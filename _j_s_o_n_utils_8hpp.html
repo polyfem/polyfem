@@ -120,21 +120,20 @@ $(document).ready(function(){initNavTree('_j_s_o_n_utils_8hpp.html',''); initRes
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">JSONUtils.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;<a class="el" href="_common_8hpp_source.html">polyfem/Common.hpp</a>&gt;</code><br />
+<code>#include &lt;polysolve/JSONUtils.hpp&gt;</code><br />
 <code>#include &lt;Eigen/Core&gt;</code><br />
 <code>#include &lt;igl/PI.h&gt;</code><br />
 <code>#include &lt;filesystem&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for JSONUtils.hpp:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="_j_s_o_n_utils_8hpp__incl.svg" width="544" height="183"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="_j_s_o_n_utils_8hpp__incl.svg" width="100%" height="437"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
@@ -144,32 +143,12 @@ This graph shows which files directly or indirectly include this file:</div>
 </div>
 <p><a href="_j_s_o_n_utils_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
-Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnlohmann_1_1adl__serializer_3_01_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html">nlohmann::adl_serializer&lt; Vector&lt; T, dim, max_dim &gt; &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnlohmann_1_1adl__serializer_3_01_row_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html">nlohmann::adl_serializer&lt; RowVector&lt; T, dim, max_dim &gt; &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structnlohmann_1_1adl__serializer_3_01std_1_1filesystem_1_1path_01_4.html">nlohmann::adl_serializer&lt; std::filesystem::path &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacepolyfem" id="r_namespacepolyfem"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html">polyfem</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepolyfem_1_1utils" id="r_namespacepolyfem_1_1utils"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html">polyfem::utils</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacenlohmann" id="r_namespacenlohmann"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacenlohmann.html">nlohmann</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
-Typedefs</h2></td></tr>
-<tr class="memitem:ac6d5d984326c96a62a1b14db054e31bc" id="r_ac6d5d984326c96a62a1b14db054e31bc"><td class="memTemplParams" colspan="2">template&lt;typename T , int dim, int max_dim = dim&gt; </td></tr>
-<tr class="memitem:ac6d5d984326c96a62a1b14db054e31bc"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacenlohmann.html#ac6d5d984326c96a62a1b14db054e31bc">nlohmann::Vector</a> = Eigen::Matrix&lt; T, dim, 1, Eigen::ColMajor, max_dim, 1 &gt;</td></tr>
-<tr class="separator:ac6d5d984326c96a62a1b14db054e31bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf63a157949686c4a9dd40c56e7e70c2" id="r_acf63a157949686c4a9dd40c56e7e70c2"><td class="memTemplParams" colspan="2">template&lt;typename T , int dim, int max_dim = dim&gt; </td></tr>
-<tr class="memitem:acf63a157949686c4a9dd40c56e7e70c2"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacenlohmann.html#acf63a157949686c4a9dd40c56e7e70c2">nlohmann::RowVector</a> = Eigen::Matrix&lt; T, 1, dim, Eigen::RowMajor, 1, max_dim &gt;</td></tr>
-<tr class="separator:acf63a157949686c4a9dd40c56e7e70c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>

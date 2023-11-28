@@ -189,10 +189,10 @@ $(document).ready(function(){initNavTree('_collision_proxy_8cpp_source.html','')
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            UV.row(2) &lt;&lt; 0, 0;</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keyword">const</span> Eigen::MatrixXd UVW = uv_to_uvw(UV, local_fid);</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            Eigen::MatrixXd V;</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            element.<a class="code hl_function" href="classpolyfem_1_1basis_1_1_element_bases.html#a47d52083f050e4cb34eeab5656a86523">eval_geom_mapping</a>(UVW, V);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            Eigen::MatrixXd <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            element.<a class="code hl_function" href="classpolyfem_1_1basis_1_1_element_bases.html#a47d52083f050e4cb34eeab5656a86523">eval_geom_mapping</a>(UVW, <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>);</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            <span class="keywordflow">return</span> V;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            <span class="keywordflow">return</span> <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>;</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        }</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    } <span class="comment">// namespace</span></div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
@@ -529,6 +529,7 @@ $(document).ready(function(){initNavTree('_collision_proxy_8cpp_source.html','')
 </div>
 <div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>} <span class="comment">// namespace polyfem::mesh</span></div>
 </div>
+<div class="ttc" id="a_adjoint_n_l_problem_8cpp_html_a91e334f289dc11ba09da0df4a9c72123"><div class="ttname"><a href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a></div><div class="ttdeci">int V</div><div class="ttdef"><b>Definition</b> <a href="_adjoint_n_l_problem_8cpp_source.html#l00023">AdjointNLProblem.cpp:23</a></div></div>
 <div class="ttc" id="a_collision_proxy_8hpp_html"><div class="ttname"><a href="_collision_proxy_8hpp.html">CollisionProxy.hpp</a></div></div>
 <div class="ttc" id="a_geometry_reader_8hpp_html"><div class="ttname"><a href="_geometry_reader_8hpp.html">GeometryReader.hpp</a></div></div>
 <div class="ttc" id="a_logger_8hpp_html"><div class="ttname"><a href="_logger_8hpp.html">Logger.hpp</a></div></div>

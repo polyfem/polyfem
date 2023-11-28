@@ -1,8 +1,4 @@
 var searchData=
 [
-  ['pk1_0',['PK1',['../namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ac34dd77ffb9238275b93ea1897664a7e',1,'polyfem']]],
-  ['pk2_1',['PK2',['../namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ab13248d68ac5516c015337b68346fc21',1,'polyfem']]],
-  ['poly_2',['POLY',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#a884a904ee9c03603ae89e2824180d93ca711f44effcbd8619148b829b6aa2ed4f',1,'polyfem::assembler::AssemblerUtils']]],
-  ['polygon_3',['POLYGON',['../namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826aecdc92bf56d960b73b02ee40125758bc',1,'polyfem::mesh']]],
-  ['polyhedron_4',['POLYHEDRON',['../namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826a0fc6833ef0fef62f1b80d37303f6dd74',1,'polyfem::mesh']]]
+  ['none_0',['None',['../namespacepolyfem_1_1solver.html#aff8f99461509f079bd5ac2a9817dbef8a6adf97f83acf6453d4a6a4b1070f3754',1,'polyfem::solver']]]
 ];

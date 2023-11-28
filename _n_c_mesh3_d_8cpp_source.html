@@ -185,7 +185,7 @@ $(document).ready(function(){initNavTree('_n_c_mesh3_d_8cpp_source.html',''); in
 </div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
 <div class="foldopen" id="foldopen00052" data-start="{" data-end="}">
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a857329f1c2617ad4dc242dd1d7b56227">   52</a></span>        <span class="keywordtype">bool</span> <a class="code hl_function" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a857329f1c2617ad4dc242dd1d7b56227">NCMesh3D::build_from_matrices</a>(<span class="keyword">const</span> Eigen::MatrixXd &amp;V, <span class="keyword">const</span> Eigen::MatrixXi &amp;<a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>)</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a857329f1c2617ad4dc242dd1d7b56227">   52</a></span>        <span class="keywordtype">bool</span> <a class="code hl_function" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a857329f1c2617ad4dc242dd1d7b56227">NCMesh3D::build_from_matrices</a>(<span class="keyword">const</span> Eigen::MatrixXd &amp;<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, <span class="keyword">const</span> Eigen::MatrixXi &amp;<a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>)</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        {</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            <a class="code hl_variable" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a6ba34425796731ff13b570bc38354475">n_elements</a> = 0;</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            <a class="code hl_variable" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#ab4104a775dd4f53df4dca1cba727ca3f">elements</a>.clear();</div>
@@ -198,10 +198,10 @@ $(document).ready(function(){initNavTree('_n_c_mesh3_d_8cpp_source.html',''); in
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            <a class="code hl_variable" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a5d98ec161cf24488729a89022bb9a3d7">index_prepared</a> = <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <a class="code hl_variable" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a1569a6dbf46378943f40cf2ce7aab8a4">adj_prepared</a> = <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <a class="code hl_variable" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a66c20666c3920b0d4143bfc2fa94c7b3">vertices</a>.reserve(V.rows());</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; V.rows(); i++)</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <a class="code hl_variable" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a66c20666c3920b0d4143bfc2fa94c7b3">vertices</a>.reserve(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.rows());</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.rows(); i++)</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            {</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                <a class="code hl_variable" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a66c20666c3920b0d4143bfc2fa94c7b3">vertices</a>.emplace_back(V.row(i));</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                <a class="code hl_variable" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a66c20666c3920b0d4143bfc2fa94c7b3">vertices</a>.emplace_back(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.row(i));</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            }</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>.rows(); i++)</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            {</div>
@@ -215,7 +215,7 @@ $(document).ready(function(){initNavTree('_n_c_mesh3_d_8cpp_source.html',''); in
 </div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
 <div class="foldopen" id="foldopen00080" data-start="{" data-end="}">
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a5a9d81ef0babc013dcebd652bd66969c">   80</a></span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a5a9d81ef0babc013dcebd652bd66969c">NCMesh3D::attach_higher_order_nodes</a>(<span class="keyword">const</span> Eigen::MatrixXd &amp;V, <span class="keyword">const</span> std::vector&lt;std::vector&lt;int&gt;&gt; &amp;nodes)</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a5a9d81ef0babc013dcebd652bd66969c">   80</a></span>        <span class="keywordtype">void</span> <a class="code hl_function" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a5a9d81ef0babc013dcebd652bd66969c">NCMesh3D::attach_higher_order_nodes</a>(<span class="keyword">const</span> Eigen::MatrixXd &amp;<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, <span class="keyword">const</span> std::vector&lt;std::vector&lt;int&gt;&gt; &amp;nodes)</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        {</div>
 <div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> f = 0; f &lt; <a class="code hl_function" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a3f281a6c7d029664820117dcb51ade52">n_cells</a>(); ++f)</div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                <span class="keywordflow">if</span> (nodes[f].size() != 4)</div>
@@ -1168,11 +1168,11 @@ $(document).ready(function(){initNavTree('_n_c_mesh3_d_8cpp_source.html',''); in
 <div class="line"><a id="l00940" name="l00940"></a><span class="lineno">  940</span>        {</div>
 <div class="line"><a id="l00941" name="l00941"></a><span class="lineno">  941</span>            assert(M.vertices.dimension() == 3);</div>
 <div class="line"><a id="l00942" name="l00942"></a><span class="lineno">  942</span> </div>
-<div class="line"><a id="l00943" name="l00943"></a><span class="lineno">  943</span>            Eigen::MatrixXd V(M.vertices.nb(), 2);</div>
+<div class="line"><a id="l00943" name="l00943"></a><span class="lineno">  943</span>            Eigen::MatrixXd <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>(M.vertices.nb(), 2);</div>
 <div class="line"><a id="l00944" name="l00944"></a><span class="lineno">  944</span>            Eigen::MatrixXi C(M.cells.nb(), 4);</div>
 <div class="line"><a id="l00945" name="l00945"></a><span class="lineno">  945</span> </div>
-<div class="line"><a id="l00946" name="l00946"></a><span class="lineno">  946</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> v = 0; v &lt; V.rows(); v++)</div>
-<div class="line"><a id="l00947" name="l00947"></a><span class="lineno">  947</span>                V.row(v) &lt;&lt; M.vertices.point(v)[0], M.vertices.point(v)[1], M.vertices.point(v)[2];</div>
+<div class="line"><a id="l00946" name="l00946"></a><span class="lineno">  946</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> v = 0; v &lt; <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.rows(); v++)</div>
+<div class="line"><a id="l00947" name="l00947"></a><span class="lineno">  947</span>                <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.row(v) &lt;&lt; M.vertices.point(v)[0], M.vertices.point(v)[1], M.vertices.point(v)[2];</div>
 <div class="line"><a id="l00948" name="l00948"></a><span class="lineno">  948</span> </div>
 <div class="line"><a id="l00949" name="l00949"></a><span class="lineno">  949</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> c = 0; c &lt; C.rows(); c++)</div>
 <div class="line"><a id="l00950" name="l00950"></a><span class="lineno">  950</span>            {</div>
@@ -1183,10 +1183,10 @@ $(document).ready(function(){initNavTree('_n_c_mesh3_d_8cpp_source.html',''); in
 <div class="line"><a id="l00955" name="l00955"></a><span class="lineno">  955</span>            }</div>
 <div class="line"><a id="l00956" name="l00956"></a><span class="lineno">  956</span> </div>
 <div class="line"><a id="l00957" name="l00957"></a><span class="lineno">  957</span>            <a class="code hl_variable" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a6ba34425796731ff13b570bc38354475">n_elements</a> = 0;</div>
-<div class="line"><a id="l00958" name="l00958"></a><span class="lineno">  958</span>            <a class="code hl_variable" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a66c20666c3920b0d4143bfc2fa94c7b3">vertices</a>.reserve(V.rows());</div>
-<div class="line"><a id="l00959" name="l00959"></a><span class="lineno">  959</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; V.rows(); i++)</div>
+<div class="line"><a id="l00958" name="l00958"></a><span class="lineno">  958</span>            <a class="code hl_variable" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a66c20666c3920b0d4143bfc2fa94c7b3">vertices</a>.reserve(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.rows());</div>
+<div class="line"><a id="l00959" name="l00959"></a><span class="lineno">  959</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.rows(); i++)</div>
 <div class="line"><a id="l00960" name="l00960"></a><span class="lineno">  960</span>            {</div>
-<div class="line"><a id="l00961" name="l00961"></a><span class="lineno">  961</span>                <a class="code hl_variable" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a66c20666c3920b0d4143bfc2fa94c7b3">vertices</a>.emplace_back(V.row(i));</div>
+<div class="line"><a id="l00961" name="l00961"></a><span class="lineno">  961</span>                <a class="code hl_variable" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a66c20666c3920b0d4143bfc2fa94c7b3">vertices</a>.emplace_back(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.row(i));</div>
 <div class="line"><a id="l00962" name="l00962"></a><span class="lineno">  962</span>            }</div>
 <div class="line"><a id="l00963" name="l00963"></a><span class="lineno">  963</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; C.rows(); i++)</div>
 <div class="line"><a id="l00964" name="l00964"></a><span class="lineno">  964</span>            {</div>
@@ -1534,6 +1534,7 @@ $(document).ready(function(){initNavTree('_n_c_mesh3_d_8cpp_source.html',''); in
 </div>
 <div class="line"><a id="l01280" name="l01280"></a><span class="lineno"> 1280</span>    } <span class="comment">// namespace mesh</span></div>
 <div class="line"><a id="l01281" name="l01281"></a><span class="lineno"> 1281</span>} <span class="comment">// namespace polyfem</span></div>
+<div class="ttc" id="a_adjoint_n_l_problem_8cpp_html_a91e334f289dc11ba09da0df4a9c72123"><div class="ttname"><a href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a></div><div class="ttdeci">int V</div><div class="ttdef"><b>Definition</b> <a href="_adjoint_n_l_problem_8cpp_source.html#l00023">AdjointNLProblem.cpp:23</a></div></div>
 <div class="ttc" id="a_logger_8hpp_html"><div class="ttname"><a href="_logger_8hpp.html">Logger.hpp</a></div></div>
 <div class="ttc" id="a_mesh_utils_8hpp_html"><div class="ttname"><a href="_mesh_utils_8hpp.html">MeshUtils.hpp</a></div></div>
 <div class="ttc" id="a_n_c_mesh3_d_8hpp_html"><div class="ttname"><a href="_n_c_mesh3_d_8hpp.html">NCMesh3D.hpp</a></div></div>

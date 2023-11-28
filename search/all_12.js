@@ -117,8 +117,7 @@ var searchData=
   ['rhsassembler_2ehpp_114',['RhsAssembler.hpp',['../_rhs_assembler_8hpp.html',1,'']]],
   ['root_5fpath_115',['root_path',['../classpolyfem_1_1_state.html#a18c94c14eb94feb4a1f82cf8d053b97f',1,'polyfem::State']]],
   ['rows_116',['rows',['../classpolyfem_1_1assembler_1_1_stokes_mixed.html#a36d1e4f5eada3f7eaf50a7bcb452381a',1,'polyfem::assembler::StokesMixed::rows()'],['../classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed.html#a1d3969c6882c5a07197f07cb4767dfff',1,'polyfem::assembler::IncompressibleLinearElasticityMixed::rows()'],['../classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html#a916d57ef5719b8cde79fcfca7bca00c1',1,'polyfem::assembler::BilaplacianMixed::rows()'],['../classpolyfem_1_1assembler_1_1_mixed_assembler.html#a1847475ec799d5afd490347178aaf0e5',1,'polyfem::assembler::MixedAssembler::rows()']]],
-  ['rowvector_117',['RowVector',['../namespacenlohmann.html#acf63a157949686c4a9dd40c56e7e70c2',1,'nlohmann']]],
-  ['rowvectornd_118',['RowVectorNd',['../namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321',1,'polyfem']]],
-  ['rules_119',['Quadrature Rules',['../index.html#autotoc_md5',1,'']]],
-  ['runtimestatscsvwriter_120',['runtimestatscsvwriter',['../classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html',1,'polyfem::io::RuntimeStatsCSVWriter'],['../classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#af5c4f8782ec4fcae18b40ab2f16c8240',1,'polyfem::io::RuntimeStatsCSVWriter::RuntimeStatsCSVWriter()']]]
+  ['rowvectornd_117',['RowVectorNd',['../namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321',1,'polyfem']]],
+  ['rules_118',['Quadrature Rules',['../index.html#autotoc_md5',1,'']]],
+  ['runtimestatscsvwriter_119',['runtimestatscsvwriter',['../classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html#af5c4f8782ec4fcae18b40ab2f16c8240',1,'polyfem::io::RuntimeStatsCSVWriter::RuntimeStatsCSVWriter()'],['../classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html',1,'polyfem::io::RuntimeStatsCSVWriter']]]
 ];

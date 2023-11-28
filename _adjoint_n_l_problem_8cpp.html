@@ -125,7 +125,7 @@ $(document).ready(function(){initNavTree('_adjoint_n_l_problem_8cpp.html',''); i
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="_adjoint_n_l_problem_8hpp_source.html">AdjointNLProblem.hpp</a>&quot;</code><br />
-<code>#include &lt;<a class="el" href="_composite_form_8hpp_source.html">polyfem/solver/forms/adjoint_forms/CompositeForm.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_adjoint_form_8hpp_source.html">polyfem/solver/forms/adjoint_forms/AdjointForm.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_logger_8hpp_source.html">polyfem/utils/Logger.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_maybe_parallel_for_8hpp_source.html">polyfem/utils/MaybeParallelFor.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_timer_8hpp_source.html">polyfem/utils/Timer.hpp</a>&gt;</code><br />
@@ -134,6 +134,8 @@ $(document).ready(function(){initNavTree('_adjoint_n_l_problem_8cpp.html',''); i
 <code>#include &lt;igl/boundary_facets.h&gt;</code><br />
 <code>#include &lt;igl/writeOBJ.h&gt;</code><br />
 <code>#include &lt;<a class="el" href="_n_l_problem_8hpp_source.html">polyfem/solver/NLProblem.hpp</a>&gt;</code><br />
+<code>#include &lt;list&gt;</code><br />
+<code>#include &lt;stack&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for AdjointNLProblem.cpp:</div>
 <div class="dyncontent">
@@ -149,6 +151,59 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacepolyfem_1_1solver" id="r_namespacepolyfem_1_1solver"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html">polyfem::solver</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Variable Documentation</h2>
+<a id="a2903a4010c2f22d07c5df8d437d79cc5" name="a2903a4010c2f22d07c5df8d437d79cc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2903a4010c2f22d07c5df8d437d79cc5">&#9670;&#160;</a></span>adj</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">vector&lt;list&lt;int&gt; &gt; adj</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00026">26</a> of file <a class="el" href="_adjoint_n_l_problem_8cpp_source.html">AdjointNLProblem.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_refinement_8cpp_source.html#l00016">polyfem::mesh::edge_adjacency_graph()</a>, and <a class="el" href="_refinement_8cpp_source.html#l00278">polyfem::mesh::instantiate_pattern()</a>.</p>
+
+</div>
+</div>
+<a id="a91e334f289dc11ba09da0df4a9c72123" name="a91e334f289dc11ba09da0df4a9c72123"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91e334f289dc11ba09da0df4a9c72123">&#9670;&#160;</a></span>V</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int V</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00023">23</a> of file <a class="el" href="_adjoint_n_l_problem_8cpp_source.html">AdjointNLProblem.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="solver_2forms_2adjoint__forms_2_a_m_i_p_s_form_8hpp_source.html#l00118">polyfem::solver::AMIPSForm::AMIPSForm()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00197">polyfem::mesh::CMesh2D::attach_higher_order_nodes()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00512">polyfem::mesh::CMesh3D::attach_higher_order_nodes()</a>, <a class="el" href="_geometry_utils_8cpp_source.html#l00088">polyfem::utils::barycentric_coordinates()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01004">polyfem::mesh::CMesh3D::bounding_box()</a>, <a class="el" href="_c_mesh2_d_8cpp_source.html#l00173">polyfem::mesh::CMesh2D::build_from_matrices()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00039">polyfem::mesh::NCMesh2D::build_from_matrices()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00469">polyfem::mesh::CMesh3D::build_from_matrices()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00052">polyfem::mesh::NCMesh3D::build_from_matrices()</a>, <a class="el" href="_state_load_8cpp_source.html#l00158">polyfem::State::build_mesh_matrices()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00006">polyfem::solver::CollisionBarrierForm::CollisionBarrierForm()</a>, <a class="el" href="_sizing_field_remesher_8cpp_source.html#l00144">polyfem::mesh::SizingFieldRemesher&lt; WMTKMesh &gt;::compute_contact_sizing_field()</a>, <a class="el" href="_sizing_field_remesher_8cpp_source.html#l00105">polyfem::mesh::SizingFieldRemesher&lt; WMTKMesh &gt;::compute_contact_sizing_field_from_candidates()</a>, <a class="el" href="_smoothing_forms_8cpp_source.html#l00117">polyfem::solver::BoundarySmoothingForm::compute_partial_gradient_unweighted()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00332">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, <a class="el" href="_singularities_8cpp_source.html#l00084">polyfem::mesh::create_patch_around_singularities()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00123">polyfem::solver::DeformedCollisionBarrierForm::DeformedCollisionBarrierForm()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l01166">polyfem::solver::AdjointTools::edge_normal_gradient()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l01198">polyfem::solver::AdjointTools::edge_velocity_divergence()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l01182">polyfem::solver::AdjointTools::face_normal_gradient()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l01203">polyfem::solver::AdjointTools::face_velocity_divergence()</a>, <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00044">polyfem::solver::InversionBarrierForm::first_derivative_unweighted()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00639">polyfem::mesh::from_geogram_mesh()</a>, <a class="el" href="_polyhedron_quadrature_8cpp_source.html#l00095">polyfem::quadrature::PolyhedronQuadrature::get_quadrature()</a>, <a class="el" href="_refinement_8cpp_source.html#l00278">polyfem::mesh::instantiate_pattern()</a>, <a class="el" href="_variable_to_simulation_8cpp_source.html#l00079">polyfem::solver::ShapeVariableToSimulation::inverse_eval()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00288">polyfem::mesh::irregular_tessellation()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00217">polyfem::mesh::irregular_triangle()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00266">polyfem::mesh::irregular_triangle_barycentric_coordinates()</a>, <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00173">polyfem::solver::InversionBarrierForm::is_step_valid()</a>, <a class="el" href="_n_c_mesh3_d_8cpp_source.html#l00939">polyfem::mesh::NCMesh3D::load()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00554">polyfem::mesh::NCMesh2D::load()</a>, <a class="el" href="_state_8hpp_source.html#l00461">polyfem::State::load_mesh()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00087">polyfem::mesh::max_edge_length()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l01011">polyfem::mesh::CMesh3D::normalize()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00702">polyfem::mesh::orient_closed_surface()</a>, <a class="el" href="_a_priori_8cpp_source.html#l00141">polyfem::refinement::APriori::p_refine()</a>, <a class="el" href="_o_b_j_reader_8cpp_source.html#l00032">polyfem::io::OBJReader::read()</a>, <a class="el" href="_o_b_j_reader_8cpp_source.html#l00282">polyfem::io::OBJReader::read()</a>, <a class="el" href="_o_b_j_reader_8cpp_source.html#l00293">polyfem::io::OBJReader::read()</a>, <a class="el" href="_o_b_j_reader_8cpp_source.html#l00052">polyfem::io::OBJReader::read()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00183">polyfem::mesh::refine_edge()</a>, <a class="el" href="_refinement_8cpp_source.html#l00620">polyfem::mesh::refine_polygonal_mesh()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00194">polyfem::mesh::refine_triangle_edges()</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00031">polyfem::utils::regular_2d_grid()</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00116">polyfem::utils::regular_3d_grid()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00148">polyfem::mesh::regular_grid_tessellation()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00104">polyfem::mesh::regular_grid_triangle_barycentric_coordinates()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00325">polyfem::mesh::reorder_mesh()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00884">polyfem::mesh::sample_surface()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00217">polyfem::solver::AdjointNLProblem::save_to_file()</a>, <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00072">polyfem::solver::InversionBarrierForm::second_derivative_unweighted()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00669">polyfem::mesh::signed_squared_distances()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00681">polyfem::mesh::signed_volume()</a>, <a class="el" href="_singularities_8cpp_source.html#l00048">polyfem::mesh::singular_edges()</a>, <a class="el" href="_singularities_8cpp_source.html#l00008">polyfem::mesh::singular_vertices()</a>, <a class="el" href="_singularities_8cpp_source.html#l00075">polyfem::mesh::singularity_graph()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00039">polyfem::State::solve_transient_tensor_nonlinear()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00046">polyfem::mesh::stitch_mesh()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00035">polyfem::mesh::stitch_mesh()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00869">polyfem::mesh::tertrahedralize_star_shaped_surface()</a>, <a class="el" href="_geometry_utils_8cpp_source.html#l00052">polyfem::utils::tetrahedron_volume()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00575">polyfem::mesh::to_geogram_mesh()</a>, <a class="el" href="_geometry_utils_8cpp_source.html#l00030">polyfem::utils::triangle_area()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00145">polyfem::solver::ContactForm::value_per_element_unweighted()</a>, <a class="el" href="_smoothing_forms_8cpp_source.html#l00076">polyfem::solver::BoundarySmoothingForm::value_unweighted()</a>, and <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00020">polyfem::solver::InversionBarrierForm::value_unweighted()</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

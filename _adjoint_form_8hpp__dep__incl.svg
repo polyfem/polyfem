@@ -46,7 +46,7 @@
   </g>
 </defs>
 <script type="application/ecmascript">
-var viewWidth = 1775;
+var viewWidth = 1626;
 var viewHeight = 280;
 var sectionId = 'dynsection-1';
 </script>
@@ -58,21 +58,19 @@ var sectionId = 'dynsection-1';
 <g id="Node000001" class="node">
 <title>Node1</title>
 <g id="a_Node000001"><a xlink:title=" ">
-<polygon fill="#999999" stroke="#666666" points="1072.5,-272 953.5,-272 953.5,-231 1072.5,-231 1072.5,-272"/>
-<text text-anchor="start" x="961.5" y="-260" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="start" x="961.5" y="-249" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
-<text text-anchor="middle" x="1013" y="-238" font-family="Helvetica,sans-Serif" font-size="10.00">/AdjointForm.hpp</text>
+<polygon fill="#999999" stroke="#666666" points="655,-272 536,-272 536,-231 655,-231 655,-272"/>
+<text text-anchor="start" x="544" y="-260" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="start" x="544" y="-249" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
+<text text-anchor="middle" x="595.5" y="-238" font-family="Helvetica,sans-Serif" font-size="10.00">/AdjointForm.hpp</text>
 </a>
 </g>
 </g>
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="_adjoint_form_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="288.5,-195 169.5,-195 169.5,-154 288.5,-154 288.5,-195"/>
-<text text-anchor="start" x="177.5" y="-183" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="start" x="177.5" y="-172" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
-<text text-anchor="middle" x="229" y="-161" font-family="Helvetica,sans-Serif" font-size="10.00">/AdjointForm.cpp</text>
+<g id="a_Node000002"><a xlink:href="main_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="160.5,-184 38.5,-184 38.5,-165 160.5,-165 160.5,-184"/>
+<text text-anchor="middle" x="99.5" y="-172" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/main.cpp</text>
 </a>
 </g>
 </g>
@@ -80,19 +78,18 @@ var sectionId = 'dynsection-1';
 <g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
 <g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M942.95,-249.75C814.08,-247.33 531.15,-237.2 297,-195 294.22,-194.5 291.39,-193.93 288.54,-193.31"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="943.01,-253.25 953.08,-249.93 943.14,-246.25 943.01,-253.25"/>
+<path fill="none" stroke="#63b8ff" d="M525.77,-244.48C440.99,-236.47 293.81,-220.28 169.5,-195 155.16,-192.08 139.44,-187.81 126.54,-184"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="525.51,-247.98 535.79,-245.42 526.16,-241.01 525.51,-247.98"/>
 </a>
 </g>
 </g>
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="_composite_form_8hpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="425.5,-195 306.5,-195 306.5,-154 425.5,-154 425.5,-195"/>
-<text text-anchor="start" x="314.5" y="-183" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="start" x="314.5" y="-172" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
-<text text-anchor="middle" x="366" y="-161" font-family="Helvetica,sans-Serif" font-size="10.00">/CompositeForm.hpp</text>
+<g id="a_Node000003"><a xlink:href="_adjoint_n_l_problem_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="306.5,-189.5 178.5,-189.5 178.5,-159.5 306.5,-159.5 306.5,-189.5"/>
+<text text-anchor="start" x="186.5" y="-177.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="middle" x="242.5" y="-166.5" font-family="Helvetica,sans-Serif" font-size="10.00">/AdjointNLProblem.cpp</text>
 </a>
 </g>
 </g>
@@ -100,8 +97,48 @@ var sectionId = 'dynsection-1';
 <g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
 <g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M943.22,-242.41C815.31,-227.58 545.45,-196.3 425.56,-182.4"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="942.95,-245.9 953.29,-243.58 943.76,-238.95 942.95,-245.9"/>
+<path fill="none" stroke="#63b8ff" d="M526.04,-238.04C469.22,-227.53 386.88,-211.59 315.5,-195 308.34,-193.34 300.83,-191.47 293.45,-189.56"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="525.52,-241.5 535.99,-239.87 526.79,-234.62 525.52,-241.5"/>
+</a>
+</g>
+</g>
+<!-- Node4 -->
+<g id="Node000004" class="node">
+<title>Node4</title>
+<g id="a_Node000004"><a xlink:href="_adjoint_form_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="444,-195 325,-195 325,-154 444,-154 444,-195"/>
+<text text-anchor="start" x="333" y="-183" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="start" x="333" y="-172" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
+<text text-anchor="middle" x="384.5" y="-161" font-family="Helvetica,sans-Serif" font-size="10.00">/AdjointForm.cpp</text>
+</a>
+</g>
+</g>
+<!-- Node1&#45;&gt;Node4 -->
+<g id="edge3_Node000001_Node000004" class="edge">
+<title>Node1&#45;&gt;Node4</title>
+<g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M530.9,-227.54C501.66,-217.15 467.47,-204.99 439.48,-195.04"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="530.02,-230.94 540.61,-230.99 532.36,-224.34 530.02,-230.94"/>
+</a>
+</g>
+</g>
+<!-- Node5 -->
+<g id="Node000005" class="node">
+<title>Node5</title>
+<g id="a_Node000005"><a xlink:href="_composite_form_8hpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="581,-195 462,-195 462,-154 581,-154 581,-195"/>
+<text text-anchor="start" x="470" y="-183" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="start" x="470" y="-172" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
+<text text-anchor="middle" x="521.5" y="-161" font-family="Helvetica,sans-Serif" font-size="10.00">/CompositeForm.hpp</text>
+</a>
+</g>
+</g>
+<!-- Node1&#45;&gt;Node5 -->
+<g id="edge4_Node000001_Node000005" class="edge">
+<title>Node1&#45;&gt;Node5</title>
+<g id="a_edge4_Node000001_Node000005"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M568.87,-223.51C559.6,-214.11 549.38,-203.76 540.81,-195.07"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="566.54,-226.13 576.06,-230.79 571.53,-221.22 566.54,-226.13"/>
 </a>
 </g>
 </g>
@@ -109,10 +146,10 @@ var sectionId = 'dynsection-1';
 <g id="Node000010" class="node">
 <title>Node10</title>
 <g id="a_Node000010"><a xlink:href="_parametrization_form_8hpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="940.5,-195 797.5,-195 797.5,-154 940.5,-154 940.5,-195"/>
-<text text-anchor="start" x="805.5" y="-183" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="start" x="805.5" y="-172" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
-<text text-anchor="middle" x="869" y="-161" font-family="Helvetica,sans-Serif" font-size="10.00">/ParametrizationForm.hpp</text>
+<polygon fill="white" stroke="#666666" points="742,-195 599,-195 599,-154 742,-154 742,-195"/>
+<text text-anchor="start" x="607" y="-183" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="start" x="607" y="-172" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
+<text text-anchor="middle" x="670.5" y="-161" font-family="Helvetica,sans-Serif" font-size="10.00">/ParametrizationForm.hpp</text>
 </a>
 </g>
 </g>
@@ -120,137 +157,79 @@ var sectionId = 'dynsection-1';
 <g id="edge10_Node000001_Node000010" class="edge">
 <title>Node1&#45;&gt;Node10</title>
 <g id="a_edge10_Node000001_Node000010"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M966.56,-226.31C947.14,-216.2 924.87,-204.6 906.52,-195.04"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="965.06,-229.48 975.54,-230.99 968.29,-223.27 965.06,-229.48"/>
+<path fill="none" stroke="#63b8ff" d="M622.49,-223.51C631.89,-214.11 642.24,-203.76 650.93,-195.07"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="619.8,-221.25 615.21,-230.79 624.75,-226.2 619.8,-221.25"/>
 </a>
 </g>
 </g>
-<!-- Node15 -->
-<g id="Node000015" class="node">
-<title>Node15</title>
-<g id="a_Node000015"><a xlink:href="_smoothing_forms_8hpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="1218.5,-195 1095.5,-195 1095.5,-154 1218.5,-154 1218.5,-195"/>
-<text text-anchor="start" x="1103.5" y="-183" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="start" x="1103.5" y="-172" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
-<text text-anchor="middle" x="1157" y="-161" font-family="Helvetica,sans-Serif" font-size="10.00">/SmoothingForms.hpp</text>
+<!-- Node16 -->
+<g id="Node000016" class="node">
+<title>Node16</title>
+<g id="a_Node000016"><a xlink:href="_smoothing_forms_8hpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="1019,-195 896,-195 896,-154 1019,-154 1019,-195"/>
+<text text-anchor="start" x="904" y="-183" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="start" x="904" y="-172" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
+<text text-anchor="middle" x="957.5" y="-161" font-family="Helvetica,sans-Serif" font-size="10.00">/SmoothingForms.hpp</text>
 </a>
 </g>
 </g>
-<!-- Node1&#45;&gt;Node15 -->
-<g id="edge17_Node000001_Node000015" class="edge">
-<title>Node1&#45;&gt;Node15</title>
-<g id="a_edge17_Node000001_Node000015"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1059.44,-226.31C1078.86,-216.2 1101.13,-204.6 1119.48,-195.04"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1057.71,-223.27 1050.46,-230.99 1060.94,-229.48 1057.71,-223.27"/>
+<!-- Node1&#45;&gt;Node16 -->
+<g id="edge18_Node000001_Node000016" class="edge">
+<title>Node1&#45;&gt;Node16</title>
+<g id="a_edge18_Node000001_Node000016"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M665.29,-236.04C732.09,-222.2 831.87,-201.53 895.82,-188.28"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="664.36,-232.66 655.28,-238.12 665.78,-239.51 664.36,-232.66"/>
 </a>
 </g>
 </g>
-<!-- Node17 -->
-<g id="Node000017" class="node">
-<title>Node17</title>
-<g id="a_Node000017"><a xlink:href="_spatial_integral_forms_8hpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="1586,-195 1444,-195 1444,-154 1586,-154 1586,-195"/>
-<text text-anchor="start" x="1452" y="-183" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="start" x="1452" y="-172" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
-<text text-anchor="middle" x="1515" y="-161" font-family="Helvetica,sans-Serif" font-size="10.00">/SpatialIntegralForms.hpp</text>
+<!-- Node18 -->
+<g id="Node000018" class="node">
+<title>Node18</title>
+<g id="a_Node000018"><a xlink:href="_spatial_integral_forms_8hpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="1443.5,-195 1301.5,-195 1301.5,-154 1443.5,-154 1443.5,-195"/>
+<text text-anchor="start" x="1309.5" y="-183" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="start" x="1309.5" y="-172" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
+<text text-anchor="middle" x="1372.5" y="-161" font-family="Helvetica,sans-Serif" font-size="10.00">/SpatialIntegralForms.hpp</text>
 </a>
 </g>
 </g>
-<!-- Node1&#45;&gt;Node17 -->
-<g id="edge20_Node000001_Node000017" class="edge">
-<title>Node1&#45;&gt;Node17</title>
-<g id="a_edge20_Node000001_Node000017"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1082.75,-241.24C1160.85,-230.71 1291.16,-212.69 1403,-195 1416.26,-192.9 1430.37,-190.54 1443.96,-188.21"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1082,-237.81 1072.55,-242.61 1082.93,-244.75 1082,-237.81"/>
+<!-- Node1&#45;&gt;Node18 -->
+<g id="edge21_Node000001_Node000018" class="edge">
+<title>Node1&#45;&gt;Node18</title>
+<g id="a_edge21_Node000001_Node000018"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M665.38,-246.45C785.91,-239.06 1040.56,-221.64 1254.5,-195 1269.75,-193.1 1286.04,-190.67 1301.5,-188.17"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="664.95,-242.97 655.19,-247.07 665.38,-249.96 664.95,-242.97"/>
 </a>
 </g>
 </g>
-<!-- Node21 -->
-<g id="Node000021" class="node">
-<title>Node21</title>
-<g id="a_Node000021"><a xlink:href="_transient_form_8hpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="1393.5,-195 1274.5,-195 1274.5,-154 1393.5,-154 1393.5,-195"/>
-<text text-anchor="start" x="1282.5" y="-183" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="start" x="1282.5" y="-172" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
-<text text-anchor="middle" x="1334" y="-161" font-family="Helvetica,sans-Serif" font-size="10.00">/TransientForm.hpp</text>
+<!-- Node22 -->
+<g id="Node000022" class="node">
+<title>Node22</title>
+<g id="a_Node000022"><a xlink:href="_transient_form_8hpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="1245,-195 1126,-195 1126,-154 1245,-154 1245,-195"/>
+<text text-anchor="start" x="1134" y="-183" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="start" x="1134" y="-172" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
+<text text-anchor="middle" x="1185.5" y="-161" font-family="Helvetica,sans-Serif" font-size="10.00">/TransientForm.hpp</text>
 </a>
 </g>
 </g>
-<!-- Node1&#45;&gt;Node21 -->
-<g id="edge26_Node000001_Node000021" class="edge">
-<title>Node1&#45;&gt;Node21</title>
-<g id="a_edge26_Node000001_Node000021"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1082.68,-234.22C1139.92,-220.85 1220.13,-202.1 1274.42,-189.42"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1081.57,-230.89 1072.63,-236.57 1083.16,-237.7 1081.57,-230.89"/>
-</a>
-</g>
-</g>
-<!-- Node4 -->
-<g id="Node000004" class="node">
-<title>Node4</title>
-<g id="a_Node000004"><a xlink:href="_adjoint_n_l_problem_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="128,-112.5 0,-112.5 0,-82.5 128,-82.5 128,-112.5"/>
-<text text-anchor="start" x="8" y="-100.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="middle" x="64" y="-89.5" font-family="Helvetica,sans-Serif" font-size="10.00">/AdjointNLProblem.cpp</text>
-</a>
-</g>
-</g>
-<!-- Node3&#45;&gt;Node4 -->
-<g id="edge3_Node000003_Node000004" class="edge">
-<title>Node3&#45;&gt;Node4</title>
-<g id="a_edge3_Node000003_Node000004"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M296.25,-153.88C224.66,-135.99 204.74,-134.66 137,-118 130.12,-116.31 122.9,-114.46 115.78,-112.6"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="295.66,-157.34 306.21,-156.39 297.37,-150.55 295.66,-157.34"/>
-</a>
-</g>
-</g>
-<!-- Node5 -->
-<g id="Node000005" class="node">
-<title>Node5</title>
-<g id="a_Node000005"><a xlink:href="_composite_forms_8hpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="427.5,-118 304.5,-118 304.5,-77 427.5,-77 427.5,-118"/>
-<text text-anchor="start" x="312.5" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="start" x="312.5" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
-<text text-anchor="middle" x="366" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">/CompositeForms.hpp</text>
-</a>
-</g>
-</g>
-<!-- Node3&#45;&gt;Node5 -->
-<g id="edge4_Node000003_Node000005" class="edge">
-<title>Node3&#45;&gt;Node5</title>
-<g id="a_edge4_Node000003_Node000005"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M366,-143.69C366,-135.08 366,-125.9 366,-118.07"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="362.5,-143.79 366,-153.79 369.5,-143.79 362.5,-143.79"/>
-</a>
-</g>
-</g>
-<!-- Node8 -->
-<g id="Node000008" class="node">
-<title>Node8</title>
-<g id="a_Node000008"><a xlink:href="_sum_composite_form_8hpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="286,-118 146,-118 146,-77 286,-77 286,-118"/>
-<text text-anchor="start" x="154" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="start" x="154" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
-<text text-anchor="middle" x="216" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">/SumCompositeForm.hpp</text>
-</a>
-</g>
-</g>
-<!-- Node3&#45;&gt;Node8 -->
-<g id="edge7_Node000003_Node000008" class="edge">
-<title>Node3&#45;&gt;Node8</title>
-<g id="a_edge7_Node000003_Node000008"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M317.9,-149.45C297.61,-139.3 274.29,-127.64 255.08,-118.04"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="316.47,-152.65 326.98,-153.99 319.6,-146.39 316.47,-152.65"/>
+<!-- Node1&#45;&gt;Node22 -->
+<g id="edge27_Node000001_Node000022" class="edge">
+<title>Node1&#45;&gt;Node22</title>
+<g id="a_edge27_Node000001_Node000022"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M665.32,-241.62C782.35,-226.75 1016.08,-197.04 1125.89,-183.08"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="664.52,-238.2 655.05,-242.93 665.41,-245.14 664.52,-238.2"/>
 </a>
 </g>
 </g>
 <!-- Node6 -->
 <g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_Node000006"><a xlink:href="_optimizations_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="1186,-35.5 1078,-35.5 1078,-5.5 1186,-5.5 1186,-35.5"/>
-<text text-anchor="start" x="1086" y="-23.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="middle" x="1132" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">/Optimizations.cpp</text>
+<g id="a_Node000006"><a xlink:href="_composite_forms_8hpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="123,-118 0,-118 0,-77 123,-77 123,-118"/>
+<text text-anchor="start" x="8" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="start" x="8" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
+<text text-anchor="middle" x="61.5" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">/CompositeForms.hpp</text>
 </a>
 </g>
 </g>
@@ -258,55 +237,76 @@ var sectionId = 'dynsection-1';
 <g id="edge5_Node000005_Node000006" class="edge">
 <title>Node5&#45;&gt;Node6</title>
 <g id="a_edge5_Node000005_Node000006"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M437.89,-77.03C681.17,-35.2 962.05,-24.95 1077.94,-22.36"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="437.05,-73.63 427.8,-78.79 438.25,-80.52 437.05,-73.63"/>
-</a>
-</g>
-</g>
-<!-- Node7 -->
-<g id="Node000007" class="node">
-<title>Node7</title>
-<g id="a_Node000007"><a xlink:href="_composite_forms_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="427,-41 305,-41 305,0 427,0 427,-41"/>
-<text text-anchor="start" x="313" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="start" x="313" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
-<text text-anchor="middle" x="366" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/CompositeForms.cpp</text>
-</a>
-</g>
-</g>
-<!-- Node5&#45;&gt;Node7 -->
-<g id="edge6_Node000005_Node000007" class="edge">
-<title>Node5&#45;&gt;Node7</title>
-<g id="a_edge6_Node000005_Node000007"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M366,-66.69C366,-58.08 366,-48.9 366,-41.07"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="362.5,-66.79 366,-76.79 369.5,-66.79 362.5,-66.79"/>
-</a>
-</g>
-</g>
-<!-- Node8&#45;&gt;Node6 -->
-<g id="edge9_Node000008_Node000006" class="edge">
-<title>Node8&#45;&gt;Node6</title>
-<g id="a_edge9_Node000008_Node000006"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M296.27,-76.95C595.82,-31.33 945.52,-23.26 1077.78,-21.81"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="295.43,-73.54 286.08,-78.52 296.5,-80.46 295.43,-73.54"/>
+<path fill="none" stroke="#63b8ff" d="M451.85,-154.06C309.81,-127.21 269.27,-144.74 131.5,-118 128.78,-117.47 126,-116.89 123.21,-116.27"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="451.32,-157.52 461.81,-155.98 452.65,-150.65 451.32,-157.52"/>
 </a>
 </g>
 </g>
 <!-- Node9 -->
 <g id="Node000009" class="node">
 <title>Node9</title>
-<g id="a_Node000009"><a xlink:href="main_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="277,-30 155,-30 155,-11 277,-11 277,-30"/>
-<text text-anchor="middle" x="216" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/main.cpp</text>
+<g id="a_Node000009"><a xlink:href="_sum_composite_form_8hpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="418.5,-118 278.5,-118 278.5,-77 418.5,-77 418.5,-118"/>
+<text text-anchor="start" x="286.5" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="start" x="286.5" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
+<text text-anchor="middle" x="348.5" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">/SumCompositeForm.hpp</text>
 </a>
 </g>
 </g>
-<!-- Node8&#45;&gt;Node9 -->
-<g id="edge8_Node000008_Node000009" class="edge">
-<title>Node8&#45;&gt;Node9</title>
-<g id="a_edge8_Node000008_Node000009"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M216,-66.7C216,-53.59 216,-39.18 216,-30.24"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="212.5,-66.79 216,-76.79 219.5,-66.79 212.5,-66.79"/>
+<!-- Node5&#45;&gt;Node9 -->
+<g id="edge8_Node000005_Node000009" class="edge">
+<title>Node5&#45;&gt;Node9</title>
+<g id="a_edge8_Node000005_Node000009"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M467.28,-150C443.59,-139.72 416.13,-127.82 393.58,-118.04"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="465.93,-153.22 476.5,-153.99 468.72,-146.8 465.93,-153.22"/>
+</a>
+</g>
+</g>
+<!-- Node7 -->
+<g id="Node000007" class="node">
+<title>Node7</title>
+<g id="a_Node000007"><a xlink:href="_optimizations_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="955.5,-35.5 847.5,-35.5 847.5,-5.5 955.5,-5.5 955.5,-35.5"/>
+<text text-anchor="start" x="855.5" y="-23.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="middle" x="901.5" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">/Optimizations.cpp</text>
+</a>
+</g>
+</g>
+<!-- Node6&#45;&gt;Node7 -->
+<g id="edge6_Node000006_Node000007" class="edge">
+<title>Node6&#45;&gt;Node7</title>
+<g id="a_edge6_Node000006_Node000007"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M133.24,-76.87C405.13,-30.69 722.58,-22.96 847.37,-21.7"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="132.45,-73.45 123.18,-78.6 133.63,-80.35 132.45,-73.45"/>
+</a>
+</g>
+</g>
+<!-- Node8 -->
+<g id="Node000008" class="node">
+<title>Node8</title>
+<g id="a_Node000008"><a xlink:href="_composite_forms_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="122.5,-41 0.5,-41 0.5,0 122.5,0 122.5,-41"/>
+<text text-anchor="start" x="8.5" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="start" x="8.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
+<text text-anchor="middle" x="61.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/CompositeForms.cpp</text>
+</a>
+</g>
+</g>
+<!-- Node6&#45;&gt;Node8 -->
+<g id="edge7_Node000006_Node000008" class="edge">
+<title>Node6&#45;&gt;Node8</title>
+<g id="a_edge7_Node000006_Node000008"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M61.5,-66.69C61.5,-58.08 61.5,-48.9 61.5,-41.07"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="58,-66.79 61.5,-76.79 65,-66.79 58,-66.79"/>
+</a>
+</g>
+</g>
+<!-- Node9&#45;&gt;Node7 -->
+<g id="edge9_Node000009_Node000007" class="edge">
+<title>Node9&#45;&gt;Node7</title>
+<g id="a_edge9_Node000009_Node000007"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M428.46,-76.94C585.68,-48.98 760.51,-32.71 847.15,-25.63"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="427.84,-73.49 418.61,-78.71 429.07,-80.38 427.84,-73.49"/>
 </a>
 </g>
 </g>
@@ -314,10 +314,10 @@ var sectionId = 'dynsection-1';
 <g id="Node000011" class="node">
 <title>Node11</title>
 <g id="a_Node000011"><a xlink:href="_barrier_forms_8hpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="1077.5,-118 958.5,-118 958.5,-77 1077.5,-77 1077.5,-118"/>
-<text text-anchor="start" x="966.5" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="start" x="966.5" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
-<text text-anchor="middle" x="1018" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">/BarrierForms.hpp</text>
+<polygon fill="white" stroke="#666666" points="260,-118 141,-118 141,-77 260,-77 260,-118"/>
+<text text-anchor="start" x="149" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="start" x="149" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
+<text text-anchor="middle" x="200.5" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">/BarrierForms.hpp</text>
 </a>
 </g>
 </g>
@@ -325,39 +325,19 @@ var sectionId = 'dynsection-1';
 <g id="edge11_Node000010_Node000011" class="edge">
 <title>Node10&#45;&gt;Node11</title>
 <g id="a_edge11_Node000010_Node000011"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M916.78,-149.45C936.94,-139.3 960.1,-127.64 979.18,-118.04"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="915.12,-146.37 907.76,-153.99 918.26,-152.62 915.12,-146.37"/>
-</a>
-</g>
-</g>
-<!-- Node12 -->
-<g id="Node000012" class="node">
-<title>Node12</title>
-<g id="a_Node000012"><a xlink:href="_parametrization_form_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="940,-118 798,-118 798,-77 940,-77 940,-118"/>
-<text text-anchor="start" x="806" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="start" x="806" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
-<text text-anchor="middle" x="869" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">/ParametrizationForm.cpp</text>
-</a>
-</g>
-</g>
-<!-- Node10&#45;&gt;Node12 -->
-<g id="edge13_Node000010_Node000012" class="edge">
-<title>Node10&#45;&gt;Node12</title>
-<g id="a_edge13_Node000010_Node000012"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M869,-143.69C869,-135.08 869,-125.9 869,-118.07"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="865.5,-143.79 869,-153.79 872.5,-143.79 865.5,-143.79"/>
+<path fill="none" stroke="#63b8ff" d="M588.66,-153.98C446.76,-129.92 406.79,-144.93 269.5,-118 266.45,-117.4 263.33,-116.73 260.19,-116.01"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="588.16,-157.45 598.61,-155.7 589.35,-150.55 588.16,-157.45"/>
 </a>
 </g>
 </g>
 <!-- Node13 -->
 <g id="Node000013" class="node">
 <title>Node13</title>
-<g id="a_Node000013"><a xlink:href="_parametrized_product_form_8hpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="779.5,-118 612.5,-118 612.5,-77 779.5,-77 779.5,-118"/>
-<text text-anchor="start" x="620.5" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="start" x="620.5" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
-<text text-anchor="middle" x="696" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">/ParametrizedProductForm.hpp</text>
+<g id="a_Node000013"><a xlink:href="_parametrization_form_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="578.5,-118 436.5,-118 436.5,-77 578.5,-77 578.5,-118"/>
+<text text-anchor="start" x="444.5" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="start" x="444.5" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
+<text text-anchor="middle" x="507.5" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">/ParametrizationForm.cpp</text>
 </a>
 </g>
 </g>
@@ -365,182 +345,222 @@ var sectionId = 'dynsection-1';
 <g id="edge14_Node000010_Node000013" class="edge">
 <title>Node10&#45;&gt;Node13</title>
 <g id="a_edge14_Node000010_Node000013"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M814.78,-150C791.09,-139.72 763.63,-127.82 741.08,-118.04"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="813.43,-153.22 824,-153.99 816.22,-146.8 813.43,-153.22"/>
+<path fill="none" stroke="#63b8ff" d="M618.82,-149.72C596.64,-139.51 571.03,-127.73 549.97,-118.04"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="617.55,-152.99 628.1,-153.99 620.48,-146.63 617.55,-152.99"/>
 </a>
 </g>
 </g>
 <!-- Node14 -->
 <g id="Node000014" class="node">
 <title>Node14</title>
-<g id="a_Node000014"><a xlink:href="_weighted_volume_form_8hpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="594,-118 446,-118 446,-77 594,-77 594,-118"/>
-<text text-anchor="start" x="454" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="start" x="454" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
-<text text-anchor="middle" x="520" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">/WeightedVolumeForm.hpp</text>
+<g id="a_Node000014"><a xlink:href="_parametrized_product_form_8hpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="930,-118 763,-118 763,-77 930,-77 930,-118"/>
+<text text-anchor="start" x="771" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="start" x="771" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
+<text text-anchor="middle" x="846.5" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">/ParametrizedProductForm.hpp</text>
 </a>
 </g>
 </g>
 <!-- Node10&#45;&gt;Node14 -->
-<g id="edge16_Node000010_Node000014" class="edge">
+<g id="edge15_Node000010_Node000014" class="edge">
 <title>Node10&#45;&gt;Node14</title>
-<g id="a_edge16_Node000010_Node000014"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M787.52,-157.05C734.81,-146.27 664.76,-131.7 603,-118 600.11,-117.36 597.16,-116.7 594.19,-116.03"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="786.99,-160.51 797.49,-159.09 788.39,-153.66 786.99,-160.51"/>
+<g id="a_edge15_Node000010_Node000014"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M725.66,-150C749.76,-139.72 777.7,-127.82 800.64,-118.04"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="724.11,-146.85 716.28,-153.99 726.85,-153.29 724.11,-146.85"/>
 </a>
 </g>
 </g>
-<!-- Node11&#45;&gt;Node6 -->
-<g id="edge12_Node000011_Node000006" class="edge">
-<title>Node11&#45;&gt;Node6</title>
-<g id="a_edge12_Node000011_Node000006"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1056.25,-71.34C1074.29,-59.47 1095.16,-45.74 1110.42,-35.7"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1054.09,-68.57 1047.65,-76.99 1057.93,-74.42 1054.09,-68.57"/>
+<!-- Node15 -->
+<g id="Node000015" class="node">
+<title>Node15</title>
+<g id="a_Node000015"><a xlink:href="_weighted_volume_form_8hpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="744.5,-118 596.5,-118 596.5,-77 744.5,-77 744.5,-118"/>
+<text text-anchor="start" x="604.5" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="start" x="604.5" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
+<text text-anchor="middle" x="670.5" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">/WeightedVolumeForm.hpp</text>
 </a>
 </g>
 </g>
-<!-- Node13&#45;&gt;Node6 -->
-<g id="edge15_Node000013_Node000006" class="edge">
-<title>Node13&#45;&gt;Node6</title>
-<g id="a_edge15_Node000013_Node000006"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M789.73,-76.91C897.9,-57.01 1012.14,-39.32 1077.81,-29.48"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="788.81,-73.52 779.62,-78.78 790.09,-80.4 788.81,-73.52"/>
+<!-- Node10&#45;&gt;Node15 -->
+<g id="edge17_Node000010_Node000015" class="edge">
+<title>Node10&#45;&gt;Node15</title>
+<g id="a_edge17_Node000010_Node000015"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M670.5,-143.69C670.5,-135.08 670.5,-125.9 670.5,-118.07"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="667,-143.79 670.5,-153.79 674,-143.79 667,-143.79"/>
 </a>
 </g>
 </g>
-<!-- Node15&#45;&gt;Node6 -->
-<g id="edge18_Node000015_Node000006" class="edge">
-<title>Node15&#45;&gt;Node6</title>
-<g id="a_edge18_Node000015_Node000006"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1201.79,-147.78C1211.93,-139.65 1221.36,-129.68 1227,-118 1234.93,-101.59 1236.07,-92.8 1227,-77 1215.88,-57.62 1195.08,-44.36 1175.77,-35.68"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1199.49,-145.13 1193.57,-153.91 1203.68,-150.74 1199.49,-145.13"/>
+<!-- Node11&#45;&gt;Node7 -->
+<g id="edge12_Node000011_Node000007" class="edge">
+<title>Node11&#45;&gt;Node7</title>
+<g id="a_edge12_Node000011_Node000007"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M270.23,-77.06C488.76,-37.82 739.19,-26.24 847.36,-22.83"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="269.39,-73.66 260.18,-78.89 270.64,-80.55 269.39,-73.66"/>
 </a>
 </g>
 </g>
-<!-- Node16 -->
-<g id="Node000016" class="node">
-<title>Node16</title>
-<g id="a_Node000016"><a xlink:href="_smoothing_forms_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="1218,-118 1096,-118 1096,-77 1218,-77 1218,-118"/>
-<text text-anchor="start" x="1104" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="start" x="1104" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
-<text text-anchor="middle" x="1157" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">/SmoothingForms.cpp</text>
+<!-- Node12 -->
+<g id="Node000012" class="node">
+<title>Node12</title>
+<g id="a_Node000012"><a xlink:href="_barrier_forms_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="260,-41 141,-41 141,0 260,0 260,-41"/>
+<text text-anchor="start" x="149" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="start" x="149" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
+<text text-anchor="middle" x="200.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/BarrierForms.cpp</text>
 </a>
 </g>
 </g>
-<!-- Node15&#45;&gt;Node16 -->
-<g id="edge19_Node000015_Node000016" class="edge">
-<title>Node15&#45;&gt;Node16</title>
-<g id="a_edge19_Node000015_Node000016"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1157,-143.69C1157,-135.08 1157,-125.9 1157,-118.07"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1153.5,-143.79 1157,-153.79 1160.5,-143.79 1153.5,-143.79"/>
+<!-- Node11&#45;&gt;Node12 -->
+<g id="edge13_Node000011_Node000012" class="edge">
+<title>Node11&#45;&gt;Node12</title>
+<g id="a_edge13_Node000011_Node000012"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M200.5,-66.69C200.5,-58.08 200.5,-48.9 200.5,-41.07"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="197,-66.79 200.5,-76.79 204,-66.79 197,-66.79"/>
 </a>
 </g>
 </g>
-<!-- Node17&#45;&gt;Node6 -->
-<g id="edge21_Node000017_Node000006" class="edge">
-<title>Node17&#45;&gt;Node6</title>
-<g id="a_edge21_Node000017_Node000006"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1495.26,-145.67C1477.98,-123.51 1450.87,-93.54 1420,-77 1345.49,-37.08 1246.52,-25.6 1186.13,-22.46"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1492.55,-147.89 1501.38,-153.74 1498.12,-143.66 1492.55,-147.89"/>
+<!-- Node14&#45;&gt;Node7 -->
+<g id="edge16_Node000014_Node000007" class="edge">
+<title>Node14&#45;&gt;Node7</title>
+<g id="a_edge16_Node000014_Node000007"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M866.97,-68.59C875.13,-57.46 884.18,-45.12 890.97,-35.86"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="864.04,-66.66 860.95,-76.79 869.69,-70.8 864.04,-66.66"/>
 </a>
 </g>
 </g>
-<!-- Node18 -->
-<g id="Node000018" class="node">
-<title>Node18</title>
-<g id="a_Node000018"><a xlink:href="_spatial_integral_forms_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="1766.5,-118 1625.5,-118 1625.5,-77 1766.5,-77 1766.5,-118"/>
-<text text-anchor="start" x="1633.5" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="start" x="1633.5" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
-<text text-anchor="middle" x="1696" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">/SpatialIntegralForms.cpp</text>
+<!-- Node16&#45;&gt;Node7 -->
+<g id="edge19_Node000016_Node000007" class="edge">
+<title>Node16&#45;&gt;Node7</title>
+<g id="a_edge19_Node000016_Node000007"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M954.72,-143.85C952.15,-124.3 947.34,-98.44 938.5,-77 932.23,-61.8 921.53,-46.38 913.25,-35.67"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="951.27,-144.48 955.92,-154 958.22,-143.65 951.27,-144.48"/>
 </a>
 </g>
 </g>
-<!-- Node17&#45;&gt;Node18 -->
-<g id="edge22_Node000017_Node000018" class="edge">
-<title>Node17&#45;&gt;Node18</title>
-<g id="a_edge22_Node000017_Node000018"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1571.4,-150.13C1596.26,-139.83 1625.14,-127.86 1648.84,-118.04"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1569.98,-146.93 1562.08,-153.99 1572.66,-153.4 1569.98,-146.93"/>
+<!-- Node17 -->
+<g id="Node000017" class="node">
+<title>Node17</title>
+<g id="a_Node000017"><a xlink:href="_smoothing_forms_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="1107.5,-118 985.5,-118 985.5,-77 1107.5,-77 1107.5,-118"/>
+<text text-anchor="start" x="993.5" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="start" x="993.5" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
+<text text-anchor="middle" x="1046.5" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">/SmoothingForms.cpp</text>
+</a>
+</g>
+</g>
+<!-- Node16&#45;&gt;Node17 -->
+<g id="edge20_Node000016_Node000017" class="edge">
+<title>Node16&#45;&gt;Node17</title>
+<g id="a_edge20_Node000016_Node000017"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M988.53,-147.35C999.95,-137.73 1012.66,-127.01 1023.27,-118.07"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="986.28,-144.67 980.88,-153.79 990.79,-150.03 986.28,-144.67"/>
+</a>
+</g>
+</g>
+<!-- Node18&#45;&gt;Node7 -->
+<g id="edge22_Node000018_Node000007" class="edge">
+<title>Node18&#45;&gt;Node7</title>
+<g id="a_edge22_Node000018_Node000007"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M1351.88,-146.03C1333.43,-123.6 1304.28,-93.07 1271.5,-77 1216.97,-50.27 1044.68,-32.98 955.76,-25.6"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1349.2,-148.28 1358.19,-153.89 1354.66,-143.9 1349.2,-148.28"/>
 </a>
 </g>
 </g>
 <!-- Node19 -->
 <g id="Node000019" class="node">
 <title>Node19</title>
-<g id="a_Node000019"><a xlink:href="_target_forms_8hpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="1607.5,-118 1488.5,-118 1488.5,-77 1607.5,-77 1607.5,-118"/>
-<text text-anchor="start" x="1496.5" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="start" x="1496.5" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
-<text text-anchor="middle" x="1548" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">/TargetForms.hpp</text>
+<g id="a_Node000019"><a xlink:href="_spatial_integral_forms_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="1481,-118 1340,-118 1340,-77 1481,-77 1481,-118"/>
+<text text-anchor="start" x="1348" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="start" x="1348" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
+<text text-anchor="middle" x="1410.5" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">/SpatialIntegralForms.cpp</text>
 </a>
 </g>
 </g>
-<!-- Node17&#45;&gt;Node19 -->
-<g id="edge23_Node000017_Node000019" class="edge">
-<title>Node17&#45;&gt;Node19</title>
-<g id="a_edge23_Node000017_Node000019"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1527.74,-144.55C1531.64,-135.69 1535.83,-126.15 1539.39,-118.07"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1524.49,-143.23 1523.67,-153.79 1530.9,-146.05 1524.49,-143.23"/>
-</a>
-</g>
-</g>
-<!-- Node19&#45;&gt;Node6 -->
-<g id="edge24_Node000019_Node000006" class="edge">
-<title>Node19&#45;&gt;Node6</title>
-<g id="a_edge24_Node000019_Node000006"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1478.43,-77.96C1476.94,-77.63 1475.46,-77.31 1474,-77 1373.09,-55.57 1253.9,-37.94 1186.2,-28.64"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1477.81,-81.41 1488.34,-80.25 1479.39,-74.59 1477.81,-81.41"/>
+<!-- Node18&#45;&gt;Node19 -->
+<g id="edge23_Node000018_Node000019" class="edge">
+<title>Node18&#45;&gt;Node19</title>
+<g id="a_edge23_Node000018_Node000019"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M1387.03,-144.83C1391.56,-135.89 1396.45,-126.24 1400.58,-118.07"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1383.88,-143.29 1382.48,-153.79 1390.13,-146.46 1383.88,-143.29"/>
 </a>
 </g>
 </g>
 <!-- Node20 -->
 <g id="Node000020" class="node">
 <title>Node20</title>
-<g id="a_Node000020"><a xlink:href="_target_forms_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="1607.5,-41 1488.5,-41 1488.5,0 1607.5,0 1607.5,-41"/>
-<text text-anchor="start" x="1496.5" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="start" x="1496.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
-<text text-anchor="middle" x="1548" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/TargetForms.cpp</text>
+<g id="a_Node000020"><a xlink:href="_target_forms_8hpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="1618,-118 1499,-118 1499,-77 1618,-77 1618,-118"/>
+<text text-anchor="start" x="1507" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="start" x="1507" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
+<text text-anchor="middle" x="1558.5" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">/TargetForms.hpp</text>
 </a>
 </g>
 </g>
-<!-- Node19&#45;&gt;Node20 -->
-<g id="edge25_Node000019_Node000020" class="edge">
-<title>Node19&#45;&gt;Node20</title>
-<g id="a_edge25_Node000019_Node000020"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1548,-66.69C1548,-58.08 1548,-48.9 1548,-41.07"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1544.5,-66.79 1548,-76.79 1551.5,-66.79 1544.5,-66.79"/>
+<!-- Node18&#45;&gt;Node20 -->
+<g id="edge24_Node000018_Node000020" class="edge">
+<title>Node18&#45;&gt;Node20</title>
+<g id="a_edge24_Node000018_Node000020"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M1430.45,-150.13C1456,-139.83 1485.69,-127.86 1510.04,-118.04"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1428.85,-147 1420.88,-153.99 1431.47,-153.5 1428.85,-147"/>
 </a>
 </g>
 </g>
-<!-- Node21&#45;&gt;Node6 -->
-<g id="edge27_Node000021_Node000006" class="edge">
-<title>Node21&#45;&gt;Node6</title>
-<g id="a_edge27_Node000021_Node000006"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1378.16,-147.67C1388.15,-139.54 1397.45,-129.6 1403,-118 1410.87,-101.57 1414.52,-91.12 1403,-77 1376.17,-44.12 1257.2,-30.18 1186.12,-24.71"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1375.92,-144.98 1370.06,-153.8 1380.14,-150.56 1375.92,-144.98"/>
+<!-- Node20&#45;&gt;Node7 -->
+<g id="edge25_Node000020_Node000007" class="edge">
+<title>Node20&#45;&gt;Node7</title>
+<g id="a_edge25_Node000020_Node000007"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M1489.1,-76.9C1288.14,-39.81 1058.17,-27.29 955.57,-23.25"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1488.47,-80.35 1498.95,-78.75 1489.76,-73.47 1488.47,-80.35"/>
 </a>
 </g>
 </g>
-<!-- Node22 -->
-<g id="Node000022" class="node">
-<title>Node22</title>
-<g id="a_Node000022"><a xlink:href="_transient_form_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="1393.5,-118 1274.5,-118 1274.5,-77 1393.5,-77 1393.5,-118"/>
-<text text-anchor="start" x="1282.5" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="start" x="1282.5" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
-<text text-anchor="middle" x="1334" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">/TransientForm.cpp</text>
+<!-- Node21 -->
+<g id="Node000021" class="node">
+<title>Node21</title>
+<g id="a_Node000021"><a xlink:href="_target_forms_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="1618,-41 1499,-41 1499,0 1618,0 1618,-41"/>
+<text text-anchor="start" x="1507" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="start" x="1507" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
+<text text-anchor="middle" x="1558.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">/TargetForms.cpp</text>
 </a>
 </g>
 </g>
-<!-- Node21&#45;&gt;Node22 -->
-<g id="edge28_Node000021_Node000022" class="edge">
-<title>Node21&#45;&gt;Node22</title>
-<g id="a_edge28_Node000021_Node000022"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1334,-143.69C1334,-135.08 1334,-125.9 1334,-118.07"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1330.5,-143.79 1334,-153.79 1337.5,-143.79 1330.5,-143.79"/>
+<!-- Node20&#45;&gt;Node21 -->
+<g id="edge26_Node000020_Node000021" class="edge">
+<title>Node20&#45;&gt;Node21</title>
+<g id="a_edge26_Node000020_Node000021"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M1558.5,-66.69C1558.5,-58.08 1558.5,-48.9 1558.5,-41.07"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1555,-66.79 1558.5,-76.79 1562,-66.79 1555,-66.79"/>
+</a>
+</g>
+</g>
+<!-- Node22&#45;&gt;Node7 -->
+<g id="edge28_Node000022_Node000007" class="edge">
+<title>Node22&#45;&gt;Node7</title>
+<g id="a_edge28_Node000022_Node000007"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M1229.66,-147.67C1239.65,-139.54 1248.95,-129.6 1254.5,-118 1262.37,-101.57 1266.34,-90.85 1254.5,-77 1216.7,-32.8 1044.91,-23.57 955.68,-21.8"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1227.42,-144.98 1221.56,-153.8 1231.64,-150.56 1227.42,-144.98"/>
+</a>
+</g>
+</g>
+<!-- Node23 -->
+<g id="Node000023" class="node">
+<title>Node23</title>
+<g id="a_Node000023"><a xlink:href="_transient_form_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="1245,-118 1126,-118 1126,-77 1245,-77 1245,-118"/>
+<text text-anchor="start" x="1134" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="start" x="1134" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/adjoint_forms</text>
+<text text-anchor="middle" x="1185.5" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">/TransientForm.cpp</text>
+</a>
+</g>
+</g>
+<!-- Node22&#45;&gt;Node23 -->
+<g id="edge29_Node000022_Node000023" class="edge">
+<title>Node22&#45;&gt;Node23</title>
+<g id="a_edge29_Node000022_Node000023"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M1185.5,-143.69C1185.5,-135.08 1185.5,-125.9 1185.5,-118.07"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1182,-143.79 1185.5,-153.79 1189,-143.79 1182,-143.79"/>
 </a>
 </g>
 </g>

@@ -46,7 +46,6 @@ var namespaces_dup =
       [ "z", "namespaceelasticity__rhs.html#a7da2b62e54e8b30ff93de1396c5429c8", null ]
     ] ],
     [ "ipc", "namespaceipc.html", null ],
-    [ "nlohmann", "namespacenlohmann.html", "namespacenlohmann" ],
     [ "p_bases", "namespacep__bases.html", "namespacep__bases" ],
     [ "polyfem", "namespacepolyfem.html", "namespacepolyfem" ],
     [ "polysolve", "namespacepolysolve.html", "namespacepolysolve" ],

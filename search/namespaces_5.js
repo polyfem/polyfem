@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['spdlog_0',['spdlog',['../namespacespdlog.html',1,'']]],
-  ['spdlog_3a_3alevel_1',['level',['../namespacespdlog_1_1level.html',1,'spdlog']]]
+  ['tetrahedron_0',['tetrahedron',['../namespacetetrahedron.html',1,'']]],
+  ['triangle_1',['triangle',['../namespacetriangle.html',1,'']]]
 ];

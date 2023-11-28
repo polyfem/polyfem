@@ -327,24 +327,24 @@ $(document).ready(function(){initNavTree('_clipper_utils_8cpp_source.html',''); 
 <div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        <span class="keywordflow">return</span> Eigen::RowVector2d(p.X, p.Y) / DOUBLE_TO_INT_SCALE_FACTOR;</div>
 <div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    }</div>
 <div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    ClipperLib::Path PolygonClipping::toClipperPolygon(<span class="keyword">const</span> Eigen::MatrixXd &amp;V)</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    ClipperLib::Path PolygonClipping::toClipperPolygon(<span class="keyword">const</span> Eigen::MatrixXd &amp;<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>)</div>
 <div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    {</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        ClipperLib::Path <a class="code hl_variable" href="namespaceeigs.html#a9fe38deb6414bc39f39d8ed436b42d3e">path</a>(V.rows());</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        ClipperLib::Path <a class="code hl_variable" href="namespaceeigs.html#a9fe38deb6414bc39f39d8ed436b42d3e">path</a>(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.rows());</div>
 <div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code hl_variable" href="namespaceeigs.html#a9fe38deb6414bc39f39d8ed436b42d3e">path</a>.size(); ++i)</div>
 <div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        {</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>            <a class="code hl_variable" href="namespaceeigs.html#a9fe38deb6414bc39f39d8ed436b42d3e">path</a>[i] = toClipperPoint(V.row(i));</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>            <a class="code hl_variable" href="namespaceeigs.html#a9fe38deb6414bc39f39d8ed436b42d3e">path</a>[i] = toClipperPoint(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.row(i));</div>
 <div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        }</div>
 <div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="namespaceeigs.html#a9fe38deb6414bc39f39d8ed436b42d3e">path</a>;</div>
 <div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    }</div>
 <div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
 <div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    Eigen::MatrixXd PolygonClipping::fromClipperPolygon(<span class="keyword">const</span> ClipperLib::Path &amp;path)</div>
 <div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    {</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        Eigen::MatrixXd V(<a class="code hl_variable" href="namespaceeigs.html#a9fe38deb6414bc39f39d8ed436b42d3e">path</a>.size(), 2);</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        Eigen::MatrixXd <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>(<a class="code hl_variable" href="namespaceeigs.html#a9fe38deb6414bc39f39d8ed436b42d3e">path</a>.size(), 2);</div>
 <div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code hl_variable" href="namespaceeigs.html#a9fe38deb6414bc39f39d8ed436b42d3e">path</a>.size(); ++i)</div>
 <div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        {</div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>            V.row(i) = fromClipperPoint(path[i]);</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>            <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.row(i) = fromClipperPoint(path[i]);</div>
 <div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        }</div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        <span class="keywordflow">return</span> V;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>;</div>
 <div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    }</div>
 <div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span> </div>
@@ -376,6 +376,7 @@ $(document).ready(function(){initNavTree('_clipper_utils_8cpp_source.html',''); 
 <div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    }</div>
 </div>
 <div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>} <span class="comment">// namespace polyfem::utils</span></div>
+<div class="ttc" id="a_adjoint_n_l_problem_8cpp_html_a91e334f289dc11ba09da0df4a9c72123"><div class="ttname"><a href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a></div><div class="ttdeci">int V</div><div class="ttdef"><b>Definition</b> <a href="_adjoint_n_l_problem_8cpp_source.html#l00023">AdjointNLProblem.cpp:23</a></div></div>
 <div class="ttc" id="a_clipper_utils_8hpp_html"><div class="ttname"><a href="_clipper_utils_8hpp.html">ClipperUtils.hpp</a></div></div>
 <div class="ttc" id="a_geometry_utils_8hpp_html"><div class="ttname"><a href="_geometry_utils_8hpp.html">GeometryUtils.hpp</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1utils_1_1_polygon_clipping_html_a9de239868084d24f48a3309f97ffa58e"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_polygon_clipping.html#a9de239868084d24f48a3309f97ffa58e">polyfem::utils::PolygonClipping::toPolyClipperVector</a></div><div class="ttdeci">static PolyClipper::Vector2d toPolyClipperVector(const Eigen::Vector2d &amp;v)</div><div class="ttdef"><b>Definition</b> <a href="_clipper_utils_8cpp_source.html#l00216">ClipperUtils.cpp:216</a></div></div>

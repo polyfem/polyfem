@@ -331,8 +331,8 @@ $(document).ready(function(){initNavTree('_a_priori_8cpp_source.html',''); initR
 <div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>            alpha(11) = angle3(-e.row(3), e.row(2));</div>
 <div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
 <div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>            <span class="keyword">const</span> <span class="keywordtype">double</span> S = (e.row(0).cross(e.row(1)).norm() + e.row(0).cross(e.row(4)).norm() + e.row(4).cross(e.row(1)).norm() + e.row(2).cross(e.row(5)).norm()) / 2;</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>            <span class="keyword">const</span> <span class="keywordtype">double</span> V = std::abs(e.row(3).dot(e.row(2).cross(-e.row(0)))) / 6;</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>            <span class="keyword">const</span> <span class="keywordtype">double</span> rho = 3 * V / S;</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>            <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a> = std::abs(e.row(3).dot(e.row(2).cross(-e.row(0)))) / 6;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>            <span class="keyword">const</span> <span class="keywordtype">double</span> rho = 3 * <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a> / S;</div>
 <div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>            <span class="keyword">const</span> <span class="keywordtype">double</span> hp = en.maxCoeff();</div>
 <div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
 <div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>            stats.<a class="code hl_variable" href="classpolyfem_1_1io_1_1_out_stats_data.html#ab7fb71a9b284a7699c81db1dd8a948cb">sigma_avg</a> += rho / hp;</div>
@@ -394,6 +394,7 @@ $(document).ready(function(){initNavTree('_a_priori_8cpp_source.html',''); initR
 <div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>} <span class="comment">// namespace polyfem::refinement</span></div>
 </div>
 <div class="ttc" id="a_a_priori_8hpp_html"><div class="ttname"><a href="_a_priori_8hpp.html">APriori.hpp</a></div></div>
+<div class="ttc" id="a_adjoint_n_l_problem_8cpp_html_a91e334f289dc11ba09da0df4a9c72123"><div class="ttname"><a href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a></div><div class="ttdeci">int V</div><div class="ttdef"><b>Definition</b> <a href="_adjoint_n_l_problem_8cpp_source.html#l00023">AdjointNLProblem.cpp:23</a></div></div>
 <div class="ttc" id="a_logger_8hpp_html"><div class="ttname"><a href="_logger_8hpp.html">Logger.hpp</a></div></div>
 <div class="ttc" id="aauto__p__bases_8hpp_html"><div class="ttname"><a href="auto__p__bases_8hpp.html">auto_p_bases.hpp</a></div></div>
 <div class="ttc" id="aauto__q__bases_8hpp_html"><div class="ttname"><a href="auto__q__bases_8hpp.html">auto_q_bases.hpp</a></div></div>

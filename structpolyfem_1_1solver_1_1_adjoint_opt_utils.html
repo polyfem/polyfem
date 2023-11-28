@@ -134,8 +134,12 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:ab38613c0efb3df98a160a828cca64963"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a522e38998a46be499ac7d7d1b28e0fd9" id="r_a522e38998a46be499ac7d7d1b28e0fd9"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; polysolve::nonlinear::Solver &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#a522e38998a46be499ac7d7d1b28e0fd9">make_nl_solver</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;solver_params, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;linear_solver_params, const double characteristic_length)</td></tr>
 <tr class="separator:a522e38998a46be499ac7d7d1b28e0fd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb653333228fa2d1efd2b7d07f1c64f6" id="r_adb653333228fa2d1efd2b7d07f1c64f6"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#adb653333228fa2d1efd2b7d07f1c64f6">create_state</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;args, const size_t max_threads=32)</td></tr>
-<tr class="separator:adb653333228fa2d1efd2b7d07f1c64f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2da0db5984161ba996cbb36416b27286" id="r_a2da0db5984161ba996cbb36416b27286"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#a2da0db5984161ba996cbb36416b27286">create_state</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;args, <a class="el" href="namespacepolyfem_1_1solver.html#aff8f99461509f079bd5ac2a9817dbef8">CacheLevel</a> level=<a class="el" href="namespacepolyfem_1_1solver.html#aff8f99461509f079bd5ac2a9817dbef8a2a7f1476b6ddab6d53b03d77dacdbd1e">CacheLevel::Derivatives</a>, const size_t max_threads=32)</td></tr>
+<tr class="separator:a2da0db5984161ba996cbb36416b27286"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6239bbf7a5a5462a5be0dcd890312f67" id="r_a6239bbf7a5a5462a5be0dcd890312f67"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#a6239bbf7a5a5462a5be0dcd890312f67">create_states</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;state_args, const <a class="el" href="namespacepolyfem_1_1solver.html#aff8f99461509f079bd5ac2a9817dbef8">CacheLevel</a> &amp;level, const spdlog::level::level_enum &amp;log_level, const size_t max_threads)</td></tr>
+<tr class="separator:a6239bbf7a5a5462a5be0dcd890312f67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36da850c59e2b8166e16b795b12b427a" id="r_a36da850c59e2b8166e16b795b12b427a"><td class="memItemLeft" align="right" valign="top">static Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#a36da850c59e2b8166e16b795b12b427a">inverse_evaluation</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;args, const int ndof, const std::vector&lt; int &gt; &amp;variable_sizes, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html">VariableToSimulation</a> &gt; &gt; &amp;var2sim)</td></tr>
+<tr class="separator:a36da850c59e2b8166e16b795b12b427a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acac3e8ce8646ddd1544ed034c71bec96" id="r_acac3e8ce8646ddd1544ed034c71bec96"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acac3e8ce8646ddd1544ed034c71bec96">solve_pde</a> (<a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state)</td></tr>
 <tr class="separator:acac3e8ce8646ddd1544ed034c71bec96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a942feaefaec441b75ea37d155b5c7582" id="r_a942feaefaec441b75ea37d155b5c7582"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html">AdjointForm</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#a942feaefaec441b75ea37d155b5c7582">create_form</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;args, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html">VariableToSimulation</a> &gt; &gt; &amp;var2sim, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt; &gt; &amp;states)</td></tr>
@@ -149,7 +153,7 @@ Static Public Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_optimizations_8hpp_source.html#l00022">22</a> of file <a class="el" href="_optimizations_8hpp_source.html">Optimizations.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_optimizations_8hpp_source.html#l00024">24</a> of file <a class="el" href="_optimizations_8hpp_source.html">Optimizations.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="ab38613c0efb3df98a160a828cca64963" name="ab38613c0efb3df98a160a828cca64963"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab38613c0efb3df98a160a828cca64963">&#9670;&#160;</a></span>apply_opt_json_spec()</h2>
@@ -185,9 +189,9 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_optimizations_8cpp_source.html#l00453">453</a> of file <a class="el" href="_optimizations_8cpp_source.html">Optimizations.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_optimizations_8cpp_source.html#l00486">486</a> of file <a class="el" href="_optimizations_8cpp_source.html">Optimizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_optimizations_8cpp_source.html#l00425">polyfem::solver::apply_objective_json_spec()</a>, and <a class="el" href="_logger_8cpp_source.html#l00027">polyfem::logger()</a>.</p>
+<p class="reference">References <a class="el" href="_optimizations_8cpp_source.html#l00458">polyfem::solver::apply_objective_json_spec()</a>, and <a class="el" href="_logger_8cpp_source.html#l00027">polyfem::logger()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00210">optimization_simulation()</a>.</p>
 <div class="dynheader">
@@ -237,7 +241,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_optimizations_8cpp_source.html#l00517">517</a> of file <a class="el" href="_optimizations_8cpp_source.html">Optimizations.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_optimizations_8cpp_source.html#l00550">550</a> of file <a class="el" href="_optimizations_8cpp_source.html">Optimizations.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00050">polyfem::log_and_throw_error()</a>, <a class="el" href="namespacepolyfem_1_1solver.html#ad27032b2014cdcea2f5718580272f48fad302e976c9dd527a9521a88c012437c5">polyfem::solver::surface</a>, and <a class="el" href="namespacepolyfem_1_1solver.html#ad27032b2014cdcea2f5718580272f48fa210ab9e731c9c36c2c38db15c28a8d1c">polyfem::solver::volume</a>.</p>
 
@@ -295,15 +299,15 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_optimizations_8cpp_source.html#l00054">54</a> of file <a class="el" href="_optimizations_8cpp_source.html">Optimizations.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_optimizations_8cpp_source.html#l00061">61</a> of file <a class="el" href="_optimizations_8cpp_source.html">Optimizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_optimizations_8cpp_source.html#l00054">create_form()</a>, <a class="el" href="_optimizations_8cpp_source.html#l00189">create_parametrization()</a>, and <a class="el" href="_logger_8cpp_source.html#l00050">polyfem::log_and_throw_error()</a>.</p>
+<p class="reference">References <a class="el" href="_optimizations_8cpp_source.html#l00061">create_form()</a>, <a class="el" href="_optimizations_8cpp_source.html#l00195">create_parametrization()</a>, and <a class="el" href="_logger_8cpp_source.html#l00050">polyfem::log_and_throw_error()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_optimizations_8cpp_source.html#l00054">create_form()</a>, and <a class="el" href="main_8cpp_source.html#l00210">optimization_simulation()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_optimizations_8cpp_source.html#l00061">create_form()</a>, and <a class="el" href="main_8cpp_source.html#l00210">optimization_simulation()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="structpolyfem_1_1solver_1_1_adjoint_opt_utils_a942feaefaec441b75ea37d155b5c7582_cgraph.svg" width="100%" height="501"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="structpolyfem_1_1solver_1_1_adjoint_opt_utils_a942feaefaec441b75ea37d155b5c7582_cgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
@@ -353,15 +357,15 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_optimizations_8cpp_source.html#l00189">189</a> of file <a class="el" href="_optimizations_8cpp_source.html">Optimizations.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_optimizations_8cpp_source.html#l00195">195</a> of file <a class="el" href="_optimizations_8cpp_source.html">Optimizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_geometry_reader_8cpp_source.html#l00688">polyfem::mesh::construct_affine_transformation()</a>, <a class="el" href="_units_8cpp_source.html#l00031">polyfem::Units::convert()</a>, <a class="el" href="_logger_8cpp_source.html#l00050">polyfem::log_and_throw_error()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00050">polyfem::log_and_throw_error()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_optimizations_8cpp_source.html#l00054">create_form()</a>, and <a class="el" href="_optimizations_8cpp_source.html#l00292">create_variable_to_simulation()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_optimizations_8cpp_source.html#l00061">create_form()</a>, and <a class="el" href="_optimizations_8cpp_source.html#l00271">create_variable_to_simulation()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="structpolyfem_1_1solver_1_1_adjoint_opt_utils_ad26a3a05049ab7ddeb4aadc463ac9e2a_cgraph.svg" width="100%" height="469"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="structpolyfem_1_1solver_1_1_adjoint_opt_utils_ad26a3a05049ab7ddeb4aadc463ac9e2a_cgraph.svg" width="646" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
@@ -371,8 +375,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="adb653333228fa2d1efd2b7d07f1c64f6" name="adb653333228fa2d1efd2b7d07f1c64f6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adb653333228fa2d1efd2b7d07f1c64f6">&#9670;&#160;</a></span>create_state()</h2>
+<a id="a2da0db5984161ba996cbb36416b27286" name="a2da0db5984161ba996cbb36416b27286"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2da0db5984161ba996cbb36416b27286">&#9670;&#160;</a></span>create_state()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -385,6 +389,12 @@ Here is the caller graph for this function:</div>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
           <td class="paramname"><em>args</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacepolyfem_1_1solver.html#aff8f99461509f079bd5ac2a9817dbef8">CacheLevel</a>&#160;</td>
+          <td class="paramname"><em>level</em> = <code><a class="el" href="namespacepolyfem_1_1solver.html#aff8f99461509f079bd5ac2a9817dbef8a2a7f1476b6ddab6d53b03d77dacdbd1e">CacheLevel::Derivatives</a></code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -405,13 +415,77 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_optimizations_8cpp_source.html#l00384">384</a> of file <a class="el" href="_optimizations_8cpp_source.html">Optimizations.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_optimizations_8cpp_source.html#l00388">388</a> of file <a class="el" href="_optimizations_8cpp_source.html">Optimizations.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00210">optimization_simulation()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_optimizations_8cpp_source.html#l00421">create_states()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="structpolyfem_1_1solver_1_1_adjoint_opt_utils_adb653333228fa2d1efd2b7d07f1c64f6_icgraph.svg" width="520" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="structpolyfem_1_1solver_1_1_adjoint_opt_utils_a2da0db5984161ba996cbb36416b27286_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="a6239bbf7a5a5462a5be0dcd890312f67" name="a6239bbf7a5a5462a5be0dcd890312f67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6239bbf7a5a5462a5be0dcd890312f67">&#9670;&#160;</a></span>create_states()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt; &gt; polyfem::solver::AdjointOptUtils::create_states </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>state_args</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem_1_1solver.html#aff8f99461509f079bd5ac2a9817dbef8">CacheLevel</a> &amp;&#160;</td>
+          <td class="paramname"><em>level</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const spdlog::level::level_enum &amp;&#160;</td>
+          <td class="paramname"><em>log_level</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>max_threads</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_optimizations_8cpp_source.html#l00421">421</a> of file <a class="el" href="_optimizations_8cpp_source.html">Optimizations.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_optimizations_8cpp_source.html#l00388">create_state()</a>, <a class="el" href="main_8cpp_source.html#l00031">load_json()</a>, and <a class="el" href="_logger_8cpp_source.html#l00050">polyfem::log_and_throw_error()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00210">optimization_simulation()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="structpolyfem_1_1solver_1_1_adjoint_opt_utils_a6239bbf7a5a5462a5be0dcd890312f67_cgraph.svg" width="590" height="166"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="structpolyfem_1_1solver_1_1_adjoint_opt_utils_a6239bbf7a5a5462a5be0dcd890312f67_icgraph.svg" width="520" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -456,20 +530,79 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_optimizations_8cpp_source.html#l00292">292</a> of file <a class="el" href="_optimizations_8cpp_source.html">Optimizations.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_optimizations_8cpp_source.html#l00271">271</a> of file <a class="el" href="_optimizations_8cpp_source.html">Optimizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_optimizations_8cpp_source.html#l00189">create_parametrization()</a>, <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00019">polyfem::solver::VariableToNodes::get_output_indexing()</a>, <a class="el" href="_logger_8cpp_source.html#l00050">polyfem::log_and_throw_error()</a>, <a class="el" href="_matrix_i_o_8cpp_source.html#l00018">polyfem::io::read_matrix()</a>, and <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00026">tmp_mat</a>.</p>
+<p class="reference">References <a class="el" href="_optimizations_8cpp_source.html#l00195">create_parametrization()</a>, <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00019">polyfem::solver::VariableToNodes::get_output_indexing()</a>, <a class="el" href="_logger_8cpp_source.html#l00050">polyfem::log_and_throw_error()</a>, <a class="el" href="_matrix_i_o_8cpp_source.html#l00018">polyfem::io::read_matrix()</a>, and <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00026">tmp_mat</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00210">optimization_simulation()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="structpolyfem_1_1solver_1_1_adjoint_opt_utils_acde7d7162b22bde1a3605e9e363ab46c_cgraph.svg" width="100%" height="554"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="structpolyfem_1_1solver_1_1_adjoint_opt_utils_acde7d7162b22bde1a3605e9e363ab46c_cgraph.svg" width="100%" height="472"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="structpolyfem_1_1solver_1_1_adjoint_opt_utils_acde7d7162b22bde1a3605e9e363ab46c_icgraph.svg" width="526" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="a36da850c59e2b8166e16b795b12b427a" name="a36da850c59e2b8166e16b795b12b427a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36da850c59e2b8166e16b795b12b427a">&#9670;&#160;</a></span>inverse_evaluation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd polyfem::solver::AdjointOptUtils::inverse_evaluation </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramname"><em>args</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>ndof</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>variable_sizes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html">VariableToSimulation</a> &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>var2sim</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_optimizations_8cpp_source.html#l00359">359</a> of file <a class="el" href="_optimizations_8cpp_source.html">Optimizations.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00210">optimization_simulation()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="structpolyfem_1_1solver_1_1_adjoint_opt_utils_a36da850c59e2b8166e16b795b12b427a_icgraph.svg" width="548" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -514,15 +647,15 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_optimizations_8cpp_source.html#l00049">49</a> of file <a class="el" href="_optimizations_8cpp_source.html">Optimizations.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_optimizations_8cpp_source.html#l00048">48</a> of file <a class="el" href="_optimizations_8cpp_source.html">Optimizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::adjoint_logger()</a>.</p>
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00021">polyfem::adjoint_logger()</a>, and <a class="el" href="_logger_8cpp_source.html#l00050">polyfem::log_and_throw_error()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00210">optimization_simulation()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="structpolyfem_1_1solver_1_1_adjoint_opt_utils_a522e38998a46be499ac7d7d1b28e0fd9_cgraph.svg" width="595" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="structpolyfem_1_1solver_1_1_adjoint_opt_utils_a522e38998a46be499ac7d7d1b28e0fd9_cgraph.svg" width="596" height="102"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
@@ -556,9 +689,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_optimizations_8cpp_source.html#l00417">417</a> of file <a class="el" href="_optimizations_8cpp_source.html">Optimizations.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_optimizations_8cpp_source.html#l00450">450</a> of file <a class="el" href="_optimizations_8cpp_source.html">Optimizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_state_8cpp_source.html#l01325">polyfem::State::assemble_mass_mat()</a>, <a class="el" href="_state_8cpp_source.html#l01434">polyfem::State::assemble_rhs()</a>, and <a class="el" href="_state_8cpp_source.html#l01506">polyfem::State::solve_problem()</a>.</p>
+<p class="reference">References <a class="el" href="_state_8cpp_source.html#l01323">polyfem::State::assemble_mass_mat()</a>, <a class="el" href="_state_8cpp_source.html#l01432">polyfem::State::assemble_rhs()</a>, and <a class="el" href="_state_8cpp_source.html#l01504">polyfem::State::solve_problem()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">

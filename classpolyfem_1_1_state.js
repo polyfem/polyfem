@@ -120,7 +120,7 @@ var classpolyfem_1_1_state =
     [ "neumann_nodes", "classpolyfem_1_1_state.html#a3283e4133ccd2fcadb338f439a12b723", null ],
     [ "neumann_nodes_position", "classpolyfem_1_1_state.html#a91254b3af9d1809de3a6e25742fd94ea", null ],
     [ "obstacle", "classpolyfem_1_1_state.html#a22084ebd017a5b2775e1027bcbfd9759", null ],
-    [ "optimization_enabled", "classpolyfem_1_1_state.html#ab1a7f9cd993bb4b26496eece766a9523", null ],
+    [ "optimization_enabled", "classpolyfem_1_1_state.html#a3992d081820ed035c8dc6e3fd3222f25", null ],
     [ "out_geom", "classpolyfem_1_1_state.html#a2a0b2271b633585b26170541a2ce0a9b", null ],
     [ "output_dir", "classpolyfem_1_1_state.html#a34ad4df546a9f0f7e5bd8425d47288aa", null ],
     [ "poly_edge_to_data", "classpolyfem_1_1_state.html#a414982cb06ba354f2069c3b1808774b8", null ],

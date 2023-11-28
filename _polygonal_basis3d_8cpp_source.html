@@ -198,9 +198,9 @@ $(document).ready(function(){initNavTree('_polygonal_basis3d_8cpp_source.html','
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            <span class="comment">// -----------------------------------------------------------------------------</span></div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            <span class="comment">// Canonical triangle mesh in parametric domain</span></div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <span class="keywordtype">void</span> compute_canonical_pattern(<span class="keywordtype">int</span> n_samples_per_edge, Eigen::MatrixXd &amp;V, Eigen::MatrixXi &amp;<a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>)</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <span class="keywordtype">void</span> compute_canonical_pattern(<span class="keywordtype">int</span> n_samples_per_edge, Eigen::MatrixXd &amp;<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, Eigen::MatrixXi &amp;<a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>)</div>
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            {</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                <a class="code hl_function" href="namespacepolyfem_1_1utils.html#a7c9c5e9f9e93fd2d77c1f5ce6e1ad854">regular_2d_grid</a>(n_samples_per_edge, <span class="keyword">false</span>, V, <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>);</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                <a class="code hl_function" href="namespacepolyfem_1_1utils.html#a7c9c5e9f9e93fd2d77c1f5ce6e1ad854">regular_2d_grid</a>(n_samples_per_edge, <span class="keyword">false</span>, <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>);</div>
 <div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                <span class="comment">// igl::opengl::glfw::Viewer viewer;</span></div>
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                <span class="comment">// viewer.data().set_mesh(V, F);</span></div>
@@ -214,11 +214,11 @@ $(document).ready(function(){initNavTree('_polygonal_basis3d_8cpp_source.html','
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            <span class="comment">// Assemble the surface quad mesh (V, F) corresponding to the polyhedron c</span></div>
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            <a class="code hl_typedef" href="namespacepolyfem_1_1mesh.html#adb5543570018cfbaaaf1932e5f1ba21a">GetAdjacentLocalEdge</a> compute_quad_mesh_from_cell(</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                <span class="keyword">const</span> Mesh3D &amp;mesh, <span class="keywordtype">int</span> c, Eigen::MatrixXd &amp;V, Eigen::MatrixXi &amp;<a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>)</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                <span class="keyword">const</span> Mesh3D &amp;mesh, <span class="keywordtype">int</span> c, Eigen::MatrixXd &amp;<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, Eigen::MatrixXi &amp;<a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>)</div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            {</div>
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                std::vector&lt;std::array&lt;int, 4&gt;&gt; quads(mesh.n_cell_faces(c));</div>
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                <span class="keyword">typedef</span> std::tuple&lt;int, int, bool&gt; QuadLocalEdge;</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                std::vector&lt;std::array&lt;QuadLocalEdge, 4&gt;&gt; adj(mesh.n_cell_faces(c));</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                std::vector&lt;std::array&lt;QuadLocalEdge, 4&gt;&gt; <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a2903a4010c2f22d07c5df8d437d79cc5">adj</a>(mesh.n_cell_faces(c));</div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                <span class="keywordtype">int</span> num_vertices = 0;</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                std::map&lt;int, int&gt; vertex_g2l;</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                std::map&lt;int, int&gt; face_g2l;</div>
@@ -241,21 +241,21 @@ $(document).ready(function(){initNavTree('_polygonal_basis3d_8cpp_source.html','
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                        <span class="comment">// Set adjacency info</span></div>
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>                        <span class="keyword">auto</span> index2 = mesh.switch_face(index);</div>
 <div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>                        <span class="keywordtype">int</span> lf2 = face_g2l.at(index2.face);</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                        std::get&lt;0&gt;(adj[lf][lv]) = lf2;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                        std::get&lt;0&gt;(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a2903a4010c2f22d07c5df8d437d79cc5">adj</a>[lf][lv]) = lf2;</div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                        <span class="keyword">auto</span> index3 = mesh.get_index_from_element(c, lf2, lv0);</div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> lv2 = 0; lv2 &lt; 4; ++lv2)</div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                        {</div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>                            <span class="keywordflow">if</span> (index3.edge == index2.edge)</div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                            {</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                                std::get&lt;1&gt;(adj[lf][lv]) = lv2;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                                std::get&lt;1&gt;(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a2903a4010c2f22d07c5df8d437d79cc5">adj</a>[lf][lv]) = lv2;</div>
 <div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                                <span class="keywordflow">if</span> (index2.vertex != index3.vertex)</div>
 <div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                                {</div>
 <div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                                    assert(mesh.switch_vertex(index3).vertex == index2.vertex);</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                                    std::get&lt;2&gt;(adj[lf][lv]) = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                                    std::get&lt;2&gt;(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a2903a4010c2f22d07c5df8d437d79cc5">adj</a>[lf][lv]) = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                                }</div>
 <div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                                <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                                {</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                                    std::get&lt;2&gt;(adj[lf][lv]) = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                                    std::get&lt;2&gt;(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a2903a4010c2f22d07c5df8d437d79cc5">adj</a>[lf][lv]) = <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                                }</div>
 <div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                            }</div>
 <div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                            index3 = mesh.next_around_face(index3);</div>
@@ -264,10 +264,10 @@ $(document).ready(function(){initNavTree('_polygonal_basis3d_8cpp_source.html','
 <div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>                        index = mesh.next_around_face(index);</div>
 <div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>                    }</div>
 <div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>                }</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>                V.resize(num_vertices, 3);</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>                <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.resize(num_vertices, 3);</div>
 <div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>                <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;kv : vertex_g2l)</div>
 <div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>                {</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>                    V.row(kv.second) = mesh.point(kv.first);</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>                    <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.row(kv.second) = mesh.point(kv.first);</div>
 <div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>                }</div>
 <div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>                <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>.resize(quads.size(), 4);</div>
 <div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>                <span class="keywordtype">int</span> <a class="code hl_variable" href="namespaceelasticity__rhs.html#a40cac4cd15d87571365bca9e062442d8">f</a> = 0;</div>
@@ -276,8 +276,8 @@ $(document).ready(function(){initNavTree('_polygonal_basis3d_8cpp_source.html','
 <div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>                    <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>.row(f++) &lt;&lt; q[0], q[1], q[2], q[3];</div>
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>                }</div>
 <div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>                <span class="keywordflow">return</span> [adj](<span class="keywordtype">int</span> q, <span class="keywordtype">int</span> lv) {</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>                    <span class="keywordflow">return</span> adj[q][lv];</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>                <span class="keywordflow">return</span> [<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a2903a4010c2f22d07c5df8d437d79cc5">adj</a>](<span class="keywordtype">int</span> q, <span class="keywordtype">int</span> lv) {</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>                    <span class="keywordflow">return</span> <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a2903a4010c2f22d07c5df8d437d79cc5">adj</a>[q][lv];</div>
 <div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>                };</div>
 <div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>            }</div>
 <div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
@@ -873,6 +873,8 @@ $(document).ready(function(){initNavTree('_polygonal_basis3d_8cpp_source.html','
 </div>
 <div class="line"><a id="l00742" name="l00742"></a><span class="lineno">  742</span>    } <span class="comment">// namespace basis</span></div>
 <div class="line"><a id="l00743" name="l00743"></a><span class="lineno">  743</span>} <span class="comment">// namespace polyfem</span></div>
+<div class="ttc" id="a_adjoint_n_l_problem_8cpp_html_a2903a4010c2f22d07c5df8d437d79cc5"><div class="ttname"><a href="_adjoint_n_l_problem_8cpp.html#a2903a4010c2f22d07c5df8d437d79cc5">adj</a></div><div class="ttdeci">vector&lt; list&lt; int &gt; &gt; adj</div><div class="ttdef"><b>Definition</b> <a href="_adjoint_n_l_problem_8cpp_source.html#l00026">AdjointNLProblem.cpp:26</a></div></div>
+<div class="ttc" id="a_adjoint_n_l_problem_8cpp_html_a91e334f289dc11ba09da0df4a9c72123"><div class="ttname"><a href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a></div><div class="ttdeci">int V</div><div class="ttdef"><b>Definition</b> <a href="_adjoint_n_l_problem_8cpp_source.html#l00023">AdjointNLProblem.cpp:23</a></div></div>
 <div class="ttc" id="a_assembler_8cpp_html_a3c8bc0bb4f045bfe78d1196cb786792c"><div class="ttname"><a href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a></div><div class="ttdeci">double val</div><div class="ttdef"><b>Definition</b> <a href="_assembler_8cpp_source.html#l00086">Assembler.cpp:86</a></div></div>
 <div class="ttc" id="a_assembler_8cpp_html_ace467602a78d8e0c10fcd553d052fb6e"><div class="ttname"><a href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a></div><div class="ttdeci">ElementAssemblyValues vals</div><div class="ttdef"><b>Definition</b> <a href="_assembler_8cpp_source.html#l00022">Assembler.cpp:22</a></div></div>
 <div class="ttc" id="a_assembler_utils_8hpp_html"><div class="ttname"><a href="_assembler_utils_8hpp.html">AssemblerUtils.hpp</a></div></div>

@@ -1,10 +1,5 @@
 var annotated_dup =
 [
-    [ "nlohmann", "namespacenlohmann.html", [
-      [ "adl_serializer< RowVector< T, dim, max_dim > >", "structnlohmann_1_1adl__serializer_3_01_row_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html", null ],
-      [ "adl_serializer< std::filesystem::path >", "structnlohmann_1_1adl__serializer_3_01std_1_1filesystem_1_1path_01_4.html", null ],
-      [ "adl_serializer< Vector< T, dim, max_dim > >", "structnlohmann_1_1adl__serializer_3_01_vector_3_01_t_00_01dim_00_01max__dim_01_4_01_4.html", null ]
-    ] ],
     [ "p_bases", "namespacep__bases.html", [
       [ "Lagrange", "classp__bases_1_1_lagrange.html", "classp__bases_1_1_lagrange" ],
       [ "ReferenceSimplex", "classp__bases_1_1_reference_simplex.html", "classp__bases_1_1_reference_simplex" ]
@@ -220,11 +215,10 @@ var annotated_dup =
         [ "CompositeForm", "classpolyfem_1_1solver_1_1_composite_form.html", "classpolyfem_1_1solver_1_1_composite_form" ],
         [ "CompositeParametrization", "classpolyfem_1_1solver_1_1_composite_parametrization.html", "classpolyfem_1_1solver_1_1_composite_parametrization" ],
         [ "ContactForm", "classpolyfem_1_1solver_1_1_contact_form.html", "classpolyfem_1_1solver_1_1_contact_form" ],
-        [ "CustomSymmetric", "classpolyfem_1_1solver_1_1_custom_symmetric.html", "classpolyfem_1_1solver_1_1_custom_symmetric" ],
         [ "DampingCoeffientVariableToSimulation", "classpolyfem_1_1solver_1_1_damping_coeffient_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_damping_coeffient_variable_to_simulation" ],
+        [ "DeformedCollisionBarrierForm", "classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html", "classpolyfem_1_1solver_1_1_deformed_collision_barrier_form" ],
         [ "DiffCache", "classpolyfem_1_1solver_1_1_diff_cache.html", "classpolyfem_1_1solver_1_1_diff_cache" ],
         [ "DirichletVariableToSimulation", "classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation" ],
-        [ "DispGradForm", "classpolyfem_1_1solver_1_1_disp_grad_form.html", "classpolyfem_1_1solver_1_1_disp_grad_form" ],
         [ "DivideForm", "classpolyfem_1_1solver_1_1_divide_form.html", "classpolyfem_1_1solver_1_1_divide_form" ],
         [ "ElasticEnergyForm", "classpolyfem_1_1solver_1_1_elastic_energy_form.html", "classpolyfem_1_1solver_1_1_elastic_energy_form" ],
         [ "ElasticForm", "classpolyfem_1_1solver_1_1_elastic_form.html", "classpolyfem_1_1solver_1_1_elastic_form" ],
@@ -246,8 +240,6 @@ var annotated_dup =
         [ "LaggedRegForm", "classpolyfem_1_1solver_1_1_lagged_reg_form.html", "classpolyfem_1_1solver_1_1_lagged_reg_form" ],
         [ "LinearFilter", "classpolyfem_1_1solver_1_1_linear_filter.html", "classpolyfem_1_1solver_1_1_linear_filter" ],
         [ "MaxStressForm", "classpolyfem_1_1solver_1_1_max_stress_form.html", "classpolyfem_1_1solver_1_1_max_stress_form" ],
-        [ "MeshAffine", "classpolyfem_1_1solver_1_1_mesh_affine.html", "classpolyfem_1_1solver_1_1_mesh_affine" ],
-        [ "MeshTiling", "classpolyfem_1_1solver_1_1_mesh_tiling.html", "classpolyfem_1_1solver_1_1_mesh_tiling" ],
         [ "NavierStokesSolver", "classpolyfem_1_1solver_1_1_navier_stokes_solver.html", "classpolyfem_1_1solver_1_1_navier_stokes_solver" ],
         [ "NegativeCompositeForm", "classpolyfem_1_1solver_1_1_negative_composite_form.html", "classpolyfem_1_1solver_1_1_negative_composite_form" ],
         [ "NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html", "classpolyfem_1_1solver_1_1_n_l_problem" ],
@@ -259,14 +251,12 @@ var annotated_dup =
         [ "ParametrizedProductForm", "classpolyfem_1_1solver_1_1_parametrized_product_form.html", "classpolyfem_1_1solver_1_1_parametrized_product_form" ],
         [ "PerBody2PerElem", "classpolyfem_1_1solver_1_1_per_body2_per_elem.html", "classpolyfem_1_1solver_1_1_per_body2_per_elem" ],
         [ "PerBody2PerNode", "classpolyfem_1_1solver_1_1_per_body2_per_node.html", "classpolyfem_1_1solver_1_1_per_body2_per_node" ],
-        [ "PeriodicMeshToMesh", "classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html", "classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh" ],
         [ "PlusConstCompositeForm", "classpolyfem_1_1solver_1_1_plus_const_composite_form.html", "classpolyfem_1_1solver_1_1_plus_const_composite_form" ],
         [ "PositionForm", "classpolyfem_1_1solver_1_1_position_form.html", "classpolyfem_1_1solver_1_1_position_form" ],
         [ "PowerForm", "classpolyfem_1_1solver_1_1_power_form.html", "classpolyfem_1_1solver_1_1_power_form" ],
         [ "PowerMap", "classpolyfem_1_1solver_1_1_power_map.html", "classpolyfem_1_1solver_1_1_power_map" ],
         [ "RayleighDampingForm", "classpolyfem_1_1solver_1_1_rayleigh_damping_form.html", "classpolyfem_1_1solver_1_1_rayleigh_damping_form" ],
         [ "Scaling", "classpolyfem_1_1solver_1_1_scaling.html", "classpolyfem_1_1solver_1_1_scaling" ],
-        [ "SDFShapeVariableToSimulation", "classpolyfem_1_1solver_1_1_s_d_f_shape_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_s_d_f_shape_variable_to_simulation" ],
         [ "ShapeVariableToSimulation", "classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_shape_variable_to_simulation" ],
         [ "SliceMap", "classpolyfem_1_1solver_1_1_slice_map.html", "classpolyfem_1_1solver_1_1_slice_map" ],
         [ "SolveData", "classpolyfem_1_1solver_1_1_solve_data.html", "classpolyfem_1_1solver_1_1_solve_data" ],

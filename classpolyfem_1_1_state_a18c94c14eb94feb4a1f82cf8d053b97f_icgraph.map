@@ -1,64 +1,66 @@
 <map id="polyfem::State::root_path" name="polyfem::State::root_path">
-<area shape="rect" id="Node000001" title="Get the root path for the state (e.g., args[&quot;root_path&quot;] or &quot;.&quot;)" alt="" coords="1535,364,1723,389"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1_state.html#a92ca4b0169412ddc297a77744bd0e724" title="compute rhs, step 3 of solve build rhs vector based on defined basis and given rhs of the problem mod..." alt="" coords="347,263,563,288"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1566,395,1487,411,1336,432,1184,437,962,437,788,441,713,433,671,422,622,404,573,379,528,347,466,290,470,286,531,343,575,375,624,399,672,417,714,428,789,436,962,431,1184,431,1336,426,1486,406,1565,390"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1_state.html#a0dfe8b477867a13f17afb35bd4309508" title="extracts the boundary mesh for collision, called in build_basis" alt="" coords="1320,471,1479,511"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="1594,398,1488,455,1448,474,1446,469,1485,450,1592,394"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1_state.html#a184100545465d3feab07312e3f9c32a4" title="initialize the polyfem solver with a json settings" alt="" coords="1109,27,1256,52"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="1610,353,1559,280,1524,238,1485,200,1417,150,1343,109,1274,77,1219,55,1221,50,1277,72,1346,104,1420,146,1488,196,1528,235,1563,277,1615,350"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1_state.html#acfcd600796cd24e1555454a1d31f2fc2" title="Resolve input path relative to root_path() if the path is not absolute." alt="" coords="1312,210,1487,250"/>
-<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="1595,359,1430,252,1433,248,1598,354"/>
-<area shape="rect" id="Node000022" href="$classpolyfem_1_1_state.html#a86103f6944298fbb1a4a9ec50e614292" title="Save a JSON sim file for restarting the simulation at time t." alt="" coords="1321,357,1478,397"/>
-<area shape="poly" id="edge39_Node000001_Node000022" title=" " alt="" coords="1521,379,1478,379,1478,374,1521,374"/>
-<area shape="rect" id="Node000003" href="$main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0" title=" " alt="" coords="123,117,271,143"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="349,260,333,252,317,239,307,225,298,211,285,196,250,168,217,145,220,140,253,163,289,192,303,208,311,223,321,235,336,248,351,255"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="117,205,278,231"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="378,262,334,253,251,233,252,228,335,247,380,257"/>
-<area shape="rect" id="Node000006" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acac3e8ce8646ddd1544ed034c71bec96" title=" " alt="" coords="108,255,287,295"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="333,278,287,278,287,273,333,273"/>
-<area shape="rect" id="Node000004" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,117,60,143"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="109,133,60,133,60,127,109,127"/>
-<area shape="poly" id="edge8_Node000008_Node000003" title=" " alt="" coords="1095,29,949,15,758,8,653,11,545,20,439,36,335,60,302,73,270,88,218,119,216,115,267,84,300,68,334,55,438,31,545,14,652,6,758,3,949,10,1096,24"/>
-<area shape="poly" id="edge16_Node000009_Node000008" title=" " alt="" coords="1376,200,1328,136,1297,103,1263,73,1226,54,1228,50,1265,69,1301,99,1333,133,1380,197"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1_state.html#ae73637bc6b2260ba3b25d50cc9b212cc" title="extracts the boundary mesh for collision, called in build_basis" alt="" coords="645,70,803,110"/>
-<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="1313,207,1311,206,1296,196,1286,186,1277,177,1263,168,1204,146,1142,129,1016,106,899,94,803,91,804,86,900,89,1017,100,1143,124,1205,141,1265,164,1280,172,1290,182,1300,192,1313,201,1315,202"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1_state.html#a9d3e2c1bbf7f78250330eb30019de100" title="Load or compute the initial acceleration." alt="" coords="1101,306,1264,346"/>
-<area shape="poly" id="edge17_Node000009_Node000013" title=" " alt="" coords="1347,258,1265,296,1237,308,1235,303,1263,292,1345,253"/>
-<area shape="rect" id="Node000019" href="$classpolyfem_1_1_state.html#a516bb511c65912f159ec1cbb568e11b6" title="Load or compute the initial solution." alt="" coords="1101,178,1264,218"/>
-<area shape="poly" id="edge29_Node000009_Node000019" title=" " alt="" coords="1298,218,1264,213,1265,207,1299,212"/>
-<area shape="rect" id="Node000021" href="$classpolyfem_1_1_state.html#a8de28566e6b24a8d31e5b4b043956a06" title="Load or compute the initial velocity." alt="" coords="1101,242,1264,282"/>
-<area shape="poly" id="edge35_Node000009_Node000021" title=" " alt="" coords="1299,247,1265,253,1264,247,1298,242"/>
-<area shape="poly" id="edge14_Node000010_Node000010" title=" " alt="" coords="764,58,750,51,724,49,701,51,687,55,682,61,685,69,680,70,677,60,684,51,700,45,724,43,752,46,767,53"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b" title="builds the bases step 2 of solve modifies bases, pressure_bases, geom_bases_, boundary_nodes,..." alt="" coords="375,70,534,110"/>
-<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="631,93,534,93,534,87,631,87"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1solver_1_1_collision_barrier_form.html#ae9d9e71618eeb10d2a73cb2739ef8c5a" title=" " alt="" coords="335,134,575,174"/>
-<area shape="poly" id="edge15_Node000010_Node000012" title=" " alt="" coords="632,114,540,136,539,131,631,109"/>
-<area shape="poly" id="edge12_Node000011_Node000003" title=" " alt="" coords="362,107,272,121,271,116,361,102"/>
-<area shape="poly" id="edge13_Node000011_Node000005" title=" " alt="" coords="363,113,336,124,218,207,215,203,333,120,361,108"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1_state.html#ac904ade9c3fa1d665ff5976766c499c4" title="initialize the linear solve" alt="" coords="890,242,1037,282"/>
-<area shape="poly" id="edge18_Node000013_Node000014" title=" " alt="" coords="1100,305,1032,285,1033,279,1101,299"/>
-<area shape="rect" id="Node000016" href="$classpolyfem_1_1_state.html#ae0de6ea3bdc69e3e21ddfbcdb144180b" title="initialize the nonlinear solver" alt="" coords="873,306,1053,346"/>
-<area shape="poly" id="edge23_Node000013_Node000016" title=" " alt="" coords="1088,329,1054,329,1054,323,1088,323"/>
-<area shape="rect" id="Node000018" href="$classpolyfem_1_1_state.html#af5afb70dc127d3ce190116321e83f190" title="solves transient linear problem" alt="" coords="883,178,1044,218"/>
-<area shape="poly" id="edge27_Node000013_Node000018" title=" " alt="" coords="1107,301,1100,296,1084,279,1075,263,1067,247,1052,232,1032,220,1034,216,1055,228,1071,244,1080,261,1088,276,1103,292,1110,297"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="374,198,535,238"/>
-<area shape="poly" id="edge19_Node000014_Node000015" title=" " alt="" coords="876,257,535,228,536,222,876,252"/>
-<area shape="poly" id="edge20_Node000015_Node000003" title=" " alt="" coords="360,197,334,188,226,145,228,140,336,183,362,192"/>
-<area shape="poly" id="edge21_Node000015_Node000005" title=" " alt="" coords="360,221,278,221,278,215,360,215"/>
-<area shape="poly" id="edge22_Node000015_Node000006" title=" " alt="" coords="361,241,287,258,286,253,360,236"/>
-<area shape="poly" id="edge24_Node000016_Node000015" title=" " alt="" coords="859,307,622,257,535,238,536,233,623,251,860,302"/>
-<area shape="rect" id="Node000017" href="$classpolyfem_1_1_state.html#a4d91e8c971fc121b0cff2f0c02ca79e7" title="solves transient tensor nonlinear problem" alt="" coords="623,350,825,390"/>
-<area shape="poly" id="edge25_Node000016_Node000017" title=" " alt="" coords="860,348,826,354,825,349,859,342"/>
-<area shape="poly" id="edge26_Node000017_Node000015" title=" " alt="" coords="639,346,621,333,604,312,597,292,589,272,573,253,535,234,537,229,576,249,594,269,602,290,609,310,624,329,642,342"/>
-<area shape="poly" id="edge28_Node000018_Node000015" title=" " alt="" coords="869,204,536,217,535,212,869,199"/>
-<area shape="poly" id="edge30_Node000019_Node000014" title=" " alt="" coords="1101,224,1033,244,1032,239,1100,219"/>
-<area shape="poly" id="edge31_Node000019_Node000016" title=" " alt="" coords="1110,227,1103,232,1088,248,1080,263,1071,280,1055,296,1034,308,1032,304,1052,292,1067,276,1075,261,1084,245,1100,228,1107,223"/>
-<area shape="poly" id="edge34_Node000019_Node000018" title=" " alt="" coords="1088,201,1044,201,1044,195,1088,195"/>
-<area shape="rect" id="Node000020" href="$classpolyfem_1_1_state.html#ac5c4dd2be369c759c68e0a36a45bfcc7" title="initialize solver" alt="" coords="651,134,797,174"/>
-<area shape="poly" id="edge32_Node000019_Node000020" title=" " alt="" coords="1099,177,1053,169,917,157,797,155,797,150,918,152,1054,163,1100,172"/>
-<area shape="poly" id="edge33_Node000020_Node000015" title=" " alt="" coords="638,177,536,201,535,196,637,172"/>
-<area shape="poly" id="edge36_Node000021_Node000014" title=" " alt="" coords="1088,265,1037,265,1037,259,1088,259"/>
-<area shape="poly" id="edge37_Node000021_Node000016" title=" " alt="" coords="1101,288,1033,308,1032,303,1100,283"/>
-<area shape="poly" id="edge38_Node000021_Node000018" title=" " alt="" coords="1100,241,1032,221,1033,215,1101,235"/>
-<area shape="poly" id="edge40_Node000022_Node000017" title=" " alt="" coords="1306,378,825,374,825,368,1306,373"/>
+<area shape="rect" id="Node000001" title="Get the root path for the state (e.g., args[&quot;root_path&quot;] or &quot;.&quot;)" alt="" coords="1535,112,1723,137"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1_state.html#a92ca4b0169412ddc297a77744bd0e724" title="compute rhs, step 3 of solve build rhs vector based on defined basis and given rhs of the problem mod..." alt="" coords="347,30,563,56"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1600,105,1549,69,1518,51,1486,38,1404,16,1338,9,1184,12,962,12,749,20,563,35,563,29,749,15,962,7,1184,7,1338,4,1405,10,1488,33,1521,47,1552,64,1603,101"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1_state.html#a0dfe8b477867a13f17afb35bd4309508" title="extracts the boundary mesh for collision, called in build_basis" alt="" coords="1320,226,1479,266"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="1600,147,1549,181,1488,216,1461,228,1459,223,1485,211,1546,177,1597,143"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1_state.html#a184100545465d3feab07312e3f9c32a4" title="initialize the polyfem solver with a json settings" alt="" coords="1109,112,1256,137"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="1521,127,1256,127,1256,122,1521,122"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1_state.html#acfcd600796cd24e1555454a1d31f2fc2" title="Resolve input path relative to root_path() if the path is not absolute." alt="" coords="1312,162,1487,202"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="1564,143,1480,164,1479,159,1563,138"/>
+<area shape="rect" id="Node000023" href="$classpolyfem_1_1_state.html#a86103f6944298fbb1a4a9ec50e614292" title="Save a JSON sim file for restarting the simulation at time t." alt="" coords="1321,47,1478,87"/>
+<area shape="poly" id="edge40_Node000001_Node000023" title=" " alt="" coords="1563,111,1477,89,1479,84,1565,106"/>
+<area shape="rect" id="Node000003" href="$main_8cpp.html#a48e4775e12bdf81ebb0eaa27df888aa0" title=" " alt="" coords="123,117,271,142"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="389,62,336,78,228,120,227,115,334,73,387,57"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="117,196,278,221"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="425,66,288,156,221,198,218,193,285,152,422,61"/>
+<area shape="rect" id="Node000006" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acac3e8ce8646ddd1544ed034c71bec96" title=" " alt="" coords="108,38,287,78"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="333,53,287,55,287,50,333,47"/>
+<area shape="rect" id="Node000004" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,117,60,142"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="109,132,60,132,60,127,109,127"/>
+<area shape="poly" id="edge8_Node000008_Node000003" title=" " alt="" coords="1096,125,825,122,623,122,271,130,271,125,623,116,825,116,1096,120"/>
+<area shape="poly" id="edge17_Node000009_Node000008" title=" " alt="" coords="1309,161,1231,140,1232,135,1311,156"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1_state.html#ae73637bc6b2260ba3b25d50cc9b212cc" title="extracts the boundary mesh for collision, called in build_basis" alt="" coords="645,435,803,475"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="1318,212,1314,216,1302,231,1295,247,1292,279,1287,312,1280,328,1266,344,1213,382,1154,411,1092,432,1028,447,966,457,906,462,804,463,804,458,905,457,965,452,1027,442,1090,427,1152,406,1210,377,1262,340,1275,325,1282,310,1287,279,1290,246,1297,229,1310,212,1315,208"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1_state.html#a9d3e2c1bbf7f78250330eb30019de100" title="Load or compute the initial acceleration." alt="" coords="1101,162,1264,202"/>
+<area shape="poly" id="edge18_Node000009_Node000014" title=" " alt="" coords="1298,184,1264,184,1264,179,1298,179"/>
+<area shape="rect" id="Node000020" href="$classpolyfem_1_1_state.html#a516bb511c65912f159ec1cbb568e11b6" title="Load or compute the initial solution." alt="" coords="1101,290,1264,330"/>
+<area shape="poly" id="edge30_Node000009_Node000020" title=" " alt="" coords="1321,211,1314,216,1299,231,1290,247,1282,263,1266,280,1246,292,1244,287,1262,276,1277,260,1286,244,1294,228,1310,212,1318,206"/>
+<area shape="rect" id="Node000022" href="$classpolyfem_1_1_state.html#a8de28566e6b24a8d31e5b4b043956a06" title="Load or compute the initial velocity." alt="" coords="1101,226,1264,266"/>
+<area shape="poly" id="edge36_Node000009_Node000022" title=" " alt="" coords="1319,208,1252,228,1250,223,1317,203"/>
+<area shape="poly" id="edge14_Node000010_Node000010" title=" " alt="" coords="764,423,750,416,724,414,701,416,687,421,682,426,685,434,680,435,677,425,684,416,700,410,724,408,752,411,767,419"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1_state.html#a75cfcf28f3bc27e8e30b41c7347c799b" title="builds the bases step 2 of solve modifies bases, pressure_bases, geom_bases_, boundary_nodes,..." alt="" coords="375,339,534,379"/>
+<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="653,433,511,382,513,377,655,428"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1solver_1_1_collision_barrier_form.html#ae9d9e71618eeb10d2a73cb2739ef8c5a" title=" " alt="" coords="335,275,575,315"/>
+<area shape="poly" id="edge15_Node000010_Node000012" title=" " alt="" coords="663,431,621,401,605,381,597,363,589,346,573,329,553,317,555,313,576,325,594,343,602,361,610,379,625,397,666,426"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html#a7ed7a25dff777565db29868c2d9f9b64" title=" " alt="" coords="341,428,569,482"/>
+<area shape="poly" id="edge16_Node000010_Node000013" title=" " alt="" coords="631,458,569,458,569,452,631,452"/>
+<area shape="poly" id="edge12_Node000011_Node000003" title=" " alt="" coords="361,347,333,329,318,311,310,293,305,258,302,222,296,204,285,185,259,162,230,145,232,140,262,157,289,181,301,201,308,221,311,257,315,292,322,308,336,325,364,343"/>
+<area shape="poly" id="edge13_Node000011_Node000005" title=" " alt="" coords="361,341,333,329,294,304,258,275,208,223,212,219,262,271,297,300,336,325,363,337"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1_state.html#ac904ade9c3fa1d665ff5976766c499c4" title="initialize the linear solve" alt="" coords="890,226,1037,266"/>
+<area shape="poly" id="edge19_Node000014_Node000015" title=" " alt="" coords="1101,208,1033,228,1032,223,1100,203"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1_state.html#ae0de6ea3bdc69e3e21ddfbcdb144180b" title="initialize the nonlinear solver" alt="" coords="873,162,1053,202"/>
+<area shape="poly" id="edge24_Node000014_Node000017" title=" " alt="" coords="1088,184,1054,184,1054,179,1088,179"/>
+<area shape="rect" id="Node000019" href="$classpolyfem_1_1_state.html#af5afb70dc127d3ce190116321e83f190" title="solves transient linear problem" alt="" coords="883,290,1044,330"/>
+<area shape="poly" id="edge28_Node000014_Node000019" title=" " alt="" coords="1110,211,1103,216,1088,231,1080,247,1071,263,1055,280,1034,292,1032,287,1052,276,1067,260,1075,245,1084,228,1100,212,1107,206"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="374,188,535,228"/>
+<area shape="poly" id="edge20_Node000015_Node000016" title=" " alt="" coords="876,242,535,217,536,212,876,237"/>
+<area shape="poly" id="edge21_Node000016_Node000003" title=" " alt="" coords="375,187,239,145,241,140,376,182"/>
+<area shape="poly" id="edge22_Node000016_Node000005" title=" " alt="" coords="360,211,278,211,278,206,360,206"/>
+<area shape="poly" id="edge23_Node000016_Node000006" title=" " alt="" coords="409,183,285,107,237,80,239,76,288,102,412,178"/>
+<area shape="poly" id="edge25_Node000017_Node000016" title=" " alt="" coords="860,190,536,207,535,202,859,185"/>
+<area shape="rect" id="Node000018" href="$classpolyfem_1_1_state.html#a4d91e8c971fc121b0cff2f0c02ca79e7" title="solves transient tensor nonlinear problem" alt="" coords="623,131,825,171"/>
+<area shape="poly" id="edge26_Node000017_Node000018" title=" " alt="" coords="860,171,825,167,826,161,860,166"/>
+<area shape="poly" id="edge27_Node000018_Node000016" title=" " alt="" coords="617,177,536,194,535,189,616,171"/>
+<area shape="poly" id="edge29_Node000019_Node000016" title=" " alt="" coords="869,294,535,227,536,222,870,289"/>
+<area shape="poly" id="edge31_Node000020_Node000015" title=" " alt="" coords="1100,288,1032,268,1033,263,1101,283"/>
+<area shape="poly" id="edge32_Node000020_Node000017" title=" " alt="" coords="1107,285,1100,280,1084,263,1075,247,1067,231,1052,216,1032,204,1034,199,1055,212,1071,228,1080,244,1088,260,1103,276,1110,281"/>
+<area shape="poly" id="edge35_Node000020_Node000019" title=" " alt="" coords="1088,312,1044,312,1044,307,1088,307"/>
+<area shape="rect" id="Node000021" href="$classpolyfem_1_1_state.html#ac5c4dd2be369c759c68e0a36a45bfcc7" title="initialize solver" alt="" coords="651,347,797,387"/>
+<area shape="poly" id="edge33_Node000020_Node000021" title=" " alt="" coords="1097,336,1054,344,918,360,798,368,797,362,917,355,1053,339,1096,330"/>
+<area shape="poly" id="edge34_Node000021_Node000016" title=" " alt="" coords="641,343,621,330,605,314,596,297,588,281,573,265,544,246,514,231,516,226,547,241,576,261,592,278,601,295,609,311,624,326,644,339"/>
+<area shape="poly" id="edge37_Node000022_Node000015" title=" " alt="" coords="1088,248,1037,248,1037,243,1088,243"/>
+<area shape="poly" id="edge38_Node000022_Node000017" title=" " alt="" coords="1100,224,1032,204,1033,199,1101,219"/>
+<area shape="poly" id="edge39_Node000022_Node000019" title=" " alt="" coords="1101,272,1033,292,1032,287,1100,267"/>
+<area shape="poly" id="edge41_Node000023_Node000018" title=" " alt="" coords="1307,79,1102,102,826,139,825,134,1101,96,1307,74"/>
 </map>

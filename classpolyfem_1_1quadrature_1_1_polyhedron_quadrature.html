@@ -130,7 +130,7 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1quadrature_1_1_polyhed
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a01e616aaa62b158c76d3e966232e06d8" id="r_a01e616aaa62b158c76d3e966232e06d8"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1quadrature_1_1_polyhedron_quadrature.html#a01e616aaa62b158c76d3e966232e06d8">get_quadrature</a> (const Eigen::MatrixXd &amp;V, const Eigen::MatrixXi &amp;<a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>, const Eigen::RowVector3d &amp;kernel, const int order, <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">Quadrature</a> &amp;quadr)</td></tr>
+<tr class="memitem:a01e616aaa62b158c76d3e966232e06d8" id="r_a01e616aaa62b158c76d3e966232e06d8"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1quadrature_1_1_polyhedron_quadrature.html#a01e616aaa62b158c76d3e966232e06d8">get_quadrature</a> (const Eigen::MatrixXd &amp;<a class="el" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, const Eigen::MatrixXi &amp;<a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>, const Eigen::RowVector3d &amp;kernel, const int order, <a class="el" href="classpolyfem_1_1quadrature_1_1_quadrature.html">Quadrature</a> &amp;quadr)</td></tr>
 <tr class="memdesc:a01e616aaa62b158c76d3e966232e06d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the quadrature points &amp; weights for a polyhedron.  <br /></td></tr>
 <tr class="separator:a01e616aaa62b158c76d3e966232e06d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -193,7 +193,7 @@ Static Public Member Functions</h2></td></tr>
 <p>Gets the quadrature points &amp; weights for a polyhedron. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">V</td><td>#V x 3 input surface vertices (triangulated surface of the polyhedron) </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">V</td><td><a class="el" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a> x 3 input surface vertices (triangulated surface of the polyhedron) </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td><a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a> x 3 input surface faces </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">kernel</td><td>A point in the kernel of the polyhedron </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">order</td><td>Order of the quadrature </td></tr>
@@ -204,7 +204,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_polyhedron_quadrature_8cpp_source.html#l00095">95</a> of file <a class="el" href="_polyhedron_quadrature_8cpp_source.html">PolyhedronQuadrature.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_tet_quadrature_8cpp_source.html#l00031">polyfem::quadrature::TetQuadrature::get_quadrature()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00869">polyfem::mesh::tertrahedralize_star_shaped_surface()</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626a16514e6f648a594f5399a6b3a58e9c93">polyfem::mesh::V0</a>, and <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::weights</a>.</p>
+<p class="reference">References <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_tet_quadrature_8cpp_source.html#l00031">polyfem::quadrature::TetQuadrature::get_quadrature()</a>, <a class="el" href="_quadrature_8hpp_source.html#l00010">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00869">polyfem::mesh::tertrahedralize_star_shaped_surface()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00023">V</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626a16514e6f648a594f5399a6b3a58e9c93">polyfem::mesh::V0</a>, and <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::weights</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">

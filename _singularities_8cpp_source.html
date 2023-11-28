@@ -135,7 +135,7 @@ $(document).ready(function(){initNavTree('_singularities_8cpp_source.html',''); 
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
 <div class="foldopen" id="foldopen00008" data-start="{" data-end="}">
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1mesh.html#aeb087429296c4e79bd346db0fce81ec5">    8</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#aeb087429296c4e79bd346db0fce81ec5">polyfem::mesh::singular_vertices</a>(</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keyword">const</span> GEO::Mesh &amp;M, Eigen::VectorXi &amp;V, <span class="keywordtype">int</span> regular_degree, <span class="keywordtype">bool</span> ignore_border)</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keyword">const</span> GEO::Mesh &amp;M, Eigen::VectorXi &amp;<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, <span class="keywordtype">int</span> regular_degree, <span class="keywordtype">bool</span> ignore_border)</div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>{</div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keyword">using </span>GEO::index_t;</div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    std::vector&lt;int&gt; degree(M.vertices.nb(), 0);</div>
@@ -163,26 +163,26 @@ $(document).ready(function(){initNavTree('_singularities_8cpp_source.html',''); 
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="comment">// Count and create list of irregular vertices</span></div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">long</span> nb_reg = std::count(degree.begin(), degree.end(), regular_degree);</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    V.resize(M.vertices.nb() - nb_reg);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.resize(M.vertices.nb() - nb_reg);</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">for</span> (index_t v = 0, i = 0; v &lt; M.vertices.nb(); ++v)</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    {</div>
 <div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <span class="keywordflow">if</span> (degree[v] != regular_degree)</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        {</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            assert(i &lt; V.size());</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            V(i++) = v;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>            assert(i &lt; <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.size());</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>            <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>(i++) = v;</div>
 <div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        }</div>
 <div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    }</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>}</div>
 </div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
 <div class="foldopen" id="foldopen00048" data-start="{" data-end="}">
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1mesh.html#ad0c1bdc69a7ad16cfa3eeb7d23b60867">   48</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#ad0c1bdc69a7ad16cfa3eeb7d23b60867">polyfem::mesh::singular_edges</a>(<span class="keyword">const</span> GEO::Mesh &amp;M, <span class="keyword">const</span> Eigen::VectorXi &amp;V, Eigen::MatrixX2i &amp;E)</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1mesh.html#ad0c1bdc69a7ad16cfa3eeb7d23b60867">   48</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#ad0c1bdc69a7ad16cfa3eeb7d23b60867">polyfem::mesh::singular_edges</a>(<span class="keyword">const</span> GEO::Mesh &amp;M, <span class="keyword">const</span> Eigen::VectorXi &amp;<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, Eigen::MatrixX2i &amp;E)</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>{</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keyword">using </span>GEO::index_t;</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    std::vector&lt;bool&gt; is_singular(M.vertices.nb(), <span class="keyword">false</span>);</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; V.size(); ++i)</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.size(); ++i)</div>
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    {</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        is_singular[V(i)] = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        is_singular[<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>(i)] = <span class="keyword">true</span>;</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    }</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    std::vector&lt;std::pair&lt;int, int&gt;&gt; edges;</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordflow">for</span> (index_t e = 0; e &lt; M.edges.nb(); ++e)</div>
@@ -206,17 +206,17 @@ $(document).ready(function(){initNavTree('_singularities_8cpp_source.html',''); 
 <div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
 <div class="foldopen" id="foldopen00075" data-start="{" data-end="}">
 <div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1mesh.html#a78a20bc192a325efd376142bae8605c0">   75</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a78a20bc192a325efd376142bae8605c0">polyfem::mesh::singularity_graph</a>(</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">const</span> GEO::Mesh &amp;M, Eigen::VectorXi &amp;V, Eigen::MatrixX2i &amp;E, <span class="keywordtype">int</span> regular_degree, <span class="keywordtype">bool</span> ignore_border)</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keyword">const</span> GEO::Mesh &amp;M, Eigen::VectorXi &amp;<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, Eigen::MatrixX2i &amp;E, <span class="keywordtype">int</span> regular_degree, <span class="keywordtype">bool</span> ignore_border)</div>
 <div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>{</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#aeb087429296c4e79bd346db0fce81ec5">singular_vertices</a>(M, V, regular_degree, ignore_border);</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#ad0c1bdc69a7ad16cfa3eeb7d23b60867">singular_edges</a>(M, V, E);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#aeb087429296c4e79bd346db0fce81ec5">singular_vertices</a>(M, <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, regular_degree, ignore_border);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#ad0c1bdc69a7ad16cfa3eeb7d23b60867">singular_edges</a>(M, <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, E);</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>}</div>
 </div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
 <div class="foldopen" id="foldopen00084" data-start="{" data-end="}">
 <div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1mesh.html#a6c2f88605218d9c84cb80764dd0887db">   84</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a6c2f88605218d9c84cb80764dd0887db">polyfem::mesh::create_patch_around_singularities</a>(</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    GEO::Mesh &amp;M, <span class="keyword">const</span> Eigen::VectorXi &amp;V, <span class="keyword">const</span> Eigen::MatrixX2i &amp;E, <span class="keywordtype">double</span> t)</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    GEO::Mesh &amp;M, <span class="keyword">const</span> Eigen::VectorXi &amp;<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, <span class="keyword">const</span> Eigen::MatrixX2i &amp;E, <span class="keywordtype">double</span> t)</div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>{</div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keyword">using </span>GEO::index_t;</div>
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keyword">using </span><a class="code hl_struct" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">Navigation::Index</a>;</div>
@@ -225,10 +225,10 @@ $(document).ready(function(){initNavTree('_singularities_8cpp_source.html',''); 
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="comment">// Step 0: Make sure all endpoints of E are in V</span></div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    std::vector&lt;int&gt; singulars;</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    singulars.reserve(V.size() + E.size());</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; V.size(); ++i)</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    singulars.reserve(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.size() + E.size());</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.size(); ++i)</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    {</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        singulars.push_back(V(i));</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        singulars.push_back(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>(i));</div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    }</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; E.size(); ++i)</div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    {</div>
@@ -472,6 +472,7 @@ $(document).ready(function(){initNavTree('_singularities_8cpp_source.html',''); 
 <div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>}</div>
 </div>
+<div class="ttc" id="a_adjoint_n_l_problem_8cpp_html_a91e334f289dc11ba09da0df4a9c72123"><div class="ttname"><a href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a></div><div class="ttdeci">int V</div><div class="ttdef"><b>Definition</b> <a href="_adjoint_n_l_problem_8cpp_source.html#l00023">AdjointNLProblem.cpp:23</a></div></div>
 <div class="ttc" id="a_mesh_utils_8hpp_html"><div class="ttname"><a href="_mesh_utils_8hpp.html">MeshUtils.hpp</a></div></div>
 <div class="ttc" id="a_navigation_8hpp_html"><div class="ttname"><a href="_navigation_8hpp.html">Navigation.hpp</a></div></div>
 <div class="ttc" id="a_singularities_8hpp_html"><div class="ttname"><a href="_singularities_8hpp.html">Singularities.hpp</a></div></div>
