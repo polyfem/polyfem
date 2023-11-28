@@ -53,7 +53,7 @@ namespace polyfem
 #endif
 		// const double save_dt = remesh_enabled ? (dt / 3) : dt;
 
-		if (optimization_enabled != CacheLevel::None)
+		if (optimization_enabled != solver::CacheLevel::None)
 			cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 
 		for (int t = 1; t <= time_steps; ++t)
@@ -95,7 +95,7 @@ namespace polyfem
 			energy_csv.write(save_i, sol);
 			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 
-			if (optimization_enabled != CacheLevel::None)
+			if (optimization_enabled != solver::CacheLevel::None)
 			{
 				cache_transient_adjoint_quantities(t, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 			}
@@ -141,7 +141,7 @@ namespace polyfem
 		assert(!problem->is_scalar());                           // tensor
 		assert(mixed_assembler == nullptr);
 
-		if (optimization_enabled != CacheLevel::None)
+		if (optimization_enabled != solver::CacheLevel::None)
 		{
 			if (initial_sol_update.size() == ndof())
 				sol = initial_sol_update;
@@ -185,7 +185,7 @@ namespace polyfem
 				initial_acceleration(acceleration);
 				assert(acceleration.rows() == sol.size());
 
-				if (optimization_enabled != CacheLevel::None)
+				if (optimization_enabled != solver::CacheLevel::None)
 				{
 					if (initial_vel_update.size() == ndof())
 						velocity = initial_vel_update;
@@ -237,7 +237,7 @@ namespace polyfem
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
-			optimization_enabled == CacheLevel::Derivatives,
+			optimization_enabled == solver::CacheLevel::Derivatives,
 			// Periodic contact
 			args["contact"]["periodic"], periodic_collision_mesh_to_basis,
 			// Friction form
@@ -322,7 +322,7 @@ namespace polyfem
 		// TODO: Make this more general
 		const double lagging_tol = args["solver"]["contact"].value("friction_convergence_tol", 1e-2) * units.characteristic_length();
 
-		if (optimization_enabled != CacheLevel::Derivatives)
+		if (optimization_enabled != solver::CacheLevel::Derivatives)
 		{
 			// Lagging loop (start at 1 because we already did an iteration above)
 			bool lagging_converged = !nl_problem.uses_lagging();

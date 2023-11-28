@@ -105,7 +105,7 @@ namespace polyfem
 		ipc::CollisionConstraints cur_contact_set;
 		ipc::FrictionConstraints cur_friction_set;
 
-		if (optimization_enabled == CacheLevel::Derivatives)
+		if (optimization_enabled == solver::CacheLevel::Derivatives)
 		{
 			if (!problem->is_time_dependent() || current_step > 0)
 				compute_force_jacobian(sol, disp_grad, gradu_h);

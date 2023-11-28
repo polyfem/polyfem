@@ -56,7 +56,7 @@ void State::init_homogenization_solve(const std::vector<int> &fixed_entry, const
         args["solver"]["contact"]["CCD"]["broad_phase"],
         args["solver"]["contact"]["CCD"]["tolerance"],
         args["solver"]["contact"]["CCD"]["max_iterations"],
-        optimization_enabled == CacheLevel::Derivatives,
+        optimization_enabled == solver::CacheLevel::Derivatives,
         // Periodic contact
         args["contact"]["periodic"], periodic_collision_mesh_to_basis,
         // Friction form
@@ -250,7 +250,7 @@ void State::solve_homogenization_step(Eigen::MatrixXd &sol, const Eigen::MatrixX
             sol(Eigen::seqN(d, n_bases, dim), 0).array() -= integral(d) / area;
     }
 
-    if (optimization_enabled != CacheLevel::None)
+    if (optimization_enabled != solver::CacheLevel::None)
         cache_transient_adjoint_quantities(t, sol, utils::unflatten(extended_sol.tail(dim * dim), dim));
 }
 

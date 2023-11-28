@@ -16,6 +16,9 @@
 #include <list>
 #include <stack>
 
+#include <list>
+#include <stack>
+
 namespace polyfem::solver
 {
 	namespace {
@@ -24,11 +27,11 @@ namespace polyfem::solver
 		class Graph {
 			int V; // No. of vertices'
 		
-			// Pointer to an array containing adjacency listsList
-			list<int>* adj;
+			// adjacency lists
+			vector<list<int>> adj;
 		
 			// A function used by topologicalSort
-			void topologicalSortUtil(int v, bool visited[], stack<int>& Stack);
+			void topologicalSortUtil(int v, vector<bool> &visited, stack<int>& Stack);
 		
 		public:
 			Graph(int V); // Constructor
@@ -43,7 +46,7 @@ namespace polyfem::solver
 		Graph::Graph(int V)
 		{
 			this->V = V;
-			adj = new list<int>[V];
+			adj.resize(V);
 		}
 		
 		void Graph::addEdge(int v, int w)
@@ -52,7 +55,7 @@ namespace polyfem::solver
 		}
 		
 		// A recursive function used by topologicalSort
-		void Graph::topologicalSortUtil(int v, bool visited[],
+		void Graph::topologicalSortUtil(int v, vector<bool> &visited,
 										stack<int>& Stack)
 		{
 			// Mark the current node as visited.
@@ -75,9 +78,7 @@ namespace polyfem::solver
 			stack<int> Stack;
 		
 			// Mark all the vertices as not visited
-			bool* visited = new bool[V];
-			for (int i = 0; i < V; i++)
-				visited[i] = false;
+			vector<bool> visited(V, false);
 		
 			// Call the recursive helper function to store Topological
 			// Sort starting from all vertices one by one
@@ -98,7 +99,6 @@ namespace polyfem::solver
 
 	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args)
 		: FullNLProblem({form}),
-		  args_(args),
 		  form_(form),
 		  variables_to_simulation_(variables_to_simulation),
 		  all_states_(all_states),

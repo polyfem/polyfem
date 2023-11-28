@@ -1,11 +1,18 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-
+#include <polyfem/utils/Types.hpp>
 #include <ipc/ipc.hpp>
 
 namespace polyfem::solver
 {
+	enum class CacheLevel
+	{
+		None,
+		Solution,
+		Derivatives
+	};
+
     class DiffCache
     {
     public:
