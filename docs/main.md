@@ -18,14 +18,14 @@ The high-level functions of PolyFEM are in `polyfem::State`, a class containing 
 `polyfem::basis` contains the implementation of finite element basis functions. 
 
 The module supports the following 2 dimensional elements:
-* Lagrangian triangular elements of degree 1 to 8 (`FEBasis2d.hpp`)
-* Lagrangian quadrilateral elements of degree 1 to 8 (`FEBasis2d.hpp`)
+* Lagrangian triangular elements of degree 1 to 8 (`LagrangeBasis2d.hpp`)
+* Lagrangian quadrilateral elements of degree 1 to 8 (`LagrangeBasis2d.hpp`)
 * Spline (IGA) elements of degree 1 to 4 (`SplineBasis2d.hpp`)
 * Polygonal elements (`PolygonalBasis2d.hpp`)
 
 The module supports the following 3 dimensional elements:
-* Lagrangian tetrahedral elements of degree 1 to 8 (`FEBasis3d.hpp`)
-* Lagrangian hexahedral elements of degree 1 to 8 (`FEBasis3d.hpp`)
+* Lagrangian tetrahedral elements of degree 1 to 8 (`LagrangeBasis3d.hpp`)
+* Lagrangian hexahedral elements of degree 1 to 8 (`LagrangeBasis3d.hpp`)
 * Spline (IGA) elements of degree 1 to 4 (`SplineBasis3d.hpp`)
 * Polygonal elements (`PolygonalBasis3d.hpp`)
 
@@ -110,55 +110,47 @@ For this example, we solve the Laplacian on a (triangular) plate-hole mesh with 
     },
 
     "output": {
-        "json": "stats_test.json",
+        "json": "stats.json",
         "paraview": {
-            "file_name": "result_test.vtu"
+            "file_name": "result.vtu"
         }
     }
 }
 ```
 
+### State
+
+Internally, PolyFEM keeps a `polyfem::State` object that contains the entire state of the solve. The mesh, basis, boundary conditions, stiffness/mass matrices, RHS, and user-selected settings are all stored in `polyfem::State`. The `polyfem::State` class is also responsible for dispatch, meaning it contains member functions for the basic steps of a solve, including building a basis, assembling matrices, and actually performing the linear or nonlinear solve. 
+
 ### Basis Building
 
-After creating a `polyfem::State` object and loading the input mesh, the next step in the code is to build the basis. In PolyFEM, there are two separate notions of basis: the finite element (FE) basis and the geometric basis. The la
+After creating a `polyfem::State` object and loading the input mesh, the next step in the code is to build the basis. In PolyFEM, there are two separate notions of basis: the finite element (FE) basis and the geometric basis. (They are the same in the isoparametric case.) The former is used to construct the solution whereas the latter is used to represent the geometric mapping, which is especially useful to implement curved elements. Both the FE and geometric basis are stored as vectors of `basis::ElementBases`. Each `basis::ElementBases` object stores the basis functions for a given element as a vector of `basis::Basis`. Each `basis::Basis` stores functions representing a local basis function and its gradient. 
 
-`basis::LagrangeBasis2d`
-`basis::ElementBases`
-`basis::Basis`
+The high-level function that constructs the FE and geometric bases is `State::build_basis`. In our example, it uses `basis::LagrangeBasis2d` to create the vector of `basis::ElementBases`. 
 
-`State::build_basis`
+### Basis/Gradient Evaluation and Storage
 
+In order to evaluate local basis functions and construct mass/stiffness matrices, PolyFEM makes use of a series of data storage classes. The lowest level of these classes is `assembler::AssemblyValues`, which stores the evaluation and gradient of a single local basis function on its element's quadrature points. A vector of `basis::Local2Global` objects is also stored. This is used to constrain nodes at the interface between different order elements (allowing for refinement). The `assembler::ElementAssemblyValues` class stores per element information, including quadrature points in real space, the geometric mapping's determinant, and a vector of `assembler::AssemblyValues` objects (one for each local basis function). Finallly, `assembler::AssemblyValsCache` is essentially a wrapper over `assembler::ElementAssemblyValues` that boosts performance by caching the per element information. These three classes are the core data storage objects used during matrix assembly. These classes use the previously constructed `basis::ElementBases` objects to evaluate basis functions and their gradients. 
+
+### RHS Assembly
+
+After building the basis, the next step is to assemble the RHS. This is done through the `State::assemble_rhs` function, which itself creates a `assembler::RhsAssembler` object. The `assembler::RhsAssembler::assemble` function is then called in order to construct the RHS vector of the weak form using `assembler::AssemblyValsCache` and the user-provided RHS function. In our simple example, the latter is just $10$. Note that the RHS function and boundary conditions are stored in `assembler::GenericProblem`.
 
 ### Matrix Assembly
 
-The next step is assembling the linear system, which requires the mass matrix, RHS, and stiffness matrix. All three 
+The virtual class `assembler::Assembler` provides the interface used to actually construct matrices. For our simple example, the relevant subclass is `assembler::LinearAssembler`, which is itself a virtual class that defines how to assemble global matrices. However, the function that defines how to evaluate local matrix entries according to the chosen bilinear form is a pure virtual function. In our example, the stiffness matrix is built using `assembler::Laplacian`, which is a subclass of `assembler::LinearAssembler` that defines the local matrix entries (ie grad u dot grad v). The `assembler::Mass` class is similar except for building the mass matrix. 
 
-`assembler::AssemblyValsCache`
-`assembler::ElementAssemblyValues`
-`assembler::AssemblyValues`
-
-`assembler::Assembler`
-`assembler::LinearAssembler`
-`assembler::RhsAssembler`
-`assembler::Mass`
-`assembler::Laplacian`
-`assembler::Problem`
-
-`State::assemble_rhs`
-`State::assemble_mass_mat`
-`State::build_stiffness_mat`
-
-Note that the stiffness matrix is built at a different point in time than the mass matrix and RHS. The latter are built 
+The relevant high-level functions for matrix assembly are `State::assemble_mass_mat` and `State::build_stiffness_mat`. Note that the stiffness matrix is built later on (in the `State::solve_linear` function).  
 
 ### Solver
 
-After constructing the basis and necessary matrices/vectors, the linear system can be solved. 
-`State::solve_linear`
-`State::init_linear_solve`
+After assembling the necessary matrices/vectors, the `State::solve_problem` function dispatches `State::init_linear_solve` then `State::solve_problem`, which solves the linear system. 
 
 ### Diagram
 
-![Setup diagram](img/example_setup.png)
+A diagram showing the relationships discussed above is included below. Each block represents its own class. `polyfem::State` is shown in orange and `basis::LagrangeBasis2d` in red. The basis storage classes are blue, the value storage classes purple, and the assembly-related classes green. Relationships between classes are shown with arrows. Bold arrows represent calling a member function and dashed ones represent inheritance.
+
+![Overall diagram](img/example_diagram.png)
 
 #### Technical Note: Matrix Caching
 
