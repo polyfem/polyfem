@@ -85,7 +85,7 @@ namespace polyfem::solver
 		const State &state_;
 		std::set<int> ids_;
 		Eigen::VectorXi active_nodes_;
-		Eigen::VectorXd node_area_scaling_;
+		// Eigen::VectorXd node_area_scaling_;
 		StiffnessMatrix active_nodes_mat_;
 		int dim_;
 

@@ -524,7 +524,7 @@ namespace polyfem::solver
 		}
 
 		active_nodes_.resize(active_nodes_set.size());
-		node_area_scaling_.resize(active_nodes_set.size());
+		// node_area_scaling_.resize(active_nodes_set.size());
 		active_nodes_mat_.resize(state_.collision_mesh.full_ndof(), active_nodes_set.size());
 		std::vector<Eigen::Triplet<double>> active_nodes_i;
 		int count = 0;
@@ -532,7 +532,7 @@ namespace polyfem::solver
 		{
 			active_nodes_i.emplace_back(node, count, 1.0);
 			active_nodes_(count) = node;
-			node_area_scaling_(count) = node_area_scaling_map[node];
+			// node_area_scaling_(count) = node_area_scaling_map[node];
 			count++;
 		}
 		active_nodes_mat_.setFromTriplets(active_nodes_i.begin(), active_nodes_i.end());
@@ -547,14 +547,34 @@ namespace polyfem::solver
 			matching_expr.push_back(ExpressionValue());
 			matching_expr[i].init(closed_form_forces[i]);
 		}
+
 		Eigen::MatrixXd V;
-		state_.get_vertices(V);
-		V = utils::unflatten(AdjointTools::map_primitive_to_node_order(state_, utils::flatten(V)), dim_);
+		int dim = state_.collision_mesh.dim();
+		V.setZero(active_nodes_.size() / dim, dim);
+		{
+			const Eigen::MatrixXd &rest_positions = state_.collision_mesh.rest_positions();
+			for (int i = 0; i < state_.collision_mesh.num_vertices(); ++i)
+			{
+				for (int j = 0; j < dim; ++j)
+				{
+					int dof_idx = state_.collision_mesh.to_full_vertex_id(i) * dim + j;
+					auto it = std::find(active_nodes_.begin(), active_nodes_.end(), dof_idx);
+					if (it != active_nodes_.end())
+					{
+						int idx = it - active_nodes_.begin();
+						V(idx / dim, idx % dim) = rest_positions(i, j);
+					}
+				}
+			}
+		}
+
+		// state_.get_vertices(V);
+		// V = utils::unflatten(AdjointTools::map_primitive_to_node_order(state_, utils::flatten(V)), dim_);
 		matched_forces_.resize(active_nodes_.size(), 1);
 		for (int i = 0; i < active_nodes_.size(); ++i)
 		{
-			int n = active_nodes_[i] / dim_;
-			int d = active_nodes_[i] % dim_;
+			int n = i / dim_;
+			int d = i % dim_;
 			if (state_.mesh->is_volume())
 				matched_forces_(i) = matching_expr[d](V(n, 0), V(n, 1), V(n, 2));
 			else
@@ -592,9 +612,9 @@ namespace polyfem::solver
 		if (state_.solve_data.friction_form && time_step > 0)
 			forces += state_.diff_cached.friction_constraint_set(time_step).compute_force(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness, epsv_ * state_.solve_data.time_integrator->dt());
 		forces = collision_mesh.to_full_dof(forces)(active_nodes_, Eigen::all);
-		forces = forces.array() / node_area_scaling_.array();
-		std::cout << "actual forces:\n"
-				  << utils::unflatten(forces, dim_) << std::endl;
+		// forces = forces.array() / node_area_scaling_.array();
+		// std::cout << "actual forces:\n"
+		// 		  << utils::unflatten(forces, dim_) << std::endl;
 		forces -= matched_forces_;
 
 		double sum = (forces.array() * forces.array()).sum();
@@ -617,7 +637,7 @@ namespace polyfem::solver
 		if (state_.solve_data.friction_form && time_step > 0)
 			forces += state_.diff_cached.friction_constraint_set(time_step).compute_force(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness, epsv_ * state_.solve_data.time_integrator->dt());
 		forces = collision_mesh.to_full_dof(forces)(active_nodes_, Eigen::all);
-		forces = forces.array() / node_area_scaling_.array() / node_area_scaling_.array();
+		// forces = forces.array() / node_area_scaling_.array() / node_area_scaling_.array();
 		forces -= matched_forces_;
 
 		StiffnessMatrix hessian(collision_mesh.ndof(), collision_mesh.ndof());
@@ -649,7 +669,7 @@ namespace polyfem::solver
 		if (state_.solve_data.friction_form && time_step > 0)
 			forces += state_.diff_cached.friction_constraint_set(time_step).compute_force(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness, epsv_ * state_.solve_data.time_integrator->dt());
 		forces = collision_mesh.to_full_dof(forces)(active_nodes_, Eigen::all);
-		forces = forces.array() / node_area_scaling_.array() / node_area_scaling_.array();
+		// forces = forces.array() / node_area_scaling_.array() / node_area_scaling_.array();
 		forces -= matched_forces_;
 
 		StiffnessMatrix hessian_prev(collision_mesh.ndof(), collision_mesh.ndof());
@@ -681,7 +701,7 @@ namespace polyfem::solver
 		if (state_.solve_data.friction_form && time_step > 0)
 			forces += state_.diff_cached.friction_constraint_set(time_step).compute_force(collision_mesh, collision_mesh.rest_positions(), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step - 1), collision_mesh.dim())), collision_mesh.vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh.dim())), dhat_, barrier_stiffness, epsv_ * state_.solve_data.time_integrator->dt());
 		forces = collision_mesh.to_full_dof(forces)(active_nodes_, Eigen::all);
-		forces = forces.array() / node_area_scaling_.array() / node_area_scaling_.array();
+		// forces = forces.array() / node_area_scaling_.array() / node_area_scaling_.array();
 		forces -= matched_forces_;
 
 		StiffnessMatrix shape_derivative(collision_mesh.ndof(), collision_mesh.ndof());
