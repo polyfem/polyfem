@@ -1,17 +1,19 @@
 #pragma once
 
-#include "Form.hpp"
+#include "LagrangianForm.hpp"
 
 namespace polyfem::solver
 {
-    class MacroStrainLagrangianForm : public Form
+	/// @brief Form of the lagrangian in augmented lagrangian for homogenization
+    class MacroStrainLagrangianForm : public LagrangianForm
     {
     public:
+		/// @brief Construct a new MacroStrainLagrangianForm object
         MacroStrainLagrangianForm(const Eigen::VectorXi &indices, const Eigen::VectorXd &values);
 
 		std::string name() const override { return "Macro_Lagrangian"; }
 
-		void update_lagrangian(const Eigen::VectorXd &x, const double k_al);
+		void update_lagrangian(const Eigen::VectorXd &x, const double k_al) override;
     protected:
 		/// @brief Compute the contact barrier potential value
 		/// @param x Current solution

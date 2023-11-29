@@ -6,7 +6,7 @@ namespace polyfem::solver
 {
 	ALSolver::ALSolver(
 		std::shared_ptr<NLSolver> nl_solver,
-		std::shared_ptr<BCLagrangianForm> lagr_form,
+		std::shared_ptr<LagrangianForm> lagr_form,
 		std::shared_ptr<BCPenaltyForm> pen_form,
 		const double initial_al_weight,
 		const double scaling,
