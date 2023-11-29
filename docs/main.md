@@ -124,13 +124,21 @@ Internally, PolyFEM keeps a `polyfem::State` object that contains the entire sta
 
 ### Basis Building
 
-After creating a `polyfem::State` object and loading the input mesh, the next step in the code is to build the basis. In PolyFEM, there are two separate notions of basis: the finite element (FE) basis and the geometric basis. (They are the same in the isoparametric case.) The former is used to construct the solution whereas the latter is used to represent the geometric mapping, which is especially useful to implement curved elements. Both the FE and geometric basis are stored as vectors of `basis::ElementBases`. Each `basis::ElementBases` object stores the basis functions for a given element as a vector of `basis::Basis`. Each `basis::Basis` stores functions representing a local basis function and its gradient. 
+After creating a `polyfem::State` object and loading the input mesh, the next step in the code is to build the basis. In PolyFEM, there are two separate notions of basis: the finite element (FE) basis and the geometric basis. (They are the same in the isoparametric case.) The former is used to construct the solution whereas the latter is used to represent the geometric mapping, which is especially useful to implement curved elements. 
+
+Both the FE and geometric basis are stored as vectors of `basis::ElementBases`. Each `basis::ElementBases` object stores the basis functions for a given element as a vector of `basis::Basis`. Each `basis::Basis` stores functions representing a local basis function and its gradient. 
 
 The high-level function that constructs the FE and geometric bases is `State::build_basis`. In our example, it uses `basis::LagrangeBasis2d` to create the vector of `basis::ElementBases`. 
 
 ### Basis/Gradient Evaluation and Storage
 
-In order to evaluate local basis functions and construct mass/stiffness matrices, PolyFEM makes use of a series of data storage classes. The lowest level of these classes is `assembler::AssemblyValues`, which stores the evaluation and gradient of a single local basis function on its element's quadrature points. A vector of `basis::Local2Global` objects is also stored. This is used to constrain nodes at the interface between different order elements (allowing for refinement). The `assembler::ElementAssemblyValues` class stores per element information, including quadrature points in real space, the geometric mapping's determinant, and a vector of `assembler::AssemblyValues` objects (one for each local basis function). Finallly, `assembler::AssemblyValsCache` is essentially a wrapper over `assembler::ElementAssemblyValues` that boosts performance by caching the per element information. Its data can be accessed through its `compute` function. These three classes are the core data storage objects used during matrix assembly. These classes use the previously constructed `basis::ElementBases` objects to evaluate basis functions and their gradients. 
+In order to evaluate local basis functions and construct mass/stiffness matrices, PolyFEM makes use of a series of data storage classes. The lowest level of these classes is `assembler::AssemblyValues`, which stores the evaluation and gradient of a single local basis function on its element's quadrature points. A vector of `basis::Local2Global` objects is also stored. This is used to constrain nodes at the interface between different order elements (allowing for refinement). 
+
+The `assembler::ElementAssemblyValues` class stores per element information, including quadrature points in real space, the geometric mapping's determinant, and a vector of `assembler::AssemblyValues` objects (one for each local basis function). 
+
+Finallly, `assembler::AssemblyValsCache` is stores a vector of `assembler::ElementAssemblyValues`, boosting performance by caching the per element information. Its data can be accessed through its `compute` function. 
+
+These three classes are the core data storage objects used during matrix assembly. These classes use the previously constructed `basis::ElementBases` objects to evaluate basis functions and their gradients. 
 
 ### RHS Assembly
 
@@ -160,7 +168,7 @@ In PolyFEM, sparse matrices are stored in [Compressed Sparse Column (CSC)](https
 
 Consider the first time a `polyfem::utils::SparseMatrixCache` object is filled with values. Each time `SparseMatrixCache::add_value` is called, the values and their global indices are placed in a temporary buffer. It is assumed that a given `polyfem::utils::SparseMatrixCache` always receives each entry from a given element in the same order.
 
-The first time the matrix is retrieved using `SparseMatrixCache::get_matrix`, the buffered values are written to the actual matrix. Then, the stored index information is used to create a mapping from the ordering of values received from a given element to the corresponding CSC-style index. In future iterations, instead of recomputing the matrix structure, `polyfem::utils::SparseMatrixCache` uses this cached index to save the given value directly to the CSC-style values array at the correct position. 
+The first time the matrix is retrieved using `SparseMatrixCache::get_matrix`, `SparseMatrixCache::prune` is called, which writes the buffered values to the actual matrix. Then, the stored index information is used to create a mapping from the ordering of values received from a given element to the corresponding CSC-style index. In future iterations, instead of recomputing the matrix structure, `polyfem::utils::SparseMatrixCache` uses this cached index to save the given value directly to the CSC-style values array at the correct position. 
 
 ## Building PolyFEM as a stand-alone executable
 
