@@ -215,7 +215,7 @@ namespace polyfem::solver
 					if (node_id_to_body_id_(g.index) < 0)
 						node_id_to_body_id_(g.index) = id;
 					else if (node_id_to_body_id_(g.index) != id)
-						log_and_throw_error("Same node on different bodies!");
+						log_and_throw_adjoint_error("Same node on different bodies!");
 				}
 			}
 		}
@@ -319,7 +319,7 @@ namespace polyfem::solver
 	SliceMap::SliceMap(const int from, const int to, const int total) : from_(from), to_(to), total_(total)
 	{
 		if (to_ - from_ < 0)
-			log_and_throw_error("Invalid Slice Map input!");
+			log_and_throw_adjoint_error("Invalid Slice Map input!");
 	}
 
 	Eigen::VectorXd SliceMap::inverse_eval(const Eigen::VectorXd &y)
@@ -329,7 +329,7 @@ namespace polyfem::solver
 		else
 		{
 			if (y.size() != size(0))
-				log_and_throw_error("Inverse eval on SliceMap is inconsistent in size!");
+				log_and_throw_adjoint_error("Inverse eval on SliceMap is inconsistent in size!");
 			Eigen::VectorXd y_;
 			y_.setZero(total_);
 			y_.segment(from_, to_ - from_) = y;
@@ -349,10 +349,10 @@ namespace polyfem::solver
 		return grad_full;
 	}
 
-	InsertConstantMap::InsertConstantMap(const int size, const double val, const int start_index): start_index_(start_index)
+	InsertConstantMap::InsertConstantMap(const int size, const double val, const int start_index) : start_index_(start_index)
 	{
 		if (size <= 0)
-			log_and_throw_error("Invalid InsertConstantMap input!");
+			log_and_throw_adjoint_error("Invalid InsertConstantMap input!");
 		values_.setConstant(size, val);
 	}
 

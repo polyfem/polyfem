@@ -89,11 +89,11 @@ namespace polyfem::solver
 		const int dim = vertices.cols();
 
 		if (x.size() != vertices.size())
-			log_and_throw_error("Inconsistent input mesh in tiling!");
+			log_and_throw_adjoint_error("Inconsistent input mesh in tiling!");
 		else if ((x - utils::flatten(vertices)).norm() > 1e-6)
 		{
 			logger().error("Diff in input mesh and x is {}", (x - utils::flatten(vertices)).norm());
-			log_and_throw_error("Inconsistent input mesh in tiling!");
+			log_and_throw_adjoint_error("Inconsistent input mesh in tiling!");
 		}
 		vertices = utils::unflatten(x, vertices.cols());
 
@@ -118,7 +118,7 @@ namespace polyfem::solver
 		const int dim = vertices.cols();
 
 		if (grad.size() != vertices.size())
-			log_and_throw_error("Inconsistent input mesh in tiling jacobian!");
+			log_and_throw_adjoint_error("Inconsistent input mesh in tiling jacobian!");
 
 		Eigen::VectorXd reduced_grad;
 		reduced_grad.setZero(x.size());
@@ -168,7 +168,7 @@ namespace polyfem::solver
 		}
 		else
 		{
-			log_and_throw_error("Not implemented!");
+			log_and_throw_adjoint_error("Not implemented!");
 		}
 
 		// clean duplicated vertices
@@ -403,7 +403,7 @@ namespace polyfem::solver
 		if ((y - eval(x)).norm() > 1e-5)
 		{
 			std::cout << (y - eval(x)).transpose() << "\n";
-			log_and_throw_error("Bug in periodic mesh!");
+			log_and_throw_adjoint_error("Bug in periodic mesh!");
 		}
 
 		return x;

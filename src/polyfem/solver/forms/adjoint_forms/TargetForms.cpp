@@ -149,7 +149,7 @@ namespace polyfem::solver
 				j.set_dj_du(djdu_func);
 			}
 			else
-				log_and_throw_error("Only constant target displacement is supported!");
+				log_and_throw_adjoint_error("Only constant target displacement is supported!");
 		}
 
 		return j;

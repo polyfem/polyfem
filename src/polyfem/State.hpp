@@ -656,7 +656,7 @@ namespace polyfem
 				else if (type == 1)
 					return diff_cached.adjoint_mat().middleCols(diff_cached.adjoint_mat().cols() / 2, diff_cached.adjoint_mat().cols() / 2);
 				else
-					log_and_throw_error("Invalid adjoint type!");
+					log_and_throw_adjoint_error("Invalid adjoint type!");
 			}
 
 			return diff_cached.adjoint_mat();

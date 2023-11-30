@@ -96,7 +96,7 @@ namespace polyfem::solver
 				if (formulation == "NeoHookean")
 					val(q) = mu(q) / 2 * ((def_grad.transpose() * def_grad).trace() - dim - 2 * log_det_j) + lambda(q) / 2 * log_det_j * log_det_j;
 				else
-					log_and_throw_error("Unknown formulation!");
+					log_and_throw_adjoint_error("Unknown formulation!");
 			}
 		});
 
@@ -117,7 +117,7 @@ namespace polyfem::solver
 					stress = mu(q) * (def_grad - FmT) + lambda(q) * std::log(def_grad.determinant()) * FmT;
 				}
 				else
-					log_and_throw_error("Unknown formulation!");
+					log_and_throw_adjoint_error("Unknown formulation!");
 				val.row(q) = utils::flatten(stress);
 			}
 		});
@@ -139,7 +139,7 @@ namespace polyfem::solver
 
 				Eigen::VectorXd term;
 				if (param_type == ParameterType::Material)
-					log_and_throw_error("Doesn't support stress derivative wrt. material!");
+					log_and_throw_adjoint_error("Doesn't support stress derivative wrt. material!");
 
 				if (term.size() > 0)
 					gradv += param_map->apply_parametrization_jacobian(term, x);
@@ -218,7 +218,7 @@ namespace polyfem::solver
 
 				Eigen::VectorXd term;
 				if (param_type == ParameterType::Material)
-					log_and_throw_error("Doesn't support stress derivative wrt. material!");
+					log_and_throw_adjoint_error("Doesn't support stress derivative wrt. material!");
 
 				if (term.size() > 0)
 					gradv += param_map->apply_parametrization_jacobian(term, x);
@@ -362,7 +362,7 @@ namespace polyfem::solver
 		j.set_dj_du([dim](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), u.cols());
 
-			log_and_throw_error("Not implemented!");
+			log_and_throw_adjoint_error("Not implemented!");
 		});
 
 		return j;
@@ -389,7 +389,7 @@ namespace polyfem::solver
 		j.set_dj_du([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), u.cols());
 
-			log_and_throw_error("Not implemented!");
+			log_and_throw_adjoint_error("Not implemented!");
 		});
 
 		return j;
@@ -410,7 +410,7 @@ namespace polyfem::solver
 
 				Eigen::VectorXd term;
 				if (param_type == ParameterType::Material)
-					log_and_throw_error("Doesn't support stress derivative wrt. material!");
+					log_and_throw_adjoint_error("Doesn't support stress derivative wrt. material!");
 
 				if (term.size() > 0)
 					gradv += param_map->apply_parametrization_jacobian(term, x);
@@ -443,7 +443,7 @@ namespace polyfem::solver
 					stress = mu(q) * (def_grad - FmT) + lambda(q) * std::log(def_grad.determinant()) * FmT;
 				}
 				else
-					log_and_throw_error("Unknown formulation!");
+					log_and_throw_adjoint_error("Unknown formulation!");
 				val(q) = stress(dimensions[0], dimensions[1]);
 			}
 		});
@@ -511,7 +511,7 @@ namespace polyfem::solver
 
 				Eigen::VectorXd term;
 				if (param_type == ParameterType::Material)
-					log_and_throw_error("Doesn't support stress derivative wrt. material!");
+					log_and_throw_adjoint_error("Doesn't support stress derivative wrt. material!");
 
 				if (term.size() > 0)
 					gradv += param_map->apply_parametrization_jacobian(term, x);

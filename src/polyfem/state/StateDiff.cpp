@@ -122,7 +122,7 @@ namespace polyfem
 					vel = euler_integrator->v_prev();
 				}
 				else
-					log_and_throw_error("Differentiable code doesn't support this time integrator!");
+					log_and_throw_adjoint_error("Differentiable code doesn't support this time integrator!");
 
 				acc.setZero(ndof(), 1);
 			}
@@ -146,7 +146,7 @@ namespace polyfem
 		if (problem->is_time_dependent())
 		{
 			if (assembler->is_linear() && !is_contact_enabled())
-				log_and_throw_error("Transient linear formulation is not yet differentiable!");
+				log_and_throw_adjoint_error("Transient linear formulation is not yet differentiable!");
 
 			StiffnessMatrix tmp_hess;
 			solve_data.nl_problem->set_project_to_psd(false);
@@ -385,7 +385,7 @@ namespace polyfem
 		else if (args["time"]["integrator"]["type"] == "BDF")
 			bdf_order = args["time"]["integrator"]["steps"].get<int>();
 		else
-			log_and_throw_error("Integrator type not supported for differentiability.");
+			log_and_throw_adjoint_error("Integrator type not supported for differentiability.");
 
 		assert(adjoint_rhs.cols() == time_steps + 1);
 

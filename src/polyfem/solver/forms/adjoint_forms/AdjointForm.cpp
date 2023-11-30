@@ -27,7 +27,7 @@ namespace polyfem::solver
 
 	void AdjointForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
-		log_and_throw_error("Not implemented");
+		log_and_throw_adjoint_error("Not implemented");
 	}
 
 	Eigen::MatrixXd AdjointForm::compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const
@@ -125,11 +125,11 @@ namespace polyfem::solver
 	}
 	Eigen::VectorXd MaxStressForm::compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
 	{
-		log_and_throw_error("MaxStressForm is not differentiable!");
+		log_and_throw_adjoint_error("MaxStressForm is not differentiable!");
 		return Eigen::VectorXd();
 	}
 	void MaxStressForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		log_and_throw_error("MaxStressForm is not differentiable!");
+		log_and_throw_adjoint_error("MaxStressForm is not differentiable!");
 	}
 } // namespace polyfem::solver

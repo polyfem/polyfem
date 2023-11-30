@@ -35,7 +35,7 @@ namespace polyfem::solver
 						continue;
 
 					if (geometry["type"] != "mesh")
-						log_and_throw_error(
+						log_and_throw_adjoint_error(
 							fmt::format("Invalid geometry type \"{}\" for FEM mesh!", geometry["type"]));
 
 					if (i == mesh_id_)

@@ -226,7 +226,7 @@ int optimization_simulation(const CLI::App &command_line,
 		{
 			json cur_args;
 			if (!load_json(args["path"], cur_args))
-				log_and_throw_error("Can't find json for State {}", i);
+				log_and_throw_adjoint_error("Can't find json for State {}", i);
 
 			{
 				auto tmp = R"({

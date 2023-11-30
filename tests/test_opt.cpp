@@ -111,7 +111,7 @@ TEST_CASE("material-opt", tagsopt)
 		const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
 		json opt_args;
 		if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
-			log_and_throw_error("Failed to load optimization json file!");
+			log_and_throw_adjoint_error("Failed to load optimization json file!");
 
 		opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
@@ -128,7 +128,7 @@ TEST_CASE("material-opt", tagsopt)
 			{
 				json cur_args;
 				if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-					log_and_throw_error("Can't find json for State {}", i);
+					log_and_throw_adjoint_error("Can't find json for State {}", i);
 
 				states[i++] = AdjointOptUtils::create_state(cur_args);
 			}
@@ -203,7 +203,7 @@ TEST_CASE("topology-opt", "[optimization]")
 	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
 	json opt_args;
 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
-		log_and_throw_error("Failed to load optimization json file!");
+		log_and_throw_adjoint_error("Failed to load optimization json file!");
 
 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
@@ -222,7 +222,7 @@ TEST_CASE("topology-opt", "[optimization]")
 		{
 			json cur_args;
 			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-				log_and_throw_error("Can't find json for State {}", i);
+				log_and_throw_adjoint_error("Can't find json for State {}", i);
 
 			states[i++] = AdjointOptUtils::create_state(cur_args);
 		}
@@ -291,7 +291,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + "AMIPS-debug" + "/";
 	json opt_args;
 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
-		log_and_throw_error("Failed to load optimization json file!");
+		log_and_throw_adjoint_error("Failed to load optimization json file!");
 
 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
@@ -305,7 +305,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 	{
 		json cur_args;
 		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-			log_and_throw_error("Can't find json for State {}", i);
+			log_and_throw_adjoint_error("Can't find json for State {}", i);
 
 		states[i++] = AdjointOptUtils::create_state(cur_args);
 	}
@@ -346,7 +346,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + "shape-stress-opt" + "/";
 	json opt_args;
 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
-		log_and_throw_error("Failed to load optimization json file!");
+		log_and_throw_adjoint_error("Failed to load optimization json file!");
 
 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
@@ -360,7 +360,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 	{
 		json cur_args;
 		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-			log_and_throw_error("Can't find json for State {}", i);
+			log_and_throw_adjoint_error("Can't find json for State {}", i);
 
 		states[i++] = AdjointOptUtils::create_state(cur_args);
 	}
@@ -438,7 +438,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + "shape-trajectory-surface-opt-bspline" + "/";
 // 	json opt_args;
 // 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
-// 		log_and_throw_error("Failed to load optimization json file!");
+// 		log_and_throw_adjoint_error("Failed to load optimization json file!");
 
 // 	for (auto &state_arg : opt_args["states"])
 // 		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
@@ -450,7 +450,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	{
 // 		json cur_args;
 // 		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-// 			log_and_throw_error("Can't find json for State {}", i);
+// 			log_and_throw_adjoint_error("Can't find json for State {}", i);
 
 // 		states[i++] = AdjointOptUtils::create_state(cur_args);
 // 	}
@@ -535,7 +535,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/../optimizations/") + "shape-trajectory-surface-opt-bspline" + "/";
 // 	json opt_args;
 // 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
-// 		log_and_throw_error("Failed to load optimization json file!");
+// 		log_and_throw_adjoint_error("Failed to load optimization json file!");
 
 // 	for (auto &state_arg : opt_args["states"])
 // 		state_arg["path"] = resolve_output_path(root_folder, state_arg["path"]);
@@ -547,7 +547,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	{
 // 		json cur_args;
 // 		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-// 			log_and_throw_error("Can't find json for State {}", i);
+// 			log_and_throw_adjoint_error("Can't find json for State {}", i);
 
 // 		states[i++] = AdjointOptUtils::create_state(cur_args);
 // 	}
@@ -662,7 +662,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
 // 	json opt_args;
 // 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
-// 		log_and_throw_error("Failed to load optimization json file!");
+// 		log_and_throw_adjoint_error("Failed to load optimization json file!");
 
 // 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
@@ -681,7 +681,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 		{
 // 			json cur_args;
 // 			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-// 				log_and_throw_error("Can't find json for State {}", i);
+// 				log_and_throw_adjoint_error("Can't find json for State {}", i);
 
 // 			states[i++] = AdjointOptUtils::create_state(cur_args);
 // 		}
@@ -835,7 +835,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
 // 	json opt_args;
 // 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
-// 		log_and_throw_error("Failed to load optimization json file!");
+// 		log_and_throw_adjoint_error("Failed to load optimization json file!");
 
 // 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
@@ -854,7 +854,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 		{
 // 			json cur_args;
 // 			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-// 				log_and_throw_error("Can't find json for State {}", i);
+// 				log_and_throw_adjoint_error("Can't find json for State {}", i);
 
 // 			states[i++] = AdjointOptUtils::create_state(cur_args);
 // 		}
@@ -906,7 +906,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
 // 	json opt_args;
 // 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
-// 		log_and_throw_error("Failed to load optimization json file!");
+// 		log_and_throw_adjoint_error("Failed to load optimization json file!");
 
 // 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
@@ -927,7 +927,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 		{
 // 			json cur_args;
 // 			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-// 				log_and_throw_error("Can't find json for State {}", i);
+// 				log_and_throw_adjoint_error("Can't find json for State {}", i);
 
 // 			states[i++] = AdjointOptUtils::create_state(cur_args);
 // 		}
@@ -979,7 +979,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
 // 	json opt_args;
 // 	if (!load_json(resolve_output_path(root_folder, "run.json"), opt_args))
-// 		log_and_throw_error("Failed to load optimization json file!");
+// 		log_and_throw_adjoint_error("Failed to load optimization json file!");
 
 // 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
@@ -998,7 +998,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 		{
 // 			json cur_args;
 // 			if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
-// 				log_and_throw_error("Can't find json for State {}", i);
+// 				log_and_throw_adjoint_error("Can't find json for State {}", i);
 
 // 			states[i++] = AdjointOptUtils::create_state(cur_args);
 // 		}

@@ -30,10 +30,10 @@ namespace polyfem::solver
 		{
 			for (int i : args["solver"]["advanced"]["solve_in_order"])
 				solve_in_order.push_back(i);
-			
+
 			if (solve_in_parallel)
 				logger().error("Cannot solve both in order and in parallel, ignoring the order!");
-			
+
 			assert(solve_in_order.size() == all_states.size());
 		}
 		else
@@ -66,7 +66,7 @@ namespace polyfem::solver
 
 	void AdjointNLProblem::hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 	{
-		log_and_throw_error("Hessian not supported!");
+		log_and_throw_adjoint_error("Hessian not supported!");
 	}
 
 	double AdjointNLProblem::value(const Eigen::VectorXd &x)
@@ -222,7 +222,7 @@ namespace polyfem::solver
 	{
 		const auto cur_log_level = logger().level();
 		all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
-		
+
 		if (solve_in_parallel)
 		{
 			logger().info("Run simulations in parallel...");
@@ -266,7 +266,7 @@ namespace polyfem::solver
 	{
 		if (stopping_conditions_.size() == 0)
 			return false;
-		
+
 		for (auto &obj : stopping_conditions_)
 		{
 			obj->solution_changed(x);
