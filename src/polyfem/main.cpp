@@ -215,6 +215,11 @@ int optimization_simulation(const CLI::App &command_line,
 {
 	// TODO fix gobal stuff threads log level etc
 
+	json tmp = json::object();
+	if (has_arg(command_line, "log_level"))
+		tmp["/output/log/level"_json_pointer] = int(log_level);
+	opt_args.merge_patch(tmp);
+
 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, is_strict);
 
 	/* states */
@@ -237,14 +242,14 @@ int optimization_simulation(const CLI::App &command_line,
 						}
 					})"_json;
 
-				tmp["output"]["log"]["level"] = int(log_level);
-
 				cur_args.merge_patch(tmp);
 			}
 
 			states[i++] = AdjointOptUtils::create_state(cur_args, max_threads);
 		}
 	}
+
+	adjoint_logger().set_level(opt_args["output"]["log"]["level"]);
 
 	/* DOF */
 	int ndof = 0;

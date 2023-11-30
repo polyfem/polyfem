@@ -166,7 +166,7 @@ namespace polyfem::solver
 			else if (type == "parametrized_product")
 			{
 				if (args["parametrization"].contains("parameter_index"))
-					log_and_throw_error("Parametrizations in parametrized forms don't support parameter_index!");
+					log_and_throw_adjoint_error("Parametrizations in parametrized forms don't support parameter_index!");
 
 				std::vector<std::shared_ptr<Parametrization>> map_list;
 				for (const auto &arg : args["parametrization"])
@@ -176,7 +176,7 @@ namespace polyfem::solver
 				obj = std::make_shared<ParametrizedProductForm>(composite_map);
 			}
 			else
-				log_and_throw_error("Objective not implemented!");
+				log_and_throw_adjoint_error("Objective not implemented!");
 
 			obj->set_weight(args["weight"]);
 			if (args["print_energy"].get<std::string>() != "")
@@ -229,7 +229,7 @@ namespace polyfem::solver
 				map = std::make_shared<SliceMap>(from, to, last);
 			}
 			else
-				log_and_throw_error("Incorrect spec for SliceMap!");
+				log_and_throw_adjoint_error("Incorrect spec for SliceMap!");
 		}
 		else if (type == "exp")
 		{
@@ -284,7 +284,7 @@ namespace polyfem::solver
 			map = std::make_shared<MeshAffine>(A, b, args["input_path"], args["output_path"]);
 		}
 		else
-			log_and_throw_error("Unkown parametrization!");
+			log_and_throw_adjoint_error("Unkown parametrization!");
 
 		return map;
 	}
@@ -345,7 +345,7 @@ namespace polyfem::solver
 			else if (args["composite_map_indices"].is_array())
 				nlohmann::adl_serializer<Eigen::VectorXi>::from_json(args["composite_map_indices"], output_indexing);
 			else
-				log_and_throw_error("Invalid composite map indices type!");
+				log_and_throw_adjoint_error("Invalid composite map indices type!");
 		}
 
 		if (type == "shape")
@@ -566,11 +566,11 @@ namespace polyfem::solver
 			}
 			else
 			{
-				log_and_throw_error("Incorrect specification for parameters.");
+				log_and_throw_adjoint_error("Incorrect specification for parameters.");
 			}
 		}
 		else
-			log_and_throw_error("Incorrect specification for parameters.");
+			log_and_throw_adjoint_error("Incorrect specification for parameters.");
 
 		return -1;
 	}

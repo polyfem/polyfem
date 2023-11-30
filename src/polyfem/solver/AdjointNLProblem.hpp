@@ -52,7 +52,6 @@ namespace polyfem::solver
 		Eigen::VectorXd cur_grad;
 		int iter = 0;
 
-		const int solve_log_level;
 		const int save_freq;
 
 		const bool solve_in_parallel;

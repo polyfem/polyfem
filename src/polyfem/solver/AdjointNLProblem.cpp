@@ -18,7 +18,6 @@ namespace polyfem::solver
 		  composite_form_(composite_form),
 		  variables_to_simulation_(variables_to_simulation),
 		  all_states_(all_states),
-		  solve_log_level(args["output"]["solve_log_level"]),
 		  save_freq(args["output"]["save_frequency"]),
 		  solve_in_parallel(args["solver"]["advanced"]["solve_in_parallel"]),
 		  better_initial_guess(args["solver"]["advanced"]["better_initial_guess"])
@@ -206,7 +205,6 @@ namespace polyfem::solver
 		if (need_rebuild_basis)
 		{
 			const auto cur_log_level = logger().level();
-			all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
 			for (const auto &state : all_states_)
 				state->build_basis();
 			all_states_[0]->set_log_level(cur_log_level);
@@ -221,7 +219,6 @@ namespace polyfem::solver
 	void AdjointNLProblem::solve_pde()
 	{
 		const auto cur_log_level = logger().level();
-		all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
 
 		if (solve_in_parallel)
 		{

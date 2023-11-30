@@ -35,7 +35,7 @@ namespace polyfem
 	///
 	/// @param[in]  logger  New logger object to be used by adjoint Polyfem. Ownership is shared with Polyfem.
 	///
-	void set_adjont_logger(std::shared_ptr<spdlog::logger> logger);
+	void set_adjoint_logger(std::shared_ptr<spdlog::logger> logger);
 
 	[[noreturn]] void log_and_throw_error(const std::string &msg);
 	[[noreturn]] void log_and_throw_adjoint_error(const std::string &msg);

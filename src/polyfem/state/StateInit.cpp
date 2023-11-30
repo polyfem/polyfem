@@ -156,9 +156,12 @@ namespace polyfem
 		init_logger(sinks, log_level);
 	}
 
-	void State::init_logger(const std::vector<spdlog::sink_ptr> &sinks, const spdlog::level::level_enum log_level)
+	void State::init_logger(
+		const std::vector<spdlog::sink_ptr> &sinks,
+		const spdlog::level::level_enum log_level)
 	{
 		set_logger(std::make_shared<spdlog::logger>("polyfem", sinks.begin(), sinks.end()));
+		set_adjoint_logger(std::make_shared<spdlog::logger>("adjoint-polyfem", sinks.begin(), sinks.end()));
 
 		GEO::Logger *geo_logger = GEO::Logger::instance();
 		geo_logger->unregister_all_clients();
@@ -173,6 +176,7 @@ namespace polyfem
 
 		// Set the logger at the lowest level, so all messages are passed to the sinks
 		logger().set_level(spdlog::level::trace);
+		adjoint_logger().set_level(spdlog::level::trace);
 		ipc::logger().set_level(spdlog::level::trace);
 #ifdef POLYFEM_WITH_REMESHING
 		wmtk::logger().set_level(spdlog::level::trace);
