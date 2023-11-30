@@ -16,7 +16,7 @@ namespace polyfem
 		}
 
 		// Custom logger instance defined by the user, if any
-		std::shared_ptr<spdlog::logger> &get_shared_adjont_logger()
+		std::shared_ptr<spdlog::logger> &get_shared_adjoint_logger()
 		{
 			static std::shared_ptr<spdlog::logger> logger;
 			return logger;
