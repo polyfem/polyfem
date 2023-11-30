@@ -1,16 +1,17 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/solver/DiffCache.hpp>
 
 namespace polyfem
 {
 	class State;
 }
 
-namespace cppoptlib
+namespace polysolve::nonlinear
 {
-	template <typename ProblemType>
-	class NonlinearSolver;
+	class Solver;
 }
 
 namespace polyfem::solver
@@ -24,9 +25,13 @@ namespace polyfem::solver
 	{
 		static json apply_opt_json_spec(const json &input_args, bool strict_validation);
 
-		static std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> make_nl_solver(const json &solver_params, const double characteristic_length);
+		static std::shared_ptr<polysolve::nonlinear::Solver> make_nl_solver(const json &solver_params, const json &linear_solver_params, const double characteristic_length);
 
-		static std::shared_ptr<State> create_state(const json &args, const size_t max_threads = 32);
+		static std::shared_ptr<State> create_state(const json &args, CacheLevel level = CacheLevel::Derivatives, const size_t max_threads = 32);
+
+		static std::vector<std::shared_ptr<State>> create_states(const json &state_args, const CacheLevel &level, const spdlog::level::level_enum &log_level, const size_t max_threads);
+
+		static Eigen::VectorXd inverse_evaluation(const json &args, const int ndof, const std::vector<int> &variable_sizes, std::vector<std::shared_ptr<VariableToSimulation>> &var2sim);
 
 		static void solve_pde(State &state);
 

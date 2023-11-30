@@ -16,7 +16,6 @@
 #include <polyfem/solver/forms/InertiaForm.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
-#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
 
 #include <polyfem/time_integrator/BDF.hpp>
 

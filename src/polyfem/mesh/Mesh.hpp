@@ -96,6 +96,10 @@ namespace polyfem
 			/// @return pointer to the mesh
 			static std::unique_ptr<Mesh> create(const int dim, const bool non_conforming = false);
 
+			/// @brief Create a copy of the mesh
+			/// @return pointer to the new copy mesh
+			virtual std::unique_ptr<Mesh> copy() const = 0;
+
 		protected:
 			///
 			/// @brief Construct a new Mesh object

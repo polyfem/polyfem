@@ -6,7 +6,7 @@
 
 #include <polyfem/assembler/AssemblerUtils.hpp>
 
-#include <polysolve/LinearSolver.hpp>
+#include <polysolve/linear/Solver.hpp>
 #include <polyfem/mesh/MeshNodes.hpp>
 
 #include <polyfem/utils/Types.hpp>

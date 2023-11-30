@@ -20,6 +20,7 @@ namespace polyfem
 		const std::string &mass() const { return mass_; }
 		const std::string &time() const { return time_; }
 		double characteristic_length() const { return characteristic_length_; }
+		double &characteristic_length() { return characteristic_length_; }
 
 		std::string stress() const { return fmt::format("{}/({}*{}^2)", mass_, length_, time_); }
 		std::string density() const { return fmt::format("{}/{}^3", mass_, length_); }

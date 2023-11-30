@@ -14,6 +14,12 @@ namespace polyfem
 	/// @return     A const reference to Polyfem's logger object.
 	///
 	spdlog::logger &logger();
+	///
+	/// Retrieves the current logger for adjoint.
+	///
+	/// @return     A const reference to Polyfem's logger object.
+	///
+	spdlog::logger &adjoint_logger();
 
 	///
 	/// Setup a logger object to be used by Polyfem. Calling this function with other Polyfem function

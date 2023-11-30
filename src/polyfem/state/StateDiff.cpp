@@ -5,7 +5,7 @@
 #include <polyfem/time_integrator/ImplicitEuler.hpp>
 
 #include <polyfem/utils/BoundarySampler.hpp>
-#include <polysolve/FEMSolver.hpp>
+#include <polysolve/linear/FEMSolver.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/io/Evaluator.hpp>
@@ -100,11 +100,23 @@ namespace polyfem
 		StiffnessMatrix gradu_h(sol.size(), sol.size());
 		if (current_step == 0)
 			diff_cached.init(ndof(), problem->is_time_dependent() ? args["time"]["time_steps"].get<int>() : 0);
-		if (!problem->is_time_dependent() || current_step > 0)
-			compute_force_jacobian(sol, disp_grad, gradu_h);
 
-		auto cur_contact_set = solve_data.contact_form ? solve_data.contact_form->get_constraint_set() : ipc::CollisionConstraints();
-		auto cur_friction_set = solve_data.friction_form ? solve_data.friction_form->get_friction_constraint_set() : ipc::FrictionConstraints();
+		ipc::CollisionConstraints cur_contact_set;
+		ipc::FrictionConstraints cur_friction_set;
+
+		if (optimization_enabled == solver::CacheLevel::Derivatives)
+		{
+			if (!problem->is_time_dependent() || current_step > 0)
+				compute_force_jacobian(sol, disp_grad, gradu_h);
+
+			cur_contact_set = solve_data.contact_form ? solve_data.contact_form->get_constraint_set() : ipc::CollisionConstraints();
+			cur_friction_set = solve_data.friction_form ? solve_data.friction_form->get_friction_constraint_set() : ipc::FrictionConstraints();
+		}
+		else
+		{
+			cur_contact_set = ipc::CollisionConstraints();
+			cur_friction_set = ipc::FrictionConstraints();
+		}
 
 		if (problem->is_time_dependent())
 		{
@@ -146,7 +158,7 @@ namespace polyfem
 		if (problem->is_time_dependent())
 		{
 			if (assembler->is_linear() && !is_contact_enabled())
-				log_and_throw_error("Transient linear formulation is not yet differentiable!");
+				log_and_throw_error("Differentiable transient linear solve is not supported!");
 
 			StiffnessMatrix tmp_hess;
 			solve_data.nl_problem->set_project_to_psd(false);
@@ -157,7 +169,7 @@ namespace polyfem
 		}
 		else // static formulation
 		{
-			if (assembler->is_linear() && !is_contact_enabled()) // && disp_grad_.size() == 0)
+			if (assembler->is_linear() && !is_contact_enabled())
 			{
 				hessian.setZero();
 				StiffnessMatrix stiffness;
@@ -331,11 +343,10 @@ namespace polyfem
 		}
 		else
 		{
-			auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["adjoint_solver"], args["solver"]["linear"]["precond"]);
-			solver->setParameters(args["solver"]["linear"]);
+			auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], adjoint_logger());
 
 			StiffnessMatrix A = diff_cached.gradu_h(0);
-			solver->analyzePattern(A, A.rows());
+			solver->analyze_pattern(A, A.rows());
 			solver->factorize(A);
 
 			if (true) // (disp_grad_.size() == 0)
@@ -439,8 +450,7 @@ namespace polyfem
 					Eigen::VectorXd b_ = rhs_;
 					b_(boundary_nodes).setZero();
 
-					auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["adjoint_solver"], args["solver"]["linear"]["precond"]);
-					solver->setParameters(args["solver"]["linear"]);
+					auto solver = polysolve::linear::Solver::create(args["solver"]["adjoint_linear"], adjoint_logger());
 
 					Eigen::VectorXd x;
 					dirichlet_solve(*solver, A, b_, boundary_nodes, x, A.rows(), "", false, false, false);

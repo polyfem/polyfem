@@ -3,8 +3,6 @@ set(SOURCES
 	Parametrization.cpp
 	Parametrizations.hpp
 	Parametrizations.cpp
-	SDFParametrizations.hpp
-	SDFParametrizations.cpp
 	NodeCompositeParametrizations.hpp
 	NodeCompositeParametrizations.cpp
 )

@@ -239,8 +239,6 @@ namespace polyfem::mesh
 				dirichlet_nodes_position, neumann_nodes_position, n_bases(),
 				dim(), bases, /*geom_bases=*/bases, mass_assembly_vals_cache,
 				*state.problem, state.args["space"]["advanced"]["bc_method"],
-				state.args["solver"]["linear"]["solver"],
-				state.args["solver"]["linear"]["precond"],
 				rhs_solver_params);
 
 			solve_data.rhs_assembler->assemble(mass_matrix_assembler->density(), rhs);
