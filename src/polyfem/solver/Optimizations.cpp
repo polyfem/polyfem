@@ -522,7 +522,7 @@ namespace polyfem::solver
 				throw std::runtime_error("Invald spec file");
 			}
 
-			jse.include_directories.push_back(POLYFEM_OPT_INPUT_SPEC);
+			jse.include_directories.push_back(POLYFEM_JSON_SPEC_DIR);
 			jse.include_directories.push_back(POLYSOLVE_JSON_SPEC_DIR);
 			rules = jse.inject_include(rules);
 
