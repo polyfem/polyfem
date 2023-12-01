@@ -149,7 +149,7 @@ namespace polyfem::solver
 				j.set_dj_du(djdu_func);
 			}
 			else
-				log_and_throw_adjoint_error("Only constant target displacement is supported!");
+				log_and_throw_adjoint_error("[{}] Only constant target displacement is supported!", name());
 		}
 
 		return j;
@@ -188,9 +188,9 @@ namespace polyfem::solver
 		}
 
 		if (count != ref_count)
-			logger().error("Number of interested elements in the reference and optimization examples do not match! {} {}", count, ref_count);
+			adjoint_logger().error("[{}] Number of interested elements in the reference and optimization examples do not match! {} {}", name(), count, ref_count);
 		else
-			logger().trace("Found {} matching elements.", count);
+			adjoint_logger().trace("[{}] Found {} matching elements.", name(), count);
 
 		for (const auto &kv : interested_body_id_to_e)
 		{

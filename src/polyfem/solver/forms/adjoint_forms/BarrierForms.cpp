@@ -123,7 +123,7 @@ namespace polyfem::solver
     DeformedCollisionBarrierForm::DeformedCollisionBarrierForm(const std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulation, const State &state, const double dhat) : AdjointForm(variable_to_simulation), state_(state), dhat_(dhat)
     {
         if (state_.n_bases != state_.n_geom_bases)
-            log_and_throw_error("Should use linear FE basis!");
+            log_and_throw_error("[{}] Should use linear FE basis!", name());
 
         State::build_collision_mesh(
             *state_.mesh, state_.n_geom_bases, state_.geom_bases(), state_.geom_bases(),

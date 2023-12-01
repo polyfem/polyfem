@@ -97,7 +97,7 @@ namespace polyfem::solver
 
 		const std::string formulation = state_.formulation();
 
-		j.set_j([formulation](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
+		j.set_j([formulation,this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), 1);
 			const int dim = u.cols();
 			Eigen::MatrixXd grad_u_q;
@@ -109,11 +109,11 @@ namespace polyfem::solver
 				if (formulation == "NeoHookean")
 					val(q) = mu(q) / 2 * ((def_grad.transpose() * def_grad).trace() - dim - 2 * log_det_j) + lambda(q) / 2 * log_det_j * log_det_j;
 				else
-					log_and_throw_adjoint_error("Unknown formulation!");
+					log_and_throw_adjoint_error("[{}] Unknown formulation {}!", name(), formulation);
 			}
 		});
 
-		j.set_dj_dgradu([formulation](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
+		j.set_dj_dgradu([formulation,this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), grad_u.cols());
 			Eigen::MatrixXd grad_u_q, def_grad, FmT, stress;
 			for (int q = 0; q < grad_u.rows(); q++)
@@ -130,7 +130,7 @@ namespace polyfem::solver
 					stress = mu(q) * (def_grad - FmT) + lambda(q) * std::log(def_grad.determinant()) * FmT;
 				}
 				else
-					log_and_throw_adjoint_error("Unknown formulation!");
+					log_and_throw_adjoint_error("[{}] Unknown formulation {}!", name(), formulation);
 				val.row(q) = utils::flatten(stress);
 			}
 		});
@@ -152,7 +152,7 @@ namespace polyfem::solver
 
 				Eigen::VectorXd term;
 				if (param_type == ParameterType::Material)
-					log_and_throw_adjoint_error("Doesn't support stress derivative wrt. material!");
+					log_and_throw_adjoint_error("[{}] Doesn't support stress derivative wrt. material!", name());
 
 				if (term.size() > 0)
 					gradv += param_map->apply_parametrization_jacobian(term, x);
@@ -231,7 +231,7 @@ namespace polyfem::solver
 
 				Eigen::VectorXd term;
 				if (param_type == ParameterType::Material)
-					log_and_throw_adjoint_error("Doesn't support stress derivative wrt. material!");
+					log_and_throw_adjoint_error("[{}] Doesn't support stress derivative wrt. material!", name());
 
 				if (term.size() > 0)
 					gradv += param_map->apply_parametrization_jacobian(term, x);
@@ -245,7 +245,7 @@ namespace polyfem::solver
 
 		const std::string formulation = state_.formulation();
 
-		j.set_j([formulation](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
+		j.set_j([formulation,this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), 1);
 
 			Eigen::MatrixXd grad_u_q, stress;
@@ -255,7 +255,7 @@ namespace polyfem::solver
 				if (formulation == "LinearElasticity")
 					stress = mu(q) * (grad_u_q + grad_u_q.transpose()) + lambda(q) * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
 				else
-					logger().error("Unknown formulation!");
+					log_and_throw_adjoint_error("[{}] Unknown formulation {}!", name(), formulation);
 				val(q) = (stress.array() * grad_u_q.array()).sum();
 			}
 		});
@@ -372,10 +372,10 @@ namespace polyfem::solver
 			val = acc.col(dim);
 		});
 
-		j.set_dj_du([dim](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
+		j.set_dj_du([dim,this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), u.cols());
 
-			log_and_throw_adjoint_error("Gradient not implemented!");
+			log_and_throw_adjoint_error("[{}] Gradient not implemented!", name());
 		});
 
 		return j;
@@ -402,7 +402,7 @@ namespace polyfem::solver
 		j.set_dj_du([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), u.cols());
 
-			log_and_throw_adjoint_error("Gradient not implemented!");
+			log_and_throw_adjoint_error("[{}] Gradient not implemented!", name());
 		});
 
 		return j;
@@ -423,7 +423,7 @@ namespace polyfem::solver
 
 				Eigen::VectorXd term;
 				if (param_type == ParameterType::Material)
-					log_and_throw_adjoint_error("Doesn't support stress derivative wrt. material!");
+					log_and_throw_adjoint_error("[{}] Doesn't support stress derivative wrt. material!", name());
 
 				if (term.size() > 0)
 					gradv += param_map->apply_parametrization_jacobian(term, x);
@@ -438,7 +438,7 @@ namespace polyfem::solver
 		std::string formulation = state_.formulation();
 		auto dimensions = dimensions_;
 
-		j.set_j([formulation, dimensions](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
+		j.set_j([formulation, dimensions, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), 1);
 
 			Eigen::MatrixXd grad_u_q, stress;
@@ -456,12 +456,12 @@ namespace polyfem::solver
 					stress = mu(q) * (def_grad - FmT) + lambda(q) * std::log(def_grad.determinant()) * FmT;
 				}
 				else
-					log_and_throw_adjoint_error("Unknown formulation!");
+					log_and_throw_adjoint_error("[{}] Unknown formulation {}!", name(), formulation);
 				val(q) = stress(dimensions[0], dimensions[1]);
 			}
 		});
 
-		j.set_dj_dgradu([formulation, dimensions](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
+		j.set_dj_dgradu([formulation, dimensions, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), grad_u.cols());
 
 			const int dim = sqrt(grad_u.cols());
@@ -500,7 +500,7 @@ namespace polyfem::solver
 					stiffness += lambda(q) * utils::flatten(FmT_vec * FmT_vec.transpose()).transpose();
 				}
 				else
-					logger().error("Unknown formulation!");
+					log_and_throw_adjoint_error("[{}] Unknown formulation {}!", name(), formulation);
 
 				val.row(q) = stiffness.block(0, (dimensions[0] * dim + dimensions[1]) * dim * dim, 1, dim * dim);
 			}

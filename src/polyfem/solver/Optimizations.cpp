@@ -26,6 +26,26 @@
 
 #include <polysolve/nonlinear/BoxConstraintSolver.hpp>
 
+namespace spdlog::level
+{
+	NLOHMANN_JSON_SERIALIZE_ENUM(
+		spdlog::level::level_enum,
+		{{spdlog::level::level_enum::trace, "trace"},
+		 {spdlog::level::level_enum::debug, "debug"},
+		 {spdlog::level::level_enum::info, "info"},
+		 {spdlog::level::level_enum::warn, "warning"},
+		 {spdlog::level::level_enum::err, "error"},
+		 {spdlog::level::level_enum::critical, "critical"},
+		 {spdlog::level::level_enum::off, "off"},
+		 {spdlog::level::level_enum::trace, 0},
+		 {spdlog::level::level_enum::debug, 1},
+		 {spdlog::level::level_enum::info, 2},
+		 {spdlog::level::level_enum::warn, 3},
+		 {spdlog::level::level_enum::err, 3},
+		 {spdlog::level::level_enum::critical, 4},
+		 {spdlog::level::level_enum::off, 5}})
+}
+
 namespace polyfem::solver
 {
 	namespace
