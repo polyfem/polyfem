@@ -1,11 +1,11 @@
 #include "SpatialIntegralForms.hpp"
 #include <polyfem/io/Evaluator.hpp>
+#include <polyfem/utils/MaybeParallelFor.hpp>
 
 #include <polyfem/State.hpp>
 #include <polyfem/assembler/Mass.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
-#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
 
 #include <polyfem/utils/IntegrableFunctional.hpp>
 
@@ -34,6 +34,20 @@ namespace polyfem::solver
 				val = 0;
 			}
 		};
+
+		class LocalThreadVecStorage
+		{
+		public:
+			Eigen::MatrixXd vec;
+			assembler::ElementAssemblyValues vals;
+			QuadratureVector da;
+
+			LocalThreadVecStorage(const int size)
+			{
+				vec.resize(size, 1);
+				vec.setZero();
+			}
+		};
 	} // namespace
 
 	double SpatialIntegralForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
@@ -58,7 +72,6 @@ namespace polyfem::solver
 				Eigen::VectorXd term;
 				if (param_type == ParameterType::Shape)
 					AdjointTools::compute_shape_derivative_functional_term(state_, state_.diff_cached.u(time_step), get_integral_functional(), ids_, spatial_integral_type_, term, time_step);
-
 				if (term.size() > 0)
 					gradv += param_map->apply_parametrization_jacobian(term, x);
 			}
@@ -362,7 +375,7 @@ namespace polyfem::solver
 		j.set_dj_du([dim](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), u.cols());
 
-			log_and_throw_adjoint_error("Not implemented!");
+			log_and_throw_adjoint_error("Gradient not implemented!");
 		});
 
 		return j;
@@ -389,7 +402,7 @@ namespace polyfem::solver
 		j.set_dj_du([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(u.rows(), u.cols());
 
-			log_and_throw_adjoint_error("Not implemented!");
+			log_and_throw_adjoint_error("Gradient not implemented!");
 		});
 
 		return j;
@@ -491,51 +504,6 @@ namespace polyfem::solver
 
 				val.row(q) = stiffness.block(0, (dimensions[0] * dim + dimensions[1]) * dim * dim, 1, dim * dim);
 			}
-		});
-
-		return j;
-	}
-
-	void DispGradForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
-	{
-		SpatialIntegralForm::compute_partial_gradient_unweighted_step(time_step, x, gradv);
-		for (const auto &param_map : variable_to_simulations_)
-		{
-			const auto &param_type = param_map->get_parameter_type();
-
-			for (const auto &state_ptr : param_map->get_states())
-			{
-				const auto &state = *state_ptr;
-				if (&state != &state_)
-					continue;
-
-				Eigen::VectorXd term;
-				if (param_type == ParameterType::Material)
-					log_and_throw_adjoint_error("Doesn't support stress derivative wrt. material!");
-
-				if (term.size() > 0)
-					gradv += param_map->apply_parametrization_jacobian(term, x);
-			}
-		}
-	}
-
-	IntegrableFunctional DispGradForm::get_integral_functional() const
-	{
-		IntegrableFunctional j;
-
-		auto dimensions = dimensions_;
-
-		j.set_j([dimensions](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
-			const int dim = sqrt(grad_u.cols());
-
-			val = grad_u.col(dimensions[0] * dim + dimensions[1]);
-		});
-
-		j.set_dj_dgradu([dimensions](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
-			val.setZero(grad_u.rows(), grad_u.cols());
-
-			const int dim = sqrt(grad_u.cols());
-			val.col(dimensions[0] * dim + dimensions[1]).setOnes();
 		});
 
 		return j;

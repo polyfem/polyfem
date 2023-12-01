@@ -164,28 +164,6 @@ namespace polyfem::solver
 		std::vector<int> dimensions_;
 	};
 
-	// Integral of one entry of displacement gradient
-	class DispGradForm : public SpatialIntegralForm
-	{
-	public:
-		DispGradForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
-		{
-			set_integral_type(SpatialIntegralType::volume);
-
-			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
-			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
-
-			dimensions_ = args["dimensions"].get<std::vector<int>>();
-		}
-
-		void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
-
-	protected:
-		IntegrableFunctional get_integral_functional() const override;
-
-		std::vector<int> dimensions_;
-	};
-
 	class VolumeForm : public SpatialIntegralForm
 	{
 	public:

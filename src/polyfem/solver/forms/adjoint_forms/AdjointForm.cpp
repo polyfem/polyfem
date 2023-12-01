@@ -4,8 +4,6 @@
 #include <polyfem/State.hpp>
 #include <polyfem/assembler/Assembler.hpp>
 
-#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
-
 namespace polyfem::solver
 {
 	double AdjointForm::value(const Eigen::VectorXd &x) const

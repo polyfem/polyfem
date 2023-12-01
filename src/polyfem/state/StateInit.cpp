@@ -189,6 +189,8 @@ namespace polyfem
 	{
 		// Set only the level of the console
 		spdlog::set_level(log_level);
+		logger().set_level(log_level);
+ 		ipc::logger().set_level(log_level);
 		if (console_sink_)
 			console_sink_->set_level(log_level); // Shared by all loggers
 	}
@@ -220,6 +222,7 @@ namespace polyfem
 			rules = jse.inject_include(rules);
 
 			polysolve::linear::Solver::apply_default_solver(rules, "/solver/linear");
+			polysolve::linear::Solver::apply_default_solver(rules, "/solver/adjoint_linear");
 
 			{
 				std::ofstream file("complete-spec.json");
@@ -228,6 +231,10 @@ namespace polyfem
 		}
 
 		polysolve::linear::Solver::select_valid_solver(args_in["solver"]["linear"], logger());
+		if (args_in["solver"]["adjoint_linear"].is_null())
+			args_in["solver"]["adjoint_linear"] = args_in["solver"]["linear"];
+		else
+			polysolve::linear::Solver::select_valid_solver(args_in["solver"]["adjoint_linear"], logger());
 
 		const bool valid_input = jse.verify_json(args_in, rules);
 
@@ -345,7 +352,7 @@ namespace polyfem
 
 		problem->set_units(*assembler, units);
 
-		if (optimization_enabled)
+		if (optimization_enabled == solver::CacheLevel::Derivatives)
 		{
 			if (is_contact_enabled())
 			{

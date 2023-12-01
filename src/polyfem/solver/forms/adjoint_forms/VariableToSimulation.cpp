@@ -1,6 +1,5 @@
 #include "VariableToSimulation.hpp"
 #include <polyfem/State.hpp>
-#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
@@ -300,8 +299,14 @@ namespace polyfem::solver
 	}
 	Eigen::VectorXd InitialConditionVariableToSimulation::inverse_eval()
 	{
-		log_and_throw_adjoint_error("Not implemented!");
-		return Eigen::VectorXd();
+		auto &state = *states_[0];
+		Eigen::MatrixXd sol, vel;
+		state.initial_solution(sol);
+		state.initial_velocity(vel);
+
+		Eigen::VectorXd x(sol.size() + vel.size());
+		x << sol, vel;
+		return x;
 	}
 
 	void DirichletVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
