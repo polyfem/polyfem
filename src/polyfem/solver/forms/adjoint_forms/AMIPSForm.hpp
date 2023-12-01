@@ -190,15 +190,16 @@ namespace polyfem::solver
 			Eigen::MatrixXd V;
 			state_.get_vertices(V);
 			state_.get_elements(F);
-			X_init = utils::flatten(V);
-			init_geom_bases_ = state_.geom_bases();
+			X_rest = utils::flatten(V);
+			rest_geom_bases_ = state_.geom_bases();
+			// init_ass_vals_cache_ = state_.ass_vals_cache;
 		}
 
 		double value_unweighted(const Eigen::VectorXd &x) const override
 		{
 			Eigen::VectorXd X = get_updated_mesh_nodes(x);
 
-			double energy = amips_energy_->assemble_energy(state_.mesh->is_volume(), init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_init), Eigen::VectorXd());
+			double energy = amips_energy_->assemble_energy(state_.mesh->is_volume(), rest_geom_bases_, rest_geom_bases_, init_ass_vals_cache_, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_rest), Eigen::VectorXd());
 
 			return energy;
 		}
@@ -208,7 +209,7 @@ namespace polyfem::solver
 			Eigen::VectorXd X = get_updated_mesh_nodes(x);
 
 			Eigen::MatrixXd grad;
-			amips_energy_->assemble_gradient(state_.mesh->is_volume(), state_.n_geom_bases, init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_init), Eigen::VectorXd(), grad); // grad wrt. gbases
+			amips_energy_->assemble_gradient(state_.mesh->is_volume(), state_.n_geom_bases, rest_geom_bases_, rest_geom_bases_, init_ass_vals_cache_, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_rest), Eigen::VectorXd(), grad); // grad wrt. gbases
 			grad = AdjointTools::map_node_to_primitive_order(state_, grad);                                                                                                                                                                       // grad wrt. vertices
 
 			assert(grad.cols() == 1);
@@ -242,10 +243,19 @@ namespace polyfem::solver
 			return !flipped;
 		}
 
+		void solution_changed(const Eigen::VectorXd &newX) override
+		{
+			Eigen::MatrixXd V;
+			state_.get_vertices(V);
+			X_rest = utils::flatten(V);
+			rest_geom_bases_ = state_.geom_bases();
+			// init_ass_vals_cache_ = state_.ass_vals_cache;
+		}
+
 	private:
 		Eigen::VectorXd get_updated_mesh_nodes(const Eigen::VectorXd &x) const
 		{
-			Eigen::VectorXd X = X_init;
+			Eigen::VectorXd X = X_rest;
 
 			for (auto &p : variable_to_simulations_)
 			{
@@ -265,9 +275,9 @@ namespace polyfem::solver
 
 		const State &state_;
 
-		Eigen::VectorXd X_init;
+		Eigen::VectorXd X_rest;
 		Eigen::MatrixXi F;
-		std::vector<polyfem::basis::ElementBases> init_geom_bases_;
+		std::vector<polyfem::basis::ElementBases> rest_geom_bases_;
 		assembler::AssemblyValsCache init_ass_vals_cache_;
 
 		std::shared_ptr<assembler::Assembler> amips_energy_;
