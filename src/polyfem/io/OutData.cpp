@@ -45,7 +45,7 @@
 #include <paraviewo/VTMWriter.hpp>
 #include <paraviewo/PVDWriter.hpp>
 
-#include <BVH.hpp>
+#include <SimpleBVH/BVH.hpp>
 
 #include <igl/write_triangle_mesh.h>
 #include <igl/edges.h>
@@ -2320,7 +2320,7 @@ namespace polyfem::io
 		std::vector<std::array<Eigen::Vector3d, 2>> boxes;
 		mesh.elements_boxes(boxes);
 
-		BVH::BVH bvh;
+		SimpleBVH::BVH bvh;
 		bvh.init(boxes);
 
 		const double eps = 1e-6;

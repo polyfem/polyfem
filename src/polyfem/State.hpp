@@ -30,7 +30,7 @@
 
 #include <polyfem/io/OutData.hpp>
 
-#include <polysolve/LinearSolver.hpp>
+#include <polysolve/linear/Solver.hpp>
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
@@ -49,10 +49,9 @@
 #include <ipc/utils/logger.hpp>
 
 // Forward declaration
-namespace cppoptlib
+namespace polysolve::nonlinear
 {
-	template <typename ProblemType>
-	class NonlinearSolver;
+	class Solver;
 }
 
 namespace polyfem::assembler
@@ -146,7 +145,10 @@ namespace polyfem
 		Units units;
 
 		/// assemblers
+
+		/// assembler corresponding to governing physical equations
 		std::shared_ptr<assembler::Assembler> assembler = nullptr;
+
 		std::shared_ptr<assembler::Mass> mass_matrix_assembler = nullptr;
 
 		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
@@ -219,10 +221,17 @@ namespace polyfem
 		}
 
 		/// builds the bases step 2 of solve
+		/// modifies bases, pressure_bases, geom_bases_, boundary_nodes,
+		/// dirichlet_nodes, neumann_nodes, local_boundary, total_local_boundary
+		/// local_neumann_boundary, polys, poly_edge_to_data, rhs
 		void build_basis();
 		/// compute rhs, step 3 of solve
+		/// build rhs vector based on defined basis and given rhs of the problem
+		/// modifies rhs (and maybe more?)
 		void assemble_rhs();
 		/// assemble mass, step 4 of solve
+		/// build mass matrix based on defined basis
+		/// modifies mass (and maybe more?)
 		void assemble_mass_mat();
 
 		/// build a RhsAssembler for the problem
@@ -369,9 +378,7 @@ namespace polyfem
 
 		/// factory to create the nl solver depending on input
 		/// @return nonlinear solver (eg newton or LBFGS)
-		template <typename ProblemType>
-		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver(
-			const std::string &linear_solver_type = "") const;
+		std::shared_ptr<polysolve::nonlinear::Solver> make_nl_solver() const;
 
 		/// @brief Solve the linear problem with the given solver and system.
 		/// @param solver Linear solver.
@@ -381,7 +388,7 @@ namespace polyfem
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
 		void solve_linear(
-			const std::unique_ptr<polysolve::LinearSolver> &solver,
+			const std::unique_ptr<polysolve::linear::Solver> &solver,
 			StiffnessMatrix &A,
 			Eigen::VectorXd &b,
 			const bool compute_spectrum,
@@ -637,11 +644,11 @@ namespace polyfem
 		//-----------------differentiable--------------------
 		//---------------------------------------------------
 	public:
-		bool optimization_enabled = false;
+		solver::CacheLevel optimization_enabled = solver::CacheLevel::None;
 		void cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad);
 		solver::DiffCache diff_cached;
 
-		std::unique_ptr<polysolve::LinearSolver> lin_solver_cached; // matrix factorization of last linear solve
+		std::unique_ptr<polysolve::linear::Solver> lin_solver_cached; // matrix factorization of last linear solve
 
 		int ndof() const
 		{

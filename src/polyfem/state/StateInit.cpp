@@ -11,8 +11,6 @@
 #include <polyfem/problem/KernelProblem.hpp>
 #include <polyfem/utils/par_for.hpp>
 
-#include <polysolve/LinearSolver.hpp>
-
 #include <polyfem/utils/JSONUtils.hpp>
 
 #include <jse/jse.h>
@@ -187,6 +185,8 @@ namespace polyfem
 	{
 		// Set only the level of the console
 		spdlog::set_level(log_level);
+		logger().set_level(log_level);
+ 		ipc::logger().set_level(log_level);
 		if (console_sink_)
 			console_sink_->set_level(log_level); // Shared by all loggers
 	}
@@ -212,81 +212,25 @@ namespace polyfem
 				logger().error("unable to open {} rules", polyfem_input_spec);
 				throw std::runtime_error("Invald spec file");
 			}
-		}
 
-		// Set valid options for enabled linear solvers
-		for (int i = 0; i < rules.size(); i++)
-		{
-			if (rules[i]["pointer"] == "/solver/linear/solver")
+			jse.include_directories.push_back(POLYFEM_JSON_SPEC_DIR);
+			jse.include_directories.push_back(POLYSOLVE_JSON_SPEC_DIR);
+			rules = jse.inject_include(rules);
+
+			polysolve::linear::Solver::apply_default_solver(rules, "/solver/linear");
+			polysolve::linear::Solver::apply_default_solver(rules, "/solver/adjoint_linear");
+
 			{
-				rules[i]["default"] = polysolve::LinearSolver::defaultSolver();
-				rules[i]["options"] = polysolve::LinearSolver::availableSolvers();
-			}
-			else if (rules[i]["pointer"] == "/solver/linear/precond")
-			{
-				rules[i]["default"] = polysolve::LinearSolver::defaultPrecond();
-				rules[i]["options"] = polysolve::LinearSolver::availablePrecond();
-			}
-			else if (rules[i]["pointer"] == "/solver/linear/adjoint_solver")
-			{
-				const auto ss = polysolve::LinearSolver::availableSolvers();
-				const bool solver_found = args_in.contains("solver") && args_in["solver"].contains("linear") && args_in["solver"]["linear"].contains("solver") && (std::find(ss.begin(), ss.end(), args_in["solver"]["linear"]["solver"]) != ss.end());
-				rules[i]["default"] = solver_found ? args_in["solver"]["linear"]["solver"].get<std::string>() : polysolve::LinearSolver::defaultSolver();
-				rules[i]["options"] = polysolve::LinearSolver::availableSolvers();
+				std::ofstream file("complete-spec.json");
+				file << rules;
 			}
 		}
 
-		const auto lin_solver_ptr = "/solver/linear/solver"_json_pointer;
-		if (args_in.contains(lin_solver_ptr) && args_in[lin_solver_ptr].is_array())
-		{
-			const std::vector<std::string> solvers = args_in[lin_solver_ptr];
-			const std::vector<std::string> available_solvers = polysolve::LinearSolver::availableSolvers();
-			std::string accepted_solver = "";
-			for (const std::string &solver : solvers)
-			{
-				if (std::find(available_solvers.begin(), available_solvers.end(), solver) != available_solvers.end())
-				{
-					accepted_solver = solver;
-					break;
-				}
-			}
-			if (!accepted_solver.empty())
-				logger().info("Solver {} is the highest priority availble solver; using it.", accepted_solver);
-			else
-				logger().warn("No valid solver found in the list of specified solvers!");
-			args_in[lin_solver_ptr] = accepted_solver;
-		}
-
-		// Fallback to default linear solver if the specified solver is invalid
-		// NOTE: I do not know why .value() causes a segfault only on Windows
-		// const bool fallback_solver = args_in.value("/solver/linear/enable_overwrite_solver"_json_pointer, false);
-		const bool fallback_solver =
-			args_in.contains("/solver/linear/enable_overwrite_solver"_json_pointer)
-				? args_in.at("/solver/linear/enable_overwrite_solver"_json_pointer).get<bool>()
-				: false;
-		if (fallback_solver)
-		{
-			const std::vector<std::string> ss = polysolve::LinearSolver::availableSolvers();
-			std::string s_json = "null";
-			if (!args_in.contains(lin_solver_ptr) || !args_in[lin_solver_ptr].is_string()
-				|| std::find(ss.begin(), ss.end(), s_json = args_in[lin_solver_ptr].get<std::string>()) == ss.end())
-			{
-				logger().warn("Solver {} is invalid, falling back to {}", s_json, polysolve::LinearSolver::defaultSolver());
-				args_in[lin_solver_ptr] = polysolve::LinearSolver::defaultSolver();
-			}
-		}
-
-		if (fallback_solver)
-		{
-			const std::string s_json = this->args["solver"]["linear"]["adjoint_solver"];
-			const auto ss = polysolve::LinearSolver::availableSolvers();
-			const auto solver_found = std::find(ss.begin(), ss.end(), s_json);
-			if (solver_found == ss.end())
-			{
-				logger().warn("Adjoint solver {} is invalid, falling back to {}", s_json, this->args["solver"]["linear"]["solver"]);
-				this->args["solver"]["linear"]["adjoint_solver"] = this->args["solver"]["linear"]["solver"];
-			}
-		}
+		polysolve::linear::Solver::select_valid_solver(args_in["solver"]["linear"], logger());
+		if (args_in["solver"]["adjoint_linear"].is_null())
+			args_in["solver"]["adjoint_linear"] = args_in["solver"]["linear"];
+		else
+			polysolve::linear::Solver::select_valid_solver(args_in["solver"]["adjoint_linear"], logger());
 
 		const bool valid_input = jse.verify_json(args_in, rules);
 
@@ -404,7 +348,7 @@ namespace polyfem
 
 		problem->set_units(*assembler, units);
 
-		if (optimization_enabled)
+		if (optimization_enabled == solver::CacheLevel::Derivatives)
 		{
 			if (is_contact_enabled())
 			{
@@ -516,6 +460,8 @@ namespace polyfem
 		args["time"]["tend"] = tend;
 		args["time"]["dt"] = dt;
 		args["time"]["time_steps"] = time_steps;
+
+		units.characteristic_length() *= dt;
 
 		logger().info("t0={}, dt={}, tend={}", t0, dt, tend);
 	}

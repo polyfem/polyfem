@@ -145,9 +145,11 @@ target_compile_definitions(polyfem PUBLIC -DEIGEN_STACK_ALLOCATION_LIMIT=0)
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_SMALL_N=${POLYFEM_SMALL_N})
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_BIG_N=${POLYFEM_BIG_N})
 
-target_compile_definitions(polyfem PUBLIC POLYFEM_INPUT_SPEC="${CMAKE_SOURCE_DIR}/input-spec.json")
-target_compile_definitions(polyfem PUBLIC POLYFEM_OPT_INPUT_SPEC="${CMAKE_SOURCE_DIR}/opt-input-spec.json")
-target_compile_definitions(polyfem PUBLIC POLYFEM_OBJECTIVE_INPUT_SPEC="${CMAKE_SOURCE_DIR}/objective-spec.json")
+set(POLYFEM_JSON_SPEC_DIR "${CMAKE_SOURCE_DIR}/json-specs")
+target_compile_definitions(polyfem PUBLIC POLYFEM_JSON_SPEC_DIR="${POLYFEM_JSON_SPEC_DIR}")
+target_compile_definitions(polyfem PUBLIC POLYFEM_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/input-spec.json")
+target_compile_definitions(polyfem PUBLIC POLYFEM_OPT_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/opt-input-spec.json")
+target_compile_definitions(polyfem PUBLIC POLYFEM_OBJECTIVE_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/objective-spec.json")
 
 if(MSVC)
     add_compile_options(/bigobj)
@@ -192,7 +194,7 @@ target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
 
 # polysolve
 include(polysolve)
-target_link_libraries(polyfem PUBLIC polysolve)
+target_link_libraries(polyfem PUBLIC polysolve::polysolve)
 
 # IPC Toolkit
 include(ipc_toolkit)
@@ -220,9 +222,9 @@ if(POLYFEM_WITH_TRIANGLE)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_TRIANGLE)
 endif()
 
-# BVH
-include(BVH)
-target_link_libraries(polyfem PUBLIC BVH_lib)
+# SimpleBVH
+include(simple_bvh)
+target_link_libraries(ipc_toolkit PUBLIC simple_bvh::simple_bvh)
 
 # MSHIO
 include(mshio)
@@ -243,14 +245,6 @@ target_link_libraries(polyfem PUBLIC paraviewo::paraviewo)
 # spdlog
 include(spdlog)
 target_link_libraries(polyfem PUBLIC spdlog::spdlog)
-
-# CppNumericalSolvers
-include(cppoptlib)
-target_link_libraries(polyfem PUBLIC cppoptlib)
-
-# LBFGSpp
-include(LBFGSpp)
-target_link_libraries(polyfem PUBLIC LBFGSpp::LBFGSpp)
 
 # TinyExpr library
 include(tinyexpr)

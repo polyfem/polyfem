@@ -3,8 +3,9 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/assembler/Problem.hpp>
-#include <polysolve/FEMSolver.hpp>
 #include <polyfem/utils/Logger.hpp>
+
+#include <polysolve/linear/Solver.hpp>
 
 #include <polyfem/assembler/Assembler.hpp>
 #include <memory>
@@ -55,8 +56,6 @@ namespace polyfem
 									const StiffnessMatrix &mass_velocity,
 									const double &dt,
 									const double &viscosity_,
-									const std::string &solver_type,
-									const std::string &precond,
 									const json &params);
 
 			int handle_boundary_advection(RowVectorNd &pos);
@@ -170,14 +169,12 @@ namespace polyfem
 			std::vector<int> boundary_elem_id;
 			std::vector<int> boundary_nodes;
 
-			std::unique_ptr<polysolve::LinearSolver> solver_diffusion;
-			std::unique_ptr<polysolve::LinearSolver> solver_projection;
-			std::unique_ptr<polysolve::LinearSolver> solver_mass;
+			std::unique_ptr<polysolve::linear::Solver> solver_diffusion;
+			std::unique_ptr<polysolve::linear::Solver> solver_projection;
+			std::unique_ptr<polysolve::linear::Solver> solver_mass;
 
 			StiffnessMatrix mat_diffusion;
 			StiffnessMatrix mat_projection;
-
-			std::string solver_type;
 
 			Eigen::VectorXd density;
 			// Eigen::VectorXi density_cell_no;

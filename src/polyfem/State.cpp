@@ -41,8 +41,7 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Timer.hpp>
 
-#include <polysolve/LinearSolver.hpp>
-#include <polysolve/FEMSolver.hpp>
+#include <polysolve/linear/FEMSolver.hpp>
 
 #include <polyfem/io/OBJWriter.hpp>
 
@@ -53,8 +52,6 @@
 #include <algorithm>
 #include <memory>
 #include <filesystem>
-
-#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
 
 #include <polyfem/utils/autodiff.h>
 DECLARE_DIFFSCALAR_BASE();
@@ -546,7 +543,7 @@ namespace polyfem
 		if (args["space"]["use_p_ref"])
 			return false;
 
-		if (optimization_enabled)
+		if (optimization_enabled == solver::CacheLevel::Derivatives)
 			return false;
 
 		if (mesh->orders().size() <= 0)
@@ -619,8 +616,8 @@ namespace polyfem
 		stats.reset();
 
 		disc_orders.resize(mesh->n_elements());
-		problem->init(*mesh);
 
+		problem->init(*mesh);
 		logger().info("Building {} basis...", (iso_parametric() ? "isoparametric" : "not isoparametric"));
 		const bool has_polys = mesh->has_poly();
 
@@ -724,7 +721,7 @@ namespace polyfem
 		}
 
 		// shape optimization needs continuous geometric basis
-		const bool use_continuous_gbasis = optimization_enabled;
+		const bool use_continuous_gbasis = optimization_enabled == solver::CacheLevel::Derivatives;
 
 		if (mesh->is_volume())
 		{
@@ -810,7 +807,7 @@ namespace polyfem
 
 		auto &gbases = geom_bases();
 
-		if (optimization_enabled)
+		if (optimization_enabled == solver::CacheLevel::Derivatives)
 		{
 			std::map<std::array<int, 2>, double> pairs;
 			for (int e = 0; e < gbases.size(); e++)
@@ -867,7 +864,7 @@ namespace polyfem
 
 		const int dim = mesh->dimension();
 		const int problem_dim = problem->is_scalar() ? 1 : dim;
-
+		
 		if (args["space"]["advanced"]["count_flipped_els"])
 			stats.count_flipped_elements(*mesh, geom_bases());
 
@@ -1433,8 +1430,6 @@ namespace polyfem
 			dirichlet_nodes_position, neumann_nodes_position,
 			n_bases_, size, bases_, geom_bases(), ass_vals_cache_, *problem,
 			args["space"]["advanced"]["bc_method"],
-			args["solver"]["linear"]["solver"],
-			args["solver"]["linear"]["precond"],
 			rhs_solver_params);
 	}
 
@@ -1465,9 +1460,6 @@ namespace polyfem
 		}
 
 		igl::Timer timer;
-		// std::string rhs_path = "";
-		// if (args["boundary_conditions"]["rhs"].is_string())
-		// 	rhs_path = resolve_input_path(args["boundary_conditions"]["rhs"]);
 
 		json p_params = {};
 		p_params["formulation"] = assembler->name();
@@ -1587,7 +1579,7 @@ namespace polyfem
 			{
 				init_linear_solve(sol);
 				solve_linear(sol, pressure);
-				if (optimization_enabled)
+				if (optimization_enabled != solver::CacheLevel::None)
 					cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 			}
 			else if (!assembler->is_linear() && problem->is_scalar())
@@ -1596,7 +1588,7 @@ namespace polyfem
 			{
 				init_nonlinear_tensor_solve(sol);
 				solve_tensor_nonlinear(sol);
-				if (optimization_enabled)
+				if (optimization_enabled != solver::CacheLevel::None)
 					cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 
 				const std::string state_path = resolve_output_path(args["output"]["data"]["state"]);

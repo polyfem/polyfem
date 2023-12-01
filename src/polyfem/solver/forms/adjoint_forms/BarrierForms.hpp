@@ -11,130 +11,24 @@ namespace polyfem::solver
 	class CollisionBarrierForm : public AdjointForm
 	{
 	public:
-		CollisionBarrierForm(const std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulation, const State &state, const double dhat, const double dmin = 0) : AdjointForm(variable_to_simulation), state_(state), dhat_(dhat), dmin_(dmin)
-		{
-			build_collision_mesh();
+		CollisionBarrierForm(const std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulation, const State &state, const double dhat, const double dmin = 0);
 
-			Eigen::MatrixXd V;
-			state_.get_vertices(V);
-			X_init = utils::flatten(V);
+		double value_unweighted(const Eigen::VectorXd &x) const override;
 
-			broad_phase_method_ = ipc::BroadPhaseMethod::HASH_GRID;
-		}
+		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
-		double value_unweighted(const Eigen::VectorXd &x) const override
-		{
-			const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_.mesh->dimension()));
+		void solution_changed(const Eigen::VectorXd &x) override;
 
-			return constraint_set.compute_potential(collision_mesh_, displaced_surface, dhat_);
-		}
+		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override;
 
-		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
-		{
-			const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_.mesh->dimension()));
+		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
-			Eigen::VectorXd grad = collision_mesh_.to_full_dof(constraint_set.compute_potential_gradient(collision_mesh_, displaced_surface, dhat_));
-
-			grad = AdjointTools::map_node_to_primitive_order(state_, grad);
-
-			gradv.setZero(x.size());
-			for (auto &p : variable_to_simulations_)
-			{
-				for (const auto &state : p->get_states())
-					if (state.get() != &state_)
-						continue;
-				if (p->get_parameter_type() != ParameterType::Shape)
-					continue;
-				gradv += p->apply_parametrization_jacobian(grad, x);
-			}
-		}
-
-		void solution_changed(const Eigen::VectorXd &x) override
-		{
-			AdjointForm::solution_changed(x);
-
-			const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_.mesh->dimension()));
-			build_constraint_set(displaced_surface);
-		}
-
-		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override
-		{
-			return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
-		}
-
-		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override
-		{
-			const Eigen::MatrixXd V0 = utils::unflatten(get_updated_mesh_nodes(x0), state_.mesh->dimension());
-			const Eigen::MatrixXd V1 = utils::unflatten(get_updated_mesh_nodes(x1), state_.mesh->dimension());
-
-			// Skip CCD if the displacement is zero.
-			if ((V1 - V0).lpNorm<Eigen::Infinity>() == 0.0)
-				return true;
-
-			bool is_valid = ipc::is_step_collision_free(
-				collision_mesh_,
-				collision_mesh_.vertices(V0),
-				collision_mesh_.vertices(V1),
-				broad_phase_method_,
-				dmin_, 1e-6, 1e6);
-
-			return is_valid;
-		}
-
-		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override
-		{
-			const Eigen::MatrixXd V0 = utils::unflatten(get_updated_mesh_nodes(x0), state_.mesh->dimension());
-			const Eigen::MatrixXd V1 = utils::unflatten(get_updated_mesh_nodes(x1), state_.mesh->dimension());
-
-			double max_step = ipc::compute_collision_free_stepsize(
-				collision_mesh_,
-				collision_mesh_.vertices(V0),
-				collision_mesh_.vertices(V1),
-				broad_phase_method_, dmin_, 1e-6, 1e6);
-
-			return max_step;
-		}
+		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
 	protected:
-		virtual void build_collision_mesh()
-		{
-			State::build_collision_mesh(
-				*state_.mesh, state_.n_geom_bases, state_.geom_bases(), state_.geom_bases(),
-				state_.total_local_boundary, state_.obstacle, state_.args,
-				[this](const std::string &p) { return this->state_.resolve_input_path(p); },
-				state_.in_node_to_node, collision_mesh_);
-		};
+		void build_constraint_set(const Eigen::MatrixXd &displaced_surface);
 
-		void build_constraint_set(const Eigen::MatrixXd &displaced_surface)
-		{
-			static Eigen::MatrixXd cached_displaced_surface;
-			if (cached_displaced_surface.size() == displaced_surface.size() && cached_displaced_surface == displaced_surface)
-				return;
-
-			constraint_set.build(collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_method_);
-
-			cached_displaced_surface = displaced_surface;
-		}
-
-		Eigen::VectorXd get_updated_mesh_nodes(const Eigen::VectorXd &x) const
-		{
-			Eigen::VectorXd X = X_init;
-
-			for (auto &p : variable_to_simulations_)
-			{
-				for (const auto &state : p->get_states())
-					if (state.get() != &state_)
-						continue;
-				if (p->get_parameter_type() != ParameterType::Shape)
-					continue;
-				auto state_variable = p->get_parametrization().eval(x);
-				auto output_indexing = p->get_output_indexing(x);
-				for (int i = 0; i < output_indexing.size(); ++i)
-					X(output_indexing(i)) = state_variable(i);
-			}
-
-			return AdjointTools::map_primitive_to_node_order(state_, X);
-		}
+		Eigen::VectorXd get_updated_mesh_nodes(const Eigen::VectorXd &x) const;
 
 		const State &state_;
 
@@ -154,138 +48,45 @@ namespace polyfem::solver
 						   const State &state,
 						   const std::vector<int> &boundary_ids,
 						   const double dhat,
-						   const double dmin) : CollisionBarrierForm(variable_to_simulations, state, dhat, dmin),
-												boundary_ids_(boundary_ids)
-		{
-			for (const auto &id : boundary_ids_)
-				boundary_ids_to_dof_[id] = std::set<int>();
-
-			build_collision_mesh();
-		}
+						   const double dmin);
 
 	protected:
-		void build_collision_mesh() override
-		{
-			Eigen::MatrixXd node_positions;
-			Eigen::MatrixXi boundary_edges, boundary_triangles;
-			std::vector<Eigen::Triplet<double>> displacement_map_entries;
-			io::OutGeometryData::extract_boundary_mesh(*state_.mesh, state_.n_geom_bases, state_.geom_bases(), state_.total_local_boundary,
-													   node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
-
-			std::vector<bool> is_on_surface;
-			is_on_surface.resize(node_positions.rows(), false);
-
-			assembler::ElementAssemblyValues vals;
-			Eigen::MatrixXd points, uv, normals;
-			Eigen::VectorXd weights;
-			Eigen::VectorXi global_primitive_ids;
-			for (const auto &lb : state_.total_local_boundary)
-			{
-				const int e = lb.element_id();
-				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, state_.n_boundary_samples(), *state_.mesh, false, uv, points, normals, weights, global_primitive_ids);
-
-				if (!has_samples)
-					continue;
-
-				const basis::ElementBases &gbs = state_.geom_bases()[e];
-
-				vals.compute(e, state_.mesh->is_volume(), points, gbs, gbs);
-
-				for (int i = 0; i < lb.size(); ++i)
-				{
-					const int primitive_global_id = lb.global_primitive_id(i);
-					const auto nodes = gbs.local_nodes_for_primitive(primitive_global_id, *state_.mesh);
-					const int boundary_id = state_.mesh->get_boundary_id(primitive_global_id);
-
-					if (!std::count(boundary_ids_.begin(), boundary_ids_.end(), boundary_id))
-						continue;
-
-					for (long n = 0; n < nodes.size(); ++n)
-					{
-						const assembler::AssemblyValues &v = vals.basis_values[nodes(n)];
-						is_on_surface[v.global[0].index] = true;
-						assert(v.global[0].index < node_positions.rows());
-						boundary_ids_to_dof_[boundary_id].insert(v.global[0].index);
-					}
-				}
-			}
-
-			Eigen::SparseMatrix<double> displacement_map;
-			if (!displacement_map_entries.empty())
-			{
-				displacement_map.resize(node_positions.rows(), state_.n_geom_bases);
-				displacement_map.setFromTriplets(displacement_map_entries.begin(), displacement_map_entries.end());
-			}
-
-			// Fix boundary edges and boundary triangles to exclude vertices not on triangles
-			Eigen::MatrixXi boundary_edges_alt(0, 2), boundary_triangles_alt(0, 3);
-			{
-				for (int i = 0; i < boundary_edges.rows(); ++i)
-				{
-					bool on_surface = true;
-					for (int j = 0; j < boundary_edges.cols(); ++j)
-						on_surface &= is_on_surface[boundary_edges(i, j)];
-					if (on_surface)
-					{
-						boundary_edges_alt.conservativeResize(boundary_edges_alt.rows() + 1, 2);
-						boundary_edges_alt.row(boundary_edges_alt.rows() - 1) = boundary_edges.row(i);
-					}
-				}
-
-				if (state_.mesh->is_volume())
-				{
-					for (int i = 0; i < boundary_triangles.rows(); ++i)
-					{
-						bool on_surface = true;
-						for (int j = 0; j < boundary_triangles.cols(); ++j)
-							on_surface &= is_on_surface[boundary_triangles(i, j)];
-						if (on_surface)
-						{
-							boundary_triangles_alt.conservativeResize(boundary_triangles_alt.rows() + 1, 3);
-							boundary_triangles_alt.row(boundary_triangles_alt.rows() - 1) = boundary_triangles.row(i);
-						}
-					}
-				}
-				else
-					boundary_triangles_alt.resize(0, 0);
-			}
-
-			collision_mesh_ = ipc::CollisionMesh(is_on_surface,
-												 node_positions,
-												 boundary_edges_alt,
-												 boundary_triangles_alt,
-												 displacement_map);
-
-			can_collide_cache_.resize(collision_mesh_.num_vertices(), collision_mesh_.num_vertices());
-			for (int i = 0; i < can_collide_cache_.rows(); ++i)
-			{
-				int dof_idx_i = collision_mesh_.to_full_vertex_id(i);
-				if (!is_on_surface[dof_idx_i])
-					continue;
-				for (int j = 0; j < can_collide_cache_.cols(); ++j)
-				{
-					int dof_idx_j = collision_mesh_.to_full_vertex_id(j);
-					if (!is_on_surface[dof_idx_j])
-						continue;
-
-					bool collision_allowed = true;
-					for (const auto &id : boundary_ids_)
-						if (boundary_ids_to_dof_[id].count(dof_idx_i) && boundary_ids_to_dof_[id].count(dof_idx_j))
-							collision_allowed = false;
-					can_collide_cache_(i, j) = collision_allowed;
-				}
-			}
-
-			collision_mesh_.can_collide = [&](size_t vi, size_t vj) {
-				return (bool)can_collide_cache_(vi, vj);
-			};
-
-			collision_mesh_.init_area_jacobians();
-		}
+		void build_collision_mesh();
 
 		std::vector<int> boundary_ids_;
 		std::map<int, std::set<int>> boundary_ids_to_dof_;
 		Eigen::MatrixXi can_collide_cache_;
 	};
 
+	class DeformedCollisionBarrierForm : public AdjointForm
+	{
+	public:
+		DeformedCollisionBarrierForm(const std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulation, const State &state, const double dhat);
+
+		double value_unweighted(const Eigen::VectorXd &x) const override;
+
+		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+
+		void solution_changed(const Eigen::VectorXd &x) override;
+
+		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override;
+
+		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
+
+		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
+
+	private:
+		void build_constraint_set(const Eigen::MatrixXd &displaced_surface);
+
+		Eigen::VectorXd get_updated_mesh_nodes(const Eigen::VectorXd &x) const;
+
+		const State &state_;
+
+		Eigen::VectorXd X_init;
+
+		ipc::CollisionMesh collision_mesh_;
+		ipc::CollisionConstraints constraint_set;
+		const double dhat_;
+		ipc::BroadPhaseMethod broad_phase_method_;
+	};
 } // namespace polyfem::solver

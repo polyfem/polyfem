@@ -33,8 +33,6 @@ namespace polyfem
 				const AssemblyValsCache &ass_vals_cache,
 				const Problem &problem,
 				const std::string bc_method,
-				const std::string &solver,
-				const std::string &preconditioner,
 				const json &solver_params);
 
 			// computes the rhs of a problem by \int \phi rho rhs
@@ -120,13 +118,12 @@ namespace polyfem
 			const mesh::Mesh &mesh_;
 			const mesh::Obstacle &obstacle_;
 			const int n_basis_;
-			const int size_;
-			const std::vector<basis::ElementBases> &bases_;
-			const std::vector<basis::ElementBases> &gbases_;
+			const int size_; ///< dimension of problem
+			const std::vector<basis::ElementBases> &bases_; ///< basis functions associated with solution
+			const std::vector<basis::ElementBases> &gbases_; ///< basis functions associated with geometric mapping
 			const AssemblyValsCache &ass_vals_cache_;
 			const Problem &problem_;
 			const std::string bc_method_;
-			const std::string solver_, preconditioner_;
 			const json solver_params_;
 			const std::vector<int> &dirichlet_nodes_;
 			const std::vector<RowVectorNd> &dirichlet_nodes_position_;

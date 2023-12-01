@@ -5,7 +5,6 @@ set(SOURCES
 	ParametrizationForm.cpp
 	SpatialIntegralForms.cpp
 	SpatialIntegralForms.hpp
-	SDFVariableToSimulation.cpp
 	VariableToSimulation.cpp
 	VariableToSimulation.hpp
 	CompositeForm.hpp
@@ -18,6 +17,7 @@ set(SOURCES
 	TransientForm.hpp
 	TransientForm.cpp
 	BarrierForms.hpp
+	BarrierForms.cpp
 	SmoothingForms.hpp
 	SmoothingForms.cpp
 	SurfaceTractionForms.hpp

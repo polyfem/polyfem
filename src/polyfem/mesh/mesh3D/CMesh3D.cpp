@@ -456,7 +456,7 @@ namespace polyfem
 			}
 
 			f << "KERNEL"
-			<< " " << mesh_.elements.size() << std::endl;
+			  << " " << mesh_.elements.size() << std::endl;
 			for (uint32_t i = 0; i < mesh_.elements.size(); i++)
 			{
 				f << mesh_.elements[i].v_in_Kernel[0] << " " << mesh_.elements[i].v_in_Kernel[1] << " " << mesh_.elements[i].v_in_Kernel[2] << std::endl;
@@ -1683,6 +1683,11 @@ namespace polyfem
 
 			Navigation3D::prepare_mesh(mesh_);
 			compute_elements_tag();
+		}
+
+		std::unique_ptr<Mesh> CMesh3D::copy() const
+		{
+			return std::make_unique<CMesh3D>(*this);
 		}
 
 	} // namespace mesh

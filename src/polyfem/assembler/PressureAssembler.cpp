@@ -5,7 +5,7 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <ipc/utils/eigen_ext.hpp>
-#include <polysolve/LinearSolver.hpp>
+#include <polysolve/linear/Solver.hpp>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/io/Evaluator.hpp>

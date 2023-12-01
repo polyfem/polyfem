@@ -18,6 +18,13 @@ namespace polyfem
 	} // namespace
 
 	// Retrieve current logger
+	spdlog::logger &adjoint_logger()
+	{
+		static std::shared_ptr<spdlog::logger> opt_logger = spdlog::stdout_color_mt("opt");
+		return *opt_logger;
+	}
+
+	// Retrieve current logger
 	spdlog::logger &logger()
 	{
 		if (get_shared_logger())

@@ -26,14 +26,15 @@ namespace polyfem::assembler
 
 		AssemblerUtils() = delete;
 
-		// utility to merge 3 blocks of mixed matrices, A=velocity_stiffness, B=mixed_stiffness, and C=pressure_stiffness
-		//  A   B
-		//  B^T C
+		/// utility to merge 3 blocks of mixed matrices, A=velocity_stiffness, B=mixed_stiffness, and C=pressure_stiffness
+		///  A   B
+		///  B^T C
 		static void merge_mixed_matrices(
 			const int n_bases, const int n_pressure_bases, const int problem_dim, const bool add_average,
 			const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 			StiffnessMatrix &stiffness);
-
+		
+		/// utility for retrieving the needed quadrature order to precisely integrate the given form on the given element basis
 		static int quadrature_order(const std::string &assembler, const int basis_degree, const BasisType &b_type, const int dim);
 	};
 } // namespace polyfem::assembler
