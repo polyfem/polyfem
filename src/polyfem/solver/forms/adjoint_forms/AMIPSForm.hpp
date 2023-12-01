@@ -119,6 +119,8 @@ namespace polyfem::solver
 			: AdjointForm(variable_to_simulation),
 			  state_(state)
 		{
+			log_and_throw_error("Don't use amips in the optimization!");
+
 			amips_energy_ = assembler::AssemblerUtils::make_assembler("AMIPS");
 			amips_energy_->set_size(state.mesh->dimension());
 
@@ -243,6 +245,7 @@ namespace polyfem::solver
 			return !flipped;
 		}
 
+		/*
 		void solution_changed(const Eigen::VectorXd &newX) override
 		{
 			Eigen::MatrixXd V;
@@ -251,6 +254,7 @@ namespace polyfem::solver
 			rest_geom_bases_ = state_.geom_bases();
 			rest_ass_vals_cache_.init(state_.mesh->is_volume(), rest_geom_bases_, rest_geom_bases_);
 		}
+		*/
 
 	private:
 		Eigen::VectorXd get_updated_mesh_nodes(const Eigen::VectorXd &x) const

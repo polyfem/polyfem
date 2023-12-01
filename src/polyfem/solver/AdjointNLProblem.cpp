@@ -19,6 +19,128 @@ namespace polyfem::solver
 {
 	namespace
 	{
+		double triangle_jacobian(const Eigen::VectorXd &v1, const Eigen::VectorXd &v2, const Eigen::VectorXd &v3)
+		{
+			Eigen::VectorXd a = v2 - v1, b = v3 - v1;
+			return a(0) * b(1) - b(0) * a(1);
+		}
+
+		double tet_determinant(const Eigen::VectorXd &v1, const Eigen::VectorXd &v2, const Eigen::VectorXd &v3, const Eigen::VectorXd &v4)
+		{
+			Eigen::Matrix3d mat;
+			mat.col(0) << v2 - v1;
+			mat.col(1) << v3 - v1;
+			mat.col(2) << v4 - v1;
+			return mat.determinant();
+		}
+
+		void scaled_jacobian(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, Eigen::VectorXd &quality)
+		{
+			const int dim = F.cols() - 1;
+
+			quality.setZero(F.rows());
+			if (dim == 2)
+			{
+				for (int i = 0; i < F.rows(); i++)
+				{
+					Eigen::RowVector3d e0;
+					e0(2) = 0;
+					e0.head(2) = V.row(F(i, 2)) - V.row(F(i, 1));
+					Eigen::RowVector3d e1;
+					e1(2) = 0;
+					e1.head(2) = V.row(F(i, 0)) - V.row(F(i, 2));
+					Eigen::RowVector3d e2;
+					e2(2) = 0;
+					e2.head(2) = V.row(F(i, 1)) - V.row(F(i, 0));
+
+					double l0 = e0.norm();
+					double l1 = e1.norm();
+					double l2 = e2.norm();
+
+					double A = 0.5 * (e0.cross(e1)).norm();
+					double Lmax = std::max(l0 * l1, std::max(l1 * l2, l0 * l2));
+
+					quality(i) = 2 * A * (2 / sqrt(3)) / Lmax;
+				}
+			}
+			else
+			{
+				for (int i = 0; i < F.rows(); i++)
+				{
+					Eigen::RowVector3d e0 = V.row(F(i, 1)) - V.row(F(i, 0));
+					Eigen::RowVector3d e1 = V.row(F(i, 2)) - V.row(F(i, 1));
+					Eigen::RowVector3d e2 = V.row(F(i, 0)) - V.row(F(i, 2));
+					Eigen::RowVector3d e3 = V.row(F(i, 3)) - V.row(F(i, 0));
+					Eigen::RowVector3d e4 = V.row(F(i, 3)) - V.row(F(i, 1));
+					Eigen::RowVector3d e5 = V.row(F(i, 3)) - V.row(F(i, 2));
+
+					double l0 = e0.norm();
+					double l1 = e1.norm();
+					double l2 = e2.norm();
+					double l3 = e3.norm();
+					double l4 = e4.norm();
+					double l5 = e5.norm();
+
+					double J = std::abs((e0.cross(e3)).dot(e2));
+
+					double a1 = l0 * l2 * l3;
+					double a2 = l0 * l1 * l4;
+					double a3 = l1 * l2 * l5;
+					double a4 = l3 * l4 * l5;
+
+					double a = std::max({a1, a2, a3, a4, J});
+					quality(i) = J * sqrt(2) / a;
+				}
+			}
+		}
+
+		bool is_flipped(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
+		{
+			if (F.cols() == 3)
+			{
+				for (int i = 0; i < F.rows(); i++)
+					if (triangle_jacobian(V.row(F(i, 0)), V.row(F(i, 1)), V.row(F(i, 2))) <= 0)
+						return true;
+			}
+			else if (F.cols() == 4)
+			{
+				for (int i = 0; i < F.rows(); i++)
+					if (tet_determinant(V.row(F(i, 0)), V.row(F(i, 1)), V.row(F(i, 2)), V.row(F(i, 3))) <= 0)
+						return true;
+			}
+			else
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		Eigen::VectorXd get_updated_mesh_nodes(const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::shared_ptr<State> &curr_state, const Eigen::VectorXd &x)
+		{
+			Eigen::MatrixXd V;
+			curr_state->get_vertices(V);
+			Eigen::VectorXd X = utils::flatten(V);
+
+			for (auto &p : variables_to_simulation)
+			{
+				for (const auto &state : p->get_states())
+					if (state.get() != curr_state.get())
+						continue;
+				if (p->get_parameter_type() != ParameterType::Shape)
+					continue;
+				auto state_variable = p->get_parametrization().eval(x);
+				auto output_indexing = p->get_output_indexing(x);
+				for (int i = 0; i < output_indexing.size(); ++i)
+					X(output_indexing(i)) = state_variable(i);
+			}
+
+			return X;
+		}
+	} // namespace
+
+	namespace
+	{
 		using namespace std;
 		// Class to represent a graph
 		class Graph
@@ -205,6 +327,19 @@ namespace polyfem::solver
 
 	bool AdjointNLProblem::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
+		Eigen::MatrixXd X, V1;
+		Eigen::MatrixXi F;
+
+		for (auto state_ : all_states_)
+		{
+			X = get_updated_mesh_nodes(variables_to_simulation_, state_, x1);
+			V1 = utils::unflatten(X, state_->mesh->dimension());
+			state_->get_elements(F);
+			bool flipped = is_flipped(V1, F);
+			if (flipped)
+				return false;
+		}
+
 		return form_->is_step_valid(x0, x1);
 	}
 
