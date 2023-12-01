@@ -160,25 +160,13 @@ namespace polyfem::solver
 
 			{
 				POLYFEM_SCOPED_TIMER("adjoint solve");
-
-				const auto cur_log_level = logger().level();
-				all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
-
 				for (int i = 0; i < all_states_.size(); i++)
 					all_states_[i]->solve_adjoint_cached(form_->compute_adjoint_rhs(x, *all_states_[i])); // caches inside state
-
-				all_states_[0]->set_log_level(cur_log_level);
 			}
 
 			{
 				POLYFEM_SCOPED_TIMER("gradient assembly");
-
-				const auto cur_log_level = logger().level();
-				all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
-
 				form_->first_derivative(x, gradv);
-
-				all_states_[0]->set_log_level(cur_log_level);
 			}
 
 			cur_grad = gradv;
@@ -282,11 +270,8 @@ namespace polyfem::solver
 
 		if (need_rebuild_basis)
 		{
-			const auto cur_log_level = logger().level();
-			all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
 			for (const auto &state : all_states_)
 				state->build_basis();
-			all_states_[0]->set_log_level(cur_log_level);
 		}
 
 		form_->solution_changed(newX);
@@ -306,10 +291,8 @@ namespace polyfem::solver
 
 		if (need_rebuild_basis)
 		{
-			const auto cur_log_level = logger().level();
 			for (const auto &state : all_states_)
 				state->build_basis();
-			all_states_[0]->set_log_level(cur_log_level);
 		}
 
 		// solve PDE
@@ -320,8 +303,6 @@ namespace polyfem::solver
 
 	void AdjointNLProblem::solve_pde()
 	{
-		const auto cur_log_level = logger().level();
-
 		if (solve_in_parallel)
 		{
 			logger().info("Run simulations in parallel...");
@@ -355,8 +336,6 @@ namespace polyfem::solver
 				}
 			}
 		}
-
-		all_states_[0]->set_log_level(cur_log_level);
 
 		cur_grad.resize(0);
 	}

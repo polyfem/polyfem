@@ -265,7 +265,6 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 	Eigen::VectorXd x(2);
 	x << 0., 1.;
 
-	states[0]->set_log_level(static_cast<spdlog::level::level_enum>(1));
 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
 	{
 		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization()));
