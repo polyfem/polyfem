@@ -3,6 +3,7 @@
 #include <polyfem/solver/Optimizations.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/par_for.hpp>
+#include <polyfem/utils/GeogramUtils.hpp>
 
 #include <polyfem/solver/AdjointNLProblem.hpp>
 #include <polyfem/solver/forms/adjoint_forms/VariableToSimulation.hpp>
@@ -17,6 +18,7 @@ namespace polyfem
 {
 	OptState::OptState()
 	{
+		utils::GeogramUtils::instance().initialize();
 	}
 
 	void OptState::init_logger(
@@ -117,6 +119,8 @@ namespace polyfem
 			args["states"],
 			polyfem::solver::CacheLevel::Derivatives,
 			log_level, max_threads <= 0 ? std::numeric_limits<unsigned int>::max() : max_threads);
+
+		utils::GeogramUtils::instance().set_logger(adjoint_logger());
 	}
 
 	void OptState::init_variables()
