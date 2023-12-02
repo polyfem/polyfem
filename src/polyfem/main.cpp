@@ -5,16 +5,10 @@
 #include <h5pp/h5pp.h>
 
 #include <polyfem/State.hpp>
-
-#include <polyfem/solver/AdjointNLProblem.hpp>
-#include <polyfem/solver/forms/adjoint_forms/AdjointForm.hpp>
-#include <polyfem/solver/Optimizations.hpp>
+#include <polyfem/OptState.hpp>
 
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
-
-#include <polysolve/nonlinear/Solver.hpp>
-#include <polysolve/linear/Solver.hpp>
 
 using namespace polyfem;
 using namespace solver;
@@ -218,58 +212,22 @@ int optimization_simulation(const CLI::App &command_line,
 		tmp["/output/log/level"_json_pointer] = int(log_level);
 	opt_args.merge_patch(tmp);
 
-	// TODO fix gobal stuff threads log level etc
-	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, is_strict);
+	OptState state;
+	state.init(opt_args, is_strict);
 
-	/* states */
-	std::vector<std::shared_ptr<State>> states = AdjointOptUtils::create_states(opt_args["states"], polyfem::solver::CacheLevel::Derivatives, log_level, max_threads);
+	state.create_states();
+	state.init_variables();
+	state.crate_problem();
 
-	adjoint_logger().set_level(opt_args["output"]["log"]["level"]);
-
-	/* DOF */
-	int ndof = 0;
-	std::vector<int> variable_sizes;
-	for (const auto &arg : opt_args["parameters"])
-	{
-		int size = AdjointOptUtils::compute_variable_size(arg, states);
-		ndof += size;
-		variable_sizes.push_back(size);
-	}
-
-	/* variable to simulations */
-	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	for (const auto &arg : opt_args["variable_to_simulation"])
-		variable_to_simulations.push_back(
-			AdjointOptUtils::create_variable_to_simulation(arg, states,
-														   variable_sizes));
-
-	/* forms */
-	std::shared_ptr<AdjointForm> obj = AdjointOptUtils::create_form(
-		opt_args["functionals"], variable_to_simulations, states);
-
-	/* stopping conditions */
-	std::vector<std::shared_ptr<AdjointForm>> stopping_conditions;
-	for (const auto &arg : opt_args["stopping_conditions"])
-		stopping_conditions.push_back(
-			AdjointOptUtils::create_form(arg, variable_to_simulations, states));
-
-	Eigen::VectorXd x = AdjointOptUtils::inverse_evaluation(opt_args["parameters"], ndof, variable_sizes, variable_to_simulations);
-
-	for (auto &v2s : variable_to_simulations)
-		v2s->update(x);
-
-	auto nl_problem = std::make_shared<AdjointNLProblem>(
-		obj, stopping_conditions, variable_to_simulations, states, opt_args);
+	Eigen::VectorXd x;
+	state.initial_guess(x);
 
 	if (opt_args["compute_objective"].get<bool>())
 	{
-		nl_problem->solution_changed(x);
-		logger().info("Objective is {}", nl_problem->value(x));
+		logger().info("Objective is {}", state.eval(x));
 		return EXIT_SUCCESS;
 	}
 
-	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], opt_args["solver"]["advanced"]["characteristic_length"]);
-	nl_solver->minimize(*nl_problem, x);
-
+	state.solve(x);
 	return EXIT_SUCCESS;
 }
