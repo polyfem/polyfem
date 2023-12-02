@@ -68,13 +68,13 @@ namespace polyfem::solver
 	std::shared_ptr<polysolve::nonlinear::Solver> AdjointOptUtils::make_nl_solver(const json &solver_params, const json &linear_solver_params, const double characteristic_length)
 	{
 		auto names = polysolve::nonlinear::Solver::available_solvers();
-		if (std::find(names.begin(),names.end(),solver_params["solver"]) != names.end())
+		if (std::find(names.begin(), names.end(), solver_params["solver"]) != names.end())
 			return polysolve::nonlinear::Solver::create(solver_params, linear_solver_params, characteristic_length, adjoint_logger());
-		
+
 		names = polysolve::nonlinear::BoxConstraintSolver::available_solvers();
-		if (std::find(names.begin(),names.end(),solver_params["solver"]) != names.end())
+		if (std::find(names.begin(), names.end(), solver_params["solver"]) != names.end())
 			return polysolve::nonlinear::BoxConstraintSolver::create(solver_params, linear_solver_params, characteristic_length, adjoint_logger());
-		
+
 		log_and_throw_error("Invalid nonlinear solver name!");
 	}
 
@@ -428,7 +428,7 @@ namespace polyfem::solver
 		}
 
 		state->optimization_enabled = level;
-		state->init(in_args, false);
+		state->init(in_args, true);
 		state->load_mesh();
 		Eigen::MatrixXd sol, pressure;
 		state->build_basis();
@@ -447,20 +447,6 @@ namespace polyfem::solver
 			json cur_args;
 			if (!load_json(args["path"], cur_args))
 				log_and_throw_error("Can't find json for State {}", i);
-
-			{
-				auto tmp = R"({
-						"output": {
-							"log": {
-								"level": -1
-							}
-						}
-					})"_json;
-
-				tmp["output"]["log"]["level"] = int(log_level);
-
-				cur_args.merge_patch(tmp);
-			}
 
 			states[i++] = AdjointOptUtils::create_state(cur_args, level, max_threads);
 		}
