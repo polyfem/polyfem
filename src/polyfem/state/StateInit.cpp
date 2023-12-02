@@ -206,7 +206,7 @@ namespace polyfem
 		logger().info("Saving output to {}", output_dir);
 
 		const unsigned int thread_in = this->args["solver"]["max_threads"];
-		set_max_threads(thread_in <= 0 ? std::numeric_limits<unsigned int>::max() : thread_in);
+		set_max_threads(thread_in);
 
 		has_dhat = args_in["contact"].contains("dhat");
 
@@ -311,14 +311,9 @@ namespace polyfem
 		}
 	}
 
-	void State::set_max_threads(const unsigned int max_threads)
+	void State::set_max_threads(const int max_threads)
 	{
-		const unsigned int num_threads = std::max(1u, std::min(max_threads, std::thread::hardware_concurrency()));
-		NThread::get().num_threads = num_threads;
-#ifdef POLYFEM_WITH_TBB
-		thread_limiter = std::make_shared<tbb::global_control>(tbb::global_control::max_allowed_parallelism, num_threads);
-#endif
-		Eigen::setNbThreads(num_threads);
+		NThread::get().set_num_threads(max_threads);
 	}
 
 	void State::init_time()

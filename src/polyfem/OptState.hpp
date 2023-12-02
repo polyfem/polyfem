@@ -5,10 +5,6 @@
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
-#ifdef POLYFEM_WITH_TBB
-#include <tbb/global_control.h>
-#endif
-
 namespace polyfem
 {
 	class State;
@@ -30,9 +26,6 @@ namespace polyfem
 		~OptState() = default;
 		/// Constructor
 		OptState();
-
-		/// @param[in] max_threads max number of threads
-		void set_max_threads(const unsigned int max_threads = std::numeric_limits<unsigned int>::max());
 
 		/// initialize the polyfem solver with a json settings
 		/// @param[in] args input arguments
@@ -83,11 +76,6 @@ namespace polyfem
 				return args["root_path"].get<std::string>();
 			return "";
 		}
-
-#ifdef POLYFEM_WITH_TBB
-		/// limits the number of used threads
-		std::shared_ptr<tbb::global_control> thread_limiter;
-#endif
 
 		/// initializing the logger meant for internal usage
 		void init_logger(const std::vector<spdlog::sink_ptr> &sinks, const spdlog::level::level_enum log_level);

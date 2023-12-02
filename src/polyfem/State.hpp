@@ -34,10 +34,6 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-#ifdef POLYFEM_WITH_TBB
-#include <tbb/global_control.h>
-#endif
-
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -81,7 +77,7 @@ namespace polyfem
 		State();
 
 		/// @param[in] max_threads max number of threads
-		void set_max_threads(const unsigned int max_threads = std::numeric_limits<unsigned int>::max());
+		void set_max_threads(const int max_threads = std::numeric_limits<int>::max());
 
 		/// initialize the polyfem solver with a json settings
 		/// @param[in] args input arguments
@@ -614,11 +610,6 @@ namespace polyfem
 		/// @param[in] path path to resolve
 		/// @return resolvedpath
 		std::string resolve_output_path(const std::string &path) const;
-
-#ifdef POLYFEM_WITH_TBB
-		/// limits the number of used threads
-		std::shared_ptr<tbb::global_control> thread_limiter;
-#endif
 
 		//---------------------------------------------------
 		//-----------------differentiable--------------------
