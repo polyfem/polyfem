@@ -60,9 +60,16 @@
         "type": "object",
         "optional": [
             "log",
-            "save_frequency"
+            "save_frequency",
+            "directory"
         ],
         "doc": "Optimization output options"
+    },
+    {
+        "pointer": "/output/directory",
+        "default": "",
+        "type": "string",
+        "doc": "Directory for output files."
     },
     {
         "pointer": "/output/save_frequency",
