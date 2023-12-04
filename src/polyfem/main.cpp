@@ -222,7 +222,7 @@ int optimization_simulation(const CLI::App &command_line,
 	Eigen::VectorXd x;
 	state.initial_guess(x);
 
-	if (opt_args["compute_objective"].get<bool>())
+	if (state.args["compute_objective"].get<bool>())
 	{
 		logger().info("Objective is {}", state.eval(x));
 		return EXIT_SUCCESS;

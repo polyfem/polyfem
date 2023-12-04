@@ -75,7 +75,7 @@ namespace polyfem::solver
 		if (std::find(names.begin(), names.end(), solver_params["solver"]) != names.end())
 			return polysolve::nonlinear::BoxConstraintSolver::create(solver_params, linear_solver_params, characteristic_length, adjoint_logger());
 
-		log_and_throw_error("Invalid nonlinear solver name!");
+		log_and_throw_adjoint_error("Invalid nonlinear solver name!");
 	}
 
 	std::shared_ptr<AdjointForm> AdjointOptUtils::create_form(const json &args, const std::vector<std::shared_ptr<VariableToSimulation>> &var2sim, const std::vector<std::shared_ptr<State>> &states)
@@ -446,7 +446,7 @@ namespace polyfem::solver
 		{
 			json cur_args;
 			if (!load_json(args["path"], cur_args))
-				log_and_throw_error("Can't find json for State {}", i);
+				log_and_throw_adjoint_error("Can't find json for State {}", i);
 
 			states[i++] = AdjointOptUtils::create_state(cur_args, level, max_threads);
 		}

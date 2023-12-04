@@ -137,7 +137,6 @@ namespace polyfem
 	{
 		/* DOFS */
 		ndof = 0;
-		std::vector<int> variable_sizes;
 		for (const auto &arg : args["parameters"])
 		{
 			int size = solver::AdjointOptUtils::compute_variable_size(arg, states);
