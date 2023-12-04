@@ -84,7 +84,8 @@ namespace polyfem
 		const int n_el = int(bases.size());       // number of elements
 		const int shape = gbases[0].bases.size(); // number of geometry vertices in an element
 
-		double viscosity_ = std::dynamic_pointer_cast<assembler::OperatorSplitting>(assembler)->viscosity();
+		// TODO
+		double viscosity_ = std::dynamic_pointer_cast<assembler::OperatorSplitting>(assembler)->viscosity()(0, 0, 0, 0, 0);
 		assert(viscosity_ >= 0);
 
 		logger().info("Matrices assembly...");
