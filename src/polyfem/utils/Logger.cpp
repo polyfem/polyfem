@@ -29,7 +29,7 @@ namespace polyfem
 	{
 		if (get_shared_adjoint_logger())
 		{
-			return *get_shared_logger();
+			return *get_shared_adjoint_logger();
 		}
 		else
 		{

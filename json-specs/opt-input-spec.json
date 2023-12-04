@@ -89,9 +89,17 @@
         "default": null,
         "optional": [
             "nonlinear",
-            "advanced"
+            "advanced",
+            "max_threads"
         ],
         "doc": "Optimization solver parameters."
+    },
+    {
+        "pointer": "/solver/max_threads",
+        "default": 0,
+        "type": "int",
+        "min": 0,
+        "doc": "Maximum number of threads used; 0 is unlimited."
     },
     {
         "pointer": "/solver/nonlinear",
