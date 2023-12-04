@@ -119,7 +119,7 @@ namespace polyfem::solver
 			: AdjointForm(variable_to_simulation),
 			  state_(state)
 		{
-			log_and_throw_error("Don't use amips in the optimization!");
+			logger().error("Don't use amips in the optimization!");
 
 			amips_energy_ = assembler::AssemblerUtils::make_assembler("AMIPS");
 			amips_energy_->set_size(state.mesh->dimension());
