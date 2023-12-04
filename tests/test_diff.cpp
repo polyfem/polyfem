@@ -853,60 +853,26 @@ TEST_CASE("shape-transient-friction", "[test_adjoint]")
 	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-6, 1e-5);
 }
 
-// TEST_CASE("shape-transient-friction-sdf", "[test_adjoint]")
-// {
-// 	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
-// 	json in_args;
-// 	load_json(path + "shape-transient-friction-sdf.json", in_args);
-// 	auto state_ptr = create_state_and_solve(in_args);
-// 	State &state = *state_ptr;
+TEST_CASE("shape-transient-friction-sdf", "[test_adjoint]")
+{
+	json opt_args;
+	load_json(append_root_path("shape-transient-friction-sdf-opt.json"), opt_args);
+	auto [obj, var2sim, states] = prepare_test(opt_args);
 
-// 	json opt_args;
-// 	load_json(path + "shape-transient-friction-sdf-opt.json", opt_args);
-// 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
 
-// 	std::vector<std::shared_ptr<State>> states({state_ptr});
+	Eigen::MatrixXd velocity_discrete;
+	velocity_discrete.setZero(states[0]->n_geom_bases * 2, 1);
+	for (int i = 0; i < velocity_discrete.size(); ++i)
+		velocity_discrete(i) = rand() % 1000;
+	velocity_discrete.normalize();
 
-// 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-// 	variable_to_simulations.push_back(AdjointOptUtils::create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
+	Eigen::MatrixXd V;
+	states[0]->get_vertices(V);
+	Eigen::VectorXd x = utils::flatten(V);
 
-// 	// Eigen::MatrixXd control_points;
-// 	// Eigen::VectorXd knots;
-// 	// double delta;
-// 	// control_points.setZero(4, 2);
-// 	// control_points << 1, 0.4,
-// 	// 	0.66666667, 0.73333333,
-// 	// 	0.43333333, 1,
-// 	// 	0.1, 1;
-// 	// knots.setZero(8);
-// 	// knots << 0,
-// 	// 	0,
-// 	// 	0,
-// 	// 	0,
-// 	// 	1,
-// 	// 	1,
-// 	// 	1,
-// 	// 	1;
-// 	// delta = 0.05;
-
-// 	auto obj = AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states);
-
-// 	Eigen::MatrixXd velocity_discrete;
-// 	velocity_discrete.setZero(state.n_geom_bases * 2, 1);
-// 	for (int i = 0; i < state.n_geom_bases; ++i)
-// 	{
-// 		velocity_discrete(i * 2 + 0) = rand() % 1000;
-// 		velocity_discrete(i * 2 + 1) = rand() % 1000;
-// 	}
-
-// 	velocity_discrete.normalize();
-
-// 	Eigen::MatrixXd V;
-// 	state.get_vertices(V);
-// 	Eigen::VectorXd x = utils::flatten(V);
-
-// 	verify_adjoint(variable_to_simulations, *obj, state, x, velocity_discrete, 1e-7, 1e-5);
-// }
+	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-5);
+}
 
 TEST_CASE("initial-contact", "[test_adjoint]")
 {
