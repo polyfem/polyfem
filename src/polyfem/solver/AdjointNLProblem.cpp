@@ -206,7 +206,7 @@ namespace polyfem::solver
 
 	void AdjointNLProblem::save_to_file(const Eigen::VectorXd &x0)
 	{
-		logger().info("Saving iter {}", iter);
+		adjoint_logger().info("Saving iter {}", iter);
 		int id = 0;
 		if (iter % save_freq != 0)
 			return;
@@ -221,7 +221,7 @@ namespace polyfem::solver
 
 			if (!save_vtu)
 				continue;
-			logger().debug("Save final vtu to file {} ...", vis_mesh_path);
+			adjoint_logger().debug("Save final vtu to file {} ...", vis_mesh_path);
 
 			double tend = state->args.value("tend", 1.0);
 			double dt = 1;
@@ -242,7 +242,7 @@ namespace polyfem::solver
 
 			if (!save_rest_mesh)
 				continue;
-			logger().debug("Save rest mesh to file {} ...", rest_mesh_path);
+			adjoint_logger().debug("Save rest mesh to file {} ...", rest_mesh_path);
 
 			// If shape opt, save rest meshes as well
 			Eigen::MatrixXd V;
@@ -305,7 +305,7 @@ namespace polyfem::solver
 	{
 		if (solve_in_parallel)
 		{
-			logger().info("Run simulations in parallel...");
+			adjoint_logger().info("Run simulations in parallel...");
 
 			utils::maybe_parallel_for(all_states_.size(), [&](int start, int end, int thread_id) {
 				for (int i = start; i < end; i++)
