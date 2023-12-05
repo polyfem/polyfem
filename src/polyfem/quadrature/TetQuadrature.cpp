@@ -1,5 +1,4 @@
 #include "TetQuadrature.hpp"
-#include "LineQuadrature.hpp"
 
 #include <vector>
 #include <cassert>
@@ -30,8 +29,6 @@ namespace polyfem
 
 		void TetQuadrature::get_quadrature(const int order, Quadrature &quad)
 		{
-			Quadrature tmp;
-
 			get_weight_and_points(order, quad.points, quad.weights);
 
 			assert(fabs(quad.weights.sum() - 1) < 1e-12);

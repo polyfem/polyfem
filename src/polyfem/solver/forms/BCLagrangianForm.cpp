@@ -8,7 +8,7 @@ namespace polyfem::solver
 									   const std::vector<int> &boundary_nodes,
 									   const std::vector<mesh::LocalBoundary> &local_boundary,
 									   const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
-									   const int n_boundary_samples,
+									   const QuadratureOrders &n_boundary_samples,
 									   const StiffnessMatrix &mass,
 									   const assembler::RhsAssembler &rhs_assembler,
 									   const size_t obstacle_ndof,
@@ -33,7 +33,7 @@ namespace polyfem::solver
 		: boundary_nodes_(boundary_nodes),
 		  local_boundary_(nullptr),
 		  local_neumann_boundary_(nullptr),
-		  n_boundary_samples_(0),
+		  n_boundary_samples_({{0, 0}}),
 		  rhs_assembler_(nullptr),
 		  is_time_dependent_(false),
 		  target_x_(target_x)

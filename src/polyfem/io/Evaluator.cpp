@@ -7,11 +7,13 @@
 #include <polyfem/quadrature/QuadQuadrature.hpp>
 #include <polyfem/quadrature/TetQuadrature.hpp>
 #include <polyfem/quadrature/TriQuadrature.hpp>
+#include <polyfem/quadrature/PrismQuadrature.hpp>
 
 #include <polyfem/utils/BoundarySampler.hpp>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
+#include <polyfem/autogen/prism_bases.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 
@@ -198,6 +200,8 @@ namespace polyfem::io
 					utils::BoundarySampler::quadrature_for_tri_face(lf, 4, face_id, mesh3d, uv, points, weights);
 				else if (mesh3d.is_cube(e))
 					utils::BoundarySampler::quadrature_for_quad_face(lf, 4, face_id, mesh3d, uv, points, weights);
+				else if (mesh3d.is_prism(e))
+					utils::BoundarySampler::quadrature_for_prism_face(lf, 4, 4, face_id, mesh3d, uv, points, weights);
 				else
 					assert(false);
 
@@ -303,6 +307,8 @@ namespace polyfem::io
 					autogen::p_nodes_3d(1, points);
 				else if (mesh3d.is_cube(e))
 					autogen::q_nodes_3d(1, points);
+				else if (mesh3d.is_prism(e))
+					autogen::prism_nodes_3d(1, 1, points);
 				else
 					assert(false);
 
@@ -463,6 +469,8 @@ namespace polyfem::io
 						loc_v = utils::BoundarySampler::tet_local_node_coordinates_from_face(lfid);
 					else if (mesh.is_cube(e))
 						loc_v = utils::BoundarySampler::hex_local_node_coordinates_from_face(lfid);
+					else if (mesh.is_prism(e))
+						loc_v = utils::BoundarySampler::prism_local_node_coordinates_from_face(lfid);
 					else
 						assert(false);
 
@@ -502,6 +510,11 @@ namespace polyfem::io
 				{
 					utils::BoundarySampler::quadrature_for_quad_face(lfid, 4, face_id, mesh3d, uv, points, weights);
 					utils::BoundarySampler::normal_for_quad_face(lfid, tmp_n);
+				}
+				else if (mesh.is_prism(e))
+				{
+					utils::BoundarySampler::quadrature_for_prism_face(lfid, 4, 4, face_id, mesh3d, uv, points, weights);
+					utils::BoundarySampler::normal_for_prism_face(lfid, tmp_n);
 				}
 				else
 					assert(false);
@@ -561,6 +574,7 @@ namespace polyfem::io
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXi &disc_orders,
+		const Eigen::VectorXi &disc_ordersq,
 		const std::map<int, Eigen::MatrixXd> &polys,
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 		const assembler::Assembler &assembler,
@@ -617,6 +631,11 @@ namespace polyfem::io
 					autogen::q_nodes_3d(disc_orders(i), local_pts);
 				else
 					autogen::q_nodes_2d(disc_orders(i), local_pts);
+			}
+			else if (mesh.is_prism(i))
+			{
+				assert(mesh.dimension() == 3);
+				autogen::prism_nodes_3d(disc_orders(i), disc_ordersq(i), local_pts);
 			}
 			else
 			{
@@ -678,7 +697,7 @@ namespace polyfem::io
 		for (int k = 0; k < tmp_s.size(); ++k)
 		{
 			result_scalar[k].first = tmp_s[k].first;
-			interpolate_function(mesh, 1, bases, disc_orders, polys, polys_3d, sampler, n_points,
+			interpolate_function(mesh, 1, bases, disc_orders, disc_ordersq, polys, polys_3d, sampler, n_points,
 								 avg_scalar[k], result_scalar[k].second, use_sampler, boundary_only);
 		}
 		// interpolate_function(n_points, actual_dim*actual_dim, bases, avg_tensor, result_tensor, boundary_only);
@@ -736,6 +755,12 @@ namespace polyfem::io
 				auto vtx = mesh3d.get_ordered_vertices_from_hex(i);
 				vertices.assign(vtx.begin(), vtx.end());
 			}
+			else if (mesh.is_prism(i))
+			{
+				local_pts = sampler.prism_corners();
+				auto vtx = mesh3d.get_ordered_vertices_from_hex(i);
+				vertices.assign(vtx.begin(), vtx.end());
+			}
 			// TODO poly?
 			assert((int)vertices.size() == (int)local_pts.rows());
 
@@ -774,6 +799,7 @@ namespace polyfem::io
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXi &disc_orders,
+		const Eigen::VectorXi &disc_ordersq,
 		const assembler::Assembler &assembler,
 		const Eigen::MatrixXd &fun,
 		Eigen::MatrixXd &result,
@@ -835,6 +861,13 @@ namespace polyfem::io
 					f.get_quadrature(disc_orders(e), quadr);
 				}
 			}
+			else if (mesh.is_prism(e))
+			{
+				assert(mesh.is_volume());
+
+				quadrature::PrismQuadrature f;
+				f.get_quadrature(disc_orders(e), disc_ordersq(e), quadr);
+			}
 			else
 			{
 				continue;
@@ -869,6 +902,7 @@ namespace polyfem::io
 		const bool is_problem_scalar,
 		const std::vector<basis::ElementBases> &bases,
 		const Eigen::VectorXi &disc_orders,
+		const Eigen::VectorXi &disc_ordersq,
 		const std::map<int, Eigen::MatrixXd> &polys,
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 		const utils::RefElementSampler &sampler,
@@ -881,7 +915,7 @@ namespace polyfem::io
 		int actual_dim = 1;
 		if (!is_problem_scalar)
 			actual_dim = mesh.dimension();
-		interpolate_function(mesh, actual_dim, bases, disc_orders,
+		interpolate_function(mesh, actual_dim, bases, disc_orders, disc_ordersq,
 							 polys, polys_3d, sampler, n_points,
 							 fun, result, use_sampler, boundary_only);
 	}
@@ -891,6 +925,7 @@ namespace polyfem::io
 		const int actual_dim,
 		const std::vector<basis::ElementBases> &basis,
 		const Eigen::VectorXi &disc_orders,
+		const Eigen::VectorXi &disc_ordersq,
 		const std::map<int, Eigen::MatrixXd> &polys,
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 		const utils::RefElementSampler &sampler,
@@ -928,6 +963,8 @@ namespace polyfem::io
 					local_pts = sampler.simplex_points();
 				else if (mesh.is_cube(i))
 					local_pts = sampler.cube_points();
+				else if (mesh.is_prism(i))
+					local_pts = sampler.prism_points();
 				else
 				{
 					if (mesh.is_volume())
@@ -944,6 +981,8 @@ namespace polyfem::io
 						autogen::p_nodes_3d(disc_orders(i), local_pts);
 					else if (mesh.is_cube(i))
 						autogen::q_nodes_3d(disc_orders(i), local_pts);
+					else if (mesh.is_prism(i))
+						autogen::prism_nodes_3d(disc_orders(i), disc_ordersq(i), local_pts);
 					else
 						continue;
 				}
@@ -1082,6 +1121,7 @@ namespace polyfem::io
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXi &disc_orders,
+		const Eigen::VectorXi &disc_ordersq,
 		const std::map<int, Eigen::MatrixXd> &polys,
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 		const assembler::Assembler &assembler,
@@ -1117,6 +1157,8 @@ namespace polyfem::io
 					local_pts = sampler.simplex_points();
 				else if (mesh.is_cube(i))
 					local_pts = sampler.cube_points();
+				else if (mesh.is_prism(i))
+					local_pts = sampler.prism_points();
 				else
 				{
 					if (mesh.is_volume())
@@ -1133,6 +1175,8 @@ namespace polyfem::io
 						autogen::p_nodes_3d(disc_orders(i), local_pts);
 					else if (mesh.is_cube(i))
 						autogen::q_nodes_3d(disc_orders(i), local_pts);
+					else if (mesh.is_prism(i))
+						autogen::prism_nodes_3d(disc_orders(i), disc_ordersq(i), local_pts);
 					else
 						continue;
 				}
@@ -1163,6 +1207,7 @@ namespace polyfem::io
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXi &disc_orders,
+		const Eigen::VectorXi &disc_ordersq,
 		const std::map<int, Eigen::MatrixXd> &polys,
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 		const assembler::Assembler &assembler,
@@ -1203,6 +1248,8 @@ namespace polyfem::io
 					local_pts = sampler.simplex_points();
 				else if (mesh.is_cube(i))
 					local_pts = sampler.cube_points();
+				else if (mesh.is_prism(i))
+					local_pts = sampler.prism_points();
 				else
 				{
 					if (mesh.is_volume())
@@ -1219,6 +1266,8 @@ namespace polyfem::io
 						autogen::p_nodes_3d(disc_orders(i), local_pts);
 					else if (mesh.is_cube(i))
 						autogen::q_nodes_3d(disc_orders(i), local_pts);
+					else if (mesh.is_prism(i))
+						autogen::prism_nodes_3d(disc_orders(i), disc_ordersq(i), local_pts);
 					else
 						continue;
 				}
@@ -1260,6 +1309,7 @@ namespace polyfem::io
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const Eigen::VectorXi &disc_orders,
+		const Eigen::VectorXi &disc_ordersq,
 		const std::map<int, Eigen::MatrixXd> &polys,
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 		const assembler::Assembler &assembler,
@@ -1301,6 +1351,8 @@ namespace polyfem::io
 					local_pts = sampler.simplex_points();
 				else if (mesh.is_cube(i))
 					local_pts = sampler.cube_points();
+				else if (mesh.is_prism(i))
+					local_pts = sampler.prism_points();
 				else
 				{
 					if (mesh.is_volume())
@@ -1317,6 +1369,8 @@ namespace polyfem::io
 						autogen::p_nodes_3d(disc_orders(i), local_pts);
 					else if (mesh.is_cube(i))
 						autogen::q_nodes_3d(disc_orders(i), local_pts);
+					else if (mesh.is_prism(i))
+						autogen::prism_nodes_3d(disc_orders(i), disc_ordersq(i), local_pts);
 					else
 						continue;
 				}

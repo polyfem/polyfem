@@ -28,7 +28,7 @@ namespace polyfem::solver
 		  reduced_size_(full_size_ - boundary_nodes.size()),
 		  rhs_assembler_(nullptr),
 		  local_boundary_(nullptr),
-		  n_boundary_samples_(0),
+		  n_boundary_samples_({{0, 0}}),
 		  t_(0)
 	{
 		use_reduced_size();
@@ -38,7 +38,7 @@ namespace polyfem::solver
 		const int full_size,
 		const std::vector<int> &boundary_nodes,
 		const std::vector<mesh::LocalBoundary> &local_boundary,
-		const int n_boundary_samples,
+		const QuadratureOrders &n_boundary_samples,
 		const assembler::RhsAssembler &rhs_assembler,
 		const double t,
 		const std::vector<std::shared_ptr<Form>> &forms)

@@ -81,6 +81,14 @@ namespace polyfem
 			// v0────v1
 			std::array<int, 8> get_ordered_vertices_from_hex(const int element_index) const;
 			virtual std::array<int, 4> get_ordered_vertices_from_tet(const int element_index) const;
+			// Retrieves hex vertices numbered as follows:
+			//   v5
+			//   ╱┆ \
+			// v3─┼──v4
+			//  │v2   |
+			//  │╱  \ │
+			// v0────v1
+			std::array<int, 6> get_ordered_vertices_from_prism(const int element_index) const;
 
 			virtual void get_vertex_elements_neighs(const int v_id, std::vector<int> &ids) const = 0;
 			virtual void get_edge_elements_neighs(const int e_id, std::vector<int> &ids) const = 0;
