@@ -346,6 +346,8 @@ namespace polyfem::solver
 		const auto &bases = state.bases;
 		const int dim = state.mesh->dimension();
 		const int actual_dim = state.problem->is_scalar() ? 1 : dim;
+		const double t0 = state.problem->is_time_dependent() ? state.args["time"]["t0"].get<double>() : 0.0;
+		const double dt = state.problem->is_time_dependent() ? state.args["time"]["dt"].get<double>() : 0.0;
 
 		const int n_elements = int(bases.size());
 		term.setZero(state.n_geom_bases * dim, 1);
@@ -371,6 +373,7 @@ namespace polyfem::solver
 				Eigen::MatrixXd u, grad_u, j_val, dj_dgradu, dj_dx, lambda, mu;
 
 				json params = {};
+				params["t"] = cur_time_step * dt + t0;
 				params["step"] = cur_time_step;
 
 				for (int e = start; e < end; ++e)
@@ -440,6 +443,7 @@ namespace polyfem::solver
 				Eigen::MatrixXd u, grad_u, x, grad_x, j_val, dj_dgradu, dj_dgradx, dj_dx, lambda, mu;
 
 				json params = {};
+				params["t"] = cur_time_step * dt + t0;
 				params["step"] = cur_time_step;
 
 				for (int lb_id = start; lb_id < end; ++lb_id)
