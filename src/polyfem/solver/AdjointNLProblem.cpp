@@ -556,4 +556,9 @@ namespace polyfem::solver
 		return true;
 	}
 
+	void AdjointNLProblem::step_accepted(const int iter_num, const TVector &x)
+	{
+		save_to_file(x);
+	}
+
 } // namespace polyfem::solver

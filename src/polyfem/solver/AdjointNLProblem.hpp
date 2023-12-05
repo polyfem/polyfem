@@ -34,6 +34,8 @@ namespace polyfem::solver
 		void post_step(const int iter_num, const Eigen::VectorXd &x) override;
 		bool stop(const TVector &x) override;
 
+		void step_accepted(const int iter_num, const TVector &x) override;
+
 		// virtual void set_project_to_psd(bool val) override;
 
 		void solution_changed(const Eigen::VectorXd &new_x) override;
