@@ -151,7 +151,7 @@ namespace polyfem::assembler
 		else if (model == "MooneyRivlin")
 			return mooney_rivlin_elasticity_.assign_stress_tensor(data, all_size, type, all, fun);
 		else if (model == "MooneyRivlin3Param")
-			return mooney_rivlin_3_param_elasticity_.assign_stress_tensor(data);
+			return mooney_rivlin_3_param_elasticity_.assign_stress_tensor(data, all_size, type, all, fun);
 		else if (model == "UnconstrainedOgden")
 			return unconstrained_ogden_elasticity_.assign_stress_tensor(data, all_size, type, all, fun);
 		else if (model == "IncompressibleOgden")
