@@ -64,9 +64,14 @@ namespace polyfem::assembler
 		std::string name() const override { return "IncompressibleLinearElasticityPressure"; }
 		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
 
-		void set_size(const int) override { size_ = 1; }
+		void set_size(const int size) override
+		{
+			disp_size_ = size;
+			size_ = 1;
+		}
 
 	private:
 		LameParameters params_;
+		int disp_size_ = 0;
 	};
 } // namespace polyfem::assembler

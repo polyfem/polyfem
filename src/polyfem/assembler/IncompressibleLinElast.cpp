@@ -167,9 +167,9 @@ namespace polyfem::assembler
 
 	void IncompressibleLinearElasticityPressure::add_multimaterial(const int index, const json &params, const Units &units)
 	{
-		assert(size() == 2 || size() == 3);
+		assert(disp_size_ == 2 || disp_size_ == 3);
 
-		params_.add_multimaterial(index, params, size() == 3, units.stress());
+		params_.add_multimaterial(index, params, disp_size_ == 3, units.stress());
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
