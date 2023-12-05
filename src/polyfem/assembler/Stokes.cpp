@@ -26,7 +26,7 @@ namespace polyfem::assembler
 		double dot = 0;
 		for (int k = 0; k < gradi.rows(); ++k)
 		{
-			dot += gradi.row(k).dot(gradj.row(k)) * data.da(k) * viscosity_(data.vals.val.row(k), 0, data.vals.element_id);
+			dot += gradi.row(k).dot(gradj.row(k)) * data.da(k) * viscosity_(data.vals.val.row(k), data.t, data.vals.element_id);
 		}
 
 		for (int d = 0; d < size(); ++d)

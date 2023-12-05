@@ -33,7 +33,7 @@ namespace polyfem::assembler
 		{
 
 			double lambda, mu;
-			params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.vals.element_id, lambda, mu);
+			params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id, lambda, mu);
 
 			for (int di = 0; di < size(); ++di)
 			{
@@ -54,8 +54,18 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	void IncompressibleLinearElasticityDispacement::assign_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+	void IncompressibleLinearElasticityDispacement::assign_stress_tensor(const OutputData &data,
+																		 const int all_size,
+																		 const ElasticityTensorType &type,
+																		 Eigen::MatrixXd &all,
+																		 const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
+		const auto &displacement = data.fun;
+		const auto &local_pts = data.local_pts;
+		const auto &bs = data.bs;
+		const auto &gbs = data.gbs;
+		const auto el_id = data.el_id;
+
 		assert(size() == 2 || size() == 3);
 		all.resize(local_pts.rows(), all_size);
 		assert(displacement.cols() == 1);
@@ -76,7 +86,7 @@ namespace polyfem::assembler
 			}
 
 			double lambda, mu;
-			params_.lambda_mu(local_pts.row(p), vals.val.row(p), vals.element_id, lambda, mu);
+			params_.lambda_mu(local_pts.row(p), vals.val.row(p), data.t, vals.element_id, lambda, mu);
 
 			const Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose()) / 2;
 			Eigen::MatrixXd stress = 2 * mu * strain + lambda * strain.trace() * Eigen::MatrixXd::Identity(size(), size());
@@ -99,20 +109,20 @@ namespace polyfem::assembler
 		res["lambda"] = [&params](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
 			double lambda, mu;
 
-			params.lambda_mu(uv, p, e, lambda, mu);
+			params.lambda_mu(uv, p, t, e, lambda, mu);
 			return lambda;
 		};
 
 		res["mu"] = [&params](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
 			double lambda, mu;
 
-			params.lambda_mu(uv, p, e, lambda, mu);
+			params.lambda_mu(uv, p, t, e, lambda, mu);
 			return mu;
 		};
 
 		res["E"] = [&params, size](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
 			double lambda, mu;
-			params.lambda_mu(uv, p, e, lambda, mu);
+			params.lambda_mu(uv, p, t, e, lambda, mu);
 
 			if (size == 3)
 				return mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
@@ -123,7 +133,7 @@ namespace polyfem::assembler
 		res["nu"] = [&params, size](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
 			double lambda, mu;
 
-			params.lambda_mu(uv, p, e, lambda, mu);
+			params.lambda_mu(uv, p, t, e, lambda, mu);
 
 			if (size == 3)
 				return lambda / (2.0 * (lambda + mu));
@@ -175,7 +185,7 @@ namespace polyfem::assembler
 		for (long p = 0; p < data.da.size(); ++p)
 		{
 			double lambda, mu;
-			params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.vals.element_id, lambda, mu);
+			params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id, lambda, mu);
 
 			res += -phii(p) * phij(p) * data.da(p) / lambda;
 		}

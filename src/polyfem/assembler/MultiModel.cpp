@@ -125,24 +125,29 @@ namespace polyfem::assembler
 		}
 	}
 
-	void MultiModel::assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+	void MultiModel::assign_stress_tensor(
+		const OutputData &data,
+		const int all_size,
+		const ElasticityTensorType &type,
+		Eigen::MatrixXd &all,
+		const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
-		const std::string model = multi_material_models_[el_id];
+		const std::string model = multi_material_models_[data.el_id];
 
 		if (model == "SaintVenant")
-			saint_venant_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
+			saint_venant_.assign_stress_tensor(data, all_size, type, all, fun);
 		else if (model == "NeoHookean")
-			neo_hookean_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
+			neo_hookean_.assign_stress_tensor(data, all_size, type, all, fun);
 		else if (model == "LinearElasticity")
-			linear_elasticity_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
+			linear_elasticity_.assign_stress_tensor(data, all_size, type, all, fun);
 		else if (model == "HookeLinearElasticity")
-			return hooke_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
+			return hooke_.assign_stress_tensor(data, all_size, type, all, fun);
 		else if (model == "MooneyRivlin")
-			return mooney_rivlin_elasticity_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
+			return mooney_rivlin_elasticity_.assign_stress_tensor(data, all_size, type, all, fun);
 		else if (model == "UnconstrainedOgden")
-			return unconstrained_ogden_elasticity_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
+			return unconstrained_ogden_elasticity_.assign_stress_tensor(data, all_size, type, all, fun);
 		else if (model == "IncompressibleOgden")
-			return incompressible_ogden_elasticity_.assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, all_size, type, all, fun);
+			return incompressible_ogden_elasticity_.assign_stress_tensor(data, all_size, type, all, fun);
 		else
 		{
 			assert(false);

@@ -387,6 +387,8 @@ namespace polyfem::io
 		Eigen::MatrixXd &mises,
 		bool skip_orientation)
 	{
+		// TODO teseo
+		const double t = 0;
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -517,8 +519,8 @@ namespace polyfem::io
 					tet_n += tmp;
 				}
 
-				assembler.compute_scalar_value(e, bs, gbs, points, fun, tmp_s);
-				assembler.compute_tensor_value(e, bs, gbs, points, fun, tmp_t);
+				assembler.compute_scalar_value(OutputData(t, e, bs, gbs, points, fun), tmp_s);
+				assembler.compute_tensor_value(OutputData(t, e, bs, gbs, points, fun), tmp_t);
 
 				Eigen::MatrixXd loc_val = tmp_t[0].second, local_mises = tmp_s[0].second;
 				Eigen::VectorXd tmp(loc_val.cols());
@@ -572,6 +574,9 @@ namespace polyfem::io
 		const bool use_sampler,
 		const bool boundary_only)
 	{
+		// todo teseo
+		const double t = 0;
+
 		result_scalar.clear();
 		result_tensor.clear();
 
@@ -628,7 +633,7 @@ namespace polyfem::io
 			const quadrature::Quadrature &quadrature = vals.quadrature;
 			const double area = (vals.det.array() * quadrature.weights.array()).sum();
 
-			assembler.compute_scalar_value(i, bs, gbs, local_pts, fun, tmp_s);
+			assembler.compute_scalar_value(OutputData(t, i, bs, gbs, local_pts, fun), tmp_s);
 
 			// assembler.compute_tensor_value(i, bs, gbs, local_pts, fun, local_val);
 			// MatrixXd avg_tensor(n_points * actual_dim*actual_dim, 1);
@@ -779,6 +784,9 @@ namespace polyfem::io
 		Eigen::MatrixXd &result,
 		Eigen::VectorXd &von_mises)
 	{
+		// todo teseo
+		const double t = 0;
+
 		// if (!mesh)
 		// {
 		// 	logger().error("Load the mesh first!");
@@ -842,8 +850,8 @@ namespace polyfem::io
 
 			std::vector<std::pair<std::string, Eigen::MatrixXd>> tmp_s, tmp_t;
 
-			assembler.compute_scalar_value(e, bases[e], gbases[e], quadr.points, fun, tmp_s);
-			assembler.compute_tensor_value(e, bases[e], gbases[e], quadr.points, fun, tmp_t);
+			assembler.compute_scalar_value(OutputData(t, e, bases[e], gbases[e], quadr.points, fun), tmp_s);
+			assembler.compute_tensor_value(OutputData(t, e, bases[e], gbases[e], quadr.points, fun), tmp_t);
 
 			local_mises = tmp_s[0].second;
 			local_val = tmp_t[0].second;
@@ -1090,6 +1098,9 @@ namespace polyfem::io
 		const bool use_sampler,
 		const bool boundary_only)
 	{
+		// todo teseo
+		const double t = 0;
+
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -1147,7 +1158,7 @@ namespace polyfem::io
 				}
 			}
 
-			assembler.compute_scalar_value(i, bs, gbs, local_pts, fun, tmp_s);
+			assembler.compute_scalar_value(OutputData(t, i, bs, gbs, local_pts, fun), tmp_s);
 
 			for (const auto &s : tmp_s)
 				if (std::isnan(s.second.norm()))
@@ -1173,6 +1184,9 @@ namespace polyfem::io
 		const bool use_sampler,
 		const bool boundary_only)
 	{
+		// todo teseo
+		const double t = 0;
+
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -1233,7 +1247,7 @@ namespace polyfem::io
 				}
 			}
 
-			assembler.compute_scalar_value(i, bs, gbs, local_pts, fun, tmp_s);
+			assembler.compute_scalar_value(OutputData(t, i, bs, gbs, local_pts, fun), tmp_s);
 
 			if (result.empty())
 			{
@@ -1270,6 +1284,9 @@ namespace polyfem::io
 		const bool use_sampler,
 		const bool boundary_only)
 	{
+		// todo teseo
+		const double t = 0;
+
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -1331,7 +1348,7 @@ namespace polyfem::io
 				}
 			}
 
-			assembler.compute_tensor_value(i, bs, gbs, local_pts, fun, tmp_t);
+			assembler.compute_tensor_value(OutputData(t, i, bs, gbs, local_pts, fun), tmp_t);
 
 			if (result.empty())
 			{

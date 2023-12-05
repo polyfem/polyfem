@@ -163,6 +163,8 @@ namespace polyfem::assembler
 		StiffnessMatrix &stiffness,
 		const bool is_mass) const
 	{
+		// todo teseo
+		double t = 0;
 		assert(size() > 0);
 
 		const int max_triplets_size = int(1e7);
@@ -219,11 +221,11 @@ namespace polyfem::assembler
 							const auto &global_j = vals.basis_values[j].global;
 
 							// compute local entry in stiffness matrix
-							const auto stiffness_val = assemble(LinearAssemblerData(vals, i, j, local_storage.da));
+							const auto stiffness_val = assemble(LinearAssemblerData(vals, t, i, j, local_storage.da));
 							assert(stiffness_val.size() == size() * size());
 
 							// igl::Timer t1; t1.start();
-							// loop over dimensions of the problem 
+							// loop over dimensions of the problem
 							for (int n = 0; n < size(); ++n)
 							{
 								for (int m = 0; m < size(); ++m)
@@ -507,6 +509,8 @@ namespace polyfem::assembler
 		const Eigen::MatrixXd &displacement,
 		const Eigen::MatrixXd &displacement_prev) const
 	{
+		// TODO teseo
+		const double t = 0;
 		auto storage = create_thread_storage(LocalThreadScalarStorage());
 		const int n_bases = int(bases.size());
 
@@ -523,7 +527,7 @@ namespace polyfem::assembler
 				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 
-				const double val = compute_energy(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				const double val = compute_energy(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, local_storage.da));
 				local_storage.val += val;
 			}
 		});
@@ -544,6 +548,9 @@ namespace polyfem::assembler
 		const Eigen::MatrixXd &displacement,
 		const Eigen::MatrixXd &displacement_prev) const
 	{
+		// TODO teseo
+		const double t = 0;
+
 		auto storage = create_thread_storage(LocalThreadScalarStorage());
 		const int n_bases = int(bases.size());
 		Eigen::VectorXd out(bases.size());
@@ -561,7 +568,7 @@ namespace polyfem::assembler
 				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 
-				const double val = compute_energy(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				const double val = compute_energy(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, local_storage.da));
 				out[e] = val;
 			}
 		});
@@ -586,6 +593,9 @@ namespace polyfem::assembler
 		const Eigen::MatrixXd &displacement_prev,
 		Eigen::MatrixXd &rhs) const
 	{
+		// TODO teseo
+		const double t = 0;
+
 		rhs.resize(n_basis * size(), 1);
 		rhs.setZero();
 
@@ -610,7 +620,7 @@ namespace polyfem::assembler
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 				const int n_loc_bases = int(vals.basis_values.size());
 
-				const auto val = assemble_gradient(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				const auto val = assemble_gradient(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, local_storage.da));
 				assert(val.size() == n_loc_bases * size());
 
 				for (int j = 0; j < n_loc_bases; ++j)
@@ -662,6 +672,9 @@ namespace polyfem::assembler
 		MatrixCache &mat_cache,
 		StiffnessMatrix &hess) const
 	{
+		// TODO teseo
+		const double t = 0;
+
 		const int max_triplets_size = int(1e7);
 		const int buffer_size = std::min(long(max_triplets_size), long(n_basis) * size());
 		// std::cout<<"buffer_size "<<buffer_size<<std::endl;
@@ -692,7 +705,7 @@ namespace polyfem::assembler
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 				const int n_loc_bases = int(vals.basis_values.size());
 
-				auto stiffness_val = assemble_hessian(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				auto stiffness_val = assemble_hessian(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, local_storage.da));
 				assert(stiffness_val.rows() == n_loc_bases * size());
 				assert(stiffness_val.cols() == n_loc_bases * size());
 

@@ -62,6 +62,8 @@ namespace polyfem::io
 	{
 		void compute_traction_forces(const State &state, const Eigen::MatrixXd &solution, Eigen::MatrixXd &traction_forces, bool skip_dirichlet = true)
 		{
+			// todo teseo
+			double t = 0;
 
 			int actual_dim = 1;
 			if (!state.problem->is_scalar())
@@ -100,7 +102,7 @@ namespace polyfem::io
 				}
 
 				std::vector<assembler::Assembler::NamedMatrix> tensor_flat;
-				state.assembler->compute_tensor_value(e, bs, gbs, points, solution, tensor_flat);
+				state.assembler->compute_tensor_value(assembler::OutputData(t, e, bs, gbs, points, solution), tensor_flat);
 
 				for (long n = 0; n < vals.basis_values.size(); ++n)
 				{
@@ -1560,7 +1562,7 @@ namespace polyfem::io
 					for (const auto &[p, func] : params)
 						param_val.at(p)(index) = func(local_pts.row(j), vals.val.row(j), t, e);
 
-					rhos(index) = density(local_pts.row(j), vals.val.row(j), e);
+					rhos(index) = density(local_pts.row(j), vals.val.row(j), t, e);
 
 					++index;
 				}
@@ -1824,7 +1826,7 @@ namespace polyfem::io
 				std::vector<assembler::Assembler::NamedMatrix> tensor_flat;
 				const basis::ElementBases &gbs = gbases[el_index];
 				const basis::ElementBases &bs = bases[el_index];
-				assembler.compute_tensor_value(el_index, bs, gbs, boundary_vis_local_vertices.row(i), sol, tensor_flat);
+				assembler.compute_tensor_value(assembler::OutputData(t, el_index, bs, gbs, boundary_vis_local_vertices.row(i), sol), tensor_flat);
 				// TF computed only from cauchy stress
 				assert(tensor_flat[0].first == "cauchy_stess");
 				assert(tensor_flat[0].second.size() == actual_dim * actual_dim);
@@ -1893,7 +1895,7 @@ namespace polyfem::io
 				for (const auto &[p, func] : params)
 					param_val.at(p)(i) = func(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), t, boundary_vis_elements_ids(i));
 
-				rhos(i) = density(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), boundary_vis_elements_ids(i));
+				rhos(i) = density(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), t, boundary_vis_elements_ids(i));
 			}
 
 			for (const auto &[p, tmp] : param_val)

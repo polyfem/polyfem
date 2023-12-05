@@ -180,7 +180,7 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 
 		// value
 		{
-			const NonLinearAssemblerData data(vals, 0, displacement, displacement, da);
+			const NonLinearAssemblerData data(vals, 0, 0, displacement, displacement, da);
 
 			const double ea = autodiff.compute_energy(data);
 			const double e = real.compute_energy(data);
@@ -193,7 +193,7 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 
 		// grad
 		{
-			const NonLinearAssemblerData data(vals, 0, displacement, displacement, da);
+			const NonLinearAssemblerData data(vals, 0, 0, displacement, displacement, da);
 
 			const Eigen::VectorXd grada = autodiff.assemble_gradient(data);
 			const Eigen::VectorXd grad = real.assemble_gradient(data);
@@ -209,7 +209,7 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 
 		// hessian
 		{
-			const NonLinearAssemblerData data(vals, 0, displacement, displacement, da);
+			const NonLinearAssemblerData data(vals, 0, 0, displacement, displacement, da);
 
 			const Eigen::MatrixXd hessiana = autodiff.assemble_hessian(data);
 			const Eigen::MatrixXd hessian = real.assemble_hessian(data);
@@ -226,8 +226,8 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 		// F stress
 		{
 			Eigen::MatrixXd stressa, stress;
-			autodiff.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::F, stressa);
-			real.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::F, stress);
+			autodiff.compute_stress_tensor(OutputData(0, el_id, bs, bs, local_pts, displacement), ElasticityTensorType::F, stressa);
+			real.compute_stress_tensor(OutputData(0, el_id, bs, bs, local_pts, displacement), ElasticityTensorType::F, stress);
 
 			for (int i = 0; i < stressa.size(); ++i)
 			{
@@ -241,8 +241,8 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 		// cauchy stress
 		{
 			Eigen::MatrixXd stressa, stress;
-			autodiff.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::CAUCHY, stressa);
-			real.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::CAUCHY, stress);
+			autodiff.compute_stress_tensor(OutputData(0, el_id, bs, bs, local_pts, displacement), ElasticityTensorType::CAUCHY, stressa);
+			real.compute_stress_tensor(OutputData(0, el_id, bs, bs, local_pts, displacement), ElasticityTensorType::CAUCHY, stress);
 
 			for (int i = 0; i < stressa.size(); ++i)
 			{
@@ -256,8 +256,8 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 		// pk1 stress
 		{
 			Eigen::MatrixXd stressa, stress;
-			autodiff.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::PK1, stressa);
-			real.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::PK1, stress);
+			autodiff.compute_stress_tensor(OutputData(0, el_id, bs, bs, local_pts, displacement), ElasticityTensorType::PK1, stressa);
+			real.compute_stress_tensor(OutputData(0, el_id, bs, bs, local_pts, displacement), ElasticityTensorType::PK1, stress);
 
 			for (int i = 0; i < stressa.size(); ++i)
 			{
@@ -271,8 +271,8 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 		// pk2 stress
 		{
 			Eigen::MatrixXd stressa, stress;
-			autodiff.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::PK2, stressa);
-			real.compute_stress_tensor(el_id, bs, bs, local_pts, displacement, ElasticityTensorType::PK2, stress);
+			autodiff.compute_stress_tensor(OutputData(0, el_id, bs, bs, local_pts, displacement), ElasticityTensorType::PK2, stressa);
+			real.compute_stress_tensor(OutputData(0, el_id, bs, bs, local_pts, displacement), ElasticityTensorType::PK2, stress);
 
 			for (int i = 0; i < stressa.size(); ++i)
 			{

@@ -160,6 +160,9 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &adjoint,
 		Eigen::VectorXd &one_form)
 	{
+		// TODO Zizhou
+		const double t = 0;
+
 		const int dim = state.mesh->dimension();
 		const auto &bases = state.bases;
 		const auto &gbases = state.geom_bases();
@@ -178,7 +181,7 @@ namespace polyfem::solver
 				const quadrature::Quadrature &quadrature = vals.quadrature;
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 
-				state.assembler->compute_stiffness_value(vals, quadrature.points, sol, stiffnesses);
+				state.assembler->compute_stiffness_value(t, vals, quadrature.points, sol, stiffnesses);
 				stiffnesses.array().colwise() *= local_storage.da.array();
 
 				io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, adjoint, p, grad_p);

@@ -11,7 +11,8 @@
 
 namespace polyfem::solver
 {
-	namespace {
+	namespace
+	{
 
 		class LocalThreadVecStorage
 		{
@@ -28,8 +29,8 @@ namespace polyfem::solver
 		};
 
 		double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
-	}
-	
+	} // namespace
+
 	InertiaForm::InertiaForm(const StiffnessMatrix &mass,
 							 const time_integrator::ImplicitTimeIntegrator &time_integrator)
 		: mass_(mass), time_integrator_(time_integrator)
@@ -63,10 +64,12 @@ namespace polyfem::solver
 		const std::vector<basis::ElementBases> &geom_bases,
 		const assembler::Mass &assembler,
 		const assembler::AssemblyValsCache &ass_vals_cache,
-		const Eigen::MatrixXd &velocity, 
-		const Eigen::MatrixXd &adjoint, 
+		const Eigen::MatrixXd &velocity,
+		const Eigen::MatrixXd &adjoint,
 		Eigen::VectorXd &term)
 	{
+		// todo zizhou
+		double t = 0;
 		const int dim = is_volume ? 3 : 2;
 		const int n_elements = int(bases.size());
 		term.setZero(n_geom_bases * dim, 1);
@@ -92,7 +95,7 @@ namespace polyfem::solver
 
 				for (int q = 0; q < local_storage.da.size(); ++q)
 				{
-					const double rho = assembler.density()(quadrature.points.row(q), vals.val.row(q), e);
+					const double rho = assembler.density()(quadrature.points.row(q), vals.val.row(q), t, e);
 					const double value = rho * dot(p.row(q), vel.row(q)) * local_storage.da(q);
 					for (const auto &v : gvals.basis_values)
 					{

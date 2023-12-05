@@ -163,12 +163,16 @@ namespace polyfem::solver
 	// TODO: call local assemblers instead
 	IntegrableFunctional StressNormForm::get_integral_functional() const
 	{
+		// todo zizhou
+		double t = 0;
+		double dt = 0;
+
 		IntegrableFunctional j;
 
 		const std::string formulation = state_.formulation();
 		const int power = in_power_;
 
-		j.set_j([formulation, power, &state = std::as_const(state_)](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
+		j.set_j([t, dt, formulation, power, &state = std::as_const(state_)](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), 1);
 			int el_id = params["elem"];
 
@@ -180,13 +184,13 @@ namespace polyfem::solver
 				else
 				{
 					vector2matrix(grad_u.row(q), grad_u_q);
-					state.assembler->compute_stress_grad_multiply_mat(el_id, local_pts.row(q), pts.row(q), grad_u_q, Eigen::MatrixXd::Zero(grad_u_q.rows(), grad_u_q.cols()), stress, grad_unused);
+					state.assembler->compute_stress_grad_multiply_mat(OptAssemblerData(t, dt, el_id, local_pts.row(q), pts.row(q), grad_u_q), Eigen::MatrixXd::Zero(grad_u_q.rows(), grad_u_q.cols()), stress, grad_unused);
 				}
 				val(q) = pow(stress.squaredNorm(), power / 2.);
 			}
 		});
 
-		j.set_dj_dgradu([formulation, power, &state = std::as_const(state_)](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
+		j.set_dj_dgradu([t, dt, formulation, power, &state = std::as_const(state_)](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), grad_u.cols());
 			int el_id = params["elem"];
 			const int dim = sqrt(grad_u.cols());
@@ -203,7 +207,7 @@ namespace polyfem::solver
 				else
 				{
 					vector2matrix(grad_u.row(q), grad_u_q);
-					state.assembler->compute_stress_grad_multiply_stress(el_id, local_pts.row(q), pts.row(q), grad_u_q, stress, stress_dstress);
+					state.assembler->compute_stress_grad_multiply_stress(OptAssemblerData(t, dt, el_id, local_pts.row(q), pts.row(q), grad_u_q), stress, stress_dstress);
 				}
 
 				const double coef = power * pow(stress.squaredNorm(), power / 2. - 1.);
@@ -281,6 +285,10 @@ namespace polyfem::solver
 
 	void ComplianceForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
+		// todo zizhou
+		double t = 0;
+		double dt = 0;
+
 		SpatialIntegralForm::compute_partial_gradient_unweighted_step(time_step, x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
 		{
@@ -322,7 +330,7 @@ namespace polyfem::solver
 							vector2matrix(grad_u.row(q), grad_u_q);
 
 							Eigen::MatrixXd f_prime_dmu, f_prime_dlambda;
-							state.assembler->compute_dstress_dmu_dlambda(e, quadrature.points.row(q), vals.val.row(q), grad_u_q, f_prime_dmu, f_prime_dlambda);
+							state.assembler->compute_dstress_dmu_dlambda(OptAssemblerData(t, dt, e, quadrature.points.row(q), vals.val.row(q), grad_u_q), f_prime_dmu, f_prime_dlambda);
 
 							term(e + bases.size()) += dot(f_prime_dmu, grad_u_q) * da(q);
 							term(e) += dot(f_prime_dlambda, grad_u_q) * da(q);
@@ -383,9 +391,12 @@ namespace polyfem::solver
 
 	IntegrableFunctional KineticForm::get_integral_functional() const
 	{
+		// todo zizhou
+		double t = 0;
+
 		IntegrableFunctional j;
 
-		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
+		j.set_j([t, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			const int e = params["elem"];
 
 			Eigen::MatrixXd v, grad_v;
@@ -394,7 +405,7 @@ namespace polyfem::solver
 			val.setZero(u.rows(), 1);
 			for (int q = 0; q < v.rows(); q++)
 			{
-				const double rho = state_.mass_matrix_assembler->density()(local_pts.row(q), pts.row(q), e);
+				const double rho = state_.mass_matrix_assembler->density()(local_pts.row(q), pts.row(q), t, e);
 				val(q) = 0.5 * rho * v.row(q).squaredNorm();
 			}
 		});
