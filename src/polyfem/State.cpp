@@ -405,6 +405,7 @@ namespace polyfem
 						|| current == "SaintVenant"
 						|| current == "HookeLinearElasticity"
 						|| current == "MooneyRivlin"
+						|| current == "MooneyRivlin3Param"
 						|| current == "UnconstrainedOgden"
 						|| current == "IncompressibleOgden"
 						|| current == "MultiModels")
@@ -414,6 +415,7 @@ namespace polyfem
 							|| tmp == "SaintVenant"
 							|| tmp == "HookeLinearElasticity"
 							|| tmp == "MooneyRivlin"
+							|| current == "MooneyRivlin3Param"
 							|| tmp == "UnconstrainedOgden"
 							|| tmp == "IncompressibleOgden")
 							current = "MultiModels";

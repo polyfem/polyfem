@@ -61,6 +61,8 @@ namespace polyfem::assembler
 			return hooke_.assemble_gradient(data);
 		else if (model == "MooneyRivlin")
 			return mooney_rivlin_elasticity_.assemble_gradient(data);
+		else if (model == "MooneyRivlin3Param")
+			return mooney_rivlin_3_param_elasticity_.assemble_gradient(data);
 		else if (model == "UnconstrainedOgden")
 			return unconstrained_ogden_elasticity_.assemble_gradient(data);
 		else if (model == "IncompressibleOgden")
@@ -88,6 +90,8 @@ namespace polyfem::assembler
 			return hooke_.assemble_hessian(data);
 		else if (model == "MooneyRivlin")
 			return mooney_rivlin_elasticity_.assemble_hessian(data);
+		else if (model == "MooneyRivlin3Param")
+			return mooney_rivlin_3_param_elasticity_.assemble_hessian(data);
 		else if (model == "UnconstrainedOgden")
 			return unconstrained_ogden_elasticity_.assemble_hessian(data);
 		else if (model == "IncompressibleOgden")
@@ -114,6 +118,8 @@ namespace polyfem::assembler
 			return hooke_.compute_energy(data);
 		else if (model == "MooneyRivlin")
 			return mooney_rivlin_elasticity_.compute_energy(data);
+		else if (model == "MooneyRivlin3Param")
+			return mooney_rivlin_3_param_elasticity_.compute_energy(data);
 		else if (model == "UnconstrainedOgden")
 			return unconstrained_ogden_elasticity_.compute_energy(data);
 		else if (model == "IncompressibleOgden")
@@ -144,6 +150,8 @@ namespace polyfem::assembler
 			return hooke_.assign_stress_tensor(data, all_size, type, all, fun);
 		else if (model == "MooneyRivlin")
 			return mooney_rivlin_elasticity_.assign_stress_tensor(data, all_size, type, all, fun);
+		else if (model == "MooneyRivlin3Param")
+			return mooney_rivlin_3_param_elasticity_.assign_stress_tensor(data);
 		else if (model == "UnconstrainedOgden")
 			return unconstrained_ogden_elasticity_.assign_stress_tensor(data, all_size, type, all, fun);
 		else if (model == "IncompressibleOgden")
