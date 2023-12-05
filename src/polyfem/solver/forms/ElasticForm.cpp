@@ -122,11 +122,8 @@ namespace polyfem::solver
 		}
 	}
 
-	void ElasticForm::force_material_derivative(const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
+	void ElasticForm::force_material_derivative(const double t, const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
 	{
-		// todo zizhou
-		double t = 0;
-
 		const int dim = is_volume_ ? 3 : 2;
 
 		const int n_elements = int(bases_.size());
@@ -215,11 +212,8 @@ namespace polyfem::solver
 		}
 	}
 
-	void ElasticForm::force_shape_derivative(const int n_verts, const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
+	void ElasticForm::force_shape_derivative(const double t, const int n_verts, const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
 	{
-		// todo zizhou
-		double t = 0;
-
 		const int dim = is_volume_ ? 3 : 2;
 		const int actual_dim = (assembler_.name() == "Laplacian") ? 1 : dim;
 

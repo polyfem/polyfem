@@ -60,6 +60,7 @@ namespace polyfem::solver
 	void InertiaForm::force_shape_derivative(
 		bool is_volume,
 		const int n_geom_bases,
+		const double t,
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &geom_bases,
 		const assembler::Mass &assembler,
@@ -68,8 +69,6 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &adjoint,
 		Eigen::VectorXd &term)
 	{
-		// todo zizhou
-		double t = 0;
 		const int dim = is_volume ? 3 : 2;
 		const int n_elements = int(bases.size());
 		term.setZero(n_geom_bases * dim, 1);

@@ -99,9 +99,7 @@ namespace polyfem::solver
 
 	double MaxStressForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
 	{
-		// todo zizhou
-		double t = 0;
-
+		const double t = state_.problem->is_time_dependent() ? time_step * state_.args["time"]["dt"].get<double>() + state_.args["time"]["t0"].get<double>() : 0;
 		Eigen::VectorXd max_stress;
 		max_stress.setZero(state_.bases.size());
 		utils::maybe_parallel_for(state_.bases.size(), [&](int start, int end, int thread_id) {

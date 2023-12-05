@@ -36,6 +36,7 @@ namespace polyfem::solver
 		static void force_shape_derivative(
 			bool is_volume,
 			const int n_geom_bases,
+			const double t, 
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &geom_bases,
 			const assembler::Mass &assembler,
