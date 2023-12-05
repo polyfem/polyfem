@@ -358,6 +358,7 @@ namespace polyfem::io
 		const Eigen::MatrixXd &pts,
 		const Eigen::MatrixXi &faces,
 		const Eigen::MatrixXd &fun,
+		const double t,
 		const bool compute_avg,
 		Eigen::MatrixXd &result,
 		Eigen::MatrixXd &stresses,
@@ -367,7 +368,7 @@ namespace polyfem::io
 		interpolate_boundary_tensor_function(
 			mesh, is_problem_scalar, bases, gbases,
 			assembler,
-			pts, faces, fun, Eigen::MatrixXd::Zero(pts.rows(), pts.cols()),
+			pts, faces, fun, Eigen::MatrixXd::Zero(pts.rows(), pts.cols()), t,
 			compute_avg, result, stresses, mises, skip_orientation);
 	}
 
@@ -381,14 +382,13 @@ namespace polyfem::io
 		const Eigen::MatrixXi &faces,
 		const Eigen::MatrixXd &fun,
 		const Eigen::MatrixXd &disp,
+		const double t,
 		const bool compute_avg,
 		Eigen::MatrixXd &result,
 		Eigen::MatrixXd &stresses,
 		Eigen::MatrixXd &mises,
 		bool skip_orientation)
 	{
-		// TODO teseo
-		const double t = 0;
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -567,6 +567,7 @@ namespace polyfem::io
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 		const assembler::Assembler &assembler,
 		const utils::RefElementSampler &sampler,
+		const double t,
 		const int n_points,
 		const Eigen::MatrixXd &fun,
 		std::vector<assembler::Assembler::NamedMatrix> &result_scalar,
@@ -574,9 +575,6 @@ namespace polyfem::io
 		const bool use_sampler,
 		const bool boundary_only)
 	{
-		// todo teseo
-		const double t = 0;
-
 		result_scalar.clear();
 		result_tensor.clear();
 
@@ -781,12 +779,10 @@ namespace polyfem::io
 		const Eigen::VectorXi &disc_orders,
 		const assembler::Assembler &assembler,
 		const Eigen::MatrixXd &fun,
+		const double t,
 		Eigen::MatrixXd &result,
 		Eigen::VectorXd &von_mises)
 	{
-		// todo teseo
-		const double t = 0;
-
 		// if (!mesh)
 		// {
 		// 	logger().error("Load the mesh first!");
@@ -1095,12 +1091,10 @@ namespace polyfem::io
 		const assembler::Assembler &assembler,
 		const utils::RefElementSampler &sampler,
 		const Eigen::MatrixXd &fun,
+		const double t,
 		const bool use_sampler,
 		const bool boundary_only)
 	{
-		// todo teseo
-		const double t = 0;
-
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -1180,13 +1174,11 @@ namespace polyfem::io
 		const utils::RefElementSampler &sampler,
 		const int n_points,
 		const Eigen::MatrixXd &fun,
+		const double t,
 		std::vector<assembler::Assembler::NamedMatrix> &result,
 		const bool use_sampler,
 		const bool boundary_only)
 	{
-		// todo teseo
-		const double t = 0;
-
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -1280,13 +1272,11 @@ namespace polyfem::io
 		const utils::RefElementSampler &sampler,
 		const int n_points,
 		const Eigen::MatrixXd &fun,
+		const double t,
 		std::vector<assembler::Assembler::NamedMatrix> &result,
 		const bool use_sampler,
 		const bool boundary_only)
 	{
-		// todo teseo
-		const double t = 0;
-
 		if (fun.size() <= 0)
 		{
 			logger().error("Solve the problem first!");

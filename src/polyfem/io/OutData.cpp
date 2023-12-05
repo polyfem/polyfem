@@ -60,11 +60,8 @@ namespace polyfem::io
 {
 	namespace
 	{
-		void compute_traction_forces(const State &state, const Eigen::MatrixXd &solution, Eigen::MatrixXd &traction_forces, bool skip_dirichlet = true)
+		void compute_traction_forces(const State &state, const Eigen::MatrixXd &solution, const double t, Eigen::MatrixXd &traction_forces, bool skip_dirichlet = true)
 		{
-			// todo teseo
-			double t = 0;
-
 			int actual_dim = 1;
 			if (!state.problem->is_scalar())
 				actual_dim = state.mesh->dimension();
@@ -1036,7 +1033,7 @@ namespace polyfem::io
 			Evaluator::compute_stress_at_quadrature_points(
 				mesh, problem.is_scalar(),
 				bases, gbases, state.disc_orders, *state.assembler,
-				sol, result, mises);
+				sol, tend, result, mises);
 			std::ofstream out(stress_path);
 			out.precision(20);
 			out << result;
@@ -1048,7 +1045,7 @@ namespace polyfem::io
 			Evaluator::compute_stress_at_quadrature_points(
 				mesh, problem.is_scalar(),
 				bases, gbases, state.disc_orders, *state.assembler,
-				sol, result, mises);
+				sol, tend, result, mises);
 			std::ofstream out(mises_path);
 			out.precision(20);
 			out << mises;
@@ -1413,7 +1410,7 @@ namespace polyfem::io
 				mesh, problem.is_scalar(), bases, gbases,
 				state.disc_orders, state.polys, state.polys_3d,
 				*state.assembler,
-				ref_element_sampler, points.rows(), sol, vals, opts.use_sampler, opts.boundary_only);
+				ref_element_sampler, points.rows(), sol, t, vals, opts.use_sampler, opts.boundary_only);
 
 			for (auto &[_, v] : vals)
 				utils::append_rows_of_zeros(v, obstacle.n_vertices());
@@ -1434,7 +1431,7 @@ namespace polyfem::io
 				Evaluator::compute_tensor_value(
 					mesh, problem.is_scalar(), bases, gbases, state.disc_orders,
 					state.polys, state.polys_3d, *state.assembler, ref_element_sampler,
-					points.rows(), sol, tvals, opts.use_sampler, opts.boundary_only);
+					points.rows(), sol, t, tvals, opts.use_sampler, opts.boundary_only);
 
 				for (auto &[_, v] : tvals)
 					utils::append_rows_of_zeros(v, obstacle.n_vertices());
@@ -1460,7 +1457,7 @@ namespace polyfem::io
 				Evaluator::average_grad_based_function(
 					mesh, problem.is_scalar(), state.n_bases, bases, gbases,
 					state.disc_orders, state.polys, state.polys_3d, *state.assembler,
-					ref_element_sampler, points.rows(), sol, vals, tvals,
+					ref_element_sampler, t, points.rows(), sol, vals, tvals,
 					opts.use_sampler, opts.boundary_only);
 
 				if (obstacle.n_vertices() > 0)
@@ -1611,7 +1608,7 @@ namespace polyfem::io
 		if (fun.cols() != 1)
 		{
 			Eigen::MatrixXd traction_forces, traction_forces_fun;
-			compute_traction_forces(state, sol, traction_forces, false);
+			compute_traction_forces(state, sol, t, traction_forces, false);
 
 			Evaluator::interpolate_function(
 				mesh, problem.is_scalar(), bases, state.disc_orders,
@@ -2200,7 +2197,7 @@ namespace polyfem::io
 				mesh, problem.is_scalar(), state.bases, gbases,
 				state.disc_orders, state.polys, state.polys_3d,
 				*state.assembler,
-				ref_element_sampler, pts_index, sol, scalar_val, /*use_sampler*/ true, false);
+				ref_element_sampler, pts_index, sol, t, scalar_val, /*use_sampler*/ true, false);
 			for (const auto &v : scalar_val)
 				writer.add_field(v.first, v.second);
 		}
