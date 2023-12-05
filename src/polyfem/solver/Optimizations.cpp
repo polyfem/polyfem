@@ -83,6 +83,7 @@ namespace polyfem::solver
 			// 	log_and_throw_error("If optimizing a shape paramter, AMIPS form must be part of the objectives to prevent inverted elements!");
 
 			obj = std::make_shared<SumCompositeForm>(var2sim, forms);
+            obj->enable_energy_print("sum_of_objectives");
 		}
 		else
 		{

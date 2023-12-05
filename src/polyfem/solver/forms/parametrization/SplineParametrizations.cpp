@@ -21,63 +21,70 @@ namespace polyfem::solver
 	namespace
 	{
 
-		Eigen::Matrix<double, 3, 1> affine_transformation(const Eigen::Matrix<double, 3, 1> &point, const Eigen::Matrix<double, 6, 1> &param)
+		Eigen::Matrix<double, 3, 1> affine_transformation(const Eigen::Matrix<double, 3, 1> &control_pt, const Eigen::Matrix<double, 3, 1> &point, const Eigen::Matrix<double, 6, 1> &param)
 		{
 			Eigen::Matrix<double, 3, 1> transformed_point(3);
 
 			const double helper_0 = cos(param(2));
-			const double helper_1 = cos(param(1));
-			const double helper_2 = helper_1 * point(0);
-			const double helper_3 = sin(param(0));
-			const double helper_4 = sin(param(2));
-			const double helper_5 = helper_3 * helper_4;
-			const double helper_6 = sin(param(1));
-			const double helper_7 = cos(param(0));
-			const double helper_8 = helper_0 * helper_7;
-			const double helper_9 = helper_4 * helper_7;
-			const double helper_10 = helper_0 * helper_3;
-			transformed_point(0) = helper_0 * helper_2 + point(1) * (helper_10 * helper_6 - helper_9) + point(2) * (helper_5 + helper_6 * helper_8) + param(3);
-			transformed_point(1) = helper_2 * helper_4 + point(1) * (helper_5 * helper_6 + helper_8) - point(2) * (helper_10 - helper_6 * helper_9) + param(4);
-			transformed_point(2) = helper_1 * helper_3 * point(1) + helper_1 * helper_7 * point(2) - helper_6 * point(0) + param(5);
+			const double helper_1 = control_pt(0) - point(0);
+			const double helper_2 = cos(param(1));
+			const double helper_3 = helper_1 * helper_2;
+			const double helper_4 = control_pt(2) - point(2);
+			const double helper_5 = sin(param(0));
+			const double helper_6 = sin(param(2));
+			const double helper_7 = helper_5 * helper_6;
+			const double helper_8 = sin(param(1));
+			const double helper_9 = cos(param(0));
+			const double helper_10 = helper_0 * helper_9;
+			const double helper_11 = control_pt(1) - point(1);
+			const double helper_12 = helper_6 * helper_9;
+			const double helper_13 = helper_0 * helper_5;
+			transformed_point(0) = control_pt(0) - helper_0 * helper_3 - helper_11 * (-helper_12 + helper_13 * helper_8) - helper_4 * (helper_10 * helper_8 + helper_7) + param(3);
+			transformed_point(1) = control_pt(1) - helper_11 * (helper_10 + helper_7 * helper_8) - helper_3 * helper_6 + helper_4 * (-helper_12 * helper_8 + helper_13) + param(4);
+			transformed_point(2) = control_pt(2) + helper_1 * helper_8 - helper_11 * helper_2 * helper_5 - helper_2 * helper_4 * helper_9 + param(5);
+
 			return transformed_point;
 		}
 
-		Eigen::MatrixXd grad_affine_transformation(const Eigen::VectorXd &point, const Eigen::VectorXd &param)
+		Eigen::MatrixXd grad_affine_transformation(const Eigen::Matrix<double, 3, 1> &control_pt, const Eigen::VectorXd &point, const Eigen::VectorXd &param)
 		{
 			Eigen::MatrixXd grad(6, 3);
 
-			const double helper_0 = sin(param(0));
-			const double helper_1 = sin(param(2));
-			const double helper_2 = helper_0 * helper_1;
-			const double helper_3 = sin(param(1));
-			const double helper_4 = cos(param(0));
-			const double helper_5 = cos(param(2));
-			const double helper_6 = helper_4 * helper_5;
-			const double helper_7 = helper_2 + helper_3 * helper_6;
-			const double helper_8 = helper_1 * helper_4;
-			const double helper_9 = helper_0 * helper_5;
-			const double helper_10 = helper_3 * helper_9 - helper_8;
-			const double helper_11 = cos(param(1));
-			const double helper_12 = helper_0 * point(1);
-			const double helper_13 = helper_4 * point(2);
-			const double helper_14 = helper_11 * helper_12 + helper_11 * helper_13 - helper_3 * point(0);
-			const double helper_15 = helper_11 * point(0);
-			const double helper_16 = helper_2 * helper_3 + helper_6;
-			const double helper_17 = -helper_3 * helper_8 + helper_9;
-			grad(0) = -helper_10 * point(2) + helper_7 * point(1);
-			grad(1) = helper_14 * helper_5;
-			grad(2) = -helper_1 * helper_15 - helper_16 * point(1) + helper_17 * point(2);
+			const double helper_0 = control_pt(1) - point(1);
+			const double helper_1 = sin(param(0));
+			const double helper_2 = sin(param(2));
+			const double helper_3 = helper_1 * helper_2;
+			const double helper_4 = sin(param(1));
+			const double helper_5 = cos(param(0));
+			const double helper_6 = cos(param(2));
+			const double helper_7 = helper_5 * helper_6;
+			const double helper_8 = helper_3 + helper_4 * helper_7;
+			const double helper_9 = control_pt(2) - point(2);
+			const double helper_10 = helper_2 * helper_5;
+			const double helper_11 = helper_1 * helper_6;
+			const double helper_12 = -helper_10 + helper_11 * helper_4;
+			const double helper_13 = control_pt(0) - point(0);
+			const double helper_14 = cos(param(1));
+			const double helper_15 = helper_0 * helper_1;
+			const double helper_16 = helper_5 * helper_9;
+			const double helper_17 = helper_13 * helper_4 - helper_14 * helper_15 - helper_14 * helper_16;
+			const double helper_18 = helper_13 * helper_14;
+			const double helper_19 = helper_3 * helper_4 + helper_7;
+			const double helper_20 = -helper_10 * helper_4 + helper_11;
+			grad(0) = -helper_0 * helper_8 + helper_12 * helper_9;
+			grad(1) = helper_17 * helper_6;
+			grad(2) = helper_0 * helper_19 + helper_18 * helper_2 - helper_20 * helper_9;
 			grad(3) = 1;
 			grad(4) = 0;
 			grad(5) = 0;
-			grad(6) = -helper_16 * point(2) - helper_17 * point(1);
-			grad(7) = helper_1 * helper_14;
-			grad(8) = helper_10 * point(1) + helper_15 * helper_5 + helper_7 * point(2);
+			grad(6) = helper_0 * helper_20 + helper_19 * helper_9;
+			grad(7) = helper_17 * helper_2;
+			grad(8) = -helper_0 * helper_12 - helper_18 * helper_6 - helper_8 * helper_9;
 			grad(9) = 0;
 			grad(10) = 1;
 			grad(11) = 0;
-			grad(12) = helper_11 * (-helper_0 * point(2) + helper_4 * point(1));
-			grad(13) = -helper_12 * helper_3 - helper_13 * helper_3 - helper_15;
+			grad(12) = helper_14 * (-helper_0 * helper_5 + helper_1 * helper_9);
+			grad(13) = helper_15 * helper_4 + helper_16 * helper_4 + helper_18;
 			grad(14) = 0;
 			grad(15) = 0;
 			grad(16) = 0;
@@ -328,7 +335,7 @@ namespace polyfem::solver
 			{
 				Eigen::Matrix<double, 6, 1> affine_params = x.segment(j * 6, 6);
 				for (int i = 0; i < bbw_weights_.rows(); ++i)
-					y.segment(i * 3, 3) += bbw_weights_(i, j) * affine_transformation(y_start.segment(i * 3, 3), affine_params);
+					y.segment(i * 3, 3) += bbw_weights_(i, j) * affine_transformation(control_points_.row(j), y_start.segment(i * 3, 3), affine_params);
 			}
 		}
 		else
@@ -352,7 +359,7 @@ namespace polyfem::solver
 		{
 			for (int j = 0; j < bbw_weights_.cols(); ++j)
 				for (int i = 0; i < bbw_weights_.rows(); ++i)
-					grad.segment(j * 6, 6) += bbw_weights_(i, j) * grad_affine_transformation(y_start.segment(i * 3, 3), x.segment(j * 6, 6)).transpose() * grad_full.segment(i * 3, 3);
+					grad.segment(j * 6, 6) += bbw_weights_(i, j) * grad_affine_transformation(control_points_.row(j), y_start.segment(i * 3, 3), x.segment(j * 6, 6)).transpose() * grad_full.segment(i * 3, 3);
 		}
 		else
 		{
