@@ -21,7 +21,7 @@ namespace polyfem::solver
 					const std::vector<basis::ElementBases> &geom_bases,
 					const assembler::Assembler &assembler,
 					const assembler::AssemblyValsCache &ass_vals_cache,
-					const double dt,
+					const double t, const double dt,
 					const bool is_volume);
 
 		std::string name() const override { return "elastic"; }
@@ -57,7 +57,11 @@ namespace polyfem::solver
 		/// @brief Update time-dependent fields
 		/// @param t Current time
 		/// @param x Current solution at time t
-		void update_quantities(const double t, const Eigen::VectorXd &x) override { x_prev_ = x; }
+		void update_quantities(const double t, const Eigen::VectorXd &x) override
+		{
+			t_ = t;
+			x_prev_ = x;
+		}
 
 		/// @brief Compute the derivative of the force wrt lame/damping parameters, then multiply the resulting matrix with adjoint_sol.
 		/// @param[in] x Current solution
@@ -79,6 +83,7 @@ namespace polyfem::solver
 
 		const assembler::Assembler &assembler_; ///< Reference to the assembler
 		const assembler::AssemblyValsCache &ass_vals_cache_;
+		double t_;
 		const double dt_;
 		const bool is_volume_;
 

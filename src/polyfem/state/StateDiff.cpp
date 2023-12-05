@@ -189,6 +189,9 @@ namespace polyfem
 
 	void State::compute_force_jacobian_prev(const int force_step, const int sol_step, StiffnessMatrix &hessian_prev) const
 	{
+		// todo zizhou
+		double t = 0;
+
 		assert(force_step > 0);
 		assert(force_step > sol_step);
 		if (assembler->is_linear() && !is_contact_enabled())
@@ -289,7 +292,7 @@ namespace polyfem
 				{
 					utils::SparseMatrixCache mat_cache;
 					StiffnessMatrix damping_hessian_prev(u.size(), u.size());
-					damping_prev_assembler->assemble_hessian(mesh->is_volume(), n_bases, false, bases, geom_bases(), ass_vals_cache, dt, u, u_prev, mat_cache, damping_hessian_prev);
+					damping_prev_assembler->assemble_hessian(mesh->is_volume(), n_bases, false, bases, geom_bases(), ass_vals_cache, t, dt, u, u_prev, mat_cache, damping_hessian_prev);
 
 					hessian_prev += damping_hessian_prev;
 				}

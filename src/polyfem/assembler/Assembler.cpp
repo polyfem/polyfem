@@ -160,11 +160,10 @@ namespace polyfem::assembler
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &cache,
+		const double t,
 		StiffnessMatrix &stiffness,
 		const bool is_mass) const
 	{
-		// todo teseo
-		double t = 0;
 		assert(size() > 0);
 
 		const int max_triplets_size = int(1e7);
@@ -401,6 +400,7 @@ namespace polyfem::assembler
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &psi_cache,
 		const AssemblyValsCache &phi_cache,
+		const double t,
 		StiffnessMatrix &stiffness) const
 	{
 		assert(size() > 0);
@@ -445,7 +445,7 @@ namespace polyfem::assembler
 					{
 						const auto &global_j = phi_vals.basis_values[j].global;
 
-						const auto stiffness_val = assemble(MixedAssemblerData(psi_vals, phi_vals, i, j, local_storage.da));
+						const auto stiffness_val = assemble(MixedAssemblerData(psi_vals, phi_vals, t, i, j, local_storage.da));
 						assert(stiffness_val.size() == rows() * cols());
 
 						// igl::Timer t1; t1.start();
@@ -505,12 +505,11 @@ namespace polyfem::assembler
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &cache,
+		const double t,
 		const double dt,
 		const Eigen::MatrixXd &displacement,
 		const Eigen::MatrixXd &displacement_prev) const
 	{
-		// TODO teseo
-		const double t = 0;
 		auto storage = create_thread_storage(LocalThreadScalarStorage());
 		const int n_bases = int(bases.size());
 
@@ -544,13 +543,11 @@ namespace polyfem::assembler
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &cache,
+		const double t,
 		const double dt,
 		const Eigen::MatrixXd &displacement,
 		const Eigen::MatrixXd &displacement_prev) const
 	{
-		// TODO teseo
-		const double t = 0;
-
 		auto storage = create_thread_storage(LocalThreadScalarStorage());
 		const int n_bases = int(bases.size());
 		Eigen::VectorXd out(bases.size());
@@ -575,7 +572,7 @@ namespace polyfem::assembler
 
 #ifndef NDEBUG
 		const double assemble_val = assemble_energy(
-			is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
+			is_volume, bases, gbases, cache, t, dt, displacement, displacement_prev);
 		assert(std::abs(assemble_val - out.sum()) < std::max(1e-10 * assemble_val, 1e-10));
 #endif
 
@@ -588,14 +585,12 @@ namespace polyfem::assembler
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &cache,
+		const double t,
 		const double dt,
 		const Eigen::MatrixXd &displacement,
 		const Eigen::MatrixXd &displacement_prev,
 		Eigen::MatrixXd &rhs) const
 	{
-		// TODO teseo
-		const double t = 0;
-
 		rhs.resize(n_basis * size(), 1);
 		rhs.setZero();
 
@@ -666,15 +661,13 @@ namespace polyfem::assembler
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &cache,
+		const double t,
 		const double dt,
 		const Eigen::MatrixXd &displacement,
 		const Eigen::MatrixXd &displacement_prev,
 		MatrixCache &mat_cache,
 		StiffnessMatrix &hess) const
 	{
-		// TODO teseo
-		const double t = 0;
-
 		const int max_triplets_size = int(1e7);
 		const int buffer_size = std::min(long(max_triplets_size), long(n_basis) * size());
 		// std::cout<<"buffer_size "<<buffer_size<<std::endl;

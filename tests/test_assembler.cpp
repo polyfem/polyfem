@@ -52,7 +52,7 @@ TEST_CASE("hessian_lin", "[assembler]")
 	for (int rand = 0; rand < 10; ++rand)
 	{
 		state.assembler->assemble_hessian(false, state.n_bases, false,
-										  state.bases, state.bases, state.ass_vals_cache, 0, disp, Eigen::MatrixXd(), mat_cache, hessian);
+										  state.bases, state.bases, state.ass_vals_cache, 0, 0, disp, Eigen::MatrixXd(), mat_cache, hessian);
 
 		const StiffnessMatrix tmp = stiffness - hessian;
 		const auto val = Catch::Approx(0).margin(1e-8);
@@ -107,7 +107,7 @@ TEST_CASE("hessian_hooke", "[assembler]")
 	for (int rand = 0; rand < 10; ++rand)
 	{
 		state.assembler->assemble_hessian(false, state.n_bases, false,
-										  state.bases, state.bases, state.ass_vals_cache, 0, disp, Eigen::MatrixXd(), mat_cache, hessian);
+										  state.bases, state.bases, state.ass_vals_cache, 0, 0, disp, Eigen::MatrixXd(), mat_cache, hessian);
 
 		const StiffnessMatrix tmp = stiffness - hessian;
 		const auto val = Catch::Approx(0).margin(1e-8);

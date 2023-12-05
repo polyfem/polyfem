@@ -36,13 +36,14 @@ namespace polyfem::solver
 							 const std::vector<basis::ElementBases> &geom_bases,
 							 const assembler::Assembler &assembler,
 							 const assembler::AssemblyValsCache &ass_vals_cache,
-							 const double dt,
+							 const double t, const double dt,
 							 const bool is_volume)
 		: n_bases_(n_bases),
 		  bases_(bases),
 		  geom_bases_(geom_bases),
 		  assembler_(assembler),
 		  ass_vals_cache_(ass_vals_cache),
+		  t_(t),
 		  dt_(dt),
 		  is_volume_(is_volume)
 	{
@@ -55,13 +56,14 @@ namespace polyfem::solver
 	double ElasticForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		return assembler_.assemble_energy(
-			is_volume_, bases_, geom_bases_, ass_vals_cache_, dt_, x, x_prev_);
+			is_volume_,
+			bases_, geom_bases_, ass_vals_cache_, t_, dt_, x, x_prev_);
 	}
 
 	Eigen::VectorXd ElasticForm::value_per_element_unweighted(const Eigen::VectorXd &x) const
 	{
 		const Eigen::VectorXd out = assembler_.assemble_energy_per_element(
-			is_volume_, bases_, geom_bases_, ass_vals_cache_, dt_, x, x_prev_);
+			is_volume_, bases_, geom_bases_, ass_vals_cache_, t_, dt_, x, x_prev_);
 		assert(abs(out.sum() - value_unweighted(x)) < std::max(1e-10 * out.sum(), 1e-10));
 		return out;
 	}
@@ -70,7 +72,7 @@ namespace polyfem::solver
 	{
 		Eigen::MatrixXd grad;
 		assembler_.assemble_gradient(is_volume_, n_bases_, bases_, geom_bases_,
-									 ass_vals_cache_, dt_, x, x_prev_, grad);
+									 ass_vals_cache_, t_, dt_, x, x_prev_, grad);
 		gradv = grad;
 	}
 
@@ -90,7 +92,7 @@ namespace polyfem::solver
 			// NOTE: mat_cache_ is marked as mutable so we can modify it here
 			assembler_.assemble_hessian(
 				is_volume_, n_bases_, project_to_psd_, bases_,
-				geom_bases_, ass_vals_cache_, dt_, x, x_prev_, *mat_cache_, hessian);
+				geom_bases_, ass_vals_cache_, t_, dt_, x, x_prev_, *mat_cache_, hessian);
 		}
 	}
 
@@ -116,7 +118,7 @@ namespace polyfem::solver
 		if (assembler_.is_linear() && cached_stiffness_.size() == 0)
 		{
 			assembler_.assemble(is_volume_, n_bases_, bases_, geom_bases_,
-								ass_vals_cache_, cached_stiffness_);
+								ass_vals_cache_, t_, cached_stiffness_);
 		}
 	}
 

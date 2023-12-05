@@ -32,6 +32,7 @@ namespace polyfem::assembler
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &psi_cache,
 			const AssemblyValsCache &phi_cache,
+			const double t,
 			StiffnessMatrix &stiffness) const;
 
 		virtual std::string name() const = 0;
@@ -70,6 +71,7 @@ namespace polyfem::assembler
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &cache,
+			const double t,
 			StiffnessMatrix &stiffness,
 			const bool is_mass = false) const { log_and_throw_error("Assembler not implemented by {}!", name()); }
 
@@ -79,6 +81,7 @@ namespace polyfem::assembler
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &cache,
+			const double t,
 			const double dt,
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev) const { log_and_throw_error("Assemble energy not implemented by {}!", name()); }
@@ -88,6 +91,7 @@ namespace polyfem::assembler
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &cache,
+			const double t,
 			const double dt,
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev) const { log_and_throw_error("Assemble energy not implemented by {}!", name()); }
@@ -99,6 +103,7 @@ namespace polyfem::assembler
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &cache,
+			const double t,
 			const double dt,
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev,
@@ -112,6 +117,7 @@ namespace polyfem::assembler
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &cache,
+			const double t,
 			const double dt,
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev,
@@ -224,6 +230,7 @@ namespace polyfem::assembler
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &cache,
+			const double t,
 			StiffnessMatrix &stiffness,
 			const bool is_mass = false) const override;
 
@@ -246,6 +253,7 @@ namespace polyfem::assembler
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &cache,
+			const double t,
 			const double dt,
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev) const override;
@@ -256,6 +264,7 @@ namespace polyfem::assembler
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &cache,
+			const double t,
 			const double dt,
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev) const override;
@@ -267,6 +276,7 @@ namespace polyfem::assembler
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &cache,
+			const double t,
 			const double dt,
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev,
@@ -280,6 +290,7 @@ namespace polyfem::assembler
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &cache,
+			const double t,
 			const double dt,
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev,

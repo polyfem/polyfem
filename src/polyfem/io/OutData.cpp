@@ -1630,7 +1630,7 @@ namespace polyfem::io
 		if (fun.cols() != 1)
 		{
 			Eigen::MatrixXd potential_grad, potential_grad_fun;
-			state.assembler->assemble_gradient(mesh.is_volume(), state.n_bases, bases, gbases, state.ass_vals_cache, dt, sol, sol, potential_grad);
+			state.assembler->assemble_gradient(mesh.is_volume(), state.n_bases, bases, gbases, state.ass_vals_cache, t, dt, sol, sol, potential_grad);
 
 			Evaluator::interpolate_function(
 				mesh, problem.is_scalar(), bases, state.disc_orders,

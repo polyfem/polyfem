@@ -56,10 +56,11 @@ namespace polyfem::assembler
 		MixedAssemblerData(
 			const ElementAssemblyValues &psi_vals,
 			const ElementAssemblyValues &phi_vals,
+			const double t,
 			int i, int j,
 			const QuadratureVector &da)
 			: psi_vals(psi_vals), phi_vals(phi_vals),
-			  i(i), j(j), da(da)
+			  t(t), i(i), j(j), da(da)
 		{
 		}
 
@@ -67,6 +68,8 @@ namespace polyfem::assembler
 		const ElementAssemblyValues &psi_vals;
 		/// stores the evaluation for that element
 		const ElementAssemblyValues &phi_vals;
+
+		const double t;
 		/// first local order
 		const int i;
 		/// second local order
