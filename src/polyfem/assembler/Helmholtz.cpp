@@ -35,7 +35,7 @@ namespace polyfem::assembler
 		assert(pt.size() == 1);
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> val(size());
 		for (int d = 0; d < size(); ++d)
-			val(d) = pt(d).getValue();
+			val(d) = 0;
 
 		const double tmp = k_(val, 0, 0);
 		result(0) = pt(0).getHessian().trace() + tmp * tmp * pt(0).getValue();
