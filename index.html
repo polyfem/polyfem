@@ -239,15 +239,14 @@ RHS Assembly</h2>
 <h2><a class="anchor" id="autotoc_md16"></a>
 Matrix Assembly</h2>
 <p>The virtual class <code>assembler::Assembler</code> provides the interface used to actually construct matrices through its <code>assemble</code> function. For our simple example, the relevant subclass is <code>assembler::LinearAssembler</code>, which is itself a virtual class that defines how to assemble global matrices. However, the function that defines how to evaluate local matrix entries according to the chosen bilinear form is a pure virtual function. In our example, the stiffness matrix is built using <code>assembler::Laplacian</code>, which is a subclass of <code>assembler::LinearAssembler</code> that defines the local matrix entries (ie grad u dot grad v). The <code>assembler::Mass</code> class is similar except for building the mass matrix.</p>
-<p>The relevant high-level functions for matrix assembly are <code>State::assemble_mass_mat</code> and <code>State::build_stiffness_mat</code>. Note that the stiffness matrix is built later on (in the <code>State::solve_linear</code> function). <br  />
-</p>
+<p>The relevant high-level functions for matrix assembly are <code>State::assemble_mass_mat</code> and <code>State::build_stiffness_mat</code>. Note that the stiffness matrix is built later on (in the <code>State::solve_linear</code> function).</p>
 <h2><a class="anchor" id="autotoc_md17"></a>
 Solver</h2>
 <p>After assembling the necessary matrices/vectors, the <code>State::solve_problem</code> function dispatches <code>State::init_linear_solve</code> then <code>State::solve_problem</code>, which solves the linear system.</p>
 <h2><a class="anchor" id="autotoc_md18"></a>
 Diagram</h2>
 <p>A diagram showing the relationships discussed above is included below. Each block represents its own class. <code><a class="el" href="classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state">polyfem::State</a></code> is shown in orange and <code>basis::LagrangeBasis2d</code> in red. The basis storage classes are blue, the value storage classes purple, and the assembly-related classes green. Relationships between classes are shown with arrows. Bold arrows represent calling a member function and dashed ones represent inheritance.</p>
-<p><img src="img/example_diagram.png" alt="Overall diagram" class="inline"/></p>
+<p><img src="example_diagram.png" alt="Overall diagram" class="inline"/></p>
 <h3><a class="anchor" id="autotoc_md19"></a>
 Technical Note: Matrix Caching</h3>
 <p>In order to boost performance, PolyFEM caches sparsity structure when assembling matrices, taking advantage of the fact that the structure of stiffness/mass matrices remains unchanged assuming the basis is unchanged. The details can be found in <code><a class="el" href="_matrix_cache_8hpp.html">MatrixCache.hpp</a></code>. A brief overview of <code><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html">polyfem::utils::SparseMatrixCache</a></code> is included here for reference.</p>
