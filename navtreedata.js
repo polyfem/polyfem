@@ -35,8 +35,20 @@ var NAVTREE =
       [ "Automatic Code Generation", "index.html#autotoc_md8", null ],
       [ "Utilities", "index.html#autotoc_md9", null ]
     ] ],
-    [ "Building PolyFEM as a stand-alone executable", "index.html#autotoc_md10", null ],
-    [ "Building PolyFEM as a static library", "index.html#autotoc_md11", null ],
+    [ "Simple Example / Code Walkthrough", "index.html#autotoc_md10", [
+      [ "JSON File", "index.html#autotoc_md11", null ],
+      [ "State", "index.html#autotoc_md12", null ],
+      [ "Basis Building", "index.html#autotoc_md13", null ],
+      [ "Basis/Gradient Evaluation and Storage", "index.html#autotoc_md14", null ],
+      [ "RHS Assembly", "index.html#autotoc_md15", null ],
+      [ "Matrix Assembly", "index.html#autotoc_md16", null ],
+      [ "Solver", "index.html#autotoc_md17", null ],
+      [ "Diagram", "index.html#autotoc_md18", [
+        [ "Technical Note: Matrix Caching", "index.html#autotoc_md19", null ]
+      ] ]
+    ] ],
+    [ "Building PolyFEM as a stand-alone executable", "index.html#autotoc_md20", null ],
+    [ "Building PolyFEM as a static library", "index.html#autotoc_md21", null ],
     [ "Todo List", "todo.html", null ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
@@ -114,11 +126,11 @@ var NAVTREEINDEX =
 "classpolyfem_1_1utils_1_1_n_thread.html#ae09a4841c48c335a61ca4978a9234034",
 "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#ad88a48a400a496954c400573daf100de",
 "functions_vars_n.html",
-"namespacepolyfem_1_1autogen.html#a7aa835e572d97cf6952c3fa9a85b4851",
-"namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a01ba7e77dad0a0033b291edfcfd27898",
-"q__bases_8py.html#ad30e7e55965ca67e8255ccdb40bc367f",
-"structpolyfem_1_1mesh_1_1_face.html#acf613e68c19ab2130833ce14912945d1",
-"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_vert.html#ae9a8cc8e4fe8f4ea101961322341f183"
+"namespacepolyfem_1_1autogen.html#a2f3adeab0ebfd5fde39348930e85ad26",
+"namespacepolyfem_1_1problem.html#adc09098cb774ea452624a87d89433e7c",
+"q__bases_8py.html#aa9656e17bbd1e348385800ca316b200c",
+"structpolyfem_1_1mesh_1_1_face.html#a062642822db33e1287727faad413294c",
+"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_vert.html#a4a3453998e2f61f959d248bd648e8ee5"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -133,14 +133,14 @@ Finite Element Assembler</h2>
 Finite Element Bases</h2>
 <p><code><a class="el" href="namespacepolyfem_1_1basis.html">polyfem::basis</a></code> contains the implementation of finite element basis functions.</p>
 <p>The module supports the following 2 dimensional elements:</p><ul>
-<li>Lagrangian triangular elements of degree 1 to 8 (<code>FEBasis2d.hpp</code>)</li>
-<li>Lagrangian quadrilateral elements of degree 1 to 8 (<code>FEBasis2d.hpp</code>)</li>
+<li>Lagrangian triangular elements of degree 1 to 8 (<code><a class="el" href="_lagrange_basis2d_8hpp.html">LagrangeBasis2d.hpp</a></code>)</li>
+<li>Lagrangian quadrilateral elements of degree 1 to 8 (<code><a class="el" href="_lagrange_basis2d_8hpp.html">LagrangeBasis2d.hpp</a></code>)</li>
 <li>Spline (IGA) elements of degree 1 to 4 (<code><a class="el" href="_spline_basis2d_8hpp.html">SplineBasis2d.hpp</a></code>)</li>
 <li>Polygonal elements (<code><a class="el" href="_polygonal_basis2d_8hpp.html">PolygonalBasis2d.hpp</a></code>)</li>
 </ul>
 <p>The module supports the following 3 dimensional elements:</p><ul>
-<li>Lagrangian tetrahedral elements of degree 1 to 8 (<code>FEBasis3d.hpp</code>)</li>
-<li>Lagrangian hexahedral elements of degree 1 to 8 (<code>FEBasis3d.hpp</code>)</li>
+<li>Lagrangian tetrahedral elements of degree 1 to 8 (<code><a class="el" href="_lagrange_basis3d_8hpp.html">LagrangeBasis3d.hpp</a></code>)</li>
+<li>Lagrangian hexahedral elements of degree 1 to 8 (<code><a class="el" href="_lagrange_basis3d_8hpp.html">LagrangeBasis3d.hpp</a></code>)</li>
 <li>Spline (IGA) elements of degree 1 to 4 (<code><a class="el" href="_spline_basis3d_8hpp.html">SplineBasis3d.hpp</a></code>)</li>
 <li>Polygonal elements (<code><a class="el" href="_polygonal_basis3d_8hpp.html">PolygonalBasis3d.hpp</a></code>)</li>
 </ul>
@@ -181,6 +181,80 @@ Automatic Code Generation</h2>
 Utilities</h2>
 <p>Smaller utilities are grouped in the <code><a class="el" href="namespacepolyfem_1_1utils.html">polyfem::utils</a></code> module, including mesh IO, hashing functions, logging, matrix utilities, parallelization, rasterization, function interpolation (<code><a class="el" href="_r_b_f_interpolation_8hpp.html">RBFInterpolation.hpp</a></code>), and timers (<code><a class="el" href="_timer_8hpp.html">Timer.hpp</a></code>).</p>
 <h1><a class="anchor" id="autotoc_md10"></a>
+Simple Example / Code Walkthrough</h1>
+<p>In this section, a brief, high-level code walkthrough for a simple example problem is given.</p>
+<h2><a class="anchor" id="autotoc_md11"></a>
+JSON File</h2>
+<p>For this example, we solve the Laplacian on a (triangular) plate-hole mesh with Dirichlet boundary conditions and a constant RHS. We choose P1 elements implicitly (as this is the default). See the <a href="https://polyfem.github.io/json_defaults_and_spec/">JSON specificiation</a> for more details.</p>
+<div class="fragment"><div class="line">{</div>
+<div class="line">    &quot;geometry&quot;: {</div>
+<div class="line">        &quot;advanced&quot;: {</div>
+<div class="line">            &quot;normalize_mesh&quot;: true</div>
+<div class="line">        },</div>
+<div class="line">        &quot;mesh&quot;: &quot;plate_hole.obj&quot;,</div>
+<div class="line">        &quot;surface_selection&quot;: {</div>
+<div class="line">            &quot;threshold&quot;: 1e-08</div>
+<div class="line">        }</div>
+<div class="line">    },</div>
+<div class="line"> </div>
+<div class="line">    &quot;materials&quot;: {</div>
+<div class="line">        &quot;type&quot;: &quot;Laplacian&quot;</div>
+<div class="line">    },</div>
+<div class="line"> </div>
+<div class="line">    &quot;boundary_conditions&quot;: {</div>
+<div class="line">        &quot;dirichlet_boundary&quot;: [{</div>
+<div class="line">            &quot;id&quot;: 1,</div>
+<div class="line">            &quot;value&quot;: 0.0</div>
+<div class="line">        }, {</div>
+<div class="line">            &quot;id&quot;: 4,</div>
+<div class="line">            &quot;value&quot;: 1.0</div>
+<div class="line">        }],</div>
+<div class="line">        &quot;rhs&quot;: 10</div>
+<div class="line">    },</div>
+<div class="line"> </div>
+<div class="line">    &quot;output&quot;: {</div>
+<div class="line">        &quot;json&quot;: &quot;stats.json&quot;,</div>
+<div class="line">        &quot;paraview&quot;: {</div>
+<div class="line">            &quot;file_name&quot;: &quot;result.vtu&quot;</div>
+<div class="line">        }</div>
+<div class="line">    }</div>
+<div class="line">}</div>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md12"></a>
+State</h2>
+<p>Internally, PolyFEM keeps a <code><a class="el" href="classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state">polyfem::State</a></code> object that contains the entire state of the solve. The mesh, basis, boundary conditions, stiffness/mass matrices, RHS, and user-selected settings are all stored in <code><a class="el" href="classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state">polyfem::State</a></code>. The <code><a class="el" href="classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state">polyfem::State</a></code> class is also responsible for dispatch, meaning it contains member functions for the basic steps of a solve, including building a basis, assembling matrices, and actually performing the linear or nonlinear solve.</p>
+<h2><a class="anchor" id="autotoc_md13"></a>
+Basis Building</h2>
+<p>After creating a <code><a class="el" href="classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state">polyfem::State</a></code> object and loading the input mesh, the next step in the code is to build the basis. In PolyFEM, there are two separate notions of basis: the finite element (FE) basis and the geometric basis. (They are the same in the isoparametric case.) The former is used to construct the solution whereas the latter is used to represent the geometric mapping, which is especially useful to implement curved elements.</p>
+<p>Both the FE and geometric basis are stored as vectors of <code>basis::ElementBases</code>. Each <code>basis::ElementBases</code> object stores the basis functions for a given element as a vector of <code>basis::Basis</code>. Each <code>basis::Basis</code> stores functions representing a local basis function and its gradient.</p>
+<p>The high-level function that constructs the FE and geometric bases is <code>State::build_basis</code>. In our example, it uses <code>basis::LagrangeBasis2d</code> to create the vector of <code>basis::ElementBases</code>.</p>
+<h2><a class="anchor" id="autotoc_md14"></a>
+Basis/Gradient Evaluation and Storage</h2>
+<p>In order to evaluate local basis functions and construct mass/stiffness matrices, PolyFEM makes use of a series of data storage classes. The lowest level of these classes is <code>assembler::AssemblyValues</code>, which stores the evaluation and gradient of a single local basis function on its element's quadrature points. A vector of <code>basis::Local2Global</code> objects is also stored. This is used to constrain nodes at the interface between different order elements (allowing for refinement).</p>
+<p>The <code>assembler::ElementAssemblyValues</code> class stores per element information, including quadrature points in real space, the geometric mapping's determinant, and a vector of <code>assembler::AssemblyValues</code> objects (one for each local basis function).</p>
+<p>Finallly, <code>assembler::AssemblyValsCache</code> is stores a vector of <code>assembler::ElementAssemblyValues</code>, boosting performance by caching the per element information. Its data can be accessed through its <code>compute</code> function.</p>
+<p>These three classes are the core data storage objects used during matrix assembly. These classes use the previously constructed <code>basis::ElementBases</code> objects to evaluate basis functions and their gradients.</p>
+<h2><a class="anchor" id="autotoc_md15"></a>
+RHS Assembly</h2>
+<p>After building the basis, the next step is to assemble the RHS. This is done through the <code>State::assemble_rhs</code> function, which itself creates a <code>assembler::RhsAssembler</code> object. The <code>assembler::RhsAssembler::assemble</code> function is then called in order to construct the RHS vector of the weak form using <code>assembler::AssemblyValsCache</code> and the user-provided RHS function. In our simple example, the latter is just $10$. Note that the RHS function and boundary conditions are stored in <code>assembler::GenericProblem</code>.</p>
+<h2><a class="anchor" id="autotoc_md16"></a>
+Matrix Assembly</h2>
+<p>The virtual class <code>assembler::Assembler</code> provides the interface used to actually construct matrices through its <code>assemble</code> function. For our simple example, the relevant subclass is <code>assembler::LinearAssembler</code>, which is itself a virtual class that defines how to assemble global matrices. However, the function that defines how to evaluate local matrix entries according to the chosen bilinear form is a pure virtual function. In our example, the stiffness matrix is built using <code>assembler::Laplacian</code>, which is a subclass of <code>assembler::LinearAssembler</code> that defines the local matrix entries (ie grad u dot grad v). The <code>assembler::Mass</code> class is similar except for building the mass matrix.</p>
+<p>The relevant high-level functions for matrix assembly are <code>State::assemble_mass_mat</code> and <code>State::build_stiffness_mat</code>. Note that the stiffness matrix is built later on (in the <code>State::solve_linear</code> function). <br  />
+</p>
+<h2><a class="anchor" id="autotoc_md17"></a>
+Solver</h2>
+<p>After assembling the necessary matrices/vectors, the <code>State::solve_problem</code> function dispatches <code>State::init_linear_solve</code> then <code>State::solve_problem</code>, which solves the linear system.</p>
+<h2><a class="anchor" id="autotoc_md18"></a>
+Diagram</h2>
+<p>A diagram showing the relationships discussed above is included below. Each block represents its own class. <code><a class="el" href="classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state">polyfem::State</a></code> is shown in orange and <code>basis::LagrangeBasis2d</code> in red. The basis storage classes are blue, the value storage classes purple, and the assembly-related classes green. Relationships between classes are shown with arrows. Bold arrows represent calling a member function and dashed ones represent inheritance.</p>
+<p><img src="img/example_diagram.png" alt="Overall diagram" class="inline"/></p>
+<h3><a class="anchor" id="autotoc_md19"></a>
+Technical Note: Matrix Caching</h3>
+<p>In order to boost performance, PolyFEM caches sparsity structure when assembling matrices, taking advantage of the fact that the structure of stiffness/mass matrices remains unchanged assuming the basis is unchanged. The details can be found in <code><a class="el" href="_matrix_cache_8hpp.html">MatrixCache.hpp</a></code>. A brief overview of <code><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html">polyfem::utils::SparseMatrixCache</a></code> is included here for reference.</p>
+<p>In PolyFEM, sparse matrices are stored in <a href="https://en.wikipedia.org/wiki/Sparse_matrix#Compressed_sparse_column_(CSC_or_CCS)">Compressed Sparse Column (CSC)</a> form. Thus, the matrix is represented as three arrays: two for storing non-zero indices and one for storing values.</p>
+<p>Consider the first time a <code><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html">polyfem::utils::SparseMatrixCache</a></code> object is filled with values. Each time <code>SparseMatrixCache::add_value</code> is called, the values and their global indices are placed in a temporary buffer. It is assumed that a given <code><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html">polyfem::utils::SparseMatrixCache</a></code> always receives each entry from a given element in the same order.</p>
+<p>The first time the matrix is retrieved using <code>SparseMatrixCache::get_matrix</code>, <code>SparseMatrixCache::prune</code> is called, which writes the buffered values to the actual matrix. Then, the stored index information is used to create a mapping from the ordering of values received from a given element to the corresponding CSC-style index. In future iterations, instead of recomputing the matrix structure, <code><a class="el" href="classpolyfem_1_1utils_1_1_sparse_matrix_cache.html">polyfem::utils::SparseMatrixCache</a></code> uses this cached index to save the given value directly to the CSC-style values array at the correct position.</p>
+<h1><a class="anchor" id="autotoc_md20"></a>
 Building PolyFEM as a stand-alone executable</h1>
 <p>All the C++ dependencies required to build the code are included and are compiled statically in a single executable. PolyFEM is compiled using automatic builds on Windows, macOS, and Linux using:</p>
 <div class="fragment"><div class="line">mkdir build</div>
@@ -189,7 +263,7 @@ Building PolyFEM as a stand-alone executable</h1>
 <div class="line">make -j4</div>
 </div><!-- fragment --><p>After compilation, unit and system tests (<code>tests/main.cpp</code>) can be run with:</p>
 <div class="fragment"><div class="line">./tests/unit_tests</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md11"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md21"></a>
 Building PolyFEM as a static library</h1>
 <p><b>Polyfem</b> can be added to an existing <code>cmake</code> project with </p><div class="fragment"><div class="line">add_subdirectory(&lt;path-to-polyfem&gt; polyfem)</div>
 </div><!-- fragment --><p> and linked with </p><div class="fragment"><div class="line">target_link_library(&lt;your_target&gt; polyfem::polyfem)</div>
