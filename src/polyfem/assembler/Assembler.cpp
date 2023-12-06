@@ -229,10 +229,6 @@ namespace polyfem::assembler
 								for (int m = 0; m < size(); ++m)
 								{
 									const double local_value = stiffness_val(n * size() + m);
-									if (std::abs(local_value) < 1e-30)
-									{
-										continue;
-									}
 
 									// loop over the global nodes corresponding to local element (useful for non-conforming cases)
 									for (size_t ii = 0; ii < global_i.size(); ++ii)
@@ -452,10 +448,6 @@ namespace polyfem::assembler
 							for (int m = 0; m < cols(); ++m)
 							{
 								const double local_value = stiffness_val(n * cols() + m);
-								if (std::abs(local_value) < 1e-30)
-								{
-									continue;
-								}
 
 								for (size_t ii = 0; ii < global_i.size(); ++ii)
 								{
@@ -621,10 +613,6 @@ namespace polyfem::assembler
 					for (int m = 0; m < size(); ++m)
 					{
 						const double local_value = val(j * size() + m);
-						if (std::abs(local_value) < 1e-30)
-						{
-							continue;
-						}
 
 						for (size_t jj = 0; jj < global_j.size(); ++jj)
 						{
@@ -729,10 +717,6 @@ namespace polyfem::assembler
 							for (int m = 0; m < size(); ++m)
 							{
 								const double local_value = stiffness_val(i * size() + m, j * size() + n);
-								//  if (std::abs(local_value) < 1e-30)
-								//  {
-								// 	 continue;
-								//  }
 
 								for (size_t ii = 0; ii < global_i.size(); ++ii)
 								{
