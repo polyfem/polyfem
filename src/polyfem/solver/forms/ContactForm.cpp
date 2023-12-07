@@ -277,6 +277,9 @@ namespace polyfem::solver
 
 	void ContactForm::post_step(const int iter_num, const Eigen::VectorXd &x)
 	{
+		if (iter_num == 0)
+			return;
+
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
 		const double curr_distance = constraint_set_.compute_minimum_distance(collision_mesh_, displaced_surface);
