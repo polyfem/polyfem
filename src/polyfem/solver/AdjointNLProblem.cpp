@@ -16,81 +16,84 @@
 
 namespace polyfem::solver
 {
-	namespace {
+	namespace
+	{
 		using namespace std;
 		// Class to represent a graph
-		class Graph {
+		class Graph
+		{
 			int V; // No. of vertices'
-		
+
 			// adjacency lists
 			vector<list<int>> adj;
-		
+
 			// A function used by topologicalSort
-			void topologicalSortUtil(int v, vector<bool> &visited, stack<int>& Stack);
-		
+			void topologicalSortUtil(int v, vector<bool> &visited, stack<int> &Stack);
+
 		public:
 			Graph(int V); // Constructor
-		
+
 			// function to add an edge to graph
 			void addEdge(int v, int w);
-		
+
 			// prints a Topological Sort of the complete graph
 			vector<int> topologicalSort();
 		};
-		
+
 		Graph::Graph(int V)
 		{
 			this->V = V;
 			adj.resize(V);
 		}
-		
+
 		void Graph::addEdge(int v, int w)
 		{
 			adj[v].push_back(w); // Add w to v’s list.
 		}
-		
+
 		// A recursive function used by topologicalSort
 		void Graph::topologicalSortUtil(int v, vector<bool> &visited,
-										stack<int>& Stack)
+										stack<int> &Stack)
 		{
 			// Mark the current node as visited.
 			visited[v] = true;
-		
+
 			// Recur for all the vertices adjacent to this vertex
 			list<int>::iterator i;
 			for (i = adj[v].begin(); i != adj[v].end(); ++i)
 				if (!visited[*i])
 					topologicalSortUtil(*i, visited, Stack);
-		
+
 			// Push current vertex to stack which stores result
 			Stack.push(v);
 		}
-		
+
 		// The function to do Topological Sort. It uses recursive
 		// topologicalSortUtil()
 		vector<int> Graph::topologicalSort()
 		{
 			stack<int> Stack;
-		
+
 			// Mark all the vertices as not visited
 			vector<bool> visited(V, false);
-		
+
 			// Call the recursive helper function to store Topological
 			// Sort starting from all vertices one by one
 			for (int i = 0; i < V; i++)
 				if (visited[i] == false)
 					topologicalSortUtil(i, visited, Stack);
-		
+
 			// Print contents of stack
 			vector<int> sorted;
-			while (Stack.empty() == false) {
+			while (Stack.empty() == false)
+			{
 				sorted.push_back(Stack.top());
 				Stack.pop();
 			}
 
 			return sorted;
 		}
-	}
+	} // namespace
 
 	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args)
 		: FullNLProblem({form}),
@@ -108,7 +111,7 @@ namespace polyfem::solver
 			Graph G(all_states.size());
 			for (int k = 0; k < all_states.size(); k++)
 			{
-				auto& arg = args["states"][k];
+				auto &arg = args["states"][k];
 				if (arg["initial_guess"].get<int>() >= 0)
 					G.addEdge(arg["initial_guess"].get<int>(), k);
 			}
@@ -210,7 +213,9 @@ namespace polyfem::solver
 
 	void AdjointNLProblem::post_step(const int iter_num, const Eigen::VectorXd &x)
 	{
+		save_to_file(x);
 		iter++;
+
 		form_->post_step(iter_num, x);
 	}
 
@@ -321,7 +326,7 @@ namespace polyfem::solver
 	{
 		const auto cur_log_level = logger().level();
 		all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
-		
+
 		if (solve_in_parallel)
 		{
 			logger().info("Run simulations in parallel...");
@@ -365,7 +370,7 @@ namespace polyfem::solver
 	{
 		if (stopping_conditions_.size() == 0)
 			return false;
-		
+
 		for (auto &obj : stopping_conditions_)
 		{
 			obj->solution_changed(x);
