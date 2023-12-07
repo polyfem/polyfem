@@ -212,22 +212,22 @@ int optimization_simulation(const CLI::App &command_line,
 		tmp["/output/log/level"_json_pointer] = int(log_level);
 	opt_args.merge_patch(tmp);
 
-	OptState state;
-	state.init(opt_args, is_strict);
+	OptState opt_state;
+	opt_state.init(opt_args, is_strict);
 
-	state.create_states();
-	state.init_variables();
-	state.crate_problem();
+	opt_state.create_states();
+	opt_state.init_variables();
+	opt_state.crate_problem();
 
 	Eigen::VectorXd x;
-	state.initial_guess(x);
+	opt_state.initial_guess(x);
 
-	if (state.args["compute_objective"].get<bool>())
+	if (opt_state.args["compute_objective"].get<bool>())
 	{
-		logger().info("Objective is {}", state.eval(x));
+		logger().info("Objective is {}", opt_state.eval(x));
 		return EXIT_SUCCESS;
 	}
 
-	state.solve(x);
+	opt_state.solve(x);
 	return EXIT_SUCCESS;
 }
