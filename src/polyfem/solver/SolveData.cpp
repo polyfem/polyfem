@@ -208,7 +208,7 @@ namespace polyfem::solver
 		}
 		else if (rayleigh_damping_jsons.size() > 0)
 		{
-			log_and_throw_error("Rayleigh damping is only supported for time-dependent problems");
+			log_and_throw_adjoint_error("Rayleigh damping is only supported for time-dependent problems");
 		}
 
 		update_dt();

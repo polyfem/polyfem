@@ -147,19 +147,13 @@ namespace polyfem::assembler
 		virtual void compute_dstress_dmu_dlambda(
 			const OptAssemblerData &data,
 			Eigen::MatrixXd &dstress_dmu,
-			Eigen::MatrixXd &dstress_dlambda) const
-		{
-			log_and_throw_error("Not implemented!");
-		}
+			Eigen::MatrixXd &dstress_dlambda) const { log_and_throw_adjoint_error("Not implemented!"); }
 
 		virtual void compute_stress_grad_multiply_mat(
 			const OptAssemblerData &data,
 			const Eigen::MatrixXd &mat,
 			Eigen::MatrixXd &stress,
-			Eigen::MatrixXd &result) const
-		{
-			log_and_throw_error("Not implemented!");
-		}
+			Eigen::MatrixXd &result) const { log_and_throw_adjoint_error("Not implemented!"); }
 
 		virtual void compute_stress_grad_multiply_stress(
 			const OptAssemblerData &data,
@@ -181,12 +175,11 @@ namespace polyfem::assembler
 			const OptAssemblerData &data,
 			const Eigen::MatrixXd &prev_grad_u_i,
 			Eigen::MatrixXd &stress,
-			Eigen::MatrixXd &result) const { log_and_throw_error("Not implemented!"); }
-
+			Eigen::MatrixXd &result) const { log_and_throw_adjoint_error("Not implemented!"); }
 		virtual void compute_stress_prev_grad(
 			const OptAssemblerData &data,
 			const Eigen::MatrixXd &prev_grad_u_i,
-			Eigen::MatrixXd &result) const { log_and_throw_error("Not implemented!"); }
+			Eigen::MatrixXd &result) const { log_and_throw_adjoint_error("Not implemented!"); }
 
 		virtual std::map<std::string, ParamFunc> parameters() const = 0;
 		virtual VectorNd compute_rhs(const AutodiffHessianPt &pt) const { log_and_throw_error("Rhs not supported by {}!", name()); }

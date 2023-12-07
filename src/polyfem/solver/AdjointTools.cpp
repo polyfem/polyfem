@@ -40,7 +40,7 @@ namespace
 		if (state.args["time"]["integrator"]["type"] == "BDF")
 			return state.args["time"]["integrator"]["steps"].get<int>();
 
-		polyfem::log_and_throw_error("Integrator type not supported for differentiability.");
+		polyfem::log_and_throw_adjoint_error("Integrator type not supported for differentiability.");
 		return -1;
 	}
 } // namespace
@@ -497,7 +497,7 @@ namespace polyfem::solver
 						const auto nodes = gbases[e].local_nodes_for_primitive(lb.global_primitive_id(i), *state.mesh);
 
 						if (nodes.size() != dim)
-							log_and_throw_error("Only linear geometry is supported in differentiable surface integral functional!");
+							log_and_throw_adjoint_error("Only linear geometry is supported in differentiable surface integral functional!");
 
 						Eigen::MatrixXd velocity_div_mat;
 						if (state.mesh->is_volume())
@@ -564,7 +564,7 @@ namespace polyfem::solver
 		}
 		else if (spatial_integral_type == SpatialIntegralType::vertex_sum)
 		{
-			log_and_throw_error("Shape derivative of vertex sum type functional is not implemented!");
+			log_and_throw_adjoint_error("Shape derivative of vertex sum type functional is not implemented!");
 		}
 		for (const LocalThreadVecStorage &local_storage : storage)
 			term += local_storage.vec;
@@ -626,7 +626,7 @@ namespace polyfem::solver
 			});
 		}
 		else
-			log_and_throw_error("Not implemented!");
+			log_and_throw_adjoint_error("Not implemented!");
 
 		for (const LocalThreadVecStorage &local_storage : storage)
 			term += local_storage.vec;
