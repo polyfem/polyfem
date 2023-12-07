@@ -12,6 +12,7 @@ var searchData=
   ['genericscalarproblem_9',['GenericScalarProblem',['../classpolyfem_1_1assembler_1_1_generic_scalar_problem.html',1,'polyfem::assembler']]],
   ['genericscalarproblemexact_10',['GenericScalarProblemExact',['../classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html',1,'polyfem::problem']]],
   ['generictensorproblem_11',['GenericTensorProblem',['../classpolyfem_1_1assembler_1_1_generic_tensor_problem.html',1,'polyfem::assembler']]],
-  ['globalprojectioncache_12',['GlobalProjectionCache',['../structpolyfem_1_1mesh_1_1_remesher_1_1_global_projection_cache.html',1,'polyfem::mesh::Remesher']]],
-  ['gravityproblem_13',['GravityProblem',['../classpolyfem_1_1problem_1_1_gravity_problem.html',1,'polyfem::problem']]]
+  ['geogramutils_12',['GeogramUtils',['../classpolyfem_1_1utils_1_1_geogram_utils.html',1,'polyfem::utils']]],
+  ['globalprojectioncache_13',['GlobalProjectionCache',['../structpolyfem_1_1mesh_1_1_remesher_1_1_global_projection_cache.html',1,'polyfem::mesh::Remesher']]],
+  ['gravityproblem_14',['GravityProblem',['../classpolyfem_1_1problem_1_1_gravity_problem.html',1,'polyfem::problem']]]
 ];

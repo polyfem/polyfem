@@ -46,7 +46,7 @@
   </g>
 </defs>
 <script type="application/ecmascript">
-var viewWidth = 654;
+var viewWidth = 693;
 var viewHeight = 60;
 var sectionId = 'dynsection-4';
 </script>
@@ -95,10 +95,10 @@ var sectionId = 'dynsection-4';
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="namespacepolyfem.html#a8d6eb2c01f97c327e382b6dcda332777" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="516,-30 382,-30 382,0 516,0 516,-30"/>
 <text text-anchor="start" x="390" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::log_and_throw</text>
-<text text-anchor="middle" x="449" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">_error</text>
+<text text-anchor="middle" x="449" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">_adjoint_error</text>
 </a>
 </g>
 </g>
@@ -123,9 +123,9 @@ var sectionId = 'dynsection-4';
 <!-- Node4 -->
 <g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_Node000004"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
-<polygon fill="white" stroke="#666666" points="646,-24.5 552,-24.5 552,-5.5 646,-5.5 646,-24.5"/>
-<text text-anchor="middle" x="599" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::logger</text>
+<g id="a_Node000004"><a xlink:href="namespacepolyfem.html#a4d64be939c7759c782fff98ed87f3399" target="_top" xlink:title="Retrieves the current logger for adjoint.">
+<polygon fill="white" stroke="#666666" points="685,-24.5 552,-24.5 552,-5.5 685,-5.5 685,-24.5"/>
+<text text-anchor="middle" x="618.5" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::adjoint_logger</text>
 </a>
 </g>
 </g>
@@ -133,8 +133,8 @@ var sectionId = 'dynsection-4';
 <g id="edge4_Node000003_Node000004" class="edge">
 <title>Node3&#45;&gt;Node4</title>
 <g id="a_edge4_Node000003_Node000004"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M516.21,-15C524.74,-15 533.42,-15 541.77,-15"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="541.77,-18.5 551.77,-15 541.77,-11.5 541.77,-18.5"/>
+<path fill="none" stroke="#63b8ff" d="M516.2,-15C524.52,-15 533.09,-15 541.54,-15"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="541.78,-18.5 551.78,-15 541.78,-11.5 541.78,-18.5"/>
 </a>
 </g>
 </g>

@@ -55,7 +55,7 @@ var searchData=
   ['primitive_5ffrom_5fface_52',['primitive_from_face',['../classpolyfem_1_1mesh_1_1_mesh_nodes.html#a702c0b4c38949e0b59a1060ccef3974d',1,'polyfem::mesh::MeshNodes']]],
   ['primitive_5ffrom_5fvertex_53',['primitive_from_vertex',['../classpolyfem_1_1mesh_1_1_mesh_nodes.html#a9cde502a05abe1aa482ac5abf7d15f90',1,'polyfem::mesh::MeshNodes']]],
   ['primitive_5fto_5fnode_54',['primitive_to_node',['../classpolyfem_1_1mesh_1_1_mesh_nodes.html#a831767d1c7cd68325f10807a0a0aabdd',1,'polyfem::mesh::MeshNodes::primitive_to_node()'],['../classpolyfem_1_1_state.html#a5eaa1d1e994fd9fe2ef287e1d623fe67',1,'polyfem::State::primitive_to_node()']]],
-  ['problem_55',['problem',['../classpolyfem_1_1assembler_1_1_problem.html#ab7bc716ad17294502839aa1435265cd1',1,'polyfem::assembler::Problem::Problem()'],['../classpolyfem_1_1assembler_1_1_rhs_assembler.html#a4e2fb8d7059e5523cb6381bb4f142857',1,'polyfem::assembler::RhsAssembler::problem()']]],
+  ['problem_55',['problem',['../classpolyfem_1_1assembler_1_1_rhs_assembler.html#a4e2fb8d7059e5523cb6381bb4f142857',1,'polyfem::assembler::RhsAssembler::problem()'],['../classpolyfem_1_1assembler_1_1_problem.html#ab7bc716ad17294502839aa1435265cd1',1,'polyfem::assembler::Problem::Problem()']]],
   ['problemfactory_56',['ProblemFactory',['../classpolyfem_1_1problem_1_1_problem_factory.html#a2e6f46d52ecd01d0e15c261ca8baa65f',1,'polyfem::problem::ProblemFactory']]],
   ['problemwithsolution_57',['ProblemWithSolution',['../classpolyfem_1_1problem_1_1_problem_with_solution.html#af656c84ef26e0161c5fed1ec7feba07d',1,'polyfem::problem::ProblemWithSolution']]],
   ['project_5flocal_5fquantities_58',['project_local_quantities',['../namespacepolyfem_1_1mesh.html#a9ac4c0abec6eba47be3743212e1d3541',1,'polyfem::mesh']]],

@@ -26,7 +26,6 @@ var classpolyfem_1_1solver_1_1_adjoint_n_l_problem =
     [ "save_freq", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#aacecbd532ec78e70b03c76daa28b5815", null ],
     [ "solve_in_order", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#aa8f28a5d1c3cbc820a8cfed81180e5f1", null ],
     [ "solve_in_parallel", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#afd5bfdcda004b24c00ab58fb13aadee3", null ],
-    [ "solve_log_level", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a9dead37d271c8688e3f64edcb05820e1", null ],
     [ "stopping_conditions_", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a5697679bc9b617d9b6a89d72d057583c", null ],
     [ "variables_to_simulation_", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a6ca960c9c91ccd87e9131b04a901c893", null ]
 ];

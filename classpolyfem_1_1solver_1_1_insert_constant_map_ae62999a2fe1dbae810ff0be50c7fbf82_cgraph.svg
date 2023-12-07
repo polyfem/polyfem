@@ -46,7 +46,7 @@
   </g>
 </defs>
 <script type="application/ecmascript">
-var viewWidth = 514;
+var viewWidth = 553;
 var viewHeight = 86;
 var sectionId = 'dynsection-2';
 </script>
@@ -67,10 +67,10 @@ var sectionId = 'dynsection-2';
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="namespacepolyfem.html#a8d6eb2c01f97c327e382b6dcda332777" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="358,-78 224,-78 224,-48 358,-48 358,-78"/>
 <text text-anchor="start" x="232" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::log_and_throw</text>
-<text text-anchor="middle" x="291" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">_error</text>
+<text text-anchor="middle" x="291" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">_adjoint_error</text>
 </a>
 </g>
 </g>
@@ -105,9 +105,9 @@ var sectionId = 'dynsection-2';
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
-<polygon fill="white" stroke="#666666" points="506,-72.5 412,-72.5 412,-53.5 506,-53.5 506,-72.5"/>
-<text text-anchor="middle" x="459" y="-60.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::logger</text>
+<g id="a_Node000003"><a xlink:href="namespacepolyfem.html#a4d64be939c7759c782fff98ed87f3399" target="_top" xlink:title="Retrieves the current logger for adjoint.">
+<polygon fill="white" stroke="#666666" points="545,-72.5 412,-72.5 412,-53.5 545,-53.5 545,-72.5"/>
+<text text-anchor="middle" x="478.5" y="-60.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::adjoint_logger</text>
 </a>
 </g>
 </g>
@@ -115,8 +115,8 @@ var sectionId = 'dynsection-2';
 <g id="edge2_Node000002_Node000003" class="edge">
 <title>Node2&#45;&gt;Node3</title>
 <g id="a_edge2_Node000002_Node000003"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M358.08,-63C372.42,-63 387.46,-63 401.4,-63"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="401.81,-66.5 411.81,-63 401.81,-59.5 401.81,-66.5"/>
+<path fill="none" stroke="#63b8ff" d="M358.18,-63C372.25,-63 387.21,-63 401.6,-63"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="401.97,-66.5 411.97,-63 401.97,-59.5 401.97,-66.5"/>
 </a>
 </g>
 </g>

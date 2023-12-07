@@ -1,0 +1,26 @@
+var classpolyfem_1_1_opt_state =
+[
+    [ "~OptState", "classpolyfem_1_1_opt_state.html#a5affd7d9c87258c8bfa48844b1f0c332", null ],
+    [ "OptState", "classpolyfem_1_1_opt_state.html#af92124a9c75253c4c70e66c46ecf7449", null ],
+    [ "crate_problem", "classpolyfem_1_1_opt_state.html#ae4fc316d7ce75aed5d5d95f22c265b44", null ],
+    [ "create_states", "classpolyfem_1_1_opt_state.html#ac1c59582416c47b5ac3904c9454265fe", null ],
+    [ "eval", "classpolyfem_1_1_opt_state.html#a8ce170f4f3bc85947966358984a8ea8b", null ],
+    [ "init", "classpolyfem_1_1_opt_state.html#a49a90bfd024bab8f1d0a0565911b20ca", null ],
+    [ "init_logger", "classpolyfem_1_1_opt_state.html#ac773f2b10e90d8b0e45fa605c1f3fff0", null ],
+    [ "init_logger", "classpolyfem_1_1_opt_state.html#a14140e7f65913d5c384c0085ce794bca", null ],
+    [ "init_logger", "classpolyfem_1_1_opt_state.html#a56a0da412363473b2e7bf6ccf6be06a3", null ],
+    [ "init_variables", "classpolyfem_1_1_opt_state.html#aeef759df193275f8dd2a886f62c6b461", null ],
+    [ "initial_guess", "classpolyfem_1_1_opt_state.html#a2df2d7ec2271a5a969814c9b100e0bc0", null ],
+    [ "root_path", "classpolyfem_1_1_opt_state.html#a77515b2c1da5e2c0b54e9388f3f060d2", null ],
+    [ "set_log_level", "classpolyfem_1_1_opt_state.html#a33b574d38a053c7c13a8b30e0c265fae", null ],
+    [ "solve", "classpolyfem_1_1_opt_state.html#a146051c929a4ea6da9fc24fc2fadc39f", null ],
+    [ "args", "classpolyfem_1_1_opt_state.html#a3a0a2a1c5f70dc1d7f1a8e06a2bb0860", null ],
+    [ "console_sink_", "classpolyfem_1_1_opt_state.html#ac02e4821c706dd375552aaa47e48f720", null ],
+    [ "file_sink_", "classpolyfem_1_1_opt_state.html#a63c46c8dd629f4604866fa476f730e5e", null ],
+    [ "ndof", "classpolyfem_1_1_opt_state.html#aa601accd4d2967809ac165aedc3b45a8", null ],
+    [ "nl_problem", "classpolyfem_1_1_opt_state.html#a678ba31b97afca6296dfe59ac721fa9b", null ],
+    [ "output_dir", "classpolyfem_1_1_opt_state.html#aa5b86fbc404f7d34534e654b19d13d87", null ],
+    [ "states", "classpolyfem_1_1_opt_state.html#a033bf0014e0985c1f63e8fa0a0c8a1f7", null ],
+    [ "variable_sizes", "classpolyfem_1_1_opt_state.html#a92db2e5b36ebafaa49ef692b5c6f616c", null ],
+    [ "variable_to_simulations", "classpolyfem_1_1_opt_state.html#aa7c6fdb5cf8f4acfb6bdc0fe54988c01", null ]
+];

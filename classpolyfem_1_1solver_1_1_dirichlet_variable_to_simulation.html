@@ -144,6 +144,8 @@ Collaboration diagram for polyfem::solver::DirichletVariableToSimulation:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aaac35f84a1b89641d65fb013d2dc01df" id="r_aaac35f84a1b89641d65fb013d2dc01df"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation.html#aaac35f84a1b89641d65fb013d2dc01df">~DirichletVariableToSimulation</a> ()</td></tr>
 <tr class="separator:aaac35f84a1b89641d65fb013d2dc01df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84b82d9dbf5067e91c278cc46cefa1ef" id="r_a84b82d9dbf5067e91c278cc46cefa1ef"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation.html#a84b82d9dbf5067e91c278cc46cefa1ef">name</a> () const override</td></tr>
+<tr class="separator:a84b82d9dbf5067e91c278cc46cefa1ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad183a4df9ccb11f132d5944b9e24f1e2" id="r_ad183a4df9ccb11f132d5944b9e24f1e2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59">ParameterType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation.html#ad183a4df9ccb11f132d5944b9e24f1e2">get_parameter_type</a> () const override</td></tr>
 <tr class="separator:ad183a4df9ccb11f132d5944b9e24f1e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a01e67080c867ca4d4df9bfcac16c1f7c" id="r_a01e67080c867ca4d4df9bfcac16c1f7c"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation.html#a01e67080c867ca4d4df9bfcac16c1f7c">compute_adjoint_term</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const override</td></tr>
@@ -198,7 +200,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00127">127</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00139">139</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aaac35f84a1b89641d65fb013d2dc01df" name="aaac35f84a1b89641d65fb013d2dc01df"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aaac35f84a1b89641d65fb013d2dc01df">&#9670;&#160;</a></span>~DirichletVariableToSimulation()</h2>
@@ -223,7 +225,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00131">131</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00143">143</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
 
 </div>
 </div>
@@ -256,11 +258,11 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8cpp_source.html#l00328">328</a> of file <a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_variable_to_simulation_8cpp_source.html#l00026">polyfem::solver::VariableToSimulation::apply_parametrization_jacobian()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00888">polyfem::solver::AdjointTools::dJ_dirichlet_transient_adjoint_term()</a>, <a class="el" href="_logger_8cpp_source.html#l00050">polyfem::log_and_throw_error()</a>, <a class="el" href="_variable_to_simulation_8hpp_source.html#l00035">polyfem::solver::VariableToSimulation::states_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_variable_to_simulation_8cpp_source.html#l00026">polyfem::solver::VariableToSimulation::apply_parametrization_jacobian()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00888">polyfem::solver::AdjointTools::dJ_dirichlet_transient_adjoint_term()</a>, <a class="el" href="_logger_8cpp_source.html#l00077">polyfem::log_and_throw_adjoint_error()</a>, <a class="el" href="_variable_to_simulation_8hpp_source.html#l00145">name()</a>, <a class="el" href="_variable_to_simulation_8hpp_source.html#l00037">polyfem::solver::VariableToSimulation::states_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation_a01e67080c867ca4d4df9bfcac16c1f7c_cgraph.svg" width="100%" height="524"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation_a01e67080c867ca4d4df9bfcac16c1f7c_cgraph.svg" width="100%" height="573"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -290,7 +292,7 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a42f04c6ce5f100eb4d59a96c1fc44652">polyfem::solver::VariableToSimulation</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00133">133</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00147">147</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59abf475759a5b12fab0ca2c50e7c712112">polyfem::solver::DirichletBC</a>.</p>
 
@@ -323,11 +325,47 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8cpp_source.html#l00355">355</a> of file <a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00050">polyfem::log_and_throw_error()</a>.</p>
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00077">polyfem::log_and_throw_adjoint_error()</a>, and <a class="el" href="_variable_to_simulation_8hpp_source.html#l00145">name()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation_ac3fbeee4a53019e29a50a18fb0259133_cgraph.svg" width="662" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation_ac3fbeee4a53019e29a50a18fb0259133_cgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="a84b82d9dbf5067e91c278cc46cefa1ef" name="a84b82d9dbf5067e91c278cc46cefa1ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84b82d9dbf5067e91c278cc46cefa1ef">&#9670;&#160;</a></span>name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string polyfem::solver::DirichletVariableToSimulation::name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#adb558dcc6027a3fda5f8cb0ca8c43df8">polyfem::solver::VariableToSimulation</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00145">145</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_variable_to_simulation_8cpp_source.html#l00328">compute_adjoint_term()</a>, <a class="el" href="_variable_to_simulation_8cpp_source.html#l00355">inverse_eval()</a>, and <a class="el" href="_variable_to_simulation_8cpp_source.html#l00312">update_state()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation_a84b82d9dbf5067e91c278cc46cefa1ef_icgraph.svg" width="515" height="195"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -370,11 +408,11 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8cpp_source.html#l00312">312</a> of file <a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00050">polyfem::log_and_throw_error()</a>.</p>
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00077">polyfem::log_and_throw_adjoint_error()</a>, and <a class="el" href="_variable_to_simulation_8hpp_source.html#l00145">name()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation_ac2c80ee907ad245b278326bac13af9c0_cgraph.svg" width="663" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation_ac2c80ee907ad245b278326bac13af9c0_cgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>

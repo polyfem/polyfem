@@ -11,6 +11,7 @@ var classpolyfem_1_1solver_1_1_variable_to_simulation =
     [ "get_states", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#aecb18aa0e590f48133dccfd48c0b46dd", null ],
     [ "inverse_eval", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#a61980fa8af530a04b79862d1066285e0", null ],
     [ "n_states", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#a8f01e87c3500c045dcd883145c2a635b", null ],
+    [ "name", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#adb558dcc6027a3fda5f8cb0ca8c43df8", null ],
     [ "set_output_indexing", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#a03279a18a921423f93783632da2d8708", null ],
     [ "update", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#ad2e28ad1b291e82a76fb7190563dd8d0", null ],
     [ "update_state", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#aa515864c242bd6cf8baee829628a6a95", null ],

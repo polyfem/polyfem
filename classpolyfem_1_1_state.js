@@ -64,7 +64,7 @@ var classpolyfem_1_1_state =
     [ "set_log_level", "classpolyfem_1_1_state.html#a81d50ae65a097daec8f46b732d057151", null ],
     [ "set_materials", "classpolyfem_1_1_state.html#a23240dd8300e9591ac6cdc08140795b6", null ],
     [ "set_materials", "classpolyfem_1_1_state.html#a3de46d5d59fbeaa652577e8c99f3fba5", null ],
-    [ "set_max_threads", "classpolyfem_1_1_state.html#a512f9685cbafdb0e60b8db8cb35f7e44", null ],
+    [ "set_max_threads", "classpolyfem_1_1_state.html#a43c2de37e679082b2ff150cfeb6d7365", null ],
     [ "set_mesh_vertex", "classpolyfem_1_1_state.html#a0f9375b3354f7485313319690bda8128", null ],
     [ "sol_to_pressure", "classpolyfem_1_1_state.html#a15c6a567afbf3e32d7b48300222f6386", null ],
     [ "solve", "classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4", null ],

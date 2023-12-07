@@ -472,10 +472,10 @@ var sectionId = 'dynsection-7';
 <!-- Node14 -->
 <g id="Node000014" class="node">
 <title>Node14</title>
-<g id="a_Node000014"><a xlink:href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" target="_top" xlink:title=" ">
+<g id="a_Node000014"><a xlink:href="namespacepolyfem.html#a8d6eb2c01f97c327e382b6dcda332777" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="541,-338.5 407,-338.5 407,-308.5 541,-308.5 541,-338.5"/>
 <text text-anchor="start" x="415" y="-326.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::log_and_throw</text>
-<text text-anchor="middle" x="474" y="-315.5" font-family="Helvetica,sans-Serif" font-size="10.00">_error</text>
+<text text-anchor="middle" x="474" y="-315.5" font-family="Helvetica,sans-Serif" font-size="10.00">_adjoint_error</text>
 </a>
 </g>
 </g>
@@ -491,9 +491,9 @@ var sectionId = 'dynsection-7';
 <!-- Node15 -->
 <g id="Node000015" class="node">
 <title>Node15</title>
-<g id="a_Node000015"><a xlink:href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" target="_top" xlink:title="Retrieves the current logger.">
-<polygon fill="white" stroke="#666666" points="721,-333 627,-333 627,-314 721,-314 721,-333"/>
-<text text-anchor="middle" x="674" y="-321" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::logger</text>
+<g id="a_Node000015"><a xlink:href="namespacepolyfem.html#a4d64be939c7759c782fff98ed87f3399" target="_top" xlink:title="Retrieves the current logger for adjoint.">
+<polygon fill="white" stroke="#666666" points="740.5,-333 607.5,-333 607.5,-314 740.5,-314 740.5,-333"/>
+<text text-anchor="middle" x="674" y="-321" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::adjoint_logger</text>
 </a>
 </g>
 </g>
@@ -501,8 +501,8 @@ var sectionId = 'dynsection-7';
 <g id="edge16_Node000014_Node000015" class="edge">
 <title>Node14&#45;&gt;Node15</title>
 <g id="a_edge16_Node000014_Node000015"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M541.21,-323.5C565.69,-323.5 593.19,-323.5 616.71,-323.5"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="616.87,-327 626.87,-323.5 616.87,-320 616.87,-327"/>
+<path fill="none" stroke="#63b8ff" d="M541.21,-323.5C559.13,-323.5 578.68,-323.5 597.1,-323.5"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="597.19,-327 607.19,-323.5 597.19,-320 597.19,-327"/>
 </a>
 </g>
 </g>

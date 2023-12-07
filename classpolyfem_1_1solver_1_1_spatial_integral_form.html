@@ -144,6 +144,8 @@ Collaboration diagram for polyfem::solver::SpatialIntegralForm:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a31a59bacc77389cbea8ba1843cc638d5" id="r_a31a59bacc77389cbea8ba1843cc638d5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_spatial_integral_form.html#a31a59bacc77389cbea8ba1843cc638d5">SpatialIntegralForm</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html">VariableToSimulation</a> &gt; &gt; &amp;variable_to_simulations, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;args)</td></tr>
 <tr class="separator:a31a59bacc77389cbea8ba1843cc638d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2bf36039614a69c8bcb28cc6bed7cbf" id="r_aa2bf36039614a69c8bcb28cc6bed7cbf"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_spatial_integral_form.html#aa2bf36039614a69c8bcb28cc6bed7cbf">name</a> () const override</td></tr>
+<tr class="separator:aa2bf36039614a69c8bcb28cc6bed7cbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2d4b63dfce95eba70d056d15baf0157" id="r_ac2d4b63dfce95eba70d056d15baf0157"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac2d4b63dfce95eba70d056d15baf0157">get_state</a> ()</td></tr>
 <tr class="separator:ac2d4b63dfce95eba70d056d15baf0157"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a09f18485cbd951ec6974cf9d452ae55f" id="r_a09f18485cbd951ec6974cf9d452ae55f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_spatial_integral_form.html#a09f18485cbd951ec6974cf9d452ae55f">set_integral_type</a> (const <a class="el" href="namespacepolyfem_1_1solver.html#ad27032b2014cdcea2f5718580272f48f">SpatialIntegralType</a> type)</td></tr>
@@ -157,8 +159,6 @@ Public Member Functions</h2></td></tr>
 <tr class="inherit_header pub_methods_classpolyfem_1_1solver_1_1_static_form"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpolyfem_1_1solver_1_1_static_form')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpolyfem_1_1solver_1_1_static_form.html">polyfem::solver::StaticForm</a></td></tr>
 <tr class="memitem:aa3569d3ab37e1d87b49b5c21a00fa39d inherit pub_methods_classpolyfem_1_1solver_1_1_static_form" id="r_aa3569d3ab37e1d87b49b5c21a00fa39d"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#aa3569d3ab37e1d87b49b5c21a00fa39d">~StaticForm</a> ()=default</td></tr>
 <tr class="separator:aa3569d3ab37e1d87b49b5c21a00fa39d inherit pub_methods_classpolyfem_1_1solver_1_1_static_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f57682d8354d371c761eb1b154e8a10 inherit pub_methods_classpolyfem_1_1solver_1_1_static_form" id="r_a5f57682d8354d371c761eb1b154e8a10"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#a5f57682d8354d371c761eb1b154e8a10">name</a> () const override</td></tr>
-<tr class="separator:a5f57682d8354d371c761eb1b154e8a10 inherit pub_methods_classpolyfem_1_1solver_1_1_static_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe5cae4b7dcb21111d20d1985b5803f7 inherit pub_methods_classpolyfem_1_1solver_1_1_static_form" id="r_abe5cae4b7dcb21111d20d1985b5803f7"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#abe5cae4b7dcb21111d20d1985b5803f7">compute_adjoint_rhs_unweighted</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state) const final override</td></tr>
 <tr class="separator:abe5cae4b7dcb21111d20d1985b5803f7 inherit pub_methods_classpolyfem_1_1solver_1_1_static_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd98107ff1b650277357894b6d229d04 inherit pub_methods_classpolyfem_1_1solver_1_1_static_form" id="r_abd98107ff1b650277357894b6d229d04"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#abd98107ff1b650277357894b6d229d04">compute_partial_gradient_unweighted</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, Eigen::VectorXd &amp;gradv) const final override</td></tr>
@@ -415,7 +415,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00081">81</a> of file <a class="el" href="_spatial_integral_forms_8cpp_source.html">SpatialIntegralForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00629">polyfem::State::diff_cached</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00909">polyfem::solver::AdjointTools::dJ_du_step()</a>, <a class="el" href="classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac6f9bf7bd979734dad72425a8a48cc65">get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00027">ids_</a>, <a class="el" href="_state_8hpp_source.html#l00633">polyfem::State::ndof()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00082">polyfem::solver::DiffCache::size()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00026">spatial_integral_type_</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00025">state_</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00085">polyfem::solver::DiffCache::u()</a>.</p>
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00620">polyfem::State::diff_cached</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00909">polyfem::solver::AdjointTools::dJ_du_step()</a>, <a class="el" href="classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac6f9bf7bd979734dad72425a8a48cc65">get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00029">ids_</a>, <a class="el" href="_state_8hpp_source.html#l00624">polyfem::State::ndof()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00082">polyfem::solver::DiffCache::size()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00028">spatial_integral_type_</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00027">state_</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00085">polyfem::solver::DiffCache::u()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -470,7 +470,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00059">59</a> of file <a class="el" href="_spatial_integral_forms_8cpp_source.html">SpatialIntegralForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_adjoint_tools_8cpp_source.html#l00332">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, <a class="el" href="_state_8hpp_source.html#l00629">polyfem::State::diff_cached</a>, <a class="el" href="classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac6f9bf7bd979734dad72425a8a48cc65">get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00027">ids_</a>, <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a880c1273b27d27cfc82004c3a4b205c9">polyfem::solver::Shape</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00082">polyfem::solver::DiffCache::size()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00026">spatial_integral_type_</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00025">state_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00085">polyfem::solver::DiffCache::u()</a>, <a class="el" href="_adjoint_form_8hpp_source.html#l00048">polyfem::solver::AdjointForm::variable_to_simulations_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_adjoint_tools_8cpp_source.html#l00332">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, <a class="el" href="_state_8hpp_source.html#l00620">polyfem::State::diff_cached</a>, <a class="el" href="classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac6f9bf7bd979734dad72425a8a48cc65">get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00029">ids_</a>, <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a880c1273b27d27cfc82004c3a4b205c9">polyfem::solver::Shape</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00082">polyfem::solver::DiffCache::size()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00028">spatial_integral_type_</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00027">state_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00085">polyfem::solver::DiffCache::u()</a>, <a class="el" href="_adjoint_form_8hpp_source.html#l00048">polyfem::solver::AdjointForm::variable_to_simulations_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00141">polyfem::solver::ElasticEnergyForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00219">polyfem::solver::StressNormForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00282">polyfem::solver::ComplianceForm::compute_partial_gradient_unweighted_step()</a>, and <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00411">polyfem::solver::StressForm::compute_partial_gradient_unweighted_step()</a>.</p>
 <div class="dynheader">
@@ -543,9 +543,47 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
+<p class="definition">Definition at line <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00016">16</a> of file <a class="el" href="_spatial_integral_forms_8hpp_source.html">SpatialIntegralForms.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00027">state_</a>.</p>
+
+</div>
+</div>
+<a id="aa2bf36039614a69c8bcb28cc6bed7cbf" name="aa2bf36039614a69c8bcb28cc6bed7cbf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2bf36039614a69c8bcb28cc6bed7cbf">&#9670;&#160;</a></span>name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string polyfem::solver::SpatialIntegralForm::name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#a5f57682d8354d371c761eb1b154e8a10">polyfem::solver::StaticForm</a>.</p>
+
+<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_stress_norm_form.html#a8c3fb264f11df0cf19f3964caccd59da">polyfem::solver::StressNormForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_stress_form.html#a6601281256aacff3fac19b7c8dc5f021">polyfem::solver::StressForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_target_form.html#abfe73503214ba79bd630520762534500">polyfem::solver::TargetForm</a>.</p>
+
 <p class="definition">Definition at line <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00014">14</a> of file <a class="el" href="_spatial_integral_forms_8hpp_source.html">SpatialIntegralForms.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00025">state_</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00361">polyfem::solver::AccelerationForm::get_integral_functional()</a>, and <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00384">polyfem::solver::KineticForm::get_integral_functional()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_spatial_integral_form_aa2bf36039614a69c8bcb28cc6bed7cbf_icgraph.svg" width="450" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
@@ -573,11 +611,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00016">16</a> of file <a class="el" href="_spatial_integral_forms_8hpp_source.html">SpatialIntegralForms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00018">18</a> of file <a class="el" href="_spatial_integral_forms_8hpp_source.html">SpatialIntegralForms.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00026">spatial_integral_type_</a>.</p>
+<p class="reference">References <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00028">spatial_integral_type_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00112">polyfem::solver::AccelerationForm::AccelerationForm()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00073">polyfem::solver::ComplianceForm::ComplianceForm()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00033">polyfem::solver::ElasticEnergyForm::ElasticEnergyForm()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00134">polyfem::solver::KineticForm::KineticForm()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00090">polyfem::solver::PositionForm::PositionForm()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00149">polyfem::solver::StressForm::StressForm()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00050">polyfem::solver::StressNormForm::StressNormForm()</a>, <a class="el" href="_target_forms_8hpp_source.html#l00013">polyfem::solver::TargetForm::TargetForm()</a>, and <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00170">polyfem::solver::VolumeForm::VolumeForm()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00120">polyfem::solver::AccelerationForm::AccelerationForm()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00079">polyfem::solver::ComplianceForm::ComplianceForm()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00035">polyfem::solver::ElasticEnergyForm::ElasticEnergyForm()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00142">polyfem::solver::KineticForm::KineticForm()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00098">polyfem::solver::PositionForm::PositionForm()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00157">polyfem::solver::StressForm::StressForm()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00054">polyfem::solver::StressNormForm::StressNormForm()</a>, <a class="el" href="_target_forms_8hpp_source.html#l00013">polyfem::solver::TargetForm::TargetForm()</a>, and <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00180">polyfem::solver::VolumeForm::VolumeForm()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -624,7 +662,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00053">53</a> of file <a class="el" href="_spatial_integral_forms_8cpp_source.html">SpatialIntegralForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00629">polyfem::State::diff_cached</a>, <a class="el" href="classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac6f9bf7bd979734dad72425a8a48cc65">get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00027">ids_</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00199">polyfem::solver::AdjointTools::integrate_objective()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00082">polyfem::solver::DiffCache::size()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00026">spatial_integral_type_</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00025">state_</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00085">polyfem::solver::DiffCache::u()</a>.</p>
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00620">polyfem::State::diff_cached</a>, <a class="el" href="classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac6f9bf7bd979734dad72425a8a48cc65">get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00029">ids_</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00199">polyfem::solver::AdjointTools::integrate_objective()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00082">polyfem::solver::DiffCache::size()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00028">spatial_integral_type_</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00027">state_</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00085">polyfem::solver::DiffCache::u()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -654,9 +692,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00027">27</a> of file <a class="el" href="_spatial_integral_forms_8hpp_source.html">SpatialIntegralForms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00029">29</a> of file <a class="el" href="_spatial_integral_forms_8hpp_source.html">SpatialIntegralForms.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00112">polyfem::solver::AccelerationForm::AccelerationForm()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00073">polyfem::solver::ComplianceForm::ComplianceForm()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00081">compute_adjoint_rhs_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00059">compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00033">polyfem::solver::ElasticEnergyForm::ElasticEnergyForm()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00134">polyfem::solver::KineticForm::KineticForm()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00090">polyfem::solver::PositionForm::PositionForm()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00149">polyfem::solver::StressForm::StressForm()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00050">polyfem::solver::StressNormForm::StressNormForm()</a>, <a class="el" href="_target_forms_8hpp_source.html#l00013">polyfem::solver::TargetForm::TargetForm()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00053">value_unweighted_step()</a>, and <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00170">polyfem::solver::VolumeForm::VolumeForm()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00120">polyfem::solver::AccelerationForm::AccelerationForm()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00079">polyfem::solver::ComplianceForm::ComplianceForm()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00081">compute_adjoint_rhs_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00059">compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00035">polyfem::solver::ElasticEnergyForm::ElasticEnergyForm()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00142">polyfem::solver::KineticForm::KineticForm()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00098">polyfem::solver::PositionForm::PositionForm()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00157">polyfem::solver::StressForm::StressForm()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00054">polyfem::solver::StressNormForm::StressNormForm()</a>, <a class="el" href="_target_forms_8hpp_source.html#l00013">polyfem::solver::TargetForm::TargetForm()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00053">value_unweighted_step()</a>, and <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00180">polyfem::solver::VolumeForm::VolumeForm()</a>.</p>
 
 </div>
 </div>
@@ -680,9 +718,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00026">26</a> of file <a class="el" href="_spatial_integral_forms_8hpp_source.html">SpatialIntegralForms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00028">28</a> of file <a class="el" href="_spatial_integral_forms_8hpp_source.html">SpatialIntegralForms.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00081">compute_adjoint_rhs_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00059">compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00016">set_integral_type()</a>, and <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00053">value_unweighted_step()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00081">compute_adjoint_rhs_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00059">compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00018">set_integral_type()</a>, and <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00053">value_unweighted_step()</a>.</p>
 
 </div>
 </div>
@@ -706,9 +744,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00025">25</a> of file <a class="el" href="_spatial_integral_forms_8hpp_source.html">SpatialIntegralForms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00027">27</a> of file <a class="el" href="_spatial_integral_forms_8hpp_source.html">SpatialIntegralForms.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00081">compute_adjoint_rhs_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00059">compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00141">polyfem::solver::ElasticEnergyForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00219">polyfem::solver::StressNormForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00282">polyfem::solver::ComplianceForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00411">polyfem::solver::StressForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00094">polyfem::solver::ElasticEnergyForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00164">polyfem::solver::StressNormForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00242">polyfem::solver::ComplianceForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00361">polyfem::solver::AccelerationForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00384">polyfem::solver::KineticForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00434">polyfem::solver::StressForm::get_integral_functional()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00032">polyfem::solver::TargetForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00014">get_state()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00158">polyfem::solver::TargetForm::set_reference()</a>, and <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00053">value_unweighted_step()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00081">compute_adjoint_rhs_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00059">compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00141">polyfem::solver::ElasticEnergyForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00219">polyfem::solver::StressNormForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00282">polyfem::solver::ComplianceForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00411">polyfem::solver::StressForm::compute_partial_gradient_unweighted_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00094">polyfem::solver::ElasticEnergyForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00164">polyfem::solver::StressNormForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00242">polyfem::solver::ComplianceForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00361">polyfem::solver::AccelerationForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00384">polyfem::solver::KineticForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00434">polyfem::solver::StressForm::get_integral_functional()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00032">polyfem::solver::TargetForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8hpp_source.html#l00016">get_state()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00158">polyfem::solver::TargetForm::set_reference()</a>, and <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00053">value_unweighted_step()</a>.</p>
 
 </div>
 </div>

@@ -3,6 +3,7 @@ var classpolyfem_1_1solver_1_1_target_form =
     [ "TargetForm", "classpolyfem_1_1solver_1_1_target_form.html#a10ef6559246f18ee4c522397ca57a752", null ],
     [ "~TargetForm", "classpolyfem_1_1solver_1_1_target_form.html#a3db4cf13a46f052ec57edf2ab49d8c81", null ],
     [ "get_integral_functional", "classpolyfem_1_1solver_1_1_target_form.html#a3d5ef3814ac921658a55bbc521755e26", null ],
+    [ "name", "classpolyfem_1_1solver_1_1_target_form.html#abfe73503214ba79bd630520762534500", null ],
     [ "set_active_dimension", "classpolyfem_1_1solver_1_1_target_form.html#ae55d81af0f4eef8feb6b2a8073d2ed6e", null ],
     [ "set_reference", "classpolyfem_1_1solver_1_1_target_form.html#ab3770920113a0ab7f13db242db334d23", null ],
     [ "set_reference", "classpolyfem_1_1solver_1_1_target_form.html#ac0caf80f56f31b1373a256c91c5479f6", null ],

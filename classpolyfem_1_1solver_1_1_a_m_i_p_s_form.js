@@ -8,6 +8,7 @@ var classpolyfem_1_1solver_1_1_a_m_i_p_s_form =
     [ "get_updated_mesh_nodes", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a4a09fc78f3e8f84c2d958f495a43a9da", null ],
     [ "is_step_valid", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a839c98ba85e25009fa86add9af0e7e17", null ],
     [ "is_step_valid", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a359ec0ff883060c1f2c97868bfbfb174", null ],
+    [ "name", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a2340089ebfa9d872554293b235a1e339", null ],
     [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#aba07f9573db206750e9fa14f637f6807", null ],
     [ "value_unweighted", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a0c61cd7c58f329bfb9b7d9c4749a2b62", null ],
     [ "value_unweighted", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a0c61cd7c58f329bfb9b7d9c4749a2b62", null ],

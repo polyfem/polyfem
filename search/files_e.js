@@ -15,6 +15,8 @@ var searchData=
   ['operatorsplittingsolver_2ehpp_12',['OperatorSplittingSolver.hpp',['../_operator_splitting_solver_8hpp.html',1,'']]],
   ['optimizations_2ecpp_13',['Optimizations.cpp',['../_optimizations_8cpp.html',1,'']]],
   ['optimizations_2ehpp_14',['Optimizations.hpp',['../_optimizations_8hpp.html',1,'']]],
-  ['outdata_2ecpp_15',['OutData.cpp',['../_out_data_8cpp.html',1,'']]],
-  ['outdata_2ehpp_16',['OutData.hpp',['../_out_data_8hpp.html',1,'']]]
+  ['optstate_2ecpp_15',['OptState.cpp',['../_opt_state_8cpp.html',1,'']]],
+  ['optstate_2ehpp_16',['OptState.hpp',['../_opt_state_8hpp.html',1,'']]],
+  ['outdata_2ecpp_17',['OutData.cpp',['../_out_data_8cpp.html',1,'']]],
+  ['outdata_2ehpp_18',['OutData.hpp',['../_out_data_8hpp.html',1,'']]]
 ];

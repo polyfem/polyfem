@@ -18,6 +18,7 @@ var namespacepolyfem_1_1utils =
     [ "EqualUnorderedArray", "structpolyfem_1_1utils_1_1_equal_unordered_array.html", "structpolyfem_1_1utils_1_1_equal_unordered_array" ],
     [ "ExpressionValue", "classpolyfem_1_1utils_1_1_expression_value.html", "classpolyfem_1_1utils_1_1_expression_value" ],
     [ "FileSelection", "classpolyfem_1_1utils_1_1_file_selection.html", "classpolyfem_1_1utils_1_1_file_selection" ],
+    [ "GeogramUtils", "classpolyfem_1_1utils_1_1_geogram_utils.html", "classpolyfem_1_1utils_1_1_geogram_utils" ],
     [ "HashMatrix", "structpolyfem_1_1utils_1_1_hash_matrix.html", "structpolyfem_1_1utils_1_1_hash_matrix" ],
     [ "HashPair", "structpolyfem_1_1utils_1_1_hash_pair.html", "structpolyfem_1_1utils_1_1_hash_pair" ],
     [ "HashUnorderedArray", "structpolyfem_1_1utils_1_1_hash_unordered_array.html", "structpolyfem_1_1utils_1_1_hash_unordered_array" ],

@@ -135,11 +135,11 @@ $(document).ready(function(){initNavTree('_parametrization_8cpp_source.html','')
 <div class="foldopen" id="foldopen00006" data-start="{" data-end="}">
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1_parametrization.html#a1442cd89d8ca4ed607b5caff20effd1d">    6</a></span>    Eigen::VectorXd <a class="code hl_function" href="classpolyfem_1_1solver_1_1_parametrization.html#a1442cd89d8ca4ed607b5caff20effd1d">Parametrization::inverse_eval</a>(<span class="keyword">const</span> Eigen::VectorXd &amp;<a class="code hl_variable" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>)</div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>    {</div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>        <a class="code hl_function" href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391">log_and_throw_error</a>(<span class="stringliteral">&quot;Not supported&quot;</span>);</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>        <a class="code hl_function" href="namespacepolyfem.html#a8d6eb2c01f97c327e382b6dcda332777">log_and_throw_adjoint_error</a>(<span class="stringliteral">&quot;Not supported&quot;</span>);</div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>        <span class="keywordflow">return</span> Eigen::VectorXd();</div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    }</div>
 </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
 <div class="foldopen" id="foldopen00012" data-start="{" data-end="}">
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="classpolyfem_1_1solver_1_1_composite_parametrization.html#a0444e6671378eaf12bc3c0e2a4601aa2">   12</a></span>    <span class="keywordtype">int</span> <a class="code hl_function" href="classpolyfem_1_1solver_1_1_composite_parametrization.html#a0444e6671378eaf12bc3c0e2a4601aa2">CompositeParametrization::size</a>(<span class="keyword">const</span> <span class="keywordtype">int</span> x_size)<span class="keyword"> const</span></div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">    </span>{</div>
@@ -204,7 +204,7 @@ $(document).ready(function(){initNavTree('_parametrization_8cpp_source.html','')
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="keywordflow">return</span> gradv;</div>
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    }</div>
 </div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>}</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>} <span class="comment">// namespace polyfem::solver</span></div>
 <div class="ttc" id="a_logger_8hpp_html"><div class="ttname"><a href="_logger_8hpp.html">Logger.hpp</a></div></div>
 <div class="ttc" id="a_parametrization_8hpp_html"><div class="ttname"><a href="_parametrization_8hpp.html">Parametrization.hpp</a></div></div>
 <div class="ttc" id="a_spline_basis3d_8cpp_html_a0a2f84ed7838f07779ae24c5a9086d33"><div class="ttname"><a href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a></div><div class="ttdeci">int y</div><div class="ttdef"><b>Definition</b> <a href="_spline_basis3d_8cpp_source.html#l00055">SplineBasis3d.cpp:55</a></div></div>
@@ -216,7 +216,7 @@ $(document).ready(function(){initNavTree('_parametrization_8cpp_source.html','')
 <div class="ttc" id="aclasspolyfem_1_1solver_1_1_composite_parametrization_html_af42e8ffafbdbf4e0f1f253595a5ed543"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_composite_parametrization.html#af42e8ffafbdbf4e0f1f253595a5ed543">polyfem::solver::CompositeParametrization::eval</a></div><div class="ttdeci">Eigen::VectorXd eval(const Eigen::VectorXd &amp;x) const override</div><div class="ttdef"><b>Definition</b> <a href="_parametrization_8cpp_source.html#l00035">Parametrization.cpp:35</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1solver_1_1_parametrization_html_a1442cd89d8ca4ed607b5caff20effd1d"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_parametrization.html#a1442cd89d8ca4ed607b5caff20effd1d">polyfem::solver::Parametrization::inverse_eval</a></div><div class="ttdeci">virtual Eigen::VectorXd inverse_eval(const Eigen::VectorXd &amp;y)</div><div class="ttdef"><b>Definition</b> <a href="_parametrization_8cpp_source.html#l00006">Parametrization.cpp:6</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1solver_html"><div class="ttname"><a href="namespacepolyfem_1_1solver.html">polyfem::solver</a></div><div class="ttdef"><b>Definition</b> <a href="_a_m_i_p_s_form_8cpp_source.html#l00007">AMIPSForm.cpp:8</a></div></div>
-<div class="ttc" id="anamespacepolyfem_html_adc7e749e0c40939b7323961c6a41e391"><div class="ttname"><a href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391">polyfem::log_and_throw_error</a></div><div class="ttdeci">void log_and_throw_error(const std::string &amp;msg)</div><div class="ttdef"><b>Definition</b> <a href="_logger_8cpp_source.html#l00050">Logger.cpp:50</a></div></div>
+<div class="ttc" id="anamespacepolyfem_html_a8d6eb2c01f97c327e382b6dcda332777"><div class="ttname"><a href="namespacepolyfem.html#a8d6eb2c01f97c327e382b6dcda332777">polyfem::log_and_throw_adjoint_error</a></div><div class="ttdeci">void log_and_throw_adjoint_error(const std::string &amp;msg)</div><div class="ttdef"><b>Definition</b> <a href="_logger_8cpp_source.html#l00077">Logger.cpp:77</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

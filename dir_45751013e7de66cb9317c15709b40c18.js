@@ -15,6 +15,8 @@ var dir_45751013e7de66cb9317c15709b40c18 =
     [ "EnableWarnings.hpp", "_enable_warnings_8hpp.html", null ],
     [ "ExpressionValue.cpp", "_expression_value_8cpp.html", null ],
     [ "ExpressionValue.hpp", "_expression_value_8hpp.html", "_expression_value_8hpp" ],
+    [ "GeogramUtils.cpp", "_geogram_utils_8cpp.html", "_geogram_utils_8cpp" ],
+    [ "GeogramUtils.hpp", "_geogram_utils_8hpp.html", "_geogram_utils_8hpp" ],
     [ "GeometryUtils.cpp", "_geometry_utils_8cpp.html", "_geometry_utils_8cpp" ],
     [ "GeometryUtils.hpp", "_geometry_utils_8hpp.html", "_geometry_utils_8hpp" ],
     [ "getRSS.c", "get_r_s_s_8c.html", "get_r_s_s_8c" ],

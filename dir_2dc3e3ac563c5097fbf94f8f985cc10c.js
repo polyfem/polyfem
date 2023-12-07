@@ -14,6 +14,8 @@ var dir_2dc3e3ac563c5097fbf94f8f985cc10c =
     [ "utils", "dir_45751013e7de66cb9317c15709b40c18.html", "dir_45751013e7de66cb9317c15709b40c18" ],
     [ "Common.hpp", "_common_8hpp.html", "_common_8hpp" ],
     [ "main.cpp", "main_8cpp.html", "main_8cpp" ],
+    [ "OptState.cpp", "_opt_state_8cpp.html", null ],
+    [ "OptState.hpp", "_opt_state_8hpp.html", "_opt_state_8hpp" ],
     [ "State.cpp", "_state_8cpp.html", "_state_8cpp" ],
     [ "State.hpp", "_state_8hpp.html", "_state_8hpp" ],
     [ "Units.cpp", "_units_8cpp.html", null ],

@@ -143,6 +143,8 @@ Collaboration diagram for polyfem::solver::FrictionCoeffientVariableToSimulation
 Public Member Functions</h2></td></tr>
 <tr class="memitem:acd069444568ce42d12865857409e9507" id="r_acd069444568ce42d12865857409e9507"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html#acd069444568ce42d12865857409e9507">~FrictionCoeffientVariableToSimulation</a> ()</td></tr>
 <tr class="separator:acd069444568ce42d12865857409e9507"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49fbaa5a7464e215c440c126235e624a" id="r_a49fbaa5a7464e215c440c126235e624a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html#a49fbaa5a7464e215c440c126235e624a">name</a> () const override</td></tr>
+<tr class="separator:a49fbaa5a7464e215c440c126235e624a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae151e0de3ac89ea137d0066425856e4" id="r_aae151e0de3ac89ea137d0066425856e4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59">ParameterType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html#aae151e0de3ac89ea137d0066425856e4">get_parameter_type</a> () const override</td></tr>
 <tr class="separator:aae151e0de3ac89ea137d0066425856e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f07e6f8d3dccd177ae47eb6eb07a55b" id="r_a3f07e6f8d3dccd177ae47eb6eb07a55b"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html#a3f07e6f8d3dccd177ae47eb6eb07a55b">compute_adjoint_term</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const override</td></tr>
@@ -192,7 +194,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00076">76</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00082">82</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="acd069444568ce42d12865857409e9507" name="acd069444568ce42d12865857409e9507"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acd069444568ce42d12865857409e9507">&#9670;&#160;</a></span>~FrictionCoeffientVariableToSimulation()</h2>
@@ -217,7 +219,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00080">80</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00086">86</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
 
 </div>
 </div>
@@ -250,7 +252,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8cpp_source.html#l00179">179</a> of file <a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_variable_to_simulation_8cpp_source.html#l00026">polyfem::solver::VariableToSimulation::apply_parametrization_jacobian()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00781">polyfem::solver::AdjointTools::dJ_friction_transient_adjoint_term()</a>, <a class="el" href="_logger_8cpp_source.html#l00050">polyfem::log_and_throw_error()</a>, <a class="el" href="_variable_to_simulation_8hpp_source.html#l00035">polyfem::solver::VariableToSimulation::states_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_variable_to_simulation_8cpp_source.html#l00026">polyfem::solver::VariableToSimulation::apply_parametrization_jacobian()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00781">polyfem::solver::AdjointTools::dJ_friction_transient_adjoint_term()</a>, <a class="el" href="_logger_8cpp_source.html#l00077">polyfem::log_and_throw_adjoint_error()</a>, <a class="el" href="_variable_to_simulation_8hpp_source.html#l00088">name()</a>, <a class="el" href="_variable_to_simulation_8hpp_source.html#l00037">polyfem::solver::VariableToSimulation::states_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -284,7 +286,7 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#a42f04c6ce5f100eb4d59a96c1fc44652">polyfem::solver::VariableToSimulation</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00082">82</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00090">90</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
 
 <p class="reference">References <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a434e3f38d82d009df521aaa0fc45b0f3">polyfem::solver::FrictionCoeff</a>.</p>
 
@@ -317,11 +319,47 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8cpp_source.html#l00202">202</a> of file <a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00050">polyfem::log_and_throw_error()</a>.</p>
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00077">polyfem::log_and_throw_adjoint_error()</a>, and <a class="el" href="_variable_to_simulation_8hpp_source.html#l00088">name()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation_ae4b1d5d13d7a521d9493b8b2580551fc_cgraph.svg" width="630" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation_ae4b1d5d13d7a521d9493b8b2580551fc_cgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="a49fbaa5a7464e215c440c126235e624a" name="a49fbaa5a7464e215c440c126235e624a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49fbaa5a7464e215c440c126235e624a">&#9670;&#160;</a></span>name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string polyfem::solver::FrictionCoeffientVariableToSimulation::name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html#adb558dcc6027a3fda5f8cb0ca8c43df8">polyfem::solver::VariableToSimulation</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00088">88</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_variable_to_simulation_8cpp_source.html#l00179">compute_adjoint_term()</a>, and <a class="el" href="_variable_to_simulation_8cpp_source.html#l00202">inverse_eval()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation_a49fbaa5a7464e215c440c126235e624a_icgraph.svg" width="540" height="144"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -364,7 +402,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8cpp_source.html#l00172">172</a> of file <a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_variable_to_simulation_8hpp_source.html#l00035">polyfem::solver::VariableToSimulation::states_</a>.</p>
+<p class="reference">References <a class="el" href="_variable_to_simulation_8hpp_source.html#l00037">polyfem::solver::VariableToSimulation::states_</a>.</p>
 
 </div>
 </div>

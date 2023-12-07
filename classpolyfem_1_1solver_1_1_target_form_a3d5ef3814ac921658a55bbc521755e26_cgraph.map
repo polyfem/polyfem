@@ -1,20 +1,22 @@
 <map id="polyfem::solver::TargetForm::get_integral_functional" name="polyfem::solver::TargetForm::get_integral_functional">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,157,211,197"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,189,211,229"/>
 <area shape="rect" id="Node000002" href="$classpolyfem_1_1io_1_1_evaluator.html#a37193c8a31244f89fc4586d18101a033" title="interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)" alt="" coords="271,29,464,69"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="134,155,189,117,258,79,275,72,277,77,260,84,192,121,137,159"/>
-<area shape="rect" id="Node000005" href="$namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391" title=" " alt="" coords="278,93,457,133"/>
-<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="189,155,272,134,273,139,190,160"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1_integrable_functional.html#af24abb035d76bc7013e67a4fa902ae34" title=" " alt="" coords="259,157,476,197"/>
-<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="211,175,245,175,245,180,211,180"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1_integrable_functional.html#aa8c0539f60df8e54743b12569f68fe84" title=" " alt="" coords="259,221,476,261"/>
-<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="190,195,273,215,272,221,189,200"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1_integrable_functional.html#afcc6c27d6c8f2ed9731279407adac08a" title=" " alt="" coords="259,285,476,325"/>
-<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="137,195,192,233,260,271,277,278,275,283,258,276,189,238,134,200"/>
-<area shape="poly" id="edge4_Node000002_Node000002" title=" " alt="" coords="323,30,320,20,328,10,343,5,367,3,395,6,410,13,408,18,394,11,367,8,344,10,331,15,326,21,328,28"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1mesh_1_1_mesh.html#aadc9bb68805f0a4c0209bee9160c9fc6" title="utily for dimension" alt="" coords="524,29,687,69"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="464,47,510,47,510,52,464,52"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="735,29,897,69"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="687,47,721,47,721,52,687,52"/>
-<area shape="rect" id="Node000006" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="543,101,668,126"/>
-<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="457,111,529,111,529,116,457,116"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="126,187,181,134,218,104,257,79,271,72,273,77,260,84,221,109,185,138,129,191"/>
+<area shape="rect" id="Node000005" href="$namespacepolyfem.html#a8d6eb2c01f97c327e382b6dcda332777" title=" " alt="" coords="278,93,457,133"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="152,187,258,143,281,135,282,140,260,148,154,192"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_target_form.html#abfe73503214ba79bd630520762534500" title=" " alt="" coords="265,157,470,197"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="210,194,251,189,251,194,211,199"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1_integrable_functional.html#af24abb035d76bc7013e67a4fa902ae34" title=" " alt="" coords="259,221,476,261"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="211,219,245,224,245,229,210,225"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1_integrable_functional.html#aa8c0539f60df8e54743b12569f68fe84" title=" " alt="" coords="259,285,476,325"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="154,227,260,271,282,279,281,284,258,276,152,232"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1_integrable_functional.html#afcc6c27d6c8f2ed9731279407adac08a" title=" " alt="" coords="259,349,476,389"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="129,228,185,281,221,310,260,335,273,342,271,346,257,340,218,314,181,285,126,232"/>
+<area shape="poly" id="edge4_Node000002_Node000002" title=" " alt="" coords="322,30,319,20,326,10,343,5,367,3,396,6,411,13,409,18,394,11,367,8,344,10,329,15,324,21,327,28"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1mesh_1_1_mesh.html#aadc9bb68805f0a4c0209bee9160c9fc6" title="utily for dimension" alt="" coords="531,29,694,69"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="464,47,517,47,517,52,464,52"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="749,29,912,69"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="694,47,735,47,735,52,694,52"/>
+<area shape="rect" id="Node000006" href="$namespacepolyfem.html#a4d64be939c7759c782fff98ed87f3399" title="Retrieves the current logger for adjoint." alt="" coords="524,101,701,126"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="457,111,510,111,510,116,457,116"/>
 </map>

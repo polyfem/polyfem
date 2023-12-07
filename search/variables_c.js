@@ -28,6 +28,6 @@ var searchData=
   ['local_5fneumann_5fboundary_5f_25',['local_neumann_boundary_',['../classpolyfem_1_1solver_1_1_b_c_penalty_form.html#a129d07931b8921b961439cb10435d98e',1,'polyfem::solver::BCPenaltyForm::local_neumann_boundary_'],['../classpolyfem_1_1solver_1_1_body_form.html#a677914744dd2df3685e3399582fe7e3d',1,'polyfem::solver::BodyForm::local_neumann_boundary_'],['../classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a888a625b7c984285bb32f327105847c7',1,'polyfem::solver::BCLagrangianForm::local_neumann_boundary_']]],
   ['local_5fnode_5ffrom_5fprimitive_5f_26',['local_node_from_primitive_',['../classpolyfem_1_1basis_1_1_element_bases.html#a9df0ed812e27f48018349b2f283a08ee',1,'polyfem::basis::ElementBases']]],
   ['local_5fprimitive_5fid_5f_27',['local_primitive_id_',['../classpolyfem_1_1mesh_1_1_local_boundary.html#a8a3d0169b9403f606f49e3b09086e97a',1,'polyfem::mesh::LocalBoundary']]],
-  ['logger_5f_28',['logger_',['../_state_init_8cpp.html#ac2b9c1c21e0f8366b6a8e57c3bae34fd',1,'StateInit.cpp']]],
+  ['logger_5f_28',['logger_',['../_geogram_utils_8cpp.html#ac2b9c1c21e0f8366b6a8e57c3bae34fd',1,'GeogramUtils.cpp']]],
   ['lp_5ferr_29',['lp_err',['../classpolyfem_1_1io_1_1_out_stats_data.html#a30468b92c25ac491390157d56949ec0e',1,'polyfem::io::OutStatsData']]]
 ];
