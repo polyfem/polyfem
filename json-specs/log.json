@@ -1,0 +1,70 @@
+[
+    {
+        "pointer": "/",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "level",
+            "file_level",
+            "path",
+            "quiet"
+        ],
+        "doc": "Setting for the output log."
+    },
+    {
+        "pointer": "/level",
+        "type": "int",
+        "min": 0,
+        "max": 6,
+        "doc": "Level of logging, 0 trace, 1 debug, 2 info, 3 warning, 4 error, 5 critical, and 6 off."
+    },
+    {
+        "pointer": "/level",
+        "default": "debug",
+        "type": "string",
+        "options": [
+            "trace",
+            "debug",
+            "info",
+            "warning",
+            "error",
+            "critical",
+            "off"
+        ],
+        "doc": "Level of logging."
+    },
+    {
+        "pointer": "/file_level",
+        "type": "int",
+        "min": 0,
+        "max": 6,
+        "doc": "Level of logging to a file, 0 trace, 1 debug, 2 info, 3 warning, 4 error, 5 critical, and 6 off."
+    },
+    {
+        "pointer": "/file_level",
+        "default": "trace",
+        "type": "string",
+        "options": [
+            "trace",
+            "debug",
+            "info",
+            "warning",
+            "error",
+            "critical",
+            "off"
+        ],
+        "doc": "Level of logging."
+    },
+    {
+        "pointer": "/path",
+        "default": "",
+        "type": "string",
+        "doc": "File where to save the log; empty string is output to terminal."
+    },
+    {
+        "pointer": "/quiet",
+        "default": false,
+        "type": "bool",
+        "doc": "Disable cout for logging."
+    }
+]

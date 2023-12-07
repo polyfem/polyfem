@@ -59,10 +59,17 @@
         "default": null,
         "type": "object",
         "optional": [
-            "solve_log_level",
-            "save_frequency"
+            "log",
+            "save_frequency",
+            "directory"
         ],
         "doc": "Optimization output options"
+    },
+    {
+        "pointer": "/output/directory",
+        "default": "",
+        "type": "string",
+        "doc": "Directory for output files."
     },
     {
         "pointer": "/output/save_frequency",
@@ -71,10 +78,10 @@
         "doc": "Optimization output frequency"
     },
     {
-        "pointer": "/output/solve_log_level",
-        "default": 2,
-        "type": "int",
-        "doc": "Log level in forward solve"
+        "pointer": "/output/log",
+        "spec_file": "log.json",
+        "type": "include",
+        "doc": "Setting for the output log."
     },
     {
         "pointer": "/solver",
@@ -82,9 +89,17 @@
         "default": null,
         "optional": [
             "nonlinear",
-            "advanced"
+            "advanced",
+            "max_threads"
         ],
         "doc": "Optimization solver parameters."
+    },
+    {
+        "pointer": "/solver/max_threads",
+        "default": 0,
+        "type": "int",
+        "min": 0,
+        "doc": "Maximum number of threads used; 0 is unlimited."
     },
     {
         "pointer": "/solver/nonlinear",
