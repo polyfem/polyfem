@@ -31,9 +31,11 @@ namespace polyfem
 	using namespace io;
 	using namespace utils;
 
-	std::shared_ptr<polysolve::nonlinear::Solver> State::make_nl_solver() const
+	std::shared_ptr<polysolve::nonlinear::Solver> State::make_nl_solver(bool for_al) const
 	{
-		return polysolve::nonlinear::Solver::create(args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger());
+		auto solver = polysolve::nonlinear::Solver::create(for_al ? args["solver"]["augmented_lagrangian"]["nonlinear"] : args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger());
+		solver->allow
+		return solver;
 	}
 
 	void State::solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol)
@@ -289,10 +291,10 @@ namespace polyfem
 
 		// ---------------------------------------------------------------------
 
-		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver();
+		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(true);
 
 		ALSolver al_solver(
-			nl_solver, solve_data.al_lagr_form, solve_data.al_pen_form,
+			solve_data.al_lagr_form, solve_data.al_pen_form,
 			args["solver"]["augmented_lagrangian"]["initial_weight"],
 			args["solver"]["augmented_lagrangian"]["scaling"],
 			args["solver"]["augmented_lagrangian"]["max_weight"],
@@ -313,7 +315,10 @@ namespace polyfem
 		};
 
 		Eigen::MatrixXd prev_sol = sol;
-		al_solver.solve(nl_problem, sol);
+		al_solver.solve_al(nl_solver, nl_problem, sol);
+
+		nl_solver = make_nl_solver(false);
+		al_solver.solve_reduced(nl_solver, nl_problem, sol);
 
 		// ---------------------------------------------------------------------
 

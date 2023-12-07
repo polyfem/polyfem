@@ -5,28 +5,24 @@
 namespace polyfem::solver
 {
 	ALSolver::ALSolver(
-		std::shared_ptr<NLSolver> nl_solver,
 		std::shared_ptr<BCLagrangianForm> lagr_form,
 		std::shared_ptr<BCPenaltyForm> pen_form,
 		const double initial_al_weight,
 		const double scaling,
 		const double max_al_weight,
 		const double eta_tol,
-		const int max_solver_iter,
 		const std::function<void(const Eigen::VectorXd &)> &update_barrier_stiffness)
-		: nl_solver(nl_solver),
-		  lagr_form(lagr_form),
+		: lagr_form(lagr_form),
 		  pen_form(pen_form),
 		  initial_al_weight(initial_al_weight),
 		  scaling(scaling),
 		  max_al_weight(max_al_weight),
 		  eta_tol(eta_tol),
-		  max_solver_iter(max_solver_iter),
 		  update_barrier_stiffness(update_barrier_stiffness)
 	{
 	}
 
-	void ALSolver::solve(NLProblem &nl_problem, Eigen::MatrixXd &sol)
+	void ALSolver::solve_al(std::shared_ptr<NLSolver> nl_solver,NLProblem &nl_problem, Eigen::MatrixXd &sol)
 	{
 		assert(sol.size() == nl_problem.full_size());
 
@@ -38,7 +34,6 @@ namespace polyfem::solver
 		double al_weight = initial_al_weight;
 		int al_steps = 0;
 		const int iters = nl_solver->max_iterations();
-		nl_solver->max_iterations() = max_solver_iter;
 
 		const StiffnessMatrix &mask = pen_form->mask();
 		const double initial_error = (pen_form->target() - sol).transpose() * mask * (pen_form->target() - sol);
@@ -86,6 +81,19 @@ namespace polyfem::solver
 		}
 		nl_problem.line_search_end();
 		nl_solver->max_iterations() = iters;
+	}
+
+	void ALSolver::solve_al(std::shared_ptr<NLSolver> nl_solver,NLProblem &nl_problem, Eigen::MatrixXd &sol)
+	{
+		assert(sol.size() == nl_problem.full_size());
+
+		Eigen::VectorXd tmp_sol = nl_problem.full_to_reduced(sol);
+		nl_problem.line_search_begin(sol, tmp_sol);
+		
+		if (!std::isfinite(nl_problem.value(tmp_sol))
+			   || !nl_problem.is_step_valid(sol, tmp_sol)
+			   || !nl_problem.is_step_collision_free(sol, tmp_sol))
+			log_and_throw_error("Failed to apply boundary conditions; solve with augmented lagrangian first!");
 
 		// --------------------------------------------------------------------
 		// Perform one final solve with the DBC projected out

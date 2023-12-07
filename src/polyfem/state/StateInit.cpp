@@ -232,6 +232,9 @@ namespace polyfem
 		else
 			polysolve::linear::Solver::select_valid_solver(args_in["solver"]["adjoint_linear"], logger());
 
+		if (args_in["solver"]["augmented_lagrangian"]["nonlinear"].is_null())
+			args_in["solver"]["augmented_lagrangian"]["nonlinear"] = args_in["solver"]["nonlinear"];
+
 		const bool valid_input = jse.verify_json(args_in, rules);
 
 		if (!valid_input)

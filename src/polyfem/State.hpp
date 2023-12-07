@@ -367,7 +367,7 @@ namespace polyfem
 
 		/// factory to create the nl solver depending on input
 		/// @return nonlinear solver (eg newton or LBFGS)
-		std::shared_ptr<polysolve::nonlinear::Solver> make_nl_solver() const;
+		std::shared_ptr<polysolve::nonlinear::Solver> make_nl_solver(bool for_al) const;
 
 		/// @brief Solve the linear problem with the given solver and system.
 		/// @param solver Linear solver.
