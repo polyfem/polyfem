@@ -53,7 +53,7 @@ namespace polyfem::mesh
 		if (dim == 2)
 		{
 			logger().error("SLIM smoothing not implemented for 2d");
-			assert(false);
+			return;
 		}
 		else
 		{
