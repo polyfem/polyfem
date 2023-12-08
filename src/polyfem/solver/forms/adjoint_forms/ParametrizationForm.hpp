@@ -60,6 +60,7 @@ namespace polyfem::solver
 		{
 			post_step_with_param(polysolve::nonlinear::PostStepData(
 				data.iter_num,
+				data.solver_info,
 				apply_parametrizations(data.x),
 				parametrizations_.apply_jacobian(data.grad, data.x)));
 		}

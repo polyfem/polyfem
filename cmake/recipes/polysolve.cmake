@@ -11,4 +11,4 @@ message(STATUS "Third-party: creating target 'polysolve'")
 set(POLYSOLVE_WITH_ACCELERATE OFF CACHE BOOL "Enable Apple Accelerate" FORCE)
 
 include(CPM)
-CPMAddPackage("gh:polyfem/polysolve#e9bb71879758ae1ed3947d9ec7973e918cd6300a")
+CPMAddPackage("gh:polyfem/polysolve#b08ab2397af8f2eabb496326b40f28784a1bd435")
