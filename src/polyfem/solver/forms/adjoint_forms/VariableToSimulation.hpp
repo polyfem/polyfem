@@ -17,6 +17,8 @@ namespace polyfem::solver
 			update_state(parametrization_.eval(x), get_output_indexing(x));
 		}
 
+		virtual std::string name() const = 0;
+
 		inline int n_states() const { return states_.size(); }
 		inline const std::vector<std::shared_ptr<State>> &get_states() const { return states_; }
 
@@ -45,6 +47,8 @@ namespace polyfem::solver
 		using VariableToSimulation::VariableToSimulation;
 		virtual ~ShapeVariableToSimulation() {}
 
+		std::string name() const override { return "shape"; }
+
 		ParameterType get_parameter_type() const override { return ParameterType::Shape; }
 
 		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;
@@ -61,6 +65,8 @@ namespace polyfem::solver
 	public:
 		using VariableToSimulation::VariableToSimulation;
 		virtual ~ElasticVariableToSimulation() {}
+
+		std::string name() const override { return "elastic"; }
 
 		ParameterType get_parameter_type() const override { return ParameterType::Material; }
 
@@ -79,6 +85,8 @@ namespace polyfem::solver
 		using VariableToSimulation::VariableToSimulation;
 		virtual ~FrictionCoeffientVariableToSimulation() {}
 
+		std::string name() const override { return "friction"; }
+
 		ParameterType get_parameter_type() const override { return ParameterType::FrictionCoeff; }
 
 		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;
@@ -95,6 +103,8 @@ namespace polyfem::solver
 	public:
 		using VariableToSimulation::VariableToSimulation;
 		virtual ~DampingCoeffientVariableToSimulation() {}
+
+		std::string name() const override { return "damping"; }
 
 		ParameterType get_parameter_type() const override { return ParameterType::DampingCoeff; }
 
@@ -113,6 +123,8 @@ namespace polyfem::solver
 		using VariableToSimulation::VariableToSimulation;
 		virtual ~InitialConditionVariableToSimulation() {}
 
+		std::string name() const override { return "initial"; }
+
 		ParameterType get_parameter_type() const override { return ParameterType::InitialCondition; }
 
 		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;
@@ -129,6 +141,8 @@ namespace polyfem::solver
 	public:
 		using VariableToSimulation::VariableToSimulation;
 		virtual ~DirichletVariableToSimulation() {}
+
+		std::string name() const override { return "dirichlet"; }
 
 		ParameterType get_parameter_type() const override { return ParameterType::DirichletBC; }
 

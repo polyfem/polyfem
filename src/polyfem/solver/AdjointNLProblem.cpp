@@ -100,7 +100,6 @@ namespace polyfem::solver
 		  form_(form),
 		  variables_to_simulation_(variables_to_simulation),
 		  all_states_(all_states),
-		  solve_log_level(args["output"]["solve_log_level"]),
 		  save_freq(args["output"]["save_frequency"]),
 		  solve_in_parallel(args["solver"]["advanced"]["solve_in_parallel"])
 	{
@@ -143,7 +142,7 @@ namespace polyfem::solver
 
 	void AdjointNLProblem::hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 	{
-		log_and_throw_error("Hessian not supported!");
+		log_and_throw_adjoint_error("Hessian not supported!");
 	}
 
 	double AdjointNLProblem::value(const Eigen::VectorXd &x)
@@ -161,25 +160,13 @@ namespace polyfem::solver
 
 			{
 				POLYFEM_SCOPED_TIMER("adjoint solve");
-
-				const auto cur_log_level = logger().level();
-				all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
-
 				for (int i = 0; i < all_states_.size(); i++)
 					all_states_[i]->solve_adjoint_cached(form_->compute_adjoint_rhs(x, *all_states_[i])); // caches inside state
-
-				all_states_[0]->set_log_level(cur_log_level);
 			}
 
 			{
 				POLYFEM_SCOPED_TIMER("gradient assembly");
-
-				const auto cur_log_level = logger().level();
-				all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
-
 				form_->first_derivative(x, gradv);
-
-				all_states_[0]->set_log_level(cur_log_level);
 			}
 
 			cur_grad = gradv;
@@ -222,7 +209,7 @@ namespace polyfem::solver
 		int id = 0;
 		if (iter_num % save_freq != 0)
 			return;
-		logger().info("Saving iteration {}", iter_num);
+		adjoint_logger().info("Saving iteration {}", iter_num);
 		for (const auto &state : all_states_)
 		{
 			bool save_vtu = true;
@@ -234,7 +221,7 @@ namespace polyfem::solver
 
 			if (!save_vtu)
 				continue;
-			logger().debug("Save final vtu to file {} ...", vis_mesh_path);
+			adjoint_logger().debug("Save final vtu to file {} ...", vis_mesh_path);
 
 			double tend = state->args.value("tend", 1.0);
 			double dt = 1;
@@ -255,7 +242,7 @@ namespace polyfem::solver
 
 			if (!save_rest_mesh)
 				continue;
-			logger().debug("Save rest mesh to file {} ...", rest_mesh_path);
+			adjoint_logger().debug("Save rest mesh to file {} ...", rest_mesh_path);
 
 			// If shape opt, save rest meshes as well
 			Eigen::MatrixXd V;
@@ -283,11 +270,8 @@ namespace polyfem::solver
 
 		if (need_rebuild_basis)
 		{
-			const auto cur_log_level = logger().level();
-			all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
 			for (const auto &state : all_states_)
 				state->build_basis();
-			all_states_[0]->set_log_level(cur_log_level);
 		}
 
 		form_->solution_changed(newX);
@@ -307,11 +291,8 @@ namespace polyfem::solver
 
 		if (need_rebuild_basis)
 		{
-			const auto cur_log_level = logger().level();
-			all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
 			for (const auto &state : all_states_)
 				state->build_basis();
-			all_states_[0]->set_log_level(cur_log_level);
 		}
 
 		// solve PDE
@@ -322,12 +303,9 @@ namespace polyfem::solver
 
 	void AdjointNLProblem::solve_pde()
 	{
-		const auto cur_log_level = logger().level();
-		all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
-
 		if (solve_in_parallel)
 		{
-			logger().info("Run simulations in parallel...");
+			adjoint_logger().info("Run simulations in parallel...");
 
 			utils::maybe_parallel_for(all_states_.size(), [&](int start, int end, int thread_id) {
 				for (int i = start; i < end; i++)
@@ -358,8 +336,6 @@ namespace polyfem::solver
 				}
 			}
 		}
-
-		all_states_[0]->set_log_level(cur_log_level);
 
 		cur_grad.resize(0);
 	}

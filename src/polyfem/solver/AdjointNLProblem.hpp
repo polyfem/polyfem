@@ -51,7 +51,6 @@ namespace polyfem::solver
 		std::vector<bool> active_state_mask;
 		Eigen::VectorXd cur_grad;
 
-		const int solve_log_level;
 		const int save_freq;
 
 		const bool solve_in_parallel;
