@@ -200,23 +200,23 @@ namespace polyfem::solver
 
 	void AdjointNLProblem::post_step(const int iter_num, const Eigen::VectorXd &x)
 	{
-		iter++;
+		save_to_file(iter_num, x);
 		form_->post_step(iter_num, x);
 	}
 
-	void AdjointNLProblem::save_to_file(const Eigen::VectorXd &x0)
+	void AdjointNLProblem::save_to_file(const int iter_num, const Eigen::VectorXd &x0)
 	{
-		adjoint_logger().info("Saving iter {}", iter);
 		int id = 0;
-		if (iter % save_freq != 0)
+		if (iter_num % save_freq != 0)
 			return;
+		adjoint_logger().info("Saving iteration {}", iter_num);
 		for (const auto &state : all_states_)
 		{
 			bool save_vtu = true;
 			bool save_rest_mesh = true;
 
-			std::string vis_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.vtu", id, iter));
-			std::string rest_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.obj", id, iter));
+			std::string vis_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.vtu", id, iter_num));
+			std::string rest_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.obj", id, iter_num));
 			id++;
 
 			if (!save_vtu)
