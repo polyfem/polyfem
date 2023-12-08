@@ -83,7 +83,7 @@ namespace polyfem::solver
 			interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 		}
 
-		std::string name() const override { return "max-stress"; }
+		std::string name() const override { return "max_stress"; }
 
 		Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
 		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;

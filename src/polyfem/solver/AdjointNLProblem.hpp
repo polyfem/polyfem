@@ -24,7 +24,7 @@ namespace polyfem::solver
 
 		void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
 		void hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
-		void save_to_file(const Eigen::VectorXd &x0) override;
+		void save_to_file(const int iter_num, const Eigen::VectorXd &x0);
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
@@ -50,9 +50,7 @@ namespace polyfem::solver
 		std::vector<std::shared_ptr<State>> all_states_;
 		std::vector<bool> active_state_mask;
 		Eigen::VectorXd cur_grad;
-		int iter = 0;
 
-		const int solve_log_level;
 		const int save_freq;
 
 		const bool solve_in_parallel;

@@ -8,16 +8,13 @@
 #include <polyfem/autogen/auto_q_bases.hpp>
 
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/GeogramUtils.hpp>
 #include <polyfem/problem/KernelProblem.hpp>
 #include <polyfem/utils/par_for.hpp>
 
 #include <polyfem/utils/JSONUtils.hpp>
 
 #include <jse/jse.h>
-
-#include <geogram/basic/logger.h>
-#include <geogram/basic/command_line.h>
-#include <geogram/basic/command_line_args.h>
 
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -58,67 +55,11 @@ namespace polyfem
 	using namespace problem;
 	using namespace utils;
 
-	namespace
-	{
-		class GeoLoggerForward : public GEO::LoggerClient
-		{
-			std::shared_ptr<spdlog::logger> logger_;
-
-		public:
-			template <typename T>
-			GeoLoggerForward(T logger) : logger_(logger) {}
-
-		private:
-			std::string truncate(const std::string &msg)
-			{
-				static size_t prefix_len = GEO::CmdLine::ui_feature(" ", false).size();
-				return msg.substr(prefix_len, msg.size() - 1 - prefix_len);
-			}
-
-		protected:
-			void div(const std::string &title) override
-			{
-				logger_->trace(title.substr(0, title.size() - 1));
-			}
-
-			void out(const std::string &str) override
-			{
-				logger_->info(truncate(str));
-			}
-
-			void warn(const std::string &str) override
-			{
-				logger_->warn(truncate(str));
-			}
-
-			void err(const std::string &str) override
-			{
-				logger_->error(truncate(str));
-			}
-
-			void status(const std::string &str) override
-			{
-				// Errors and warnings are also dispatched as status by geogram, but without
-				// the "feature" header. We thus forward them as trace, to avoid duplicated
-				// logger info...
-				logger_->trace(str.substr(0, str.size() - 1));
-			}
-		};
-	} // namespace
-
 	State::State()
 	{
 		using namespace polysolve;
-#ifndef WIN32
-		setenv("GEO_NO_SIGNAL_HANDLER", "1", 1);
-#endif
 
-		GEO::initialize();
-
-		// Import standard command line arguments, and custom ones
-		GEO::CmdLine::import_arg_group("standard");
-		GEO::CmdLine::import_arg_group("pre");
-		GEO::CmdLine::import_arg_group("algo");
+		GeogramUtils::instance().initialize();
 
 		problem = ProblemFactory::factory().get_problem("Linear");
 	}
@@ -156,14 +97,12 @@ namespace polyfem
 		init_logger(sinks, log_level);
 	}
 
-	void State::init_logger(const std::vector<spdlog::sink_ptr> &sinks, const spdlog::level::level_enum log_level)
+	void State::init_logger(
+		const std::vector<spdlog::sink_ptr> &sinks,
+		const spdlog::level::level_enum log_level)
 	{
 		set_logger(std::make_shared<spdlog::logger>("polyfem", sinks.begin(), sinks.end()));
-
-		GEO::Logger *geo_logger = GEO::Logger::instance();
-		geo_logger->unregister_all_clients();
-		geo_logger->register_client(new GeoLoggerForward(logger().clone("geogram")));
-		geo_logger->set_pretty(false);
+		GeogramUtils::instance().set_logger(logger());
 
 		ipc::set_logger(std::make_shared<spdlog::logger>("ipctk", sinks.begin(), sinks.end()));
 
@@ -186,7 +125,7 @@ namespace polyfem
 		// Set only the level of the console
 		spdlog::set_level(log_level);
 		logger().set_level(log_level);
- 		ipc::logger().set_level(log_level);
+		ipc::logger().set_level(log_level);
 		if (console_sink_)
 			console_sink_->set_level(log_level); // Shared by all loggers
 	}
@@ -273,7 +212,7 @@ namespace polyfem
 		logger().info("Saving output to {}", output_dir);
 
 		const unsigned int thread_in = this->args["solver"]["max_threads"];
-		set_max_threads(thread_in <= 0 ? std::numeric_limits<unsigned int>::max() : thread_in);
+		set_max_threads(thread_in);
 
 		has_dhat = args_in["contact"].contains("dhat");
 
@@ -378,14 +317,9 @@ namespace polyfem
 		}
 	}
 
-	void State::set_max_threads(const unsigned int max_threads)
+	void State::set_max_threads(const int max_threads)
 	{
-		const unsigned int num_threads = std::max(1u, std::min(max_threads, std::thread::hardware_concurrency()));
-		NThread::get().num_threads = num_threads;
-#ifdef POLYFEM_WITH_TBB
-		thread_limiter = std::make_shared<tbb::global_control>(tbb::global_control::max_allowed_parallelism, num_threads);
-#endif
-		Eigen::setNbThreads(num_threads);
+		NThread::get().set_num_threads(max_threads);
 	}
 
 	void State::init_time()

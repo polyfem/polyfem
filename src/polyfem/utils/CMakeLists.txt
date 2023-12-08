@@ -14,6 +14,8 @@ set(SOURCES
 	EnableWarnings.hpp
 	ExpressionValue.cpp
 	ExpressionValue.hpp
+	GeogramUtils.cpp
+	GeogramUtils.hpp
 	GeometryUtils.cpp
 	GeometryUtils.hpp
 	getRSS.c
