@@ -102,10 +102,10 @@ namespace polyfem::solver
 				f->line_search_end();
 		}
 
-		virtual void post_step(const int iter_num, const Eigen::VectorXd &x) override
+		virtual void post_step(const polysolve::nonlinear::PostStepData &data) override
 		{
 			for (const auto &f : forms_)
-				f->post_step(iter_num, x);
+				f->post_step(data);
 		}
 
 		virtual void solution_changed(const Eigen::VectorXd &new_x) override

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/utils/Types.hpp>
+#include <polysolve/nonlinear/Solver.hpp>
 
 #include <filesystem>
 
@@ -75,7 +76,8 @@ namespace polyfem::solver
 		/// @brief Update fields after a step in the optimization
 		/// @param iter_num Optimization iteration number
 		/// @param x Current solution
-		virtual void post_step(const int iter_num, const Eigen::VectorXd &x) {}
+		/// @param data Data containing info about the current iteration
+		virtual void post_step(const polysolve::nonlinear::PostStepData &data) {}
 
 		/// @brief Update cached fields upon a change in the solution
 		/// @param new_x New solution

@@ -108,7 +108,7 @@ namespace polyfem::solver
 		/// @brief Update fields after a step in the optimization
 		/// @param iter_num Optimization iteration number
 		/// @param x Current solution
-		void post_step(const int iter_num, const Eigen::VectorXd &x) override;
+		void post_step(const polysolve::nonlinear::PostStepData &data) override;
 
 		/// @brief Checks if the step is collision free
 		/// @return True if the step is collision free else false

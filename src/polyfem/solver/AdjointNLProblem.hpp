@@ -31,7 +31,7 @@ namespace polyfem::solver
 
 		void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 		void line_search_end() override;
-		void post_step(const int iter_num, const Eigen::VectorXd &x) override;
+		void post_step(const polysolve::nonlinear::PostStepData &data) override;
 		bool stop(const TVector &x) override;
 
 		// virtual void set_project_to_psd(bool val) override;

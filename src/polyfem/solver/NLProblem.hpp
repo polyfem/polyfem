@@ -37,7 +37,7 @@ namespace polyfem::solver
 		double max_step_size(const TVector &x0, const TVector &x1) const override;
 
 		void line_search_begin(const TVector &x0, const TVector &x1) override;
-		void post_step(const int iter_num, const TVector &x) override;
+		void post_step(const polysolve::nonlinear::PostStepData &data) override;
 
 		void solution_changed(const TVector &new_x) override;
 

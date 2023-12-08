@@ -275,12 +275,12 @@ namespace polyfem::solver
 		use_cached_candidates_ = false;
 	}
 
-	void ContactForm::post_step(const int iter_num, const Eigen::VectorXd &x)
+	void ContactForm::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
-		if (iter_num == 0)
+		if (data.iter_num == 0)
 			return;
 
-		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
+		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(data.x);
 
 		const double curr_distance = constraint_set_.compute_minimum_distance(collision_mesh_, displaced_surface);
 
@@ -304,7 +304,7 @@ namespace polyfem::solver
 			else
 			{
 				// TODO: missing feature
-				// update_barrier_stiffness(x);
+				// update_barrier_stiffness(data.x);
 			}
 		}
 
