@@ -122,7 +122,14 @@ int authenticate_json(const std::string &json_file, const bool compute_validatio
 	Eigen::MatrixXd sol;
 	Eigen::MatrixXd pressure;
 
-	state.solve_problem(sol, pressure);
+	try
+	{
+		state.solve_problem(sol, pressure);
+	}
+	catch (...)
+	{
+		return 3;
+	}
 
 	state.compute_errors(sol);
 
