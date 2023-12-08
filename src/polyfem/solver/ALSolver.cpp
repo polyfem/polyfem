@@ -83,7 +83,7 @@ namespace polyfem::solver
 		nl_solver->max_iterations() = iters;
 	}
 
-	void ALSolver::solve_al(std::shared_ptr<NLSolver> nl_solver,NLProblem &nl_problem, Eigen::MatrixXd &sol)
+	void ALSolver::solve_reduced(std::shared_ptr<NLSolver> nl_solver,NLProblem &nl_problem, Eigen::MatrixXd &sol)
 	{
 		assert(sol.size() == nl_problem.full_size());
 
