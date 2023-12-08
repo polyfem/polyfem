@@ -80,7 +80,7 @@ namespace
 	void verify_adjoint(AdjointNLProblem &problem, const Eigen::VectorXd &x, const Eigen::MatrixXd &theta, const double dt, const double tol)
 	{
 		problem.solution_changed(x);
-		problem.save_to_file(x);
+		problem.save_to_file(0, x);
 		double functional_val = problem.value(x);
 
 		Eigen::VectorXd one_form;

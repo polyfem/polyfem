@@ -197,6 +197,8 @@ namespace polyfem::solver
 			rest_ass_vals_cache_.init(state_.mesh->is_volume(), rest_geom_bases_, rest_geom_bases_);
 		}
 
+		virtual std::string name() const override { return "AMIPS"; }
+
 		double value_unweighted(const Eigen::VectorXd &x) const override
 		{
 			Eigen::VectorXd X = get_updated_mesh_nodes(x);
@@ -240,7 +242,7 @@ namespace polyfem::solver
 			bool flipped = is_flipped(V1, F);
 
 			if (flipped)
-				logger().trace("Step flips elements.");
+				adjoint_logger().trace("[{}] Step flips elements.", name());
 
 			return !flipped;
 		}

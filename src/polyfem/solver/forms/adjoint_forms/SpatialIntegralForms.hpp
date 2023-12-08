@@ -11,6 +11,8 @@ namespace polyfem::solver
 		{
 		}
 
+		std::string name() const override { return "spatial_integral"; }
+
 		const State &get_state() { return state_; }
 
 		void set_integral_type(const SpatialIntegralType type) { spatial_integral_type_ = type; }
@@ -38,6 +40,8 @@ namespace polyfem::solver
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 		}
 
+		std::string name() const override { return "elastic_energy"; }
+
 		void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	protected:
@@ -58,6 +62,8 @@ namespace polyfem::solver
 				in_power_ = args["power"];
 		}
 
+		std::string name() const override { return "stress_norm"; }
+
 		void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	protected:
@@ -77,6 +83,8 @@ namespace polyfem::solver
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 		}
+
+		std::string name() const override { return "compliance"; }
 
 		void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
@@ -155,6 +163,8 @@ namespace polyfem::solver
 
 			dimensions_ = args["dimensions"].get<std::vector<int>>();
 		}
+
+		std::string name() const override { return "stress"; }
 
 		void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 

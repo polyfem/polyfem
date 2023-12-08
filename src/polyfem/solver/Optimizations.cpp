@@ -28,6 +28,26 @@
 
 #include <polysolve/nonlinear/BoxConstraintSolver.hpp>
 
+namespace spdlog::level
+{
+	NLOHMANN_JSON_SERIALIZE_ENUM(
+		spdlog::level::level_enum,
+		{{spdlog::level::level_enum::trace, "trace"},
+		 {spdlog::level::level_enum::debug, "debug"},
+		 {spdlog::level::level_enum::info, "info"},
+		 {spdlog::level::level_enum::warn, "warning"},
+		 {spdlog::level::level_enum::err, "error"},
+		 {spdlog::level::level_enum::critical, "critical"},
+		 {spdlog::level::level_enum::off, "off"},
+		 {spdlog::level::level_enum::trace, 0},
+		 {spdlog::level::level_enum::debug, 1},
+		 {spdlog::level::level_enum::info, 2},
+		 {spdlog::level::level_enum::warn, 3},
+		 {spdlog::level::level_enum::err, 3},
+		 {spdlog::level::level_enum::critical, 4},
+		 {spdlog::level::level_enum::off, 5}})
+}
+
 namespace polyfem::solver
 {
 	namespace
@@ -57,7 +77,7 @@ namespace polyfem::solver
 		if (std::find(names.begin(), names.end(), solver_params["solver"]) != names.end())
 			return polysolve::nonlinear::BoxConstraintSolver::create(solver_params, linear_solver_params, characteristic_length, adjoint_logger());
 
-		log_and_throw_error("Invalid nonlinear solver name!");
+		log_and_throw_adjoint_error("Invalid nonlinear solver name!");
 	}
 
 	std::shared_ptr<AdjointForm> AdjointOptUtils::create_form(const json &args, const std::vector<std::shared_ptr<VariableToSimulation>> &var2sim, const std::vector<std::shared_ptr<State>> &states)
@@ -83,7 +103,7 @@ namespace polyfem::solver
 			// 	log_and_throw_error("If optimizing a shape paramter, AMIPS form must be part of the objectives to prevent inverted elements!");
 
 			obj = std::make_shared<SumCompositeForm>(var2sim, forms);
-            obj->enable_energy_print("sum_of_objectives");
+			obj->enable_energy_print("sum_of_objectives");
 		}
 		else
 		{
@@ -271,7 +291,7 @@ namespace polyfem::solver
 			else if (type == "parametrized_product")
 			{
 				if (args["parametrization"].contains("parameter_index"))
-					log_and_throw_error("Parametrizations in parametrized forms don't support parameter_index!");
+					log_and_throw_adjoint_error("Parametrizations in parametrized forms don't support parameter_index!");
 
 				std::vector<std::shared_ptr<Parametrization>> map_list;
 				for (const auto &arg : args["parametrization"])
@@ -281,7 +301,7 @@ namespace polyfem::solver
 				obj = std::make_shared<ParametrizedProductForm>(composite_map);
 			}
 			else
-				log_and_throw_error("Objective not implemented!");
+				log_and_throw_adjoint_error("Objective not implemented!");
 
 			obj->set_weight(args["weight"]);
 			if (args["print_energy"].get<std::string>() != "")
@@ -334,7 +354,7 @@ namespace polyfem::solver
 				map = std::make_shared<SliceMap>(from, to, last);
 			}
 			else
-				log_and_throw_error("Incorrect spec for SliceMap!");
+				log_and_throw_adjoint_error("Incorrect spec for SliceMap!");
 		}
 		else if (type == "exp")
 		{
@@ -366,7 +386,7 @@ namespace polyfem::solver
 			map = std::make_shared<BoundedBiharmonicWeights2Dto3D>(args["num_control_vertices"], args["num_vertices"], *states[args["state"]], args["allow_rotations"]);
 		}
 		else
-			log_and_throw_error("Unkown parametrization!");
+			log_and_throw_adjoint_error("Unkown parametrization!");
 
 		return map;
 	}
@@ -427,7 +447,7 @@ namespace polyfem::solver
 			else if (args["composite_map_indices"].is_array())
 				output_indexing = args["composite_map_indices"];
 			else
-				log_and_throw_error("Invalid composite map indices type!");
+				log_and_throw_adjoint_error("Invalid composite map indices type!");
 		}
 
 		if (type == "shape")
@@ -511,7 +531,7 @@ namespace polyfem::solver
 		}
 
 		state->optimization_enabled = level;
-		state->init(in_args, false);
+		state->init(in_args, true);
 		state->load_mesh();
 		Eigen::MatrixXd sol, pressure;
 		state->build_basis();
@@ -529,21 +549,7 @@ namespace polyfem::solver
 		{
 			json cur_args;
 			if (!load_json(args["path"], cur_args))
-				log_and_throw_error("Can't find json for State {}", i);
-
-			{
-				auto tmp = R"({
-						"output": {
-							"log": {
-								"level": -1
-							}
-						}
-					})"_json;
-
-				tmp["output"]["log"]["level"] = int(log_level);
-
-				cur_args.merge_patch(tmp);
-			}
+				log_and_throw_adjoint_error("Can't find json for State {}", i);
 
 			states[i++] = AdjointOptUtils::create_state(cur_args, level, max_threads);
 		}
@@ -605,7 +611,7 @@ namespace polyfem::solver
 				throw std::runtime_error("Invald spec file");
 			}
 
-			jse.include_directories.push_back(POLYFEM_OPT_INPUT_SPEC);
+			jse.include_directories.push_back(POLYFEM_JSON_SPEC_DIR);
 			jse.include_directories.push_back(POLYSOLVE_JSON_SPEC_DIR);
 			rules = jse.inject_include(rules);
 
@@ -702,11 +708,11 @@ namespace polyfem::solver
 			}
 			else
 			{
-				log_and_throw_error("Incorrect specification for parameters.");
+				log_and_throw_adjoint_error("Incorrect specification for parameters.");
 			}
 		}
 		else
-			log_and_throw_error("Incorrect specification for parameters.");
+			log_and_throw_adjoint_error("Incorrect specification for parameters.");
 
 		return -1;
 	}

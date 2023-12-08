@@ -63,6 +63,8 @@ namespace polyfem::solver
 	public:
 		DeformedCollisionBarrierForm(const std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulation, const State &state, const double dhat);
 
+		std::string name() const override { return "deformed_collision_barrier"; }
+
 		double value_unweighted(const Eigen::VectorXd &x) const override;
 
 		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;

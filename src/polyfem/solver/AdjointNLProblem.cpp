@@ -137,10 +137,6 @@ namespace polyfem::solver
 
 			return X;
 		}
-	} // namespace
-
-	namespace
-	{
 		using namespace std;
 		// Class to represent a graph
 		class Graph
@@ -223,52 +219,36 @@ namespace polyfem::solver
 		  form_(form),
 		  variables_to_simulation_(variables_to_simulation),
 		  all_states_(all_states),
-		  solve_log_level(args["output"]["solve_log_level"]),
 		  save_freq(args["output"]["save_frequency"]),
-		  slim_freq(args["solver"]["advanced"]["slim_frequency"]),
+		  enable_slim(args["solver"]["advanced"]["enable_slim"]),
 		  solve_in_parallel(args["solver"]["advanced"]["solve_in_parallel"])
 	{
 		cur_grad.setZero(0);
 
 		solve_in_order.clear();
-		if (args["solver"]["advanced"]["solve_in_order"].size() > 0)
 		{
-			for (int i : args["solver"]["advanced"]["solve_in_order"])
-				solve_in_order.push_back(i);
-
-			if (solve_in_parallel)
-				logger().error("Cannot solve both in order and in parallel, ignoring the order!");
-
-			assert(solve_in_order.size() == all_states.size());
-		}
-		else
-		{
-			for (int i = 0; i < all_states_.size(); i++)
-				solve_in_order.push_back(i);
+			Graph G(all_states.size());
+			for (int k = 0; k < all_states.size(); k++)
 			{
-				Graph G(all_states.size());
-				for (int k = 0; k < all_states.size(); k++)
-				{
-					auto &arg = args["states"][k];
-					if (arg["initial_guess"].get<int>() >= 0)
-						G.addEdge(arg["initial_guess"].get<int>(), k);
-				}
-
-				solve_in_order = G.topologicalSort();
+				auto &arg = args["states"][k];
+				if (arg["initial_guess"].get<int>() >= 0)
+					G.addEdge(arg["initial_guess"].get<int>(), k);
 			}
 
-			active_state_mask.assign(all_states_.size(), false);
-			for (int i = 0; i < all_states_.size(); i++)
+			solve_in_order = G.topologicalSort();
+		}
+
+		active_state_mask.assign(all_states_.size(), false);
+		for (int i = 0; i < all_states_.size(); i++)
+		{
+			for (const auto &v2sim : variables_to_simulation_)
 			{
-				for (const auto &v2sim : variables_to_simulation_)
+				for (const auto &state : v2sim->get_states())
 				{
-					for (const auto &state : v2sim->get_states())
+					if (all_states_[i].get() == state.get())
 					{
-						if (all_states_[i].get() == state.get())
-						{
-							active_state_mask[i] = true;
-							break;
-						}
+						active_state_mask[i] = true;
+						break;
 					}
 				}
 			}
@@ -282,7 +262,7 @@ namespace polyfem::solver
 
 	void AdjointNLProblem::hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian)
 	{
-		log_and_throw_error("Hessian not supported!");
+		log_and_throw_adjoint_error("Hessian not supported!");
 	}
 
 	double AdjointNLProblem::value(const Eigen::VectorXd &x)
@@ -300,25 +280,13 @@ namespace polyfem::solver
 
 			{
 				POLYFEM_SCOPED_TIMER("adjoint solve");
-
-				const auto cur_log_level = logger().level();
-				all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
-
 				for (int i = 0; i < all_states_.size(); i++)
 					all_states_[i]->solve_adjoint_cached(form_->compute_adjoint_rhs(x, *all_states_[i])); // caches inside state
-
-				all_states_[0]->set_log_level(cur_log_level);
 			}
 
 			{
 				POLYFEM_SCOPED_TIMER("gradient assembly");
-
-				const auto cur_log_level = logger().level();
-				all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
-
 				form_->first_derivative(x, gradv);
-
-				all_states_[0]->set_log_level(cur_log_level);
 			}
 
 			cur_grad = gradv;
@@ -365,28 +333,28 @@ namespace polyfem::solver
 
 	void AdjointNLProblem::post_step(const int iter_num, const Eigen::VectorXd &x)
 	{
-		iter++;
+		save_to_file(iter_num, x);
 		form_->post_step(iter_num, x);
 	}
 
-	void AdjointNLProblem::save_to_file(const Eigen::VectorXd &x0)
+	void AdjointNLProblem::save_to_file(const int iter_num, const Eigen::VectorXd &x0)
 	{
-		logger().info("Saving iter {}", iter);
 		int id = 0;
-		if (iter % save_freq != 0)
+		if (iter_num % save_freq != 0)
 			return;
+		adjoint_logger().info("Saving iteration {}", iter_num);
 		for (const auto &state : all_states_)
 		{
 			bool save_vtu = true;
 			bool save_rest_mesh = true;
 
-			std::string vis_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.vtu", id, iter));
-			std::string rest_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.obj", id, iter));
+			std::string vis_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.vtu", id, iter_num));
+			std::string rest_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.obj", id, iter_num));
 			id++;
 
 			if (!save_vtu)
 				continue;
-			logger().debug("Save final vtu to file {} ...", vis_mesh_path);
+			adjoint_logger().debug("Save final vtu to file {} ...", vis_mesh_path);
 
 			double tend = state->args.value("tend", 1.0);
 			double dt = 1;
@@ -407,7 +375,7 @@ namespace polyfem::solver
 
 			if (!save_rest_mesh)
 				continue;
-			logger().debug("Save rest mesh to file {} ...", rest_mesh_path);
+			adjoint_logger().debug("Save rest mesh to file {} ...", rest_mesh_path);
 
 			// If shape opt, save rest meshes as well
 			Eigen::MatrixXd V;
@@ -435,11 +403,8 @@ namespace polyfem::solver
 
 		if (need_rebuild_basis)
 		{
-			const auto cur_log_level = logger().level();
-			all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
 			for (const auto &state : all_states_)
 				state->build_basis();
-			all_states_[0]->set_log_level(cur_log_level);
 		}
 
 		form_->solution_changed(newX);
@@ -466,7 +431,7 @@ namespace polyfem::solver
 		}
 
 		// Apply slim to all states on a frequency
-		if (need_rebuild_basis && (slim_freq > 0) && (iter % slim_freq == 0))
+		if (need_rebuild_basis && enable_slim)
 		{
 			int state_num = 0;
 			for (auto state : all_states_)
@@ -485,11 +450,8 @@ namespace polyfem::solver
 
 		if (need_rebuild_basis)
 		{
-			const auto cur_log_level = logger().level();
-			all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
 			for (const auto &state : all_states_)
 				state->build_basis();
-			all_states_[0]->set_log_level(cur_log_level);
 		}
 
 		// solve PDE
@@ -500,12 +462,9 @@ namespace polyfem::solver
 
 	void AdjointNLProblem::solve_pde()
 	{
-		const auto cur_log_level = logger().level();
-		all_states_[0]->set_log_level(static_cast<spdlog::level::level_enum>(solve_log_level)); // log level is global, only need to change in one state
-
 		if (solve_in_parallel)
 		{
-			logger().info("Run simulations in parallel...");
+			adjoint_logger().info("Run simulations in parallel...");
 
 			utils::maybe_parallel_for(all_states_.size(), [&](int start, int end, int thread_id) {
 				for (int i = start; i < end; i++)
@@ -537,8 +496,6 @@ namespace polyfem::solver
 			}
 		}
 
-		all_states_[0]->set_log_level(cur_log_level);
-
 		cur_grad.resize(0);
 	}
 
@@ -554,11 +511,6 @@ namespace polyfem::solver
 				return false;
 		}
 		return true;
-	}
-
-	void AdjointNLProblem::step_accepted(const int iter_num, const TVector &x)
-	{
-		save_to_file(x);
 	}
 
 } // namespace polyfem::solver
