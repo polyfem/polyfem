@@ -151,8 +151,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a2465b3b989f5f836202bb38a32346b58"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a703e9b37b69297bfec21eb0879fe65f5" id="r_a703e9b37b69297bfec21eb0879fe65f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a703e9b37b69297bfec21eb0879fe65f5">hessian</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hessian) override</td></tr>
 <tr class="separator:a703e9b37b69297bfec21eb0879fe65f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a50ab6857d514efc4e62c37a688312deb" id="r_a50ab6857d514efc4e62c37a688312deb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a50ab6857d514efc4e62c37a688312deb">save_to_file</a> (const Eigen::VectorXd &amp;x0) override</td></tr>
-<tr class="separator:a50ab6857d514efc4e62c37a688312deb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4eb368a3c1be9d0f2321f00f8a97cb6e" id="r_a4eb368a3c1be9d0f2321f00f8a97cb6e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a4eb368a3c1be9d0f2321f00f8a97cb6e">save_to_file</a> (const int iter_num, const Eigen::VectorXd &amp;x0)</td></tr>
+<tr class="separator:a4eb368a3c1be9d0f2321f00f8a97cb6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afbda8df5b35379cf006ec13f656d1b25" id="r_afbda8df5b35379cf006ec13f656d1b25"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#afbda8df5b35379cf006ec13f656d1b25">is_step_valid</a> (const Eigen::VectorXd &amp;x0, const Eigen::VectorXd &amp;x1) const override</td></tr>
 <tr class="separator:afbda8df5b35379cf006ec13f656d1b25"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4bab13f7ad6912a40dc0cef840444925" id="r_a4bab13f7ad6912a40dc0cef840444925"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a4bab13f7ad6912a40dc0cef840444925">is_step_collision_free</a> (const Eigen::VectorXd &amp;x0, const Eigen::VectorXd &amp;x1) const override</td></tr>
@@ -210,8 +210,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a8a1cf6caf3eb9e8ce1cbbd1b95f41a5d inherit pub_methods_classpolyfem_1_1solver_1_1_full_n_l_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2160af0b5e54c4c57cd7ea99d3bc38d7 inherit pub_methods_classpolyfem_1_1solver_1_1_full_n_l_problem" id="r_a2160af0b5e54c4c57cd7ea99d3bc38d7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a2160af0b5e54c4c57cd7ea99d3bc38d7">uses_lagging</a> () const</td></tr>
 <tr class="separator:a2160af0b5e54c4c57cd7ea99d3bc38d7 inherit pub_methods_classpolyfem_1_1solver_1_1_full_n_l_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8819e984cec7cf787817f05458cfcf9c inherit pub_methods_classpolyfem_1_1solver_1_1_full_n_l_problem" id="r_a8819e984cec7cf787817f05458cfcf9c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a8819e984cec7cf787817f05458cfcf9c">save_to_file</a> (const TVector &amp;x0)</td></tr>
-<tr class="separator:a8819e984cec7cf787817f05458cfcf9c inherit pub_methods_classpolyfem_1_1solver_1_1_full_n_l_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7612662ef357ab012b69ef33f16890fe inherit pub_methods_classpolyfem_1_1solver_1_1_full_n_l_problem" id="r_a7612662ef357ab012b69ef33f16890fe"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a7612662ef357ab012b69ef33f16890fe">forms</a> ()</td></tr>
 <tr class="separator:a7612662ef357ab012b69ef33f16890fe inherit pub_methods_classpolyfem_1_1solver_1_1_full_n_l_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -227,8 +225,6 @@ Private Attributes</h2></td></tr>
 <tr class="separator:ac76af7dec4d0c1fed8fd4029f16ab6e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a80bb8f48bb2942e0698064b92f51836c" id="r_a80bb8f48bb2942e0698064b92f51836c"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a80bb8f48bb2942e0698064b92f51836c">cur_grad</a></td></tr>
 <tr class="separator:a80bb8f48bb2942e0698064b92f51836c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a390daa9d1d79df5a6d05c39b4ca5187f" id="r_a390daa9d1d79df5a6d05c39b4ca5187f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a390daa9d1d79df5a6d05c39b4ca5187f">iter</a> = 0</td></tr>
-<tr class="separator:a390daa9d1d79df5a6d05c39b4ca5187f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aacecbd532ec78e70b03c76daa28b5815" id="r_aacecbd532ec78e70b03c76daa28b5815"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#aacecbd532ec78e70b03c76daa28b5815">save_freq</a></td></tr>
 <tr class="separator:aacecbd532ec78e70b03c76daa28b5815"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afd5bfdcda004b24c00ab58fb13aadee3" id="r_afd5bfdcda004b24c00ab58fb13aadee3"><td class="memItemLeft" align="right" valign="top">const bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#afd5bfdcda004b24c00ab58fb13aadee3">solve_in_parallel</a></td></tr>
@@ -336,7 +332,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00138">138</a> of file <a class="el" href="_adjoint_n_l_problem_8cpp_source.html">AdjointNLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00060">stopping_conditions_</a>.</p>
+<p class="reference">References <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00059">stopping_conditions_</a>.</p>
 
 </div>
 </div>
@@ -712,41 +708,55 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00201">201</a> of file <a class="el" href="_adjoint_n_l_problem_8cpp_source.html">AdjointNLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00048">form_</a>, <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00053">iter</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00048">form_</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00207">save_to_file()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_adjoint_n_l_problem_a674405f24a0a2fadbfaa6cafd9a56cce_cgraph.svg" width="642" height="102"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
-<a id="a50ab6857d514efc4e62c37a688312deb" name="a50ab6857d514efc4e62c37a688312deb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a50ab6857d514efc4e62c37a688312deb">&#9670;&#160;</a></span>save_to_file()</h2>
+<a id="a4eb368a3c1be9d0f2321f00f8a97cb6e" name="a4eb368a3c1be9d0f2321f00f8a97cb6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4eb368a3c1be9d0f2321f00f8a97cb6e">&#9670;&#160;</a></span>save_to_file()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void polyfem::solver::AdjointNLProblem::save_to_file </td>
           <td>(</td>
-          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>x0</em></td><td>)</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>iter_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>x0</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00207">207</a> of file <a class="el" href="_adjoint_n_l_problem_8cpp_source.html">AdjointNLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00028">polyfem::adjoint_logger()</a>, <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00050">all_states_</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00053">iter</a>, <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00055">save_freq</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00025">V</a>, and <a class="el" href="_o_b_j_writer_8cpp_source.html#l00018">polyfem::io::OBJWriter::write()</a>.</p>
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00028">polyfem::adjoint_logger()</a>, <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00050">all_states_</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00054">save_freq</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00025">V</a>, and <a class="el" href="_o_b_j_writer_8cpp_source.html#l00018">polyfem::io::OBJWriter::write()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00201">post_step()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_adjoint_n_l_problem_a50ab6857d514efc4e62c37a688312deb_cgraph.svg" width="415" height="102"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_adjoint_n_l_problem_a4eb368a3c1be9d0f2321f00f8a97cb6e_cgraph.svg" width="415" height="102"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_adjoint_n_l_problem_a4eb368a3c1be9d0f2321f00f8a97cb6e_icgraph.svg" width="416" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -825,7 +835,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00304">304</a> of file <a class="el" href="_adjoint_n_l_problem_8cpp_source.html">AdjointNLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00028">polyfem::adjoint_logger()</a>, <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00050">all_states_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, and <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00057">solve_in_parallel</a>.</p>
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00028">polyfem::adjoint_logger()</a>, <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00050">all_states_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, and <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00056">solve_in_parallel</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00280">solution_changed()</a>.</p>
 <div class="dynheader">
@@ -869,7 +879,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00343">343</a> of file <a class="el" href="_adjoint_n_l_problem_8cpp_source.html">AdjointNLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00060">stopping_conditions_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00059">stopping_conditions_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 </div>
 </div>
@@ -1006,32 +1016,6 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a390daa9d1d79df5a6d05c39b4ca5187f" name="a390daa9d1d79df5a6d05c39b4ca5187f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a390daa9d1d79df5a6d05c39b4ca5187f">&#9670;&#160;</a></span>iter</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">int polyfem::solver::AdjointNLProblem::iter = 0</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00053">53</a> of file <a class="el" href="_adjoint_n_l_problem_8hpp_source.html">AdjointNLProblem.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00201">post_step()</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00207">save_to_file()</a>.</p>
-
-</div>
-</div>
 <a id="aacecbd532ec78e70b03c76daa28b5815" name="aacecbd532ec78e70b03c76daa28b5815"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aacecbd532ec78e70b03c76daa28b5815">&#9670;&#160;</a></span>save_freq</h2>
 
@@ -1052,7 +1036,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00055">55</a> of file <a class="el" href="_adjoint_n_l_problem_8hpp_source.html">AdjointNLProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00054">54</a> of file <a class="el" href="_adjoint_n_l_problem_8hpp_source.html">AdjointNLProblem.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00207">save_to_file()</a>.</p>
 
@@ -1078,7 +1062,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00058">58</a> of file <a class="el" href="_adjoint_n_l_problem_8hpp_source.html">AdjointNLProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00057">57</a> of file <a class="el" href="_adjoint_n_l_problem_8hpp_source.html">AdjointNLProblem.hpp</a>.</p>
 
 </div>
 </div>
@@ -1102,7 +1086,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00057">57</a> of file <a class="el" href="_adjoint_n_l_problem_8hpp_source.html">AdjointNLProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00056">56</a> of file <a class="el" href="_adjoint_n_l_problem_8hpp_source.html">AdjointNLProblem.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00304">solve_pde()</a>.</p>
 
@@ -1128,7 +1112,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00060">60</a> of file <a class="el" href="_adjoint_n_l_problem_8hpp_source.html">AdjointNLProblem.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_adjoint_n_l_problem_8hpp_source.html#l00059">59</a> of file <a class="el" href="_adjoint_n_l_problem_8hpp_source.html">AdjointNLProblem.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00138">AdjointNLProblem()</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00343">stop()</a>.</p>
 

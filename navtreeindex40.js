@@ -1,9 +1,5 @@
 var NAVTREEINDEX40 =
 {
-"namespacepolyfem_1_1mesh.html#a9ac4c0abec6eba47be3743212e1d3541":[5,0,4,4,85],
-"namespacepolyfem_1_1mesh.html#a9ad4233b995aa8aba9440009505693d0":[5,0,4,4,57],
-"namespacepolyfem_1_1mesh.html#a9d79697c151a12917ccb7a8b871fe7b7":[5,0,4,4,100],
-"namespacepolyfem_1_1mesh.html#a9edb1ab6286b5c93e9f2a564ea072559":[5,0,4,4,94],
 "namespacepolyfem_1_1mesh.html#a9f801017db21aa959f16cfc91c986a04":[5,0,4,4,61],
 "namespacepolyfem_1_1mesh.html#aa0aff2ad64ded82a861fd4aa657544a4":[5,0,4,4,46],
 "namespacepolyfem_1_1mesh.html#aa0e7695d364a2bec049d84fac36d3710":[5,0,4,4,92],
@@ -249,5 +245,9 @@ var NAVTREEINDEX40 =
 "namespacetetrahedron.html#a64cec644370efe9f3500b5e072720e7a":[5,0,9,4],
 "namespacetetrahedron.html#a7d07fa3b1cec79f5ac164c61966ad513":[5,0,9,1],
 "namespacetetrahedron.html#ad7f1ad54c2b30703fb514566fd6b06ee":[5,0,9,2],
-"namespacetetrahedron.html#ae5f96548a25451b8fba930997fc32ccf":[5,0,9,7]
+"namespacetetrahedron.html#ae5f96548a25451b8fba930997fc32ccf":[5,0,9,7],
+"namespacetriangle.html":[5,0,10],
+"namespacetriangle.html#a3ff67c3715497f5e286fc897fccef4b1":[5,0,10,4],
+"namespacetriangle.html#a562269204da12a71842d6cb8bb768090":[5,0,10,3],
+"namespacetriangle.html#a7187faa9a20504ee4df0885281f840f0":[5,0,10,7]
 };

@@ -1,9 +1,5 @@
 var NAVTREEINDEX44 =
 {
-"structpolyfem_1_1utils_1_1_timing.html#a8c9b83c4aaed995561dcb18a42288aa5":[6,0,1,10,36,0],
-"structpolyfem_1_1utils_1_1_timing.html#a957edaa5abafdf65c2bacdb17f2af0f4":[5,0,4,11,37,1],
-"structpolyfem_1_1utils_1_1_timing.html#a957edaa5abafdf65c2bacdb17f2af0f4":[6,0,1,10,36,1],
-"tetrahedron_8py.html":[7,0,1,0,1,0,0],
 "tetrahedron_8py.html#a144f2d07d2b1e2b1cd7b019cd5d42e20":[7,0,1,0,1,0,0,6],
 "tetrahedron_8py.html#a18344bd86e16e6968b58500748ec2f13":[7,0,1,0,1,0,0,3],
 "tetrahedron_8py.html#a4e44a06c2223bd2fec6b9afcca2a32e1":[7,0,1,0,1,0,0,0],
