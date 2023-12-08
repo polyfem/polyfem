@@ -205,6 +205,9 @@ int forward_simulation(const CLI::App &command_line,
 	Eigen::MatrixXd sol;
 	Eigen::MatrixXd pressure;
 
+	if (hdf5_out != "")
+		state.hdf5_outpath = hdf5_out;
+
 	state.solve_problem(sol, pressure);
 
 	state.compute_errors(sol);
@@ -214,11 +217,11 @@ int forward_simulation(const CLI::App &command_line,
 	state.save_json(sol);
 	state.export_data(sol, pressure);
 
-	if (hdf5_out != "")
-		if (state.problem->is_time_dependent())
-			state.dump_basis_nodes_transient(hdf5_out);
-		else
-			state.dump_basis_nodes(hdf5_out, sol);
+	// if (hdf5_out != "")
+	// 	if (state.problem->is_time_dependent())
+	// 		state.dump_basis_nodes_transient(hdf5_out);
+	// 	else
+	// 		state.dump_basis_nodes(hdf5_out, sol);
 
 	return EXIT_SUCCESS;
 }

@@ -4,6 +4,11 @@
 #include <polyfem/assembler/RhsAssembler.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 
+namespace polyfem
+{
+	class State;
+}
+
 namespace polyfem::solver
 {
 	class NLProblem : public FullNLProblem
@@ -17,7 +22,8 @@ namespace polyfem::solver
 		NLProblem(
 			const int full_size,
 			const std::vector<int> &boundary_nodes,
-			const std::vector<std::shared_ptr<Form>> &forms);
+			const std::vector<std::shared_ptr<Form>> &forms,
+			State &state);
 
 	public:
 		NLProblem(const int full_size,
@@ -26,7 +32,8 @@ namespace polyfem::solver
 				  const int n_boundary_samples,
 				  const assembler::RhsAssembler &rhs_assembler,
 				  const double t,
-				  const std::vector<std::shared_ptr<Form>> &forms);
+				  const std::vector<std::shared_ptr<Form>> &forms,
+				  State &state);
 
 		virtual double value(const TVector &x) override;
 		virtual void gradient(const TVector &x, TVector &gradv) override;
@@ -36,6 +43,7 @@ namespace polyfem::solver
 		bool is_step_collision_free(const TVector &x0, const TVector &x1) const override;
 		double max_step_size(const TVector &x0, const TVector &x1) const override;
 
+		void before_line_search(const TVector &x0, const TVector &x1) override;
 		void line_search_begin(const TVector &x0, const TVector &x1) override;
 		void post_step(const int iter_num, const TVector &x) override;
 
@@ -83,6 +91,8 @@ namespace polyfem::solver
 		const std::vector<mesh::LocalBoundary> *local_boundary_;
 		const int n_boundary_samples_;
 		double t_;
+
+		State &state;
 
 		template <class FullMat, class ReducedMat>
 		static void full_to_reduced_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced);

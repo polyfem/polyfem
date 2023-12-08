@@ -54,6 +54,14 @@ namespace polyfem
 					}
 
 					// ----------------------------
+					// Export elements to file
+					// ----------------------------
+
+					{
+						objFunc.before_line_search(x, x + delta_x);
+					}
+
+					// ----------------------------
 					// Find finite energy step size
 					// ----------------------------
 

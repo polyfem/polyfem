@@ -636,6 +636,8 @@ namespace polyfem
 
 		void dump_basis_nodes(const std::string &path, const Eigen::MatrixXd &u) const;
 		void dump_basis_nodes_transient(const std::string &path) const;
+
+		std::string hdf5_outpath;
 	};
 
 } // namespace polyfem

@@ -1,6 +1,18 @@
 #include "NLProblem.hpp"
 
 #include <polyfem/io/OBJWriter.hpp>
+#include <polyfem/State.hpp>
+
+#include <polyfem/assembler/ElementAssemblyValues.hpp>
+#include <paraviewo/ParaviewWriter.hpp>
+#include <paraviewo/VTUWriter.hpp>
+#include <paraviewo/HDF5VTUWriter.hpp>
+
+#include <polyfem/utils/Rational.hpp>
+#include <polyfem/io/Evaluator.hpp>
+
+#include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 /*
 m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\newline
@@ -21,7 +33,8 @@ namespace polyfem::solver
 	NLProblem::NLProblem(
 		const int full_size,
 		const std::vector<int> &boundary_nodes,
-		const std::vector<std::shared_ptr<Form>> &forms)
+		const std::vector<std::shared_ptr<Form>> &forms,
+		State &state)
 		: FullNLProblem(forms),
 		  boundary_nodes_(boundary_nodes),
 		  full_size_(full_size),
@@ -29,7 +42,8 @@ namespace polyfem::solver
 		  rhs_assembler_(nullptr),
 		  local_boundary_(nullptr),
 		  n_boundary_samples_(0),
-		  t_(0)
+		  t_(0),
+		  state(state)
 	{
 		use_reduced_size();
 	}
@@ -41,7 +55,8 @@ namespace polyfem::solver
 		const int n_boundary_samples,
 		const assembler::RhsAssembler &rhs_assembler,
 		const double t,
-		const std::vector<std::shared_ptr<Form>> &forms)
+		const std::vector<std::shared_ptr<Form>> &forms,
+		State &state)
 		: FullNLProblem(forms),
 		  boundary_nodes_(boundary_nodes),
 		  full_size_(full_size),
@@ -49,7 +64,8 @@ namespace polyfem::solver
 		  rhs_assembler_(&rhs_assembler),
 		  local_boundary_(&local_boundary),
 		  n_boundary_samples_(n_boundary_samples),
-		  t_(t)
+		  t_(t),
+		  state(state)
 	{
 		assert(std::is_sorted(boundary_nodes.begin(), boundary_nodes.end()));
 		assert(boundary_nodes.size() == 0 || (boundary_nodes.front() >= 0 && boundary_nodes.back() < full_size_));
@@ -72,6 +88,108 @@ namespace polyfem::solver
 		const TVector full = reduced_to_full(x);
 		for (auto &f : forms_)
 			f->update_quantities(t, full);
+	}
+
+	void NLProblem::before_line_search(const TVector &x0, const TVector &x1)
+	{
+		const int dim = state.mesh->dimension();
+		const int n_elem = state.bases.size();
+		const int n_loc_nodes = state.bases[0].bases.size();
+		TVector u = reduced_to_full(x1);
+
+		static int save_idx = 0;
+		if (state.hdf5_outpath.empty())
+			return;
+		const std::string path = state.resolve_output_path(state.hdf5_outpath + "_" + std::to_string(save_idx++) + ".hdf5");
+
+		std::vector<int> mask(n_elem, 0);
+		utils::maybe_parallel_for(n_elem, [&](int start, int end, int thread_id) {
+			for (int e = start; e < end; e++)
+			{
+				const auto& bs = state.bases[e];
+				polyfem::assembler::ElementAssemblyValues vals;
+				state.ass_vals_cache.compute(e, dim == 3, state.bases[e], state.geom_bases()[e], vals);
+				const int n_pts = vals.det.size();
+				
+				Eigen::Matrix<double, -1, -1, Eigen::ColMajor, -1, 3> local_pos = Eigen::MatrixXd::Zero(vals.basis_values.size(), dim);
+				for (size_t i = 0; i < vals.basis_values.size(); ++i)
+				{
+					const auto &bs = vals.basis_values[i];
+					for (const auto& g : bs.global)
+					{
+						local_pos.row(i) += g.val * (u.segment(g.index * dim, dim) + g.node.transpose());
+					}
+				}
+
+				double m = std::numeric_limits<double>::max();
+				double M = 0;
+
+				Eigen::Matrix<double, -1, -1, Eigen::ColMajor, 3, 3> tmp(dim, dim);
+				for (long k = 0; k < n_pts; ++k)
+				{
+					tmp.setZero();
+					for (int j = 0; j < vals.basis_values.size(); j++)
+					{
+						// for (int d = 0; d < dim; d++)
+						// 	tmp.row(d) += b.grad(k, d) * local_pos.row(j);
+						
+						tmp += vals.basis_values[j].grad.row(k).transpose() * local_pos.row(j);
+					}
+
+					double det = tmp.determinant();
+					m = std::min(det, m);
+					M = std::max(det, M);
+				}
+
+				// std::cout << "det min " << m << " max " << M << ", ";
+				if (m < 0 || m < 0.1 * M)
+					mask[e] = 1;
+			}
+		});
+		// std::cout << "\n";
+
+		int total = 0;
+		for (int i = 0; i < mask.size(); i++)
+		{
+			if (mask[i])
+				mask[i] = total++;
+			else
+				mask[i] = -1;
+		}
+		logger().info("{} out of {} elements exported!", total, n_elem);
+
+		if (total == 0)
+			return;
+
+		std::vector<std::string> nodes_rational;
+		nodes_rational.resize(total * n_loc_nodes * 2 * dim);
+		utils::maybe_parallel_for(total, [&](int start, int end, int thread_id) {
+			for (int e = start; e < end; e++)
+			{
+				const auto& bs = state.bases[e];
+				if (mask[e] < 0)
+					continue;
+				
+				for (int i = 0; i < bs.bases.size(); i++)
+				{
+					const int idx = i + n_loc_nodes * mask[e];
+					assert(bs.bases[i].global().size() == 1);
+					Eigen::Matrix<double, -1, 1, Eigen::ColMajor, 3, 1> pos = bs.bases[i].global()[0].node.transpose() + u.segment(bs.bases[i].global()[0].index * dim, dim);
+					// nodes.row(idx) = bs.bases[i].global()[0].node;
+					// nodes.row(idx) += u.block(bs.bases[i].global()[0].index * dim, 0, dim, 1).transpose();
+
+					for (int d = 0; d < dim; d++)
+					{
+						utils::Rational num(pos(d));
+						nodes_rational[idx * (2 * dim) + d * 2 + 0] = num.get_numerator_str();
+						nodes_rational[idx * (2 * dim) + d * 2 + 1] = num.get_denominator_str();
+					}
+				}
+			}
+		});
+		// paraviewo::HDF5MatrixWriter::write_matrix(rawname + ".hdf5", dim, bases.size(), n_loc_nodes, nodes);
+		paraviewo::HDF5MatrixWriter::write_matrix(path, dim, state.bases.size(), n_loc_nodes, nodes_rational);
+		logger().info("Save to {}", path);
 	}
 
 	void NLProblem::line_search_begin(const TVector &x0, const TVector &x1)

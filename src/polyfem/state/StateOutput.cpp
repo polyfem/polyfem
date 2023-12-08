@@ -275,8 +275,8 @@ namespace polyfem
 		size_t lastindex = path.find_last_of("."); 
 		std::string rawname = path.substr(0, lastindex); 
 
-		// utils::maybe_parallel_for(bases.size(), [&](int start, int end, int thread_id) {
-			for (int e = 0; e < bases.size(); e++)
+		utils::maybe_parallel_for(bases.size(), [&](int start, int end, int thread_id) {
+			for (int e = start; e < end; e++)
 			{
 				const auto& bs = bases[e];
 				
@@ -295,7 +295,7 @@ namespace polyfem
 					}
 				}
 			}
-		// });
+		});
 		// paraviewo::HDF5MatrixWriter::write_matrix(rawname + ".hdf5", dim, bases.size(), n_loc_nodes, nodes);
 		paraviewo::HDF5MatrixWriter::write_matrix(rawname + "-rational.hdf5", dim, bases.size(), n_loc_nodes, nodes_rational);
 		logger().info("Save to {}.hdf5", rawname);
