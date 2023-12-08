@@ -215,7 +215,7 @@ int optimization_simulation(const CLI::App &command_line,
 	OptState opt_state;
 	opt_state.init(opt_args, is_strict);
 
-	opt_state.create_states();
+	opt_state.create_states(log_level, max_threads);
 	opt_state.init_variables();
 	opt_state.crate_problem();
 
