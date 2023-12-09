@@ -31,13 +31,22 @@ bool missing_tests_data(const json &j, const std::string &key)
 	return !j.contains(key) || (j.at(key).size() == 1 && j.at(key).contains("time_steps"));
 }
 
-int authenticate_json(const std::string &json_file, const bool compute_validation)
+enum AuthenticateResult
+{
+	SUCCESS,
+	MISSING_FILE,
+	MISSING_TEST_DATA,
+	SOLVE_FAILED,
+	AUTHETICATION_FAILED
+};
+
+AuthenticateResult authenticate_json(const std::string &json_file, const bool compute_validation)
 {
 	json in_args;
 	if (!load_json(json_file, in_args))
 	{
 		spdlog::error("unable to open {} file", json_file);
-		return 1;
+		return MISSING_FILE;
 	}
 
 	const std::string tests_key = "tests";
@@ -46,7 +55,7 @@ int authenticate_json(const std::string &json_file, const bool compute_validatio
 		spdlog::error(
 			"JSON file missing \"{}\" key. Add a * to the beginning of filename to allow appends.",
 			tests_key);
-		return 2;
+		return MISSING_TEST_DATA;
 	}
 
 	// ------------------------------------------------------------------------
@@ -109,7 +118,7 @@ int authenticate_json(const std::string &json_file, const bool compute_validatio
 	if (state.mesh == nullptr)
 	{
 		spdlog::warn("No Mesh is Read!!");
-		return 1;
+		return MISSING_FILE;
 	}
 
 	// state.compute_mesh_stats();
@@ -128,7 +137,7 @@ int authenticate_json(const std::string &json_file, const bool compute_validatio
 	}
 	catch (...)
 	{
-		return 3;
+		return SOLVE_FAILED;
 	}
 
 	state.compute_errors(sol);
@@ -162,7 +171,7 @@ int authenticate_json(const std::string &json_file, const bool compute_validatio
 			if (relerr > margin)
 			{
 				spdlog::error("Violating Authenticate prev_{0}={1} curr_{0}={2}", key, prev_val, curr_val);
-				return 2;
+				return AUTHETICATION_FAILED;
 			}
 		}
 		spdlog::info("Authenticated ✅");
@@ -176,7 +185,7 @@ int authenticate_json(const std::string &json_file, const bool compute_validatio
 		file << in_args;
 	}
 
-	return 0;
+	return SUCCESS;
 }
 
 #if defined(NDEBUG) && !defined(WIN32)
@@ -201,10 +210,10 @@ TEST_CASE("runners", tagsrun)
 			line = line.substr(1);
 		}
 		spdlog::info("Processing {}", line);
-		auto flag = authenticate_json(POLYFEM_DATA_DIR "/" + line, compute_validation);
+		AuthenticateResult result = authenticate_json(POLYFEM_DATA_DIR "/" + line, compute_validation);
 		CAPTURE(line);
-		CHECK(flag == 0);
-		if (flag != 0)
+		CHECK(result == SUCCESS);
+		if (result != SUCCESS)
 			failing_tests.push_back(line);
 	}
 	if (failing_tests.size() > 0)
