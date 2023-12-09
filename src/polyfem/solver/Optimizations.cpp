@@ -438,7 +438,7 @@ namespace polyfem::solver
 		return state;
 	}
 
-	std::vector<std::shared_ptr<State>> AdjointOptUtils::create_states(const json &state_args, const CacheLevel &level, const spdlog::level::level_enum &log_level, const size_t max_threads)
+	std::vector<std::shared_ptr<State>> AdjointOptUtils::create_states(const json &state_args, const CacheLevel &level, const size_t max_threads)
 	{
 		std::vector<std::shared_ptr<State>> states(state_args.size());
 		int i = 0;

@@ -123,12 +123,12 @@ namespace polyfem
 		utils::NThread::get().set_num_threads(thread_in);
 	}
 
-	void OptState::create_states(const spdlog::level::level_enum &log_level, const int max_threads)
+	void OptState::create_states(const polyfem::solver::CacheLevel level, const int max_threads)
 	{
 		states = solver::AdjointOptUtils::create_states(
 			args["states"],
-			polyfem::solver::CacheLevel::Derivatives,
-			log_level, max_threads <= 0 ? std::numeric_limits<unsigned int>::max() : max_threads);
+			level,
+			max_threads <= 0 ? std::numeric_limits<unsigned int>::max() : max_threads);
 
 		utils::GeogramUtils::instance().set_logger(adjoint_logger());
 	}
