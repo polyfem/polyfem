@@ -200,7 +200,7 @@ namespace polyfem::solver
 
 	void AdjointNLProblem::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
-		save_to_file(data.iter_num, data.x);
+		save_to_file(data.iter_num + 1, data.x);
 
 		form_->post_step(data);
 	}
