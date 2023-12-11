@@ -198,7 +198,7 @@ namespace polyfem::solver
 			}
 		});
 		// paraviewo::HDF5MatrixWriter::write_matrix(rawname + ".hdf5", dim, bases.size(), n_loc_nodes, nodes);
-		paraviewo::HDF5MatrixWriter::write_matrix(path, dim, state.bases.size(), n_loc_nodes, nodes_rational);
+		paraviewo::HDF5MatrixWriter::write_matrix(path, dim, total, n_loc_nodes, nodes_rational);
 		logger().info("Save to {}", path);
 	}
 
