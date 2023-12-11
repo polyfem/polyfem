@@ -56,6 +56,8 @@ namespace polyfem::solver
 		const bool solve_in_parallel;
 		std::vector<int> solve_in_order;
 
+		int save_iter = 0;
+
 		std::vector<std::shared_ptr<AdjointForm>> stopping_conditions_; // if all the stopping conditions are non-positive, stop the optimization
 	};
 } // namespace polyfem::solver
