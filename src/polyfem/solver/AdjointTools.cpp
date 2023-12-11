@@ -160,6 +160,9 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &adjoint,
 		Eigen::VectorXd &one_form)
 	{
+		// doesn't support transient simulation
+		const double t = 0;
+
 		const int dim = state.mesh->dimension();
 		const auto &bases = state.bases;
 		const auto &gbases = state.geom_bases();
@@ -178,7 +181,7 @@ namespace polyfem::solver
 				const quadrature::Quadrature &quadrature = vals.quadrature;
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 
-				state.assembler->compute_stiffness_value(vals, quadrature.points, sol, stiffnesses);
+				state.assembler->compute_stiffness_value(t, vals, quadrature.points, sol, stiffnesses);
 				stiffnesses.array().colwise() *= local_storage.da.array();
 
 				io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, adjoint, p, grad_p);
@@ -210,6 +213,7 @@ namespace polyfem::solver
 		const int dim = state.mesh->dimension();
 		const int actual_dim = state.problem->is_scalar() ? 1 : dim;
 		const int n_elements = int(bases.size());
+		const double t0 = state.problem->is_time_dependent() ? state.args["time"]["t0"].get<double>() : 0.0;
 		const double dt = state.problem->is_time_dependent() ? state.args["time"]["dt"].get<double>() : 0.0;
 
 		double integral = 0;
@@ -220,7 +224,7 @@ namespace polyfem::solver
 				LocalThreadScalarStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
 				json params = {};
-				params["t"] = dt * cur_step;
+				params["t"] = dt * cur_step + t0;
 				params["step"] = cur_step;
 
 				Eigen::MatrixXd u, grad_u;
@@ -263,7 +267,7 @@ namespace polyfem::solver
 				Eigen::MatrixXd lambda, mu;
 				Eigen::MatrixXd result;
 				json params = {};
-				params["t"] = dt * cur_step;
+				params["t"] = dt * cur_step + t0;
 				params["step"] = cur_step;
 
 				for (int lb_id = start; lb_id < end; ++lb_id)
@@ -301,7 +305,7 @@ namespace polyfem::solver
 		{
 			std::vector<bool> traversed(state.n_bases, false);
 			json params = {};
-			params["t"] = dt * cur_step;
+			params["t"] = dt * cur_step + t0;
 			params["step"] = cur_step;
 			for (int e = 0; e < bases.size(); e++)
 			{
@@ -342,6 +346,8 @@ namespace polyfem::solver
 		const auto &bases = state.bases;
 		const int dim = state.mesh->dimension();
 		const int actual_dim = state.problem->is_scalar() ? 1 : dim;
+		const double t0 = state.problem->is_time_dependent() ? state.args["time"]["t0"].get<double>() : 0.0;
+		const double dt = state.problem->is_time_dependent() ? state.args["time"]["dt"].get<double>() : 0.0;
 
 		const int n_elements = int(bases.size());
 		term.setZero(state.n_geom_bases * dim, 1);
@@ -367,6 +373,7 @@ namespace polyfem::solver
 				Eigen::MatrixXd u, grad_u, j_val, dj_dgradu, dj_dx, lambda, mu;
 
 				json params = {};
+				params["t"] = cur_time_step * dt + t0;
 				params["step"] = cur_time_step;
 
 				for (int e = start; e < end; ++e)
@@ -436,6 +443,7 @@ namespace polyfem::solver
 				Eigen::MatrixXd u, grad_u, x, grad_x, j_val, dj_dgradu, dj_dgradx, dj_dx, lambda, mu;
 
 				json params = {};
+				params["t"] = cur_time_step * dt + t0;
 				params["step"] = cur_time_step;
 
 				for (int lb_id = start; lb_id < end; ++lb_id)
@@ -636,7 +644,7 @@ namespace polyfem::solver
 
 		// if (j.depend_on_u() || j.depend_on_gradu())
 		{
-			state.solve_data.elastic_form->force_shape_derivative(state.n_geom_bases, sol, sol, adjoint, elasticity_term);
+			state.solve_data.elastic_form->force_shape_derivative(0, state.n_geom_bases, sol, sol, adjoint, elasticity_term);
 			if (state.solve_data.body_form)
 				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, 0, sol, adjoint, rhs_term);
 			else
@@ -675,6 +683,7 @@ namespace polyfem::solver
 			const int real_order = std::min(bdf_order, i);
 			double beta = time_integrator::BDF::betas(real_order - 1);
 			double beta_dt = beta * dt;
+			const double t = i * dt + t0;
 
 			Eigen::MatrixXd velocity = state.diff_cached.v(i);
 
@@ -684,12 +693,12 @@ namespace polyfem::solver
 			cur_nu(state.boundary_nodes).setZero();
 
 			{
-				state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), *(state.mass_matrix_assembler), state.mass_ass_vals_cache, velocity, cur_nu, mass_term);
-				state.solve_data.elastic_form->force_shape_derivative(state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i), cur_p, elasticity_term);
-				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, t0 + i * dt, state.diff_cached.u(i - 1), cur_p, rhs_term);
+				state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, t, state.bases, state.geom_bases(), *(state.mass_matrix_assembler), state.mass_ass_vals_cache, velocity, cur_nu, mass_term);
+				state.solve_data.elastic_form->force_shape_derivative(t, state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i), cur_p, elasticity_term);
+				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, t, state.diff_cached.u(i - 1), cur_p, rhs_term);
 
 				if (state.solve_data.damping_form)
-					state.solve_data.damping_form->force_shape_derivative(state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i - 1), cur_p, damping_term);
+					state.solve_data.damping_form->force_shape_derivative(t, state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i - 1), cur_p, damping_term);
 				else
 					damping_term.setZero(mass_term.size());
 
@@ -727,7 +736,7 @@ namespace polyfem::solver
 			}
 		}
 		sum_alpha_p(state.boundary_nodes).setZero();
-		state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, state.bases, state.geom_bases(), *(state.mass_matrix_assembler), state.mass_ass_vals_cache, state.diff_cached.v(0), sum_alpha_p, mass_term);
+		state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, t0, state.bases, state.geom_bases(), *(state.mass_matrix_assembler), state.mass_ass_vals_cache, state.diff_cached.v(0), sum_alpha_p, mass_term);
 
 		one_form += mass_term;
 
@@ -740,7 +749,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &adjoint,
 		Eigen::VectorXd &one_form)
 	{
-		state.solve_data.elastic_form->force_material_derivative(sol, sol, adjoint, one_form);
+		state.solve_data.elastic_form->force_material_derivative(0, sol, sol, adjoint, one_form);
 	}
 
 	void AdjointTools::dJ_material_transient_adjoint_term(
@@ -749,6 +758,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &adjoint_p,
 		Eigen::VectorXd &one_form)
 	{
+		const double t0 = state.args["time"]["t0"];
 		const double dt = state.args["time"]["dt"];
 		const int time_steps = state.args["time"]["time_steps"];
 		const int bdf_order = get_bdf_order(state);
@@ -769,7 +779,7 @@ namespace polyfem::solver
 				Eigen::VectorXd cur_p = adjoint_p.col(i);
 				cur_p(state.boundary_nodes).setZero();
 
-				state.solve_data.elastic_form->force_material_derivative(state.diff_cached.u(i), state.diff_cached.u(i - 1), -cur_p, elasticity_term);
+				state.solve_data.elastic_form->force_material_derivative(t0 + dt * i, state.diff_cached.u(i), state.diff_cached.u(i - 1), -cur_p, elasticity_term);
 				local_storage.vec += beta_dt * elasticity_term;
 			}
 		});
@@ -836,6 +846,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &adjoint_p,
 		Eigen::VectorXd &one_form)
 	{
+		const double t0 = state.args["time"]["t0"];
 		const double dt = state.args["time"]["dt"];
 		const int time_steps = state.args["time"]["time_steps"];
 		const int bdf_order = get_bdf_order(state);
@@ -856,7 +867,7 @@ namespace polyfem::solver
 				Eigen::VectorXd cur_p = adjoint_p.col(t);
 				cur_p(state.boundary_nodes).setZero();
 
-				state.solve_data.damping_form->force_material_derivative(state.diff_cached.u(t), state.diff_cached.u(t - 1), -cur_p, damping_term);
+				state.solve_data.damping_form->force_material_derivative(t * dt + t0, state.diff_cached.u(t), state.diff_cached.u(t - 1), -cur_p, damping_term);
 				local_storage.vec += (beta * dt) * damping_term;
 			}
 		});
@@ -921,6 +932,7 @@ namespace polyfem::solver
 		const int dim = state.mesh->dimension();
 		const int actual_dim = state.problem->is_scalar() ? 1 : dim;
 		const int n_elements = int(bases.size());
+		const double t0 = state.problem->is_time_dependent() ? state.args["time"]["t0"].get<double>() : 0.0;
 		const double dt = state.problem->is_time_dependent() ? state.args["time"]["dt"].get<double>() : 0.0;
 
 		term = Eigen::MatrixXd::Zero(state.n_bases * actual_dim, 1);
@@ -939,7 +951,7 @@ namespace polyfem::solver
 				Eigen::MatrixXd dj_du, dj_dgradu, dj_dgradx;
 
 				json params = {};
-				params["t"] = dt * cur_step;
+				params["t"] = dt * cur_step + t0;
 				params["step"] = cur_step;
 
 				for (int e = start; e < end; ++e)
@@ -1019,7 +1031,7 @@ namespace polyfem::solver
 				Eigen::MatrixXd lambda, mu;
 				Eigen::MatrixXd dj_du, dj_dgradu, dj_dgradu_local;
 				json params = {};
-				params["t"] = dt * cur_step;
+				params["t"] = dt * cur_step + t0;
 				params["step"] = cur_step;
 
 				for (int lb_id = start; lb_id < end; ++lb_id)
@@ -1115,7 +1127,7 @@ namespace polyfem::solver
 		{
 			std::vector<bool> traversed(state.n_bases, false);
 			json params = {};
-			params["t"] = dt * cur_step;
+			params["t"] = dt * cur_step + t0;
 			params["step"] = cur_step;
 			for (int e = 0; e < bases.size(); e++)
 			{

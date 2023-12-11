@@ -196,8 +196,19 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	void HookeLinearElasticity::assign_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+	void HookeLinearElasticity::assign_stress_tensor(
+		const OutputData &data,
+		const int all_size,
+		const ElasticityTensorType &type,
+		Eigen::MatrixXd &all,
+		const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
+		const auto &displacement = data.fun;
+		const auto &local_pts = data.local_pts;
+		const auto &bs = data.bs;
+		const auto &gbs = data.gbs;
+		const auto el_id = data.el_id;
+
 		Eigen::MatrixXd displacement_grad(size(), size());
 
 		assert(displacement.cols() == 1);
