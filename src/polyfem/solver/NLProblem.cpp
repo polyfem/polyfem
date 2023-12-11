@@ -96,6 +96,7 @@ namespace polyfem::solver
 		const int n_elem = state.bases.size();
 		const int n_loc_nodes = state.bases[0].bases.size();
 		TVector u = reduced_to_full(x1);
+		TVector u0 = reduced_to_full(x0);
 
 		static int save_idx = 0;
 		if (state.hdf5_outpath.empty())
@@ -162,7 +163,7 @@ namespace polyfem::solver
 			return;
 
 		std::vector<std::string> nodes_rational;
-		nodes_rational.resize(total * n_loc_nodes * 2 * dim);
+		nodes_rational.resize(total * n_loc_nodes * 4 * dim);
 		utils::maybe_parallel_for(total, [&](int start, int end, int thread_id) {
 			for (int e = start; e < end; e++)
 			{
@@ -181,8 +182,17 @@ namespace polyfem::solver
 					for (int d = 0; d < dim; d++)
 					{
 						utils::Rational num(pos(d));
-						nodes_rational[idx * (2 * dim) + d * 2 + 0] = num.get_numerator_str();
-						nodes_rational[idx * (2 * dim) + d * 2 + 1] = num.get_denominator_str();
+						nodes_rational[idx * (4 * dim) + d * 4 + 2] = num.get_numerator_str();
+						nodes_rational[idx * (4 * dim) + d * 4 + 3] = num.get_denominator_str();
+					}
+
+					pos = bs.bases[i].global()[0].node.transpose() + u0.segment(bs.bases[i].global()[0].index * dim, dim);
+
+					for (int d = 0; d < dim; d++)
+					{
+						utils::Rational num(pos(d));
+						nodes_rational[idx * (4 * dim) + d * 4 + 0] = num.get_numerator_str();
+						nodes_rational[idx * (4 * dim) + d * 4 + 1] = num.get_denominator_str();
 					}
 				}
 			}
