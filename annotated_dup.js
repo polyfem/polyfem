@@ -47,6 +47,8 @@ var annotated_dup =
         [ "NLAssembler", "classpolyfem_1_1assembler_1_1_n_l_assembler.html", "classpolyfem_1_1assembler_1_1_n_l_assembler" ],
         [ "NonLinearAssemblerData", "classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html", "classpolyfem_1_1assembler_1_1_non_linear_assembler_data" ],
         [ "OperatorSplitting", "classpolyfem_1_1assembler_1_1_operator_splitting.html", "classpolyfem_1_1assembler_1_1_operator_splitting" ],
+        [ "OptAssemblerData", "classpolyfem_1_1assembler_1_1_opt_assembler_data.html", "classpolyfem_1_1assembler_1_1_opt_assembler_data" ],
+        [ "OutputData", "classpolyfem_1_1assembler_1_1_output_data.html", "classpolyfem_1_1assembler_1_1_output_data" ],
         [ "Problem", "classpolyfem_1_1assembler_1_1_problem.html", "classpolyfem_1_1assembler_1_1_problem" ],
         [ "RhsAssembler", "classpolyfem_1_1assembler_1_1_rhs_assembler.html", "classpolyfem_1_1assembler_1_1_rhs_assembler" ],
         [ "SaintVenantElasticity", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity" ],

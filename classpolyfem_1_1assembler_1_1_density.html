@@ -136,10 +136,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a45842b3cacf3a36390e47be124a7b1d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d48b19ebc812f9818a1d94f6fb882fd" id="r_a5d48b19ebc812f9818a1d94f6fb882fd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_density.html#a5d48b19ebc812f9818a1d94f6fb882fd">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const std::string &amp;density_unit)</td></tr>
 <tr class="separator:a5d48b19ebc812f9818a1d94f6fb882fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf752b4682da722f962e1e889062c84f" id="r_adf752b4682da722f962e1e889062c84f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_density.html#adf752b4682da722f962e1e889062c84f">operator()</a> (double px, double py, double pz, double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, int el_id) const</td></tr>
-<tr class="separator:adf752b4682da722f962e1e889062c84f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c5538e2a86e7f1087a38b1ebdb9f547" id="r_a0c5538e2a86e7f1087a38b1ebdb9f547"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_density.html#a0c5538e2a86e7f1087a38b1ebdb9f547">operator()</a> (const Eigen::MatrixXd &amp;param, const Eigen::MatrixXd &amp;p, int el_id) const</td></tr>
-<tr class="separator:a0c5538e2a86e7f1087a38b1ebdb9f547"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab80a9220827c49f5c848b118dc242bfa" id="r_ab80a9220827c49f5c848b118dc242bfa"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_density.html#ab80a9220827c49f5c848b118dc242bfa">operator()</a> (double px, double py, double pz, double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, double t, int el_id) const</td></tr>
+<tr class="separator:ab80a9220827c49f5c848b118dc242bfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa96d3d898cf9d4f7aed98735e1e52626" id="r_aa96d3d898cf9d4f7aed98735e1e52626"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_density.html#aa96d3d898cf9d4f7aed98735e1e52626">operator()</a> (const Eigen::MatrixXd &amp;param, const Eigen::MatrixXd &amp;p, double t, int el_id) const</td></tr>
+<tr class="separator:aa96d3d898cf9d4f7aed98735e1e52626"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -153,7 +153,7 @@ Private Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00095">95</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00096">96</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a45842b3cacf3a36390e47be124a7b1d3" name="a45842b3cacf3a36390e47be124a7b1d3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a45842b3cacf3a36390e47be124a7b1d3">&#9670;&#160;</a></span>Density()</h2>
@@ -172,7 +172,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00393">393</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00115">rho_</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00116">rho_</a>.</p>
 
 </div>
 </div>
@@ -211,7 +211,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00410">410</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00115">rho_</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00116">rho_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mass_8cpp_source.html#l00033">polyfem::assembler::Mass::add_multimaterial()</a>.</p>
 <div class="dynheader">
@@ -222,8 +222,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a0c5538e2a86e7f1087a38b1ebdb9f547" name="a0c5538e2a86e7f1087a38b1ebdb9f547"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0c5538e2a86e7f1087a38b1ebdb9f547">&#9670;&#160;</a></span>operator()() <span class="overload">[1/2]</span></h2>
+<a id="aa96d3d898cf9d4f7aed98735e1e52626" name="aa96d3d898cf9d4f7aed98735e1e52626"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa96d3d898cf9d4f7aed98735e1e52626">&#9670;&#160;</a></span>operator()() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -246,6 +246,12 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>el_id</em>&#160;</td>
         </tr>
@@ -262,12 +268,12 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00103">103</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00104">104</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
 
 </div>
 </div>
-<a id="adf752b4682da722f962e1e889062c84f" name="adf752b4682da722f962e1e889062c84f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adf752b4682da722f962e1e889062c84f">&#9670;&#160;</a></span>operator()() <span class="overload">[2/2]</span></h2>
+<a id="ab80a9220827c49f5c848b118dc242bfa" name="ab80a9220827c49f5c848b118dc242bfa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab80a9220827c49f5c848b118dc242bfa">&#9670;&#160;</a></span>operator()() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -311,6 +317,12 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>el_id</em>&#160;</td>
         </tr>
@@ -324,7 +336,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00399">399</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00115">rho_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00116">rho_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">z</a>.</p>
 
 </div>
 </div>
@@ -375,7 +387,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00115">115</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00116">116</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00410">add_multimaterial()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00393">Density()</a>, and <a class="el" href="_mat_params_8cpp_source.html#l00399">operator()()</a>.</p>
 

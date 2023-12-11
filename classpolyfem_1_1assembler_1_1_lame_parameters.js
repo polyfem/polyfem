@@ -2,8 +2,8 @@ var classpolyfem_1_1assembler_1_1_lame_parameters =
 [
     [ "LameParameters", "classpolyfem_1_1assembler_1_1_lame_parameters.html#a83bfa05f675ce7a883787cf32e11e920", null ],
     [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_lame_parameters.html#a67f738b587c2e2c46164f5e640f4874a", null ],
-    [ "lambda_mu", "classpolyfem_1_1assembler_1_1_lame_parameters.html#a6e8cf83bc2cf6c5702d356c4c30e10ff", null ],
-    [ "lambda_mu", "classpolyfem_1_1assembler_1_1_lame_parameters.html#ab0fae1aa60ff63c1489b810353f0964c", null ],
+    [ "lambda_mu", "classpolyfem_1_1assembler_1_1_lame_parameters.html#abd3c332a7c50c17d8c7f797a62cd5acd", null ],
+    [ "lambda_mu", "classpolyfem_1_1assembler_1_1_lame_parameters.html#a04e5ea105a84e8fba87098641798e6f6", null ],
     [ "set_e_nu", "classpolyfem_1_1assembler_1_1_lame_parameters.html#a29833f735ddf95828052c53e57de3373", null ],
     [ "is_lambda_mu_", "classpolyfem_1_1assembler_1_1_lame_parameters.html#ae5f40bf462a1f67383932a158d1caa08", null ],
     [ "lambda_mat_", "classpolyfem_1_1assembler_1_1_lame_parameters.html#ac2fffd47fa04d46bfef3793c8e5e889f", null ],

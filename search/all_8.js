@@ -34,7 +34,7 @@ var searchData=
   ['hat_31',['hat',['../namespacepolyfem_1_1assembler.html#aaff5aece5fe5a409ef40ca97ac093b32',1,'polyfem::assembler']]],
   ['have_5ftarget_5ffunc_32',['have_target_func',['../classpolyfem_1_1solver_1_1_target_form.html#aedc695824900376821ef328989c4ffcd',1,'polyfem::solver::TargetForm']]],
   ['height_5f_33',['height_',['../classpolyfem_1_1utils_1_1_cylinder_selection.html#ac232a2d6fb83301c65208d1bd3b09ed4',1,'polyfem::utils::CylinderSelection']]],
-  ['helmholtz_34',['Helmholtz',['../classpolyfem_1_1assembler_1_1_helmholtz.html',1,'polyfem::assembler']]],
+  ['helmholtz_34',['helmholtz',['../classpolyfem_1_1assembler_1_1_helmholtz.html',1,'polyfem::assembler::Helmholtz'],['../classpolyfem_1_1assembler_1_1_helmholtz.html#a38c4dd7f78c958c6535d2e9166c5dcd8',1,'polyfem::assembler::Helmholtz::Helmholtz()']]],
   ['helmholtz_2ecpp_35',['Helmholtz.cpp',['../_helmholtz_8cpp.html',1,'']]],
   ['helmholtz_2ehpp_36',['Helmholtz.hpp',['../_helmholtz_8hpp.html',1,'']]],
   ['hess_37',['hess',['../struct_d_scalar2.html#a15737f75543ecbaba980e825dee51bdb',1,'DScalar2']]],

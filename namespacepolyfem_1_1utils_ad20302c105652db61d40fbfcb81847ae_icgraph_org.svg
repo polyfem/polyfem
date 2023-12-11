@@ -41,7 +41,7 @@
 <!-- Node5 -->
 <g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_Node000005"><a xlink:href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a5de7744258b1171ceed1f7ddb9f0b201" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a0dcf0db6270fc7b52a74a498a8d3eb3a" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="605,-1008.5 464,-1008.5 464,-967.5 605,-967.5 605,-1008.5"/>
 <text text-anchor="start" x="472" y="-996.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="472" y="-985.5" font-family="Helvetica,sans-Serif" font-size="10.00">::NLAssembler::assemble</text>
@@ -61,7 +61,7 @@
 <!-- Node6 -->
 <g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_Node000006"><a xlink:href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a6176f75e99b04d00a6d3300b823bc77f" target="_top" xlink:title=" ">
+<g id="a_Node000006"><a xlink:href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a361a7f8e67d5f122d0cb46f6961f716a" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="379.5,-974.5 238.5,-974.5 238.5,-933.5 379.5,-933.5 379.5,-974.5"/>
 <text text-anchor="start" x="246.5" y="-962.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
 <text text-anchor="start" x="246.5" y="-951.5" font-family="Helvetica,sans-Serif" font-size="10.00">::NLAssembler::assemble</text>
@@ -280,7 +280,7 @@
 <!-- Node27 -->
 <g id="Node000027" class="node">
 <title>Node27</title>
-<g id="a_Node000027"><a xlink:href="classpolyfem_1_1solver_1_1_elastic_form.html#a4cd17b1d3a5510cccdc6b59084e165cd" target="_top" xlink:title="Compute the derivative of the force wrt lame/damping parameters, then multiply the resulting matrix w...">
+<g id="a_Node000027"><a xlink:href="classpolyfem_1_1solver_1_1_elastic_form.html#a684521b7ad102ebdbb51d9977f032071" target="_top" xlink:title="Compute the derivative of the force wrt lame/damping parameters, then multiply the resulting matrix w...">
 <polygon fill="white" stroke="#666666" points="621,-330 448,-330 448,-300 621,-300 621,-330"/>
 <text text-anchor="start" x="456" y="-318" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Elastic</text>
 <text text-anchor="middle" x="534.5" y="-307" font-family="Helvetica,sans-Serif" font-size="10.00">Form::force_material_derivative</text>
@@ -299,7 +299,7 @@
 <!-- Node28 -->
 <g id="Node000028" class="node">
 <title>Node28</title>
-<g id="a_Node000028"><a xlink:href="classpolyfem_1_1solver_1_1_inertia_form.html#ae4a6e56fdad0440265869c7ea7a94d93" target="_top" xlink:title=" ">
+<g id="a_Node000028"><a xlink:href="classpolyfem_1_1solver_1_1_inertia_form.html#accc5bac64d90e926129a0c02e381d2d7" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="615,-282 454,-282 454,-252 615,-252 615,-282"/>
 <text text-anchor="start" x="462" y="-270" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Inertia</text>
 <text text-anchor="middle" x="534.5" y="-259" font-family="Helvetica,sans-Serif" font-size="10.00">Form::force_shape_derivative</text>
@@ -318,10 +318,10 @@
 <!-- Node29 -->
 <g id="Node000029" class="node">
 <title>Node29</title>
-<g id="a_Node000029"><a xlink:href="classpolyfem_1_1solver_1_1_body_form.html#a5dd3812e581ac1ca48508abd65fe6c07" target="_top" xlink:title="Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adj...">
-<polygon fill="white" stroke="#666666" points="609,-234 460,-234 460,-204 609,-204 609,-234"/>
-<text text-anchor="start" x="468" y="-222" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::BodyForm</text>
-<text text-anchor="middle" x="534.5" y="-211" font-family="Helvetica,sans-Serif" font-size="10.00">::force_shape_derivative</text>
+<g id="a_Node000029"><a xlink:href="classpolyfem_1_1solver_1_1_elastic_form.html#a7610f62d04a931837c5641d1defd2a9f" target="_top" xlink:title="Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adj...">
+<polygon fill="white" stroke="#666666" points="615,-234 454,-234 454,-204 615,-204 615,-234"/>
+<text text-anchor="start" x="462" y="-222" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Elastic</text>
+<text text-anchor="middle" x="534.5" y="-211" font-family="Helvetica,sans-Serif" font-size="10.00">Form::force_shape_derivative</text>
 </a>
 </g>
 </g>
@@ -329,7 +329,7 @@
 <g id="edge29_Node000001_Node000029" class="edge">
 <title>Node1&#45;&gt;Node29</title>
 <g id="a_edge29_Node000001_Node000029"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M718.13,-488.48C713.83,-434.88 696.18,-310.03 624,-243 619.57,-238.88 614.5,-235.46 609.09,-232.62"/>
+<path fill="none" stroke="#63b8ff" d="M718.13,-488.48C713.83,-434.88 696.18,-310.03 624,-243 620.27,-239.53 616.08,-236.56 611.62,-234.01"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="714.66,-489.06 718.85,-498.79 721.64,-488.57 714.66,-489.06"/>
 </a>
 </g>
@@ -337,10 +337,10 @@
 <!-- Node30 -->
 <g id="Node000030" class="node">
 <title>Node30</title>
-<g id="a_Node000030"><a xlink:href="classpolyfem_1_1solver_1_1_elastic_form.html#a3f5a989495a7a288ab2bd7ba54535822" target="_top" xlink:title="Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adj...">
-<polygon fill="white" stroke="#666666" points="615,-186 454,-186 454,-156 615,-156 615,-186"/>
-<text text-anchor="start" x="462" y="-174" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Elastic</text>
-<text text-anchor="middle" x="534.5" y="-163" font-family="Helvetica,sans-Serif" font-size="10.00">Form::force_shape_derivative</text>
+<g id="a_Node000030"><a xlink:href="classpolyfem_1_1solver_1_1_body_form.html#a5dd3812e581ac1ca48508abd65fe6c07" target="_top" xlink:title="Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adj...">
+<polygon fill="white" stroke="#666666" points="609,-186 460,-186 460,-156 609,-156 609,-186"/>
+<text text-anchor="start" x="468" y="-174" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::BodyForm</text>
+<text text-anchor="middle" x="534.5" y="-163" font-family="Helvetica,sans-Serif" font-size="10.00">::force_shape_derivative</text>
 </a>
 </g>
 </g>
@@ -348,7 +348,7 @@
 <g id="edge30_Node000001_Node000030" class="edge">
 <title>Node1&#45;&gt;Node30</title>
 <g id="a_edge30_Node000001_Node000030"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M719.72,-488.64C718.79,-428.6 707.81,-276.65 624,-195 620.47,-191.56 616.49,-188.59 612.23,-186.05"/>
+<path fill="none" stroke="#63b8ff" d="M719.72,-488.64C718.79,-428.6 707.81,-276.65 624,-195 619.67,-190.78 614.67,-187.28 609.3,-184.39"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="716.22,-488.77 719.79,-498.75 723.22,-488.72 716.22,-488.77"/>
 </a>
 </g>

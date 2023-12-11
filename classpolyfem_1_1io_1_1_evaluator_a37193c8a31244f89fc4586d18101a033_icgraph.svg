@@ -155,7 +155,7 @@ var sectionId = 'dynsection-15';
 <!-- Node11 -->
 <g id="Node000011" class="node">
 <title>Node11</title>
-<g id="a_Node000011"><a xlink:href="classpolyfem_1_1solver_1_1_elastic_form.html#a4cd17b1d3a5510cccdc6b59084e165cd" target="_top" xlink:title="Compute the derivative of the force wrt lame/damping parameters, then multiply the resulting matrix w...">
+<g id="a_Node000011"><a xlink:href="classpolyfem_1_1solver_1_1_elastic_form.html#a684521b7ad102ebdbb51d9977f032071" target="_top" xlink:title="Compute the derivative of the force wrt lame/damping parameters, then multiply the resulting matrix w...">
 <polygon fill="white" stroke="#666666" points="1414,-638 1241,-638 1241,-608 1414,-608 1414,-638"/>
 <text text-anchor="start" x="1249" y="-626" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Elastic</text>
 <text text-anchor="middle" x="1327.5" y="-615" font-family="Helvetica,sans-Serif" font-size="10.00">Form::force_material_derivative</text>
@@ -174,7 +174,7 @@ var sectionId = 'dynsection-15';
 <!-- Node12 -->
 <g id="Node000012" class="node">
 <title>Node12</title>
-<g id="a_Node000012"><a xlink:href="classpolyfem_1_1solver_1_1_inertia_form.html#ae4a6e56fdad0440265869c7ea7a94d93" target="_top" xlink:title=" ">
+<g id="a_Node000012"><a xlink:href="classpolyfem_1_1solver_1_1_inertia_form.html#accc5bac64d90e926129a0c02e381d2d7" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="1408,-590 1247,-590 1247,-560 1408,-560 1408,-590"/>
 <text text-anchor="start" x="1255" y="-578" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Inertia</text>
 <text text-anchor="middle" x="1327.5" y="-567" font-family="Helvetica,sans-Serif" font-size="10.00">Form::force_shape_derivative</text>
@@ -193,10 +193,10 @@ var sectionId = 'dynsection-15';
 <!-- Node13 -->
 <g id="Node000013" class="node">
 <title>Node13</title>
-<g id="a_Node000013"><a xlink:href="classpolyfem_1_1solver_1_1_body_form.html#a5dd3812e581ac1ca48508abd65fe6c07" target="_top" xlink:title="Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adj...">
-<polygon fill="white" stroke="#666666" points="1402,-542 1253,-542 1253,-512 1402,-512 1402,-542"/>
-<text text-anchor="start" x="1261" y="-530" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::BodyForm</text>
-<text text-anchor="middle" x="1327.5" y="-519" font-family="Helvetica,sans-Serif" font-size="10.00">::force_shape_derivative</text>
+<g id="a_Node000013"><a xlink:href="classpolyfem_1_1solver_1_1_elastic_form.html#a7610f62d04a931837c5641d1defd2a9f" target="_top" xlink:title="Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adj...">
+<polygon fill="white" stroke="#666666" points="1408,-542 1247,-542 1247,-512 1408,-512 1408,-542"/>
+<text text-anchor="start" x="1255" y="-530" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Elastic</text>
+<text text-anchor="middle" x="1327.5" y="-519" font-family="Helvetica,sans-Serif" font-size="10.00">Form::force_shape_derivative</text>
 </a>
 </g>
 </g>
@@ -204,7 +204,7 @@ var sectionId = 'dynsection-15';
 <g id="edge13_Node000001_Node000013" class="edge">
 <title>Node1&#45;&gt;Node13</title>
 <g id="a_edge13_Node000001_Node000013"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1442.73,-513.01C1429.29,-514.66 1415.43,-516.36 1402.2,-517.98"/>
+<path fill="none" stroke="#63b8ff" d="M1442.91,-512.99C1431.42,-514.4 1419.63,-515.84 1408.18,-517.24"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="1443.41,-516.46 1452.91,-511.77 1442.56,-509.51 1443.41,-516.46"/>
 </a>
 </g>
@@ -212,10 +212,10 @@ var sectionId = 'dynsection-15';
 <!-- Node14 -->
 <g id="Node000014" class="node">
 <title>Node14</title>
-<g id="a_Node000014"><a xlink:href="classpolyfem_1_1solver_1_1_elastic_form.html#a3f5a989495a7a288ab2bd7ba54535822" target="_top" xlink:title="Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adj...">
-<polygon fill="white" stroke="#666666" points="1408,-494 1247,-494 1247,-464 1408,-464 1408,-494"/>
-<text text-anchor="start" x="1255" y="-482" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Elastic</text>
-<text text-anchor="middle" x="1327.5" y="-471" font-family="Helvetica,sans-Serif" font-size="10.00">Form::force_shape_derivative</text>
+<g id="a_Node000014"><a xlink:href="classpolyfem_1_1solver_1_1_body_form.html#a5dd3812e581ac1ca48508abd65fe6c07" target="_top" xlink:title="Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adj...">
+<polygon fill="white" stroke="#666666" points="1402,-494 1253,-494 1253,-464 1402,-464 1402,-494"/>
+<text text-anchor="start" x="1261" y="-482" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::BodyForm</text>
+<text text-anchor="middle" x="1327.5" y="-471" font-family="Helvetica,sans-Serif" font-size="10.00">::force_shape_derivative</text>
 </a>
 </g>
 </g>
@@ -223,7 +223,7 @@ var sectionId = 'dynsection-15';
 <g id="edge14_Node000001_Node000014" class="edge">
 <title>Node1&#45;&gt;Node14</title>
 <g id="a_edge14_Node000001_Node000014"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1442.91,-493.01C1431.42,-491.6 1419.63,-490.16 1408.18,-488.76"/>
+<path fill="none" stroke="#63b8ff" d="M1442.73,-492.99C1429.29,-491.34 1415.43,-489.64 1402.2,-488.02"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="1442.56,-496.49 1452.91,-494.23 1443.41,-489.54 1442.56,-496.49"/>
 </a>
 </g>

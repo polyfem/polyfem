@@ -2,7 +2,7 @@ var classpolyfem_1_1assembler_1_1_mixed_assembler =
 [
     [ "MixedAssembler", "classpolyfem_1_1assembler_1_1_mixed_assembler.html#a1e93f92073a6aa1b611149f0a31da7d0", null ],
     [ "~MixedAssembler", "classpolyfem_1_1assembler_1_1_mixed_assembler.html#a80a11df0e960d7c5c9c19576407ffc13", null ],
-    [ "assemble", "classpolyfem_1_1assembler_1_1_mixed_assembler.html#a33b300a3f7ed4d7ceb62b904ce26fca2", null ],
+    [ "assemble", "classpolyfem_1_1assembler_1_1_mixed_assembler.html#ace0577a362df24127447c34ee4cd6713", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_mixed_assembler.html#a7cd4a2dc99229b2267b010dd0ed9a70b", null ],
     [ "cols", "classpolyfem_1_1assembler_1_1_mixed_assembler.html#ad087b20307467724325f1b097b7abba6", null ],
     [ "name", "classpolyfem_1_1assembler_1_1_mixed_assembler.html#adddc62935373d00b0fcad3915d306bee", null ],

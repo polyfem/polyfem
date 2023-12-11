@@ -1,10 +1,10 @@
 var classpolyfem_1_1solver_1_1_elastic_form =
 [
-    [ "ElasticForm", "classpolyfem_1_1solver_1_1_elastic_form.html#a38360e97715fcdfaa111544d94056114", null ],
+    [ "ElasticForm", "classpolyfem_1_1solver_1_1_elastic_form.html#a5ee36b573720df84640d35c22c4da4fb", null ],
     [ "compute_cached_stiffness", "classpolyfem_1_1solver_1_1_elastic_form.html#a4a66c73e76a0c85f7a206f857f4832ed", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_elastic_form.html#a9eb7dde77480e465994679d524ef5bc8", null ],
-    [ "force_material_derivative", "classpolyfem_1_1solver_1_1_elastic_form.html#a4cd17b1d3a5510cccdc6b59084e165cd", null ],
-    [ "force_shape_derivative", "classpolyfem_1_1solver_1_1_elastic_form.html#a3f5a989495a7a288ab2bd7ba54535822", null ],
+    [ "force_material_derivative", "classpolyfem_1_1solver_1_1_elastic_form.html#a684521b7ad102ebdbb51d9977f032071", null ],
+    [ "force_shape_derivative", "classpolyfem_1_1solver_1_1_elastic_form.html#a7610f62d04a931837c5641d1defd2a9f", null ],
     [ "is_step_valid", "classpolyfem_1_1solver_1_1_elastic_form.html#af2f0f857ec53a4bc3e282fce304446a0", null ],
     [ "name", "classpolyfem_1_1solver_1_1_elastic_form.html#af31e9468dfabab01f1009790c57b2e90", null ],
     [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_elastic_form.html#a2a1eb1f32b30101e73734d70ab4baead", null ],
@@ -20,5 +20,6 @@ var classpolyfem_1_1solver_1_1_elastic_form =
     [ "is_volume_", "classpolyfem_1_1solver_1_1_elastic_form.html#ae2e90737ad01cd3432c78a4a7a1b9b0a", null ],
     [ "mat_cache_", "classpolyfem_1_1solver_1_1_elastic_form.html#a574044fd8deca64f89fa113d0f875beb", null ],
     [ "n_bases_", "classpolyfem_1_1solver_1_1_elastic_form.html#a4566e1f3b534bb9e36b1acba418ec5c1", null ],
+    [ "t_", "classpolyfem_1_1solver_1_1_elastic_form.html#ac7ebc5bb32fae6105ebf6e24d724479b", null ],
     [ "x_prev_", "classpolyfem_1_1solver_1_1_elastic_form.html#a1742e5433f6b37f4da578c7c8376f0eb", null ]
 ];

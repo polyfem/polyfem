@@ -13,6 +13,7 @@ var classpolyfem_1_1_units =
     [ "stress", "classpolyfem_1_1_units.html#a2b020eef18641f82a921e06a2a1ed0da", null ],
     [ "time", "classpolyfem_1_1_units.html#a92ba69751b71039087e8b71c0e2ff08f", null ],
     [ "velocity", "classpolyfem_1_1_units.html#a7bfe2242576da6434b6a6e8fd5f15134", null ],
+    [ "viscosity", "classpolyfem_1_1_units.html#a38c58f5a4fa4e4cf1fb30e65d526ef3a", null ],
     [ "characteristic_length_", "classpolyfem_1_1_units.html#a0fa1f9a086cf0d0a3d23c1b8e279c2a4", null ],
     [ "length_", "classpolyfem_1_1_units.html#a8389db0c957d03a563285851042a7452", null ],
     [ "mass_", "classpolyfem_1_1_units.html#a3ccb8e88e21a60e190519fd6aa1bb42a", null ],

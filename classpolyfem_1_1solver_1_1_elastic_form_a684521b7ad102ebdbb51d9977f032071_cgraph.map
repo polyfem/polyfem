@@ -1,0 +1,34 @@
+<map id="polyfem::solver::ElasticForm::force_material_derivative" name="polyfem::solver::ElasticForm::force_material_derivative">
+<area shape="rect" id="Node000001" title="Compute the derivative of the force wrt lame/damping parameters, then multiply the resulting matrix w..." alt="" coords="5,306,236,346"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#ae6a71006ed00c05812b65401a1c37d5c" title="retrieves cached basis evaluation and geometric for the given element if it doesn&#39;t exist,..." alt="" coords="309,5,471,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="127,305,148,257,181,194,226,128,253,97,282,69,296,60,299,64,286,73,256,100,230,131,185,197,152,259,132,307"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1assembler_1_1_assembler.html#a35f1f3a973305afdc33e3d213ddef362" title=" " alt="" coords="302,84,478,139"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="134,304,193,229,235,186,282,148,290,143,293,147,286,152,239,190,197,233,138,307"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1assembler_1_1_viscous_damping.html#a4f63fac04b1dc6a17d99f6a66d915e32" title=" " alt="" coords="288,163,492,217"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="151,304,211,267,283,228,299,220,301,225,285,232,214,271,154,308"/>
+<area shape="rect" id="Node000008" href="$namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae" title=" " alt="" coords="309,242,471,282"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="205,303,295,282,296,287,206,309"/>
+<area shape="rect" id="Node000009" href="$namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b" title=" " alt="" coords="307,306,473,346"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="236,323,294,323,294,329,236,329"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1io_1_1_evaluator.html#a37193c8a31244f89fc4586d18101a033" title="interpolate solution and gradient at element (calls interpolate_at_local_vals with sol)" alt="" coords="293,394,487,434"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="184,344,315,387,314,392,182,349"/>
+<area shape="rect" id="Node000013" href="$namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c" title=" " alt="" coords="307,458,473,498"/>
+<area shape="poly" id="edge13_Node000001_Node000013" title=" " alt="" coords="146,344,206,393,245,420,285,444,301,451,298,455,283,448,242,425,203,398,142,348"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1assembler_1_1_assembler.html#a7c54d99815b988e2ca1bc05c1e202f69" title=" " alt="" coords="314,522,466,562"/>
+<area shape="poly" id="edge14_Node000001_Node000014" title=" " alt="" coords="137,345,160,380,195,424,237,469,285,508,302,517,300,522,283,512,233,473,190,428,156,383,132,348"/>
+<area shape="rect" id="Node000015" href="$namespacepolyfem_1_1utils.html#a75043e8afe913f3bc6279fd5349a4fd4" title=" " alt="" coords="284,587,496,612"/>
+<area shape="poly" id="edge15_Node000001_Node000015" title=" " alt="" coords="132,345,151,392,184,454,229,518,255,547,286,572,297,579,294,583,282,576,252,551,224,521,179,457,147,394,127,347"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1basis_1_1_element_bases.html#a1eb3299faf0fce0b170d524017874af3" title=" " alt="" coords="544,13,763,53"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="471,30,530,30,530,35,471,35"/>
+<area shape="rect" id="Node000005" href="$namespacepolyfem.html#a8d6eb2c01f97c327e382b6dcda332777" title=" " alt="" coords="564,91,743,131"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="478,109,550,109,550,114,478,114"/>
+<area shape="rect" id="Node000006" href="$namespacepolyfem.html#a4d64be939c7759c782fff98ed87f3399" title="Retrieves the current logger for adjoint." alt="" coords="811,99,988,124"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="743,109,797,109,797,114,743,114"/>
+<area shape="poly" id="edge12_Node000010_Node000010" title=" " alt="" coords="342,394,339,384,346,375,364,369,390,367,420,370,437,377,435,382,419,375,390,373,365,375,349,379,344,385,347,393"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1mesh_1_1_mesh.html#aadc9bb68805f0a4c0209bee9160c9fc6" title="utily for dimension" alt="" coords="572,394,735,434"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="487,411,558,411,558,417,487,417"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="818,394,981,434"/>
+<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="735,411,805,411,805,417,735,417"/>
+<area shape="rect" id="Node000016" href="$namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" title="Unflatten rowwises, so every dim elements in x become a row." alt="" coords="564,587,743,612"/>
+<area shape="poly" id="edge16_Node000015_Node000016" title=" " alt="" coords="496,597,550,597,550,602,496,602"/>
+</map>

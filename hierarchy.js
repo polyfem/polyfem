@@ -241,8 +241,10 @@ var hierarchy =
     [ "polyfem::io::OBJWriter", "classpolyfem_1_1io_1_1_o_b_j_writer.html", null ],
     [ "polyfem::mesh::Obstacle", "classpolyfem_1_1mesh_1_1_obstacle.html", null ],
     [ "polyfem::solver::OperatorSplittingSolver", "classpolyfem_1_1solver_1_1_operator_splitting_solver.html", null ],
+    [ "polyfem::assembler::OptAssemblerData", "classpolyfem_1_1assembler_1_1_opt_assembler_data.html", null ],
     [ "polyfem::OptState", "classpolyfem_1_1_opt_state.html", null ],
     [ "polyfem::io::OutGeometryData", "classpolyfem_1_1io_1_1_out_geometry_data.html", null ],
+    [ "polyfem::assembler::OutputData", "classpolyfem_1_1assembler_1_1_output_data.html", null ],
     [ "polyfem::io::OutRuntimeData", "classpolyfem_1_1io_1_1_out_runtime_data.html", null ],
     [ "polyfem::io::OutStatsData", "classpolyfem_1_1io_1_1_out_stats_data.html", null ],
     [ "polyfem::solver::Parametrization", "classpolyfem_1_1solver_1_1_parametrization.html", [
