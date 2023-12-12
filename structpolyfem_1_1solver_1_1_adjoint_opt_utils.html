@@ -136,8 +136,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a522e38998a46be499ac7d7d1b28e0fd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2da0db5984161ba996cbb36416b27286" id="r_a2da0db5984161ba996cbb36416b27286"><td class="memItemLeft" align="right" valign="top">static std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#a2da0db5984161ba996cbb36416b27286">create_state</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;args, <a class="el" href="namespacepolyfem_1_1solver.html#aff8f99461509f079bd5ac2a9817dbef8">CacheLevel</a> level=<a class="el" href="namespacepolyfem_1_1solver.html#aff8f99461509f079bd5ac2a9817dbef8a2a7f1476b6ddab6d53b03d77dacdbd1e">CacheLevel::Derivatives</a>, const size_t max_threads=32)</td></tr>
 <tr class="separator:a2da0db5984161ba996cbb36416b27286"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6239bbf7a5a5462a5be0dcd890312f67" id="r_a6239bbf7a5a5462a5be0dcd890312f67"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#a6239bbf7a5a5462a5be0dcd890312f67">create_states</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;state_args, const <a class="el" href="namespacepolyfem_1_1solver.html#aff8f99461509f079bd5ac2a9817dbef8">CacheLevel</a> &amp;level, const spdlog::level::level_enum &amp;log_level, const size_t max_threads)</td></tr>
-<tr class="separator:a6239bbf7a5a5462a5be0dcd890312f67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add508919054219a9a5764d51b8e9f2dc" id="r_add508919054219a9a5764d51b8e9f2dc"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#add508919054219a9a5764d51b8e9f2dc">create_states</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;state_args, const <a class="el" href="namespacepolyfem_1_1solver.html#aff8f99461509f079bd5ac2a9817dbef8">CacheLevel</a> &amp;level, const size_t max_threads)</td></tr>
+<tr class="separator:add508919054219a9a5764d51b8e9f2dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a36da850c59e2b8166e16b795b12b427a" id="r_a36da850c59e2b8166e16b795b12b427a"><td class="memItemLeft" align="right" valign="top">static Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#a36da850c59e2b8166e16b795b12b427a">inverse_evaluation</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;args, const int ndof, const std::vector&lt; int &gt; &amp;variable_sizes, std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html">VariableToSimulation</a> &gt; &gt; &amp;var2sim)</td></tr>
 <tr class="separator:a36da850c59e2b8166e16b795b12b427a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acac3e8ce8646ddd1544ed034c71bec96" id="r_acac3e8ce8646ddd1544ed034c71bec96"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acac3e8ce8646ddd1544ed034c71bec96">solve_pde</a> (<a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state)</td></tr>
@@ -426,8 +426,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a6239bbf7a5a5462a5be0dcd890312f67" name="a6239bbf7a5a5462a5be0dcd890312f67"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6239bbf7a5a5462a5be0dcd890312f67">&#9670;&#160;</a></span>create_states()</h2>
+<a id="add508919054219a9a5764d51b8e9f2dc" name="add508919054219a9a5764d51b8e9f2dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add508919054219a9a5764d51b8e9f2dc">&#9670;&#160;</a></span>create_states()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -446,12 +446,6 @@ Here is the caller graph for this function:</div>
           <td></td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem_1_1solver.html#aff8f99461509f079bd5ac2a9817dbef8">CacheLevel</a> &amp;&#160;</td>
           <td class="paramname"><em>level</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const spdlog::level::level_enum &amp;&#160;</td>
-          <td class="paramname"><em>log_level</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -480,12 +474,12 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="structpolyfem_1_1solver_1_1_adjoint_opt_utils_a6239bbf7a5a5462a5be0dcd890312f67_cgraph.svg" width="642" height="166"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="structpolyfem_1_1solver_1_1_adjoint_opt_utils_add508919054219a9a5764d51b8e9f2dc_cgraph.svg" width="642" height="166"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="structpolyfem_1_1solver_1_1_adjoint_opt_utils_a6239bbf7a5a5462a5be0dcd890312f67_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="structpolyfem_1_1solver_1_1_adjoint_opt_utils_add508919054219a9a5764d51b8e9f2dc_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
