@@ -21,10 +21,12 @@ namespace polyfem
 
 		if (mixed_assembler != nullptr)
 		{
+			const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
+
 			pressure.resize(0, 0);
 			sol.conservativeResize(rhs.size(), sol.cols());
 			// Zero initial pressure
-			sol.middleRows(n_bases * mesh->dimension(), n_pressure_bases).setZero();
+			sol.middleRows(n_bases * actual_dim, n_pressure_bases).setZero();
 			sol(sol.size() - 1) = 0;
 
 			sol_to_pressure(sol, pressure);

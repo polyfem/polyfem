@@ -95,7 +95,7 @@ int authenticate_json(const std::string &json_file, const bool compute_validatio
 	// ------------------------------------------------------------------------
 
 	args["/solver/linear/solver"_json_pointer] =
-		json_file.find("navier") == std::string::npos
+		(json_file.find("navier") == std::string::npos && json_file.find("bilaplace") == std::string::npos)
 			? "Eigen::SimplicialLDLT"
 			: "Eigen::SparseLU";
 
