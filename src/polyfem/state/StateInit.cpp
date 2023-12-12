@@ -130,7 +130,7 @@ namespace polyfem
 		}
 		else
 		{
-			// Set the level of all loggers
+			// Set the level of all sinks
 			logger().set_level(log_level);
 			ipc::logger().set_level(log_level);
 		}
