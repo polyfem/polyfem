@@ -71,7 +71,7 @@ jobs:
           cd build
           ctest --verbose --output-on-failure
           lcov --directory . --capture --output-file coverage.info
-          lcov --remove coverage.info '/usr/*' "${HOME}"'/.cache/*' '*tests/*.cpp' --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' "${HOME}"'/.cache/*' '*tests/*.cpp' '*/polyfem/problem/*.cpp' '*/polyfem/problem/*.hpp' --output-file coverage.info
 
       - name: Upload Coverage
         uses: codecov/codecov-action@v3

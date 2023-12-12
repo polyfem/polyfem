@@ -110,7 +110,8 @@ namespace polyfem
 							double tmp = 0; //(vals.basis_values[i].val.array() * vals.basis_values[j].val.array() * da.array()).sum();
 							for (int q = 0; q < local_storage.da.size(); ++q)
 							{
-								const double rho = density(vals.quadrature.points.row(q), vals.val.row(q), vals.element_id);
+								// TODO t
+								const double rho = density(vals.quadrature.points.row(q), vals.val.row(q), 0, vals.element_id);
 								tmp += rho * vals.basis_values[i].val(q) * vals.basis_values[j].val(q) * local_storage.da(q);
 							}
 

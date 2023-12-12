@@ -24,7 +24,11 @@ namespace polyfem::assembler
 		std::map<std::string, ParamFunc> parameters() const override;
 
 	protected:
-		void assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const override;
+		void assign_stress_tensor(const OutputData &data,
+								  const int all_size,
+								  const ElasticityTensorType &type,
+								  Eigen::MatrixXd &all,
+								  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const override;
 
 	private:
 		LameParameters params_;
@@ -60,9 +64,14 @@ namespace polyfem::assembler
 		std::string name() const override { return "IncompressibleLinearElasticityPressure"; }
 		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
 
-		void set_size(const int) override { size_ = 1; }
+		void set_size(const int size) override
+		{
+			disp_size_ = size;
+			size_ = 1;
+		}
 
 	private:
 		LameParameters params_;
+		int disp_size_ = 0;
 	};
 } // namespace polyfem::assembler

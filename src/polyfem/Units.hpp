@@ -29,6 +29,7 @@ namespace polyfem
 		std::string force() const { return fmt::format("{}*{}", mass_, acceleration()); }
 		std::string pressure() const { return fmt::format("{}*{}/{}", mass_, acceleration(), length_); }
 		std::string energy() const { return fmt::format("{}*{}^2/{}^2", mass_, length_, time_); }
+		std::string viscosity() const { return fmt::format("{}/{}^2*{}", force(), length_, time_); }
 
 	private:
 		std::string length_ = "m";

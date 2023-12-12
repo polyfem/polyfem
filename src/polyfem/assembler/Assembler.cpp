@@ -160,6 +160,7 @@ namespace polyfem::assembler
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &cache,
+		const double t,
 		StiffnessMatrix &stiffness,
 		const bool is_mass) const
 	{
@@ -219,11 +220,11 @@ namespace polyfem::assembler
 							const auto &global_j = vals.basis_values[j].global;
 
 							// compute local entry in stiffness matrix
-							const auto stiffness_val = assemble(LinearAssemblerData(vals, i, j, local_storage.da));
+							const auto stiffness_val = assemble(LinearAssemblerData(vals, t, i, j, local_storage.da));
 							assert(stiffness_val.size() == size() * size());
 
 							// igl::Timer t1; t1.start();
-							// loop over dimensions of the problem 
+							// loop over dimensions of the problem
 							for (int n = 0; n < size(); ++n)
 							{
 								for (int m = 0; m < size(); ++m)
@@ -395,6 +396,7 @@ namespace polyfem::assembler
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &psi_cache,
 		const AssemblyValsCache &phi_cache,
+		const double t,
 		StiffnessMatrix &stiffness) const
 	{
 		assert(size() > 0);
@@ -439,7 +441,7 @@ namespace polyfem::assembler
 					{
 						const auto &global_j = phi_vals.basis_values[j].global;
 
-						const auto stiffness_val = assemble(MixedAssemblerData(psi_vals, phi_vals, i, j, local_storage.da));
+						const auto stiffness_val = assemble(MixedAssemblerData(psi_vals, phi_vals, t, i, j, local_storage.da));
 						assert(stiffness_val.size() == rows() * cols());
 
 						// igl::Timer t1; t1.start();
@@ -495,6 +497,7 @@ namespace polyfem::assembler
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &cache,
+		const double t,
 		const double dt,
 		const Eigen::MatrixXd &displacement,
 		const Eigen::MatrixXd &displacement_prev) const
@@ -515,7 +518,7 @@ namespace polyfem::assembler
 				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 
-				const double val = compute_energy(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				const double val = compute_energy(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, local_storage.da));
 				local_storage.val += val;
 			}
 		});
@@ -532,6 +535,7 @@ namespace polyfem::assembler
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &cache,
+		const double t,
 		const double dt,
 		const Eigen::MatrixXd &displacement,
 		const Eigen::MatrixXd &displacement_prev) const
@@ -553,14 +557,14 @@ namespace polyfem::assembler
 				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 
-				const double val = compute_energy(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				const double val = compute_energy(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, local_storage.da));
 				out[e] = val;
 			}
 		});
 
 #ifndef NDEBUG
 		const double assemble_val = assemble_energy(
-			is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
+			is_volume, bases, gbases, cache, t, dt, displacement, displacement_prev);
 		assert(std::abs(assemble_val - out.sum()) < std::max(1e-10 * assemble_val, 1e-10));
 #endif
 
@@ -573,6 +577,7 @@ namespace polyfem::assembler
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &cache,
+		const double t,
 		const double dt,
 		const Eigen::MatrixXd &displacement,
 		const Eigen::MatrixXd &displacement_prev,
@@ -602,7 +607,7 @@ namespace polyfem::assembler
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 				const int n_loc_bases = int(vals.basis_values.size());
 
-				const auto val = assemble_gradient(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				const auto val = assemble_gradient(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, local_storage.da));
 				assert(val.size() == n_loc_bases * size());
 
 				for (int j = 0; j < n_loc_bases; ++j)
@@ -644,6 +649,7 @@ namespace polyfem::assembler
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &cache,
+		const double t,
 		const double dt,
 		const Eigen::MatrixXd &displacement,
 		const Eigen::MatrixXd &displacement_prev,
@@ -680,7 +686,7 @@ namespace polyfem::assembler
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 				const int n_loc_bases = int(vals.basis_values.size());
 
-				auto stiffness_val = assemble_hessian(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				auto stiffness_val = assemble_hessian(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, local_storage.da));
 				assert(stiffness_val.rows() == n_loc_bases * size());
 				assert(stiffness_val.cols() == n_loc_bases * size());
 

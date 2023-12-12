@@ -1,4 +1,5 @@
-[{
+[
+    {
         "pointer": "/",
         "type": "int",
         "doc": "Assign specified ID to all elements of the geometry."
@@ -70,12 +71,11 @@
             "normal"
         ],
         "optional": [
-            "relative",
-            "offset"
+            "relative"
         ],
         "default": null,
         "#type_name": "plane",
-        "doc": "Assign the ID to all elements with barycenters in a halfspace. The halfspace boundary plane is defined in one of two ways: (1) by a point in the plane and the normal, which points to the halfspace. (2) By a normal and the offset from the coordinate system origin along the line in the direction of the normal passing through the origin. In the former case, the option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry."
+        "doc": "Assign the ID to all elements with barycenters in a halfspace. The halfspace boundary plane is defined by a point in the plane and the normal, which points to the halfspace. The option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry."
     },
     {
         "pointer": "/*",
