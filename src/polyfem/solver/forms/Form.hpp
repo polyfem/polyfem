@@ -1,7 +1,7 @@
 #pragma once
 
 #include <polyfem/utils/Types.hpp>
-#include <polysolve/nonlinear/Solver.hpp>
+#include <polysolve/nonlinear/PostSolveData.hpp>
 
 #include <filesystem>
 
