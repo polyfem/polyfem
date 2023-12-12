@@ -99,6 +99,7 @@ namespace polyfem::solver
 
 	double MaxStressForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
 	{
+		const double t = state_.problem->is_time_dependent() ? time_step * state_.args["time"]["dt"].get<double>() + state_.args["time"]["t0"].get<double>() : 0;
 		Eigen::VectorXd max_stress;
 		max_stress.setZero(state_.bases.size());
 		utils::maybe_parallel_for(state_.bases.size(), [&](int start, int end, int thread_id) {
@@ -112,7 +113,7 @@ namespace polyfem::solver
 				state_.ass_vals_cache.compute(e, state_.mesh->is_volume(), state_.bases[e], state_.geom_bases()[e], vals);
 				// std::vector<assembler::Assembler::NamedMatrix> result;
 				// state_.assembler->compute_tensor_value(e, state_.bases[e], state_.geom_bases()[e], vals.quadrature.points, state_.diff_cached.u(time_step), result);
-				std::dynamic_pointer_cast<assembler::ElasticityAssembler>(state_.assembler)->compute_stress_tensor(e, state_.bases[e], state_.geom_bases()[e], vals.quadrature.points, state_.diff_cached.u(time_step), ElasticityTensorType::PK1, local_vals);
+				std::dynamic_pointer_cast<assembler::ElasticityAssembler>(state_.assembler)->compute_stress_tensor(assembler::OutputData(t, e, state_.bases[e], state_.geom_bases()[e], vals.quadrature.points, state_.diff_cached.u(time_step)), ElasticityTensorType::PK1, local_vals);
 
 				Eigen::VectorXd stress_norms = local_vals.rowwise().norm();
 				max_stress(e) = std::max(max_stress(e), stress_norms.maxCoeff());

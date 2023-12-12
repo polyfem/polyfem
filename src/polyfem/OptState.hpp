@@ -5,6 +5,8 @@
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
+#include <polyfem/solver/DiffCache.hpp>
+
 namespace polyfem
 {
 	class State;
@@ -56,7 +58,7 @@ namespace polyfem
 		void set_log_level(const spdlog::level::level_enum log_level);
 
 		/// @brief create the opt states
-		void create_states(const spdlog::level::level_enum &log_level = spdlog::level::level_enum::trace, const int max_threads = -1);
+		void create_states(const polyfem::solver::CacheLevel level, const int max_threads = -1);
 
 		/// init variables
 		void init_variables();
