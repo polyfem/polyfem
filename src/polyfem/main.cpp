@@ -215,7 +215,7 @@ int optimization_simulation(const CLI::App &command_line,
 	OptState opt_state;
 	opt_state.init(opt_args, is_strict);
 
-	opt_state.create_states();
+	opt_state.create_states(opt_state.args["compute_objective"].get<bool>() ? polyfem::solver::CacheLevel::Solution : polyfem::solver::CacheLevel::Derivatives);
 	opt_state.init_variables();
 	opt_state.crate_problem();
 
