@@ -203,7 +203,7 @@ namespace polyfem::solver
 		{
 			Eigen::VectorXd X = get_updated_mesh_nodes(x);
 
-			double energy = amips_energy_->assemble_energy(state_.mesh->is_volume(), rest_geom_bases_, rest_geom_bases_, rest_ass_vals_cache_, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_rest), Eigen::VectorXd());
+			double energy = amips_energy_->assemble_energy(state_.mesh->is_volume(), rest_geom_bases_, rest_geom_bases_, rest_ass_vals_cache_, 0, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_rest), Eigen::VectorXd());
 
 			return energy;
 		}
@@ -213,8 +213,8 @@ namespace polyfem::solver
 			Eigen::VectorXd X = get_updated_mesh_nodes(x);
 
 			Eigen::MatrixXd grad;
-			amips_energy_->assemble_gradient(state_.mesh->is_volume(), state_.n_geom_bases, rest_geom_bases_, rest_geom_bases_, rest_ass_vals_cache_, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_rest), Eigen::VectorXd(), grad); // grad wrt. gbases
-			grad = AdjointTools::map_node_to_primitive_order(state_, grad);                                                                                                                                                                       // grad wrt. vertices
+			amips_energy_->assemble_gradient(state_.mesh->is_volume(), state_.n_geom_bases, rest_geom_bases_, rest_geom_bases_, rest_ass_vals_cache_, 0, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_rest), Eigen::VectorXd(), grad); // grad wrt. gbases
+			grad = AdjointTools::map_node_to_primitive_order(state_, grad);                                                                                                                                                                          // grad wrt. vertices
 
 			assert(grad.cols() == 1);
 

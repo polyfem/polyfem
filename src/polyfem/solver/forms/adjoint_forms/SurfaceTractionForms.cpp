@@ -52,6 +52,8 @@ namespace polyfem::solver
 		j.set_j([formulation, power, &state = std::as_const(state_)](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), 1);
 			int el_id = params["elem"];
+			const double dt = state.problem->is_time_dependent() ? state.args["time"]["dt"].get<double>() : 0;
+			const double t = params["t"];
 
 			Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> grad_u_local, grad_x;
 			Eigen::MatrixXd grad_u_q, stress, traction_force, grad_unused;
@@ -64,7 +66,8 @@ namespace polyfem::solver
 
 				reference_normal = reference_normals.row(q);
 				displaced_normal = compute_displaced_normal(reference_normal, grad_x, grad_u_local).transpose();
-				state.assembler->compute_stress_grad_multiply_vect(el_id, local_pts.row(q), pts.row(q), grad_u_q, Eigen::MatrixXd::Zero(1, grad_u_q.cols()), stress, grad_unused);
+				// state.assembler->compute_stress_grad_multiply_vect(el_id, local_pts.row(q), pts.row(q), grad_u_q, Eigen::MatrixXd::Zero(1, grad_u_q.cols()), stress, grad_unused);
+				state.assembler->compute_stress_grad_multiply_vect(OptAssemblerData(t, dt, el_id, local_pts.row(q), pts.row(q), grad_u_q), Eigen::MatrixXd::Zero(1, grad_u_q.cols()), stress, grad_unused);
 				traction_force = displaced_normal * stress;
 				val(q) = pow(traction_force.squaredNorm(), power / 2.);
 			}
@@ -73,6 +76,8 @@ namespace polyfem::solver
 		auto dj_dgradx = [formulation, power, &state = std::as_const(state_)](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), grad_u.cols());
 			int el_id = params["elem"];
+			const double dt = state.problem->is_time_dependent() ? state.args["time"]["dt"].get<double>() : 0;
+			const double t = params["t"];
 			const int dim = sqrt(grad_u.cols());
 
 			Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> grad_u_local, grad_x;
@@ -95,7 +100,8 @@ namespace polyfem::solver
 				displaced_normal.resize(1, dim);
 				for (int i = 0; i < dim; ++i)
 					displaced_normal(i) = n(i).getValue();
-				state.assembler->compute_stress_grad_multiply_vect(el_id, local_pts.row(q), pts.row(q), grad_u_q, Eigen::MatrixXd::Zero(1, grad_u_q.cols()), stress, grad_unused);
+				// state.assembler->compute_stress_grad_multiply_vect(el_id, local_pts.row(q), pts.row(q), grad_u_q, Eigen::MatrixXd::Zero(1, grad_u_q.cols()), stress, grad_unused);
+				state.assembler->compute_stress_grad_multiply_vect(OptAssemblerData(t, dt, el_id, local_pts.row(q), pts.row(q), grad_u_q), Eigen::MatrixXd::Zero(1, grad_u_q.cols()), stress, grad_unused);
 				traction_force = displaced_normal * stress;
 
 				const double coef = power * pow(traction_force.squaredNorm(), power / 2. - 1.);
@@ -122,6 +128,8 @@ namespace polyfem::solver
 		auto dj_dgradu = [formulation, power, &state = std::as_const(state_)](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), grad_u.cols());
 			int el_id = params["elem"];
+			const double dt = state.problem->is_time_dependent() ? state.args["time"]["dt"].get<double>() : 0;
+			const double t = params["t"];
 			const int dim = sqrt(grad_u.cols());
 
 			Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> grad_u_local, grad_x;
@@ -135,7 +143,8 @@ namespace polyfem::solver
 
 				reference_normal = reference_normals.row(q);
 				displaced_normal = compute_displaced_normal(reference_normal, grad_x, grad_u_local).transpose();
-				state.assembler->compute_stress_grad_multiply_vect(el_id, local_pts.row(q), pts.row(q), grad_u_q, displaced_normal, stress, vect_mult_dstress);
+				// state.assembler->compute_stress_grad_multiply_vect(el_id, local_pts.row(q), pts.row(q), grad_u_q, displaced_normal, stress, vect_mult_dstress);
+				state.assembler->compute_stress_grad_multiply_vect(OptAssemblerData(t, dt, el_id, local_pts.row(q), pts.row(q), grad_u_q), displaced_normal, stress, vect_mult_dstress);
 				traction_force = displaced_normal * stress;
 
 				const double coef = power * pow(traction_force.squaredNorm(), power / 2. - 1.);

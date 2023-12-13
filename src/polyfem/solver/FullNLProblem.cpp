@@ -125,9 +125,9 @@ namespace polyfem::solver
 			f->solution_changed(x);
 	}
 
-	void FullNLProblem::post_step(const int iter_num, const TVector &x)
+	void FullNLProblem::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
 		for (auto &f : forms_)
-			f->post_step(iter_num, x);
+			f->post_step(data);
 	}
 } // namespace polyfem::solver

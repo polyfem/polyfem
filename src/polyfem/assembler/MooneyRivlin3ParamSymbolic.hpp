@@ -38,11 +38,25 @@ namespace polyfem::assembler
 		std::string name() const override { return "MooneyRivlin3ParamSymbolic"; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
-		void assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const override;
+		void assign_stress_tensor(const OutputData &data,
+								  const int all_size,
+								  const ElasticityTensorType &type,
+								  Eigen::MatrixXd &all,
+								  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const override;
 
-		void compute_stress_grad_multiply_mat(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &mat, Eigen::MatrixXd &stress, Eigen::MatrixXd &result) const override;
-		void compute_stress_grad_multiply_stress(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, Eigen::MatrixXd &stress, Eigen::MatrixXd &result) const override;
-		void compute_stress_grad_multiply_vect(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &vect, Eigen::MatrixXd &stress, Eigen::MatrixXd &result) const override;
+		void compute_stress_grad_multiply_mat(const OptAssemblerData &data,
+											  const Eigen::MatrixXd &mat,
+											  Eigen::MatrixXd &stress,
+											  Eigen::MatrixXd &result) const override;
+
+		void compute_stress_grad_multiply_stress(const OptAssemblerData &data,
+												 Eigen::MatrixXd &stress,
+												 Eigen::MatrixXd &result) const override;
+
+		void compute_stress_grad_multiply_vect(const OptAssemblerData &data,
+											   const Eigen::MatrixXd &vect,
+											   Eigen::MatrixXd &stress,
+											   Eigen::MatrixXd &result) const override;
 
 	private:
 		GenericMatParam c1_;

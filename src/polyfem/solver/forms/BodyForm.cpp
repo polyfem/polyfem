@@ -145,7 +145,7 @@ namespace polyfem::solver
 				rhs_function *= -1;
 				for (int q = 0; q < vals.val.rows(); q++)
 				{
-					const double rho = density_(quadrature.points.row(q), vals.val.row(q), e);
+					const double rho = density_(quadrature.points.row(q), vals.val.row(q), t, e);
 					rhs_function.row(q) *= rho;
 				}
 

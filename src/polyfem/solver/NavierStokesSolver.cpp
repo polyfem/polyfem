@@ -58,9 +58,9 @@ namespace polyfem
 			time.start();
 			StiffnessMatrix stoke_stiffness;
 			StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
-			velocity_stokes_assembler.assemble(is_volume, n_bases, bases, gbases, ass_vals_cache, velocity_stiffness);
-			mixed_assembler.assemble(is_volume, n_pressure_bases, n_bases, pressure_bases, bases, gbases, pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
-			pressure_assembler.assemble(is_volume, n_pressure_bases, pressure_bases, gbases, pressure_ass_vals_cache, pressure_stiffness);
+			velocity_stokes_assembler.assemble(is_volume, n_bases, bases, gbases, ass_vals_cache, 0, velocity_stiffness);
+			mixed_assembler.assemble(is_volume, n_pressure_bases, n_bases, pressure_bases, bases, gbases, pressure_ass_vals_cache, ass_vals_cache, 0, mixed_stiffness);
+			pressure_assembler.assemble(is_volume, n_pressure_bases, pressure_bases, gbases, pressure_ass_vals_cache, 0, pressure_stiffness);
 
 			AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure,
 												 velocity_stiffness, mixed_stiffness, pressure_stiffness,
@@ -170,7 +170,7 @@ namespace polyfem
 
 			time.start();
 			velocity_assembler.set_picard(true);
-			velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
+			velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
 			AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure,
 												 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 												 total_matrix);
@@ -197,7 +197,7 @@ namespace polyfem
 				if (!is_picard)
 				{
 					velocity_assembler.set_picard(false);
-					velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
+					velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
 					AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure,
 														 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 														 total_matrix);
@@ -215,7 +215,7 @@ namespace polyfem
 
 				time.start();
 				velocity_assembler.set_picard(true);
-				velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
+				velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
 				AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure,
 													 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 													 total_matrix);

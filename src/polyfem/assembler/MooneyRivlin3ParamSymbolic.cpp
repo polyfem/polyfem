@@ -158,8 +158,19 @@ namespace polyfem::assembler
 		return hessian;
 	}
 
-	void MooneyRivlin3ParamSymbolic::assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+	void MooneyRivlin3ParamSymbolic::assign_stress_tensor(const OutputData &data,
+														  const int all_size,
+														  const ElasticityTensorType &type,
+														  Eigen::MatrixXd &all,
+														  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
+		const auto &displacement = data.fun;
+		const auto &local_pts = data.local_pts;
+		const auto &bs = data.bs;
+		const auto &gbs = data.gbs;
+		const auto el_id = data.el_id;
+		const auto t = data.t;
+
 		Eigen::MatrixXd displacement_grad(size(), size());
 
 		assert(displacement.cols() == 1);
@@ -202,20 +213,22 @@ namespace polyfem::assembler
 	}
 
 	void MooneyRivlin3ParamSymbolic::compute_stress_grad_multiply_mat(
-		const int el_id,
-		const Eigen::MatrixXd &local_pts,
-		const Eigen::MatrixXd &global_pts,
-		const Eigen::MatrixXd &grad_u_i,
+		const OptAssemblerData &data,
 		const Eigen::MatrixXd &mat,
 		Eigen::MatrixXd &stress,
 		Eigen::MatrixXd &result) const
 	{
+		const double t = data.t;
+		const int el_id = data.el_id;
+		const Eigen::MatrixXd &local_pts = data.local_pts;
+		const Eigen::MatrixXd &global_pts = data.global_pts;
+		const Eigen::MatrixXd &grad_u_i = data.grad_u_i;
+
 		Eigen::MatrixXd F = grad_u_i;
 		for (int d = 0; d < size(); ++d)
 			F(d, d) += 1.;
 		Eigen::MatrixXd F_T = F.transpose();
 
-		const double t = 0;
 		const double c1 = c1_(global_pts, t, el_id);
 		const double c2 = c2_(global_pts, t, el_id);
 		const double c3 = c3_(global_pts, t, el_id);
@@ -232,18 +245,20 @@ namespace polyfem::assembler
 	}
 
 	void MooneyRivlin3ParamSymbolic::compute_stress_grad_multiply_stress(
-		const int el_id,
-		const Eigen::MatrixXd &local_pts,
-		const Eigen::MatrixXd &global_pts,
-		const Eigen::MatrixXd &grad_u_i,
+		const OptAssemblerData &data,
 		Eigen::MatrixXd &stress,
 		Eigen::MatrixXd &result) const
 	{
+		const double t = data.t;
+		const int el_id = data.el_id;
+		const Eigen::MatrixXd &local_pts = data.local_pts;
+		const Eigen::MatrixXd &global_pts = data.global_pts;
+		const Eigen::MatrixXd &grad_u_i = data.grad_u_i;
+
 		Eigen::MatrixXd F = grad_u_i;
 		for (int d = 0; d < size(); ++d)
 			F(d, d) += 1.;
 
-		const double t = 0;
 		const double c1 = c1_(global_pts, t, el_id);
 		const double c2 = c2_(global_pts, t, el_id);
 		const double c3 = c3_(global_pts, t, el_id);
@@ -260,20 +275,23 @@ namespace polyfem::assembler
 	}
 
 	void MooneyRivlin3ParamSymbolic::compute_stress_grad_multiply_vect(
-		const int el_id,
-		const Eigen::MatrixXd &local_pts,
-		const Eigen::MatrixXd &global_pts,
-		const Eigen::MatrixXd &grad_u_i,
+		const OptAssemblerData &data,
 		const Eigen::MatrixXd &vect,
 		Eigen::MatrixXd &stress,
 		Eigen::MatrixXd &result) const
 	{
+
+		const double t = data.t;
+		const int el_id = data.el_id;
+		const Eigen::MatrixXd &local_pts = data.local_pts;
+		const Eigen::MatrixXd &global_pts = data.global_pts;
+		const Eigen::MatrixXd &grad_u_i = data.grad_u_i;
+
 		Eigen::MatrixXd F = grad_u_i;
 		for (int d = 0; d < size(); ++d)
 			F(d, d) += 1.;
 		Eigen::MatrixXd F_T = F.transpose();
 
-		const double t = 0;
 		const double c1 = c1_(global_pts, t, el_id);
 		const double c2 = c2_(global_pts, t, el_id);
 		const double c3 = c3_(global_pts, t, el_id);

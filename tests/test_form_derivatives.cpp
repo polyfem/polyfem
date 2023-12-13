@@ -274,6 +274,7 @@ TEST_CASE("elastic form derivatives", "[form][form_derivatives][elastic_form]")
 		state_ptr->geom_bases(),
 		*state_ptr->assembler,
 		state_ptr->ass_vals_cache,
+		0,
 		state_ptr->args["time"]["dt"],
 		state_ptr->mesh->is_volume());
 	test_form(form, *state_ptr);
@@ -322,6 +323,7 @@ TEST_CASE("damping form derivatives", "[form][form_derivatives][damping_form]")
 		state_ptr->geom_bases(),
 		*damping_assembler,
 		state_ptr->ass_vals_cache,
+		0,
 		dt,
 		state_ptr->mesh->is_volume());
 	form.update_quantities(0, Eigen::VectorXd::Ones(state_ptr->n_bases * dim));
@@ -368,6 +370,7 @@ TEST_CASE("Rayleigh damping form derivatives", "[form][form_derivatives][rayleig
 		state_ptr->geom_bases(),
 		*state_ptr->assembler,
 		state_ptr->ass_vals_cache,
+		0,
 		state_ptr->args["time"]["dt"],
 		state_ptr->mesh->is_volume());
 
@@ -402,6 +405,7 @@ TEST_CASE("BC lagrangian form derivatives", "[form][form_derivatives][bc_lagr_fo
 											   state_ptr->bases,
 											   state_ptr->geom_bases(),
 											   state_ptr->mass_ass_vals_cache,
+											   0,
 											   mass_tmp,
 											   true);
 
@@ -453,6 +457,7 @@ TEST_CASE("BC penalty form derivatives", "[form][form_derivatives][bc_penalty_fo
 											   state_ptr->bases,
 											   state_ptr->geom_bases(),
 											   state_ptr->mass_ass_vals_cache,
+											   0,
 											   mass_tmp,
 											   true);
 

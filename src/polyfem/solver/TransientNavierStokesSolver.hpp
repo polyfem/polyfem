@@ -22,6 +22,7 @@ namespace polyfem
 
 			void minimize(const int n_bases,
 						  const int n_pressure_bases,
+						  const double t,
 						  const std::vector<basis::ElementBases> &bases,
 						  const std::vector<basis::ElementBases> &gbases,
 						  assembler::NavierStokesVelocity &velocity_assembler,
@@ -46,6 +47,7 @@ namespace polyfem
 							 const std::vector<int> &skipping,
 							 const int n_bases,
 							 const int n_pressure_bases,
+							 const double t,
 							 const std::vector<basis::ElementBases> &bases,
 							 const std::vector<basis::ElementBases> &gbases,
 							 assembler::NavierStokesVelocity &velocity_assembler,
