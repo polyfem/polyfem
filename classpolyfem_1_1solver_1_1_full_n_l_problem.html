@@ -161,8 +161,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ae63f768e702778c005f9071033343674"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b0b95f98b74d4b154801bb09c2ec376" id="r_a7b0b95f98b74d4b154801bb09c2ec376"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a7b0b95f98b74d4b154801bb09c2ec376">line_search_end</a> () override</td></tr>
 <tr class="separator:a7b0b95f98b74d4b154801bb09c2ec376"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ee4fbdc8d403b3a5e9c585c4eb6ddb0" id="r_a9ee4fbdc8d403b3a5e9c585c4eb6ddb0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a9ee4fbdc8d403b3a5e9c585c4eb6ddb0">post_step</a> (const int iter_num, const TVector &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
-<tr class="separator:a9ee4fbdc8d403b3a5e9c585c4eb6ddb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53132a072f8ffd0e79ca04678b600f7b" id="r_a53132a072f8ffd0e79ca04678b600f7b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a53132a072f8ffd0e79ca04678b600f7b">post_step</a> (const polysolve::nonlinear::PostStepData &amp;data) override</td></tr>
+<tr class="separator:a53132a072f8ffd0e79ca04678b600f7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16adec18510ee42554b2b9a44ca1f0be" id="r_a16adec18510ee42554b2b9a44ca1f0be"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a16adec18510ee42554b2b9a44ca1f0be">set_project_to_psd</a> (bool <a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) override</td></tr>
 <tr class="separator:a16adec18510ee42554b2b9a44ca1f0be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a98ee7d8df27b7bb57316050985b6220b" id="r_a98ee7d8df27b7bb57316050985b6220b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a98ee7d8df27b7bb57316050985b6220b">solution_changed</a> (const TVector &amp;new_x) override</td></tr>
@@ -685,8 +685,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a9ee4fbdc8d403b3a5e9c585c4eb6ddb0" name="a9ee4fbdc8d403b3a5e9c585c4eb6ddb0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9ee4fbdc8d403b3a5e9c585c4eb6ddb0">&#9670;&#160;</a></span>post_step()</h2>
+<a id="a53132a072f8ffd0e79ca04678b600f7b" name="a53132a072f8ffd0e79ca04678b600f7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53132a072f8ffd0e79ca04678b600f7b">&#9670;&#160;</a></span>post_step()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -697,19 +697,9 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="memname">void polyfem::solver::FullNLProblem::post_step </td>
           <td>(</td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>iter_num</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype">const polysolve::nonlinear::PostStepData &amp;&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">const TVector &amp;&#160;</td>
-          <td class="paramname"><em>x</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -719,17 +709,17 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#ade0951bf92aab68f8201e383f4396b8b">polyfem::solver::NLProblem</a>.</p>
+<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a819cfd3d76cc1e9ac19c27f0a5d26e40">polyfem::solver::AdjointNLProblem</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a41a25a627b677650437bf5040115bf98">polyfem::solver::NLProblem</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8cpp_source.html#l00128">128</a> of file <a class="el" href="_full_n_l_problem_8cpp_source.html">FullNLProblem.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00043">forms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_full_n_l_problem_8hpp_source.html#l00043">forms_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_n_l_problem_8cpp_source.html#l00124">polyfem::solver::NLProblem::post_step()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_a9ee4fbdc8d403b3a5e9c585c4eb6ddb0_icgraph.svg" width="488" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_a53132a072f8ffd0e79ca04678b600f7b_icgraph.svg" width="488" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>

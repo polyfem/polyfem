@@ -58,10 +58,10 @@ var sectionId = 'dynsection-3';
 <g id="Node000001" class="node">
 <title>Node1</title>
 <g id="a_Node000001"><a xlink:title=" ">
-<polygon fill="#999999" stroke="#666666" points="616,-130 464,-130 464,-89 616,-89 616,-130"/>
-<text text-anchor="start" x="472" y="-118" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Composite</text>
-<text text-anchor="start" x="472" y="-107" font-family="Helvetica,sans-Serif" font-size="10.00">Parametrization::apply</text>
-<text text-anchor="middle" x="540" y="-96" font-family="Helvetica,sans-Serif" font-size="10.00">_jacobian</text>
+<polygon fill="#999999" stroke="#666666" points="616,-102 464,-102 464,-61 616,-61 616,-102"/>
+<text text-anchor="start" x="472" y="-90" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Composite</text>
+<text text-anchor="start" x="472" y="-79" font-family="Helvetica,sans-Serif" font-size="10.00">Parametrization::apply</text>
+<text text-anchor="middle" x="540" y="-68" font-family="Helvetica,sans-Serif" font-size="10.00">_jacobian</text>
 </a>
 </g>
 </g>
@@ -69,8 +69,8 @@ var sectionId = 'dynsection-3';
 <g id="edge1_Node000001_Node000001" class="edge">
 <title>Node1&#45;&gt;Node1</title>
 <g id="a_edge1_Node000001_Node000001"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M576.13,-139.96C570.76,-144.74 558.71,-148 540,-148 510.06,-148 497.19,-139.65 501.4,-130.1"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="579.57,-140.65 578.6,-130.1 572.77,-138.95 579.57,-140.65"/>
+<path fill="none" stroke="#63b8ff" d="M576.13,-111.96C570.76,-116.74 558.71,-120 540,-120 510.06,-120 497.19,-111.65 501.4,-102.1"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="579.57,-112.65 578.6,-102.1 572.77,-110.95 579.57,-112.65"/>
 </a>
 </g>
 </g>
@@ -89,8 +89,8 @@ var sectionId = 'dynsection-3';
 <g id="edge2_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
 <g id="a_edge2_Node000001_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M481.26,-133.93C449.28,-147.46 409.97,-164.09 379.58,-176.95"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="482.65,-137.14 490.5,-130.02 479.92,-130.69 482.65,-137.14"/>
+<path fill="none" stroke="#63b8ff" d="M493.06,-107.12C455.41,-128.12 402.81,-157.45 367.86,-176.94"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="494.78,-110.17 501.81,-102.24 491.38,-104.05 494.78,-110.17"/>
 </a>
 </g>
 </g>
@@ -98,9 +98,9 @@ var sectionId = 'dynsection-3';
 <g id="Node000009" class="node">
 <title>Node9</title>
 <g id="a_Node000009"><a xlink:href="classpolyfem_1_1solver_1_1_parametrization_form.html#a5f270ce437e32738a0985cb67ad41b09" target="_top" xlink:title="Compute the first derivative of the value wrt x.">
-<polygon fill="white" stroke="#666666" points="421.5,-97.5 238.5,-97.5 238.5,-67.5 421.5,-67.5 421.5,-97.5"/>
-<text text-anchor="start" x="246.5" y="-85.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Parametrization</text>
-<text text-anchor="middle" x="330" y="-74.5" font-family="Helvetica,sans-Serif" font-size="10.00">Form::first_derivative_unweighted</text>
+<polygon fill="white" stroke="#666666" points="421.5,-96.5 238.5,-96.5 238.5,-66.5 421.5,-66.5 421.5,-96.5"/>
+<text text-anchor="start" x="246.5" y="-84.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Parametrization</text>
+<text text-anchor="middle" x="330" y="-73.5" font-family="Helvetica,sans-Serif" font-size="10.00">Form::first_derivative_unweighted</text>
 </a>
 </g>
 </g>
@@ -108,8 +108,27 @@ var sectionId = 'dynsection-3';
 <g id="edge9_Node000001_Node000009" class="edge">
 <title>Node1&#45;&gt;Node9</title>
 <g id="a_edge9_Node000001_Node000009"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M453.82,-98.44C443.19,-97.06 432.29,-95.65 421.59,-94.26"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="453.54,-101.94 463.91,-99.75 454.44,-94.99 453.54,-101.94"/>
+<path fill="none" stroke="#63b8ff" d="M453.82,-81.5C443.19,-81.5 432.29,-81.5 421.59,-81.5"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="453.91,-85 463.91,-81.5 453.91,-78 453.91,-85"/>
+</a>
+</g>
+</g>
+<!-- Node11 -->
+<g id="Node000011" class="node">
+<title>Node11</title>
+<g id="a_Node000011"><a xlink:href="classpolyfem_1_1solver_1_1_parametrization_form.html#aacc8404e5edcae5f78ffc2cdfc72eb7c" target="_top" xlink:title="Update fields after a step in the optimization.">
+<polygon fill="white" stroke="#666666" points="418,-48.5 242,-48.5 242,-18.5 418,-18.5 418,-48.5"/>
+<text text-anchor="start" x="250" y="-36.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Parametrization</text>
+<text text-anchor="middle" x="330" y="-25.5" font-family="Helvetica,sans-Serif" font-size="10.00">Form::post_step</text>
+</a>
+</g>
+</g>
+<!-- Node1&#45;&gt;Node11 -->
+<g id="edge11_Node000001_Node000011" class="edge">
+<title>Node1&#45;&gt;Node11</title>
+<g id="a_edge11_Node000001_Node000011"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M453.9,-61.86C434.57,-57.4 414.35,-52.73 396.01,-48.5"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="453.38,-65.33 463.91,-64.17 454.95,-58.51 453.38,-65.33"/>
 </a>
 </g>
 </g>
@@ -247,8 +266,8 @@ var sectionId = 'dynsection-3';
 <g id="edge10_Node000009_Node000010" class="edge">
 <title>Node9&#45;&gt;Node10</title>
 <g id="a_edge10_Node000009_Node000010"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M263.44,-64.83C236.01,-57.43 203.95,-48.79 175.45,-41.11"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="262.76,-68.27 273.32,-67.49 264.58,-61.51 262.76,-68.27"/>
+<path fill="none" stroke="#63b8ff" d="M257.17,-63.97C248.68,-61.83 240.14,-59.64 232,-57.5 212.3,-52.32 191.02,-46.5 171.38,-41.04"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="256.54,-67.43 267.1,-66.47 258.25,-60.64 256.54,-67.43"/>
 </a>
 </g>
 </g>

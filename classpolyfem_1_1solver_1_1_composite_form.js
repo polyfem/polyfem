@@ -16,7 +16,7 @@ var classpolyfem_1_1solver_1_1_composite_form =
     [ "line_search_end", "classpolyfem_1_1solver_1_1_composite_form.html#a20ea1c3988d264671b8e95780713dd05", null ],
     [ "max_step_size", "classpolyfem_1_1solver_1_1_composite_form.html#aa7600ce1b9c2073f239c5de91c8b9992", null ],
     [ "n_objs", "classpolyfem_1_1solver_1_1_composite_form.html#ac9f9fd517b292fadea9fc47c62606769", null ],
-    [ "post_step", "classpolyfem_1_1solver_1_1_composite_form.html#a2a416f072efb34be6e3bfedcd91bd546", null ],
+    [ "post_step", "classpolyfem_1_1solver_1_1_composite_form.html#aeff40b9079dfd35202409453db82d6e5", null ],
     [ "set_apply_DBC", "classpolyfem_1_1solver_1_1_composite_form.html#af2024635576661939aeaad87d7612f82", null ],
     [ "solution_changed", "classpolyfem_1_1solver_1_1_composite_form.html#aa7e7e2af751820fdd4df88a9a2488904", null ],
     [ "update_lagging", "classpolyfem_1_1solver_1_1_composite_form.html#ad595b9ddece6e9bf0d8380467884296a", null ],

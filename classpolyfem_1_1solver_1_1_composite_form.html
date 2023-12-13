@@ -177,9 +177,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a20ea1c3988d264671b8e95780713dd05" id="r_a20ea1c3988d264671b8e95780713dd05"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_composite_form.html#a20ea1c3988d264671b8e95780713dd05">line_search_end</a> () override</td></tr>
 <tr class="memdesc:a20ea1c3988d264671b8e95780713dd05"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear variables used during the line search.  <br /></td></tr>
 <tr class="separator:a20ea1c3988d264671b8e95780713dd05"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2a416f072efb34be6e3bfedcd91bd546" id="r_a2a416f072efb34be6e3bfedcd91bd546"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_composite_form.html#a2a416f072efb34be6e3bfedcd91bd546">post_step</a> (const int iter_num, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
-<tr class="memdesc:a2a416f072efb34be6e3bfedcd91bd546"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update fields after a step in the optimization.  <br /></td></tr>
-<tr class="separator:a2a416f072efb34be6e3bfedcd91bd546"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeff40b9079dfd35202409453db82d6e5" id="r_aeff40b9079dfd35202409453db82d6e5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_composite_form.html#aeff40b9079dfd35202409453db82d6e5">post_step</a> (const polysolve::nonlinear::PostStepData &amp;data) override</td></tr>
+<tr class="memdesc:aeff40b9079dfd35202409453db82d6e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update fields after a step in the optimization.  <br /></td></tr>
+<tr class="separator:aeff40b9079dfd35202409453db82d6e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7e7e2af751820fdd4df88a9a2488904" id="r_aa7e7e2af751820fdd4df88a9a2488904"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_composite_form.html#aa7e7e2af751820fdd4df88a9a2488904">solution_changed</a> (const Eigen::VectorXd &amp;new_x) override</td></tr>
 <tr class="memdesc:aa7e7e2af751820fdd4df88a9a2488904"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update cached fields upon a change in the solution.  <br /></td></tr>
 <tr class="separator:aa7e7e2af751820fdd4df88a9a2488904"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -944,8 +944,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a2a416f072efb34be6e3bfedcd91bd546" name="a2a416f072efb34be6e3bfedcd91bd546"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2a416f072efb34be6e3bfedcd91bd546">&#9670;&#160;</a></span>post_step()</h2>
+<a id="aeff40b9079dfd35202409453db82d6e5" name="aeff40b9079dfd35202409453db82d6e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeff40b9079dfd35202409453db82d6e5">&#9670;&#160;</a></span>post_step()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -956,19 +956,9 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="memname">virtual void polyfem::solver::CompositeForm::post_step </td>
           <td>(</td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>iter_num</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype">const polysolve::nonlinear::PostStepData &amp;&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>x</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -983,15 +973,16 @@ Here is the caller graph for this function:</div>
   <table class="params">
     <tr><td class="paramname">iter_num</td><td>Optimization iteration number </td></tr>
     <tr><td class="paramname">x</td><td>Current solution </td></tr>
+    <tr><td class="paramname">data</td><td>Data containing info about the current iteration </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a1db6efac98eb859c4a6f47df7f5a367c">polyfem::solver::Form</a>.</p>
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#ab29c045a12b7367c9b227f12767e20b4">polyfem::solver::Form</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_composite_form_8hpp_source.html#l00105">105</a> of file <a class="el" href="_composite_form_8hpp_source.html">CompositeForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_composite_form_8hpp_source.html#l00153">forms_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_composite_form_8hpp_source.html#l00153">forms_</a>.</p>
 
 </div>
 </div>
