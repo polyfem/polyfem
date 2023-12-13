@@ -198,10 +198,11 @@ namespace polyfem::solver
 		form_->line_search_end();
 	}
 
-	void AdjointNLProblem::post_step(const int iter_num, const Eigen::VectorXd &x)
+	void AdjointNLProblem::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
-		save_to_file(iter_num, x);
-		form_->post_step(iter_num, x);
+		save_to_file(save_iter++, data.x);
+
+		form_->post_step(data);
 	}
 
 	void AdjointNLProblem::save_to_file(const int iter_num, const Eigen::VectorXd &x0)

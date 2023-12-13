@@ -31,7 +31,7 @@ namespace polyfem::solver
 
 		void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 		void line_search_end() override;
-		void post_step(const int iter_num, const Eigen::VectorXd &x) override;
+		void post_step(const polysolve::nonlinear::PostStepData &data) override;
 		bool stop(const TVector &x) override;
 
 		// virtual void set_project_to_psd(bool val) override;
@@ -55,6 +55,8 @@ namespace polyfem::solver
 
 		const bool solve_in_parallel;
 		std::vector<int> solve_in_order;
+
+		int save_iter = 0;
 
 		std::vector<std::shared_ptr<AdjointForm>> stopping_conditions_; // if all the stopping conditions are non-positive, stop the optimization
 	};

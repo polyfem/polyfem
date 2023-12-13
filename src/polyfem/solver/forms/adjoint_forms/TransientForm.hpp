@@ -18,7 +18,7 @@ namespace polyfem::solver
 		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 		void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 		void line_search_end() override;
-		void post_step(const int iter_num, const Eigen::VectorXd &x) override;
+		void post_step(const polysolve::nonlinear::PostStepData &data) override;
 		void solution_changed(const Eigen::VectorXd &new_x) override;
 		void update_quantities(const double t, const Eigen::VectorXd &x) override;
 		void init_lagging(const Eigen::VectorXd &x) override;
