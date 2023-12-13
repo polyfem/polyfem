@@ -36,6 +36,7 @@ namespace polyfem::solver
 		static void force_shape_derivative(
 			bool is_volume,
 			const int n_geom_bases,
+			const double t, 
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &geom_bases,
 			const assembler::Mass &assembler,
@@ -61,6 +62,7 @@ namespace polyfem::solver
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
 	private:
+		// TODO mass might be time dependent
 		const StiffnessMatrix &mass_;                                    ///< Mass matrix
 		const time_integrator::ImplicitTimeIntegrator &time_integrator_; ///< Time integrator
 	};

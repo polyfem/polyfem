@@ -71,7 +71,7 @@ namespace polyfem
 				for (int e = 0; e < n_elements; ++e)
 				{
 					// vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
-					
+
 					// compute geometric mapping
 					// evaluate and store basis functions/their gradients at quadrature points
 					ass_vals_cache_.compute(e, mesh_.is_volume(), bases_[e], gbases_[e], vals);
@@ -87,7 +87,7 @@ namespace polyfem
 						for (int q = 0; q < quadrature.weights.size(); ++q)
 						{
 							// const double rho = problem_.is_time_dependent() ? density(vals.quadrature.points.row(q), vals.val.row(q), vals.element_id) : 1;
-							const double rho = density(vals.quadrature.points.row(q), vals.val.row(q), vals.element_id);
+							const double rho = density(vals.quadrature.points.row(q), vals.val.row(q), t, vals.element_id);
 							// prepare for integration by weighing rhs by determinant and quadrature weights
 							rhs_fun(q, d) *= vals.det(q) * quadrature.weights(q) * rho;
 						}
@@ -215,7 +215,7 @@ namespace polyfem
 					mass_mat_assembler.add_multimaterial(0, json({}), Units());
 					StiffnessMatrix mass;
 					const int n_fe_basis = n_basis_ - obstacle_.n_vertices();
-					mass_mat_assembler.assemble(size_ == 3, n_fe_basis, bases_, gbases_, ass_vals_cache_, mass, true);
+					mass_mat_assembler.assemble(size_ == 3, n_fe_basis, bases_, gbases_, ass_vals_cache_, 0, mass, true);
 					assert(mass.rows() == n_basis_ * size_ - obstacle_.ndof() && mass.cols() == n_basis_ * size_ - obstacle_.ndof());
 
 					auto solver = linear::Solver::create(solver_params_, logger());
@@ -738,7 +738,12 @@ namespace polyfem
 			}
 		}
 
-		double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const Eigen::MatrixXd &displacement_prev, const std::vector<LocalBoundary> &local_neumann_boundary, const Density &density, const int resolution, const double t) const
+		double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement,
+											const Eigen::MatrixXd &displacement_prev,
+											const std::vector<LocalBoundary> &local_neumann_boundary,
+											const Density &density,
+											const int resolution,
+											const double t) const
 		{
 
 			double res = 0;
@@ -785,7 +790,7 @@ namespace polyfem
 								}
 							}
 							// const double rho = problem_.is_time_dependent() ? density(vals.quadrature.points.row(p), vals.val.row(p), vals.element_id) : 1;
-							const double rho = density(vals.quadrature.points.row(p), vals.val.row(p), vals.element_id);
+							const double rho = density(vals.quadrature.points.row(p), vals.val.row(p), t, vals.element_id);
 
 							for (int d = 0; d < size_; ++d)
 							{

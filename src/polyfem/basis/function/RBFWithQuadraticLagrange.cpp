@@ -264,6 +264,8 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_2d_old(
 void RBFWithQuadraticLagrange::compute_constraints_matrix_2d(const LinearAssembler &assembler,
 															 const int num_bases, const Quadrature &quadr, Eigen::MatrixXd &C) const
 {
+	// TODO
+	const double t = 0;
 	const int num_kernels = centers_.rows();
 	const int space_dim = centers_.cols();
 	const int assembler_dim = assembler.is_tensor() ? 2 : 1;
@@ -310,7 +312,7 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_2d(const LinearAssembl
 		// first num_kernels bases
 		for (int i = 0; i < num_kernels; ++i)
 		{
-			const auto tmp = assembler.assemble(LinearAssemblerData(ass_val, d, 5 + i, quadr.weights));
+			const auto tmp = assembler.assemble(LinearAssemblerData(ass_val, t, d, 5 + i, quadr.weights));
 			for (int alpha = 0; alpha < assembler_dim; ++alpha)
 			{
 				for (int beta = 0; beta < assembler_dim; ++beta)
@@ -324,7 +326,7 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_2d(const LinearAssembl
 		// second the q_i
 		for (int i = 0; i < 5; ++i)
 		{
-			const auto tmp = assembler.assemble(LinearAssemblerData(ass_val, d, i, quadr.weights));
+			const auto tmp = assembler.assemble(LinearAssemblerData(ass_val, t, d, i, quadr.weights));
 			for (int alpha = 0; alpha < assembler_dim; ++alpha)
 			{
 				for (int beta = 0; beta < assembler_dim; ++beta)

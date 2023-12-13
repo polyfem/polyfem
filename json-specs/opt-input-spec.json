@@ -1,5 +1,4 @@
-[
-    {
+[{
         "pointer": "/",
         "type": "object",
         "required": [
@@ -104,7 +103,7 @@
     {
         "pointer": "/solver/nonlinear",
         "type": "include",
-        "spec_file": "non-linear-solver-spec.json",
+        "spec_file": "nonlinear-solver-spec.json",
         "doc": "Settings for optimization nonlinear solver. Interior-loop linear solver settings are defined in the solver/linear section"
     },
     {

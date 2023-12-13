@@ -210,12 +210,14 @@ int optimization_simulation(const CLI::App &command_line,
 	json tmp = json::object();
 	if (has_arg(command_line, "log_level"))
 		tmp["/output/log/level"_json_pointer] = int(log_level);
+	if (has_arg(command_line, "max_threads"))
+		tmp["/solver/max_threads"_json_pointer] = max_threads;
 	opt_args.merge_patch(tmp);
 
 	OptState opt_state;
 	opt_state.init(opt_args, is_strict);
 
-	opt_state.create_states();
+	opt_state.create_states(opt_state.args["compute_objective"].get<bool>() ? polyfem::solver::CacheLevel::Solution : polyfem::solver::CacheLevel::Derivatives, opt_state.args["solver"]["max_threads"].get<int>());
 	opt_state.init_variables();
 	opt_state.crate_problem();
 

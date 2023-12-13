@@ -10,11 +10,11 @@ namespace polyfem
 		class AssemblyValsCache
 		{
 		public:
-			/// computes the basis evaluation and geometric mapping 
+			/// computes the basis evaluation and geometric mapping
 			/// for each of the given ElementBases in bases
 			/// initializes cache member
 			void init(const bool is_volume, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const bool is_mass = false);
-			
+
 			/// retrieves cached basis evaluation and geometric for the given element
 			/// if it doesn't exist, computes and caches it (modifies cache member in the latter case)
 			void compute(const int el_index, const bool is_volume, const basis::ElementBases &basis, const basis::ElementBases &gbasis, ElementAssemblyValues &vals) const;

@@ -60,9 +60,8 @@ namespace polyfem::io
 {
 	namespace
 	{
-		void compute_traction_forces(const State &state, const Eigen::MatrixXd &solution, Eigen::MatrixXd &traction_forces, bool skip_dirichlet = true)
+		void compute_traction_forces(const State &state, const Eigen::MatrixXd &solution, const double t, Eigen::MatrixXd &traction_forces, bool skip_dirichlet = true)
 		{
-
 			int actual_dim = 1;
 			if (!state.problem->is_scalar())
 				actual_dim = state.mesh->dimension();
@@ -100,7 +99,7 @@ namespace polyfem::io
 				}
 
 				std::vector<assembler::Assembler::NamedMatrix> tensor_flat;
-				state.assembler->compute_tensor_value(e, bs, gbs, points, solution, tensor_flat);
+				state.assembler->compute_tensor_value(assembler::OutputData(t, e, bs, gbs, points, solution), tensor_flat);
 
 				for (long n = 0; n < vals.basis_values.size(); ++n)
 				{
@@ -1034,7 +1033,7 @@ namespace polyfem::io
 			Evaluator::compute_stress_at_quadrature_points(
 				mesh, problem.is_scalar(),
 				bases, gbases, state.disc_orders, *state.assembler,
-				sol, result, mises);
+				sol, tend, result, mises);
 			std::ofstream out(stress_path);
 			out.precision(20);
 			out << result;
@@ -1046,7 +1045,7 @@ namespace polyfem::io
 			Evaluator::compute_stress_at_quadrature_points(
 				mesh, problem.is_scalar(),
 				bases, gbases, state.disc_orders, *state.assembler,
-				sol, result, mises);
+				sol, tend, result, mises);
 			std::ofstream out(mises_path);
 			out.precision(20);
 			out << mises;
@@ -1411,7 +1410,7 @@ namespace polyfem::io
 				mesh, problem.is_scalar(), bases, gbases,
 				state.disc_orders, state.polys, state.polys_3d,
 				*state.assembler,
-				ref_element_sampler, points.rows(), sol, vals, opts.use_sampler, opts.boundary_only);
+				ref_element_sampler, points.rows(), sol, t, vals, opts.use_sampler, opts.boundary_only);
 
 			for (auto &[_, v] : vals)
 				utils::append_rows_of_zeros(v, obstacle.n_vertices());
@@ -1432,7 +1431,7 @@ namespace polyfem::io
 				Evaluator::compute_tensor_value(
 					mesh, problem.is_scalar(), bases, gbases, state.disc_orders,
 					state.polys, state.polys_3d, *state.assembler, ref_element_sampler,
-					points.rows(), sol, tvals, opts.use_sampler, opts.boundary_only);
+					points.rows(), sol, t, tvals, opts.use_sampler, opts.boundary_only);
 
 				for (auto &[_, v] : tvals)
 					utils::append_rows_of_zeros(v, obstacle.n_vertices());
@@ -1458,7 +1457,7 @@ namespace polyfem::io
 				Evaluator::average_grad_based_function(
 					mesh, problem.is_scalar(), state.n_bases, bases, gbases,
 					state.disc_orders, state.polys, state.polys_3d, *state.assembler,
-					ref_element_sampler, points.rows(), sol, vals, tvals,
+					ref_element_sampler, t, points.rows(), sol, vals, tvals,
 					opts.use_sampler, opts.boundary_only);
 
 				if (obstacle.n_vertices() > 0)
@@ -1560,7 +1559,7 @@ namespace polyfem::io
 					for (const auto &[p, func] : params)
 						param_val.at(p)(index) = func(local_pts.row(j), vals.val.row(j), t, e);
 
-					rhos(index) = density(local_pts.row(j), vals.val.row(j), e);
+					rhos(index) = density(local_pts.row(j), vals.val.row(j), t, e);
 
 					++index;
 				}
@@ -1609,7 +1608,7 @@ namespace polyfem::io
 		if (fun.cols() != 1)
 		{
 			Eigen::MatrixXd traction_forces, traction_forces_fun;
-			compute_traction_forces(state, sol, traction_forces, false);
+			compute_traction_forces(state, sol, t, traction_forces, false);
 
 			Evaluator::interpolate_function(
 				mesh, problem.is_scalar(), bases, state.disc_orders,
@@ -1627,21 +1626,27 @@ namespace polyfem::io
 
 		if (fun.cols() != 1)
 		{
-			Eigen::MatrixXd potential_grad, potential_grad_fun;
-			state.assembler->assemble_gradient(mesh.is_volume(), state.n_bases, bases, gbases, state.ass_vals_cache, dt, sol, sol, potential_grad);
-
-			Evaluator::interpolate_function(
-				mesh, problem.is_scalar(), bases, state.disc_orders,
-				state.polys, state.polys_3d, ref_element_sampler,
-				points.rows(), potential_grad, potential_grad_fun, opts.use_sampler, opts.boundary_only);
-
-			if (obstacle.n_vertices() > 0)
+			try
 			{
-				potential_grad_fun.conservativeResize(potential_grad_fun.rows() + obstacle.n_vertices(), potential_grad_fun.cols());
-				potential_grad_fun.bottomRows(obstacle.n_vertices()).setZero();
-			}
+				Eigen::MatrixXd potential_grad, potential_grad_fun;
+				state.assembler->assemble_gradient(mesh.is_volume(), state.n_bases, bases, gbases, state.ass_vals_cache, t, dt, sol, sol, potential_grad);
 
-			writer.add_field("gradient_of_potential", potential_grad_fun);
+				Evaluator::interpolate_function(
+					mesh, problem.is_scalar(), bases, state.disc_orders,
+					state.polys, state.polys_3d, ref_element_sampler,
+					points.rows(), potential_grad, potential_grad_fun, opts.use_sampler, opts.boundary_only);
+
+				if (obstacle.n_vertices() > 0)
+				{
+					potential_grad_fun.conservativeResize(potential_grad_fun.rows() + obstacle.n_vertices(), potential_grad_fun.cols());
+					potential_grad_fun.bottomRows(obstacle.n_vertices()).setZero();
+				}
+
+				writer.add_field("gradient_of_potential", potential_grad_fun);
+			}
+			catch (std::exception &)
+			{
+			}
 		}
 
 		// Write the solution last so it is the default for warp-by-vector
@@ -1824,7 +1829,7 @@ namespace polyfem::io
 				std::vector<assembler::Assembler::NamedMatrix> tensor_flat;
 				const basis::ElementBases &gbs = gbases[el_index];
 				const basis::ElementBases &bs = bases[el_index];
-				assembler.compute_tensor_value(el_index, bs, gbs, boundary_vis_local_vertices.row(i), sol, tensor_flat);
+				assembler.compute_tensor_value(assembler::OutputData(t, el_index, bs, gbs, boundary_vis_local_vertices.row(i), sol), tensor_flat);
 				// TF computed only from cauchy stress
 				assert(tensor_flat[0].first == "cauchy_stess");
 				assert(tensor_flat[0].second.size() == actual_dim * actual_dim);
@@ -1893,7 +1898,7 @@ namespace polyfem::io
 				for (const auto &[p, func] : params)
 					param_val.at(p)(i) = func(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), t, boundary_vis_elements_ids(i));
 
-				rhos(i) = density(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), boundary_vis_elements_ids(i));
+				rhos(i) = density(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), t, boundary_vis_elements_ids(i));
 			}
 
 			for (const auto &[p, tmp] : param_val)
@@ -2198,7 +2203,7 @@ namespace polyfem::io
 				mesh, problem.is_scalar(), state.bases, gbases,
 				state.disc_orders, state.polys, state.polys_3d,
 				*state.assembler,
-				ref_element_sampler, pts_index, sol, scalar_val, /*use_sampler*/ true, false);
+				ref_element_sampler, pts_index, sol, t, scalar_val, /*use_sampler*/ true, false);
 			for (const auto &v : scalar_val)
 				writer.add_field(v.first, v.second);
 		}
