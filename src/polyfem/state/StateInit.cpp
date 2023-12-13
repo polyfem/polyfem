@@ -122,12 +122,18 @@ namespace polyfem
 
 	void State::set_log_level(const spdlog::level::level_enum log_level)
 	{
-		// Set only the level of the console
 		spdlog::set_level(log_level);
-		logger().set_level(log_level);
-		ipc::logger().set_level(log_level);
 		if (console_sink_)
+		{
+			// Set only the level of the console
 			console_sink_->set_level(log_level); // Shared by all loggers
+		}
+		else
+		{
+			// Set the level of all sinks
+			logger().set_level(log_level);
+			ipc::logger().set_level(log_level);
+		}
 	}
 
 	void State::init(const json &p_args_in, const bool strict_validation)
