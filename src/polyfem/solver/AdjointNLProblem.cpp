@@ -137,6 +137,7 @@ namespace polyfem::solver
 
 			return X;
 		}
+
 		using namespace std;
 		// Class to represent a graph
 		class Graph
@@ -221,6 +222,7 @@ namespace polyfem::solver
 		  all_states_(all_states),
 		  save_freq(args["output"]["save_frequency"]),
 		  enable_slim(args["solver"]["advanced"]["enable_slim"]),
+		  smooth_line_search(args["solver"]["advanced"]["smooth_line_search"]),
 		  solve_in_parallel(args["solver"]["advanced"]["solve_in_parallel"])
 	{
 		cur_grad.setZero(0);
@@ -295,17 +297,39 @@ namespace polyfem::solver
 
 	bool AdjointNLProblem::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		Eigen::MatrixXd X, V1;
+		Eigen::MatrixXd X, V0, V1, V_smooth;
 		Eigen::MatrixXi F;
 
+		int state_count = 0;
 		for (auto state_ : all_states_)
 		{
-			X = get_updated_mesh_nodes(variables_to_simulation_, state_, x1);
-			V1 = utils::unflatten(X, state_->mesh->dimension());
+
+			V1 = utils::unflatten(
+				get_updated_mesh_nodes(variables_to_simulation_, state_, x1),
+				state_->mesh->dimension());
+			state_->get_vertices(V0);
 			state_->get_elements(F);
+
+			if (smooth_line_search)
+			{
+				bool slim_success = polyfem::mesh::apply_slim(V0, F, V1, V_smooth);
+				if (!slim_success)
+				{
+					adjoint_logger().info("SLIM failed, step not valid!");
+					return false;
+				}
+
+				V1 = V_smooth;
+			}
+
 			bool flipped = is_flipped(V1, F);
 			if (flipped)
+			{
+				adjoint_logger().info("Found flipped element, step not valid!");
 				return false;
+			}
+
+			state_count++;
 		}
 
 		return form_->is_step_valid(x0, x1);
@@ -394,12 +418,43 @@ namespace polyfem::solver
 	{
 		bool need_rebuild_basis = false;
 
+		std::vector<Eigen::MatrixXd> V_old_list;
+		for (auto state : all_states_)
+		{
+			Eigen::MatrixXd V;
+			state->get_vertices(V);
+			V_old_list.push_back(V);
+		}
+
 		// update to new parameter and check if the new parameter is valid to solve
 		for (const auto &v : variables_to_simulation_)
 		{
 			v->update(newX);
 			if (v->get_parameter_type() == ParameterType::Shape)
 				need_rebuild_basis = true;
+		}
+
+		// Apply slim to all states
+		if (need_rebuild_basis && enable_slim && curr_x.size() > 0)
+		{
+			int state_num = 0;
+			for (auto state : all_states_)
+			{
+				Eigen::MatrixXd V_new, V_smooth;
+				Eigen::MatrixXi F;
+				state->get_vertices(V_new);
+				state->get_elements(F);
+
+				bool slim_success = polyfem::mesh::apply_slim(V_old_list[state_num], F, V_new, V_smooth, 50);
+
+				if (!slim_success)
+					log_and_throw_adjoint_error("SLIM cannot succeed, something went wrong!");
+
+				state_num++;
+
+				for (int i = 0; i < V_smooth.rows(); ++i)
+					state->set_mesh_vertex(i, V_smooth.row(i));
+			}
 		}
 
 		if (need_rebuild_basis)
@@ -432,7 +487,7 @@ namespace polyfem::solver
 		}
 
 		// Apply slim to all states on a frequency
-		if (need_rebuild_basis && enable_slim)
+		if (need_rebuild_basis && enable_slim && curr_x.size() > 0)
 		{
 			int state_num = 0;
 			for (auto state : all_states_)
@@ -442,10 +497,12 @@ namespace polyfem::solver
 				state->get_vertices(V_new);
 				state->get_elements(F);
 
-				polyfem::mesh::apply_slim(V_old_list[state_num++], F, V_new, V_smooth);
+				polyfem::mesh::apply_slim(V_old_list[state_num], F, V_new, V_smooth);
 
 				for (int i = 0; i < V_smooth.rows(); ++i)
 					state->set_mesh_vertex(i, V_smooth.row(i));
+
+				state_num++;
 			}
 		}
 
@@ -459,6 +516,8 @@ namespace polyfem::solver
 		solve_pde();
 
 		form_->solution_changed(newX);
+
+		curr_x = newX;
 	}
 
 	void AdjointNLProblem::solve_pde()

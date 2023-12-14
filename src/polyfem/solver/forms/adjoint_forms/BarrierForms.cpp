@@ -58,26 +58,6 @@ namespace polyfem::solver
 		return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
 	}
 
-	bool CollisionBarrierForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
-	{
-		const Eigen::MatrixXd V0 = utils::unflatten(get_updated_mesh_nodes(x0), state_.mesh->dimension());
-		const Eigen::MatrixXd V1 = utils::unflatten(get_updated_mesh_nodes(x1), state_.mesh->dimension());
-
-		// Skip CCD if the displacement is zero.
-		if ((V1 - V0).lpNorm<Eigen::Infinity>() == 0.0)
-			return true;
-
-		bool is_valid = ipc::is_step_collision_free(
-			collision_mesh_,
-			collision_mesh_.vertices(V0),
-			collision_mesh_.vertices(V1),
-			broad_phase_method_,
-			dmin_,
-			1e-6, 1e6);
-
-		return is_valid;
-	}
-
 	double CollisionBarrierForm::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
 		const Eigen::MatrixXd V0 = utils::unflatten(get_updated_mesh_nodes(x0), state_.mesh->dimension());
@@ -88,6 +68,8 @@ namespace polyfem::solver
 			collision_mesh_.vertices(V0),
 			collision_mesh_.vertices(V1),
 			broad_phase_method_, dmin_, 1e-6, 1e6);
+
+		adjoint_logger().info("Objective {}: max step size is {}.", name(), max_step);
 
 		return max_step;
 	}

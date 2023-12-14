@@ -47,13 +47,13 @@ namespace polyfem::mesh
 
 	} // namespace
 
-	void apply_slim(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const Eigen::MatrixXd &V_new, Eigen::MatrixXd &V_smooth)
+	bool apply_slim(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const Eigen::MatrixXd &V_new, Eigen::MatrixXd &V_smooth, const int max_iters)
 	{
 		const int dim = F.cols() - 1;
 		if (dim == 2)
 		{
 			logger().error("SLIM smoothing not implemented for 2d");
-			return;
+			return true;
 		}
 		else
 		{
@@ -69,8 +69,7 @@ namespace polyfem::mesh
 
 			const int dim = F.cols() - 1;
 			const double soft_const_p = 1e5;
-			const int min_iter = 2;
-			int max_it = dim == 2 ? 20 : 50;
+			const int slim_iters = 2;
 			const double tol = 1e-8;
 
 			igl::SLIMData slim_data;
@@ -108,11 +107,11 @@ namespace polyfem::mesh
 
 			do
 			{
-				igl::slim_solve(slim_data, min_iter);
+				igl::slim_solve(slim_data, slim_iters);
 				good_enough = is_good_enough(slim_data.V_o, boundary_indices_, boundary_constraints, error, 1e-8);
 				V_smooth = slim_data.V_o.block(0, 0, V_smooth.rows(), dim);
-				it += min_iter;
-			} while (it < max_it && !good_enough);
+				it += slim_iters;
+			} while (it < max_iters && !good_enough);
 
 			for (unsigned i = 0; i < boundary_indices_.rows(); i++)
 				V_smooth.row(boundary_indices_(i)) = boundary_constraints.row(i);
@@ -120,10 +119,16 @@ namespace polyfem::mesh
 			logger().debug("SLIM finished in {} iterations", it);
 
 			if (!good_enough)
+			{
 				logger()
 					.warn("Slimflator could not inflate correctly. Error: {}", error);
-
-			logger().debug("SLIM succeeded.");
+				return false;
+			}
+			else
+			{
+				logger().debug("SLIM succeeded.");
+				return true;
+			}
 		}
 	}
 } // namespace polyfem::mesh

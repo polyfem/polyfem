@@ -21,7 +21,7 @@ namespace polyfem::solver
 
 		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override;
 
-		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
+		std::string name() const override { return "collision barrier"; }
 
 		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
@@ -49,6 +49,8 @@ namespace polyfem::solver
 						   const std::vector<int> &boundary_ids,
 						   const double dhat,
 						   const double dmin);
+
+		std::string name() const override { return "layer thickness"; }
 
 	protected:
 		void build_collision_mesh();

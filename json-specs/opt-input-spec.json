@@ -1,4 +1,5 @@
-[{
+[
+    {
         "pointer": "/",
         "type": "object",
         "required": [
@@ -581,7 +582,8 @@
             "solve_in_parallel",
             "solve_in_order",
             "characteristic_length",
-            "enable_slim"
+            "enable_slim",
+            "smooth_line_search"
         ],
         "doc": "Advanced settings for arranging forward simulations"
     },
@@ -618,6 +620,12 @@
         "pointer": "/solver/advanced/enable_slim",
         "default": false,
         "type": "bool",
-        "doc": "Whether to apply slim smoothing to the optimization."
+        "doc": "Whether to apply slim smoothing to the optimization when step is accepted."
+    },
+    {
+        "pointer": "/solver/advanced/smooth_line_search",
+        "default": false,
+        "type": "bool",
+        "doc": "Whether to apply slim smoothing to the optimization line search."
     }
 ]
