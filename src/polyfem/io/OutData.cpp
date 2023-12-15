@@ -1969,7 +1969,7 @@ namespace polyfem::io
 
 			const Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(full_displacements);
 
-			ipc::CollisionConstraints constraint_set;
+			ipc::Collisions constraint_set;
 			constraint_set.set_use_convergent_formulation(state.args["contact"]["use_convergent_formulation"]);
 			constraint_set.build(
 				collision_mesh, displaced_surface, dhat,
@@ -1990,7 +1990,7 @@ namespace polyfem::io
 
 			if (opts.friction_forces)
 			{
-				ipc::FrictionConstraints friction_constraint_set;
+				ipc::FrictionCollisions friction_constraint_set;
 				friction_constraint_set.build(
 					collision_mesh, displaced_surface, constraint_set,
 					dhat, barrier_stiffness, friction_coefficient);

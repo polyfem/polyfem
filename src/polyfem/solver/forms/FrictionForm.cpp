@@ -32,7 +32,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &prev_solution,
 		const Eigen::MatrixXd &solution,
 		const Eigen::MatrixXd &adjoint,
-		const ipc::FrictionConstraints &friction_constraints_set,
+		const ipc::FrictionCollisions &friction_constraints_set,
 		Eigen::VectorXd &term)
 	{
 		Eigen::MatrixXd U = collision_mesh_.vertices(utils::unflatten(solution, collision_mesh_.dim()));
@@ -65,8 +65,8 @@ namespace polyfem::solver
 		// 			ipc::CollisionMesh fd_mesh(fd_X, collision_mesh_.edges(), collision_mesh_.faces());
 		// 			fd_mesh.init_area_jacobians();
 
-		// 			ipc::FrictionConstraints fd_friction_constraints;
-		// 			ipc::CollisionConstraints fd_constraints;
+		// 			ipc::FrictionCollisions fd_friction_constraints;
+		// 			ipc::Collisions fd_constraints;
 		// 			fd_constraints.set_use_convergent_formulation(contact_form_.use_convergent_formulation());
 		// 			fd_constraints.set_are_shape_derivatives_enabled(true);
 		// 			fd_constraints.build(fd_mesh, fd_X + U_prev, dhat);
@@ -128,7 +128,7 @@ namespace polyfem::solver
 	{
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
-		ipc::CollisionConstraints constraint_set;
+		ipc::Collisions constraint_set;
 		constraint_set.set_use_convergent_formulation(contact_form_.use_convergent_formulation());
 		constraint_set.set_are_shape_derivatives_enabled(contact_form_.enable_shape_derivatives());
 		constraint_set.build(

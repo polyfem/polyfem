@@ -50,7 +50,7 @@ namespace polyfem::solver
 		update_constraint_set(compute_displaced_surface(x));
 	}
 
-	void ContactForm::force_shape_derivative(const ipc::CollisionConstraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
+	void ContactForm::force_shape_derivative(const ipc::Collisions &contact_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
 	{
 		// Eigen::MatrixXd U = collision_mesh_.vertices(utils::unflatten(solution, collision_mesh_.dim()));
 		// Eigen::MatrixXd X = collision_mesh_.vertices(boundary_nodes_pos_);
@@ -80,7 +80,7 @@ namespace polyfem::solver
 		// The adative stiffness is designed for the non-convergent formulation,
 		// so we need to compute the gradient of the non-convergent barrier.
 		// After we can map it to a good value for the convergent formulation.
-		ipc::CollisionConstraints nonconvergent_constraints;
+		ipc::Collisions nonconvergent_constraints;
 		nonconvergent_constraints.set_use_convergent_formulation(false);
 		nonconvergent_constraints.build(
 			collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_method_);

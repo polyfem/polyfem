@@ -7,7 +7,7 @@
 
 #include <ipc/ipc.hpp>
 #include <ipc/collision_mesh.hpp>
-#include <ipc/friction/friction_constraints.hpp>
+#include <ipc/friction/friction_collisions.hpp>
 
 namespace polyfem::solver
 {
@@ -38,7 +38,7 @@ namespace polyfem::solver
 
 		std::string name() const override { return "friction"; }
 
-		void force_shape_derivative(const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint, const ipc::FrictionConstraints &friction_constraints_set, Eigen::VectorXd &term);
+		void force_shape_derivative(const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint, const ipc::FrictionCollisions &friction_constraints_set, Eigen::VectorXd &term);
 
 	protected:
 		/// @brief Compute the value of the form
@@ -85,7 +85,7 @@ namespace polyfem::solver
 
 		double mu() const { return mu_; }
 		double epsv() const { return epsv_; }
-		ipc::FrictionConstraints get_friction_constraint_set() const { return friction_constraint_set_; }
+		ipc::FrictionCollisions get_friction_constraint_set() const { return friction_constraint_set_; }
 
 	private:
 		/// Reference to the collision mesh
@@ -100,7 +100,7 @@ namespace polyfem::solver
 		const ipc::BroadPhaseMethod broad_phase_method_; ///< Broad-phase method used for distance computation and collision detection
 		const int n_lagging_iters_;                      ///< Number of lagging iterations
 
-		ipc::FrictionConstraints friction_constraint_set_; ///< Lagged friction constraint set
+		ipc::FrictionCollisions friction_constraint_set_; ///< Lagged friction constraint set
 
 		const ContactForm &contact_form_; ///< necessary to have the barrier stiffnes, maybe clean me
 	};

@@ -34,7 +34,7 @@ namespace polyfem::solver
 		Eigen::VectorXd X_init;
 
 		ipc::CollisionMesh collision_mesh_;
-		ipc::CollisionConstraints constraint_set;
+		ipc::Collisions constraint_set;
 		const double dhat_;
 		ipc::BroadPhaseMethod broad_phase_method_;
 	};
@@ -76,7 +76,7 @@ namespace polyfem::solver
 		Eigen::VectorXd X_init;
 
 		ipc::CollisionMesh collision_mesh_;
-		ipc::CollisionConstraints constraint_set;
+		ipc::Collisions constraint_set;
 		const double dhat_;
 		ipc::BroadPhaseMethod broad_phase_method_;
 	};
