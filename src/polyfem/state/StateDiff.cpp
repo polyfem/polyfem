@@ -23,6 +23,7 @@
 #include <ipc/ipc.hpp>
 #include <ipc/barrier/barrier.hpp>
 #include <ipc/utils/local_to_global.hpp>
+#include <ipc/potentials/friction_potential.hpp>
 
 #include <Eigen/Dense>
 #include <unsupported/Eigen/SparseExtra>
@@ -101,21 +102,21 @@ namespace polyfem
 		if (current_step == 0)
 			diff_cached.init(ndof(), problem->is_time_dependent() ? args["time"]["time_steps"].get<int>() : 0);
 
-		ipc::CollisionConstraints cur_contact_set;
-		ipc::FrictionConstraints cur_friction_set;
+		ipc::Collisions cur_contact_set;
+		ipc::FrictionCollisions cur_friction_set;
 
 		if (optimization_enabled == solver::CacheLevel::Derivatives)
 		{
 			if (!problem->is_time_dependent() || current_step > 0)
 				compute_force_jacobian(sol, disp_grad, gradu_h);
 
-			cur_contact_set = solve_data.contact_form ? solve_data.contact_form->get_constraint_set() : ipc::CollisionConstraints();
-			cur_friction_set = solve_data.friction_form ? solve_data.friction_form->get_friction_constraint_set() : ipc::FrictionConstraints();
+			cur_contact_set = solve_data.contact_form ? solve_data.contact_form->get_collision_set() : ipc::Collisions();
+			cur_friction_set = solve_data.friction_form ? solve_data.friction_form->get_friction_collision_set() : ipc::FrictionCollisions();
 		}
 		else
 		{
-			cur_contact_set = ipc::CollisionConstraints();
-			cur_friction_set = ipc::FrictionConstraints();
+			cur_contact_set = ipc::Collisions();
+			cur_friction_set = ipc::FrictionCollisions();
 		}
 
 		if (problem->is_time_dependent())
@@ -217,26 +218,24 @@ namespace polyfem
 						const double dv_dut = -1 / dt;
 
 						hessian_prev =
-							diff_cached.friction_constraint_set(force_step)
-								.compute_force_jacobian(
-									collision_mesh,
-									collision_mesh.rest_positions(),
-									/*lagged_displacements=*/surface_solution_prev,
-									surface_velocities,
-									solve_data.contact_form->dhat(),
-									solve_data.contact_form->barrier_stiffness(),
-									solve_data.friction_form->epsv(),
-									ipc::FrictionConstraint::DiffWRT::LAGGED_DISPLACEMENTS)
-							+ diff_cached.friction_constraint_set(force_step)
-									  .compute_force_jacobian(
-										  collision_mesh,
-										  collision_mesh.rest_positions(),
-										  /*lagged_displacements=*/surface_solution_prev,
-										  surface_velocities,
-										  solve_data.contact_form->dhat(),
-										  solve_data.contact_form->barrier_stiffness(),
-										  solve_data.friction_form->epsv(),
-										  ipc::FrictionConstraint::DiffWRT::VELOCITIES)
+							solve_data.friction_form->get_friction_potential().force_jacobian(
+								diff_cached.friction_collision_set(force_step),
+								collision_mesh,
+								collision_mesh.rest_positions(),
+								/*lagged_displacements=*/surface_solution_prev,
+								surface_velocities,
+								solve_data.contact_form->dhat(),
+								solve_data.contact_form->barrier_stiffness(),
+								ipc::FrictionPotential::DiffWRT::LAGGED_DISPLACEMENTS)
+							+ solve_data.friction_form->get_friction_potential().force_jacobian(
+								  diff_cached.friction_collision_set(force_step),
+								  collision_mesh,
+								  collision_mesh.rest_positions(),
+								  /*lagged_displacements=*/surface_solution_prev,
+								  surface_velocities,
+								  solve_data.contact_form->dhat(),
+								  solve_data.contact_form->barrier_stiffness(),
+								  ipc::FrictionPotential::DiffWRT::VELOCITIES)
 								  * dv_dut;
 
 						hessian_prev *= -1;
@@ -255,8 +254,8 @@ namespace polyfem
 						// 		{
 						// 			Eigen::MatrixXd fd_Ut = utils::unflatten(y, surface_solution_prev.cols());
 
-						// 			ipc::FrictionConstraints fd_friction_constraints;
-						// 			ipc::CollisionConstraints fd_constraints;
+						// 			ipc::FrictionCollisions fd_friction_constraints;
+						// 			ipc::Collisions fd_constraints;
 						// 			fd_constraints.set_use_convergent_formulation(solve_data.contact_form->use_convergent_formulation());
 						// 			fd_constraints.set_are_shape_derivatives_enabled(true);
 						// 			fd_constraints.build(collision_mesh, X + fd_Ut, dhat);
@@ -278,7 +277,7 @@ namespace polyfem
 					{
 						// const double alpha = time_integrator::BDF::alphas(std::min(diff_cached.bdf_order(force_step), force_step) - 1)[force_step - sol_step - 1];
 						// Eigen::MatrixXd velocity = collision_mesh.map_displacements(utils::unflatten(diff_cached.v(force_step), collision_mesh.dim()));
-						// hessian_prev = diff_cached.friction_constraint_set(force_step).compute_potential_hessian( //
+						// hessian_prev = diff_cached.friction_collision_set(force_step).compute_potential_hessian( //
 						// 			collision_mesh, velocity, solve_data.friction_form->epsv(), false) * (-alpha / beta / dt);
 
 						// hessian_prev = collision_mesh.to_full_dof(hessian_prev);

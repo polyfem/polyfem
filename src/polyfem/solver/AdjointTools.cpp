@@ -724,7 +724,7 @@ namespace polyfem::solver
 
 				if (state.solve_data.friction_form)
 				{
-					state.solve_data.friction_form->force_shape_derivative(state.diff_cached.u(i - 1), state.diff_cached.u(i), cur_p, state.diff_cached.friction_constraint_set(i), friction_term);
+					state.solve_data.friction_form->force_shape_derivative(state.diff_cached.u(i - 1), state.diff_cached.u(i), cur_p, state.diff_cached.friction_collision_set(i), friction_term);
 					friction_term = state.gbasis_nodes_to_basis_nodes * (friction_term / beta);
 					// friction_term /= beta_dt * beta_dt;
 				}
@@ -830,15 +830,15 @@ namespace polyfem::solver
 				const Eigen::MatrixXd surface_velocities = (surface_solution - surface_solution_prev) / dt;
 
 				Eigen::MatrixXd force = state.collision_mesh.to_full_dof(
-					-state.diff_cached.friction_constraint_set(t)
-						 .compute_force(
-							 state.collision_mesh,
-							 state.collision_mesh.rest_positions(),
-							 /*lagged_displacements=*/surface_solution_prev,
-							 surface_velocities,
-							 state.solve_data.contact_form->dhat(),
-							 state.solve_data.contact_form->barrier_stiffness(),
-							 state.solve_data.friction_form->epsv()));
+					-state.solve_data.friction_form->get_friction_potential().force(
+						state.diff_cached.friction_collision_set(t),
+						state.collision_mesh,
+						state.collision_mesh.rest_positions(),
+						/*lagged_displacements=*/surface_solution_prev,
+						surface_velocities,
+						state.solve_data.contact_form->dhat(),
+						state.solve_data.contact_form->barrier_stiffness(),
+						state.solve_data.friction_form->epsv()));
 
 				Eigen::VectorXd cur_p = adjoint_p.col(t);
 				cur_p(state.boundary_nodes).setZero();

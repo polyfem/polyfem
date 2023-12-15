@@ -1,8 +1,6 @@
 #pragma once
 
 #include "SpatialIntegralForms.hpp"
-#include <ipc/collisions/collision_constraints.hpp>
-#include <ipc/friction/friction_constraints.hpp>
 #include <ipc/collision_mesh.hpp>
 #include <ipc/broad_phase/broad_phase.hpp>
 
