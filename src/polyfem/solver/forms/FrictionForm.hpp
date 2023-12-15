@@ -86,7 +86,7 @@ namespace polyfem::solver
 
 		double mu() const { return mu_; }
 		double epsv() const { return epsv_; }
-		ipc::FrictionCollisions get_friction_constraint_set() const { return friction_constraint_set_; }
+		ipc::FrictionCollisions get_friction_collision_set() const { return friction_collision_set_; }
 
 		const ipc::FrictionPotential &get_friction_potential() const { return friction_potential_; }
 
@@ -103,7 +103,7 @@ namespace polyfem::solver
 		const ipc::BroadPhaseMethod broad_phase_method_; ///< Broad-phase method used for distance computation and collision detection
 		const int n_lagging_iters_;                      ///< Number of lagging iterations
 
-		ipc::FrictionCollisions friction_constraint_set_; ///< Lagged friction constraint set
+		ipc::FrictionCollisions friction_collision_set_; ///< Lagged friction constraint set
 
 		const ContactForm &contact_form_; ///< necessary to have the barrier stiffnes, maybe clean me
 

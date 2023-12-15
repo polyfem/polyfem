@@ -42,13 +42,13 @@ namespace polyfem::solver
 		assert(ccd_tolerance > 0);
 
 		prev_distance_ = -1;
-		constraint_set_.set_use_convergent_formulation(use_convergent_formulation);
-		constraint_set_.set_are_shape_derivatives_enabled(enable_shape_derivatives);
+		collision_set_.set_use_convergent_formulation(use_convergent_formulation);
+		collision_set_.set_are_shape_derivatives_enabled(enable_shape_derivatives);
 	}
 
 	void ContactForm::init(const Eigen::VectorXd &x)
 	{
-		update_constraint_set(compute_displaced_surface(x));
+		update_collision_set(compute_displaced_surface(x));
 	}
 
 	void ContactForm::force_shape_derivative(const ipc::Collisions &contact_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
@@ -63,7 +63,7 @@ namespace polyfem::solver
 
 	void ContactForm::update_quantities(const double t, const Eigen::VectorXd &x)
 	{
-		update_constraint_set(compute_displaced_surface(x));
+		update_collision_set(compute_displaced_surface(x));
 	}
 
 	Eigen::MatrixXd ContactForm::compute_displaced_surface(const Eigen::VectorXd &x) const
@@ -101,9 +101,9 @@ namespace polyfem::solver
 				const double nonconvergent_potential = barrier_potential_(
 					nonconvergent_constraints, collision_mesh_, displaced_surface);
 
-				update_constraint_set(displaced_surface);
+				update_collision_set(displaced_surface);
 				const double convergent_potential = barrier_potential_(
-					constraint_set_, collision_mesh_, displaced_surface);
+					collision_set_, collision_mesh_, displaced_surface);
 
 				scaling_factor = nonconvergent_potential / convergent_potential;
 			}
@@ -122,7 +122,7 @@ namespace polyfem::solver
 		logger().debug("adaptive barrier form stiffness {}", barrier_stiffness());
 	}
 
-	void ContactForm::update_constraint_set(const Eigen::MatrixXd &displaced_surface)
+	void ContactForm::update_collision_set(const Eigen::MatrixXd &displaced_surface)
 	{
 		// Store the previous value used to compute the constraint set to avoid duplicate computation.
 		static Eigen::MatrixXd cached_displaced_surface;
@@ -130,17 +130,17 @@ namespace polyfem::solver
 			return;
 
 		if (use_cached_candidates_)
-			constraint_set_.build(
+			collision_set_.build(
 				candidates_, collision_mesh_, displaced_surface, dhat_);
 		else
-			constraint_set_.build(
+			collision_set_.build(
 				collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_method_);
 		cached_displaced_surface = displaced_surface;
 	}
 
 	double ContactForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		return barrier_potential_(constraint_set_, collision_mesh_, compute_displaced_surface(x));
+		return barrier_potential_(collision_set_, collision_mesh_, compute_displaced_surface(x));
 	}
 
 	Eigen::VectorXd ContactForm::value_per_element_unweighted(const Eigen::VectorXd &x) const
@@ -150,7 +150,7 @@ namespace polyfem::solver
 
 		const size_t num_vertices = collision_mesh_.num_vertices();
 
-		if (constraint_set_.empty())
+		if (collision_set_.empty())
 		{
 			return Eigen::VectorXd::Zero(collision_mesh_.full_num_vertices());
 		}
@@ -160,16 +160,16 @@ namespace polyfem::solver
 
 		auto storage = utils::create_thread_storage<Eigen::VectorXd>(Eigen::VectorXd::Zero(num_vertices));
 
-		utils::maybe_parallel_for(constraint_set_.size(), [&](int start, int end, int thread_id) {
+		utils::maybe_parallel_for(collision_set_.size(), [&](int start, int end, int thread_id) {
 			Eigen::VectorXd &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
 			for (size_t i = start; i < end; i++)
 			{
 				// Quadrature weight is premultiplied by compute_potential
-				const double potential = barrier_potential_(constraint_set_[i], constraint_set_[i].dof(V, E, F));
+				const double potential = barrier_potential_(collision_set_[i], collision_set_[i].dof(V, E, F));
 
-				const int n_v = constraint_set_[i].num_vertices();
-				const std::array<long, 4> vis = constraint_set_[i].vertex_ids(E, F);
+				const int n_v = collision_set_[i].num_vertices();
+				const std::array<long, 4> vis = collision_set_[i].vertex_ids(E, F);
 				for (int j = 0; j < n_v; j++)
 				{
 					assert(0 <= vis[j] && vis[j] < num_vertices);
@@ -195,20 +195,20 @@ namespace polyfem::solver
 
 	void ContactForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = barrier_potential_.gradient(constraint_set_, collision_mesh_, compute_displaced_surface(x));
+		gradv = barrier_potential_.gradient(collision_set_, collision_mesh_, compute_displaced_surface(x));
 		gradv = collision_mesh_.to_full_dof(gradv);
 	}
 
 	void ContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		POLYFEM_SCOPED_TIMER("barrier hessian");
-		hessian = barrier_potential_.hessian(constraint_set_, collision_mesh_, compute_displaced_surface(x), project_to_psd_);
+		hessian = barrier_potential_.hessian(collision_set_, collision_mesh_, compute_displaced_surface(x), project_to_psd_);
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
 
 	void ContactForm::solution_changed(const Eigen::VectorXd &new_x)
 	{
-		update_constraint_set(compute_displaced_surface(new_x));
+		update_collision_set(compute_displaced_surface(new_x));
 	}
 
 	double ContactForm::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
@@ -283,7 +283,7 @@ namespace polyfem::solver
 
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(data.x);
 
-		const double curr_distance = constraint_set_.compute_minimum_distance(collision_mesh_, displaced_surface);
+		const double curr_distance = collision_set_.compute_minimum_distance(collision_mesh_, displaced_surface);
 
 		if (use_adaptive_barrier_stiffness_)
 		{

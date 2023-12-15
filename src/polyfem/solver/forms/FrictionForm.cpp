@@ -106,13 +106,13 @@ namespace polyfem::solver
 
 	double FrictionForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		return friction_potential_(friction_constraint_set_, collision_mesh_, compute_surface_velocities(x)) / dv_dx();
+		return friction_potential_(friction_collision_set_, collision_mesh_, compute_surface_velocities(x)) / dv_dx();
 	}
 
 	void FrictionForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		const Eigen::VectorXd grad_friction = friction_potential_.gradient(
-			friction_constraint_set_, collision_mesh_, compute_surface_velocities(x));
+			friction_collision_set_, collision_mesh_, compute_surface_velocities(x));
 		gradv = collision_mesh_.to_full_dof(grad_friction);
 	}
 
@@ -121,7 +121,7 @@ namespace polyfem::solver
 		POLYFEM_SCOPED_TIMER("friction hessian");
 
 		hessian = dv_dx() * friction_potential_.hessian( //
-					  friction_constraint_set_, collision_mesh_, compute_surface_velocities(x), project_to_psd_);
+					  friction_collision_set_, collision_mesh_, compute_surface_velocities(x), project_to_psd_);
 
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
@@ -130,15 +130,15 @@ namespace polyfem::solver
 	{
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
-		ipc::Collisions constraint_set;
-		constraint_set.set_use_convergent_formulation(contact_form_.use_convergent_formulation());
-		constraint_set.set_are_shape_derivatives_enabled(contact_form_.enable_shape_derivatives());
-		constraint_set.build(
+		ipc::Collisions collision_set;
+		collision_set.set_use_convergent_formulation(contact_form_.use_convergent_formulation());
+		collision_set.set_are_shape_derivatives_enabled(contact_form_.enable_shape_derivatives());
+		collision_set.build(
 			collision_mesh_, displaced_surface, dhat_,
 			/*dmin=*/0, broad_phase_method_);
 
-		friction_constraint_set_.build(
-			collision_mesh_, displaced_surface, constraint_set,
+		friction_collision_set_.build(
+			collision_mesh_, displaced_surface, collision_set,
 			dhat_, contact_form_.barrier_stiffness(), mu_);
 	}
 } // namespace polyfem::solver

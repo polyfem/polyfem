@@ -25,7 +25,7 @@ namespace polyfem::solver
 		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
 	private:
-		void build_constraint_set(const Eigen::MatrixXd &displaced_surface);
+		void build_collision_set(const Eigen::MatrixXd &displaced_surface);
 
 		Eigen::VectorXd get_updated_mesh_nodes(const Eigen::VectorXd &x) const;
 
@@ -34,7 +34,7 @@ namespace polyfem::solver
 		Eigen::VectorXd X_init;
 
 		ipc::CollisionMesh collision_mesh_;
-		ipc::Collisions constraint_set;
+		ipc::Collisions collision_set;
 		const double dhat_;
 		ipc::BroadPhaseMethod broad_phase_method_;
 
@@ -69,7 +69,7 @@ namespace polyfem::solver
 		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
 	private:
-		void build_constraint_set(const Eigen::MatrixXd &displaced_surface);
+		void build_collision_set(const Eigen::MatrixXd &displaced_surface);
 
 		Eigen::VectorXd get_updated_mesh_nodes(const Eigen::VectorXd &x) const;
 
@@ -78,7 +78,7 @@ namespace polyfem::solver
 		Eigen::VectorXd X_init;
 
 		ipc::CollisionMesh collision_mesh_;
-		ipc::Collisions constraint_set;
+		ipc::Collisions collision_set;
 		const double dhat_;
 		ipc::BroadPhaseMethod broad_phase_method_;
 

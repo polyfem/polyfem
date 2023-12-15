@@ -713,7 +713,7 @@ namespace polyfem::solver
 
 				if (state.solve_data.friction_form)
 				{
-					state.solve_data.friction_form->force_shape_derivative(state.diff_cached.u(i - 1), state.diff_cached.u(i), cur_p, state.diff_cached.friction_constraint_set(i), friction_term);
+					state.solve_data.friction_form->force_shape_derivative(state.diff_cached.u(i - 1), state.diff_cached.u(i), cur_p, state.diff_cached.friction_collision_set(i), friction_term);
 					friction_term = state.gbasis_nodes_to_basis_nodes * (friction_term / beta);
 					// friction_term /= beta_dt * beta_dt;
 				}
@@ -820,7 +820,7 @@ namespace polyfem::solver
 
 				Eigen::MatrixXd force = state.collision_mesh.to_full_dof(
 					-state.solve_data.friction_form->get_friction_potential().force(
-						state.diff_cached.friction_constraint_set(t),
+						state.diff_cached.friction_collision_set(t),
 						state.collision_mesh,
 						state.collision_mesh.rest_positions(),
 						/*lagged_displacements=*/surface_solution_prev,

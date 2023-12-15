@@ -23,14 +23,14 @@ namespace polyfem::solver
 	{
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_.mesh->dimension()));
 
-		return barrier_potential_(constraint_set, collision_mesh_, displaced_surface);
+		return barrier_potential_(collision_set, collision_mesh_, displaced_surface);
 	}
 
 	void CollisionBarrierForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_.mesh->dimension()));
 
-		Eigen::VectorXd grad = collision_mesh_.to_full_dof(barrier_potential_.gradient(constraint_set, collision_mesh_, displaced_surface));
+		Eigen::VectorXd grad = collision_mesh_.to_full_dof(barrier_potential_.gradient(collision_set, collision_mesh_, displaced_surface));
 
 		gradv.setZero(x.size());
 		for (auto &p : variable_to_simulations_)
@@ -49,7 +49,7 @@ namespace polyfem::solver
 		AdjointForm::solution_changed(x);
 
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_.mesh->dimension()));
-		build_constraint_set(displaced_surface);
+		build_collision_set(displaced_surface);
 	}
 
 	Eigen::MatrixXd CollisionBarrierForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const
@@ -90,13 +90,13 @@ namespace polyfem::solver
 		return max_step;
 	}
 
-	void CollisionBarrierForm::build_constraint_set(const Eigen::MatrixXd &displaced_surface)
+	void CollisionBarrierForm::build_collision_set(const Eigen::MatrixXd &displaced_surface)
 	{
 		static Eigen::MatrixXd cached_displaced_surface;
 		if (cached_displaced_surface.size() == displaced_surface.size() && cached_displaced_surface == displaced_surface)
 			return;
 
-		constraint_set.build(collision_mesh_, displaced_surface, dhat_, 0, broad_phase_method_);
+		collision_set.build(collision_mesh_, displaced_surface, dhat_, 0, broad_phase_method_);
 
 		cached_displaced_surface = displaced_surface;
 	}
@@ -144,14 +144,14 @@ namespace polyfem::solver
 	{
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_.mesh->dimension()));
 
-		return barrier_potential_(constraint_set, collision_mesh_, displaced_surface);
+		return barrier_potential_(collision_set, collision_mesh_, displaced_surface);
 	}
 
 	void DeformedCollisionBarrierForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_.mesh->dimension()));
 
-		Eigen::VectorXd grad = collision_mesh_.to_full_dof(barrier_potential_.gradient(constraint_set, collision_mesh_, displaced_surface));
+		Eigen::VectorXd grad = collision_mesh_.to_full_dof(barrier_potential_.gradient(collision_set, collision_mesh_, displaced_surface));
 
 		gradv.setZero(x.size());
 		for (auto &p : variable_to_simulations_)
@@ -170,7 +170,7 @@ namespace polyfem::solver
 		AdjointForm::solution_changed(x);
 
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_.mesh->dimension()));
-		build_constraint_set(displaced_surface);
+		build_collision_set(displaced_surface);
 	}
 
 	Eigen::MatrixXd DeformedCollisionBarrierForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const
@@ -211,13 +211,13 @@ namespace polyfem::solver
 		return 1; // max_step;
 	}
 
-	void DeformedCollisionBarrierForm::build_constraint_set(const Eigen::MatrixXd &displaced_surface)
+	void DeformedCollisionBarrierForm::build_collision_set(const Eigen::MatrixXd &displaced_surface)
 	{
 		static Eigen::MatrixXd cached_displaced_surface;
 		if (cached_displaced_surface.size() == displaced_surface.size() && cached_displaced_surface == displaced_surface)
 			return;
 
-		constraint_set.build(collision_mesh_, displaced_surface, dhat_, 0, broad_phase_method_);
+		collision_set.build(collision_mesh_, displaced_surface, dhat_, 0, broad_phase_method_);
 
 		cached_displaced_surface = displaced_surface;
 	}

@@ -110,8 +110,8 @@ namespace polyfem
 			if (!problem->is_time_dependent() || current_step > 0)
 				compute_force_jacobian(sol, disp_grad, gradu_h);
 
-			cur_contact_set = solve_data.contact_form ? solve_data.contact_form->get_constraint_set() : ipc::Collisions();
-			cur_friction_set = solve_data.friction_form ? solve_data.friction_form->get_friction_constraint_set() : ipc::FrictionCollisions();
+			cur_contact_set = solve_data.contact_form ? solve_data.contact_form->get_collision_set() : ipc::Collisions();
+			cur_friction_set = solve_data.friction_form ? solve_data.friction_form->get_friction_collision_set() : ipc::FrictionCollisions();
 		}
 		else
 		{
@@ -219,7 +219,7 @@ namespace polyfem
 
 						hessian_prev =
 							solve_data.friction_form->get_friction_potential().force_jacobian(
-								diff_cached.friction_constraint_set(force_step),
+								diff_cached.friction_collision_set(force_step),
 								collision_mesh,
 								collision_mesh.rest_positions(),
 								/*lagged_displacements=*/surface_solution_prev,
@@ -228,7 +228,7 @@ namespace polyfem
 								solve_data.contact_form->barrier_stiffness(),
 								ipc::FrictionPotential::DiffWRT::LAGGED_DISPLACEMENTS)
 							+ solve_data.friction_form->get_friction_potential().force_jacobian(
-								  diff_cached.friction_constraint_set(force_step),
+								  diff_cached.friction_collision_set(force_step),
 								  collision_mesh,
 								  collision_mesh.rest_positions(),
 								  /*lagged_displacements=*/surface_solution_prev,
@@ -277,7 +277,7 @@ namespace polyfem
 					{
 						// const double alpha = time_integrator::BDF::alphas(std::min(diff_cached.bdf_order(force_step), force_step) - 1)[force_step - sol_step - 1];
 						// Eigen::MatrixXd velocity = collision_mesh.map_displacements(utils::unflatten(diff_cached.v(force_step), collision_mesh.dim()));
-						// hessian_prev = diff_cached.friction_constraint_set(force_step).compute_potential_hessian( //
+						// hessian_prev = diff_cached.friction_collision_set(force_step).compute_potential_hessian( //
 						// 			collision_mesh, velocity, solve_data.friction_form->epsv(), false) * (-alpha / beta / dt);
 
 						// hessian_prev = collision_mesh.to_full_dof(hessian_prev);
