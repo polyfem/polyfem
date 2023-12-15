@@ -1975,11 +1975,13 @@ namespace polyfem::io
 				collision_mesh, displaced_surface, dhat,
 				/*dmin=*/0, state.args["solver"]["contact"]["CCD"]["broad_phase"]);
 
+			ipc::BarrierPotential barrier_potential(dhat);
+
 			const double barrier_stiffness = contact_form != nullptr ? contact_form->weight() : 1;
 
 			if (opts.contact_forces)
 			{
-				Eigen::MatrixXd forces = -barrier_stiffness * constraint_set.compute_potential_gradient(collision_mesh, displaced_surface, dhat);
+				Eigen::MatrixXd forces = -barrier_stiffness * barrier_potential.gradient(constraint_set, collision_mesh, displaced_surface);
 
 				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
 
@@ -1995,6 +1997,8 @@ namespace polyfem::io
 					collision_mesh, displaced_surface, constraint_set,
 					dhat, barrier_stiffness, friction_coefficient);
 
+				ipc::FrictionPotential friction_potential(epsv);
+
 				Eigen::MatrixXd velocities;
 				if (state.solve_data.time_integrator != nullptr)
 					velocities = state.solve_data.time_integrator->v_prev();
@@ -2002,8 +2006,8 @@ namespace polyfem::io
 					velocities = sol;
 				velocities = collision_mesh.map_displacements(utils::unflatten(velocities, collision_mesh.dim()));
 
-				Eigen::MatrixXd forces = -friction_constraint_set.compute_potential_gradient(
-					collision_mesh, velocities, epsv);
+				Eigen::MatrixXd forces = -friction_potential.gradient(
+					friction_constraint_set, collision_mesh, velocities);
 
 				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
 

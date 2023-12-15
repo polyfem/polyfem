@@ -23,6 +23,7 @@
 #include <ipc/ipc.hpp>
 #include <ipc/barrier/barrier.hpp>
 #include <ipc/utils/local_to_global.hpp>
+#include <ipc/potentials/friction_potential.hpp>
 
 #include <Eigen/Dense>
 #include <unsupported/Eigen/SparseExtra>
@@ -217,26 +218,24 @@ namespace polyfem
 						const double dv_dut = -1 / dt;
 
 						hessian_prev =
-							diff_cached.friction_constraint_set(force_step)
-								.compute_force_jacobian(
-									collision_mesh,
-									collision_mesh.rest_positions(),
-									/*lagged_displacements=*/surface_solution_prev,
-									surface_velocities,
-									solve_data.contact_form->dhat(),
-									solve_data.contact_form->barrier_stiffness(),
-									solve_data.friction_form->epsv(),
-									ipc::FrictionConstraint::DiffWRT::LAGGED_DISPLACEMENTS)
-							+ diff_cached.friction_constraint_set(force_step)
-									  .compute_force_jacobian(
-										  collision_mesh,
-										  collision_mesh.rest_positions(),
-										  /*lagged_displacements=*/surface_solution_prev,
-										  surface_velocities,
-										  solve_data.contact_form->dhat(),
-										  solve_data.contact_form->barrier_stiffness(),
-										  solve_data.friction_form->epsv(),
-										  ipc::FrictionConstraint::DiffWRT::VELOCITIES)
+							solve_data.friction_form->get_friction_potential().force_jacobian(
+								diff_cached.friction_constraint_set(force_step),
+								collision_mesh,
+								collision_mesh.rest_positions(),
+								/*lagged_displacements=*/surface_solution_prev,
+								surface_velocities,
+								solve_data.contact_form->dhat(),
+								solve_data.contact_form->barrier_stiffness(),
+								ipc::FrictionPotential::DiffWRT::LAGGED_DISPLACEMENTS)
+							+ solve_data.friction_form->get_friction_potential().force_jacobian(
+								  diff_cached.friction_constraint_set(force_step),
+								  collision_mesh,
+								  collision_mesh.rest_positions(),
+								  /*lagged_displacements=*/surface_solution_prev,
+								  surface_velocities,
+								  solve_data.contact_form->dhat(),
+								  solve_data.contact_form->barrier_stiffness(),
+								  ipc::FrictionPotential::DiffWRT::VELOCITIES)
 								  * dv_dut;
 
 						hessian_prev *= -1;

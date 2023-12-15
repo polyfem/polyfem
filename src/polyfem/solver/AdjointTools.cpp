@@ -819,15 +819,15 @@ namespace polyfem::solver
 				const Eigen::MatrixXd surface_velocities = (surface_solution - surface_solution_prev) / dt;
 
 				Eigen::MatrixXd force = state.collision_mesh.to_full_dof(
-					-state.diff_cached.friction_constraint_set(t)
-						 .compute_force(
-							 state.collision_mesh,
-							 state.collision_mesh.rest_positions(),
-							 /*lagged_displacements=*/surface_solution_prev,
-							 surface_velocities,
-							 state.solve_data.contact_form->dhat(),
-							 state.solve_data.contact_form->barrier_stiffness(),
-							 state.solve_data.friction_form->epsv()));
+					-state.solve_data.friction_form->get_friction_potential().force(
+						state.diff_cached.friction_constraint_set(t),
+						state.collision_mesh,
+						state.collision_mesh.rest_positions(),
+						/*lagged_displacements=*/surface_solution_prev,
+						surface_velocities,
+						state.solve_data.contact_form->dhat(),
+						state.solve_data.contact_form->barrier_stiffness(),
+						state.solve_data.friction_form->epsv()));
 
 				Eigen::VectorXd cur_p = adjoint_p.col(t);
 				cur_p(state.boundary_nodes).setZero();

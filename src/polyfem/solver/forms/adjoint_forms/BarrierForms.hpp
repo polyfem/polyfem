@@ -37,6 +37,8 @@ namespace polyfem::solver
 		ipc::Collisions constraint_set;
 		const double dhat_;
 		ipc::BroadPhaseMethod broad_phase_method_;
+
+		const ipc::BarrierPotential barrier_potential_;
 	};
 
 	// class LayerThicknessForm : public ParametrizationForm
@@ -79,5 +81,7 @@ namespace polyfem::solver
 		ipc::Collisions constraint_set;
 		const double dhat_;
 		ipc::BroadPhaseMethod broad_phase_method_;
+
+		const ipc::BarrierPotential barrier_potential_;
 	};
 } // namespace polyfem::solver

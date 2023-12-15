@@ -35,7 +35,8 @@ namespace polyfem::solver
 		  enable_shape_derivatives_(enable_shape_derivatives),
 		  broad_phase_method_(broad_phase_method),
 		  ccd_tolerance_(ccd_tolerance),
-		  ccd_max_iterations_(ccd_max_iterations)
+		  ccd_max_iterations_(ccd_max_iterations),
+		  barrier_potential_(dhat)
 	{
 		assert(dhat_ > 0);
 		assert(ccd_tolerance > 0);
@@ -56,7 +57,7 @@ namespace polyfem::solver
 		// Eigen::MatrixXd X = collision_mesh_.vertices(boundary_nodes_pos_);
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(solution);
 
-		StiffnessMatrix dq_h = collision_mesh_.to_full_dof(contact_set.compute_shape_derivative(collision_mesh_, displaced_surface, dhat_));
+		StiffnessMatrix dq_h = collision_mesh_.to_full_dof(barrier_potential_.shape_derivative(contact_set, collision_mesh_, displaced_surface));
 		term = barrier_stiffness() * dq_h.transpose() * adjoint_sol;
 	}
 
@@ -84,8 +85,8 @@ namespace polyfem::solver
 		nonconvergent_constraints.set_use_convergent_formulation(false);
 		nonconvergent_constraints.build(
 			collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_method_);
-		Eigen::VectorXd grad_barrier = nonconvergent_constraints.compute_potential_gradient(
-			collision_mesh_, displaced_surface, dhat_);
+		Eigen::VectorXd grad_barrier = barrier_potential_.gradient(
+			nonconvergent_constraints, collision_mesh_, displaced_surface);
 		grad_barrier = collision_mesh_.to_full_dof(grad_barrier);
 
 		barrier_stiffness_ = ipc::initial_barrier_stiffness(
@@ -97,12 +98,12 @@ namespace polyfem::solver
 			double scaling_factor = 0;
 			if (!nonconvergent_constraints.empty())
 			{
-				const double nonconvergent_potential = nonconvergent_constraints.compute_potential(
-					collision_mesh_, displaced_surface, dhat_);
+				const double nonconvergent_potential = barrier_potential_(
+					nonconvergent_constraints, collision_mesh_, displaced_surface);
 
 				update_constraint_set(displaced_surface);
-				const double convergent_potential = constraint_set_.compute_potential(
-					collision_mesh_, displaced_surface, dhat_);
+				const double convergent_potential = barrier_potential_(
+					constraint_set_, collision_mesh_, displaced_surface);
 
 				scaling_factor = nonconvergent_potential / convergent_potential;
 			}
@@ -139,7 +140,7 @@ namespace polyfem::solver
 
 	double ContactForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		return constraint_set_.compute_potential(collision_mesh_, compute_displaced_surface(x), dhat_);
+		return barrier_potential_(constraint_set_, collision_mesh_, compute_displaced_surface(x));
 	}
 
 	Eigen::VectorXd ContactForm::value_per_element_unweighted(const Eigen::VectorXd &x) const
@@ -165,7 +166,7 @@ namespace polyfem::solver
 			for (size_t i = start; i < end; i++)
 			{
 				// Quadrature weight is premultiplied by compute_potential
-				const double potential = constraint_set_[i].compute_potential(V, E, F, dhat_);
+				const double potential = barrier_potential_(constraint_set_[i], constraint_set_[i].dof(V, E, F));
 
 				const int n_v = constraint_set_[i].num_vertices();
 				const std::array<long, 4> vis = constraint_set_[i].vertex_ids(E, F);
@@ -194,14 +195,14 @@ namespace polyfem::solver
 
 	void ContactForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = constraint_set_.compute_potential_gradient(collision_mesh_, compute_displaced_surface(x), dhat_);
+		gradv = barrier_potential_.gradient(constraint_set_, collision_mesh_, compute_displaced_surface(x));
 		gradv = collision_mesh_.to_full_dof(gradv);
 	}
 
 	void ContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		POLYFEM_SCOPED_TIMER("barrier hessian");
-		hessian = constraint_set_.compute_potential_hessian(collision_mesh_, compute_displaced_surface(x), dhat_, project_to_psd_);
+		hessian = barrier_potential_.hessian(constraint_set_, collision_mesh_, compute_displaced_surface(x), project_to_psd_);
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
 

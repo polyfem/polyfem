@@ -8,6 +8,7 @@
 #include <ipc/collisions/collisions.hpp>
 #include <ipc/collision_mesh.hpp>
 #include <ipc/broad_phase/broad_phase.hpp>
+#include <ipc/potentials/barrier_potential.hpp>
 
 // map BroadPhaseMethod values to JSON as strings
 namespace ipc
@@ -140,6 +141,8 @@ namespace polyfem::solver
 		double dhat() const { return dhat_; }
 		ipc::Collisions get_constraint_set() const { return constraint_set_; }
 
+		const ipc::BarrierPotential &get_barrier_potential() const { return barrier_potential_; }
+
 	protected:
 		/// @brief Update the cached candidate set for the current solution
 		/// @param displaced_surface Vertex positions displaced by the current solution
@@ -186,5 +189,7 @@ namespace polyfem::solver
 		ipc::Collisions constraint_set_;
 		/// @brief Cached candidate set for the current solution
 		ipc::Candidates candidates_;
+
+		const ipc::BarrierPotential barrier_potential_;
 	};
 } // namespace polyfem::solver

@@ -22,7 +22,8 @@ namespace polyfem::solver
 		  dhat_(dhat),
 		  broad_phase_method_(broad_phase_method),
 		  n_lagging_iters_(n_lagging_iters < 0 ? std::numeric_limits<int>::max() : n_lagging_iters),
-		  contact_form_(contact_form)
+		  contact_form_(contact_form),
+		  friction_potential_(epsv)
 
 	{
 		assert(epsv_ > 0);
@@ -41,11 +42,12 @@ namespace polyfem::solver
 		// TODO: use the time integration to compute the velocity
 		const Eigen::MatrixXd velocities = (U - U_prev) / time_integrator_->dt();
 
-		StiffnessMatrix hess = -friction_constraints_set.compute_force_jacobian(
+		StiffnessMatrix hess = -friction_potential_.force_jacobian(
+			friction_constraints_set,
 			collision_mesh_, collision_mesh_.rest_positions(),
 			/*lagged_displacements=*/U_prev, velocities,
-			dhat_, contact_form_.barrier_stiffness(), epsv_,
-			ipc::FrictionConstraint::DiffWRT::REST_POSITIONS);
+			dhat_, contact_form_.barrier_stiffness(),
+			ipc::FrictionPotential::DiffWRT::REST_POSITIONS);
 
 		// {
 		// 	Eigen::MatrixXd X = collision_mesh_.rest_positions();
@@ -104,13 +106,13 @@ namespace polyfem::solver
 
 	double FrictionForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		return friction_constraint_set_.compute_potential(collision_mesh_, compute_surface_velocities(x), epsv_) / dv_dx();
+		return friction_potential_(friction_constraint_set_, collision_mesh_, compute_surface_velocities(x)) / dv_dx();
 	}
 
 	void FrictionForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		const Eigen::VectorXd grad_friction = friction_constraint_set_.compute_potential_gradient(
-			collision_mesh_, compute_surface_velocities(x), epsv_);
+		const Eigen::VectorXd grad_friction = friction_potential_.gradient(
+			friction_constraint_set_, collision_mesh_, compute_surface_velocities(x));
 		gradv = collision_mesh_.to_full_dof(grad_friction);
 	}
 
@@ -118,8 +120,8 @@ namespace polyfem::solver
 	{
 		POLYFEM_SCOPED_TIMER("friction hessian");
 
-		hessian = dv_dx() * friction_constraint_set_.compute_potential_hessian( //
-					  collision_mesh_, compute_surface_velocities(x), epsv_, project_to_psd_);
+		hessian = dv_dx() * friction_potential_.hessian( //
+					  friction_constraint_set_, collision_mesh_, compute_surface_velocities(x), project_to_psd_);
 
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}

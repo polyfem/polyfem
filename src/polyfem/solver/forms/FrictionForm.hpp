@@ -8,6 +8,7 @@
 #include <ipc/ipc.hpp>
 #include <ipc/collision_mesh.hpp>
 #include <ipc/friction/friction_collisions.hpp>
+#include <ipc/potentials/friction_potential.hpp>
 
 namespace polyfem::solver
 {
@@ -87,6 +88,8 @@ namespace polyfem::solver
 		double epsv() const { return epsv_; }
 		ipc::FrictionCollisions get_friction_constraint_set() const { return friction_constraint_set_; }
 
+		const ipc::FrictionPotential &get_friction_potential() const { return friction_potential_; }
+
 	private:
 		/// Reference to the collision mesh
 		const ipc::CollisionMesh &collision_mesh_;
@@ -103,5 +106,7 @@ namespace polyfem::solver
 		ipc::FrictionCollisions friction_constraint_set_; ///< Lagged friction constraint set
 
 		const ContactForm &contact_form_; ///< necessary to have the barrier stiffnes, maybe clean me
+
+		const ipc::FrictionPotential friction_potential_;
 	};
 } // namespace polyfem::solver
