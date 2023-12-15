@@ -32,6 +32,8 @@ namespace polyfem::solver
 
 		Eigen::VectorXd grad = collision_mesh_.to_full_dof(barrier_potential_.gradient(collision_set, collision_mesh_, displaced_surface));
 
+		grad = AdjointTools::map_node_to_primitive_order(state_, grad);
+
 		gradv.setZero(x.size());
 		for (auto &p : variable_to_simulations_)
 		{
@@ -152,6 +154,8 @@ namespace polyfem::solver
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_.mesh->dimension()));
 
 		Eigen::VectorXd grad = collision_mesh_.to_full_dof(barrier_potential_.gradient(collision_set, collision_mesh_, displaced_surface));
+
+		grad = AdjointTools::map_node_to_primitive_order(state_, grad);
 
 		gradv.setZero(x.size());
 		for (auto &p : variable_to_simulations_)
