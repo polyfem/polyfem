@@ -57,7 +57,7 @@ namespace polyfem::solver
 
 				Eigen::VectorXd local_grad =
 					(scale * element_volume(rest_positions_(elements_.row(i), Eigen::all))
-					 * ipc::barrier_gradient(element_volume(element_vertices), vhat_))
+					 * ipc::barrier_first_derivative(element_volume(element_vertices), vhat_))
 					* element_volume_gradient(element_vertices);
 
 				ipc::local_gradient_to_global_gradient(local_grad, elements_.row(i), dim_, grad);
@@ -91,8 +91,8 @@ namespace polyfem::solver
 				const double rest_volume = element_volume(rest_positions_(elements_.row(i), Eigen::all));
 
 				Eigen::MatrixXd local_hess =
-					(scale * rest_volume * ipc::barrier_hessian(volume, vhat_)) * volume_grad * volume_grad.transpose()
-					+ (scale * rest_volume * ipc::barrier_gradient(volume, vhat_)) * element_volume_hessian(element_vertices);
+					(scale * rest_volume * ipc::barrier_second_derivative(volume, vhat_)) * volume_grad * volume_grad.transpose()
+					+ (scale * rest_volume * ipc::barrier_first_derivative(volume, vhat_)) * element_volume_hessian(element_vertices);
 
 				if (project_to_psd_)
 					local_hess = ipc::project_to_psd(local_hess);

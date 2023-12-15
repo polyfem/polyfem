@@ -90,7 +90,7 @@ namespace polyfem::solver
 		grad_barrier = collision_mesh_.to_full_dof(grad_barrier);
 
 		barrier_stiffness_ = ipc::initial_barrier_stiffness(
-			ipc::world_bbox_diagonal_length(displaced_surface), dhat_, avg_mass_,
+			ipc::world_bbox_diagonal_length(displaced_surface), barrier_potential_.barrier(), dhat_, avg_mass_,
 			grad_energy, grad_barrier, max_barrier_stiffness_);
 
 		if (use_convergent_formulation())
