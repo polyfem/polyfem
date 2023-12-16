@@ -282,7 +282,7 @@ namespace polyfem::solver
 			}
 			else if (type == "layer_thickness")
 			{
-				obj = std::make_shared<LayerThicknessForm>(var2sim, *(states[args["state"]]), args["boundary_ids"].get<std::vector<int>>(), args["dhat"], args["dmin"]);
+				obj = std::make_shared<LayerThicknessForm>(var2sim, *(states[args["state"]]), args["boundary_ids"].get<std::vector<int>>(), args["dhat"]);
 			}
 			else if (type == "deformed_collision_barrier")
 			{

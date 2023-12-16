@@ -3,6 +3,41 @@
 
 namespace polyfem::solver
 {
+	namespace
+	{
+		class QuadraticBarrier : public ipc::Barrier
+		{
+		public:
+			QuadraticBarrier(const double weight = 1) : weight_(weight) {}
+
+			double operator()(const double d, const double dhat) const override
+			{
+				if (d > dhat)
+					return 0;
+				else
+					return weight_ * (d - dhat) * (d - dhat);
+			}
+			double first_derivative(const double d, const double dhat) const override
+			{
+				if (d > dhat)
+					return 0;
+				else
+					return 2 * weight_ * (d - dhat);
+			}
+			double second_derivative(const double d, const double dhat) const override
+			{
+				if (d > dhat)
+					return 0;
+				else
+					return 2 * weight_;
+			}
+
+		private:
+			const double weight_;
+		};
+
+	} // namespace
+
 	CollisionBarrierForm::CollisionBarrierForm(const std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulation, const State &state, const double dhat, const double dmin)
 		: AdjointForm(variable_to_simulation), state_(state), dhat_(dhat), dmin_(dmin), barrier_potential_(dhat)
 	{
@@ -232,14 +267,19 @@ namespace polyfem::solver
 	LayerThicknessForm::LayerThicknessForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations,
 										   const State &state,
 										   const std::vector<int> &boundary_ids,
-										   const double dhat,
-										   const double dmin) : CollisionBarrierForm(variable_to_simulations, state, dhat, dmin),
-																boundary_ids_(boundary_ids)
+										   const double dhat)
+		: CollisionBarrierForm(variable_to_simulations, state, dhat, 0),
+		  boundary_ids_(boundary_ids)
 	{
 		for (const auto &id : boundary_ids_)
 			boundary_ids_to_dof_[id] = std::set<int>();
 
 		build_collision_mesh();
+
+		// if (dmin != 0.)
+		// 	log_and_throw_error("dmin must be zero");
+
+		barrier_potential_.set_barrier(std::make_shared<QuadraticBarrier>(dhat));
 	}
 
 	void LayerThicknessForm::build_collision_mesh()

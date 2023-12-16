@@ -40,7 +40,7 @@ namespace polyfem::solver
 		const double dmin_;
 		ipc::BroadPhaseMethod broad_phase_method_;
 
-		const ipc::BarrierPotential barrier_potential_;
+		ipc::BarrierPotential barrier_potential_;
 	};
 
 	class LayerThicknessForm : public CollisionBarrierForm
@@ -49,10 +49,11 @@ namespace polyfem::solver
 		LayerThicknessForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations,
 						   const State &state,
 						   const std::vector<int> &boundary_ids,
-						   const double dhat,
-						   const double dmin);
+						   const double dhat);
 
 		std::string name() const override { return "layer thickness"; }
+
+		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override { return 1.; }
 
 	protected:
 		void build_collision_mesh();

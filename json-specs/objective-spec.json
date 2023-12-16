@@ -841,7 +841,6 @@
         ],
         "optional": [
             "boundary_ids",
-            "dmin",
             "dhat",
             "weight",
             "print_energy"
@@ -863,12 +862,6 @@
     {
         "pointer": "/boundary_ids/*",
         "type": "int",
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/dmin",
-        "type": "float",
-        "default": 0.0,
         "doc": "TODO"
     },
     {
