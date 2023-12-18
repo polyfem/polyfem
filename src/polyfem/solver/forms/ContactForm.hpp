@@ -5,9 +5,10 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/Types.hpp>
 
-#include <ipc/collisions/collision_constraints.hpp>
+#include <ipc/collisions/collisions.hpp>
 #include <ipc/collision_mesh.hpp>
 #include <ipc/broad_phase/broad_phase.hpp>
+#include <ipc/potentials/barrier_potential.hpp>
 
 // map BroadPhaseMethod values to JSON as strings
 namespace ipc
@@ -58,7 +59,7 @@ namespace polyfem::solver
 		/// @param x Current solution
 		void init(const Eigen::VectorXd &x) override;
 
-		virtual void force_shape_derivative(const ipc::CollisionConstraints &contact_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term);
+		virtual void force_shape_derivative(const ipc::Collisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term);
 
 	protected:
 		/// @brief Compute the contact barrier potential value
@@ -128,7 +129,7 @@ namespace polyfem::solver
 		/// @brief Get use_adaptive_barrier_stiffness
 		bool use_adaptive_barrier_stiffness() const { return use_adaptive_barrier_stiffness_; }
 		/// @brief Get use_convergent_formulation
-		bool use_convergent_formulation() const { return constraint_set_.use_convergent_formulation(); }
+		bool use_convergent_formulation() const { return collision_set_.use_convergent_formulation(); }
 
 		bool enable_shape_derivatives() const { return enable_shape_derivatives_; }
 
@@ -138,12 +139,14 @@ namespace polyfem::solver
 		bool save_ccd_debug_meshes = false;
 
 		double dhat() const { return dhat_; }
-		ipc::CollisionConstraints get_constraint_set() const { return constraint_set_; }
+		ipc::Collisions get_collision_set() const { return collision_set_; }
+
+		const ipc::BarrierPotential &get_barrier_potential() const { return barrier_potential_; }
 
 	protected:
 		/// @brief Update the cached candidate set for the current solution
 		/// @param displaced_surface Vertex positions displaced by the current solution
-		void update_constraint_set(const Eigen::MatrixXd &displaced_surface);
+		void update_collision_set(const Eigen::MatrixXd &displaced_surface);
 
 		/// @brief Collision mesh
 		const ipc::CollisionMesh &collision_mesh_;
@@ -183,8 +186,10 @@ namespace polyfem::solver
 		/// @brief If true, use the cached candidate set for the current solution
 		bool use_cached_candidates_ = false;
 		/// @brief Cached constraint set for the current solution
-		ipc::CollisionConstraints constraint_set_;
+		ipc::Collisions collision_set_;
 		/// @brief Cached candidate set for the current solution
 		ipc::Candidates candidates_;
+
+		const ipc::BarrierPotential barrier_potential_;
 	};
 } // namespace polyfem::solver

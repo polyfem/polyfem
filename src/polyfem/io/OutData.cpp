@@ -1969,17 +1969,19 @@ namespace polyfem::io
 
 			const Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(full_displacements);
 
-			ipc::CollisionConstraints constraint_set;
-			constraint_set.set_use_convergent_formulation(state.args["contact"]["use_convergent_formulation"]);
-			constraint_set.build(
+			ipc::Collisions collision_set;
+			collision_set.set_use_convergent_formulation(state.args["contact"]["use_convergent_formulation"]);
+			collision_set.build(
 				collision_mesh, displaced_surface, dhat,
 				/*dmin=*/0, state.args["solver"]["contact"]["CCD"]["broad_phase"]);
+
+			ipc::BarrierPotential barrier_potential(dhat);
 
 			const double barrier_stiffness = contact_form != nullptr ? contact_form->weight() : 1;
 
 			if (opts.contact_forces)
 			{
-				Eigen::MatrixXd forces = -barrier_stiffness * constraint_set.compute_potential_gradient(collision_mesh, displaced_surface, dhat);
+				Eigen::MatrixXd forces = -barrier_stiffness * barrier_potential.gradient(collision_set, collision_mesh, displaced_surface);
 
 				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
 
@@ -1990,10 +1992,12 @@ namespace polyfem::io
 
 			if (opts.friction_forces)
 			{
-				ipc::FrictionConstraints friction_constraint_set;
-				friction_constraint_set.build(
-					collision_mesh, displaced_surface, constraint_set,
+				ipc::FrictionCollisions friction_collision_set;
+				friction_collision_set.build(
+					collision_mesh, displaced_surface, collision_set,
 					dhat, barrier_stiffness, friction_coefficient);
+
+				ipc::FrictionPotential friction_potential(epsv);
 
 				Eigen::MatrixXd velocities;
 				if (state.solve_data.time_integrator != nullptr)
@@ -2002,8 +2006,8 @@ namespace polyfem::io
 					velocities = sol;
 				velocities = collision_mesh.map_displacements(utils::unflatten(velocities, collision_mesh.dim()));
 
-				Eigen::MatrixXd forces = -friction_constraint_set.compute_potential_gradient(
-					collision_mesh, velocities, epsv);
+				Eigen::MatrixXd forces = -friction_potential.gradient(
+					friction_collision_set, collision_mesh, velocities);
 
 				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
 
