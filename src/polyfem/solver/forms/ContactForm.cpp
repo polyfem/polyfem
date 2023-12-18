@@ -51,13 +51,13 @@ namespace polyfem::solver
 		update_collision_set(compute_displaced_surface(x));
 	}
 
-	void ContactForm::force_shape_derivative(const ipc::Collisions &contact_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
+	void ContactForm::force_shape_derivative(const ipc::Collisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
 	{
 		// Eigen::MatrixXd U = collision_mesh_.vertices(utils::unflatten(solution, collision_mesh_.dim()));
 		// Eigen::MatrixXd X = collision_mesh_.vertices(boundary_nodes_pos_);
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(solution);
 
-		StiffnessMatrix dq_h = collision_mesh_.to_full_dof(barrier_potential_.shape_derivative(contact_set, collision_mesh_, displaced_surface));
+		StiffnessMatrix dq_h = collision_mesh_.to_full_dof(barrier_potential_.shape_derivative(collision_set, collision_mesh_, displaced_surface));
 		term = barrier_stiffness() * dq_h.transpose() * adjoint_sol;
 	}
 

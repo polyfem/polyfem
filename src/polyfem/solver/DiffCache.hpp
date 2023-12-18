@@ -33,20 +33,20 @@ namespace polyfem::solver
 			}
 			gradu_h_.resize(n_time_steps + 1);
 
-			contact_set_.resize(n_time_steps + 1);
+			collision_set_.resize(n_time_steps + 1);
 			friction_collision_set_.resize(n_time_steps + 1);
 		}
 
 		void cache_quantities_static(
 			const Eigen::MatrixXd &u,
 			const StiffnessMatrix &gradu_h,
-			const ipc::Collisions &contact_set,
+			const ipc::Collisions &collision_set,
 			const ipc::FrictionCollisions &friction_collision_set)
 		{
 			u_ = u;
 
 			gradu_h_[0] = gradu_h;
-			contact_set_[0] = contact_set;
+			collision_set_[0] = collision_set;
 			friction_collision_set_[0] = friction_collision_set;
 
 			cur_size_ = 1;
@@ -60,7 +60,7 @@ namespace polyfem::solver
 			const Eigen::MatrixXd &acc,
 			const StiffnessMatrix &gradu_h,
 			// const StiffnessMatrix &gradu_h_prev,
-			const ipc::Collisions &contact_set,
+			const ipc::Collisions &collision_set,
 			const ipc::FrictionCollisions &friction_collision_set)
 		{
 			bdf_order_(cur_step) = cur_bdf_order;
@@ -72,7 +72,7 @@ namespace polyfem::solver
 			gradu_h_[cur_step] = gradu_h;
 			// gradu_h_prev_[cur_step] = gradu_h_prev;
 
-			contact_set_[cur_step] = contact_set;
+			collision_set_[cur_step] = collision_set;
 			friction_collision_set_[cur_step] = friction_collision_set;
 
 			cur_size_++;
@@ -128,12 +128,12 @@ namespace polyfem::solver
 		}
 		// const StiffnessMatrix &gradu_h_prev(const int step) const { assert(step < size()); return gradu_h_prev_[step]; }
 
-		const ipc::Collisions &contact_set(int step) const
+		const ipc::Collisions &collision_set(int step) const
 		{
 			assert(step < size());
 			if (step < 0)
-				step += contact_set_.size();
-			return contact_set_[step];
+				step += collision_set_.size();
+			return collision_set_[step];
 		}
 		const ipc::FrictionCollisions &friction_collision_set(int step) const
 		{
@@ -158,7 +158,7 @@ namespace polyfem::solver
 		std::vector<StiffnessMatrix> gradu_h_; // gradient of force at time T wrt. u  at time T
 		// std::vector<StiffnessMatrix> gradu_h_prev_; // gradient of force at time T wrt. u at time (T-1) in transient simulations
 
-		std::vector<ipc::Collisions> contact_set_;
+		std::vector<ipc::Collisions> collision_set_;
 		std::vector<ipc::FrictionCollisions> friction_collision_set_;
 
 		Eigen::MatrixXd adjoint_mat_;
