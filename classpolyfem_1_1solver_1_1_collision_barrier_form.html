@@ -257,8 +257,8 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:a7ecfa400f9647587902571f3be2e51cb" id="r_a7ecfa400f9647587902571f3be2e51cb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_collision_barrier_form.html#a7ecfa400f9647587902571f3be2e51cb">build_constraint_set</a> (const Eigen::MatrixXd &amp;displaced_surface)</td></tr>
-<tr class="separator:a7ecfa400f9647587902571f3be2e51cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33f5a75351168980dd42656127f1693c" id="r_a33f5a75351168980dd42656127f1693c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_collision_barrier_form.html#a33f5a75351168980dd42656127f1693c">build_collision_set</a> (const Eigen::MatrixXd &amp;displaced_surface)</td></tr>
+<tr class="separator:a33f5a75351168980dd42656127f1693c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa99bbe0187758a168ceeb8960bdad94" id="r_afa99bbe0187758a168ceeb8960bdad94"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_collision_barrier_form.html#afa99bbe0187758a168ceeb8960bdad94">get_updated_mesh_nodes</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const</td></tr>
 <tr class="separator:afa99bbe0187758a168ceeb8960bdad94"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -270,12 +270,14 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a8e197f6800b058e6ec89c9d460b948be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a164a6de0b57b137d40a08021594ea393" id="r_a164a6de0b57b137d40a08021594ea393"><td class="memItemLeft" align="right" valign="top">ipc::CollisionMesh&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_collision_barrier_form.html#a164a6de0b57b137d40a08021594ea393">collision_mesh_</a></td></tr>
 <tr class="separator:a164a6de0b57b137d40a08021594ea393"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac5b6397a529740877f5b830569723640" id="r_ac5b6397a529740877f5b830569723640"><td class="memItemLeft" align="right" valign="top">ipc::CollisionConstraints&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_collision_barrier_form.html#ac5b6397a529740877f5b830569723640">constraint_set</a></td></tr>
-<tr class="separator:ac5b6397a529740877f5b830569723640"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7c99c137ec262f53eff23508882c5e74" id="r_a7c99c137ec262f53eff23508882c5e74"><td class="memItemLeft" align="right" valign="top">ipc::Collisions&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_collision_barrier_form.html#a7c99c137ec262f53eff23508882c5e74">collision_set</a></td></tr>
+<tr class="separator:a7c99c137ec262f53eff23508882c5e74"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a12f4afa6e6e42adcd82256966e5082f7" id="r_a12f4afa6e6e42adcd82256966e5082f7"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_collision_barrier_form.html#a12f4afa6e6e42adcd82256966e5082f7">dhat_</a></td></tr>
 <tr class="separator:a12f4afa6e6e42adcd82256966e5082f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40226949015eff48f6e81431f120fdc3" id="r_a40226949015eff48f6e81431f120fdc3"><td class="memItemLeft" align="right" valign="top">ipc::BroadPhaseMethod&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_collision_barrier_form.html#a40226949015eff48f6e81431f120fdc3">broad_phase_method_</a></td></tr>
 <tr class="separator:a40226949015eff48f6e81431f120fdc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5a57bb65ef83567487c2cc920a112da" id="r_ab5a57bb65ef83567487c2cc920a112da"><td class="memItemLeft" align="right" valign="top">const ipc::BarrierPotential&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_collision_barrier_form.html#ab5a57bb65ef83567487c2cc920a112da">barrier_potential_</a></td></tr>
+<tr class="separator:ab5a57bb65ef83567487c2cc920a112da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -347,7 +349,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_barrier_forms_8cpp_source.html#l00006">6</a> of file <a class="el" href="_barrier_forms_8cpp_source.html">BarrierForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00091">polyfem::State::args</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00039">broad_phase_method_</a>, <a class="el" href="_state_8cpp_source.html#l01202">polyfem::State::build_collision_mesh()</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00036">collision_mesh_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00034">polyfem::utils::flatten()</a>, <a class="el" href="_state_8hpp_source.html#l00211">polyfem::State::geom_bases()</a>, <a class="el" href="_state_diff_8cpp_source.html#l00067">polyfem::State::get_vertices()</a>, <a class="el" href="_state_8hpp_source.html#l00416">polyfem::State::in_node_to_node</a>, <a class="el" href="_state_8hpp_source.html#l00432">polyfem::State::mesh</a>, <a class="el" href="_state_8hpp_source.html#l00170">polyfem::State::n_geom_bases</a>, <a class="el" href="_state_8hpp_source.html#l00434">polyfem::State::obstacle</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00032">state_</a>, <a class="el" href="_state_8hpp_source.html#l00401">polyfem::State::total_local_boundary</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00025">V</a>, and <a class="el" href="_barrier_forms_8hpp_source.html#l00034">X_init</a>.</p>
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00091">polyfem::State::args</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00039">broad_phase_method_</a>, <a class="el" href="_state_8cpp_source.html#l01202">polyfem::State::build_collision_mesh()</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00036">collision_mesh_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00034">polyfem::utils::flatten()</a>, <a class="el" href="_state_8hpp_source.html#l00211">polyfem::State::geom_bases()</a>, <a class="el" href="_state_diff_8cpp_source.html#l00068">polyfem::State::get_vertices()</a>, <a class="el" href="_state_8hpp_source.html#l00416">polyfem::State::in_node_to_node</a>, <a class="el" href="_state_8hpp_source.html#l00432">polyfem::State::mesh</a>, <a class="el" href="_state_8hpp_source.html#l00170">polyfem::State::n_geom_bases</a>, <a class="el" href="_state_8hpp_source.html#l00434">polyfem::State::obstacle</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00032">state_</a>, <a class="el" href="_state_8hpp_source.html#l00401">polyfem::State::total_local_boundary</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00025">V</a>, and <a class="el" href="_barrier_forms_8hpp_source.html#l00034">X_init</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -357,8 +359,8 @@ Here is the call graph for this function:</div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a7ecfa400f9647587902571f3be2e51cb" name="a7ecfa400f9647587902571f3be2e51cb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7ecfa400f9647587902571f3be2e51cb">&#9670;&#160;</a></span>build_constraint_set()</h2>
+<a id="a33f5a75351168980dd42656127f1693c" name="a33f5a75351168980dd42656127f1693c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33f5a75351168980dd42656127f1693c">&#9670;&#160;</a></span>build_collision_set()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -367,7 +369,7 @@ Here is the call graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void polyfem::solver::CollisionBarrierForm::build_constraint_set </td>
+          <td class="memname">void polyfem::solver::CollisionBarrierForm::build_collision_set </td>
           <td>(</td>
           <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
           <td class="paramname"><em>displaced_surface</em></td><td>)</td>
@@ -381,15 +383,15 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_barrier_forms_8cpp_source.html#l00092">92</a> of file <a class="el" href="_barrier_forms_8cpp_source.html">BarrierForms.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_barrier_forms_8cpp_source.html#l00095">95</a> of file <a class="el" href="_barrier_forms_8cpp_source.html">BarrierForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_barrier_forms_8hpp_source.html#l00039">broad_phase_method_</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00036">collision_mesh_</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00037">constraint_set</a>, and <a class="el" href="_barrier_forms_8hpp_source.html#l00038">dhat_</a>.</p>
+<p class="reference">References <a class="el" href="_barrier_forms_8hpp_source.html#l00039">broad_phase_method_</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00036">collision_mesh_</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00037">collision_set</a>, and <a class="el" href="_barrier_forms_8hpp_source.html#l00038">dhat_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_barrier_forms_8cpp_source.html#l00046">solution_changed()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_barrier_forms_8cpp_source.html#l00049">solution_changed()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_collision_barrier_form_a7ecfa400f9647587902571f3be2e51cb_icgraph.svg" width="519" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_collision_barrier_form_a33f5a75351168980dd42656127f1693c_icgraph.svg" width="507" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -430,9 +432,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a0c23d531939de93f8978ed8811bbabec">polyfem::solver::AdjointForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_barrier_forms_8cpp_source.html#l00054">54</a> of file <a class="el" href="_barrier_forms_8cpp_source.html">BarrierForms.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_barrier_forms_8cpp_source.html#l00057">57</a> of file <a class="el" href="_barrier_forms_8cpp_source.html">BarrierForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00620">polyfem::State::diff_cached</a>, <a class="el" href="_state_8hpp_source.html#l00624">polyfem::State::ndof()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00082">polyfem::solver::DiffCache::size()</a>.</p>
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00620">polyfem::State::diff_cached</a>, <a class="el" href="_state_8hpp_source.html#l00624">polyfem::State::ndof()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00084">polyfem::solver::DiffCache::size()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -477,13 +479,13 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a5422bc128dccf09157fcc25fc05e8fb3">polyfem::solver::AdjointForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_barrier_forms_8cpp_source.html#l00028">28</a> of file <a class="el" href="_barrier_forms_8cpp_source.html">BarrierForms.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_barrier_forms_8cpp_source.html#l00029">29</a> of file <a class="el" href="_barrier_forms_8cpp_source.html">BarrierForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_barrier_forms_8hpp_source.html#l00036">collision_mesh_</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00037">constraint_set</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00038">dhat_</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00103">get_updated_mesh_nodes()</a>, <a class="el" href="_state_8hpp_source.html#l00432">polyfem::State::mesh</a>, <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a880c1273b27d27cfc82004c3a4b205c9">polyfem::solver::Shape</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00032">state_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, <a class="el" href="_adjoint_form_8hpp_source.html#l00048">polyfem::solver::AdjointForm::variable_to_simulations_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_barrier_forms_8hpp_source.html#l00041">barrier_potential_</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00036">collision_mesh_</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00037">collision_set</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00106">get_updated_mesh_nodes()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l01167">polyfem::solver::AdjointTools::map_node_to_primitive_order()</a>, <a class="el" href="_state_8hpp_source.html#l00432">polyfem::State::mesh</a>, <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a880c1273b27d27cfc82004c3a4b205c9">polyfem::solver::Shape</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00032">state_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, <a class="el" href="_adjoint_form_8hpp_source.html#l00048">polyfem::solver::AdjointForm::variable_to_simulations_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_collision_barrier_form_aae682f9f4eee4132e0ee61699b357e83_cgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_collision_barrier_form_aae682f9f4eee4132e0ee61699b357e83_cgraph.svg" width="100%" height="435"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -512,11 +514,11 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_barrier_forms_8cpp_source.html#l00103">103</a> of file <a class="el" href="_barrier_forms_8cpp_source.html">BarrierForms.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_barrier_forms_8cpp_source.html#l00106">106</a> of file <a class="el" href="_barrier_forms_8cpp_source.html">BarrierForms.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_adjoint_tools_8cpp_source.html#l01156">polyfem::solver::AdjointTools::map_primitive_to_node_order()</a>, <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a880c1273b27d27cfc82004c3a4b205c9">polyfem::solver::Shape</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00032">state_</a>, <a class="el" href="_adjoint_form_8hpp_source.html#l00048">polyfem::solver::AdjointForm::variable_to_simulations_</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_barrier_forms_8hpp_source.html#l00034">X_init</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_barrier_forms_8cpp_source.html#l00028">compute_partial_gradient_unweighted()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00059">is_step_collision_free()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00078">max_step_size()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00046">solution_changed()</a>, and <a class="el" href="_barrier_forms_8cpp_source.html#l00021">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_barrier_forms_8cpp_source.html#l00029">compute_partial_gradient_unweighted()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00062">is_step_collision_free()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00081">max_step_size()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00049">solution_changed()</a>, and <a class="el" href="_barrier_forms_8cpp_source.html#l00022">value_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -569,9 +571,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a52a657c152e9c1448c520c34bc443a3e">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_barrier_forms_8cpp_source.html#l00059">59</a> of file <a class="el" href="_barrier_forms_8cpp_source.html">BarrierForms.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_barrier_forms_8cpp_source.html#l00062">62</a> of file <a class="el" href="_barrier_forms_8cpp_source.html">BarrierForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_barrier_forms_8hpp_source.html#l00039">broad_phase_method_</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00036">collision_mesh_</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00103">get_updated_mesh_nodes()</a>, <a class="el" href="_state_8hpp_source.html#l00432">polyfem::State::mesh</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00032">state_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626a16514e6f648a594f5399a6b3a58e9c93">polyfem::mesh::V0</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626ab4daca084ad9eabfc8de231929477ed6">polyfem::mesh::V1</a>.</p>
+<p class="reference">References <a class="el" href="_barrier_forms_8hpp_source.html#l00039">broad_phase_method_</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00036">collision_mesh_</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00106">get_updated_mesh_nodes()</a>, <a class="el" href="_state_8hpp_source.html#l00432">polyfem::State::mesh</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00032">state_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626a16514e6f648a594f5399a6b3a58e9c93">polyfem::mesh::V0</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626ab4daca084ad9eabfc8de231929477ed6">polyfem::mesh::V1</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -626,9 +628,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#ab9da0c5d97cbb385ffc9b6685d29d06c">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_barrier_forms_8cpp_source.html#l00078">78</a> of file <a class="el" href="_barrier_forms_8cpp_source.html">BarrierForms.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_barrier_forms_8cpp_source.html#l00081">81</a> of file <a class="el" href="_barrier_forms_8cpp_source.html">BarrierForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_barrier_forms_8hpp_source.html#l00039">broad_phase_method_</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00036">collision_mesh_</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00103">get_updated_mesh_nodes()</a>, <a class="el" href="_state_8hpp_source.html#l00432">polyfem::State::mesh</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00032">state_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626a16514e6f648a594f5399a6b3a58e9c93">polyfem::mesh::V0</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626ab4daca084ad9eabfc8de231929477ed6">polyfem::mesh::V1</a>.</p>
+<p class="reference">References <a class="el" href="_barrier_forms_8hpp_source.html#l00039">broad_phase_method_</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00036">collision_mesh_</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00106">get_updated_mesh_nodes()</a>, <a class="el" href="_state_8hpp_source.html#l00432">polyfem::State::mesh</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00032">state_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626a16514e6f648a594f5399a6b3a58e9c93">polyfem::mesh::V0</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626ab4daca084ad9eabfc8de231929477ed6">polyfem::mesh::V1</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -671,9 +673,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a3f00fafcf3de6cbf9d381d89d093db83">polyfem::solver::AdjointForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_barrier_forms_8cpp_source.html#l00046">46</a> of file <a class="el" href="_barrier_forms_8cpp_source.html">BarrierForms.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_barrier_forms_8cpp_source.html#l00049">49</a> of file <a class="el" href="_barrier_forms_8cpp_source.html">BarrierForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_barrier_forms_8cpp_source.html#l00092">build_constraint_set()</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00036">collision_mesh_</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00103">get_updated_mesh_nodes()</a>, <a class="el" href="_state_8hpp_source.html#l00432">polyfem::State::mesh</a>, <a class="el" href="_adjoint_form_8cpp_source.html#l00020">polyfem::solver::AdjointForm::solution_changed()</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00032">state_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_barrier_forms_8cpp_source.html#l00095">build_collision_set()</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00036">collision_mesh_</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00106">get_updated_mesh_nodes()</a>, <a class="el" href="_state_8hpp_source.html#l00432">polyfem::State::mesh</a>, <a class="el" href="_adjoint_form_8cpp_source.html#l00020">polyfem::solver::AdjointForm::solution_changed()</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00032">state_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -717,9 +719,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a464a37a939d522c672aed03d281a5a92">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_barrier_forms_8cpp_source.html#l00021">21</a> of file <a class="el" href="_barrier_forms_8cpp_source.html">BarrierForms.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_barrier_forms_8cpp_source.html#l00022">22</a> of file <a class="el" href="_barrier_forms_8cpp_source.html">BarrierForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_barrier_forms_8hpp_source.html#l00036">collision_mesh_</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00037">constraint_set</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00038">dhat_</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00103">get_updated_mesh_nodes()</a>, <a class="el" href="_state_8hpp_source.html#l00432">polyfem::State::mesh</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00032">state_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_barrier_forms_8hpp_source.html#l00041">barrier_potential_</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00036">collision_mesh_</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00037">collision_set</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00106">get_updated_mesh_nodes()</a>, <a class="el" href="_state_8hpp_source.html#l00432">polyfem::State::mesh</a>, <a class="el" href="_barrier_forms_8hpp_source.html#l00032">state_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -729,6 +731,32 @@ Here is the call graph for this function:</div>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="ab5a57bb65ef83567487c2cc920a112da" name="ab5a57bb65ef83567487c2cc920a112da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5a57bb65ef83567487c2cc920a112da">&#9670;&#160;</a></span>barrier_potential_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const ipc::BarrierPotential polyfem::solver::CollisionBarrierForm::barrier_potential_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_barrier_forms_8hpp_source.html#l00041">41</a> of file <a class="el" href="_barrier_forms_8hpp_source.html">BarrierForms.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_barrier_forms_8cpp_source.html#l00029">compute_partial_gradient_unweighted()</a>, and <a class="el" href="_barrier_forms_8cpp_source.html#l00022">value_unweighted()</a>.</p>
+
+</div>
+</div>
 <a id="a40226949015eff48f6e81431f120fdc3" name="a40226949015eff48f6e81431f120fdc3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a40226949015eff48f6e81431f120fdc3">&#9670;&#160;</a></span>broad_phase_method_</h2>
 
@@ -751,7 +779,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_barrier_forms_8hpp_source.html#l00039">39</a> of file <a class="el" href="_barrier_forms_8hpp_source.html">BarrierForms.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_barrier_forms_8cpp_source.html#l00092">build_constraint_set()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00006">CollisionBarrierForm()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00059">is_step_collision_free()</a>, and <a class="el" href="_barrier_forms_8cpp_source.html#l00078">max_step_size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_barrier_forms_8cpp_source.html#l00095">build_collision_set()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00006">CollisionBarrierForm()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00062">is_step_collision_free()</a>, and <a class="el" href="_barrier_forms_8cpp_source.html#l00081">max_step_size()</a>.</p>
 
 </div>
 </div>
@@ -777,12 +805,12 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_barrier_forms_8hpp_source.html#l00036">36</a> of file <a class="el" href="_barrier_forms_8hpp_source.html">BarrierForms.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_barrier_forms_8cpp_source.html#l00092">build_constraint_set()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00006">CollisionBarrierForm()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00028">compute_partial_gradient_unweighted()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00059">is_step_collision_free()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00078">max_step_size()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00046">solution_changed()</a>, and <a class="el" href="_barrier_forms_8cpp_source.html#l00021">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_barrier_forms_8cpp_source.html#l00095">build_collision_set()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00006">CollisionBarrierForm()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00029">compute_partial_gradient_unweighted()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00062">is_step_collision_free()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00081">max_step_size()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00049">solution_changed()</a>, and <a class="el" href="_barrier_forms_8cpp_source.html#l00022">value_unweighted()</a>.</p>
 
 </div>
 </div>
-<a id="ac5b6397a529740877f5b830569723640" name="ac5b6397a529740877f5b830569723640"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac5b6397a529740877f5b830569723640">&#9670;&#160;</a></span>constraint_set</h2>
+<a id="a7c99c137ec262f53eff23508882c5e74" name="a7c99c137ec262f53eff23508882c5e74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7c99c137ec262f53eff23508882c5e74">&#9670;&#160;</a></span>collision_set</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -791,7 +819,7 @@ Here is the call graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">ipc::CollisionConstraints polyfem::solver::CollisionBarrierForm::constraint_set</td>
+          <td class="memname">ipc::Collisions polyfem::solver::CollisionBarrierForm::collision_set</td>
         </tr>
       </table>
   </td>
@@ -803,7 +831,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_barrier_forms_8hpp_source.html#l00037">37</a> of file <a class="el" href="_barrier_forms_8hpp_source.html">BarrierForms.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_barrier_forms_8cpp_source.html#l00092">build_constraint_set()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00028">compute_partial_gradient_unweighted()</a>, and <a class="el" href="_barrier_forms_8cpp_source.html#l00021">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_barrier_forms_8cpp_source.html#l00095">build_collision_set()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00029">compute_partial_gradient_unweighted()</a>, and <a class="el" href="_barrier_forms_8cpp_source.html#l00022">value_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -829,7 +857,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_barrier_forms_8hpp_source.html#l00038">38</a> of file <a class="el" href="_barrier_forms_8hpp_source.html">BarrierForms.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_barrier_forms_8cpp_source.html#l00092">build_constraint_set()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00028">compute_partial_gradient_unweighted()</a>, and <a class="el" href="_barrier_forms_8cpp_source.html#l00021">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_barrier_forms_8cpp_source.html#l00095">build_collision_set()</a>.</p>
 
 </div>
 </div>
@@ -855,7 +883,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_barrier_forms_8hpp_source.html#l00032">32</a> of file <a class="el" href="_barrier_forms_8hpp_source.html">BarrierForms.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_barrier_forms_8cpp_source.html#l00006">CollisionBarrierForm()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00028">compute_partial_gradient_unweighted()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00103">get_updated_mesh_nodes()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00059">is_step_collision_free()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00078">max_step_size()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00046">solution_changed()</a>, and <a class="el" href="_barrier_forms_8cpp_source.html#l00021">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_barrier_forms_8cpp_source.html#l00006">CollisionBarrierForm()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00029">compute_partial_gradient_unweighted()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00106">get_updated_mesh_nodes()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00062">is_step_collision_free()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00081">max_step_size()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00049">solution_changed()</a>, and <a class="el" href="_barrier_forms_8cpp_source.html#l00022">value_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -881,7 +909,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_barrier_forms_8hpp_source.html#l00034">34</a> of file <a class="el" href="_barrier_forms_8hpp_source.html">BarrierForms.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_barrier_forms_8cpp_source.html#l00006">CollisionBarrierForm()</a>, and <a class="el" href="_barrier_forms_8cpp_source.html#l00103">get_updated_mesh_nodes()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_barrier_forms_8cpp_source.html#l00006">CollisionBarrierForm()</a>, and <a class="el" href="_barrier_forms_8cpp_source.html#l00106">get_updated_mesh_nodes()</a>.</p>
 
 </div>
 </div>

@@ -191,7 +191,7 @@ $(document).ready(function(){initNavTree('_inversion_barrier_form_8cpp_source.ht
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                Eigen::VectorXd local_grad =</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                    (scale * element_volume(rest_positions_(elements_.row(i), Eigen::all))</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                     * ipc::barrier_gradient(element_volume(element_vertices), vhat_))</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                     * ipc::barrier_first_derivative(element_volume(element_vertices), vhat_))</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                    * element_volume_gradient(element_vertices);</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                ipc::local_gradient_to_global_gradient(local_grad, elements_.row(i), dim_, grad);</div>
@@ -227,8 +227,8 @@ $(document).ready(function(){initNavTree('_inversion_barrier_form_8cpp_source.ht
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                const double rest_volume = element_volume(rest_positions_(elements_.row(i), Eigen::all));</div>
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                Eigen::MatrixXd local_hess =</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                    (scale * rest_volume * ipc::barrier_hessian(volume, vhat_)) * volume_grad * volume_grad.transpose()</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                    + (scale * rest_volume * ipc::barrier_gradient(volume, vhat_)) * element_volume_hessian(element_vertices);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                    (scale * rest_volume * ipc::barrier_second_derivative(volume, vhat_)) * volume_grad * volume_grad.transpose()</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                    + (scale * rest_volume * ipc::barrier_first_derivative(volume, vhat_)) * element_volume_hessian(element_vertices);</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                if (project_to_psd_)</div>
 <div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                    local_hess = ipc::project_to_psd(local_hess);</div>

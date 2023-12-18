@@ -48,7 +48,7 @@
 <script type="application/ecmascript">
 var viewWidth = 566;
 var viewHeight = 291;
-var sectionId = 'dynsection-17';
+var sectionId = 'dynsection-18';
 </script>
 <script type="application/ecmascript" xlink:href="svg.min.js"/>
 <svg id="graph" class="graph">
@@ -124,10 +124,10 @@ var sectionId = 'dynsection-17';
 <!-- Node6 -->
 <g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_Node000006"><a xlink:href="classpolyfem_1_1solver_1_1_contact_form.html#a7cb85c21eb5a2f1d04a33865d695d3d6" target="_top" xlink:title="Update the cached candidate set for the current solution.">
-<polygon fill="white" stroke="#666666" points="372,-138 217,-138 217,-108 372,-108 372,-138"/>
-<text text-anchor="start" x="225" y="-126" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Contact</text>
-<text text-anchor="middle" x="294.5" y="-115" font-family="Helvetica,sans-Serif" font-size="10.00">Form::update_constraint_set</text>
+<g id="a_Node000006"><a xlink:href="classpolyfem_1_1solver_1_1_contact_form.html#ab82ceaece78f38fb538aaf5cd4ff98c4" target="_top" xlink:title="Update the cached candidate set for the current solution.">
+<polygon fill="white" stroke="#666666" points="368,-138 221,-138 221,-108 368,-108 368,-138"/>
+<text text-anchor="start" x="229" y="-126" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Contact</text>
+<text text-anchor="middle" x="294.5" y="-115" font-family="Helvetica,sans-Serif" font-size="10.00">Form::update_collision_set</text>
 </a>
 </g>
 </g>
@@ -135,8 +135,8 @@ var sectionId = 'dynsection-17';
 <g id="edge5_Node000001_Node000006" class="edge">
 <title>Node1&#45;&gt;Node6</title>
 <g id="a_edge5_Node000001_Node000006"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M165.29,-135.82C178.78,-134.47 192.81,-133.07 206.43,-131.71"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="207.14,-135.15 216.74,-130.68 206.44,-128.19 207.14,-135.15"/>
+<path fill="none" stroke="#63b8ff" d="M165.29,-135.82C180.17,-134.33 195.7,-132.78 210.61,-131.29"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="211.22,-134.75 220.82,-130.27 210.52,-127.78 211.22,-134.75"/>
 </a>
 </g>
 </g>
