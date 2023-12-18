@@ -139,6 +139,6 @@ namespace polyfem::solver
 
 		friction_collision_set_.build(
 			collision_mesh_, displaced_surface, collision_set,
-			dhat_, contact_form_.barrier_stiffness(), mu_);
+			contact_form_.barrier_potential(), contact_form_.barrier_stiffness(), mu_);
 	}
 } // namespace polyfem::solver
