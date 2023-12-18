@@ -59,7 +59,7 @@ namespace polyfem::solver
 		/// @param x Current solution
 		void init(const Eigen::VectorXd &x) override;
 
-		virtual void force_shape_derivative(const ipc::Collisions &contact_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term);
+		virtual void force_shape_derivative(const ipc::Collisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term);
 
 	protected:
 		/// @brief Compute the contact barrier potential value

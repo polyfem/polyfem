@@ -102,7 +102,7 @@ namespace polyfem
 		if (current_step == 0)
 			diff_cached.init(ndof(), problem->is_time_dependent() ? args["time"]["time_steps"].get<int>() : 0);
 
-		ipc::Collisions cur_contact_set;
+		ipc::Collisions cur_collision_set;
 		ipc::FrictionCollisions cur_friction_set;
 
 		if (optimization_enabled == solver::CacheLevel::Derivatives)
@@ -110,12 +110,12 @@ namespace polyfem
 			if (!problem->is_time_dependent() || current_step > 0)
 				compute_force_jacobian(sol, disp_grad, gradu_h);
 
-			cur_contact_set = solve_data.contact_form ? solve_data.contact_form->get_collision_set() : ipc::Collisions();
+			cur_collision_set = solve_data.contact_form ? solve_data.contact_form->get_collision_set() : ipc::Collisions();
 			cur_friction_set = solve_data.friction_form ? solve_data.friction_form->get_friction_collision_set() : ipc::FrictionCollisions();
 		}
 		else
 		{
-			cur_contact_set = ipc::Collisions();
+			cur_collision_set = ipc::Collisions();
 			cur_friction_set = ipc::FrictionCollisions();
 		}
 
@@ -145,11 +145,11 @@ namespace polyfem
 				acc = solve_data.time_integrator->compute_acceleration(vel);
 			}
 
-			diff_cached.cache_quantities_transient(current_step, solve_data.time_integrator->steps(), sol, vel, acc, gradu_h, cur_contact_set, cur_friction_set);
+			diff_cached.cache_quantities_transient(current_step, solve_data.time_integrator->steps(), sol, vel, acc, gradu_h, cur_collision_set, cur_friction_set);
 		}
 		else
 		{
-			diff_cached.cache_quantities_static(sol, gradu_h, cur_contact_set, cur_friction_set);
+			diff_cached.cache_quantities_static(sol, gradu_h, cur_collision_set, cur_friction_set);
 			diff_cached.cache_disp_grad(disp_grad);
 		}
 	}
