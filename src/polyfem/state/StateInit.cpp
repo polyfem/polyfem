@@ -164,11 +164,6 @@ namespace polyfem
 
 			polysolve::linear::Solver::apply_default_solver(rules, "/solver/linear");
 			polysolve::linear::Solver::apply_default_solver(rules, "/solver/adjoint_linear");
-
-			{
-				std::ofstream file("complete-spec.json");
-				file << rules;
-			}
 		}
 
 		polysolve::linear::Solver::select_valid_solver(args_in["solver"]["linear"], logger());
