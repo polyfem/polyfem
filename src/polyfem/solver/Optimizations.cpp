@@ -250,10 +250,18 @@ namespace polyfem::solver
 			{
 				obj = std::make_shared<ContactForceForm>(var2sim, *(states[args["state"]]), args);
 			}
-			else if (type == "contact_force_match")
+			else if (type == "quadratic_contact_force_norm")
 			{
-				obj = std::make_shared<ContactForceMatchForm>(var2sim, *(states[args["state"]]), args);
+				obj = std::make_shared<ProxyContactForceForm>(var2sim, *(states[args["state"]]), args["dhat"], true, args);
 			}
+			else if (type == "log_contact_force_norm")
+			{
+				obj = std::make_shared<ProxyContactForceForm>(var2sim, *(states[args["state"]]), args["dhat"], false, args);
+			}
+			// else if (type == "contact_force_match")
+			// {
+			// 	obj = std::make_shared<ContactForceMatchForm>(var2sim, *(states[args["state"]]), args);
+			// }
 			else if (type == "max_stress")
 			{
 				obj = std::make_shared<MaxStressForm>(var2sim, *(states[args["state"]]), args);

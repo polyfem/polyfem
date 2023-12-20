@@ -276,10 +276,7 @@ namespace polyfem::solver
 
 		build_collision_mesh();
 
-		// if (dmin != 0.)
-		// 	log_and_throw_error("dmin must be zero");
-
-		barrier_potential_.set_barrier(std::make_shared<QuadraticBarrier>(dhat));
+		barrier_potential_.set_barrier(std::make_shared<QuadraticBarrier>());
 	}
 
 	void LayerThicknessForm::build_collision_mesh()
