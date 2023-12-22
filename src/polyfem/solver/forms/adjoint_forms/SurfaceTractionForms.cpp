@@ -339,7 +339,7 @@ namespace polyfem::solver
 		return j;
 	}
 
-	void ContactForceForm::build_active_nodes()
+	void TrueContactForceForm::build_active_nodes()
 	{
 
 		std::set<int> active_nodes_set = {};
@@ -384,7 +384,7 @@ namespace polyfem::solver
 		depends_on_step_prev_ = (friction_coefficient_ > 0);
 	}
 
-	double ContactForceForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
+	double TrueContactForceForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
 	{
 		assert(state_.solve_data.time_integrator != nullptr);
 		assert(state_.solve_data.contact_form != nullptr);
@@ -405,7 +405,7 @@ namespace polyfem::solver
 		return sum;
 	}
 
-	Eigen::VectorXd ContactForceForm::compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
+	Eigen::VectorXd TrueContactForceForm::compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
 	{
 		assert(state_.solve_data.time_integrator != nullptr);
 		assert(state_.solve_data.contact_form != nullptr);
@@ -435,7 +435,7 @@ namespace polyfem::solver
 		return gradu;
 	}
 
-	Eigen::VectorXd ContactForceForm::compute_adjoint_rhs_unweighted_step_prev(const int time_step, const Eigen::VectorXd &x, const State &state) const
+	Eigen::VectorXd TrueContactForceForm::compute_adjoint_rhs_unweighted_step_prev(const int time_step, const Eigen::VectorXd &x, const State &state) const
 	{
 		assert(state_.solve_data.time_integrator != nullptr);
 		assert(state_.solve_data.contact_form != nullptr);
@@ -465,7 +465,7 @@ namespace polyfem::solver
 		return gradu;
 	}
 
-	void ContactForceForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void TrueContactForceForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		assert(state_.solve_data.time_integrator != nullptr);
 		assert(state_.solve_data.contact_form != nullptr);
@@ -530,10 +530,20 @@ namespace polyfem::solver
 
 		broad_phase_method_ = ipc::BroadPhaseMethod::HASH_GRID;
 
-		int time_steps = state.args["time"]["time_steps"].get<int>() + 1;
-		collision_set_indicator_.setZero(time_steps);
-		for (int i = 0; i < time_steps + 1; ++i)
+		if (state.problem->is_time_dependent())
 		{
+			int time_steps = state.args["time"]["time_steps"].get<int>() + 1;
+			collision_set_indicator_.setZero(time_steps);
+			for (int i = 0; i < time_steps + 1; ++i)
+			{
+				collision_sets_.push_back(std::make_shared<ipc::Collisions>());
+				collision_sets_.back()->set_use_convergent_formulation(true);
+				collision_sets_.back()->set_are_shape_derivatives_enabled(true);
+			}
+		}
+		else
+		{
+			collision_set_indicator_.setZero(1);
 			collision_sets_.push_back(std::make_shared<ipc::Collisions>());
 			collision_sets_.back()->set_use_convergent_formulation(true);
 			collision_sets_.back()->set_are_shape_derivatives_enabled(true);

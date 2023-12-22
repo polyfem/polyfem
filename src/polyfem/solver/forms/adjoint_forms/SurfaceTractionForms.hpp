@@ -27,17 +27,17 @@ namespace polyfem::solver
 		int in_power_ = 2;
 	};
 
-	class ContactForceForm : public StaticForm
+	class TrueContactForceForm : public StaticForm
 	{
 	public:
-		ContactForceForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : StaticForm(variable_to_simulations), state_(state)
+		TrueContactForceForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : StaticForm(variable_to_simulations), state_(state)
 		{
 			auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 
 			build_active_nodes();
 		}
-		~ContactForceForm() = default;
+		~TrueContactForceForm() = default;
 
 		const State &get_state() { return state_; }
 
@@ -72,10 +72,14 @@ namespace polyfem::solver
 		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
 		void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
-		void solution_changed(const Eigen::VectorXd &x) override
+		void solution_changed_step(const int time_step, const Eigen::VectorXd &x) override
 		{
+			if (curr_x.size() > 0 && (curr_x - x).norm() < 1e-8)
+				return;
+
 			collision_set_indicator_.setZero();
 			build_collision_mesh();
+			curr_x = x;
 		}
 
 	protected:
@@ -94,6 +98,8 @@ namespace polyfem::solver
 		const double dhat_;
 		const double dmin_ = 0;
 		ipc::BroadPhaseMethod broad_phase_method_;
+
+		Eigen::VectorXd curr_x;
 
 		ipc::BarrierPotential barrier_potential_;
 	};
@@ -132,7 +138,7 @@ namespace polyfem::solver
 	// 	double dhat_, epsv_, friction_coefficient_;
 	// };
 
-	// class ContactForceForm : public ContactForceMatchForm
+	// class TrueContactForceForm : public ContactForceMatchForm
 	// {
 	// 	ContactForceForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : StaticForm(variable_to_simulations), state_(state)
 	// 	{

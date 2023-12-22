@@ -248,7 +248,7 @@ namespace polyfem::solver
 			}
 			else if (type == "contact_force_norm")
 			{
-				obj = std::make_shared<ContactForceForm>(var2sim, *(states[args["state"]]), args);
+				obj = std::make_shared<TrueContactForceForm>(var2sim, *(states[args["state"]]), args);
 			}
 			else if (type == "quadratic_contact_force_norm")
 			{
