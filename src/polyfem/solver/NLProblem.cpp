@@ -92,6 +92,7 @@ namespace polyfem::solver
 
 	void NLProblem::before_line_search(const TVector &x0, const TVector &x1)
 	{
+		static int useless_iter = 0;
 		const int dim = state.mesh->dimension();
 		const int n_elem = state.bases.size();
 		const int n_loc_nodes = state.bases[0].bases.size();
@@ -143,7 +144,7 @@ namespace polyfem::solver
 				}
 
 				// std::cout << "det min " << m << " max " << M << ", ";
-				if (m < 0 || m < 0.1 * M)
+				if (m < 0 || m < 0.2 * M)
 					mask[e] = 1;
 			}
 		});
@@ -159,12 +160,21 @@ namespace polyfem::solver
 		}
 		logger().info("{} out of {} elements exported!", total, n_elem);
 
-		if (total == 0)
+		if (total < 0.01 * n_elem)
+		{
+			useless_iter++;
+			if (useless_iter > 10)
+				exit(0);
 			return;
+		}
+		else
+		{
+			useless_iter = 0;
+		}
 
 		std::vector<std::string> nodes_rational;
 		nodes_rational.resize(total * n_loc_nodes * 4 * dim);
-		utils::maybe_parallel_for(total, [&](int start, int end, int thread_id) {
+		utils::maybe_parallel_for(n_elem, [&](int start, int end, int thread_id) {
 			for (int e = start; e < end; e++)
 			{
 				const auto& bs = state.bases[e];
@@ -199,6 +209,8 @@ namespace polyfem::solver
 		});
 		// paraviewo::HDF5MatrixWriter::write_matrix(rawname + ".hdf5", dim, bases.size(), n_loc_nodes, nodes);
 		paraviewo::HDF5MatrixWriter::write_matrix(path, dim, total, n_loc_nodes, nodes_rational);
+		// for (auto& s : nodes_rational)
+		// 	std::cout << s << ",";
 		logger().info("Save to {}", path);
 	}
 
