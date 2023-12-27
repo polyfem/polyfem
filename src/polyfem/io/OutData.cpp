@@ -1352,7 +1352,7 @@ namespace polyfem::io
 				if (form->enabled())
 				{
 					form->first_derivative(sol, force);
-					force *= -s; // Multiply by acceleration scaling to get units of force
+					force *= -1.0 / s; // Divide by acceleration scaling to get units of force
 				}
 				else
 				{
@@ -2911,10 +2911,10 @@ namespace polyfem::io
 		file << i << ",";
 		for (const auto &[_, form] : solve_data.named_forms())
 		{
-			// Multiply by acceleration scaling to get the energy (units of J)
-			file << s * ((form && form->enabled()) ? form->value(sol) : 0) << ",";
+			// Divide by acceleration scaling to get the energy (units of J)
+			file << ((form && form->enabled()) ? form->value(sol) : 0) / s << ",";
 		}
-		file << s * solve_data.nl_problem->value(sol) << "\n";
+		file << solve_data.nl_problem->value(sol) / s << "\n";
 		file.flush();
 	}
 
