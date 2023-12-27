@@ -1338,6 +1338,10 @@ namespace polyfem::io
 
 		if (opts.forces)
 		{
+			const double s = state.solve_data.time_integrator
+								 ? state.solve_data.time_integrator->acceleration_scaling()
+								 : 1;
+
 			for (const auto &[name, form] : state.solve_data.named_forms())
 			{
 				// NOTE: Assumes this form will be null for the entire sim
@@ -1348,7 +1352,7 @@ namespace polyfem::io
 				if (form->enabled())
 				{
 					form->first_derivative(sol, force);
-					force *= -1.0;
+					force *= -s; // Multiply by acceleration scaling to get units of force
 				}
 				else
 				{
@@ -2901,12 +2905,16 @@ namespace polyfem::io
 
 	void EnergyCSVWriter::write(const int i, const Eigen::MatrixXd &sol)
 	{
+		const double s = solve_data.time_integrator
+							 ? solve_data.time_integrator->acceleration_scaling()
+							 : 1;
 		file << i << ",";
 		for (const auto &[_, form] : solve_data.named_forms())
 		{
-			file << ((form && form->enabled()) ? form->value(sol) : 0) << ",";
+			// Multiply by acceleration scaling to get the energy (units of J)
+			file << s * ((form && form->enabled()) ? form->value(sol) : 0) << ",";
 		}
-		file << solve_data.nl_problem->value(sol) << "\n";
+		file << s * solve_data.nl_problem->value(sol) << "\n";
 		file.flush();
 	}
 
