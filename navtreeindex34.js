@@ -1,9 +1,9 @@
 var NAVTREEINDEX34 =
 {
-"classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac2d4b63dfce95eba70d056d15baf0157":[6,0,1,8,62,4],
 "classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac2d4b63dfce95eba70d056d15baf0157":[5,0,4,9,62,4],
-"classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac499e05d60c9c75a44a860bdfa52ca66":[5,0,4,9,62,10],
+"classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac2d4b63dfce95eba70d056d15baf0157":[6,0,1,8,62,4],
 "classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac499e05d60c9c75a44a860bdfa52ca66":[6,0,1,8,62,10],
+"classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac499e05d60c9c75a44a860bdfa52ca66":[5,0,4,9,62,10],
 "classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac5641105d5303178b79b4c23ef0d7387":[6,0,1,8,62,7],
 "classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac5641105d5303178b79b4c23ef0d7387":[5,0,4,9,62,7],
 "classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac6f9bf7bd979734dad72425a8a48cc65":[6,0,1,8,62,3],
@@ -16,8 +16,8 @@ var NAVTREEINDEX34 =
 "classpolyfem_1_1solver_1_1_static_boundary_n_l_problem.html#a5de3d132b8f2958cfa7a6197356011fd":[6,0,1,8,63,2],
 "classpolyfem_1_1solver_1_1_static_boundary_n_l_problem.html#aa707c257ae626f6eeb88175527dc2dbf":[5,0,4,9,63,1],
 "classpolyfem_1_1solver_1_1_static_boundary_n_l_problem.html#aa707c257ae626f6eeb88175527dc2dbf":[6,0,1,8,63,1],
-"classpolyfem_1_1solver_1_1_static_boundary_n_l_problem.html#ae7d8fde37c915f1d93a44c19c1c7eae1":[5,0,4,9,63,0],
 "classpolyfem_1_1solver_1_1_static_boundary_n_l_problem.html#ae7d8fde37c915f1d93a44c19c1c7eae1":[6,0,1,8,63,0],
+"classpolyfem_1_1solver_1_1_static_boundary_n_l_problem.html#ae7d8fde37c915f1d93a44c19c1c7eae1":[5,0,4,9,63,0],
 "classpolyfem_1_1solver_1_1_static_form.html":[5,0,4,9,64],
 "classpolyfem_1_1solver_1_1_static_form.html":[6,0,1,8,64],
 "classpolyfem_1_1solver_1_1_static_form.html#a0a18c9b23e15783557a92e3581252f92":[5,0,4,9,64,6],
