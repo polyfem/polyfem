@@ -40,8 +40,6 @@ namespace polyfem
 	{
 		init_nonlinear_tensor_solve(sol, t0 + dt);
 
-		save_timestep(t0, 0, t0, dt, sol, Eigen::MatrixXd()); // no pressure
-
 		// Write the total energy to a CSV file
 		int save_i = 0;
 		EnergyCSVWriter energy_csv(resolve_output_path("energy.csv"), solve_data);
@@ -52,6 +50,11 @@ namespace polyfem
 			log_and_throw_error("Remeshing is not enabled in this build! Set POLYFEM_WITH_REMESHING=ON in CMake to enable it.");
 #endif
 		// const double save_dt = remesh_enabled ? (dt / 3) : dt;
+
+		// Save the initial solution
+		energy_csv.write(save_i, sol);
+		save_timestep(t0, save_i, t0, dt, sol, Eigen::MatrixXd()); // no pressure
+		save_i++;
 
 		if (optimization_enabled != solver::CacheLevel::None)
 			cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
@@ -259,6 +262,8 @@ namespace polyfem
 		solve_data.nl_problem = std::make_shared<NLProblem>(
 			ndof, boundary_nodes, local_boundary, n_boundary_samples(),
 			*solve_data.rhs_assembler, t, forms);
+		solve_data.nl_problem->init(sol);
+		solve_data.nl_problem->update_quantities(t, sol);
 
 		// --------------------------------------------------------------------
 
