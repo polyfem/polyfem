@@ -22,7 +22,7 @@ namespace polyfem::solver
 	{
 	}
 
-	void ALSolver::solve_al(std::shared_ptr<NLSolver> nl_solver,NLProblem &nl_problem, Eigen::MatrixXd &sol)
+	void ALSolver::solve_al(std::shared_ptr<NLSolver> nl_solver, NLProblem &nl_problem, Eigen::MatrixXd &sol)
 	{
 		assert(sol.size() == nl_problem.full_size());
 
@@ -83,16 +83,16 @@ namespace polyfem::solver
 		nl_solver->max_iterations() = iters;
 	}
 
-	void ALSolver::solve_reduced(std::shared_ptr<NLSolver> nl_solver,NLProblem &nl_problem, Eigen::MatrixXd &sol)
+	void ALSolver::solve_reduced(std::shared_ptr<NLSolver> nl_solver, NLProblem &nl_problem, Eigen::MatrixXd &sol)
 	{
 		assert(sol.size() == nl_problem.full_size());
 
 		Eigen::VectorXd tmp_sol = nl_problem.full_to_reduced(sol);
 		nl_problem.line_search_begin(sol, tmp_sol);
-		
+
 		if (!std::isfinite(nl_problem.value(tmp_sol))
-			   || !nl_problem.is_step_valid(sol, tmp_sol)
-			   || !nl_problem.is_step_collision_free(sol, tmp_sol))
+			|| !nl_problem.is_step_valid(sol, tmp_sol)
+			|| !nl_problem.is_step_collision_free(sol, tmp_sol))
 			log_and_throw_error("Failed to apply boundary conditions; solve with augmented lagrangian first!");
 
 		// --------------------------------------------------------------------

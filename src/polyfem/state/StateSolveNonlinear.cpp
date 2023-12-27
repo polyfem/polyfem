@@ -94,6 +94,7 @@ namespace polyfem
 			// Always save the solution for consistency
 			energy_csv.write(save_i, sol);
 			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
+			save_i++;
 
 			if (optimization_enabled != solver::CacheLevel::None)
 			{

@@ -2886,7 +2886,12 @@ namespace polyfem::io
 	EnergyCSVWriter::EnergyCSVWriter(const std::string &path, const solver::SolveData &solve_data)
 		: file(path), solve_data(solve_data)
 	{
-		file << "i,elastic_energy,body_energy,inertia,contact_form,AL_lagr_energy,AL_pen_energy,total_energy" << std::endl;
+		file << "i,";
+		for (const auto &[name, _] : solve_data.named_forms())
+		{
+			file << name << ",";
+		}
+		file << "total_energy" << std::endl;
 	}
 
 	EnergyCSVWriter::~EnergyCSVWriter()
@@ -2896,15 +2901,12 @@ namespace polyfem::io
 
 	void EnergyCSVWriter::write(const int i, const Eigen::MatrixXd &sol)
 	{
-		file << fmt::format(
-			"{},{},{},{},{},{},{},{}\n", i,
-			solve_data.elastic_form->value(sol),
-			solve_data.body_form->value(sol),
-			solve_data.inertia_form ? solve_data.inertia_form->value(sol) : 0,
-			solve_data.contact_form ? solve_data.contact_form->value(sol) : 0,
-			solve_data.al_lagr_form->value(sol),
-			solve_data.al_pen_form->value(sol),
-			solve_data.nl_problem->value(sol));
+		file << i << ",";
+		for (const auto &[_, form] : solve_data.named_forms())
+		{
+			file << ((form && form->enabled()) ? form->value(sol) : 0) << ",";
+		}
+		file << solve_data.nl_problem->value(sol) << "\n";
 		file.flush();
 	}
 
