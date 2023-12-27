@@ -8,6 +8,7 @@
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
+#include <polyfem/solver/forms/PressureForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/InversionBarrierForm.hpp>
@@ -94,6 +95,11 @@ namespace
 						"axis": "-z",
 						"position": 0.2,
 						"relative": true
+					},
+					{
+						"id": 3,
+						"box": [[0, 0, 0.2], [1, 1, 0.8]],
+						"relative": true
 					}
 				],
 				"n_refs": 1
@@ -105,7 +111,15 @@ namespace
 					"value": [1000, 1000, 1000]
 				}],
 				"pressure_boundary": [{
+					"id": 1,
+					"value": -2000
+				},
+				{
 					"id": 2,
+					"value": -2000
+				},
+				{
+					"id": 3,
 					"value": -2000
 				}],
 				"rhs": [0, 0, 0]
@@ -277,6 +291,22 @@ TEST_CASE("elastic form derivatives", "[form][form_derivatives][elastic_form]")
 		0,
 		state_ptr->args["time"]["dt"],
 		state_ptr->mesh->is_volume());
+	test_form(form, *state_ptr);
+}
+
+TEST_CASE("pressure form derivatives", "[form][form_derivatives][pressure_form]")
+{
+	const int dim = GENERATE(3);
+	const bool is_time_dependent = GENERATE(true);
+	const auto state_ptr = get_state(dim);
+	state_ptr->elasticity_pressure_assembler = state_ptr->build_pressure_assembler();
+	PressureForm form(
+		state_ptr->n_bases,
+		state_ptr->local_pressure_boundary,
+		state_ptr->boundary_nodes,
+		state_ptr->n_boundary_samples(),
+		*state_ptr->elasticity_pressure_assembler,
+		is_time_dependent);
 	test_form(form, *state_ptr);
 }
 
