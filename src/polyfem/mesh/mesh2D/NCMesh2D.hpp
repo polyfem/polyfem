@@ -221,9 +221,9 @@ namespace polyfem
 
 			void refine(const int n_refinement, const double t) override;
 
-			bool save(const std::string &path) const override 
-			{ 
-				// TODO 
+			bool save(const std::string &path) const override
+			{
+				// TODO
 				return false;
 			}
 
@@ -302,6 +302,8 @@ namespace polyfem
 			void build_index_mapping();
 
 			void append(const Mesh &mesh) override;
+
+			std::unique_ptr<Mesh> copy() const override;
 
 		private:
 			struct ArrayHasher2D

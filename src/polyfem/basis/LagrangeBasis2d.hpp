@@ -37,6 +37,7 @@ namespace polyfem
 			///                                the canonical elements lie on the boundary of the mesh
 			/// @param[out] poly_edge_to_data  Data for edges at the interface with a polygon (used to
 			///                                build the harmonics inside polygons)
+			/// @param[out] mesh_nodes		   Object for retrieving assigned node IDs.
 			///
 			/// @return     The number of basis functions created.
 			///
@@ -72,6 +73,7 @@ namespace polyfem
 			///                                the canonical elements lie on the boundary of the mesh
 			/// @param[out] poly_edge_to_data  Data for edges at the interface with a polygon (used to
 			///                                build the harmonics inside polygons)
+			/// @param[out] mesh_nodes		   Object for retrieving assigned node IDs.
 			///
 			/// @return     The number of basis functions created.
 			///

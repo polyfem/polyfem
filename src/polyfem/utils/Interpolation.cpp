@@ -47,7 +47,7 @@ namespace polyfem::utils
 	double LinearRamp::eval(const double t) const
 	{
 		if (t >= to_)
-			return to_;
+			return to_ - from_;
 
 		if (t <= from_)
 			return 0;

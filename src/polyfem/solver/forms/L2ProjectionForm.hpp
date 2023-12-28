@@ -8,7 +8,7 @@
 namespace polyfem::solver
 {
 
-	class L2ProjectionForm : public polyfem::solver::Form
+	class L2ProjectionForm : public Form
 	{
 	public:
 		L2ProjectionForm(

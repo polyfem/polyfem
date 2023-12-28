@@ -1,0 +1,3402 @@
+[
+    {
+        "pointer": "/",
+        "type": "object",
+        "required": [
+            "geometry",
+            "materials"
+        ],
+        "optional": [
+            "units",
+            "preset_problem",
+            "common",
+            "root_path",
+            "space",
+            "time",
+            "contact",
+            "solver",
+            "boundary_conditions",
+            "initial_conditions",
+            "output",
+            "input",
+            "tests"
+        ],
+        "doc": "Root of the configuration file."
+    },
+    {
+        "pointer": "/common",
+        "default": "",
+        "type": "file",
+        "extensions": [
+            ".json"
+        ],
+        "doc": "Path to common settings will patch the current file."
+    },
+    {
+        "pointer": "/root_path",
+        "default": "",
+        "type": "string",
+        "doc": "Path for all relative paths, set automatically to the folder containing this JSON."
+    },
+    {
+        "pointer": "/units",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "length",
+            "mass",
+            "time",
+            "characteristic_length"
+        ],
+        "doc": "Basic units used in the code."
+    },
+    {
+        "pointer": "/units/length",
+        "default": "m",
+        "type": "string",
+        "doc": "Length unit."
+    },
+    {
+        "pointer": "/units/mass",
+        "default": "kg",
+        "type": "string",
+        "doc": "Mass unit."
+    },
+    {
+        "pointer": "/units/time",
+        "default": "s",
+        "type": "string",
+        "doc": "Time unit."
+    },
+    {
+        "pointer": "/units/characteristic_length",
+        "default": 1,
+        "type": "float",
+        "doc": "Characteristic length, used for tolerances."
+    },
+    {
+        "pointer": "/tests",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "err_h1",
+            "err_h1_semi",
+            "err_l2",
+            "err_linf",
+            "err_linf_grad",
+            "err_lp",
+            "margin",
+            "time_steps"
+        ],
+        "doc": "Used to test to compare different norms of solutions."
+    },
+    {
+        "pointer": "/tests/err_h1",
+        "default": 0,
+        "type": "float",
+        "doc": "Reference h1 solution's norm."
+    },
+    {
+        "pointer": "/tests/err_h1_semi",
+        "default": 0,
+        "type": "float",
+        "doc": "Reference h1 seminorm solution's norm."
+    },
+    {
+        "pointer": "/tests/err_l2",
+        "default": 0,
+        "type": "float",
+        "doc": "Reference $L^2$ solution's norm."
+    },
+    {
+        "pointer": "/tests/err_linf",
+        "default": 0,
+        "type": "float",
+        "doc": "Reference $L^\\infty$ solution's norm."
+    },
+    {
+        "pointer": "/tests/err_linf_grad",
+        "default": 0,
+        "type": "float",
+        "doc": "Reference $L^\\infty$ solution's gradient norm."
+    },
+    {
+        "pointer": "/tests/err_lp",
+        "default": 0,
+        "type": "float",
+        "doc": "Reference $L^8$ solution's gradient norm."
+    },
+    {
+        "pointer": "/tests/margin",
+        "default": 1e-5,
+        "type": "float",
+        "doc": "Reference tolerance used in tests."
+    },
+    {
+        "pointer": "/tests/time_steps",
+        "default": 1,
+        "type": "int",
+        "min": 1,
+        "doc": "Number of time steps to test."
+    },
+    {
+        "pointer": "/tests/time_steps",
+        "type": "string",
+        "options": [
+            "all",
+            "static"
+        ],
+        "doc": "Number of time steps to test."
+    },
+    {
+        "pointer": "/geometry",
+        "type": "list",
+        "min": 1,
+        "doc": "List of geometry objects."
+    },
+    {
+        "pointer": "/geometry/*",
+        "type": "object",
+        "required": [
+            "mesh"
+        ],
+        "optional": [
+            "type",
+            "extract",
+            "unit",
+            "transformation",
+            "volume_selection",
+            "surface_selection",
+            "curve_selection",
+            "point_selection",
+            "n_refs",
+            "advanced",
+            "enabled",
+            "is_obstacle"
+        ],
+        "#type_name": "mesh",
+        "doc": "Each geometry object stores a mesh, a set of transformations applied to it after loading, and a set of selections, which can be used to specify boundary conditions, materials, optimization parameters and other quantities that can be associated with a part of an object."
+    },
+    {
+        "pointer": "/geometry/*",
+        "type": "object",
+        "required": [
+            "mesh",
+            "array"
+        ],
+        "optional": [
+            "type",
+            "extract",
+            "unit",
+            "transformation",
+            "volume_selection",
+            "surface_selection",
+            "curve_selection",
+            "point_selection",
+            "n_refs",
+            "advanced",
+            "enabled",
+            "is_obstacle"
+        ],
+        "type_name": "mesh_array",
+        "doc": "Each geometry object stores a mesh, a set of transformations applied to it after loading, and a set of selections, which can be used to specify boundary conditions, materials, optimization parameters and other quantities that can be associated with a part of an object."
+    },
+    {
+        "pointer": "/geometry/*",
+        "type": "object",
+        "required": [
+            "point",
+            "normal"
+        ],
+        "optional": [
+            "type",
+            "enabled",
+            "is_obstacle"
+        ],
+        "type_name": "plane",
+        "doc": "Plane geometry object defined by its origin and normal."
+    },
+    {
+        "pointer": "/geometry/*",
+        "type": "object",
+        "required": [
+            "height"
+        ],
+        "optional": [
+            "type",
+            "enabled",
+            "is_obstacle"
+        ],
+        "type_name": "ground",
+        "doc": "Plane orthogonal to gravity defined by its height."
+    },
+    {
+        "pointer": "/geometry/*",
+        "type": "object",
+        "required": [
+            "mesh_sequence",
+            "fps"
+        ],
+        "optional": [
+            "type",
+            "extract",
+            "transformation",
+            "enabled",
+            "is_obstacle"
+        ],
+        "type_name": "mesh_sequence",
+        "doc": "Mesh sequence."
+    },
+    {
+        "pointer": "/geometry/*/mesh",
+        "type": "file",
+        "extensions": [
+            ".obj",
+            ".msh",
+            ".stl",
+            ".ply",
+            ".mesh"
+        ],
+        "doc": "Path of the mesh file to load."
+    },
+    {
+        "pointer": "/geometry/*/type",
+        "type": "string",
+        "options": [
+            "mesh",
+            "plane",
+            "ground",
+            "mesh_sequence",
+            "mesh_array"
+        ],
+        "default": "mesh",
+        "doc": "Type of geometry, currently only one supported. In future we will add stuff like planes, spheres, etc."
+    },
+    {
+        "pointer": "/geometry/*/extract",
+        "type": "string",
+        "options": [
+            "volume",
+            "edges",
+            "points",
+            "surface"
+        ],
+        "default": "volume",
+        "doc": "Used to extract stuff from the mesh. Eg extract surface extracts the surface from a tet mesh."
+    },
+    {
+        "pointer": "/geometry/*/unit",
+        "type": "string",
+        "default": "",
+        "doc": "Units of the geometric model."
+    },
+    {
+        "pointer": "/geometry/*/transformation",
+        "type": "object",
+        "default": null,
+        "optional": [
+            "translation",
+            "rotation",
+            "rotation_mode",
+            "scale",
+            "dimensions"
+        ],
+        "doc": "Geometric transformations applied to the geometry after loading it."
+    },
+    {
+        "pointer": "/geometry/*/transformation/rotation_mode",
+        "type": "string",
+        "default": "xyz",
+        "doc": "Type of rotation, supported are any permutation of [xyz]+, axis_angle, quaternion, or rotation_vector."
+    },
+    {
+        "pointer": "/geometry/*/transformation/translation",
+        "type": "list",
+        "default": [],
+        "doc": "Translate (two entries for 2D problems or three entries for 3D problems)."
+    },
+    {
+        "pointer": "/geometry/*/transformation/rotation",
+        "type": "list",
+        "default": [],
+        "doc": "Rotate, in 2D, one number, the rotation angle, in 3D, three or four Euler angles, axis+angle, or a unit quaternion. Depends on rotation mode."
+    },
+    {
+        "pointer": "/geometry/*/transformation/scale",
+        "type": "list",
+        "default": [],
+        "doc": "Scale by specified factors along axes (two entries for 2D problems or three entries for 3D problems)."
+    },
+    {
+        "pointer": "/geometry/*/transformation/dimensions",
+        "type": "float",
+        "default": 1,
+        "doc": "Scale the object so that bounding box dimensions match specified dimensions, 2 entries for 2D problems, 3 entries for 3D problems."
+    },
+    {
+        "pointer": "/geometry/*/transformation/dimensions",
+        "type": "list",
+        "doc": "Scale the object so that bounding box dimensions match specified dimensions, 2 entries for 2D problems, 3 entries for 3D problems."
+    },
+    {
+        "pointer": "/geometry/*/transformation/dimensions/*",
+        "type": "float",
+        "default": 0
+    },
+    {
+        "pointer": "/geometry/*/transformation/translation/*",
+        "type": "float",
+        "default": 0
+    },
+    {
+        "pointer": "/geometry/*/transformation/rotation/*",
+        "default": 0,
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/transformation/scale/*",
+        "default": 0,
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection",
+        "type": "include",
+        "spec_file": "selection.json",
+        "doc": "Selection of volume elements"
+    },
+    {
+        "pointer": "/geometry/*/volume_selection",
+        "type": "object",
+        "optional": [
+            "id_offset"
+        ],
+        "#type_name": "id_offset",
+        "default": null,
+        "doc": "Offsets the volume IDs loaded from the mesh."
+    },
+    {
+        "pointer": "/geometry/*/volume_selection/id_offset",
+        "type": "int",
+        "default": 0,
+        "doc": "Offsets the volume IDs loaded from the mesh."
+    },
+    {
+        "pointer": "/geometry/*/volume_selection",
+        "type": "list",
+        "doc": "List of selection (ID assignment) operations to apply to the geometry; operations can be box, sphere, etc."
+    },
+    {
+        "pointer": "/geometry/*/surface_selection",
+        "type": "include",
+        "spec_file": "selection.json",
+        "doc": "Selection of surface elements"
+    },
+    {
+        "pointer": "/geometry/*/surface_selection",
+        "type": "list",
+        "default": "skip",
+        "doc": "List of selection (ID assignment) operations to apply to the geometry; operations can be box, sphere, etc."
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*",
+        "type": "object",
+        "required": [
+            "threshold"
+        ],
+        "optional": [
+            "id_offset"
+        ],
+        "default": null,
+        "#type_name": "box_side",
+        "doc": "Assigns ids to sides touching the bbox of the model using a threshold. Assigns 1+offset to left, 2+offset to bottom, 3+offset to right, 4+offset to top, 5+offset to front, 6+offset to back, 7+offset to everything else."
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*/id_offset",
+        "type": "int",
+        "default": 0,
+        "doc": "ID offset of box side selection."
+    },
+    {
+        "pointer": "/geometry/*/curve_selection",
+        "type": "object",
+        "default": null,
+        "doc": "Selection of curves"
+    },
+    {
+        "pointer": "/geometry/*/point_selection",
+        "type": "include",
+        "spec_file": "selection.json",
+        "doc": "Selection of points"
+    },
+    {
+        "pointer": "/geometry/*/point_selection",
+        "type": "list",
+        "default": "skip",
+        "doc": "List of selection (ID assignment) operations to apply to the geometry; operations can be box, sphere, etc."
+    },
+    {
+        "pointer": "/geometry/*/point_selection/*",
+        "type": "object",
+        "required": [
+            "threshold"
+        ],
+        "optional": [
+            "id_offset"
+        ],
+        "default": null,
+        "#type_name": "box_side",
+        "doc": "Assigns ids to sides touching the bbox of the model using a threshold. Assigns 1+offset to left, 2+offset to bottom, 3+offset to right, 4+offset to top, 5+offset to front, 6+offset to back, 7+offset to everything else."
+    },
+    {
+        "pointer": "/geometry/*/surface_selection/*/id_offset",
+        "type": "int",
+        "default": 0,
+        "doc": "ID offset of box side selection."
+    },
+    {
+        "pointer": "/geometry/*/n_refs",
+        "type": "int",
+        "default": 0,
+        "doc": "number of uniform refinements"
+    },
+    {
+        "pointer": "/geometry/*/advanced",
+        "type": "object",
+        "optional": [
+            "normalize_mesh",
+            "force_linear_geometry",
+            "refinement_location",
+            "min_component"
+        ],
+        "default": null,
+        "doc": "Advanced options for geometry"
+    },
+    {
+        "pointer": "/geometry/*/advanced/normalize_mesh",
+        "type": "bool",
+        "default": false,
+        "doc": "Rescale the mesh to it fits in the biunit cube"
+    },
+    {
+        "pointer": "/geometry/*/advanced/force_linear_geometry",
+        "type": "bool",
+        "default": false,
+        "doc": "Discard high-order nodes for curved geometries"
+    },
+    {
+        "pointer": "/geometry/*/advanced/refinement_location",
+        "type": "float",
+        "default": 0.5,
+        "doc": "parametric location of the refinement"
+    },
+    {
+        "pointer": "/geometry/*/advanced/min_component",
+        "type": "int",
+        "default": -1,
+        "doc": "Size of the minumum component for collision"
+    },
+    {
+        "pointer": "/geometry/*/is_obstacle",
+        "type": "bool",
+        "default": false,
+        "doc": "The geometry elements are not included in deforming geometry, only in collision computations"
+    },
+    {
+        "pointer": "/geometry/*/enabled",
+        "type": "bool",
+        "default": true,
+        "doc": "Skips the geometry if false"
+    },
+    {
+        "pointer": "/geometry/*/point",
+        "type": "list",
+        "doc": "Point on plane (two entries for 2D problems or three entries for 3D problems)."
+    },
+    {
+        "pointer": "/geometry/*/point/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/normal",
+        "type": "list",
+        "doc": "Normal of plane (two entries for 2D problems or three entries for 3D problems)."
+    },
+    {
+        "pointer": "/geometry/*/point/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/height",
+        "type": "float",
+        "doc": "Height of ground plane."
+    },
+    {
+        "pointer": "/geometry/*/mesh_sequence",
+        "type": "string",
+        "doc": "Directory (or GLOB) of meshes for the mesh sequence."
+    },
+    {
+        "pointer": "/geometry/*/mesh_sequence",
+        "type": "list",
+        "doc": "List of mesh files for the mesh sequence."
+    },
+    {
+        "pointer": "/geometry/*/mesh_sequence/*",
+        "type": "file",
+        "extensions": [
+            ".obj",
+            ".msh",
+            ".stl",
+            ".ply",
+            ".mesh"
+        ],
+        "doc": "Path of the mesh file to load."
+    },
+    {
+        "pointer": "/geometry/*/fps",
+        "type": "int",
+        "doc": "Frames of the mesh sequence per second."
+    },
+    {
+        "pointer": "/geometry/*/array",
+        "type": "object",
+        "required": [
+            "offset",
+            "size"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "doc": "Array of meshes"
+    },
+    {
+        "pointer": "/geometry/*/array/relative",
+        "type": "bool",
+        "default": false,
+        "doc": "Is the offset value relative to the mesh's dimensions."
+    },
+    {
+        "pointer": "/geometry/*/array/offset",
+        "type": "float",
+        "doc": "Offset of the mesh in the array."
+    },
+    {
+        "pointer": "/geometry/*/array/size",
+        "type": "list",
+        "doc": "Size of the array (two entries for 2D problems or three entries for 3D problems)."
+    },
+    {
+        "pointer": "/geometry/*/array/size/*",
+        "type": "int",
+        "min": 1,
+        "doc": "Size of the array (two entries for 2D problems or three entries for 3D problems)."
+    },
+    {
+        "pointer": "/space",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "discr_order",
+            "pressure_discr_order",
+            "basis_type",
+            "poly_basis_type",
+            "use_p_ref",
+            "remesh",
+            "advanced"
+        ],
+        "doc": "Options related to the FE space."
+    },
+    {
+        "pointer": "/space/discr_order",
+        "default": 1,
+        "type": "int",
+        "doc": "Lagrange element order for the space for the main unknown, for all elements."
+    },
+    {
+        "pointer": "/space/discr_order",
+        "type": "file",
+        "extensions": [
+            ".txt",
+            ".bin"
+        ],
+        "doc": "Path to file containing Lagrange element order for the space for the main unknown per element."
+    },
+    {
+        "pointer": "/space/discr_order",
+        "type": "list",
+        "doc": "List of Lagrange element order for the space for the main unknown with volume IDs."
+    },
+    {
+        "pointer": "/space/discr_order/*",
+        "type": "object",
+        "required": [
+            "id",
+            "order"
+        ],
+        "doc": "Lagrange element order for the a space tagged with volume ID for the main unknown."
+    },
+    {
+        "pointer": "/space/discr_order/*/id",
+        "type": "int",
+        "doc": "Volume selection ID to apply the discr_order to."
+    },
+    {
+        "pointer": "/space/discr_order/*/id",
+        "type": "list",
+        "doc": "List of volume selection IDs to apply the discr_order to."
+    },
+    {
+        "pointer": "/space/discr_order/*/id/*",
+        "type": "int",
+        "doc": "Volume selection ID to apply the discr_order to."
+    },
+    {
+        "pointer": "/space/discr_order/*/order",
+        "type": "int",
+        "doc": "Lagrange element order for the space for the main unknown, for all elements."
+    },
+    {
+        "pointer": "/space/pressure_discr_order",
+        "default": 1,
+        "type": "int",
+        "doc": " Lagrange element order for the space for the pressure unknown, for all elements."
+    },
+    {
+        "pointer": "/space/basis_type",
+        "default": "Lagrange",
+        "options": [
+            "Lagrange",
+            "Spline",
+            "Serendipity"
+        ],
+        "type": "string",
+        "doc": "Type of basis to use for non polygonal element, one of Lagrange, Spline, or Serendipity. Spline or Serendipity work only for quad/hex meshes"
+    },
+    {
+        "pointer": "/space/poly_basis_type",
+        "default": "MFSHarmonic",
+        "options": [
+            "MFSHarmonic",
+            "MeanValue",
+            "Wachspress"
+        ],
+        "type": "string",
+        "doc": "Type of basis to use for a polygonal element, one of MFSHarmonic, MeanValue, or Wachspress see 'PolySpline..' paper for details."
+    },
+    {
+        "pointer": "/space/use_p_ref",
+        "default": false,
+        "type": "bool",
+        "doc": "Perform a priori p-refinement based on element shape, as described in 'Decoupling..' paper."
+    },
+    {
+        "pointer": "/space/remesh",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "enabled",
+            "split",
+            "collapse",
+            "swap",
+            "smooth",
+            "local_relaxation",
+            "type"
+        ],
+        "doc": "Settings for adaptive remeshing"
+    },
+    {
+        "pointer": "/space/remesh/enabled",
+        "default": false,
+        "type": "bool",
+        "doc": "Whether to do adaptive remeshing"
+    },
+    {
+        "pointer": "/space/remesh/split",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "enabled",
+            "acceptance_tolerance",
+            "culling_threshold",
+            "max_depth",
+            "min_edge_length"
+        ],
+        "doc": "Settings for adaptive remeshing edge splitting operations"
+    },
+    {
+        "pointer": "/space/remesh/split/enabled",
+        "default": true,
+        "type": "bool",
+        "doc": "Whether to do edge splitting in adaptive remeshing"
+    },
+    {
+        "pointer": "/space/remesh/split/acceptance_tolerance",
+        "default": 1e-3,
+        "min": 0,
+        "type": "float",
+        "doc": "Accept split operation if energy decreased by at least x"
+    },
+    {
+        "pointer": "/space/remesh/split/culling_threshold",
+        "default": 0.95,
+        "type": "float",
+        "min": 0,
+        "max": 1,
+        "doc": "Split operation culling threshold on energy"
+    },
+    {
+        "pointer": "/space/remesh/split/max_depth",
+        "default": 3,
+        "type": "int",
+        "min": 1,
+        "doc": "Maximum depth split per time-step"
+    },
+    {
+        "pointer": "/space/remesh/split/min_edge_length",
+        "default": 1e-6,
+        "type": "float",
+        "min": 0,
+        "doc": "Minimum edge length to split"
+    },
+    {
+        "pointer": "/space/remesh/collapse",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "enabled",
+            "acceptance_tolerance",
+            "culling_threshold",
+            "max_depth",
+            "rel_max_edge_length",
+            "abs_max_edge_length"
+        ],
+        "doc": "Settings for adaptive remeshing edge collapse operations"
+    },
+    {
+        "pointer": "/space/remesh/collapse/enabled",
+        "default": true,
+        "type": "bool",
+        "doc": "Whether to do edge collapse in adaptive remeshing"
+    },
+    {
+        "pointer": "/space/remesh/collapse/acceptance_tolerance",
+        "default": -1e-8,
+        "max": 0,
+        "type": "float",
+        "doc": "Accept collapse operation if energy decreased by at least x"
+    },
+    {
+        "pointer": "/space/remesh/collapse/culling_threshold",
+        "default": 0.01,
+        "type": "float",
+        "min": 0,
+        "max": 1,
+        "doc": "Collapse operation culling threshold on energy"
+    },
+    {
+        "pointer": "/space/remesh/collapse/max_depth",
+        "default": 3,
+        "type": "int",
+        "min": 1,
+        "doc": "Maximum depth collapse per time-step"
+    },
+    {
+        "pointer": "/space/remesh/collapse/rel_max_edge_length",
+        "default": 1,
+        "type": "float",
+        "min": 0,
+        "doc": "Length of maximum edge length to collapse relative to initial minimum edge length"
+    },
+    {
+        "pointer": "/space/remesh/collapse/abs_max_edge_length",
+        "default": 1e100,
+        "type": "float",
+        "min": 0,
+        "doc": "Length of maximum edge length to collapse in absolute units of distance"
+    },
+    {
+        "pointer": "/space/remesh/swap",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "enabled",
+            "acceptance_tolerance",
+            "max_depth"
+        ],
+        "doc": "Settings for adaptive remeshing edge/face swap operations"
+    },
+    {
+        "pointer": "/space/remesh/swap/enabled",
+        "default": false,
+        "type": "bool",
+        "doc": "Whether to do edge/face swap in adaptive remeshing"
+    },
+    {
+        "pointer": "/space/remesh/swap/acceptance_tolerance",
+        "default": -1e-8,
+        "max": 0,
+        "type": "float",
+        "doc": "Accept swap operation if energy decreased by at least x"
+    },
+    {
+        "pointer": "/space/remesh/swap/max_depth",
+        "default": 3,
+        "type": "int",
+        "min": 1,
+        "doc": "Maximum depth swap per time-step"
+    },
+    {
+        "pointer": "/space/remesh/smooth",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "enabled",
+            "acceptance_tolerance",
+            "max_iters"
+        ],
+        "doc": "Settings for adaptive remeshing vertex smoothing operations"
+    },
+    {
+        "pointer": "/space/remesh/smooth/enabled",
+        "default": false,
+        "type": "bool",
+        "doc": "Whether to do vertex smoothing in adaptive remeshing"
+    },
+    {
+        "pointer": "/space/remesh/smooth/acceptance_tolerance",
+        "default": -1e-8,
+        "max": 0,
+        "type": "float",
+        "doc": "Accept smooth operation if energy decreased by at least x"
+    },
+    {
+        "pointer": "/space/remesh/smooth/max_iters",
+        "default": 1,
+        "type": "int",
+        "min": 1,
+        "doc": "Maximum number of smoothing iterations per time-step"
+    },
+    {
+        "pointer": "/space/remesh/local_relaxation",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "local_mesh_n_ring",
+            "local_mesh_rel_area",
+            "max_nl_iterations"
+        ],
+        "doc": "Settings for adaptive remeshing local relaxation"
+    },
+    {
+        "pointer": "/space/remesh/local_relaxation/local_mesh_n_ring",
+        "default": 2,
+        "type": "int",
+        "doc": "Size of n-ring for local relaxation"
+    },
+    {
+        "pointer": "/space/remesh/local_relaxation/local_mesh_rel_area",
+        "default": 0.01,
+        "type": "float",
+        "doc": "Minimum area for local relaxation"
+    },
+    {
+        "pointer": "/space/remesh/local_relaxation/max_nl_iterations",
+        "default": 1,
+        "type": "int",
+        "doc": "Maximum number of nonlinear solver iterations before acceptance check"
+    },
+    {
+        "pointer": "/space/remesh/type",
+        "default": "physics",
+        "type": "string",
+        "options": [
+            "physics",
+            "sizing_field"
+        ],
+        "doc": "Type of adaptive remeshing to use."
+    },
+    {
+        "pointer": "/space/advanced",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "discr_order_max",
+            "isoparametric",
+            "bc_method",
+            "n_boundary_samples",
+            "quadrature_order",
+            "mass_quadrature_order",
+            "integral_constraints",
+            "n_harmonic_samples",
+            "force_no_ref_for_harmonic",
+            "B",
+            "h1_formula",
+            "count_flipped_els",
+            "use_particle_advection"
+        ],
+        "doc": "Advanced settings for the FE space."
+    },
+    {
+        "pointer": "/space/advanced/discr_order_max",
+        "default": 4,
+        "type": "int",
+        "doc": "Maximal discretization order in adaptive p-refinement and hp-refinement"
+    },
+    {
+        "pointer": "/space/advanced/isoparametric",
+        "default": false,
+        "type": "bool",
+        "doc": "Forces geometric map basis to be the same degree as the main variable basis, irrespective of the degree associated with the geom. map degrees associated with the elements of the geometry."
+    },
+    {
+        "pointer": "/space/advanced/bc_method",
+        "default": "sample",
+        "options": [
+            "lsq",
+            "sample"
+        ],
+        "type": "string",
+        "doc": "Method for imposing analytic Dirichet boundary conditions. If 'lsq' (least-squares fit), then the bc function is sampled at quadrature points, and the FEspace nodal values on the boundary are determined by minimizing L2 norm of the difference. If 'sample', then the analytic bc function is sampled at the boundary nodes."
+    },
+    {
+        "pointer": "/space/advanced/n_boundary_samples",
+        "default": -1,
+        "type": "int",
+        "doc": "Per-element number of boundary samples for analytic Dirichlet and Neumann boundary conditions."
+    },
+    {
+        "pointer": "/space/advanced/quadrature_order",
+        "default": -1,
+        "type": "int",
+        "doc": "Minimal quadrature order to use in matrix and rhs assembly; the actual order is determined as min(2*(p-1)+1,quadrature_order)."
+    },
+    {
+        "pointer": "/space/advanced/mass_quadrature_order",
+        "default": -1,
+        "type": "int",
+        "doc": "Minimal quadrature order to use in mass matrix assembler; the actual order is determined as min(2*p+1,quadrature_order)"
+    },
+    {
+        "pointer": "/space/advanced/integral_constraints",
+        "default": 2,
+        "type": "int",
+        "doc": "Number of constraints for non-conforming polygonal basis;  0, 1, or 2; see 'PolySpline..' paper for details."
+    },
+    {
+        "pointer": "/space/advanced/n_harmonic_samples",
+        "default": 10,
+        "type": "int",
+        "doc": "If MFSHarmonics is used for a polygonal element, number of collocation samples used in the basis construction;see 'PolySpline..' paper for details."
+    },
+    {
+        "pointer": "/space/advanced/force_no_ref_for_harmonic",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, do not do uniform global refinement if the mesh contains polygonal elements."
+    },
+    {
+        "pointer": "/space/advanced/B",
+        "default": 3,
+        "type": "int",
+        "doc": "The target deviation of the error on elements from perfect element error, for a priori geometry-dependent p-refinement, see 'Decoupling .. ' paper."
+    },
+    {
+        "pointer": "/space/advanced/h1_formula",
+        "default": false,
+        "type": "bool",
+        "doc": ""
+    },
+    {
+        "pointer": "/space/advanced/count_flipped_els",
+        "default": true,
+        "type": "bool",
+        "doc": "Count the number of elements with Jacobian of the geometric map not positive at quadrature points."
+    },
+    {
+        "pointer": "/space/advanced/use_particle_advection",
+        "default": false,
+        "type": "bool",
+        "doc": "Use particle advection in splitting method for solving NS equation."
+    },
+    {
+        "pointer": "/time",
+        "default": "skip",
+        "type": "object",
+        "required": [
+            "tend",
+            "dt"
+        ],
+        "optional": [
+            "t0",
+            "integrator",
+            "quasistatic"
+        ],
+        "doc": "The time parameters: start time `t0`, end time `tend`, time step `dt`."
+    },
+    {
+        "pointer": "/time",
+        "type": "object",
+        "required": [
+            "time_steps",
+            "dt"
+        ],
+        "optional": [
+            "t0",
+            "integrator",
+            "quasistatic"
+        ],
+        "doc": "The time parameters: start time `t0`, time step `dt`, number of time steps."
+    },
+    {
+        "pointer": "/time",
+        "type": "object",
+        "required": [
+            "time_steps",
+            "tend"
+        ],
+        "optional": [
+            "t0",
+            "integrator",
+            "quasistatic"
+        ],
+        "doc": "The time parameters: start time `t0`, end time `tend`, number of time steps."
+    },
+    {
+        "pointer": "/time/t0",
+        "type": "float",
+        "min": 0,
+        "default": 0,
+        "doc": "Startning time"
+    },
+    {
+        "pointer": "/time/tend",
+        "type": "float",
+        "min": 0,
+        "doc": "Ending time"
+    },
+    {
+        "pointer": "/time/dt",
+        "type": "float",
+        "min": 0,
+        "doc": "Time step size $\\Delta t$"
+    },
+    {
+        "pointer": "/time/time_steps",
+        "type": "int",
+        "min": 0,
+        "doc": "Number of time steps"
+    },
+    {
+        "pointer": "/time/integrator",
+        "type": "string",
+        "default": "ImplicitEuler",
+        "options": [
+            "ImplicitEuler",
+            "BDF1",
+            "BDF2",
+            "BDF3",
+            "BDF4",
+            "BDF5",
+            "BDF6",
+            "ImplicitNewmark"
+        ],
+        "doc": "Time integrator"
+    },
+    {
+        "pointer": "/time/integrator",
+        "type": "object",
+        "type_name": "ImplicitEuler",
+        "required": [
+            "type"
+        ],
+        "doc": "Implicit Euler time integration"
+    },
+    {
+        "pointer": "/time/integrator",
+        "type": "object",
+        "type_name": "BDF",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "steps"
+        ],
+        "doc": "Backwards differentiation formula time integration"
+    },
+    {
+        "pointer": "/time/integrator",
+        "type": "object",
+        "type_name": "ImplicitNewmark",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "gamma",
+            "beta"
+        ],
+        "doc": "Implicit Newmark time integration"
+    },
+    {
+        "pointer": "/time/integrator/type",
+        "type": "string",
+        "options": [
+            "ImplicitEuler",
+            "BDF",
+            "ImplicitNewmark"
+        ],
+        "doc": "Type of time integrator to use"
+    },
+    {
+        "pointer": "/time/integrator/gamma",
+        "type": "float",
+        "default": 0.5,
+        "min": 0,
+        "max": 1,
+        "doc": "Newmark gamma"
+    },
+    {
+        "pointer": "/time/integrator/beta",
+        "type": "float",
+        "default": 0.25,
+        "min": 0,
+        "max": 0.5,
+        "doc": "Newmark beta"
+    },
+    {
+        "pointer": "/time/integrator/steps",
+        "type": "int",
+        "default": 1,
+        "min": 1,
+        "max": 6,
+        "doc": "BDF order"
+    },
+    {
+        "pointer": "/time/quasistatic",
+        "type": "bool",
+        "default": false,
+        "doc": "Ignore inertia in time dependent. Used for doing incremental load."
+    },
+    {
+        "pointer": "/contact",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "enabled",
+            "dhat",
+            "dhat_percentage",
+            "epsv",
+            "friction_coefficient",
+            "use_convergent_formulation",
+            "collision_mesh"
+        ],
+        "doc": "Contact handling parameters."
+    },
+    {
+        "pointer": "/contact/enabled",
+        "default": false,
+        "type": "bool",
+        "doc": "True if contact handling is enabled."
+    },
+    {
+        "pointer": "/contact/dhat",
+        "default": 0.001,
+        "min": 0,
+        "type": "float",
+        "doc": "Contact barrier activation distance."
+    },
+    {
+        "pointer": "/contact/dhat_percentage",
+        "default": 0.8,
+        "type": "float",
+        "doc": "$\\hat{d}$ as percentage of the diagonal of the bounding box"
+    },
+    {
+        "pointer": "/contact/epsv",
+        "default": 0.001,
+        "min": 0,
+        "type": "float",
+        "doc": "Friction smoothing parameter."
+    },
+    {
+        "pointer": "/contact/friction_coefficient",
+        "default": 0,
+        "type": "float",
+        "doc": "Coefficient of friction (global)"
+    },
+    {
+        "pointer": "/contact/use_convergent_formulation",
+        "default": false,
+        "type": "bool",
+        "doc": "Whether to use the convergent (area weighted) formulation of IPC."
+    },
+    {
+        "pointer": "/contact/collision_mesh",
+        "type": "object",
+        "required": [
+            "mesh",
+            "linear_map"
+        ],
+        "optional": [
+            "enabled"
+        ],
+        "default": "skip",
+        "doc": "Load a preconstructed collision mesh."
+    },
+    {
+        "pointer": "/contact/collision_mesh",
+        "type": "object",
+        "required": [
+            "max_edge_length"
+        ],
+        "optional": [
+            "tessellation_type",
+            "enabled"
+        ],
+        "doc": "Construct a collision mesh with a maximum edge length."
+    },
+    {
+        "pointer": "/contact/collision_mesh/mesh",
+        "type": "string",
+        "doc": "Path to preconstructed collision mesh."
+    },
+    {
+        "pointer": "/contact/collision_mesh/linear_map",
+        "type": "string",
+        "doc": "HDF file storing the linear mapping of displacements."
+    },
+    {
+        "pointer": "/contact/collision_mesh/max_edge_length",
+        "type": "float",
+        "doc": "Maximum edge length to use for building the collision mesh."
+    },
+    {
+        "pointer": "/contact/collision_mesh/tessellation_type",
+        "type": "string",
+        "options": [
+            "regular",
+            "irregular"
+        ],
+        "default": "regular",
+        "doc": "Type of tessellation to use for building the collision mesh."
+    },
+    {
+        "pointer": "/contact/collision_mesh/enabled",
+        "type": "bool",
+        "default": true,
+        "doc": ""
+    },
+    {
+        "pointer": "/solver",
+        "type": "include",
+        "spec_file": "polysolve.json",
+        "doc": "Settings for the solver."
+    },
+    {
+        "pointer": "/solver",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "max_threads",
+            "linear",
+            "adjoint_linear",
+            "nonlinear",
+            "augmented_lagrangian",
+            "contact",
+            "rayleigh_damping",
+            "advanced"
+        ],
+        "doc": "The settings for the solver including linear solver, nonlinear solver, and some advanced options."
+    },
+    {
+        "pointer": "/solver/max_threads",
+        "default": 0,
+        "type": "int",
+        "min": 0,
+        "doc": "Maximum number of threads used; 0 is unlimited."
+    },
+    {
+        "pointer": "/solver/linear/adjoint_solver",
+        "type": "include",
+        "spec_file": "linear-solver-spec.json"
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "initial_weight",
+            "scaling",
+            "max_weight",
+            "eta",
+            "nonlinear"
+        ],
+        "doc": "Parameters for the AL for imposing Dirichlet BCs. If the bc are not imposable, we add $w\\|u - bc\\|^2$ to the energy ($u$ is the solution at the Dirichlet nodes and $bc$ are the Dirichlet values). After convergence, we try to impose bc again. The algorithm computes E + a/2*AL^2 - lambda AL, where E is the current energy (elastic, inertia, contact, etc.) and AL is the augmented Lagrangian energy. a starts at `initial_weight` and, in case DBC cannot be imposed, we update a as `a *= scaling` until `max_weight`. See IPC additional material"
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/nonlinear",
+        "type": "include",
+        "spec_file": "nonlinear-solver-spec.json",
+        "doc": "Settings for nonlinear solver in augmented lagrangian."
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/initial_weight",
+        "default": 1e6,
+        "min": 0,
+        "type": "float",
+        "doc": "Initial weight for AL"
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/scaling",
+        "default": 2.0,
+        "type": "float",
+        "doc": "Multiplication factor"
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/max_weight",
+        "default": 1e8,
+        "type": "float",
+        "doc": "Maximum weigth"
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/eta",
+        "default": 0.99,
+        "min": 0,
+        "max": 1,
+        "type": "float",
+        "doc": "Tolerance for increasing the weight or updating the lagrangian"
+    },
+    {
+        "pointer": "/solver/contact",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "CCD",
+            "friction_iterations",
+            "friction_convergence_tol",
+            "barrier_stiffness"
+        ],
+        "doc": "Settings for contact handling in the solver."
+    },
+    {
+        "pointer": "/solver/contact/CCD",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "broad_phase",
+            "tolerance",
+            "max_iterations"
+        ],
+        "doc": "CCD options"
+    },
+    {
+        "pointer": "/solver/contact/CCD/broad_phase",
+        "default": "hash_grid",
+        "type": "string",
+        "options": [
+            "hash_grid",
+            "HG",
+            "brute_force",
+            "BF",
+            "spatial_hash",
+            "SH",
+            "sweep_and_tiniest_queue",
+            "STQ",
+            "sweep_and_tiniest_queue_gpu",
+            "STQ_GPU"
+        ],
+        "doc": "Broad phase collision-detection algorithm to use"
+    },
+    {
+        "pointer": "/solver/contact/CCD/tolerance",
+        "default": 1e-06,
+        "type": "float",
+        "doc": "CCD tolerance"
+    },
+    {
+        "pointer": "/solver/contact/CCD/max_iterations",
+        "default": 1000000,
+        "type": "int",
+        "doc": "Maximum number of iterations for continuous collision detection"
+    },
+    {
+        "pointer": "/solver/contact/friction_iterations",
+        "default": 1,
+        "type": "int",
+        "doc": "Maximum number of update iterations for lagged friction formulation (see IPC paper)."
+    },
+    {
+        "pointer": "/solver/contact/friction_convergence_tol",
+        "default": 0.01,
+        "type": "float",
+        "doc": "Tolerence for friction convergence"
+    },
+    {
+        "pointer": "/solver/contact/barrier_stiffness",
+        "default": "adaptive",
+        "options": [
+            "adaptive"
+        ],
+        "type": "string",
+        "doc": "How coefficient of clamped log-barrier function for contact is updated"
+    },
+    {
+        "pointer": "/solver/contact/barrier_stiffness",
+        "type": "float",
+        "doc": "The coefficient of clamped log-barrier function value when not adaptive"
+    },
+    {
+        "pointer": "/solver/rayleigh_damping",
+        "type": "list",
+        "default": [],
+        "doc": "Apply Rayleigh damping."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*",
+        "type": "object",
+        "required": [
+            "form",
+            "stiffness_ratio"
+        ],
+        "optional": [
+            "lagging_iterations"
+        ],
+        "doc": "Apply Rayleigh damping to the given Form with a stiffness ratio."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*",
+        "type": "object",
+        "required": [
+            "form",
+            "stiffness"
+        ],
+        "optional": [
+            "lagging_iterations"
+        ],
+        "doc": "Apply Rayleigh damping to the given Form with a stiffness."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*/form",
+        "type": "string",
+        "options": [
+            "elasticity",
+            "contact",
+            "friction"
+        ],
+        "doc": "Form to damp."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*/stiffness_ratio",
+        "type": "float",
+        "min": 0,
+        "doc": "Ratio of to damp (stiffness = 0.75 * stiffness_ratio * Δt³)."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*/stiffness",
+        "type": "float",
+        "min": 0,
+        "doc": "Ratio of to damp."
+    },
+    {
+        "pointer": "/solver/rayleigh_damping/*/lagging_iterations",
+        "default": 1,
+        "type": "int",
+        "doc": "Maximum number of update iterations for lagging."
+    },
+    {
+        "pointer": "/solver/advanced",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "cache_size",
+            "lump_mass_matrix",
+            "lagged_regularization_weight",
+            "lagged_regularization_iterations"
+        ],
+        "doc": "Advanced settings for the solver"
+    },
+    {
+        "pointer": "/solver/advanced/cache_size",
+        "default": 900000,
+        "type": "int",
+        "doc": "Maximum number of elements when the assembly values are cached."
+    },
+    {
+        "pointer": "/solver/advanced/lump_mass_matrix",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, use diagonal mass matrix with entries on the diagonal equal to the sum of entries in each row of the full mass matrix.}"
+    },
+    {
+        "pointer": "/solver/advanced/lagged_regularization_weight",
+        "default": 0,
+        "type": "float",
+        "doc": "Weight used to regularize singular static problems."
+    },
+    {
+        "pointer": "/solver/advanced/lagged_regularization_iterations",
+        "default": 1,
+        "type": "int",
+        "doc": "Number of regularize singular static problems."
+    },
+    {
+        "pointer": "/materials",
+        "type": "list",
+        "doc": "Material Parameters lists including ID pointing to volume selection, Young's modulus ($E$), Poisson's ratio ($\\nu$), Density ($\\rho$), or Lamé constants ($\\lambda$ and $\\mu$)."
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "NeoHookean",
+        "required": [
+            "type",
+            "E",
+            "nu"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "phi",
+            "psi"
+        ],
+        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "NeoHookean",
+        "required": [
+            "type",
+            "lambda",
+            "mu"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "phi",
+            "psi"
+        ],
+        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "MooneyRivlin",
+        "required": [
+            "type",
+            "c1",
+            "c2",
+            "k"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "MooneyRivlin3Param",
+        "required": [
+            "type",
+            "c1",
+            "c2",
+            "c3",
+            "d1"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "UnconstrainedOgden",
+        "required": [
+            "type",
+            "alphas",
+            "mus",
+            "Ds"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, for [Ogden](https://en.wikipedia.org/wiki/Ogden_hyperelastic_model)."
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "IncompressibleOgden",
+        "required": [
+            "type",
+            "c",
+            "m",
+            "k"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, for [Ogden](https://en.wikipedia.org/wiki/Ogden_hyperelastic_model)."
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "LinearElasticity",
+        "required": [
+            "type",
+            "E",
+            "nu"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "phi",
+            "psi"
+        ],
+        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "LinearElasticity",
+        "required": [
+            "type",
+            "lambda",
+            "mu"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "HookeLinearElasticity",
+        "required": [
+            "type",
+            "E",
+            "nu"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "HookeLinearElasticity",
+        "required": [
+            "type",
+            "elasticity_tensor"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "SaintVenant",
+        "required": [
+            "type",
+            "E",
+            "nu"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "phi",
+            "psi"
+        ],
+        "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "SaintVenant",
+        "required": [
+            "type",
+            "elasticity_tensor"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "phi",
+            "psi"
+        ],
+        "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "Stokes",
+        "required": [
+            "type",
+            "viscosity"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, viscosity, density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "NavierStokes",
+        "required": [
+            "type",
+            "viscosity"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, viscosity, density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "OperatorSplitting",
+        "required": [
+            "type",
+            "viscosity"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, viscosity, density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "IncompressibleLinearElasticity",
+        "required": [
+            "type",
+            "E",
+            "nu"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "IncompressibleLinearElasticity",
+        "required": [
+            "type",
+            "lambda",
+            "mu"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "Laplacian",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "Helmholtz",
+        "required": [
+            "type",
+            "k"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, k, density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "Bilaplacian",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "AMIPS",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "id"
+        ],
+        "doc": "Material Parameters including ID"
+    },
+    {
+        "pointer": "/materials/*/type",
+        "type": "string",
+        "options": [
+            "LinearElasticity",
+            "HookeLinearElasticity",
+            "SaintVenant",
+            "NeoHookean",
+            "MooneyRivlin",
+            "MooneyRivlin3Param",
+            "UnconstrainedOgden",
+            "IncompressibleOgden",
+            "Stokes",
+            "NavierStokes",
+            "OperatorSplitting",
+            "IncompressibleLinearElasticity",
+            "Laplacian",
+            "Helmholtz",
+            "Bilaplacian",
+            "AMIPS"
+        ],
+        "doc": "Type of material"
+    },
+    {
+        "pointer": "/materials/*/id",
+        "type": "int",
+        "default": 0,
+        "doc": "Volume selection ID"
+    },
+    {
+        "pointer": "/materials/*/id",
+        "type": "list",
+        "doc": "Volume selection IDs"
+    },
+    {
+        "pointer": "/materials/*/id/*",
+        "type": "int",
+        "doc": "Volume selection ID"
+    },
+    {
+        "pointer": "/materials/*/E",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Young's modulus"
+    },
+    {
+        "pointer": "/materials/*/nu",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Poisson's ratio"
+    },
+    {
+        "pointer": "/materials/*/viscosity",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Fuild's viscosity"
+    },
+    {
+        "pointer": "/materials/*/elasticity_tensor",
+        "type": "list",
+        "doc": "Symmetric elasticity tensor"
+    },
+    {
+        "pointer": "/materials/*/elasticity_tensor/*",
+        "default": 0,
+        "type": "include",
+        "spec_file": "value0.json",
+        "doc": "Entries of elasticity tensor"
+    },
+    {
+        "pointer": "/materials/*/rho",
+        "type": "include",
+        "spec_file": "value1.json",
+        "doc": "Density",
+        "default": 1
+    },
+    {
+        "pointer": "/materials/*/phi",
+        "type": "include",
+        "spec_file": "value0.json",
+        "doc": "Damping parameter 1",
+        "default": 0
+    },
+    {
+        "pointer": "/materials/*/psi",
+        "type": "include",
+        "spec_file": "value0.json",
+        "doc": "Damping parameter 2",
+        "default": 0
+    },
+    {
+        "pointer": "/materials/*/k",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Scaling for Helmholtz/Bulk modulus for Ogden"
+    },
+    {
+        "pointer": "/materials/*/mu",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "First Lamé parameters"
+    },
+    {
+        "pointer": "/materials/*/lambda",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Second Lamé parameter"
+    },
+    {
+        "pointer": "/materials/*/c1",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "First Parameter for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*/c2",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Second Parameter for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*/c3",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Third Parameter for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*/d1",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "MooneyRivlin third parameter"
+    },
+    {
+        "pointer": "/materials/*/alphas",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Ogden alpha"
+    },
+    {
+        "pointer": "/materials/*/mus",
+        "type": "list",
+        "doc": "Ogden mu"
+    },
+    {
+        "pointer": "/materials/*/Ds",
+        "type": "list",
+        "doc": "Ogden D"
+    },
+    {
+        "pointer": "/materials/*/alphas/*",
+        "type": "include",
+        "spec_file": "value-no.json"
+    },
+    {
+        "pointer": "/materials/*/mus/*",
+        "type": "include",
+        "spec_file": "value-no.json"
+    },
+    {
+        "pointer": "/materials/*/Ds/*",
+        "type": "include",
+        "spec_file": "value-no.json"
+    },
+    {
+        "pointer": "/materials/*/c",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Coefficient(s) of Incompressible Ogden"
+    },
+    {
+        "pointer": "/materials/*/m",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Exponent(s) of Incompressible Ogden"
+    },
+    {
+        "pointer": "/materials/*/c",
+        "type": "list",
+        "doc": "Coefficient(s) of Incompressible Ogden"
+    },
+    {
+        "pointer": "/materials/*/m",
+        "type": "list",
+        "doc": "Exponent(s) of Incompressible Ogden"
+    },
+    {
+        "pointer": "/materials/*/c/*",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Coefficient of Incompressible Ogden"
+    },
+    {
+        "pointer": "/materials/*/m/*",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Exponent(s) of Incompressible Ogden"
+    },
+    {
+        "pointer": "/boundary_conditions",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "rhs",
+            "dirichlet_boundary",
+            "neumann_boundary",
+            "pressure_boundary",
+            "obstacle_displacements"
+        ],
+        "doc": "The settings for boundary conditions."
+    },
+    {
+        "pointer": "/boundary_conditions/rhs",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Right-hand side of the system being solved, value."
+    },
+    {
+        "pointer": "/boundary_conditions/rhs",
+        "default": [],
+        "type": "list",
+        "doc": "Right-hand side of the system being solved for vector-valued PDEs."
+    },
+    {
+        "pointer": "/boundary_conditions/rhs/*",
+        "type": "include",
+        "spec_file": "value0.json",
+        "default": 0,
+        "doc": "Right-hand side of the system being solved, value."
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary",
+        "type": "include",
+        "spec_file": "boundary-condition.json",
+        "doc": "Dirichlet boundary conditions."
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*",
+        "type": "object",
+        "default": null,
+        "required": [
+            "id",
+            "value"
+        ],
+        "optional": [
+            "interpolation",
+            "dimension"
+        ],
+        "doc": "Dirichlet boundary condition."
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*",
+        "type": "string",
+        "doc": "Dirichlet boundary condition loaded from a file, <node_id> <bc values>, 1 for scalar, 2/3 for tensor depending on dimension."
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension",
+        "type": "list",
+        "default": [
+            true,
+            true,
+            true
+        ],
+        "doc": "List of 2 (2D) or 3 (3D) boolean values indicating if the Dirichlet boundary condition  is applied for a particular dimension."
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension/*",
+        "type": "bool",
+        "default": true,
+        "doc": "value"
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary",
+        "type": "include",
+        "spec_file": "boundary-condition.json",
+        "doc": "Neumann boundary conditions."
+    },
+    {
+        "pointer": "/boundary_conditions/neumann_boundary/*",
+        "type": "object",
+        "default": null,
+        "required": [
+            "id",
+            "value"
+        ],
+        "optional": [
+            "interpolation"
+        ],
+        "doc": "Neumann boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary",
+        "default": [],
+        "type": "list",
+        "doc": "Neumann boundary condition for normal times value for vector-valued PDEs."
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*",
+        "type": "object",
+        "default": null,
+        "required": [
+            "id",
+            "value"
+        ],
+        "optional": [
+            "interpolation",
+            "dimension"
+        ],
+        "doc": "pressure BC entry"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/id",
+        "type": "int",
+        "min": 0,
+        "max": 2147483646,
+        "doc": "ID for the pressure Neumann boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/value",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Values of pressure Neumann boundary condition as a function of $x,y,z,t$"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/dimension",
+        "type": "list",
+        "default": [
+            true,
+            true,
+            true
+        ],
+        "doc": "List of 2 (2D) or 3 (3D) boolean values indicating if the Pressure boundary condition is applied for a particular dimension."
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/dimension/*",
+        "type": "bool",
+        "default": true,
+        "doc": "value"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation",
+        "type": "include",
+        "spec_file": "interpolation.json",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements",
+        "type": "include",
+        "spec_file": "boundary-condition.json",
+        "doc": "Obstacle displacements"
+    },
+    {
+        "pointer": "/boundary_conditions/obstacle_displacements/*",
+        "type": "object",
+        "default": null,
+        "required": [
+            "id",
+            "value"
+        ],
+        "optional": [
+            "interpolation"
+        ],
+        "doc": "Obstacle displacements"
+    },
+    {
+        "pointer": "/initial_conditions",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "solution",
+            "velocity",
+            "acceleration"
+        ],
+        "doc": "Initial conditions for the time-dependent problem, imposed on the main variable, its derivative or second derivative"
+    },
+    {
+        "pointer": "/initial_conditions/solution",
+        "default": [],
+        "type": "list",
+        "doc": "initial solution"
+    },
+    {
+        "pointer": "/initial_conditions/solution/*",
+        "default": null,
+        "type": "object",
+        "required": [
+            "id",
+            "value"
+        ],
+        "doc": "A list of (ID, value) pairs defining the initial conditions for the main variable values. Ids are set by selection, and values can be floats or formulas."
+    },
+    {
+        "pointer": "/initial_conditions/solution/*/id",
+        "type": "int",
+        "doc": "ID from volume selections"
+    },
+    {
+        "pointer": "/initial_conditions/solution/*/value",
+        "type": "list",
+        "doc": "value of the solution"
+    },
+    {
+        "pointer": "/initial_conditions/solution/*/value/*",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "value"
+    },
+    {
+        "pointer": "/initial_conditions/velocity",
+        "default": [],
+        "type": "list",
+        "doc": "initial velocity"
+    },
+    {
+        "pointer": "/initial_conditions/velocity/*",
+        "default": null,
+        "type": "object",
+        "required": [
+            "id",
+            "value"
+        ],
+        "doc": "A list of (ID, value) pairs defining the initial conditions for the first derivative of the main variable values. Ids are set by selection, and values can be floats or formulas."
+    },
+    {
+        "pointer": "/initial_conditions/velocity/*/id",
+        "type": "int",
+        "doc": "ID from volume selections"
+    },
+    {
+        "pointer": "/initial_conditions/velocity/*/value",
+        "type": "list",
+        "min": 2,
+        "max": 3,
+        "doc": "value od the initial velocity"
+    },
+    {
+        "pointer": "/initial_conditions/velocity/*/value/*",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "value"
+    },
+    {
+        "pointer": "/initial_conditions/acceleration",
+        "default": [],
+        "type": "list",
+        "doc": "initial acceleration"
+    },
+    {
+        "pointer": "/initial_conditions/acceleration/*",
+        "default": null,
+        "type": "object",
+        "required": [
+            "id",
+            "value"
+        ],
+        "doc": "entries"
+    },
+    {
+        "pointer": "/initial_conditions/acceleration/*/id",
+        "type": "int",
+        "doc": "ID from volume selections"
+    },
+    {
+        "pointer": "/initial_conditions/acceleration/*/value",
+        "type": "list",
+        "min": 2,
+        "max": 3,
+        "doc": "value"
+    },
+    {
+        "pointer": "/initial_conditions/acceleration/*/value/*",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "value"
+    },
+    {
+        "pointer": "/output",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "directory",
+            "log",
+            "json",
+            "restart_json",
+            "paraview",
+            "data",
+            "advanced",
+            "reference"
+        ],
+        "doc": "output settings"
+    },
+    {
+        "pointer": "/output/directory",
+        "default": "",
+        "type": "string",
+        "doc": "Directory for output files."
+    },
+    {
+        "pointer": "/output/log",
+        "spec_file": "log.json",
+        "type": "include",
+        "doc": "Setting for the output log."
+    },
+    {
+        "pointer": "/output/json",
+        "default": "",
+        "type": "string",
+        "doc": "File name for JSON output statistics on time/error/etc."
+    },
+    {
+        "pointer": "/output/restart_json",
+        "default": "",
+        "type": "string",
+        "doc": "File name for JSON output to restart the simulation."
+    },
+    {
+        "pointer": "/output/paraview",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "file_name",
+            "vismesh_rel_area",
+            "skip_frame",
+            "high_order_mesh",
+            "volume",
+            "surface",
+            "wireframe",
+            "points",
+            "options"
+        ],
+        "doc": "Output in paraview format"
+    },
+    {
+        "pointer": "/output/paraview/file_name",
+        "default": "",
+        "type": "string",
+        "doc": "Paraview output file name"
+    },
+    {
+        "pointer": "/output/paraview/vismesh_rel_area",
+        "default": 1e-05,
+        "type": "float",
+        "doc": "relative area for the upsampled visualisation mesh"
+    },
+    {
+        "pointer": "/output/paraview/skip_frame",
+        "default": 1,
+        "type": "int",
+        "doc": "export every skip_frame-th frames for time dependent simulations"
+    },
+    {
+        "pointer": "/output/paraview/high_order_mesh",
+        "default": true,
+        "type": "bool",
+        "doc": "Enables/disables high-order output for paraview. Supported only for isoparametric or linear meshes with high-order solutions."
+    },
+    {
+        "pointer": "/output/paraview/volume",
+        "default": true,
+        "type": "bool",
+        "doc": "Export volumetric mesh"
+    },
+    {
+        "pointer": "/output/paraview/surface",
+        "default": false,
+        "type": "bool",
+        "doc": "Export surface mesh (in 2d polygon)"
+    },
+    {
+        "pointer": "/output/paraview/wireframe",
+        "default": false,
+        "type": "bool",
+        "doc": "Export the wireframe of the mesh"
+    },
+    {
+        "pointer": "/output/paraview/points",
+        "default": false,
+        "type": "bool",
+        "doc": "Export the Dirichlet points"
+    },
+    {
+        "pointer": "/output/paraview/options",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "use_hdf5",
+            "material",
+            "body_ids",
+            "contact_forces",
+            "friction_forces",
+            "velocity",
+            "acceleration",
+            "scalar_values",
+            "tensor_values",
+            "discretization_order",
+            "nodes",
+            "forces"
+        ],
+        "doc": "Optional fields in the output"
+    },
+    {
+        "pointer": "/output/paraview/options/use_hdf5",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, export the data as hdf5, compatible with paraview >5.11"
+    },
+    {
+        "pointer": "/output/paraview/options/material",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out material values sampled on the vertices of the mesh"
+    },
+    {
+        "pointer": "/output/paraview/options/body_ids",
+        "default": false,
+        "type": "bool",
+        "doc": "Export volumes ids"
+    },
+    {
+        "pointer": "/output/paraview/options/contact_forces",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out contact forces for surface"
+    },
+    {
+        "pointer": "/output/paraview/options/friction_forces",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out friction forces for surface"
+    },
+    {
+        "pointer": "/output/paraview/options/velocity",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out velocities"
+    },
+    {
+        "pointer": "/output/paraview/options/acceleration",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out accelerations"
+    },
+    {
+        "pointer": "/output/paraview/options/scalar_values",
+        "default": true,
+        "type": "bool",
+        "doc": "If true, write out scalar values"
+    },
+    {
+        "pointer": "/output/paraview/options/tensor_values",
+        "default": true,
+        "type": "bool",
+        "doc": "If true, write out tensor values"
+    },
+    {
+        "pointer": "/output/paraview/options/discretization_order",
+        "default": true,
+        "type": "bool",
+        "doc": "If true, write out discretization order"
+    },
+    {
+        "pointer": "/output/paraview/options/nodes",
+        "default": true,
+        "type": "bool",
+        "doc": "If true, write out node order"
+    },
+    {
+        "pointer": "/output/paraview/options/forces",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out all variational forces on the FE mesh "
+    },
+    {
+        "pointer": "/output/data",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "solution",
+            "full_mat",
+            "stiffness_mat",
+            "stress_mat",
+            "state",
+            "rest_mesh",
+            "mises",
+            "nodes",
+            "advanced"
+        ],
+        "doc": "File names to write output data to."
+    },
+    {
+        "pointer": "/output/data/solution",
+        "default": "",
+        "type": "string",
+        "doc": "Main variable solution. Unrolled [xyz, xyz, ...] using PolyFEM ordering. If reorder_nodes exports the solution with the same order the vertices of the input mesh as a #n x d file"
+    },
+    {
+        "pointer": "/output/data/full_mat",
+        "default": "",
+        "type": "string",
+        "doc": "System matrix without boundary conditions. Doesn't work for nonlinear problems"
+    },
+    {
+        "pointer": "/output/data/stiffness_mat",
+        "default": "",
+        "type": "string",
+        "doc": "System matrix with boundary conditions. Doesn't work for nonlinear problems"
+    },
+    {
+        "pointer": "/output/data/stress_mat",
+        "default": "",
+        "type": "string",
+        "doc": "Exports stress"
+    },
+    {
+        "pointer": "/output/data/state",
+        "default": "",
+        "type": "string",
+        "doc": "Writes the complete state in PolyFEM hdf5 format, used to restart the sim"
+    },
+    {
+        "pointer": "/output/data/rest_mesh",
+        "default": "",
+        "type": "string",
+        "doc": "Writes the rest mesh in OBJ format, used to restart the sim"
+    },
+    {
+        "pointer": "/output/data/mises",
+        "default": "",
+        "type": "string",
+        "doc": "File name to write per-node Von Mises stress values to."
+    },
+    {
+        "pointer": "/output/data/nodes",
+        "default": "",
+        "type": "string",
+        "doc": "Writes the FEM nodes"
+    },
+    {
+        "pointer": "/output/data/advanced",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "reorder_nodes"
+        ],
+        "doc": "advanced options"
+    },
+    {
+        "pointer": "/output/data/advanced/reorder_nodes",
+        "default": false,
+        "type": "bool",
+        "doc": "Reorder nodes accodring to input"
+    },
+    {
+        "pointer": "/output/reference",
+        "default": null,
+        "optional": [
+            "solution",
+            "gradient"
+        ],
+        "type": "object",
+        "doc": "Write out the analytic/numerical ground-truth solution and or its gradient"
+    },
+    {
+        "pointer": "/output/reference/solution",
+        "default": [],
+        "type": "list",
+        "doc": "reference solution used to compute errors"
+    },
+    {
+        "pointer": "/output/reference/solution/*",
+        "default": "",
+        "type": "string",
+        "doc": "value as a function of $x,y,z,t$"
+    },
+    {
+        "pointer": "/output/reference/gradient",
+        "default": [],
+        "type": "list",
+        "doc": "gradient of the reference solution to compute errors"
+    },
+    {
+        "pointer": "/output/reference/gradient/*",
+        "default": "",
+        "type": "string",
+        "doc": "value as a function of $x,y,z,t$"
+    },
+    {
+        "pointer": "/output/advanced",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "timestep_prefix",
+            "sol_on_grid",
+            "compute_error",
+            "sol_at_node",
+            "vis_boundary_only",
+            "curved_mesh_size",
+            "save_solve_sequence_debug",
+            "save_ccd_debug_meshes",
+            "save_time_sequence",
+            "save_nl_solve_sequence",
+            "spectrum"
+        ],
+        "doc": "Additional output options"
+    },
+    {
+        "pointer": "/output/advanced/timestep_prefix",
+        "default": "step_",
+        "type": "string",
+        "doc": "Prefix for output file names for each time step, the final file is step_i.[vtu|vtm] where i is the time index."
+    },
+    {
+        "pointer": "/output/advanced/sol_on_grid",
+        "default": -1,
+        "type": "float",
+        "doc": "exports the solution sampled on a grid, specify the grid spacing"
+    },
+    {
+        "pointer": "/output/advanced/compute_error",
+        "default": true,
+        "type": "bool",
+        "doc": "Enables the computation of the error. If no reference solution is provided, return the norms of the solution"
+    },
+    {
+        "pointer": "/output/advanced/sol_at_node",
+        "default": -1,
+        "type": "int",
+        "doc": "Write out solution values at a specific node. the values will be written in the output JSON file"
+    },
+    {
+        "pointer": "/output/advanced/vis_boundary_only",
+        "default": false,
+        "type": "bool",
+        "doc": "saves only elements touching the boundaries"
+    },
+    {
+        "pointer": "/output/advanced/curved_mesh_size",
+        "default": false,
+        "type": "bool",
+        "doc": "upsample curved edges to compute mesh size"
+    },
+    {
+        "pointer": "/output/advanced/save_solve_sequence_debug",
+        "default": false,
+        "type": "bool",
+        "doc": "saves AL internal steps, for debugging"
+    },
+    {
+        "pointer": "/output/advanced/save_ccd_debug_meshes",
+        "default": false,
+        "type": "bool",
+        "doc": "saves AL internal steps, for debugging"
+    },
+    {
+        "pointer": "/output/advanced/save_time_sequence",
+        "default": true,
+        "type": "bool",
+        "doc": "saves timesteps"
+    },
+    {
+        "pointer": "/output/advanced/save_nl_solve_sequence",
+        "default": false,
+        "type": "bool",
+        "doc": "saves obj after every nonlinear iteration, for debugging"
+    },
+    {
+        "pointer": "/output/advanced/spectrum",
+        "default": false,
+        "type": "bool",
+        "doc": "exports the spectrum of the matrix in the output JSON. Works only if POLYSOLVE_WITH_SPECTRA is enabled"
+    },
+    {
+        "pointer": "/input",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "data"
+        ],
+        "doc": "input data"
+    },
+    {
+        "pointer": "/input/data",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "state",
+            "reorder"
+        ],
+        "doc": "input to restart time dependent sim"
+    },
+    {
+        "pointer": "/input/data/state",
+        "default": "",
+        "type": "file",
+        "doc": "input state as hdf5"
+    },
+    {
+        "pointer": "/input/data/reorder",
+        "default": false,
+        "type": "bool",
+        "doc": "reorder input data"
+    },
+    {
+        "pointer": "/preset_problem",
+        "default": "skip",
+        "type_name": "Linear",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Quadratic",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Cubic",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Sine",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Franke",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "FrankeOld",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "GenericScalarExact",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "func"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem/func",
+        "type": "int",
+        "default": 0,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Zero_BC",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Elastic",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Walk",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "TorsionElastic",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "axis_coordiante",
+            "n_turns",
+            "fixed_boundary",
+            "turning_boundary",
+            "bbox_center"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem/axis_coordiante",
+        "type": "int",
+        "default": 2,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem/n_turns",
+        "type": "float",
+        "default": 0.5,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem/fixed_boundary",
+        "type": "int",
+        "default": 5,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem/turning_boundary",
+        "type": "int",
+        "default": 6,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem/bbox_center",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem/bbox_center/*",
+        "type": "float",
+        "default": 0,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "DoubleTorsionElastic",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "axis_coordiante0",
+            "axis_coordiante1",
+            "angular_v0",
+            "angular_v1",
+            "turning_boundary0",
+            "turning_boundary1",
+            "bbox_center"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem/axis_coordiante0",
+        "type": "int",
+        "default": 2,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem/axis_coordiante1",
+        "type": "int",
+        "default": 2,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem/angular_v0",
+        "type": "float",
+        "default": 0.5,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem/angular_v1",
+        "type": "float",
+        "default": -0.5,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem/turning_boundary0",
+        "type": "int",
+        "default": 5,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem/turning_boundary1",
+        "type": "int",
+        "default": 6,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "ElasticZeroBC",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "ElasticExact",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "ElasticCantileverExact",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO, add displacement, E, nu, formulation, mesh_size"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "CompressionElasticExact",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "QuadraticElasticExact",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "LinearElasticExact",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "PointBasedTensor",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO, add optionals"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Kernel",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "formulation",
+            "n_kernels",
+            "kernel_distance",
+            "kernel_weights"
+        ],
+        "doc": "TODO, add optionals"
+    },
+    {
+        "pointer": "/preset_problem/formulation",
+        "type": "string",
+        "default": "",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem/n_kernels",
+        "type": "int",
+        "default": 0,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem/kernel_distance",
+        "type": "float",
+        "default": 0,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem/kernel_weights",
+        "type": "string",
+        "default": "",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Node",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO, add optionals"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "TimeDependentScalar",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "MinSurf",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Gravity",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "force"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem/n_kernels/force",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem/n_kernels/force/*",
+        "type": "float",
+        "default": 0,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "ConstantVelocity",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "TwoSpheres",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "DrivenCavity",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "DrivenCavityC0",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "DrivenCavitySmooth",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Flow",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO, add inflow, outflow, inflow_amout, outflow_amout, direction, obstacle"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "FlowWithObstacle",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "U"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem/n_kernels/U",
+        "type": "float",
+        "default": 0,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem/n_kernels/time_dependent",
+        "type": "bool",
+        "default": false,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "CornerFlow",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "U",
+            "time_dependent"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "UnitFlowWithObstacle",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "U"
+        ],
+        "doc": "TODO, add inflow_id, direction, no_slip"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "StokesLaw",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "time_dependent",
+            "viscosity"
+        ],
+        "doc": "TODO, add radius"
+    },
+    {
+        "pointer": "/preset_problem/n_kernels/viscosity",
+        "type": "float",
+        "default": 0,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "TaylorGreenVortex",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "viscosity"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem/viscosity",
+        "type": "float",
+        "default": 1,
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "SimpleStokeProblemExact",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "func"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "SineStokeProblemExact",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "TransientStokeProblemExact",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "func",
+            "viscosity"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Kovnaszy",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "viscosity"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Airfoil",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "time_dependent"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "Lshape",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "U",
+            "time_dependent"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "TestProblem",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO, type, omega, is_scalar"
+    },
+    {
+        "pointer": "/preset_problem",
+        "type_name": "BilaplacianProblemWithSolution",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "doc": "TODO, type, omega, is_scalar"
+    },
+    {
+        "pointer": "/preset_problem/type",
+        "type": "string",
+        "doc": "Type of preset problem to use.",
+        "options": [
+            "Linear",
+            "Quadratic",
+            "Cubic",
+            "Sine",
+            "Franke",
+            "FrankeOld",
+            "GenericScalarExact",
+            "Zero_BC",
+            "Elastic",
+            "Walk",
+            "TorsionElastic",
+            "DoubleTorsionElastic",
+            "ElasticZeroBC",
+            "ElasticExact",
+            "ElasticCantileverExact",
+            "CompressionElasticExact",
+            "QuadraticElasticExact",
+            "LinearElasticExact",
+            "PointBasedTensor",
+            "Kernel",
+            "Node",
+            "TimeDependentScalar",
+            "MinSurf",
+            "Gravity",
+            "ConstantVelocity",
+            "TwoSpheres",
+            "DrivenCavity",
+            "DrivenCavityC0",
+            "DrivenCavitySmooth",
+            "Flow",
+            "FlowWithObstacle",
+            "CornerFlow",
+            "UnitFlowWithObstacle",
+            "StokesLaw",
+            "TaylorGreenVortex",
+            "SimpleStokeProblemExact",
+            "SineStokeProblemExact",
+            "TransientStokeProblemExact",
+            "Kovnaszy",
+            "Airfoil",
+            "Lshape",
+            "TestProblem",
+            "BilaplacianProblemWithSolution"
+        ]
+    }
+]

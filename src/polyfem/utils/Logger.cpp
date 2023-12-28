@@ -15,7 +15,28 @@ namespace polyfem
 			return logger;
 		}
 
+		// Custom logger instance defined by the user, if any
+		std::shared_ptr<spdlog::logger> &get_shared_adjoint_logger()
+		{
+			static std::shared_ptr<spdlog::logger> logger;
+			return logger;
+		}
+
 	} // namespace
+
+	// Retrieve current logger
+	spdlog::logger &adjoint_logger()
+	{
+		if (get_shared_adjoint_logger())
+		{
+			return *get_shared_adjoint_logger();
+		}
+		else
+		{
+			static std::shared_ptr<spdlog::logger> default_logger = spdlog::stdout_color_mt("adjoint-polyfem");
+			return *default_logger;
+		}
+	}
 
 	// Retrieve current logger
 	spdlog::logger &logger()
@@ -41,9 +62,21 @@ namespace polyfem
 		get_shared_logger() = std::move(p_logger);
 	}
 
+	// Use a custom logger
+	void set_adjoint_logger(std::shared_ptr<spdlog::logger> p_logger)
+	{
+		get_shared_adjoint_logger() = std::move(p_logger);
+	}
+
 	void log_and_throw_error(const std::string &msg)
 	{
 		logger().error(msg);
+		throw std::runtime_error(msg);
+	}
+
+	void log_and_throw_adjoint_error(const std::string &msg)
+	{
+		adjoint_logger().error(msg);
 		throw std::runtime_error(msg);
 	}
 } // namespace polyfem

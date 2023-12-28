@@ -117,9 +117,9 @@ namespace polyfem::mesh
 		SparseSizingField sizing_field;
 		for (const auto &candidate : candidates)
 		{
-			const double distance_sqr = candidate.compute_distance(V, E, F);
-			const double rest_distance_sqr = candidate.compute_distance(V_rest, E, F);
-			const ipc::VectorMax12d distance_grad = candidate.compute_distance_gradient(V, E, F);
+			const double distance_sqr = candidate.compute_distance(candidate.dof(V, E, F));
+			const double rest_distance_sqr = candidate.compute_distance(candidate.dof(V_rest, E, F));
+			const ipc::VectorMax12d distance_grad = candidate.compute_distance_gradient(candidate.dof(V, E, F));
 			const auto vertices = candidate.vertex_ids(E, F);
 			for (int i = 0; i < 4; i++)
 			{

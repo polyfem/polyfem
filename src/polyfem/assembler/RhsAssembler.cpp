@@ -5,7 +5,7 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <ipc/utils/eigen_ext.hpp>
-#include <polysolve/LinearSolver.hpp>
+#include <polysolve/linear/Solver.hpp>
 
 namespace polyfem
 {
@@ -38,7 +38,7 @@ namespace polyfem
 								   const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
 								   const Problem &problem,
 								   const std::string bc_method,
-								   const std::string &solver, const std::string &preconditioner, const json &solver_params)
+								   const json &solver_params)
 			: assembler_(assembler),
 			  mesh_(mesh),
 			  obstacle_(obstacle),
@@ -49,8 +49,6 @@ namespace polyfem
 			  ass_vals_cache_(ass_vals_cache),
 			  problem_(problem),
 			  bc_method_(bc_method),
-			  solver_(solver),
-			  preconditioner_(preconditioner),
 			  solver_params_(solver_params),
 			  dirichlet_nodes_(dirichlet_nodes),
 			  dirichlet_nodes_position_(dirichlet_nodes_position),
@@ -62,6 +60,7 @@ namespace polyfem
 
 		void RhsAssembler::assemble(const Density &density, Eigen::MatrixXd &rhs, const double t) const
 		{
+			// set size of rhs to the number of basis functions * the dimension of the problem
 			rhs = Eigen::MatrixXd::Zero(n_basis_ * size_, 1);
 			if (!problem_.is_rhs_zero())
 			{
@@ -72,10 +71,14 @@ namespace polyfem
 				for (int e = 0; e < n_elements; ++e)
 				{
 					// vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+
+					// compute geometric mapping
+					// evaluate and store basis functions/their gradients at quadrature points
 					ass_vals_cache_.compute(e, mesh_.is_volume(), bases_[e], gbases_[e], vals);
 
 					const Quadrature &quadrature = vals.quadrature;
 
+					// compute rhs values in physical space
 					problem_.rhs(assembler_, vals.val, t, rhs_fun);
 
 					for (int d = 0; d < size_; ++d)
@@ -84,7 +87,8 @@ namespace polyfem
 						for (int q = 0; q < quadrature.weights.size(); ++q)
 						{
 							// const double rho = problem_.is_time_dependent() ? density(vals.quadrature.points.row(q), vals.val.row(q), vals.element_id) : 1;
-							const double rho = density(vals.quadrature.points.row(q), vals.val.row(q), vals.element_id);
+							const double rho = density(vals.quadrature.points.row(q), vals.val.row(q), t, vals.element_id);
+							// prepare for integration by weighing rhs by determinant and quadrature weights
 							rhs_fun(q, d) *= vals.det(q) * quadrature.weights(q) * rho;
 						}
 					}
@@ -96,8 +100,10 @@ namespace polyfem
 
 						for (int d = 0; d < size_; ++d)
 						{
+							// integrate rhs function times the given local basis
 							const double rhs_value = (rhs_fun.col(d).array() * v.val.array()).sum();
 							for (std::size_t ii = 0; ii < v.global.size(); ++ii)
+								// add local contribution to the global rhs vector (with some weight for non-conforming bases)
 								rhs(v.global[ii].index * size_ + d) += rhs_value * v.global[ii].val;
 						}
 					}
@@ -209,12 +215,12 @@ namespace polyfem
 					mass_mat_assembler.add_multimaterial(0, json({}), Units());
 					StiffnessMatrix mass;
 					const int n_fe_basis = n_basis_ - obstacle_.n_vertices();
-					mass_mat_assembler.assemble(size_ == 3, n_fe_basis, bases_, gbases_, ass_vals_cache_, mass, true);
+					mass_mat_assembler.assemble(size_ == 3, n_fe_basis, bases_, gbases_, ass_vals_cache_, 0, mass, true);
 					assert(mass.rows() == n_basis_ * size_ - obstacle_.ndof() && mass.cols() == n_basis_ * size_ - obstacle_.ndof());
 
-					auto solver = LinearSolver::create(solver_, preconditioner_);
-					solver->setParameters(solver_params_);
-					solver->analyzePattern(mass, mass.rows());
+					auto solver = linear::Solver::create(solver_params_, logger());
+					logger().info("Solve RHS using {} linear solver", solver->name());
+					solver->analyze_pattern(mass, mass.rows());
 					solver->factorize(mass);
 
 					for (long i = 0; i < b.cols(); ++i)
@@ -394,9 +400,9 @@ namespace polyfem
 						Eigen::VectorXd b = mat_t * global_rhs;
 
 						Eigen::VectorXd coeffs(b.rows(), 1);
-						auto solver = LinearSolver::create(solver_, preconditioner_);
-						solver->setParameters(solver_params_);
-						solver->analyzePattern(A, A.rows());
+						auto solver = linear::Solver::create(solver_params_, logger());
+						logger().info("Solve RHS using {} linear solver", solver->name());
+						solver->analyze_pattern(A, A.rows());
 						solver->factorize(A);
 						coeffs.setZero();
 						solver->solve(b, coeffs);
@@ -729,7 +735,12 @@ namespace polyfem
 			}
 		}
 
-		double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const Eigen::MatrixXd &displacement_prev, const std::vector<LocalBoundary> &local_neumann_boundary, const Density &density, const int resolution, const double t) const
+		double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement,
+											const Eigen::MatrixXd &displacement_prev,
+											const std::vector<LocalBoundary> &local_neumann_boundary,
+											const Density &density,
+											const int resolution,
+											const double t) const
 		{
 
 			double res = 0;
@@ -776,7 +787,7 @@ namespace polyfem
 								}
 							}
 							// const double rho = problem_.is_time_dependent() ? density(vals.quadrature.points.row(p), vals.val.row(p), vals.element_id) : 1;
-							const double rho = density(vals.quadrature.points.row(p), vals.val.row(p), vals.element_id);
+							const double rho = density(vals.quadrature.points.row(p), vals.val.row(p), t, vals.element_id);
 
 							for (int d = 0; d < size_; ++d)
 							{

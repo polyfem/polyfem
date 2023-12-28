@@ -5,7 +5,7 @@
 #include <polyfem/time_integrator/ImplicitEuler.hpp>
 
 #include <polyfem/utils/BoundarySampler.hpp>
-#include <polysolve/FEMSolver.hpp>
+#include <polysolve/linear/FEMSolver.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/io/Evaluator.hpp>
@@ -23,6 +23,7 @@
 #include <ipc/ipc.hpp>
 #include <ipc/barrier/barrier.hpp>
 #include <ipc/utils/local_to_global.hpp>
+#include <ipc/potentials/friction_potential.hpp>
 
 #include <Eigen/Dense>
 #include <unsupported/Eigen/SparseExtra>
@@ -100,11 +101,23 @@ namespace polyfem
 		StiffnessMatrix gradu_h(sol.size(), sol.size());
 		if (current_step == 0)
 			diff_cached.init(ndof(), problem->is_time_dependent() ? args["time"]["time_steps"].get<int>() : 0);
-		if (!problem->is_time_dependent() || current_step > 0)
-			compute_force_jacobian(sol, disp_grad, gradu_h);
 
-		auto cur_contact_set = solve_data.contact_form ? solve_data.contact_form->get_constraint_set() : ipc::CollisionConstraints();
-		auto cur_friction_set = solve_data.friction_form ? solve_data.friction_form->get_friction_constraint_set() : ipc::FrictionConstraints();
+		ipc::Collisions cur_collision_set;
+		ipc::FrictionCollisions cur_friction_set;
+
+		if (optimization_enabled == solver::CacheLevel::Derivatives)
+		{
+			if (!problem->is_time_dependent() || current_step > 0)
+				compute_force_jacobian(sol, disp_grad, gradu_h);
+
+			cur_collision_set = solve_data.contact_form ? solve_data.contact_form->get_collision_set() : ipc::Collisions();
+			cur_friction_set = solve_data.friction_form ? solve_data.friction_form->get_friction_collision_set() : ipc::FrictionCollisions();
+		}
+		else
+		{
+			cur_collision_set = ipc::Collisions();
+			cur_friction_set = ipc::FrictionCollisions();
+		}
 
 		if (problem->is_time_dependent())
 		{
@@ -122,7 +135,7 @@ namespace polyfem
 					vel = euler_integrator->v_prev();
 				}
 				else
-					log_and_throw_error("Differentiable code doesn't support this time integrator!");
+					log_and_throw_adjoint_error("Differentiable code doesn't support this time integrator!");
 
 				acc.setZero(ndof(), 1);
 			}
@@ -132,11 +145,11 @@ namespace polyfem
 				acc = solve_data.time_integrator->compute_acceleration(vel);
 			}
 
-			diff_cached.cache_quantities_transient(current_step, solve_data.time_integrator->steps(), sol, vel, acc, gradu_h, cur_contact_set, cur_friction_set);
+			diff_cached.cache_quantities_transient(current_step, solve_data.time_integrator->steps(), sol, vel, acc, gradu_h, cur_collision_set, cur_friction_set);
 		}
 		else
 		{
-			diff_cached.cache_quantities_static(sol, gradu_h, cur_contact_set, cur_friction_set);
+			diff_cached.cache_quantities_static(sol, gradu_h, cur_collision_set, cur_friction_set);
 			diff_cached.cache_disp_grad(disp_grad);
 		}
 	}
@@ -146,7 +159,7 @@ namespace polyfem
 		if (problem->is_time_dependent())
 		{
 			if (assembler->is_linear() && !is_contact_enabled())
-				log_and_throw_error("Transient linear formulation is not yet differentiable!");
+				log_and_throw_adjoint_error("Differentiable transient linear solve is not supported!");
 
 			StiffnessMatrix tmp_hess;
 			solve_data.nl_problem->set_project_to_psd(false);
@@ -157,7 +170,7 @@ namespace polyfem
 		}
 		else // static formulation
 		{
-			if (assembler->is_linear() && !is_contact_enabled()) // && disp_grad_.size() == 0)
+			if (assembler->is_linear() && !is_contact_enabled())
 			{
 				hessian.setZero();
 				StiffnessMatrix stiffness;
@@ -205,26 +218,24 @@ namespace polyfem
 						const double dv_dut = -1 / dt;
 
 						hessian_prev =
-							diff_cached.friction_constraint_set(force_step)
-								.compute_force_jacobian(
-									collision_mesh,
-									collision_mesh.rest_positions(),
-									/*lagged_displacements=*/surface_solution_prev,
-									surface_velocities,
-									solve_data.contact_form->dhat(),
-									solve_data.contact_form->barrier_stiffness(),
-									solve_data.friction_form->epsv(),
-									ipc::FrictionConstraint::DiffWRT::LAGGED_DISPLACEMENTS)
-							+ diff_cached.friction_constraint_set(force_step)
-									  .compute_force_jacobian(
-										  collision_mesh,
-										  collision_mesh.rest_positions(),
-										  /*lagged_displacements=*/surface_solution_prev,
-										  surface_velocities,
-										  solve_data.contact_form->dhat(),
-										  solve_data.contact_form->barrier_stiffness(),
-										  solve_data.friction_form->epsv(),
-										  ipc::FrictionConstraint::DiffWRT::VELOCITIES)
+							solve_data.friction_form->get_friction_potential().force_jacobian(
+								diff_cached.friction_collision_set(force_step),
+								collision_mesh,
+								collision_mesh.rest_positions(),
+								/*lagged_displacements=*/surface_solution_prev,
+								surface_velocities,
+								solve_data.contact_form->dhat(),
+								solve_data.contact_form->barrier_stiffness(),
+								ipc::FrictionPotential::DiffWRT::LAGGED_DISPLACEMENTS)
+							+ solve_data.friction_form->get_friction_potential().force_jacobian(
+								  diff_cached.friction_collision_set(force_step),
+								  collision_mesh,
+								  collision_mesh.rest_positions(),
+								  /*lagged_displacements=*/surface_solution_prev,
+								  surface_velocities,
+								  solve_data.contact_form->dhat(),
+								  solve_data.contact_form->barrier_stiffness(),
+								  ipc::FrictionPotential::DiffWRT::VELOCITIES)
 								  * dv_dut;
 
 						hessian_prev *= -1;
@@ -243,8 +254,8 @@ namespace polyfem
 						// 		{
 						// 			Eigen::MatrixXd fd_Ut = utils::unflatten(y, surface_solution_prev.cols());
 
-						// 			ipc::FrictionConstraints fd_friction_constraints;
-						// 			ipc::CollisionConstraints fd_constraints;
+						// 			ipc::FrictionCollisions fd_friction_constraints;
+						// 			ipc::Collisions fd_constraints;
 						// 			fd_constraints.set_use_convergent_formulation(solve_data.contact_form->use_convergent_formulation());
 						// 			fd_constraints.set_are_shape_derivatives_enabled(true);
 						// 			fd_constraints.build(collision_mesh, X + fd_Ut, dhat);
@@ -266,7 +277,7 @@ namespace polyfem
 					{
 						// const double alpha = time_integrator::BDF::alphas(std::min(diff_cached.bdf_order(force_step), force_step) - 1)[force_step - sol_step - 1];
 						// Eigen::MatrixXd velocity = collision_mesh.map_displacements(utils::unflatten(diff_cached.v(force_step), collision_mesh.dim()));
-						// hessian_prev = diff_cached.friction_constraint_set(force_step).compute_potential_hessian( //
+						// hessian_prev = diff_cached.friction_collision_set(force_step).compute_potential_hessian( //
 						// 			collision_mesh, velocity, solve_data.friction_form->epsv(), false) * (-alpha / beta / dt);
 
 						// hessian_prev = collision_mesh.to_full_dof(hessian_prev);
@@ -277,7 +288,7 @@ namespace polyfem
 				{
 					utils::SparseMatrixCache mat_cache;
 					StiffnessMatrix damping_hessian_prev(u.size(), u.size());
-					damping_prev_assembler->assemble_hessian(mesh->is_volume(), n_bases, false, bases, geom_bases(), ass_vals_cache, dt, u, u_prev, mat_cache, damping_hessian_prev);
+					damping_prev_assembler->assemble_hessian(mesh->is_volume(), n_bases, false, bases, geom_bases(), ass_vals_cache, force_step * args["time"]["dt"].get<double>() + args["time"]["t0"].get<double>(), dt, u, u_prev, mat_cache, damping_hessian_prev);
 
 					hessian_prev += damping_hessian_prev;
 				}
@@ -331,11 +342,10 @@ namespace polyfem
 		}
 		else
 		{
-			auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["adjoint_solver"], args["solver"]["linear"]["precond"]);
-			solver->setParameters(args["solver"]["linear"]);
+			auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], adjoint_logger());
 
 			StiffnessMatrix A = diff_cached.gradu_h(0);
-			solver->analyzePattern(A, A.rows());
+			solver->analyze_pattern(A, A.rows());
 			solver->factorize(A);
 
 			if (true) // (disp_grad_.size() == 0)
@@ -386,7 +396,7 @@ namespace polyfem
 		else if (args["time"]["integrator"]["type"] == "BDF")
 			bdf_order = args["time"]["integrator"]["steps"].get<int>();
 		else
-			log_and_throw_error("Integrator type not supported for differentiability.");
+			log_and_throw_adjoint_error("Integrator type not supported for differentiability.");
 
 		assert(adjoint_rhs.cols() == time_steps + 1);
 
@@ -439,8 +449,7 @@ namespace polyfem
 					Eigen::VectorXd b_ = rhs_;
 					b_(boundary_nodes).setZero();
 
-					auto solver = polysolve::LinearSolver::create(args["solver"]["linear"]["adjoint_solver"], args["solver"]["linear"]["precond"]);
-					solver->setParameters(args["solver"]["linear"]);
+					auto solver = polysolve::linear::Solver::create(args["solver"]["adjoint_linear"], adjoint_logger());
 
 					Eigen::VectorXd x;
 					dirichlet_solve(*solver, A, b_, boundary_nodes, x, A.rows(), "", false, false, false);

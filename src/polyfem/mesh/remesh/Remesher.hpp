@@ -165,9 +165,9 @@ namespace polyfem::mesh
 		static void split_time_integrator_quantities(
 			const Eigen::MatrixXd &quantities,
 			const int dim,
-			std::vector<Eigen::VectorXd> &x_prevs,
-			std::vector<Eigen::VectorXd> &v_prevs,
-			std::vector<Eigen::VectorXd> &a_prevs);
+			Eigen::MatrixXd &x_prevs,
+			Eigen::MatrixXd &v_prevs,
+			Eigen::MatrixXd &a_prevs);
 
 		/// @brief Create an assembler object
 		/// @param body_ids One body ID per element.

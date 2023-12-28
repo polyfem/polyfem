@@ -7,7 +7,7 @@
 #include <polyfem/utils/ClipperUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
-#include <BVH.hpp>
+#include <SimpleBVH/BVH.hpp>
 
 namespace polyfem
 {
@@ -110,12 +110,9 @@ namespace polyfem
 							double tmp = 0; //(vals.basis_values[i].val.array() * vals.basis_values[j].val.array() * da.array()).sum();
 							for (int q = 0; q < local_storage.da.size(); ++q)
 							{
-								const double rho = density(vals.quadrature.points.row(q), vals.val.row(q), vals.element_id);
+								// TODO t
+								const double rho = density(vals.quadrature.points.row(q), vals.val.row(q), 0, vals.element_id);
 								tmp += rho * vals.basis_values[i].val(q) * vals.basis_values[j].val(q) * local_storage.da(q);
-							}
-							if (std::abs(tmp) < 1e-30)
-							{
-								continue;
 							}
 
 							for (int n = 0; n < size; ++n)
@@ -223,7 +220,7 @@ namespace polyfem
 				boxes[i][1].head(size) = from_nodes.colwise().maxCoeff();
 			}
 
-			BVH::BVH bvh;
+			SimpleBVH::BVH bvh;
 			bvh.init(boxes);
 
 			// maybe_parallel_for(n_to_basis, [&](int start, int end, int thread_id) {

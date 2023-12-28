@@ -121,9 +121,9 @@ namespace polyfem::solver
 		FullNLProblem::solution_changed(reduced_to_full(newX));
 	}
 
-	void NLProblem::post_step(const int iter_num, const TVector &x)
+	void NLProblem::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
-		FullNLProblem::post_step(iter_num, reduced_to_full(x));
+		FullNLProblem::post_step(polysolve::nonlinear::PostStepData(data.iter_num, data.solver_info, reduced_to_full(data.x), reduced_to_full(data.grad)));
 
 		// TODO: add me back
 		// if (state_.args["output"]["advanced"]["save_nl_solve_sequence"])

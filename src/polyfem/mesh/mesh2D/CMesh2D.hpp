@@ -96,6 +96,8 @@ namespace polyfem
 
 			void append(const Mesh &mesh) override;
 
+			std::unique_ptr<Mesh> copy() const override;
+
 		protected:
 			bool load(const std::string &path) override;
 			bool load(const GEO::Mesh &mesh) override;

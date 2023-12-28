@@ -19,7 +19,7 @@ namespace polyfem::assembler
 			return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
 		}
 
-		std::string name() const override { return "BiLaplacian"; }
+		std::string name() const override { return "Bilaplacian"; }
 		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
 	};
 
@@ -47,7 +47,7 @@ namespace polyfem::assembler
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 		assemble(const LinearAssemblerData &data) const override;
 
-		std::string name() const override { return "BiLaplacianAux"; }
+		std::string name() const override { return "BilaplacianAux"; }
 		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
 	};
 } // namespace polyfem::assembler

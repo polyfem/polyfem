@@ -1,6 +1,8 @@
 #pragma once
 
+#include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/assembler/Assembler.hpp>
+
 #include <polyfem/utils/AutodiffTypes.hpp>
 
 // Navier-Stokes local assembler
@@ -12,6 +14,8 @@ namespace polyfem::assembler
 		using NLAssembler::assemble_energy;
 		using NLAssembler::assemble_gradient;
 		using NLAssembler::assemble_hessian;
+
+		NavierStokesVelocity();
 
 		std::string name() const override { return "NavierStokes"; }
 		std::map<std::string, ParamFunc> parameters() const override;
@@ -44,7 +48,7 @@ namespace polyfem::assembler
 		void set_picard(const bool val) { full_gradient_ = !val; }
 
 	private:
-		double viscosity_ = 1;
+		GenericMatParam viscosity_;
 
 		// not full graidnet used for Picard iteration
 		bool full_gradient_ = true;

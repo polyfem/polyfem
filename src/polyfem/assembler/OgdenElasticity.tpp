@@ -8,11 +8,10 @@ namespace polyfem::assembler
 	template <typename T>
 	T UnconstrainedOgdenElasticity::elastic_energy(
 		const RowVectorNd &p,
+		const double t,
 		const int el_id,
 		const DefGradMatrix<T> &def_grad) const
 	{
-		constexpr double t = 0; // TODO if we want to allow material that varys over time
-
 		Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> eigs;
 
 		if (size() == 2)
@@ -60,11 +59,10 @@ namespace polyfem::assembler
 	template <typename T>
 	T IncompressibleOgdenElasticity::elastic_energy(
 		const RowVectorNd &p,
+		const double t,
 		const int el_id,
 		const DefGradMatrix<T> &def_grad) const
 	{
-		constexpr double t = 0; // TODO if we want to allow material that varys over time
-
 		Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> eigs;
 
 		const T J = polyfem::utils::determinant(def_grad);

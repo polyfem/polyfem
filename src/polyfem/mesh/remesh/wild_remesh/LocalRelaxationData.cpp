@@ -107,8 +107,9 @@ namespace polyfem::mesh
 
 		std::vector<int> pressure_boundary_nodes;
 		state.problem->setup_bc(
-			*mesh, n_bases(), bases, /*geom_bases=*/bases, /*pressure_bases=*/std::vector<basis::ElementBases>(),
-			local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes,
+			*mesh, n_bases() - state.obstacle.n_vertices(), bases, /*geom_bases=*/bases,
+			/*pressure_bases=*/std::vector<basis::ElementBases>(), local_boundary,
+			boundary_nodes, local_neumann_boundary, pressure_boundary_nodes,
 			dirichlet_nodes, neumann_nodes);
 
 		auto find_node_position = [&](const int n_id) {
@@ -170,7 +171,9 @@ namespace polyfem::mesh
 		assert(mass_matrix_assembler != nullptr);
 		mass_matrix_assembler->assemble(
 			is_volume(), n_bases(), bases, /*gbases=*/bases,
-			mass_assembly_vals_cache, mass, /*is_mass=*/true);
+			mass_assembly_vals_cache,
+			/*t=*/0, // TODO: time-dependent mass matrix
+			mass, /*is_mass=*/true);
 
 		// Set the mass of the codimensional fixed vertices to the average mass.
 		const int local_ndof = dim() * local_mesh.num_local_vertices();
@@ -216,9 +219,7 @@ namespace polyfem::mesh
 			solve_data.time_integrator =
 				time_integrator::ImplicitTimeIntegrator::construct_time_integrator(
 					state.args["time"]["integrator"]);
-			std::vector<Eigen::VectorXd> x_prevs;
-			std::vector<Eigen::VectorXd> v_prevs;
-			std::vector<Eigen::VectorXd> a_prevs;
+			Eigen::MatrixXd x_prevs, v_prevs, a_prevs;
 			Remesher::split_time_integrator_quantities(
 				local_mesh.projection_quantities(), dim(), x_prevs, v_prevs, a_prevs);
 			solve_data.time_integrator->init(
@@ -240,8 +241,6 @@ namespace polyfem::mesh
 				dirichlet_nodes_position, neumann_nodes_position, n_bases(),
 				dim(), bases, /*geom_bases=*/bases, mass_assembly_vals_cache,
 				*state.problem, state.args["space"]["advanced"]["bc_method"],
-				state.args["solver"]["linear"]["solver"],
-				state.args["solver"]["linear"]["precond"],
 				rhs_solver_params);
 
 			solve_data.rhs_assembler->assemble(mass_matrix_assembler->density(), rhs);

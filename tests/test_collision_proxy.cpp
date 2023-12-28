@@ -3,6 +3,7 @@
 #include <polyfem/mesh/MeshUtils.hpp>
 
 #include <polyfem/State.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 
 #include <catch2/catch_all.hpp>
 
@@ -14,7 +15,7 @@ namespace
 {
 	std::shared_ptr<polyfem::State> get_state(const std::string mesh_path = "", const int discr_order = 4)
 	{
-		json in_args;
+		polyfem::json in_args;
 		in_args["/materials/type"_json_pointer] = "NeoHookean";
 		in_args["/materials/E"_json_pointer] = 1e5;
 		in_args["/materials/nu"_json_pointer] = 0.3;
@@ -159,7 +160,7 @@ TEST_CASE("build collision proxy displacement map", "[build_collision_proxy]")
 	polyfem::mesh::read_surface_mesh(proxy_mesh_path, vertices, _, __, faces);
 
 	std::vector<Eigen::Triplet<double>> displacement_map_entries;
-	polyfem::mesh::build_collision_proxy_displacement_maps(
+	polyfem::mesh::build_collision_proxy_displacement_map(
 		state->bases, state->geom_bases(), state->total_local_boundary,
 		state->n_bases, state->mesh->dimension(), vertices,
 		displacement_map_entries);
