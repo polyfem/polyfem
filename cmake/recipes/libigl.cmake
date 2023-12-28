@@ -27,4 +27,4 @@ cmake_dependent_option(LIBIGL_RESTRICTED_TRIANGLE "Build target igl_restricted::
 include(eigen)
 
 include(CPM)
-CPMAddPackage("gh:libigl/libigl#cb111f6838fc221609e70e774f8673425990bca0")
+CPMAddPackage("gh:libigl/libigl@2.5.0")
