@@ -9,9 +9,9 @@ namespace polyfem::assembler
 	class Mass : public LinearAssembler
 	{
 	public:
-		using Assembler::assemble;
+		using LinearAssembler::assemble;
 
-		/// computes and returns local stiffness matrix (1x1) for 
+		/// computes and returns local stiffness matrix (1x1) for
 		/// bases i,j (where i,j is passed in through data)
 		/// ie integral of phi_i * phi_j on the given element
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>

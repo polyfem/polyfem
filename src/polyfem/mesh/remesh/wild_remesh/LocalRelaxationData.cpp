@@ -171,7 +171,9 @@ namespace polyfem::mesh
 		assert(mass_matrix_assembler != nullptr);
 		mass_matrix_assembler->assemble(
 			is_volume(), n_bases(), bases, /*gbases=*/bases,
-			mass_assembly_vals_cache, mass, /*is_mass=*/true);
+			mass_assembly_vals_cache,
+			/*t=*/0, // TODO: time-dependent mass matrix
+			mass, /*is_mass=*/true);
 
 		// Set the mass of the codimensional fixed vertices to the average mass.
 		const int local_ndof = dim() * local_mesh.num_local_vertices();

@@ -2,8 +2,9 @@
 
 #include <polyfem/assembler/MassMatrixAssembler.hpp>
 #include <polyfem/solver/NLProblem.hpp>
-#include <polyfem/solver/NonlinearSolver.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
+
+#include <polysolve/nonlinear/Solver.hpp>
 
 namespace polyfem::mesh
 {
