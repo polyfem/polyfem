@@ -268,18 +268,18 @@ namespace polyfem::solver
 		}
 	}
 
-	std::unordered_map<std::string, std::shared_ptr<solver::Form>> SolveData::named_forms() const
+	std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> SolveData::named_forms() const
 	{
 		return {
-			{"contact", contact_form},
+			{"elastic", elastic_form},
+			{"inertia", inertia_form},
 			{"body", body_form},
+			{"contact", contact_form},
+			{"friction", friction_form},
+			{"damping", damping_form},
 			{"pressure", pressure_form},
 			{"augmented_lagrangian_lagr", al_lagr_form},
 			{"augmented_lagrangian_penalty", al_pen_form},
-			{"damping", damping_form},
-			{"friction", friction_form},
-			{"inertia", inertia_form},
-			{"elastic", elastic_form},
 		};
 	}
 } // namespace polyfem::solver

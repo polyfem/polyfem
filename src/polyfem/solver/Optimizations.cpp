@@ -624,11 +624,6 @@ namespace polyfem::solver
 			rules = jse.inject_include(rules);
 
 			// polysolve::linear::Solver::apply_default_solver(rules, "/solver/linear");
-
-			{
-				std::ofstream file("opt-complete-spec.json");
-				file << rules;
-			}
 		}
 
 		// polysolve::linear::Solver::select_valid_solver(args_in["solver"]["linear"], logger());
