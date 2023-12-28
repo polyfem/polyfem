@@ -1981,7 +1981,7 @@ namespace polyfem::io
 
 			ipc::BarrierPotential barrier_potential(dhat);
 
-			const double barrier_stiffness = contact_form != nullptr ? contact_form->weight() : 1;
+			const double barrier_stiffness = contact_form != nullptr ? contact_form->barrier_stiffness() : 1;
 
 			if (opts.contact_forces)
 			{
