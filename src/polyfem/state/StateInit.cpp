@@ -105,7 +105,6 @@ namespace polyfem
 		ipc::set_logger(std::make_shared<spdlog::logger>("ipctk", sinks.begin(), sinks.end()));
 
 		wmtk::set_logger(std::make_shared<spdlog::logger>("wmtk", sinks.begin(), sinks.end()));
-#endif
 
 		// Set the logger at the lowest level, so all messages are passed to the sinks
 		logger().set_level(spdlog::level::trace);
