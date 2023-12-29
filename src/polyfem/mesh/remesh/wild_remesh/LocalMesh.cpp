@@ -13,7 +13,7 @@
 #include <igl/edges.h>
 #include <igl/PI.h>
 
-#include <BVH.hpp>
+#include <SimpleBVH/BVH.hpp>
 
 namespace polyfem::mesh
 {

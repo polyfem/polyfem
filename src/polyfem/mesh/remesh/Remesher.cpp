@@ -200,7 +200,7 @@ namespace polyfem::mesh
 		for (int i = 0; i < n_constrained_quantaties; ++i)
 		{
 			projected_quantities.col(i) = constrained_L2_projection(
-				state.make_nl_solver<polyfem::solver::NLProblem>(),
+				state.make_nl_solver(/*for_al=*/false),
 				// L2 projection form
 				M, A, /*y=*/from_projection_quantities.col(i),
 				// Inversion-free form
