@@ -666,7 +666,9 @@ namespace polyfem
 						}
 
 						if (project_to_psd)
-							local_hessian = ipc::project_to_psd(local_hessian);
+						{
+							log_and_throw_error("Cannot project pressure to PSD!");
+						}
 
 						for (long ni = 0; ni < nodes.size(); ++ni)
 						{

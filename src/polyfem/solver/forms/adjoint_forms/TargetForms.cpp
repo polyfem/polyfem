@@ -116,7 +116,7 @@ namespace polyfem::solver
 			j.set_dj_du(djdu_func);
 			j.set_dj_dx(djdu_func); // only used for shape derivative
 		}
-		else                        // error wrt. a constant displacement
+		else // error wrt. a constant displacement
 		{
 			if (target_disp.size() == state_.mesh->dimension())
 			{
@@ -211,8 +211,6 @@ namespace polyfem::solver
 
 	void SDFTargetForm::solution_changed_step(const int time_step, const Eigen::VectorXd &x)
 	{
-		AdjointForm::solution_changed(x);
-
 		const auto &bases = state_.bases;
 		const auto &gbases = state_.geom_bases();
 		const int actual_dim = state_.problem->is_scalar() ? 1 : dim;
@@ -257,7 +255,8 @@ namespace polyfem::solver
 	{
 		dim = control_points.cols();
 		delta_ = delta;
-		assert(dim == 2);
+		if ((dim != 2) || (state_.mesh->dimension() != 2))
+			log_and_throw_error("SDFTargetForm specified for 2d.");
 
 		samples = 100;
 
@@ -285,7 +284,8 @@ namespace polyfem::solver
 
 		dim = control_points.cols();
 		delta_ = delta;
-		assert(dim == 3);
+		if ((dim != 3) || (state_.mesh->dimension() != 3))
+			log_and_throw_error("SDFTargetForm specified for 3d.");
 
 		samples = 100;
 
@@ -414,8 +414,6 @@ namespace polyfem::solver
 
 	void MeshTargetForm::solution_changed_step(const int time_step, const Eigen::VectorXd &x)
 	{
-		AdjointForm::solution_changed(x);
-
 		const auto &bases = state_.bases;
 		const auto &gbases = state_.geom_bases();
 		const int actual_dim = state_.problem->is_scalar() ? 1 : dim;
@@ -579,7 +577,7 @@ namespace polyfem::solver
 		}
 	}
 
-	BarycenterTargetForm::BarycenterTargetForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const json &args, const std::shared_ptr<State> &state1, const std::shared_ptr<State> &state2): StaticForm(variable_to_simulations)
+	BarycenterTargetForm::BarycenterTargetForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const json &args, const std::shared_ptr<State> &state1, const std::shared_ptr<State> &state2) : StaticForm(variable_to_simulations)
 	{
 		dim = state1->mesh->dimension();
 		json tmp_args = args;
@@ -619,7 +617,7 @@ namespace polyfem::solver
 		double dist = 0;
 		for (int d = 0; d < dim; d++)
 			dist += std::pow(center1[d]->value_unweighted_step(time_step, x) - center2[d]->value_unweighted_step(time_step, x), 2);
-		
+
 		return dist;
 	}
-}
+} // namespace polyfem::solver

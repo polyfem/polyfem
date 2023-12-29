@@ -874,6 +874,31 @@ TEST_CASE("shape-transient-friction-sdf", "[test_adjoint]")
 	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-5);
 }
 
+TEST_CASE("3d-shape-mesh-target", "[test_adjoint]")
+{
+	json opt_args;
+	load_json(append_root_path("3d-shape-mesh-target-opt.json"), opt_args);
+	auto [obj, var2sim, states] = prepare_test(opt_args);
+
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
+
+	Eigen::VectorXd x(opt_args["parameters"][0]["number"].get<int>());
+	Eigen::MatrixXd velocity_discrete;
+
+	Eigen::MatrixXd V;
+	states[0]->get_vertices(V);
+	Eigen::VectorXd V_flat = utils::flatten(V);
+	auto b_idx = var2sim[0]->get_output_indexing(x);
+	for (int i = 0; i < b_idx.size(); ++i)
+		x(i) = V_flat(b_idx(i));
+	velocity_discrete.setZero(x.size(), 1);
+	for (int i = 0; i < velocity_discrete.size(); ++i)
+		velocity_discrete(i) = rand() % 1000;
+	velocity_discrete.normalize();
+
+	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-5);
+}
+
 TEST_CASE("initial-contact", "[test_adjoint]")
 {
 	json opt_args;
