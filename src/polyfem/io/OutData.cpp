@@ -1338,6 +1338,10 @@ namespace polyfem::io
 
 		if (opts.forces)
 		{
+			const double s = state.solve_data.time_integrator
+								 ? state.solve_data.time_integrator->acceleration_scaling()
+								 : 1;
+
 			for (const auto &[name, form] : state.solve_data.named_forms())
 			{
 				// NOTE: Assumes this form will be null for the entire sim
@@ -1348,7 +1352,7 @@ namespace polyfem::io
 				if (form->enabled())
 				{
 					form->first_derivative(sol, force);
-					force *= -1.0;
+					force *= -1.0 / s; // Divide by acceleration scaling to get units of force
 				}
 				else
 				{
@@ -1977,7 +1981,7 @@ namespace polyfem::io
 
 			ipc::BarrierPotential barrier_potential(dhat);
 
-			const double barrier_stiffness = contact_form != nullptr ? contact_form->weight() : 1;
+			const double barrier_stiffness = contact_form != nullptr ? contact_form->barrier_stiffness() : 1;
 
 			if (opts.contact_forces)
 			{
@@ -2886,7 +2890,12 @@ namespace polyfem::io
 	EnergyCSVWriter::EnergyCSVWriter(const std::string &path, const solver::SolveData &solve_data)
 		: file(path), solve_data(solve_data)
 	{
-		file << "i,elastic_energy,body_energy,inertia,contact_form,AL_lagr_energy,AL_pen_energy,total_energy" << std::endl;
+		file << "i,";
+		for (const auto &[name, _] : solve_data.named_forms())
+		{
+			file << name << ",";
+		}
+		file << "total_energy" << std::endl;
 	}
 
 	EnergyCSVWriter::~EnergyCSVWriter()
@@ -2896,15 +2905,16 @@ namespace polyfem::io
 
 	void EnergyCSVWriter::write(const int i, const Eigen::MatrixXd &sol)
 	{
-		file << fmt::format(
-			"{},{},{},{},{},{},{},{}\n", i,
-			solve_data.elastic_form->value(sol),
-			solve_data.body_form->value(sol),
-			solve_data.inertia_form ? solve_data.inertia_form->value(sol) : 0,
-			solve_data.contact_form ? solve_data.contact_form->value(sol) : 0,
-			solve_data.al_lagr_form->value(sol),
-			solve_data.al_pen_form->value(sol),
-			solve_data.nl_problem->value(sol));
+		const double s = solve_data.time_integrator
+							 ? solve_data.time_integrator->acceleration_scaling()
+							 : 1;
+		file << i << ",";
+		for (const auto &[_, form] : solve_data.named_forms())
+		{
+			// Divide by acceleration scaling to get the energy (units of J)
+			file << ((form && form->enabled()) ? form->value(sol) : 0) / s << ",";
+		}
+		file << solve_data.nl_problem->value(sol) / s << "\n";
 		file.flush();
 	}
 

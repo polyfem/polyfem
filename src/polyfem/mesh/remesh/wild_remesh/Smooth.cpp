@@ -114,7 +114,7 @@ namespace polyfem::mesh
 		const int n_constrained_quantaties = projected_quantities.cols() / 3;
 		const int n_unconstrained_quantaties = projected_quantities.cols() - n_constrained_quantaties;
 
-		auto nl_solver = m.state.template make_nl_solver<solver::NLProblem>("Eigen::LLT");
+		auto nl_solver = m.state.make_nl_solver(/*for_al=*/false);
 		for (int i = 0; i < n_constrained_quantaties; ++i)
 		{
 			const auto level_before = logger().level();
