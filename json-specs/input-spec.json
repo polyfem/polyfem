@@ -1237,7 +1237,8 @@
             "linear_map"
         ],
         "optional": [
-            "enabled"
+            "enabled",
+            "no_self_contact"
         ],
         "default": "skip",
         "doc": "Load a preconstructed collision mesh."
@@ -1250,9 +1251,25 @@
         ],
         "optional": [
             "tessellation_type",
-            "enabled"
+            "enabled",
+            "no_self_contact"
         ],
         "doc": "Construct a collision mesh with a maximum edge length."
+    },
+    {
+        "pointer": "/contact/collision_mesh",
+        "type": "object",
+        "optional": [
+            "enabled",
+            "no_self_contact"
+        ],
+        "doc": "Construct a collision mesh."
+    },
+    {
+        "pointer": "/contact/collision_mesh/no_self_contact",
+        "default": false,
+        "type": "bool",
+        "doc": "Skip self-contact check, only check collision between different body ids."
     },
     {
         "pointer": "/contact/collision_mesh/mesh",

@@ -10,7 +10,7 @@ namespace polyfem::solver
 			*state_.mesh, state_.n_geom_bases, state_.geom_bases(), state_.geom_bases(),
 			state_.total_local_boundary, state_.obstacle, state_.args,
 			[this](const std::string &p) { return this->state_.resolve_input_path(p); },
-			state_.in_node_to_node, collision_mesh_);
+			state_.in_node_to_node, state_.node_to_body_id, collision_mesh_);
 
 		Eigen::MatrixXd V;
 		state_.get_vertices(V);
@@ -133,7 +133,7 @@ namespace polyfem::solver
 			*state_.mesh, state_.n_geom_bases, state_.geom_bases(), state_.geom_bases(),
 			state_.total_local_boundary, state_.obstacle, state_.args,
 			[this](const std::string &p) { return this->state_.resolve_input_path(p); },
-			state_.in_node_to_node, collision_mesh_);
+			state_.in_node_to_node, state_.node_to_body_id, collision_mesh_);
 
 		Eigen::MatrixXd V;
 		state_.get_vertices(V);
