@@ -1,5 +1,7 @@
 var NAVTREEINDEX41 =
 {
+"namespacepretty__print.html":[5,0,6],
+"namespacepretty__print.html#a73786f15be021f8233264d6227553414":[5,0,6,0],
 "namespaceq__bases.html":[5,0,7],
 "namespaceq__bases.html#a0a98d3094ec04b7aa5cda1942549beb1":[5,0,7,28],
 "namespaceq__bases.html#a0ceee4d67a7535662c1061e87b0a46c3":[5,0,7,10],
@@ -247,7 +249,5 @@ var NAVTREEINDEX41 =
 "struct_d_scalar1.html#aeb8af2533209850e51cfd669438171fa":[6,0,4,9],
 "struct_d_scalar1.html#af4c40df14b6d01e4642119a51df1d619":[6,0,4,18],
 "struct_d_scalar1.html#afb8cd56b14cb874e04860f92d6b5f436":[6,0,4,21],
-"struct_d_scalar2.html":[6,0,5],
-"struct_d_scalar2.html#a05ac50d4b0eceb899d824c12efb34fe8":[6,0,5,0],
-"struct_d_scalar2.html#a0771f89e4d9a5b5574a2326d075f6403":[6,0,5,22]
+"struct_d_scalar2.html":[6,0,5]
 };

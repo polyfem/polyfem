@@ -131,183 +131,184 @@ $(document).ready(function(){initNavTree('_local_relaxation_8cpp_source.html',''
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;<a class="code" href="_local_relaxation_data_8hpp.html">polyfem/mesh/remesh/wild_remesh/LocalRelaxationData.hpp</a>&gt;</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;<a class="code" href="_body_form_8hpp.html">polyfem/solver/forms/BodyForm.hpp</a>&gt;</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;<a class="code" href="_n_l_problem_8hpp.html">polyfem/solver/NLProblem.hpp</a>&gt;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;polyfem/solver/NonlinearSolver.hpp&gt;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;<a class="code" href="_implicit_time_integrator_8hpp.html">polyfem/time_integrator/ImplicitTimeIntegrator.hpp</a>&gt;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacepolyfem_1_1mesh.html">polyfem::mesh</a></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>{</div>
-<div class="foldopen" id="foldopen00010" data-start="{" data-end="}">
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1mesh.html#a47b36fa8a7d89d878d53cd21e83bfb1b">   10</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a47b36fa8a7d89d878d53cd21e83bfb1b">add_solver_timings</a>(</div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        <span class="keyword">decltype</span>(<a class="code hl_variable" href="classpolyfem_1_1mesh_1_1_remesher.html#ad401237782fe592e0ac68901e837b7c9">Remesher::timings</a>) &amp;timings,</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        <span class="keyword">const</span> <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">polyfem::json</a> &amp;solver_info)</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    {</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        <span class="comment">// Copy over timing data</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> solver_iters = solver_info[<span class="stringliteral">&quot;iterations&quot;</span>];</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[key, value] : solver_info.items())</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        {</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>            <span class="keywordflow">if</span> (<a class="code hl_function" href="namespacepolyfem_1_1utils_1_1_string_utils.html#a8df4a1f29bc95ee539adb419f19b83b7">utils::StringUtils::startswith</a>(key, <span class="stringliteral">&quot;time_&quot;</span>)</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>                &amp;&amp; key != <span class="stringliteral">&quot;total_time&quot;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>                &amp;&amp; key != <span class="stringliteral">&quot;time_line_search&quot;</span>)</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>            {</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>                <span class="comment">// The solver reports the time per iteration, so we need to</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>                <span class="comment">// multiply by the number of iterations.</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>                <span class="keyword">const</span> std::string new_key = <span class="stringliteral">&quot;NonlinearSolver::&quot;</span> + key.substr(5, key.size() - 5);</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>                timings[new_key] += solver_iters * value.get&lt;<span class="keywordtype">double</span>&gt;();</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            }</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        }</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    }</div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;<a class="code" href="_implicit_time_integrator_8hpp.html">polyfem/time_integrator/ImplicitTimeIntegrator.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;polysolve/nonlinear/Solver.hpp&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacepolyfem_1_1mesh.html">polyfem::mesh</a></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>{</div>
+<div class="foldopen" id="foldopen00011" data-start="{" data-end="}">
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1mesh.html#a47b36fa8a7d89d878d53cd21e83bfb1b">   11</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a47b36fa8a7d89d878d53cd21e83bfb1b">add_solver_timings</a>(</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        <span class="keyword">decltype</span>(<a class="code hl_variable" href="classpolyfem_1_1mesh_1_1_remesher.html#ad401237782fe592e0ac68901e837b7c9">Remesher::timings</a>) &amp;timings,</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        <span class="keyword">const</span> <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">polyfem::json</a> &amp;solver_info)</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        <span class="comment">// Copy over timing data</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> solver_iters = solver_info[<span class="stringliteral">&quot;iterations&quot;</span>];</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[key, value] : solver_info.items())</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>            <span class="keywordflow">if</span> (<a class="code hl_function" href="namespacepolyfem_1_1utils_1_1_string_utils.html#a8df4a1f29bc95ee539adb419f19b83b7">utils::StringUtils::startswith</a>(key, <span class="stringliteral">&quot;time_&quot;</span>)</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>                &amp;&amp; key != <span class="stringliteral">&quot;total_time&quot;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>                &amp;&amp; key != <span class="stringliteral">&quot;time_line_search&quot;</span>)</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>            {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>                <span class="comment">// The solver reports the time per iteration, so we need to</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>                <span class="comment">// multiply by the number of iterations.</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>                <span class="keyword">const</span> std::string new_key = <span class="stringliteral">&quot;NonlinearSolver::&quot;</span> + key.substr(5, key.size() - 5);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>                timings[new_key] += solver_iters * value.get&lt;<span class="keywordtype">double</span>&gt;();</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            }</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    }</div>
 </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <span class="keyword">template</span> &lt;<span class="keyword">class</span> WMTKMesh&gt;</div>
-<div class="foldopen" id="foldopen00031" data-start="{" data-end="}">
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classpolyfem_1_1mesh_1_1_physics_remesher.html#ada199f0f1581defdd20aadf6df0568d5">   31</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classpolyfem_1_1mesh_1_1_physics_remesher.html#a6c2cdd15989aa56fa1861bdcd25b7a6f">PhysicsRemesher&lt;WMTKMesh&gt;::local_relaxation</a>(</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keyword">const</span> std::vector&lt;Tuple&gt; &amp;local_mesh_tuples,</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> acceptance_tolerance)</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    {</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="comment">// --------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="comment">// 1. Get the n-ring of elements around the vertex.</span></div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> include_global_boundary =</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            state.is_contact_enabled() &amp;&amp; std::any_of(local_mesh_tuples.begin(), local_mesh_tuples.end(), [&amp;](<span class="keyword">const</span> <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_physics_remesher.html#ac660b969a851c9edeff8c01f71251f58">Tuple</a> &amp;t) {</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                const size_t tid = this-&gt;element_id(t);</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                for (int i = 0; i &lt; Super::FACETS_PER_ELEMENT; ++i)</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                    if (this-&gt;is_boundary_facet(this-&gt;tuple_from_facet(tid, i)))</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                        return true;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                return false;</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            });</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <a class="code hl_class" href="classpolyfem_1_1mesh_1_1_local_mesh.html">LocalMesh&lt;Super&gt;</a> local_mesh(*<span class="keyword">this</span>, local_mesh_tuples, include_global_boundary);</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="comment">// --------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="comment">// 2. Perform &quot;relaxation&quot; by minimizing the elastic energy of the</span></div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="comment">// n-ring with the internal boundary edges fixed.</span></div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <a class="code hl_class" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html">LocalRelaxationData</a> data(this-&gt;state, local_mesh, this-&gt;current_time, include_global_boundary);</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <a class="code hl_class" href="classpolyfem_1_1solver_1_1_solve_data.html">solver::SolveData</a> &amp;solve_data = data.<a class="code hl_variable" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a8873c67b721823b8d109782ea93316c1">solve_data</a>;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> n_free_dof = data.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a5a613063e949dd0e13b138ea4840b696">n_free_dof</a>();</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordflow">if</span> (n_free_dof &lt;= 0)</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        {</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            assert(n_free_dof == 0);</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        }</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        this-&gt;total_ndofs += n_free_dof;</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        this-&gt;num_solves++;</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>        <span class="comment">// Nonlinear solver</span></div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keyword">auto</span> nl_solver = state.template make_nl_solver&lt;solver::NLProblem&gt;(<span class="stringliteral">&quot;Eigen::LLT&quot;</span>);</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        nl_solver-&gt;max_iterations() = args[<span class="stringliteral">&quot;local_relaxation&quot;</span>][<span class="stringliteral">&quot;max_nl_iterations&quot;</span>];</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">if</span> (this-&gt;is_boundary_op())</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            nl_solver-&gt;max_iterations() = std::max(nl_solver-&gt;max_iterations(), 5ul);</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        nl_solver-&gt;allow_out_of_iterations = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        Eigen::VectorXd reduced_sol = solve_data.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">nl_problem</a>-&gt;full_to_reduced(data.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a379b6b1b827da11f5c32f0e728b714d4">sol</a>());</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        <span class="keyword">const</span> <span class="keyword">auto</span> level_before = <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().level();</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().set_level(spdlog::level::warn);</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keywordflow">try</span></div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        {</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <a class="code hl_define" href="_remesher_8hpp.html#a59e7cc87c0c490009afe680a351b7bdf">POLYFEM_REMESHER_SCOPED_TIMER</a>(<span class="stringliteral">&quot;Local relaxation solve&quot;</span>);</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            nl_solver-&gt;minimize(*(solve_data.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">nl_problem</a>), reduced_sol);</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        }</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keyword">template</span> &lt;<span class="keyword">class</span> WMTKMesh&gt;</div>
+<div class="foldopen" id="foldopen00032" data-start="{" data-end="}">
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="classpolyfem_1_1mesh_1_1_physics_remesher.html#ada199f0f1581defdd20aadf6df0568d5">   32</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classpolyfem_1_1mesh_1_1_physics_remesher.html#a6c2cdd15989aa56fa1861bdcd25b7a6f">PhysicsRemesher&lt;WMTKMesh&gt;::local_relaxation</a>(</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keyword">const</span> std::vector&lt;Tuple&gt; &amp;local_mesh_tuples,</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> acceptance_tolerance)</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="comment">// --------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="comment">// 1. Get the n-ring of elements around the vertex.</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> include_global_boundary =</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            state.is_contact_enabled() &amp;&amp; std::any_of(local_mesh_tuples.begin(), local_mesh_tuples.end(), [&amp;](<span class="keyword">const</span> <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_physics_remesher.html#ac660b969a851c9edeff8c01f71251f58">Tuple</a> &amp;t) {</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                const size_t tid = this-&gt;element_id(t);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                for (int i = 0; i &lt; Super::FACETS_PER_ELEMENT; ++i)</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                    if (this-&gt;is_boundary_facet(this-&gt;tuple_from_facet(tid, i)))</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                        return true;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                return false;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            });</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span> </div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <a class="code hl_class" href="classpolyfem_1_1mesh_1_1_local_mesh.html">LocalMesh&lt;Super&gt;</a> local_mesh(*<span class="keyword">this</span>, local_mesh_tuples, include_global_boundary);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="comment">// --------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        <span class="comment">// 2. Perform &quot;relaxation&quot; by minimizing the elastic energy of the</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="comment">// n-ring with the internal boundary edges fixed.</span></div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <a class="code hl_class" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html">LocalRelaxationData</a> data(this-&gt;state, local_mesh, this-&gt;current_time, include_global_boundary);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <a class="code hl_class" href="classpolyfem_1_1solver_1_1_solve_data.html">solver::SolveData</a> &amp;solve_data = data.<a class="code hl_variable" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a8873c67b721823b8d109782ea93316c1">solve_data</a>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> n_free_dof = data.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a5a613063e949dd0e13b138ea4840b696">n_free_dof</a>();</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">if</span> (n_free_dof &lt;= 0)</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            assert(n_free_dof == 0);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        this-&gt;total_ndofs += n_free_dof;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        this-&gt;num_solves++;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="comment">// Nonlinear solver</span></div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keyword">auto</span> nl_solver = state.make_nl_solver(<span class="comment">/*for_al=*/</span><span class="keyword">false</span>); <span class="comment">// TODO: Use Eigen::LLT</span></div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        nl_solver-&gt;max_iterations() = args[<span class="stringliteral">&quot;local_relaxation&quot;</span>][<span class="stringliteral">&quot;max_nl_iterations&quot;</span>];</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keywordflow">if</span> (this-&gt;is_boundary_op())</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            nl_solver-&gt;max_iterations() = std::max(nl_solver-&gt;max_iterations(), 5ul);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        nl_solver-&gt;allow_out_of_iterations = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        Eigen::VectorXd reduced_sol = solve_data.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">nl_problem</a>-&gt;full_to_reduced(data.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a379b6b1b827da11f5c32f0e728b714d4">sol</a>());</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keyword">const</span> <span class="keyword">auto</span> level_before = <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().level();</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().set_level(spdlog::level::warn);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        <span class="keywordflow">try</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            <a class="code hl_define" href="_remesher_8hpp.html#a59e7cc87c0c490009afe680a351b7bdf">POLYFEM_REMESHER_SCOPED_TIMER</a>(<span class="stringliteral">&quot;Local relaxation solve&quot;</span>);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            nl_solver-&gt;minimize(*(solve_data.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">nl_problem</a>), reduced_sol);</div>
 <div class="foldopen" id="foldopen00082" data-start="{" data-end="}">
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="classpolyfem_1_1mesh_1_1_physics_remesher.html#ada199f0f1581defdd20aadf6df0568d5">   82</a></span>        <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::runtime_error &amp;e)</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        {</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().set_level(level_before);</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            assert(<span class="keyword">false</span>);</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        }</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().set_level(level_before);</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="comment">// Copy over timing data</span></div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a47b36fa8a7d89d878d53cd21e83bfb1b">add_solver_timings</a>(this-&gt;timings, nl_solver-&gt;get_info());</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        Eigen::VectorXd sol = solve_data.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">nl_problem</a>-&gt;reduced_to_full(reduced_sol);</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="comment">// --------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <span class="comment">// 3. Determine if we should accept the operation based on a decrease in</span></div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="comment">// energy.</span></div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> local_energy_after = solve_data.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">nl_problem</a>-&gt;value(sol);</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        assert(std::isfinite(local_energy_before()));</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        assert(std::isfinite(local_energy_after));</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> abs_diff = local_energy_before() - local_energy_after; <span class="comment">// &gt; 0 if energy decreased</span></div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        <span class="comment">// TODO: compute global_energy_before</span></div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="comment">// Right now using: starting_energy = state.solve_data.nl_problem-&gt;value(sol)</span></div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="comment">// const double global_energy_before = abs(starting_energy);</span></div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="comment">// const double rel_diff = abs_diff / global_energy_before;</span></div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        <span class="comment">// NOTE: only use abs_diff</span></div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="comment">// accept = rel_diff &gt;= energy_relative_tolerance &amp;&amp; abs_diff &gt;= energy_absolute_tolerance;</span></div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="comment">// NOTE: account for Δt² in energy by multiplying acceptance tol by Δt²</span></div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> dt_sqr = solve_data.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#acf11b23233cb27e88cb996b540418d0c">time_integrator</a> ? solve_data.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#acf11b23233cb27e88cb996b540418d0c">time_integrator</a>-&gt;acceleration_scaling() : 1.0;</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> accept = abs_diff &gt;= dt_sqr * acceptance_tolerance;</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="comment">// Update positions only on acceptance</span></div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordflow">if</span> (accept)</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        {</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            <span class="keyword">static</span> <span class="keywordtype">int</span> save_i = 0;</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>            <span class="comment">// local_mesh.write_mesh(state.resolve_output_path(fmt::format(&quot;local_mesh_{:04d}.vtu&quot;, save_i)), target_x);</span></div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            <span class="comment">// write_mesh(state.resolve_output_path(fmt::format(&quot;relaxation_{:04d}.vtu&quot;, save_i++)));</span></div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            <span class="comment">// Re-solve with more iterations</span></div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>            <span class="keywordflow">if</span> (!nl_solver-&gt;converged())</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>            {</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                nl_solver-&gt;max_iterations() = 100;</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                <span class="keyword">const</span> <span class="keyword">auto</span> level_before = <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().level();</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().set_level(spdlog::level::warn);</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                <span class="keywordflow">try</span></div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                {</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                    <a class="code hl_define" href="_remesher_8hpp.html#a59e7cc87c0c490009afe680a351b7bdf">POLYFEM_REMESHER_SCOPED_TIMER</a>(<span class="stringliteral">&quot;Local relaxation resolve&quot;</span>);</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                    nl_solver-&gt;minimize(*(solve_data.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">nl_problem</a>), reduced_sol);</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                }</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::runtime_error &amp;e)</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>                {</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>                    <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().set_level(level_before);</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>                    assert(<span class="keyword">false</span>);</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>                    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>                }</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>                <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().set_level(level_before);</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>                <span class="comment">// Copy over timing data</span></div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>                <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a47b36fa8a7d89d878d53cd21e83bfb1b">add_solver_timings</a>(this-&gt;timings, nl_solver-&gt;get_info());</div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>                sol = solve_data.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">nl_problem</a>-&gt;reduced_to_full(reduced_sol);</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>            }</div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[glob_vi, loc_vi] : local_mesh.global_to_local())</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>            {</div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>                <span class="keyword">const</span> <span class="keyword">auto</span> u = sol.middleRows(this-&gt;dim() * loc_vi, this-&gt;dim());</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>                <span class="keyword">const</span> <span class="keyword">auto</span> u_old = vertex_attrs[glob_vi].displacement();</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>                vertex_attrs[glob_vi].position = vertex_attrs[glob_vi].rest_position + u;</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>            }</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span> </div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>            <span class="comment">// local_mesh.write_mesh(state.resolve_output_path(fmt::format(&quot;local_mesh_{:04d}.vtu&quot;, save_i)), sol);</span></div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>            <span class="comment">// write_mesh(state.resolve_output_path(fmt::format(&quot;relaxation_{:04d}.vtu&quot;, save_i++)));</span></div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        }</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        <span class="keyword">static</span> <span class="keyword">const</span> std::string accept_str =</div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>            fmt::format(fmt::fg(fmt::terminal_color::green), <span class="stringliteral">&quot;accept&quot;</span>);</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <span class="keyword">static</span> <span class="keyword">const</span> std::string reject_str =</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>            fmt::format(fmt::fg(fmt::terminal_color::yellow), <span class="stringliteral">&quot;reject&quot;</span>);</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().debug(</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>            <span class="stringliteral">&quot;[{:s}] E0={:&lt;10g} E1={:&lt;10g} (E0-E1)={:&lt;10g} tol={:g} local_ndof={:d} n_iters={:d}&quot;</span>,</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>            accept ? accept_str : reject_str, local_energy_before(),</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>            local_energy_after, abs_diff, acceptance_tolerance,</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>            n_free_dof, nl_solver-&gt;criteria().iterations);</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        <span class="keywordflow">return</span> accept;</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    }</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="classpolyfem_1_1mesh_1_1_physics_remesher.html#ada199f0f1581defdd20aadf6df0568d5">   82</a></span>        }</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::runtime_error &amp;e)</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().set_level(level_before);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            assert(<span class="keyword">false</span>);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        }</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().set_level(level_before);</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="comment">// Copy over timing data</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a47b36fa8a7d89d878d53cd21e83bfb1b">add_solver_timings</a>(this-&gt;timings, nl_solver-&gt;get_info());</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        Eigen::VectorXd sol = solve_data.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">nl_problem</a>-&gt;reduced_to_full(reduced_sol);</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        <span class="comment">// --------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="comment">// 3. Determine if we should accept the operation based on a decrease in</span></div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="comment">// energy.</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> local_energy_after = solve_data.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">nl_problem</a>-&gt;value(sol);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        assert(std::isfinite(local_energy_before()));</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        assert(std::isfinite(local_energy_after));</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> abs_diff = local_energy_before() - local_energy_after; <span class="comment">// &gt; 0 if energy decreased</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="comment">// TODO: compute global_energy_before</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="comment">// Right now using: starting_energy = state.solve_data.nl_problem-&gt;value(sol)</span></div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="comment">// const double global_energy_before = abs(starting_energy);</span></div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        <span class="comment">// const double rel_diff = abs_diff / global_energy_before;</span></div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="comment">// NOTE: only use abs_diff</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="comment">// accept = rel_diff &gt;= energy_relative_tolerance &amp;&amp; abs_diff &gt;= energy_absolute_tolerance;</span></div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="comment">// NOTE: account for Δt² in energy by multiplying acceptance tol by Δt²</span></div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keyword">const</span> <span class="keywordtype">double</span> dt_sqr = solve_data.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#acf11b23233cb27e88cb996b540418d0c">time_integrator</a> ? solve_data.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#acf11b23233cb27e88cb996b540418d0c">time_integrator</a>-&gt;acceleration_scaling() : 1.0;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> accept = abs_diff &gt;= dt_sqr * acceptance_tolerance;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="comment">// Update positions only on acceptance</span></div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keywordflow">if</span> (accept)</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>            <span class="keyword">static</span> <span class="keywordtype">int</span> save_i = 0;</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            <span class="comment">// local_mesh.write_mesh(state.resolve_output_path(fmt::format(&quot;local_mesh_{:04d}.vtu&quot;, save_i)), target_x);</span></div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            <span class="comment">// write_mesh(state.resolve_output_path(fmt::format(&quot;relaxation_{:04d}.vtu&quot;, save_i++)));</span></div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>            <span class="comment">// Re-solve with more iterations</span></div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>            <span class="keywordflow">if</span> (!nl_solver-&gt;converged())</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>            {</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                nl_solver-&gt;max_iterations() = 100;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                <span class="keyword">const</span> <span class="keyword">auto</span> level_before = <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().level();</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().set_level(spdlog::level::warn);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                <span class="keywordflow">try</span></div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                {</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                    <a class="code hl_define" href="_remesher_8hpp.html#a59e7cc87c0c490009afe680a351b7bdf">POLYFEM_REMESHER_SCOPED_TIMER</a>(<span class="stringliteral">&quot;Local relaxation resolve&quot;</span>);</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                    nl_solver-&gt;minimize(*(solve_data.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">nl_problem</a>), reduced_sol);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                }</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>                <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::runtime_error &amp;e)</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>                {</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>                    <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().set_level(level_before);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>                    assert(<span class="keyword">false</span>);</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>                    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>                }</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>                <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().set_level(level_before);</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>                <span class="comment">// Copy over timing data</span></div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>                <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a47b36fa8a7d89d878d53cd21e83bfb1b">add_solver_timings</a>(this-&gt;timings, nl_solver-&gt;get_info());</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span> </div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>                sol = solve_data.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">nl_problem</a>-&gt;reduced_to_full(reduced_sol);</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>            }</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[glob_vi, loc_vi] : local_mesh.global_to_local())</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>            {</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>                <span class="keyword">const</span> <span class="keyword">auto</span> u = sol.middleRows(this-&gt;dim() * loc_vi, this-&gt;dim());</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>                <span class="keyword">const</span> <span class="keyword">auto</span> u_old = vertex_attrs[glob_vi].displacement();</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>                vertex_attrs[glob_vi].position = vertex_attrs[glob_vi].rest_position + u;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>            }</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>            <span class="comment">// local_mesh.write_mesh(state.resolve_output_path(fmt::format(&quot;local_mesh_{:04d}.vtu&quot;, save_i)), sol);</span></div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>            <span class="comment">// write_mesh(state.resolve_output_path(fmt::format(&quot;relaxation_{:04d}.vtu&quot;, save_i++)));</span></div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>        }</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        <span class="keyword">static</span> <span class="keyword">const</span> std::string accept_str =</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>            fmt::format(fmt::fg(fmt::terminal_color::green), <span class="stringliteral">&quot;accept&quot;</span>);</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        <span class="keyword">static</span> <span class="keyword">const</span> std::string reject_str =</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>            fmt::format(fmt::fg(fmt::terminal_color::yellow), <span class="stringliteral">&quot;reject&quot;</span>);</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().debug(</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>            <span class="stringliteral">&quot;[{:s}] E0={:&lt;10g} E1={:&lt;10g} (E0-E1)={:&lt;10g} tol={:g} local_ndof={:d} n_iters={:d}&quot;</span>,</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>            accept ? accept_str : reject_str, local_energy_before(),</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>            local_energy_after, abs_diff, acceptance_tolerance,</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>            n_free_dof, nl_solver-&gt;criteria().iterations);</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        <span class="keywordflow">return</span> accept;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    }</div>
 </div>
 </div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <span class="comment">// ----------------------------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="comment">// Template specializations</span></div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keyword">template</span> <span class="keyword">class </span>PhysicsRemesher&lt;wmtk::TriMesh&gt;;</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="keyword">template</span> <span class="keyword">class </span>PhysicsRemesher&lt;wmtk::TetMesh&gt;;</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>} <span class="comment">// namespace polyfem::mesh</span></div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="comment">// ----------------------------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="comment">// Template specializations</span></div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="keyword">template</span> <span class="keyword">class </span>PhysicsRemesher&lt;wmtk::TriMesh&gt;;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keyword">template</span> <span class="keyword">class </span>PhysicsRemesher&lt;wmtk::TetMesh&gt;;</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>} <span class="comment">// namespace polyfem::mesh</span></div>
 <div class="ttc" id="a_body_form_8hpp_html"><div class="ttname"><a href="_body_form_8hpp.html">BodyForm.hpp</a></div></div>
 <div class="ttc" id="a_implicit_time_integrator_8hpp_html"><div class="ttname"><a href="_implicit_time_integrator_8hpp.html">ImplicitTimeIntegrator.hpp</a></div></div>
 <div class="ttc" id="a_local_relaxation_data_8hpp_html"><div class="ttname"><a href="_local_relaxation_data_8hpp.html">LocalRelaxationData.hpp</a></div></div>
@@ -326,7 +327,7 @@ $(document).ready(function(){initNavTree('_local_relaxation_8cpp_source.html',''
 <div class="ttc" id="aclasspolyfem_1_1solver_1_1_solve_data_html_a9eefd73924c6adfa89fabd51f9bac359"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_solve_data.html#a9eefd73924c6adfa89fabd51f9bac359">polyfem::solver::SolveData::nl_problem</a></div><div class="ttdeci">std::shared_ptr&lt; solver::NLProblem &gt; nl_problem</div><div class="ttdef"><b>Definition</b> <a href="_solve_data_8hpp_source.html#l00120">SolveData.hpp:120</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1solver_1_1_solve_data_html_acf11b23233cb27e88cb996b540418d0c"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_solve_data.html#acf11b23233cb27e88cb996b540418d0c">polyfem::solver::SolveData::time_integrator</a></div><div class="ttdeci">std::shared_ptr&lt; time_integrator::ImplicitTimeIntegrator &gt; time_integrator</div><div class="ttdef"><b>Definition</b> <a href="_solve_data_8hpp_source.html#l00131">SolveData.hpp:131</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1mesh_html"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html">polyfem::mesh</a></div><div class="ttdef"><b>Definition</b> <a href="_collision_proxy_8cpp_source.html#l00015">CollisionProxy.cpp:16</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1mesh_html_a47b36fa8a7d89d878d53cd21e83bfb1b"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#a47b36fa8a7d89d878d53cd21e83bfb1b">polyfem::mesh::add_solver_timings</a></div><div class="ttdeci">void add_solver_timings(decltype(Remesher::timings) &amp;timings, const polyfem::json &amp;solver_info)</div><div class="ttdef"><b>Definition</b> <a href="_local_relaxation_8cpp_source.html#l00010">LocalRelaxation.cpp:10</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1mesh_html_a47b36fa8a7d89d878d53cd21e83bfb1b"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#a47b36fa8a7d89d878d53cd21e83bfb1b">polyfem::mesh::add_solver_timings</a></div><div class="ttdeci">void add_solver_timings(decltype(Remesher::timings) &amp;timings, const polyfem::json &amp;solver_info)</div><div class="ttdef"><b>Definition</b> <a href="_local_relaxation_8cpp_source.html#l00011">LocalRelaxation.cpp:11</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1utils_1_1_string_utils_html_a8df4a1f29bc95ee539adb419f19b83b7"><div class="ttname"><a href="namespacepolyfem_1_1utils_1_1_string_utils.html#a8df4a1f29bc95ee539adb419f19b83b7">polyfem::utils::StringUtils::startswith</a></div><div class="ttdeci">bool startswith(const std::string &amp;str, const std::string &amp;prefix)</div><div class="ttdef"><b>Definition</b> <a href="_string_utils_8cpp_source.html#l00042">StringUtils.cpp:42</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_a03f3d75072d2fd19f70cd886a51d10dd"><div class="ttname"><a href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">polyfem::logger</a></div><div class="ttdeci">spdlog::logger &amp; logger()</div><div class="ttdoc">Retrieves the current logger.</div><div class="ttdef"><b>Definition</b> <a href="_logger_8cpp_source.html#l00042">Logger.cpp:42</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_a77fa8fe96825827f2af726fcf6405d15"><div class="ttname"><a href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">polyfem::json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition</b> <a href="_common_8hpp_source.html#l00009">Common.hpp:9</a></div></div>
