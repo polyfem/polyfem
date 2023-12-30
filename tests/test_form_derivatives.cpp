@@ -6,7 +6,8 @@
 #include <polyfem/solver/forms/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/BCPenaltyForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
-#include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/BarrierContactForm.hpp>
+#include <polyfem/solver/forms/SmoothContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
@@ -240,7 +241,7 @@ TEST_CASE("body form derivatives", "[form][form_derivatives][body_form]")
 	test_form(form, *state_ptr);
 }
 
-TEST_CASE("contact form derivatives", "[form][form_derivatives][contact_form]")
+TEST_CASE("barrier contact form derivatives", "[form][form_derivatives][contact_form]")
 {
 	const int dim = GENERATE(2, 3);
 	const auto state_ptr = get_state(dim);
@@ -255,11 +256,35 @@ TEST_CASE("contact form derivatives", "[form][form_derivatives][contact_form]")
 	const int ccd_max_iterations = static_cast<int>(1e6);
 	const double dt = 1e-3;
 
-	ContactForm form(
+	BarrierContactForm form(
 		state_ptr->collision_mesh, dhat, state_ptr->avg_mass,
 		use_convergent_formulation, use_adaptive_barrier_stiffness,
 		is_time_dependent, false, broad_phase_method, ccd_tolerance,
 		ccd_max_iterations);
+
+	test_form(form, *state_ptr);
+}
+
+TEST_CASE("smooth contact form derivatives", "[form][form_derivatives][contact_form]")
+{
+	const int dim = GENERATE(2, 3);
+	const auto state_ptr = get_state(dim);
+
+	const double dhat = 1e-3;
+	const double alpha = 2;
+	const double r = 2;
+	const bool use_adaptive_barrier_stiffness = true; // GENERATE(true, false);
+	const double barrier_stiffness = 1e7;
+	const bool is_time_dependent = true;
+	const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
+	const double ccd_tolerance = 1e-6;
+	const int ccd_max_iterations = static_cast<int>(1e6);
+	const double dt = 1e-3;
+
+	SmoothContactForm form(
+		state_ptr->collision_mesh, dhat, alpha, r, state_ptr->avg_mass,
+		use_adaptive_barrier_stiffness, is_time_dependent, broad_phase_method, 
+		ccd_tolerance, ccd_max_iterations);
 
 	test_form(form, *state_ptr);
 }
@@ -297,7 +322,7 @@ TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]"
 	const double ccd_tolerance = 1e-6;
 	const int ccd_max_iterations = static_cast<int>(1e6);
 
-	const ContactForm contact_form(
+	const BarrierContactForm contact_form(
 		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, use_convergent_formulation,
 		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
 		ccd_tolerance, ccd_max_iterations);

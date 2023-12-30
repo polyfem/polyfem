@@ -8,7 +8,7 @@
 #include <ipc/collisions/collisions.hpp>
 #include <ipc/collision_mesh.hpp>
 #include <ipc/broad_phase/broad_phase.hpp>
-#include <ipc/potentials/barrier_potential.hpp>
+#include <ipc/potentials/potential.hpp>
 
 // map BroadPhaseMethod values to JSON as strings
 namespace ipc
@@ -53,13 +53,13 @@ namespace polyfem::solver
 					const double ccd_tolerance,
 					const int ccd_max_iterations);
 
-		std::string name() const override { return "contact"; }
+		virtual std::string name() const override { return "contact"; }
 
 		/// @brief Initialize the form
 		/// @param x Current solution
 		void init(const Eigen::VectorXd &x) override;
 
-		virtual void force_shape_derivative(const ipc::Collisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term);
+		virtual void force_shape_derivative(const ipc::Collisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) = 0;
 
 	protected:
 		/// @brief Compute the contact barrier potential value
@@ -117,7 +117,7 @@ namespace polyfem::solver
 
 		/// @brief Update the barrier stiffness based on the current elasticity energy
 		/// @param x Current solution
-		virtual void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy);
+		virtual void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) = 0;
 
 		/// @brief Compute the displaced positions of the surface nodes
 		Eigen::MatrixXd compute_displaced_surface(const Eigen::VectorXd &x) const;
@@ -141,12 +141,14 @@ namespace polyfem::solver
 		double dhat() const { return dhat_; }
 		ipc::Collisions get_collision_set() const { return collision_set_; }
 
-		const ipc::BarrierPotential &get_barrier_potential() const { return barrier_potential_; }
+		std::shared_ptr<ipc::Potential<ipc::Collisions>> get_potential() const { return contact_potential_; }
 
 	protected:
 		/// @brief Update the cached candidate set for the current solution
 		/// @param displaced_surface Vertex positions displaced by the current solution
 		void update_collision_set(const Eigen::MatrixXd &displaced_surface);
+
+		virtual double barrier_support_size() const { return dhat_; }
 
 		/// @brief Collision mesh
 		const ipc::CollisionMesh &collision_mesh_;
@@ -190,6 +192,6 @@ namespace polyfem::solver
 		/// @brief Cached candidate set for the current solution
 		ipc::Candidates candidates_;
 
-		const ipc::BarrierPotential barrier_potential_;
+		std::shared_ptr<ipc::Potential<ipc::Collisions>> contact_potential_;
 	};
 } // namespace polyfem::solver

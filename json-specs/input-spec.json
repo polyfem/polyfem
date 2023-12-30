@@ -1187,9 +1187,32 @@
             "epsv",
             "friction_coefficient",
             "use_convergent_formulation",
-            "collision_mesh"
+            "collision_mesh",
+            "use_smooth_formulation",
+            "alpha",
+            "r"
         ],
         "doc": "Contact handling parameters."
+    },
+    {
+        "pointer": "/contact/use_smooth_formulation",
+        "default": false,
+        "type": "bool",
+        "doc": "True if the smooth contact formulation is used."
+    },
+    {
+        "pointer": "/contact/alpha",
+        "default": 1,
+        "min": 0,
+        "type": "float",
+        "doc": "Control the angle of contact pairs."
+    },
+    {
+        "pointer": "/contact/r",
+        "default": 2,
+        "min": 1,
+        "type": "float",
+        "doc": "Control the power of distance barrier function."
     },
     {
         "pointer": "/contact/enabled",

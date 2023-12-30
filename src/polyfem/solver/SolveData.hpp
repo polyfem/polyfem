@@ -97,6 +97,11 @@ namespace polyfem::solver
 			const double ccd_tolerance,
 			const long ccd_max_iterations,
 			const bool enable_shape_derivatives,
+			
+			// Smooth contact form
+			const bool use_smooth_contact,
+			const double alpha,
+			const double r,
 
 			// Friction form
 			const double friction_coefficient,

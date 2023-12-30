@@ -137,8 +137,12 @@ namespace polyfem::solver
 			collision_mesh_, displaced_surface, dhat_,
 			/*dmin=*/0, broad_phase_method_);
 
+		auto potential = std::dynamic_pointer_cast<ipc::BarrierPotential>(contact_form_.get_potential());
+		if (!potential)
+			log_and_throw_error("Friction doesn't support SmoothContactPotential!");
+
 		friction_collision_set_.build(
 			collision_mesh_, displaced_surface, collision_set,
-			contact_form_.get_barrier_potential(), contact_form_.barrier_stiffness(), mu_);
+			*potential, contact_form_.barrier_stiffness(), mu_);
 	}
 } // namespace polyfem::solver

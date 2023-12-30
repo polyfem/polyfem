@@ -22,6 +22,10 @@ set(SOURCES
 	FrictionForm.hpp
 	ContactForm.cpp
 	ContactForm.hpp
+	BarrierContactForm.cpp
+	BarrierContactForm.hpp
+	SmoothContactForm.cpp
+	SmoothContactForm.hpp
 	RayleighDampingForm.cpp
 	RayleighDampingForm.hpp
 )

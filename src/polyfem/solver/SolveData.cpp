@@ -5,7 +5,8 @@
 #include <polyfem/solver/forms/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/BCPenaltyForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
-#include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/BarrierContactForm.hpp>
+#include <polyfem/solver/forms/SmoothContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
@@ -72,6 +73,11 @@ namespace polyfem::solver
 		const double ccd_tolerance,
 		const long ccd_max_iterations,
 		const bool enable_shape_derivatives,
+
+		// Smooth contact form
+		const bool use_smooth_contact,
+		const double alpha,
+		const double r,
 
 		// Friction form
 		const double friction_coefficient,
@@ -159,10 +165,16 @@ namespace polyfem::solver
 		{
 			const bool use_adaptive_barrier_stiffness = !barrier_stiffness.is_number();
 
-			contact_form = std::make_shared<ContactForm>(
-				collision_mesh, dhat, avg_mass, use_convergent_contact_formulation,
-				use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(),
-				ccd_max_iterations);
+			if (use_smooth_contact)
+				contact_form = std::make_shared<SmoothContactForm>(
+					collision_mesh, dhat, alpha, r, avg_mass,
+					use_adaptive_barrier_stiffness, is_time_dependent, broad_phase, 
+					ccd_tolerance * units.characteristic_length(), ccd_max_iterations);
+			else
+				contact_form = std::make_shared<BarrierContactForm>(
+					collision_mesh, dhat, avg_mass, use_convergent_contact_formulation,
+					use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(),
+					ccd_max_iterations);
 
 			if (use_adaptive_barrier_stiffness)
 			{

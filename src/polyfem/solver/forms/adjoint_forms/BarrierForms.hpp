@@ -4,6 +4,7 @@
 #include "VariableToSimulation.hpp"
 
 #include <polyfem/solver/forms/ContactForm.hpp>
+#include <ipc/potentials/barrier_potential.hpp>
 
 namespace polyfem::solver
 {
