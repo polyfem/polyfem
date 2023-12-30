@@ -267,6 +267,7 @@ namespace polyfem
 			*solve_data.rhs_assembler, t, forms);
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
+		solve_data.nl_problem->state = this;
 
 		// --------------------------------------------------------------------
 
