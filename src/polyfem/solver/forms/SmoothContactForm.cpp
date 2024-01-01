@@ -3,7 +3,22 @@
 
 namespace polyfem::solver
 {
-    void SmoothContactForm::force_shape_derivative(const ipc::Collisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
+    SmoothContactForm::SmoothContactForm(const ipc::CollisionMesh &collision_mesh,
+                const json &args,
+                const double avg_mass,
+                const bool use_adaptive_barrier_stiffness,
+                const bool is_time_dependent,
+                const ipc::BroadPhaseMethod broad_phase_method,
+                const double ccd_tolerance,
+                const int ccd_max_iterations): ContactForm(collision_mesh, args["dhat"], avg_mass, false, use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(dhat_*dhat_, args["alpha"], args["a"], args["r"])
+    {
+		collision_set_ = std::make_shared<ipc::SmoothCollisions>();
+        contact_potential_ = std::make_shared<ipc::SmoothContactPotential<ipc::VirtualCollisions>>(params);
+        if (params.a > 0)
+            logger().error("The contact candidate search size is likely wrong!");
+    }
+    
+    void SmoothContactForm::force_shape_derivative(const ipc::VirtualCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
     {
         log_and_throw_error("[{}] Shape derivatives not implemented!", name());
     }

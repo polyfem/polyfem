@@ -1190,6 +1190,7 @@
             "collision_mesh",
             "use_smooth_formulation",
             "alpha",
+            "a",
             "r"
         ],
         "doc": "Contact handling parameters."
@@ -1208,8 +1209,15 @@
         "doc": "Control the angle of contact pairs."
     },
     {
+        "pointer": "/contact/a",
+        "default": 0,
+        "min": 0,
+        "type": "float",
+        "doc": "Control the smoothness of point edge distance."
+    },
+    {
         "pointer": "/contact/r",
-        "default": 2,
+        "default": 1,
         "min": 1,
         "type": "float",
         "doc": "Control the power of distance barrier function."

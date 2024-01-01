@@ -18,9 +18,13 @@ namespace polyfem::solver
 					const double ccd_tolerance,
 					const int ccd_max_iterations): ContactForm(collision_mesh, dhat, avg_mass, use_convergent_formulation, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations)
     {
+		collision_set_ = std::make_shared<ipc::Collisions>();
+		collision_set_->set_use_convergent_formulation(use_convergent_formulation);
+		collision_set_->set_are_shape_derivatives_enabled(enable_shape_derivatives);
+
         contact_potential_ = std::make_shared<ipc::BarrierPotential>(dhat);
     }
-	void BarrierContactForm::force_shape_derivative(const ipc::Collisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
+	void BarrierContactForm::force_shape_derivative(const ipc::VirtualCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
 	{
 		// Eigen::MatrixXd U = collision_mesh_.vertices(utils::unflatten(solution, collision_mesh_.dim()));
 		// Eigen::MatrixXd X = collision_mesh_.vertices(boundary_nodes_pos_);
@@ -62,7 +66,7 @@ namespace polyfem::solver
 
 				update_collision_set(displaced_surface);
 				const double convergent_potential = (*contact_potential_)(
-					collision_set_, collision_mesh_, displaced_surface);
+					*collision_set_, collision_mesh_, displaced_surface);
 
 				scaling_factor = nonconvergent_potential / convergent_potential;
 			}

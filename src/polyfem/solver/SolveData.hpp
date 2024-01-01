@@ -99,9 +99,7 @@ namespace polyfem::solver
 			const bool enable_shape_derivatives,
 			
 			// Smooth contact form
-			const bool use_smooth_contact,
-			const double alpha,
-			const double r,
+			const json &contact_params,
 
 			// Friction form
 			const double friction_coefficient,

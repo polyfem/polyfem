@@ -5,7 +5,7 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/Types.hpp>
 
-#include <ipc/collisions/collisions.hpp>
+#include <ipc/smooth_contact/smooth_collisions.hpp>
 #include <ipc/collision_mesh.hpp>
 #include <ipc/broad_phase/broad_phase.hpp>
 #include <ipc/potentials/potential.hpp>
@@ -59,7 +59,7 @@ namespace polyfem::solver
 		/// @param x Current solution
 		void init(const Eigen::VectorXd &x) override;
 
-		virtual void force_shape_derivative(const ipc::Collisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) = 0;
+		virtual void force_shape_derivative(const ipc::VirtualCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) = 0;
 
 	protected:
 		/// @brief Compute the contact barrier potential value
@@ -129,7 +129,7 @@ namespace polyfem::solver
 		/// @brief Get use_adaptive_barrier_stiffness
 		bool use_adaptive_barrier_stiffness() const { return use_adaptive_barrier_stiffness_; }
 		/// @brief Get use_convergent_formulation
-		bool use_convergent_formulation() const { return collision_set_.use_convergent_formulation(); }
+		bool use_convergent_formulation() const { return collision_set_->use_convergent_formulation(); }
 
 		bool enable_shape_derivatives() const { return enable_shape_derivatives_; }
 
@@ -139,9 +139,9 @@ namespace polyfem::solver
 		bool save_ccd_debug_meshes = false;
 
 		double dhat() const { return dhat_; }
-		ipc::Collisions get_collision_set() const { return collision_set_; }
+		std::shared_ptr<ipc::VirtualCollisions> get_collision_set() const { return collision_set_; }
 
-		std::shared_ptr<ipc::Potential<ipc::Collisions>> get_potential() const { return contact_potential_; }
+		std::shared_ptr<ipc::Potential<ipc::VirtualCollisions>> get_potential() const { return contact_potential_; }
 
 	protected:
 		/// @brief Update the cached candidate set for the current solution
@@ -188,10 +188,10 @@ namespace polyfem::solver
 		/// @brief If true, use the cached candidate set for the current solution
 		bool use_cached_candidates_ = false;
 		/// @brief Cached constraint set for the current solution
-		ipc::Collisions collision_set_;
+		std::shared_ptr<ipc::VirtualCollisions> collision_set_;
 		/// @brief Cached candidate set for the current solution
 		ipc::Candidates candidates_;
 
-		std::shared_ptr<ipc::Potential<ipc::Collisions>> contact_potential_;
+		std::shared_ptr<ipc::Potential<ipc::VirtualCollisions>> contact_potential_;
 	};
 } // namespace polyfem::solver

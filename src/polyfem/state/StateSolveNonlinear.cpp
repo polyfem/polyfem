@@ -242,9 +242,7 @@ namespace polyfem
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
 			optimization_enabled == solver::CacheLevel::Derivatives,
-			args["contact"]["use_smooth_formulation"],
-			args["contact"]["alpha"],
-			args["contact"]["r"],
+			args["contact"],
 			// Friction form
 			args["contact"]["friction_coefficient"],
 			args["contact"]["epsv"],
