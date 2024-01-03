@@ -214,22 +214,18 @@ namespace polyfem::solver
 
 	void ContactForm::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
-		if (data.iter_num == 0)
-			return;
-
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(data.x);
 
 		const double curr_distance = collision_set_->compute_minimum_distance(collision_mesh_, displaced_surface);
 		if (!std::isinf(curr_distance))
 		{
 			const double ratio = sqrt(curr_distance) / dhat();
-			if (ratio < 1e-4)
-				polyfem::logger().log(spdlog::level::err, "Minimum distance: {}", sqrt(curr_distance));
-			else if (ratio < 1e-2)
-				polyfem::logger().log(spdlog::level::warn, "Minimum distance: {}", sqrt(curr_distance));
-			else
-				polyfem::logger().log(spdlog::level::debug, "Minimum distance: {}", sqrt(curr_distance));
+			const auto log_level = (ratio < 1e-4) ? spdlog::level::err : ((ratio < 1e-2) ? spdlog::level::warn : spdlog::level::debug);
+			polyfem::logger().log(log_level, "Minimum distance during solve: {}, dhat: {}", sqrt(curr_distance), dhat());
 		}
+		
+		if (data.iter_num == 0)
+			return;
 
 		if (use_adaptive_barrier_stiffness_)
 		{

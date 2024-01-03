@@ -1632,8 +1632,10 @@ namespace polyfem::io
 		{
 			try
 			{
-				Eigen::MatrixXd potential_grad, potential_grad_fun;
-				state.assembler->assemble_gradient(mesh.is_volume(), state.n_bases, bases, gbases, state.ass_vals_cache, t, dt, sol, sol, potential_grad);
+				Eigen::VectorXd potential_grad;
+				Eigen::MatrixXd potential_grad_fun;
+				if (state.solve_data.elastic_form)
+					state.solve_data.elastic_form->first_derivative(sol, potential_grad);
 
 				Evaluator::interpolate_function(
 					mesh, problem.is_scalar(), bases, state.disc_orders,
@@ -1646,7 +1648,31 @@ namespace polyfem::io
 					potential_grad_fun.bottomRows(obstacle.n_vertices()).setZero();
 				}
 
-				writer.add_field("gradient_of_potential", potential_grad_fun);
+				writer.add_field("gradient_of_elastic_potential", potential_grad_fun);
+			}
+			catch (std::exception &)
+			{
+			}
+
+			try
+			{
+				Eigen::VectorXd potential_grad;
+				Eigen::MatrixXd potential_grad_fun;
+				if (state.solve_data.contact_form)
+					state.solve_data.contact_form->first_derivative(sol, potential_grad);
+
+				Evaluator::interpolate_function(
+					mesh, problem.is_scalar(), bases, state.disc_orders,
+					state.polys, state.polys_3d, ref_element_sampler,
+					points.rows(), potential_grad, potential_grad_fun, opts.use_sampler, opts.boundary_only);
+
+				if (obstacle.n_vertices() > 0)
+				{
+					potential_grad_fun.conservativeResize(potential_grad_fun.rows() + obstacle.n_vertices(), potential_grad_fun.cols());
+					potential_grad_fun.bottomRows(obstacle.n_vertices()).setZero();
+				}
+
+				writer.add_field("gradient_of_contact_potential", potential_grad_fun);
 			}
 			catch (std::exception &)
 			{

@@ -280,7 +280,7 @@ TEST_CASE("smooth contact form derivatives", "[form][form_derivatives][contact_f
 	const double ccd_tolerance = 1e-6;
 	const int ccd_max_iterations = static_cast<int>(1e6);
 	const double dt = 1e-3;
-	const double a = 0.2;
+	const double a = 0;
 	const json contact_args = json::object({ {"a", a}, {"alpha", alpha}, {"dhat", dhat}, {"r", r} });
 
 	SmoothContactForm form(
