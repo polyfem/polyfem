@@ -1332,8 +1332,6 @@ namespace polyfem
 					|| collision_mesh.to_full_vertex_id(vj) < num_fe_collision_vertices;
 
 				flag = flag && (node_to_body_id[collision_mesh.to_full_vertex_id(vi)] != node_to_body_id[collision_mesh.to_full_vertex_id(vj)]);
-				flag = flag && (node_to_body_id[collision_mesh.to_full_vertex_id(vi)] <= 3);
-				flag = flag && (node_to_body_id[collision_mesh.to_full_vertex_id(vj)] <= 3);
 				return flag;
 			};
 		}
