@@ -1191,9 +1191,17 @@
             "use_smooth_formulation",
             "alpha",
             "a",
-            "r"
+            "r",
+            "high_order_quadrature"
         ],
         "doc": "Contact handling parameters."
+    },
+    {
+        "pointer": "/contact/high_order_quadrature",
+        "default": 1,
+        "min": 1,
+        "type": "int",
+        "doc": "Number of quadrature points in edge-vertex contact."
     },
     {
         "pointer": "/contact/use_smooth_formulation",
@@ -1218,7 +1226,7 @@
     {
         "pointer": "/contact/r",
         "default": 1,
-        "min": 1,
+        "min": 0,
         "type": "float",
         "doc": "Control the power of distance barrier function."
     },

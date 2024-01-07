@@ -10,12 +10,18 @@ namespace polyfem::solver
                 const bool is_time_dependent,
                 const ipc::BroadPhaseMethod broad_phase_method,
                 const double ccd_tolerance,
-                const int ccd_max_iterations): ContactForm(collision_mesh, args["dhat"], avg_mass, false, use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(dhat_*dhat_, args["alpha"], args["a"], args["r"])
+                const int ccd_max_iterations): ContactForm(collision_mesh, args["dhat"], avg_mass, false, use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(dhat_*dhat_, args["alpha"], args["a"], args["r"], args["high_order_quadrature"])
     {
 		collision_set_ = std::make_shared<ipc::SmoothCollisions>();
         contact_potential_ = std::make_shared<ipc::SmoothContactPotential<ipc::VirtualCollisions>>(params);
         if (params.a > 0)
             logger().error("The contact candidate search size is likely wrong!");
+        if (args["high_order_quadrature"] > 1)
+            collision_set_->set_edge_quadrature_type(ipc::SurfaceQuadratureType::UniformSampling);
+        else
+            collision_set_->set_edge_quadrature_type(ipc::SurfaceQuadratureType::SinglePoint);
+        
+        candidates_.set_candidate_types(collision_set_->get_candidate_types(collision_mesh_.dim()));
     }
     
     void SmoothContactForm::force_shape_derivative(const ipc::VirtualCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)

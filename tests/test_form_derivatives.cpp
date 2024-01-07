@@ -281,7 +281,7 @@ TEST_CASE("smooth contact form derivatives", "[form][form_derivatives][contact_f
 	const int ccd_max_iterations = static_cast<int>(1e6);
 	const double dt = 1e-3;
 	const double a = 0;
-	const json contact_args = json::object({ {"a", a}, {"alpha", alpha}, {"dhat", dhat}, {"r", r} });
+	const json contact_args = json::object({ {"a", a}, {"alpha", alpha}, {"dhat", dhat}, {"r", r}, {"high_order_quadrature", 5} });
 
 	SmoothContactForm form(
 		state_ptr->collision_mesh, contact_args, state_ptr->avg_mass,
