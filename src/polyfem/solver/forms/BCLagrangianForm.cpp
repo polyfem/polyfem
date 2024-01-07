@@ -51,7 +51,7 @@ namespace polyfem::solver
 		for (const auto bn : boundary_nodes_)
 			is_boundary_dof[bn] = false;
 
-		masked_lumped_mass_sqrt_ = polyfem::utils::sparse_identity(ndof, ndof);
+		masked_lumped_mass_sqrt_ = mass.size() == 0 ? polyfem::utils::sparse_identity(ndof, ndof) : polyfem::utils::lump_matrix(mass);
 		assert(ndof == masked_lumped_mass_sqrt_.rows() && ndof == masked_lumped_mass_sqrt_.cols());
 
 		// Give the collision obstacles a entry in the lumped mass matrix
@@ -78,7 +78,8 @@ namespace polyfem::solver
 			for (StiffnessMatrix::InnerIterator it(masked_lumped_mass_sqrt_, k); it; ++it)
 			{
 				assert(it.col() == k);
-				assert(it.value() >= 0);
+				if (it.value() <= 0)
+					log_and_throw_error("Invalid lumped mass matrix!");
 				tmp_triplets.emplace_back(it.row(), it.col(), sqrt(it.value()));
 			}
 		}
