@@ -1192,9 +1192,24 @@
             "alpha",
             "a",
             "r",
-            "high_order_quadrature"
+            "high_order_quadrature",
+            "min_distance_ratio",
+            "use_adaptive_epsilon"
         ],
         "doc": "Contact handling parameters."
+    },
+    {
+        "pointer": "/contact/use_adaptive_epsilon",
+        "default": false,
+        "type": "bool",
+        "doc": "True if adaptive epsilon is used."
+    },
+    {
+        "pointer": "/contact/min_distance_ratio",
+        "default": 0.5,
+        "min": 0,
+        "type": "float",
+        "doc": "Ratio of the minimum distance to contact to define local epsilon."
     },
     {
         "pointer": "/contact/high_order_quadrature",
