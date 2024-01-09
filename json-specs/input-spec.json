@@ -1193,9 +1193,16 @@
             "a",
             "r",
             "high_order_quadrature",
-            "min_distance_ratio"
+            "min_distance_ratio",
+            "use_adaptive_epsilon"
         ],
         "doc": "Contact handling parameters."
+    },
+    {
+        "pointer": "/contact/use_adaptive_epsilon",
+        "default": false,
+        "type": "bool",
+        "doc": "True if adaptive epsilon is used."
     },
     {
         "pointer": "/contact/min_distance_ratio",
