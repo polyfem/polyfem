@@ -247,6 +247,24 @@ namespace polyfem::io
 						loc_nodes.push_back(gindex);
 					}
 
+					{
+						Eigen::MatrixXd normals, uv, points;
+						Eigen::VectorXd weights;
+						bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, 2, mesh, j, false, uv, points, normals, weights);
+						
+						assembler::ElementAssemblyValues vals;
+						vals.compute(lb.element_id(), true, points, bases[lb.element_id()], bases[lb.element_id()]);
+
+						for (int n = 0; n < vals.jac_it.size(); ++n)
+						{
+							normals.row(n) = normals.row(n) * vals.jac_it[n];
+							normals.row(n).normalize();
+							Eigen::Vector3d a = node_positions.row(loc_nodes[1]) - node_positions.row(loc_nodes[0]);
+							Eigen::Vector3d b = node_positions.row(loc_nodes[2]) - node_positions.row(loc_nodes[0]);
+							assert(normals.row(n).dot(a.cross(b)) > 0);
+						}
+					}
+
 					if (loc_nodes.size() == 3)
 					{
 						tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
