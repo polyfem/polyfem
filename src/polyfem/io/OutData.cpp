@@ -342,6 +342,22 @@ namespace polyfem::io
 
 					int prev_node = -1;
 
+					Eigen::MatrixXd normals;
+					{
+						Eigen::MatrixXd uv, points;
+						Eigen::VectorXd weights;
+						bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, 2, mesh, j, false, uv, points, normals, weights);
+						
+						assembler::ElementAssemblyValues vals;
+						vals.compute(lb.element_id(), false, points, bases[lb.element_id()], bases[lb.element_id()]);
+
+						for (int n = 0; n < vals.jac_it.size(); ++n)
+						{
+							normals.row(n) = normals.row(n) * vals.jac_it[n];
+							normals.row(n).normalize();
+						}
+					}
+
 					for (long n = 0; n < nodes.size(); ++n)
 					{
 						const basis::Basis &bs = b.bases[nodes(n)];
@@ -353,7 +369,15 @@ namespace polyfem::io
 						node_positions.row(gindex) = glob.front().node.head<2>();
 
 						if (prev_node >= 0)
-							edges.emplace_back(prev_node, gindex);
+						{
+							double orientation = -normals(n, 1) * (node_positions(gindex, 0) - node_positions(prev_node, 0)) + 
+												 normals(n, 0) * (node_positions(gindex, 1) - node_positions(prev_node, 1));
+							assert(orientation > 0);
+							if (orientation > 0)
+								edges.emplace_back(prev_node, gindex);
+							else
+								edges.emplace_back(gindex, prev_node);
+						}
 						prev_node = gindex;
 					}
 				}
