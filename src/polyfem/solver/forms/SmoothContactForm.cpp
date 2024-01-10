@@ -13,9 +13,9 @@ namespace polyfem::solver
                 const int ccd_max_iterations): ContactForm(collision_mesh, args["dhat"], avg_mass, false, use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(dhat_*dhat_, args["alpha"], args["a"], args["r"], args["high_order_quadrature"])
     {
         if (collision_mesh.dim() == 2)
-		    collision_set_ = std::make_shared<ipc::SmoothCollisions<2>>();
+		    collision_set_ = std::make_shared<ipc::SmoothCollisions<2>>(args["use_adaptive_epsilon"]);
         else
-            collision_set_ = std::make_shared<ipc::SmoothCollisions<3>>();
+            collision_set_ = std::make_shared<ipc::SmoothCollisions<3>>(args["use_adaptive_epsilon"]);
         contact_potential_ = std::make_shared<ipc::SmoothContactPotential<ipc::VirtualCollisions>>(params);
         if (params.a > 0)
             logger().error("The contact candidate search size is likely wrong!");

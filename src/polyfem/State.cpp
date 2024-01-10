@@ -1324,6 +1324,8 @@ namespace polyfem
 			is_on_surface, collision_vertices, collision_edges, collision_triangles,
 			displacement_map);
 
+		collision_mesh.set_min_dist_ratio(args["contact"]["min_distance_ratio"]);
+
 		if (utils::is_param_valid(args["contact"], "collision_mesh") && args["contact"]["collision_mesh"]["no_self_contact"])
 		{
 			collision_mesh.can_collide = [&collision_mesh, num_fe_collision_vertices, node_to_body_id](size_t vi, size_t vj) {
