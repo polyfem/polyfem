@@ -223,3 +223,57 @@ TEST_CASE("runners", tagsrun)
 			std::cout << t << std::endl;
 	}
 }
+
+
+
+const std::string CONTACT_TEST_FOLDER = POLYFEM_TEST_DIR + std::string("/../contact-tests/");
+
+TEST_CASE("new-contact", "[contact]")
+{
+    std::string json_file = CONTACT_TEST_FOLDER + "cube-on-floor/run.json";
+	json in_args;
+	if (!load_json(json_file, in_args))
+	{
+		spdlog::error("unable to open {} file", json_file);
+	}
+
+	json args = in_args;
+	args["root_path"] = json_file;
+	utils::apply_common_params(args);
+
+	json time_steps;
+	time_steps = "static";
+
+    State state;
+    state.init(args, true);
+    state.set_max_threads(1);
+    spdlog::set_level(spdlog::level::info);
+    state.load_mesh();
+
+    if (state.mesh == nullptr)
+    {
+        spdlog::warn("No Mesh is Read!!");
+    }
+
+    // state.compute_mesh_stats();
+
+    state.build_basis();
+
+    state.assemble_rhs();
+    state.assemble_mass_mat();
+
+    Eigen::MatrixXd sol;
+    Eigen::MatrixXd pressure;
+
+    try
+    {
+        state.solve_problem(sol, pressure);
+    }
+    catch (...)
+    {
+        spdlog::error("Solve failed!");
+        REQUIRE(false);
+    }
+
+	REQUIRE()
+}

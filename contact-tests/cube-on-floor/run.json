@@ -1,0 +1,136 @@
+{
+    "boundary_conditions": {
+        "dirichlet_boundary": [
+            {
+                "id": 12,
+                "value": [0, 0]
+            },
+            {
+                "id": 1,
+                "value": [0, 0],
+                "dimension": [true, false]
+            },
+            {
+                "id": 2,
+                "value": [0, 0],
+                "dimension": [true, false]
+            },
+            {
+                "id": 3,
+                "value": [0, 0],
+                "dimension": [true, false]
+            },
+            {
+                "id": 4,
+                "value": [0, 0],
+                "dimension": [true, false]
+            },
+            {
+                "id": 7,
+                "value": [0, 0],
+                "dimension": [true, false]
+            }
+        ],
+        "neumann_boundary": [
+            {
+                "id": 4,
+                "value": [0, -1e2]
+            }
+        ]
+    },
+    "space": {
+        "discr_order": 1
+    },
+    "geometry": [
+        {
+            "mesh": "cube.obj",
+            "enabled": true,
+            "volume_selection": 1,
+            "surface_selection": 11,
+            "n_refs": 0
+        },
+        {
+            "mesh": "floor.obj",
+            "enabled": true,
+            "volume_selection": 2,
+            "surface_selection": 12,
+            "n_refs": 0
+        },
+        {
+            "mesh": "top.obj",
+            "enabled": true,
+            "volume_selection": 3,
+            "surface_selection": {
+                "threshold": 1e-3
+            },
+            "n_refs": 0
+        }
+    ],
+    "contact": {
+        "enabled": true,
+        "dhat": 0.03,
+        "use_convergent_formulation": true,
+        "collision_mesh": {
+            "enabled": true
+        },
+        "use_smooth_formulation": true,
+        "alpha": 0.05,
+        "r": 1,
+        "high_order_quadrature": 3
+    },
+    "output": {
+        "json": "out.json",
+        "paraview": {
+            "high_order_mesh": false,
+            "file_name": "out.vtu",
+            "vismesh_rel_area": 1,
+            "surface": true,
+            "volume": true,
+            "options": {
+                "use_hdf5": false,
+                "body_ids": true
+            }
+        }
+    },
+    "materials": 
+    [{
+        "id": 1,
+        "E": 1e4,
+        "nu": 0.49,
+        "rho": 100,
+        "type": "NeoHookean"
+    },
+    {
+        "id": 2,
+        "E": 1e4,
+        "nu": 0.49,
+        "rho": 100,
+        "type": "NeoHookean"
+    },
+    {
+        "id": 3,
+        "E": 1e4,
+        "nu": 0.49,
+        "rho": 100,
+        "type": "NeoHookean"
+    }],
+    "solver": {
+        "linear": {
+            "solver": "Eigen::PardisoLDLT"
+        },
+        "nonlinear": {
+            "line_search": {
+                "method": "Backtracking",
+                "use_grad_norm_tol": 1e-14
+            },
+            "grad_norm": 1e-6,
+            "max_iterations": 1000
+        },
+        "contact": {
+            "CCD": {
+                "broad_phase": "BVH"
+            },
+            "barrier_stiffness": 10000
+        }
+    }
+}
