@@ -1,5 +1,5 @@
 #include "FrictionForm.hpp"
-#include "ContactForm.hpp"
+#include "BarrierContactForm.hpp"
 
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
@@ -137,12 +137,12 @@ namespace polyfem::solver
 			collision_mesh_, displaced_surface, dhat_,
 			/*dmin=*/0, broad_phase_method_);
 
-		auto potential = std::dynamic_pointer_cast<ipc::BarrierPotential>(contact_form_.get_potential());
-		if (!potential)
+		const auto barrier_contact = dynamic_cast<const BarrierContactForm*>(&contact_form_);
+		if (!barrier_contact)
 			log_and_throw_error("Friction doesn't support SmoothContactPotential!");
 
 		friction_collision_set_.build(
 			collision_mesh_, displaced_surface, collision_set,
-			*potential, contact_form_.barrier_stiffness(), mu_);
+			barrier_contact->get_potential(), contact_form_.barrier_stiffness(), mu_);
 	}
 } // namespace polyfem::solver

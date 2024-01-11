@@ -127,11 +127,13 @@ namespace polyfem::solver
 
 		// TODO: add me back
 		static int nsolves = 0;
+		if (data.iter_num == 0)
+			nsolves++;
 		if (state && state->args["output"]["advanced"]["save_nl_solve_sequence"])
 		{
 			const Eigen::MatrixXd displacements = utils::unflatten(reduced_to_full(data.x), state->mesh->dimension());
 			io::OBJWriter::write(
-				state->resolve_output_path(fmt::format("nonlinear_solve{:04d}_iter{:04d}.obj", nsolves++, data.iter_num)),
+				state->resolve_output_path(fmt::format("nonlinear_solve{:04d}_iter{:04d}.obj", nsolves, data.iter_num)),
 				state->collision_mesh.displace_vertices(displacements),
 				state->collision_mesh.edges(), state->collision_mesh.faces());
 		}

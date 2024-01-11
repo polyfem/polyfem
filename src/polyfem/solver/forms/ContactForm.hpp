@@ -31,6 +31,7 @@ namespace ipc
 
 namespace polyfem::solver
 {
+	class BarrierContactForm;
 	/// @brief Form representing the contact potential and forces
 	class ContactForm : public Form
 	{
@@ -61,29 +62,6 @@ namespace polyfem::solver
 		/// @param x Current solution
 		void init(const Eigen::VectorXd &x) override;
 
-		virtual void force_shape_derivative(const ipc::VirtualCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) = 0;
-
-	protected:
-		/// @brief Compute the contact barrier potential value
-		/// @param x Current solution
-		/// @return Value of the contact barrier potential
-		virtual double value_unweighted(const Eigen::VectorXd &x) const override;
-
-		/// @brief Compute the value of the form multiplied per element
-		/// @param x Current solution
-		/// @return Computed value
-		Eigen::VectorXd value_per_element_unweighted(const Eigen::VectorXd &x) const override;
-
-		/// @brief Compute the first derivative of the value wrt x
-		/// @param[in] x Current solution
-		/// @param[out] gradv Output gradient of the value wrt x
-		virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
-
-		/// @brief Compute the second derivative of the value wrt x
-		/// @param x Current solution
-		/// @param hessian Output Hessian of the value wrt x
-		virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
-
 	public:
 		/// @brief Update time-dependent fields
 		/// @param t Current time
@@ -108,11 +86,6 @@ namespace polyfem::solver
 		/// @param new_x New solution
 		void solution_changed(const Eigen::VectorXd &new_x) override;
 
-		/// @brief Update fields after a step in the optimization
-		/// @param iter_num Optimization iteration number
-		/// @param x Current solution
-		void post_step(const polysolve::nonlinear::PostStepData &data) override;
-
 		/// @brief Checks if the step is collision free
 		/// @return True if the step is collision free else false
 		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
@@ -131,7 +104,7 @@ namespace polyfem::solver
 		/// @brief Get use_adaptive_barrier_stiffness
 		bool use_adaptive_barrier_stiffness() const { return use_adaptive_barrier_stiffness_; }
 		/// @brief Get use_convergent_formulation
-		bool use_convergent_formulation() const { return collision_set_->use_convergent_formulation(); }
+		virtual bool use_convergent_formulation() const { return false; }
 
 		bool enable_shape_derivatives() const { return enable_shape_derivatives_; }
 
@@ -141,14 +114,11 @@ namespace polyfem::solver
 		bool save_ccd_debug_meshes = false;
 
 		double dhat() const { return dhat_; }
-		std::shared_ptr<ipc::VirtualCollisions> get_collision_set() const { return collision_set_; }
-
-		std::shared_ptr<ipc::Potential<ipc::VirtualCollisions>> get_potential() const { return contact_potential_; }
 
 	protected:
 		/// @brief Update the cached candidate set for the current solution
 		/// @param displaced_surface Vertex positions displaced by the current solution
-		void update_collision_set(const Eigen::MatrixXd &displaced_surface);
+		virtual void update_collision_set(const Eigen::MatrixXd &displaced_surface) = 0;
 
 		virtual double barrier_support_size() const { return dhat_; }
 
@@ -189,11 +159,7 @@ namespace polyfem::solver
 
 		/// @brief If true, use the cached candidate set for the current solution
 		bool use_cached_candidates_ = false;
-		/// @brief Cached constraint set for the current solution
-		std::shared_ptr<ipc::VirtualCollisions> collision_set_;
 		/// @brief Cached candidate set for the current solution
 		ipc::Candidates candidates_;
-
-		std::shared_ptr<ipc::Potential<ipc::VirtualCollisions>> contact_potential_;
 	};
 } // namespace polyfem::solver

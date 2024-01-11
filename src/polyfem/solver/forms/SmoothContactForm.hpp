@@ -6,6 +6,7 @@
 
 namespace polyfem::solver
 {
+	template <int _dim = 3>
     class SmoothContactForm : public ContactForm
     {
     public:
@@ -20,12 +21,43 @@ namespace polyfem::solver
 
 		virtual std::string name() const override { return "smooth-contact"; }
 
-        void force_shape_derivative(const ipc::VirtualCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) override;
-
         void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) override;
-	
+
+		/// @brief Update fields after a step in the optimization
+		/// @param iter_num Optimization iteration number
+		/// @param x Current solution
+		void post_step(const polysolve::nonlinear::PostStepData &data) override;
+
 	protected:
+		/// @brief Compute the contact barrier potential value
+		/// @param x Current solution
+		/// @return Value of the contact barrier potential
+		double value_unweighted(const Eigen::VectorXd &x) const override;
+
+		/// @brief Compute the value of the form multiplied per element
+		/// @param x Current solution
+		/// @return Computed value
+		Eigen::VectorXd value_per_element_unweighted(const Eigen::VectorXd &x) const override;
+
+		/// @brief Compute the first derivative of the value wrt x
+		/// @param[in] x Current solution
+		/// @param[out] gradv Output gradient of the value wrt x
+		void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+
+		/// @brief Compute the second derivative of the value wrt x
+		/// @param x Current solution
+		/// @param hessian Output Hessian of the value wrt x
+		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
+
 		double barrier_support_size() const override { return dhat_; }
+
+		void update_collision_set(const Eigen::MatrixXd &displaced_surface) override;
+
+		/// @brief Cached constraint set for the current solution
+		std::shared_ptr<ipc::SmoothCollisions<_dim>> collision_set_;
+
+		/// @brief Contact potential
+		std::shared_ptr<ipc::Potential<ipc::SmoothCollisions<_dim>>> contact_potential_;
 
 	private:
 		ipc::ParameterType params;

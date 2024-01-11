@@ -10,7 +10,7 @@
 #include <polyfem/utils/BoundarySampler.hpp>
 
 #include <polyfem/solver/forms/ElasticForm.hpp>
-#include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/BarrierContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
@@ -652,7 +652,9 @@ namespace polyfem::solver
 
 			if (state.is_contact_enabled())
 			{
-				state.solve_data.contact_form->force_shape_derivative(state.diff_cached.collision_set(0), sol, adjoint, contact_term);
+				auto barrier_contact_form = std::dynamic_pointer_cast<BarrierContactForm>(state.solve_data.contact_form);
+				if (barrier_contact_form)
+					barrier_contact_form->force_shape_derivative(state.diff_cached.collision_set(0), sol, adjoint, contact_term);
 				contact_term = state.gbasis_nodes_to_basis_nodes * contact_term;
 			}
 			else
@@ -704,7 +706,9 @@ namespace polyfem::solver
 
 				if (state.is_contact_enabled())
 				{
-					state.solve_data.contact_form->force_shape_derivative(state.diff_cached.collision_set(i), state.diff_cached.u(i), cur_p, contact_term);
+					auto barrier_contact_form = std::dynamic_pointer_cast<BarrierContactForm>(state.solve_data.contact_form);
+					if (barrier_contact_form)
+						barrier_contact_form->force_shape_derivative(state.diff_cached.collision_set(i), state.diff_cached.u(i), cur_p, contact_term);
 					contact_term = state.gbasis_nodes_to_basis_nodes * contact_term;
 					// contact_term /= beta_dt * beta_dt;
 				}

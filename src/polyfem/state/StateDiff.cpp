@@ -13,7 +13,7 @@
 #include <polyfem/solver/NLProblem.hpp>
 
 #include <polyfem/solver/forms/BodyForm.hpp>
-#include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/BarrierContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
@@ -112,9 +112,9 @@ namespace polyfem
 
 			if (solve_data.contact_form)
 			{
-				auto contact_set_ptr = std::dynamic_pointer_cast<ipc::Collisions>(solve_data.contact_form->get_collision_set());
-				if (contact_set_ptr)
-					cur_collision_set = *contact_set_ptr;
+				auto contact_form_ptr = std::dynamic_pointer_cast<solver::BarrierContactForm>(solve_data.contact_form);
+				if (contact_form_ptr)
+					cur_collision_set = contact_form_ptr->get_collision_set();
 			}
 			if (solve_data.friction_form)
 				cur_friction_set = solve_data.friction_form->get_friction_collision_set();
