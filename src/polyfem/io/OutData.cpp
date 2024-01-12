@@ -247,13 +247,14 @@ namespace polyfem::io
 						loc_nodes.push_back(gindex);
 					}
 
+					bool orient_correct = true;
 					{
 						Eigen::MatrixXd normals, uv, points;
 						Eigen::VectorXd weights;
 						bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, 2, mesh, j, false, uv, points, normals, weights);
 						
 						assembler::ElementAssemblyValues vals;
-						vals.compute(lb.element_id(), true, points, bases[lb.element_id()], bases[lb.element_id()]);
+						vals.compute(lb.element_id(), true, points, b, b);
 
 						for (int n = 0; n < vals.jac_it.size(); ++n)
 						{
@@ -261,13 +262,23 @@ namespace polyfem::io
 							normals.row(n).normalize();
 							Eigen::Vector3d a = node_positions.row(loc_nodes[1]) - node_positions.row(loc_nodes[0]);
 							Eigen::Vector3d b = node_positions.row(loc_nodes[2]) - node_positions.row(loc_nodes[0]);
-							assert(normals.row(n).dot(a.cross(b)) > 0);
+							if (normals.row(n).dot(a.cross(b)) < 0)
+							{
+								orient_correct = false;
+								break;
+							}
 						}
 					}
 
+					if (!orient_correct && loc_nodes.size() != 3)
+						logger().warn("Boundary face is not oriented correctly! New contact formulation may fail!");
+
 					if (loc_nodes.size() == 3)
 					{
-						tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
+						if (orient_correct)
+							tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
+						else
+							tris.emplace_back(loc_nodes[0], loc_nodes[2], loc_nodes[1]);
 					}
 					else if (loc_nodes.size() == 6)
 					{
