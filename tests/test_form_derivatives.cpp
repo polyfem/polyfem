@@ -271,15 +271,14 @@ TEST_CASE("smooth contact form derivatives", "[form][form_derivatives][contact_f
 	const auto state_ptr = get_state(dim);
 
 	const double dhat = 1e-3;
-	const double alpha = 2;
-	const double r = 2;
-	const bool use_adaptive_barrier_stiffness = true; // GENERATE(true, false);
+	const double alpha = 0.2;
+	const double r = 1;
 	const double barrier_stiffness = 1e7;
 	const bool is_time_dependent = true;
+	const bool use_adaptive_barrier_stiffness = false;
 	const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
 	const double ccd_tolerance = 1e-6;
 	const int ccd_max_iterations = static_cast<int>(1e6);
-	const double dt = 1e-3;
 	const double a = 0;
 	const json contact_args = json::object({ {"a", a}, {"alpha", alpha}, {"dhat", dhat}, {"r", r}, {"high_order_quadrature", 5}, {"use_adaptive_epsilon", false}, {"min_distance_ratio", 0.5} });
 
