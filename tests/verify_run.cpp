@@ -274,6 +274,4 @@ TEST_CASE("new-contact", "[contact]")
         spdlog::error("Solve failed!");
         REQUIRE(false);
     }
-
-	REQUIRE()
 }
