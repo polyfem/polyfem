@@ -2083,6 +2083,15 @@ namespace polyfem::io
 				writer.add_field("contact_forces", forces_reshaped);
 			}
 
+			{
+				Eigen::VectorXd dhats(problem_dim == 3 ? collision_mesh.num_faces() : collision_mesh.num_edges());
+				dhats.setConstant(dhat);
+				if (state.args["contact"]["use_smooth_formulation"] && state.args["contact"]["use_adaptive_epsilon"] && collision_mesh.are_min_distances_initialized())
+					for (int e = 0; e < dhats.size(); e++)
+						dhats(e) = std::min(dhats(e), collision_mesh.min_distance_in_rest_config(e));
+				writer.add_cell_field("dhat", dhats);
+			}
+
 			if (opts.friction_forces)
 			{
 				ipc::FrictionCollisions friction_collision_set;
