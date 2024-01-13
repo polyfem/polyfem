@@ -1,0 +1,83 @@
+{
+    "geometry": [{
+        "mesh": "cube-denser.msh",
+        "transformation": {
+            "translation": [0, 1.05, 0]
+        },
+        "volume_selection": 1
+    }, {
+        "mesh": "cube-denser.msh",
+        "transformation": {
+            "translation": [0, 0, 0]
+        },
+        "volume_selection": 1,
+        "surface_selection": {
+            "id": 1,
+            "axis": "-y",
+            "position": 1e-5,
+            "relative": true
+        }
+    }],
+    "solver": {
+        "linear": {
+            "solver": ["Eigen::PardisoLDLT", "Eigen::CholmodSupernodalLLT", "Eigen::SimplicialLDLT"]
+        },
+        "nonlinear": {
+            "advanced": {
+                "plot_energy": {
+                    "range": [1e-2, 1],
+                    "resolution": 50
+                }
+            },
+            "line_search": {
+                "method": "Backtracking",
+                "use_grad_norm_tol": 1e-14
+            },
+            "grad_norm": 1e-6,
+            "max_iterations": 1000
+        },
+        "contact": {
+            "barrier_stiffness": 5e4
+        }
+    },
+    "output": {
+        "json": "sim.json",
+        "paraview": {
+            "file_name": "sim.pvd",
+            "options": {
+                "material": true,
+                "body_ids": true,
+                "contact_forces": true
+            },
+            "vismesh_rel_area": 10000000
+        },
+        "advanced": {
+            "save_solve_sequence_debug": false,
+            "save_time_sequence": true
+        }
+    },
+    "contact": {
+        "enabled": true,
+        "dhat": 1e-2,
+        "use_smooth_formulation": true,
+        "alpha": 1
+    },
+    "time": {
+        "tend": 1.0,
+        "time_steps": 10
+    },
+    "boundary_conditions": {
+        "rhs": [0, 9.81, 0],
+        "dirichlet_boundary": {
+            "id": 1,
+            "value": [0, 0, 0]
+        }
+    },
+    "materials": [{
+        "id": 1,
+        "E": 5e4,
+        "nu": 0.4,
+        "rho": 1000,
+        "type": "NeoHookean"
+    }]
+}
