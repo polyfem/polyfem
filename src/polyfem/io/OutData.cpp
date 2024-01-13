@@ -1711,8 +1711,11 @@ namespace polyfem::io
 			{
 				Eigen::VectorXd potential_grad;
 				Eigen::MatrixXd potential_grad_fun;
-				if (state.solve_data.contact_form)
+				if (state.solve_data.contact_form && state.solve_data.contact_form->weight() > 0)
+				{
 					state.solve_data.contact_form->first_derivative(sol, potential_grad);
+					potential_grad *= state.solve_data.contact_form->barrier_stiffness() / state.solve_data.contact_form->weight();
+				}
 
 				Evaluator::interpolate_function(
 					mesh, problem.is_scalar(), bases, state.disc_orders,
@@ -2062,11 +2065,18 @@ namespace polyfem::io
 
 			const double barrier_stiffness = contact_form != nullptr ? contact_form->barrier_stiffness() : 1;
 
-			if (opts.contact_forces)
+			if (contact_form != nullptr && opts.contact_forces)
 			{
-				Eigen::MatrixXd forces = -barrier_stiffness * barrier_potential.gradient(collision_set, collision_mesh, displaced_surface);
-
-				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
+				// Eigen::MatrixXd forces = -barrier_stiffness * barrier_potential.gradient(collision_set, collision_mesh, displaced_surface);
+				// Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
+				Eigen::MatrixXd forces_reshaped;
+				if (contact_form && contact_form->weight() > 0)
+				{
+					Eigen::VectorXd potential_grad;
+					contact_form->first_derivative(sol, potential_grad);
+					potential_grad *= barrier_stiffness / contact_form->weight();
+					forces_reshaped = collision_mesh.vertices(utils::unflatten(potential_grad, problem_dim));
+				}
 
 				assert(forces_reshaped.rows() == surface_displacements.rows());
 				assert(forces_reshaped.cols() == surface_displacements.cols());
