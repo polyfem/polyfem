@@ -1,8 +1,10 @@
 {
     "geometry": [{
         "mesh": "cube-denser.msh",
+        "enabled": true,
         "transformation": {
-            "translation": [0, 1.05, 0]
+            "translation": [0, 1.2, 0],
+            "rotation": [0, 0, 0]
         },
         "volume_selection": 1
     }, {
@@ -26,14 +28,14 @@
             "advanced": {
                 "plot_energy": {
                     "range": [1e-2, 1],
-                    "resolution": 50
+                    "resolution": 200
                 }
             },
             "line_search": {
                 "method": "Backtracking",
-                "use_grad_norm_tol": 1e-14
+                "use_grad_norm_tol": 1e-12
             },
-            "grad_norm": 1e-6,
+            "grad_norm": 1e-5,
             "max_iterations": 1000
         },
         "contact": {
@@ -52,19 +54,21 @@
             "vismesh_rel_area": 10000000
         },
         "advanced": {
-            "save_solve_sequence_debug": false,
+            "save_nl_solve_sequence": false,
             "save_time_sequence": true
         }
     },
     "contact": {
         "enabled": true,
-        "dhat": 1e-2,
+        "dhat": 1.5e-1,
         "use_smooth_formulation": true,
-        "alpha": 1
+        "alpha": 5e-2,
+        "r": 1,
+        "high_order_quadrature": 1
     },
     "time": {
-        "tend": 1.0,
-        "time_steps": 10
+        "tend": 0.5,
+        "time_steps": 20
     },
     "boundary_conditions": {
         "rhs": [0, 9.81, 0],
@@ -75,7 +79,7 @@
     },
     "materials": [{
         "id": 1,
-        "E": 5e4,
+        "E": 5e5,
         "nu": 0.4,
         "rho": 1000,
         "type": "NeoHookean"
