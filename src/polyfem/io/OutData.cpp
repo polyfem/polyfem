@@ -2074,7 +2074,7 @@ namespace polyfem::io
 				{
 					Eigen::VectorXd potential_grad;
 					contact_form->first_derivative(sol, potential_grad);
-					potential_grad *= barrier_stiffness / contact_form->weight();
+					potential_grad *= -barrier_stiffness / contact_form->weight();
 					forces_reshaped = collision_mesh.vertices(utils::unflatten(potential_grad, problem_dim));
 				}
 
