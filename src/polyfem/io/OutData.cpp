@@ -247,38 +247,38 @@ namespace polyfem::io
 						loc_nodes.push_back(gindex);
 					}
 
-					bool orient_correct = true;
-					{
-						Eigen::MatrixXd normals, uv, points;
-						Eigen::VectorXd weights;
-						bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, 2, mesh, j, false, uv, points, normals, weights);
+					// bool orient_correct = true;
+					// {
+					// 	Eigen::MatrixXd normals, uv, points;
+					// 	Eigen::VectorXd weights;
+					// 	bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, 2, mesh, j, false, uv, points, normals, weights);
 						
-						assembler::ElementAssemblyValues vals;
-						vals.compute(lb.element_id(), true, points, b, b);
+					// 	assembler::ElementAssemblyValues vals;
+					// 	vals.compute(lb.element_id(), true, points, b, b);
 
-						for (int n = 0; n < vals.jac_it.size(); ++n)
-						{
-							normals.row(n) = normals.row(n) * vals.jac_it[n];
-							normals.row(n).normalize();
-							Eigen::Vector3d a = node_positions.row(loc_nodes[1]) - node_positions.row(loc_nodes[0]);
-							Eigen::Vector3d b = node_positions.row(loc_nodes[2]) - node_positions.row(loc_nodes[0]);
-							if (normals.row(n).dot(a.cross(b)) < 0)
-							{
-								orient_correct = false;
-								break;
-							}
-						}
-					}
+					// 	for (int n = 0; n < vals.jac_it.size(); ++n)
+					// 	{
+					// 		normals.row(n) = normals.row(n) * vals.jac_it[n];
+					// 		normals.row(n).normalize();
+					// 		Eigen::Vector3d a = node_positions.row(loc_nodes[1]) - node_positions.row(loc_nodes[0]);
+					// 		Eigen::Vector3d b = node_positions.row(loc_nodes[2]) - node_positions.row(loc_nodes[0]);
+					// 		if (normals.row(n).dot(a.cross(b)) < 0)
+					// 		{
+					// 			orient_correct = false;
+					// 			break;
+					// 		}
+					// 	}
+					// }
 
-					if (!orient_correct && loc_nodes.size() != 3)
-						logger().warn("Boundary face is not oriented correctly! New contact formulation may fail!");
+					// if (!orient_correct && loc_nodes.size() != 3)
+					// 	logger().warn("Boundary face is not oriented correctly! New contact formulation may fail!");
 
 					if (loc_nodes.size() == 3)
 					{
-						if (orient_correct)
+						// if (orient_correct)
 							tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
-						else
-							tris.emplace_back(loc_nodes[0], loc_nodes[2], loc_nodes[1]);
+						// else
+							// tris.emplace_back(loc_nodes[0], loc_nodes[2], loc_nodes[1]);
 					}
 					else if (loc_nodes.size() == 6)
 					{
