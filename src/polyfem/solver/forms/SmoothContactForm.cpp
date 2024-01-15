@@ -42,10 +42,10 @@ namespace polyfem::solver
 
 		if (use_cached_candidates_)
 			collision_set_->build(
-				candidates_, collision_mesh_, displaced_surface, barrier_support_size());
+				candidates_, collision_mesh_, displaced_surface, params);
 		else
 			collision_set_->build(
-				collision_mesh_, displaced_surface, barrier_support_size(), dmin_, broad_phase_method_);
+				collision_mesh_, displaced_surface, params, broad_phase_method_);
 		cached_displaced_surface = displaced_surface;
 	}
 
