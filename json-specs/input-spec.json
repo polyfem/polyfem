@@ -1190,7 +1190,6 @@
             "collision_mesh",
             "use_smooth_formulation",
             "alpha",
-            "a",
             "r",
             "high_order_quadrature",
             "min_distance_ratio",
@@ -1230,13 +1229,6 @@
         "min": 0,
         "type": "float",
         "doc": "Control the angle of contact pairs."
-    },
-    {
-        "pointer": "/contact/a",
-        "default": 0,
-        "min": 0,
-        "type": "float",
-        "doc": "Control the smoothness of point edge distance."
     },
     {
         "pointer": "/contact/r",

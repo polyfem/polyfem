@@ -18,12 +18,13 @@ namespace polyfem::solver
                 const bool is_time_dependent,
                 const ipc::BroadPhaseMethod broad_phase_method,
                 const double ccd_tolerance,
-                const int ccd_max_iterations): ContactForm(collision_mesh, args["dhat"], avg_mass, false, use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(dhat_*dhat_, args["alpha"], args["a"], args["r"], args["high_order_quadrature"])
+                const int ccd_max_iterations): ContactForm(collision_mesh, args["dhat"], avg_mass, false, use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(dhat_*dhat_, args["alpha"], args["r"], args["high_order_quadrature"]), use_adaptive_epsilon(args["use_adaptive_epsilon"])
     {
-		collision_set_ = std::make_shared<ipc::SmoothCollisions<_dim>>(args["high_order_quadrature"].get<int>() > 1, args["use_adaptive_epsilon"]);
+		collision_set_ = std::make_shared<ipc::SmoothCollisions<_dim>>(args["high_order_quadrature"].get<int>() > 1);
         contact_potential_ = std::make_shared<ipc::SmoothContactPotential<ipc::SmoothCollisions<_dim>>>(params);
-        if (params.a > 0)
-            logger().error("The contact candidate search size is likely wrong!");
+		params.set_adaptive_dhat_ratio(args["min_distance_ratio"]);
+		if (use_adaptive_epsilon)
+			collision_set_->compute_adaptive_dhat(collision_mesh, collision_mesh.rest_positions(), params, broad_phase_method_);
     }
 
     template <int _dim>
@@ -42,10 +43,10 @@ namespace polyfem::solver
 
 		if (use_cached_candidates_)
 			collision_set_->build(
-				candidates_, collision_mesh_, displaced_surface, params);
+				candidates_, collision_mesh_, displaced_surface, params, use_adaptive_epsilon);
 		else
 			collision_set_->build(
-				collision_mesh_, displaced_surface, params, broad_phase_method_);
+				collision_mesh_, displaced_surface, params, use_adaptive_epsilon, broad_phase_method_);
 		cached_displaced_surface = displaced_surface;
 	}
 

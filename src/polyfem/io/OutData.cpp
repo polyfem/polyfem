@@ -17,7 +17,7 @@
 
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
-#include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/SmoothContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
@@ -2065,7 +2065,7 @@ namespace polyfem::io
 
 			const double barrier_stiffness = contact_form != nullptr ? contact_form->barrier_stiffness() : 1;
 
-			if (contact_form != nullptr && opts.contact_forces)
+			if (contact_form && opts.contact_forces)
 			{
 				// Eigen::MatrixXd forces = -barrier_stiffness * barrier_potential.gradient(collision_set, collision_mesh, displaced_surface);
 				// Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
@@ -2083,13 +2083,32 @@ namespace polyfem::io
 				writer.add_field("contact_forces", forces_reshaped);
 			}
 
+			if (contact_form && state.args["contact"]["use_smooth_formulation"] && state.args["contact"]["use_adaptive_epsilon"])
 			{
-				Eigen::VectorXd dhats(problem_dim == 3 ? collision_mesh.num_faces() : collision_mesh.num_edges());
-				dhats.setConstant(dhat);
-				if (state.args["contact"]["use_smooth_formulation"] && state.args["contact"]["use_adaptive_epsilon"] && collision_mesh.are_min_distances_initialized())
+				if (problem_dim == 2)
+				{
+					const auto form = std::dynamic_pointer_cast<solver::SmoothContactForm<2>>(contact_form);
+					assert(form);
+					const auto &set = form->get_collision_set();
+					Eigen::VectorXd dhats(collision_mesh.num_edges());
+					dhats.setConstant(dhat);
 					for (int e = 0; e < dhats.size(); e++)
-						dhats(e) = std::min(dhats(e), collision_mesh.min_distance_in_rest_config(e));
-				writer.add_cell_field("dhat", dhats);
+						dhats(e) = set.get_edge_dhat(e);
+					
+					writer.add_cell_field("dhat", dhats);
+				}
+				else
+				{
+					const auto form = std::dynamic_pointer_cast<solver::SmoothContactForm<3>>(contact_form);
+					assert(form);
+					const auto &set = form->get_collision_set();
+					Eigen::VectorXd dhats(collision_mesh.num_faces());
+					dhats.setConstant(dhat);
+					for (int e = 0; e < dhats.size(); e++)
+						dhats(e) = set.get_face_dhat(e);
+					
+					writer.add_cell_field("dhat", dhats);
+				}
 			}
 
 			if (opts.friction_forces)
