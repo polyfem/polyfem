@@ -132,7 +132,7 @@ namespace polyfem::solver
 		if (!std::isinf(curr_distance))
 		{
 			const double ratio = sqrt(curr_distance) / dhat();
-			const auto log_level = spdlog::level::debug; //(ratio < 1e-4) ? spdlog::level::err : ((ratio < 1e-2) ? spdlog::level::warn : spdlog::level::debug);
+			const auto log_level = (ratio < 1e-4) ? spdlog::level::err : ((ratio < 1e-2) ? spdlog::level::warn : spdlog::level::debug);
 			polyfem::logger().log(log_level, "Minimum distance during solve: {}, dhat: {}", sqrt(curr_distance), dhat());
 		}
 
