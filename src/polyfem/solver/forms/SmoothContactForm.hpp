@@ -60,7 +60,7 @@ namespace polyfem::solver
 		std::shared_ptr<ipc::SmoothCollisions<_dim>> collision_set_;
 
 		/// @brief Contact potential
-		std::shared_ptr<ipc::Potential<ipc::SmoothCollisions<_dim>>> contact_potential_;
+		std::shared_ptr<ipc::SmoothContactPotential<ipc::SmoothCollisions<_dim>>> contact_potential_;
 
 	private:
 		ipc::ParameterType params;
