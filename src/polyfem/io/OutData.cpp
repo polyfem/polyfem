@@ -1714,7 +1714,7 @@ namespace polyfem::io
 				if (state.solve_data.contact_form && state.solve_data.contact_form->weight() > 0)
 				{
 					state.solve_data.contact_form->first_derivative(sol, potential_grad);
-					potential_grad *= state.solve_data.contact_form->barrier_stiffness() / state.solve_data.contact_form->weight();
+					potential_grad *= -state.solve_data.contact_form->barrier_stiffness() / state.solve_data.contact_form->weight();
 				}
 
 				Evaluator::interpolate_function(
@@ -2074,7 +2074,7 @@ namespace polyfem::io
 				{
 					Eigen::VectorXd potential_grad;
 					contact_form->first_derivative(sol, potential_grad);
-					potential_grad *= barrier_stiffness / contact_form->weight();
+					potential_grad *= -barrier_stiffness / contact_form->weight();
 					forces_reshaped = collision_mesh.vertices(utils::unflatten(potential_grad, problem_dim));
 				}
 
