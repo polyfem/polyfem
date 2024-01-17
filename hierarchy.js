@@ -79,7 +79,9 @@ var hierarchy =
     [ "polyfem::problem::PointBasedTensorProblem::BCValue", "classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html", null ],
     [ "polyfem::utils::BoundarySampler", "classpolyfem_1_1utils_1_1_boundary_sampler.html", null ],
     [ "polyfem::mesh::Mesh::CellNodes", "classpolyfem_1_1mesh_1_1_mesh_1_1_cell_nodes.html", null ],
-    [ "polyfem::assembler::Density", "classpolyfem_1_1assembler_1_1_density.html", null ],
+    [ "polyfem::assembler::Density", "classpolyfem_1_1assembler_1_1_density.html", [
+      [ "polyfem::assembler::NoDensity", "classpolyfem_1_1assembler_1_1_no_density.html", null ]
+    ] ],
     [ "polyfem::solver::DiffCache", "classpolyfem_1_1solver_1_1_diff_cache.html", null ],
     [ "DiffScalarBase", "struct_diff_scalar_base.html", [
       [ "DScalar1< _Scalar, _Gradient >", "struct_d_scalar1.html", null ],

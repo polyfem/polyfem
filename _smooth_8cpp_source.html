@@ -194,7 +194,7 @@ $(document).ready(function(){initNavTree('_smooth_8cpp_source.html',''); initRes
 <div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        Eigen::SparseMatrix&lt;double&gt; M, A;</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        {</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            <a class="code hl_class" href="classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html">assembler::MassMatrixAssembler</a> assembler;</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <a class="code hl_class" href="classpolyfem_1_1assembler_1_1_density.html">assembler::Density</a> no_density; <span class="comment">// Density of one (i.e., no scaling of mass matrix)</span></div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <a class="code hl_class" href="classpolyfem_1_1assembler_1_1_no_density.html">assembler::NoDensity</a> no_density; <span class="comment">// Density of one (i.e., no scaling of mass matrix)</span></div>
 <div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <a class="code hl_class" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">assembler::AssemblyValsCache</a> <a class="code hl_variable" href="_assembler_8cpp.html#ac67a22d4c9279979f58f5ebca27a2c79">cache</a>;</div>
 <div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
 <div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            assembler.<a class="code hl_function" href="classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html#a331b61c7a70e3d0f42a199d4d87444ef">assemble</a>(</div>
@@ -312,160 +312,168 @@ $(document).ready(function(){initNavTree('_smooth_8cpp_source.html',''); initRes
 <div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        <span class="keywordflow">if</span> (!Super::smooth_before(v))</div>
 <div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span> </div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        this-&gt;op_cache-&gt;local_energy = local_mesh_energy(</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>            vertex_attrs[v.vid(*<span class="keyword">this</span>)].rest_position);</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    }</div>
-</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="comment">// -------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <span class="keywordflow">if</span> (this-&gt;op_cache == <span class="keyword">nullptr</span>)</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        {</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>            <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;WMTKMesh, wmtk::TriMesh&gt;)</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>                this-&gt;op_cache = std::make_shared&lt;TriOperationCache&gt;();</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>                this-&gt;op_cache = std::make_shared&lt;TetOperationCache&gt;();</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        }</div>
 <div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="keyword">template</span> &lt;<span class="keyword">class</span> WMTKMesh&gt;</div>
-<div class="foldopen" id="foldopen00184" data-start="{" data-end="}">
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno"><a class="line" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#ae193cae58645e9363dc4343207bba61f">  184</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#ae193cae58645e9363dc4343207bba61f">WildRemesher&lt;WMTKMesh&gt;::smooth_after</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a68008fadcf8fbab3d0242adf3608a81f">Tuple</a> &amp;v)</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    {</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        <span class="keywordflow">if</span> (!WMTKMesh::smooth_before(v))</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        this-&gt;op_cache-&gt;local_energy = local_mesh_energy(</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>            vertex_attrs[v.vid(*<span class="keyword">this</span>)].rest_position);</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    }</div>
+</div>
 <div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span> </div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="keyword">const</span> <span class="keywordtype">size_t</span> vid = v.vid(*<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <span class="comment">// -------------------------------------------------------------------------</span></div>
 <div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span> </div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>        <span class="keyword">const</span> std::vector&lt;Tuple&gt; one_ring = this-&gt;get_one_ring_elements_for_vertex(v);</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        assert(one_ring.size() &gt; 0);</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        <span class="comment">// ---------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        <span class="comment">// 1. update rest position of new vertex</span></div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keyword">template</span> &lt;<span class="keyword">class</span> WMTKMesh&gt;</div>
+<div class="foldopen" id="foldopen00192" data-start="{" data-end="}">
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno"><a class="line" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#ae193cae58645e9363dc4343207bba61f">  192</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#ae193cae58645e9363dc4343207bba61f">WildRemesher&lt;WMTKMesh&gt;::smooth_after</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a68008fadcf8fbab3d0242adf3608a81f">Tuple</a> &amp;v)</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    {</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        <span class="keywordflow">if</span> (!WMTKMesh::smooth_before(v))</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        <span class="comment">// Computes the maximal error around the one ring</span></div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>        <span class="comment">// that is needed to ensure the operation will decrease the error measure</span></div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="keywordtype">double</span> max_quality = 0;</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a68008fadcf8fbab3d0242adf3608a81f">Tuple</a> &amp;t : get_one_ring_elements_for_vertex(v))</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>            max_quality = std::max(max_quality, <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#aeeb75343ae4dea20c931438731523228">get_quality</a>(*<span class="keyword">this</span>, t));</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        assert(max_quality &gt; 0); <span class="comment">// If max quality is zero it is likely that the triangles are flipped</span></div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span> </div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        <span class="comment">// Collects the coordinate of all vertices in the 1-ring</span></div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        <span class="keyword">constexpr</span> <span class="keywordtype">int</span> NDOF = DIM * VERTICES_PER_ELEMENT;</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        std::vector&lt;std::array&lt;double, NDOF&gt;&gt; assembles(one_ring.size());</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span> </div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="comment">// For each triangle, make a reordered copy of the vertices so that</span></div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        <span class="comment">// the vertex to optimize is always the first</span></div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; one_ring.size(); i++)</div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        {</div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>            <span class="keyword">const</span> <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a68008fadcf8fbab3d0242adf3608a81f">Tuple</a> &amp;t = one_ring[i];</div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>            <span class="keyword">auto</span> t_id = t.fid(*<span class="keyword">this</span>);</div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span> </div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>            assert(!is_inverted(t));</div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>            <span class="keyword">const</span> <span class="keyword">auto</span> local_verts = orient_preserve_element_reorder(element_vids(t), vid);</div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span> </div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span> j = 0; j &lt; VERTICES_PER_ELEMENT; j++)</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>                <span class="keywordflow">for</span> (<span class="keyword">auto</span> d = 0; d &lt; DIM; d++)</div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>                    assembles[i][j * DIM + d] = vertex_attrs[local_verts[j]].rest_position[d];</div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>        }</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        <span class="keyword">const</span> <span class="keywordtype">size_t</span> vid = v.vid(*<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span> </div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>        <span class="keyword">const</span> std::vector&lt;Tuple&gt; one_ring = this-&gt;get_one_ring_elements_for_vertex(v);</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        assert(one_ring.size() &gt; 0);</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span> </div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>        <span class="comment">// ---------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>        <span class="comment">// 1. update rest position of new vertex</span></div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span> </div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        <span class="comment">// Computes the maximal error around the one ring</span></div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <span class="comment">// that is needed to ensure the operation will decrease the error measure</span></div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>        <span class="keywordtype">double</span> max_quality = 0;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a68008fadcf8fbab3d0242adf3608a81f">Tuple</a> &amp;t : get_one_ring_elements_for_vertex(v))</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>            max_quality = std::max(max_quality, <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#aeeb75343ae4dea20c931438731523228">get_quality</a>(*<span class="keyword">this</span>, t));</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        assert(max_quality &gt; 0); <span class="comment">// If max quality is zero it is likely that the triangles are flipped</span></div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span> </div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        <span class="comment">// Collects the coordinate of all vertices in the 1-ring</span></div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        <span class="keyword">constexpr</span> <span class="keywordtype">int</span> NDOF = DIM * VERTICES_PER_ELEMENT;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        std::vector&lt;std::array&lt;double, NDOF&gt;&gt; assembles(one_ring.size());</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span> </div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        <span class="comment">// For each triangle, make a reordered copy of the vertices so that</span></div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        <span class="comment">// the vertex to optimize is always the first</span></div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; one_ring.size(); i++)</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>        {</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>            <span class="keyword">const</span> <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a68008fadcf8fbab3d0242adf3608a81f">Tuple</a> &amp;t = one_ring[i];</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>            <span class="keyword">auto</span> t_id = t.fid(*<span class="keyword">this</span>);</div>
 <div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span> </div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        <span class="comment">// Make a backup of the current configuration</span></div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        <a class="code hl_class" href="classpolyfem_1_1mesh_1_1_local_mesh.html">LocalMesh&lt;This&gt;</a> old_local_mesh(*<span class="keyword">this</span>, one_ring, <span class="keyword">false</span>);</div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>        <span class="keyword">const</span> <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#ad99e0a1545ae49920a458ab0f7b38337">VectorNd</a> old_rest_position = vertex_attrs[vid].rest_position;</div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span> </div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        <span class="comment">// Minimize distortion using newton&#39;s method</span></div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>        <span class="keyword">const</span> <span class="keyword">auto</span> log_lvl = wmtk::logger().level();</div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        wmtk::logger().set_level(spdlog::level::warn);</div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (DIM == 2)</div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>            vertex_attrs[vid].rest_position = wmtk::newton_method_from_stack_2d(</div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>                assembles, wmtk::AMIPS2D_energy, wmtk::AMIPS2D_jacobian, wmtk::AMIPS2D_hessian);</div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>            vertex_attrs[vid].rest_position = wmtk::newton_method_from_stack(</div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>                assembles, wmtk::AMIPS_energy, wmtk::AMIPS_jacobian, wmtk::AMIPS_hessian);</div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        wmtk::logger().set_level(log_lvl);</div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span> </div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        <span class="comment">// The AMIPS energy should have prevented inversions</span></div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        <span class="keywordflow">if</span> (std::any_of(one_ring.begin(), one_ring.end(), [<span class="keyword">this</span>](<span class="keyword">const</span> <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a68008fadcf8fbab3d0242adf3608a81f">Tuple</a> &amp;t) {</div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>                return this-&gt;is_rest_inverted(t);</div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>            }))</div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>        {</div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>            assert(<span class="keyword">false</span>);</div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>        }</div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>        <span class="comment">// ---------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>        <span class="comment">// 2. project quantities so to minimize the L2 error</span></div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span> </div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>        <span class="comment">// Adjust the previous displacements so they results in the same previous positions</span></div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>        vertex_attrs[vid].projection_quantities.leftCols(n_quantities() / 3) +=</div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>            old_rest_position - vertex_attrs[vid].rest_position;</div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span> </div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>        <a class="code hl_class" href="classpolyfem_1_1mesh_1_1_local_mesh.html">LocalMesh&lt;This&gt;</a> new_local_mesh(*<span class="keyword">this</span>, one_ring, <span class="keyword">false</span>);</div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span> </div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a9ac4c0abec6eba47be3743212e1d3541">project_local_quantities</a>(*<span class="keyword">this</span>, old_local_mesh, new_local_mesh);</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>            assert(!is_inverted(t));</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>            <span class="keyword">const</span> <span class="keyword">auto</span> local_verts = orient_preserve_element_reorder(element_vids(t), vid);</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span> </div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span> j = 0; j &lt; VERTICES_PER_ELEMENT; j++)</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>                <span class="keywordflow">for</span> (<span class="keyword">auto</span> d = 0; d &lt; DIM; d++)</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>                    assembles[i][j * DIM + d] = vertex_attrs[local_verts[j]].rest_position[d];</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        }</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span> </div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        <span class="comment">// Make a backup of the current configuration</span></div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>        <a class="code hl_class" href="classpolyfem_1_1mesh_1_1_local_mesh.html">LocalMesh&lt;This&gt;</a> old_local_mesh(*<span class="keyword">this</span>, one_ring, <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>        <span class="keyword">const</span> <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#ad99e0a1545ae49920a458ab0f7b38337">VectorNd</a> old_rest_position = vertex_attrs[vid].rest_position;</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>        <span class="comment">// Minimize distortion using newton&#39;s method</span></div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        <span class="keyword">const</span> <span class="keyword">auto</span> log_lvl = wmtk::logger().level();</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>        wmtk::logger().set_level(spdlog::level::warn);</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (DIM == 2)</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>            vertex_attrs[vid].rest_position = wmtk::newton_method_from_stack_2d(</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>                assembles, wmtk::AMIPS2D_energy, wmtk::AMIPS2D_jacobian, wmtk::AMIPS2D_hessian);</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>            vertex_attrs[vid].rest_position = wmtk::newton_method_from_stack(</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>                assembles, wmtk::AMIPS_energy, wmtk::AMIPS_jacobian, wmtk::AMIPS_hessian);</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>        wmtk::logger().set_level(log_lvl);</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span> </div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>        <span class="comment">// The AMIPS energy should have prevented inversions</span></div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>        <span class="keywordflow">if</span> (std::any_of(one_ring.begin(), one_ring.end(), [<span class="keyword">this</span>](<span class="keyword">const</span> <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a68008fadcf8fbab3d0242adf3608a81f">Tuple</a> &amp;t) {</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>                return this-&gt;is_rest_inverted(t);</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>            }))</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>        {</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>            assert(<span class="keyword">false</span>);</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>        }</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span> </div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>        <span class="comment">// ---------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>        <span class="comment">// 2. project quantities so to minimize the L2 error</span></div>
 <div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span> </div>
-<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        <span class="comment">// The Constrained L2 Projection should have prevented inversions</span></div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        <span class="keywordflow">if</span> (std::any_of(one_ring.begin(), one_ring.end(), [<span class="keyword">this</span>](<span class="keyword">const</span> <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a68008fadcf8fbab3d0242adf3608a81f">Tuple</a> &amp;t) {</div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>                return this-&gt;is_inverted(t);</div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>            }))</div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        {</div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>            assert(<span class="keyword">false</span>);</div>
-<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>        }</div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span> </div>
-<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>    }</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>        <span class="comment">// Adjust the previous displacements so they results in the same previous positions</span></div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        vertex_attrs[vid].projection_quantities.leftCols(n_quantities() / 3) +=</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>            old_rest_position - vertex_attrs[vid].rest_position;</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span> </div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>        <a class="code hl_class" href="classpolyfem_1_1mesh_1_1_local_mesh.html">LocalMesh&lt;This&gt;</a> new_local_mesh(*<span class="keyword">this</span>, one_ring, <span class="keyword">false</span>);</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span> </div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a9ac4c0abec6eba47be3743212e1d3541">project_local_quantities</a>(*<span class="keyword">this</span>, old_local_mesh, new_local_mesh);</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span> </div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>        <span class="comment">// The Constrained L2 Projection should have prevented inversions</span></div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>        <span class="keywordflow">if</span> (std::any_of(one_ring.begin(), one_ring.end(), [<span class="keyword">this</span>](<span class="keyword">const</span> <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a68008fadcf8fbab3d0242adf3608a81f">Tuple</a> &amp;t) {</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>                return this-&gt;is_inverted(t);</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>            }))</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>        {</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>            assert(<span class="keyword">false</span>);</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>        }</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span> </div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    }</div>
 </div>
 </div>
-<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span> </div>
-<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>    <span class="keyword">template</span> &lt;<span class="keyword">class</span> WMTKMesh&gt;</div>
-<div class="foldopen" id="foldopen00271" data-start="{" data-end="}">
-<div class="line"><a id="l00271" name="l00271"></a><span class="lineno"><a class="line" href="classpolyfem_1_1mesh_1_1_physics_remesher.html#a831328a90694d3a8971428bdffd70653">  271</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classpolyfem_1_1mesh_1_1_physics_remesher.html#a831328a90694d3a8971428bdffd70653">PhysicsRemesher&lt;WMTKMesh&gt;::smooth_after</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_physics_remesher.html#ac660b969a851c9edeff8c01f71251f58">Tuple</a> &amp;v)</div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    {</div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>        <a class="code hl_class" href="classpolyfem_1_1utils_1_1_timer.html">utils::Timer</a> timer(this-&gt;timings[<span class="stringliteral">&quot;Smooth vertex after&quot;</span>]);</div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>        timer.<a class="code hl_function" href="classpolyfem_1_1utils_1_1_timer.html#ae53a5ca589deb3dc3ac8a562c1aaac96">start</a>();</div>
-<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>        <span class="keywordflow">if</span> (!Super::smooth_after(v))</div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>        <span class="comment">// local relaxation has its own timers</span></div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>        timer.<a class="code hl_function" href="classpolyfem_1_1utils_1_1_timer.html#a63a21e271660a8fdb06117a933d56ce8">stop</a>();</div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span> </div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>        <span class="comment">// ---------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>        <span class="comment">// 3. perform a local relaxation of the n-ring to get an estimate of the</span></div>
-<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>        <span class="comment">//    energy decrease.</span></div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>        <span class="keyword">const</span> std::vector&lt;Tuple&gt; one_ring = this-&gt;get_one_ring_elements_for_vertex(v);</div>
-<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>        <span class="keywordflow">return</span> local_relaxation(one_ring, args[<span class="stringliteral">&quot;smooth&quot;</span>][<span class="stringliteral">&quot;acceptance_tolerance&quot;</span>]);</div>
-<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>    }</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span> </div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    <span class="keyword">template</span> &lt;<span class="keyword">class</span> WMTKMesh&gt;</div>
+<div class="foldopen" id="foldopen00279" data-start="{" data-end="}">
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno"><a class="line" href="classpolyfem_1_1mesh_1_1_physics_remesher.html#a831328a90694d3a8971428bdffd70653">  279</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="classpolyfem_1_1mesh_1_1_physics_remesher.html#a831328a90694d3a8971428bdffd70653">PhysicsRemesher&lt;WMTKMesh&gt;::smooth_after</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_physics_remesher.html#ac660b969a851c9edeff8c01f71251f58">Tuple</a> &amp;v)</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    {</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>        <a class="code hl_class" href="classpolyfem_1_1utils_1_1_timer.html">utils::Timer</a> timer(this-&gt;timings[<span class="stringliteral">&quot;Smooth vertex after&quot;</span>]);</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>        timer.<a class="code hl_function" href="classpolyfem_1_1utils_1_1_timer.html#ae53a5ca589deb3dc3ac8a562c1aaac96">start</a>();</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>        <span class="keywordflow">if</span> (!Super::smooth_after(v))</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>        <span class="comment">// local relaxation has its own timers</span></div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>        timer.<a class="code hl_function" href="classpolyfem_1_1utils_1_1_timer.html#a63a21e271660a8fdb06117a933d56ce8">stop</a>();</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span> </div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>        <span class="comment">// ---------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>        <span class="comment">// 3. perform a local relaxation of the n-ring to get an estimate of the</span></div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>        <span class="comment">//    energy decrease.</span></div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>        <span class="keyword">const</span> std::vector&lt;Tuple&gt; one_ring = this-&gt;get_one_ring_elements_for_vertex(v);</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>        <span class="keywordflow">return</span> local_relaxation(one_ring, args[<span class="stringliteral">&quot;smooth&quot;</span>][<span class="stringliteral">&quot;acceptance_tolerance&quot;</span>]);</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>    }</div>
 </div>
-<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span> </div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>    <span class="keyword">template</span> &lt;<span class="keyword">class</span> WMTKMesh&gt;</div>
-<div class="foldopen" id="foldopen00288" data-start="{" data-end="}">
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno"><a class="line" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a77c427596a171f8f3fad35385c4368e6">  288</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a77c427596a171f8f3fad35385c4368e6">WildRemesher&lt;WMTKMesh&gt;::smooth_vertices</a>()</div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>    {</div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>        executor.priority = [](<span class="keyword">const</span> <a class="code hl_class" href="classpolyfem_1_1mesh_1_1_wild_remesher.html">WildRemesher&lt;WMTKMesh&gt;</a> &amp;m, std::string op, <span class="keyword">const</span> <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a68008fadcf8fbab3d0242adf3608a81f">Tuple</a> &amp;v) -&gt; <span class="keywordtype">double</span> {</div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>            <span class="keywordtype">double</span> max_quality = 0;</div>
-<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a68008fadcf8fbab3d0242adf3608a81f">Tuple</a> &amp;t : m.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a991889b7932eed486068af42931eae48">get_one_ring_elements_for_vertex</a>(v))</div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>                max_quality = std::max(max_quality, <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#aeeb75343ae4dea20c931438731523228">get_quality</a>(m, t));</div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>            assert(max_quality &gt; 0); <span class="comment">// If max quality is zero it is likely that the triangles are flipped</span></div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>            <span class="keywordflow">return</span> max_quality;</div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>        };</div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>        executor.should_renew = [](<span class="keyword">auto</span>) { <span class="keywordflow">return</span> <span class="keyword">true</span>; };</div>
-<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>        executor.renew_neighbor_tuples = [](<span class="keyword">auto</span> &amp;, <span class="keyword">auto</span>, <span class="keyword">auto</span> &amp;) -&gt; <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a3756ffe58418827404fd3ad783e9c74b">Operations</a> { <span class="keywordflow">return</span> {}; };</div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span> </div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> max_iters = args[<span class="stringliteral">&quot;smooth&quot;</span>][<span class="stringliteral">&quot;max_iters&quot;</span>];</div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; max_iters; i++)</div>
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>        {</div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>            <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a3756ffe58418827404fd3ad783e9c74b">Operations</a> smooths;</div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;v : WMTKMesh::get_vertices())</div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>                smooths.emplace_back(<span class="stringliteral">&quot;vertex_smooth&quot;</span>, v);</div>
-<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>            executor(*<span class="keyword">this</span>, smooths);</div>
-<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>            <span class="keywordflow">if</span> (executor.cnt_success() == 0)</div>
-<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>                <span class="keywordflow">break</span>;</div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>        }</div>
-<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    }</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span> </div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    <span class="keyword">template</span> &lt;<span class="keyword">class</span> WMTKMesh&gt;</div>
+<div class="foldopen" id="foldopen00296" data-start="{" data-end="}">
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno"><a class="line" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a77c427596a171f8f3fad35385c4368e6">  296</a></span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a77c427596a171f8f3fad35385c4368e6">WildRemesher&lt;WMTKMesh&gt;::smooth_vertices</a>()</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    {</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>        executor.priority = [](<span class="keyword">const</span> <a class="code hl_class" href="classpolyfem_1_1mesh_1_1_wild_remesher.html">WildRemesher&lt;WMTKMesh&gt;</a> &amp;m, std::string op, <span class="keyword">const</span> <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a68008fadcf8fbab3d0242adf3608a81f">Tuple</a> &amp;v) -&gt; <span class="keywordtype">double</span> {</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>            <span class="keywordtype">double</span> max_quality = 0;</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a68008fadcf8fbab3d0242adf3608a81f">Tuple</a> &amp;t : m.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a991889b7932eed486068af42931eae48">get_one_ring_elements_for_vertex</a>(v))</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>                max_quality = std::max(max_quality, <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#aeeb75343ae4dea20c931438731523228">get_quality</a>(m, t));</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>            assert(max_quality &gt; 0); <span class="comment">// If max quality is zero it is likely that the triangles are flipped</span></div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>            <span class="keywordflow">return</span> max_quality;</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>        };</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>        executor.should_renew = [](<span class="keyword">auto</span>) { <span class="keywordflow">return</span> <span class="keyword">true</span>; };</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>        executor.renew_neighbor_tuples = [](<span class="keyword">auto</span> &amp;, <span class="keyword">auto</span>, <span class="keyword">auto</span> &amp;) -&gt; <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a3756ffe58418827404fd3ad783e9c74b">Operations</a> { <span class="keywordflow">return</span> {}; };</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span> </div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> max_iters = args[<span class="stringliteral">&quot;smooth&quot;</span>][<span class="stringliteral">&quot;max_iters&quot;</span>];</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; max_iters; i++)</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>        {</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>            <a class="code hl_typedef" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a3756ffe58418827404fd3ad783e9c74b">Operations</a> smooths;</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;v : WMTKMesh::get_vertices())</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>                smooths.emplace_back(<span class="stringliteral">&quot;vertex_smooth&quot;</span>, v);</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>            executor(*<span class="keyword">this</span>, smooths);</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>            <span class="keywordflow">if</span> (executor.cnt_success() == 0)</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>        }</div>
+<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>    }</div>
 </div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span> </div>
-<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>    <span class="comment">// ------------------------------------------------------------------------</span></div>
-<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>    <span class="comment">// Template specializations</span></div>
-<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span> </div>
-<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>    <span class="keyword">template</span> <span class="keyword">class </span><a class="code hl_class" href="classpolyfem_1_1mesh_1_1_wild_remesher.html">WildRemesher&lt;wmtk::TriMesh&gt;</a>;</div>
-<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>    <span class="keyword">template</span> <span class="keyword">class </span><a class="code hl_class" href="classpolyfem_1_1mesh_1_1_wild_remesher.html">WildRemesher&lt;wmtk::TetMesh&gt;</a>;</div>
-<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>    <span class="keyword">template</span> <span class="keyword">class </span><a class="code hl_class" href="classpolyfem_1_1mesh_1_1_physics_remesher.html">PhysicsRemesher&lt;wmtk::TriMesh&gt;</a>;</div>
-<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>    <span class="keyword">template</span> <span class="keyword">class </span><a class="code hl_class" href="classpolyfem_1_1mesh_1_1_physics_remesher.html">PhysicsRemesher&lt;wmtk::TetMesh&gt;</a>;</div>
 <div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span> </div>
-<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>} <span class="comment">// namespace polyfem::mesh</span></div>
+<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>    <span class="comment">// ------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>    <span class="comment">// Template specializations</span></div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span> </div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>    <span class="keyword">template</span> <span class="keyword">class </span><a class="code hl_class" href="classpolyfem_1_1mesh_1_1_wild_remesher.html">WildRemesher&lt;wmtk::TriMesh&gt;</a>;</div>
+<div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>    <span class="keyword">template</span> <span class="keyword">class </span><a class="code hl_class" href="classpolyfem_1_1mesh_1_1_wild_remesher.html">WildRemesher&lt;wmtk::TetMesh&gt;</a>;</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    <span class="keyword">template</span> <span class="keyword">class </span><a class="code hl_class" href="classpolyfem_1_1mesh_1_1_physics_remesher.html">PhysicsRemesher&lt;wmtk::TriMesh&gt;</a>;</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>    <span class="keyword">template</span> <span class="keyword">class </span><a class="code hl_class" href="classpolyfem_1_1mesh_1_1_physics_remesher.html">PhysicsRemesher&lt;wmtk::TetMesh&gt;</a>;</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span> </div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>} <span class="comment">// namespace polyfem::mesh</span></div>
 </div>
 </div>
 </div>
@@ -482,14 +490,14 @@ $(document).ready(function(){initNavTree('_smooth_8cpp_source.html',''); initRes
 <div class="ttc" id="aclasspolyfem_1_1_state_html_a813d80fa2f8ebcf6fa4a09ffb9b5da99"><div class="ttname"><a href="classpolyfem_1_1_state.html#a813d80fa2f8ebcf6fa4a09ffb9b5da99">polyfem::State::args</a></div><div class="ttdeci">json args</div><div class="ttdoc">main input arguments containing all defaults</div><div class="ttdef"><b>Definition</b> <a href="_state_8hpp_source.html#l00091">State.hpp:91</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1_state_html_ad1f83d1340141601dd1cd235bb5ec94d"><div class="ttname"><a href="classpolyfem_1_1_state.html#ad1f83d1340141601dd1cd235bb5ec94d">polyfem::State::solve_data</a></div><div class="ttdeci">solver::SolveData solve_data</div><div class="ttdoc">timedependent stuff cached</div><div class="ttdef"><b>Definition</b> <a href="_state_8hpp_source.html#l00304">State.hpp:304</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_assembly_vals_cache_html"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">polyfem::assembler::AssemblyValsCache</a></div><div class="ttdoc">Caches basis evaluation and geometric mapping at every element.</div><div class="ttdef"><b>Definition</b> <a href="_assembly_vals_cache_8hpp_source.html#l00010">AssemblyValsCache.hpp:11</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_density_html"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_density.html">polyfem::assembler::Density</a></div><div class="ttdef"><b>Definition</b> <a href="_mat_params_8hpp_source.html#l00096">MatParams.hpp:97</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_mass_matrix_assembler_html"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html">polyfem::assembler::MassMatrixAssembler</a></div><div class="ttdef"><b>Definition</b> <a href="_mass_matrix_assembler_8hpp_source.html#l00016">MassMatrixAssembler.hpp:17</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_mass_matrix_assembler_html_a331b61c7a70e3d0f42a199d4d87444ef"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html#a331b61c7a70e3d0f42a199d4d87444ef">polyfem::assembler::MassMatrixAssembler::assemble</a></div><div class="ttdeci">void assemble(const bool is_volume, const int size, const int n_basis, const Density &amp;density, const std::vector&lt; basis::ElementBases &gt; &amp;bases, const std::vector&lt; basis::ElementBases &gt; &amp;gbases, const AssemblyValsCache &amp;cache, StiffnessMatrix &amp;mass) const</div><div class="ttdoc">Assembles the mass matrix.</div><div class="ttdef"><b>Definition</b> <a href="_mass_matrix_assembler_8cpp_source.html#l00068">MassMatrixAssembler.cpp:68</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_mass_matrix_assembler_html_a46a5d0af0ac8125650fe418548274ae6"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html#a46a5d0af0ac8125650fe418548274ae6">polyfem::assembler::MassMatrixAssembler::assemble_cross</a></div><div class="ttdeci">void assemble_cross(const bool is_volume, const int size, const int n_from_basis, const std::vector&lt; basis::ElementBases &gt; &amp;from_bases, const std::vector&lt; basis::ElementBases &gt; &amp;from_gbases, const int n_to_basis, const std::vector&lt; basis::ElementBases &gt; &amp;to_bases, const std::vector&lt; basis::ElementBases &gt; &amp;to_gbases, const AssemblyValsCache &amp;cache, StiffnessMatrix &amp;mass) const</div><div class="ttdoc">Assembles the cross mass matrix between to function spaces.</div><div class="ttdef"><b>Definition</b> <a href="_mass_matrix_assembler_8cpp_source.html#l00186">MassMatrixAssembler.cpp:186</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_no_density_html"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_no_density.html">polyfem::assembler::NoDensity</a></div><div class="ttdef"><b>Definition</b> <a href="_mat_params_8hpp_source.html#l00120">MatParams.hpp:121</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1mesh_1_1_local_mesh_html"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_local_mesh.html">polyfem::mesh::LocalMesh</a></div><div class="ttdef"><b>Definition</b> <a href="_local_mesh_8hpp_source.html#l00012">LocalMesh.hpp:13</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1mesh_1_1_physics_remesher_html"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_physics_remesher.html">polyfem::mesh::PhysicsRemesher</a></div><div class="ttdef"><b>Definition</b> <a href="_physics_remesher_8hpp_source.html#l00011">PhysicsRemesher.hpp:12</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1mesh_1_1_physics_remesher_html_a767d10e5477ba2340eae0982e4dd1d69"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_physics_remesher.html#a767d10e5477ba2340eae0982e4dd1d69">polyfem::mesh::PhysicsRemesher::smooth_before</a></div><div class="ttdeci">bool smooth_before(const Tuple &amp;t) override</div><div class="ttdef"><b>Definition</b> <a href="_smooth_8cpp_source.html#l00170">Smooth.cpp:170</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_physics_remesher_html_a831328a90694d3a8971428bdffd70653"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_physics_remesher.html#a831328a90694d3a8971428bdffd70653">polyfem::mesh::PhysicsRemesher::smooth_after</a></div><div class="ttdeci">bool smooth_after(const Tuple &amp;t) override</div><div class="ttdef"><b>Definition</b> <a href="_smooth_8cpp_source.html#l00271">Smooth.cpp:271</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_physics_remesher_html_a831328a90694d3a8971428bdffd70653"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_physics_remesher.html#a831328a90694d3a8971428bdffd70653">polyfem::mesh::PhysicsRemesher::smooth_after</a></div><div class="ttdeci">bool smooth_after(const Tuple &amp;t) override</div><div class="ttdef"><b>Definition</b> <a href="_smooth_8cpp_source.html#l00279">Smooth.cpp:279</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1mesh_1_1_physics_remesher_html_ac660b969a851c9edeff8c01f71251f58"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_physics_remesher.html#ac660b969a851c9edeff8c01f71251f58">polyfem::mesh::PhysicsRemesher::Tuple</a></div><div class="ttdeci">typename Super::Tuple Tuple</div><div class="ttdef"><b>Definition</b> <a href="_physics_remesher_8hpp_source.html#l00024">PhysicsRemesher.hpp:24</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1mesh_1_1_remesher_html_a85b8cb629bb16c1ca9039bd37ab52235"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_remesher.html#a85b8cb629bb16c1ca9039bd37ab52235">polyfem::mesh::Remesher::is_volume</a></div><div class="ttdeci">virtual bool is_volume() const</div><div class="ttdoc">Is the mesh a volumetric mesh.</div><div class="ttdef"><b>Definition</b> <a href="_remesher_8hpp_source.html#l00102">Remesher.hpp:102</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1mesh_1_1_remesher_html_a980694c724a805f33c46957dca459ca1"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_remesher.html#a980694c724a805f33c46957dca459ca1">polyfem::mesh::Remesher::state</a></div><div class="ttdeci">const State &amp; state</div><div class="ttdoc">Reference to the simulation state.</div><div class="ttdef"><b>Definition</b> <a href="_remesher_8hpp_source.html#l00191">Remesher.hpp:191</a></div></div>
@@ -499,11 +507,11 @@ $(document).ready(function(){initNavTree('_smooth_8cpp_source.html',''); initRes
 <div class="ttc" id="aclasspolyfem_1_1mesh_1_1_wild_remesher_html_a6427b948e35f18d86e875617153f1e65"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a6427b948e35f18d86e875617153f1e65">polyfem::mesh::WildRemesher::smooth_before</a></div><div class="ttdeci">virtual bool smooth_before(const Tuple &amp;t) override</div><div class="ttdef"><b>Definition</b> <a href="_smooth_8cpp_source.html#l00162">Smooth.cpp:162</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1mesh_1_1_wild_remesher_html_a68008fadcf8fbab3d0242adf3608a81f"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a68008fadcf8fbab3d0242adf3608a81f">polyfem::mesh::WildRemesher::Tuple</a></div><div class="ttdeci">typename WMTKMesh::Tuple Tuple</div><div class="ttdef"><b>Definition</b> <a href="_wild_remesher_8hpp_source.html#l00064">WildRemesher.hpp:64</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1mesh_1_1_wild_remesher_html_a75a70402bc132ba9f1ce99ddfaebb96a"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a75a70402bc132ba9f1ce99ddfaebb96a">polyfem::mesh::WildRemesher::vertex_attrs</a></div><div class="ttdeci">wmtk::AttributeCollection&lt; VertexAttributes &gt; vertex_attrs</div><div class="ttdef"><b>Definition</b> <a href="_wild_remesher_8hpp_source.html#l00408">WildRemesher.hpp:408</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_wild_remesher_html_a77c427596a171f8f3fad35385c4368e6"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a77c427596a171f8f3fad35385c4368e6">polyfem::mesh::WildRemesher::smooth_vertices</a></div><div class="ttdeci">virtual void smooth_vertices()</div><div class="ttdef"><b>Definition</b> <a href="_smooth_8cpp_source.html#l00288">Smooth.cpp:288</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_wild_remesher_html_a77c427596a171f8f3fad35385c4368e6"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a77c427596a171f8f3fad35385c4368e6">polyfem::mesh::WildRemesher::smooth_vertices</a></div><div class="ttdeci">virtual void smooth_vertices()</div><div class="ttdef"><b>Definition</b> <a href="_smooth_8cpp_source.html#l00296">Smooth.cpp:296</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1mesh_1_1_wild_remesher_html_a991889b7932eed486068af42931eae48"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a991889b7932eed486068af42931eae48">polyfem::mesh::WildRemesher::get_one_ring_elements_for_vertex</a></div><div class="ttdeci">std::vector&lt; Tuple &gt; get_one_ring_elements_for_vertex(const Tuple &amp;t) const</div><div class="ttdoc">Get the one ring of elements around a vertex.</div></div>
 <div class="ttc" id="aclasspolyfem_1_1mesh_1_1_wild_remesher_html_aba17aa84ad88a687220f0f06ae50d25f"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_wild_remesher.html#aba17aa84ad88a687220f0f06ae50d25f">polyfem::mesh::WildRemesher::dim</a></div><div class="ttdeci">int dim() const override</div><div class="ttdoc">Dimension of the mesh.</div><div class="ttdef"><b>Definition</b> <a href="_wild_remesher_8hpp_source.html#l00152">WildRemesher.hpp:152</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1mesh_1_1_wild_remesher_html_ad99e0a1545ae49920a458ab0f7b38337"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_wild_remesher.html#ad99e0a1545ae49920a458ab0f7b38337">polyfem::mesh::WildRemesher::VectorNd</a></div><div class="ttdeci">Eigen::Matrix&lt; double, DIM, 1 &gt; VectorNd</div><div class="ttdef"><b>Definition</b> <a href="_wild_remesher_8hpp_source.html#l00062">WildRemesher.hpp:62</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_wild_remesher_html_ae193cae58645e9363dc4343207bba61f"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_wild_remesher.html#ae193cae58645e9363dc4343207bba61f">polyfem::mesh::WildRemesher::smooth_after</a></div><div class="ttdeci">virtual bool smooth_after(const Tuple &amp;t) override</div><div class="ttdef"><b>Definition</b> <a href="_smooth_8cpp_source.html#l00184">Smooth.cpp:184</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1mesh_1_1_wild_remesher_html_ae193cae58645e9363dc4343207bba61f"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_wild_remesher.html#ae193cae58645e9363dc4343207bba61f">polyfem::mesh::WildRemesher::smooth_after</a></div><div class="ttdeci">virtual bool smooth_after(const Tuple &amp;t) override</div><div class="ttdef"><b>Definition</b> <a href="_smooth_8cpp_source.html#l00192">Smooth.cpp:192</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1solver_1_1_solve_data_html_ab3d9f54bfa1c173fd1569a852bcd1a11"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_solve_data.html#ab3d9f54bfa1c173fd1569a852bcd1a11">polyfem::solver::SolveData::contact_form</a></div><div class="ttdeci">std::shared_ptr&lt; solver::ContactForm &gt; contact_form</div><div class="ttdef"><b>Definition</b> <a href="_solve_data_8hpp_source.html#l00125">SolveData.hpp:125</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1utils_1_1_timer_html"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_timer.html">polyfem::utils::Timer</a></div><div class="ttdef"><b>Definition</b> <a href="_timer_8hpp_source.html#l00030">Timer.hpp:31</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1utils_1_1_timer_html_a63a21e271660a8fdb06117a933d56ce8"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_timer.html#a63a21e271660a8fdb06117a933d56ce8">polyfem::utils::Timer::stop</a></div><div class="ttdeci">void stop()</div><div class="ttdef"><b>Definition</b> <a href="_timer_8hpp_source.html#l00079">Timer.hpp:79</a></div></div>

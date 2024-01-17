@@ -294,9 +294,9 @@ $(document).ready(function(){initNavTree('_local_relaxation_8cpp_source.html',''
 <div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        <span class="keyword">static</span> <span class="keyword">const</span> std::string reject_str =</div>
 <div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>            fmt::format(fmt::fg(fmt::terminal_color::yellow), <span class="stringliteral">&quot;reject&quot;</span>);</div>
 <div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().debug(</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>            <span class="stringliteral">&quot;[{:s}] E0={:&lt;10g} E1={:&lt;10g} (E0-E1)={:&lt;10g} tol={:g} local_ndof={:d} n_iters={:d}&quot;</span>,</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>            <span class="stringliteral">&quot;[{:s}] E0={:&lt;10g} E1={:&lt;10g} (E0-E1)={:&lt;11g} tol={:g} local_ndof={:d} n_iters={:d}&quot;</span>,</div>
 <div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>            accept ? accept_str : reject_str, local_energy_before(),</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>            local_energy_after, abs_diff, acceptance_tolerance,</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>            local_energy_after, abs_diff, dt_sqr * acceptance_tolerance,</div>
 <div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>            n_free_dof, nl_solver-&gt;criteria().iterations);</div>
 <div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
 <div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        <span class="keywordflow">return</span> accept;</div>

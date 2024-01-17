@@ -1,6 +1,7 @@
 var classpolyfem_1_1assembler_1_1_density =
 [
     [ "Density", "classpolyfem_1_1assembler_1_1_density.html#a45842b3cacf3a36390e47be124a7b1d3", null ],
+    [ "~Density", "classpolyfem_1_1assembler_1_1_density.html#ab91098e79561a4a595cc5613260138d0", null ],
     [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_density.html#a5d48b19ebc812f9818a1d94f6fb882fd", null ],
     [ "operator()", "classpolyfem_1_1assembler_1_1_density.html#aa96d3d898cf9d4f7aed98735e1e52626", null ],
     [ "operator()", "classpolyfem_1_1assembler_1_1_density.html#ab80a9220827c49f5c848b118dc242bfa", null ],

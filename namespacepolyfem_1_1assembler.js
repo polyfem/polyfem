@@ -39,6 +39,7 @@ var namespacepolyfem_1_1assembler =
     [ "NeoHookeanAutodiff", "classpolyfem_1_1assembler_1_1_neo_hookean_autodiff.html", "classpolyfem_1_1assembler_1_1_neo_hookean_autodiff" ],
     [ "NeoHookeanElasticity", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity" ],
     [ "NLAssembler", "classpolyfem_1_1assembler_1_1_n_l_assembler.html", "classpolyfem_1_1assembler_1_1_n_l_assembler" ],
+    [ "NoDensity", "classpolyfem_1_1assembler_1_1_no_density.html", "classpolyfem_1_1assembler_1_1_no_density" ],
     [ "NonLinearAssemblerData", "classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html", "classpolyfem_1_1assembler_1_1_non_linear_assembler_data" ],
     [ "OperatorSplitting", "classpolyfem_1_1assembler_1_1_operator_splitting.html", "classpolyfem_1_1assembler_1_1_operator_splitting" ],
     [ "OptAssemblerData", "classpolyfem_1_1assembler_1_1_opt_assembler_data.html", "classpolyfem_1_1assembler_1_1_opt_assembler_data" ],

@@ -1,5 +1,15 @@
 var NAVTREEINDEX41 =
 {
+"namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c":[5,0,4,11,61],
+"namespacepolyfem_1_1utils_1_1_string_utils.html":[5,0,4,11,0],
+"namespacepolyfem_1_1utils_1_1_string_utils.html#a4d5b5bc40fafe3b42a347ff1a55013ca":[5,0,4,11,0,2],
+"namespacepolyfem_1_1utils_1_1_string_utils.html#a5ea2c1e360cb00a431694ced69344bea":[5,0,4,11,0,5],
+"namespacepolyfem_1_1utils_1_1_string_utils.html#a8df4a1f29bc95ee539adb419f19b83b7":[5,0,4,11,0,4],
+"namespacepolyfem_1_1utils_1_1_string_utils.html#a9425d6e696ee910680614d0439ba3fbe":[5,0,4,11,0,3],
+"namespacepolyfem_1_1utils_1_1_string_utils.html#ac716d9eff97c92c06c752fe151a714ae":[5,0,4,11,0,0],
+"namespacepolyfem_1_1utils_1_1_string_utils.html#af73165b653d0e64acc1e8b888fe93bca":[5,0,4,11,0,1],
+"namespacepolysolve.html":[5,0,5],
+"namespacepolysolve_1_1nonlinear.html":[5,0,5,0],
 "namespacepretty__print.html":[5,0,6],
 "namespacepretty__print.html#a73786f15be021f8233264d6227553414":[5,0,6,0],
 "namespaceq__bases.html":[5,0,7],
@@ -239,15 +249,5 @@ var NAVTREEINDEX41 =
 "struct_d_scalar1.html#abbab3460f5e5cc5826ba5db3fe498775":[6,0,4,15],
 "struct_d_scalar1.html#ac86867603295986f55d7a3730f82293a":[6,0,4,32],
 "struct_d_scalar1.html#ad03fa0285b05819092994986f1d20475":[6,0,4,1],
-"struct_d_scalar1.html#ad2579791ed8b8c61d6a534ec8c8a324e":[6,0,4,40],
-"struct_d_scalar1.html#ad29e55d339405233cb838550641a8abe":[6,0,4,38],
-"struct_d_scalar1.html#ad428dc0d1dbc11a0d3476518ede88e27":[6,0,4,22],
-"struct_d_scalar1.html#ad794b635f54b860d5adc4d0efb76d83d":[6,0,4,28],
-"struct_d_scalar1.html#ad926ae714781b813016da95ecc1ed731":[6,0,4,24],
-"struct_d_scalar1.html#ad9e7938ffa2e6bebdaf8b13e0d711eba":[6,0,4,50],
-"struct_d_scalar1.html#adaa855acf7d526bd89b52c51b45e93a8":[6,0,4,34],
-"struct_d_scalar1.html#aeb8af2533209850e51cfd669438171fa":[6,0,4,9],
-"struct_d_scalar1.html#af4c40df14b6d01e4642119a51df1d619":[6,0,4,18],
-"struct_d_scalar1.html#afb8cd56b14cb874e04860f92d6b5f436":[6,0,4,21],
-"struct_d_scalar2.html":[6,0,5]
+"struct_d_scalar1.html#ad2579791ed8b8c61d6a534ec8c8a324e":[6,0,4,40]
 };

@@ -151,12 +151,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa05408a71fb2ce3ecc27591d73154b68"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1adb9f2892b235bd537cff0a02b35e25" id="r_a1adb9f2892b235bd537cff0a02b35e25"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a1adb9f2892b235bd537cff0a02b35e25">hessian</a> (const TVector &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, THessian &amp;hessian) override</td></tr>
 <tr class="separator:a1adb9f2892b235bd537cff0a02b35e25"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6c4788b7a30f82e4e5d4176c500bdcde" id="r_a6c4788b7a30f82e4e5d4176c500bdcde"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a6c4788b7a30f82e4e5d4176c500bdcde">is_step_valid</a> (const TVector &amp;x0, const TVector &amp;x1) const override</td></tr>
-<tr class="separator:a6c4788b7a30f82e4e5d4176c500bdcde"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a693d8ab3743782661afa5e0ba8f48bcb" id="r_a693d8ab3743782661afa5e0ba8f48bcb"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a693d8ab3743782661afa5e0ba8f48bcb">is_step_collision_free</a> (const TVector &amp;x0, const TVector &amp;x1) const</td></tr>
-<tr class="separator:a693d8ab3743782661afa5e0ba8f48bcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a42aab3f240dfa0e035b004ce68106204" id="r_a42aab3f240dfa0e035b004ce68106204"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a42aab3f240dfa0e035b004ce68106204">max_step_size</a> (const TVector &amp;x0, const TVector &amp;x1) const override</td></tr>
-<tr class="separator:a42aab3f240dfa0e035b004ce68106204"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a793cb281009ab27f820ec75c7cc7ea4a" id="r_a793cb281009ab27f820ec75c7cc7ea4a"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a793cb281009ab27f820ec75c7cc7ea4a">is_step_valid</a> (const TVector &amp;x0, const TVector &amp;x1) override</td></tr>
+<tr class="separator:a793cb281009ab27f820ec75c7cc7ea4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43e2799fdf17d41982b865e6724a4bc8" id="r_a43e2799fdf17d41982b865e6724a4bc8"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a43e2799fdf17d41982b865e6724a4bc8">is_step_collision_free</a> (const TVector &amp;x0, const TVector &amp;x1)</td></tr>
+<tr class="separator:a43e2799fdf17d41982b865e6724a4bc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0134297b7fc55b8cb39220379f8952a5" id="r_a0134297b7fc55b8cb39220379f8952a5"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a0134297b7fc55b8cb39220379f8952a5">max_step_size</a> (const TVector &amp;x0, const TVector &amp;x1) override</td></tr>
+<tr class="separator:a0134297b7fc55b8cb39220379f8952a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae63f768e702778c005f9071033343674" id="r_ae63f768e702778c005f9071033343674"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#ae63f768e702778c005f9071033343674">line_search_begin</a> (const TVector &amp;x0, const TVector &amp;x1) override</td></tr>
 <tr class="separator:ae63f768e702778c005f9071033343674"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b0b95f98b74d4b154801bb09c2ec376" id="r_a7b0b95f98b74d4b154801bb09c2ec376"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_full_n_l_problem.html#a7b0b95f98b74d4b154801bb09c2ec376">line_search_end</a> () override</td></tr>
@@ -418,8 +418,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a693d8ab3743782661afa5e0ba8f48bcb" name="a693d8ab3743782661afa5e0ba8f48bcb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a693d8ab3743782661afa5e0ba8f48bcb">&#9670;&#160;</a></span>is_step_collision_free()</h2>
+<a id="a43e2799fdf17d41982b865e6724a4bc8" name="a43e2799fdf17d41982b865e6724a4bc8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43e2799fdf17d41982b865e6724a4bc8">&#9670;&#160;</a></span>is_step_collision_free()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -442,7 +442,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td> const</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -452,7 +452,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a7e513a5bf53df67973b32848b43223c0">polyfem::solver::NLProblem</a>.</p>
+<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a841013a529ef716a506472ceb76d0ac8">polyfem::solver::NLProblem</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8cpp_source.html#l00079">79</a> of file <a class="el" href="_full_n_l_problem_8cpp_source.html">FullNLProblem.cpp</a>.</p>
 
@@ -462,13 +462,13 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_a693d8ab3743782661afa5e0ba8f48bcb_icgraph.svg" width="100%" height="448"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_a43e2799fdf17d41982b865e6724a4bc8_icgraph.svg" width="100%" height="448"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a6c4788b7a30f82e4e5d4176c500bdcde" name="a6c4788b7a30f82e4e5d4176c500bdcde"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6c4788b7a30f82e4e5d4176c500bdcde">&#9670;&#160;</a></span>is_step_valid()</h2>
+<a id="a793cb281009ab27f820ec75c7cc7ea4a" name="a793cb281009ab27f820ec75c7cc7ea4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a793cb281009ab27f820ec75c7cc7ea4a">&#9670;&#160;</a></span>is_step_valid()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -491,7 +491,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td> const</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -501,7 +501,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a4db19ca2abdc0fa349994c9e44bb365a">polyfem::solver::NLProblem</a>.</p>
+<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a2c2932dd5ee7a1c2e85de2df28a10a84">polyfem::solver::NLProblem</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8cpp_source.html#l00071">71</a> of file <a class="el" href="_full_n_l_problem_8cpp_source.html">FullNLProblem.cpp</a>.</p>
 
@@ -511,7 +511,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_a6c4788b7a30f82e4e5d4176c500bdcde_icgraph.svg" width="100%" height="448"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_a793cb281009ab27f820ec75c7cc7ea4a_icgraph.svg" width="100%" height="448"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -636,8 +636,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a42aab3f240dfa0e035b004ce68106204" name="a42aab3f240dfa0e035b004ce68106204"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a42aab3f240dfa0e035b004ce68106204">&#9670;&#160;</a></span>max_step_size()</h2>
+<a id="a0134297b7fc55b8cb39220379f8952a5" name="a0134297b7fc55b8cb39220379f8952a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0134297b7fc55b8cb39220379f8952a5">&#9670;&#160;</a></span>max_step_size()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -660,7 +660,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td></td>
           <td>)</td>
-          <td></td><td> const</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -670,7 +670,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#a0f6010db70fac314b23b19dc48f4f00d">polyfem::solver::NLProblem</a>.</p>
+<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_n_l_problem.html#ab8cc510c88b527c67a442ce8a9dd1f79">polyfem::solver::NLProblem</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_full_n_l_problem_8cpp_source.html#l00062">62</a> of file <a class="el" href="_full_n_l_problem_8cpp_source.html">FullNLProblem.cpp</a>.</p>
 
@@ -680,7 +680,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_a42aab3f240dfa0e035b004ce68106204_icgraph.svg" width="488" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_full_n_l_problem_a0134297b7fc55b8cb39220379f8952a5_icgraph.svg" width="488" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
