@@ -142,7 +142,7 @@ namespace polyfem::mesh
 		Eigen::SparseMatrix<double> M, A;
 		{
 			MassMatrixAssembler assembler;
-			Density no_density; // Density of one (i.e., no scaling of mass matrix)
+			NoDensity no_density; // Density of one (i.e., no scaling of mass matrix)
 			AssemblyValsCache cache;
 
 			assembler.assemble(
@@ -218,6 +218,26 @@ namespace polyfem::mesh
 				boundary_nodes, obstacle().ndof(), to_projection_quantities.col(i),
 				// Initial guess
 				to_projection_quantities.col(i));
+		}
+
+		// Set entry for obstacle to identity
+		// ┌     ┐ ┌     ┐   ┌     ┐
+		// │M   0│ │x_fem│   |y_fem|
+		// │     │ │     │ = |     | ⟹ x_obs = y_obs
+		// │0   I│ │x_obs│   |y_obs|
+		// └     ┘ └     ┘   └     ┘
+
+		for (int i = 0; i < dim() * obstacle().n_vertices(); ++i)
+		{
+			const int row = M.rows() - i - 1; // fill from bottom
+			M.coeffRef(row, row) = 1.0;
+		}
+
+		for (int i = 0; i < dim() * obstacle().n_vertices(); ++i)
+		{
+			const int row = A.rows() - i - 1; // fill from bottom
+			const int col = A.cols() - i - 1; // fill from bottom
+			A.coeffRef(row, col) = 1.0;
 		}
 
 		// NOTE: no need for to_projection_quantities.rightCols(n_unconstrained_quantaties)

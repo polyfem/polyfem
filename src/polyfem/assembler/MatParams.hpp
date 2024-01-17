@@ -97,10 +97,11 @@ namespace polyfem::assembler
 	{
 	public:
 		Density();
+		virtual ~Density() = default;
 
-		void add_multimaterial(const int index, const json &params, const std::string &density_unit);
+		virtual void add_multimaterial(const int index, const json &params, const std::string &density_unit);
 
-		double operator()(double px, double py, double pz, double x, double y, double z, double t, int el_id) const;
+		virtual double operator()(double px, double py, double pz, double x, double y, double z, double t, int el_id) const;
 		double operator()(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, double t, int el_id) const
 		{
 			assert(param.size() == 2 || param.size() == 3);
@@ -114,5 +115,21 @@ namespace polyfem::assembler
 		void set_rho(const json &rho);
 
 		std::vector<utils::ExpressionValue> rho_;
+	};
+
+	class NoDensity : public Density
+	{
+	public:
+		NoDensity() {}
+
+		void add_multimaterial(const int index, const json &params, const std::string &density_unit) override
+		{
+			throw std::runtime_error("NoDensity does not support multimaterial");
+		}
+
+		double operator()(double px, double py, double pz, double x, double y, double z, double t, int el_id) const override
+		{
+			return 1.0;
+		}
 	};
 } // namespace polyfem::assembler
