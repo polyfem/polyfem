@@ -162,7 +162,7 @@ namespace polyfem::solver
 		if (data.iter_num == 0)
 			return;
 
-		// if (use_adaptive_barrier_stiffness_)
+		if (use_adaptive_barrier_stiffness_)
 		{
 			if (is_time_dependent_)
 			{
