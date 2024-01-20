@@ -30,7 +30,30 @@ namespace polyfem::solver
     template <int _dim>
     void SmoothContactForm<_dim>::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
     {
-        log_and_throw_error("[{}] Barrier stiffness update not implemented!", name());
+		max_barrier_stiffness_ = 1e10 * barrier_stiffness();
+		// if (!use_adaptive_barrier_stiffness())
+			return;
+
+		// const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
+
+		// // The adative stiffness is designed for the non-convergent formulation,
+		// // so we need to compute the gradient of the non-convergent barrier.
+		// // After we can map it to a good value for the convergent formulation.
+		// ipc::SmoothCollisions<_dim> nonconvergent_constraints;
+		// nonconvergent_constraints.build(
+		// 	collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_method_);
+		// Eigen::VectorXd grad_barrier = contact_potential_->gradient(
+		// 	nonconvergent_constraints, collision_mesh_, displaced_surface);
+		// grad_barrier = collision_mesh_.to_full_dof(grad_barrier);
+
+		// barrier_stiffness_ = ipc::initial_barrier_stiffness(
+		// 	ipc::world_bbox_diagonal_length(displaced_surface), get_barrier_potential().barrier(), dhat_, avg_mass_,
+		// 	grad_energy, grad_barrier, max_barrier_stiffness_);
+
+		// // Remove the acceleration scaling from the barrier stiffness because it will be applied later.
+		// barrier_stiffness_ /= weight_;
+
+		// logger().debug("adaptive barrier form stiffness {}", barrier_stiffness());
     }
 
     template <int _dim>
@@ -139,7 +162,7 @@ namespace polyfem::solver
 		if (data.iter_num == 0)
 			return;
 
-		if (use_adaptive_barrier_stiffness_)
+		// if (use_adaptive_barrier_stiffness_)
 		{
 			if (is_time_dependent_)
 			{

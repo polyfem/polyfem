@@ -1193,9 +1193,16 @@
             "r",
             "high_order_quadrature",
             "min_distance_ratio",
-            "use_adaptive_epsilon"
+            "use_adaptive_epsilon",
+            "initial_barrier_stiffness"
         ],
         "doc": "Contact handling parameters."
+    },
+    {
+        "pointer": "/contact/initial_barrier_stiffness",
+        "default": 1,
+        "type": "float",
+        "doc": "Initial barrier stiffness if adaptive barrier is used."
     },
     {
         "pointer": "/contact/use_adaptive_epsilon",

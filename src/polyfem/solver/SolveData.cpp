@@ -182,7 +182,7 @@ namespace polyfem::solver
 
 			if (use_adaptive_barrier_stiffness)
 			{
-				contact_form->set_barrier_stiffness(1);
+				contact_form->set_barrier_stiffness(contact_params["initial_barrier_stiffness"]);
 				// logger().debug("Using adaptive barrier stiffness");
 			}
 			else
