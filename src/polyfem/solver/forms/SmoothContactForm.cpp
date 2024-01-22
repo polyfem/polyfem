@@ -18,7 +18,7 @@ namespace polyfem::solver
                 const bool is_time_dependent,
                 const ipc::BroadPhaseMethod broad_phase_method,
                 const double ccd_tolerance,
-                const int ccd_max_iterations): ContactForm(collision_mesh, args["dhat"], avg_mass, false, use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(dhat_*dhat_, args["alpha"], args["r"], args["high_order_quadrature"]), use_adaptive_epsilon(args["use_adaptive_epsilon"])
+                const int ccd_max_iterations): ContactForm(collision_mesh, args["dhat"], avg_mass, false, use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(dhat_*dhat_, args["alpha"], args["r"], args["high_order_quadrature"], args["beta"]), use_adaptive_epsilon(args["use_adaptive_epsilon"])
     {
 		collision_set_ = std::make_shared<ipc::SmoothCollisions<_dim>>(args["high_order_quadrature"].get<int>() > 1);
         contact_potential_ = std::make_shared<ipc::SmoothContactPotential<ipc::SmoothCollisions<_dim>>>(params);
@@ -170,7 +170,7 @@ namespace polyfem::solver
 
 				barrier_stiffness_ = ipc::update_barrier_stiffness(
 					prev_distance_, curr_distance, max_barrier_stiffness_,
-					barrier_stiffness(), ipc::world_bbox_diagonal_length(displaced_surface));
+					barrier_stiffness(), ipc::world_bbox_diagonal_length(displaced_surface), 1e-7);
 
 				if (barrier_stiffness() != prev_barrier_stiffness)
 				{

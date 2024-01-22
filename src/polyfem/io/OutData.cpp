@@ -2081,6 +2081,18 @@ namespace polyfem::io
 				assert(forces_reshaped.rows() == surface_displacements.rows());
 				assert(forces_reshaped.cols() == surface_displacements.cols());
 				writer.add_field("contact_forces", forces_reshaped);
+
+				if (collision_mesh.dim() == 3)
+				{
+					Eigen::MatrixXd normals;
+					normals.setZero(collision_mesh.num_faces(), 3);
+					for (int i = 0; i < collision_mesh.num_faces(); i++)
+					{
+						normals.row(i) = collision_mesh.face_normal(i);
+					}
+
+					writer.add_cell_field("normals", normals);
+				}
 			}
 
 			if (contact_form && state.args["contact"]["use_smooth_formulation"] && state.args["contact"]["use_adaptive_epsilon"])

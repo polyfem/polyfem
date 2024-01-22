@@ -1190,6 +1190,7 @@
             "collision_mesh",
             "use_smooth_formulation",
             "alpha",
+            "beta",
             "r",
             "high_order_quadrature",
             "min_distance_ratio",
@@ -1235,7 +1236,14 @@
         "default": 1,
         "min": 0,
         "type": "float",
-        "doc": "Control the angle of contact pairs."
+        "doc": "Control the smoothness of angle contraints of contact pairs."
+    },
+    {
+        "pointer": "/contact/beta",
+        "default": 0,
+        "min": 0,
+        "type": "float",
+        "doc": "Control the threshold of angle constraints of contact pairs."
     },
     {
         "pointer": "/contact/r",
