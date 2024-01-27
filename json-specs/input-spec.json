@@ -1355,7 +1355,7 @@
         "pointer": "/solver/augmented_lagrangian/max_weight",
         "default": 1e8,
         "type": "float",
-        "doc": "Maximum weigth"
+        "doc": "Maximum weight"
     },
     {
         "pointer": "/solver/augmented_lagrangian/eta",
@@ -2584,7 +2584,7 @@
         "pointer": "/output/data/rest_mesh",
         "default": "",
         "type": "string",
-        "doc": "Writes the rest mesh in OBJ format, used to restart the sim"
+        "doc": "Writes the rest mesh in MSH format, used to restart the sim"
     },
     {
         "pointer": "/output/data/mises",
