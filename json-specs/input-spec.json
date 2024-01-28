@@ -1191,10 +1191,8 @@
             "use_smooth_formulation",
             "alpha",
             "beta",
-            "r",
-            "high_order_quadrature",
             "min_distance_ratio",
-            "use_adaptive_epsilon",
+            "use_adaptive_dhat",
             "initial_barrier_stiffness"
         ],
         "doc": "Contact handling parameters."
@@ -1206,7 +1204,7 @@
         "doc": "Initial barrier stiffness if adaptive barrier is used."
     },
     {
-        "pointer": "/contact/use_adaptive_epsilon",
+        "pointer": "/contact/use_adaptive_dhat",
         "default": false,
         "type": "bool",
         "doc": "True if adaptive epsilon is used."
@@ -1217,13 +1215,6 @@
         "min": 0,
         "type": "float",
         "doc": "Ratio of the minimum distance to contact to define local epsilon."
-    },
-    {
-        "pointer": "/contact/high_order_quadrature",
-        "default": 1,
-        "min": 1,
-        "type": "int",
-        "doc": "Number of quadrature points in edge-vertex contact."
     },
     {
         "pointer": "/contact/use_smooth_formulation",
@@ -1241,16 +1232,10 @@
     {
         "pointer": "/contact/beta",
         "default": 0,
-        "min": 0,
+        "max": 1,
+        "min": -1,
         "type": "float",
         "doc": "Control the threshold of angle constraints of contact pairs."
-    },
-    {
-        "pointer": "/contact/r",
-        "default": 1,
-        "min": 0,
-        "type": "float",
-        "doc": "Control the power of distance barrier function."
     },
     {
         "pointer": "/contact/enabled",

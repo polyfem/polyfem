@@ -64,6 +64,6 @@ namespace polyfem::solver
 
 	private:
 		ipc::ParameterType params;
-		const bool use_adaptive_epsilon;
+		const bool use_adaptive_dhat;
 	};
 }
