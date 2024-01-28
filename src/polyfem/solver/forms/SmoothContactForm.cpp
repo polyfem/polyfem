@@ -18,7 +18,7 @@ namespace polyfem::solver
                 const bool is_time_dependent,
                 const ipc::BroadPhaseMethod broad_phase_method,
                 const double ccd_tolerance,
-                const int ccd_max_iterations): ContactForm(collision_mesh, args["dhat"], avg_mass, false, use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(dhat_, args["alpha"], collision_mesh.dim() == 3 ? 1 : 0.5, 1, args["beta"]), use_adaptive_dhat(args["use_adaptive_dhat"])
+                const int ccd_max_iterations): ContactForm(collision_mesh, args["dhat"], avg_mass, false, use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(dhat_, args["alpha"], _dim == 3 ? 1 : 0.5, 1, args["beta"]), use_adaptive_dhat(args["use_adaptive_dhat"])
     {
 		collision_set_ = std::make_shared<ipc::SmoothCollisions<_dim>>(false /*no high order quadrature*/);
         contact_potential_ = std::make_shared<ipc::SmoothContactPotential<ipc::SmoothCollisions<_dim>>>(params);
@@ -30,7 +30,7 @@ namespace polyfem::solver
     template <int _dim>
     void SmoothContactForm<_dim>::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
     {
-		max_barrier_stiffness_ = 1e10 * barrier_stiffness();
+		max_barrier_stiffness_ = 1e3 * barrier_stiffness();
 		// if (!use_adaptive_barrier_stiffness())
 			return;
 

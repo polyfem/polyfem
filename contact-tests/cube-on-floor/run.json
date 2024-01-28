@@ -68,18 +68,15 @@
     ],
     "contact": {
         "enabled": true,
-        "dhat": 0.03,
-        "use_convergent_formulation": true,
-        "collision_mesh": {
-            "enabled": true
-        },
+        "dhat": 0.05,
         "use_smooth_formulation": true,
-        "alpha": 0.05,
-        "r": 1,
-        "high_order_quadrature": 3
+        "alpha": 0.1
     },
     "output": {
         "json": "out.json",
+        "log": {
+            "level": "info"
+        },
         "paraview": {
             "high_order_mesh": false,
             "file_name": "out.vtu",
@@ -88,7 +85,8 @@
             "volume": true,
             "options": {
                 "use_hdf5": false,
-                "body_ids": true
+                "body_ids": true,
+                "contact_forces": true
             }
         }
     },
@@ -130,7 +128,7 @@
             "CCD": {
                 "broad_phase": "BVH"
             },
-            "barrier_stiffness": 10000
+            "barrier_stiffness": 1e5
         }
     }
 }
