@@ -92,9 +92,36 @@ namespace polyfem::io
 
 				vals.compute(e, state.mesh->is_volume(), points, bs, gbs);
 
+				// for (int n = 0; n < normals.rows(); ++n)
+				// {
+				// 	normals.row(n) = normals.row(n) * vals.jac_it[n];
+				// 	normals.row(n).normalize();
+				// }
+
 				for (int n = 0; n < normals.rows(); ++n)
 				{
-					normals.row(n) = normals.row(n) * vals.jac_it[n];
+					trafo = vals.jac_it[n].inverse();
+
+					if (solution.size() > 0)
+					{
+						assert(actual_dim == 2 || actual_dim == 3);
+						deform_mat.resize(actual_dim, actual_dim);
+						deform_mat.setZero();
+						for (const auto &b : vals.basis_values)
+						{
+							for (const auto &g : b.global)
+							{
+								for (int d = 0; d < actual_dim; ++d)
+								{
+									deform_mat.row(d) += solution(g.index * actual_dim + d) * b.grad.row(n);
+								}
+							}
+						}
+
+						trafo += deform_mat;
+					}
+
+					normals.row(n) = normals.row(n) * trafo.inverse();
 					normals.row(n).normalize();
 				}
 

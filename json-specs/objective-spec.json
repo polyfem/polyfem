@@ -39,6 +39,7 @@
             "volume",
             "soft_constraint",
             "layer_thickness",
+            "layer_thickness_log",
             "AMIPS",
             "parametrized_product"
         ],
@@ -882,10 +883,32 @@
         "doc": "TODO"
     },
     {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "layer_thickness_log",
+        "required": [
+            "type",
+            "state",
+            "dmin"
+        ],
+        "optional": [
+            "boundary_ids",
+            "dhat",
+            "weight",
+            "print_energy"
+        ],
+        "doc": "TODO"
+    },
+    {
         "pointer": "/dhat",
         "type": "float",
         "default": 1e-3,
         "doc": "The support size of barrier function"
+    },
+    {
+        "pointer": "/dmin",
+        "type": "float",
+        "doc": "The min distance of barrier function"
     },
     {
         "pointer": "/boundary_ids",

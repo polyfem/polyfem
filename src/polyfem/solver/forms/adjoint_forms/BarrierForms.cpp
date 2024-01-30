@@ -267,8 +267,10 @@ namespace polyfem::solver
 	LayerThicknessForm::LayerThicknessForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations,
 										   const State &state,
 										   const std::vector<int> &boundary_ids,
-										   const double dhat)
-		: CollisionBarrierForm(variable_to_simulations, state, dhat, 0),
+										   const double dhat,
+										   const bool use_log_barrier,
+										   const double dmin)
+		: CollisionBarrierForm(variable_to_simulations, state, dhat, dmin),
 		  boundary_ids_(boundary_ids)
 	{
 		for (const auto &id : boundary_ids_)
@@ -276,7 +278,8 @@ namespace polyfem::solver
 
 		build_collision_mesh();
 
-		barrier_potential_.set_barrier(std::make_shared<QuadraticBarrier>());
+		if (!use_log_barrier)
+			barrier_potential_.set_barrier(std::make_shared<QuadraticBarrier>());
 	}
 
 	void LayerThicknessForm::build_collision_mesh()

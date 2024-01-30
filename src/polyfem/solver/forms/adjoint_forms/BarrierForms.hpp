@@ -49,7 +49,9 @@ namespace polyfem::solver
 		LayerThicknessForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations,
 						   const State &state,
 						   const std::vector<int> &boundary_ids,
-						   const double dhat);
+						   const double dhat,
+						   const bool use_log_barrier = false,
+						   const double dmin = 0);
 
 		std::string name() const override { return "layer thickness"; }
 
