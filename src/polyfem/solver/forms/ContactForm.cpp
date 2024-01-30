@@ -116,10 +116,14 @@ namespace polyfem::solver
 			max_barrier_stiffness_ *= scaling_factor;
 		}
 
-		// Remove the acceleration scaling from the barrier stiffness because it will be applied later.
+		// The barrier stiffness is choosen based on including the acceleration scaling,
+		// but the acceleration scaling will be applied later. Therefore, we need to remove it.
 		barrier_stiffness_ /= weight_;
+		max_barrier_stiffness_ /= weight_;
 
-		logger().debug("adaptive barrier form stiffness {}", barrier_stiffness());
+		logger().debug(
+			"adaptive barrier form stiffness {} (max barrier stiffness: {})",
+			barrier_stiffness(), max_barrier_stiffness_);
 	}
 
 	void ContactForm::update_collision_set(const Eigen::MatrixXd &displaced_surface)
@@ -298,8 +302,8 @@ namespace polyfem::solver
 				if (barrier_stiffness() != prev_barrier_stiffness)
 				{
 					polyfem::logger().debug(
-						"updated barrier stiffness from {:g} to {:g}",
-						prev_barrier_stiffness, barrier_stiffness());
+						"updated barrier stiffness from {:g} to {:g} (max barrier stiffness: )",
+						prev_barrier_stiffness, barrier_stiffness(), max_barrier_stiffness_);
 				}
 			}
 			else
