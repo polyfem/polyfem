@@ -18,9 +18,9 @@ namespace polyfem::solver
 		virtual void gradient(const TVector &x, TVector &gradv) override;
 		virtual void hessian(const TVector &x, THessian &hessian) override;
 
-		virtual bool is_step_valid(const TVector &x0, const TVector &x1) const override;
-		virtual bool is_step_collision_free(const TVector &x0, const TVector &x1) const;
-		virtual double max_step_size(const TVector &x0, const TVector &x1) const override;
+		virtual bool is_step_valid(const TVector &x0, const TVector &x1) override;
+		virtual bool is_step_collision_free(const TVector &x0, const TVector &x1);
+		virtual double max_step_size(const TVector &x0, const TVector &x1) override;
 
 		virtual void line_search_begin(const TVector &x0, const TVector &x1) override;
 		virtual void line_search_end() override;

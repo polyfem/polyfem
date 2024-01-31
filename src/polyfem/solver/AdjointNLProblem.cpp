@@ -295,7 +295,7 @@ namespace polyfem::solver
 		}
 	}
 
-	bool AdjointNLProblem::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
+	bool AdjointNLProblem::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
 	{
 		Eigen::MatrixXd X, V0, V1, V_smooth;
 		Eigen::MatrixXi F;
@@ -335,12 +335,12 @@ namespace polyfem::solver
 		return form_->is_step_valid(x0, x1);
 	}
 
-	bool AdjointNLProblem::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
+	bool AdjointNLProblem::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
 	{
 		return form_->is_step_collision_free(x0, x1);
 	}
 
-	double AdjointNLProblem::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
+	double AdjointNLProblem::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
 	{
 		return form_->max_step_size(x0, x1);
 	}

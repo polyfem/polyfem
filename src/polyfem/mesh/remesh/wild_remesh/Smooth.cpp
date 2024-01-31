@@ -60,7 +60,7 @@ namespace polyfem::mesh
 		Eigen::SparseMatrix<double> M, A;
 		{
 			assembler::MassMatrixAssembler assembler;
-			assembler::Density no_density; // Density of one (i.e., no scaling of mass matrix)
+			assembler::NoDensity no_density; // Density of one (i.e., no scaling of mass matrix)
 			assembler::AssemblyValsCache cache;
 
 			assembler.assemble(
@@ -171,6 +171,14 @@ namespace polyfem::mesh
 	{
 		if (!Super::smooth_before(v))
 			return false;
+
+		if (this->op_cache == nullptr)
+		{
+			if constexpr (std::is_same_v<WMTKMesh, wmtk::TriMesh>)
+				this->op_cache = std::make_shared<TriOperationCache>();
+			else
+				this->op_cache = std::make_shared<TetOperationCache>();
+		}
 
 		this->op_cache->local_energy = local_mesh_energy(
 			vertex_attrs[v.vid(*this)].rest_position);

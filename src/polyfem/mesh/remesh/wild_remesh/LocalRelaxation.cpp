@@ -161,9 +161,9 @@ namespace polyfem::mesh
 		static const std::string reject_str =
 			fmt::format(fmt::fg(fmt::terminal_color::yellow), "reject");
 		logger().debug(
-			"[{:s}] E0={:<10g} E1={:<10g} (E0-E1)={:<10g} tol={:g} local_ndof={:d} n_iters={:d}",
+			"[{:s}] E0={:<10g} E1={:<10g} (E0-E1)={:<11g} tol={:g} local_ndof={:d} n_iters={:d}",
 			accept ? accept_str : reject_str, local_energy_before(),
-			local_energy_after, abs_diff, acceptance_tolerance,
+			local_energy_after, abs_diff, dt_sqr * acceptance_tolerance,
 			n_free_dof, nl_solver->criteria().iterations);
 
 		return accept;
