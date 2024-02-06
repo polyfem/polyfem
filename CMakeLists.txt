@@ -189,7 +189,7 @@ target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
 
 # polysolve
 include(polysolve)
-target_link_libraries(polyfem PUBLIC polysolve)
+target_link_libraries(polyfem PUBLIC polysolve::polysolve)
 
 # IPC Toolkit
 include(ipc_toolkit)
@@ -216,9 +216,9 @@ if(POLYFEM_WITH_TRIANGLE)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_TRIANGLE)
 endif()
 
-# BVH
-include(BVH)
-target_link_libraries(polyfem PUBLIC BVH_lib)
+# SimpleBVH
+include(simple_bvh)
+target_link_libraries(ipc_toolkit PUBLIC simple_bvh::simple_bvh)
 
 # MSHIO
 include(mshio)
@@ -235,14 +235,6 @@ target_link_libraries(polyfem PUBLIC paraviewo::paraviewo)
 # spdlog
 include(spdlog)
 target_link_libraries(polyfem PUBLIC spdlog::spdlog)
-
-# CppNumericalSolvers
-include(cppoptlib)
-target_link_libraries(polyfem PUBLIC cppoptlib)
-
-# LBFGSpp
-include(LBFGSpp)
-target_link_libraries(polyfem PUBLIC LBFGSpp::LBFGSpp)
 
 # TinyExpr library
 include(tinyexpr)

@@ -8,18 +8,13 @@
 #include <polyfem/autogen/auto_q_bases.hpp>
 
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/GeogramUtils.hpp>
 #include <polyfem/problem/KernelProblem.hpp>
 #include <polyfem/utils/par_for.hpp>
-
-#include <polysolve/LinearSolver.hpp>
 
 #include <polyfem/utils/JSONUtils.hpp>
 
 #include <jse/jse.h>
-
-#include <geogram/basic/logger.h>
-#include <geogram/basic/command_line.h>
-#include <geogram/basic/command_line_args.h>
 
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -60,67 +55,11 @@ namespace polyfem
 	using namespace problem;
 	using namespace utils;
 
-	namespace
-	{
-		class GeoLoggerForward : public GEO::LoggerClient
-		{
-			std::shared_ptr<spdlog::logger> logger_;
-
-		public:
-			template <typename T>
-			GeoLoggerForward(T logger) : logger_(logger) {}
-
-		private:
-			std::string truncate(const std::string &msg)
-			{
-				static size_t prefix_len = GEO::CmdLine::ui_feature(" ", false).size();
-				return msg.substr(prefix_len, msg.size() - 1 - prefix_len);
-			}
-
-		protected:
-			void div(const std::string &title) override
-			{
-				logger_->trace(title.substr(0, title.size() - 1));
-			}
-
-			void out(const std::string &str) override
-			{
-				logger_->info(truncate(str));
-			}
-
-			void warn(const std::string &str) override
-			{
-				logger_->warn(truncate(str));
-			}
-
-			void err(const std::string &str) override
-			{
-				logger_->error(truncate(str));
-			}
-
-			void status(const std::string &str) override
-			{
-				// Errors and warnings are also dispatched as status by geogram, but without
-				// the "feature" header. We thus forward them as trace, to avoid duplicated
-				// logger info...
-				logger_->trace(str.substr(0, str.size() - 1));
-			}
-		};
-	} // namespace
-
 	State::State()
 	{
 		using namespace polysolve;
-#ifndef WIN32
-		setenv("GEO_NO_SIGNAL_HANDLER", "1", 1);
-#endif
 
-		GEO::initialize();
-
-		// Import standard command line arguments, and custom ones
-		GEO::CmdLine::import_arg_group("standard");
-		GEO::CmdLine::import_arg_group("pre");
-		GEO::CmdLine::import_arg_group("algo");
+		GeogramUtils::instance().initialize();
 
 		problem = ProblemFactory::factory().get_problem("Linear");
 	}
@@ -158,14 +97,12 @@ namespace polyfem
 		init_logger(sinks, log_level);
 	}
 
-	void State::init_logger(const std::vector<spdlog::sink_ptr> &sinks, const spdlog::level::level_enum log_level)
+	void State::init_logger(
+		const std::vector<spdlog::sink_ptr> &sinks,
+		const spdlog::level::level_enum log_level)
 	{
 		set_logger(std::make_shared<spdlog::logger>("polyfem", sinks.begin(), sinks.end()));
-
-		GEO::Logger *geo_logger = GEO::Logger::instance();
-		geo_logger->unregister_all_clients();
-		geo_logger->register_client(new GeoLoggerForward(logger().clone("geogram")));
-		geo_logger->set_pretty(false);
+		GeogramUtils::instance().set_logger(logger());
 
 		ipc::set_logger(std::make_shared<spdlog::logger>("ipctk", sinks.begin(), sinks.end()));
 
@@ -185,10 +122,18 @@ namespace polyfem
 
 	void State::set_log_level(const spdlog::level::level_enum log_level)
 	{
-		// Set only the level of the console
 		spdlog::set_level(log_level);
 		if (console_sink_)
+		{
+			// Set only the level of the console
 			console_sink_->set_level(log_level); // Shared by all loggers
+		}
+		else
+		{
+			// Set the level of all sinks
+			logger().set_level(log_level);
+			ipc::logger().set_level(log_level);
+		}
 	}
 
 	void State::init(const json &p_args_in, const bool strict_validation)
@@ -214,86 +159,23 @@ namespace polyfem
 			}
 
 			jse.include_directories.push_back(POLYFEM_JSON_SPEC_DIR);
+			jse.include_directories.push_back(POLYSOLVE_JSON_SPEC_DIR);
 			rules = jse.inject_include(rules);
 
-			{
-				std::ofstream file("complete-spec.json");
-				file << rules;
-			}
+			polysolve::linear::Solver::apply_default_solver(rules, "/solver/linear");
+			polysolve::linear::Solver::apply_default_solver(rules, "/solver/adjoint_linear");
 		}
 
-		// Set valid options for enabled linear solvers
-		for (int i = 0; i < rules.size(); i++)
-		{
-			if (rules[i]["pointer"] == "/solver/linear/solver")
-			{
-				rules[i]["default"] = polysolve::LinearSolver::defaultSolver();
-				rules[i]["options"] = polysolve::LinearSolver::availableSolvers();
-			}
-			else if (rules[i]["pointer"] == "/solver/linear/precond")
-			{
-				rules[i]["default"] = polysolve::LinearSolver::defaultPrecond();
-				rules[i]["options"] = polysolve::LinearSolver::availablePrecond();
-			}
-			else if (rules[i]["pointer"] == "/solver/linear/adjoint_solver")
-			{
-				const auto ss = polysolve::LinearSolver::availableSolvers();
-				const bool solver_found = args_in.contains("solver") && args_in["solver"].contains("linear") && args_in["solver"]["linear"].contains("solver") && (std::find(ss.begin(), ss.end(), args_in["solver"]["linear"]["solver"]) != ss.end());
-				rules[i]["default"] = solver_found ? args_in["solver"]["linear"]["solver"].get<std::string>() : polysolve::LinearSolver::defaultSolver();
-				rules[i]["options"] = polysolve::LinearSolver::availableSolvers();
-			}
-		}
+		polysolve::linear::Solver::select_valid_solver(args_in["solver"]["linear"], logger());
+		if (args_in["solver"]["adjoint_linear"].is_null())
+			args_in["solver"]["adjoint_linear"] = args_in["solver"]["linear"];
+		else
+			polysolve::linear::Solver::select_valid_solver(args_in["solver"]["adjoint_linear"], logger());
 
-		const auto lin_solver_ptr = "/solver/linear/solver"_json_pointer;
-		if (args_in.contains(lin_solver_ptr) && args_in[lin_solver_ptr].is_array())
 		{
-			const std::vector<std::string> solvers = args_in[lin_solver_ptr];
-			const std::vector<std::string> available_solvers = polysolve::LinearSolver::availableSolvers();
-			std::string accepted_solver = "";
-			for (const std::string &solver : solvers)
-			{
-				if (std::find(available_solvers.begin(), available_solvers.end(), solver) != available_solvers.end())
-				{
-					accepted_solver = solver;
-					break;
-				}
-			}
-			if (!accepted_solver.empty())
-				logger().info("Solver {} is the highest priority availble solver; using it.", accepted_solver);
-			else
-				logger().warn("No valid solver found in the list of specified solvers!");
-			args_in[lin_solver_ptr] = accepted_solver;
-		}
-
-		// Fallback to default linear solver if the specified solver is invalid
-		// NOTE: I do not know why .value() causes a segfault only on Windows
-		// const bool fallback_solver = args_in.value("/solver/linear/enable_overwrite_solver"_json_pointer, false);
-		const bool fallback_solver =
-			args_in.contains("/solver/linear/enable_overwrite_solver"_json_pointer)
-				? args_in.at("/solver/linear/enable_overwrite_solver"_json_pointer).get<bool>()
-				: false;
-		if (fallback_solver)
-		{
-			const std::vector<std::string> ss = polysolve::LinearSolver::availableSolvers();
-			std::string s_json = "null";
-			if (!args_in.contains(lin_solver_ptr) || !args_in[lin_solver_ptr].is_string()
-				|| std::find(ss.begin(), ss.end(), s_json = args_in[lin_solver_ptr].get<std::string>()) == ss.end())
-			{
-				logger().warn("Solver {} is invalid, falling back to {}", s_json, polysolve::LinearSolver::defaultSolver());
-				args_in[lin_solver_ptr] = polysolve::LinearSolver::defaultSolver();
-			}
-		}
-
-		if (fallback_solver)
-		{
-			const std::string s_json = this->args["solver"]["linear"]["adjoint_solver"];
-			const auto ss = polysolve::LinearSolver::availableSolvers();
-			const auto solver_found = std::find(ss.begin(), ss.end(), s_json);
-			if (solver_found == ss.end())
-			{
-				logger().warn("Adjoint solver {} is invalid, falling back to {}", s_json, this->args["solver"]["linear"]["solver"]);
-				this->args["solver"]["linear"]["adjoint_solver"] = this->args["solver"]["linear"]["solver"];
-			}
+			json tmp_args = args_in["solver"]["nonlinear"];
+			tmp_args.merge_patch(args_in["solver"]["augmented_lagrangian"]["nonlinear"]);
+			args_in["solver"]["augmented_lagrangian"]["nonlinear"] = tmp_args;
 		}
 
 		const bool valid_input = jse.verify_json(args_in, rules);
@@ -331,7 +213,7 @@ namespace polyfem
 		logger().info("Saving output to {}", output_dir);
 
 		const unsigned int thread_in = this->args["solver"]["max_threads"];
-		set_max_threads(thread_in <= 0 ? std::numeric_limits<unsigned int>::max() : thread_in);
+		set_max_threads(thread_in);
 
 		has_dhat = args_in["contact"].contains("dhat");
 
@@ -412,7 +294,7 @@ namespace polyfem
 
 		problem->set_units(*assembler, units);
 
-		if (optimization_enabled)
+		if (optimization_enabled == solver::CacheLevel::Derivatives)
 		{
 			if (is_contact_enabled())
 			{
@@ -436,14 +318,9 @@ namespace polyfem
 		}
 	}
 
-	void State::set_max_threads(const unsigned int max_threads)
+	void State::set_max_threads(const int max_threads)
 	{
-		const unsigned int num_threads = std::max(1u, std::min(max_threads, std::thread::hardware_concurrency()));
-		NThread::get().num_threads = num_threads;
-#ifdef POLYFEM_WITH_TBB
-		thread_limiter = std::make_shared<tbb::global_control>(tbb::global_control::max_allowed_parallelism, num_threads);
-#endif
-		Eigen::setNbThreads(num_threads);
+		NThread::get().set_num_threads(max_threads);
 	}
 
 	void State::init_time()
@@ -524,6 +401,8 @@ namespace polyfem
 		args["time"]["tend"] = tend;
 		args["time"]["dt"] = dt;
 		args["time"]["time_steps"] = time_steps;
+
+		units.characteristic_length() *= dt;
 
 		logger().info("t0={}, dt={}, tend={}", t0, dt, tend);
 	}

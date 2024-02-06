@@ -79,17 +79,17 @@ namespace polyfem::solver
 		FullNLProblem::line_search_begin(reduced_to_full(x0), reduced_to_full(x1));
 	}
 
-	double NLProblem::max_step_size(const TVector &x0, const TVector &x1) const
+	double NLProblem::max_step_size(const TVector &x0, const TVector &x1)
 	{
 		return FullNLProblem::max_step_size(reduced_to_full(x0), reduced_to_full(x1));
 	}
 
-	bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1) const
+	bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1)
 	{
 		return FullNLProblem::is_step_valid(reduced_to_full(x0), reduced_to_full(x1));
 	}
 
-	bool NLProblem::is_step_collision_free(const TVector &x0, const TVector &x1) const
+	bool NLProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
 	{
 		return FullNLProblem::is_step_collision_free(reduced_to_full(x0), reduced_to_full(x1));
 	}
@@ -121,9 +121,9 @@ namespace polyfem::solver
 		FullNLProblem::solution_changed(reduced_to_full(newX));
 	}
 
-	void NLProblem::post_step(const int iter_num, const TVector &x)
+	void NLProblem::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
-		FullNLProblem::post_step(iter_num, reduced_to_full(x));
+		FullNLProblem::post_step(polysolve::nonlinear::PostStepData(data.iter_num, data.solver_info, reduced_to_full(data.x), reduced_to_full(data.grad)));
 
 		// TODO: add me back
 		// if (state_.args["output"]["advanced"]["save_nl_solve_sequence"])

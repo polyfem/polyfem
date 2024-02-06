@@ -29,14 +29,10 @@
 
 #include <polyfem/io/OutData.hpp>
 
-#include <polysolve/LinearSolver.hpp>
+#include <polysolve/linear/Solver.hpp>
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-
-#ifdef POLYFEM_WITH_TBB
-#include <tbb/global_control.h>
-#endif
 
 #include <memory>
 #include <string>
@@ -48,10 +44,9 @@
 #include <ipc/utils/logger.hpp>
 
 // Forward declaration
-namespace cppoptlib
+namespace polysolve::nonlinear
 {
-	template <typename ProblemType>
-	class NonlinearSolver;
+	class Solver;
 }
 
 namespace polyfem::assembler
@@ -82,7 +77,7 @@ namespace polyfem
 		State();
 
 		/// @param[in] max_threads max number of threads
-		void set_max_threads(const unsigned int max_threads = std::numeric_limits<unsigned int>::max());
+		void set_max_threads(const int max_threads = std::numeric_limits<int>::max());
 
 		/// initialize the polyfem solver with a json settings
 		/// @param[in] args input arguments
@@ -368,9 +363,7 @@ namespace polyfem
 
 		/// factory to create the nl solver depending on input
 		/// @return nonlinear solver (eg newton or LBFGS)
-		template <typename ProblemType>
-		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver(
-			const std::string &linear_solver_type = "") const;
+		std::shared_ptr<polysolve::nonlinear::Solver> make_nl_solver(bool for_al) const;
 
 		/// @brief Solve the linear problem with the given solver and system.
 		/// @param solver Linear solver.
@@ -380,7 +373,7 @@ namespace polyfem
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
 		void solve_linear(
-			const std::unique_ptr<polysolve::LinearSolver> &solver,
+			const std::unique_ptr<polysolve::linear::Solver> &solver,
 			StiffnessMatrix &A,
 			Eigen::VectorXd &b,
 			const bool compute_spectrum,
@@ -618,20 +611,15 @@ namespace polyfem
 		/// @return resolvedpath
 		std::string resolve_output_path(const std::string &path) const;
 
-#ifdef POLYFEM_WITH_TBB
-		/// limits the number of used threads
-		std::shared_ptr<tbb::global_control> thread_limiter;
-#endif
-
 		//---------------------------------------------------
 		//-----------------differentiable--------------------
 		//---------------------------------------------------
 	public:
-		bool optimization_enabled = false;
+		solver::CacheLevel optimization_enabled = solver::CacheLevel::None;
 		void cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad);
 		solver::DiffCache diff_cached;
 
-		std::unique_ptr<polysolve::LinearSolver> lin_solver_cached; // matrix factorization of last linear solve
+		std::unique_ptr<polysolve::linear::Solver> lin_solver_cached; // matrix factorization of last linear solve
 
 		int ndof() const
 		{
@@ -659,7 +647,7 @@ namespace polyfem
 				else if (type == 1)
 					return diff_cached.adjoint_mat().middleCols(diff_cached.adjoint_mat().cols() / 2, diff_cached.adjoint_mat().cols() / 2);
 				else
-					log_and_throw_error("Invalid adjoint type!");
+					log_and_throw_adjoint_error("Invalid adjoint type!");
 			}
 
 			return diff_cached.adjoint_mat();

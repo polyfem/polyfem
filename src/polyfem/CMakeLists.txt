@@ -2,6 +2,8 @@ set(SOURCES
 	Common.hpp
 	State.cpp
 	State.hpp
+	OptState.cpp
+	OptState.hpp
 	Units.cpp
 	Units.hpp
 )

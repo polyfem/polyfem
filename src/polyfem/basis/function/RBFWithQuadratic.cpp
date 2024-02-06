@@ -508,6 +508,8 @@ void RBFWithQuadratic::compute_constraints_matrix_2d(
 	Eigen::MatrixXd &L,
 	Eigen::MatrixXd &t) const
 {
+	// TODO
+	const double time = 0;
 	const int num_kernels = centers_.rows();
 	const int space_dim = centers_.cols();
 	const int assembler_dim = assembler.is_tensor() ? 2 : 1;
@@ -550,7 +552,7 @@ void RBFWithQuadratic::compute_constraints_matrix_2d(
 	{
 		for (int j = 0; j < 5; ++j)
 		{
-			const auto tmp = assembler.assemble(LinearAssemblerData(ass_val, i, j, quadr.weights));
+			const auto tmp = assembler.assemble(LinearAssemblerData(ass_val, time, i, j, quadr.weights));
 
 			for (int d1 = 0; d1 < assembler_dim; ++d1)
 			{
@@ -575,7 +577,7 @@ void RBFWithQuadratic::compute_constraints_matrix_2d(
 	{
 		for (int j = 0; j < num_kernels; ++j)
 		{
-			const auto tmp = assembler.assemble(LinearAssemblerData(ass_val, i, 5 + j, quadr.weights));
+			const auto tmp = assembler.assemble(LinearAssemblerData(ass_val, time, i, 5 + j, quadr.weights));
 			for (int d1 = 0; d1 < assembler_dim; ++d1)
 			{
 				for (int d2 = 0; d2 < assembler_dim; ++d2)

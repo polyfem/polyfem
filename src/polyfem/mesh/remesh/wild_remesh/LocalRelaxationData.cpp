@@ -171,7 +171,9 @@ namespace polyfem::mesh
 		assert(mass_matrix_assembler != nullptr);
 		mass_matrix_assembler->assemble(
 			is_volume(), n_bases(), bases, /*gbases=*/bases,
-			mass_assembly_vals_cache, mass, /*is_mass=*/true);
+			mass_assembly_vals_cache,
+			/*t=*/0, // TODO: time-dependent mass matrix
+			mass, /*is_mass=*/true);
 
 		// Set the mass of the codimensional fixed vertices to the average mass.
 		const int local_ndof = dim() * local_mesh.num_local_vertices();
@@ -239,8 +241,6 @@ namespace polyfem::mesh
 				dirichlet_nodes_position, neumann_nodes_position, n_bases(),
 				dim(), bases, /*geom_bases=*/bases, mass_assembly_vals_cache,
 				*state.problem, state.args["space"]["advanced"]["bc_method"],
-				state.args["solver"]["linear"]["solver"],
-				state.args["solver"]["linear"]["precond"],
 				rhs_solver_params);
 
 			solve_data.rhs_assembler->assemble(mass_matrix_assembler->density(), rhs);

@@ -11,7 +11,7 @@
 
 #include <ipc/ipc.hpp>
 
-#include <polysolve/LinearSolver.hpp>
+#include <polysolve/linear/Solver.hpp>
 
 namespace polyfem::mesh
 {
@@ -21,16 +21,16 @@ namespace polyfem::mesh
 		const Eigen::Ref<const Eigen::MatrixXd> &y)
 	{
 		// Construct a linear solver for M
-		std::unique_ptr<polysolve::LinearSolver> solver;
+		std::unique_ptr<polysolve::linear::Solver> solver;
 #ifdef POLYSOLVE_WITH_MKL
-		solver = polysolve::LinearSolver::create("Eigen::PardisoLDLT", "");
+		solver = polysolve::linear::Solver::create("Eigen::PardisoLDLT", "");
 #elif defined(POLYSOLVE_WITH_CHOLMOD)
-		solver = polysolve::LinearSolver::create("Eigen::CholmodSimplicialLDLT", "");
+		solver = polysolve::linear::Solver::create("Eigen::CholmodSimplicialLDLT", "");
 #else
-		solver = polysolve::LinearSolver::create("Eigen::SimplicialLDLT", "");
+		solver = polysolve::linear::Solver::create("Eigen::SimplicialLDLT", "");
 #endif
 
-		solver->analyzePattern(M, 0);
+		solver->analyze_pattern(M, 0);
 		solver->factorize(M);
 
 		const Eigen::MatrixXd rhs = A * y;
@@ -69,7 +69,7 @@ namespace polyfem::mesh
 
 	Eigen::VectorXd constrained_L2_projection(
 		// Nonlinear solver
-		std::shared_ptr<cppoptlib::NonlinearSolver<polyfem::solver::NLProblem>> nl_solver,
+		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver,
 		// L2 projection form
 		const Eigen::SparseMatrix<double> &M,
 		const Eigen::SparseMatrix<double> &A,
@@ -141,14 +141,19 @@ namespace polyfem::mesh
 		constexpr int al_max_weight = 100 * al_initial_weight;
 		constexpr double al_eta_tol = 0.99;
 		constexpr size_t al_max_solver_iter = 1000;
-		constexpr bool force_al = false;
 		ALSolver al_solver(
-			nl_solver, bc_lagrangian_form, bc_penalty_form, al_initial_weight,
-			al_scaling, al_max_weight, al_eta_tol, al_max_solver_iter,
+			bc_lagrangian_form, bc_penalty_form, al_initial_weight,
+			al_scaling, al_max_weight, al_eta_tol,
 			/*update_barrier_stiffness=*/[&](const Eigen::MatrixXd &x) {});
 
 		Eigen::MatrixXd sol = x0;
-		al_solver.solve(problem, sol, force_al);
+
+		const size_t default_max_iterations = nl_solver->max_iterations();
+		nl_solver->max_iterations() = al_max_solver_iter;
+		al_solver.solve_al(nl_solver, problem, sol);
+
+		nl_solver->max_iterations() = default_max_iterations;
+		al_solver.solve_reduced(nl_solver, problem, sol);
 
 #ifndef NDEBUG
 		assert(forms[1]->is_step_valid(sol, sol)); // inversion-free

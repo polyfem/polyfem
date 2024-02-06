@@ -93,7 +93,7 @@ namespace polyfem::solver
 
 		elastic_form = std::make_shared<ElasticForm>(
 			n_bases, bases, geom_bases, assembler, ass_vals_cache,
-			dt, is_volume);
+			t, dt, is_volume);
 		forms.push_back(elastic_form);
 
 		if (rhs_assembler != nullptr)
@@ -121,7 +121,7 @@ namespace polyfem::solver
 			if (damping_assembler != nullptr)
 			{
 				damping_form = std::make_shared<ElasticForm>(
-					n_bases, bases, geom_bases, *damping_assembler, ass_vals_cache, dt, is_volume);
+					n_bases, bases, geom_bases, *damping_assembler, ass_vals_cache, t, dt, is_volume);
 				forms.push_back(damping_form);
 			}
 		}
@@ -208,7 +208,7 @@ namespace polyfem::solver
 		}
 		else if (rayleigh_damping_jsons.size() > 0)
 		{
-			log_and_throw_error("Rayleigh damping is only supported for time-dependent problems");
+			log_and_throw_adjoint_error("Rayleigh damping is only supported for time-dependent problems");
 		}
 
 		update_dt();
@@ -252,17 +252,17 @@ namespace polyfem::solver
 		}
 	}
 
-	std::unordered_map<std::string, std::shared_ptr<solver::Form>> SolveData::named_forms() const
+	std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> SolveData::named_forms() const
 	{
 		return {
-			{"contact", contact_form},
+			{"elastic", elastic_form},
+			{"inertia", inertia_form},
 			{"body", body_form},
+			{"contact", contact_form},
+			{"friction", friction_form},
+			{"damping", damping_form},
 			{"augmented_lagrangian_lagr", al_lagr_form},
 			{"augmented_lagrangian_penalty", al_pen_form},
-			{"damping", damping_form},
-			{"friction", friction_form},
-			{"inertia", inertia_form},
-			{"elastic", elastic_form},
 		};
 	}
 } // namespace polyfem::solver

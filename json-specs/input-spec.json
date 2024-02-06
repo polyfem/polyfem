@@ -181,6 +181,30 @@
         "pointer": "/geometry/*",
         "type": "object",
         "required": [
+            "mesh",
+            "array"
+        ],
+        "optional": [
+            "type",
+            "extract",
+            "unit",
+            "transformation",
+            "volume_selection",
+            "surface_selection",
+            "curve_selection",
+            "point_selection",
+            "n_refs",
+            "advanced",
+            "enabled",
+            "is_obstacle"
+        ],
+        "type_name": "mesh_array",
+        "doc": "Each geometry object stores a mesh, a set of transformations applied to it after loading, and a set of selections, which can be used to specify boundary conditions, materials, optimization parameters and other quantities that can be associated with a part of an object."
+    },
+    {
+        "pointer": "/geometry/*",
+        "type": "object",
+        "required": [
             "point",
             "normal"
         ],
@@ -242,7 +266,8 @@
             "mesh",
             "plane",
             "ground",
-            "mesh_sequence"
+            "mesh_sequence",
+            "mesh_array"
         ],
         "default": "mesh",
         "doc": "Type of geometry, currently only one supported. In future we will add stuff like planes, spheres, etc."
@@ -531,6 +556,40 @@
         "pointer": "/geometry/*/fps",
         "type": "int",
         "doc": "Frames of the mesh sequence per second."
+    },
+    {
+        "pointer": "/geometry/*/array",
+        "type": "object",
+        "required": [
+            "offset",
+            "size"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "doc": "Array of meshes"
+    },
+    {
+        "pointer": "/geometry/*/array/relative",
+        "type": "bool",
+        "default": false,
+        "doc": "Is the offset value relative to the mesh's dimensions."
+    },
+    {
+        "pointer": "/geometry/*/array/offset",
+        "type": "float",
+        "doc": "Offset of the mesh in the array."
+    },
+    {
+        "pointer": "/geometry/*/array/size",
+        "type": "list",
+        "doc": "Size of the array (two entries for 2D problems or three entries for 3D problems)."
+    },
+    {
+        "pointer": "/geometry/*/array/size/*",
+        "type": "int",
+        "min": 1,
+        "doc": "Size of the array (two entries for 2D problems or three entries for 3D problems)."
     },
     {
         "pointer": "/space",
@@ -891,7 +950,7 @@
     },
     {
         "pointer": "/space/advanced/bc_method",
-        "default": "lsq",
+        "default": "sample",
         "options": [
             "lsq",
             "sample"
@@ -1239,6 +1298,7 @@
         "optional": [
             "max_threads",
             "linear",
+            "adjoint_linear",
             "nonlinear",
             "augmented_lagrangian",
             "contact",
@@ -1255,56 +1315,9 @@
         "doc": "Maximum number of threads used; 0 is unlimited."
     },
     {
-        "pointer": "/solver/linear",
-        "default": null,
-        "type": "object",
-        "optional": [
-            "enable_overwrite_solver",
-            "solver",
-            "adjoint_solver",
-            "precond",
-            "Eigen::LeastSquaresConjugateGradient",
-            "Eigen::DGMRES",
-            "Eigen::ConjugateGradient",
-            "Eigen::BiCGSTAB",
-            "Eigen::GMRES",
-            "Eigen::MINRES",
-            "Pardiso",
-            "Hypre",
-            "AMGCL"
-        ],
-        "doc": "Settings for the linear solver."
-    },
-    {
-        "pointer": "/solver/linear/enable_overwrite_solver",
-        "default": false,
-        "type": "bool",
-        "doc": "If solver name is not present, falls back to default"
-    },
-    {
         "pointer": "/solver/linear/adjoint_solver",
-        "default": "",
-        "type": "string",
-        "doc": "Adjoint linear solver type.",
-        "options": [
-            "Eigen::SimplicialLDLT",
-            "Eigen::SparseLU",
-            "Eigen::CholmodSupernodalLLT",
-            "Eigen::UmfPackLU",
-            "Eigen::SuperLU",
-            "Eigen::PardisoLDLT",
-            "Eigen::PardisoLLT",
-            "Eigen::PardisoLU",
-            "Pardiso",
-            "Hypre",
-            "AMGCL",
-            "Eigen::LeastSquaresConjugateGradient",
-            "Eigen::DGMRES",
-            "Eigen::ConjugateGradient",
-            "Eigen::BiCGSTAB",
-            "Eigen::GMRES",
-            "Eigen::MINRES"
-        ]
+        "type": "include",
+        "spec_file": "linear-solver-spec.json"
     },
     {
         "pointer": "/solver/augmented_lagrangian",
@@ -1315,10 +1328,15 @@
             "scaling",
             "max_weight",
             "eta",
-            "max_solver_iters",
-            "force"
+            "nonlinear"
         ],
         "doc": "Parameters for the AL for imposing Dirichlet BCs. If the bc are not imposable, we add $w\\|u - bc\\|^2$ to the energy ($u$ is the solution at the Dirichlet nodes and $bc$ are the Dirichlet values). After convergence, we try to impose bc again. The algorithm computes E + a/2*AL^2 - lambda AL, where E is the current energy (elastic, inertia, contact, etc.) and AL is the augmented Lagrangian energy. a starts at `initial_weight` and, in case DBC cannot be imposed, we update a as `a *= scaling` until `max_weight`. See IPC additional material"
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/nonlinear",
+        "type": "include",
+        "spec_file": "nonlinear-solver-spec.json",
+        "doc": "Settings for nonlinear solver in augmented lagrangian."
     },
     {
         "pointer": "/solver/augmented_lagrangian/initial_weight",
@@ -1337,7 +1355,7 @@
         "pointer": "/solver/augmented_lagrangian/max_weight",
         "default": 1e8,
         "type": "float",
-        "doc": "Maximum weigth"
+        "doc": "Maximum weight"
     },
     {
         "pointer": "/solver/augmented_lagrangian/eta",
@@ -1346,19 +1364,6 @@
         "max": 1,
         "type": "float",
         "doc": "Tolerance for increasing the weight or updating the lagrangian"
-    },
-    {
-        "pointer": "/solver/augmented_lagrangian/max_solver_iters",
-        "min": 1,
-        "default": 500,
-        "type": "int",
-        "doc": "Maximum number of iterations of the nonlinear solver inside the AL steps."
-    },
-    {
-        "pointer": "/solver/augmented_lagrangian/force",
-        "default": false,
-        "type": "bool",
-        "doc": "Always enable AL, even when BC can be imposed"
     },
     {
         "pointer": "/solver/contact",
@@ -1394,6 +1399,8 @@
             "BF",
             "spatial_hash",
             "SH",
+            "bvh",
+            "BVH",
             "sweep_and_tiniest_queue",
             "STQ",
             "sweep_and_tiniest_queue_gpu",
@@ -2353,71 +2360,9 @@
     },
     {
         "pointer": "/output/log",
-        "default": null,
-        "type": "object",
-        "optional": [
-            "level",
-            "file_level",
-            "path",
-            "quiet"
-        ],
+        "spec_file": "log.json",
+        "type": "include",
         "doc": "Setting for the output log."
-    },
-    {
-        "pointer": "/output/log/level",
-        "type": "int",
-        "min": 0,
-        "max": 6,
-        "doc": "Level of logging, 0 trace, 1 debug, 2 info, 3 warning, 4 error, 5 critical, and 6 off."
-    },
-    {
-        "pointer": "/output/log/level",
-        "default": "debug",
-        "type": "string",
-        "options": [
-            "trace",
-            "debug",
-            "info",
-            "warning",
-            "error",
-            "critical",
-            "off"
-        ],
-        "doc": "Level of logging."
-    },
-    {
-        "pointer": "/output/log/file_level",
-        "type": "int",
-        "min": 0,
-        "max": 6,
-        "doc": "Level of logging to a file, 0 trace, 1 debug, 2 info, 3 warning, 4 error, 5 critical, and 6 off."
-    },
-    {
-        "pointer": "/output/log/file_level",
-        "default": "trace",
-        "type": "string",
-        "options": [
-            "trace",
-            "debug",
-            "info",
-            "warning",
-            "error",
-            "critical",
-            "off"
-        ],
-        "doc": "Level of logging."
-    },
-    {
-        "pointer": "/output/log/path",
-        "default": "",
-        "type": "string",
-        "doc": "File where to save the log; empty string is output to terminal."
-    },
-    {
-        "pointer": "/output/log/quiet",
-        "default": false,
-        "type": "bool",
-        "doc": "Disable cout for logging."
     },
     {
         "pointer": "/output/json",
@@ -2639,7 +2584,7 @@
         "pointer": "/output/data/rest_mesh",
         "default": "",
         "type": "string",
-        "doc": "Writes the rest mesh in OBJ format, used to restart the sim"
+        "doc": "Writes the rest mesh in MSH format, used to restart the sim"
     },
     {
         "pointer": "/output/data/mises",

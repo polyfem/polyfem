@@ -29,6 +29,7 @@ namespace polyfem::assembler
 		template <typename T>
 		T elastic_energy(
 			const RowVectorNd &p,
+			const double t,
 			const int el_id,
 			const DefGradMatrix<T> &def_grad) const
 		{
