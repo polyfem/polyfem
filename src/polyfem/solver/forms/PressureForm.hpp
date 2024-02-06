@@ -25,7 +25,7 @@ namespace polyfem::solver
 					 const assembler::PressureAssembler &pressure_assembler,
 					 const bool is_time_dependent);
 
-		std::string name() const override { return "rayleigh-damping"; }
+		std::string name() const override { return "pressure"; }
 
 	protected:
 		/// @brief Compute the value of the body force form
