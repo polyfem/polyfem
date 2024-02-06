@@ -416,6 +416,8 @@ namespace polyfem
 		std::vector<mesh::LocalBoundary> local_neumann_boundary;
 		/// mapping from elements to nodes for pressure boundary conditions
 		std::vector<mesh::LocalBoundary> local_pressure_boundary;
+		/// mapping from elements to nodes for pressure boundary conditions
+		std::unordered_map<int, std::vector<mesh::LocalBoundary>> local_pressure_cavity;
 		/// nodes on the boundary of polygonal elements, used for harmonic bases
 		std::map<int, basis::InterfaceData> poly_edge_to_data;
 		/// Matrices containing the input per node dirichelt
@@ -551,7 +553,11 @@ namespace polyfem
 		/// @brief does the simulation has pressure
 		///
 		/// @return true/false
-		bool is_pressure_enabled() const { return args["boundary_conditions"]["pressure_boundary"].size() > 0; }
+		bool is_pressure_enabled() const
+		{
+			return (args["boundary_conditions"]["pressure_boundary"].size() > 0)
+				   || (args["boundary_conditions"]["pressure_cavity"].size() > 0);
+		}
 
 		/// stores if input json contains dhat
 		bool has_dhat = false;

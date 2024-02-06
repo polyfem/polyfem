@@ -108,6 +108,9 @@ namespace polyfem
 				for (auto &v : pressures_)
 					v.set_unit_type(units.pressure());
 
+				for (auto &v : cavity_pressures_)
+					v.second.set_unit_type(units.pressure());
+
 				for (auto &v : initial_position_)
 					for (int i = 0; i < 3; ++i)
 						v.second[i].set_unit_type(units.length());
@@ -258,6 +261,13 @@ namespace polyfem
 					}
 				}
 			}
+		}
+
+		double GenericTensorProblem::pressure_cavity_bc(const int boundary_id, const double t) const
+		{
+			Eigen::VectorXd pt;
+			pt.setZero(3);
+			return cavity_pressures_.at(boundary_id).eval(pt, t);
 		}
 
 		void GenericTensorProblem::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -944,6 +954,35 @@ namespace polyfem
 				}
 			}
 
+			if (is_param_valid(params, "pressure_cavity"))
+			{
+				const int offset = pressure_cavity_ids_.size();
+
+				auto j_boundary_tmp = params["pressure_cavity"];
+				std::vector<json> j_boundary = flatten_ids(j_boundary_tmp);
+
+				pressure_cavity_ids_.resize(offset + j_boundary.size());
+
+				for (size_t i = offset; i < pressure_cavity_ids_.size(); ++i)
+				{
+					int boundary_id = j_boundary[i - offset]["id"];
+					pressure_cavity_ids_[i] = boundary_id;
+
+					if (cavity_pressures_.find(boundary_id) == cavity_pressures_.end())
+					{
+						cavity_pressures_[boundary_id] = ScalarBCValue();
+
+						auto ff = j_boundary[i - offset]["value"];
+						cavity_pressures_[boundary_id].value.init(ff);
+
+						if (j_boundary[i - offset].contains("interpolation"))
+							cavity_pressures_[boundary_id].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
+						else
+							cavity_pressures_[boundary_id].interpolation = std::make_shared<NoInterpolation>();
+					}
+				}
+			}
+
 			if (is_param_valid(params, "solution"))
 			{
 				auto rr = params["solution"];
@@ -1099,6 +1138,7 @@ namespace polyfem
 			forces_.clear();
 			displacements_.clear();
 			pressures_.clear();
+			cavity_pressures_.clear();
 
 			nodal_dirichlet_.clear();
 			nodal_neumann_.clear();

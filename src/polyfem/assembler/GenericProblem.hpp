@@ -21,7 +21,6 @@ namespace polyfem
 			}
 
 			double eval(const RowVectorNd &pts, const int dim, const double t, const int el_id = -1) const;
-
 		};
 
 		struct ScalarBCValue
@@ -33,7 +32,7 @@ namespace polyfem
 			{
 				value.set_unit_type(unit_type);
 			}
-      
+
 			double eval(const RowVectorNd &pts, const double t) const;
 		};
 
@@ -57,6 +56,7 @@ namespace polyfem
 			void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const override;
 			void pressure_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const override;
+			double pressure_cavity_bc(const int boundary_id, const double t) const override;
 
 			void dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val) const override;
 			void neumann_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const Eigen::MatrixXd &normal, const double t, Eigen::MatrixXd &val) const override;
@@ -89,26 +89,32 @@ namespace polyfem
 			void add_dirichlet_boundary(const int id, const Eigen::RowVector3d &val, const bool isx, const bool isy, const bool isz, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
 			void add_neumann_boundary(const int id, const Eigen::RowVector3d &val, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
 			void add_pressure_boundary(const int id, const double val, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
+			// void add_pressure_cavity(const int id, const double val, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
 
 			void update_dirichlet_boundary(const int id, const Eigen::RowVector3d &val, const bool isx, const bool isy, const bool isz, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
 			void update_neumann_boundary(const int id, const Eigen::RowVector3d &val, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
 			void update_pressure_boundary(const int id, const double val, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
+			// void update_pressure_cavity(const int id, const double val, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
 
 			void add_dirichlet_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const bool isx, const bool isy, const bool isz, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
 			void add_neumann_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
 			void add_pressure_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
+			// void add_pressure_cavity(const int id, const std::function<double(double x, double y, double z, double t)> &func, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
 
 			void update_dirichlet_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const bool isx, const bool isy, const bool isz, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
 			void update_neumann_boundary(const int id, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
 			void update_pressure_boundary(const int id, const std::function<double(double x, double y, double z, double t)> &func, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
+			// void update_pressure_cavity(const int id, const std::function<double(double x, double y, double z, double t)> &func, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
 
 			void add_dirichlet_boundary(const int id, const json &val, const bool isx, const bool isy, const bool isz, const std::string &interpolation = "");
 			void add_neumann_boundary(const int id, const json &val, const std::string &interpolation = "");
 			void add_pressure_boundary(const int id, json val, const std::string &interpolation = "");
+			// void add_pressure_cavity(const int id, json val, const std::string &interpolation = "");
 
 			void update_dirichlet_boundary(const int id, const json &val, const bool isx, const bool isy, const bool isz, const std::string &interpolation = "");
 			void update_neumann_boundary(const int id, const json &val, const std::string &interpolation = "");
 			void update_pressure_boundary(const int id, json val, const std::string &interpolation = "");
+			// void update_pressure_cavity(const int id, json val, const std::string &interpolation = "");
 
 			void set_rhs(double x, double y, double z);
 
@@ -124,6 +130,7 @@ namespace polyfem
 			std::vector<TensorBCValue> forces_;
 			std::vector<TensorBCValue> displacements_;
 			std::vector<ScalarBCValue> pressures_;
+			std::unordered_map<int, ScalarBCValue> cavity_pressures_;
 
 			std::vector<std::pair<int, std::array<utils::ExpressionValue, 3>>> initial_position_;
 			std::vector<std::pair<int, std::array<utils::ExpressionValue, 3>>> initial_velocity_;

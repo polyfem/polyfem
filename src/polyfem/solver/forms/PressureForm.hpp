@@ -19,6 +19,7 @@ namespace polyfem::solver
 		/// @param pressure_assembler Reference to the pressure assembler
 		PressureForm(const int ndof,
 					 const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
+					 const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity,
 					 const std::vector<int> dirichlet_nodes,
 					 const int n_boundary_samples,
 					 const assembler::PressureAssembler &pressure_assembler,
@@ -65,6 +66,7 @@ namespace polyfem::solver
 		const int ndof_; ///< Number of degrees of freedom
 
 		const std::vector<mesh::LocalBoundary> &local_pressure_boundary_;
+		const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity_;
 		const std::vector<int> dirichlet_nodes_;
 		const int n_boundary_samples_;
 

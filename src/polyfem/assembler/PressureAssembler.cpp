@@ -62,215 +62,18 @@ namespace polyfem
 			}
 		} // namespace
 
-		double PressureAssembler::compute_volume(const Eigen::MatrixXd &displacement, const std::vector<mesh::LocalBoundary> &local_boundary, const int resolution, const int boundary_id) const
-		{
-			double volume = 0;
-
-			ElementAssemblyValues vals;
-			Eigen::MatrixXd uv, samples, gtmp, rhs_fun, deform_mat, jac_mat, trafo, g_3;
-			Eigen::VectorXi global_primitive_ids;
-			Eigen::MatrixXd points, normals;
-			Eigen::VectorXd weights;
-
-			for (const auto &lb : local_boundary)
-			{
-				const int e = lb.element_id();
-				const basis::ElementBases &gbs = gbases_[e];
-				const basis::ElementBases &bs = bases_[e];
-
-				for (int i = 0; i < lb.size(); ++i)
-				{
-					const int primitive_global_id = lb.global_primitive_id(i);
-					const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
-
-					if (boundary_id != mesh_.get_boundary_id(primitive_global_id))
-						continue;
-
-					bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, i, false, uv, points, normals, weights);
-					g_3.setZero(normals.rows(), normals.cols());
-
-					if (!has_samples)
-						continue;
-
-					global_primitive_ids.setConstant(weights.size(), primitive_global_id);
-
-					Eigen::MatrixXd reference_normals = normals;
-
-					vals.compute(e, mesh_.is_volume(), points, bs, gbs);
-
-					std::vector<std::vector<Eigen::MatrixXd>> grad_normal;
-					for (int n = 0; n < vals.jac_it.size(); ++n)
-					{
-						trafo = vals.jac_it[n].inverse();
-
-						if (displacement.size() > 0)
-						{
-
-							assert(size_ == 2 || size_ == 3);
-							deform_mat.resize(size_, size_);
-							deform_mat.setZero();
-							jac_mat.resize(size_, vals.basis_values.size());
-							int b_idx = 0;
-							for (const auto &b : vals.basis_values)
-							{
-								jac_mat.col(b_idx++) = b.grad.row(n);
-
-								for (const auto &g : b.global)
-									for (int d = 0; d < size_; ++d)
-										deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
-							}
-
-							trafo += deform_mat;
-						}
-
-						Eigen::VectorXd displaced_normal = normals.row(n) * trafo.inverse();
-						normals.row(n) = displaced_normal / displaced_normal.norm();
-
-						Eigen::Vector3d g1, g2, g3;
-						auto endpoints = utils::BoundarySampler::tet_local_node_coordinates_from_face(lb[i]);
-						g1 = trafo * (endpoints.row(0) - endpoints.row(1)).transpose();
-						g2 = trafo * (endpoints.row(0) - endpoints.row(2)).transpose();
-						if (lb[i] == 0)
-							g1 *= -1;
-						g3 = g1.cross(g2);
-						g_3.row(n) = g3.transpose();
-					}
-
-					Eigen::MatrixXd u, grad_u;
-					io::Evaluator::interpolate_at_local_vals(mesh_, problem_.is_scalar(), bases_, gbases_, e, points, displacement, u, grad_u);
-
-					u += vals.val;
-
-					for (long p = 0; p < weights.size(); ++p)
-						for (int d = 0; d < size_; ++d)
-							volume += g_3(p, d) * u(p, d) * weights(p);
-				}
-			}
-
-			return (1. / 3.) * volume;
-		}
-
-		void PressureAssembler::compute_grad_volume(const Eigen::MatrixXd &displacement, const std::vector<mesh::LocalBoundary> &local_boundary, const int resolution, const int boundary_id, Eigen::MatrixXd &grad) const
-		{
-			grad.setZero(n_basis_ * size_, 1);
-
-			ElementAssemblyValues vals;
-			Eigen::MatrixXd uv, samples, gtmp, rhs_fun, deform_mat, jac_mat, trafo, g_3;
-			Eigen::VectorXi global_primitive_ids;
-			Eigen::MatrixXd points, normals;
-			Eigen::VectorXd weights;
-
-			for (const auto &lb : local_boundary)
-			{
-				const int e = lb.element_id();
-				const basis::ElementBases &gbs = gbases_[e];
-				const basis::ElementBases &bs = bases_[e];
-
-				for (int i = 0; i < lb.size(); ++i)
-				{
-					const int primitive_global_id = lb.global_primitive_id(i);
-					const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
-
-					if (boundary_id != mesh_.get_boundary_id(primitive_global_id))
-						continue;
-
-					bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, i, false, uv, points, normals, weights);
-					g_3.setZero(normals.rows(), normals.cols());
-
-					if (!has_samples)
-						continue;
-
-					global_primitive_ids.setConstant(weights.size(), primitive_global_id);
-
-					Eigen::MatrixXd reference_normals = normals;
-
-					vals.compute(e, mesh_.is_volume(), points, bs, gbs);
-
-					std::vector<std::vector<Eigen::MatrixXd>> grad_normal;
-					for (int n = 0; n < vals.jac_it.size(); ++n)
-					{
-						trafo = vals.jac_it[n].inverse();
-
-						if (displacement.size() > 0)
-						{
-
-							assert(size_ == 2 || size_ == 3);
-							deform_mat.resize(size_, size_);
-							deform_mat.setZero();
-							jac_mat.resize(size_, vals.basis_values.size());
-							int b_idx = 0;
-							for (const auto &b : vals.basis_values)
-							{
-								jac_mat.col(b_idx++) = b.grad.row(n);
-
-								for (const auto &g : b.global)
-									for (int d = 0; d < size_; ++d)
-										deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
-							}
-
-							trafo += deform_mat;
-						}
-
-						Eigen::VectorXd displaced_normal = normals.row(n) * trafo.inverse();
-						normals.row(n) = displaced_normal / displaced_normal.norm();
-
-						Eigen::Vector3d g1, g2, g3;
-						auto endpoints = utils::BoundarySampler::tet_local_node_coordinates_from_face(lb[i]);
-						g1 = trafo * (endpoints.row(0) - endpoints.row(1)).transpose();
-						g2 = trafo * (endpoints.row(0) - endpoints.row(2)).transpose();
-						if (lb[i] == 0)
-							g1 *= -1;
-						g3 = g1.cross(g2);
-						g_3.row(n) = g3.transpose();
-					}
-
-					for (long n = 0; n < nodes.size(); ++n)
-					{
-						const AssemblyValues &v = vals.basis_values[nodes(n)];
-						for (int d = 0; d < size_; ++d)
-							for (size_t g = 0; g < v.global.size(); ++g)
-							{
-								const int g_index = v.global[g].index * size_ + d;
-
-								for (long p = 0; p < weights.size(); ++p)
-									grad(g_index) += g_3(p, d) * v.val(p) * weights(p);
-							}
-					}
-				}
-			}
-		}
-
-		PressureAssembler::PressureAssembler(const Assembler &assembler, const Mesh &mesh, const Obstacle &obstacle,
-											 const std::vector<mesh::LocalBoundary> &local_pressure_boundary, const std::vector<int> &primitive_to_nodes, const std::vector<int> &node_to_primitives,
-											 const int n_basis, const int size,
-											 const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases,
-											 const Problem &problem)
-			: assembler_(assembler),
-			  mesh_(mesh),
-			  obstacle_(obstacle),
-			  n_basis_(n_basis),
-			  size_(size),
-			  bases_(bases),
-			  gbases_(gbases),
-			  problem_(problem),
-			  primitive_to_nodes_(primitive_to_nodes),
-			  node_to_primitives_(node_to_primitives)
-		{
-			if (size_ != 3 && (local_pressure_boundary.size() > 0))
-				log_and_throw_error("Pressure is only supported for 3d!");
-		}
-
-		double PressureAssembler::compute_energy(
+		double PressureAssembler::compute_volume(
 			const Eigen::MatrixXd &displacement,
-			const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
+			const std::vector<mesh::LocalBoundary> &local_boundary,
 			const int resolution,
-			const double t) const
+			const double t,
+			const bool multiply_pressure) const
 		{
 			double res = 0;
 
 			auto storage = utils::create_thread_storage(LocalThreadScalarStorage());
 
-			utils::maybe_parallel_for(local_pressure_boundary.size(), [&](int start, int end, int thread_id) {
+			utils::maybe_parallel_for(local_boundary.size(), [&](int start, int end, int thread_id) {
 				LocalThreadScalarStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
 				Eigen::MatrixXd pressure_vals, g_3;
@@ -280,7 +83,7 @@ namespace polyfem
 				Eigen::VectorXi global_primitive_ids;
 				for (int lb_id = start; lb_id < end; ++lb_id)
 				{
-					const auto &lb = local_pressure_boundary[lb_id];
+					const auto &lb = local_boundary[lb_id];
 					const int e = lb.element_id();
 					const basis::ElementBases &gbs = gbases_[e];
 					const basis::ElementBases &bs = bases_[e];
@@ -343,19 +146,25 @@ namespace polyfem
 							}
 							else
 							{
-								assert(false);
-								// Eigen::Vector2d g1, g3;
-								// auto endpoints = utils::BoundarySampler::tri_local_node_coordinates_from_edge(lb[i]);
-								// g1 = trafo * (endpoints.row(0) - endpoints.row(1)).transpose();
-								// g3(0) = -g1(0);
-								// g3(1) = g1(1);
-								// g_3.row(n) = g3.transpose();
+								Eigen::Vector2d g1, g3;
+								auto endpoints = utils::BoundarySampler::tri_local_node_coordinates_from_edge(lb[i]);
+								g1 = trafo * (endpoints.row(0) - endpoints.row(1)).transpose();
+								g3(0) = -g1(1);
+								g3(1) = g1(0);
+								g_3.row(n) = g3.transpose();
 							}
 						}
-						problem_.pressure_bc(mesh_, global_primitive_ids, uv, vals.val, normals, t, pressure_vals);
+
+						if (multiply_pressure)
+							problem_.pressure_bc(mesh_, global_primitive_ids, uv, vals.val, normals, t, pressure_vals);
+						else
+							pressure_vals = Eigen::MatrixXd::Ones(weights.size(), 1);
 
 						Eigen::MatrixXd u, grad_u;
-						io::Evaluator::interpolate_at_local_vals(mesh_, problem_.is_scalar(), bases_, gbases_, e, points, displacement, u, grad_u);
+						if (displacement.size() > 0)
+							io::Evaluator::interpolate_at_local_vals(mesh_, problem_.is_scalar(), bases_, gbases_, e, points, displacement, u, grad_u);
+						else
+							u.setZero(weights.size(), size_);
 						u += vals.val;
 
 						for (long p = 0; p < weights.size(); ++p)
@@ -373,19 +182,20 @@ namespace polyfem
 			return res;
 		}
 
-		void PressureAssembler::compute_energy_grad(
+		void PressureAssembler::compute_grad_volume(
 			const Eigen::MatrixXd &displacement,
-			const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
+			const std::vector<mesh::LocalBoundary> &local_boundary,
 			const std::vector<int> dirichlet_nodes,
 			const int resolution,
+			Eigen::VectorXd &grad,
 			const double t,
-			Eigen::VectorXd &grad) const
+			const bool multiply_pressure) const
 		{
 			grad.setZero(n_basis_ * size_);
 
 			auto storage = utils::create_thread_storage(LocalThreadVecStorage(grad.size()));
 
-			utils::maybe_parallel_for(local_pressure_boundary.size(), [&](int start, int end, int thread_id) {
+			utils::maybe_parallel_for(local_boundary.size(), [&](int start, int end, int thread_id) {
 				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
 				Eigen::MatrixXd pressure_vals, g_3;
@@ -395,7 +205,7 @@ namespace polyfem
 				Eigen::VectorXi global_primitive_ids;
 				for (int lb_id = start; lb_id < end; ++lb_id)
 				{
-					const auto &lb = local_pressure_boundary[lb_id];
+					const auto &lb = local_boundary[lb_id];
 					const int e = lb.element_id();
 					const basis::ElementBases &gbs = gbases_[e];
 					const basis::ElementBases &bs = bases_[e];
@@ -457,16 +267,19 @@ namespace polyfem
 							}
 							else
 							{
-								assert(false);
-								// Eigen::Vector2d g1, g3;
-								// auto endpoints = utils::BoundarySampler::tri_local_node_coordinates_from_edge(lb[i]);
-								// g1 = trafo * (endpoints.row(0) - endpoints.row(1)).transpose();
-								// g3(0) = -g1(0);
-								// g3(1) = g1(1);
-								// g_3.row(n) = g3.transpose();
+								Eigen::Vector2d g1, g3;
+								auto endpoints = utils::BoundarySampler::tri_local_node_coordinates_from_edge(lb[i]);
+								g1 = trafo * (endpoints.row(0) - endpoints.row(1)).transpose();
+								g3(0) = -g1(1);
+								g3(1) = g1(0);
+								g_3.row(n) = g3.transpose();
 							}
 						}
-						problem_.pressure_bc(mesh_, global_primitive_ids, uv, vals.val, normals, t, pressure_vals);
+
+						if (multiply_pressure)
+							problem_.pressure_bc(mesh_, global_primitive_ids, uv, vals.val, normals, t, pressure_vals);
+						else
+							pressure_vals = Eigen::MatrixXd::Ones(weights.size(), 1);
 
 						for (long n = 0; n < nodes.size(); ++n)
 						{
@@ -482,7 +295,6 @@ namespace polyfem
 
 									for (long p = 0; p < weights.size(); ++p)
 									{
-										// grad(g_index) += pressure_vals(p) * g_3(p, d) * v.val(p) * weights(p);
 										local_storage.vec(g_index) += pressure_vals(p) * g_3(p, d) * v.val(p) * weights(p);
 									}
 								}
@@ -495,20 +307,20 @@ namespace polyfem
 				grad += local_storage.vec;
 		}
 
-		void PressureAssembler::compute_energy_hess(
+		void PressureAssembler::compute_hess_volume(
 			const Eigen::MatrixXd &displacement,
-			const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
+			const std::vector<mesh::LocalBoundary> &local_boundary,
 			const std::vector<int> dirichlet_nodes,
 			const int resolution,
+			StiffnessMatrix &hess,
 			const double t,
-			const bool project_to_psd,
-			StiffnessMatrix &hess) const
+			const bool multiply_pressure) const
 		{
 			hess.resize(n_basis_ * size_, n_basis_ * size_);
 
 			auto storage = create_thread_storage(LocalThreadMatStorage());
 
-			utils::maybe_parallel_for(local_pressure_boundary.size(), [&](int start, int end, int thread_id) {
+			utils::maybe_parallel_for(local_boundary.size(), [&](int start, int end, int thread_id) {
 				LocalThreadMatStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
 				Eigen::MatrixXd pressure_vals, g_1, g_2, g_3, local_hessian;
@@ -518,7 +330,7 @@ namespace polyfem
 				Eigen::VectorXi global_primitive_ids;
 				for (int lb_id = start; lb_id < end; ++lb_id)
 				{
-					const auto &lb = local_pressure_boundary[lb_id];
+					const auto &lb = local_boundary[lb_id];
 					const int e = lb.element_id();
 					const basis::ElementBases &gbs = gbases_[e];
 					const basis::ElementBases &bs = bases_[e];
@@ -544,14 +356,15 @@ namespace polyfem
 						}
 						else
 						{
-							assert(false);
-							// 	weights /= mesh_.edge_length(primitive_global_id);
-							// 	g_1.setZero(normals.rows(), normals.cols());
-							// 	g_2.setZero(0, 0);
-							// 	g_3.setZero(normals.rows(), normals.cols());
+							weights /= mesh_.edge_length(primitive_global_id);
+							g_1.setZero(normals.rows(), normals.cols());
+							g_2.setZero(0, 0);
+							g_3.setZero(normals.rows(), normals.cols());
 
-							// 	auto endpoints = utils::BoundarySampler::tri_local_node_coordinates_from_edge(lb[i]);
-							// 	param_chain_rule = {(-endpoints.row(0) - endpoints.row(1)).transpose()};
+							auto endpoints = utils::BoundarySampler::tri_local_node_coordinates_from_edge(lb[i]);
+							param_chain_rule = {Eigen::VectorXd::Zero(2)};
+							param_chain_rule[0](0) = -(endpoints(0, 1) - endpoints(1, 1));
+							param_chain_rule[0](1) = (endpoints(0, 0) - endpoints(1, 0));
 						}
 
 						if (!has_samples)
@@ -613,7 +426,11 @@ namespace polyfem
 								// g_3.row(n) = g3.transpose();
 							}
 						}
-						problem_.pressure_bc(mesh_, global_primitive_ids, uv, vals.val, normals, t, pressure_vals);
+
+						if (multiply_pressure)
+							problem_.pressure_bc(mesh_, global_primitive_ids, uv, vals.val, normals, t, pressure_vals);
+						else
+							pressure_vals = Eigen::MatrixXd::Ones(weights.size(), 1);
 
 						local_hessian.setZero(vals.basis_values.size() * size_, vals.basis_values.size() * size_);
 
@@ -665,10 +482,10 @@ namespace polyfem
 							}
 						}
 
-						if (project_to_psd)
-						{
-							log_and_throw_error("Cannot project pressure to PSD!");
-						}
+						// if (project_to_psd)
+						// {
+						// 	log_and_throw_error("Cannot project pressure to PSD!");
+						// }
 
 						for (long ni = 0; ni < nodes.size(); ++ni)
 						{
@@ -700,6 +517,150 @@ namespace polyfem
 			}
 
 			hess.setFromTriplets(all_entries.begin(), all_entries.end());
+		}
+
+		PressureAssembler::PressureAssembler(const Assembler &assembler, const Mesh &mesh, const Obstacle &obstacle,
+											 const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
+											 const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity, const std::vector<int> &primitive_to_nodes, const std::vector<int> &node_to_primitives,
+											 const int n_basis, const int size,
+											 const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases,
+											 const Problem &problem)
+			: assembler_(assembler),
+			  mesh_(mesh),
+			  obstacle_(obstacle),
+			  n_basis_(n_basis),
+			  size_(size),
+			  bases_(bases),
+			  gbases_(gbases),
+			  problem_(problem),
+			  primitive_to_nodes_(primitive_to_nodes),
+			  node_to_primitives_(node_to_primitives)
+		{
+			if (size_ != 3 && ((local_pressure_boundary.size() > 0) || local_pressure_cavity.size() > 0))
+				log_and_throw_error("Pressure is only supported for 3d!");
+
+			for (const auto &v : local_pressure_cavity)
+				starting_volumes_[v.first] = compute_volume(Eigen::VectorXd(), v.second, 5, 0, false);
+
+			cavity_thermodynamics_ = std::make_unique<AdiabaticProcess>();
+			// cavity_thermodynamics_ = std::make_unique<IsothermalProcess>();
+		}
+
+		double PressureAssembler::compute_cavity_energy(
+			const Eigen::MatrixXd &displacement,
+			const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity,
+			const int resolution,
+			const double t) const
+		{
+			double energy_ = 0;
+			for (const auto &v : local_pressure_cavity)
+			{
+				const double start_pressure = problem_.pressure_cavity_bc(v.first, t);
+				const double start_volume = starting_volumes_.at(v.first);
+				const double curr_volume = compute_volume(displacement, v.second, resolution, t, false);
+
+				energy_ += cavity_thermodynamics_->energy(-start_pressure, -start_volume, -curr_volume);
+			}
+			return energy_;
+		}
+
+		void PressureAssembler::compute_cavity_energy_grad(
+			const Eigen::MatrixXd &displacement,
+			const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity,
+			const std::vector<int> dirichlet_nodes,
+			const int resolution,
+			const double t,
+			Eigen::VectorXd &grad) const
+		{
+			grad.setZero(displacement.size());
+			for (const auto &v : local_pressure_cavity)
+			{
+				double start_pressure = problem_.pressure_cavity_bc(v.first, t);
+				double start_volume = starting_volumes_.at(v.first);
+				double curr_volume = compute_volume(displacement, v.second, resolution, t, false);
+				Eigen::VectorXd g;
+
+				compute_grad_volume(displacement, v.second, dirichlet_nodes, resolution, g, t, false);
+
+				double p = -cavity_thermodynamics_->pressure(
+					-start_pressure, -start_volume, -curr_volume);
+
+				grad += p * g;
+			}
+		}
+
+		void PressureAssembler::compute_cavity_energy_hess(
+			const Eigen::MatrixXd &displacement,
+			const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity,
+			const std::vector<int> dirichlet_nodes,
+			const int resolution,
+			const double t,
+			const bool project_to_psd,
+			StiffnessMatrix &hess) const
+		{
+			if (project_to_psd)
+			{
+				log_and_throw_error("Cannot project caivity pressure to PSD!");
+			}
+
+			hess.resize(displacement.size(), displacement.size());
+			for (const auto &v : local_pressure_cavity)
+			{
+				double start_pressure = problem_.pressure_cavity_bc(v.first, t);
+				double start_volume = starting_volumes_.at(v.first);
+				double curr_volume = compute_volume(displacement, v.second, resolution, t, false);
+				Eigen::VectorXd g;
+				StiffnessMatrix h;
+
+				compute_grad_volume(displacement, v.second, dirichlet_nodes, resolution, g, t, false);
+				compute_hess_volume(displacement, v.second, dirichlet_nodes, resolution, h, t, false);
+
+				double p = -cavity_thermodynamics_->pressure(
+					-start_pressure, -start_volume, -curr_volume);
+				double dp_dv = cavity_thermodynamics_->first_derivative(
+					-start_pressure, -start_volume, -curr_volume);
+
+				hess += p * h;
+				hess += dp_dv * (g * g.transpose()).sparseView();
+			}
+		}
+
+		double PressureAssembler::compute_energy(
+			const Eigen::MatrixXd &displacement,
+			const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
+			const int resolution,
+			const double t) const
+		{
+			double vol = compute_volume(displacement, local_pressure_boundary, resolution, t, false);
+			return compute_volume(displacement, local_pressure_boundary, resolution, t, true);
+		}
+
+		void PressureAssembler::compute_energy_grad(
+			const Eigen::MatrixXd &displacement,
+			const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
+			const std::vector<int> dirichlet_nodes,
+			const int resolution,
+			const double t,
+			Eigen::VectorXd &grad) const
+		{
+			compute_grad_volume(displacement, local_pressure_boundary, dirichlet_nodes, resolution, grad, t, true);
+		}
+
+		void PressureAssembler::compute_energy_hess(
+			const Eigen::MatrixXd &displacement,
+			const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
+			const std::vector<int> dirichlet_nodes,
+			const int resolution,
+			const double t,
+			const bool project_to_psd,
+			StiffnessMatrix &hess) const
+		{
+			if (project_to_psd)
+			{
+				log_and_throw_error("Cannot project pressure to PSD!");
+			}
+
+			compute_hess_volume(displacement, local_pressure_boundary, dirichlet_nodes, resolution, hess, t, true);
 		}
 
 		void PressureAssembler::compute_force_jacobian(

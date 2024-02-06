@@ -590,6 +590,7 @@ namespace polyfem
 		total_local_boundary.clear();
 		local_neumann_boundary.clear();
 		local_pressure_boundary.clear();
+		local_pressure_cavity.clear();
 		polys.clear();
 		poly_edge_to_data.clear();
 		rhs.resize(0, 0);
@@ -626,6 +627,7 @@ namespace polyfem
 		local_boundary.clear();
 		local_neumann_boundary.clear();
 		local_pressure_boundary.clear();
+		local_pressure_cavity.clear();
 		std::map<int, basis::InterfaceData> poly_edge_to_data_geom; // temp dummy variable
 
 		const auto &tmp_json = args["space"]["discr_order"];
@@ -891,7 +893,12 @@ namespace polyfem
 		const int prev_b_size = local_boundary.size();
 		problem->setup_bc(*mesh, n_bases - obstacle.n_vertices(),
 						  bases, geom_bases(), pressure_bases,
-						  local_boundary, boundary_nodes, local_neumann_boundary, local_pressure_boundary, pressure_boundary_nodes,
+						  local_boundary,
+						  boundary_nodes,
+						  local_neumann_boundary,
+						  local_pressure_boundary,
+						  local_pressure_cavity,
+						  pressure_boundary_nodes,
 						  dirichlet_nodes, neumann_nodes);
 
 		// setp nodal values
@@ -1444,6 +1451,7 @@ namespace polyfem
 		return std::make_shared<PressureAssembler>(
 			*assembler, *mesh, obstacle,
 			local_pressure_boundary,
+			local_pressure_cavity,
 			primitive_to_node(), node_to_primitive(),
 			n_bases_, size, bases_, geom_bases(), *problem);
 	}

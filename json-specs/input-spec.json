@@ -2086,6 +2086,7 @@
             "dirichlet_boundary",
             "neumann_boundary",
             "pressure_boundary",
+            "pressure_cavity",
             "obstacle_displacements"
         ],
         "doc": "The settings for boundary conditions."
@@ -2196,8 +2197,7 @@
             "value"
         ],
         "optional": [
-            "interpolation",
-            "dimension"
+            "interpolation"
         ],
         "doc": "pressure BC entry"
     },
@@ -2215,26 +2215,39 @@
         "doc": "Values of pressure boundary condition as a function of $x,y,z,t$"
     },
     {
-        "pointer": "/boundary_conditions/pressure_boundary/*/dimension",
-        "type": "list",
-        "default": [
-            true,
-            true,
-            true
-        ],
-        "doc": "List of 2 (2D) or 3 (3D) boolean values indicating if the Pressure boundary condition is applied for a particular dimension."
-    },
-    {
-        "pointer": "/boundary_conditions/pressure_boundary/*/dimension/*",
-        "type": "bool",
-        "default": true,
-        "doc": "value"
-    },
-    {
         "pointer": "/boundary_conditions/pressure_boundary/*/interpolation",
         "type": "include",
         "spec_file": "interpolation.json",
         "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_cavity",
+        "default": [],
+        "type": "list",
+        "doc": "Neumann boundary condition for normal times value for vector-valued PDEs."
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_cavity/*",
+        "type": "object",
+        "default": null,
+        "required": [
+            "id",
+            "value"
+        ],
+        "doc": "pressure BC entry"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_cavity/*/id",
+        "type": "int",
+        "min": 0,
+        "max": 2147483646,
+        "doc": "ID for the pressure Neumann boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_cavity/*/value",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Values of pressure boundary condition as a function of $x,y,z,t$"
     },
     {
         "pointer": "/boundary_conditions/obstacle_displacements",

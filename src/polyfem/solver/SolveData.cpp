@@ -48,6 +48,7 @@ namespace polyfem::solver
 
 		// Pressure form
 		const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
+		const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity,
 		const std::shared_ptr<assembler::PressureAssembler> pressure_assembler,
 
 		// Inertia form
@@ -116,7 +117,10 @@ namespace polyfem::solver
 		if (pressure_assembler != nullptr)
 		{
 			pressure_form = std::make_shared<PressureForm>(
-				ndof, local_pressure_boundary, boundary_nodes,
+				ndof,
+				local_pressure_boundary,
+				local_pressure_cavity,
+				boundary_nodes,
 				n_boundary_samples, *pressure_assembler,
 				is_time_dependent);
 			pressure_form->update_quantities(t, sol);

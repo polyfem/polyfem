@@ -73,6 +73,7 @@ namespace polyfem::solver
 
 			// Pressure form
 			const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
+			const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity,
 			const std::shared_ptr<assembler::PressureAssembler> pressure_assembler,
 
 			// Inertia form
