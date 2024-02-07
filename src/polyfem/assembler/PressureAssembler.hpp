@@ -155,7 +155,15 @@ namespace polyfem
 									 Eigen::VectorXd &grad,
 									 const double t = 0,
 									 const bool multiply_pressure = false) const;
-			void compute_hess_volume(
+			void compute_hess_volume_3d(
+				const Eigen::MatrixXd &displacement,
+				const std::vector<mesh::LocalBoundary> &local_boundary,
+				const std::vector<int> dirichlet_nodes,
+				const int resolution,
+				StiffnessMatrix &hess,
+				const double t = 0,
+				const bool multiply_pressure = false) const;
+			void compute_hess_volume_2d(
 				const Eigen::MatrixXd &displacement,
 				const std::vector<mesh::LocalBoundary> &local_boundary,
 				const std::vector<int> dirichlet_nodes,
