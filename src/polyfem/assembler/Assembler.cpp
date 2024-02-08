@@ -179,7 +179,7 @@ namespace polyfem::assembler
 
 			auto storage = create_thread_storage(LocalThreadMatStorage(buffer_size, stiffness.rows(), stiffness.cols()));
 
-			const long int n_bases = int(bases.size());
+			const int n_bases = int(bases.size());
 			igl::Timer timer;
 			timer.start();
 			assert(cache.is_mass() == is_mass);
@@ -204,7 +204,7 @@ namespace polyfem::assembler
 
 					assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
 					local_storage.da = vals.det.array() * quadrature.weights.array();
-					const long int n_loc_bases = int(vals.basis_values.size());
+					const int n_loc_bases = int(vals.basis_values.size());
 
 					for (int i = 0; i < n_loc_bases; ++i)
 					{

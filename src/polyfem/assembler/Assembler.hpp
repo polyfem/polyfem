@@ -37,11 +37,11 @@ namespace polyfem::assembler
 
 		virtual std::string name() const = 0;
 
-		long int size() const { return size_; }
+		int size() const { return size_; }
 		virtual void set_size(const int size) { size_ = size; }
 
 	protected:
-		long int size_ = -1;
+		int size_ = -1;
 
 		virtual int rows() const = 0;
 		virtual int cols() const = 0;
@@ -60,7 +60,7 @@ namespace polyfem::assembler
 
 		virtual std::string name() const = 0;
 
-		long int size() const { return size_; }
+		int size() const { return size_; }
 		virtual void set_size(const int size) { size_ = size; }
 
 		// assembler stiffness matrix, is the mesh is volumetric, number of bases and bases (FE and geom)
@@ -200,7 +200,7 @@ namespace polyfem::assembler
 		virtual bool is_tensor() const { return false; }
 
 	protected:
-		long int size_ = -1;
+		int size_ = -1;
 	};
 
 	/// assemble matrix based on the local assembler
