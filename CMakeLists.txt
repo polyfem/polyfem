@@ -218,7 +218,7 @@ endif()
 
 # SimpleBVH
 include(simple_bvh)
-target_link_libraries(ipc_toolkit PUBLIC simple_bvh::simple_bvh)
+target_link_libraries(polyfem PUBLIC simple_bvh::simple_bvh)
 
 # MSHIO
 include(mshio)
