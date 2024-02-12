@@ -105,6 +105,9 @@ namespace polyfem
 				for (auto &v : forces_)
 					v.set_unit_type(units.force());
 
+				for (auto &v : rest_pressures_)
+					v.set_unit_type(units.pressure());
+
 				for (auto &v : pressures_)
 					v.set_unit_type(units.pressure());
 
@@ -230,17 +233,17 @@ namespace polyfem
 					}
 				}
 
-				// for (size_t b = 0; b < pressure_boundary_ids_.size(); ++b)
-				// {
-				// 	if (id == pressure_boundary_ids_[b])
-				// 	{
-				// 		for (int d = 0; d < val.cols(); ++d)
-				// 		{
-				// 			val(i, d) = pressures_[b].eval(pts.row(i), t) * normals(i, d);
-				// 		}
-				// 		break;
-				// 	}
-				// }
+				for (size_t b = 0; b < rest_pressure_boundary_ids_.size(); ++b)
+				{
+					if (id == rest_pressure_boundary_ids_[b])
+					{
+						for (int d = 0; d < val.cols(); ++d)
+						{
+							val(i, d) = rest_pressures_[b].eval(pts.row(i), t) * normals(i, d);
+						}
+						break;
+					}
+				}
 			}
 		}
 
@@ -929,6 +932,30 @@ namespace polyfem
 				}
 			}
 
+			if (is_param_valid(params, "rest_pressure_boundary"))
+			{
+				const int offset = rest_pressure_boundary_ids_.size();
+
+				auto j_boundary_tmp = params["rest_pressure_boundary"];
+				std::vector<json> j_boundary = flatten_ids(j_boundary_tmp);
+
+				rest_pressure_boundary_ids_.resize(offset + j_boundary.size());
+				rest_pressures_.resize(offset + j_boundary.size());
+
+				for (size_t i = offset; i < rest_pressure_boundary_ids_.size(); ++i)
+				{
+					rest_pressure_boundary_ids_[i] = j_boundary[i - offset]["id"];
+
+					auto ff = j_boundary[i - offset]["value"];
+					rest_pressures_[i].value.init(ff);
+
+					if (j_boundary[i - offset].contains("interpolation"))
+						rest_pressures_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
+					else
+						rest_pressures_[i].interpolation = std::make_shared<NoInterpolation>();
+				}
+			}
+
 			if (is_param_valid(params, "pressure_boundary"))
 			{
 				// pressure_boundary_ids_.clear();
@@ -974,11 +1001,6 @@ namespace polyfem
 
 						auto ff = j_boundary[i - offset]["value"];
 						cavity_pressures_[boundary_id].value.init(ff);
-
-						if (j_boundary[i - offset].contains("interpolation"))
-							cavity_pressures_[boundary_id].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
-						else
-							cavity_pressures_[boundary_id].interpolation = std::make_shared<NoInterpolation>();
 					}
 				}
 			}
@@ -1137,6 +1159,7 @@ namespace polyfem
 
 			forces_.clear();
 			displacements_.clear();
+			rest_pressures_.clear();
 			pressures_.clear();
 			cavity_pressures_.clear();
 

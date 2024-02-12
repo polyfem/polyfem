@@ -129,6 +129,7 @@ namespace polyfem
 
 			std::vector<TensorBCValue> forces_;
 			std::vector<TensorBCValue> displacements_;
+			std::vector<ScalarBCValue> rest_pressures_;
 			std::vector<ScalarBCValue> pressures_;
 			std::unordered_map<int, ScalarBCValue> cavity_pressures_;
 

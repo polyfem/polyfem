@@ -744,7 +744,7 @@ namespace polyfem
 			const bool project_to_psd,
 			StiffnessMatrix &hess) const
 		{
-			if (project_to_psd)
+			if (project_to_psd && local_pressure_cavity.size() > 0)
 			{
 				log_and_throw_error("Cannot project caivity pressure to PSD!");
 			}
@@ -804,7 +804,7 @@ namespace polyfem
 			const bool project_to_psd,
 			StiffnessMatrix &hess) const
 		{
-			if (project_to_psd)
+			if (project_to_psd && local_pressure_boundary.size() > 0)
 			{
 				log_and_throw_error("Cannot project pressure to PSD!");
 			}

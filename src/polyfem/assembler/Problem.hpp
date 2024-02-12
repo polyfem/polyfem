@@ -77,6 +77,7 @@ namespace polyfem
 		protected:
 			std::vector<int> boundary_ids_;
 			std::vector<int> neumann_boundary_ids_;
+			std::vector<int> rest_pressure_boundary_ids_;
 			std::vector<int> pressure_boundary_ids_;
 			std::vector<int> pressure_cavity_ids_;
 			std::vector<int> splitting_pressure_boundary_ids_;
