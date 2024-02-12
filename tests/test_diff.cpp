@@ -28,6 +28,11 @@ namespace
 		return POLYFEM_DATA_DIR + std::string("/differentiable/input/") + path;
 	}
 
+	std::string append_mesh_path(const std::string &path)
+	{
+		return POLYFEM_DATA_DIR + std::string("/") + path;
+	}
+
 	bool load_json(const std::string &json_file, json &out)
 	{
 		std::ifstream file(json_file);
@@ -878,6 +883,7 @@ TEST_CASE("3d-shape-mesh-target", "[test_adjoint]")
 {
 	json opt_args;
 	load_json(append_root_path("3d-shape-mesh-target-opt.json"), opt_args);
+	opt_args["functionals"][0]["mesh_path"] = append_mesh_path(opt_args["functionals"][0]["mesh_path"]);
 	auto [obj, var2sim, states] = prepare_test(opt_args);
 
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
