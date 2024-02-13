@@ -210,5 +210,10 @@ namespace polyfem
 		/// @brief      assing edges to M
 		/// @param[in/out]  M       geogram mesh to appen edges to
 		void generate_edges(GEO::Mesh &M);
+
+		void scaled_jacobian(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, Eigen::VectorXd &quality);
+
+		bool is_flipped(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F);
+
 	} // namespace mesh
 } // namespace polyfem
