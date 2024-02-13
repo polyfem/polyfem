@@ -21,6 +21,7 @@
 #include <spdlog/sinks/ostream_sink.h>
 
 #include <ipc/utils/logger.hpp>
+#include <ipc/utils/par_for.hpp>
 #ifdef POLYFEM_WITH_REMESHING
 #include <wmtk/utils/Logger.hpp>
 #endif
@@ -320,6 +321,7 @@ namespace polyfem
 
 	void State::set_max_threads(const int max_threads)
 	{
+		ipc::utils::NThread::get().set_num_threads(max_threads);
 		NThread::get().set_num_threads(max_threads);
 	}
 
