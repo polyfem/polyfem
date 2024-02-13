@@ -300,8 +300,8 @@ $(document).ready(function(){initNavTree('_assembler_8cpp_source.html',''); init
 <div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span><span class="keyword">    </span>{</div>
 <div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        assert(<a class="code hl_function" href="classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4">size</a>() &gt; 0);</div>
 <div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> max_triplets_size = int(1e7);</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> buffer_size = std::min(<span class="keywordtype">long</span>(max_triplets_size), <span class="keywordtype">long</span>(n_basis) * <a class="code hl_function" href="classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4">size</a>());</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        <span class="keyword">const</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> max_triplets_size = long(1e7);</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        <span class="keyword">const</span> <span class="keywordtype">long</span> <span class="keywordtype">int</span> buffer_size = std::min(<span class="keywordtype">long</span>(max_triplets_size), <span class="keywordtype">long</span>(n_basis) * <a class="code hl_function" href="classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4">size</a>());</div>
 <div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        <span class="comment">// #ifdef POLYFEM_WITH_TBB</span></div>
 <div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        <span class="comment">//      buffer_size /= tbb::task_scheduler_init::default_num_threads();</span></div>
 <div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        <span class="comment">// #endif</span></div>
@@ -411,7 +411,7 @@ $(document).ready(function(){initNavTree('_assembler_8cpp_source.html',''); init
 <div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span> </div>
 <div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>            <span class="comment">// Collect thread storages</span></div>
 <div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>            std::vector&lt;LocalThreadMatStorage *&gt; storages(storage.size());</div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>            <span class="keywordtype">int</span> index = 0;</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>            <span class="keywordtype">long</span> <span class="keywordtype">int</span> index = 0;</div>
 <div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;local_storage : storage)</div>
 <div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>            {</div>
 <div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>                storages[index++] = &amp;local_storage;</div>
@@ -425,10 +425,10 @@ $(document).ready(function(){initNavTree('_assembler_8cpp_source.html',''); init
 <div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>            <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().trace(<span class="stringliteral">&quot;done pruning triplets {}s...&quot;</span>, timer.getElapsedTime());</div>
 <div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span> </div>
 <div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>            <span class="comment">// Prepares for parallel concatenation</span></div>
-<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>            std::vector&lt;int&gt; offsets(storage.size());</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>            std::vector&lt;long int&gt; offsets(storage.size());</div>
 <div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span> </div>
 <div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>            index = 0;</div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>            <span class="keywordtype">int</span> triplet_count = 0;</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>            <span class="keywordtype">long</span> <span class="keywordtype">int</span> triplet_count = 0;</div>
 <div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;local_storage : storage)</div>
 <div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>            {</div>
 <div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>                offsets[index++] = triplet_count;</div>
@@ -479,14 +479,14 @@ $(document).ready(function(){initNavTree('_assembler_8cpp_source.html',''); init
 <div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>                <span class="comment">// Parallel copy into triplets</span></div>
 <div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>                <a class="code hl_function" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">maybe_parallel_for</a>(storages.size(), [&amp;](<span class="keywordtype">int</span> i) {</div>
 <div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>                    const SparseMatrixCache &amp;cache = dynamic_cast&lt;const SparseMatrixCache &amp;&gt;(*storages[i]-&gt;cache);</div>
-<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>                    int offset = offsets[i];</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>                    long int offset = offsets[i];</div>
 <div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span> </div>
 <div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>                    std::copy(cache.entries().begin(), cache.entries().end(), triplets.begin() + offset);</div>
 <div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>                    offset += cache.entries().size();</div>
 <div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span> </div>
 <div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>                    if (cache.mat().nonZeros() &gt; 0)</div>
 <div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>                    {</div>
-<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>                        int count = 0;</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>                        long int count = 0;</div>
 <div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>                        for (int k = 0; k &lt; cache.mat().outerSize(); ++k)</div>
 <div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>                        {</div>
 <div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>                            for (Eigen::SparseMatrix&lt;double&gt;::InnerIterator it(cache.mat(), k); it; ++it)</div>
