@@ -2,6 +2,7 @@
 #include <polyfem/Common.hpp>
 
 #include <polyfem/io/MatrixIO.hpp>
+#include <polyfem/io/Evaluator.hpp>
 
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/MultiModel.hpp>
@@ -582,11 +583,14 @@ namespace polyfem
 		pressure_bases.clear();
 		geom_bases_.clear();
 		boundary_nodes.clear();
+		input_dirichlet.clear();
 		dirichlet_nodes.clear();
 		neumann_nodes.clear();
 		local_boundary.clear();
 		total_local_boundary.clear();
 		local_neumann_boundary.clear();
+		local_pressure_boundary.clear();
+		local_pressure_cavity.clear();
 		polys.clear();
 		poly_edge_to_data.clear();
 		rhs.resize(0, 0);
@@ -622,6 +626,8 @@ namespace polyfem
 
 		local_boundary.clear();
 		local_neumann_boundary.clear();
+		local_pressure_boundary.clear();
+		local_pressure_cavity.clear();
 		std::map<int, basis::InterfaceData> poly_edge_to_data_geom; // temp dummy variable
 
 		const auto &tmp_json = args["space"]["discr_order"];
@@ -887,7 +893,12 @@ namespace polyfem
 		const int prev_b_size = local_boundary.size();
 		problem->setup_bc(*mesh, n_bases - obstacle.n_vertices(),
 						  bases, geom_bases(), pressure_bases,
-						  local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes,
+						  local_boundary,
+						  boundary_nodes,
+						  local_neumann_boundary,
+						  local_pressure_boundary,
+						  local_pressure_cavity,
+						  pressure_boundary_nodes,
 						  dirichlet_nodes, neumann_nodes);
 
 		// setp nodal values
@@ -1431,6 +1442,20 @@ namespace polyfem
 			rhs_solver_params);
 	}
 
+	std::shared_ptr<PressureAssembler> State::build_pressure_assembler(
+		const int n_bases_,
+		const std::vector<basis::ElementBases> &bases_) const
+	{
+		const int size = problem->is_scalar() ? 1 : mesh->dimension();
+
+		return std::make_shared<PressureAssembler>(
+			*assembler, *mesh, obstacle,
+			local_pressure_boundary,
+			local_pressure_cavity,
+			primitive_to_node(), node_to_primitive(),
+			n_bases_, size, bases_, geom_bases(), *problem);
+	}
+
 	void State::assemble_rhs()
 	{
 		if (!mesh)
@@ -1549,7 +1574,7 @@ namespace polyfem
 				solve_transient_navier_stokes(time_steps, t0, dt, sol, pressure);
 			else if (assembler->name() == "OperatorSplitting")
 				solve_transient_navier_stokes_split(time_steps, dt, sol, pressure);
-			else if (assembler->is_linear() && !is_contact_enabled()) // Collisions add nonlinearity to the problem
+			else if (assembler->is_linear() && !is_contact_enabled() && !is_pressure_enabled()) // Collisions add nonlinearity to the problem
 				solve_transient_linear(time_steps, t0, dt, sol, pressure);
 			else if (!assembler->is_linear() && problem->is_scalar())
 				throw std::runtime_error("Nonlinear scalar problems are not supported yet!");
@@ -1560,7 +1585,7 @@ namespace polyfem
 		{
 			if (assembler->name() == "NavierStokes")
 				solve_navier_stokes(sol, pressure);
-			else if (assembler->is_linear() && !is_contact_enabled())
+			else if (assembler->is_linear() && !is_contact_enabled() && !is_pressure_enabled())
 			{
 				init_linear_solve(sol);
 				solve_linear(sol, pressure);

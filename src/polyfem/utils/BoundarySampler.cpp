@@ -49,24 +49,25 @@ namespace polyfem
 				return Eigen::RowVector3d(p(local_index, 0), p(local_index, 1), p(local_index, 2));
 			}
 
-			Eigen::Matrix2d quad_local_node_coordinates_from_edge(int le)
-			{
-				Eigen::Matrix2d res(2, 2);
-				res.row(0) = quad_local_node_coordinates(le);
-				res.row(1) = quad_local_node_coordinates((le + 1) % 4);
-
-				return res;
-			}
-
-			Eigen::Matrix2d tri_local_node_coordinates_from_edge(int le)
-			{
-				Eigen::Matrix2d res(2, 2);
-				res.row(0) = tri_local_node_coordinates(le);
-				res.row(1) = tri_local_node_coordinates((le + 1) % 3);
-
-				return res;
-			}
 		} // namespace
+
+		Eigen::Matrix2d utils::BoundarySampler::quad_local_node_coordinates_from_edge(int le)
+		{
+			Eigen::Matrix2d res(2, 2);
+			res.row(0) = quad_local_node_coordinates(le);
+			res.row(1) = quad_local_node_coordinates((le + 1) % 4);
+
+			return res;
+		}
+
+		Eigen::Matrix2d utils::BoundarySampler::tri_local_node_coordinates_from_edge(int le)
+		{
+			Eigen::Matrix2d res(2, 2);
+			res.row(0) = tri_local_node_coordinates(le);
+			res.row(1) = tri_local_node_coordinates((le + 1) % 3);
+
+			return res;
+		}
 
 		Eigen::MatrixXd utils::BoundarySampler::tet_local_node_coordinates_from_face(int lf)
 		{
@@ -577,8 +578,8 @@ namespace polyfem
 
 		bool utils::BoundarySampler::boundary_quadrature(const mesh::LocalBoundary &local_boundary, const int order, const mesh::Mesh &mesh, const int i, const bool skip_computation, Eigen::MatrixXd &uv, Eigen::MatrixXd &points, Eigen::MatrixXd &normals, Eigen::VectorXd &weights)
 		{
-			assert (local_boundary.size() > i);
-				
+			assert(local_boundary.size() > i);
+
 			uv.resize(0, 0);
 			points.resize(0, 0);
 			weights.resize(0);

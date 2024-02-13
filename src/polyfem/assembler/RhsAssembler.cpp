@@ -626,14 +626,10 @@ namespace polyfem
 				for (int i = 0; i < lb.size(); ++i)
 				{
 					const int primitive_global_id = lb.global_primitive_id(i);
-					const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
 
 					bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, i, false, uv, points, normals, weights);
-
-					if (!has_samples)
-						continue;
-
 					global_primitive_ids.setConstant(weights.size(), primitive_global_id);
+
 					vals.compute(e, mesh_.is_volume(), points, bs, gbs);
 
 					for (int n = 0; n < vals.jac_it.size(); ++n)
@@ -670,6 +666,8 @@ namespace polyfem
 
 					for (int d = 0; d < size_; ++d)
 						rhs_fun.col(d) = rhs_fun.col(d).array() * weights.array();
+
+					const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
 
 					for (long n = 0; n < nodes.size(); ++n)
 					{
@@ -814,67 +812,76 @@ namespace polyfem
 			for (const auto &lb : local_neumann_boundary)
 			{
 				const int e = lb.element_id();
-				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, false, uv, points, normals, weights, global_primitive_ids);
-
-				if (!has_samples)
-					continue;
-
 				const basis::ElementBases &gbs = gbases_[e];
 				const basis::ElementBases &bs = bases_[e];
 
-				vals.compute(e, mesh_.is_volume(), points, bs, gbs);
-
-				for (int n = 0; n < vals.jac_it.size(); ++n)
+				for (int i = 0; i < lb.size(); ++i)
 				{
-					trafo = vals.jac_it[n].inverse();
+					const int primitive_global_id = lb.global_primitive_id(i);
 
-					if (displacement_prev.size() > 0)
+					bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, i, false, uv, points, normals, weights);
+					global_primitive_ids.setConstant(weights.size(), primitive_global_id);
+
+					if (!has_samples)
+						continue;
+
+					const basis::ElementBases &gbs = gbases_[e];
+					const basis::ElementBases &bs = bases_[e];
+
+					vals.compute(e, mesh_.is_volume(), points, bs, gbs);
+
+					for (int n = 0; n < vals.jac_it.size(); ++n)
 					{
-						assert(size_ == 2 || size_ == 3);
-						deform_mat.resize(size_, size_);
-						deform_mat.setZero();
-						for (const auto &b : vals.basis_values)
+						trafo = vals.jac_it[n].inverse();
+
+						if (displacement_prev.size() > 0)
 						{
-							for (const auto &g : b.global)
+							assert(size_ == 2 || size_ == 3);
+							deform_mat.resize(size_, size_);
+							deform_mat.setZero();
+							for (const auto &b : vals.basis_values)
 							{
-								for (int d = 0; d < size_; ++d)
+								for (const auto &g : b.global)
 								{
-									deform_mat.row(d) += displacement_prev(g.index * size_ + d) * b.grad.row(n);
+									for (int d = 0; d < size_; ++d)
+									{
+										deform_mat.row(d) += displacement_prev(g.index * size_ + d) * b.grad.row(n);
+									}
+								}
+							}
+
+							trafo += deform_mat;
+						}
+
+						normals.row(n) = normals.row(n) * trafo.inverse();
+						normals.row(n).normalize();
+					}
+					problem_.neumann_bc(mesh_, global_primitive_ids, uv, vals.val, normals, t, forces);
+
+					// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
+
+					for (long p = 0; p < weights.size(); ++p)
+					{
+						local_displacement.setZero();
+
+						for (size_t i = 0; i < vals.basis_values.size(); ++i)
+						{
+							const auto &vv = vals.basis_values[i];
+							assert(vv.val.size() == weights.size());
+							const double b_val = vv.val(p);
+
+							for (int d = 0; d < size_; ++d)
+							{
+								for (std::size_t ii = 0; ii < vv.global.size(); ++ii)
+								{
+									local_displacement(d) += (vv.global[ii].val * b_val) * displacement(vv.global[ii].index * size_ + d);
 								}
 							}
 						}
 
-						trafo += deform_mat;
-					}
-
-					normals.row(n) = normals.row(n) * trafo.inverse();
-					normals.row(n).normalize();
-				}
-				problem_.neumann_bc(mesh_, global_primitive_ids, uv, vals.val, normals, t, forces);
-
-				// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(1,0,0));
-
-				for (long p = 0; p < weights.size(); ++p)
-				{
-					local_displacement.setZero();
-
-					for (size_t i = 0; i < vals.basis_values.size(); ++i)
-					{
-						const auto &vv = vals.basis_values[i];
-						assert(vv.val.size() == weights.size());
-						const double b_val = vv.val(p);
-
 						for (int d = 0; d < size_; ++d)
-						{
-							for (std::size_t ii = 0; ii < vv.global.size(); ++ii)
-							{
-								local_displacement(d) += (vv.global[ii].val * b_val) * displacement(vv.global[ii].index * size_ + d);
-							}
-						}
+							res -= forces(p, d) * local_displacement(d) * weights(p);
 					}
-
-					for (int d = 0; d < size_; ++d)
-						res -= forces(p, d) * local_displacement(d) * weights(p);
 				}
 			}
 
@@ -912,14 +919,12 @@ namespace polyfem
 				for (int i = 0; i < lb.size(); ++i)
 				{
 					const int primitive_global_id = lb.global_primitive_id(i);
-					const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
 
 					bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, i, false, uv, points, normals, weights);
+					global_primitive_ids.setConstant(weights.size(), primitive_global_id);
 
 					if (!has_samples)
 						continue;
-
-					global_primitive_ids.setConstant(weights.size(), primitive_global_id);
 
 					Eigen::MatrixXd reference_normals = normals;
 
@@ -990,6 +995,8 @@ namespace polyfem
 					}
 					Eigen::MatrixXd rhs_fun;
 					problem_.neumann_bc(mesh_, global_primitive_ids, uv, vals.val, normals, t, rhs_fun);
+
+					const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
 
 					const bool is_pressure = problem_.is_boundary_pressure(mesh_.get_boundary_id(primitive_global_id));
 					if (!is_pressure)

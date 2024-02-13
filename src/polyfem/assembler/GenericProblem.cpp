@@ -105,8 +105,14 @@ namespace polyfem
 				for (auto &v : forces_)
 					v.set_unit_type(units.force());
 
+				for (auto &v : rest_pressures_)
+					v.set_unit_type(units.pressure());
+
 				for (auto &v : pressures_)
 					v.set_unit_type(units.pressure());
+
+				for (auto &v : cavity_pressures_)
+					v.second.set_unit_type(units.pressure());
 
 				for (auto &v : initial_position_)
 					for (int i = 0; i < 3; ++i)
@@ -227,18 +233,44 @@ namespace polyfem
 					}
 				}
 
-				for (size_t b = 0; b < pressure_boundary_ids_.size(); ++b)
+				for (size_t b = 0; b < rest_pressure_boundary_ids_.size(); ++b)
 				{
-					if (id == pressure_boundary_ids_[b])
+					if (id == rest_pressure_boundary_ids_[b])
 					{
 						for (int d = 0; d < val.cols(); ++d)
 						{
-							val(i, d) = pressures_[b].eval(pts.row(i), t) * normals(i, d);
+							val(i, d) = rest_pressures_[b].eval(pts.row(i), t) * normals(i, d);
 						}
 						break;
 					}
 				}
 			}
+		}
+
+		void GenericTensorProblem::pressure_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const
+		{
+			val = Eigen::MatrixXd::Zero(pts.rows(), 1);
+
+			for (long i = 0; i < pts.rows(); ++i)
+			{
+				const int id = mesh.get_boundary_id(global_ids(i));
+
+				for (size_t b = 0; b < pressure_boundary_ids_.size(); ++b)
+				{
+					if (id == pressure_boundary_ids_[b])
+					{
+						val(i) = pressures_[b].eval(pts.row(i), t);
+						break;
+					}
+				}
+			}
+		}
+
+		double GenericTensorProblem::pressure_cavity_bc(const int boundary_id, const double t) const
+		{
+			Eigen::VectorXd pt;
+			pt.setZero(3);
+			return cavity_pressures_.at(boundary_id).eval(pt, t);
 		}
 
 		void GenericTensorProblem::exact(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const
@@ -828,6 +860,8 @@ namespace polyfem
 						for (size_t k = 0; k < ff.size(); ++k)
 						{
 							displacements_[i].value[k].init(ff[k]);
+							if (j_boundary[i - offset].contains("time_reference") && j_boundary[i - offset]["time_reference"].size() > 0)
+								displacements_[i].value[k].set_t(j_boundary[i - offset]["time_reference"]);
 							nodal_dirichlet_[current_id].value[k].init(ff[k]);
 						}
 					}
@@ -898,6 +932,30 @@ namespace polyfem
 				}
 			}
 
+			if (is_param_valid(params, "rest_pressure_boundary"))
+			{
+				const int offset = rest_pressure_boundary_ids_.size();
+
+				auto j_boundary_tmp = params["rest_pressure_boundary"];
+				std::vector<json> j_boundary = flatten_ids(j_boundary_tmp);
+
+				rest_pressure_boundary_ids_.resize(offset + j_boundary.size());
+				rest_pressures_.resize(offset + j_boundary.size());
+
+				for (size_t i = offset; i < rest_pressure_boundary_ids_.size(); ++i)
+				{
+					rest_pressure_boundary_ids_[i] = j_boundary[i - offset]["id"];
+
+					auto ff = j_boundary[i - offset]["value"];
+					rest_pressures_[i].value.init(ff);
+
+					if (j_boundary[i - offset].contains("interpolation"))
+						rest_pressures_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
+					else
+						rest_pressures_[i].interpolation = std::make_shared<NoInterpolation>();
+				}
+			}
+
 			if (is_param_valid(params, "pressure_boundary"))
 			{
 				// pressure_boundary_ids_.clear();
@@ -920,6 +978,30 @@ namespace polyfem
 						pressures_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
 					else
 						pressures_[i].interpolation = std::make_shared<NoInterpolation>();
+				}
+			}
+
+			if (is_param_valid(params, "pressure_cavity"))
+			{
+				const int offset = pressure_cavity_ids_.size();
+
+				auto j_boundary_tmp = params["pressure_cavity"];
+				std::vector<json> j_boundary = flatten_ids(j_boundary_tmp);
+
+				pressure_cavity_ids_.resize(offset + j_boundary.size());
+
+				for (size_t i = offset; i < pressure_cavity_ids_.size(); ++i)
+				{
+					int boundary_id = j_boundary[i - offset]["id"];
+					pressure_cavity_ids_[i] = boundary_id;
+
+					if (cavity_pressures_.find(boundary_id) == cavity_pressures_.end())
+					{
+						cavity_pressures_[boundary_id] = ScalarBCValue();
+
+						auto ff = j_boundary[i - offset]["value"];
+						cavity_pressures_[boundary_id].value.init(ff);
+					}
 				}
 			}
 
@@ -1077,7 +1159,9 @@ namespace polyfem
 
 			forces_.clear();
 			displacements_.clear();
+			rest_pressures_.clear();
 			pressures_.clear();
+			cavity_pressures_.clear();
 
 			nodal_dirichlet_.clear();
 			nodal_neumann_.clear();

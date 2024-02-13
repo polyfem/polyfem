@@ -24,6 +24,8 @@ set(SOURCES
 	ContactForm.hpp
 	RayleighDampingForm.cpp
 	RayleighDampingForm.hpp
+	PressureForm.cpp
+	PressureForm.hpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})

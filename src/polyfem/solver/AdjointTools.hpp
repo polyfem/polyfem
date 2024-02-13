@@ -7,7 +7,7 @@ namespace polyfem
 {
 	class State;
 	class IntegrableFunctional;
-}
+} // namespace polyfem
 
 namespace polyfem::solver
 {
