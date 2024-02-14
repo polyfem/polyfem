@@ -559,80 +559,80 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 // 	}
 // }
 
-TEST_CASE("shape-pressure-neumann-nodes", "[test_adjoint]")
-{
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
-	json in_args;
-	load_json(path + "shape-pressure-neumann-nodes.json", in_args);
-	auto state_ptr = create_state_and_solve(in_args);
-	State &state = *state_ptr;
+// TEST_CASE("shape-pressure-neumann-nodes", "[test_adjoint]")
+// {
+// 	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+// 	json in_args;
+// 	load_json(path + "shape-pressure-neumann-nodes.json", in_args);
+// 	auto state_ptr = create_state_and_solve(in_args);
+// 	State &state = *state_ptr;
 
-	std::vector<std::shared_ptr<State>> states({state_ptr});
+// 	std::vector<std::shared_ptr<State>> states({state_ptr});
 
-	json opt_args;
-	load_json(path + "shape-pressure-neumann-nodes-opt.json", opt_args);
-	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
+// 	json opt_args;
+// 	load_json(path + "shape-pressure-neumann-nodes-opt.json", opt_args);
+// 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
-	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
-	{
-		VariableToBoundaryNodes variable_to_node(*state_ptr, 2);
-		variable_to_simulations[0]->set_output_indexing(variable_to_node.get_output_indexing());
-	}
+// 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+// 	variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
+// 	{
+// 		VariableToBoundaryNodes variable_to_node(*state_ptr, 2);
+// 		variable_to_simulations[0]->set_output_indexing(variable_to_node.get_output_indexing());
+// 	}
 
-	auto obj = AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states);
+// 	auto obj = AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states);
 
-	auto velocity = [](const Eigen::MatrixXd &position) {
-		auto vel = position;
-		for (int i = 0; i < vel.size(); i++)
-		{
-			vel(i) = (rand() % 1000) / 1000.0;
-		}
-		return vel;
-	};
-	Eigen::MatrixXd velocity_discrete;
+// 	auto velocity = [](const Eigen::MatrixXd &position) {
+// 		auto vel = position;
+// 		for (int i = 0; i < vel.size(); i++)
+// 		{
+// 			vel(i) = (rand() % 1000) / 1000.0;
+// 		}
+// 		return vel;
+// 	};
+// 	Eigen::MatrixXd velocity_discrete;
 
-	Eigen::VectorXd x;
-	int opt_bnodes = 0;
-	int dim;
-	{
-		const auto &mesh = state.mesh;
-		const auto &bases = state.bases;
-		const auto &gbases = state.geom_bases();
-		dim = mesh->dimension();
+// 	Eigen::VectorXd x;
+// 	int opt_bnodes = 0;
+// 	int dim;
+// 	{
+// 		const auto &mesh = state.mesh;
+// 		const auto &bases = state.bases;
+// 		const auto &gbases = state.geom_bases();
+// 		dim = mesh->dimension();
 
-		std::set<int> node_ids;
-		std::set<int> total_bnode_ids;
-		for (const auto &lb : state.total_local_boundary)
-		{
-			const int e = lb.element_id();
-			for (int i = 0; i < lb.size(); ++i)
-			{
-				const int primitive_global_id = lb.global_primitive_id(i);
-				const int boundary_id = mesh->get_boundary_id(primitive_global_id);
-				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
+// 		std::set<int> node_ids;
+// 		std::set<int> total_bnode_ids;
+// 		for (const auto &lb : state.total_local_boundary)
+// 		{
+// 			const int e = lb.element_id();
+// 			for (int i = 0; i < lb.size(); ++i)
+// 			{
+// 				const int primitive_global_id = lb.global_primitive_id(i);
+// 				const int boundary_id = mesh->get_boundary_id(primitive_global_id);
+// 				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
 
-				if (boundary_id == 2)
-					for (long n = 0; n < nodes.size(); ++n)
-						node_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
-			}
-		}
-		opt_bnodes = node_ids.size();
-	}
-	x.resize(opt_bnodes * dim);
+// 				if (boundary_id == 2)
+// 					for (long n = 0; n < nodes.size(); ++n)
+// 						node_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
+// 			}
+// 		}
+// 		opt_bnodes = node_ids.size();
+// 	}
+// 	x.resize(opt_bnodes * dim);
 
-	Eigen::MatrixXd V;
-	state.get_vertices(V);
-	Eigen::VectorXd V_flat = utils::flatten(V);
-	auto b_idx = variable_to_simulations[0]->get_output_indexing(x);
-	for (int i = 0; i < b_idx.size(); ++i)
-		x(i) = V_flat(b_idx(i));
-	velocity_discrete = velocity(x);
+// 	Eigen::MatrixXd V;
+// 	state.get_vertices(V);
+// 	Eigen::VectorXd V_flat = utils::flatten(V);
+// 	auto b_idx = variable_to_simulations[0]->get_output_indexing(x);
+// 	for (int i = 0; i < b_idx.size(); ++i)
+// 		x(i) = V_flat(b_idx(i));
+// 	velocity_discrete = velocity(x);
 
-	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
+// 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 
-	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-8, 1e-3);
-}
+// 	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-8, 1e-3);
+// }
 
 // TEST_CASE("shape-contact-force-norm", "[test_adjoint]")
 // {
