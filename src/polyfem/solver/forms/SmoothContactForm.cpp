@@ -18,9 +18,9 @@ namespace polyfem::solver
                 const bool is_time_dependent,
                 const ipc::BroadPhaseMethod broad_phase_method,
                 const double ccd_tolerance,
-                const int ccd_max_iterations): ContactForm(collision_mesh, args["dhat"], avg_mass, false, use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(dhat_, args["alpha"], _dim == 3 ? 1 : 0.5, 1, args["beta"]), use_adaptive_dhat(args["use_adaptive_dhat"])
+                const int ccd_max_iterations): ContactForm(collision_mesh, args["dhat"], avg_mass, false, use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(dhat_, args["alpha"], _dim == 3 ? 1 : 0.5, args["beta"]), use_adaptive_dhat(args["use_adaptive_dhat"])
     {
-		collision_set_ = std::make_shared<ipc::SmoothCollisions<_dim>>(false /*no high order quadrature*/);
+		collision_set_ = std::make_shared<ipc::SmoothCollisions<_dim>>();
         contact_potential_ = std::make_shared<ipc::SmoothContactPotential<ipc::SmoothCollisions<_dim>>>(params);
 		params.set_adaptive_dhat_ratio(args["min_distance_ratio"]);
 		if (use_adaptive_dhat)

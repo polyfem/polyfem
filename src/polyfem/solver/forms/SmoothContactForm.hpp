@@ -28,6 +28,8 @@ namespace polyfem::solver
 		/// @param x Current solution
 		void post_step(const polysolve::nonlinear::PostStepData &data) override;
 
+		bool using_adaptive_dhat() const { return use_adaptive_dhat; }
+		const ipc::ParameterType &get_params() const { return params; }
 		const ipc::SmoothCollisions<_dim> &get_collision_set() const { return *collision_set_; }
 		const ipc::Potential<ipc::SmoothCollisions<_dim>> &get_potential() const { return *contact_potential_; }
 

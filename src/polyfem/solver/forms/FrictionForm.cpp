@@ -1,5 +1,6 @@
 #include "FrictionForm.hpp"
 #include "BarrierContactForm.hpp"
+#include "SmoothContactForm.hpp"
 
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
@@ -130,19 +131,42 @@ namespace polyfem::solver
 	{
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
-		ipc::Collisions collision_set;
-		collision_set.set_use_convergent_formulation(contact_form_.use_convergent_formulation());
-		collision_set.set_are_shape_derivatives_enabled(contact_form_.enable_shape_derivatives());
-		collision_set.build(
-			collision_mesh_, displaced_surface, dhat_,
-			/*dmin=*/0, broad_phase_method_);
-
-		const auto barrier_contact = dynamic_cast<const BarrierContactForm*>(&contact_form_);
-		if (!barrier_contact)
-			log_and_throw_error("Friction doesn't support SmoothContactPotential!");
-
-		friction_collision_set_.build(
-			collision_mesh_, displaced_surface, collision_set,
-			barrier_contact->get_potential(), contact_form_.barrier_stiffness(), mu_);
+		if (const auto barrier_contact = dynamic_cast<const BarrierContactForm*>(&contact_form_))
+		{
+			ipc::Collisions collision_set;
+			collision_set.set_use_convergent_formulation(contact_form_.use_convergent_formulation());
+			collision_set.set_are_shape_derivatives_enabled(contact_form_.enable_shape_derivatives());
+			collision_set.build(
+				collision_mesh_, displaced_surface, dhat_,
+				/*dmin=*/0, broad_phase_method_);
+				
+			friction_collision_set_.build(
+				collision_mesh_, displaced_surface, collision_set,
+				barrier_contact->get_potential(), contact_form_.barrier_stiffness(), mu_);
+		}
+		else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm<2>*>(&contact_form_))
+		{
+			ipc::SmoothCollisions<2> collision_set;
+			collision_set.build(
+				collision_mesh_, displaced_surface, smooth_contact->get_params(), 
+				smooth_contact->using_adaptive_dhat(), broad_phase_method_);
+			friction_collision_set_.build(
+				collision_mesh_, displaced_surface, 
+				collision_set, smooth_contact->get_params(), contact_form_.barrier_stiffness(), mu_);
+		}
+		else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm<3>*>(&contact_form_))
+		{
+			ipc::SmoothCollisions<3> collision_set;
+			collision_set.build(
+				collision_mesh_, displaced_surface, smooth_contact->get_params(), 
+				smooth_contact->using_adaptive_dhat(), broad_phase_method_);
+			friction_collision_set_.build(
+				collision_mesh_, displaced_surface, 
+				collision_set, smooth_contact->get_params(), contact_form_.barrier_stiffness(), mu_);
+		}
+		else
+		{
+			throw std::runtime_error("Unknown contact form");
+		}
 	}
 } // namespace polyfem::solver
