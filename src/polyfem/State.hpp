@@ -390,6 +390,9 @@ namespace polyfem
 			const bool compute_spectrum,
 			Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
 
+		/// @brief Returns whether the system is linear. Collisions and pressure add nonlinearity to the problem.
+		bool is_linear() const { return assembler->is_linear() && !is_contact_enabled() && !is_pressure_enabled(); }
+
 	public:
 		/// @brief utility that builds the stiffness matrix and collects stats, used only for linear problems
 		/// @param[out] stiffness matrix
