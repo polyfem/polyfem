@@ -45,12 +45,27 @@ var namespaces_dup =
       [ "y", "namespaceelasticity__rhs.html#aef0d8d8037b75153eb9212b88feb35c4", null ],
       [ "z", "namespaceelasticity__rhs.html#a7da2b62e54e8b30ff93de1396c5429c8", null ]
     ] ],
+    [ "generate_mooney_rivlin", "namespacegenerate__mooney__rivlin.html", [
+      [ "mr_energy", "namespacegenerate__mooney__rivlin.html#ae60cf33f9640326c2e7e8fcd2ea2f204", null ],
+      [ "optimizations", "namespacegenerate__mooney__rivlin.html#a48325c419468207c335e902a0560c873", null ],
+      [ "c1", "namespacegenerate__mooney__rivlin.html#a74a4678454aebe6cba95e23a8e042dcc", null ],
+      [ "c2", "namespacegenerate__mooney__rivlin.html#ac615cabfdefed4f65294ae19ad24d1f7", null ],
+      [ "c3", "namespacegenerate__mooney__rivlin.html#adf95783f48de2d6839c00b5ab41e3a28", null ],
+      [ "d1", "namespacegenerate__mooney__rivlin.html#a65ca06dd2574c81344dba55b54a73080", null ],
+      [ "dim", "namespacegenerate__mooney__rivlin.html#aca2415ae8c0df86d447adf341caf4830", null ],
+      [ "energy", "namespacegenerate__mooney__rivlin.html#a7123b96660815239e68499d288fae89b", null ],
+      [ "F", "namespacegenerate__mooney__rivlin.html#a8ae2eca3f3a3ed0d7e9119980783ab51", null ],
+      [ "F_", "namespacegenerate__mooney__rivlin.html#a495cf6eec3b14159d795a0965470688b", null ],
+      [ "grad", "namespacegenerate__mooney__rivlin.html#a63e341bc618a2c344100fb6c7c93f87d", null ],
+      [ "hess", "namespacegenerate__mooney__rivlin.html#a810c21d1f8e04c917030814a38029037", null ]
+    ] ],
     [ "ipc", "namespaceipc.html", null ],
     [ "p_bases", "namespacep__bases.html", "namespacep__bases" ],
     [ "polyfem", "namespacepolyfem.html", "namespacepolyfem" ],
     [ "polysolve", "namespacepolysolve.html", "namespacepolysolve" ],
     [ "pretty_print", "namespacepretty__print.html", [
-      [ "C99_print", "namespacepretty__print.html#a73786f15be021f8233264d6227553414", null ]
+      [ "C99_print", "namespacepretty__print.html#a73786f15be021f8233264d6227553414", null ],
+      [ "C99_print_tensor", "namespacepretty__print.html#ac11a97cfd2c874ce1ad19aaadca6f738", null ]
     ] ],
     [ "q_bases", "namespaceq__bases.html", "namespaceq__bases" ],
     [ "spdlog", "namespacespdlog.html", "namespacespdlog" ],

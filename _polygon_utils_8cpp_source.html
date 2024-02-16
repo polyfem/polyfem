@@ -288,13 +288,13 @@ $(document).ready(function(){initNavTree('_polygon_utils_8cpp_source.html',''); 
 <div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    }</div>
 <div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    {</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        Eigen::MatrixXi <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>(1, OV.rows());</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        Eigen::MatrixXi F(1, OV.rows());</div>
 <div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; OV.rows(); ++i)</div>
 <div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        {</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>            <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>(0, i) = i;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>            F(0, i) = i;</div>
 <div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        }</div>
 <div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        Eigen::MatrixXd BC;</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        igl::barycenter(OV, <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>, BC);</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        igl::barycenter(OV, F, BC);</div>
 <div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        <span class="comment">// std::cout &lt;&lt; BC.rows() &lt;&lt; &#39;x&#39; &lt;&lt; BC.cols() &lt;&lt; std::endl;</span></div>
 <div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        <span class="comment">// std::cout &lt;&lt; BC &lt;&lt; std::endl;</span></div>
 <div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        <span class="keywordtype">int</span> n = std::min(3, (<span class="keywordtype">int</span>)BC.cols());</div>
@@ -452,7 +452,6 @@ $(document).ready(function(){initNavTree('_polygon_utils_8cpp_source.html',''); 
 <div class="ttc" id="anamespacepolyfem_1_1mesh_html_ae1e56322029f56281de64523a44a2b18"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#ae1e56322029f56281de64523a44a2b18">polyfem::mesh::is_star_shaped</a></div><div class="ttdeci">bool is_star_shaped(const Eigen::MatrixXd &amp;IV, Eigen::RowVector3d &amp;bary)</div><div class="ttdoc">Determine whether a polygon is star-shaped or not.</div><div class="ttdef"><b>Definition</b> <a href="_polygon_utils_8cpp_source.html#l00150">PolygonUtils.cpp:150</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1mesh_html_aee0e69679f580e427e1db3922b2a5311"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#aee0e69679f580e427e1db3922b2a5311">polyfem::mesh::is_inside</a></div><div class="ttdeci">int is_inside(const Eigen::MatrixXd &amp;IV, const Eigen::MatrixXd &amp;Q, std::vector&lt; bool &gt; &amp;inside)</div><div class="ttdoc">Compute whether points are inside a polygon.</div><div class="ttdef"><b>Definition</b> <a href="_polygon_utils_8cpp_source.html#l00242">PolygonUtils.cpp:242</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1utils_html"><div class="ttname"><a href="namespacepolyfem_1_1utils.html">polyfem::utils</a></div><div class="ttdef"><b>Definition</b> <a href="_bessel_8hpp_source.html#l00005">Bessel.hpp:6</a></div></div>
-<div class="ttc" id="anamespacepolyfem_html_ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012"><div class="ttname"><a href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::ElasticityTensorType::F</a></div><div class="ttdeci">@ F</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

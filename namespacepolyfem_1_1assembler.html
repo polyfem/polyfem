@@ -203,6 +203,8 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_elasticity.html">MooneyRivlin3ParamElasticity</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_symbolic.html">MooneyRivlin3ParamSymbolic</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html">MooneyRivlinElasticity</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_multi_model.html">MultiModel</a></td></tr>
@@ -253,6 +255,12 @@ Typedefs</h2></td></tr>
 <tr class="memitem:a3845564fe405bdfdad1fdf79c7255e69" id="r_a3845564fe405bdfdad1fdf79c7255e69"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:a3845564fe405bdfdad1fdf79c7255e69"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1assembler.html#a3845564fe405bdfdad1fdf79c7255e69">DefGradMatrix</a> = Eigen::Matrix&lt; T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3 &gt;</td></tr>
 <tr class="separator:a3845564fe405bdfdad1fdf79c7255e69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cfbb549e59585dc992cebd40b4253ce" id="r_a6cfbb549e59585dc992cebd40b4253ce"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:a6cfbb549e59585dc992cebd40b4253ce"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1assembler.html#a6cfbb549e59585dc992cebd40b4253ce">AutoDiffGradMat</a> = Eigen::Matrix&lt; T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3 &gt;</td></tr>
+<tr class="separator:a6cfbb549e59585dc992cebd40b4253ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad90a88bb8d1f91b65a88e2561c464109" id="r_ad90a88bb8d1f91b65a88e2561c464109"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
+<tr class="memitem:ad90a88bb8d1f91b65a88e2561c464109"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1assembler.html#ad90a88bb8d1f91b65a88e2561c464109">AutoDiffVect</a> = Eigen::Matrix&lt; T, Eigen::Dynamic, 1 &gt;</td></tr>
+<tr class="separator:ad90a88bb8d1f91b65a88e2561c464109"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
@@ -266,6 +274,42 @@ Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Used for test only. </p>
 </div><h2 class="groupheader">Typedef Documentation</h2>
+<a id="a6cfbb549e59585dc992cebd40b4253ce" name="a6cfbb549e59585dc992cebd40b4253ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cfbb549e59585dc992cebd40b4253ce">&#9670;&#160;</a></span>AutoDiffGradMat</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacepolyfem_1_1assembler.html#a6cfbb549e59585dc992cebd40b4253ce">polyfem::assembler::AutoDiffGradMat</a> = typedef Eigen::Matrix&lt;T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_mooney_rivlin3_param_symbolic_8hpp_source.html#l00012">12</a> of file <a class="el" href="_mooney_rivlin3_param_symbolic_8hpp_source.html">MooneyRivlin3ParamSymbolic.hpp</a>.</p>
+
+</div>
+</div>
+<a id="ad90a88bb8d1f91b65a88e2561c464109" name="ad90a88bb8d1f91b65a88e2561c464109"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad90a88bb8d1f91b65a88e2561c464109">&#9670;&#160;</a></span>AutoDiffVect</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespacepolyfem_1_1assembler.html#ad90a88bb8d1f91b65a88e2561c464109">polyfem::assembler::AutoDiffVect</a> = typedef Eigen::Matrix&lt;T, Eigen::Dynamic, 1&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_mooney_rivlin3_param_symbolic_8hpp_source.html#l00014">14</a> of file <a class="el" href="_mooney_rivlin3_param_symbolic_8hpp_source.html">MooneyRivlin3ParamSymbolic.hpp</a>.</p>
+
+</div>
+</div>
 <a id="a3845564fe405bdfdad1fdf79c7255e69" name="a3845564fe405bdfdad1fdf79c7255e69"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3845564fe405bdfdad1fdf79c7255e69">&#9670;&#160;</a></span>DefGradMatrix</h2>
 

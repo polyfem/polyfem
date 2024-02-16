@@ -33,6 +33,7 @@ var namespacepolyfem_1_1assembler =
     [ "MixedAssembler", "classpolyfem_1_1assembler_1_1_mixed_assembler.html", "classpolyfem_1_1assembler_1_1_mixed_assembler" ],
     [ "MixedAssemblerData", "classpolyfem_1_1assembler_1_1_mixed_assembler_data.html", "classpolyfem_1_1assembler_1_1_mixed_assembler_data" ],
     [ "MooneyRivlin3ParamElasticity", "classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_elasticity.html", "classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_elasticity" ],
+    [ "MooneyRivlin3ParamSymbolic", "classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_symbolic.html", "classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_symbolic" ],
     [ "MooneyRivlinElasticity", "classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html", "classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity" ],
     [ "MultiModel", "classpolyfem_1_1assembler_1_1_multi_model.html", "classpolyfem_1_1assembler_1_1_multi_model" ],
     [ "NavierStokesVelocity", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity" ],
@@ -55,6 +56,8 @@ var namespacepolyfem_1_1assembler =
     [ "UnconstrainedOgdenElasticity", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity" ],
     [ "ViscousDamping", "classpolyfem_1_1assembler_1_1_viscous_damping.html", "classpolyfem_1_1assembler_1_1_viscous_damping" ],
     [ "ViscousDampingPrev", "classpolyfem_1_1assembler_1_1_viscous_damping_prev.html", "classpolyfem_1_1assembler_1_1_viscous_damping_prev" ],
+    [ "AutoDiffGradMat", "namespacepolyfem_1_1assembler.html#a6cfbb549e59585dc992cebd40b4253ce", null ],
+    [ "AutoDiffVect", "namespacepolyfem_1_1assembler.html#ad90a88bb8d1f91b65a88e2561c464109", null ],
     [ "DefGradMatrix", "namespacepolyfem_1_1assembler.html#a3845564fe405bdfdad1fdf79c7255e69", null ],
     [ "cross", "namespacepolyfem_1_1assembler.html#acde7fba90d34c1fca18bdfa2b8a84784", null ],
     [ "hat", "namespacepolyfem_1_1assembler.html#aaff5aece5fe5a409ef40ca97ac093b32", null ]

@@ -491,11 +491,11 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>    }</div>
 <div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>    <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a> = NV;</div>
 <div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>    <span class="comment">// Remap face indices</span></div>
-<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> f = 0; f &lt; <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>.rows(); ++f)</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> f = 0; f &lt; F.rows(); ++f)</div>
 <div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>    {</div>
-<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> lv = 0; lv &lt; <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>.cols(); ++lv)</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> lv = 0; lv &lt; F.cols(); ++lv)</div>
 <div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>        {</div>
-<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>            <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>(f, lv) = remap(<a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>(f, lv));</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>            F(f, lv) = remap(F(f, lv));</div>
 <div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>        }</div>
 <div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>    }</div>
 <div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>}</div>
@@ -713,13 +713,13 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="line"><a id="l00585" name="l00585"></a><span class="lineno">  585</span>        p[2] = <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.cols() &gt;= 3 ? <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>(i, 2) : 0;</div>
 <div class="line"><a id="l00586" name="l00586"></a><span class="lineno">  586</span>    }</div>
 <div class="line"><a id="l00587" name="l00587"></a><span class="lineno">  587</span>    <span class="comment">// Setup faces</span></div>
-<div class="line"><a id="l00588" name="l00588"></a><span class="lineno">  588</span>    <span class="keywordflow">if</span> (<a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>.cols() == 3)</div>
+<div class="line"><a id="l00588" name="l00588"></a><span class="lineno">  588</span>    <span class="keywordflow">if</span> (F.cols() == 3)</div>
 <div class="line"><a id="l00589" name="l00589"></a><span class="lineno">  589</span>    {</div>
-<div class="line"><a id="l00590" name="l00590"></a><span class="lineno">  590</span>        M.facets.create_triangles((<span class="keywordtype">int</span>)<a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>.rows());</div>
+<div class="line"><a id="l00590" name="l00590"></a><span class="lineno">  590</span>        M.facets.create_triangles((<span class="keywordtype">int</span>)F.rows());</div>
 <div class="line"><a id="l00591" name="l00591"></a><span class="lineno">  591</span>    }</div>
-<div class="line"><a id="l00592" name="l00592"></a><span class="lineno">  592</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>.cols() == 4)</div>
+<div class="line"><a id="l00592" name="l00592"></a><span class="lineno">  592</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (F.cols() == 4)</div>
 <div class="line"><a id="l00593" name="l00593"></a><span class="lineno">  593</span>    {</div>
-<div class="line"><a id="l00594" name="l00594"></a><span class="lineno">  594</span>        M.facets.create_quads((<span class="keywordtype">int</span>)<a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>.rows());</div>
+<div class="line"><a id="l00594" name="l00594"></a><span class="lineno">  594</span>        M.facets.create_quads((<span class="keywordtype">int</span>)F.rows());</div>
 <div class="line"><a id="l00595" name="l00595"></a><span class="lineno">  595</span>    }</div>
 <div class="line"><a id="l00596" name="l00596"></a><span class="lineno">  596</span>    <span class="keywordflow">else</span></div>
 <div class="line"><a id="l00597" name="l00597"></a><span class="lineno">  597</span>    {</div>
@@ -727,9 +727,9 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="line"><a id="l00599" name="l00599"></a><span class="lineno">  599</span>    }</div>
 <div class="line"><a id="l00600" name="l00600"></a><span class="lineno">  600</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> c = 0; c &lt; (int)M.facets.nb(); ++c)</div>
 <div class="line"><a id="l00601" name="l00601"></a><span class="lineno">  601</span>    {</div>
-<div class="line"><a id="l00602" name="l00602"></a><span class="lineno">  602</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> lv = 0; lv &lt; <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>.cols(); ++lv)</div>
+<div class="line"><a id="l00602" name="l00602"></a><span class="lineno">  602</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> lv = 0; lv &lt; F.cols(); ++lv)</div>
 <div class="line"><a id="l00603" name="l00603"></a><span class="lineno">  603</span>        {</div>
-<div class="line"><a id="l00604" name="l00604"></a><span class="lineno">  604</span>            M.facets.set_vertex(c, lv, <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>(c, lv));</div>
+<div class="line"><a id="l00604" name="l00604"></a><span class="lineno">  604</span>            M.facets.set_vertex(c, lv, F(c, lv));</div>
 <div class="line"><a id="l00605" name="l00605"></a><span class="lineno">  605</span>        }</div>
 <div class="line"><a id="l00606" name="l00606"></a><span class="lineno">  606</span>    }</div>
 <div class="line"><a id="l00607" name="l00607"></a><span class="lineno">  607</span>}</div>
@@ -775,12 +775,12 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="line"><a id="l00645" name="l00645"></a><span class="lineno">  645</span>        <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.row(i) &lt;&lt; p[0], p[1], p[2];</div>
 <div class="line"><a id="l00646" name="l00646"></a><span class="lineno">  646</span>    }</div>
 <div class="line"><a id="l00647" name="l00647"></a><span class="lineno">  647</span>    assert(M.facets.are_simplices());</div>
-<div class="line"><a id="l00648" name="l00648"></a><span class="lineno">  648</span>    <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>.resize(M.facets.nb(), 3);</div>
+<div class="line"><a id="l00648" name="l00648"></a><span class="lineno">  648</span>    F.resize(M.facets.nb(), 3);</div>
 <div class="line"><a id="l00649" name="l00649"></a><span class="lineno">  649</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> c = 0; c &lt; (int)M.facets.nb(); ++c)</div>
 <div class="line"><a id="l00650" name="l00650"></a><span class="lineno">  650</span>    {</div>
 <div class="line"><a id="l00651" name="l00651"></a><span class="lineno">  651</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> lv = 0; lv &lt; 3; ++lv)</div>
 <div class="line"><a id="l00652" name="l00652"></a><span class="lineno">  652</span>        {</div>
-<div class="line"><a id="l00653" name="l00653"></a><span class="lineno">  653</span>            <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>(c, lv) = M.facets.vertex(c, lv);</div>
+<div class="line"><a id="l00653" name="l00653"></a><span class="lineno">  653</span>            F(c, lv) = M.facets.vertex(c, lv);</div>
 <div class="line"><a id="l00654" name="l00654"></a><span class="lineno">  654</span>        }</div>
 <div class="line"><a id="l00655" name="l00655"></a><span class="lineno">  655</span>    }</div>
 <div class="line"><a id="l00656" name="l00656"></a><span class="lineno">  656</span>    assert(M.cells.are_simplices());</div>
@@ -802,7 +802,7 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="line"><a id="l00670" name="l00670"></a><span class="lineno">  670</span>                                             <span class="keyword">const</span> Eigen::MatrixXd &amp;P, Eigen::VectorXd &amp;D)</div>
 <div class="line"><a id="l00671" name="l00671"></a><span class="lineno">  671</span>{</div>
 <div class="line"><a id="l00672" name="l00672"></a><span class="lineno">  672</span>    GEO::Mesh M;</div>
-<div class="line"><a id="l00673" name="l00673"></a><span class="lineno">  673</span>    <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a7da2ae1a2cf19143192bb198c5ebb5b0">to_geogram_mesh</a>(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>, M);</div>
+<div class="line"><a id="l00673" name="l00673"></a><span class="lineno">  673</span>    <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a7da2ae1a2cf19143192bb198c5ebb5b0">to_geogram_mesh</a>(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, F, M);</div>
 <div class="line"><a id="l00674" name="l00674"></a><span class="lineno">  674</span>    GEO::MeshFacetsAABB aabb_tree(M);</div>
 <div class="line"><a id="l00675" name="l00675"></a><span class="lineno">  675</span>    compute_unsigned_distance_field(M, aabb_tree, P, D);</div>
 <div class="line"><a id="l00676" name="l00676"></a><span class="lineno">  676</span>    compute_sign(M, aabb_tree, P, D);</div>
@@ -814,16 +814,16 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="foldopen" id="foldopen00681" data-start="{" data-end="}">
 <div class="line"><a id="l00681" name="l00681"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1mesh.html#a3366f41b53c326c7a196eea55d0c5c13">  681</a></span><span class="keywordtype">double</span> <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a3366f41b53c326c7a196eea55d0c5c13">polyfem::mesh::signed_volume</a>(<span class="keyword">const</span> Eigen::MatrixXd &amp;<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, <span class="keyword">const</span> Eigen::MatrixXi &amp;F)</div>
 <div class="line"><a id="l00682" name="l00682"></a><span class="lineno">  682</span>{</div>
-<div class="line"><a id="l00683" name="l00683"></a><span class="lineno">  683</span>    assert(<a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>.cols() == 3);</div>
+<div class="line"><a id="l00683" name="l00683"></a><span class="lineno">  683</span>    assert(F.cols() == 3);</div>
 <div class="line"><a id="l00684" name="l00684"></a><span class="lineno">  684</span>    assert(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.cols() == 3);</div>
 <div class="line"><a id="l00685" name="l00685"></a><span class="lineno">  685</span>    std::array&lt;Eigen::RowVector3d, 4&gt; t;</div>
 <div class="line"><a id="l00686" name="l00686"></a><span class="lineno">  686</span>    t[3] = Eigen::RowVector3d::Zero(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.cols());</div>
 <div class="line"><a id="l00687" name="l00687"></a><span class="lineno">  687</span>    <span class="keywordtype">double</span> volume_total = 0;</div>
-<div class="line"><a id="l00688" name="l00688"></a><span class="lineno">  688</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> f = 0; f &lt; <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>.rows(); ++f)</div>
+<div class="line"><a id="l00688" name="l00688"></a><span class="lineno">  688</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> f = 0; f &lt; F.rows(); ++f)</div>
 <div class="line"><a id="l00689" name="l00689"></a><span class="lineno">  689</span>    {</div>
-<div class="line"><a id="l00690" name="l00690"></a><span class="lineno">  690</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> lv = 0; lv &lt; <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>.cols(); ++lv)</div>
+<div class="line"><a id="l00690" name="l00690"></a><span class="lineno">  690</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> lv = 0; lv &lt; F.cols(); ++lv)</div>
 <div class="line"><a id="l00691" name="l00691"></a><span class="lineno">  691</span>        {</div>
-<div class="line"><a id="l00692" name="l00692"></a><span class="lineno">  692</span>            t[lv] = <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.row(<a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>(f, lv));</div>
+<div class="line"><a id="l00692" name="l00692"></a><span class="lineno">  692</span>            t[lv] = <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.row(F(f, lv));</div>
 <div class="line"><a id="l00693" name="l00693"></a><span class="lineno">  693</span>        }</div>
 <div class="line"><a id="l00694" name="l00694"></a><span class="lineno">  694</span>        <span class="keywordtype">double</span> vol = GEO::Geom::tetra_signed_volume(t[0].data(), t[1].data(), t[2].data(), t[3].data());</div>
 <div class="line"><a id="l00695" name="l00695"></a><span class="lineno">  695</span>        volume_total += vol;</div>
@@ -837,11 +837,11 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="foldopen" id="foldopen00702" data-start="{" data-end="}">
 <div class="line"><a id="l00702" name="l00702"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1mesh.html#a1f0a5489e7a8bc1a78e123094cb09854">  702</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a1f0a5489e7a8bc1a78e123094cb09854">polyfem::mesh::orient_closed_surface</a>(<span class="keyword">const</span> Eigen::MatrixXd &amp;<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, Eigen::MatrixXi &amp;F, <span class="keywordtype">bool</span> positive)</div>
 <div class="line"><a id="l00703" name="l00703"></a><span class="lineno">  703</span>{</div>
-<div class="line"><a id="l00704" name="l00704"></a><span class="lineno">  704</span>    <span class="keywordflow">if</span> ((positive ? 1 : -1) * <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a3366f41b53c326c7a196eea55d0c5c13">signed_volume</a>(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>) &lt; 0)</div>
+<div class="line"><a id="l00704" name="l00704"></a><span class="lineno">  704</span>    <span class="keywordflow">if</span> ((positive ? 1 : -1) * <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a3366f41b53c326c7a196eea55d0c5c13">signed_volume</a>(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, F) &lt; 0)</div>
 <div class="line"><a id="l00705" name="l00705"></a><span class="lineno">  705</span>    {</div>
-<div class="line"><a id="l00706" name="l00706"></a><span class="lineno">  706</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> f = 0; f &lt; <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>.rows(); ++f)</div>
+<div class="line"><a id="l00706" name="l00706"></a><span class="lineno">  706</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> f = 0; f &lt; F.rows(); ++f)</div>
 <div class="line"><a id="l00707" name="l00707"></a><span class="lineno">  707</span>        {</div>
-<div class="line"><a id="l00708" name="l00708"></a><span class="lineno">  708</span>            <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>.row(f) = <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>.row(f).reverse().eval();</div>
+<div class="line"><a id="l00708" name="l00708"></a><span class="lineno">  708</span>            F.row(f) = F.row(f).reverse().eval();</div>
 <div class="line"><a id="l00709" name="l00709"></a><span class="lineno">  709</span>        }</div>
 <div class="line"><a id="l00710" name="l00710"></a><span class="lineno">  710</span>    }</div>
 <div class="line"><a id="l00711" name="l00711"></a><span class="lineno">  711</span>}</div>
@@ -1014,10 +1014,10 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="line"><a id="l00873" name="l00873"></a><span class="lineno">  873</span>    OV.resize(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.rows() + 1, <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.cols());</div>
 <div class="line"><a id="l00874" name="l00874"></a><span class="lineno">  874</span>    OV.topRows(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.rows()) = <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>;</div>
 <div class="line"><a id="l00875" name="l00875"></a><span class="lineno">  875</span>    OV.bottomRows(1) = kernel;</div>
-<div class="line"><a id="l00876" name="l00876"></a><span class="lineno">  876</span>    OF = <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>;</div>
+<div class="line"><a id="l00876" name="l00876"></a><span class="lineno">  876</span>    OF = F;</div>
 <div class="line"><a id="l00877" name="l00877"></a><span class="lineno">  877</span>    OT.resize(OF.rows(), 4);</div>
 <div class="line"><a id="l00878" name="l00878"></a><span class="lineno">  878</span>    OT.col(0).setConstant(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>.rows());</div>
-<div class="line"><a id="l00879" name="l00879"></a><span class="lineno">  879</span>    OT.rightCols(3) = <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>;</div>
+<div class="line"><a id="l00879" name="l00879"></a><span class="lineno">  879</span>    OT.rightCols(3) = F;</div>
 <div class="line"><a id="l00880" name="l00880"></a><span class="lineno">  880</span>}</div>
 </div>
 <div class="line"><a id="l00881" name="l00881"></a><span class="lineno">  881</span> </div>
@@ -1028,7 +1028,7 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="line"><a id="l00886" name="l00886"></a><span class="lineno">  886</span>{</div>
 <div class="line"><a id="l00887" name="l00887"></a><span class="lineno">  887</span>    assert(num_samples &gt; 3);</div>
 <div class="line"><a id="l00888" name="l00888"></a><span class="lineno">  888</span>    GEO::Mesh M;</div>
-<div class="line"><a id="l00889" name="l00889"></a><span class="lineno">  889</span>    <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a7da2ae1a2cf19143192bb198c5ebb5b0">to_geogram_mesh</a>(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>, M);</div>
+<div class="line"><a id="l00889" name="l00889"></a><span class="lineno">  889</span>    <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a7da2ae1a2cf19143192bb198c5ebb5b0">to_geogram_mesh</a>(<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, F, M);</div>
 <div class="line"><a id="l00890" name="l00890"></a><span class="lineno">  890</span>    GEO::CentroidalVoronoiTesselation CVT(&amp;M);</div>
 <div class="line"><a id="l00891" name="l00891"></a><span class="lineno">  891</span>    <span class="comment">// GEO::mesh_save(M, &quot;foo.obj&quot;);</span></div>
 <div class="line"><a id="l00892" name="l00892"></a><span class="lineno">  892</span>    <span class="keywordtype">bool</span> was_quiet = GEO::Logger::instance()-&gt;is_quiet();</div>
@@ -1496,7 +1496,6 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="ttc" id="anamespacepolyfem_1_1utils_1_1_string_utils_html_ac716d9eff97c92c06c752fe151a714ae"><div class="ttname"><a href="namespacepolyfem_1_1utils_1_1_string_utils.html#ac716d9eff97c92c06c752fe151a714ae">polyfem::utils::StringUtils::endswith</a></div><div class="ttdeci">bool endswith(const std::string &amp;str, const std::string &amp;suffix)</div><div class="ttdef"><b>Definition</b> <a href="_string_utils_8cpp_source.html#l00048">StringUtils.cpp:48</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1utils_html"><div class="ttname"><a href="namespacepolyfem_1_1utils.html">polyfem::utils</a></div><div class="ttdef"><b>Definition</b> <a href="_bessel_8hpp_source.html#l00005">Bessel.hpp:6</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_a03f3d75072d2fd19f70cd886a51d10dd"><div class="ttname"><a href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">polyfem::logger</a></div><div class="ttdeci">spdlog::logger &amp; logger()</div><div class="ttdoc">Retrieves the current logger.</div><div class="ttdef"><b>Definition</b> <a href="_logger_8cpp_source.html#l00042">Logger.cpp:42</a></div></div>
-<div class="ttc" id="anamespacepolyfem_html_ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012"><div class="ttname"><a href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::ElasticityTensorType::F</a></div><div class="ttdeci">@ F</div></div>
 <div class="ttc" id="astructpolyfem_1_1mesh_1_1_edge_html"><div class="ttname"><a href="structpolyfem_1_1mesh_1_1_edge.html">polyfem::mesh::Edge</a></div><div class="ttdef"><b>Definition</b> <a href="_mesh3_d_storage_8hpp_source.html#l00022">Mesh3DStorage.hpp:23</a></div></div>
 <div class="ttc" id="astructpolyfem_1_1utils_1_1_hash_vector_html"><div class="ttname"><a href="structpolyfem_1_1utils_1_1_hash_vector.html">polyfem::utils::HashVector</a></div><div class="ttdef"><b>Definition</b> <a href="_hash_utils_8hpp_source.html#l00059">HashUtils.hpp:60</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
