@@ -55,12 +55,12 @@ namespace polyfem::solver
 		void set_fixed_values(const Eigen::VectorXd &fixed_values) { fixed_values_ = fixed_values; }
 
 		void init(const TVector &x0) override;
-		bool is_step_valid(const TVector &x0, const TVector &x1) const override;
-		bool is_step_collision_free(const TVector &x0, const TVector &x1) const override;
-		double max_step_size(const TVector &x0, const TVector &x1) const override;
+		bool is_step_valid(const TVector &x0, const TVector &x1) override;
+		bool is_step_collision_free(const TVector &x0, const TVector &x1) override;
+		double max_step_size(const TVector &x0, const TVector &x1) override;
 
 		void line_search_begin(const TVector &x0, const TVector &x1) override;
-		void post_step(const int iter_num, const TVector &x) override;
+		void post_step(const polysolve::nonlinear::PostStepData &data) override;
 
 		void solution_changed(const TVector &new_x) override;
 

@@ -35,9 +35,9 @@ namespace polyfem
 		{
 
 			StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
-			assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, velocity_stiffness);
-			mixed_assembler->assemble(mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, geom_bases(), pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
-			pressure_assembler->assemble(mesh->is_volume(), n_pressure_bases, pressure_bases, geom_bases(), pressure_ass_vals_cache, pressure_stiffness);
+			assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, 0, velocity_stiffness);
+			mixed_assembler->assemble(mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, geom_bases(), pressure_ass_vals_cache, ass_vals_cache, 0, mixed_stiffness);
+			pressure_assembler->assemble(mesh->is_volume(), n_pressure_bases, pressure_bases, geom_bases(), pressure_ass_vals_cache, 0, pressure_stiffness);
 
 			const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 
@@ -47,7 +47,7 @@ namespace polyfem
 		}
 		else
 		{
-			assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, stiffness);
+			assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, 0, stiffness);
 		}
 
 		timer.stop();
@@ -173,7 +173,7 @@ namespace polyfem
 		solve_data.elastic_form = std::make_shared<ElasticForm>(
 			n_bases, bases, geom_bases(),
 			*assembler, ass_vals_cache,
-			problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
+			t, problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
 			mesh->is_volume());
 
 		solve_data.body_form = std::make_shared<BodyForm>(
@@ -261,7 +261,7 @@ namespace polyfem
 
 		if (optimization_enabled != solver::CacheLevel::None)
 		{
-			log_and_throw_error("Transient linear problems are not differentiable yet!");
+			log_and_throw_adjoint_error("Transient linear problems are not differentiable yet!");
 			cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 		}
 
@@ -271,7 +271,7 @@ namespace polyfem
 		build_stiffness_mat(stiffness);
 
 		// --------------------------------------------------------------------
-
+		// TODO rebuild stiffnes if material are time dept
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			const double time = t0 + t * dt;
@@ -334,7 +334,7 @@ namespace polyfem
 
 			if (optimization_enabled != solver::CacheLevel::None)
 			{
-				log_and_throw_error("Transient linear problems are not differentiable yet!");
+				log_and_throw_adjoint_error("Transient linear problems are not differentiable yet!");
 				cache_transient_adjoint_quantities(t, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 			}
 

@@ -60,7 +60,7 @@ namespace polyfem::mesh
 		Eigen::SparseMatrix<double> M, A;
 		{
 			assembler::MassMatrixAssembler assembler;
-			assembler::Density no_density; // Density of one (i.e., no scaling of mass matrix)
+			assembler::NoDensity no_density; // Density of one (i.e., no scaling of mass matrix)
 			assembler::AssemblyValsCache cache;
 
 			assembler.assemble(
@@ -114,7 +114,7 @@ namespace polyfem::mesh
 		const int n_constrained_quantaties = projected_quantities.cols() / 3;
 		const int n_unconstrained_quantaties = projected_quantities.cols() - n_constrained_quantaties;
 
-		auto nl_solver = m.state.template make_nl_solver<solver::NLProblem>("Eigen::LLT");
+		auto nl_solver = m.state.make_nl_solver(/*for_al=*/false);
 		for (int i = 0; i < n_constrained_quantaties; ++i)
 		{
 			const auto level_before = logger().level();
@@ -171,6 +171,14 @@ namespace polyfem::mesh
 	{
 		if (!Super::smooth_before(v))
 			return false;
+
+		if (this->op_cache == nullptr)
+		{
+			if constexpr (std::is_same_v<WMTKMesh, wmtk::TriMesh>)
+				this->op_cache = std::make_shared<TriOperationCache>();
+			else
+				this->op_cache = std::make_shared<TetOperationCache>();
+		}
 
 		this->op_cache->local_energy = local_mesh_energy(
 			vertex_attrs[v.vid(*this)].rest_position);

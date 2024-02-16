@@ -407,6 +407,7 @@ namespace polyfem
 						|| current == "SaintVenant"
 						|| current == "HookeLinearElasticity"
 						|| current == "MooneyRivlin"
+						|| current == "MooneyRivlin3Param"
 						|| current == "UnconstrainedOgden"
 						|| current == "IncompressibleOgden"
 						|| current == "MultiModels")
@@ -416,6 +417,7 @@ namespace polyfem
 							|| tmp == "SaintVenant"
 							|| tmp == "HookeLinearElasticity"
 							|| tmp == "MooneyRivlin"
+							|| current == "MooneyRivlin3Param"
 							|| tmp == "UnconstrainedOgden"
 							|| tmp == "IncompressibleOgden")
 							current = "MultiModels";
@@ -1546,7 +1548,7 @@ namespace polyfem
 		if (mixed_assembler != nullptr)
 		{
 			StiffnessMatrix velocity_mass;
-			mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, velocity_mass, true);
+			mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, 0, velocity_mass, true);
 
 			std::vector<Eigen::Triplet<double>> mass_blocks;
 			mass_blocks.reserve(velocity_mass.nonZeros());
@@ -1565,7 +1567,7 @@ namespace polyfem
 		}
 		else
 		{
-			mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, mass, true);
+			mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, 0, mass, true);
 		}
 
 		assert(mass.size() > 0);

@@ -32,16 +32,14 @@ namespace polyfem
 	using namespace io;
 	using namespace utils;
 
-	std::shared_ptr<polysolve::nonlinear::Solver> State::make_nl_solver() const
+	std::shared_ptr<polysolve::nonlinear::Solver> State::make_nl_solver(bool for_al) const
 	{
-		return polysolve::nonlinear::Solver::create(args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger());
+		return polysolve::nonlinear::Solver::create(for_al ? args["solver"]["augmented_lagrangian"]["nonlinear"] : args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger());
 	}
 
 	void State::solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol)
 	{
 		init_nonlinear_tensor_solve(sol, t0 + dt);
-
-		save_timestep(t0, 0, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 
 		// Write the total energy to a CSV file
 		int save_i = 0;
@@ -53,6 +51,11 @@ namespace polyfem
 			log_and_throw_error("Remeshing is not enabled in this build! Set POLYFEM_WITH_REMESHING=ON in CMake to enable it.");
 #endif
 		// const double save_dt = remesh_enabled ? (dt / 3) : dt;
+
+		// Save the initial solution
+		energy_csv.write(save_i, sol);
+		save_timestep(t0, save_i, t0, dt, sol, Eigen::MatrixXd()); // no pressure
+		save_i++;
 
 		if (optimization_enabled != solver::CacheLevel::None)
 			cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
@@ -95,6 +98,7 @@ namespace polyfem
 			// Always save the solution for consistency
 			energy_csv.write(save_i, sol);
 			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
+			save_i++;
 
 			if (optimization_enabled != solver::CacheLevel::None)
 			{
@@ -159,7 +163,7 @@ namespace polyfem
 			const Eigen::MatrixXd displaced = collision_mesh.displace_vertices(
 				utils::unflatten(sol, mesh->dimension()));
 
-			if (ipc::has_intersections(collision_mesh, displaced))
+			if (ipc::has_intersections(collision_mesh, displaced, args["solver"]["contact"]["CCD"]["broad_phase"]))
 			{
 				OBJWriter::write(
 					resolve_output_path("intersection.obj"), displaced,
@@ -261,7 +265,8 @@ namespace polyfem
 		solve_data.nl_problem = std::make_shared<NLProblem>(
 			ndof, boundary_nodes, local_boundary, n_boundary_samples(),
 			*solve_data.rhs_assembler, periodic_bc, t, forms);
-
+		solve_data.nl_problem->init(sol);
+		solve_data.nl_problem->update_quantities(t, sol);
 		// --------------------------------------------------------------------
 
 		stats.solver_info = json::array();
@@ -292,15 +297,14 @@ namespace polyfem
 
 		// ---------------------------------------------------------------------
 
-		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver();
+		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(true);
 
 		ALSolver al_solver(
-			nl_solver, solve_data.al_lagr_form, solve_data.al_pen_form,
+			solve_data.al_lagr_form, solve_data.al_pen_form,
 			args["solver"]["augmented_lagrangian"]["initial_weight"],
 			args["solver"]["augmented_lagrangian"]["scaling"],
 			args["solver"]["augmented_lagrangian"]["max_weight"],
 			args["solver"]["augmented_lagrangian"]["eta"],
-			args["solver"]["augmented_lagrangian"]["max_solver_iters"],
 			[&](const Eigen::VectorXd &x) {
 				this->solve_data.update_barrier_stiffness(sol);
 			});
@@ -316,7 +320,10 @@ namespace polyfem
 		};
 
 		Eigen::MatrixXd prev_sol = sol;
-		al_solver.solve(nl_problem, sol);
+		al_solver.solve_al(nl_solver, nl_problem, sol);
+
+		nl_solver = make_nl_solver(false);
+		al_solver.solve_reduced(nl_solver, nl_problem, sol);
 
 		// ---------------------------------------------------------------------
 

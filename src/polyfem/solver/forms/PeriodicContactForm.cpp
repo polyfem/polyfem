@@ -148,9 +148,11 @@ namespace polyfem::solver
         ContactForm::solution_changed(single_to_tiled(new_x));
     }
 
-    void PeriodicContactForm::post_step(const int iter_num, const Eigen::VectorXd &x) 
+    void PeriodicContactForm::post_step(const polysolve::nonlinear::PostStepData &data)
     {
-        ContactForm::post_step(iter_num, single_to_tiled(x));
+        ContactForm::post_step(
+            polysolve::nonlinear::PostStepData(
+                data.iter_num, data.solver_info, single_to_tiled(data.x), single_to_tiled(data.grad)));
     }
 
     bool PeriodicContactForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const 

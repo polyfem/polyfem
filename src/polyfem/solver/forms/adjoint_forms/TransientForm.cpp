@@ -172,9 +172,9 @@ namespace polyfem::solver
 		obj_->line_search_end();
 	}
 
-	void TransientForm::post_step(const int iter_num, const Eigen::VectorXd &x)
+	void TransientForm::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
-		obj_->post_step(iter_num, x);
+		obj_->post_step(data);
 	}
 
 	void TransientForm::solution_changed(const Eigen::VectorXd &new_x)

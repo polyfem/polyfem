@@ -66,10 +66,14 @@ void State::init_homogenization_solve(const std::vector<int> &fixed_entry, const
         // Rayleigh damping form
         args["solver"]["rayleigh_damping"]);
     
-    solve_data.named_forms().at("augmented_lagrangian_lagr")->disable();
-    solve_data.named_forms().at("augmented_lagrangian_lagr")->set_weight(0);
-    solve_data.named_forms().at("augmented_lagrangian_penalty")->disable();
-    solve_data.named_forms().at("augmented_lagrangian_penalty")->set_weight(0);
+    for (const auto &[name, form] : solve_data.named_forms())
+    {
+        if (name == "augmented_lagrangian_lagr" || name == "augmented_lagrangian_penalty")
+        {
+            form->set_weight(0);
+            form->disable();
+        }
+    }
 
     bool solve_symmetric_flag = false;
     {
@@ -111,8 +115,6 @@ void State::solve_homogenization_step(Eigen::MatrixXd &sol, const Eigen::MatrixX
     if (homo_problem->has_symmetry_constraint() && (disp_grad - disp_grad.transpose()).norm() > 1e-8)
         log_and_throw_error("Macro strain is not symmetric!");
 
-    std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver();
-
     Eigen::VectorXd extended_sol;
     extended_sol.setZero(ndof + dim * dim);
     
@@ -120,6 +122,7 @@ void State::solve_homogenization_step(Eigen::MatrixXd &sol, const Eigen::MatrixX
         extended_sol = sol;
 
     {
+        std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(true);
         Eigen::VectorXi al_indices;
         Eigen::VectorXd al_values;
         // from full to symmetric indices
@@ -140,8 +143,7 @@ void State::solve_homogenization_step(Eigen::MatrixXd &sol, const Eigen::MatrixX
         const double max_weight = args["solver"]["augmented_lagrangian"]["max_weight"];
         const double eta_tol = args["solver"]["augmented_lagrangian"]["eta"];
         const double scaling = args["solver"]["augmented_lagrangian"]["scaling"];
-        const int max_al_steps = args["solver"]["augmented_lagrangian"]["max_solver_iters"];
-        const double error_tol = args["solver"]["augmented_lagrangian"]["error"];
+        const int max_al_steps = args["solver"]["augmented_lagrangian"]["nonlinear"]["max_iterations"];
         double al_weight = initial_weight;
 
         Eigen::VectorXd tmp_sol = homo_problem->extended_to_reduced(extended_sol);
@@ -159,8 +161,7 @@ void State::solve_homogenization_step(Eigen::MatrixXd &sol, const Eigen::MatrixX
 		while (force_al
 			   || !std::isfinite(homo_problem->value(reduced_sol))
 			   || !homo_problem->is_step_valid(tmp_sol, reduced_sol)
-			   || !homo_problem->is_step_collision_free(tmp_sol, reduced_sol)
-               || current_error > error_tol)
+			   || !homo_problem->is_step_collision_free(tmp_sol, reduced_sol))
         {
             force_al = false;
             homo_problem->line_search_end();
@@ -237,6 +238,7 @@ void State::solve_homogenization_step(Eigen::MatrixXd &sol, const Eigen::MatrixX
     Eigen::VectorXd reduced_sol = homo_problem->extended_to_reduced(extended_sol);
 
     homo_problem->init(reduced_sol);
+    std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(false);
     nl_solver->minimize(*homo_problem, reduced_sol);
 
     logger().info("displacement grad {}", extended_sol.tail(dim * dim).transpose());

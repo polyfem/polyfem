@@ -50,6 +50,7 @@ namespace polyfem::io
 			const Eigen::VectorXi &disc_orders,
 			const assembler::Assembler &assembler,
 			const Eigen::MatrixXd &fun,
+			const double t,
 			Eigen::MatrixXd &result,
 			Eigen::VectorXd &von_mises);
 
@@ -151,7 +152,7 @@ namespace polyfem::io
 			Eigen::MatrixXd &result_grad);
 
 		static void interpolate_at_local_vals(
-			const int el_index, 
+			const int el_index,
 			const int dim,
 			const int actual_dim,
 			const assembler::ElementAssemblyValues &vals,
@@ -184,6 +185,7 @@ namespace polyfem::io
 			const assembler::Assembler &assembler,
 			const utils::RefElementSampler &sampler,
 			const Eigen::MatrixXd &fun,
+			const double t,
 			const bool use_sampler,
 			const bool boundary_only);
 
@@ -214,6 +216,7 @@ namespace polyfem::io
 			const utils::RefElementSampler &sampler,
 			const int n_points,
 			const Eigen::MatrixXd &fun,
+			const double t,
 			std::vector<assembler::Assembler::NamedMatrix> &result,
 			const bool use_sampler,
 			const bool boundary_only);
@@ -247,6 +250,7 @@ namespace polyfem::io
 			const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 			const assembler::Assembler &assembler,
 			const utils::RefElementSampler &sampler,
+			const double t,
 			const int n_points,
 			const Eigen::MatrixXd &fun,
 			std::vector<assembler::Assembler::NamedMatrix> &result_scalar,
@@ -281,6 +285,7 @@ namespace polyfem::io
 			const utils::RefElementSampler &sampler,
 			const int n_points,
 			const Eigen::MatrixXd &fun,
+			const double t,
 			std::vector<assembler::Assembler::NamedMatrix> &result,
 			const bool use_sampler,
 			const bool boundary_only);
@@ -336,6 +341,7 @@ namespace polyfem::io
 		/// @param[in] faces boundary faces
 		/// @param[in] fun function to used
 		/// @param[in] disp displacement to deform mesh
+		/// @param[in] t time
 		/// @param[in] compute_avg if compute the average across elements
 		/// @param[out] result resulting value
 		/// @param[out] stresses resulting stresses
@@ -351,6 +357,7 @@ namespace polyfem::io
 			const Eigen::MatrixXi &faces,
 			const Eigen::MatrixXd &fun,
 			const Eigen::MatrixXd &disp,
+			const double t,
 			const bool compute_avg,
 			Eigen::MatrixXd &result,
 			Eigen::MatrixXd &stresses,
@@ -366,6 +373,7 @@ namespace polyfem::io
 		/// @param[in] pts boundary points
 		/// @param[in] faces boundary faces
 		/// @param[in] fun function to used
+		/// @param[in] t time
 		/// @param[in] compute_avg if compute the average across elements
 		/// @param[out] result resulting value
 		/// @param[out] stresses resulting stresses
@@ -380,6 +388,7 @@ namespace polyfem::io
 			const Eigen::MatrixXd &pts,
 			const Eigen::MatrixXi &faces,
 			const Eigen::MatrixXd &fun,
+			const double t,
 			const bool compute_avg,
 			Eigen::MatrixXd &result,
 			Eigen::MatrixXd &stresses,

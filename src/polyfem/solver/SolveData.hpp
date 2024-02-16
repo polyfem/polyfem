@@ -119,7 +119,7 @@ namespace polyfem::solver
 		/// @brief updates the dt inside the different forms
 		void update_dt();
 
-		std::unordered_map<std::string, std::shared_ptr<solver::Form>> named_forms() const;
+		std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> named_forms() const;
 
 	public:
 		std::shared_ptr<assembler::RhsAssembler> rhs_assembler;

@@ -325,7 +325,7 @@ namespace polyfem::solver
         FullNLProblem::init(reduced_to_full(x0));
     }
 
-    bool NLHomoProblem::is_step_valid(const TVector &x0, const TVector &x1) const
+    bool NLHomoProblem::is_step_valid(const TVector &x0, const TVector &x1)
     {
         bool flag =  NLProblem::is_step_valid(x0, x1);
         for (auto &form : homo_forms)
@@ -334,7 +334,7 @@ namespace polyfem::solver
         
         return flag;
     }
-    bool NLHomoProblem::is_step_collision_free(const TVector &x0, const TVector &x1) const
+    bool NLHomoProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
     {
         bool flag = NLProblem::is_step_collision_free(x0, x1);
         for (auto &form : homo_forms)
@@ -343,7 +343,7 @@ namespace polyfem::solver
         
         return flag;
     }
-    double NLHomoProblem::max_step_size(const TVector &x0, const TVector &x1) const
+    double NLHomoProblem::max_step_size(const TVector &x0, const TVector &x1)
     {
         double size = NLProblem::max_step_size(x0, x1);
         for (auto &form : homo_forms)
@@ -359,12 +359,13 @@ namespace polyfem::solver
             if (form->enabled())
                 form->line_search_begin(reduced_to_extended(x0), reduced_to_extended(x1));
     }
-    void NLHomoProblem::post_step(const int iter_num, const TVector &x)
+    void NLHomoProblem::post_step(const polysolve::nonlinear::PostStepData &data)
     {
-        NLProblem::post_step(iter_num, x);
+        NLProblem::post_step(data);
         for (auto &form : homo_forms)
             if (form->enabled())
-                form->post_step(iter_num, reduced_to_extended(x));
+                form->post_step(polysolve::nonlinear::PostStepData(
+                data.iter_num, data.solver_info, reduced_to_extended(data.x), reduced_to_extended(data.grad)));
     }
 
     void NLHomoProblem::solution_changed(const TVector &new_x)

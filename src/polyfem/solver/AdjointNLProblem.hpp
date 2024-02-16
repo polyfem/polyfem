@@ -24,14 +24,14 @@ namespace polyfem::solver
 
 		void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
 		void hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
-		void save_to_file(const Eigen::VectorXd &x0) override;
-		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
-		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
-		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
+		void save_to_file(const int iter_num, const Eigen::VectorXd &x0);
+		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
+		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
+		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 
 		void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 		void line_search_end() override;
-		void post_step(const int iter_num, const Eigen::VectorXd &x) override;
+		void post_step(const polysolve::nonlinear::PostStepData &data) override;
 		bool stop(const TVector &x) override;
 
 		// virtual void set_project_to_psd(bool val) override;
@@ -50,13 +50,13 @@ namespace polyfem::solver
 		std::vector<std::shared_ptr<State>> all_states_;
 		std::vector<bool> active_state_mask;
 		Eigen::VectorXd cur_grad;
-		int iter = 0;
 
-		const int solve_log_level;
 		const int save_freq;
 
 		const bool solve_in_parallel;
 		std::vector<int> solve_in_order;
+
+		int save_iter = 0;
 
 		std::vector<std::shared_ptr<AdjointForm>> stopping_conditions_; // if all the stopping conditions are non-positive, stop the optimization
 	};

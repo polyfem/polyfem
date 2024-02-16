@@ -160,13 +160,14 @@ namespace polyfem::assembler
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &cache,
+		const double t,
 		StiffnessMatrix &stiffness,
 		const bool is_mass) const
 	{
 		assert(size() > 0);
 
-		const int max_triplets_size = int(1e7);
-		const int buffer_size = std::min(long(max_triplets_size), long(n_basis) * size());
+		const long int max_triplets_size = long(1e7);
+		const long int buffer_size = std::min(long(max_triplets_size), long(n_basis) * size());
 		// #ifdef POLYFEM_WITH_TBB
 		// 		buffer_size /= tbb::task_scheduler_init::default_num_threads();
 		// #endif
@@ -219,20 +220,16 @@ namespace polyfem::assembler
 							const auto &global_j = vals.basis_values[j].global;
 
 							// compute local entry in stiffness matrix
-							const auto stiffness_val = assemble(LinearAssemblerData(vals, i, j, local_storage.da));
+							const auto stiffness_val = assemble(LinearAssemblerData(vals, t, i, j, local_storage.da));
 							assert(stiffness_val.size() == size() * size());
 
 							// igl::Timer t1; t1.start();
-							// loop over dimensions of the problem 
+							// loop over dimensions of the problem
 							for (int n = 0; n < size(); ++n)
 							{
 								for (int m = 0; m < size(); ++m)
 								{
 									const double local_value = stiffness_val(n * size() + m);
-									// if (std::abs(local_value) < 1e-30)
-									// {
-									// 	continue;
-									// }
 
 									// loop over the global nodes corresponding to local element (useful for non-conforming cases)
 									for (size_t ii = 0; ii < global_i.size(); ++ii)
@@ -279,7 +276,7 @@ namespace polyfem::assembler
 
 			// Collect thread storages
 			std::vector<LocalThreadMatStorage *> storages(storage.size());
-			int index = 0;
+			long int index = 0;
 			for (auto &local_storage : storage)
 			{
 				storages[index++] = &local_storage;
@@ -293,10 +290,10 @@ namespace polyfem::assembler
 			logger().trace("done pruning triplets {}s...", timer.getElapsedTime());
 
 			// Prepares for parallel concatenation
-			std::vector<int> offsets(storage.size());
+			std::vector<long int> offsets(storage.size());
 
 			index = 0;
-			int triplet_count = 0;
+			long int triplet_count = 0;
 			for (auto &local_storage : storage)
 			{
 				offsets[index++] = triplet_count;
@@ -347,14 +344,14 @@ namespace polyfem::assembler
 				// Parallel copy into triplets
 				maybe_parallel_for(storages.size(), [&](int i) {
 					const SparseMatrixCache &cache = dynamic_cast<const SparseMatrixCache &>(*storages[i]->cache);
-					int offset = offsets[i];
+					long int offset = offsets[i];
 
 					std::copy(cache.entries().begin(), cache.entries().end(), triplets.begin() + offset);
 					offset += cache.entries().size();
 
 					if (cache.mat().nonZeros() > 0)
 					{
-						int count = 0;
+						long int count = 0;
 						for (int k = 0; k < cache.mat().outerSize(); ++k)
 						{
 							for (Eigen::SparseMatrix<double>::InnerIterator it(cache.mat(), k); it; ++it)
@@ -399,6 +396,7 @@ namespace polyfem::assembler
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &psi_cache,
 		const AssemblyValsCache &phi_cache,
+		const double t,
 		StiffnessMatrix &stiffness) const
 	{
 		assert(size() > 0);
@@ -443,7 +441,7 @@ namespace polyfem::assembler
 					{
 						const auto &global_j = phi_vals.basis_values[j].global;
 
-						const auto stiffness_val = assemble(MixedAssemblerData(psi_vals, phi_vals, i, j, local_storage.da));
+						const auto stiffness_val = assemble(MixedAssemblerData(psi_vals, phi_vals, t, i, j, local_storage.da));
 						assert(stiffness_val.size() == rows() * cols());
 
 						// igl::Timer t1; t1.start();
@@ -452,10 +450,6 @@ namespace polyfem::assembler
 							for (int m = 0; m < cols(); ++m)
 							{
 								const double local_value = stiffness_val(n * cols() + m);
-								// if (std::abs(local_value) < 1e-30)
-								// {
-								// 	continue;
-								// }
 
 								for (size_t ii = 0; ii < global_i.size(); ++ii)
 								{
@@ -503,6 +497,7 @@ namespace polyfem::assembler
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &cache,
+		const double t,
 		const double dt,
 		const Eigen::MatrixXd &displacement,
 		const Eigen::MatrixXd &displacement_prev) const
@@ -523,7 +518,7 @@ namespace polyfem::assembler
 				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 
-				const double val = compute_energy(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				const double val = compute_energy(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, local_storage.da));
 				local_storage.val += val;
 			}
 		});
@@ -540,6 +535,7 @@ namespace polyfem::assembler
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &cache,
+		const double t,
 		const double dt,
 		const Eigen::MatrixXd &displacement,
 		const Eigen::MatrixXd &displacement_prev) const
@@ -561,14 +557,14 @@ namespace polyfem::assembler
 				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 
-				const double val = compute_energy(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				const double val = compute_energy(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, local_storage.da));
 				out[e] = val;
 			}
 		});
 
 #ifndef NDEBUG
 		const double assemble_val = assemble_energy(
-			is_volume, bases, gbases, cache, dt, displacement, displacement_prev);
+			is_volume, bases, gbases, cache, t, dt, displacement, displacement_prev);
 		assert(std::abs(assemble_val - out.sum()) < std::max(1e-10 * assemble_val, 1e-10));
 #endif
 
@@ -581,6 +577,7 @@ namespace polyfem::assembler
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &cache,
+		const double t,
 		const double dt,
 		const Eigen::MatrixXd &displacement,
 		const Eigen::MatrixXd &displacement_prev,
@@ -610,7 +607,7 @@ namespace polyfem::assembler
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 				const int n_loc_bases = int(vals.basis_values.size());
 
-				const auto val = assemble_gradient(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				const auto val = assemble_gradient(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, local_storage.da));
 				assert(val.size() == n_loc_bases * size());
 
 				for (int j = 0; j < n_loc_bases; ++j)
@@ -621,10 +618,6 @@ namespace polyfem::assembler
 					for (int m = 0; m < size(); ++m)
 					{
 						const double local_value = val(j * size() + m);
-						// if (std::abs(local_value) < 1e-30)
-						// {
-						// 	continue;
-						// }
 
 						for (size_t jj = 0; jj < global_j.size(); ++jj)
 						{
@@ -656,6 +649,7 @@ namespace polyfem::assembler
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &cache,
+		const double t,
 		const double dt,
 		const Eigen::MatrixXd &displacement,
 		const Eigen::MatrixXd &displacement_prev,
@@ -692,7 +686,7 @@ namespace polyfem::assembler
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 				const int n_loc_bases = int(vals.basis_values.size());
 
-				auto stiffness_val = assemble_hessian(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				auto stiffness_val = assemble_hessian(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, local_storage.da));
 				assert(stiffness_val.rows() == n_loc_bases * size());
 				assert(stiffness_val.cols() == n_loc_bases * size());
 
@@ -729,10 +723,6 @@ namespace polyfem::assembler
 							for (int m = 0; m < size(); ++m)
 							{
 								const double local_value = stiffness_val(i * size() + m, j * size() + n);
-								//  if (std::abs(local_value) < 1e-30)
-								//  {
-								// 	 continue;
-								//  }
 
 								for (size_t ii = 0; ii < global_i.size(); ++ii)
 								{

@@ -1,4 +1,5 @@
-[{
+[
+    {
         "pointer": "/",
         "type": "object",
         "required": [
@@ -1334,10 +1335,15 @@
             "scaling",
             "max_weight",
             "eta",
-            "max_solver_iters",
-            "error"
+            "nonlinear"
         ],
         "doc": "Parameters for the AL for imposing Dirichlet BCs. If the bc are not imposable, we add $w\\|u - bc\\|^2$ to the energy ($u$ is the solution at the Dirichlet nodes and $bc$ are the Dirichlet values). After convergence, we try to impose bc again. The algorithm computes E + a/2*AL^2 - lambda AL, where E is the current energy (elastic, inertia, contact, etc.) and AL is the augmented Lagrangian energy. a starts at `initial_weight` and, in case DBC cannot be imposed, we update a as `a *= scaling` until `max_weight`. See IPC additional material"
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/nonlinear",
+        "type": "include",
+        "spec_file": "nonlinear-solver-spec.json",
+        "doc": "Settings for nonlinear solver in augmented lagrangian."
     },
     {
         "pointer": "/solver/augmented_lagrangian/initial_weight",
@@ -1363,7 +1369,7 @@
         "pointer": "/solver/augmented_lagrangian/max_weight",
         "default": 1e8,
         "type": "float",
-        "doc": "Maximum weigth"
+        "doc": "Maximum weight"
     },
     {
         "pointer": "/solver/augmented_lagrangian/eta",
@@ -1372,13 +1378,6 @@
         "max": 1,
         "type": "float",
         "doc": "Tolerance for increasing the weight or updating the lagrangian"
-    },
-    {
-        "pointer": "/solver/augmented_lagrangian/max_solver_iters",
-        "min": 1,
-        "default": 500,
-        "type": "int",
-        "doc": "Maximum number of iterations of the nonlinear solver inside the AL steps."
     },
     {
         "pointer": "/solver/contact",
@@ -1414,6 +1413,8 @@
             "BF",
             "spatial_hash",
             "SH",
+            "bvh",
+            "BVH",
             "sweep_and_tiniest_queue",
             "STQ",
             "sweep_and_tiniest_queue_gpu",
@@ -2455,71 +2456,9 @@
     },
     {
         "pointer": "/output/log",
-        "default": null,
-        "type": "object",
-        "optional": [
-            "level",
-            "file_level",
-            "path",
-            "quiet"
-        ],
+        "spec_file": "log.json",
+        "type": "include",
         "doc": "Setting for the output log."
-    },
-    {
-        "pointer": "/output/log/level",
-        "type": "int",
-        "min": 0,
-        "max": 6,
-        "doc": "Level of logging, 0 trace, 1 debug, 2 info, 3 warning, 4 error, 5 critical, and 6 off."
-    },
-    {
-        "pointer": "/output/log/level",
-        "default": "debug",
-        "type": "string",
-        "options": [
-            "trace",
-            "debug",
-            "info",
-            "warning",
-            "error",
-            "critical",
-            "off"
-        ],
-        "doc": "Level of logging."
-    },
-    {
-        "pointer": "/output/log/file_level",
-        "type": "int",
-        "min": 0,
-        "max": 6,
-        "doc": "Level of logging to a file, 0 trace, 1 debug, 2 info, 3 warning, 4 error, 5 critical, and 6 off."
-    },
-    {
-        "pointer": "/output/log/file_level",
-        "default": "trace",
-        "type": "string",
-        "options": [
-            "trace",
-            "debug",
-            "info",
-            "warning",
-            "error",
-            "critical",
-            "off"
-        ],
-        "doc": "Level of logging."
-    },
-    {
-        "pointer": "/output/log/path",
-        "default": "",
-        "type": "string",
-        "doc": "File where to save the log; empty string is output to terminal."
-    },
-    {
-        "pointer": "/output/log/quiet",
-        "default": false,
-        "type": "bool",
-        "doc": "Disable cout for logging."
     },
     {
         "pointer": "/output/json",
@@ -2741,7 +2680,7 @@
         "pointer": "/output/data/rest_mesh",
         "default": "",
         "type": "string",
-        "doc": "Writes the rest mesh in OBJ format, used to restart the sim"
+        "doc": "Writes the rest mesh in MSH format, used to restart the sim"
     },
     {
         "pointer": "/output/data/mises",

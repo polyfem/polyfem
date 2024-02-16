@@ -19,31 +19,28 @@ namespace polyfem::solver
 
 	public:
 		ALSolver(
-			std::shared_ptr<NLSolver> nl_solver,
 			std::shared_ptr<LagrangianForm> lagr_form,
 			std::shared_ptr<BCPenaltyForm> pen_form,
 			const double initial_al_weight,
 			const double scaling,
 			const double max_al_weight,
 			const double eta_tol,
-			const int max_solver_iter,
 			const std::function<void(const Eigen::VectorXd &)> &update_barrier_stiffness);
 
-		void solve(NLProblem &nl_problem, Eigen::MatrixXd &sol);
+		void solve_al(std::shared_ptr<NLSolver> nl_solver, NLProblem &nl_problem, Eigen::MatrixXd &sol);
+		void solve_reduced(std::shared_ptr<NLSolver> nl_solver, NLProblem &nl_problem, Eigen::MatrixXd &sol);
 
 		std::function<void(const double)> post_subsolve = [](const double) {};
 
 	protected:
 		void set_al_weight(NLProblem &nl_problem, const Eigen::VectorXd &x, const double weight);
 
-		std::shared_ptr<NLSolver> nl_solver;
 		std::shared_ptr<LagrangianForm> lagr_form;
 		std::shared_ptr<BCPenaltyForm> pen_form;
 		const double initial_al_weight;
 		const double scaling;
 		const double max_al_weight;
 		const double eta_tol;
-		const int max_solver_iter;
 
 		// TODO: replace this with a member function
 		std::function<void(const Eigen::VectorXd &)> update_barrier_stiffness;

@@ -312,7 +312,7 @@ namespace polyfem::assembler
 		is_lambda_mu_ = true;
 	}
 
-	void LameParameters::lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &lambda, double &mu) const
+	void LameParameters::lambda_mu(double px, double py, double pz, double x, double y, double z, double t, int el_id, double &lambda, double &mu) const
 	{
 		assert(lambda_or_E_.size() == 1 || el_id < lambda_or_E_.size());
 		assert(mu_or_nu_.size() == 1 || el_id < mu_or_nu_.size());
@@ -321,8 +321,8 @@ namespace polyfem::assembler
 		const auto &tmp1 = lambda_or_E_.size() == 1 ? lambda_or_E_[0] : lambda_or_E_[el_id];
 		const auto &tmp2 = mu_or_nu_.size() == 1 ? mu_or_nu_[0] : mu_or_nu_[el_id];
 
-		double llambda = tmp1(x, y, z, 0, el_id);
-		double mmu = tmp2(x, y, z, 0, el_id);
+		double llambda = tmp1(x, y, z, t, el_id);
+		double mmu = tmp2(x, y, z, t, el_id);
 
 		if (!is_lambda_mu_)
 		{
@@ -340,7 +340,7 @@ namespace polyfem::assembler
 			lambda = lambda_mat_(el_id);
 			mu = mu_mat_(el_id);
 		}
-		
+
 		assert(!std::isnan(lambda));
 		assert(!std::isnan(mu));
 		assert(!std::isinf(lambda));
@@ -396,12 +396,12 @@ namespace polyfem::assembler
 		rho_.back().init(1.0);
 	}
 
-	double Density::operator()(double px, double py, double pz, double x, double y, double z, int el_id) const
+	double Density::operator()(double px, double py, double pz, double x, double y, double z, double t, int el_id) const
 	{
 		assert(rho_.size() == 1 || el_id < rho_.size());
 
 		const auto &tmp = rho_.size() == 1 ? rho_[0] : rho_[el_id];
-		const double res = tmp(x, y, z, 0, el_id);
+		const double res = tmp(x, y, z, t, el_id);
 		assert(!std::isnan(res));
 		assert(!std::isinf(res));
 		return res;

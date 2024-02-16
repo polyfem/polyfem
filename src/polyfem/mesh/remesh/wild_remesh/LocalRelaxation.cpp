@@ -2,8 +2,9 @@
 #include <polyfem/mesh/remesh/wild_remesh/LocalRelaxationData.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/NLProblem.hpp>
-#include <polyfem/solver/NonlinearSolver.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
+
+#include <polysolve/nonlinear/Solver.hpp>
 
 namespace polyfem::mesh
 {
@@ -64,7 +65,7 @@ namespace polyfem::mesh
 		this->num_solves++;
 
 		// Nonlinear solver
-		auto nl_solver = state.template make_nl_solver<solver::NLProblem>("Eigen::LLT");
+		auto nl_solver = state.make_nl_solver(/*for_al=*/false); // TODO: Use Eigen::LLT
 		nl_solver->max_iterations() = args["local_relaxation"]["max_nl_iterations"];
 		if (this->is_boundary_op())
 			nl_solver->max_iterations() = std::max(nl_solver->max_iterations(), 5ul);
@@ -160,9 +161,9 @@ namespace polyfem::mesh
 		static const std::string reject_str =
 			fmt::format(fmt::fg(fmt::terminal_color::yellow), "reject");
 		logger().debug(
-			"[{:s}] E0={:<10g} E1={:<10g} (E0-E1)={:<10g} tol={:g} local_ndof={:d} n_iters={:d}",
+			"[{:s}] E0={:<10g} E1={:<10g} (E0-E1)={:<11g} tol={:g} local_ndof={:d} n_iters={:d}",
 			accept ? accept_str : reject_str, local_energy_before(),
-			local_energy_after, abs_diff, acceptance_tolerance,
+			local_energy_after, abs_diff, dt_sqr * acceptance_tolerance,
 			n_free_dof, nl_solver->criteria().iterations);
 
 		return accept;

@@ -77,10 +77,10 @@ namespace
 		}
 	}
 
-	void verify_adjoint(AdjointNLProblem& problem, const Eigen::VectorXd &x, const Eigen::MatrixXd &theta, const double dt, const double tol)
+	void verify_adjoint(AdjointNLProblem &problem, const Eigen::VectorXd &x, const Eigen::MatrixXd &theta, const double dt, const double tol)
 	{
 		problem.solution_changed(x);
-		problem.save_to_file(x);
+		problem.save_to_file(0, x);
 		double functional_val = problem.value(x);
 
 		Eigen::VectorXd one_form;
@@ -103,10 +103,10 @@ namespace
 	std::tuple<std::shared_ptr<AdjointForm>, std::vector<std::shared_ptr<VariableToSimulation>>, std::vector<std::shared_ptr<State>>> prepare_test(json &opt_args)
 	{
 		opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
-		for (auto& arg : opt_args["states"])
+		for (auto &arg : opt_args["states"])
 			arg["path"] = append_root_path(arg["path"]);
 
-		std::vector<std::shared_ptr<State>> states = AdjointOptUtils::create_states(opt_args["states"], solver::CacheLevel::Derivatives, spdlog::level::level_enum::err, 16);
+		std::vector<std::shared_ptr<State>> states = AdjointOptUtils::create_states(opt_args["states"], solver::CacheLevel::Derivatives, 16);
 
 		/* DOF */
 		int ndof = 0;
@@ -126,8 +126,8 @@ namespace
 
 		/* forms */
 		std::shared_ptr<AdjointForm> obj = AdjointOptUtils::create_form(
-				opt_args["functionals"], var2sim, states);
-		
+			opt_args["functionals"], var2sim, states);
+
 		return {obj, var2sim, states};
 	}
 } // namespace
@@ -727,7 +727,7 @@ TEST_CASE("shape-contact", "[test_adjoint]")
 	Eigen::VectorXd one_form;
 	nl_problem->gradient(x, one_form);
 
-	verify_adjoint(*nl_problem, x, one_form.normalized(), 1e-8, 1e-5);
+	verify_adjoint(*nl_problem, x, one_form.normalized(), 1e-7, 1e-5);
 }
 
 TEST_CASE("node-trajectory", "[test_adjoint]")
