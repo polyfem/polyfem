@@ -33,6 +33,8 @@ namespace polyfem::solver
 				// gradu_h_prev_.resize(n_time_steps + 1);
 			}
 			gradu_h_.resize(n_time_steps + 1);
+			collision_set_.resize(n_time_steps + 1);
+ 			friction_collision_set_.resize(n_time_steps + 1);
 		}
 
         void cache_quantities_static(
