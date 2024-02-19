@@ -4,7 +4,7 @@
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/Timer.hpp>
-
+#include <polysolve/linear/FEMSolver.hpp>
 #include <polysolve/nonlinear/Solver.hpp>
 
 #include <polyfem/assembler/ViscousDamping.hpp>
@@ -242,6 +242,31 @@ void State::solve_homogenization_step(Eigen::MatrixXd &sol, const Eigen::MatrixX
     nl_solver->minimize(*homo_problem, reduced_sol);
 
     logger().info("displacement grad {}", extended_sol.tail(dim * dim).transpose());
+
+    // check saddle point
+    {
+        json linear_args = args["solver"]["linear"];
+        std::string solver_name = linear_args["solver"];
+        if (solver_name.find("Pardiso") != std::string::npos)
+        {
+            linear_args["solver"] = "Eigen::PardisoLLT";
+            std::unique_ptr<polysolve::linear::Solver> solver =
+                polysolve::linear::Solver::create(linear_args, logger());
+
+            StiffnessMatrix A;
+            homo_problem->hessian(reduced_sol, A);
+            Eigen::VectorXd x, b = Eigen::VectorXd::Zero(A.rows());
+            try
+            {
+                dirichlet_solve(
+                    *solver, A, b, {}, x, A.rows(), args["output"]["data"]["stiffness_mat"], false, false, false);
+            }
+            catch (const std::runtime_error &error)
+            {
+                logger().error("The solution is a saddle point!");
+            }
+        }
+    }
 
     sol = homo_problem->reduced_to_extended(reduced_sol);
     if (args["/boundary_conditions/periodic_boundary/force_zero_mean"_json_pointer].get<bool>())
