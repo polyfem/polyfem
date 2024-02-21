@@ -105,7 +105,7 @@ namespace polyfem
 				for (auto &v : forces_)
 					v.set_unit_type(units.force());
 
-				for (auto &v : rest_pressures_)
+				for (auto &v : normal_aligned_forces_)
 					v.set_unit_type(units.pressure());
 
 				for (auto &v : pressures_)
@@ -239,7 +239,7 @@ namespace polyfem
 					{
 						for (int d = 0; d < val.cols(); ++d)
 						{
-							val(i, d) = rest_pressures_[b].eval(pts.row(i), t) * normals(i, d);
+							val(i, d) = normal_aligned_forces_[b].eval(pts.row(i), t) * normals(i, d);
 						}
 						break;
 					}
@@ -940,19 +940,19 @@ namespace polyfem
 				std::vector<json> j_boundary = flatten_ids(j_boundary_tmp);
 
 				rest_pressure_boundary_ids_.resize(offset + j_boundary.size());
-				rest_pressures_.resize(offset + j_boundary.size());
+				normal_aligned_forces_.resize(offset + j_boundary.size());
 
 				for (size_t i = offset; i < rest_pressure_boundary_ids_.size(); ++i)
 				{
 					rest_pressure_boundary_ids_[i] = j_boundary[i - offset]["id"];
 
 					auto ff = j_boundary[i - offset]["value"];
-					rest_pressures_[i].value.init(ff);
+					normal_aligned_forces_[i].value.init(ff);
 
 					if (j_boundary[i - offset].contains("interpolation"))
-						rest_pressures_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
+						normal_aligned_forces_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
 					else
-						rest_pressures_[i].interpolation = std::make_shared<NoInterpolation>();
+						normal_aligned_forces_[i].interpolation = std::make_shared<NoInterpolation>();
 				}
 			}
 
@@ -1159,7 +1159,7 @@ namespace polyfem
 
 			forces_.clear();
 			displacements_.clear();
-			rest_pressures_.clear();
+			normal_aligned_forces_.clear();
 			pressures_.clear();
 			cavity_pressures_.clear();
 
