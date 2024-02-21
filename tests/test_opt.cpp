@@ -16,6 +16,7 @@
 
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
+#include <polyfem/OptState.hpp>
 
 #include <polysolve/nonlinear/BoxConstraintSolver.hpp>
 
@@ -181,14 +182,42 @@ TEST_CASE("material-opt", tagsopt)
 // 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(2.12684299792e-09).epsilon(1e-3));
 // }
 
-// // TEST_CASE("initial-opt", "[optimization]")
-// // {
-// // 	run_trajectory_opt("initial-opt");
-// // 	auto energies = read_energy("initial-opt");
+TEST_CASE("initial-opt", "[optimization]")
+{
+	const std::string name = "initial-condition-trajectory-opt";
+	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
 
-// // 	REQUIRE(energies[0] == Catch::Approx(0.147092).epsilon(1e-4));
-// // 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(0.109971).epsilon(1e-4));
-// // }
+	json opt_args;
+	load_json(root_folder + "run.json", opt_args);
+	for (auto &arg : opt_args["states"])
+		arg["path"] = root_folder + arg["path"].get<std::string>();
+
+	OptState opt_state;
+	opt_state.init(opt_args, false);
+
+	auto [obj, var2sim, states] = prepare_test(opt_args);
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
+
+	/* DOF */
+	int ndof = 0;
+	std::vector<int> variable_sizes;
+	for (const auto &arg : opt_args["parameters"])
+	{
+		int size = AdjointOptUtils::compute_variable_size(arg, states);
+		ndof += size;
+		variable_sizes.push_back(size);
+	}
+
+	Eigen::VectorXd x = opt_args["parameters"][0]["initial"];
+
+	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], 1);
+	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
+
+	json params = nl_solver->get_info();
+	std::cout << "final energy " << params["energy"].get<double>() << "\n";
+
+	REQUIRE(params["energy"].get<double>() == Catch::Approx(4.58399e-05).epsilon(1e-2));
+}
 
 TEST_CASE("topology-opt", "[optimization]")
 {

@@ -36,6 +36,8 @@ set(SOURCES
 	MooneyRivlinElasticity.hpp
 	MooneyRivlin3ParamElasticity.cpp
 	MooneyRivlin3ParamElasticity.hpp
+	MooneyRivlin3ParamSymbolic.cpp
+	MooneyRivlin3ParamSymbolic.hpp
 	MultiModel.cpp
 	MultiModel.hpp
 	NavierStokes.cpp
