@@ -118,8 +118,7 @@ namespace polyfem
 				const Eigen::MatrixXi rt = Eigen::MatrixXi::Zero(poly.rows(), 1);
 				tris.resize(0, 0);
 				Eigen::VectorXi I;
-				Eigen::MatrixXd np;
-				igl::predicates::ear_clipping(poly, rt, I, tris, np);
+				igl::predicates::ear_clipping(poly, rt, tris, I);
 
 				assign_quadrature(tri_quadr_pts, tris, poly, quadr);
 			}

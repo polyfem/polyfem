@@ -382,8 +382,8 @@ namespace polyfem
 			const Eigen::MatrixXi rt = Eigen::MatrixXi::Zero(poly.rows(), 1);
 			faces.resize(0, 0);
 			Eigen::VectorXi I;
-			Eigen::MatrixXd np, area;
-			igl::predicates::ear_clipping(poly, rt, I, faces, np);
+			Eigen::MatrixXd area;
+			igl::predicates::ear_clipping(poly, rt, faces, I);
 
 			igl::doublearea(poly, faces, area);
 

@@ -64,7 +64,6 @@ set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vector
 # Polyfem options for enabling/disabling optional libraries
 option(POLYFEM_WITH_TESTS     "Build tests"                                 ON)
 option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"  ON)
-option(POLYFEM_WITH_REMESHING "Uses WMTK for remeshing"                    OFF)
 option(POLYFEM_WITH_MMG       "Build MMG utils for remeshing"              OFF)
 option(POLYFEM_WITH_TRIANGLE  "Build target igl_restricted::triangle"      OFF)
 option(POLYFEM_BUILD_DOCS     "Build documentation using Doxygen"          OFF)
@@ -183,13 +182,17 @@ endif()
 # Required libraries
 ################################################################################
 
+# polysolve
+include(polysolve)
+target_link_libraries(polyfem PUBLIC polysolve::polysolve)
+
 # Eigen
 include(eigen)
 target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
 
-# polysolve
-include(polysolve)
-target_link_libraries(polyfem PUBLIC polysolve::polysolve)
+# libigl
+include(libigl)
+target_link_libraries(polyfem PUBLIC igl::core)
 
 # IPC Toolkit
 include(ipc_toolkit)
@@ -207,10 +210,6 @@ elseif(POLYFEM_THREADING STREQUAL "TBB")
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_TBB)
 endif()
 
-# libigl
-include(libigl)
-target_link_libraries(polyfem PUBLIC igl::core)
-
 if(POLYFEM_WITH_TRIANGLE)
     target_link_libraries(polyfem PUBLIC igl_restricted::triangle)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_TRIANGLE)
@@ -223,10 +222,6 @@ target_link_libraries(polyfem PUBLIC simple_bvh::simple_bvh)
 # MSHIO
 include(mshio)
 target_link_libraries(polyfem PUBLIC mshio)
-
-# Geogram
-include(geogram)
-target_link_libraries(polyfem PUBLIC geogram)
 
 # paraviewo (includes HDF5 and h5pp)
 include(paraviewo)
@@ -256,9 +251,16 @@ target_link_libraries(polyfem PUBLIC Glob::Glob)
 include(units)
 target_link_libraries(polyfem PUBLIC units::units)
 
-# FCPW
-# include(fcpw)
-# target_link_libraries(polyfem PUBLIC fcpw::fcpw)
+# wmtk library
+include(wmtk)
+target_link_libraries(polyfem PUBLIC wmtk::toolkit)
+
+# Geogram
+include(geogram)
+target_link_libraries(polyfem PUBLIC geogram)
+
+include(polyclipper)
+target_link_libraries(polyfem PUBLIC PolyClipper::PolyClipper)
 
 ################################################################################
 # Optional libraries
@@ -271,21 +273,15 @@ if(POLYFEM_WITH_MMG)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_MMG)
 endif()
 
-if(POLYFEM_WITH_REMESHING)
-    # wmtk library
-    include(wmtk)
-    target_link_libraries(polyfem PUBLIC wmtk::toolkit)
-    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_REMESHING)
-endif()
-
 if(POLYFEM_WITH_CLIPPER)
     include(clipper)
     target_link_libraries(polyfem PUBLIC clipper::clipper)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_CLIPPER)
 endif()
 
-include(polyclipper)
-target_link_libraries(polyfem PUBLIC PolyClipper::PolyClipper)
+# FCPW
+# include(fcpw)
+# target_link_libraries(polyfem PUBLIC fcpw::fcpw)
 
 # Extra warnings (link this here so it has top priority)
 include(polyfem_warnings)
@@ -300,7 +296,6 @@ if(POLYFEM_TOPLEVEL_PROJECT)
     add_executable(${PROJECT_NAME}_bin src/polyfem/main.cpp)
 
     target_compile_features(${PROJECT_NAME}_bin PUBLIC cxx_std_14)
-
 
     target_link_libraries(${PROJECT_NAME}_bin PUBLIC polyfem::polyfem polyfem::warnings)
 
