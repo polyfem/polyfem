@@ -1451,6 +1451,7 @@ namespace polyfem
 			*assembler, *mesh, obstacle,
 			local_pressure_boundary,
 			local_pressure_cavity,
+			boundary_nodes,
 			primitive_to_node(), node_to_primitive(),
 			n_bases_, size, bases_, geom_bases(), *problem);
 	}
