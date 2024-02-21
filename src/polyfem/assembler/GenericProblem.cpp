@@ -233,9 +233,9 @@ namespace polyfem
 					}
 				}
 
-				for (size_t b = 0; b < rest_pressure_boundary_ids_.size(); ++b)
+				for (size_t b = 0; b < normal_aligned_neumann_boundary_ids_.size(); ++b)
 				{
-					if (id == rest_pressure_boundary_ids_[b])
+					if (id == normal_aligned_neumann_boundary_ids_[b])
 					{
 						for (int d = 0; d < val.cols(); ++d)
 						{
@@ -932,19 +932,19 @@ namespace polyfem
 				}
 			}
 
-			if (is_param_valid(params, "rest_pressure_boundary"))
+			if (is_param_valid(params, "normal_aligned_neumann_boundary"))
 			{
-				const int offset = rest_pressure_boundary_ids_.size();
+				const int offset = normal_aligned_neumann_boundary_ids_.size();
 
-				auto j_boundary_tmp = params["rest_pressure_boundary"];
+				auto j_boundary_tmp = params["normal_aligned_neumann_boundary"];
 				std::vector<json> j_boundary = flatten_ids(j_boundary_tmp);
 
-				rest_pressure_boundary_ids_.resize(offset + j_boundary.size());
+				normal_aligned_neumann_boundary_ids_.resize(offset + j_boundary.size());
 				normal_aligned_forces_.resize(offset + j_boundary.size());
 
-				for (size_t i = offset; i < rest_pressure_boundary_ids_.size(); ++i)
+				for (size_t i = offset; i < normal_aligned_neumann_boundary_ids_.size(); ++i)
 				{
-					rest_pressure_boundary_ids_[i] = j_boundary[i - offset]["id"];
+					normal_aligned_neumann_boundary_ids_[i] = j_boundary[i - offset]["id"];
 
 					auto ff = j_boundary[i - offset]["value"];
 					normal_aligned_forces_[i].value.init(ff);

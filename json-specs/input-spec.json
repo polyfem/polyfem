@@ -2085,7 +2085,7 @@
             "rhs",
             "dirichlet_boundary",
             "neumann_boundary",
-            "rest_pressure_boundary",
+            "normal_aligned_neumann_boundary",
             "pressure_boundary",
             "pressure_cavity",
             "obstacle_displacements"
@@ -2184,13 +2184,13 @@
         "doc": "Neumann boundary condition"
     },
     {
-        "pointer": "/boundary_conditions/rest_pressure_boundary",
+        "pointer": "/boundary_conditions/normal_aligned_neumann_boundary",
         "default": [],
         "type": "list",
         "doc": "Neumann boundary condition for normal times value for vector-valued PDEs."
     },
     {
-        "pointer": "/boundary_conditions/rest_pressure_boundary/*",
+        "pointer": "/boundary_conditions/normal_aligned_neumann_boundary/*",
         "type": "object",
         "default": null,
         "required": [
@@ -2203,20 +2203,20 @@
         "doc": "pressure BC entry"
     },
     {
-        "pointer": "/boundary_conditions/rest_pressure_boundary/*/id",
+        "pointer": "/boundary_conditions/normal_aligned_neumann_boundary/*/id",
         "type": "int",
         "min": 0,
         "max": 2147483646,
         "doc": "ID for the pressure Neumann boundary condition"
     },
     {
-        "pointer": "/boundary_conditions/rest_pressure_boundary/*/value",
+        "pointer": "/boundary_conditions/normal_aligned_neumann_boundary/*/value",
         "type": "include",
         "spec_file": "value-no.json",
         "doc": "Values of pressure boundary condition as a function of $x,y,z,t$"
     },
     {
-        "pointer": "/boundary_conditions/rest_pressure_boundary/*/interpolation",
+        "pointer": "/boundary_conditions/normal_aligned_neumann_boundary/*/interpolation",
         "type": "include",
         "spec_file": "interpolation.json",
         "doc": "interpolation of boundary condition"
