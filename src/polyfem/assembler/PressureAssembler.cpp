@@ -705,6 +705,7 @@ namespace polyfem
 						const int primitive_global_id = lb.global_primitive_id(i);
 						const auto nodes = gbs.local_nodes_for_primitive(primitive_global_id, mesh_);
 
+						points.resize(0, size_);
 						vals.compute(e, mesh_.is_volume(), points, gbs, gbs);
 
 						if (!((lb.type() == BoundaryType::TRI_LINE) || (lb.type() == BoundaryType::TRI)))
