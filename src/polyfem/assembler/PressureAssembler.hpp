@@ -92,14 +92,14 @@ namespace polyfem
 			void compute_energy_grad(
 				const Eigen::MatrixXd &displacement,
 				const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
-				const std::vector<int> dirichlet_nodes,
+				const std::vector<int> &dirichlet_nodes,
 				const int resolution,
 				const double t,
 				Eigen::VectorXd &grad) const;
 			void compute_energy_hess(
 				const Eigen::MatrixXd &displacement,
 				const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
-				const std::vector<int> dirichlet_nodes,
+				const std::vector<int> &dirichlet_nodes,
 				const int resolution,
 				const double t,
 				const bool project_to_psd,
@@ -113,14 +113,14 @@ namespace polyfem
 			void compute_cavity_energy_grad(
 				const Eigen::MatrixXd &displacement,
 				const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity,
-				const std::vector<int> dirichlet_nodes,
+				const std::vector<int> &dirichlet_nodes,
 				const int resolution,
 				const double t,
 				Eigen::VectorXd &grad) const;
 			void compute_cavity_energy_hess(
 				const Eigen::MatrixXd &displacement,
 				const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity,
-				const std::vector<int> dirichlet_nodes,
+				const std::vector<int> &dirichlet_nodes,
 				const int resolution,
 				const double t,
 				const bool project_to_psd,
@@ -129,7 +129,7 @@ namespace polyfem
 			void compute_force_jacobian(
 				const Eigen::MatrixXd &displacement,
 				const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
-				const std::vector<int> dirichlet_nodes,
+				const std::vector<int> &dirichlet_nodes,
 				const int resolution,
 				const double t,
 				const int n_vertices,
@@ -150,7 +150,7 @@ namespace polyfem
 				const bool multiply_pressure = false) const;
 			void compute_grad_volume(const Eigen::MatrixXd &displacement,
 									 const std::vector<mesh::LocalBoundary> &local_boundary,
-									 const std::vector<int> dirichlet_nodes,
+									 const std::vector<int> &dirichlet_nodes,
 									 const int resolution,
 									 Eigen::VectorXd &grad,
 									 const double t = 0,
@@ -158,7 +158,7 @@ namespace polyfem
 			void compute_hess_volume_3d(
 				const Eigen::MatrixXd &displacement,
 				const std::vector<mesh::LocalBoundary> &local_boundary,
-				const std::vector<int> dirichlet_nodes,
+				const std::vector<int> &dirichlet_nodes,
 				const int resolution,
 				StiffnessMatrix &hess,
 				const double t = 0,
@@ -166,11 +166,15 @@ namespace polyfem
 			void compute_hess_volume_2d(
 				const Eigen::MatrixXd &displacement,
 				const std::vector<mesh::LocalBoundary> &local_boundary,
-				const std::vector<int> dirichlet_nodes,
+				const std::vector<int> &dirichlet_nodes,
 				const int resolution,
 				StiffnessMatrix &hess,
 				const double t = 0,
 				const bool multiply_pressure = false) const;
+
+			bool is_closed_or_boundary_fixed(
+				const std::vector<mesh::LocalBoundary> &local_boundary,
+				const std::vector<int> &dirichlet_nodes) const { return false; }
 
 			const Assembler &assembler_;
 			const mesh::Mesh &mesh_;
