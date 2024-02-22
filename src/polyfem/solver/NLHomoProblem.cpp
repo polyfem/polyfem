@@ -3,6 +3,7 @@
 #include "forms/PeriodicContactForm.hpp"
 #include "forms/MacroStrainALForm.hpp"
 #include "forms/MacroStrainLagrangianForm.hpp"
+#include <polyfem/assembler/MacroStrain.hpp>
 #include <polyfem/io/Evaluator.hpp>
 
 namespace polyfem::solver
@@ -12,9 +13,11 @@ namespace polyfem::solver
                 const std::vector<mesh::LocalBoundary> &local_boundary,
                 const int n_boundary_samples,
                 const assembler::RhsAssembler &rhs_assembler,
+                const assembler::MacroStrainValue &macro_strain_constraint,
                 const State &state,
                 const double t, const std::vector<std::shared_ptr<Form>> &forms, 
-                const bool solve_symmetric_macro_strain) : NLProblem(full_size, boundary_nodes, local_boundary, n_boundary_samples, rhs_assembler, state.periodic_bc, t, forms), state_(state), only_symmetric(solve_symmetric_macro_strain)
+                const bool solve_symmetric_macro_strain)
+     : NLProblem(full_size, boundary_nodes, local_boundary, n_boundary_samples, rhs_assembler, state.periodic_bc, t, forms), state_(state), only_symmetric(solve_symmetric_macro_strain), macro_strain_constraint_(macro_strain_constraint)
     {
         init_projection();
     }
@@ -168,25 +171,19 @@ namespace polyfem::solver
             }
     }
 
-    NLHomoProblem::TVector NLHomoProblem::macro_full_to_mid(const TVector &full) const
-    {
-        return macro_full_to_mid_ * full;
-    }
-    void NLHomoProblem::set_fixed_entry(const std::vector<int> &fixed_entry, const Eigen::VectorXd &full_values)
+    void NLHomoProblem::set_fixed_entry(const Eigen::VectorXi &fixed_entry)
     {
         const int dim = state_.mesh->dimension();
 
         Eigen::VectorXd fixed_mask;
         fixed_mask.setZero(dim * dim);
-        fixed_mask(fixed_entry).setOnes();
+        fixed_mask(fixed_entry.array()).setOnes();
         fixed_mask = (macro_full_to_mid_ * fixed_mask).eval();
 
         fixed_mask_.setZero(fixed_mask.size());
         for (int i = 0; i < fixed_mask.size(); i++)
             if (abs(fixed_mask(i)) > 1e-8)
                 fixed_mask_(i) = true;
-        
-        fixed_values_ = (macro_full_to_mid_ * full_values).eval();
 
         const int new_reduced_size = fixed_mask_.size() - fixed_mask_.sum();
         macro_mid_to_reduced_.setZero(new_reduced_size, fixed_mask_.size());
@@ -272,28 +269,6 @@ namespace polyfem::solver
         Eigen::MatrixXd disp_grad = utils::unflatten(macro_reduced_to_full(reduced.tail(dof2)), dim);
         return NLProblem::reduced_to_full(reduced.head(dof1)) + io::Evaluator::generate_linear_field(state_.n_bases, state_.mesh_nodes, disp_grad);
     }
-    NLHomoProblem::TVector NLHomoProblem::reduced_to_full_shape_derivative(const Eigen::MatrixXd &disp_grad, const TVector &adjoint_full) const
-    {
-        const int dim = state_.mesh->dimension();
-
-        Eigen::VectorXd term;
-        term.setZero(state_.n_bases * dim);
-        for (int i = 0; i < state_.n_bases; i++)
-            for (int d = 0; d < dim; d++)
-                for (int p = 0; p < dim; p++)
-                    term(i * dim + p) += adjoint_full(i * dim + d) * disp_grad(d, p);
-            // term.segment(i * dim, dim) += disp_grad.transpose() * adjoint_full.segment(i * dim, dim);
-        
-        return state_.gbasis_nodes_to_basis_nodes * term;
-    }
-    Eigen::MatrixXd NLHomoProblem::reduced_to_disp_grad(const TVector &reduced) const
-    {
-        const int dim = state_.mesh->dimension();
-        const int dof2 = macro_reduced_size();
-        const int dof1 = reduced_size();
-
-        return utils::unflatten(macro_reduced_to_full(reduced.tail(dof2)), dim);
-    }
 
     int NLHomoProblem::macro_reduced_size() const
     {
@@ -310,9 +285,10 @@ namespace polyfem::solver
     NLHomoProblem::TVector NLHomoProblem::macro_reduced_to_full(const TVector &reduced) const
     {
         TVector mid = macro_mid_to_reduced_.transpose() * reduced;
+        const TVector fixed_values = macro_full_to_mid_ * utils::flatten(macro_strain_constraint_.eval(t_));
         for (int i = 0; i < fixed_mask_.size(); i++)
             if (fixed_mask_(i))
-                mid(i) = fixed_values_(i);
+                mid(i) = fixed_values(i);
         
         return macro_mid_to_full_ * mid;
     }
@@ -320,8 +296,7 @@ namespace polyfem::solver
     void NLHomoProblem::init(const TVector &x0)
     {
         for (auto &form : homo_forms)
-            if (form->enabled())
-                form->init(reduced_to_extended(x0));
+            form->init(reduced_to_extended(x0));
         FullNLProblem::init(reduced_to_full(x0));
     }
 
@@ -356,47 +331,41 @@ namespace polyfem::solver
     {
         NLProblem::line_search_begin(x0, x1);
         for (auto &form : homo_forms)
-            if (form->enabled())
-                form->line_search_begin(reduced_to_extended(x0), reduced_to_extended(x1));
+            form->line_search_begin(reduced_to_extended(x0), reduced_to_extended(x1));
     }
     void NLHomoProblem::post_step(const polysolve::nonlinear::PostStepData &data)
     {
         NLProblem::post_step(data);
         for (auto &form : homo_forms)
-            if (form->enabled())
-                form->post_step(polysolve::nonlinear::PostStepData(
-                data.iter_num, data.solver_info, reduced_to_extended(data.x), reduced_to_extended(data.grad)));
+            form->post_step(polysolve::nonlinear::PostStepData(
+            data.iter_num, data.solver_info, reduced_to_extended(data.x), reduced_to_extended(data.grad)));
     }
 
     void NLHomoProblem::solution_changed(const TVector &new_x)
     {
         NLProblem::solution_changed(new_x);
         for (auto &form : homo_forms)
-            if (form->enabled())
-                form->solution_changed(reduced_to_extended(new_x));
+            form->solution_changed(reduced_to_extended(new_x));
     }
 
     void NLHomoProblem::init_lagging(const TVector &x)
     {
         NLProblem::init_lagging(x);
         for (auto &form : homo_forms)
-            if (form->enabled())
-                form->init_lagging(reduced_to_extended(x));
+            form->init_lagging(reduced_to_extended(x));
     }
     void NLHomoProblem::update_lagging(const TVector &x, const int iter_num)
     {
         NLProblem::update_lagging(x, iter_num);
         for (auto &form : homo_forms)
-            if (form->enabled())
-                form->update_lagging(reduced_to_extended(x), iter_num);
+            form->update_lagging(reduced_to_extended(x), iter_num);
     }
 
     void NLHomoProblem::update_quantities(const double t, const TVector &x)
     {
         NLProblem::update_quantities(t, x);
         for (auto &form : homo_forms)
-            if (form->enabled())
-                form->update_quantities(t, reduced_to_extended(x));
+            form->update_quantities(t, reduced_to_extended(x));
     }
 
     Eigen::MatrixXd NLHomoProblem::constraint_grad() const

@@ -27,7 +27,7 @@ using namespace solver;
 using namespace utils;
 using namespace quadrature;
 
-void State::init_homogenization_solve(const std::vector<int> &fixed_entry, const double t)
+void State::init_homogenization_solve(const double t)
 {
     const int dim = mesh->dimension();
     const int ndof = n_bases * dim;
@@ -57,6 +57,8 @@ void State::init_homogenization_solve(const std::vector<int> &fixed_entry, const
         args["solver"]["contact"]["CCD"]["tolerance"],
         args["solver"]["contact"]["CCD"]["max_iterations"],
         optimization_enabled == solver::CacheLevel::Derivatives,
+        // Homogenization
+        macro_strain_constraint,
         // Periodic contact
         args["contact"]["periodic"], periodic_collision_mesh_to_basis,
         // Friction form
@@ -77,12 +79,13 @@ void State::init_homogenization_solve(const std::vector<int> &fixed_entry, const
 
     bool solve_symmetric_flag = false;
     {
+        const auto &fixed_entry = macro_strain_constraint.get_fixed_entry();
         for (int i = 0; i < dim; i++)
         {
             for (int j = 0; j < i; j++)
             {
-                if (std::find(fixed_entry.begin(), fixed_entry.end(), i + j * dim) == fixed_entry.end() &&
-                    std::find(fixed_entry.begin(), fixed_entry.end(), j + i * dim) == fixed_entry.end())
+                if (std::find(fixed_entry.data(), fixed_entry.data() + fixed_entry.size(), i + j * dim) == fixed_entry.data() + fixed_entry.size() &&
+                    std::find(fixed_entry.data(), fixed_entry.data() + fixed_entry.size(), j + i * dim) == fixed_entry.data() + fixed_entry.size())
                 {
                     logger().info("Strain entry [{},{}] and [{},{}] are not fixed, solve for symmetric strain...", i, j, j, i);
                     solve_symmetric_flag = true;
@@ -99,21 +102,26 @@ void State::init_homogenization_solve(const std::vector<int> &fixed_entry, const
         boundary_nodes,
         local_boundary,
         n_boundary_samples(),
-        *solve_data.rhs_assembler, *this, t, forms, solve_symmetric_flag);
+        *solve_data.rhs_assembler, macro_strain_constraint,
+        *this, t, forms, solve_symmetric_flag);
     if (solve_data.periodic_contact_form)
         homo_problem->add_form(solve_data.periodic_contact_form);
+    if (solve_data.strain_al_lagr_form)
+        homo_problem->add_form(solve_data.strain_al_lagr_form);
+    if (solve_data.strain_al_pen_form)
+        homo_problem->add_form(solve_data.strain_al_pen_form);
+    
     solve_data.nl_problem = homo_problem;
+    solve_data.nl_problem->init(Eigen::VectorXd::Zero(homo_problem->reduced_size() + homo_problem->macro_reduced_size()));
+    solve_data.nl_problem->update_quantities(t, Eigen::VectorXd::Zero(homo_problem->reduced_size() + homo_problem->macro_reduced_size()));
 }
 
-void State::solve_homogenization_step(Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, const std::vector<int> &fixed_entry, const int t, bool adaptive_initial_weight)
+void State::solve_homogenization_step(Eigen::MatrixXd &sol, const int t, bool adaptive_initial_weight)
 {
     const int dim = mesh->dimension();
     const int ndof = n_bases * dim;
 
     auto homo_problem = std::dynamic_pointer_cast<NLHomoProblem>(solve_data.nl_problem);
-
-    if (homo_problem->has_symmetry_constraint() && (disp_grad - disp_grad.transpose()).norm() > 1e-8)
-        log_and_throw_error("Macro strain is not symmetric!");
 
     Eigen::VectorXd extended_sol;
     extended_sol.setZero(ndof + dim * dim);
@@ -121,36 +129,30 @@ void State::solve_homogenization_step(Eigen::MatrixXd &sol, const Eigen::MatrixX
     if (sol.size() == extended_sol.size())
         extended_sol = sol;
 
+    const auto &fixed_entry = macro_strain_constraint.get_fixed_entry();
+    homo_problem->set_fixed_entry({});
     {
         std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(true);
-        Eigen::VectorXi al_indices;
-        Eigen::VectorXd al_values;
-        // from full to symmetric indices
-        {
-            al_indices.setZero(fixed_entry.size());
-            for (int i = 0; i < fixed_entry.size(); i++)
-                al_indices(i) = fixed_entry[i] + homo_problem->full_size();
-            
-            al_values = utils::flatten(disp_grad)(fixed_entry);
-        }
-        logger().debug("AL indices: {}, AL values: {}", al_indices.transpose(), al_values.transpose());
-        std::shared_ptr<MacroStrainALForm> al_form = std::make_shared<MacroStrainALForm>(al_indices, al_values);
-        std::shared_ptr<MacroStrainLagrangianForm> lagr_form = std::make_shared<MacroStrainLagrangianForm>(al_indices, al_values);
-        homo_problem->add_form(al_form);
-        homo_problem->add_form(lagr_form);
+
+        Eigen::VectorXi al_indices = fixed_entry.array() + homo_problem->full_size();
+        Eigen::VectorXd al_values = utils::flatten(macro_strain_constraint.eval(t))(fixed_entry);
+
+        std::shared_ptr<MacroStrainALForm> al_form = solve_data.strain_al_pen_form;
+        std::shared_ptr<MacroStrainLagrangianForm> lagr_form = solve_data.strain_al_lagr_form;
+        al_form->enable();
+        lagr_form->enable();
 
         const double initial_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
         const double max_weight = args["solver"]["augmented_lagrangian"]["max_weight"];
         const double eta_tol = args["solver"]["augmented_lagrangian"]["eta"];
         const double scaling = args["solver"]["augmented_lagrangian"]["scaling"];
-        const int max_al_steps = args["solver"]["augmented_lagrangian"]["nonlinear"]["max_iterations"];
         double al_weight = initial_weight;
 
         Eigen::VectorXd tmp_sol = homo_problem->extended_to_reduced(extended_sol);
         const Eigen::VectorXd initial_sol = tmp_sol;
-        const double initial_error = (extended_sol(al_indices).array() - al_values.array()).matrix().squaredNorm();
+        const double initial_error = al_form->compute_error(extended_sol);
         double current_error = initial_error;
-        
+
         // try to enforce fixed values on macro strain
         extended_sol(al_indices) = al_values;
         Eigen::VectorXd reduced_sol = homo_problem->extended_to_reduced(extended_sol);
@@ -183,7 +185,7 @@ void State::solve_homogenization_step(Eigen::MatrixXd &sol, const Eigen::MatrixX
             extended_sol = homo_problem->reduced_to_extended(tmp_sol);
             logger().debug("Current macro strain: {}", extended_sol.tail(dim * dim));
 
-            current_error = (extended_sol(al_indices).array() - al_values.array()).matrix().squaredNorm();
+            current_error = al_form->compute_error(extended_sol);
             const double eta = 1 - sqrt(current_error / initial_error);
 
             logger().info("Current eta = {}, current error = {}, initial error = {}", eta, current_error, initial_error);
@@ -212,28 +214,13 @@ void State::solve_homogenization_step(Eigen::MatrixXd &sol, const Eigen::MatrixX
             reduced_sol = homo_problem->extended_to_reduced(extended_sol);
 
             homo_problem->line_search_begin(tmp_sol, reduced_sol);
-
-			if (al_steps++ >= max_al_steps)
-				log_and_throw_error(fmt::format("Unable to solve AL problem, out of iterations {} (current weight = {}), stopping", max_al_steps, al_weight));
         }
         homo_problem->line_search_end();
-        // extended_sol = homo_problem->reduced_to_extended(tmp_sol);
-        // disp_grad_out = utils::unflatten(extended_sol.tail(dim * dim), dim);
-        {
-            al_weight = 1;
-            for (auto& [name, form] : solve_data.named_forms())
-                if (form)
-                    form->set_weight(al_weight);
-            if (solve_data.periodic_contact_form)
-                solve_data.periodic_contact_form->set_weight(al_weight);
-            al_form->set_weight(1 - al_weight);
-            al_form->disable();
-            lagr_form->set_weight(1 - al_weight);
-            lagr_form->disable();
-        }
+        al_form->disable();
+        lagr_form->disable();
     }
 
-    homo_problem->set_fixed_entry(fixed_entry, utils::flatten(disp_grad));
+    homo_problem->set_fixed_entry(fixed_entry);
 
     Eigen::VectorXd reduced_sol = homo_problem->extended_to_reduced(extended_sol);
 
@@ -241,7 +228,7 @@ void State::solve_homogenization_step(Eigen::MatrixXd &sol, const Eigen::MatrixX
     std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(false);
     nl_solver->minimize(*homo_problem, reduced_sol);
 
-    logger().info("displacement grad {}", extended_sol.tail(dim * dim).transpose());
+    logger().info("Macro Strain: {}", extended_sol.tail(dim * dim).transpose());
 
     // check saddle point
     {
@@ -281,25 +268,25 @@ void State::solve_homogenization_step(Eigen::MatrixXd &sol, const Eigen::MatrixX
         cache_transient_adjoint_quantities(t, sol, utils::unflatten(extended_sol.tail(dim * dim), dim));
 }
 
-void State::solve_homogenization(const int time_steps, const double t0, const double dt, const std::vector<int> &fixed_entry, Eigen::MatrixXd &sol)
+void State::solve_homogenization(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol)
 {
     bool is_static = !is_param_valid(args, "time");
     if (!is_static && !args["time"]["quasistatic"])
         log_and_throw_error("Transient homogenization can only do quasi-static!");
     
-    init_homogenization_solve(fixed_entry, t0);
-
+    init_homogenization_solve(t0);
+    
+    const int dim = mesh->dimension();
     Eigen::MatrixXd extended_sol;
     for (int t = 0; t <= time_steps; ++t)
     {
         double forward_solve_time = 0, remeshing_time = 0, global_relaxation_time = 0;
 
-        const Eigen::MatrixXd disp_grad = macro_strain_constraint.eval(mesh->dimension(), t0 + dt * t);
         {
             POLYFEM_SCOPED_TIMER(forward_solve_time);
-            solve_homogenization_step(extended_sol, disp_grad, fixed_entry, t, false);
+            solve_homogenization_step(extended_sol, t, false);
         }
-        sol = extended_sol.topRows(extended_sol.size()-disp_grad.size()) + io::Evaluator::generate_linear_field(n_bases, mesh_nodes, utils::unflatten(extended_sol.bottomRows(disp_grad.size()), mesh->dimension()));
+        sol = extended_sol.topRows(extended_sol.size()-dim * dim) + io::Evaluator::generate_linear_field(n_bases, mesh_nodes, utils::unflatten(extended_sol.bottomRows(dim * dim), dim));
         
         if (is_static)
             return;

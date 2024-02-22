@@ -16,7 +16,6 @@ set(SOURCES
 	InversionBarrierForm.hpp
 	L2ProjectionForm.cpp
 	L2ProjectionForm.hpp
-	LagrangianForm.hpp
 	LaggedRegForm.cpp
 	LaggedRegForm.hpp
 	FrictionForm.cpp

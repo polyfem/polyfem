@@ -10,13 +10,23 @@ namespace polyfem
     {
 		class MacroStrainValue
 		{
+            bool _is_active = false;
+            int _dim;
+            Eigen::VectorXi fixed_entry;
 			std::array<utils::ExpressionValue, 9> value;
 
         public:
             MacroStrainValue() = default;
 
-            void init(const json& param)
+            bool is_active() const { return _is_active; }
+            int dim() const { return _dim; }
+            const Eigen::VectorXi &get_fixed_entry() const { return fixed_entry; }
+
+            void init(const int dim, const json& param)
             {
+                _is_active = true;
+                _dim = dim;
+                fixed_entry = param["fixed_macro_strain"];
                 if (utils::is_param_valid(param, "linear_displacement_offset"))
                 {
                     json arg = param["linear_displacement_offset"];
@@ -33,11 +43,11 @@ namespace polyfem
                 }
             }
 
-            Eigen::MatrixXd eval(const int dim, const double t) const
+            Eigen::MatrixXd eval(const double t) const
             {
-                Eigen::MatrixXd strain(dim, dim);
-                for (int i = 0; i < dim; i++)
-                    for (int j = 0; j < dim; j++)
+                Eigen::MatrixXd strain(_dim, _dim);
+                for (int i = 0; i < _dim; i++)
+                    for (int j = 0; j < _dim; j++)
                         strain(i, j) = eval(i, j, t);
                 
                 return strain;

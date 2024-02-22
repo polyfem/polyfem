@@ -889,7 +889,7 @@ namespace polyfem
 
 			periodic_bc = std::make_shared<PeriodicBoundary>(problem->is_scalar(), n_bases, bases, mesh_nodes, tile_offset, args["boundary_conditions"]["periodic_boundary"]["tolerance"].get<double>());
 		
-			macro_strain_constraint.init(args["boundary_conditions"]["periodic_boundary"]);
+			macro_strain_constraint.init(dim, args["boundary_conditions"]["periodic_boundary"]);
 		}
 		
 		if (args["space"]["advanced"]["count_flipped_els"])
@@ -1741,7 +1741,7 @@ namespace polyfem
 			else if (assembler->name() == "OperatorSplitting")
 				solve_transient_navier_stokes_split(time_steps, dt, sol, pressure);
 			else if (is_homogenization())
-				solve_homogenization(time_steps, t0, dt, args["boundary_conditions"]["periodic_boundary"]["fixed_macro_strain"].get<std::vector<int>>(), sol);
+				solve_homogenization(time_steps, t0, dt, sol);
 			else if (assembler->is_linear() && !is_contact_enabled()) // Collisions add nonlinearity to the problem
 				solve_transient_linear(time_steps, t0, dt, sol, pressure);
 			else if (!assembler->is_linear() && problem->is_scalar())
@@ -1754,7 +1754,7 @@ namespace polyfem
 			if (assembler->name() == "NavierStokes")
 				solve_navier_stokes(sol, pressure);
 			else if (is_homogenization())
-				solve_homogenization(/* time steps */ 0, /* t0 */ 0, /* dt */ 0, args["boundary_conditions"]["periodic_boundary"]["fixed_macro_strain"].get<std::vector<int>>(), sol);
+				solve_homogenization(/* time steps */ 0, /* t0 */ 0, /* dt */ 0, sol);
 			else if (assembler->is_linear() && !is_contact_enabled())
 			{
 				init_linear_solve(sol);

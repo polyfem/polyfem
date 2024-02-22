@@ -25,6 +25,7 @@ namespace polyfem::time_integrator
 namespace polyfem::assembler
 {
 	class ViscousDamping;
+	class MacroStrainValue;
 } // namespace polyfem::assembler
 
 namespace polyfem::solver
@@ -38,6 +39,8 @@ namespace polyfem::solver
 	class BodyForm;
 	class BCLagrangianForm;
 	class BCPenaltyForm;
+	class MacroStrainLagrangianForm;
+	class MacroStrainALForm;
 	class InertiaForm;
 	class ElasticForm;
 
@@ -100,6 +103,9 @@ namespace polyfem::solver
 			const long ccd_max_iterations,
 			const bool enable_shape_derivatives,
 
+			// Homogenization
+			const assembler::MacroStrainValue &macro_strain_constraint,
+
 			// Periodic contact
 			const bool periodic_contact,
 			const Eigen::VectorXi &tiled_to_single,
@@ -127,6 +133,8 @@ namespace polyfem::solver
 
 		std::shared_ptr<solver::BCLagrangianForm> al_lagr_form;
 		std::shared_ptr<solver::BCPenaltyForm> al_pen_form;
+		std::shared_ptr<solver::MacroStrainLagrangianForm> strain_al_lagr_form;
+		std::shared_ptr<solver::MacroStrainALForm> strain_al_pen_form;
 		std::shared_ptr<solver::BodyForm> body_form;
 		std::shared_ptr<solver::ContactForm> contact_form;
 		std::shared_ptr<solver::ElasticForm> damping_form;

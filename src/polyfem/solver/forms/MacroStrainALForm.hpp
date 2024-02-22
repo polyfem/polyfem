@@ -2,14 +2,21 @@
 
 #include "Form.hpp"
 
+namespace polyfem::assembler {
+	class MacroStrainValue;
+}
+
 namespace polyfem::solver
 {
     class MacroStrainALForm : public Form
     {
     public:
-        MacroStrainALForm(const Eigen::VectorXi &indices, const Eigen::VectorXd &values);
+        MacroStrainALForm(const assembler::MacroStrainValue &macro_strain_constraint);
 
-		std::string name() const override { return "Macro_AL"; }
+		std::string name() const override { return "strain-penalty"; }
+
+		void update_quantities(const double t, const Eigen::VectorXd &x) override;
+		double compute_error(const Eigen::VectorXd &x) const;
 
     protected:
 		/// @brief Compute the contact barrier potential value
@@ -28,7 +35,7 @@ namespace polyfem::solver
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
     private:
-        const Eigen::VectorXi indices_;
-        const Eigen::VectorXd values_;
+		Eigen::VectorXd values;
+        const assembler::MacroStrainValue &macro_strain_constraint_;
     };
 }

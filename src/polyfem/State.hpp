@@ -698,9 +698,9 @@ namespace polyfem
 		assembler::MacroStrainValue macro_strain_constraint;
 
 		/// In Elasticity PDE, solve for "min W(disp_grad + \grad u)" instead of "min W(\grad u)"
-		void solve_homogenization_step(Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, const std::vector<int> &fixed_entry, const int t = 0, bool adaptive_initial_weight = false); // sol is the extended solution, i.e. [periodic fluctuation, macro strain]
-		void init_homogenization_solve(const std::vector<int> &fixed_entry, const double t);
-		void solve_homogenization(const int time_steps, const double t0, const double dt, const std::vector<int> &fixed_entry, Eigen::MatrixXd &sol);
+		void solve_homogenization_step(Eigen::MatrixXd &sol, const int t = 0, bool adaptive_initial_weight = false); // sol is the extended solution, i.e. [periodic fluctuation, macro strain]
+		void init_homogenization_solve(const double t);
+		void solve_homogenization(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol);
 		bool is_homogenization() const { return args["boundary_conditions"]["periodic_boundary"]["linear_displacement_offset"].size() > 0; }
 	};
 

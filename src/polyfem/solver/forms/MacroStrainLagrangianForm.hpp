@@ -1,19 +1,24 @@
 #pragma once
 
-#include "LagrangianForm.hpp"
+#include "Form.hpp"
+
+namespace polyfem::assembler {
+	class MacroStrainValue;
+}
 
 namespace polyfem::solver
 {
 	/// @brief Form of the lagrangian in augmented lagrangian for homogenization
-    class MacroStrainLagrangianForm : public LagrangianForm
+    class MacroStrainLagrangianForm : public Form
     {
     public:
 		/// @brief Construct a new MacroStrainLagrangianForm object
-        MacroStrainLagrangianForm(const Eigen::VectorXi &indices, const Eigen::VectorXd &values);
+        MacroStrainLagrangianForm(const assembler::MacroStrainValue &macro_strain_constraint);
 
-		std::string name() const override { return "Macro_Lagrangian"; }
+		std::string name() const override { return "strain-Lagrangian"; }
 
-		void update_lagrangian(const Eigen::VectorXd &x, const double k_al) override;
+		void update_quantities(const double t, const Eigen::VectorXd &x) override;
+		void update_lagrangian(const Eigen::VectorXd &x, const double k_al);
     protected:
 		/// @brief Compute the contact barrier potential value
 		/// @param x Current solution
@@ -31,9 +36,9 @@ namespace polyfem::solver
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
     private:
-        const Eigen::VectorXi indices_;
-        const Eigen::VectorXd values_;
+        Eigen::VectorXd values;
     
 		Eigen::VectorXd lagr_mults_;              ///< vector of lagrange multipliers
+		const assembler::MacroStrainValue &macro_strain_constraint_;
 	};
 }

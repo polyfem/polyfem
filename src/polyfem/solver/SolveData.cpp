@@ -4,6 +4,8 @@
 #include <polyfem/solver/forms/Form.hpp>
 #include <polyfem/solver/forms/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/BCPenaltyForm.hpp>
+#include <polyfem/solver/forms/MacroStrainLagrangianForm.hpp>
+#include <polyfem/solver/forms/MacroStrainALForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/forms/MacroStrainALForm.hpp>
@@ -15,6 +17,7 @@
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/MacroStrain.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 namespace polyfem::solver
@@ -73,6 +76,9 @@ namespace polyfem::solver
 		const double ccd_tolerance,
 		const long ccd_max_iterations,
 		const bool enable_shape_derivatives,
+
+		// Homogenization
+		const assembler::MacroStrainValue &macro_strain_constraint,
 
 		// Periodic contact
 		const bool periodic_contact,
@@ -156,6 +162,13 @@ namespace polyfem::solver
 				ndof, boundary_nodes, local_boundary, local_neumann_boundary,
 				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t);
 			forms.push_back(al_pen_form);
+		}
+
+		if (macro_strain_constraint.is_active())
+		{
+			// don't push these two into forms because they take a different input x
+			strain_al_pen_form = std::make_shared<MacroStrainALForm>(macro_strain_constraint);
+			strain_al_lagr_form = std::make_shared<MacroStrainLagrangianForm>(macro_strain_constraint);
 		}
 
 		contact_form = nullptr;
@@ -294,6 +307,8 @@ namespace polyfem::solver
 			{"damping", damping_form},
 			{"augmented_lagrangian_lagr", al_lagr_form},
 			{"augmented_lagrangian_penalty", al_pen_form},
+			{"strain_augmented_lagrangian_lagr", strain_al_lagr_form},
+			{"strain_augmented_lagrangian_penalty", strain_al_pen_form},
 			{"periodic_contact", periodic_contact_form},
 		};
 	}

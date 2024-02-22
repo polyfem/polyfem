@@ -85,11 +85,12 @@ namespace polyfem::solver
 			return current_size_ == CurrentSize::FULL_SIZE ? full_size() : reduced_size();
 		}
 
+		double t_;
+
 	private:
 		const assembler::RhsAssembler *rhs_assembler_;
 		const std::vector<mesh::LocalBoundary> *local_boundary_;
 		const int n_boundary_samples_;
-		double t_;
 
 		template <class FullMat, class ReducedMat>
 		void full_to_reduced_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const;

@@ -26,10 +26,10 @@ namespace polyfem::solver
 		  boundary_nodes_(boundary_nodes),
 		  full_size_(full_size),
 		  reduced_size_(full_size_ - boundary_nodes.size()),
+		  t_(0),
 		  rhs_assembler_(nullptr),
 		  local_boundary_(nullptr),
-		  n_boundary_samples_(0),
-		  t_(0)
+		  n_boundary_samples_(0)
 	{
 		use_reduced_size();
 	}
@@ -49,10 +49,10 @@ namespace polyfem::solver
 		  full_size_(full_size),
 		  reduced_size_((periodic_bc ? periodic_bc->n_periodic_dof() : full_size) - boundary_nodes_.size()),
 		  periodic_bc_(periodic_bc),
+		  t_(t),
 		  rhs_assembler_(&rhs_assembler),
 		  local_boundary_(&local_boundary),
-		  n_boundary_samples_(n_boundary_samples),
-		  t_(t)
+		  n_boundary_samples_(n_boundary_samples)
 	{
 		assert(std::is_sorted(boundary_nodes.begin(), boundary_nodes.end()));
 		assert(boundary_nodes.size() == 0 || (boundary_nodes.front() >= 0 && boundary_nodes.back() < full_size_));

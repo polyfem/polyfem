@@ -5,6 +5,9 @@
 namespace polyfem
 {
 	class State;
+	namespace assembler {
+		class MacroStrainValue;
+	}
 }
 
 namespace polyfem::solver
@@ -21,6 +24,7 @@ namespace polyfem::solver
 				  const std::vector<mesh::LocalBoundary> &local_boundary,
 				  const int n_boundary_samples,
 				  const assembler::RhsAssembler &rhs_assembler,
+				  const assembler::MacroStrainValue &macro_strain_constraint,
 				  const State &state,
 				  const double t, const std::vector<std::shared_ptr<Form>> &forms, 
 				  const bool solve_symmetric_macro_strain);
@@ -31,28 +35,19 @@ namespace polyfem::solver
 
 		void full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const override;
 
+		int macro_reduced_size() const;
+
 		TVector full_to_reduced(const TVector &full, const Eigen::MatrixXd &disp_grad) const;
 		TVector full_to_reduced(const TVector &full) const override;
 		TVector full_to_reduced_grad(const TVector &full) const override;
 		TVector reduced_to_full(const TVector &reduced) const override;
-		TVector reduced_to_full_shape_derivative(const Eigen::MatrixXd &disp_grad, const TVector &adjoint_full) const;
-
-		int macro_reduced_size() const;
-		TVector macro_full_to_reduced(const TVector &full) const;
-		TVector macro_full_to_mid(const TVector &full) const;
-		Eigen::MatrixXd macro_full_to_reduced_grad(const Eigen::MatrixXd &full) const;
-		TVector macro_reduced_to_full(const TVector &reduced) const;
 
 		TVector reduced_to_extended(const TVector &reduced) const;
 		TVector extended_to_reduced(const TVector &extended) const;
 		TVector extended_to_reduced_grad(const TVector &extended) const;
 		void extended_hessian_to_reduced_hessian(const THessian &extended, THessian &reduced) const;
 
-		Eigen::MatrixXd reduced_to_disp_grad(const TVector &reduced) const;
-
-		void set_fixed_entry(const std::vector<int> &fixed_entry, const Eigen::VectorXd &full_values);
-		Eigen::VectorXd get_fixed_values() const { return fixed_values_; }
-		void set_fixed_values(const Eigen::VectorXd &fixed_values) { fixed_values_ = fixed_values; }
+		void set_fixed_entry(const Eigen::VectorXi &fixed_entry);
 
 		void init(const TVector &x0) override;
 		bool is_step_valid(const TVector &x0, const TVector &x1) override;
@@ -77,13 +72,17 @@ namespace polyfem::solver
 
 	private:
 		void init_projection();
-
 		Eigen::MatrixXd constraint_grad() const;
-		
+
+		TVector macro_full_to_reduced(const TVector &full) const;
+		Eigen::MatrixXd macro_full_to_reduced_grad(const Eigen::MatrixXd &full) const;
+		TVector macro_reduced_to_full(const TVector &reduced) const;
+
 		const State &state_;
 		const bool only_symmetric;
+		const assembler::MacroStrainValue &macro_strain_constraint_;
+
 		Eigen::VectorXi fixed_mask_;
-		Eigen::VectorXd fixed_values_;
 		Eigen::MatrixXd macro_mid_to_reduced_; // (dim*dim) x (dim*(dim+1)/2)
 		Eigen::MatrixXd macro_full_to_mid_, macro_mid_to_full_;
 

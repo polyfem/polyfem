@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LagrangianForm.hpp"
+#include "Form.hpp"
 #include <polyfem/assembler/RhsAssembler.hpp>
 
 #include <polyfem/mesh/Obstacle.hpp>
@@ -9,7 +9,7 @@
 namespace polyfem::solver
 {
 	/// @brief Form of the lagrangian in augmented lagrangian
-	class BCLagrangianForm : public LagrangianForm
+	class BCLagrangianForm : public Form
 	{
 	public:
 		/// @brief Construct a new BCLagrangianForm object with a time dependent Dirichlet boundary
@@ -69,7 +69,7 @@ namespace polyfem::solver
 		/// @param x Solution at time t
 		void update_quantities(const double t, const Eigen::VectorXd &x) override;
 
-		void update_lagrangian(const Eigen::VectorXd &x, const double k_al) override;
+		void update_lagrangian(const Eigen::VectorXd &x, const double k_al);
 
 	private:
 		const std::vector<int> &boundary_nodes_;
