@@ -18,37 +18,39 @@ namespace polyfem::solver
                 const bool is_time_dependent,
                 const ipc::BroadPhaseMethod broad_phase_method,
                 const double ccd_tolerance,
-                const int ccd_max_iterations): ContactForm(collision_mesh, args["dhat"], avg_mass, false, use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(dhat_, args["alpha"], _dim == 3 ? 1 : 0.5, args["beta"]), use_adaptive_dhat(args["use_adaptive_dhat"])
+                const int ccd_max_iterations): ContactForm(collision_mesh, args["dhat"], avg_mass, false, use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(dhat_, args["alpha_t"], args["beta_t"], args["alpha_n"], args["beta_n"], _dim == 3 ? 2 : 1), use_adaptive_dhat(args["use_adaptive_dhat"])
     {
 		collision_set_ = std::make_shared<ipc::SmoothCollisions<_dim>>();
         contact_potential_ = std::make_shared<ipc::SmoothContactPotential<ipc::SmoothCollisions<_dim>>>(params);
 		params.set_adaptive_dhat_ratio(args["min_distance_ratio"]);
 		if (use_adaptive_dhat)
+		{
 			collision_set_->compute_adaptive_dhat(collision_mesh, collision_mesh.rest_positions(), params, broad_phase_method_);
-    }
+			if (use_adaptive_barrier_stiffness)
+				logger().error("Adaptive dhat is not compatible with adaptive barrier stiffness");
+		}
+	}
 
     template <int _dim>
     void SmoothContactForm<_dim>::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
     {
-		max_barrier_stiffness_ = 1e3 * barrier_stiffness();
-		// if (!use_adaptive_barrier_stiffness())
+		if (!use_adaptive_barrier_stiffness())
 			return;
 
+		max_barrier_stiffness_ = barrier_stiffness() * 4;
 		// const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
 		// // The adative stiffness is designed for the non-convergent formulation,
 		// // so we need to compute the gradient of the non-convergent barrier.
 		// // After we can map it to a good value for the convergent formulation.
-		// ipc::SmoothCollisions<_dim> nonconvergent_constraints;
-		// nonconvergent_constraints.build(
-		// 	collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_method_);
+		// ipc::SmoothCollisions<_dim> collisions;
+		// collisions.build(
+		// 	collision_mesh_, displaced_surface, params, false, broad_phase_method_);
 		// Eigen::VectorXd grad_barrier = contact_potential_->gradient(
-		// 	nonconvergent_constraints, collision_mesh_, displaced_surface);
+		// 	collisions, collision_mesh_, displaced_surface);
 		// grad_barrier = collision_mesh_.to_full_dof(grad_barrier);
 
-		// barrier_stiffness_ = ipc::initial_barrier_stiffness(
-		// 	ipc::world_bbox_diagonal_length(displaced_surface), get_barrier_potential().barrier(), dhat_, avg_mass_,
-		// 	grad_energy, grad_barrier, max_barrier_stiffness_);
+		// barrier_stiffness_ = ipc::initial_barrier_stiffness(grad_energy, grad_barrier, min_barrier_stiffness_ * weight_, max_barrier_stiffness_ * weight_);
 
 		// // Remove the acceleration scaling from the barrier stiffness because it will be applied later.
 		// barrier_stiffness_ /= weight_;
@@ -83,52 +85,6 @@ namespace polyfem::solver
 	Eigen::VectorXd SmoothContactForm<_dim>::value_per_element_unweighted(const Eigen::VectorXd &x) const
 	{
 		log_and_throw_error("value_per_element_unweighted not implemented!");
-		// const Eigen::MatrixXd V = compute_displaced_surface(x);
-		// assert(V.rows() == collision_mesh_.num_vertices());
-
-		// const size_t num_vertices = collision_mesh_.num_vertices();
-
-		// if (collision_set_->empty())
-		// {
-		// 	return Eigen::VectorXd::Zero(collision_mesh_.full_num_vertices());
-		// }
-
-		// const Eigen::MatrixXi &E = collision_mesh_.edges();
-		// const Eigen::MatrixXi &F = collision_mesh_.faces();
-
-		// auto storage = utils::create_thread_storage<Eigen::VectorXd>(Eigen::VectorXd::Zero(num_vertices));
-
-		// utils::maybe_parallel_for(collision_set_->size(), [&](int start, int end, int thread_id) {
-		// 	Eigen::VectorXd &local_storage = utils::get_local_thread_storage(storage, thread_id);
-
-		// 	for (size_t i = start; i < end; i++)
-		// 	{
-		// 		// Quadrature weight is premultiplied by compute_potential
-		// 		const double potential = (*contact_potential_)((*collision_set_)[i], (*collision_set_)[i].dof(V, E, F));
-
-		// 		const int n_v = (*collision_set_)[i].num_vertices();
-		// 		const std::array<long, 4> vis = (*collision_set_)[i].vertex_ids(E, F);
-		// 		for (int j = 0; j < n_v; j++)
-		// 		{
-		// 			assert(0 <= vis[j] && vis[j] < num_vertices);
-		// 			local_storage[vis[j]] += potential / n_v;
-		// 		}
-		// 	}
-		// });
-
-		// Eigen::VectorXd out = Eigen::VectorXd::Zero(num_vertices);
-		// for (const auto &local_potential : storage)
-		// {
-		// 	out += local_potential;
-		// }
-
-		// Eigen::VectorXd out_full = Eigen::VectorXd::Zero(collision_mesh_.full_num_vertices());
-		// for (int i = 0; i < out.size(); i++)
-		// 	out_full[collision_mesh_.to_full_vertex_id(i)] = out[i];
-
-		// assert(std::abs(value_unweighted(x) - out_full.sum()) < std::max(1e-10 * out_full.sum(), 1e-10));
-
-		// return out_full;
 	}
 
     template <int _dim>

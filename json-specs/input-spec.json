@@ -1189,8 +1189,10 @@
             "use_convergent_formulation",
             "collision_mesh",
             "use_smooth_formulation",
-            "alpha",
-            "beta",
+            "alpha_n",
+            "beta_n",
+            "alpha_t",
+            "beta_t",
             "min_distance_ratio",
             "use_adaptive_dhat",
             "initial_barrier_stiffness"
@@ -1223,19 +1225,36 @@
         "doc": "True if the smooth contact formulation is used."
     },
     {
-        "pointer": "/contact/alpha",
-        "default": 1,
-        "min": 0,
+        "pointer": "/contact/alpha_t",
+        "default": 0.5,
+        "max": 1,
+        "min": -1,
         "type": "float",
-        "doc": "Control the smoothness of angle contraints of contact pairs."
+        "doc": "Control the smoothness of tangent angle contraints of contact pairs."
     },
     {
-        "pointer": "/contact/beta",
+        "pointer": "/contact/beta_t",
         "default": 0,
         "max": 1,
         "min": -1,
         "type": "float",
-        "doc": "Control the threshold of angle constraints of contact pairs."
+        "doc": "Control the threshold of tangent angle constraints of contact pairs."
+    },
+    {
+        "pointer": "/contact/alpha_n",
+        "default": 0.5,
+        "max": 1,
+        "min": -1,
+        "type": "float",
+        "doc": "Control the smoothness of normal angle contraints of contact pairs."
+    },
+    {
+        "pointer": "/contact/beta_n",
+        "default": 0,
+        "max": 1,
+        "min": -1,
+        "type": "float",
+        "doc": "Control the threshold of normal angle constraints of contact pairs."
     },
     {
         "pointer": "/contact/enabled",
