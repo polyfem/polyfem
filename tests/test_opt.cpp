@@ -158,7 +158,7 @@ TEST_CASE("material-opt", tagsopt)
 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], 1);
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
-	json params = nl_solver->get_info();
+	json params = nl_solver->info();
 	std::cout << "final energy " << params["energy"].get<double>() << "\n";
 
 	REQUIRE(params["energy"].get<double>() == Catch::Approx(0.0023793444).epsilon(1e-2));
@@ -213,7 +213,7 @@ TEST_CASE("initial-opt", "[optimization]")
 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], 1);
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
-	json params = nl_solver->get_info();
+	json params = nl_solver->info();
 	std::cout << "final energy " << params["energy"].get<double>() << "\n";
 
 	REQUIRE(params["energy"].get<double>() == Catch::Approx(4.58399e-05).epsilon(1e-2));
@@ -259,7 +259,7 @@ TEST_CASE("topology-opt", "[optimization]")
 	// run the optimization for a few steps
 	nl_solver->minimize(*nl_problem, x);
 
-	const json &params = nl_solver->get_info();
+	const json &params = nl_solver->info();
 	std::cout << "final energy " << params["energy"].get<double>() << "\n";
 
 	REQUIRE(params["energy"].get<double>() == Catch::Approx(0.726565).epsilon(1e-4));
@@ -313,7 +313,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], 1);
 	nl_solver->minimize(*nl_problem, x);
 
-	const json &params = nl_solver->get_info();
+	const json &params = nl_solver->info();
 	std::cout << "final energy " << params["energy"].get<double>() << "\n";
 
 	REQUIRE(params["energy"].get<double>() == Catch::Approx(1.00006).epsilon(1e-4));
@@ -349,7 +349,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], 1);
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
-	const json &params = nl_solver->get_info();
+	const json &params = nl_solver->info();
 	std::cout << "final energy " << params["energy"].get<double>() << "\n";
 
 	// REQUIRE(energies[0] == Catch::Approx(0.105955475999).epsilon(1e-4));
