@@ -1999,7 +1999,7 @@ namespace polyfem::io
 				ipc::FrictionCollisions friction_collision_set;
 				friction_collision_set.build(
 					collision_mesh, displaced_surface, collision_set,
-					dhat, barrier_stiffness, friction_coefficient);
+					barrier_potential, barrier_stiffness, friction_coefficient);
 
 				ipc::FrictionPotential friction_potential(epsv);
 
