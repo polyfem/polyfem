@@ -1,7 +1,5 @@
 var NAVTREEINDEX44 =
 {
-"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#aa1ec73d17b9f77dcd62bf536109c6c64":[5,0,5,4,19,4,8],
-"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#aa1ec73d17b9f77dcd62bf536109c6c64":[6,0,1,3,17,4,8],
 "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#aa35f0c3231416b10814b185e66eb8c7b":[5,0,5,4,19,4,10],
 "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#aa35f0c3231416b10814b185e66eb8c7b":[6,0,1,3,17,4,10],
 "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#aa551c918e3a3a6dd1b5b511c4890beba":[6,0,1,3,17,4,5],

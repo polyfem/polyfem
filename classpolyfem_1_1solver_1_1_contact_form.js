@@ -1,14 +1,14 @@
 var classpolyfem_1_1solver_1_1_contact_form =
 [
     [ "ContactForm", "classpolyfem_1_1solver_1_1_contact_form.html#ab7d50032b2d64d411f0424f677d7fd61", null ],
+    [ "barrier_potential", "classpolyfem_1_1solver_1_1_contact_form.html#a1e2b2e9c627dfca2a35522c31697b8d6", null ],
     [ "barrier_stiffness", "classpolyfem_1_1solver_1_1_contact_form.html#a41dcdd4761553a2e08ed5c44056d0440", null ],
+    [ "collision_set", "classpolyfem_1_1solver_1_1_contact_form.html#a9433fe59d6b9184ca94b46b759df823e", null ],
     [ "compute_displaced_surface", "classpolyfem_1_1solver_1_1_contact_form.html#a41111805fab863090ce87259bb024995", null ],
     [ "dhat", "classpolyfem_1_1solver_1_1_contact_form.html#a891722aad2290a8a2684cadc742d6561", null ],
     [ "enable_shape_derivatives", "classpolyfem_1_1solver_1_1_contact_form.html#a7aadb732b6df116dd2374bdb64d0826c", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_contact_form.html#ac654311b96207d936de3f8e115d4cd52", null ],
     [ "force_shape_derivative", "classpolyfem_1_1solver_1_1_contact_form.html#a1bb2fcbb49ac3743415c87722b36113b", null ],
-    [ "get_barrier_potential", "classpolyfem_1_1solver_1_1_contact_form.html#a36307b96a586a50afb12778e608a69cd", null ],
-    [ "get_collision_set", "classpolyfem_1_1solver_1_1_contact_form.html#aa4b3c7ea8ee6ec9f21f1899da99e7a1a", null ],
     [ "init", "classpolyfem_1_1solver_1_1_contact_form.html#a2a11c35e1a44e6f8ad2ca4602ab158bb", null ],
     [ "is_step_collision_free", "classpolyfem_1_1solver_1_1_contact_form.html#aee65aa9ea94cac5dea17f77b65ef2006", null ],
     [ "line_search_begin", "classpolyfem_1_1solver_1_1_contact_form.html#ab011ec40a36b9125803eb58bbfae853c", null ],
