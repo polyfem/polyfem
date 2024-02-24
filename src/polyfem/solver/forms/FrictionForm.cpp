@@ -11,7 +11,6 @@ namespace polyfem::solver
 		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator,
 		const double epsv,
 		const double mu,
-		const double dhat,
 		const ipc::BroadPhaseMethod broad_phase_method,
 		const ContactForm &contact_form,
 		const int n_lagging_iters)
@@ -19,12 +18,10 @@ namespace polyfem::solver
 		  time_integrator_(time_integrator),
 		  epsv_(epsv),
 		  mu_(mu),
-		  dhat_(dhat),
 		  broad_phase_method_(broad_phase_method),
 		  n_lagging_iters_(n_lagging_iters < 0 ? std::numeric_limits<int>::max() : n_lagging_iters),
 		  contact_form_(contact_form),
 		  friction_potential_(epsv)
-
 	{
 		assert(epsv_ > 0);
 	}
@@ -46,7 +43,8 @@ namespace polyfem::solver
 			friction_constraints_set,
 			collision_mesh_, collision_mesh_.rest_positions(),
 			/*lagged_displacements=*/U_prev, velocities,
-			dhat_, contact_form_.barrier_stiffness(),
+			contact_form_.barrier_potential(),
+			contact_form_.barrier_stiffness(),
 			ipc::FrictionPotential::DiffWRT::REST_POSITIONS);
 
 		// {
@@ -134,11 +132,10 @@ namespace polyfem::solver
 		collision_set.set_use_convergent_formulation(contact_form_.use_convergent_formulation());
 		collision_set.set_are_shape_derivatives_enabled(contact_form_.enable_shape_derivatives());
 		collision_set.build(
-			collision_mesh_, displaced_surface, dhat_,
-			/*dmin=*/0, broad_phase_method_);
+			collision_mesh_, displaced_surface, contact_form_.dhat(), /*dmin=*/0, broad_phase_method_);
 
 		friction_collision_set_.build(
 			collision_mesh_, displaced_surface, collision_set,
-			contact_form_.get_barrier_potential(), contact_form_.barrier_stiffness(), mu_);
+			contact_form_.barrier_potential(), contact_form_.barrier_stiffness(), mu_);
 	}
 } // namespace polyfem::solver
