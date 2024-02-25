@@ -122,7 +122,7 @@ namespace polyfem::solver
 		max_barrier_stiffness_ /= weight_;
 
 		logger().debug(
-			"adaptive barrier form stiffness {} (max barrier stiffness: {})",
+			"Setting adaptive barrier stiffness to {} (max barrier stiffness: {})",
 			barrier_stiffness(), max_barrier_stiffness_);
 	}
 
