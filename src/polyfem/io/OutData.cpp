@@ -1999,7 +1999,7 @@ namespace polyfem::io
 				ipc::FrictionCollisions friction_collision_set;
 				friction_collision_set.build(
 					collision_mesh, displaced_surface, collision_set,
-					dhat, barrier_stiffness, friction_coefficient);
+					barrier_potential, barrier_stiffness, friction_coefficient);
 
 				ipc::FrictionPotential friction_potential(epsv);
 
@@ -2935,18 +2935,18 @@ namespace polyfem::io
 		total_remeshing_time += remeshing;
 		total_global_relaxation_time += global_relaxation;
 
-		logger().debug(
-			"Forward (cur, avg, total): {} s, {} s, {} s",
-			forward, total_forward_solve_time / t, total_forward_solve_time);
-		logger().debug(
-			"Remeshing (cur, avg, total): {} s, {} s, {} s",
-			remeshing, total_remeshing_time / t, total_remeshing_time);
-		logger().debug(
-			"Global relaxation (cur, avg, total): {} s, {} s, {} s",
-			global_relaxation, total_global_relaxation_time / t, total_global_relaxation_time);
+		// logger().debug(
+		// 	"Forward (cur, avg, total): {} s, {} s, {} s",
+		// 	forward, total_forward_solve_time / t, total_forward_solve_time);
+		// logger().debug(
+		// 	"Remeshing (cur, avg, total): {} s, {} s, {} s",
+		// 	remeshing, total_remeshing_time / t, total_remeshing_time);
+		// logger().debug(
+		// 	"Global relaxation (cur, avg, total): {} s, {} s, {} s",
+		// 	global_relaxation, total_global_relaxation_time / t, total_global_relaxation_time);
 
 		const double peak_mem = getPeakRSS() / double(1 << 30);
-		logger().debug("Peak mem: {} GiB", peak_mem);
+		// logger().debug("Peak mem: {} GiB", peak_mem);
 
 		file << fmt::format(
 			"{},{},{},{},{},{},{},{}\n",

@@ -34,7 +34,7 @@ namespace polyfem::solver
 
 		double al_weight = initial_al_weight;
 		int al_steps = 0;
-		const int iters = nl_solver->max_iterations();
+		const int iters = nl_solver->stop_criteria().iterations;
 
 		const double initial_error = pen_form->compute_error(sol);
 
@@ -71,10 +71,10 @@ namespace polyfem::solver
 
 			if (eta < 0)
 			{
-				logger().debug("Higer error than initial, increase weight and revert to previous solution");
+				logger().debug("Higher error than initial, increase weight and revert to previous solution");
 				sol = initial_sol;
 			}
-			
+
 			tmp_sol = nl_problem.full_to_reduced(sol);
 			nl_problem.line_search_begin(sol, tmp_sol);
 
@@ -87,7 +87,7 @@ namespace polyfem::solver
 			++al_steps;
 		}
 		nl_problem.line_search_end();
-		nl_solver->max_iterations() = iters;
+		nl_solver->stop_criteria().iterations = iters;
 	}
 
 	void ALSolver::solve_reduced(std::shared_ptr<NLSolver> nl_solver, NLProblem &nl_problem, Eigen::MatrixXd &sol)
@@ -105,7 +105,7 @@ namespace polyfem::solver
 		// --------------------------------------------------------------------
 		// Perform one final solve with the DBC projected out
 
-		logger().debug("Successfully applied boundary conditions; solving in reduced space:");
+		logger().debug("Successfully applied boundary conditions; solving in reduced space");
 
 		nl_problem.init(sol);
 		update_barrier_stiffness(sol);
