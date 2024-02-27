@@ -548,6 +548,11 @@ namespace polyfem
 						if (!has_samples)
 							continue;
 
+						if (mesh_.is_volume())
+							assert(false);
+						else
+							weights /= mesh_.edge_length(primitive_global_id);
+
 						global_primitive_ids.setConstant(weights.size(), primitive_global_id);
 
 						vals.compute(e, mesh_.is_volume(), points, bs, gbs);
