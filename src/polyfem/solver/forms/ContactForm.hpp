@@ -23,10 +23,10 @@ namespace ipc
 		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
 		 {ipc::BroadPhaseMethod::BVH, "bvh"},
 		 {ipc::BroadPhaseMethod::BVH, "BVH"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_PRUNE, "sweep_and_prune"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_PRUNE, "SAP"},
 		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "sweep_and_tiniest_queue_gpu"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "STQ_GPU"}})
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"}})
 } // namespace ipc
 
 namespace polyfem::solver
@@ -141,9 +141,8 @@ namespace polyfem::solver
 		bool save_ccd_debug_meshes = false;
 
 		double dhat() const { return dhat_; }
-		ipc::Collisions get_collision_set() const { return collision_set_; }
-
-		const ipc::BarrierPotential &get_barrier_potential() const { return barrier_potential_; }
+		const ipc::Collisions &collision_set() const { return collision_set_; }
+		const ipc::BarrierPotential &barrier_potential() const { return barrier_potential_; }
 
 	protected:
 		/// @brief Update the cached candidate set for the current solution

@@ -316,7 +316,7 @@ namespace polyfem
 			stats.solver_info.push_back(
 				{{"type", al_weight > 0 ? "al" : "rc"},
 				 {"t", t}, // TODO: null if static?
-				 {"info", nl_solver->get_info()}});
+				 {"info", nl_solver->info()}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
 			save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
@@ -390,7 +390,7 @@ namespace polyfem
 					{{"type", "rc"},
 					 {"t", t}, // TODO: null if static?
 					 {"lag_i", lag_i},
-					 {"info", nl_solver->get_info()}});
+					 {"info", nl_solver->info()}});
 				save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 			}
 		}
