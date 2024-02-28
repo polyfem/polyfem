@@ -8,7 +8,7 @@ namespace polyfem::solver
 	class AdjointForm : public Form
 	{
 	public:
-		AdjointForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations) : variable_to_simulations_(variable_to_simulations) {}
+		AdjointForm(const std::vector<std::unique_ptr<VariableToSimulation>> &variable_to_simulations) : variable_to_simulations_(variable_to_simulations) {}
 		virtual ~AdjointForm() {}
 
 		virtual std::string name() const override { return "adjoint"; }
@@ -45,7 +45,7 @@ namespace polyfem::solver
 	protected:
 		virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
-		std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations_;
+		const std::vector<std::unique_ptr<VariableToSimulation>>& variable_to_simulations_;
 
 		mutable int print_energy_ = 0; // 0: don't print, 1: print, 2: already printed on current solution
 		std::string print_energy_keyword_;
@@ -77,7 +77,7 @@ namespace polyfem::solver
 	class MaxStressForm : public StaticForm
 	{
 	public:
-		MaxStressForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : StaticForm(variable_to_simulations), state_(state)
+		MaxStressForm(const std::vector<std::unique_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : StaticForm(variable_to_simulations), state_(state)
 		{
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());

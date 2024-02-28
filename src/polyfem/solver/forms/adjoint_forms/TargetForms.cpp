@@ -209,7 +209,7 @@ namespace polyfem::solver
 		have_target_func = true;
 	}
 
-	NodeTargetForm::NodeTargetForm(const State &state, const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const json &args) : StaticForm(variable_to_simulations), state_(state)
+	NodeTargetForm::NodeTargetForm(const State &state, const std::vector<std::unique_ptr<VariableToSimulation>> &variable_to_simulations, const json &args) : StaticForm(variable_to_simulations), state_(state)
 	{
 		std::string target_data_path = args["target_data_path"];
 		if (!std::filesystem::is_regular_file(target_data_path))
@@ -231,7 +231,7 @@ namespace polyfem::solver
 		}
 	}
 
-	NodeTargetForm::NodeTargetForm(const State &state, const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_) : StaticForm(variable_to_simulations), state_(state), target_vertex_positions(target_vertex_positions_), active_nodes(active_nodes_)
+	NodeTargetForm::NodeTargetForm(const State &state, const std::vector<std::unique_ptr<VariableToSimulation>> &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_) : StaticForm(variable_to_simulations), state_(state), target_vertex_positions(target_vertex_positions_), active_nodes(active_nodes_)
 	{
 	}
 
@@ -293,7 +293,7 @@ namespace polyfem::solver
 		}
 	}
 
-	BarycenterTargetForm::BarycenterTargetForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const json &args, const std::shared_ptr<State> &state1, const std::shared_ptr<State> &state2) : StaticForm(variable_to_simulations)
+	BarycenterTargetForm::BarycenterTargetForm(const std::vector<std::unique_ptr<VariableToSimulation>> &variable_to_simulations, const json &args, const std::shared_ptr<State> &state1, const std::shared_ptr<State> &state2) : StaticForm(variable_to_simulations)
 	{
 		dim = state1->mesh->dimension();
 		json tmp_args = args;

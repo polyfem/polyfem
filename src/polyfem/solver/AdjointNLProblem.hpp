@@ -17,8 +17,8 @@ namespace polyfem::solver
 	class AdjointNLProblem : public FullNLProblem
 	{
 	public:
-		AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args);
-		AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<AdjointForm>> stopping_conditions, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args);
+		AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::unique_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args);
+		AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<AdjointForm>> stopping_conditions, const std::vector<std::unique_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args);
 
 		double value(const Eigen::VectorXd &x) override;
 
@@ -37,16 +37,16 @@ namespace polyfem::solver
 		// virtual void set_project_to_psd(bool val) override;
 
 		void solution_changed(const Eigen::VectorXd &new_x) override;
-		void solution_changed_no_solve(const Eigen::VectorXd &new_x);
+		// void solution_changed_no_solve(const Eigen::VectorXd &new_x);
 
 		void solve_pde();
 
-		int n_states() const { return all_states_.size(); }
-		std::shared_ptr<State> get_state(int id) { return all_states_[id]; }
+		// int n_states() const { return all_states_.size(); }
+		// std::shared_ptr<State> get_state(int id) { return all_states_[id]; }
 
 	private:
 		std::shared_ptr<AdjointForm> form_;
-		std::vector<std::shared_ptr<VariableToSimulation>> variables_to_simulation_;
+		const std::vector<std::unique_ptr<VariableToSimulation>> &variables_to_simulation_;
 		std::vector<std::shared_ptr<State>> all_states_;
 		std::vector<bool> active_state_mask;
 		Eigen::VectorXd cur_grad;

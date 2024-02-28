@@ -12,7 +12,7 @@ namespace polyfem::solver
 	class BoundarySmoothingForm : public AdjointForm
 	{
 	public:
-		BoundarySmoothingForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const bool scale_invariant, const int power) : AdjointForm(variable_to_simulations),
+		BoundarySmoothingForm(const std::vector<std::unique_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const bool scale_invariant, const int power) : AdjointForm(variable_to_simulations),
 																																													state_(state),
 																																													scale_invariant_(scale_invariant),
 																																													power_(power) { init_form(); }

@@ -95,7 +95,7 @@ namespace polyfem::solver
 		}
 	} // namespace
 
-	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args)
+	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::unique_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args)
 		: FullNLProblem({form}),
 		  form_(form),
 		  variables_to_simulation_(variables_to_simulation),
@@ -135,7 +135,7 @@ namespace polyfem::solver
 		}
 	}
 
-	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<AdjointForm>> stopping_conditions, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args) : AdjointNLProblem(form, variables_to_simulation, all_states, args)
+	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<AdjointForm>> stopping_conditions, const std::vector<std::unique_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args) : AdjointNLProblem(form, variables_to_simulation, all_states, args)
 	{
 		stopping_conditions_ = stopping_conditions;
 	}
@@ -257,26 +257,26 @@ namespace polyfem::solver
 		}
 	}
 
-	void AdjointNLProblem::solution_changed_no_solve(const Eigen::VectorXd &newX)
-	{
-		bool need_rebuild_basis = false;
+	// void AdjointNLProblem::solution_changed_no_solve(const Eigen::VectorXd &newX)
+	// {
+	// 	bool need_rebuild_basis = false;
 
-		// update to new parameter and check if the new parameter is valid to solve
-		for (const auto &v : variables_to_simulation_)
-		{
-			v->update(newX);
-			if (v->get_parameter_type() == ParameterType::Shape)
-				need_rebuild_basis = true;
-		}
+	// 	// update to new parameter and check if the new parameter is valid to solve
+	// 	for (const auto &v : variables_to_simulation_)
+	// 	{
+	// 		v->update(newX);
+	// 		if (v->get_parameter_type() == ParameterType::Shape)
+	// 			need_rebuild_basis = true;
+	// 	}
 
-		if (need_rebuild_basis)
-		{
-			for (const auto &state : all_states_)
-				state->build_basis();
-		}
+	// 	if (need_rebuild_basis)
+	// 	{
+	// 		for (const auto &state : all_states_)
+	// 			state->build_basis();
+	// 	}
 
-		form_->solution_changed(newX);
-	}
+	// 	form_->solution_changed(newX);
+	// }
 
 	void AdjointNLProblem::solution_changed(const Eigen::VectorXd &newX)
 	{
@@ -324,6 +324,8 @@ namespace polyfem::solver
 		}
 		else
 		{
+			adjoint_logger().info("Run simulations in serial...");
+
 			Eigen::MatrixXd sol, pressure; // solution is also cached in state
 			for (int i : solve_in_order)
 			{

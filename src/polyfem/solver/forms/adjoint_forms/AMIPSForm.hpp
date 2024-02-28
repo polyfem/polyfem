@@ -115,7 +115,7 @@ namespace polyfem::solver
 	class AMIPSForm : public AdjointForm
 	{
 	public:
-		AMIPSForm(const std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulation, const State &state)
+		AMIPSForm(const std::vector<std::unique_ptr<VariableToSimulation>>& variable_to_simulation, const State &state)
 			: AdjointForm(variable_to_simulation),
 			  state_(state)
 		{
@@ -216,7 +216,7 @@ namespace polyfem::solver
 			assert(grad.cols() == 1);
 
 			gradv.setZero(x.size());
-			for (auto &p : variable_to_simulations_)
+			for (const auto &p : variable_to_simulations_)
 			{
 				for (const auto &state : p->get_states())
 					if (state.get() != &state_)
@@ -249,7 +249,7 @@ namespace polyfem::solver
 		{
 			Eigen::VectorXd X = X_init;
 
-			for (auto &p : variable_to_simulations_)
+			for (const auto &p : variable_to_simulations_)
 			{
 				for (const auto &state : p->get_states())
 					if (state.get() != &state_)

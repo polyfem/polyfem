@@ -36,6 +36,11 @@ namespace spdlog::level
 
 namespace polyfem
 {
+	OptState::~OptState()
+	{
+
+	}
+
 	OptState::OptState()
 	{
 		utils::GeogramUtils::instance().initialize();
@@ -166,7 +171,7 @@ namespace polyfem
 			stopping_conditions.push_back(
 				solver::AdjointOptUtils::create_form(arg, variable_to_simulations, states));
 
-		nl_problem = std::make_shared<solver::AdjointNLProblem>(
+		nl_problem = std::make_unique<solver::AdjointNLProblem>(
 			obj, stopping_conditions, variable_to_simulations, states, args);
 	}
 

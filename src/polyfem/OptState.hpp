@@ -25,7 +25,7 @@ namespace polyfem
 		//-----------------initialization--------------------
 		//---------------------------------------------------
 
-		~OptState() = default;
+		~OptState();
 		/// Constructor
 		OptState();
 
@@ -97,9 +97,9 @@ namespace polyfem
 		std::vector<int> variable_sizes;
 		int ndof;
 
-		std::vector<std::shared_ptr<solver::VariableToSimulation>> variable_to_simulations;
+		std::vector<std::unique_ptr<solver::VariableToSimulation>> variable_to_simulations;
 
-		std::shared_ptr<solver::AdjointNLProblem> nl_problem;
+		std::unique_ptr<solver::AdjointNLProblem> nl_problem;
 
 	public:
 		/// Directory for output files

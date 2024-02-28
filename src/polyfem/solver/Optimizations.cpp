@@ -78,7 +78,7 @@ namespace polyfem::solver
 		log_and_throw_adjoint_error("Invalid nonlinear solver name!");
 	}
 
-	std::shared_ptr<AdjointForm> AdjointOptUtils::create_form(const json &args, const std::vector<std::shared_ptr<VariableToSimulation>> &var2sim, const std::vector<std::shared_ptr<State>> &states)
+	std::shared_ptr<AdjointForm> AdjointOptUtils::create_form(const json &args, const std::vector<std::unique_ptr<VariableToSimulation>> &var2sim, const std::vector<std::shared_ptr<State>> &states)
 	{
 		std::shared_ptr<AdjointForm> obj;
 		if (args.is_array())
@@ -288,9 +288,9 @@ namespace polyfem::solver
 		return map;
 	}
 
-	std::shared_ptr<VariableToSimulation> AdjointOptUtils::create_variable_to_simulation(const json &args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes)
+	std::unique_ptr<VariableToSimulation> AdjointOptUtils::create_variable_to_simulation(const json &args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes)
 	{
-		std::shared_ptr<VariableToSimulation> var2sim;
+		std::unique_ptr<VariableToSimulation> var2sim;
 		const std::string type = args["type"];
 
 		std::vector<std::shared_ptr<Parametrization>> map_list;
@@ -349,34 +349,34 @@ namespace polyfem::solver
 
 		if (type == "shape")
 		{
-			var2sim = std::make_shared<ShapeVariableToSimulation>(cur_states, composite_map);
+			var2sim = std::make_unique<ShapeVariableToSimulation>(cur_states, composite_map);
 			var2sim->set_output_indexing(output_indexing);
 		}
 		else if (type == "elastic")
 		{
-			var2sim = std::make_shared<ElasticVariableToSimulation>(cur_states, composite_map);
+			var2sim = std::make_unique<ElasticVariableToSimulation>(cur_states, composite_map);
 		}
 		else if (type == "friction")
 		{
-			var2sim = std::make_shared<FrictionCoeffientVariableToSimulation>(cur_states, composite_map);
+			var2sim = std::make_unique<FrictionCoeffientVariableToSimulation>(cur_states, composite_map);
 		}
 		else if (type == "damping")
 		{
-			var2sim = std::make_shared<DampingCoeffientVariableToSimulation>(cur_states, composite_map);
+			var2sim = std::make_unique<DampingCoeffientVariableToSimulation>(cur_states, composite_map);
 		}
 		else if (type == "initial")
 		{
-			var2sim = std::make_shared<InitialConditionVariableToSimulation>(cur_states, composite_map);
+			var2sim = std::make_unique<InitialConditionVariableToSimulation>(cur_states, composite_map);
 		}
 		else if (type == "dirichlet")
 		{
-			var2sim = std::make_shared<DirichletVariableToSimulation>(cur_states, composite_map);
+			var2sim = std::make_unique<DirichletVariableToSimulation>(cur_states, composite_map);
 		}
 
 		return var2sim;
 	}
 
-	Eigen::VectorXd AdjointOptUtils::inverse_evaluation(const json &args, const int ndof, const std::vector<int> &variable_sizes, std::vector<std::shared_ptr<VariableToSimulation>> &var2sim)
+	Eigen::VectorXd AdjointOptUtils::inverse_evaluation(const json &args, const int ndof, const std::vector<int> &variable_sizes, std::vector<std::unique_ptr<VariableToSimulation>> &var2sim)
 	{
 		Eigen::VectorXd x;
 		x.setZero(ndof);

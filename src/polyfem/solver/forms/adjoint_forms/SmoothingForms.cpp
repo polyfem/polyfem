@@ -160,7 +160,7 @@ namespace polyfem::solver
 		}
 
 		gradv.setZero(x.size());
-		for (auto &p : variable_to_simulations_)
+		for (const auto &p : variable_to_simulations_)
 		{
 			for (const auto &state : p->get_states())
 				if (state.get() != &state_)
