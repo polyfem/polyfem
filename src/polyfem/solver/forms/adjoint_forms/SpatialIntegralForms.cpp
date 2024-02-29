@@ -59,24 +59,11 @@ namespace polyfem::solver
 	void SpatialIntegralForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		assert(time_step < state_.diff_cached.size());
-		gradv.setZero(x.size());
-		for (const auto &param_map : variable_to_simulations_)
-		{
-			const auto &param_type = param_map->get_parameter_type();
-
-			for (const auto &state : param_map->get_states())
-			{
-				if (state.get() != &state_)
-					continue;
-
-				Eigen::VectorXd term;
-				if (param_type == ParameterType::Shape)
-					AdjointTools::compute_shape_derivative_functional_term(state_, state_.diff_cached.u(time_step), get_integral_functional(), ids_, spatial_integral_type_, term, time_step);
-				if (term.size() > 0)
-					gradv += param_map->apply_parametrization_jacobian(term, x);
-			}
-		}
-		gradv *= weight();
+		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, &state_, x, [this, time_step, &x]() {
+			Eigen::VectorXd term;
+			AdjointTools::compute_shape_derivative_functional_term(this->state_, this->state_.diff_cached.u(time_step), this->get_integral_functional(), this->ids_, this->spatial_integral_type_, term, time_step);
+			return term;
+		});
 	}
 
 	Eigen::VectorXd SpatialIntegralForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
@@ -142,23 +129,10 @@ namespace polyfem::solver
 	void ElasticEnergyForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		SpatialIntegralForm::compute_partial_gradient_step(time_step, x, gradv);
-		for (const auto &param_map : variable_to_simulations_)
-		{
-			const auto &param_type = param_map->get_parameter_type();
-
-			for (const auto &state : param_map->get_states())
-			{
-				if (state.get() != &state_)
-					continue;
-
-				Eigen::VectorXd term;
-				if (param_type == ParameterType::Material)
-					log_and_throw_adjoint_error("[{}] Doesn't support stress derivative wrt. material!", name());
-
-				if (term.size() > 0)
-					gradv += weight() * param_map->apply_parametrization_jacobian(term, x);
-			}
-		}
+		gradv += weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Material, &state_, x, [this]() {
+			log_and_throw_adjoint_error("[{}] Doesn't support derivatives wrt. material!", name());
+			return Eigen::VectorXd::Zero(0).eval();
+		});
 	}
 
 	// TODO: call local assemblers instead
@@ -224,24 +198,10 @@ namespace polyfem::solver
 	void StressNormForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		SpatialIntegralForm::compute_partial_gradient_step(time_step, x, gradv);
-		for (const auto &param_map : variable_to_simulations_)
-		{
-			const auto &param_type = param_map->get_parameter_type();
-
-			for (const auto &state_ptr : param_map->get_states())
-			{
-				const auto &state = *state_ptr;
-				if (&state != &state_)
-					continue;
-
-				Eigen::VectorXd term;
-				if (param_type == ParameterType::Material)
-					log_and_throw_adjoint_error("[{}] Doesn't support stress derivative wrt. material!", name());
-
-				if (term.size() > 0)
-					gradv += weight() * param_map->apply_parametrization_jacobian(term, x);
-			}
-		}
+		gradv += weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Material, &state_, x, [this]() {
+			log_and_throw_adjoint_error("[{}] Doesn't support derivatives wrt. material!", name());
+			return Eigen::VectorXd::Zero(0).eval();
+		});
 	}
 
 	IntegrableFunctional ComplianceForm::get_integral_functional() const
@@ -290,58 +250,40 @@ namespace polyfem::solver
 		const double t = state_.problem->is_time_dependent() ? dt * time_step + state_.args["time"]["t0"].get<double>() : 0;
 
 		SpatialIntegralForm::compute_partial_gradient_step(time_step, x, gradv);
-		for (const auto &param_map : variable_to_simulations_)
-		{
-			const auto &param_type = param_map->get_parameter_type();
+		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Material, &state_, x, [this, t, dt, time_step, &x]() {
+			const auto &bases = state_.bases;
+			Eigen::VectorXd term = Eigen::VectorXd::Zero(bases.size() * 2);
+			const int dim = state_.mesh->dimension();
 
-			for (const auto &state_ptr : param_map->get_states())
+			for (int e = 0; e < bases.size(); e++)
 			{
-				const auto &state = *state_ptr;
+				assembler::ElementAssemblyValues vals;
+				state_.ass_vals_cache.compute(e, state_.mesh->is_volume(), bases[e], state_.geom_bases()[e], vals);
 
-				if (&state != &state_)
-					continue;
+				const quadrature::Quadrature &quadrature = vals.quadrature;
+				Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
-				Eigen::VectorXd term;
-				if (param_type == ParameterType::Material)
+				Eigen::MatrixXd u, grad_u;
+				io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, state_.diff_cached.u(time_step), u, grad_u);
+
+				Eigen::MatrixXd grad_u_q;
+				for (int q = 0; q < quadrature.weights.size(); q++)
 				{
-					const auto &bases = state.bases;
-					const auto &gbases = state.geom_bases();
-					term.setZero(bases.size() * 2);
-					const int dim = state.mesh->dimension();
+					double lambda, mu;
+					lambda = state_.assembler->parameters().at("lambda")(quadrature.points.row(q), vals.val.row(q), 0, e);
+					mu = state_.assembler->parameters().at("mu")(quadrature.points.row(q), vals.val.row(q), 0, e);
 
-					for (int e = 0; e < bases.size(); e++)
-					{
-						assembler::ElementAssemblyValues vals;
-						state.ass_vals_cache.compute(e, state.mesh->is_volume(), bases[e], gbases[e], vals);
+					vector2matrix(grad_u.row(q), grad_u_q);
 
-						const quadrature::Quadrature &quadrature = vals.quadrature;
-						Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
+					Eigen::MatrixXd f_prime_dmu, f_prime_dlambda;
+					state_.assembler->compute_dstress_dmu_dlambda(OptAssemblerData(t, dt, e, quadrature.points.row(q), vals.val.row(q), grad_u_q), f_prime_dmu, f_prime_dlambda);
 
-						Eigen::MatrixXd u, grad_u;
-						io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, state.diff_cached.u(time_step), u, grad_u);
-
-						Eigen::MatrixXd grad_u_q;
-						for (int q = 0; q < quadrature.weights.size(); q++)
-						{
-							double lambda, mu;
-							lambda = state.assembler->parameters().at("lambda")(quadrature.points.row(q), vals.val.row(q), 0, e);
-							mu = state.assembler->parameters().at("mu")(quadrature.points.row(q), vals.val.row(q), 0, e);
-
-							vector2matrix(grad_u.row(q), grad_u_q);
-
-							Eigen::MatrixXd f_prime_dmu, f_prime_dlambda;
-							state.assembler->compute_dstress_dmu_dlambda(OptAssemblerData(t, dt, e, quadrature.points.row(q), vals.val.row(q), grad_u_q), f_prime_dmu, f_prime_dlambda);
-
-							term(e + bases.size()) += dot(f_prime_dmu, grad_u_q) * da(q);
-							term(e) += dot(f_prime_dlambda, grad_u_q) * da(q);
-						}
-					}
+					term(e + bases.size()) += dot(f_prime_dmu, grad_u_q) * da(q);
+					term(e) += dot(f_prime_dlambda, grad_u_q) * da(q);
 				}
-
-				if (term.size() > 0)
-					gradv += weight() * param_map->apply_parametrization_jacobian(term, x);
 			}
-		}
+			return term;
+		});
 	}
 
 	IntegrableFunctional PositionForm::get_integral_functional() const
@@ -420,24 +362,10 @@ namespace polyfem::solver
 	void StressForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		SpatialIntegralForm::compute_partial_gradient_step(time_step, x, gradv);
-		for (const auto &param_map : variable_to_simulations_)
-		{
-			const auto &param_type = param_map->get_parameter_type();
-
-			for (const auto &state_ptr : param_map->get_states())
-			{
-				const auto &state = *state_ptr;
-				if (&state != &state_)
-					continue;
-
-				Eigen::VectorXd term;
-				if (param_type == ParameterType::Material)
-					log_and_throw_adjoint_error("[{}] Doesn't support stress derivative wrt. material!", name());
-
-				if (term.size() > 0)
-					gradv += weight() * param_map->apply_parametrization_jacobian(term, x);
-			}
-		}
+		gradv += weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Material, &state_, x, [this]() {
+			log_and_throw_adjoint_error("[{}] Doesn't support derivatives wrt. material!", name());
+			return Eigen::VectorXd::Zero(0).eval();
+		});
 	}
 
 	IntegrableFunctional StressForm::get_integral_functional() const

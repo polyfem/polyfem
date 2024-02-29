@@ -257,27 +257,6 @@ namespace polyfem::solver
 		}
 	}
 
-	// void AdjointNLProblem::solution_changed_no_solve(const Eigen::VectorXd &newX)
-	// {
-	// 	bool need_rebuild_basis = false;
-
-	// 	// update to new parameter and check if the new parameter is valid to solve
-	// 	for (const auto &v : variables_to_simulation_)
-	// 	{
-	// 		v->update(newX);
-	// 		if (v->get_parameter_type() == ParameterType::Shape)
-	// 			need_rebuild_basis = true;
-	// 	}
-
-	// 	if (need_rebuild_basis)
-	// 	{
-	// 		for (const auto &state : all_states_)
-	// 			state->build_basis();
-	// 	}
-
-	// 	form_->solution_changed(newX);
-	// }
-
 	void AdjointNLProblem::solution_changed(const Eigen::VectorXd &newX)
 	{
 		bool need_rebuild_basis = false;

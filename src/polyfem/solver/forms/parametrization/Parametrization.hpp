@@ -26,7 +26,7 @@ namespace polyfem::solver
 	class CompositeParametrization : public Parametrization
 	{
 	public:
-		CompositeParametrization() {}
+		CompositeParametrization() : parametrizations_(std::vector<std::shared_ptr<Parametrization>>()) {}
 		CompositeParametrization(std::vector<std::shared_ptr<Parametrization>>&& parametrizations) : parametrizations_(parametrizations) {}
 		virtual ~CompositeParametrization() {}
 
@@ -37,6 +37,6 @@ namespace polyfem::solver
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad_full, const Eigen::VectorXd &x) const override;
 
 	private:
-		std::vector<std::shared_ptr<Parametrization>> parametrizations_;
+		const std::vector<std::shared_ptr<Parametrization>> parametrizations_;
 	};
 } // namespace polyfem::solver

@@ -68,7 +68,7 @@ namespace polyfem::solver
 		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
 
 	private:
-		std::vector<std::shared_ptr<PositionForm>> center1, center2;
+		std::vector<std::unique_ptr<PositionForm>> center1, center2;
 		int dim;
 	};
 } // namespace polyfem::solver

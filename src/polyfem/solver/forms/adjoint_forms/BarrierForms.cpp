@@ -22,29 +22,17 @@ namespace polyfem::solver
 	double CollisionBarrierForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_.mesh->dimension()));
-
 		return barrier_potential_(collision_set, collision_mesh_, displaced_surface);
 	}
 
 	void CollisionBarrierForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_.mesh->dimension()));
-
-		Eigen::VectorXd grad = collision_mesh_.to_full_dof(barrier_potential_.gradient(collision_set, collision_mesh_, displaced_surface));
-
-		grad = AdjointTools::map_node_to_primitive_order(state_, grad);
-
-		gradv.setZero(x.size());
-		for (const auto &p : variable_to_simulations_)
-		{
-			for (const auto &state : p->get_states())
-				if (state.get() != &state_)
-					continue;
-			if (p->get_parameter_type() != ParameterType::Shape)
-				continue;
-			gradv += p->apply_parametrization_jacobian(grad, x);
-		}
-		gradv *= weight();
+		
+		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, &state_, x, [this, &x]() {
+			const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_.mesh->dimension()));
+			const Eigen::VectorXd grad = collision_mesh_.to_full_dof(barrier_potential_.gradient(collision_set, collision_mesh_, displaced_surface));
+			return AdjointTools::map_node_to_primitive_order(state_, grad);
+		});
 	}
 
 	void CollisionBarrierForm::solution_changed(const Eigen::VectorXd &x)
@@ -102,20 +90,7 @@ namespace polyfem::solver
 	Eigen::VectorXd CollisionBarrierForm::get_updated_mesh_nodes(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd X = X_init;
-
-		for (const auto &p : variable_to_simulations_)
-		{
-			for (const auto &state : p->get_states())
-				if (state.get() != &state_)
-					continue;
-			if (p->get_parameter_type() != ParameterType::Shape)
-				continue;
-			auto state_variable = p->get_parametrization().eval(x);
-			auto output_indexing = p->get_output_indexing(x);
-			for (int i = 0; i < output_indexing.size(); ++i)
-				X(output_indexing(i)) = state_variable(i);
-		}
-
+		variable_to_simulations_.compute_state_variable(ParameterType::Shape, &state_, x, X);
 		return AdjointTools::map_primitive_to_node_order(state_, X);
 	}
 
@@ -147,23 +122,11 @@ namespace polyfem::solver
 
 	void DeformedCollisionBarrierForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_.mesh->dimension()));
-
-		Eigen::VectorXd grad = collision_mesh_.to_full_dof(barrier_potential_.gradient(collision_set, collision_mesh_, displaced_surface));
-
-		grad = AdjointTools::map_node_to_primitive_order(state_, grad);
-
-		gradv.setZero(x.size());
-		for (const auto &p : variable_to_simulations_)
-		{
-			for (const auto &state : p->get_states())
-				if (state.get() != &state_)
-					continue;
-			if (p->get_parameter_type() != ParameterType::Shape)
-				continue;
-			gradv += p->apply_parametrization_jacobian(grad, x);
-		}
-		gradv *= weight();
+		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, &state_, x, [this, &x]() {
+			const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_.mesh->dimension()));
+			const Eigen::VectorXd grad = collision_mesh_.to_full_dof(barrier_potential_.gradient(collision_set, collision_mesh_, displaced_surface));
+			return AdjointTools::map_node_to_primitive_order(state_, grad);
+		});
 	}
 
 	void DeformedCollisionBarrierForm::solution_changed(const Eigen::VectorXd &x)
@@ -221,20 +184,7 @@ namespace polyfem::solver
 	Eigen::VectorXd DeformedCollisionBarrierForm::get_updated_mesh_nodes(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd X = X_init;
-
-		for (const auto &p : variable_to_simulations_)
-		{
-			for (const auto &state : p->get_states())
-				if (state.get() != &state_)
-					continue;
-			if (p->get_parameter_type() != ParameterType::Shape)
-				continue;
-			auto state_variable = p->get_parametrization().eval(x);
-			auto output_indexing = p->get_output_indexing(x);
-			for (int i = 0; i < output_indexing.size(); ++i)
-				X(output_indexing(i)) = state_variable(i);
-		}
-
+		variable_to_simulations_.compute_state_variable(ParameterType::Shape, &state_, x, X);
 		return AdjointTools::map_primitive_to_node_order(state_, X) + state_.diff_cached.u(0);
 	}
 } // namespace polyfem::solver

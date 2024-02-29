@@ -274,24 +274,10 @@ namespace polyfem::solver
 	void NodeTargetForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv.setZero(x.size());
-		for (const auto &param_map : variable_to_simulations_)
-		{
-			const auto &param_type = param_map->get_parameter_type();
-
-			for (const auto &state : param_map->get_states())
-			{
-				if (state.get() != &state_)
-					continue;
-
-				Eigen::VectorXd term;
-				if (param_type == ParameterType::Shape)
-					throw std::runtime_error("Shape derivative of NodeTargetForm not implemented!");
-
-				if (term.size() > 0)
-					gradv += param_map->apply_parametrization_jacobian(term, x);
-			}
-		}
-		gradv *= weight();
+		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, &state_, x, [this]() {
+			log_and_throw_adjoint_error("[{}] Doesn't support derivatives wrt. shape!", name());
+			return Eigen::VectorXd::Zero(0).eval();
+		});
 	}
 
 	BarycenterTargetForm::BarycenterTargetForm(const VariableToSimulationGroup &variable_to_simulations, const json &args, const std::shared_ptr<State> &state1, const std::shared_ptr<State> &state2) : StaticForm(variable_to_simulations)
@@ -301,8 +287,8 @@ namespace polyfem::solver
 		for (int d = 0; d < dim; d++)
 		{
 			tmp_args["dim"] = d;
-			center1.push_back(std::make_shared<PositionForm>(variable_to_simulations, *state1, tmp_args));
-			center2.push_back(std::make_shared<PositionForm>(variable_to_simulations, *state2, tmp_args));
+			center1.push_back(std::make_unique<PositionForm>(variable_to_simulations, *state1, tmp_args));
+			center2.push_back(std::make_unique<PositionForm>(variable_to_simulations, *state2, tmp_args));
 		}
 	}
 

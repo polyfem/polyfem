@@ -154,16 +154,8 @@ namespace polyfem::solver
 			grad = utils::flatten(2 * (L.transpose() * (L * V)));
 		}
 
-		gradv.setZero(x.size());
-		for (const auto &p : variable_to_simulations_)
-		{
-			for (const auto &state : p->get_states())
-				if (state.get() != &state_)
-					continue;
-			if (p->get_parameter_type() != ParameterType::Shape)
-				continue;
-			gradv += p->apply_parametrization_jacobian(grad, x);
-		}
-		gradv *= weight();
+		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, &state_, x, [&grad]() {
+			return grad;
+		});
 	}
 } // namespace polyfem::solver

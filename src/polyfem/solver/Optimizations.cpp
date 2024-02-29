@@ -197,9 +197,7 @@ namespace polyfem::solver
 				std::vector<std::shared_ptr<Parametrization>> map_list;
 				for (const auto &arg : args["parametrization"])
 					map_list.push_back(create_parametrization(arg, states, {}));
-				CompositeParametrization composite_map(std::move(map_list));
-
-				obj = std::make_shared<ParametrizedProductForm>(composite_map);
+				obj = std::make_shared<ParametrizedProductForm>(CompositeParametrization(std::move(map_list)));
 			}
 			else
 				log_and_throw_adjoint_error("Objective not implemented!");
@@ -290,12 +288,7 @@ namespace polyfem::solver
 
 	std::unique_ptr<VariableToSimulation> AdjointOptUtils::create_variable_to_simulation(const json &args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes)
 	{
-		std::unique_ptr<VariableToSimulation> var2sim;
 		const std::string type = args["type"];
-
-		std::vector<std::shared_ptr<Parametrization>> map_list;
-		for (const auto &arg : args["composition"])
-			map_list.push_back(create_parametrization(arg, states, variable_sizes));
 
 		std::vector<std::shared_ptr<State>> cur_states;
 		if (args["state"].is_array())
@@ -303,8 +296,6 @@ namespace polyfem::solver
 				cur_states.push_back(states[i]);
 		else
 			cur_states.push_back(states[args["state"]]);
-
-		CompositeParametrization composite_map(std::move(map_list));
 
 		const std::string composite_map_type = args["composite_map_type"];
 		Eigen::VectorXi output_indexing;
@@ -346,31 +337,13 @@ namespace polyfem::solver
 				log_and_throw_adjoint_error("Invalid composite map indices type!");
 		}
 
+		std::vector<std::shared_ptr<Parametrization>> map_list;
+		for (const auto &arg : args["composition"])
+			map_list.push_back(create_parametrization(arg, states, variable_sizes));
+
+		std::unique_ptr<VariableToSimulation> var2sim = VariableToSimulation::create(type, cur_states, CompositeParametrization(std::move(map_list)));
 		if (type == "shape")
-		{
-			var2sim = std::make_unique<ShapeVariableToSimulation>(cur_states, composite_map);
 			var2sim->set_output_indexing(output_indexing);
-		}
-		else if (type == "elastic")
-		{
-			var2sim = std::make_unique<ElasticVariableToSimulation>(cur_states, composite_map);
-		}
-		else if (type == "friction")
-		{
-			var2sim = std::make_unique<FrictionCoeffientVariableToSimulation>(cur_states, composite_map);
-		}
-		else if (type == "damping")
-		{
-			var2sim = std::make_unique<DampingCoeffientVariableToSimulation>(cur_states, composite_map);
-		}
-		else if (type == "initial")
-		{
-			var2sim = std::make_unique<InitialConditionVariableToSimulation>(cur_states, composite_map);
-		}
-		else if (type == "dirichlet")
-		{
-			var2sim = std::make_unique<DirichletVariableToSimulation>(cur_states, composite_map);
-		}
 
 		return var2sim;
 	}
@@ -383,18 +356,19 @@ namespace polyfem::solver
 		int var = 0;
 		for (const auto &arg : args)
 		{
+			const auto& arg_initial = arg["initial"];
 			Eigen::VectorXd tmp(variable_sizes[var]);
-			if (arg["initial"].is_array() && arg["initial"].size() > 0)
+			if (arg_initial.is_array() && arg_initial.size() > 0)
 			{
-				tmp = arg["initial"];
+				tmp = arg_initial;
 				x.segment(accumulative, tmp.size()) = tmp;
 			}
-			else if (arg["initial"].is_number())
+			else if (arg_initial.is_number())
 			{
-				tmp.setConstant(arg["initial"].get<double>());
+				tmp.setConstant(arg_initial.get<double>());
 				x.segment(accumulative, tmp.size()) = tmp;
 			}
-			else
+			else // arg["initial"] is empty array
 				x += var2sim[var]->inverse_eval();
 
 			accumulative += tmp.size();

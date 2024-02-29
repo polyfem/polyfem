@@ -8,6 +8,25 @@
 
 namespace polyfem::solver
 {
+	std::unique_ptr<VariableToSimulation> VariableToSimulation::create(const std::string& type, const std::vector<std::shared_ptr<State>>& states, CompositeParametrization&& parametrization)
+	{
+		if (type == "shape")
+			return std::make_unique<ShapeVariableToSimulation>(states, parametrization);
+		else if (type == "elastic")
+			return std::make_unique<ElasticVariableToSimulation>(states, parametrization);
+		else if (type == "friction")
+			return std::make_unique<FrictionCoeffientVariableToSimulation>(states, parametrization);
+		else if (type == "damping")
+			return std::make_unique<DampingCoeffientVariableToSimulation>(states, parametrization);
+		else if (type == "initial")
+			return std::make_unique<InitialConditionVariableToSimulation>(states, parametrization);
+		else if (type == "dirichlet")
+			return std::make_unique<DirichletVariableToSimulation>(states, parametrization);
+		
+		log_and_throw_adjoint_error("Invalid type of VariableToSimulation!");
+		return std::unique_ptr<VariableToSimulation>();
+	}
+
 	Eigen::VectorXi VariableToSimulation::get_output_indexing(const Eigen::VectorXd &x) const
 	{
 		const int out_size = parametrization_.size(x.size());
@@ -35,17 +54,11 @@ namespace polyfem::solver
 		return Eigen::VectorXd();
 	}
 
-	void VariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
-	{
-		log_and_throw_adjoint_error("[{}] update_state not implemented!", name());
-	}
-
 	void VariableToSimulationGroup::init(const json& args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes)
 	{
 		std::vector<ValueType>().swap(L);
 		for (const auto &arg : args)
-			L.emplace_back(
-				std::move(AdjointOptUtils::create_variable_to_simulation(arg, states, variable_sizes)));
+			L.push_back(AdjointOptUtils::create_variable_to_simulation(arg, states, variable_sizes));
 	}
 
 	Eigen::VectorXd VariableToSimulationGroup::compute_adjoint_term(const Eigen::VectorXd &x) const
@@ -54,6 +67,47 @@ namespace polyfem::solver
 		for (const auto &v2s : L)
 			adjoint_term += v2s->compute_adjoint_term(x);
 		return adjoint_term;
+	}
+
+	void VariableToSimulationGroup::compute_state_variable(const ParameterType type, const State* state_ptr, const Eigen::VectorXd &x, Eigen::VectorXd &state_variable) const
+	{
+		for (const auto &v2s : L)
+		{
+			if (v2s->get_parameter_type() != type)
+				continue;
+			
+			const Eigen::VectorXd var = v2s->get_parametrization().eval(x);
+			for (const auto &state : v2s->get_states())
+			{
+				if (state.get() != state_ptr)
+					continue;
+				
+				state_variable(v2s->get_output_indexing(x)) = var;
+			}
+		}
+	}
+
+	Eigen::VectorXd VariableToSimulationGroup::apply_parametrization_jacobian(const ParameterType type, const State* state_ptr, const Eigen::VectorXd &x, const std::function<Eigen::VectorXd()>& grad) const
+	{
+		Eigen::VectorXd gradv = Eigen::VectorXd::Zero(x.size());
+		Eigen::VectorXd raw_grad;
+		for (const auto &v2s : L)
+		{
+			if (v2s->get_parameter_type() != type)
+				continue;
+			
+			for (const auto &state : v2s->get_states())
+			{
+				if (state.get() != state_ptr)
+					continue;
+				
+				if (raw_grad.size() == 0)
+					raw_grad = v2s->apply_parametrization_jacobian(grad(), x);
+				
+				gradv += raw_grad;
+			}
+		}
+		return gradv;
 	}
 
 	void ShapeVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)

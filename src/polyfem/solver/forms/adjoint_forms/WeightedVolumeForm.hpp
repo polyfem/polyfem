@@ -9,8 +9,8 @@ namespace polyfem::solver
 	class WeightedVolumeForm : public ParametrizationForm
 	{
 	public:
-		WeightedVolumeForm(const CompositeParametrization &parametrizations, const State &state)
-			: ParametrizationForm(parametrizations), state_(state)
+		WeightedVolumeForm(CompositeParametrization &&parametrizations, const State &state)
+			: ParametrizationForm(std::move(parametrizations)), state_(state)
 		{
 		}
 

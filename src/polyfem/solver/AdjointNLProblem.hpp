@@ -34,16 +34,9 @@ namespace polyfem::solver
 		void post_step(const polysolve::nonlinear::PostStepData &data) override;
 		bool stop(const TVector &x) override;
 
-		// virtual void set_project_to_psd(bool val) override;
-
 		void solution_changed(const Eigen::VectorXd &new_x) override;
-		// void solution_changed_no_solve(const Eigen::VectorXd &new_x);
-
 		void solve_pde();
-
-		// int n_states() const { return all_states_.size(); }
-		// std::shared_ptr<State> get_state(int id) { return all_states_[id]; }
-
+		
 	private:
 		std::shared_ptr<AdjointForm> form_;
 		const VariableToSimulationGroup variables_to_simulation_;

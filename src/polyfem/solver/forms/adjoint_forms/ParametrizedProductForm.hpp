@@ -9,7 +9,7 @@ namespace polyfem::solver
 	class ParametrizedProductForm : public ParametrizationForm
 	{
 	public:
-		ParametrizedProductForm(const CompositeParametrization &parametrizations) : ParametrizationForm(parametrizations)
+		ParametrizedProductForm(CompositeParametrization &&parametrizations) : ParametrizationForm(std::move(parametrizations))
 		{
 		}
 

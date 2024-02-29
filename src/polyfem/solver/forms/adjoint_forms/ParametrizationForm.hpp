@@ -14,7 +14,7 @@ namespace polyfem::solver
 	class ParametrizationForm : public AdjointForm
 	{
 	public:
-		ParametrizationForm(const CompositeParametrization &parametrizations) : AdjointForm({}), parametrizations_(parametrizations) {}
+		ParametrizationForm(CompositeParametrization &&parametrizations) : AdjointForm({}), parametrizations_(parametrizations) {}
 		virtual ~ParametrizationForm() {}
 
 		virtual void init(const Eigen::VectorXd &x) final override;
