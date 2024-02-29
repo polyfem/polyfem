@@ -286,7 +286,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
 			log_and_throw_adjoint_error("Can't find json for State {}", i);
 
-		states[i++] = AdjointOptUtils::create_state(cur_args);
+		states[i++] = AdjointOptUtils::create_state(cur_args, solver::CacheLevel::Derivatives, -1);
 	}
 
 	Eigen::VectorXd x(2);

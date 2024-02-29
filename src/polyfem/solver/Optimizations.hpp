@@ -28,7 +28,7 @@ namespace polyfem::solver
 
 		static std::shared_ptr<polysolve::nonlinear::Solver> make_nl_solver(const json &solver_params, const json &linear_solver_params, const double characteristic_length);
 
-		static std::shared_ptr<State> create_state(const json &args, CacheLevel level = CacheLevel::Derivatives, const size_t max_threads = 32);
+		static std::shared_ptr<State> create_state(const json &args, CacheLevel level, const size_t max_threads);
 
 		static std::vector<std::shared_ptr<State>> create_states(const json &state_args, const CacheLevel &level, const size_t max_threads);
 

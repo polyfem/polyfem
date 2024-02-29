@@ -12,23 +12,18 @@ namespace polyfem::solver
 		virtual ~AdjointForm() {}
 
 		virtual std::string name() const override { return "adjoint"; }
+		void enable_energy_print(const std::string &print_energy_keyword);
 
 		double value(const Eigen::VectorXd &x) const override;
-
-		void enable_energy_print(const std::string &print_energy_keyword)
-		{
-			print_energy_keyword_ = print_energy_keyword;
-			print_energy_ = 1;
-		}
-
 		virtual void solution_changed(const Eigen::VectorXd &new_x) override;
 
-		const auto &get_variable_to_simulations() const { return variable_to_simulations_; }
+		const VariableToSimulationGroup &get_variable_to_simulations() const { return variable_to_simulations_; }
 
 		virtual Eigen::MatrixXd compute_reduced_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const;
 		virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const;
-
 		virtual void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final override;
+
+		// not used functions from base class
 		virtual void update_quantities(const double t, const Eigen::VectorXd &x) final override;
 		virtual void init_lagging(const Eigen::VectorXd &x) final override;
 		virtual void update_lagging(const Eigen::VectorXd &x, const int iter_num) final override;
@@ -37,12 +32,18 @@ namespace polyfem::solver
 	protected:
 		virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final override;
 		virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const final override;
-
 		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const;
 
 		const VariableToSimulationGroup variable_to_simulations_;
 
-		mutable int print_energy_ = 0; // 0: don't print, 1: print, 2: already printed on current solution
+		enum class PrintStage
+		{
+			Inactive,
+			AlreadyPrinted,
+			ToPrint
+		};
+
+		mutable PrintStage print_energy_ = PrintStage::Inactive;
 		std::string print_energy_keyword_;
 	};
 

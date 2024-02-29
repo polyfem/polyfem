@@ -459,7 +459,7 @@ namespace polyfem
 				// TODO: generalize to BDFn
 				Eigen::VectorXd tmp = rhs_(boundary_nodes);
 				if (i + 1 < cols_per_adjoint)
-					tmp += -2. / beta_dt * adjoints(boundary_nodes, i + 1);
+					tmp += (-2. / beta_dt) * adjoints(boundary_nodes, i + 1);
 				if (i + 2 < cols_per_adjoint)
 					tmp += (1. / beta_dt) * adjoints(boundary_nodes, i + 2);
 

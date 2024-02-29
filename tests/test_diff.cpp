@@ -44,7 +44,7 @@ namespace
 
 	std::shared_ptr<State> create_state_and_solve(const json &args)
 	{
-		std::shared_ptr<State> state = AdjointOptUtils::create_state(args);
+		std::shared_ptr<State> state = AdjointOptUtils::create_state(args, solver::CacheLevel::Derivatives, -1);
 		Eigen::MatrixXd sol, pressure;
 		state->solve_problem(sol, pressure);
 
@@ -732,7 +732,7 @@ TEST_CASE("node-trajectory", "[test_adjoint]")
 	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
 	json in_args;
 	load_json(path + "node-trajectory.json", in_args);
-	auto state_ptr = AdjointOptUtils::create_state(in_args);
+	auto state_ptr = AdjointOptUtils::create_state(in_args, solver::CacheLevel::Derivatives, -1);
 	State &state = *state_ptr;
 
 	json opt_args;

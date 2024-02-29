@@ -9,18 +9,24 @@ namespace polyfem::solver
 	double AdjointForm::value(const Eigen::VectorXd &x) const
 	{
 		double val = Form::value(x);
-		if (print_energy_ == 1)
+		if (print_energy_ == PrintStage::ToPrint)
 		{
 			logger().debug("[{}] {}", print_energy_keyword_, val);
-			print_energy_ = 2;
+			print_energy_ = PrintStage::AlreadyPrinted;
 		}
 		return val;
 	}
 
+	void AdjointForm::enable_energy_print(const std::string &print_energy_keyword)
+	{
+		print_energy_keyword_ = print_energy_keyword;
+		print_energy_ = PrintStage::ToPrint;
+	}
+
 	void AdjointForm::solution_changed(const Eigen::VectorXd &new_x)
 	{
-		if (print_energy_ == 2)
-			print_energy_ = 1;
+		if (print_energy_ == PrintStage::AlreadyPrinted)
+			print_energy_ = PrintStage::ToPrint;
 	}
 
 	void AdjointForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
