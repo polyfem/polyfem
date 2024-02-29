@@ -22,20 +22,6 @@ namespace polyfem::solver
 			init_with_param(apply_parametrizations(x));
 		}
 
-		virtual double value_unweighted(const Eigen::VectorXd &x) const override
-		{
-			Eigen::VectorXd y = apply_parametrizations(x);
-			return value_unweighted_with_param(y);
-		}
-
-		virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
-		{
-			Eigen::VectorXd y = apply_parametrizations(x);
-			first_derivative_unweighted_with_param(y, gradv);
-
-			gradv = parametrizations_.apply_jacobian(gradv, x);
-		}
-
 		virtual bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const final override
 		{
 			return is_step_valid_with_param(apply_parametrizations(x0), apply_parametrizations(x1));
@@ -95,7 +81,12 @@ namespace polyfem::solver
 			return is_step_collision_free_with_param(apply_parametrizations(x0), apply_parametrizations(x1));
 		}
 
-		virtual Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override;
+	protected:
+		virtual double value_unweighted(const Eigen::VectorXd &x) const final override
+		{
+			Eigen::VectorXd y = apply_parametrizations(x);
+			return value_unweighted_with_param(y);
+		}
 
 		virtual void init_with_param(const Eigen::VectorXd &x) {}
 		virtual bool is_step_valid_with_param(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const { return true; }
@@ -109,14 +100,18 @@ namespace polyfem::solver
 		virtual void update_lagging_with_param(const Eigen::VectorXd &x, const int iter_num) {}
 		virtual void set_apply_DBC_with_param(const Eigen::VectorXd &x, bool apply_DBC) {}
 		virtual bool is_step_collision_free_with_param(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const { return true; }
-		virtual void first_derivative_unweighted_with_param(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const {}
 		virtual double value_unweighted_with_param(const Eigen::VectorXd &x) const { return 0; }
 
 	protected:
-		virtual void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
+		virtual void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final override
 		{
-			first_derivative_unweighted(x, gradv);
+			compute_partial_gradient_unweighted_with_param(apply_parametrizations(x), gradv);
+			gradv = parametrizations_.apply_jacobian(gradv, x);
 		}
+
+		virtual Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const final override;
+
+		virtual void compute_partial_gradient_unweighted_with_param(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const = 0;
 
 	private:
 		CompositeParametrization parametrizations_;

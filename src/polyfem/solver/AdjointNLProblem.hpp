@@ -3,6 +3,7 @@
 #include <memory>
 #include <polyfem/Common.hpp>
 #include "FullNLProblem.hpp"
+#include <polyfem/solver/forms/adjoint_forms/VariableToSimulation.hpp>
 
 namespace polyfem
 {
@@ -12,13 +13,12 @@ namespace polyfem
 namespace polyfem::solver
 {
 	class AdjointForm;
-	class VariableToSimulation;
 
 	class AdjointNLProblem : public FullNLProblem
 	{
 	public:
-		AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::unique_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args);
-		AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<AdjointForm>> stopping_conditions, const std::vector<std::unique_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args);
+		AdjointNLProblem(std::shared_ptr<AdjointForm> form, const VariableToSimulationGroup &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args);
+		AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<AdjointForm>> stopping_conditions, const VariableToSimulationGroup &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args);
 
 		double value(const Eigen::VectorXd &x) override;
 
@@ -46,7 +46,7 @@ namespace polyfem::solver
 
 	private:
 		std::shared_ptr<AdjointForm> form_;
-		const std::vector<std::unique_ptr<VariableToSimulation>> &variables_to_simulation_;
+		const VariableToSimulationGroup variables_to_simulation_;
 		std::vector<std::shared_ptr<State>> all_states_;
 		std::vector<bool> active_state_mask;
 		Eigen::VectorXd cur_grad;

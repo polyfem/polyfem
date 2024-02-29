@@ -40,6 +40,37 @@ namespace polyfem::solver
 		Eigen::VectorXi output_indexing_; // if a derived class overrides apply_parametrization_jacobian(term, x), this is not necessarily used.
 	};
 
+	class VariableToSimulationGroup
+	{
+	public:
+		using ValueType = std::shared_ptr<VariableToSimulation>;
+
+		VariableToSimulationGroup() = default;
+
+		void init(const json& args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes);
+
+		inline void update(const Eigen::VectorXd &x)
+		{
+			for (auto &v2s : L)
+				v2s->update(x);
+		}
+
+		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const;
+
+		typedef std::vector<ValueType>::iterator iterator;
+		typedef std::vector<ValueType>::const_iterator const_iterator;
+
+		inline ValueType& operator[](size_t i) { return L[i]; }
+		inline iterator begin() { return L.begin(); }
+		inline iterator end() { return L.end(); }
+		inline const_iterator begin() const { return L.begin(); }
+		inline const_iterator end() const { return L.end(); }
+		inline void push_back(const ValueType &v2s) { L.push_back(v2s); }
+		inline void clear() { L.clear(); }
+	private:
+		std::vector<ValueType> L;
+	};
+
 	// state variable dof = dim * n_vertices
 	class ShapeVariableToSimulation : public VariableToSimulation
 	{

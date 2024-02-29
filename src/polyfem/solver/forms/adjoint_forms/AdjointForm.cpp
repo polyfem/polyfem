@@ -47,20 +47,17 @@ namespace polyfem::solver
 			return rhs;
 	}
 
-	void AdjointForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void AdjointForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv.setZero(x.size());
-		for (const auto &param_map : variable_to_simulations_)
-		{
-			auto adjoint_term = param_map->compute_adjoint_term(x);
-			gradv += adjoint_term;
-		}
-
-		gradv /= weight();
-
 		Eigen::VectorXd partial_grad;
 		compute_partial_gradient_unweighted(x, partial_grad);
-		gradv += partial_grad;
+		gradv = variable_to_simulations_.compute_adjoint_term(x) + 
+					partial_grad * weight();
+	}
+
+	void AdjointForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	{
+		log_and_throw_adjoint_error("first_derivative_unweighted cannot be defined for adjoint forms!");
 	}
 
 	void AdjointForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const

@@ -100,7 +100,7 @@ namespace
 		REQUIRE(derivative == Catch::Approx(finite_difference).epsilon(tol));
 	}
 
-	std::tuple<std::shared_ptr<AdjointForm>, std::vector<std::unique_ptr<VariableToSimulation>>, std::vector<std::shared_ptr<State>>> prepare_test(json &opt_args)
+	std::tuple<std::shared_ptr<AdjointForm>, VariableToSimulationGroup, std::vector<std::shared_ptr<State>>> prepare_test(json &opt_args)
 	{
 		opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 		for (auto &arg : opt_args["states"])
@@ -119,16 +119,14 @@ namespace
 		}
 
 		/* variable to simulations */
-		std::vector<std::unique_ptr<VariableToSimulation>> var2sim;
-		for (const auto &arg : opt_args["variable_to_simulation"])
-			var2sim.push_back(
-				AdjointOptUtils::create_variable_to_simulation(arg, states, variable_sizes));
+		VariableToSimulationGroup var2sim;
+		var2sim.init(opt_args["variable_to_simulation"], states, variable_sizes);
 
 		/* forms */
 		std::shared_ptr<AdjointForm> obj = AdjointOptUtils::create_form(
 			opt_args["functionals"], var2sim, states);
 
-		return {obj, std::move(var2sim), states};
+		return {obj, var2sim, states};
 	}
 } // namespace
 
@@ -172,7 +170,7 @@ TEST_CASE("linear_elasticity-surface-3d", "[test_adjoint]")
 
 	std::vector<std::shared_ptr<State>> states({state_ptr});
 
-	std::vector<std::unique_ptr<VariableToSimulation>> variable_to_simulations;
+	VariableToSimulationGroup variable_to_simulations;
 	variable_to_simulations.push_back(AdjointOptUtils::create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
 
 	auto obj = std::make_shared<PositionForm>(variable_to_simulations, state, opt_args["functionals"][0]);
@@ -204,7 +202,7 @@ TEST_CASE("linear_elasticity-surface", "[test_adjoint]")
 
 	std::vector<std::shared_ptr<State>> states({state_ptr});
 
-	std::vector<std::unique_ptr<VariableToSimulation>> variable_to_simulations;
+	VariableToSimulationGroup variable_to_simulations;
 	variable_to_simulations.push_back(AdjointOptUtils::create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
 
 	auto obj = std::make_shared<PositionForm>(variable_to_simulations, state, opt_args["functionals"][0]);
@@ -235,10 +233,9 @@ TEST_CASE("topology-compliance", "[test_adjoint]")
 	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
 	State &state = *state_ptr;
 
-	std::vector<std::shared_ptr<Parametrization>> map_list = {std::make_shared<PowerMap>(5), std::make_shared<InsertConstantMap>(state.bases.size(), state.args["materials"]["nu"]), std::make_shared<ENu2LambdaMu>(state.mesh->is_volume())};
-	CompositeParametrization composite_map(map_list);
+	CompositeParametrization composite_map({std::make_shared<PowerMap>(5), std::make_shared<InsertConstantMap>(state.bases.size(), state.args["materials"]["nu"]), std::make_shared<ENu2LambdaMu>(state.mesh->is_volume())});
 
-	std::vector<std::unique_ptr<VariableToSimulation>> variable_to_simulations;
+	VariableToSimulationGroup variable_to_simulations;
 	variable_to_simulations.push_back(std::make_unique<ElasticVariableToSimulation>(state_ptr, composite_map));
 
 	std::vector<std::shared_ptr<State>> states({state_ptr});
@@ -293,7 +290,7 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 	load_json(path + "shape-neumann-nodes-opt.json", opt_args);
 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
-	std::vector<std::unique_ptr<VariableToSimulation>> variable_to_simulations;
+	VariableToSimulationGroup variable_to_simulations;
 	variable_to_simulations.push_back(std::make_unique<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
 	{
 		VariableToBoundaryNodes variable_to_node(*state_ptr, 2);
@@ -373,7 +370,7 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 // 	};
 // 	Eigen::MatrixXd velocity_discrete;
 
-// 	std::vector<std::unique_ptr<VariableToSimulation>> variable_to_simulations;
+// 	VariableToSimulationGroup variable_to_simulations;
 // 	variable_to_simulations.push_back(std::make_unique<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
 // 	{
 // 		VariableToBoundaryNodes variable_to_node(*state_ptr, 2);
@@ -573,7 +570,7 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 // 	load_json(path + "shape-pressure-neumann-nodes-opt.json", opt_args);
 // 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
-// 	std::vector<std::unique_ptr<VariableToSimulation>> variable_to_simulations;
+// 	VariableToSimulationGroup variable_to_simulations;
 // 	variable_to_simulations.push_back(std::make_unique<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
 // 	{
 // 		VariableToBoundaryNodes variable_to_node(*state_ptr, 2);
@@ -648,7 +645,7 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 // 	load_json(path + "shape-contact-force-norm-opt.json", opt_args);
 // 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
-// 	std::vector<std::unique_ptr<VariableToSimulation>> variable_to_simulations;
+// 	VariableToSimulationGroup variable_to_simulations;
 // 	variable_to_simulations.push_back(std::make_unique<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
 // 	{
 // 		VariableToBoundaryNodesExclusive variable_to_node(*state_ptr, {1, 2});
@@ -742,7 +739,7 @@ TEST_CASE("node-trajectory", "[test_adjoint]")
 	load_json(path + "node-trajectory-opt.json", opt_args);
 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
-	std::vector<std::unique_ptr<VariableToSimulation>> variable_to_simulations;
+	VariableToSimulationGroup variable_to_simulations;
 	variable_to_simulations.push_back(std::make_unique<ElasticVariableToSimulation>(state_ptr, CompositeParametrization()));
 
 	Eigen::MatrixXd targets(state.n_bases, state.mesh->dimension());
@@ -786,7 +783,7 @@ TEST_CASE("damping-transient", "[test_adjoint]")
 	load_json(path + "damping-transient-target.json", in_args_ref);
 	std::shared_ptr<State> state_reference = create_state_and_solve(in_args_ref);
 
-	std::vector<std::unique_ptr<VariableToSimulation>> variable_to_simulations;
+	VariableToSimulationGroup variable_to_simulations;
 	variable_to_simulations.push_back(std::make_unique<DampingCoeffientVariableToSimulation>(state_ptr, CompositeParametrization()));
 
 	std::vector<std::shared_ptr<State>> states = {state_ptr, state_reference};
@@ -855,7 +852,7 @@ TEST_CASE("shape-transient-friction", "[test_adjoint]")
 
 // 	std::vector<std::shared_ptr<State>> states({state_ptr});
 
-// 	std::vector<std::unique_ptr<VariableToSimulation>> variable_to_simulations;
+// 	VariableToSimulationGroup variable_to_simulations;
 // 	variable_to_simulations.push_back(AdjointOptUtils::create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
 
 // 	// Eigen::MatrixXd control_points;

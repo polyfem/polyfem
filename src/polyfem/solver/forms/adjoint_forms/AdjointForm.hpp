@@ -8,7 +8,7 @@ namespace polyfem::solver
 	class AdjointForm : public Form
 	{
 	public:
-		AdjointForm(const std::vector<std::unique_ptr<VariableToSimulation>> &variable_to_simulations) : variable_to_simulations_(variable_to_simulations) {}
+		AdjointForm(const VariableToSimulationGroup &variable_to_simulations) : variable_to_simulations_(variable_to_simulations) {}
 		virtual ~AdjointForm() {}
 
 		virtual std::string name() const override { return "adjoint"; }
@@ -25,12 +25,12 @@ namespace polyfem::solver
 
 		const auto &get_variable_to_simulations() const { return variable_to_simulations_; }
 
-		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const final
+		inline virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const final
 		{
 			return compute_reduced_adjoint_rhs_unweighted(x, state) * weight();
 		}
 
-		virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final
+		inline virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final
 		{
 			compute_partial_gradient_unweighted(x, gradv);
 			gradv *= weight();
@@ -40,12 +40,13 @@ namespace polyfem::solver
 		virtual Eigen::MatrixXd compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const;
 		virtual void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const;
 
-		virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const final override;
+		virtual void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final override;
 
 	protected:
-		virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final override;
+		virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const final override;
 
-		const std::vector<std::unique_ptr<VariableToSimulation>>& variable_to_simulations_;
+		const VariableToSimulationGroup variable_to_simulations_;
 
 		mutable int print_energy_ = 0; // 0: don't print, 1: print, 2: already printed on current solution
 		std::string print_energy_keyword_;
@@ -77,7 +78,7 @@ namespace polyfem::solver
 	class MaxStressForm : public StaticForm
 	{
 	public:
-		MaxStressForm(const std::vector<std::unique_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : StaticForm(variable_to_simulations), state_(state)
+		MaxStressForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : StaticForm(variable_to_simulations), state_(state)
 		{
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());

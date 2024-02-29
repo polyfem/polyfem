@@ -13,12 +13,13 @@ namespace polyfem::solver
 		{
 		}
 
+	protected:
 		inline double value_unweighted_with_param(const Eigen::VectorXd &x) const override
 		{
 			return x.prod();
 		}
 
-		inline void first_derivative_unweighted_with_param(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
+		inline void compute_partial_gradient_unweighted_with_param(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
 		{
 			gradv.setOnes(x.size());
 			for (int i = 0; i < x.size(); i++)
@@ -29,6 +30,7 @@ namespace polyfem::solver
 						gradv(i) *= x(j);
 				}
 			}
+			gradv *= weight();
 		}
 	};
 } // namespace polyfem::solver

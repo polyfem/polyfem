@@ -78,7 +78,7 @@ namespace polyfem::solver
 		log_and_throw_adjoint_error("Invalid nonlinear solver name!");
 	}
 
-	std::shared_ptr<AdjointForm> AdjointOptUtils::create_form(const json &args, const std::vector<std::unique_ptr<VariableToSimulation>> &var2sim, const std::vector<std::shared_ptr<State>> &states)
+	std::shared_ptr<AdjointForm> AdjointOptUtils::create_form(const json &args, const VariableToSimulationGroup &var2sim, const std::vector<std::shared_ptr<State>> &states)
 	{
 		std::shared_ptr<AdjointForm> obj;
 		if (args.is_array())
@@ -197,7 +197,7 @@ namespace polyfem::solver
 				std::vector<std::shared_ptr<Parametrization>> map_list;
 				for (const auto &arg : args["parametrization"])
 					map_list.push_back(create_parametrization(arg, states, {}));
-				CompositeParametrization composite_map = CompositeParametrization(map_list);
+				CompositeParametrization composite_map(std::move(map_list));
 
 				obj = std::make_shared<ParametrizedProductForm>(composite_map);
 			}
@@ -296,7 +296,6 @@ namespace polyfem::solver
 		std::vector<std::shared_ptr<Parametrization>> map_list;
 		for (const auto &arg : args["composition"])
 			map_list.push_back(create_parametrization(arg, states, variable_sizes));
-		CompositeParametrization composite_map;
 
 		std::vector<std::shared_ptr<State>> cur_states;
 		if (args["state"].is_array())
@@ -305,7 +304,7 @@ namespace polyfem::solver
 		else
 			cur_states.push_back(states[args["state"]]);
 
-		composite_map = CompositeParametrization(map_list);
+		CompositeParametrization composite_map(std::move(map_list));
 
 		const std::string composite_map_type = args["composite_map_type"];
 		Eigen::VectorXi output_indexing;
@@ -376,7 +375,7 @@ namespace polyfem::solver
 		return var2sim;
 	}
 
-	Eigen::VectorXd AdjointOptUtils::inverse_evaluation(const json &args, const int ndof, const std::vector<int> &variable_sizes, std::vector<std::unique_ptr<VariableToSimulation>> &var2sim)
+	Eigen::VectorXd AdjointOptUtils::inverse_evaluation(const json &args, const int ndof, const std::vector<int> &variable_sizes, VariableToSimulationGroup &var2sim)
 	{
 		Eigen::VectorXd x;
 		x.setZero(ndof);

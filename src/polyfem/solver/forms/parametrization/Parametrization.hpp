@@ -27,7 +27,7 @@ namespace polyfem::solver
 	{
 	public:
 		CompositeParametrization() {}
-		CompositeParametrization(const std::vector<std::shared_ptr<Parametrization>> &parametrizations) : parametrizations_(parametrizations) {}
+		CompositeParametrization(std::vector<std::shared_ptr<Parametrization>>&& parametrizations) : parametrizations_(parametrizations) {}
 		virtual ~CompositeParametrization() {}
 
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;

@@ -1,6 +1,7 @@
 #include "VariableToSimulation.hpp"
 #include <polyfem/State.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/solver/Optimizations.hpp>
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
@@ -37,6 +38,22 @@ namespace polyfem::solver
 	void VariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
 		log_and_throw_adjoint_error("[{}] update_state not implemented!", name());
+	}
+
+	void VariableToSimulationGroup::init(const json& args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes)
+	{
+		std::vector<ValueType>().swap(L);
+		for (const auto &arg : args)
+			L.emplace_back(
+				std::move(AdjointOptUtils::create_variable_to_simulation(arg, states, variable_sizes)));
+	}
+
+	Eigen::VectorXd VariableToSimulationGroup::compute_adjoint_term(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd adjoint_term = Eigen::VectorXd::Zero(x.size());
+		for (const auto &v2s : L)
+			adjoint_term += v2s->compute_adjoint_term(x);
+		return adjoint_term;
 	}
 
 	void ShapeVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)

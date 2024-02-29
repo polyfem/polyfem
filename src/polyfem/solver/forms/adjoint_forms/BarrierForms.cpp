@@ -3,7 +3,7 @@
 
 namespace polyfem::solver
 {
-	CollisionBarrierForm::CollisionBarrierForm(const std::vector<std::unique_ptr<VariableToSimulation>>& variable_to_simulation, const State &state, const double dhat)
+	CollisionBarrierForm::CollisionBarrierForm(const VariableToSimulationGroup& variable_to_simulation, const State &state, const double dhat)
 		: AdjointForm(variable_to_simulation), state_(state), dhat_(dhat), barrier_potential_(dhat)
 	{
 		State::build_collision_mesh(
@@ -123,7 +123,7 @@ namespace polyfem::solver
 		return AdjointTools::map_primitive_to_node_order(state_, X);
 	}
 
-	DeformedCollisionBarrierForm::DeformedCollisionBarrierForm(const std::vector<std::unique_ptr<VariableToSimulation>>& variable_to_simulation, const State &state, const double dhat)
+	DeformedCollisionBarrierForm::DeformedCollisionBarrierForm(const VariableToSimulationGroup& variable_to_simulation, const State &state, const double dhat)
 		: AdjointForm(variable_to_simulation), state_(state), dhat_(dhat), barrier_potential_(dhat)
 	{
 		if (state_.n_bases != state_.n_geom_bases)

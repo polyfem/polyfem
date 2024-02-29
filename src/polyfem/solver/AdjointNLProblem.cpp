@@ -95,7 +95,7 @@ namespace polyfem::solver
 		}
 	} // namespace
 
-	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::unique_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args)
+	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form, const VariableToSimulationGroup &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args)
 		: FullNLProblem({form}),
 		  form_(form),
 		  variables_to_simulation_(variables_to_simulation),
@@ -135,7 +135,7 @@ namespace polyfem::solver
 		}
 	}
 
-	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<AdjointForm>> stopping_conditions, const std::vector<std::unique_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args) : AdjointNLProblem(form, variables_to_simulation, all_states, args)
+	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<AdjointForm>> stopping_conditions, const VariableToSimulationGroup &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args) : AdjointNLProblem(form, variables_to_simulation, all_states, args)
 	{
 		stopping_conditions_ = stopping_conditions;
 	}

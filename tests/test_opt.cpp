@@ -65,7 +65,7 @@ namespace
 		return true;
 	}
 
-	std::tuple<std::shared_ptr<AdjointForm>, std::vector<std::unique_ptr<VariableToSimulation>>, std::vector<std::shared_ptr<State>>> prepare_test(json &opt_args)
+	std::tuple<std::shared_ptr<AdjointForm>, VariableToSimulationGroup, std::vector<std::shared_ptr<State>>> prepare_test(json &opt_args)
 	{
 		opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
@@ -82,7 +82,7 @@ namespace
 		}
 
 		/* variable to simulations */
-		std::vector<std::unique_ptr<VariableToSimulation>> var2sim;
+		VariableToSimulationGroup var2sim;
 		for (const auto &arg : opt_args["variable_to_simulation"])
 			var2sim.push_back(
 				AdjointOptUtils::create_variable_to_simulation(arg, states, variable_sizes));
@@ -292,7 +292,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 	Eigen::VectorXd x(2);
 	x << 0., 1.;
 
-	std::vector<std::unique_ptr<VariableToSimulation>> variable_to_simulations;
+	VariableToSimulationGroup variable_to_simulations;
 	{
 		variable_to_simulations.push_back(std::make_unique<ShapeVariableToSimulation>(states[0], CompositeParametrization()));
 
@@ -419,7 +419,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	}
 // 	x.resize(opt_bnodes * dim);
 
-// 	std::vector<std::unique_ptr<VariableToSimulation>>
+// 	VariableToSimulationGroup
 // 		variable_to_simulations;
 // 	{
 // 		std::vector<std::shared_ptr<Parametrization>> spline_boundary_map_list = {};
@@ -540,7 +540,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 		1,
 // 		1;
 
-// 	std::vector<std::unique_ptr<VariableToSimulation>>
+// 	VariableToSimulationGroup
 // 		variable_to_simulations;
 // 	{
 // 		std::vector<std::shared_ptr<Parametrization>> spline_boundary_map_list = {std::make_shared<BSplineParametrization1DTo2D>(initial_control_points, knots, opt_bnodes, true)};
@@ -608,7 +608,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
 // 	std::vector<std::shared_ptr<State>> states(state_args.size());
 // 	Eigen::VectorXd x;
-// 	std::vector<std::unique_ptr<VariableToSimulation>> variable_to_simulations;
+// 	VariableToSimulationGroup variable_to_simulations;
 // 	{
 // 		// create simulators based on json inputs
 // 		int i = 0;
@@ -781,7 +781,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
 // 	std::vector<std::shared_ptr<State>> states(state_args.size());
 // 	Eigen::VectorXd x;
-// 	std::vector<std::unique_ptr<VariableToSimulation>> variable_to_simulations;
+// 	VariableToSimulationGroup variable_to_simulations;
 // 	{
 // 		// create simulators based on json inputs
 // 		int i = 0;
@@ -854,7 +854,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
 // 	std::vector<std::shared_ptr<State>> states(state_args.size());
 // 	Eigen::VectorXd x;
-// 	std::vector<std::unique_ptr<VariableToSimulation>> variable_to_simulations;
+// 	VariableToSimulationGroup variable_to_simulations;
 // 	{
 // 		// create simulators based on json inputs
 // 		int i = 0;
@@ -925,7 +925,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
 // 	std::vector<std::shared_ptr<State>> states(state_args.size());
 // 	Eigen::VectorXd x;
-// 	std::vector<std::unique_ptr<VariableToSimulation>> variable_to_simulations;
+// 	VariableToSimulationGroup variable_to_simulations;
 // 	{
 // 		// create simulators based on json inputs
 // 		int i = 0;

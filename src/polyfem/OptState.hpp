@@ -6,6 +6,7 @@
 #include <polyfem/utils/Logger.hpp>
 
 #include <polyfem/solver/DiffCache.hpp>
+#include <polyfem/solver/forms/adjoint_forms/VariableToSimulation.hpp>
 
 namespace polyfem
 {
@@ -13,7 +14,6 @@ namespace polyfem
 
 	namespace solver
 	{
-		class VariableToSimulation;
 		class AdjointNLProblem;
 	} // namespace solver
 
@@ -97,7 +97,7 @@ namespace polyfem
 		std::vector<int> variable_sizes;
 		int ndof;
 
-		std::vector<std::unique_ptr<solver::VariableToSimulation>> variable_to_simulations;
+		solver::VariableToSimulationGroup variable_to_simulations;
 
 		std::unique_ptr<solver::AdjointNLProblem> nl_problem;
 

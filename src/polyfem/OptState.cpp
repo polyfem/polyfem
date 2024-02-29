@@ -150,13 +150,7 @@ namespace polyfem
 		}
 
 		/* variable to simulations */
-		variable_to_simulations.clear();
-		for (const auto &arg : args["variable_to_simulation"])
-			variable_to_simulations.push_back(
-				solver::AdjointOptUtils::create_variable_to_simulation(
-					arg,
-					states,
-					variable_sizes));
+		variable_to_simulations.init(args["variable_to_simulation"], states, variable_sizes);
 	}
 
 	void OptState::crate_problem()
@@ -179,8 +173,7 @@ namespace polyfem
 	{
 		x = solver::AdjointOptUtils::inverse_evaluation(args["parameters"], ndof, variable_sizes, variable_to_simulations);
 
-		for (auto &v2s : variable_to_simulations)
-			v2s->update(x);
+		variable_to_simulations.update(x);
 	}
 
 	double OptState::eval(Eigen::VectorXd &x) const

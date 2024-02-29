@@ -20,6 +20,7 @@ namespace polyfem::solver
 	class AdjointForm;
 	class Parametrization;
 	class VariableToSimulation;
+	class VariableToSimulationGroup;
 
 	struct AdjointOptUtils
 	{
@@ -31,11 +32,11 @@ namespace polyfem::solver
 
 		static std::vector<std::shared_ptr<State>> create_states(const json &state_args, const CacheLevel &level, const size_t max_threads);
 
-		static Eigen::VectorXd inverse_evaluation(const json &args, const int ndof, const std::vector<int> &variable_sizes, std::vector<std::unique_ptr<VariableToSimulation>> &var2sim);
+		static Eigen::VectorXd inverse_evaluation(const json &args, const int ndof, const std::vector<int> &variable_sizes, VariableToSimulationGroup &var2sim);
 
 		static void solve_pde(State &state);
 
-		static std::shared_ptr<AdjointForm> create_form(const json &args, const std::vector<std::unique_ptr<VariableToSimulation>> &var2sim, const std::vector<std::shared_ptr<State>> &states);
+		static std::shared_ptr<AdjointForm> create_form(const json &args, const VariableToSimulationGroup &var2sim, const std::vector<std::shared_ptr<State>> &states);
 
 		static std::shared_ptr<Parametrization> create_parametrization(const json &args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes);
 
