@@ -4,11 +4,6 @@
 
 namespace polyfem::solver
 {
-	Eigen::MatrixXd BoundarySmoothingForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const
-	{
-		return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
-	}
-
 	void BoundarySmoothingForm::init_form()
 	{
 		const auto &mesh = *(state_.mesh);
@@ -114,7 +109,7 @@ namespace polyfem::solver
 		return val;
 	}
 
-	void BoundarySmoothingForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void BoundarySmoothingForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		const auto &mesh = *(state_.mesh);
 		const int dim = mesh.dimension();
@@ -169,5 +164,6 @@ namespace polyfem::solver
 				continue;
 			gradv += p->apply_parametrization_jacobian(grad, x);
 		}
+		gradv *= weight();
 	}
 } // namespace polyfem::solver

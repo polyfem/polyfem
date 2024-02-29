@@ -56,7 +56,7 @@ namespace polyfem::solver
 		return AdjointTools::integrate_objective(state_, get_integral_functional(), state_.diff_cached.u(time_step), ids_, spatial_integral_type_, time_step);
 	}
 
-	void SpatialIntegralForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void SpatialIntegralForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		assert(time_step < state_.diff_cached.size());
 		gradv.setZero(x.size());
@@ -76,9 +76,10 @@ namespace polyfem::solver
 					gradv += param_map->apply_parametrization_jacobian(term, x);
 			}
 		}
+		gradv *= weight();
 	}
 
-	Eigen::VectorXd SpatialIntegralForm::compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
+	Eigen::VectorXd SpatialIntegralForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
 	{
 		if (&state != &state_)
 			return Eigen::VectorXd::Zero(state.ndof());
@@ -88,7 +89,7 @@ namespace polyfem::solver
 		Eigen::VectorXd rhs;
 		AdjointTools::dJ_du_step(state, get_integral_functional(), state.diff_cached.u(time_step), ids_, spatial_integral_type_, time_step, rhs);
 
-		return rhs;
+		return rhs * weight();
 	}
 
 	IntegrableFunctional ElasticEnergyForm::get_integral_functional() const
@@ -138,9 +139,9 @@ namespace polyfem::solver
 		return j;
 	}
 
-	void ElasticEnergyForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void ElasticEnergyForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		SpatialIntegralForm::compute_partial_gradient_unweighted_step(time_step, x, gradv);
+		SpatialIntegralForm::compute_partial_gradient_step(time_step, x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
 		{
 			const auto &param_type = param_map->get_parameter_type();
@@ -155,7 +156,7 @@ namespace polyfem::solver
 					log_and_throw_adjoint_error("[{}] Doesn't support stress derivative wrt. material!", name());
 
 				if (term.size() > 0)
-					gradv += param_map->apply_parametrization_jacobian(term, x);
+					gradv += weight() * param_map->apply_parametrization_jacobian(term, x);
 			}
 		}
 	}
@@ -220,9 +221,9 @@ namespace polyfem::solver
 		return j;
 	}
 
-	void StressNormForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void StressNormForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		SpatialIntegralForm::compute_partial_gradient_unweighted_step(time_step, x, gradv);
+		SpatialIntegralForm::compute_partial_gradient_step(time_step, x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
 		{
 			const auto &param_type = param_map->get_parameter_type();
@@ -238,7 +239,7 @@ namespace polyfem::solver
 					log_and_throw_adjoint_error("[{}] Doesn't support stress derivative wrt. material!", name());
 
 				if (term.size() > 0)
-					gradv += param_map->apply_parametrization_jacobian(term, x);
+					gradv += weight() * param_map->apply_parametrization_jacobian(term, x);
 			}
 		}
 	}
@@ -283,12 +284,12 @@ namespace polyfem::solver
 		return j;
 	}
 
-	void ComplianceForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void ComplianceForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		const double dt = state_.problem->is_time_dependent() ? state_.args["time"]["dt"].get<double>() : 0;
 		const double t = state_.problem->is_time_dependent() ? dt * time_step + state_.args["time"]["t0"].get<double>() : 0;
 
-		SpatialIntegralForm::compute_partial_gradient_unweighted_step(time_step, x, gradv);
+		SpatialIntegralForm::compute_partial_gradient_step(time_step, x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
 		{
 			const auto &param_type = param_map->get_parameter_type();
@@ -338,7 +339,7 @@ namespace polyfem::solver
 				}
 
 				if (term.size() > 0)
-					gradv += param_map->apply_parametrization_jacobian(term, x);
+					gradv += weight() * param_map->apply_parametrization_jacobian(term, x);
 			}
 		}
 	}
@@ -416,9 +417,9 @@ namespace polyfem::solver
 		return j;
 	}
 
-	void StressForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void StressForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		SpatialIntegralForm::compute_partial_gradient_unweighted_step(time_step, x, gradv);
+		SpatialIntegralForm::compute_partial_gradient_step(time_step, x, gradv);
 		for (const auto &param_map : variable_to_simulations_)
 		{
 			const auto &param_type = param_map->get_parameter_type();
@@ -434,7 +435,7 @@ namespace polyfem::solver
 					log_and_throw_adjoint_error("[{}] Doesn't support stress derivative wrt. material!", name());
 
 				if (term.size() > 0)
-					gradv += param_map->apply_parametrization_jacobian(term, x);
+					gradv += weight() * param_map->apply_parametrization_jacobian(term, x);
 			}
 		}
 	}

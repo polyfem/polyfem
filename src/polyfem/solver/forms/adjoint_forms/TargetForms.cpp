@@ -235,7 +235,7 @@ namespace polyfem::solver
 	{
 	}
 
-	Eigen::VectorXd NodeTargetForm::compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
+	Eigen::VectorXd NodeTargetForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
 	{
 		Eigen::VectorXd rhs;
 		rhs.setZero(state.diff_cached.u(0).size());
@@ -254,7 +254,7 @@ namespace polyfem::solver
 			}
 		}
 
-		return rhs;
+		return rhs * weight();
 	}
 
 	double NodeTargetForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
@@ -271,7 +271,7 @@ namespace polyfem::solver
 		return val;
 	}
 
-	void NodeTargetForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void NodeTargetForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv.setZero(x.size());
 		for (const auto &param_map : variable_to_simulations_)
@@ -291,6 +291,7 @@ namespace polyfem::solver
 					gradv += param_map->apply_parametrization_jacobian(term, x);
 			}
 		}
+		gradv *= weight();
 	}
 
 	BarycenterTargetForm::BarycenterTargetForm(const VariableToSimulationGroup &variable_to_simulations, const json &args, const std::shared_ptr<State> &state1, const std::shared_ptr<State> &state2) : StaticForm(variable_to_simulations)
@@ -305,28 +306,29 @@ namespace polyfem::solver
 		}
 	}
 
-	Eigen::VectorXd BarycenterTargetForm::compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
+	Eigen::VectorXd BarycenterTargetForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
 	{
 		Eigen::VectorXd term;
 		term.setZero(state.ndof());
 		for (int d = 0; d < dim; d++)
 		{
 			double value = center1[d]->value_unweighted_step(time_step, x) - center2[d]->value_unweighted_step(time_step, x);
-			term += (2 * value) * (center1[d]->compute_adjoint_rhs_unweighted_step(time_step, x, state) - center2[d]->compute_adjoint_rhs_unweighted_step(time_step, x, state));
+			term += (2 * value) * (center1[d]->compute_adjoint_rhs_step(time_step, x, state) - center2[d]->compute_adjoint_rhs_step(time_step, x, state));
 		}
-		return term;
+		return term * weight();
 	}
-	void BarycenterTargetForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void BarycenterTargetForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv.setZero(x.size());
 		Eigen::VectorXd tmp1, tmp2;
 		for (int d = 0; d < dim; d++)
 		{
 			double value = center1[d]->value_unweighted_step(time_step, x) - center2[d]->value_unweighted_step(time_step, x);
-			center1[d]->compute_partial_gradient_unweighted_step(time_step, x, tmp1);
-			center2[d]->compute_partial_gradient_unweighted_step(time_step, x, tmp2);
+			center1[d]->compute_partial_gradient_step(time_step, x, tmp1);
+			center2[d]->compute_partial_gradient_step(time_step, x, tmp2);
 			gradv += (2 * value) * (tmp1 - tmp2);
 		}
+		gradv *= weight();
 	}
 	double BarycenterTargetForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
 	{

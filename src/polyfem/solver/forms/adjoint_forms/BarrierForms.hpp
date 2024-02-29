@@ -14,11 +14,9 @@ namespace polyfem::solver
 
 		double value_unweighted(const Eigen::VectorXd &x) const override;
 
-		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 		void solution_changed(const Eigen::VectorXd &x) override;
-
-		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override;
 
 		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
@@ -58,11 +56,9 @@ namespace polyfem::solver
 
 		double value_unweighted(const Eigen::VectorXd &x) const override;
 
-		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 		void solution_changed(const Eigen::VectorXd &x) override;
-
-		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override;
 
 		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 

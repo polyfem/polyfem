@@ -205,7 +205,7 @@ namespace polyfem::solver
 			return energy;
 		}
 
-		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
+		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
 		{
 			Eigen::VectorXd X = get_updated_mesh_nodes(x);
 
@@ -225,11 +225,7 @@ namespace polyfem::solver
 					continue;
 				gradv += p->apply_parametrization_jacobian(grad, x);
 			}
-		}
-
-		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override
-		{
-			return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
+			gradv *= weight();
 		}
 
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override

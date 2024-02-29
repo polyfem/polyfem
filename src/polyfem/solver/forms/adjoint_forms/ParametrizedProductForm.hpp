@@ -19,7 +19,7 @@ namespace polyfem::solver
 			return x.prod();
 		}
 
-		inline void compute_partial_gradient_unweighted_with_param(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
+		inline void compute_partial_gradient_with_param(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
 		{
 			gradv.setOnes(x.size());
 			for (int i = 0; i < x.size(); i++)

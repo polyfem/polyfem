@@ -8,6 +8,7 @@ namespace polyfem::solver
 {
 	class CompositeForm : public AdjointForm
 	{
+		friend AdjointForm;
 	public:
 		CompositeForm(const VariableToSimulationGroup &variable_to_simulations, const std::vector<std::shared_ptr<AdjointForm>> &forms) : AdjointForm(variable_to_simulations), forms_(forms) {}
 		CompositeForm(const std::vector<std::shared_ptr<AdjointForm>> &forms) : AdjointForm(forms[0]->get_variable_to_simulations()), forms_(forms) {}
@@ -15,8 +16,8 @@ namespace polyfem::solver
 
 		virtual int n_objs() const final { return forms_.size(); }
 
-		virtual Eigen::MatrixXd compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override final;
-		virtual void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override final;
+		virtual Eigen::MatrixXd compute_reduced_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const override final;
+		virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override final;
 
 		virtual double compose(const Eigen::VectorXd &inputs) const = 0;
 		virtual Eigen::VectorXd compose_grad(const Eigen::VectorXd &inputs) const = 0;
@@ -31,10 +32,6 @@ namespace polyfem::solver
 		virtual void line_search_end() final override;
 		virtual void post_step(const polysolve::nonlinear::PostStepData &data) final override;
 		virtual void solution_changed(const Eigen::VectorXd &new_x) final override;
-		virtual void update_quantities(const double t, const Eigen::VectorXd &x) final override;
-		virtual void init_lagging(const Eigen::VectorXd &x) final override;
-		virtual void update_lagging(const Eigen::VectorXd &x, const int iter_num) final override;
-		virtual void set_apply_DBC(const Eigen::VectorXd &x, bool apply_DBC) final override;
 		virtual bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const final override;
 
 	private:

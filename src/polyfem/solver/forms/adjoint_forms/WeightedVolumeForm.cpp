@@ -17,7 +17,7 @@ namespace polyfem::solver
 		return val;
 	}
 
-	void WeightedVolumeForm::compute_partial_gradient_unweighted_with_param(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void WeightedVolumeForm::compute_partial_gradient_with_param(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		assert(x.size() == state_.mesh->n_elements());
 
@@ -28,6 +28,6 @@ namespace polyfem::solver
 			state_.ass_vals_cache.compute(e, state_.mesh->is_volume(), state_.bases[e], state_.geom_bases()[e], vals);
 			gradv(e) = (vals.det.array() * vals.quadrature.weights.array()).sum();
 		}
-		// gradv *= weight();
+		gradv *= weight();
 	}
 } // namespace polyfem::solver

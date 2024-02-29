@@ -25,26 +25,20 @@ namespace polyfem::solver
 
 		const auto &get_variable_to_simulations() const { return variable_to_simulations_; }
 
-		inline virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const final
-		{
-			return compute_reduced_adjoint_rhs_unweighted(x, state) * weight();
-		}
-
-		inline virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final
-		{
-			compute_partial_gradient_unweighted(x, gradv);
-			gradv *= weight();
-		}
-
-		virtual Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const;
-		virtual Eigen::MatrixXd compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const;
-		virtual void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const;
+		virtual Eigen::MatrixXd compute_reduced_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const;
+		virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const;
 
 		virtual void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final override;
+		virtual void update_quantities(const double t, const Eigen::VectorXd &x) final override;
+		virtual void init_lagging(const Eigen::VectorXd &x) final override;
+		virtual void update_lagging(const Eigen::VectorXd &x, const int iter_num) final override;
+		virtual void set_apply_DBC(const Eigen::VectorXd &x, bool apply_DBC) final override;
 
 	protected:
 		virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final override;
 		virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const final override;
+
+		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const;
 
 		const VariableToSimulationGroup variable_to_simulations_;
 
@@ -60,13 +54,13 @@ namespace polyfem::solver
 
 		virtual std::string name() const override { return "static"; }
 
-		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const final override;
-		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final override;
+		Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const final override;
+		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final override;
 		double value_unweighted(const Eigen::VectorXd &x) const final override;
 
-		virtual Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const = 0;
-		virtual Eigen::VectorXd compute_adjoint_rhs_unweighted_step_prev(const int time_step, const Eigen::VectorXd &x, const State &state) const;
-		virtual void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const = 0;
+		virtual Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const = 0;
+		virtual Eigen::VectorXd compute_adjoint_rhs_step_prev(const int time_step, const Eigen::VectorXd &x, const State &state) const;
+		virtual void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const = 0;
 		virtual double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const = 0;
 		virtual void solution_changed_step(const int time_step, const Eigen::VectorXd &new_x) {}
 		virtual bool depends_on_step_prev() const final { return depends_on_step_prev_; }
@@ -86,9 +80,9 @@ namespace polyfem::solver
 
 		std::string name() const override { return "max_stress"; }
 
-		Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
+		Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
 		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
-		void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	private:
 		std::set<int> interested_ids_;

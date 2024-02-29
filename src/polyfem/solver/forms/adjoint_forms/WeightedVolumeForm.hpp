@@ -19,7 +19,7 @@ namespace polyfem::solver
 		double value_unweighted_with_param(const Eigen::VectorXd &x) const override;
 
 		/// @brief Computes the gradient of this form wrt. x, assuming that the volume of elements doesn't depend on x
-		void compute_partial_gradient_unweighted_with_param(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void compute_partial_gradient_with_param(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	private:
 		const State &state_;

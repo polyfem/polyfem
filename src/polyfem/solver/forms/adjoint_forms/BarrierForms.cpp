@@ -26,7 +26,7 @@ namespace polyfem::solver
 		return barrier_potential_(collision_set, collision_mesh_, displaced_surface);
 	}
 
-	void CollisionBarrierForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void CollisionBarrierForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_.mesh->dimension()));
 
@@ -44,6 +44,7 @@ namespace polyfem::solver
 				continue;
 			gradv += p->apply_parametrization_jacobian(grad, x);
 		}
+		gradv *= weight();
 	}
 
 	void CollisionBarrierForm::solution_changed(const Eigen::VectorXd &x)
@@ -52,11 +53,6 @@ namespace polyfem::solver
 
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_.mesh->dimension()));
 		build_collision_set(displaced_surface);
-	}
-
-	Eigen::MatrixXd CollisionBarrierForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const
-	{
-		return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
 	}
 
 	bool CollisionBarrierForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
@@ -149,7 +145,7 @@ namespace polyfem::solver
 		return barrier_potential_(collision_set, collision_mesh_, displaced_surface);
 	}
 
-	void DeformedCollisionBarrierForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void DeformedCollisionBarrierForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_.mesh->dimension()));
 
@@ -167,6 +163,7 @@ namespace polyfem::solver
 				continue;
 			gradv += p->apply_parametrization_jacobian(grad, x);
 		}
+		gradv *= weight();
 	}
 
 	void DeformedCollisionBarrierForm::solution_changed(const Eigen::VectorXd &x)
@@ -175,11 +172,6 @@ namespace polyfem::solver
 
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_.mesh->dimension()));
 		build_collision_set(displaced_surface);
-	}
-
-	Eigen::MatrixXd DeformedCollisionBarrierForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const
-	{
-		return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
 	}
 
 	bool DeformedCollisionBarrierForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const

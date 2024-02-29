@@ -3,7 +3,7 @@
 
 namespace polyfem::solver
 {
-	Eigen::MatrixXd CompositeForm::compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const
+	Eigen::MatrixXd CompositeForm::compute_reduced_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const
 	{
 		Eigen::VectorXd composite_grad = compose_grad(get_inputs(x));
 
@@ -12,15 +12,15 @@ namespace polyfem::solver
 		for (int i = 0; i < forms_.size(); i++)
 		{
 			if (i == 0)
-				term = composite_grad(i) * forms_[i]->compute_adjoint_rhs(x, state);
+				term = composite_grad(i) * forms_[i]->compute_reduced_adjoint_rhs(x, state);
 			else
-				term += composite_grad(i) * forms_[i]->compute_adjoint_rhs(x, state); // important: not "unweighted"
+				term += composite_grad(i) * forms_[i]->compute_reduced_adjoint_rhs(x, state);
 		}
 
-		return term;
+		return term * weight();
 	}
 
-	void CompositeForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void CompositeForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		Eigen::VectorXd composite_grad = compose_grad(get_inputs(x));
 
@@ -28,9 +28,10 @@ namespace polyfem::solver
 		Eigen::VectorXd tmp_grad;
 		for (int i = 0; i < forms_.size(); i++)
 		{
-			forms_[i]->compute_partial_gradient(x, tmp_grad); // important: not "unweighted"
+			forms_[i]->compute_partial_gradient(x, tmp_grad);
 			gradv += composite_grad(i) * tmp_grad;
 		}
+		gradv *= weight();
 	}
 
 	Eigen::VectorXd CompositeForm::get_inputs(const Eigen::VectorXd &x) const
@@ -99,31 +100,6 @@ namespace polyfem::solver
 		for (const auto &f : forms_)
 			f->solution_changed(new_x);
 	}
-
-	void CompositeForm::update_quantities(const double t, const Eigen::VectorXd &x)
-	{
-		for (const auto &f : forms_)
-			f->update_quantities(t, x);
-	}
-
-	void CompositeForm::init_lagging(const Eigen::VectorXd &x)
-	{
-		for (const auto &f : forms_)
-			f->init_lagging(x);
-	}
-
-	void CompositeForm::update_lagging(const Eigen::VectorXd &x, const int iter_num)
-	{
-		for (const auto &f : forms_)
-			f->update_lagging(x, iter_num);
-	}
-
-	void CompositeForm::set_apply_DBC(const Eigen::VectorXd &x, bool apply_DBC)
-	{
-		for (const auto &f : forms_)
-			f->set_apply_DBC(x, apply_DBC);
-	}
-
 	bool CompositeForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
 		for (const auto &f : forms_)
