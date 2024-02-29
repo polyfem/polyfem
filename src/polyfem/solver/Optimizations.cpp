@@ -95,6 +95,8 @@ namespace polyfem::solver
 			if (type == "transient_integral")
 			{
 				std::shared_ptr<StaticForm> static_obj = std::dynamic_pointer_cast<StaticForm>(create_form(args["static_objective"], var2sim, states));
+				if (!static_obj)
+					log_and_throw_adjoint_error("Transient integral objective must have a static objective!");
 				const auto &state = states[args["state"]];
 				obj = std::make_shared<TransientForm>(var2sim, state->args["time"]["time_steps"], state->args["time"]["dt"], args["integral_type"], args["steps"].get<std::vector<int>>(), static_obj);
 			}
@@ -571,14 +573,9 @@ namespace polyfem::solver
 
 				return node_ids.size() * states[state_id]->mesh->dimension();
 			}
-			else
-			{
-				log_and_throw_adjoint_error("Incorrect specification for parameters.");
-			}
 		}
-		else
-			log_and_throw_adjoint_error("Incorrect specification for parameters.");
-
+		
+		log_and_throw_adjoint_error("Incorrect specification for parameters.");
 		return -1;
 	}
 } // namespace polyfem::solver

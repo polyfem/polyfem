@@ -47,22 +47,18 @@ namespace polyfem
 			has_gradx = true;
 		}
 
-		void evaluate(const std::map<std::string, Assembler::ParamFunc> &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, json &params, Eigen::MatrixXd &val) const
+		void evaluate(const Eigen::MatrixXd& elastic_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, json &params, Eigen::MatrixXd &val) const
 		{
 			assert(j_func);
-			Eigen::MatrixXd lambda, mu;
-			lambda_mu(lame_params, params["elem"], local_pts, pts, lambda, mu);
-			j_func(local_pts, pts, u, grad_u, lambda, mu, reference_normals, vals, params, val);
+			j_func(local_pts, pts, u, grad_u, elastic_params.col(0), elastic_params.col(1), reference_normals, vals, params, val);
 		}
 
-		void dj_dx(const std::map<std::string, Assembler::ParamFunc> &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, json &params, Eigen::MatrixXd &val) const
+		void dj_dx(const Eigen::MatrixXd& elastic_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, json &params, Eigen::MatrixXd &val) const
 		{
 			assert(has_x);
-			Eigen::MatrixXd lambda, mu;
-			lambda_mu(lame_params, params["elem"], local_pts, pts, lambda, mu);
 			if (dj_dx_func)
 			{
-				dj_dx_func(local_pts, pts, u, grad_u, lambda, mu, reference_normals, vals, params, val);
+				dj_dx_func(local_pts, pts, u, grad_u, elastic_params.col(0), elastic_params.col(1), reference_normals, vals, params, val);
 			}
 			else
 			{
@@ -70,14 +66,12 @@ namespace polyfem
 			}
 		}
 
-		void dj_du(const std::map<std::string, Assembler::ParamFunc> &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, json &params, Eigen::MatrixXd &val) const
+		void dj_du(const Eigen::MatrixXd& elastic_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, json &params, Eigen::MatrixXd &val) const
 		{
 			assert(has_u);
-			Eigen::MatrixXd lambda, mu;
-			lambda_mu(lame_params, params["elem"], local_pts, pts, lambda, mu);
 			if (dj_du_func)
 			{
-				dj_du_func(local_pts, pts, u, grad_u, lambda, mu, reference_normals, vals, params, val);
+				dj_du_func(local_pts, pts, u, grad_u, elastic_params.col(0), elastic_params.col(1), reference_normals, vals, params, val);
 			}
 			else
 			{
@@ -85,14 +79,12 @@ namespace polyfem
 			}
 		}
 
-		void dj_dgradu(const std::map<std::string, Assembler::ParamFunc> &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, json &params, Eigen::MatrixXd &val) const
+		void dj_dgradu(const Eigen::MatrixXd& elastic_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, json &params, Eigen::MatrixXd &val) const
 		{
 			assert(has_gradu);
-			Eigen::MatrixXd lambda, mu;
-			lambda_mu(lame_params, params["elem"], local_pts, pts, lambda, mu);
 			if (dj_dgradu_func)
 			{
-				dj_dgradu_func(local_pts, pts, u, grad_u, lambda, mu, reference_normals, vals, params, val);
+				dj_dgradu_func(local_pts, pts, u, grad_u, elastic_params.col(0), elastic_params.col(1), reference_normals, vals, params, val);
 			}
 			else
 			{
@@ -100,14 +92,12 @@ namespace polyfem
 			}
 		}
 
-		void dj_dgradu_local(const std::map<std::string, Assembler::ParamFunc> &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, json &params, Eigen::MatrixXd &val) const
+		void dj_dgradu_local(const Eigen::MatrixXd& elastic_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, json &params, Eigen::MatrixXd &val) const
 		{
 			assert(has_gradu_local);
-			Eigen::MatrixXd lambda, mu;
-			lambda_mu(lame_params, params["elem"], local_pts, pts, lambda, mu);
 			if (dj_dgradu_local_func)
 			{
-				dj_dgradu_local_func(local_pts, pts, u, grad_u, lambda, mu, reference_normals, vals, params, val);
+				dj_dgradu_local_func(local_pts, pts, u, grad_u, elastic_params.col(0), elastic_params.col(1), reference_normals, vals, params, val);
 			}
 			else
 			{
@@ -115,14 +105,12 @@ namespace polyfem
 			}
 		}
 
-		void dj_dgradx(const std::map<std::string, Assembler::ParamFunc> &lame_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, json &params, Eigen::MatrixXd &val) const
+		void dj_dgradx(const Eigen::MatrixXd& elastic_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, json &params, Eigen::MatrixXd &val) const
 		{
 			assert(has_gradx);
-			Eigen::MatrixXd lambda, mu;
-			lambda_mu(lame_params, params["elem"], local_pts, pts, lambda, mu);
 			if (dj_dgradx_func)
 			{
-				dj_dgradx_func(local_pts, pts, u, grad_u, lambda, mu, reference_normals, vals, params, val);
+				dj_dgradx_func(local_pts, pts, u, grad_u, elastic_params.col(0), elastic_params.col(1), reference_normals, vals, params, val);
 			}
 			else
 			{
@@ -137,25 +125,6 @@ namespace polyfem
 		bool depend_on_gradx() const { return has_gradx; }
 
 	private:
-		void lambda_mu(const std::map<std::string, Assembler::ParamFunc> &lame_params, const int e, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, Eigen::MatrixXd &lambda, Eigen::MatrixXd &mu) const
-		{
-			const double t = 0;
-			lambda.setZero(local_pts.rows(), 1);
-			mu.setZero(local_pts.rows(), 1);
-
-			auto search_lambda = lame_params.find("lambda");
-			auto search_mu = lame_params.find("mu");
-
-			if (search_lambda == lame_params.end() || search_mu == lame_params.end())
-				return;
-
-			for (int p = 0; p < local_pts.rows(); p++)
-			{
-				lambda(p) = search_lambda->second(local_pts.row(p), pts.row(p), t, e);
-				mu(p) = search_mu->second(local_pts.row(p), pts.row(p), t, e);
-			}
-		}
-
 		std::string name = "";
 		bool has_x = false, has_u = false, has_gradu = false, has_gradu_local = false, has_gradx = false;
 		functionalType j_func, dj_dx_func, dj_du_func, dj_dgradu_func, dj_dgradu_local_func, dj_dgradx_func;
