@@ -319,9 +319,7 @@ namespace polyfem::solver
 		else if (composite_map_type == "boundary_excluding_surface")
 		{
 			assert(type == "shape");
-			std::vector<int> excluded_surfaces;
-			for (const auto &s : args["surface_selection"])
-				excluded_surfaces.push_back(s);
+			const std::vector<int> excluded_surfaces = args["surface_selection"];
 			VariableToBoundaryNodesExclusive variable_to_node(*cur_states[0], excluded_surfaces);
 			output_indexing = variable_to_node.get_output_indexing();
 		}
@@ -358,7 +356,7 @@ namespace polyfem::solver
 		int var = 0;
 		for (const auto &arg : args)
 		{
-			const auto& arg_initial = arg["initial"];
+			const auto &arg_initial = arg["initial"];
 			Eigen::VectorXd tmp(variable_sizes[var]);
 			if (arg_initial.is_array() && arg_initial.size() > 0)
 			{
@@ -389,15 +387,13 @@ namespace polyfem::solver
 		in_args["solver"]["max_threads"] = max_threads;
 		if (!args.contains("output") || !args["output"].contains("log") || !args["output"]["log"].contains("level"))
 		{
-			auto tmp = R"({
+			const json tmp = R"({
 					"output": {
 						"log": {
-							"level": -1
+							"level": "error"
 						}
 					}
 				})"_json;
-
-			tmp["output"]["log"]["level"] = "error";
 
 			in_args.merge_patch(tmp);
 		}
@@ -574,7 +570,7 @@ namespace polyfem::solver
 				return node_ids.size() * states[state_id]->mesh->dimension();
 			}
 		}
-		
+
 		log_and_throw_adjoint_error("Incorrect specification for parameters.");
 		return -1;
 	}

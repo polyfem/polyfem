@@ -153,7 +153,7 @@ TEST_CASE("laplacian", "[test_adjoint]")
 	Eigen::MatrixXd velocity_discrete;
 	sample_field(*states[0], velocity, velocity_discrete);
 
-	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 3e-5);
+	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-8);
 }
 
 TEST_CASE("linear_elasticity-surface-3d", "[test_adjoint]")
@@ -233,7 +233,11 @@ TEST_CASE("topology-compliance", "[test_adjoint]")
 	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
 	State &state = *state_ptr;
 
-	CompositeParametrization composite_map({std::make_shared<PowerMap>(5), std::make_shared<InsertConstantMap>(state.bases.size(), state.args["materials"]["nu"]), std::make_shared<ENu2LambdaMu>(state.mesh->is_volume())});
+	CompositeParametrization composite_map({
+		std::make_shared<PowerMap>(5), 
+		std::make_shared<InsertConstantMap>(state.bases.size(), state.args["materials"]["nu"]), 
+		std::make_shared<ENu2LambdaMu>(state.mesh->is_volume())
+	});
 
 	VariableToSimulationGroup variable_to_simulations;
 	variable_to_simulations.push_back(std::make_unique<ElasticVariableToSimulation>(state_ptr, composite_map));
@@ -249,7 +253,7 @@ TEST_CASE("topology-compliance", "[test_adjoint]")
 
 	Eigen::VectorXd x = variable_to_simulations[0]->inverse_eval();
 
-	verify_adjoint(*nl_problem, x, theta, 1e-4, 1e-2);
+	verify_adjoint(*nl_problem, x, theta, 1e-2, 1e-4);
 }
 
 #if defined(NDEBUG) && !defined(WIN32)

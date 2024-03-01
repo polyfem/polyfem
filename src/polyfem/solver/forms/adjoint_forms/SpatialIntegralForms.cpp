@@ -142,7 +142,6 @@ namespace polyfem::solver
 		});
 	}
 
-	// TODO: call local assemblers instead
 	IntegrableFunctional StressNormForm::get_integral_functional() const
 	{
 		IntegrableFunctional j;
@@ -171,27 +170,27 @@ namespace polyfem::solver
 		j.set_dj_dgradu([formulation, power, &state = std::as_const(state_)](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const IntegrableFunctional::ParameterType &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), grad_u.cols());
 			const double dt = state.problem->is_time_dependent() ? state.args["time"]["dt"].get<double>() : 0;
-			const int dim = sqrt(grad_u.cols());
-			const int actual_dim = (formulation == "Laplacian") ? 1 : dim;
+			const int dim = state.mesh->dimension();
 
-			Eigen::MatrixXd grad_u_q, stress, stress_dstress, unused;
-			for (int q = 0; q < grad_u.rows(); q++)
+			if (formulation == "Laplacian")
 			{
-				if (formulation == "Laplacian")
+				for (int q = 0; q < grad_u.rows(); q++)
 				{
-					stress = grad_u.row(q);
-					stress_dstress = 2 * stress;
+					const double coef = power * pow(grad_u.row(q).squaredNorm(), power / 2. - 1.);
+					val.row(q) = coef * grad_u.row(q);
 				}
-				else
+			}
+			else
+			{
+				Eigen::MatrixXd grad_u_q, stress, stress_dstress;
+				for (int q = 0; q < grad_u.rows(); q++)
 				{
 					vector2matrix(grad_u.row(q), grad_u_q);
 					state.assembler->compute_stress_grad_multiply_stress(OptAssemblerData(params.t, dt, params.elem, local_pts.row(q), pts.row(q), grad_u_q), stress, stress_dstress);
-				}
 
-				const double coef = power * pow(stress.squaredNorm(), power / 2. - 1.);
-				for (int i = 0; i < actual_dim; i++)
-					for (int l = 0; l < dim; l++)
-						val(q, i * dim + l) = coef * stress_dstress(i, l);
+					const double coef = power * pow(stress.squaredNorm(), power / 2. - 1.);
+					val.row(q) = coef * utils::flatten(stress_dstress);
+				}
 			}
 		});
 
@@ -211,36 +210,31 @@ namespace polyfem::solver
 	{
 		IntegrableFunctional j;
 
-		const std::string formulation = state_.formulation();
+		if (state_.formulation() != "LinearElasticity")
+			log_and_throw_adjoint_error("[{}] Only Linear Elasticity formulation is supported!", name());
 
-		j.set_j([formulation,this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const IntegrableFunctional::ParameterType &params, Eigen::MatrixXd &val) {
+		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const IntegrableFunctional::ParameterType &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), 1);
 
 			Eigen::MatrixXd grad_u_q, stress;
 			for (int q = 0; q < grad_u.rows(); q++)
 			{
 				vector2matrix(grad_u.row(q), grad_u_q);
-				if (formulation == "LinearElasticity")
-					stress = mu(q) * (grad_u_q + grad_u_q.transpose()) + lambda(q) * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
-				else
-					log_and_throw_adjoint_error("[{}] Unknown formulation {}!", name(), formulation);
+				stress = mu(q) * (grad_u_q + grad_u_q.transpose()) + lambda(q) * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
 				val(q) = (stress.array() * grad_u_q.array()).sum();
 			}
 		});
 
-		j.set_dj_dgradu([formulation](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const IntegrableFunctional::ParameterType &params, Eigen::MatrixXd &val) {
+		j.set_dj_dgradu([](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const IntegrableFunctional::ParameterType &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), grad_u.cols());
-			const int dim = sqrt(grad_u.cols());
+			const int dim = u.cols();
 
+			Eigen::MatrixXd grad_u_q, stress;
 			for (int q = 0; q < grad_u.rows(); q++)
 			{
-				Eigen::MatrixXd grad_u_q, stress;
 				vector2matrix(grad_u.row(q), grad_u_q);
 				stress = mu(q) * (grad_u_q + grad_u_q.transpose()) + lambda(q) * grad_u_q.trace() * Eigen::MatrixXd::Identity(grad_u_q.rows(), grad_u_q.cols());
-
-				for (int i = 0; i < dim; i++)
-					for (int l = 0; l < dim; l++)
-						val(q, i * dim + l) = 2 * stress(i, l);
+				val.row(q) = 2 * utils::flatten(stress);
 			}
 		});
 
@@ -273,8 +267,8 @@ namespace polyfem::solver
 				for (int q = 0; q < quadrature.weights.size(); q++)
 				{
 					double lambda, mu;
-					lambda = state_.assembler->parameters().at("lambda")(quadrature.points.row(q), vals.val.row(q), 0, e);
-					mu = state_.assembler->parameters().at("mu")(quadrature.points.row(q), vals.val.row(q), 0, e);
+					lambda = state_.assembler->parameters().at("lambda")(quadrature.points.row(q), vals.val.row(q), t, e);
+					mu = state_.assembler->parameters().at("mu")(quadrature.points.row(q), vals.val.row(q), t, e);
 
 					vector2matrix(grad_u.row(q), grad_u_q);
 
