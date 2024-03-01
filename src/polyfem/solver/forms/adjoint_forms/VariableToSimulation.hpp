@@ -118,7 +118,7 @@ namespace polyfem::solver
 
 		std::string name() const override { return "elastic"; }
 
-		ParameterType get_parameter_type() const override { return ParameterType::Material; }
+		ParameterType get_parameter_type() const override { return ParameterType::LameParameter; }
 
 		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;
 		virtual Eigen::VectorXd inverse_eval() override;
@@ -137,7 +137,7 @@ namespace polyfem::solver
 
 		std::string name() const override { return "friction"; }
 
-		ParameterType get_parameter_type() const override { return ParameterType::FrictionCoeff; }
+		ParameterType get_parameter_type() const override { return ParameterType::FrictionCoefficient; }
 
 		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;
 		virtual Eigen::VectorXd inverse_eval() override;
@@ -156,7 +156,7 @@ namespace polyfem::solver
 
 		std::string name() const override { return "damping"; }
 
-		ParameterType get_parameter_type() const override { return ParameterType::DampingCoeff; }
+		ParameterType get_parameter_type() const override { return ParameterType::DampingCoefficient; }
 
 		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;
 		virtual Eigen::VectorXd inverse_eval() override;

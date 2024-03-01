@@ -34,7 +34,7 @@ namespace polyfem::solver
 	public:
 		ElasticEnergyForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
-			set_integral_type(SpatialIntegralType::volume);
+			set_integral_type(SpatialIntegralType::Volume);
 
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -53,7 +53,7 @@ namespace polyfem::solver
 	public:
 		StressNormForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
-			set_integral_type(SpatialIntegralType::volume);
+			set_integral_type(SpatialIntegralType::Volume);
 
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -78,7 +78,7 @@ namespace polyfem::solver
 	public:
 		ComplianceForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
-			set_integral_type(SpatialIntegralType::volume);
+			set_integral_type(SpatialIntegralType::Volume);
 
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -97,7 +97,7 @@ namespace polyfem::solver
 	public:
 		PositionForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
-			set_integral_type(SpatialIntegralType::volume);
+			set_integral_type(SpatialIntegralType::Volume);
 
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -119,7 +119,7 @@ namespace polyfem::solver
 	public:
 		AccelerationForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
-			set_integral_type(SpatialIntegralType::volume);
+			set_integral_type(SpatialIntegralType::Volume);
 
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -141,7 +141,7 @@ namespace polyfem::solver
 	public:
 		KineticForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
-			set_integral_type(SpatialIntegralType::volume);
+			set_integral_type(SpatialIntegralType::Volume);
 
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -156,7 +156,7 @@ namespace polyfem::solver
 	public:
 		StressForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
-			set_integral_type(SpatialIntegralType::volume);
+			set_integral_type(SpatialIntegralType::Volume);
 
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -179,7 +179,7 @@ namespace polyfem::solver
 	public:
 		VolumeForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
-			set_integral_type(SpatialIntegralType::volume);
+			set_integral_type(SpatialIntegralType::Volume);
 
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());

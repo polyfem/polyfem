@@ -131,12 +131,7 @@ namespace polyfem::solver
 		for (auto state : states_)
 		{
 			if (state->problem->is_time_dependent())
-			{
-				Eigen::MatrixXd adjoint_nu, adjoint_p;
-				adjoint_nu = state->get_adjoint_mat(1);
-				adjoint_p = state->get_adjoint_mat(0);
-				AdjointTools::dJ_shape_transient_adjoint_term(*state, adjoint_nu, adjoint_p, cur_term);
-			}
+				AdjointTools::dJ_shape_transient_adjoint_term(*state, state->get_adjoint_mat(1), state->get_adjoint_mat(0), cur_term);
 			else
 				AdjointTools::dJ_shape_static_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
 
@@ -184,16 +179,10 @@ namespace polyfem::solver
 		for (auto state : states_)
 		{
 			if (state->problem->is_time_dependent())
-			{
-				Eigen::MatrixXd adjoint_nu, adjoint_p;
-				adjoint_nu = state->get_adjoint_mat(1);
-				adjoint_p = state->get_adjoint_mat(0);
-				AdjointTools::dJ_material_transient_adjoint_term(*state, adjoint_nu, adjoint_p, cur_term);
-			}
+				AdjointTools::dJ_material_transient_adjoint_term(*state, state->get_adjoint_mat(1), state->get_adjoint_mat(0), cur_term);
 			else
-			{
 				AdjointTools::dJ_material_static_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
-			}
+
 			if (term.size() != cur_term.size())
 				term = cur_term;
 			else
@@ -253,16 +242,10 @@ namespace polyfem::solver
 		for (auto state : states_)
 		{
 			if (state->problem->is_time_dependent())
-			{
-				Eigen::MatrixXd adjoint_nu, adjoint_p;
-				adjoint_nu = state->get_adjoint_mat(1);
-				adjoint_p = state->get_adjoint_mat(0);
-				AdjointTools::dJ_friction_transient_adjoint_term(*state, adjoint_nu, adjoint_p, cur_term);
-			}
+				AdjointTools::dJ_friction_transient_adjoint_term(*state, state->get_adjoint_mat(1), state->get_adjoint_mat(0), cur_term);
 			else
-			{
 				log_and_throw_adjoint_error("[{}] Gradient in static simulations not implemented!", name());
-			}
+
 			if (term.size() != cur_term.size())
 				term = cur_term;
 			else
@@ -310,16 +293,10 @@ namespace polyfem::solver
 		for (auto state : states_)
 		{
 			if (state->problem->is_time_dependent())
-			{
-				Eigen::MatrixXd adjoint_nu, adjoint_p;
-				adjoint_nu = state->get_adjoint_mat(1);
-				adjoint_p = state->get_adjoint_mat(0);
-				AdjointTools::dJ_damping_transient_adjoint_term(*state, adjoint_nu, adjoint_p, cur_term);
-			}
+				AdjointTools::dJ_damping_transient_adjoint_term(*state, state->get_adjoint_mat(1), state->get_adjoint_mat(0), cur_term);
 			else
-			{
 				log_and_throw_adjoint_error("[{}] Static simulation not supported!", name());
-			}
+
 			if (term.size() != cur_term.size())
 				term = cur_term;
 			else
@@ -351,16 +328,10 @@ namespace polyfem::solver
 		for (auto state : states_)
 		{
 			if (state->problem->is_time_dependent())
-			{
-				Eigen::MatrixXd adjoint_nu, adjoint_p;
-				adjoint_nu = state->get_adjoint_mat(1);
-				adjoint_p = state->get_adjoint_mat(0);
-				AdjointTools::dJ_initial_condition_adjoint_term(*state, adjoint_nu, adjoint_p, cur_term);
-			}
+				AdjointTools::dJ_initial_condition_adjoint_term(*state, state->get_adjoint_mat(1), state->get_adjoint_mat(0), cur_term);
 			else
-			{
 				log_and_throw_adjoint_error("[{}] Static simulation not supported!", name());
-			}
+
 			if (term.size() != cur_term.size())
 				term = cur_term;
 			else
@@ -402,16 +373,10 @@ namespace polyfem::solver
 		for (auto state : states_)
 		{
 			if (state->problem->is_time_dependent())
-			{
-				Eigen::MatrixXd adjoint_nu, adjoint_p;
-				adjoint_nu = state->get_adjoint_mat(1);
-				adjoint_p = state->get_adjoint_mat(0);
-				AdjointTools::dJ_dirichlet_transient_adjoint_term(*state, adjoint_nu, adjoint_p, cur_term);
-			}
+				AdjointTools::dJ_dirichlet_transient_adjoint_term(*state, state->get_adjoint_mat(1), state->get_adjoint_mat(0), cur_term);
 			else
-			{
 				log_and_throw_adjoint_error("[{}] Static dirichlet boundary optimization not supported!", name());
-			}
+
 			if (term.size() != cur_term.size())
 				term = cur_term;
 			else
