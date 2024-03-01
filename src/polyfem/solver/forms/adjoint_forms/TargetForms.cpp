@@ -36,53 +36,34 @@ namespace polyfem::solver
 		{
 			assert(target_state_->diff_cached.size() > 0);
 
-			auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
-				val.setZero(u.rows(), 1);
-				const int e = params["elem"];
-
-				int e_ref;
-				if (auto search = e_to_ref_e_.find(e); search != e_to_ref_e_.end())
+			auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const IntegrableFunctional::ParameterType &params, Eigen::MatrixXd &val) {
+				int e_ref = params.elem;
+				if (auto search = e_to_ref_e_.find(params.elem); search != e_to_ref_e_.end())
 					e_ref = search->second;
-				else
-					e_ref = e;
-				const auto &gbase_ref = target_state_->geom_bases()[e_ref];
 
 				Eigen::MatrixXd pts_ref;
-				gbase_ref.eval_geom_mapping(local_pts, pts_ref);
+				target_state_->geom_bases()[e_ref].eval_geom_mapping(local_pts, pts_ref);
 
 				Eigen::MatrixXd u_ref, grad_u_ref;
-				const Eigen::MatrixXd &sol_ref = target_state_->problem->is_time_dependent() ? target_state_->diff_cached.u(params["step"].get<int>()) : target_state_->diff_cached.u(0);
+				const Eigen::VectorXd &sol_ref = target_state_->diff_cached.u(target_state_->problem->is_time_dependent() ? params.step : 0);
 				io::Evaluator::interpolate_at_local_vals(*(target_state_->mesh), target_state_->problem->is_scalar(), target_state_->bases, target_state_->geom_bases(), e_ref, local_pts, sol_ref, u_ref, grad_u_ref);
 
-				for (int q = 0; q < u.rows(); q++)
-				{
-					val(q) = ((u_ref.row(q) + pts_ref.row(q)) - (u.row(q) + pts.row(q))).squaredNorm();
-				}
+				val = (u_ref + pts_ref - u - pts).rowwise().squaredNorm();
 			};
 
-			auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
-				val.setZero(u.rows(), u.cols());
-				const int e = params["elem"];
-
-				int e_ref;
-				if (auto search = e_to_ref_e_.find(e); search != e_to_ref_e_.end())
+			auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const IntegrableFunctional::ParameterType &params, Eigen::MatrixXd &val) {
+				int e_ref = params.elem;
+				if (auto search = e_to_ref_e_.find(params.elem); search != e_to_ref_e_.end())
 					e_ref = search->second;
-				else
-					e_ref = e;
-				const auto &gbase_ref = target_state_->geom_bases()[e_ref];
 
 				Eigen::MatrixXd pts_ref;
-				gbase_ref.eval_geom_mapping(local_pts, pts_ref);
+				target_state_->geom_bases()[e_ref].eval_geom_mapping(local_pts, pts_ref);
 
 				Eigen::MatrixXd u_ref, grad_u_ref;
-				const Eigen::MatrixXd &sol_ref = target_state_->problem->is_time_dependent() ? target_state_->diff_cached.u(params["step"].get<int>()) : target_state_->diff_cached.u(0);
+				const Eigen::VectorXd &sol_ref = target_state_->diff_cached.u(target_state_->problem->is_time_dependent() ? params.step : 0);
 				io::Evaluator::interpolate_at_local_vals(*(target_state_->mesh), target_state_->problem->is_scalar(), target_state_->bases, target_state_->geom_bases(), e_ref, local_pts, sol_ref, u_ref, grad_u_ref);
 
-				for (int q = 0; q < u.rows(); q++)
-				{
-					auto x = (u.row(q) + pts.row(q)) - (u_ref.row(q) + pts_ref.row(q));
-					val.row(q) = 2 * x;
-				}
+				val = 2 * (u + pts - u_ref - pts_ref);
 			};
 
 			j.set_j(j_func);
@@ -91,25 +72,21 @@ namespace polyfem::solver
 		}
 		else if (have_target_func)
 		{
-			auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
+			auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const IntegrableFunctional::ParameterType &params, Eigen::MatrixXd &val) {
 				val.setZero(u.rows(), 1);
 
+				const Eigen::VectorXd X = u + pts;
 				for (int q = 0; q < u.rows(); q++)
-				{
-					Eigen::VectorXd x = u.row(q) + pts.row(q);
-					val(q) = target_func(x(0), x(1), x.size() == 2 ? 0 : x(2), 0, params["elem"]);
-				}
+					val(q) = target_func(X(q, 0), X(q, 1), X.cols() == 2 ? 0 : X(q, 2), 0, params.elem);
 			};
 
-			auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
+			auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const IntegrableFunctional::ParameterType &params, Eigen::MatrixXd &val) {
 				val.setZero(u.rows(), u.cols());
 
+				const Eigen::VectorXd X = u + pts;
 				for (int q = 0; q < u.rows(); q++)
-				{
-					Eigen::VectorXd x = u.row(q) + pts.row(q);
 					for (int d = 0; d < val.cols(); d++)
-						val(q, d) = target_func_grad[d](x(0), x(1), x.size() == 2 ? 0 : x(2), 0, params["elem"]);
-				}
+						val(q, d) = target_func_grad[d](X(q, 0), X(q, 1), X.cols() == 2 ? 0 : X(q, 2), 0, params.elem);
 			};
 
 			j.set_j(j_func);
@@ -120,7 +97,7 @@ namespace polyfem::solver
 		{
 			if (target_disp.size() == state_.mesh->dimension())
 			{
-				auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
+				auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const IntegrableFunctional::ParameterType &params, Eigen::MatrixXd &val) {
 					val.setZero(u.rows(), 1);
 
 					for (int q = 0; q < u.rows(); q++)
@@ -132,7 +109,7 @@ namespace polyfem::solver
 						val(q) = err.squaredNorm();
 					}
 				};
-				auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &lambda, const Eigen::MatrixXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const json &params, Eigen::MatrixXd &val) {
+				auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const IntegrableFunctional::ParameterType &params, Eigen::MatrixXd &val) {
 					val.setZero(u.rows(), u.cols());
 
 					for (int q = 0; q < u.rows(); q++)

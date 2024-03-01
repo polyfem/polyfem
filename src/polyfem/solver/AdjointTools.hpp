@@ -51,19 +51,6 @@ namespace polyfem::solver
 			const SpatialIntegralType spatial_integral_type,
 			const int cur_step,
 			Eigen::VectorXd &term);
-		static void dJ_macro_strain_adjoint_term(
-			const State &state,
-			const Eigen::MatrixXd &sol,
-			const Eigen::MatrixXd &adjoint,
-			Eigen::VectorXd &one_form);
-		static void compute_macro_strain_derivative_functional_term(
-			const State &state,
-			const Eigen::MatrixXd &solution,
-			const IntegrableFunctional &j,
-			const std::set<int> &interested_ids, // either body id or surface id
-			const SpatialIntegralType spatial_integral_type,
-			Eigen::VectorXd &term,
-			const int cur_time_step);
 		static void compute_shape_derivative_functional_term(
 			const State &state,
 			const Eigen::MatrixXd &solution,
