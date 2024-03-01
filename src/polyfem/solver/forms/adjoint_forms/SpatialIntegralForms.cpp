@@ -392,7 +392,7 @@ namespace polyfem::solver
 		j.set_dj_dgradu([formulation, dimensions, this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const IntegrableFunctional::ParameterType &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), grad_u.cols());
 
-			const int dim = sqrt(grad_u.cols());
+			const int dim = state_.mesh->dimension();
 			Eigen::MatrixXd grad_u_q, stiffness, stress;
 			for (int q = 0; q < grad_u.rows(); q++)
 			{
