@@ -75,7 +75,7 @@ namespace polyfem::solver
 			auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const IntegrableFunctional::ParameterType &params, Eigen::MatrixXd &val) {
 				val.setZero(u.rows(), 1);
 
-				const Eigen::VectorXd X = u + pts;
+				const Eigen::MatrixXd X = u + pts;
 				for (int q = 0; q < u.rows(); q++)
 					val(q) = target_func(X(q, 0), X(q, 1), X.cols() == 2 ? 0 : X(q, 2), 0, params.elem);
 			};
@@ -83,7 +83,7 @@ namespace polyfem::solver
 			auto djdu_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const IntegrableFunctional::ParameterType &params, Eigen::MatrixXd &val) {
 				val.setZero(u.rows(), u.cols());
 
-				const Eigen::VectorXd X = u + pts;
+				const Eigen::MatrixXd X = u + pts;
 				for (int q = 0; q < u.rows(); q++)
 					for (int d = 0; d < val.cols(); d++)
 						val(q, d) = target_func_grad[d](X(q, 0), X(q, 1), X.cols() == 2 ? 0 : X(q, 2), 0, params.elem);
