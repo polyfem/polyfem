@@ -959,12 +959,14 @@ namespace polyfem
 		for (int i = prev_bases; i < n_bases; ++i)
 		{
 			for (int d = 0; d < problem_dim; ++d)
+			{
 				boundary_nodes.push_back(i * problem_dim + d);
+			}
 		}
 
 		std::sort(boundary_nodes.begin(), boundary_nodes.end());
 		auto it = std::unique(boundary_nodes.begin(), boundary_nodes.end());
-		boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
+		boundary_nodes.erase(it, boundary_nodes.end());
 
 		const auto &curret_bases = geom_bases();
 		const int n_samples = 10;
