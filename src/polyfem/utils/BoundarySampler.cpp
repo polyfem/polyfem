@@ -577,8 +577,8 @@ namespace polyfem
 
 		bool utils::BoundarySampler::boundary_quadrature(const mesh::LocalBoundary &local_boundary, const int order, const mesh::Mesh &mesh, const int i, const bool skip_computation, Eigen::MatrixXd &uv, Eigen::MatrixXd &points, Eigen::MatrixXd &normals, Eigen::VectorXd &weights)
 		{
-			assert (local_boundary.size() > i);
-				
+			assert(local_boundary.size() > i);
+
 			uv.resize(0, 0);
 			points.resize(0, 0);
 			weights.resize(0);

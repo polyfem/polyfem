@@ -163,6 +163,7 @@ namespace polyfem
 			NCMesh2D(const NCMesh2D &) = default;
 			NCMesh2D &operator=(const NCMesh2D &) = default;
 
+			int dimension() const override { return 2; }
 			bool is_conforming() const override { return false; }
 
 			int n_faces() const override { return n_elements; }

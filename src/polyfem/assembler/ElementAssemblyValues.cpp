@@ -7,6 +7,8 @@ namespace polyfem
 
 	namespace assembler
 	{
+		using MatrixMax2x3d = Eigen::Matrix<double, 2, Eigen::Dynamic, Eigen::ColMajor, 2, 3>;
+
 		void ElementAssemblyValues::finalize_global_element(const Eigen::MatrixXd &v)
 		{
 			val = v;
@@ -44,21 +46,19 @@ namespace polyfem
 
 		bool ElementAssemblyValues::is_geom_mapping_positive(const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy) const
 		{
-			Eigen::Matrix<double, 2, Eigen::Dynamic, 0, 2, 3> tmp(2, dx.cols());
 			for (long i = 0; i < dx.rows(); ++i)
 			{
-				tmp.row(0) = dx.row(i);
-				tmp.row(1) = dy.row(i);
+				MatrixMax2x3d F(2, dx.cols());
+				F.row(0) = dx.row(i);
+				F.row(1) = dy.row(i);
 
-				double det;
-				if (tmp.rows() == tmp.cols())
-					det = tmp.determinant();
-				else
-					det = (tmp * tmp.transpose()).determinant();
+				const double det = (F.rows() == F.cols())
+									   ? F.determinant()
+									   // TODO: product of singular values?
+									   : (F * F.transpose()).determinant();
 
-				if (det <= 0.0)
+				if (det <= 0)
 				{
-					// std::cout<<tmp.determinant()<<std::endl;
 					return false;
 				}
 			}
@@ -111,49 +111,53 @@ namespace polyfem
 		{
 			det.resize(val.rows(), 1);
 
-			for (std::size_t j = 0; j < basis_values.size(); ++j)
-				basis_values[j].grad_t_m.resize(basis_values[0].grad.rows(), gbasis.bases[0].global()[0].node.size());
-			// basis_values[j].finalize();
+			for (auto &basis_value : basis_values)
+			{
+				basis_value.grad_t_m.resize(basis_value.grad.rows(), gbasis.dim());
+			}
 
-			Eigen::Matrix<double, 2, Eigen::Dynamic, 0, 2, 3> tmp(2, gbasis.bases[0].global()[0].node.size());
 			jac_it.resize(val.rows());
 
 			// loop over points
 			for (long k = 0; k < val.rows(); ++k)
 			{
-				tmp.setZero();
+				MatrixMax2x3d F = MatrixMax2x3d::Zero(2, gbasis.dim());
+
 				for (int j = 0; j < gbasis_values.size(); ++j)
 				{
 					const Basis &b = gbasis.bases[j];
 					assert(gbasis.has_parameterization);
 					assert(gbasis_values[j].grad.rows() == val.rows());
-					assert(gbasis_values[j].grad.cols() == 2 || gbasis_values[j].grad.cols() == 3);
+					assert(gbasis_values[j].grad.cols() == gbasis.dim());
 
 					for (std::size_t ii = 0; ii < b.global().size(); ++ii)
 					{
 						// add given geometric basis function + node's contribution to the Jacobian
-						tmp.row(0) += gbasis_values[j].grad(k, 0) * b.global()[ii].node * b.global()[ii].val;
-						tmp.row(1) += gbasis_values[j].grad(k, 1) * b.global()[ii].node * b.global()[ii].val;
+						F.row(0) += gbasis_values[j].grad(k, 0) * b.global()[ii].node * b.global()[ii].val;
+						F.row(1) += gbasis_values[j].grad(k, 1) * b.global()[ii].node * b.global()[ii].val;
 					}
 				}
 
 				// save Jacobian's determinant and inverse transpose
-				if (tmp.rows() == tmp.cols())
+				if (F.rows() == F.cols())
 				{
-					det(k) = tmp.determinant();
-					jac_it[k] = tmp.inverse().transpose();
+					det(k) = F.determinant();
+					jac_it[k] = F.inverse().transpose();
 				}
 				else
 				{
-					det(k) = sqrt((tmp * tmp.transpose()).determinant());
-					jac_it[k] = ((tmp * tmp.transpose()).inverse()) * tmp;
+					// TODO: product of singular values?
+					det(k) = sqrt((F * F.transpose()).determinant());
+					jac_it[k] = ((F * F.transpose()).inverse()) * F;
 				}
 
 				// assert(det(k)>0);
 				// std::cout<<det(k)<<std::endl;
 
 				for (std::size_t j = 0; j < basis_values.size(); ++j)
+				{
 					basis_values[j].grad_t_m.row(k) = basis_values[j].grad.row(k) * jac_it[k];
+				}
 			}
 		}
 
@@ -204,7 +208,7 @@ namespace polyfem
 			// compute geometric mapping as linear combination of geometric basis functions
 			const auto &gbasis_values = (&basis == &gbasis) ? basis_values : g_basis_values_cache_;
 			assert(gbasis_values.size() == n_local_g_bases);
-			val.resize(pts.rows(), gbasis.bases[0].global()[0].node.size());
+			val.resize(pts.rows(), gbasis.dim());
 			val.setZero();
 
 			// loop over geometric basis functions
@@ -249,11 +253,11 @@ namespace polyfem
 
 			std::vector<AssemblyValues> tmp;
 
-			Eigen::MatrixXd dxmv = Eigen::MatrixXd::Zero(quad.points.rows(), gbasis.bases[0].global()[0].node.size());
-			Eigen::MatrixXd dymv = Eigen::MatrixXd::Zero(quad.points.rows(), gbasis.bases[0].global()[0].node.size());
+			Eigen::MatrixXd dxmv = Eigen::MatrixXd::Zero(quad.points.rows(), gbasis.dim());
+			Eigen::MatrixXd dymv = Eigen::MatrixXd::Zero(quad.points.rows(), gbasis.dim());
 			Eigen::MatrixXd dzmv;
 			if (is_volume)
-				dzmv = Eigen::MatrixXd::Zero(quad.points.rows(), gbasis.bases[0].global()[0].node.size());
+				dzmv = Eigen::MatrixXd::Zero(quad.points.rows(), gbasis.dim());
 
 			gbasis.evaluate_grads(quad.points, tmp);
 

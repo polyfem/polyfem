@@ -35,6 +35,8 @@ namespace polyfem
 				: index(_index), val(_val), node(_node)
 			{
 			}
+
+			int dim() const { return node.size(); }
 		};
 
 		///
@@ -60,7 +62,7 @@ namespace polyfem
 			///
 			/// @brief      Checks if global is empty or not
 			///
-			inline bool is_complete() const { return !global_.empty(); }
+			bool is_complete() const { return !global_.empty(); }
 
 			///
 			/// @brief      Evaluates the basis function over a set of uv
@@ -101,15 +103,21 @@ namespace polyfem
 			}
 
 			// list of local to global mappings
-			inline const std::vector<Local2Global> &global() const { return global_; }
-			inline std::vector<Local2Global> &global() { return global_; }
+			const std::vector<Local2Global> &global() const { return global_; }
+			std::vector<Local2Global> &global() { return global_; }
 
 			// setting the basis lambda and its gradient
-			inline void set_basis(const Fun &fun) { basis_ = fun; }
-			inline void set_grad(const Fun &fun) { grad_ = fun; }
+			void set_basis(const Fun &fun) { basis_ = fun; }
+			void set_grad(const Fun &fun) { grad_ = fun; }
 
-			inline bool is_defined() const { return (basis_ ? true : false); }
-			inline int order() const { return order_; }
+			bool is_defined() const { return (basis_ ? true : false); }
+			int order() const { return order_; }
+
+			int dim() const
+			{
+				assert(!global_.empty());
+				return global_.front().dim();
+			}
 
 			// output
 			friend std::ostream &operator<<(std::ostream &os, const Basis &obj)

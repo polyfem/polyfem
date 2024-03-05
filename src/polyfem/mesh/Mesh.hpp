@@ -145,8 +145,7 @@ namespace polyfem
 			/// @brief utily for dimension
 			///
 			/// @return int 2 or 3
-			// int dimension() const { return (is_volume() ? 3 : 2); }
-			int dimension() const { return (is_planar_ ? 2: point(0).size()); }
+			virtual int dimension() const = 0;
 			///
 			/// @brief if the mesh is conforming
 			///

@@ -25,7 +25,8 @@ namespace polyfem
 			Mesh3D(const Mesh3D &) = default;
 			Mesh3D &operator=(const Mesh3D &) = default;
 
-			inline bool is_volume() const override { return true; }
+			bool is_volume() const override { return true; }
+			int dimension() const override { return 3; }
 
 			virtual int n_cell_edges(const int c_id) const = 0;
 			virtual int n_cell_faces(const int c_id) const = 0;

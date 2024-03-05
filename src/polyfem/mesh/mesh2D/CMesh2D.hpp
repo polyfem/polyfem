@@ -28,6 +28,8 @@ namespace polyfem
 
 			void refine(const int n_refinement, const double t) override;
 
+			int dimension() const override { return is_planar_ ? 2 : mesh_.vertices.dimension(); }
+
 			bool is_conforming() const override { return true; }
 
 			int n_faces() const override { return mesh_.facets.nb(); }
