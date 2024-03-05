@@ -22,6 +22,7 @@ namespace polyfem
 			Mesh2D(const Mesh2D &) = default;
 			Mesh2D &operator=(const Mesh2D &) = default;
 
+			// bool is_volume() const override { return (n_face_vertices(0) == 2 ? false : true); }
 			bool is_volume() const override { return false; }
 
 			int n_cells() const override { return 0; }

@@ -20,7 +20,10 @@ namespace polyfem
 	{
 		void Mesh2D::get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const
 		{
-			p0.resize(n_edges(), 2);
+			if (is_planar_)
+				p0.resize(n_edges(), 2);
+			else
+				p0.resize(n_edges(), 3);
 			p1.resize(p0.rows(), p0.cols());
 
 			for (GEO::index_t e = 0; e < n_edges(); ++e)

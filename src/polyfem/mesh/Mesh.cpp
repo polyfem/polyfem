@@ -97,7 +97,8 @@ namespace polyfem::mesh
 
 	std::unique_ptr<Mesh> Mesh::create(GEO::Mesh &meshin, const bool non_conforming)
 	{
-		if (is_planar(meshin))
+		bool planar = ::polyfem::mesh::is_planar(meshin);
+		if (planar || meshin.facets.nb_vertices(0) == 3) // Doesn't handle non-planar quad surface
 		{
 			generate_edges(meshin);
 			std::unique_ptr<Mesh> mesh = create(2, non_conforming);
@@ -122,6 +123,8 @@ namespace polyfem::mesh
 				assert(mesh->in_ordered_edges_.size() > 0);
 
 				mesh->in_ordered_faces_.resize(0, 0);
+
+				mesh->is_planar_ = planar;
 
 				return mesh;
 			}
@@ -161,6 +164,8 @@ namespace polyfem::mesh
 					}
 				}
 				assert(mesh->in_ordered_faces_.size() > 0);
+
+				mesh->is_planar_ = planar;
 
 				return mesh;
 			}
@@ -279,6 +284,8 @@ namespace polyfem::mesh
 			assert(mesh->in_ordered_edges_.size() > 0);
 
 			mesh->in_ordered_faces_.resize(0, 0);
+
+			mesh->is_planar_ = true;
 		}
 		else
 		{
@@ -637,5 +644,10 @@ namespace polyfem::mesh
 		transform_high_order_nodes(edge_nodes_, A, b);
 		transform_high_order_nodes(face_nodes_, A, b);
 		transform_high_order_nodes(cell_nodes_, A, b);
+	}
+
+	void Mesh::set_is_planar(GEO::Mesh &mesh)
+	{
+		is_planar_ = ::polyfem::mesh::is_planar(mesh);
 	}
 } // namespace polyfem::mesh

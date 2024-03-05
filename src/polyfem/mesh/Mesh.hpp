@@ -145,7 +145,8 @@ namespace polyfem
 			/// @brief utily for dimension
 			///
 			/// @return int 2 or 3
-			int dimension() const { return (is_volume() ? 3 : 2); }
+			// int dimension() const { return (is_volume() ? 3 : 2); }
+			int dimension() const { return (is_planar_ ? 2: point(0).size()); }
 			///
 			/// @brief if the mesh is conforming
 			///
@@ -273,6 +274,13 @@ namespace polyfem
 			///
 			/// @param[in] in_is_rational flag to enable/disable rational polynomials
 			inline void set_is_rational(const bool in_is_rational) { is_rational_ = in_is_rational; }
+			/// @brief check if mesh is planar
+			///
+			/// @return if mesh is planar
+			inline bool is_planar() const { return is_planar_; }
+			/// @brief Set the is planar object
+			///
+			inline void set_is_planar(GEO::Mesh &mesh);
 
 			/// @brief normalize the mesh
 			///
@@ -666,6 +674,8 @@ namespace polyfem
 			Eigen::MatrixXi orders_;
 			/// stores if the mesh is rational
 			bool is_rational_ = false;
+			/// stores if the mesh is planar
+			bool is_planar_ = false;
 
 			/// high-order nodes associates to edges
 			std::vector<EdgeNodes> edge_nodes_;

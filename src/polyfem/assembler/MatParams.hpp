@@ -75,7 +75,8 @@ namespace polyfem::assembler
 		void lambda_mu(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, double t, int el_id, double &lambda, double &mu) const
 		{
 			assert(param.size() == 2 || param.size() == 3);
-			assert(param.size() == p.size());
+			assert(p.size() == 2 || p.size() == 3);
+			// assert(param.size() == p.size());
 			lambda_mu(
 				param(0), param(1), param.size() == 3 ? param(2) : 0.0,
 				p(0), p(1), p.size() == 3 ? p(2) : 0.0,
@@ -105,7 +106,8 @@ namespace polyfem::assembler
 		double operator()(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, double t, int el_id) const
 		{
 			assert(param.size() == 2 || param.size() == 3);
-			assert(param.size() == p.size());
+			assert(p.size() == 2 || p.size() == 3);
+			// assert(param.size() == p.size());
 			return (*this)(param(0), param(1), param.size() == 3 ? param(2) : 0.0,
 						   p(0), p(1), p.size() == 3 ? p(2) : 0.0,
 						   t, el_id);
