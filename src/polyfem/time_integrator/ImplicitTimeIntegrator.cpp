@@ -43,7 +43,8 @@ namespace polyfem
 
 		void ImplicitTimeIntegrator::save_state(const std::string &state_path) const
 		{
-			assert(!state_path.empty());
+			if (state_path.empty())
+				return;
 
 			const int ndof = x_prev().size();
 			const int prev_steps = x_prevs().size();
