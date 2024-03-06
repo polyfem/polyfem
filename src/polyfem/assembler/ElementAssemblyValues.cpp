@@ -28,8 +28,10 @@ namespace polyfem::assembler
 		// check if the geometric basis is the same as the basis
 		const bool is_basis_gbasis = (&basis == &gbasis);
 
-		if (is_basis_gbasis)
+		if (!is_basis_gbasis)
+		{
 			g_basis_values_cache_.resize(gbasis.bases.size());
+		}
 
 		const int n_local_bases = int(basis.bases.size());
 		const int n_local_g_bases = int(gbasis.bases.size());
@@ -38,7 +40,7 @@ namespace polyfem::assembler
 		basis.evaluate_bases(pts, basis_values);
 		basis.evaluate_grads(pts, basis_values);
 
-		if (is_basis_gbasis)
+		if (!is_basis_gbasis)
 		{
 			gbasis.evaluate_bases(pts, g_basis_values_cache_);
 			gbasis.evaluate_grads(pts, g_basis_values_cache_);
