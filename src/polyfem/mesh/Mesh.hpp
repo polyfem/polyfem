@@ -257,29 +257,21 @@ namespace polyfem
 
 		public:
 			/// @brief attach high order nodes
-			///
 			/// @param[in] V nodes
 			/// @param[in] nodes list of nodes per element
 			virtual void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) = 0;
+
 			/// @brief order of each element
-			///
 			/// @return matrix containing order
 			inline const Eigen::MatrixXi &orders() const { return orders_; }
+
 			/// @brief check if curved mesh has rational polynomials elements
-			///
 			/// @return if mesh is rational
 			inline bool is_rational() const { return is_rational_; }
+
 			/// @brief Set the is rational object
-			///
 			/// @param[in] in_is_rational flag to enable/disable rational polynomials
 			inline void set_is_rational(const bool in_is_rational) { is_rational_ = in_is_rational; }
-			/// @brief check if mesh is planar
-			///
-			/// @return if mesh is planar
-			inline bool is_planar() const { return is_planar_; }
-			/// @brief Set the is planar object
-			///
-			inline void set_is_planar(GEO::Mesh &mesh);
 
 			/// @brief normalize the mesh
 			///
@@ -654,7 +646,11 @@ namespace polyfem
 			///
 			/// @param[in] path file location
 			/// @return if success
-			virtual bool load(const std::string &path) = 0;
+			virtual bool load(const std::string &path)
+			{
+				assert(false);
+				return false;
+			}
 			/// @brief loads a mesh from a geo mesh
 			///
 			/// @param[in] M geo mesh
@@ -673,8 +669,6 @@ namespace polyfem
 			Eigen::MatrixXi orders_;
 			/// stores if the mesh is rational
 			bool is_rational_ = false;
-			/// stores if the mesh is planar
-			bool is_planar_ = false;
 
 			/// high-order nodes associates to edges
 			std::vector<EdgeNodes> edge_nodes_;

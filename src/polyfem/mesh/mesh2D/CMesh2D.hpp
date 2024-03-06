@@ -28,7 +28,10 @@ namespace polyfem
 
 			void refine(const int n_refinement, const double t) override;
 
-			int dimension() const override { return is_planar_ ? 2 : mesh_.vertices.dimension(); }
+			int dimension() const override
+			{
+				return is_embedded_in_3D ? 3 : 2;
+			}
 
 			bool is_conforming() const override { return true; }
 
@@ -101,7 +104,6 @@ namespace polyfem
 			std::unique_ptr<Mesh> copy() const override;
 
 		protected:
-			bool load(const std::string &path) override;
 			bool load(const GEO::Mesh &mesh) override;
 
 		private:
@@ -109,6 +111,7 @@ namespace polyfem
 			std::unique_ptr<GEO::Attribute<GEO::index_t>> c2e_;
 			std::unique_ptr<GEO::Attribute<bool>> boundary_vertices_;
 			std::unique_ptr<GEO::Attribute<bool>> boundary_edges_;
+			bool is_embedded_in_3D;
 		};
 	} // namespace mesh
 } // namespace polyfem

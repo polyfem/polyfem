@@ -93,52 +93,6 @@ namespace polyfem
 			in_ordered_faces_.resize(0, 0);
 		}
 
-		bool CMesh2D::load(const std::string &path)
-		{
-			// This method should be used for special loading, like hybrid in 3d
-
-			// edge_nodes_.clear();
-			// face_nodes_.clear();
-			// cell_nodes_.clear();
-			// order_ = 1;
-
-			// c2e_.reset();
-			// boundary_vertices_.reset();
-			// boundary_edges_.reset();
-
-			// mesh_.clear(false,false);
-
-			// if (!StringUtils::endswith(path, "msh"))
-			// {
-			// 	Eigen::MatrixXd vertices;
-			// 	Eigen::MatrixXi cells;
-			// 	std::vector<std::vector<int>> elements;
-			// 	std::vector<std::vector<double>> weights;
-
-			// 	if(!MshReader::load(path, vertices, cells, elements, weights))
-			// 		return false;
-
-			// 	build_from_matrices(vertices, cells);
-			// 	attach_higher_order_nodes(vertices, elements);
-			// 	cell_weights_ = weights;
-			// }
-			// else
-			// {
-			// 	if(!mesh_load(path, mesh_))
-			// 		return false;
-			// }
-
-			// orient_normals_2d(mesh_);
-			// Navigation::prepare_mesh(mesh_);
-			// c2e_ = std::make_unique<GEO::Attribute<GEO::index_t>>(mesh_.facet_corners.attributes(), "edge_id");
-			// boundary_vertices_ = std::make_unique<GEO::Attribute<bool>>(mesh_.vertices.attributes(), "boundary_vertex");
-			// boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
-
-			// compute_elements_tag();
-			assert(false);
-			return false;
-		}
-
 		bool CMesh2D::load(const GEO::Mesh &mesh)
 		{
 			edge_nodes_.clear();
@@ -151,6 +105,8 @@ namespace polyfem
 
 			mesh_.clear(false, false);
 			mesh_.copy(mesh);
+
+			is_embedded_in_3D = !is_planar(mesh);
 
 			orient_normals_2d(mesh_);
 			Navigation::prepare_mesh(mesh_);

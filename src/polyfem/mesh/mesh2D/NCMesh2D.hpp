@@ -316,7 +316,6 @@ namespace polyfem
 			};
 
 		protected:
-			bool load(const std::string &path) override;
 			bool load(const GEO::Mesh &mesh) override;
 
 			// index map from vertices to valid ones, and its inverse

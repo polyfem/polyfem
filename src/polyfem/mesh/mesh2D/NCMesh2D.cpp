@@ -545,12 +545,6 @@ namespace polyfem
 			}
 		}
 
-		bool NCMesh2D::load(const std::string &path)
-		{
-			assert(false);
-			return false;
-		}
-
 		bool NCMesh2D::load(const GEO::Mesh &mesh)
 		{
 			GEO::Mesh mesh_;
