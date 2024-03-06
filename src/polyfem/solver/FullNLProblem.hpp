@@ -39,6 +39,8 @@ namespace polyfem::solver
 
 		virtual bool stop(const TVector &x) override { return false; }
 
+		std::function<void(const polysolve::nonlinear::PostStepData &data)> post_step_callback;
+
 	protected:
 		std::vector<std::shared_ptr<Form>> forms_;
 	};
