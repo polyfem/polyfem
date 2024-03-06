@@ -140,6 +140,7 @@ namespace polyfem
 	{
 		json args_in = p_args_in; // mutable copy
 
+		logger().info("Applying common parameters");
 		apply_common_params(args_in);
 
 		// CHECK validity json
@@ -191,6 +192,7 @@ namespace polyfem
 			}
 		}
 
+		logger().info("Verifying input JSON");
 		const bool valid_input = jse.verify_json(args_in, rules);
 
 		if (!valid_input)
@@ -200,6 +202,7 @@ namespace polyfem
 		}
 		// end of check
 
+		logger().info("Injecting defaults into input JSON");
 		this->args = jse.inject_defaults(args_in, rules);
 		units.init(this->args["units"]);
 
@@ -314,7 +317,7 @@ namespace polyfem
 				if (!args["contact"]["use_convergent_formulation"])
 				{
 					args["contact"]["use_convergent_formulation"] = true;
-					logger().info("Use convergent formulation for differentiable contact...");
+					logger().info("Use convergent formulation for differentiable contact");
 				}
 				if (args["/solver/contact/barrier_stiffness"_json_pointer].is_string())
 				{
