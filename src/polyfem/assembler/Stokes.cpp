@@ -2,14 +2,15 @@
 
 namespace polyfem::assembler
 {
-	void StokesVelocity::add_multimaterial(const int index, const json &params)
+	StokesVelocity::StokesVelocity()
+		: viscosity_("viscosity")
+	{
+	}
+	void StokesVelocity::add_multimaterial(const int index, const json &params, const Units &units)
 	{
 		assert(size() == 2 || size() == 3);
 
-		if (params.count("viscosity"))
-		{
-			viscosity_ = params["viscosity"];
-		}
+		viscosity_.add_multimaterial(index, params, units.viscosity());
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
@@ -25,10 +26,8 @@ namespace polyfem::assembler
 		double dot = 0;
 		for (int k = 0; k < gradi.rows(); ++k)
 		{
-			dot += gradi.row(k).dot(gradj.row(k)) * data.da(k);
+			dot += gradi.row(k).dot(gradj.row(k)) * data.da(k) * viscosity_(data.vals.val.row(k), data.t, data.vals.element_id);
 		}
-
-		dot *= viscosity_;
 
 		for (int d = 0; d < size(); ++d)
 			res(d * size() + d) = dot;
@@ -41,9 +40,14 @@ namespace polyfem::assembler
 		assert(pt.size() == size());
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res(size());
 
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> val(size());
+		for (int d = 0; d < size(); ++d)
+			val(d) = pt(d).getValue();
+
+		const auto nu = viscosity_(val, 0, 0);
 		for (int d = 0; d < size(); ++d)
 		{
-			res(d) = viscosity_ * pt(d).getHessian().trace();
+			res(d) = nu * pt(d).getHessian().trace();
 		}
 
 		return res;
@@ -52,8 +56,10 @@ namespace polyfem::assembler
 	std::map<std::string, Assembler::ParamFunc> StokesVelocity::parameters() const
 	{
 		std::map<std::string, ParamFunc> res;
-		const double nu = this->viscosity();
-		res["viscosity"] = [nu](const RowVectorNd &, const RowVectorNd &, double, int) { return nu; };
+		const auto &nu = viscosity_;
+		res["viscosity"] = [&nu](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+			return nu(p, t, e);
+		};
 
 		return res;
 	}

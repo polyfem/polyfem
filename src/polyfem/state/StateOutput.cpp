@@ -13,12 +13,10 @@ namespace polyfem
 			return;
 
 		double tend = 0;
-		// TODO fix me
+
 		if (!args["time"].is_null())
 		{
-			tend = args["time"].value("tend", 1.0);
-			if (tend <= 0)
-				tend = 1;
+			tend = args["time"]["tend"];
 		}
 
 		stats.compute_errors(n_bases, bases, geom_bases(), *mesh, *problem, tend, sol);
@@ -140,11 +138,11 @@ namespace polyfem
 			logger().error("Build the bases first!");
 			return;
 		}
-		if (rhs.size() <= 0)
-		{
-			logger().error("Assemble the rhs first!");
-			return;
-		}
+		// if (rhs.size() <= 0)
+		// {
+		// 	logger().error("Assemble the rhs first!");
+		// 	return;
+		// }
 		if (sol.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -187,6 +185,19 @@ namespace polyfem
 		restart_json["root_path"] = root_path();
 		restart_json["common"] = root_path();
 		restart_json["time"] = {{"t0", t0 + dt * t}};
+
+		restart_json["space"] = R"({
+			"remesh": {
+				"collapse": {
+					"abs_max_edge_length": -1,
+					"rel_max_edge_length": -1
+				}
+			}
+		})"_json;
+		restart_json["space"]["remesh"]["collapse"]["abs_max_edge_length"] = std::min(
+			args["space"]["remesh"]["collapse"]["abs_max_edge_length"].get<double>(),
+			starting_min_edge_length * args["space"]["remesh"]["collapse"]["rel_max_edge_length"].get<double>());
+		restart_json["space"]["remesh"]["collapse"]["rel_max_edge_length"] = std::numeric_limits<float>::max();
 
 		std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
 		if (!rest_mesh_path.empty())
@@ -245,9 +256,7 @@ namespace polyfem
 		restart_json["input"] = {{
 			"data",
 			{
-				{"u_path", resolve_output_path(fmt::format(args["output"]["data"]["u_path"], t))},
-				{"v_path", resolve_output_path(fmt::format(args["output"]["data"]["v_path"], t))},
-				{"a_path", resolve_output_path(fmt::format(args["output"]["data"]["a_path"], t))},
+				{"state", resolve_output_path(fmt::format(args["output"]["data"]["state"], t))},
 			},
 		}};
 

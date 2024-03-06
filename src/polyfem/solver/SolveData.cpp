@@ -22,6 +22,7 @@ namespace polyfem::solver
 
 	std::vector<std::shared_ptr<Form>> SolveData::init_forms(
 		// General
+		const Units &units,
 		const int dim,
 		const double t,
 
@@ -58,7 +59,7 @@ namespace polyfem::solver
 		// const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
 		// const int n_boundary_samples,
 		// const StiffnessMatrix &mass,
-		const polyfem::mesh::Obstacle &obstacle,
+		const size_t obstacle_ndof,
 
 		// Contact form
 		const bool contact_enabled,
@@ -70,6 +71,7 @@ namespace polyfem::solver
 		const ipc::BroadPhaseMethod broad_phase,
 		const double ccd_tolerance,
 		const long ccd_max_iterations,
+		const bool enable_shape_derivatives,
 
 		// Friction form
 		const double friction_coefficient,
@@ -91,7 +93,7 @@ namespace polyfem::solver
 
 		elastic_form = std::make_shared<ElasticForm>(
 			n_bases, bases, geom_bases, assembler, ass_vals_cache,
-			dt, is_volume);
+			t, dt, is_volume);
 		forms.push_back(elastic_form);
 
 		if (rhs_assembler != nullptr)
@@ -119,7 +121,7 @@ namespace polyfem::solver
 			if (damping_assembler != nullptr)
 			{
 				damping_form = std::make_shared<ElasticForm>(
-					n_bases, bases, geom_bases, *damping_assembler, ass_vals_cache, dt, is_volume);
+					n_bases, bases, geom_bases, *damping_assembler, ass_vals_cache, t, dt, is_volume);
 				forms.push_back(damping_form);
 			}
 		}
@@ -142,12 +144,12 @@ namespace polyfem::solver
 
 			al_lagr_form = std::make_shared<BCLagrangianForm>(
 				ndof, boundary_nodes, local_boundary, local_neumann_boundary,
-				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle, is_time_dependent, t);
+				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t);
 			forms.push_back(al_lagr_form);
 
 			al_pen_form = std::make_shared<BCPenaltyForm>(
 				ndof, boundary_nodes, local_boundary, local_neumann_boundary,
-				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle, is_time_dependent, t);
+				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t);
 			forms.push_back(al_pen_form);
 		}
 
@@ -159,7 +161,7 @@ namespace polyfem::solver
 
 			contact_form = std::make_shared<ContactForm>(
 				collision_mesh, dhat, avg_mass, use_convergent_contact_formulation,
-				use_adaptive_barrier_stiffness, is_time_dependent, broad_phase, ccd_tolerance,
+				use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(),
 				ccd_max_iterations);
 
 			if (use_adaptive_barrier_stiffness)
@@ -181,8 +183,9 @@ namespace polyfem::solver
 			if (friction_coefficient != 0)
 			{
 				friction_form = std::make_shared<FrictionForm>(
-					collision_mesh, time_integrator, epsv, friction_coefficient, dhat, broad_phase,
-					*contact_form, friction_iterations);
+					collision_mesh, time_integrator, epsv, friction_coefficient,
+					broad_phase, *contact_form, friction_iterations);
+				friction_form->init_lagging(sol);
 				forms.push_back(friction_form);
 			}
 		}
@@ -205,7 +208,7 @@ namespace polyfem::solver
 		}
 		else if (rayleigh_damping_jsons.size() > 0)
 		{
-			log_and_throw_error("Rayleigh damping is only supported for time-dependent problems");
+			log_and_throw_adjoint_error("Rayleigh damping is only supported for time-dependent problems");
 		}
 
 		update_dt();
@@ -249,17 +252,17 @@ namespace polyfem::solver
 		}
 	}
 
-	std::unordered_map<std::string, std::shared_ptr<solver::Form>> SolveData::named_forms() const
+	std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> SolveData::named_forms() const
 	{
 		return {
-			{"contact", contact_form},
+			{"elastic", elastic_form},
+			{"inertia", inertia_form},
 			{"body", body_form},
+			{"contact", contact_form},
+			{"friction", friction_form},
+			{"damping", damping_form},
 			{"augmented_lagrangian_lagr", al_lagr_form},
 			{"augmented_lagrangian_penalty", al_pen_form},
-			{"damping", damping_form},
-			{"friction", friction_form},
-			{"inertia", inertia_form},
-			{"elastic", elastic_form},
 		};
 	}
 } // namespace polyfem::solver

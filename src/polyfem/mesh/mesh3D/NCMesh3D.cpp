@@ -921,6 +921,11 @@ namespace polyfem
 			prepare_mesh();
 		}
 
+		std::unique_ptr<Mesh> NCMesh3D::copy() const
+		{
+			return std::make_unique<NCMesh3D>(*this);
+		}
+
 		bool NCMesh3D::load(const std::string &path)
 		{
 			if (!StringUtils::endswith(path, ".HYBRID"))

@@ -1,6 +1,8 @@
 #pragma once
 
+#include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/assembler/Assembler.hpp>
+
 #include <polyfem/utils/AutodiffTypes.hpp>
 
 namespace polyfem::assembler
@@ -11,14 +13,16 @@ namespace polyfem::assembler
 	public:
 		using LinearAssembler::assemble;
 
+		StokesVelocity();
+
 		VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;
 		// res is R^{dim²}
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 		assemble(const LinearAssemblerData &data) const override;
 
-		void add_multimaterial(const int index, const json &params) override;
+		void add_multimaterial(const int index, const json &params, const Units &units) override;
 
-		double viscosity() const { return viscosity_; }
+		const GenericMatParam &viscosity() const { return viscosity_; }
 
 		virtual std::string name() const override { return "Stokes"; }
 		std::map<std::string, ParamFunc> parameters() const override;
@@ -26,7 +30,7 @@ namespace polyfem::assembler
 		bool is_fluid() const override { return true; }
 
 	private:
-		double viscosity_ = 1;
+		GenericMatParam viscosity_;
 	};
 
 	// stokes mixed assembler (velocity phi and pressure psi)
@@ -69,7 +73,7 @@ namespace polyfem::assembler
 	public:
 		OperatorSplitting() = default;
 		~OperatorSplitting() = default;
-		
+
 		std::string name() const override { return "OperatorSplitting"; }
 	};
 } // namespace polyfem::assembler

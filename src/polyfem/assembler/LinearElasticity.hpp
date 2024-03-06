@@ -37,26 +37,52 @@ namespace polyfem::assembler
 		// pt is the evaluation of the solution at a point
 		VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;
 
+		void compute_stiffness_value(const double t,
+									 const assembler::ElementAssemblyValues &vals,
+									 const Eigen::MatrixXd &local_pts,
+									 const Eigen::MatrixXd &displacement,
+									 Eigen::MatrixXd &tensor) const override;
+
+		void compute_stress_grad_multiply_mat(const OptAssemblerData &data,
+											  const Eigen::MatrixXd &mat,
+											  Eigen::MatrixXd &stress,
+											  Eigen::MatrixXd &result) const override;
+
+		void compute_stress_grad_multiply_stress(const OptAssemblerData &data,
+												 Eigen::MatrixXd &stress,
+												 Eigen::MatrixXd &result) const override;
+
+		void compute_dstress_dmu_dlambda(const OptAssemblerData &data,
+										 Eigen::MatrixXd &dstress_dmu,
+										 Eigen::MatrixXd &dstress_dlambda) const override;
+
 		// inialize material parameter
-		void add_multimaterial(const int index, const json &params) override;
+		void add_multimaterial(const int index, const json &params, const Units &units) override;
 
 		// class that stores and compute lame parameters per point
 		const LameParameters &lame_params() const { return params_; }
 		void set_params(const LameParameters &params) { params_ = params; }
+
+		void update_lame_params(const Eigen::MatrixXd &lambdas, const Eigen::MatrixXd &mus) override
+		{
+			params_.lambda_mat_ = lambdas;
+			params_.mu_mat_ = mus;
+		}
 
 		virtual bool is_linear() const override { return true; }
 
 		std::string name() const override { return "LinearElasticity"; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
-		void assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const override;
+		void assign_stress_tensor(const OutputData &data,
+								  const int all_size,
+								  const ElasticityTensorType &type,
+								  Eigen::MatrixXd &all,
+								  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const override;
 
 	private:
 		// class that stores and compute lame parameters per point
 		LameParameters params_;
-
-		void compute_dstress_dgradu_multiply_mat(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &mat, Eigen::MatrixXd &stress, Eigen::MatrixXd &result) const;
-		void compute_dstress_dmu_dlambda(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, Eigen::MatrixXd &dstress_dmu, Eigen::MatrixXd &dstress_dlambda) const;
 
 		// aux function that computes energy
 		// double compute_energy is the same with T=double

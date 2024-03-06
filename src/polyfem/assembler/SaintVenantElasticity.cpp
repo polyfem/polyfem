@@ -23,7 +23,7 @@ namespace polyfem::assembler
 	{
 	}
 
-	void SaintVenantElasticity::add_multimaterial(const int index, const json &params)
+	void SaintVenantElasticity::add_multimaterial(const int index, const json &params, const Units &units)
 	{
 		assert(size() == 2 || size() == 3);
 
@@ -32,23 +32,23 @@ namespace polyfem::assembler
 			if (params.count("young"))
 			{
 				if (params["young"].is_number() && params["nu"].is_number())
-					elasticity_tensor_.set_from_young_poisson(params["young"], params["nu"]);
+					elasticity_tensor_.set_from_young_poisson(params["young"], params["nu"], units.stress());
 			}
 			else if (params.count("E"))
 			{
 				if (params["E"].is_number() && params["nu"].is_number())
-					elasticity_tensor_.set_from_young_poisson(params["E"], params["nu"]);
+					elasticity_tensor_.set_from_young_poisson(params["E"], params["nu"], units.stress());
 			}
 			else if (params.count("lambda"))
 			{
 				if (params["lambda"].is_number() && params["mu"].is_number())
-					elasticity_tensor_.set_from_lambda_mu(params["lambda"], params["mu"]);
+					elasticity_tensor_.set_from_lambda_mu(params["lambda"], params["mu"], units.stress());
 			}
 		}
 		else
 		{
 			std::vector<double> entries = params["elasticity_tensor"];
-			elasticity_tensor_.set_from_entries(entries);
+			elasticity_tensor_.set_from_entries(entries, units.stress());
 		}
 	}
 
@@ -127,8 +127,20 @@ namespace polyfem::assembler
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>>(data); });
 	}
 
-	void SaintVenantElasticity::assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+	void SaintVenantElasticity::assign_stress_tensor(
+		const OutputData &data,
+		const int all_size,
+		const ElasticityTensorType &type,
+		Eigen::MatrixXd &all,
+		const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
+		const auto &displacement = data.fun;
+		const auto &local_pts = data.local_pts;
+		const auto &bs = data.bs;
+		const auto &gbs = data.gbs;
+		const auto el_id = data.el_id;
+		const auto t = data.t;
+
 		Eigen::MatrixXd displacement_grad(size(), size());
 
 		assert(displacement.cols() == 1);

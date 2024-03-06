@@ -9,21 +9,23 @@ namespace polyfem::assembler
 	class Mass : public LinearAssembler
 	{
 	public:
-		using Assembler::assemble;
+		using LinearAssembler::assemble;
 
-		// computes local stiffness matrix (1x1) for bases i,j
+		/// computes and returns local stiffness matrix (1x1) for
+		/// bases i,j (where i,j is passed in through data)
+		/// ie integral of phi_i * phi_j on the given element
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 		assemble(const LinearAssemblerData &data) const override;
 
-		// uses autodiff to compute the rhs for a fabricated solution
-		// in this case it just return pt.getHessian().trace()
-		// pt is the evaluation of the solution at a point
+		/// uses autodiff to compute the rhs for a fabricated solution
+		/// in this case it just return pt.getHessian().trace()
+		/// pt is the evaluation of the solution at a point
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> compute_rhs(const AutodiffHessianPt &pt) const override;
 
-		// inialize material parameter
-		void add_multimaterial(const int index, const json &params) override;
+		/// inialize material parameter
+		void add_multimaterial(const int index, const json &params, const Units &units) override;
 
-		// class that stores and compute density per point
+		/// class that stores and compute density per point
 		const Density &density() const { return density_; }
 
 		std::string name() const override { return "Mass"; }

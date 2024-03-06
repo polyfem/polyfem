@@ -221,6 +221,12 @@ namespace polyfem
 
 			void refine(const int n_refinement, const double t) override;
 
+			bool save(const std::string &path) const override
+			{
+				// TODO
+				return false;
+			}
+
 			bool build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F) override;
 
 			void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) override;
@@ -296,6 +302,8 @@ namespace polyfem
 			void build_index_mapping();
 
 			void append(const Mesh &mesh) override;
+
+			std::unique_ptr<Mesh> copy() const override;
 
 		private:
 			struct ArrayHasher2D

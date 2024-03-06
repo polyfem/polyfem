@@ -20,6 +20,16 @@
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/forms/BodyForm.hpp>
+#include <polyfem/solver/forms/BodyForm.hpp>
+#include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/ElasticForm.hpp>
+#include <polyfem/solver/forms/FrictionForm.hpp>
+#include <polyfem/solver/forms/InertiaForm.hpp>
+#include <polyfem/solver/forms/LaggedRegForm.hpp>
+#include <polyfem/solver/forms/RayleighDampingForm.hpp>
+#include <polyfem/solver/forms/BCLagrangianForm.hpp>
+#include <polyfem/solver/forms/BCPenaltyForm.hpp>
 
 #include <polyfem/utils/EdgeSampler.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -27,6 +37,7 @@
 #include <polyfem/utils/BoundarySampler.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/utils/getRSS.h>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
@@ -34,7 +45,7 @@
 #include <paraviewo/VTMWriter.hpp>
 #include <paraviewo/PVDWriter.hpp>
 
-#include <BVH.hpp>
+#include <SimpleBVH/BVH.hpp>
 
 #include <igl/write_triangle_mesh.h>
 #include <igl/edges.h>
@@ -45,15 +56,12 @@
 
 #include <filesystem>
 
-extern "C" size_t getPeakRSS();
-
 namespace polyfem::io
 {
 	namespace
 	{
-		void compute_traction_forces(const State &state, const Eigen::MatrixXd &solution, Eigen::MatrixXd &traction_forces, bool skip_dirichlet = true)
+		void compute_traction_forces(const State &state, const Eigen::MatrixXd &solution, const double t, Eigen::MatrixXd &traction_forces, bool skip_dirichlet = true)
 		{
-
 			int actual_dim = 1;
 			if (!state.problem->is_scalar())
 				actual_dim = state.mesh->dimension();
@@ -91,7 +99,7 @@ namespace polyfem::io
 				}
 
 				std::vector<assembler::Assembler::NamedMatrix> tensor_flat;
-				state.assembler->compute_tensor_value(e, bs, gbs, points, solution, tensor_flat);
+				state.assembler->compute_tensor_value(assembler::OutputData(t, e, bs, gbs, points, solution), tensor_flat);
 
 				for (long n = 0; n < vals.basis_values.size(); ++n)
 				{
@@ -150,7 +158,7 @@ namespace polyfem::io
 				{
 					const int eid = lb.global_primitive_id(j);
 					const int lid = lb[j];
-					const auto nodes = b.local_nodes_for_primitive(eid, mesh3d);
+					const Eigen::VectorXi nodes = b.local_nodes_for_primitive(eid, mesh3d);
 
 					if (mesh.is_cube(lb.element_id()))
 					{
@@ -229,8 +237,8 @@ namespace polyfem::io
 
 					for (long n = 0; n < nodes.size(); ++n)
 					{
-						auto &bs = b.bases[nodes(n)];
-						const auto &glob = bs.global();
+						const basis::Basis &bs = b.bases[nodes(n)];
+						const std::vector<basis::Local2Global> &glob = bs.global();
 						if (glob.size() != 1)
 							continue;
 
@@ -283,7 +291,6 @@ namespace polyfem::io
 					}
 					else
 					{
-
 						print_warning << loc_nodes.size() << " ";
 						// assert(false);
 					}
@@ -323,28 +330,27 @@ namespace polyfem::io
 
 			std::vector<std::pair<int, int>> edges;
 
-			for (auto it = total_local_boundary.begin(); it != total_local_boundary.end(); ++it)
+			for (const LocalBoundary &lb : total_local_boundary)
 			{
-				const auto &lb = *it;
 				const basis::ElementBases &b = bases[lb.element_id()];
 
 				for (int j = 0; j < lb.size(); ++j)
 				{
 					const int eid = lb.global_primitive_id(j);
 					const int lid = lb[j];
-					const auto nodes = b.local_nodes_for_primitive(eid, mesh2d);
+					const Eigen::VectorXi nodes = b.local_nodes_for_primitive(eid, mesh2d);
 
 					int prev_node = -1;
 
 					for (long n = 0; n < nodes.size(); ++n)
 					{
-						auto &bs = b.bases[nodes(n)];
-						const auto &glob = bs.global();
+						const basis::Basis &bs = b.bases[nodes(n)];
+						const std::vector<basis::Local2Global> &glob = bs.global();
 						if (glob.size() != 1)
 							continue;
 
 						int gindex = glob.front().index;
-						node_positions.row(gindex) << glob.front().node(0), glob.front().node(1);
+						node_positions.row(gindex) = glob.front().node.head<2>();
 
 						if (prev_node >= 0)
 							edges.emplace_back(prev_node, gindex);
@@ -939,11 +945,11 @@ namespace polyfem::io
 			logger().error("Build the bases first!");
 			return;
 		}
-		if (rhs.size() <= 0)
-		{
-			logger().error("Assemble the rhs first!");
-			return;
-		}
+		// if (rhs.size() <= 0)
+		// {
+		// 	logger().error("Assemble the rhs first!");
+		// 	return;
+		// }
 		if (sol.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -1027,7 +1033,7 @@ namespace polyfem::io
 			Evaluator::compute_stress_at_quadrature_points(
 				mesh, problem.is_scalar(),
 				bases, gbases, state.disc_orders, *state.assembler,
-				sol, result, mises);
+				sol, tend, result, mises);
 			std::ofstream out(stress_path);
 			out.precision(20);
 			out << result;
@@ -1039,7 +1045,7 @@ namespace polyfem::io
 			Evaluator::compute_stress_at_quadrature_points(
 				mesh, problem.is_scalar(),
 				bases, gbases, state.disc_orders, *state.assembler,
-				sol, result, mises);
+				sol, tend, result, mises);
 			std::ofstream out(mises_path);
 			out.precision(20);
 			out << mises;
@@ -1062,6 +1068,12 @@ namespace polyfem::io
 		sol_on_grid = args["output"]["advanced"]["sol_on_grid"] > 0;
 		velocity = args["output"]["paraview"]["options"]["velocity"];
 		acceleration = args["output"]["paraview"]["options"]["acceleration"];
+		forces = args["output"]["paraview"]["options"]["forces"] && !is_problem_scalar;
+
+		scalar_values = args["output"]["paraview"]["options"]["scalar_values"];
+		tensor_values = args["output"]["paraview"]["options"]["tensor_values"] && !is_problem_scalar;
+		discretization_order = args["output"]["paraview"]["options"]["discretization_order"] && !is_problem_scalar;
+		nodes = args["output"]["paraview"]["options"]["nodes"] && !is_problem_scalar;
 
 		use_spline = args["space"]["basis_type"] == "Spline";
 
@@ -1096,11 +1108,11 @@ namespace polyfem::io
 			logger().error("Build the bases first!");
 			return;
 		}
-		if (rhs.size() <= 0)
-		{
-			logger().error("Assemble the rhs first!");
-			return;
-		}
+		// if (rhs.size() <= 0)
+		// {
+		// 	logger().error("Assemble the rhs first!");
+		// 	return;
+		// }
 		if (sol.size() <= 0)
 		{
 			logger().error("Solve the problem first!");
@@ -1302,7 +1314,7 @@ namespace polyfem::io
 			tmpw = std::make_shared<paraviewo::VTUWriter>();
 		paraviewo::ParaviewWriter &writer = *tmpw;
 
-		if (opts.solve_export_to_file)
+		if (opts.solve_export_to_file && opts.nodes)
 			writer.add_field("nodes", node_fun);
 
 		if (problem.is_time_dependent())
@@ -1321,6 +1333,33 @@ namespace polyfem::io
 				const Eigen::VectorXd acceleration =
 					is_time_integrator_valid ? (time_integrator->a_prev()) : Eigen::VectorXd::Zero(sol.size());
 				save_volume_vector_field(state, points, opts, "acceleration", acceleration, writer);
+			}
+		}
+
+		if (opts.forces)
+		{
+			const double s = state.solve_data.time_integrator
+								 ? state.solve_data.time_integrator->acceleration_scaling()
+								 : 1;
+
+			for (const auto &[name, form] : state.solve_data.named_forms())
+			{
+				// NOTE: Assumes this form will be null for the entire sim
+				if (form == nullptr)
+					continue;
+
+				Eigen::VectorXd force;
+				if (form->enabled())
+				{
+					form->first_derivative(sol, force);
+					force *= -1.0 / s; // Divide by acceleration scaling to get units of force
+				}
+				else
+				{
+					force.setZero(sol.size());
+				}
+
+				save_volume_vector_field(state, points, opts, name + "_forces", force, writer);
 			}
 		}
 
@@ -1351,8 +1390,9 @@ namespace polyfem::io
 			discr.bottomRows(obstacle.n_vertices()).setZero();
 		}
 
-		if (opts.solve_export_to_file)
+		if (opts.solve_export_to_file && opts.discretization_order)
 			writer.add_field("discr", discr);
+
 		if (problem.has_exact_sol())
 		{
 			if (opts.solve_export_to_file)
@@ -1374,25 +1414,28 @@ namespace polyfem::io
 				mesh, problem.is_scalar(), bases, gbases,
 				state.disc_orders, state.polys, state.polys_3d,
 				*state.assembler,
-				ref_element_sampler, points.rows(), sol, vals, opts.use_sampler, opts.boundary_only);
+				ref_element_sampler, points.rows(), sol, t, vals, opts.use_sampler, opts.boundary_only);
 
 			for (auto &[_, v] : vals)
 				utils::append_rows_of_zeros(v, obstacle.n_vertices());
 
-			if (opts.solve_export_to_file)
+			if (opts.scalar_values)
 			{
-				for (const auto &[name, v] : vals)
-					writer.add_field(name, v);
+				if (opts.solve_export_to_file)
+				{
+					for (const auto &[name, v] : vals)
+						writer.add_field(name, v);
+				}
+				else if (vals.size() > 0)
+					solution_frames.back().scalar_value = vals[0].second;
 			}
-			else if (vals.size() > 0)
-				solution_frames.back().scalar_value = vals[0].second;
 
-			if (opts.solve_export_to_file)
+			if (opts.solve_export_to_file && opts.tensor_values)
 			{
 				Evaluator::compute_tensor_value(
 					mesh, problem.is_scalar(), bases, gbases, state.disc_orders,
 					state.polys, state.polys_3d, *state.assembler, ref_element_sampler,
-					points.rows(), sol, tvals, opts.use_sampler, opts.boundary_only);
+					points.rows(), sol, t, tvals, opts.use_sampler, opts.boundary_only);
 
 				for (auto &[_, v] : tvals)
 					utils::append_rows_of_zeros(v, obstacle.n_vertices());
@@ -1418,7 +1461,7 @@ namespace polyfem::io
 				Evaluator::average_grad_based_function(
 					mesh, problem.is_scalar(), state.n_bases, bases, gbases,
 					state.disc_orders, state.polys, state.polys_3d, *state.assembler,
-					ref_element_sampler, points.rows(), sol, vals, tvals,
+					ref_element_sampler, t, points.rows(), sol, vals, tvals,
 					opts.use_sampler, opts.boundary_only);
 
 				if (obstacle.n_vertices() > 0)
@@ -1430,13 +1473,16 @@ namespace polyfem::io
 					}
 				}
 
-				if (opts.solve_export_to_file)
+				if (opts.scalar_values)
 				{
-					for (const auto &v : vals)
-						writer.add_field(fmt::format("{:s}_avg", v.first), v.second);
+					if (opts.solve_export_to_file)
+					{
+						for (const auto &v : vals)
+							writer.add_field(fmt::format("{:s}_avg", v.first), v.second);
+					}
+					else if (vals.size() > 0)
+						solution_frames.back().scalar_value_avg = vals[0].second;
 				}
-				else if (vals.size() > 0)
-					solution_frames.back().scalar_value_avg = vals[0].second;
 				// for(int i = 0; i < tvals.cols(); ++i){
 				// 	const int ii = (i / mesh.dimension()) + 1;
 				// 	const int jj = (i % mesh.dimension()) + 1;
@@ -1517,7 +1563,7 @@ namespace polyfem::io
 					for (const auto &[p, func] : params)
 						param_val.at(p)(index) = func(local_pts.row(j), vals.val.row(j), t, e);
 
-					rhos(index) = density(local_pts.row(j), vals.val.row(j), e);
+					rhos(index) = density(local_pts.row(j), vals.val.row(j), t, e);
 
 					++index;
 				}
@@ -1563,9 +1609,10 @@ namespace polyfem::io
 		// interpolate_function(pts_index, rhs, fun, opts.boundary_only);
 		// writer.add_field("rhs", fun);
 
+		if (fun.cols() != 1)
 		{
 			Eigen::MatrixXd traction_forces, traction_forces_fun;
-			compute_traction_forces(state, sol, traction_forces, false);
+			compute_traction_forces(state, sol, t, traction_forces, false);
 
 			Evaluator::interpolate_function(
 				mesh, problem.is_scalar(), bases, state.disc_orders,
@@ -1575,28 +1622,35 @@ namespace polyfem::io
 			if (obstacle.n_vertices() > 0)
 			{
 				traction_forces_fun.conservativeResize(traction_forces_fun.rows() + obstacle.n_vertices(), traction_forces_fun.cols());
-				fun.bottomRows(obstacle.n_vertices()).setZero();
+				traction_forces_fun.bottomRows(obstacle.n_vertices()).setZero();
 			}
 
 			writer.add_field("traction_force", traction_forces_fun);
 		}
 
+		if (fun.cols() != 1)
 		{
-			Eigen::MatrixXd potential_grad, potential_grad_fun;
-			state.assembler->assemble_gradient(mesh.is_volume(), state.n_bases, bases, gbases, state.ass_vals_cache, dt, sol, sol, potential_grad);
-
-			Evaluator::interpolate_function(
-				mesh, problem.is_scalar(), bases, state.disc_orders,
-				state.polys, state.polys_3d, ref_element_sampler,
-				points.rows(), potential_grad, potential_grad_fun, opts.use_sampler, opts.boundary_only);
-
-			if (obstacle.n_vertices() > 0)
+			try
 			{
-				potential_grad_fun.conservativeResize(potential_grad_fun.rows() + obstacle.n_vertices(), potential_grad_fun.cols());
-				fun.bottomRows(obstacle.n_vertices()).setZero();
-			}
+				Eigen::MatrixXd potential_grad, potential_grad_fun;
+				state.assembler->assemble_gradient(mesh.is_volume(), state.n_bases, bases, gbases, state.ass_vals_cache, t, dt, sol, sol, potential_grad);
 
-			writer.add_field("gradient_of_potential", potential_grad_fun);
+				Evaluator::interpolate_function(
+					mesh, problem.is_scalar(), bases, state.disc_orders,
+					state.polys, state.polys_3d, ref_element_sampler,
+					points.rows(), potential_grad, potential_grad_fun, opts.use_sampler, opts.boundary_only);
+
+				if (obstacle.n_vertices() > 0)
+				{
+					potential_grad_fun.conservativeResize(potential_grad_fun.rows() + obstacle.n_vertices(), potential_grad_fun.cols());
+					potential_grad_fun.bottomRows(obstacle.n_vertices()).setZero();
+				}
+
+				writer.add_field("gradient_of_potential", potential_grad_fun);
+			}
+			catch (std::exception &)
+			{
+			}
 		}
 
 		// Write the solution last so it is the default for warp-by-vector
@@ -1779,13 +1833,13 @@ namespace polyfem::io
 				std::vector<assembler::Assembler::NamedMatrix> tensor_flat;
 				const basis::ElementBases &gbs = gbases[el_index];
 				const basis::ElementBases &bs = bases[el_index];
-				assembler.compute_tensor_value(el_index, bs, gbs, boundary_vis_local_vertices.row(i), sol, tensor_flat);
+				assembler.compute_tensor_value(assembler::OutputData(t, el_index, bs, gbs, boundary_vis_local_vertices.row(i), sol), tensor_flat);
 				// TF computed only from cauchy stress
 				assert(tensor_flat[0].first == "cauchy_stess");
 				assert(tensor_flat[0].second.size() == actual_dim * actual_dim);
 
 				Eigen::Map<Eigen::MatrixXd> tensor(tensor_flat[0].second.data(), actual_dim, actual_dim);
-				vect.row(i) = boundary_vis_normals.row(i) * tensor;
+				vect.row(i) = displaced_boundary_vis_normals.row(i) * tensor;
 
 				double area = 0;
 				if (mesh.is_volume())
@@ -1848,7 +1902,7 @@ namespace polyfem::io
 				for (const auto &[p, func] : params)
 					param_val.at(p)(i) = func(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), t, boundary_vis_elements_ids(i));
 
-				rhos(i) = density(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), boundary_vis_elements_ids(i));
+				rhos(i) = density(boundary_vis_local_vertices.row(i), boundary_vis_vertices.row(i), t, boundary_vis_elements_ids(i));
 			}
 
 			for (const auto &[p, tmp] : param_val)
@@ -1919,17 +1973,19 @@ namespace polyfem::io
 
 			const Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(full_displacements);
 
-			ipc::CollisionConstraints constraint_set;
-			constraint_set.set_use_convergent_formulation(state.args["contact"]["use_convergent_formulation"]);
-			constraint_set.build(
+			ipc::Collisions collision_set;
+			collision_set.set_use_convergent_formulation(state.args["contact"]["use_convergent_formulation"]);
+			collision_set.build(
 				collision_mesh, displaced_surface, dhat,
 				/*dmin=*/0, state.args["solver"]["contact"]["CCD"]["broad_phase"]);
 
-			const double barrier_stiffness = contact_form != nullptr ? contact_form->weight() : 1;
+			ipc::BarrierPotential barrier_potential(dhat);
+
+			const double barrier_stiffness = contact_form != nullptr ? contact_form->barrier_stiffness() : 1;
 
 			if (opts.contact_forces)
 			{
-				Eigen::MatrixXd forces = -barrier_stiffness * constraint_set.compute_potential_gradient(collision_mesh, displaced_surface, dhat);
+				Eigen::MatrixXd forces = -barrier_stiffness * barrier_potential.gradient(collision_set, collision_mesh, displaced_surface);
 
 				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
 
@@ -1940,10 +1996,12 @@ namespace polyfem::io
 
 			if (opts.friction_forces)
 			{
-				ipc::FrictionConstraints friction_constraint_set;
-				friction_constraint_set.build(
-					collision_mesh, displaced_surface, constraint_set,
-					dhat, barrier_stiffness, friction_coefficient);
+				ipc::FrictionCollisions friction_collision_set;
+				friction_collision_set.build(
+					collision_mesh, displaced_surface, collision_set,
+					barrier_potential, barrier_stiffness, friction_coefficient);
+
+				ipc::FrictionPotential friction_potential(epsv);
 
 				Eigen::MatrixXd velocities;
 				if (state.solve_data.time_integrator != nullptr)
@@ -1952,8 +2010,8 @@ namespace polyfem::io
 					velocities = sol;
 				velocities = collision_mesh.map_displacements(utils::unflatten(velocities, collision_mesh.dim()));
 
-				Eigen::MatrixXd forces = -friction_constraint_set.compute_potential_gradient(
-					collision_mesh, velocities, epsv);
+				Eigen::MatrixXd forces = -friction_potential.gradient(
+					friction_collision_set, collision_mesh, velocities);
 
 				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
 
@@ -2153,7 +2211,7 @@ namespace polyfem::io
 				mesh, problem.is_scalar(), state.bases, gbases,
 				state.disc_orders, state.polys, state.polys_3d,
 				*state.assembler,
-				ref_element_sampler, pts_index, sol, scalar_val, /*use_sampler*/ true, false);
+				ref_element_sampler, pts_index, sol, t, scalar_val, /*use_sampler*/ true, false);
 			for (const auto &v : scalar_val)
 				writer.add_field(v.first, v.second);
 		}
@@ -2275,7 +2333,7 @@ namespace polyfem::io
 		std::vector<std::array<Eigen::Vector3d, 2>> boxes;
 		mesh.elements_boxes(boxes);
 
-		BVH::BVH bvh;
+		SimpleBVH::BVH bvh;
 		bvh.init(boxes);
 
 		const double eps = 1e-6;
@@ -2827,6 +2885,74 @@ namespace polyfem::io
 		j["formulation"] = formulation;
 
 		logger().info("done");
+	}
+
+	EnergyCSVWriter::EnergyCSVWriter(const std::string &path, const solver::SolveData &solve_data)
+		: file(path), solve_data(solve_data)
+	{
+		file << "i,";
+		for (const auto &[name, _] : solve_data.named_forms())
+		{
+			file << name << ",";
+		}
+		file << "total_energy" << std::endl;
+	}
+
+	EnergyCSVWriter::~EnergyCSVWriter()
+	{
+		file.close();
+	}
+
+	void EnergyCSVWriter::write(const int i, const Eigen::MatrixXd &sol)
+	{
+		const double s = solve_data.time_integrator
+							 ? solve_data.time_integrator->acceleration_scaling()
+							 : 1;
+		file << i << ",";
+		for (const auto &[_, form] : solve_data.named_forms())
+		{
+			// Divide by acceleration scaling to get the energy (units of J)
+			file << ((form && form->enabled()) ? form->value(sol) : 0) / s << ",";
+		}
+		file << solve_data.nl_problem->value(sol) / s << "\n";
+		file.flush();
+	}
+
+	RuntimeStatsCSVWriter::RuntimeStatsCSVWriter(const std::string &path, const State &state, const double t0, const double dt)
+		: file(path), state(state), t0(t0), dt(dt)
+	{
+		file << "step,time,forward,remeshing,global_relaxation,peak_mem,#V,#T" << std::endl;
+	}
+
+	RuntimeStatsCSVWriter::~RuntimeStatsCSVWriter()
+	{
+		file.close();
+	}
+
+	void RuntimeStatsCSVWriter::write(const int t, const double forward, const double remeshing, const double global_relaxation, const Eigen::MatrixXd &sol)
+	{
+		total_forward_solve_time += forward;
+		total_remeshing_time += remeshing;
+		total_global_relaxation_time += global_relaxation;
+
+		// logger().debug(
+		// 	"Forward (cur, avg, total): {} s, {} s, {} s",
+		// 	forward, total_forward_solve_time / t, total_forward_solve_time);
+		// logger().debug(
+		// 	"Remeshing (cur, avg, total): {} s, {} s, {} s",
+		// 	remeshing, total_remeshing_time / t, total_remeshing_time);
+		// logger().debug(
+		// 	"Global relaxation (cur, avg, total): {} s, {} s, {} s",
+		// 	global_relaxation, total_global_relaxation_time / t, total_global_relaxation_time);
+
+		const double peak_mem = getPeakRSS() / double(1 << 30);
+		// logger().debug("Peak mem: {} GiB", peak_mem);
+
+		file << fmt::format(
+			"{},{},{},{},{},{},{},{}\n",
+			t, t0 + dt * t, forward, remeshing, global_relaxation, peak_mem,
+			state.n_bases, state.mesh->n_elements());
+		file.flush();
 	}
 
 } // namespace polyfem::io

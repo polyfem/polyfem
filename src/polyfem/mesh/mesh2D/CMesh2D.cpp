@@ -162,6 +162,14 @@ namespace polyfem
 			return true;
 		}
 
+		bool CMesh2D::save(const std::string &path) const
+		{
+			if (!mesh_save(mesh_, path))
+				return false;
+
+			return true;
+		}
+
 		bool CMesh2D::build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
 		{
 			edge_nodes_.clear();
@@ -317,6 +325,9 @@ namespace polyfem
 					assert(false);
 				}
 			}
+
+			if (orders_.maxCoeff() == 1)
+				orders_.resize(0, 0);
 		}
 
 		RowVectorNd CMesh2D::edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const
@@ -709,6 +720,29 @@ namespace polyfem
 			c2e_ = std::make_unique<GEO::Attribute<GEO::index_t>>(mesh_.facet_corners.attributes(), "edge_id");
 			boundary_vertices_ = std::make_unique<GEO::Attribute<bool>>(mesh_.vertices.attributes(), "boundary_vertex");
 			boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
+		}
+
+		std::unique_ptr<Mesh> CMesh2D::copy() const
+		{
+			std::unique_ptr<CMesh2D> copy_mesh = std::make_unique<CMesh2D>();
+			copy_mesh->load(this->mesh_);
+
+			// Manually copy parent's data
+			copy_mesh->elements_tag_ = this->elements_tag_;
+			copy_mesh->node_ids_ = this->node_ids_;
+			copy_mesh->boundary_ids_ = this->boundary_ids_;
+			copy_mesh->body_ids_ = this->body_ids_;
+			copy_mesh->orders_ = this->orders_;
+			copy_mesh->is_rational_ = this->is_rational_;
+			copy_mesh->edge_nodes_ = this->edge_nodes_;
+			copy_mesh->face_nodes_ = this->face_nodes_;
+			copy_mesh->cell_nodes_ = this->cell_nodes_;
+			copy_mesh->cell_weights_ = this->cell_weights_;
+			copy_mesh->in_ordered_vertices_ = this->in_ordered_vertices_;
+			copy_mesh->in_ordered_edges_ = this->in_ordered_edges_;
+			copy_mesh->in_ordered_faces_ = this->in_ordered_faces_;
+
+			return copy_mesh;
 		}
 	} // namespace mesh
 } // namespace polyfem

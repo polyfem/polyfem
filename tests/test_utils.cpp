@@ -5,6 +5,7 @@
 #include <polyfem/utils/ExpressionValue.hpp>
 #include <polyfem/io/MshReader.hpp>
 #include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #ifdef POLYFEM_WITH_REMESHING
 #include <wmtk/TriMesh.h>
@@ -12,7 +13,8 @@
 
 #include <Eigen/Dense>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
@@ -38,7 +40,7 @@ TEST_CASE("interpolated_fun_2d", "[utils]")
 	InterpolatedFunction2d i_fun(fun, pts, tri);
 	const auto res = i_fun.interpolate(pt);
 
-	REQUIRE((fun.colwise().mean() - res).norm() == Approx(0).margin(1e-10));
+	REQUIRE((fun.colwise().mean() - res).norm() == Catch::Approx(0).margin(1e-10));
 }
 
 TEST_CASE("rbf_interpolate", "[utils]")
@@ -68,21 +70,21 @@ TEST_CASE("rbf_interpolate", "[utils]")
 	expected << 0.516894154053909, 0.476058965730433, 0.435748570197800, 0.397220357669309, 0.362961970820606, 0.337549413480876, 0.327784652734946, 0.339982127556460, 0.374173324760153, 0.420108170328222, 0.460205192638323, 0.478147060651189, 0.467001601598498, 0.431400523024562, 0.383076112995277, 0.334107457785502, 0.292629952299549, 0.262190022964549, 0.243125356328612, 0.234186308102585;
 
 	for (int i = 0; i < 20; ++i)
-		REQUIRE(actual(i) == Approx(expected(i)).margin(1e-10));
+		REQUIRE(actual(i) == Catch::Approx(expected(i)).margin(1e-10));
 #endif
 }
 
 TEST_CASE("bessel", "[utils]")
 {
-	REQUIRE(bessy0(0.1) == Approx(-1.534238651350367).margin(1e-8));
-	REQUIRE(bessy0(1.) == Approx(0.088256964215677).margin(1e-8));
-	REQUIRE(bessy0(10.) == Approx(0.055671167283599).margin(1e-8));
-	REQUIRE(bessy0(100.) == Approx(-0.077244313365083).margin(1e-8));
+	REQUIRE(bessy0(0.1) == Catch::Approx(-1.534238651350367).margin(1e-8));
+	REQUIRE(bessy0(1.) == Catch::Approx(0.088256964215677).margin(1e-8));
+	REQUIRE(bessy0(10.) == Catch::Approx(0.055671167283599).margin(1e-8));
+	REQUIRE(bessy0(100.) == Catch::Approx(-0.077244313365083).margin(1e-8));
 
-	REQUIRE(bessy1(0.1) == Approx(-6.458951094702027).margin(1e-8));
-	REQUIRE(bessy1(1.) == Approx(-0.781212821300289).margin(1e-8));
-	REQUIRE(bessy1(10.) == Approx(0.249015424206954).margin(1e-8));
-	REQUIRE(bessy1(100.) == Approx(-0.020372312002760).margin(1e-8));
+	REQUIRE(bessy1(0.1) == Catch::Approx(-6.458951094702027).margin(1e-8));
+	REQUIRE(bessy1(1.) == Catch::Approx(-0.781212821300289).margin(1e-8));
+	REQUIRE(bessy1(10.) == Catch::Approx(0.249015424206954).margin(1e-8));
+	REQUIRE(bessy1(100.) == Catch::Approx(-0.020372312002760).margin(1e-8));
 }
 
 TEST_CASE("expression", "[utils]")
@@ -98,9 +100,13 @@ TEST_CASE("expression", "[utils]")
 	utils::ExpressionValue val;
 	val.init(jval["value"]);
 
-	REQUIRE(expr(2, 3, 4) == Approx(2. * 2. + sqrt(2. * 3.) + sin(4.) * 2.).margin(1e-10));
-	REQUIRE(expr2d(2, 3) == Approx(2. * 2. + sqrt(2. * 3.)).margin(1e-10));
-	REQUIRE(val(2, 3, 4) == Approx(1).margin(1e-16));
+	expr.set_unit_type("");
+	expr2d.set_unit_type("");
+	val.set_unit_type("");
+
+	REQUIRE(expr(2, 3, 4) == Catch::Approx(2. * 2. + sqrt(2. * 3.) + sin(4.) * 2.).margin(1e-10));
+	REQUIRE(expr2d(2, 3) == Catch::Approx(2. * 2. + sqrt(2. * 3.)).margin(1e-10));
+	REQUIRE(val(2, 3, 4) == Catch::Approx(1).margin(1e-16));
 }
 
 TEST_CASE("mshreader", "[utils]")
@@ -110,6 +116,20 @@ TEST_CASE("mshreader", "[utils]")
 	Eigen::MatrixXi cells;
 	const auto mesh = Mesh::create(path + "/circle2.msh");
 	REQUIRE(mesh);
+}
+
+TEST_CASE("inverse", "[utils]")
+{
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat = Eigen::MatrixXd::Random(1, 1);
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat2 = Eigen::MatrixXd::Random(2, 2);
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat3 = Eigen::MatrixXd::Random(3, 3);
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat_inv = mat.inverse();
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat2_inv = mat2.inverse();
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat3_inv = mat3.inverse();
+
+	REQUIRE(((utils::inverse(mat) - mat_inv)).norm() == Catch::Approx(0).margin(1e-12));
+	REQUIRE(((utils::inverse(mat2) - mat2_inv)).norm() == Catch::Approx(0).margin(1e-12));
+	REQUIRE(((utils::inverse(mat3) - mat3_inv)).norm() == Catch::Approx(0).margin(1e-12));
 }
 
 #ifdef POLYFEM_WITH_REMESHING

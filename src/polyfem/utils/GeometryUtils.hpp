@@ -1,5 +1,7 @@
 #pragma once
 
+#include <polyfem/utils/Types.hpp>
+
 #include <Eigen/Core>
 
 namespace polyfem::utils
@@ -154,10 +156,10 @@ namespace polyfem::utils
 	/// @param tol Tolerance for collinearity.
 	/// @return True if the edges are collinear, false otherwise.
 	bool are_edges_collinear(
-		const Eigen::VectorXd &ea0,
-		const Eigen::VectorXd &ea1,
-		const Eigen::VectorXd &eb0,
-		const Eigen::VectorXd &eb1,
+		const VectorNd &ea0,
+		const VectorNd &ea1,
+		const VectorNd &eb0,
+		const VectorNd &eb1,
 		const double tol = 1e-10);
 
 	/// @brief Determine if two triangles are coplanar.
@@ -177,4 +179,16 @@ namespace polyfem::utils
 		const Eigen::Vector3d &t11,
 		const Eigen::Vector3d &t12,
 		const double tol = 1e-10);
+
+	/// @brief Determine if two axis-aligned bounding boxes intersect.
+	/// @param aabb0_min Minimum corner of the first AABB.
+	/// @param aabb0_max Maximum corner of the first AABB.
+	/// @param aabb1_min Minimum corner of the second AABB.
+	/// @param aabb1_max Maximum corner of the second AABB.
+	/// @return True if the AABBs intersect, false otherwise.
+	bool are_aabbs_intersecting(
+		const VectorNd &aabb0_min,
+		const VectorNd &aabb0_max,
+		const VectorNd &aabb1_min,
+		const VectorNd &aabb1_max);
 } // namespace polyfem::utils

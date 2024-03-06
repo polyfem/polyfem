@@ -10,7 +10,7 @@
 #include <polyfem/problem/ProblemFactory.hpp>
 #include <polyfem/Common.hpp>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 #include <iostream>
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -107,13 +107,15 @@ TEST_CASE("franke 2d", "[problem]")
 		Eigen::MatrixXd rhs = 243. / 4. * (-0.25 * cx2 - 0.25 * cy2).exp() - 0.75 * s1 * (-0.25 * cx2 - 0.25 * cy2).exp() + 36693. / 19600. * (-1. / 49. * cx1 - 0.9 * y - 0.1).exp() - 0.75 * s2 * (-1. / 49 * cx1 - 0.9 * y - 0.1).exp() + 40.5 * (-0.25 * cx7 - 0.25 * cy3).exp() - 0.5 * s3 * (-0.25 * cx7 - 0.25 * cy3).exp() - 324. / 5. * (-cx4 - cy7).exp() + 0.2 * s4 * (-cx4 - cy7).exp() - 0.75 * s5 * (-0.25 * cx2 - 0.25 * cy2).exp() - 0.5 * s6 * (-0.25 * cx7 - 0.25 * cy3).exp() + 0.2 * s7 * (-cx4 - cy7).exp();
 		rhs *= -1;
 
+		Units units;
+
 		Helmholtz helmholtz;
 		helmholtz.set_size(2);
-		helmholtz.add_multimaterial(0, params);
+		helmholtz.add_multimaterial(0, params, units);
 
 		Laplacian laplacian;
 		laplacian.set_size(2);
-		laplacian.add_multimaterial(0, params);
+		laplacian.add_multimaterial(0, params, units);
 
 		probl->rhs(laplacian, pts, 1, other);
 		Eigen::MatrixXd diff = (other - rhs);
@@ -191,13 +193,15 @@ TEST_CASE("franke 3d", "[problem]")
 		Eigen::MatrixXd rhs = (787648050 * x * x + 787648050 * y * y + 787648050 * z * z - 1225230300 * x - 525098700 * y - 875164500 * z + 748751850) * exp(-0.81e2 / 0.4e1 * x * x + 0.63e2 / 0.2e1 * x - 0.83e2 / 0.4e1 - 0.81e2 / 0.4e1 * y * y + 0.27e2 / 0.2e1 * y - 0.81e2 / 0.4e1 * z * z + 0.45e2 / 0.2e1 * z) / 0.960400e6 + (1181472075 * x * x + 1181472075 * y * y + 1181472075 * z * z - 525098700 * x - 525098700 * y - 525098700 * z + 87516450) * exp(-0.81e2 / 0.4e1 * x * x + (9 * x) - 0.3e1 - 0.81e2 / 0.4e1 * y * y + (9 * y) - 0.81e2 / 0.4e1 * z * z + (9 * z)) / 0.960400e6 + (-5040947520 * x * x - 5040947520 * y * y - 5040947520 * z * z + 4480842240 * x + 7841473920 * y + 5601052800 * z - 5507701920) * exp((-81 * x * x - 81 * y * y - 81 * z * z + 72 * x + 126 * y + 90 * z - 90)) / 0.960400e6 + 0.19683e5 / 0.2401e4 * exp(-0.81e2 / 0.49e2 * x * x - 0.18e2 / 0.49e2 * x - 0.54e2 / 0.245e3 - 0.9e1 / 0.10e2 * y - 0.9e1 / 0.10e2 * z) * ((x * x) + 0.2e1 / 0.9e1 * x - 0.2299e4 / 0.16200e5);
 		// rhs*=-1;
 
+		Units units;
+
 		Helmholtz helmholtz;
 		helmholtz.set_size(3);
-		helmholtz.add_multimaterial(0, params);
+		helmholtz.add_multimaterial(0, params, units);
 
 		Laplacian laplacian;
 		laplacian.set_size(3);
-		laplacian.add_multimaterial(0, params);
+		laplacian.add_multimaterial(0, params, units);
 
 		probl->rhs(laplacian, pts, 1, other);
 		Eigen::MatrixXd diff = (other - rhs);
@@ -248,13 +252,15 @@ TEST_CASE("linear", "[problem]")
 		REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
 	}
 
+	Units units;
+
 	Helmholtz helmholtz;
 	helmholtz.set_size(2);
-	helmholtz.add_multimaterial(0, params);
+	helmholtz.add_multimaterial(0, params, units);
 
 	Laplacian laplacian;
 	laplacian.set_size(2);
-	laplacian.add_multimaterial(0, params);
+	laplacian.add_multimaterial(0, params, units);
 
 	{
 		Eigen::MatrixXd rhs = x;
@@ -312,13 +318,15 @@ TEST_CASE("quadratic", "[problem]")
 		REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
 	}
 
+	Units units;
+
 	Helmholtz helmholtz;
 	helmholtz.set_size(2);
-	helmholtz.add_multimaterial(0, params);
+	helmholtz.add_multimaterial(0, params, units);
 
 	Laplacian laplacian;
 	laplacian.set_size(2);
-	laplacian.add_multimaterial(0, params);
+	laplacian.add_multimaterial(0, params, units);
 
 	{
 		Eigen::MatrixXd rhs = x;
@@ -360,9 +368,11 @@ TEST_CASE("zero bc 2d", "[problem]")
 		REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
 	}
 
+	Units units;
+
 	Laplacian laplacian;
 	laplacian.set_size(2);
-	laplacian.add_multimaterial(0, params);
+	laplacian.add_multimaterial(0, params, units);
 
 	{
 		Eigen::MatrixXd rhs = -4 * x * y * (1 - y) * (1 - y) + 2 * (1 - x) * y * (1 - y) * (1 - y) - 4 * (1 - x) * x * x * (1 - y) + 2 * (1 - x) * x * x * y;
@@ -394,10 +404,11 @@ TEST_CASE("zero bc 3d", "[problem]")
 
 		REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
 	}
+	Units units;
 
 	Laplacian laplacian;
 	laplacian.set_size(3);
-	laplacian.add_multimaterial(0, params);
+	laplacian.add_multimaterial(0, params, units);
 
 	{
 		Eigen::MatrixXd rhs = (0.2e1 * pow(x, 0.3e1) - 0.2e1 * x * x + (6 * z * z - 6 * z) * x - (2 * z * z) + (2 * z)) * pow(y, 0.3e1) + (-0.4e1 * pow(x, 0.3e1) + 0.4e1 * x * x + (-12 * z * z + 12 * z) * x + (4 * z * z) - (4 * z)) * y * y + ((6 * z * z - 6 * z + 2) * pow(x, 0.3e1) + (-6 * z * z + 6 * z - 2) * x * x + (6 * z * z - 6 * z) * x - (2 * z * z) + (2 * z)) * y - 0.4e1 * x * x * z * (z - 1) * (x - 0.1e1);
@@ -431,22 +442,23 @@ TEST_CASE("elasticity 2d", "[problem]")
 
 		REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
 	}
+	Units units;
 
 	LinearElasticity le;
 	le.set_size(2);
-	le.add_multimaterial(0, params);
+	le.add_multimaterial(0, params, units);
 
 	HookeLinearElasticity ho;
 	ho.set_size(2);
-	ho.add_multimaterial(0, params);
+	ho.add_multimaterial(0, params, units);
 
 	SaintVenantElasticity sv;
 	sv.set_size(2);
-	sv.add_multimaterial(0, params);
+	sv.add_multimaterial(0, params, units);
 
 	NeoHookeanElasticity nh;
 	nh.set_size(2);
-	nh.add_multimaterial(0, params);
+	nh.add_multimaterial(0, params, units);
 
 	// rhs
 	{
@@ -516,17 +528,19 @@ TEST_CASE("elasticity 3d", "[problem]")
 		REQUIRE(diff.array().abs().maxCoeff() < 1e-10);
 	}
 
+	Units units;
+
 	LinearElasticity le;
 	le.set_size(3);
-	le.add_multimaterial(0, params);
+	le.add_multimaterial(0, params, units);
 
 	HookeLinearElasticity ho;
 	ho.set_size(3);
-	ho.add_multimaterial(0, params);
+	ho.add_multimaterial(0, params, units);
 
 	SaintVenantElasticity sv;
 	sv.set_size(3);
-	sv.add_multimaterial(0, params);
+	sv.add_multimaterial(0, params, units);
 
 	// rhs
 	{

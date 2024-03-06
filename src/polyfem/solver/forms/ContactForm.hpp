@@ -5,9 +5,10 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/Types.hpp>
 
-#include <ipc/collisions/collision_constraints.hpp>
+#include <ipc/collisions/collisions.hpp>
 #include <ipc/collision_mesh.hpp>
 #include <ipc/broad_phase/broad_phase.hpp>
+#include <ipc/potentials/barrier_potential.hpp>
 
 // map BroadPhaseMethod values to JSON as strings
 namespace ipc
@@ -20,10 +21,12 @@ namespace ipc
 		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
 		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
 		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
+		 {ipc::BroadPhaseMethod::BVH, "bvh"},
+		 {ipc::BroadPhaseMethod::BVH, "BVH"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_PRUNE, "sweep_and_prune"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_PRUNE, "SAP"},
 		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "sweep_and_tiniest_queue_gpu"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "STQ_GPU"}})
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"}})
 } // namespace ipc
 
 namespace polyfem::solver
@@ -47,29 +50,39 @@ namespace polyfem::solver
 					const bool use_convergent_formulation,
 					const bool use_adaptive_barrier_stiffness,
 					const bool is_time_dependent,
+					const bool enable_shape_derivatives,
 					const ipc::BroadPhaseMethod broad_phase_method,
 					const double ccd_tolerance,
 					const int ccd_max_iterations);
+
+		std::string name() const override { return "contact"; }
 
 		/// @brief Initialize the form
 		/// @param x Current solution
 		void init(const Eigen::VectorXd &x) override;
 
+		virtual void force_shape_derivative(const ipc::Collisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term);
+
 	protected:
 		/// @brief Compute the contact barrier potential value
 		/// @param x Current solution
 		/// @return Value of the contact barrier potential
-		double value_unweighted(const Eigen::VectorXd &x) const override;
+		virtual double value_unweighted(const Eigen::VectorXd &x) const override;
+
+		/// @brief Compute the value of the form multiplied per element
+		/// @param x Current solution
+		/// @return Computed value
+		Eigen::VectorXd value_per_element_unweighted(const Eigen::VectorXd &x) const override;
 
 		/// @brief Compute the first derivative of the value wrt x
 		/// @param[in] x Current solution
 		/// @param[out] gradv Output gradient of the value wrt x
-		void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 		/// @brief Compute the second derivative of the value wrt x
 		/// @param x Current solution
 		/// @param hessian Output Hessian of the value wrt x
-		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
+		virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
 	public:
 		/// @brief Update time-dependent fields
@@ -98,7 +111,7 @@ namespace polyfem::solver
 		/// @brief Update fields after a step in the optimization
 		/// @param iter_num Optimization iteration number
 		/// @param x Current solution
-		void post_step(const int iter_num, const Eigen::VectorXd &x) override;
+		void post_step(const polysolve::nonlinear::PostStepData &data) override;
 
 		/// @brief Checks if the step is collision free
 		/// @return True if the step is collision free else false
@@ -106,7 +119,7 @@ namespace polyfem::solver
 
 		/// @brief Update the barrier stiffness based on the current elasticity energy
 		/// @param x Current solution
-		void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy);
+		virtual void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy);
 
 		/// @brief Compute the displaced positions of the surface nodes
 		Eigen::MatrixXd compute_displaced_surface(const Eigen::VectorXd &x) const;
@@ -118,17 +131,23 @@ namespace polyfem::solver
 		/// @brief Get use_adaptive_barrier_stiffness
 		bool use_adaptive_barrier_stiffness() const { return use_adaptive_barrier_stiffness_; }
 		/// @brief Get use_convergent_formulation
-		bool use_convergent_formulation() const { return constraint_set_.use_convergent_formulation(); }
+		bool use_convergent_formulation() const { return collision_set_.use_convergent_formulation(); }
+
+		bool enable_shape_derivatives() const { return enable_shape_derivatives_; }
 
 		double weight() const override { return weight_ * barrier_stiffness_; }
 
 		/// @brief If true, output debug files
 		bool save_ccd_debug_meshes = false;
 
-	private:
+		double dhat() const { return dhat_; }
+		const ipc::Collisions &collision_set() const { return collision_set_; }
+		const ipc::BarrierPotential &barrier_potential() const { return barrier_potential_; }
+
+	protected:
 		/// @brief Update the cached candidate set for the current solution
 		/// @param displaced_surface Vertex positions displaced by the current solution
-		void update_constraint_set(const Eigen::MatrixXd &displaced_surface);
+		void update_collision_set(const Eigen::MatrixXd &displaced_surface);
 
 		/// @brief Collision mesh
 		const ipc::CollisionMesh &collision_mesh_;
@@ -152,6 +171,9 @@ namespace polyfem::solver
 		/// @brief Is the simulation time dependent?
 		const bool is_time_dependent_;
 
+		/// @brief Enable shape derivatives computation
+		const bool enable_shape_derivatives_;
+
 		/// @brief Broad phase method to use for distance and CCD evaluations
 		const ipc::BroadPhaseMethod broad_phase_method_;
 		/// @brief Continuous collision detection tolerance
@@ -165,8 +187,10 @@ namespace polyfem::solver
 		/// @brief If true, use the cached candidate set for the current solution
 		bool use_cached_candidates_ = false;
 		/// @brief Cached constraint set for the current solution
-		ipc::CollisionConstraints constraint_set_;
+		ipc::Collisions collision_set_;
 		/// @brief Cached candidate set for the current solution
 		ipc::Candidates candidates_;
+
+		const ipc::BarrierPotential barrier_potential_;
 	};
 } // namespace polyfem::solver

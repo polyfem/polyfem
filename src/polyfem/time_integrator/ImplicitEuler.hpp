@@ -56,6 +56,13 @@ namespace polyfem::time_integrator
 		/// \f[
 		/// 	\frac{\partial v}{\partial x} = \frac{1}{\Delta t}
 		/// \f]
-		double dv_dx() const override;
+		/// \f[
+		/// 	\frac{\partial v}{\partial x^t} = \frac{-1}{\Delta t}
+		/// \f]
+		/// \f[
+		/// 	\frac{\partial v}{\partial x^{t-1}} = 0
+		/// \f]
+		/// @param prev_ti index of the previous solution to use (0 -> current; 1 -> previous; 2 -> second previous; etc.)
+		double dv_dx(const unsigned prev_ti = 0) const override;
 	};
 } // namespace polyfem::time_integrator

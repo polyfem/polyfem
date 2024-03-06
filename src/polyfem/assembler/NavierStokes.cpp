@@ -3,14 +3,16 @@
 namespace polyfem::assembler
 {
 
-	void NavierStokesVelocity::add_multimaterial(const int index, const json &params)
+	NavierStokesVelocity::NavierStokesVelocity()
+		: viscosity_("viscosity")
+	{
+	}
+
+	void NavierStokesVelocity::add_multimaterial(const int index, const json &params, const Units &units)
 	{
 		assert(size() == 2 || size() == 3);
 
-		if (params.count("viscosity"))
-		{
-			viscosity_ = params["viscosity"];
-		}
+		viscosity_.add_multimaterial(index, params, units.viscosity());
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
@@ -23,9 +25,10 @@ namespace polyfem::assembler
 		for (int d = 0; d < size(); ++d)
 			val(d) = pt(d).getValue();
 
+		const auto nu = viscosity_(val, 0, 0);
 		for (int d = 0; d < size(); ++d)
 		{
-			res(d) = -val.dot(pt(d).getGradient()) + viscosity_ * pt(d).getHessian().trace();
+			res(d) = -val.dot(pt(d).getGradient()) + nu * pt(d).getHessian().trace();
 		}
 
 		return res;
@@ -213,8 +216,12 @@ namespace polyfem::assembler
 	std::map<std::string, Assembler::ParamFunc> NavierStokesVelocity::parameters() const
 	{
 		std::map<std::string, ParamFunc> res;
-		res["k"] = [this](const RowVectorNd &, const RowVectorNd &, double, int) { return this->viscosity_; };
+		const auto &nu = viscosity_;
+		res["viscosity"] = [&nu](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+			return nu(p, t, e);
+		};
 
+		return res;
 		return res;
 	}
 } // namespace polyfem::assembler

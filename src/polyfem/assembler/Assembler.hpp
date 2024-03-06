@@ -1,9 +1,11 @@
 #pragma once
 
+#include <polyfem/Units.hpp>
+
 #include <polyfem/assembler/AssemblerData.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 
-#include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/MatrixCache.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -30,6 +32,7 @@ namespace polyfem::assembler
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &psi_cache,
 			const AssemblyValsCache &phi_cache,
+			const double t,
 			StiffnessMatrix &stiffness) const;
 
 		virtual std::string name() const = 0;
@@ -46,6 +49,7 @@ namespace polyfem::assembler
 		virtual Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> assemble(const MixedAssemblerData &data) const = 0;
 	};
 
+	/// abstract class
 	class Assembler
 	{
 	public:
@@ -67,6 +71,7 @@ namespace polyfem::assembler
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &cache,
+			const double t,
 			StiffnessMatrix &stiffness,
 			const bool is_mass = false) const { log_and_throw_error("Assembler not implemented by {}!", name()); }
 
@@ -76,6 +81,17 @@ namespace polyfem::assembler
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &cache,
+			const double t,
+			const double dt,
+			const Eigen::MatrixXd &displacement,
+			const Eigen::MatrixXd &displacement_prev) const { log_and_throw_error("Assemble energy not implemented by {}!", name()); }
+
+		virtual Eigen::VectorXd assemble_energy_per_element(
+			const bool is_volume,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const double t,
 			const double dt,
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev) const { log_and_throw_error("Assemble energy not implemented by {}!", name()); }
@@ -87,6 +103,7 @@ namespace polyfem::assembler
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &cache,
+			const double t,
 			const double dt,
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev,
@@ -100,37 +117,82 @@ namespace polyfem::assembler
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &cache,
+			const double t,
 			const double dt,
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev,
-			utils::SparseMatrixCache &mat_cache,
+			utils::MatrixCache &mat_cache,
 			StiffnessMatrix &grad) const { log_and_throw_error("Assemble hessian not implemented by {}!", name()); }
 
 		// plotting (eg von mises), assembler is the name of the formulation
 		virtual void compute_scalar_value(
-			const int el_id,
-			const basis::ElementBases &bs,
-			const basis::ElementBases &gbs,
-			const Eigen::MatrixXd &local_pts,
-			const Eigen::MatrixXd &fun,
+			const OutputData &data,
 			std::vector<NamedMatrix> &result) const {}
 
 		// computes tensor, assembler is the name of the formulation
 		virtual void compute_tensor_value(
-			const int el_id,
-			const basis::ElementBases &bs,
-			const basis::ElementBases &gbs,
+			const OutputData &data,
+			std::vector<NamedMatrix> &result) const
+		{
+		}
+
+		// computes tensor, assembler is the name of the formulation
+		virtual void compute_stiffness_value(
+			const double t,
+			const assembler::ElementAssemblyValues &vals,
 			const Eigen::MatrixXd &local_pts,
-			const Eigen::MatrixXd &fun,
-			std::vector<NamedMatrix> &result) const {}
+			const Eigen::MatrixXd &displacement,
+			Eigen::MatrixXd &tensor) const { log_and_throw_error("Not implemented!"); }
+
+		virtual void compute_dstress_dmu_dlambda(
+			const OptAssemblerData &data,
+			Eigen::MatrixXd &dstress_dmu,
+			Eigen::MatrixXd &dstress_dlambda) const { log_and_throw_adjoint_error("Not implemented!"); }
+
+		virtual void compute_stress_grad_multiply_mat(
+			const OptAssemblerData &data,
+			const Eigen::MatrixXd &mat,
+			Eigen::MatrixXd &stress,
+			Eigen::MatrixXd &result) const { log_and_throw_adjoint_error("Not implemented!"); }
+
+		virtual void compute_stress_grad_multiply_stress(
+			const OptAssemblerData &data,
+			Eigen::MatrixXd &stress,
+			Eigen::MatrixXd &result) const
+		{
+			Eigen::MatrixXd unused;
+			compute_stress_grad_multiply_mat(data, Eigen::MatrixXd::Zero(data.grad_u_i.rows(), data.grad_u_i.cols()), stress, unused);
+			compute_stress_grad_multiply_mat(data, stress, unused, result);
+		}
+
+		virtual void compute_stress_grad_multiply_vect(
+			const OptAssemblerData &data,
+			const Eigen::MatrixXd &vect,
+			Eigen::MatrixXd &stress,
+			Eigen::MatrixXd &result) const { log_and_throw_error("Not implemented!"); }
+
+		virtual void compute_stress_grad(
+			const OptAssemblerData &data,
+			const Eigen::MatrixXd &prev_grad_u_i,
+			Eigen::MatrixXd &stress,
+			Eigen::MatrixXd &result) const { log_and_throw_adjoint_error("Not implemented!"); }
+		virtual void compute_stress_prev_grad(
+			const OptAssemblerData &data,
+			const Eigen::MatrixXd &prev_grad_u_i,
+			Eigen::MatrixXd &result) const { log_and_throw_adjoint_error("Not implemented!"); }
 
 		virtual std::map<std::string, ParamFunc> parameters() const = 0;
 		virtual VectorNd compute_rhs(const AutodiffHessianPt &pt) const { log_and_throw_error("Rhs not supported by {}!", name()); }
 
 		virtual Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> kernel(const int dim, const AutodiffGradPt &rvect, const AutodiffScalarGrad &r) const { log_and_throw_error("Kernel not supported by {}!", name()); }
 
-		void set_materials(const std::vector<int> &body_ids, const json &body_params);
-		virtual void add_multimaterial(const int index, const json &params) {}
+		void set_materials(const std::vector<int> &body_ids, const json &body_params, const Units &units);
+		virtual void add_multimaterial(const int index, const json &params, const Units &units) {}
+
+		virtual void update_lame_params(const Eigen::MatrixXd &lambdas, const Eigen::MatrixXd &mus)
+		{
+			log_and_throw_error("Not implemented!");
+		}
 
 		virtual bool is_linear() const = 0;
 		virtual bool is_solution_displacement() const { return false; }
@@ -141,25 +203,34 @@ namespace polyfem::assembler
 		int size_ = -1;
 	};
 
-	// assemble matrix based on the local assembler
-	// local assembler is eg Laplce, LinearElasticy etc
+	/// assemble matrix based on the local assembler
+	/// local assembler is eg Laplace, LinearElasticity etc
 	class LinearAssembler : virtual public Assembler
 	{
 	public:
 		LinearAssembler();
 		virtual ~LinearAssembler() = default;
 
+		/// assembles the stiffness matrix for the given basis
+		/// the bilinear form (local assembler) is encoded by
+		/// the overloaded assemble (see below) function that
+		/// the subclass (eg Laplacian) defines
+		/// sets stiffness and modifies cache if it has not
+		/// already been computed
 		void assemble(
 			const bool is_volume,
 			const int n_basis,
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &cache,
+			const double t,
 			StiffnessMatrix &stiffness,
 			const bool is_mass = false) const override;
 
 		virtual bool is_linear() const override { return true; }
 
+		/// local assembly function that defines the bilinear form (LHS)
+		/// computes and returns a single local stiffness value
 		virtual Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> assemble(const LinearAssemblerData &data) const = 0;
 	};
 
@@ -175,6 +246,18 @@ namespace polyfem::assembler
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &cache,
+			const double t,
+			const double dt,
+			const Eigen::MatrixXd &displacement,
+			const Eigen::MatrixXd &displacement_prev) const override;
+
+		// assemble the energy per element
+		Eigen::VectorXd assemble_energy_per_element(
+			const bool is_volume,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const double t,
 			const double dt,
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev) const override;
@@ -186,6 +269,7 @@ namespace polyfem::assembler
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &cache,
+			const double t,
 			const double dt,
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev,
@@ -199,10 +283,11 @@ namespace polyfem::assembler
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &cache,
+			const double t,
 			const double dt,
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev,
-			utils::SparseMatrixCache &mat_cache,
+			utils::MatrixCache &mat_cache,
 			StiffnessMatrix &grad) const override;
 
 		virtual bool is_linear() const override { return false; }
@@ -222,35 +307,27 @@ namespace polyfem::assembler
 
 		// plotting (eg von mises), assembler is the name of the formulation
 		void compute_scalar_value(
-			const int el_id,
-			const basis::ElementBases &bs,
-			const basis::ElementBases &gbs,
-			const Eigen::MatrixXd &local_pts,
-			const Eigen::MatrixXd &fun,
+			const OutputData &data,
 			std::vector<NamedMatrix> &result) const override
 		{
 			result.clear();
 			Eigen::MatrixXd tmp;
-			compute_von_mises_stresses(el_id, bs, gbs, local_pts, fun, tmp);
+			compute_von_mises_stresses(data, tmp);
 			result.emplace_back("von_mises", tmp);
 		}
 
 		// computes tensor, assembler is the name of the formulation
 		void compute_tensor_value(
-			const int el_id,
-			const basis::ElementBases &bs,
-			const basis::ElementBases &gbs,
-			const Eigen::MatrixXd &local_pts,
-			const Eigen::MatrixXd &fun,
+			const OutputData &data,
 			std::vector<NamedMatrix> &result) const override
 		{
 			result.clear();
 			Eigen::MatrixXd cauchy, pk1, pk2, F;
 
-			compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::CAUCHY, cauchy);
-			compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK1, pk1);
-			compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::PK2, pk2);
-			compute_stress_tensor(el_id, bs, gbs, local_pts, fun, ElasticityTensorType::F, F);
+			compute_stress_tensor(data, ElasticityTensorType::CAUCHY, cauchy);
+			compute_stress_tensor(data, ElasticityTensorType::PK1, pk1);
+			compute_stress_tensor(data, ElasticityTensorType::PK2, pk2);
+			compute_stress_tensor(data, ElasticityTensorType::F, F);
 
 			result.emplace_back("cauchy_stess", cauchy);
 			result.emplace_back("pk1_stess", pk1);
@@ -258,18 +335,21 @@ namespace polyfem::assembler
 			result.emplace_back("F", F);
 		}
 
-		void compute_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const ElasticityTensorType &type, Eigen::MatrixXd &stresses) const
+		void compute_stress_tensor(const OutputData &data,
+								   const ElasticityTensorType &type,
+								   Eigen::MatrixXd &stresses) const
 		{
-			assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, size() * size(), type, stresses, [&](const Eigen::MatrixXd &stress) {
+			assign_stress_tensor(data, size() * size(), type, stresses, [&](const Eigen::MatrixXd &stress) {
 				Eigen::MatrixXd tmp = stress;
 				auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size() * size());
 				return Eigen::MatrixXd(a);
 			});
 		}
 
-		void compute_von_mises_stresses(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &stresses) const
+		void compute_von_mises_stresses(const OutputData &data,
+										Eigen::MatrixXd &stresses) const
 		{
-			assign_stress_tensor(el_id, bs, gbs, local_pts, displacement, 1, ElasticityTensorType::CAUCHY, stresses, [&](const Eigen::MatrixXd &stress) {
+			assign_stress_tensor(data, 1, ElasticityTensorType::CAUCHY, stresses, [&](const Eigen::MatrixXd &stress) {
 				Eigen::Matrix<double, 1, 1> res;
 				res.setConstant(von_mises_stress_for_stress_tensor(stress));
 				return res;
@@ -280,6 +360,10 @@ namespace polyfem::assembler
 		bool is_tensor() const override { return true; }
 
 	protected:
-		virtual void assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const = 0;
+		virtual void assign_stress_tensor(const OutputData &data,
+										  const int all_size,
+										  const ElasticityTensorType &type,
+										  Eigen::MatrixXd &all,
+										  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const = 0;
 	};
 } // namespace polyfem::assembler

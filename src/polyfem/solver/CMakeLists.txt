@@ -3,31 +3,29 @@ set(SOURCES
 	ALSolver.hpp
 	FullNLProblem.cpp
 	FullNLProblem.hpp
-	LBFGSSolver.hpp
-	LBFGSSolver.tpp
 	NavierStokesSolver.cpp
 	NavierStokesSolver.hpp
 	NLProblem.cpp
 	NLProblem.hpp
-	NonlinearSolver.hpp
-	NonlinearSolver.tpp
 	OperatorSplittingSolver.hpp
 	OperatorSplittingSolver.cpp
+	Optimizations.hpp
+	Optimizations.cpp
 	SolveData.cpp
 	SolveData.hpp
-	SparseNewtonDescentSolver.hpp
-	SparseNewtonDescentSolver.tpp
+	DiffCache.hpp
 	TransientNavierStokesSolver.cpp
 	TransientNavierStokesSolver.hpp
+	AdjointTools.cpp
+	AdjointTools.hpp
+	AdjointNLProblem.hpp
+	AdjointNLProblem.cpp
 )
 
-prepend_current_path(SOURCES)
-polyfem_set_source_group(${SOURCES})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
 target_sources(polyfem PRIVATE ${SOURCES})
 
-################################################################################
+# ###############################################################################
 # Subfolders
-################################################################################
-
-add_subdirectory(line_search)
+# ###############################################################################
 add_subdirectory(forms)

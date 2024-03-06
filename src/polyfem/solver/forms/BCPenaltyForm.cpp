@@ -11,7 +11,7 @@ namespace polyfem::solver
 								 const int n_boundary_samples,
 								 const StiffnessMatrix &mass,
 								 const assembler::RhsAssembler &rhs_assembler,
-								 const mesh::Obstacle &obstacle,
+								 const size_t obstacle_ndof,
 								 const bool is_time_dependent,
 								 const double t)
 		: boundary_nodes_(boundary_nodes),
@@ -21,14 +21,14 @@ namespace polyfem::solver
 		  rhs_assembler_(&rhs_assembler),
 		  is_time_dependent_(is_time_dependent)
 	{
-		init_masked_lumped_mass(ndof, mass, obstacle);
+		init_masked_lumped_mass(ndof, mass, obstacle_ndof);
 		update_target(t); // initialize target_x_
 	}
 
 	BCPenaltyForm::BCPenaltyForm(const int ndof,
 								 const std::vector<int> &boundary_nodes,
 								 const StiffnessMatrix &mass,
-								 const mesh::Obstacle &obstacle,
+								 const size_t obstacle_ndof,
 								 const Eigen::MatrixXd &target_x)
 		: boundary_nodes_(boundary_nodes),
 		  local_boundary_(nullptr),
@@ -38,13 +38,13 @@ namespace polyfem::solver
 		  is_time_dependent_(false),
 		  target_x_(target_x)
 	{
-		init_masked_lumped_mass(ndof, mass, obstacle);
+		init_masked_lumped_mass(ndof, mass, obstacle_ndof);
 	}
 
 	void BCPenaltyForm::init_masked_lumped_mass(
 		const int ndof,
 		const StiffnessMatrix &mass,
-		const mesh::Obstacle &obstacle)
+		const size_t obstacle_ndof)
 	{
 		std::vector<bool> is_boundary_dof(ndof, true);
 		for (const auto bn : boundary_nodes_)
@@ -54,9 +54,9 @@ namespace polyfem::solver
 		assert(ndof == masked_lumped_mass_.rows() && ndof == masked_lumped_mass_.cols());
 
 		// Give the collision obstacles a entry in the lumped mass matrix
-		if (obstacle.n_vertices() != 0)
+		if (obstacle_ndof > 0)
 		{
-			const int n_fe_dof = ndof - obstacle.ndof();
+			const int n_fe_dof = ndof - obstacle_ndof;
 			const double avg_mass = masked_lumped_mass_.diagonal().head(n_fe_dof).mean();
 			for (int i = n_fe_dof; i < ndof; ++i)
 			{

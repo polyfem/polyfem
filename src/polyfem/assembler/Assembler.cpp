@@ -18,35 +18,51 @@ namespace polyfem::assembler
 		class LocalThreadMatStorage
 		{
 		public:
-			SparseMatrixCache cache;
+			std::unique_ptr<MatrixCache> cache = nullptr;
 			ElementAssemblyValues vals;
 			QuadratureVector da;
 
-			LocalThreadMatStorage()
-			{
-			}
+			LocalThreadMatStorage() = delete;
 
 			LocalThreadMatStorage(const int buffer_size, const int rows, const int cols)
 			{
 				init(buffer_size, rows, cols);
 			}
 
-			LocalThreadMatStorage(const int buffer_size, const SparseMatrixCache &c)
+			LocalThreadMatStorage(const int buffer_size, const MatrixCache &c)
 			{
 				init(buffer_size, c);
+			}
+
+			LocalThreadMatStorage(const LocalThreadMatStorage &other)
+				: cache(other.cache->copy()), vals(other.vals), da(other.da)
+			{
+			}
+
+			LocalThreadMatStorage &operator=(const LocalThreadMatStorage &other)
+			{
+				assert(other.cache != nullptr);
+				cache = other.cache->copy();
+				vals = other.vals;
+				da = other.da;
+				return *this;
 			}
 
 			void init(const int buffer_size, const int rows, const int cols)
 			{
 				// assert(rows == cols);
-				cache.reserve(buffer_size);
-				cache.init(rows, cols);
+				// cache = std::make_unique<DenseMatrixCache>();
+				cache = std::make_unique<SparseMatrixCache>();
+				cache->reserve(buffer_size);
+				cache->init(rows, cols);
 			}
 
-			void init(const int buffer_size, const SparseMatrixCache &c)
+			void init(const int buffer_size, const MatrixCache &c)
 			{
-				cache.reserve(buffer_size);
-				cache.init(c);
+				if (cache == nullptr)
+					cache = c.copy();
+				cache->reserve(buffer_size);
+				cache->init(c);
 			}
 		};
 
@@ -78,11 +94,11 @@ namespace polyfem::assembler
 		};
 	} // namespace
 
-	void Assembler::set_materials(const std::vector<int> &body_ids, const json &body_params)
+	void Assembler::set_materials(const std::vector<int> &body_ids, const json &body_params, const Units &units)
 	{
 		if (!body_params.is_array())
 		{
-			this->add_multimaterial(0, body_params);
+			this->add_multimaterial(0, body_params, units);
 			return;
 		}
 
@@ -125,7 +141,7 @@ namespace polyfem::assembler
 			}
 
 			const json &tmp = it->second;
-			this->add_multimaterial(e, tmp);
+			this->add_multimaterial(e, tmp, units);
 		}
 
 		for (int bid : missing)
@@ -144,17 +160,18 @@ namespace polyfem::assembler
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &cache,
+		const double t,
 		StiffnessMatrix &stiffness,
 		const bool is_mass) const
 	{
 		assert(size() > 0);
 
-		const int max_triplets_size = int(1e7);
-		const int buffer_size = std::min(long(max_triplets_size), long(n_basis) * size());
+		const long int max_triplets_size = long(1e7);
+		const long int buffer_size = std::min(long(max_triplets_size), long(n_basis) * size());
 		// #ifdef POLYFEM_WITH_TBB
 		// 		buffer_size /= tbb::task_scheduler_init::default_num_threads();
 		// #endif
-		logger().trace("buffer_size {}", buffer_size);
+		// logger().trace("buffer_size {}", buffer_size);
 		try
 		{
 			stiffness.resize(n_basis * size(), n_basis * size());
@@ -163,10 +180,13 @@ namespace polyfem::assembler
 			auto storage = create_thread_storage(LocalThreadMatStorage(buffer_size, stiffness.rows(), stiffness.cols()));
 
 			const int n_bases = int(bases.size());
-			igl::Timer timerg;
-			timerg.start();
+			igl::Timer timer;
+			timer.start();
 			assert(cache.is_mass() == is_mass);
 
+			// (potentially parallel) loop over elements
+			// Note that n_bases is the number of elements since ach ElementBases object stores
+			// all local basis functions on a given element
 			maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
 				LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
 
@@ -175,6 +195,9 @@ namespace polyfem::assembler
 					ElementAssemblyValues &vals = local_storage.vals;
 					// igl::Timer timer; timer.start();
 					// vals.compute(e, is_volume, bases[e], gbases[e]);
+
+					// compute geometric mapping
+					// evaluate and store basis functions/their gradients at quadrature points
 					cache.compute(e, is_volume, bases[e], gbases[e], vals);
 
 					const Quadrature &quadrature = vals.quadrature;
@@ -189,26 +212,26 @@ namespace polyfem::assembler
 						// const Eigen::MatrixXd &gradi = values_i.grad_t_m;
 						const auto &global_i = vals.basis_values[i].global;
 
+						// loop over other bases up to the current one, taking advantage of symmetry
 						for (int j = 0; j <= i; ++j)
 						{
 							// const AssemblyValues &values_j = vals.basis_values[j];
 							// const Eigen::MatrixXd &gradj = values_j.grad_t_m;
 							const auto &global_j = vals.basis_values[j].global;
 
-							const auto stiffness_val = assemble(LinearAssemblerData(vals, i, j, local_storage.da));
+							// compute local entry in stiffness matrix
+							const auto stiffness_val = assemble(LinearAssemblerData(vals, t, i, j, local_storage.da));
 							assert(stiffness_val.size() == size() * size());
 
 							// igl::Timer t1; t1.start();
+							// loop over dimensions of the problem
 							for (int n = 0; n < size(); ++n)
 							{
 								for (int m = 0; m < size(); ++m)
 								{
 									const double local_value = stiffness_val(n * size() + m);
-									if (std::abs(local_value) < 1e-30)
-									{
-										continue;
-									}
 
+									// loop over the global nodes corresponding to local element (useful for non-conforming cases)
 									for (size_t ii = 0; ii < global_i.size(); ++ii)
 									{
 										const auto gi = global_i[ii].index * size() + m;
@@ -219,16 +242,17 @@ namespace polyfem::assembler
 											const auto gj = global_j[jj].index * size() + n;
 											const auto wj = global_j[jj].val;
 
-											local_storage.cache.add_value(e, gi, gj, local_value * wi * wj);
+											// add local value to the global matrix (weighted by corresponding nodes)
+											local_storage.cache->add_value(e, gi, gj, local_value * wi * wj);
 											if (j < i)
 											{
-												local_storage.cache.add_value(e, gj, gi, local_value * wj * wi);
+												local_storage.cache->add_value(e, gj, gi, local_value * wj * wi);
 											}
 
-											if (local_storage.cache.entries_size() >= max_triplets_size)
+											if (local_storage.cache->entries_size() >= max_triplets_size)
 											{
-												local_storage.cache.prune();
-												logger().trace("cleaning memory. Current storage: {}. mat nnz: {}", local_storage.cache.capacity(), local_storage.cache.non_zeros());
+												local_storage.cache->prune();
+												logger().trace("cleaning memory. Current storage: {}. mat nnz: {}", local_storage.cache->capacity(), local_storage.cache->non_zeros());
 											}
 										}
 									}
@@ -245,108 +269,114 @@ namespace polyfem::assembler
 				}
 			});
 
-			timerg.stop();
-			logger().trace("done separate assembly {}s...", timerg.getElapsedTime());
+			timer.stop();
+			logger().trace("done separate assembly {}s...", timer.getElapsedTime());
 
 			// Assemble the stiffness matrix by concatenating the tuples in each local storage
-			igl::Timer timer1, timer2, timer3;
 
 			// Collect thread storages
 			std::vector<LocalThreadMatStorage *> storages(storage.size());
-			int index = 0;
+			long int index = 0;
 			for (auto &local_storage : storage)
 			{
-				storages[index] = &local_storage;
-				++index;
+				storages[index++] = &local_storage;
 			}
 
-			timerg.start();
+			timer.start();
 			maybe_parallel_for(storages.size(), [&](int i) {
-				auto *s = storages[i];
-				s->cache.prune();
+				storages[i]->cache->prune();
 			});
-			timerg.stop();
-			logger().trace("done pruning triplets {}s...", timerg.getElapsedTime());
+			timer.stop();
+			logger().trace("done pruning triplets {}s...", timer.getElapsedTime());
 
 			// Prepares for parallel concatenation
-			std::vector<int> offsets(storage.size());
+			std::vector<long int> offsets(storage.size());
 
 			index = 0;
-			int triplet_count = 0;
+			long int triplet_count = 0;
 			for (auto &local_storage : storage)
 			{
-				offsets[index] = triplet_count;
-				++index;
-				triplet_count += local_storage.cache.entries().size();
-				triplet_count += local_storage.cache.mat().nonZeros();
+				offsets[index++] = triplet_count;
+				triplet_count += local_storage.cache->triplet_count();
 			}
 
 			std::vector<Eigen::Triplet<double>> triplets;
 
-			if (triplet_count >= triplets.max_size())
+			assert(storages.size() >= 1);
+			if (storages[0]->cache->is_dense())
+			{
+				timer.start();
+				// Serially merge local storages
+				Eigen::MatrixXd tmp(stiffness);
+				for (const LocalThreadMatStorage &local_storage : storage)
+					tmp += dynamic_cast<const DenseMatrixCache &>(*local_storage.cache).mat();
+				stiffness = tmp.sparseView();
+				stiffness.makeCompressed();
+				timer.stop();
+
+				logger().trace("Serial assembly time: {}s...", timer.getElapsedTime());
+			}
+			else if (triplet_count >= triplets.max_size())
 			{
 				// Serial fallback version in case the vector of triplets cannot be allocated
 
 				logger().warn("Cannot allocate space for triplets, switching to serial assembly.");
 
-				timerg.start();
+				timer.start();
 				// Serially merge local storages
 				for (LocalThreadMatStorage &local_storage : storage)
-					stiffness += local_storage.cache.get_matrix(false); // will also prune
+					stiffness += local_storage.cache->get_matrix(false); // will also prune
 				stiffness.makeCompressed();
-				timerg.stop();
+				timer.stop();
 
-				logger().trace("Serial assembly time: {}s...", timerg.getElapsedTime());
+				logger().trace("Serial assembly time: {}s...", timer.getElapsedTime());
 			}
 			else
 			{
-				timer1.start();
+				timer.start();
 				triplets.resize(triplet_count);
-				timer1.stop();
+				timer.stop();
 
-				logger().trace("done allocate triplets {}s...", timer1.getElapsedTime());
+				logger().trace("done allocate triplets {}s...", timer.getElapsedTime());
 				logger().trace("Triplets Count: {}", triplet_count);
 
-				timer2.start();
+				timer.start();
 				// Parallel copy into triplets
 				maybe_parallel_for(storages.size(), [&](int i) {
-					const auto *s = storages[i];
-					const int offset = offsets[i];
-					for (int j = 0; j < s->cache.entries().size(); ++j)
+					const SparseMatrixCache &cache = dynamic_cast<const SparseMatrixCache &>(*storages[i]->cache);
+					long int offset = offsets[i];
+
+					std::copy(cache.entries().begin(), cache.entries().end(), triplets.begin() + offset);
+					offset += cache.entries().size();
+
+					if (cache.mat().nonZeros() > 0)
 					{
-						triplets[offset + j] = s->cache.entries()[j];
-					}
-					if (s->cache.mat().nonZeros() > 0)
-					{
-						int count = 0;
-						for (int k = 0; k < s->cache.mat().outerSize(); ++k)
+						long int count = 0;
+						for (int k = 0; k < cache.mat().outerSize(); ++k)
 						{
-							for (Eigen::SparseMatrix<double>::InnerIterator it(s->cache.mat(), k); it; ++it)
+							for (Eigen::SparseMatrix<double>::InnerIterator it(cache.mat(), k); it; ++it)
 							{
-								assert(count < s->cache.mat().nonZeros());
-								triplets[offset + s->cache.entries().size() + count++] = Eigen::Triplet<double>(it.row(), it.col(), it.value());
+								assert(count < cache.mat().nonZeros());
+								triplets[offset + count++] = Eigen::Triplet<double>(it.row(), it.col(), it.value());
 							}
 						}
 					}
 				});
 
-				timer2.stop();
-				logger().trace("done concatenate triplets {}s...", timer2.getElapsedTime());
+				timer.stop();
+				logger().trace("done concatenate triplets {}s...", timer.getElapsedTime());
 
-				timer3.start();
+				timer.start();
 				// Sort and assemble
 				stiffness.setFromTriplets(triplets.begin(), triplets.end());
-				timer3.stop();
+				timer.stop();
 
-				logger().trace("done setFromTriplets assembly {}s...", timer3.getElapsedTime());
+				logger().trace("done setFromTriplets assembly {}s...", timer.getElapsedTime());
 			}
-
-			// exit(0);
 		}
 		catch (std::bad_alloc &ba)
 		{
-			logger().error("bad alloc {}", ba.what());
-			exit(0);
+			log_and_throw_error("bad alloc {}", ba.what());
 		}
 
 		// stiffness.resize(n_basis*size(), n_basis*size());
@@ -366,6 +396,7 @@ namespace polyfem::assembler
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &psi_cache,
 		const AssemblyValsCache &phi_cache,
+		const double t,
 		StiffnessMatrix &stiffness) const
 	{
 		assert(size() > 0);
@@ -373,7 +404,7 @@ namespace polyfem::assembler
 
 		const int max_triplets_size = int(1e7);
 		const int buffer_size = std::min(long(max_triplets_size), long(std::max(n_psi_basis, n_phi_basis)) * std::max(rows(), cols()));
-		logger().debug("buffer_size {}", buffer_size);
+		// logger().debug("buffer_size {}", buffer_size);
 
 		stiffness.resize(n_phi_basis * rows(), n_psi_basis * cols());
 		stiffness.setZero();
@@ -381,8 +412,8 @@ namespace polyfem::assembler
 		auto storage = create_thread_storage(LocalThreadMatStorage(buffer_size, stiffness.rows(), stiffness.cols()));
 
 		const int n_bases = int(phi_bases.size());
-		igl::Timer timerg;
-		timerg.start();
+		igl::Timer timer;
+		timer.start();
 
 		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
 			LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
@@ -410,7 +441,7 @@ namespace polyfem::assembler
 					{
 						const auto &global_j = phi_vals.basis_values[j].global;
 
-						const auto stiffness_val = assemble(MixedAssemblerData(psi_vals, phi_vals, i, j, local_storage.da));
+						const auto stiffness_val = assemble(MixedAssemblerData(psi_vals, phi_vals, t, i, j, local_storage.da));
 						assert(stiffness_val.size() == rows() * cols());
 
 						// igl::Timer t1; t1.start();
@@ -419,10 +450,6 @@ namespace polyfem::assembler
 							for (int m = 0; m < cols(); ++m)
 							{
 								const double local_value = stiffness_val(n * cols() + m);
-								if (std::abs(local_value) < 1e-30)
-								{
-									continue;
-								}
 
 								for (size_t ii = 0; ii < global_i.size(); ++ii)
 								{
@@ -434,11 +461,11 @@ namespace polyfem::assembler
 										const auto gj = global_j[jj].index * rows() + n;
 										const auto wj = global_j[jj].val;
 
-										local_storage.cache.add_value(e, gj, gi, local_value * wi * wj);
+										local_storage.cache->add_value(e, gj, gi, local_value * wi * wj);
 
-										if (local_storage.cache.entries_size() >= max_triplets_size)
+										if (local_storage.cache->entries_size() >= max_triplets_size)
 										{
-											local_storage.cache.prune();
+											local_storage.cache->prune();
 											logger().debug("cleaning memory...");
 										}
 									}
@@ -450,16 +477,16 @@ namespace polyfem::assembler
 			}
 		});
 
-		timerg.stop();
-		logger().trace("done separate assembly {}s...", timerg.getElapsedTime());
+		timer.stop();
+		logger().trace("done separate assembly {}s...", timer.getElapsedTime());
 
-		timerg.start();
+		timer.start();
 		// Serially merge local storages
 		for (LocalThreadMatStorage &local_storage : storage)
-			stiffness += local_storage.cache.get_matrix(false); // will also prune
+			stiffness += local_storage.cache->get_matrix(false); // will also prune
 		stiffness.makeCompressed();
-		timerg.stop();
-		logger().trace("done merge assembly {}s...", timerg.getElapsedTime());
+		timer.stop();
+		logger().trace("done merge assembly {}s...", timer.getElapsedTime());
 
 		// stiffness.resize(n_basis*size(), n_basis*size());
 		// stiffness.setFromTriplets(entries.begin(), entries.end());
@@ -470,6 +497,7 @@ namespace polyfem::assembler
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &cache,
+		const double t,
 		const double dt,
 		const Eigen::MatrixXd &displacement,
 		const Eigen::MatrixXd &displacement_prev) const
@@ -490,7 +518,7 @@ namespace polyfem::assembler
 				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 
-				const double val = compute_energy(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				const double val = compute_energy(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, local_storage.da));
 				local_storage.val += val;
 			}
 		});
@@ -502,12 +530,54 @@ namespace polyfem::assembler
 		return res;
 	}
 
+	Eigen::VectorXd NLAssembler::assemble_energy_per_element(
+		const bool is_volume,
+		const std::vector<ElementBases> &bases,
+		const std::vector<ElementBases> &gbases,
+		const AssemblyValsCache &cache,
+		const double t,
+		const double dt,
+		const Eigen::MatrixXd &displacement,
+		const Eigen::MatrixXd &displacement_prev) const
+	{
+		auto storage = create_thread_storage(LocalThreadScalarStorage());
+		const int n_bases = int(bases.size());
+		Eigen::VectorXd out(bases.size());
+
+		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+			LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
+			ElementAssemblyValues &vals = local_storage.vals;
+
+			for (int e = start; e < end; ++e)
+			{
+				cache.compute(e, is_volume, bases[e], gbases[e], vals);
+
+				const Quadrature &quadrature = vals.quadrature;
+
+				assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+				local_storage.da = vals.det.array() * quadrature.weights.array();
+
+				const double val = compute_energy(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, local_storage.da));
+				out[e] = val;
+			}
+		});
+
+#ifndef NDEBUG
+		const double assemble_val = assemble_energy(
+			is_volume, bases, gbases, cache, t, dt, displacement, displacement_prev);
+		assert(std::abs(assemble_val - out.sum()) < std::max(1e-10 * assemble_val, 1e-10));
+#endif
+
+		return out;
+	}
+
 	void NLAssembler::assemble_gradient(
 		const bool is_volume,
 		const int n_basis,
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &cache,
+		const double t,
 		const double dt,
 		const Eigen::MatrixXd &displacement,
 		const Eigen::MatrixXd &displacement_prev,
@@ -537,7 +607,7 @@ namespace polyfem::assembler
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 				const int n_loc_bases = int(vals.basis_values.size());
 
-				const auto val = assemble_gradient(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				const auto val = assemble_gradient(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, local_storage.da));
 				assert(val.size() == n_loc_bases * size());
 
 				for (int j = 0; j < n_loc_bases; ++j)
@@ -548,10 +618,6 @@ namespace polyfem::assembler
 					for (int m = 0; m < size(); ++m)
 					{
 						const double local_value = val(j * size() + m);
-						if (std::abs(local_value) < 1e-30)
-						{
-							continue;
-						}
 
 						for (size_t jj = 0; jj < global_j.size(); ++jj)
 						{
@@ -583,18 +649,19 @@ namespace polyfem::assembler
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &cache,
+		const double t,
 		const double dt,
 		const Eigen::MatrixXd &displacement,
 		const Eigen::MatrixXd &displacement_prev,
-		SparseMatrixCache &mat_cache,
-		StiffnessMatrix &grad) const
+		MatrixCache &mat_cache,
+		StiffnessMatrix &hess) const
 	{
 		const int max_triplets_size = int(1e7);
 		const int buffer_size = std::min(long(max_triplets_size), long(n_basis) * size());
 		// std::cout<<"buffer_size "<<buffer_size<<std::endl;
 
-		// grad.resize(n_basis * size(), n_basis * size());
-		// grad.setZero();
+		// hess.resize(n_basis * size(), n_basis * size());
+		// hess.setZero();
 
 		mat_cache.init(n_basis * size());
 		mat_cache.set_zero();
@@ -602,8 +669,8 @@ namespace polyfem::assembler
 		auto storage = create_thread_storage(LocalThreadMatStorage(buffer_size, mat_cache));
 
 		const int n_bases = int(bases.size());
-		igl::Timer timerg;
-		timerg.start();
+		igl::Timer timer;
+		timer.start();
 
 		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
 			LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
@@ -619,7 +686,7 @@ namespace polyfem::assembler
 				local_storage.da = vals.det.array() * quadrature.weights.array();
 				const int n_loc_bases = int(vals.basis_values.size());
 
-				auto stiffness_val = assemble_hessian(NonLinearAssemblerData(vals, dt, displacement, displacement_prev, local_storage.da));
+				auto stiffness_val = assemble_hessian(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, local_storage.da));
 				assert(stiffness_val.rows() == n_loc_bases * size());
 				assert(stiffness_val.cols() == n_loc_bases * size());
 
@@ -656,10 +723,6 @@ namespace polyfem::assembler
 							for (int m = 0; m < size(); ++m)
 							{
 								const double local_value = stiffness_val(i * size() + m, j * size() + n);
-								//  if (std::abs(local_value) < 1e-30)
-								//  {
-								// 	 continue;
-								//  }
 
 								for (size_t ii = 0; ii < global_i.size(); ++ii)
 								{
@@ -671,14 +734,14 @@ namespace polyfem::assembler
 										const auto gj = global_j[jj].index * size() + n;
 										const auto wj = global_j[jj].val;
 
-										local_storage.cache.add_value(e, gi, gj, local_value * wi * wj);
+										local_storage.cache->add_value(e, gi, gj, local_value * wi * wj);
 										// if (j < i) {
 										// 	local_storage.entries.emplace_back(gj, gi, local_value * wj * wi);
 										// }
 
-										if (local_storage.cache.entries_size() >= max_triplets_size)
+										if (local_storage.cache->entries_size() >= max_triplets_size)
 										{
-											local_storage.cache.prune();
+											local_storage.cache->prune();
 											logger().debug("cleaning memory...");
 										}
 									}
@@ -690,21 +753,21 @@ namespace polyfem::assembler
 			}
 		});
 
-		timerg.stop();
-		logger().trace("done separate assembly {}s...", timerg.getElapsedTime());
+		timer.stop();
+		logger().trace("done separate assembly {}s...", timer.getElapsedTime());
 
-		timerg.start();
+		timer.start();
 
 		// Serially merge local storages
 		for (LocalThreadMatStorage &local_storage : storage)
 		{
-			local_storage.cache.prune();
-			mat_cache += local_storage.cache;
+			local_storage.cache->prune();
+			mat_cache += *local_storage.cache;
 		}
-		grad = mat_cache.get_matrix();
+		hess = mat_cache.get_matrix();
 
-		timerg.stop();
-		logger().trace("done merge assembly {}s...", timerg.getElapsedTime());
+		timer.stop();
+		logger().trace("done merge assembly {}s...", timer.getElapsedTime());
 	}
 
 } // namespace polyfem::assembler

@@ -358,6 +358,7 @@ namespace polyfem::io
 		const Eigen::MatrixXd &pts,
 		const Eigen::MatrixXi &faces,
 		const Eigen::MatrixXd &fun,
+		const double t,
 		const bool compute_avg,
 		Eigen::MatrixXd &result,
 		Eigen::MatrixXd &stresses,
@@ -367,7 +368,7 @@ namespace polyfem::io
 		interpolate_boundary_tensor_function(
 			mesh, is_problem_scalar, bases, gbases,
 			assembler,
-			pts, faces, fun, Eigen::MatrixXd::Zero(pts.rows(), pts.cols()),
+			pts, faces, fun, Eigen::MatrixXd::Zero(pts.rows(), pts.cols()), t,
 			compute_avg, result, stresses, mises, skip_orientation);
 	}
 
@@ -381,6 +382,7 @@ namespace polyfem::io
 		const Eigen::MatrixXi &faces,
 		const Eigen::MatrixXd &fun,
 		const Eigen::MatrixXd &disp,
+		const double t,
 		const bool compute_avg,
 		Eigen::MatrixXd &result,
 		Eigen::MatrixXd &stresses,
@@ -517,8 +519,8 @@ namespace polyfem::io
 					tet_n += tmp;
 				}
 
-				assembler.compute_scalar_value(e, bs, gbs, points, fun, tmp_s);
-				assembler.compute_tensor_value(e, bs, gbs, points, fun, tmp_t);
+				assembler.compute_scalar_value(OutputData(t, e, bs, gbs, points, fun), tmp_s);
+				assembler.compute_tensor_value(OutputData(t, e, bs, gbs, points, fun), tmp_t);
 
 				Eigen::MatrixXd loc_val = tmp_t[0].second, local_mises = tmp_s[0].second;
 				Eigen::VectorXd tmp(loc_val.cols());
@@ -565,6 +567,7 @@ namespace polyfem::io
 		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 		const assembler::Assembler &assembler,
 		const utils::RefElementSampler &sampler,
+		const double t,
 		const int n_points,
 		const Eigen::MatrixXd &fun,
 		std::vector<assembler::Assembler::NamedMatrix> &result_scalar,
@@ -628,7 +631,7 @@ namespace polyfem::io
 			const quadrature::Quadrature &quadrature = vals.quadrature;
 			const double area = (vals.det.array() * quadrature.weights.array()).sum();
 
-			assembler.compute_scalar_value(i, bs, gbs, local_pts, fun, tmp_s);
+			assembler.compute_scalar_value(OutputData(t, i, bs, gbs, local_pts, fun), tmp_s);
 
 			// assembler.compute_tensor_value(i, bs, gbs, local_pts, fun, local_val);
 			// MatrixXd avg_tensor(n_points * actual_dim*actual_dim, 1);
@@ -776,6 +779,7 @@ namespace polyfem::io
 		const Eigen::VectorXi &disc_orders,
 		const assembler::Assembler &assembler,
 		const Eigen::MatrixXd &fun,
+		const double t,
 		Eigen::MatrixXd &result,
 		Eigen::VectorXd &von_mises)
 	{
@@ -842,8 +846,8 @@ namespace polyfem::io
 
 			std::vector<std::pair<std::string, Eigen::MatrixXd>> tmp_s, tmp_t;
 
-			assembler.compute_scalar_value(e, bases[e], gbases[e], quadr.points, fun, tmp_s);
-			assembler.compute_tensor_value(e, bases[e], gbases[e], quadr.points, fun, tmp_t);
+			assembler.compute_scalar_value(OutputData(t, e, bases[e], gbases[e], quadr.points, fun), tmp_s);
+			assembler.compute_tensor_value(OutputData(t, e, bases[e], gbases[e], quadr.points, fun), tmp_t);
 
 			local_mises = tmp_s[0].second;
 			local_val = tmp_t[0].second;
@@ -1043,6 +1047,39 @@ namespace polyfem::io
 		}
 	}
 
+	void Evaluator::interpolate_at_local_vals(const int el_index, const int dim, const int actual_dim, const assembler::ElementAssemblyValues &vals, const Eigen::MatrixXd &fun, Eigen::MatrixXd &result, Eigen::MatrixXd &result_grad)
+	{
+		if (fun.size() <= 0)
+		{
+			logger().error("Solve the problem first!");
+			return;
+		}
+
+		assert(fun.cols() == 1);
+
+		result.resize(vals.val.rows(), actual_dim);
+		result.setZero();
+
+		result_grad.resize(vals.val.rows(), dim * actual_dim);
+		result_grad.setZero();
+
+		const int n_loc_bases = int(vals.basis_values.size());
+
+		for (int i = 0; i < n_loc_bases; ++i)
+		{
+			const auto &val = vals.basis_values[i];
+
+			for (size_t ii = 0; ii < val.global.size(); ++ii)
+			{
+				for (int d = 0; d < actual_dim; ++d)
+				{
+					result.col(d) += val.global[ii].val * fun(val.global[ii].index * actual_dim + d) * val.val;
+					result_grad.block(0, d * val.grad_t_m.cols(), result_grad.rows(), val.grad_t_m.cols()) += val.global[ii].val * fun(val.global[ii].index * actual_dim + d) * val.grad_t_m;
+				}
+			}
+		}
+	}
+
 	bool Evaluator::check_scalar_value(
 		const mesh::Mesh &mesh,
 		const bool is_problem_scalar,
@@ -1054,6 +1091,7 @@ namespace polyfem::io
 		const assembler::Assembler &assembler,
 		const utils::RefElementSampler &sampler,
 		const Eigen::MatrixXd &fun,
+		const double t,
 		const bool use_sampler,
 		const bool boundary_only)
 	{
@@ -1114,7 +1152,7 @@ namespace polyfem::io
 				}
 			}
 
-			assembler.compute_scalar_value(i, bs, gbs, local_pts, fun, tmp_s);
+			assembler.compute_scalar_value(OutputData(t, i, bs, gbs, local_pts, fun), tmp_s);
 
 			for (const auto &s : tmp_s)
 				if (std::isnan(s.second.norm()))
@@ -1136,6 +1174,7 @@ namespace polyfem::io
 		const utils::RefElementSampler &sampler,
 		const int n_points,
 		const Eigen::MatrixXd &fun,
+		const double t,
 		std::vector<assembler::Assembler::NamedMatrix> &result,
 		const bool use_sampler,
 		const bool boundary_only)
@@ -1200,7 +1239,7 @@ namespace polyfem::io
 				}
 			}
 
-			assembler.compute_scalar_value(i, bs, gbs, local_pts, fun, tmp_s);
+			assembler.compute_scalar_value(OutputData(t, i, bs, gbs, local_pts, fun), tmp_s);
 
 			if (result.empty())
 			{
@@ -1233,6 +1272,7 @@ namespace polyfem::io
 		const utils::RefElementSampler &sampler,
 		const int n_points,
 		const Eigen::MatrixXd &fun,
+		const double t,
 		std::vector<assembler::Assembler::NamedMatrix> &result,
 		const bool use_sampler,
 		const bool boundary_only)
@@ -1298,7 +1338,7 @@ namespace polyfem::io
 				}
 			}
 
-			assembler.compute_tensor_value(i, bs, gbs, local_pts, fun, tmp_t);
+			assembler.compute_tensor_value(OutputData(t, i, bs, gbs, local_pts, fun), tmp_t);
 
 			if (result.empty())
 			{
@@ -1317,5 +1357,26 @@ namespace polyfem::io
 			}
 			index += local_pts.rows();
 		}
+	}
+
+	Eigen::MatrixXd Evaluator::get_bases_position(
+		const int n_bases,
+		const std::shared_ptr<mesh::MeshNodes> mesh_nodes)
+	{
+		Eigen::MatrixXd func;
+		func.setZero(n_bases, mesh_nodes->node_position(0).size());
+
+		for (int i = 0; i < n_bases; i++)
+			func.row(i) = mesh_nodes->node_position(i);
+
+		return func;
+	}
+
+	Eigen::MatrixXd Evaluator::generate_linear_field(
+		const int n_bases,
+		const std::shared_ptr<mesh::MeshNodes> mesh_nodes,
+		const Eigen::MatrixXd &grad)
+	{
+		return utils::flatten(get_bases_position(n_bases, mesh_nodes) * grad.transpose());
 	}
 } // namespace polyfem::io

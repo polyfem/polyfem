@@ -16,7 +16,7 @@
 
 #include <polyfem/utils/MaybeParallelFor.hpp>
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 #include <math.h>
 ////////////////////////////////////////////////////////////////////////////////
@@ -70,7 +70,7 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 
 	State state;
 	state.set_max_threads(1);
-	state.init_logger("", spdlog::level::off, false);
+	state.init_logger("", spdlog::level::off, spdlog::level::off, false);
 	state.init(in_args, true);
 
 	state.load_mesh(true);
@@ -155,7 +155,7 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 	in_args["geometry"][0]["mesh"] = path + "/contact/meshes/3D/simple/bar/bar-186.msh";
 
 	State state;
-	state.init_logger("", spdlog::level::off, false);
+	state.init_logger("", spdlog::level::off, spdlog::level::off, false);
 	state.init(in_args, true);
 
 	state.load_mesh(true);

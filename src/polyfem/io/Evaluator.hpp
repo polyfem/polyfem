@@ -5,6 +5,7 @@
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/mesh/Mesh.hpp>
+#include <polyfem/mesh/MeshNodes.hpp>
 
 #include <polyfem/utils/RefElementSampler.hpp>
 
@@ -49,6 +50,7 @@ namespace polyfem::io
 			const Eigen::VectorXi &disc_orders,
 			const assembler::Assembler &assembler,
 			const Eigen::MatrixXd &fun,
+			const double t,
 			Eigen::MatrixXd &result,
 			Eigen::VectorXd &von_mises);
 
@@ -149,6 +151,15 @@ namespace polyfem::io
 			Eigen::MatrixXd &result,
 			Eigen::MatrixXd &result_grad);
 
+		static void interpolate_at_local_vals(
+			const int el_index,
+			const int dim,
+			const int actual_dim,
+			const assembler::ElementAssemblyValues &vals,
+			const Eigen::MatrixXd &fun,
+			Eigen::MatrixXd &result,
+			Eigen::MatrixXd &result_grad);
+
 		/// checks if mises are not nan
 		/// @param[in] mesh mesh
 		/// @param[in] is_problem_scalar if problem is scalar
@@ -174,6 +185,7 @@ namespace polyfem::io
 			const assembler::Assembler &assembler,
 			const utils::RefElementSampler &sampler,
 			const Eigen::MatrixXd &fun,
+			const double t,
 			const bool use_sampler,
 			const bool boundary_only);
 
@@ -204,6 +216,7 @@ namespace polyfem::io
 			const utils::RefElementSampler &sampler,
 			const int n_points,
 			const Eigen::MatrixXd &fun,
+			const double t,
 			std::vector<assembler::Assembler::NamedMatrix> &result,
 			const bool use_sampler,
 			const bool boundary_only);
@@ -237,6 +250,7 @@ namespace polyfem::io
 			const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 			const assembler::Assembler &assembler,
 			const utils::RefElementSampler &sampler,
+			const double t,
 			const int n_points,
 			const Eigen::MatrixXd &fun,
 			std::vector<assembler::Assembler::NamedMatrix> &result_scalar,
@@ -271,6 +285,7 @@ namespace polyfem::io
 			const utils::RefElementSampler &sampler,
 			const int n_points,
 			const Eigen::MatrixXd &fun,
+			const double t,
 			std::vector<assembler::Assembler::NamedMatrix> &result,
 			const bool use_sampler,
 			const bool boundary_only);
@@ -315,7 +330,7 @@ namespace polyfem::io
 			const Eigen::MatrixXd &fun,
 			Eigen::MatrixXd &result);
 
-		/// computes traction foces for fun (tensor * surface normal) result, stress tensor, and von mises, per surface face. pts and faces are the boundary on the rest configuration.
+		/// computes traction forces for fun (tensor * surface normal) result, stress tensor, and von mises, per surface face. pts and faces are the boundary on the rest configuration.
 		/// disp is the displacement of the surface vertices
 		/// @param[in] mesh mesh
 		/// @param[in] is_problem_scalar if problem is scalar
@@ -326,6 +341,7 @@ namespace polyfem::io
 		/// @param[in] faces boundary faces
 		/// @param[in] fun function to used
 		/// @param[in] disp displacement to deform mesh
+		/// @param[in] t time
 		/// @param[in] compute_avg if compute the average across elements
 		/// @param[out] result resulting value
 		/// @param[out] stresses resulting stresses
@@ -341,6 +357,7 @@ namespace polyfem::io
 			const Eigen::MatrixXi &faces,
 			const Eigen::MatrixXd &fun,
 			const Eigen::MatrixXd &disp,
+			const double t,
 			const bool compute_avg,
 			Eigen::MatrixXd &result,
 			Eigen::MatrixXd &stresses,
@@ -356,6 +373,7 @@ namespace polyfem::io
 		/// @param[in] pts boundary points
 		/// @param[in] faces boundary faces
 		/// @param[in] fun function to used
+		/// @param[in] t time
 		/// @param[in] compute_avg if compute the average across elements
 		/// @param[out] result resulting value
 		/// @param[out] stresses resulting stresses
@@ -370,6 +388,7 @@ namespace polyfem::io
 			const Eigen::MatrixXd &pts,
 			const Eigen::MatrixXi &faces,
 			const Eigen::MatrixXd &fun,
+			const double t,
 			const bool compute_avg,
 			Eigen::MatrixXd &result,
 			Eigen::MatrixXd &stresses,
@@ -386,5 +405,14 @@ namespace polyfem::io
 			Eigen::MatrixXd &pts,
 			Eigen::MatrixXi &faces,
 			Eigen::MatrixXd &sidesets);
+
+		static Eigen::MatrixXd generate_linear_field(
+			const int n_bases,
+			const std::shared_ptr<mesh::MeshNodes> mesh_nodes,
+			const Eigen::MatrixXd &grad);
+
+		static Eigen::MatrixXd get_bases_position(
+			const int n_bases,
+			const std::shared_ptr<mesh::MeshNodes> mesh_nodes);
 	};
 } // namespace polyfem::io

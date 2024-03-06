@@ -28,16 +28,16 @@ namespace polyfem::solver
 				  const double t,
 				  const std::vector<std::shared_ptr<Form>> &forms);
 
-		double value(const TVector &x) override;
-		void gradient(const TVector &x, TVector &gradv) override;
-		void hessian(const TVector &x, THessian &hessian) override;
+		virtual double value(const TVector &x) override;
+		virtual void gradient(const TVector &x, TVector &gradv) override;
+		virtual void hessian(const TVector &x, THessian &hessian) override;
 
-		bool is_step_valid(const TVector &x0, const TVector &x1) const override;
-		bool is_step_collision_free(const TVector &x0, const TVector &x1) const override;
-		double max_step_size(const TVector &x0, const TVector &x1) const override;
+		bool is_step_valid(const TVector &x0, const TVector &x1) override;
+		bool is_step_collision_free(const TVector &x0, const TVector &x1) override;
+		double max_step_size(const TVector &x0, const TVector &x1) override;
 
 		void line_search_begin(const TVector &x0, const TVector &x1) override;
-		void post_step(const int iter_num, const TVector &x) override;
+		void post_step(const polysolve::nonlinear::PostStepData &data) override;
 
 		void solution_changed(const TVector &new_x) override;
 
@@ -46,7 +46,7 @@ namespace polyfem::solver
 
 		// --------------------------------------------------------------------
 
-		void update_quantities(const double t, const TVector &x);
+		virtual void update_quantities(const double t, const TVector &x);
 
 		int full_size() const { return full_size_; }
 		int reduced_size() const { return reduced_size_; }
@@ -54,8 +54,8 @@ namespace polyfem::solver
 		void use_full_size() { current_size_ = CurrentSize::FULL_SIZE; }
 		void use_reduced_size() { current_size_ = CurrentSize::REDUCED_SIZE; }
 
-		TVector full_to_reduced(const TVector &full) const;
-		TVector reduced_to_full(const TVector &reduced) const;
+		virtual TVector full_to_reduced(const TVector &full) const;
+		virtual TVector reduced_to_full(const TVector &reduced) const;
 
 		void set_apply_DBC(const TVector &x, const bool val);
 

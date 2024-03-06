@@ -1,4 +1,4 @@
-# Polyfem Solvers
+# Polyfem Solvers (https://github.com/polyfem/paraviewo)
 # License: MIT
 
 if(TARGET paraviewo::paraviewo)
@@ -7,12 +7,5 @@ endif()
 
 message(STATUS "Third-party: creating target 'paraviewo::paraviewo'")
 
-
-include(FetchContent)
-FetchContent_Declare(
-    paraviewo
-    GIT_REPOSITORY https://github.com/polyfem/paraviewo.git
-    GIT_TAG e33b4eeecb9bd847fa630f9f12132971076a251d
-    GIT_SHALLOW FALSE
-)
-FetchContent_MakeAvailable(paraviewo)
+include(CPM)
+CPMAddPackage("gh:polyfem/paraviewo#5e0218b48ad2ed19c6c92eef158dc6e8768f7eb6")

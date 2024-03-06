@@ -7,7 +7,8 @@
 
 #include <ipc/ipc.hpp>
 #include <ipc/collision_mesh.hpp>
-#include <ipc/friction/friction_constraints.hpp>
+#include <ipc/friction/friction_collisions.hpp>
+#include <ipc/potentials/friction_potential.hpp>
 
 namespace polyfem::solver
 {
@@ -31,10 +32,13 @@ namespace polyfem::solver
 			const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator,
 			const double epsv,
 			const double mu,
-			const double dhat,
 			const ipc::BroadPhaseMethod broad_phase_method,
 			const ContactForm &contact_form,
 			const int n_lagging_iters);
+
+		std::string name() const override { return "friction"; }
+
+		void force_shape_derivative(const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint, const ipc::FrictionCollisions &friction_constraints_set, Eigen::VectorXd &term);
 
 	protected:
 		/// @brief Compute the value of the form
@@ -79,6 +83,11 @@ namespace polyfem::solver
 		/// @brief Compute the derivative of the velocities wrt x
 		double dv_dx() const;
 
+		double mu() const { return mu_; }
+		double epsv() const { return epsv_; }
+		const ipc::FrictionCollisions &friction_collision_set() const { return friction_collision_set_; }
+		const ipc::FrictionPotential &friction_potential() const { return friction_potential_; }
+
 	private:
 		/// Reference to the collision mesh
 		const ipc::CollisionMesh &collision_mesh_;
@@ -88,12 +97,13 @@ namespace polyfem::solver
 
 		const double epsv_;                              ///< Smoothing factor between static and dynamic friction
 		const double mu_;                                ///< Global coefficient of friction
-		const double dhat_;                              ///< Barrier activation distance
 		const ipc::BroadPhaseMethod broad_phase_method_; ///< Broad-phase method used for distance computation and collision detection
 		const int n_lagging_iters_;                      ///< Number of lagging iterations
 
-		ipc::FrictionConstraints friction_constraint_set_; ///< Lagged friction constraint set
+		ipc::FrictionCollisions friction_collision_set_; ///< Lagged friction constraint set
 
 		const ContactForm &contact_form_; ///< necessary to have the barrier stiffnes, maybe clean me
+
+		const ipc::FrictionPotential friction_potential_;
 	};
 } // namespace polyfem::solver

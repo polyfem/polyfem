@@ -1,8 +1,7 @@
 #include "TransientNavierStokesSolver.hpp"
 
 #include <polyfem/utils/MatrixUtils.hpp>
-#include <polysolve/LinearSolver.hpp>
-#include <polysolve/FEMSolver.hpp>
+#include <polysolve/linear/FEMSolver.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
 
 #include <polyfem/utils/Logger.hpp>
@@ -23,9 +22,7 @@ namespace polyfem
 	{
 
 		TransientNavierStokesSolver::TransientNavierStokesSolver(const json &solver_param)
-			: solver_param(solver_param),
-			  solver_type(solver_param["linear"]["solver"]),
-			  precond_type(solver_param["linear"]["precond"])
+			: solver_param(solver_param)
 		{
 			gradNorm = solver_param["nonlinear"]["grad_norm"];
 			iterations = solver_param["nonlinear"]["max_iterations"];
@@ -34,6 +31,7 @@ namespace polyfem
 		void TransientNavierStokesSolver::minimize(
 			const int n_bases,
 			const int n_pressure_bases,
+			const double t,
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			assembler::NavierStokesVelocity &velocity_assembler,
@@ -49,8 +47,7 @@ namespace polyfem
 		{
 			assert(velocity_assembler.name() == "NavierStokes");
 
-			auto solver = LinearSolver::create(solver_type, precond_type);
-			solver->setParameters(solver_param);
+			auto solver = linear::Solver::create(solver_param["linear"], logger());
 			logger().debug("\tinternal solver {}", solver->name());
 
 			const int precond_num = problem_dim * n_bases;
@@ -123,6 +120,7 @@ namespace polyfem
 			it += minimize_aux(true, skipping,
 							   n_bases,
 							   n_pressure_bases,
+							   t,
 							   bases,
 							   gbases,
 							   velocity_assembler,
@@ -135,6 +133,7 @@ namespace polyfem
 			it += minimize_aux(false, skipping,
 							   n_bases,
 							   n_pressure_bases,
+							   t,
 							   bases,
 							   gbases,
 							   velocity_assembler,
@@ -164,6 +163,7 @@ namespace polyfem
 			const std::vector<int> &skipping,
 			const int n_bases,
 			const int n_pressure_bases,
+			const double t,
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			assembler::NavierStokesVelocity &velocity_assembler,
@@ -175,7 +175,7 @@ namespace polyfem
 			const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 			const StiffnessMatrix &velocity_mass,
 			const Eigen::VectorXd &rhs, const double grad_norm,
-			std::unique_ptr<LinearSolver> &solver, double &nlres_norm,
+			std::unique_ptr<linear::Solver> &solver, double &nlres_norm,
 			Eigen::VectorXd &x)
 		{
 			igl::Timer time;
@@ -187,7 +187,7 @@ namespace polyfem
 
 			time.start();
 			velocity_assembler.set_picard(true);
-			velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
+			velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, t, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
 			AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure,
 												 (velocity_stiffness + nl_matrix) + velocity_mass, mixed_stiffness, pressure_stiffness,
 												 total_matrix);
@@ -214,7 +214,7 @@ namespace polyfem
 				if (!is_picard)
 				{
 					velocity_assembler.set_picard(false);
-					velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
+					velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, t, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
 					AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure,
 														 (velocity_stiffness + nl_matrix) + velocity_mass, mixed_stiffness, pressure_stiffness,
 														 total_matrix);
@@ -231,7 +231,7 @@ namespace polyfem
 
 				time.start();
 				velocity_assembler.set_picard(true);
-				velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
+				velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, t, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
 				AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure,
 													 (velocity_stiffness + nl_matrix) + velocity_mass, mixed_stiffness, pressure_stiffness,
 													 total_matrix);
@@ -255,8 +255,7 @@ namespace polyfem
 
 			if (it >= iterations)
 			{
-				logger().error("Reaching the max number of iterations!");
-				exit(0);
+				log_and_throw_error("Reaching the max number of iterations!");
 			}
 
 			// solver_info["internal_solver"] = internal_solver;

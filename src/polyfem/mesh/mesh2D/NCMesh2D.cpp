@@ -514,6 +514,11 @@ namespace polyfem
 			prepare_mesh();
 		}
 
+		std::unique_ptr<Mesh> NCMesh2D::copy() const
+		{
+			return std::make_unique<NCMesh2D>(*this);
+		}
+
 		void NCMesh2D::traverse_edge(Eigen::Vector2i v, double p1, double p2, int depth, std::vector<follower_edge> &list) const
 		{
 			int v_mid = find_vertex(v);

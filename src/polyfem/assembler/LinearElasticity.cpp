@@ -2,17 +2,29 @@
 
 #include <polyfem/autogen/auto_elasticity_rhs.hpp>
 
+#include <polyfem/utils/MatrixUtils.hpp>
+// #include <finitediff.hpp>
+#include <polyfem/utils/Logger.hpp>
+
 namespace polyfem
 {
 	using namespace basis;
 
+	namespace
+	{
+		bool delta(int i, int j)
+		{
+			return (i == j) ? true : false;
+		}
+	} // namespace
+
 	namespace assembler
 	{
-		void LinearElasticity::add_multimaterial(const int index, const json &params)
+		void LinearElasticity::add_multimaterial(const int index, const json &params, const Units &units)
 		{
 			assert(size() == 2 || size() == 3);
 
-			params_.add_multimaterial(index, params, size() == 3);
+			params_.add_multimaterial(index, params, size() == 3, units.stress());
 		}
 
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
@@ -33,7 +45,7 @@ namespace polyfem
 				const double dot = gradi.row(k).dot(gradj.row(k));
 
 				double lambda, mu;
-				params_.lambda_mu(data.vals.quadrature.points.row(k), data.vals.val.row(k), data.vals.element_id, lambda, mu);
+				params_.lambda_mu(data.vals.quadrature.points.row(k), data.vals.val.row(k), data.t, data.vals.element_id, lambda, mu);
 
 				for (int ii = 0; ii < size(); ++ii)
 				{
@@ -112,7 +124,7 @@ namespace polyfem
 				const AutoDiffGradMat strain = (disp_grad + disp_grad.transpose()) / T(2);
 
 				double lambda, mu;
-				params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.vals.element_id, lambda, mu);
+				params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id, lambda, mu);
 
 				const T val = mu * (strain.transpose() * strain).trace() + lambda / 2 * strain.trace() * strain.trace();
 
@@ -129,7 +141,7 @@ namespace polyfem
 
 			double lambda, mu;
 			// TODO!
-			params_.lambda_mu(0, 0, 0, pt(0).getValue(), pt(1).getValue(), size() == 2 ? 0. : pt(2).getValue(), 0, lambda, mu);
+			params_.lambda_mu(0, 0, 0, pt(0).getValue(), pt(1).getValue(), size() == 2 ? 0. : pt(2).getValue(), 0, 0, lambda, mu);
 
 			if (size() == 2)
 				autogen::linear_elasticity_2d_function(pt, lambda, mu, res);
@@ -141,8 +153,42 @@ namespace polyfem
 			return res;
 		}
 
-		void LinearElasticity::assign_stress_tensor(const int el_id, const ElementBases &bs, const ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+		void LinearElasticity::compute_stiffness_value(const double t,
+													   const assembler::ElementAssemblyValues &vals,
+													   const Eigen::MatrixXd &local_pts,
+													   const Eigen::MatrixXd &displacement,
+													   Eigen::MatrixXd &tensor) const
 		{
+			tensor.resize(local_pts.rows(), size() * size() * size() * size());
+			assert(displacement.cols() == 1);
+
+			for (long p = 0; p < local_pts.rows(); ++p)
+			{
+				double lambda, mu;
+				params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
+
+				for (int i = 0, idx = 0; i < size(); i++)
+					for (int j = 0; j < size(); j++)
+						for (int k = 0; k < size(); k++)
+							for (int l = 0; l < size(); l++)
+								tensor(p, idx++) = mu * delta(i, k) * delta(j, l) + mu * delta(i, l) * delta(j, k) + lambda * delta(i, j) * delta(k, l);
+			}
+		}
+
+		void LinearElasticity::assign_stress_tensor(
+			const OutputData &data,
+			const int all_size,
+			const ElasticityTensorType &type,
+			Eigen::MatrixXd &all,
+			const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+		{
+			const auto &displacement = data.fun;
+			const auto &local_pts = data.local_pts;
+			const auto &bs = data.bs;
+			const auto &gbs = data.gbs;
+			const auto el_id = data.el_id;
+			const auto t = data.t;
+
 			all.resize(local_pts.rows(), all_size);
 			assert(displacement.cols() == 1);
 
@@ -162,7 +208,7 @@ namespace polyfem
 				}
 
 				double lambda, mu;
-				params_.lambda_mu(local_pts.row(p), vals.val.row(p), vals.element_id, lambda, mu);
+				params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
 
 				const Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose()) / 2;
 				Eigen::MatrixXd stress = 2 * mu * strain + lambda * strain.trace() * Eigen::MatrixXd::Identity(size(), size());
@@ -182,7 +228,7 @@ namespace polyfem
 
 			double mu, nu, lambda;
 			// per body lame parameter dont work here!
-			params_.lambda_mu(0, 0, 0, 0, 0, 0, 0, lambda, mu);
+			params_.lambda_mu(0, 0, 0, 0, 0, 0, 0, 0, lambda, mu);
 
 			// convert to nu!
 			nu = lambda / (lambda * (dim - 1) + 2 * mu);
@@ -204,17 +250,50 @@ namespace polyfem
 			return res;
 		}
 
-		void LinearElasticity::compute_dstress_dgradu_multiply_mat(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &mat, Eigen::MatrixXd &stress, Eigen::MatrixXd &result) const
+		void LinearElasticity::compute_stress_grad_multiply_mat(
+			const OptAssemblerData &data,
+			const Eigen::MatrixXd &mat,
+			Eigen::MatrixXd &stress,
+			Eigen::MatrixXd &result) const
 		{
+			const double t = data.t;
+			const int el_id = data.el_id;
+			const Eigen::MatrixXd &local_pts = data.local_pts;
+			const Eigen::MatrixXd &global_pts = data.global_pts;
+			const Eigen::MatrixXd &grad_u_i = data.grad_u_i;
+
 			double lambda, mu;
-			params_.lambda_mu(local_pts, global_pts, el_id, lambda, mu);
+			params_.lambda_mu(local_pts, global_pts, t, el_id, lambda, mu);
 
 			stress = mu * (grad_u_i + grad_u_i.transpose()) + lambda * grad_u_i.trace() * Eigen::MatrixXd::Identity(size(), size());
 			result = mu * (mat + mat.transpose()) + lambda * mat.trace() * Eigen::MatrixXd::Identity(size(), size());
 		}
 
-		void LinearElasticity::compute_dstress_dmu_dlambda(const int el_id, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, Eigen::MatrixXd &dstress_dmu, Eigen::MatrixXd &dstress_dlambda) const
+		void LinearElasticity::compute_stress_grad_multiply_stress(
+			const OptAssemblerData &data,
+			Eigen::MatrixXd &stress,
+			Eigen::MatrixXd &result) const
 		{
+			const double t = data.t;
+			const int el_id = data.el_id;
+			const Eigen::MatrixXd &local_pts = data.local_pts;
+			const Eigen::MatrixXd &global_pts = data.global_pts;
+			const Eigen::MatrixXd &grad_u_i = data.grad_u_i;
+
+			double lambda, mu;
+			params_.lambda_mu(local_pts, global_pts, t, el_id, lambda, mu);
+
+			stress = mu * (grad_u_i + grad_u_i.transpose()) + lambda * grad_u_i.trace() * Eigen::MatrixXd::Identity(size(), size());
+			result = mu * (stress + stress.transpose()) + lambda * stress.trace() * Eigen::MatrixXd::Identity(size(), size());
+		}
+
+		void LinearElasticity::compute_dstress_dmu_dlambda(
+			const OptAssemblerData &data,
+			Eigen::MatrixXd &dstress_dmu,
+			Eigen::MatrixXd &dstress_dlambda) const
+		{
+			const Eigen::MatrixXd &grad_u_i = data.grad_u_i;
+
 			dstress_dmu = grad_u_i.transpose() + grad_u_i;
 			dstress_dlambda = grad_u_i.trace() * Eigen::MatrixXd::Identity(grad_u_i.rows(), grad_u_i.cols());
 		}
@@ -228,20 +307,20 @@ namespace polyfem
 			res["lambda"] = [&params](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
 				double lambda, mu;
 
-				params.lambda_mu(uv, p, e, lambda, mu);
+				params.lambda_mu(uv, p, t, e, lambda, mu);
 				return lambda;
 			};
 
 			res["mu"] = [&params](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
 				double lambda, mu;
 
-				params.lambda_mu(uv, p, e, lambda, mu);
+				params.lambda_mu(uv, p, t, e, lambda, mu);
 				return mu;
 			};
 
 			res["E"] = [&params, size](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
 				double lambda, mu;
-				params.lambda_mu(uv, p, e, lambda, mu);
+				params.lambda_mu(uv, p, t, e, lambda, mu);
 
 				if (size == 3)
 					return mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
@@ -252,7 +331,7 @@ namespace polyfem
 			res["nu"] = [&params, size](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
 				double lambda, mu;
 
-				params.lambda_mu(uv, p, e, lambda, mu);
+				params.lambda_mu(uv, p, t, e, lambda, mu);
 
 				if (size == 3)
 					return lambda / (2.0 * (lambda + mu));

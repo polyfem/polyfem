@@ -1,5 +1,6 @@
 import json
 import argparse
+import jsbeautifier
 
 
 def copy_entry(key, f, t):
@@ -130,9 +131,9 @@ def PolyFEM_convert(old):
     # copy_entry("use_spline", old, j["space"]["advanced"])
     copy_entry("bc_method", old, j["space"]["advanced"])
     copy_entry("n_boundary_samples", old, j["space"]["advanced"])
-    if "poly_basis_type" not in j["space"]:
+    if "poly_bases" in old and "poly_basis_type" not in j["space"]:
         j["space"]["poly_basis_type"] = {}
-    copy_entry("poly_bases", old, j["space"]["poly_basis_type"])
+        copy_entry("poly_bases", old, j["space"]["poly_basis_type"])
     copy_entry("quadrature_order", old, j["space"]["advanced"])
     copy_entry("integral_constraints", old, j["space"]["advanced"])
     copy_entry("n_harmonic_samples", old, j["space"]["advanced"])
@@ -167,6 +168,7 @@ def PolyFEM_convert(old):
     copy_entry("epsv", old, j["contact"])
     rename_entry("mu", old, "friction_coefficient", j["contact"])
     rename_entry("coeff_friction", old, "friction_coefficient", j["contact"])
+    copy_entry("collision_mesh", old, j["contact"])
 
     # Solver
 
@@ -184,11 +186,11 @@ def PolyFEM_convert(old):
         rename_entry("fDelta", old["solver_params"],
                      "f_delta", j["solver"]["nonlinear"])
         rename_entry("gradNorm", old["solver_params"],
-                     "grad_norm", j["solver"]["nonlinear"])
+                     "grad_norm" if old["solver_params"].get(
+                         "useGradNorm", False) else "x_delta",
+                     j["solver"]["nonlinear"])
         rename_entry("nl_iterations", old["solver_params"],
                      "max_iterations", j["solver"]["nonlinear"])
-        rename_entry("useGradNorm", old["solver_params"],
-                     "use_grad_norm", j["solver"]["nonlinear"])
         rename_entry("relativeGradient", old["solver_params"],
                      "relative_gradient", j["solver"]["nonlinear"])
         rename_entry("use_grad_norm_tol", old["solver_params"],
@@ -449,5 +451,17 @@ if __name__ == "__main__":
     conv = PolyFEM_convert(old)
 
     # save it to file
+    j = json.dumps(conv, ensure_ascii=False,
+                   indent=None, separators=(',', ':'))
+
+    j = jsbeautifier.beautify(j, opts={
+        "js": {
+            "allowed_file_extensions": ["json", "jsbeautifyrc"],
+            "brace_style": "collapse",
+            "indent_char": " ",
+            "indent_size": 4
+        }
+    })
+
     with open(args.output_json, 'w', encoding='utf-8') as f:
-        json.dump(conv, f, ensure_ascii=False, indent=4)
+        f.write(j)

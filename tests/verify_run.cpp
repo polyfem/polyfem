@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
 
 #include "polyfem/utils/JSONUtils.hpp"
 #include "polyfem/State.hpp"
@@ -31,13 +31,22 @@ bool missing_tests_data(const json &j, const std::string &key)
 	return !j.contains(key) || (j.at(key).size() == 1 && j.at(key).contains("time_steps"));
 }
 
-int authenticate_json(const std::string &json_file, const bool compute_validation)
+enum AuthenticateResult
+{
+	SUCCESS,
+	MISSING_FILE,
+	MISSING_TEST_DATA,
+	SOLVE_FAILED,
+	AUTHETICATION_FAILED
+};
+
+AuthenticateResult authenticate_json(const std::string &json_file, const bool compute_validation)
 {
 	json in_args;
 	if (!load_json(json_file, in_args))
 	{
 		spdlog::error("unable to open {} file", json_file);
-		return 1;
+		return MISSING_FILE;
 	}
 
 	const std::string tests_key = "tests";
@@ -46,52 +55,56 @@ int authenticate_json(const std::string &json_file, const bool compute_validatio
 		spdlog::error(
 			"JSON file missing \"{}\" key. Add a * to the beginning of filename to allow appends.",
 			tests_key);
-		return 2;
+		return MISSING_TEST_DATA;
 	}
+
+	// ------------------------------------------------------------------------
+	// Patch the JSON file to run a single time step
+	json args = in_args;
+	args["root_path"] = json_file;
+	utils::apply_common_params(args);
 
 	json time_steps;
-	if (!in_args.contains("time"))
+	if (!args.contains("time"))
 		time_steps = "static";
-	else if (!in_args.contains(tests_key) || !in_args[tests_key].contains("time_steps"))
+	else if (!args.contains(tests_key) || !args[tests_key].contains("time_steps"))
 		time_steps = 1;
 	else
-		time_steps = in_args[tests_key]["time_steps"];
+		time_steps = args[tests_key]["time_steps"];
 
-	json args = in_args;
+	args["output"] = json({});
+	args["output"]["advanced"]["save_time_sequence"] = false;
+
+	if (time_steps.is_number())
 	{
-		args["output"] = json({});
-		args["output"]["advanced"]["save_time_sequence"] = false;
-
-		if (time_steps.is_number())
+		json t_args = args["time"];
+		if (t_args.contains("tend") && t_args.contains("dt"))
 		{
-			json t_args = args["time"];
-			if (t_args.contains("tend") && t_args.contains("dt"))
-			{
-				t_args.erase("tend");
-				t_args["time_steps"] = time_steps.get<int>();
-			}
-			else if (t_args.contains("tend") && t_args.contains("time_steps"))
-			{
-				t_args["dt"] = t_args["tend"].get<double>() / t_args["time_steps"].get<int>();
-				t_args["time_steps"] = time_steps.get<int>();
-				t_args.erase("tend");
-			}
-			else if (t_args.contains("dt") && t_args.contains("time_steps"))
-			{
-				t_args["time_steps"] = time_steps.get<int>();
-			}
-			else
-			{
-				// Required to have two of tend, dt, time_steps
-				REQUIRE(false);
-			}
-			args["time"] = t_args;
+			t_args.erase("tend");
+			t_args["time_steps"] = time_steps.get<int>();
 		}
-		args["root_path"] = json_file;
+		else if (t_args.contains("tend") && t_args.contains("time_steps"))
+		{
+			t_args["dt"] = t_args["tend"].get<double>() / t_args["time_steps"].get<int>();
+			t_args["time_steps"] = time_steps.get<int>();
+			t_args.erase("tend");
+		}
+		else if (t_args.contains("dt") && t_args.contains("time_steps"))
+		{
+			t_args["time_steps"] = time_steps.get<int>();
+		}
+		else
+		{
+			// Required to have two of tend, dt, time_steps
+			spdlog::error("Missing time parameters");
+			REQUIRE(false);
+		}
+		args["time"] = t_args;
 	}
+	// ------------------------------------------------------------------------
 
 	args["/solver/linear/solver"_json_pointer] =
-		json_file.find("navier") == std::string::npos
+		(json_file.find("navier") == std::string::npos && json_file.find("bilaplace") == std::string::npos)
 			? "Eigen::SimplicialLDLT"
 			: "Eigen::SparseLU";
 
@@ -105,7 +118,7 @@ int authenticate_json(const std::string &json_file, const bool compute_validatio
 	if (state.mesh == nullptr)
 	{
 		spdlog::warn("No Mesh is Read!!");
-		return 1;
+		return MISSING_FILE;
 	}
 
 	// state.compute_mesh_stats();
@@ -118,9 +131,19 @@ int authenticate_json(const std::string &json_file, const bool compute_validatio
 	Eigen::MatrixXd sol;
 	Eigen::MatrixXd pressure;
 
-	state.solve_problem(sol, pressure);
+	try
+	{
+		state.solve_problem(sol, pressure);
+	}
+	catch (...)
+	{
+		return SOLVE_FAILED;
+	}
 
 	state.compute_errors(sol);
+
+	state.save_json(sol);
+	state.export_data(sol, pressure);
 
 	json out = json({});
 	out["err_l2"] = state.stats.l2_err;
@@ -148,7 +171,7 @@ int authenticate_json(const std::string &json_file, const bool compute_validatio
 			if (relerr > margin)
 			{
 				spdlog::error("Violating Authenticate prev_{0}={1} curr_{0}={2}", key, prev_val, curr_val);
-				return 2;
+				return AUTHETICATION_FAILED;
 			}
 		}
 		spdlog::info("Authenticated ✅");
@@ -162,15 +185,15 @@ int authenticate_json(const std::string &json_file, const bool compute_validatio
 		file << in_args;
 	}
 
-	return 0;
+	return SUCCESS;
 }
 
 #if defined(NDEBUG) && !defined(WIN32)
-std::string tags = "[run]";
+std::string tagsrun = "[run]";
 #else
-std::string tags = "[.][run]";
+std::string tagsrun = "[.][run]";
 #endif
-TEST_CASE("runners", tags)
+TEST_CASE("runners", tagsrun)
 {
 	// Disabled on Windows CI, due to the requirement for Pardiso.
 	std::ifstream file(POLYFEM_TEST_DIR "/system_test_list.txt");
@@ -187,10 +210,10 @@ TEST_CASE("runners", tags)
 			line = line.substr(1);
 		}
 		spdlog::info("Processing {}", line);
-		auto flag = authenticate_json(POLYFEM_DATA_DIR "/" + line, compute_validation);
+		AuthenticateResult result = authenticate_json(POLYFEM_DATA_DIR "/" + line, compute_validation);
 		CAPTURE(line);
-		CHECK(flag == 0);
-		if (flag != 0)
+		CHECK(result == SUCCESS);
+		if (result != SUCCESS)
 			failing_tests.push_back(line);
 	}
 	if (failing_tests.size() > 0)

@@ -2,6 +2,8 @@
 
 #include <polyfem/Common.hpp>
 
+#include <polyfem/Units.hpp>
+
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/basis/InterfaceData.hpp>
 
@@ -18,6 +20,7 @@
 #include <polyfem/mesh/LocalBoundary.hpp>
 
 #include <polyfem/solver/SolveData.hpp>
+#include <polyfem/solver/DiffCache.hpp>
 
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
@@ -26,32 +29,31 @@
 
 #include <polyfem/io/OutData.hpp>
 
-#include <polysolve/LinearSolver.hpp>
+#include <polysolve/linear/Solver.hpp>
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-
-#ifdef POLYFEM_WITH_TBB
-#include <tbb/global_control.h>
-#endif
 
 #include <memory>
 #include <string>
 #include <unordered_map>
 
+#include <spdlog/sinks/basic_file_sink.h>
+
 #include <ipc/collision_mesh.hpp>
 #include <ipc/utils/logger.hpp>
 
 // Forward declaration
-namespace cppoptlib
+namespace polysolve::nonlinear
 {
-	template <typename ProblemType>
-	class NonlinearSolver;
+	class Solver;
 }
 
 namespace polyfem::assembler
 {
 	class Mass;
+	class ViscousDamping;
+	class ViscousDampingPrev;
 } // namespace polyfem::assembler
 
 namespace polyfem
@@ -75,7 +77,7 @@ namespace polyfem
 		State();
 
 		/// @param[in] max_threads max number of threads
-		void set_max_threads(const unsigned int max_threads = std::numeric_limits<unsigned int>::max());
+		void set_max_threads(const int max_threads = std::numeric_limits<int>::max());
 
 		/// initialize the polyfem solver with a json settings
 		/// @param[in] args input arguments
@@ -95,8 +97,13 @@ namespace polyfem
 		/// initializing the logger
 		/// @param[in] log_file is to write it to a file (use log_file="") to output to stdout
 		/// @param[in] log_level 0 all message, 6 no message. 2 is info, 1 is debug
+		/// @param[in] file_log_level 0 all message, 6 no message. 2 is info, 1 is debug
 		/// @param[in] is_quit quiets the log
-		void init_logger(const std::string &log_file, const spdlog::level::level_enum log_level, const bool is_quiet);
+		void init_logger(
+			const std::string &log_file,
+			const spdlog::level::level_enum log_level,
+			const spdlog::level::level_enum file_log_level,
+			const bool is_quiet);
 
 		/// initializing the logger writes to an output stream
 		/// @param[in] os output stream
@@ -105,12 +112,7 @@ namespace polyfem
 
 		/// change log level
 		/// @param[in] log_level 0 all message, 6 no message. 2 is info, 1 is debug
-		void set_log_level(const spdlog::level::level_enum log_level)
-		{
-			spdlog::set_level(log_level);
-			logger().set_level(log_level);
-			ipc::logger().set_level(log_level);
-		}
+		void set_log_level(const spdlog::level::level_enum log_level);
 
 		/// gets the output log as json
 		/// this is *not* what gets printed but more informative
@@ -126,17 +128,29 @@ namespace polyfem
 		/// initializing the logger meant for internal usage
 		void init_logger(const std::vector<spdlog::sink_ptr> &sinks, const spdlog::level::level_enum log_level);
 
+		/// logger sink to stdout
+		spdlog::sink_ptr console_sink_ = nullptr;
+		spdlog::sink_ptr file_sink_ = nullptr;
+
 	public:
 		//---------------------------------------------------
 		//-----------------assembly--------------------------
 		//---------------------------------------------------
 
+		Units units;
+
 		/// assemblers
+
+		/// assembler corresponding to governing physical equations
 		std::shared_ptr<assembler::Assembler> assembler = nullptr;
+
 		std::shared_ptr<assembler::Mass> mass_matrix_assembler = nullptr;
 
 		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
 		std::shared_ptr<assembler::Assembler> pressure_assembler = nullptr;
+
+		std::shared_ptr<assembler::ViscousDamping> damping_assembler = nullptr;
+		std::shared_ptr<assembler::ViscousDampingPrev> damping_prev_assembler = nullptr;
 
 		/// current problem, it contains rhs and bc
 		std::shared_ptr<assembler::Problem> problem;
@@ -152,6 +166,8 @@ namespace polyfem
 		int n_bases;
 		/// number of pressure bases
 		int n_pressure_bases;
+		/// number of geometric bases
+		int n_geom_bases;
 
 		/// polygons, used since poly have no geom mapping
 		std::map<int, Eigen::MatrixXd> polys;
@@ -162,7 +178,7 @@ namespace polyfem
 		Eigen::VectorXi disc_orders;
 
 		/// Mapping from input nodes to FE nodes
-		std::shared_ptr<polyfem::mesh::MeshNodes> mesh_nodes;
+		std::shared_ptr<polyfem::mesh::MeshNodes> mesh_nodes, geom_mesh_nodes, pressure_mesh_nodes;
 
 		/// used to store assembly values for small problems
 		assembler::AssemblyValsCache ass_vals_cache;
@@ -198,10 +214,17 @@ namespace polyfem
 		}
 
 		/// builds the bases step 2 of solve
+		/// modifies bases, pressure_bases, geom_bases_, boundary_nodes,
+		/// dirichlet_nodes, neumann_nodes, local_boundary, total_local_boundary
+		/// local_neumann_boundary, polys, poly_edge_to_data, rhs
 		void build_basis();
 		/// compute rhs, step 3 of solve
+		/// build rhs vector based on defined basis and given rhs of the problem
+		/// modifies rhs (and maybe more?)
 		void assemble_rhs();
 		/// assemble mass, step 4 of solve
+		/// build mass matrix based on defined basis
+		/// modifies mass (and maybe more?)
 		void assemble_mass_mat();
 
 		/// build a RhsAssembler for the problem
@@ -313,6 +336,18 @@ namespace polyfem
 		/// @param[out] sol solution
 		/// @param[in] t (optional) initial time
 		void init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t = 1.0, const bool init_time_integrator = true);
+		/// initialize the linear solve
+		/// @param[in] t (optional) initial time
+		void init_linear_solve(Eigen::MatrixXd &sol, const double t = 1.0);
+		/// @brief Load or compute the initial solution.
+		/// @param[out] solution Output solution variable.
+		void initial_solution(Eigen::MatrixXd &solution) const;
+		/// @brief Load or compute the initial velocity.
+		/// @param[out] solution Output velocity variable.
+		void initial_velocity(Eigen::MatrixXd &velocity) const;
+		/// @brief Load or compute the initial acceleration.
+		/// @param[out] solution Output acceleration variable.
+		void initial_acceleration(Eigen::MatrixXd &acceleration) const;
 		/// solves a linear problem
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
@@ -328,20 +363,7 @@ namespace polyfem
 
 		/// factory to create the nl solver depending on input
 		/// @return nonlinear solver (eg newton or LBFGS)
-		template <typename ProblemType>
-		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver(
-			const std::string &linear_solver_type = "") const;
-
-	private:
-		/// @brief Load or compute the initial solution.
-		/// @param[out] solution Output solution variable.
-		void initial_solution(Eigen::MatrixXd &solution) const;
-		/// @brief Load or compute the initial velocity.
-		/// @param[out] solution Output velocity variable.
-		void initial_velocity(Eigen::MatrixXd &velocity) const;
-		/// @brief Load or compute the initial acceleration.
-		/// @param[out] solution Output acceleration variable.
-		void initial_acceleration(Eigen::MatrixXd &acceleration) const;
+		std::shared_ptr<polysolve::nonlinear::Solver> make_nl_solver(bool for_al) const;
 
 		/// @brief Solve the linear problem with the given solver and system.
 		/// @param solver Linear solver.
@@ -351,7 +373,7 @@ namespace polyfem
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
 		void solve_linear(
-			const std::unique_ptr<polysolve::LinearSolver> &solver,
+			const std::unique_ptr<polysolve::linear::Solver> &solver,
 			StiffnessMatrix &A,
 			Eigen::VectorXd &b,
 			const bool compute_spectrum,
@@ -367,6 +389,10 @@ namespace polyfem
 		//---------------------------------------------------
 
 	public:
+		/// Construct a vector of boundary conditions ids with their dimension flags.
+		std::unordered_map<int, std::array<bool, 3>>
+		boundary_conditions_ids(const std::string &bc_type) const;
+
 		/// list of boundary nodes
 		std::vector<int> boundary_nodes;
 		/// list of neumann boundary nodes
@@ -390,6 +416,9 @@ namespace polyfem
 		Eigen::VectorXi in_node_to_node;
 		/// maps in vertices/edges/faces/cells to polyfem vertices/edges/faces/cells
 		Eigen::VectorXi in_primitive_to_primitive;
+
+		std::vector<int> primitive_to_node() const;
+		std::vector<int> node_to_primitive() const;
 
 	private:
 		/// build the mapping from input nodes to polyfem nodes
@@ -458,6 +487,15 @@ namespace polyfem
 		/// Build the mesh matrices (vertices and elements) from the mesh using the bases node ordering
 		void build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F);
 
+#ifdef POLYFEM_WITH_REMESHING
+		/// @brief Remesh the FE space and update solution(s).
+		/// @param time Current time.
+		/// @param dt Time step size.
+		/// @param sol Current solution.
+		/// @return True if remeshing performed any changes to the mesh/solution.
+		bool remesh(const double time, const double dt, Eigen::MatrixXd &sol);
+#endif
+
 		//---------------------------------------------------
 		//-----------------IPC-------------------------------
 		//---------------------------------------------------
@@ -465,7 +503,20 @@ namespace polyfem
 		/// @brief IPC collision mesh
 		ipc::CollisionMesh collision_mesh;
 
-		/// extracts the boundary mesh for collision, called in build_basis
+		/// @brief extracts the boundary mesh for collision, called in build_basis
+		static void build_collision_mesh(
+			const mesh::Mesh &mesh,
+			const int n_bases,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &geom_bases,
+			const std::vector<mesh::LocalBoundary> &total_local_boundary,
+			const mesh::Obstacle &obstacle,
+			const json &args,
+			const std::function<std::string(const std::string &)> &resolve_input_path,
+			const Eigen::VectorXi &in_node_to_node,
+			ipc::CollisionMesh &collision_mesh);
+
+		/// @brief extracts the boundary mesh for collision, called in build_basis
 		void build_collision_mesh();
 
 		/// checks if vertex is obstacle
@@ -503,6 +554,9 @@ namespace polyfem
 		io::OutRuntimeData timings;
 		/// Other statistics
 		io::OutStatsData stats;
+		double starting_min_edge_length = -1;
+		double starting_max_edge_length = -1;
+		double min_boundary_edge_length = -1;
 
 		/// saves all data on the disk according to the input params
 		/// @param[in] sol solution
@@ -557,10 +611,63 @@ namespace polyfem
 		/// @return resolvedpath
 		std::string resolve_output_path(const std::string &path) const;
 
-#ifdef POLYFEM_WITH_TBB
-		/// limits the number of used threads
-		std::shared_ptr<tbb::global_control> thread_limiter;
-#endif
+		//---------------------------------------------------
+		//-----------------differentiable--------------------
+		//---------------------------------------------------
+	public:
+		solver::CacheLevel optimization_enabled = solver::CacheLevel::None;
+		void cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad);
+		solver::DiffCache diff_cached;
+
+		std::unique_ptr<polysolve::linear::Solver> lin_solver_cached; // matrix factorization of last linear solve
+
+		int ndof() const
+		{
+			const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
+			if (mixed_assembler == nullptr)
+				return actual_dim * n_bases;
+			else
+				return actual_dim * n_bases + n_pressure_bases;
+		}
+
+		// Aux functions for setting up adjoint equations
+		void compute_force_jacobian(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, StiffnessMatrix &hessian);
+		void compute_force_jacobian_prev(const int force_step, const int sol_step, StiffnessMatrix &hessian_prev) const;
+		// Solves the adjoint PDE for derivatives and caches
+		void solve_adjoint_cached(const Eigen::MatrixXd &rhs);
+		Eigen::MatrixXd solve_adjoint(const Eigen::MatrixXd &rhs) const;
+		// Returns cached adjoint solve
+		Eigen::MatrixXd get_adjoint_mat(int type) const
+		{
+			assert(diff_cached.adjoint_mat().size() > 0);
+			if (problem->is_time_dependent())
+			{
+				if (type == 0)
+					return diff_cached.adjoint_mat().leftCols(diff_cached.adjoint_mat().cols() / 2);
+				else if (type == 1)
+					return diff_cached.adjoint_mat().middleCols(diff_cached.adjoint_mat().cols() / 2, diff_cached.adjoint_mat().cols() / 2);
+				else
+					log_and_throw_adjoint_error("Invalid adjoint type!");
+			}
+
+			return diff_cached.adjoint_mat();
+		}
+		Eigen::MatrixXd solve_static_adjoint(const Eigen::MatrixXd &adjoint_rhs) const;
+		Eigen::MatrixXd solve_transient_adjoint(const Eigen::MatrixXd &adjoint_rhs) const;
+		// Change geometric node positions
+		void set_mesh_vertex(int v_id, const Eigen::VectorXd &vertex);
+		void get_vertices(Eigen::MatrixXd &vertices) const;
+		void get_elements(Eigen::MatrixXi &elements) const;
+
+		// Get geometric node indices for surface/volume
+		void compute_surface_node_ids(const int surface_selection, std::vector<int> &node_ids) const;
+		void compute_total_surface_node_ids(std::vector<int> &node_ids) const;
+		void compute_volume_node_ids(const int volume_selection, std::vector<int> &node_ids) const;
+
+		// to replace the initial condition in json during initial condition optimization
+		Eigen::MatrixXd initial_sol_update, initial_vel_update;
+		// mapping from positions of geometric nodes to positions of FE basis nodes
+		StiffnessMatrix gbasis_nodes_to_basis_nodes;
 	};
 
 } // namespace polyfem
