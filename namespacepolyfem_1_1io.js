@@ -47,5 +47,7 @@ var namespacepolyfem_1_1io =
     [ "write_matrix_binary< Eigen::MatrixXf >", "namespacepolyfem_1_1io.html#a61fdfffdf092e5e52b1a7ba9b47506a4", null ],
     [ "write_matrix_binary< Eigen::VectorXd >", "namespacepolyfem_1_1io.html#a7d5a0179d04e1b1eab0204796d8d413d", null ],
     [ "write_matrix_binary< Eigen::VectorXf >", "namespacepolyfem_1_1io.html#ae66d25d146d8966c8dec58545fdf4703", null ],
-    [ "write_sparse_matrix_csv", "namespacepolyfem_1_1io.html#ac4c3c352dd849e1009497f6aa8b55b6f", null ]
+    [ "write_sparse_matrix_csv", "namespacepolyfem_1_1io.html#ac4c3c352dd849e1009497f6aa8b55b6f", null ],
+    [ "yaml_file_to_json", "namespacepolyfem_1_1io.html#a6d0b5de42b1d9e75d3c5d57618002a38", null ],
+    [ "yaml_string_to_json", "namespacepolyfem_1_1io.html#afce66cf52f99324ef3572c6a3d0f8fe4", null ]
 ];

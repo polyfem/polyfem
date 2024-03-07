@@ -245,6 +245,12 @@ Functions</h2></td></tr>
 <tr class="memitem:a50d2a67a897e7e93c2891fbf5dd792d0" id="r_a50d2a67a897e7e93c2891fbf5dd792d0"><td class="memTemplParams" colspan="2">template&lt;typename Entity &gt; </td></tr>
 <tr class="memitem:a50d2a67a897e7e93c2891fbf5dd792d0"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1io.html#a50d2a67a897e7e93c2891fbf5dd792d0">map_entity_tag_to_physical_tag</a> (const std::vector&lt; Entity &gt; &amp;entities, std::unordered_map&lt; int, int &gt; &amp;entity_tag_to_physical_tag)</td></tr>
 <tr class="separator:a50d2a67a897e7e93c2891fbf5dd792d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afce66cf52f99324ef3572c6a3d0f8fe4" id="r_afce66cf52f99324ef3572c6a3d0f8fe4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1io.html#afce66cf52f99324ef3572c6a3d0f8fe4">yaml_string_to_json</a> (const std::string &amp;yaml_str)</td></tr>
+<tr class="memdesc:afce66cf52f99324ef3572c6a3d0f8fe4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert YAML string to JSON.  <br /></td></tr>
+<tr class="separator:afce66cf52f99324ef3572c6a3d0f8fe4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d0b5de42b1d9e75d3c5d57618002a38" id="r_a6d0b5de42b1d9e75d3c5d57618002a38"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1io.html#a6d0b5de42b1d9e75d3c5d57618002a38">yaml_file_to_json</a> (const std::string &amp;yaml_filepath)</td></tr>
+<tr class="memdesc:a6d0b5de42b1d9e75d3c5d57618002a38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load a YAML file to JSON.  <br /></td></tr>
+<tr class="separator:a6d0b5de42b1d9e75d3c5d57618002a38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a6df7335d979eed828279c7cf0ba02ef2" name="a6df7335d979eed828279c7cf0ba02ef2"></a>
@@ -1535,6 +1541,57 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1io_ac4c3c352dd849e1009497f6aa8b55b6f_cgraph.svg" width="335" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
+
+</div>
+</div>
+<a id="a6d0b5de42b1d9e75d3c5d57618002a38" name="a6d0b5de42b1d9e75d3c5d57618002a38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d0b5de42b1d9e75d3c5d57618002a38">&#9670;&#160;</a></span>yaml_file_to_json()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> polyfem::io::yaml_file_to_json </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>yaml_filepath</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Load a YAML file to JSON. </p>
+
+<p class="definition">Definition at line <a class="el" href="_yaml_to_json_8cpp_source.html#l00062">62</a> of file <a class="el" href="_yaml_to_json_8cpp_source.html">YamlToJson.cpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00041">load_yaml()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1io_a6d0b5de42b1d9e75d3c5d57618002a38_icgraph.svg" width="416" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="afce66cf52f99324ef3572c6a3d0f8fe4" name="afce66cf52f99324ef3572c6a3d0f8fe4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afce66cf52f99324ef3572c6a3d0f8fe4">&#9670;&#160;</a></span>yaml_string_to_json()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> polyfem::io::yaml_string_to_json </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>yaml_str</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert YAML string to JSON. </p>
+
+<p class="definition">Definition at line <a class="el" href="_yaml_to_json_8cpp_source.html#l00056">56</a> of file <a class="el" href="_yaml_to_json_8cpp_source.html">YamlToJson.cpp</a>.</p>
 
 </div>
 </div>
