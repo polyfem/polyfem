@@ -256,13 +256,13 @@ target_link_libraries(polyfem PUBLIC Glob::Glob)
 include(units)
 target_link_libraries(polyfem PUBLIC units::units)
 
+# YAML library
+include(yaml)
+target_link_libraries(polyfem PUBLIC yaml-cpp::yaml-cpp)
+
 # FCPW
 # include(fcpw)
 # target_link_libraries(polyfem PUBLIC fcpw::fcpw)
-
-# YAML library
-include(yaml)
-polyfem_target_link_system_libraries(polyfem PUBLIC yaml-cpp::yaml-cpp)
 
 ################################################################################
 # Optional libraries
