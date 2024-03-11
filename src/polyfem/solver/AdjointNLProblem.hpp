@@ -4,6 +4,7 @@
 #include <polyfem/Common.hpp>
 #include "FullNLProblem.hpp"
 #include <polyfem/solver/forms/adjoint_forms/VariableToSimulation.hpp>
+#include <fstream>
 
 namespace polyfem
 {
@@ -45,6 +46,7 @@ namespace polyfem::solver
 		Eigen::VectorXd cur_grad;
 
 		const int save_freq;
+		std::ofstream solution_ostream;
 
 		const bool solve_in_parallel;
 		std::vector<int> solve_in_order;

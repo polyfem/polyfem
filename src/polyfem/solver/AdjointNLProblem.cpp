@@ -105,6 +105,13 @@ namespace polyfem::solver
 	{
 		cur_grad.setZero(0);
 
+		if (args["output"]["solution"] != "")
+		{
+			solution_ostream.open(args["output"]["solution"], std::ofstream::out);
+			if (!solution_ostream.is_open())
+				adjoint_logger().error("Cannot open solution file for writing!");
+		}
+
 		solve_in_order.clear();
 		{
 			Graph G(all_states.size());
@@ -208,6 +215,14 @@ namespace polyfem::solver
 	void AdjointNLProblem::save_to_file(const int iter_num, const Eigen::VectorXd &x0)
 	{
 		int id = 0;
+
+		if (solution_ostream.is_open())
+		{
+			adjoint_logger().debug("Save solution at iteration {} to file...", iter_num);
+			solution_ostream << iter_num << ": " << std::setprecision(16) << x0.transpose() << std::endl;
+			solution_ostream.flush();
+		}
+
 		if (iter_num % save_freq != 0)
 			return;
 		adjoint_logger().info("Saving iteration {}", iter_num);
