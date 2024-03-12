@@ -25,7 +25,7 @@ namespace polyfem::assembler
 
 	void SaintVenantElasticity::add_multimaterial(const int index, const json &params, const Units &units)
 	{
-		assert(size() == 2 || size() == 3);
+		assert(domain_size() == 2 || domain_size() == 3);
 
 		if (!params.contains("elasticity_tensor"))
 		{
@@ -52,10 +52,10 @@ namespace polyfem::assembler
 		}
 	}
 
-	void SaintVenantElasticity::set_size(const int size)
+	void SaintVenantElasticity::set_sizes(const unsigned domain_size, const unsigned codomain_size)
 	{
-		Assembler::set_size(size);
-		elasticity_tensor_.resize(size);
+		Assembler::set_sizes(domain_size, codomain_size);
+		elasticity_tensor_.resize(domain_size);
 	}
 
 	template <typename T, unsigned long N>
@@ -69,15 +69,15 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
+	VectorNd
 	SaintVenantElasticity::compute_rhs(const AutodiffHessianPt &pt) const
 	{
-		assert(pt.size() == size());
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res;
+		assert(pt.size() == codomain_size());
+		VectorNd res;
 
-		if (size() == 2)
+		if (codomain_size() == 2)
 			autogen::saint_venant_2d_function(pt, elasticity_tensor_, res);
-		else if (size() == 3)
+		else if (codomain_size() == 3)
 			autogen::saint_venant_3d_function(pt, elasticity_tensor_, res);
 		else
 			assert(false);
@@ -93,7 +93,7 @@ namespace polyfem::assembler
 		const int n_bases = data.vals.basis_values.size();
 
 		return polyfem::gradient_from_energy(
-			size(), n_bases, data,
+			codomain_size(), n_bases, data,
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 6, 1>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 8, 1>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 12, 1>>>(data); },
@@ -114,7 +114,7 @@ namespace polyfem::assembler
 
 		const int n_bases = data.vals.basis_values.size();
 		return polyfem::hessian_from_energy(
-			size(), n_bases, data,
+			codomain_size(), n_bases, data,
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 6, 1>, Eigen::Matrix<double, 6, 6>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 8, 1>, Eigen::Matrix<double, 8, 8>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 12, 1>, Eigen::Matrix<double, 12, 12>>>(data); },
@@ -141,29 +141,30 @@ namespace polyfem::assembler
 		const auto el_id = data.el_id;
 		const auto t = data.t;
 
-		Eigen::MatrixXd displacement_grad(size(), size());
+		MatrixNd displacement_grad(domain_size(), codomain_size());
+		const auto I = MatrixNd::Identity(domain_size(), codomain_size());
 
 		assert(displacement.cols() == 1);
 
 		all.resize(local_pts.rows(), all_size);
 
 		ElementAssemblyValues vals;
-		vals.compute(el_id, size() == 3, local_pts, bs, gbs);
+		vals.compute(el_id, codomain_size() == 3, local_pts, bs, gbs);
 
 		for (long p = 0; p < local_pts.rows(); ++p)
 		{
-			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
+			compute_displacement_grad(domain_size(), codomain_size(), bs, vals, local_pts, p, displacement, displacement_grad);
 
 			if (type == ElasticityTensorType::F)
 			{
-				all.row(p) = fun(displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
+				all.row(p) = fun(displacement_grad + I);
 				continue;
 			}
 
 			Eigen::MatrixXd strain = strain_from_disp_grad(displacement_grad);
-			Eigen::MatrixXd stress_tensor(size(), size());
+			Eigen::MatrixXd stress_tensor(codomain_size(), codomain_size());
 
-			if (size() == 2)
+			if (codomain_size() == 2)
 			{
 				std::array<double, 3> eps;
 				eps[0] = strain(0, 0);
@@ -188,12 +189,12 @@ namespace polyfem::assembler
 					stress(eps, 4), stress(eps, 3), stress(eps, 2);
 			}
 
-			stress_tensor = (Eigen::MatrixXd::Identity(size(), size()) + displacement_grad) * stress_tensor;
+			stress_tensor = (I + displacement_grad) * stress_tensor;
 
 			if (type == ElasticityTensorType::PK1)
-				stress_tensor = pk1_from_cauchy(stress_tensor, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
+				stress_tensor = pk1_from_cauchy(stress_tensor, displacement_grad + I);
 			else if (type == ElasticityTensorType::PK2)
-				stress_tensor = pk2_from_cauchy(stress_tensor, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
+				stress_tensor = pk2_from_cauchy(stress_tensor, displacement_grad + I);
 
 			all.row(p) = fun(stress_tensor);
 		}
@@ -209,24 +210,24 @@ namespace polyfem::assembler
 	T SaintVenantElasticity::compute_energy_aux(const NonLinearAssemblerData &data) const
 	{
 		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> AutoDiffVect;
-		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
+		typedef MatrixN<T> AutoDiffGradMat;
 
 		AutoDiffVect local_disp;
-		get_local_disp(data, size(), local_disp);
+		get_local_disp(data, codomain_size(), local_disp);
 
-		AutoDiffGradMat disp_grad(size(), size());
+		AutoDiffGradMat disp_grad(codomain_size(), codomain_size());
 
 		T energy = T(0.0);
 
 		const int n_pts = data.da.size();
 		for (long p = 0; p < n_pts; ++p)
 		{
-			compute_disp_grad_at_quad(data, local_disp, p, size(), disp_grad);
+			compute_disp_grad_at_quad(data, local_disp, p, codomain_size(), disp_grad);
 
 			AutoDiffGradMat strain = strain_from_disp_grad(disp_grad);
-			AutoDiffGradMat stress_tensor(size(), size());
+			AutoDiffGradMat stress_tensor(codomain_size(), codomain_size());
 
-			if (size() == 2)
+			if (codomain_size() == 2)
 			{
 				std::array<T, 3> eps;
 				eps[0] = strain(0, 0);
@@ -262,7 +263,7 @@ namespace polyfem::assembler
 		std::map<std::string, ParamFunc> res;
 
 		const auto &elast_tensor = this->elasticity_tensor_;
-		const int size = this->size() == 2 ? 3 : 6;
+		const int size = this->codomain_size() == 2 ? 3 : 6;
 
 		for (int i = 0; i < size; ++i)
 		{

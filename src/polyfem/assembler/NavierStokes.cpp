@@ -10,23 +10,23 @@ namespace polyfem::assembler
 
 	void NavierStokesVelocity::add_multimaterial(const int index, const json &params, const Units &units)
 	{
-		assert(size() == 2 || size() == 3);
+		assert(codomain_size() == 2 || codomain_size() == 3);
 
 		viscosity_.add_multimaterial(index, params, units.viscosity());
 	}
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
+	VectorNd
 	NavierStokesVelocity::compute_rhs(const AutodiffHessianPt &pt) const
 	{
-		assert(pt.size() == size());
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res(size());
+		assert(pt.size() == codomain_size());
+		VectorNd res(codomain_size());
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> val(size());
-		for (int d = 0; d < size(); ++d)
+		VectorNd val(codomain_size());
+		for (int d = 0; d < codomain_size(); ++d)
 			val(d) = pt(d).getValue();
 
 		const auto nu = viscosity_(val, 0, 0);
-		for (int d = 0; d < size(); ++d)
+		for (int d = 0; d < codomain_size(); ++d)
 		{
 			res(d) = -val.dot(pt(d).getGradient()) + nu * pt(d).getHessian().trace();
 		}
@@ -38,7 +38,7 @@ namespace polyfem::assembler
 	NavierStokesVelocity::assemble_gradient(const NonLinearAssemblerData &data) const
 	{
 		assert(false);
-		return Eigen::VectorXd(data.vals.basis_values.size() * size());
+		return Eigen::VectorXd(data.vals.basis_values.size() * codomain_size());
 	}
 
 	Eigen::MatrixXd
@@ -57,35 +57,35 @@ namespace polyfem::assembler
 
 	Eigen::MatrixXd NavierStokesVelocity::compute_N(const NonLinearAssemblerData &data) const
 	{
-		typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> GradMat;
+		typedef MatrixNd GradMat;
 
 		assert(data.x.cols() == 1);
 
 		const int n_pts = data.da.size();
 		const int n_bases = data.vals.basis_values.size();
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1> local_vel(n_bases * size(), 1);
+		Eigen::Matrix<double, Eigen::Dynamic, 1> local_vel(n_bases * codomain_size(), 1);
 		local_vel.setZero();
 		for (size_t i = 0; i < n_bases; ++i)
 		{
 			const auto &bs = data.vals.basis_values[i];
 			for (size_t ii = 0; ii < bs.global.size(); ++ii)
 			{
-				for (int d = 0; d < size(); ++d)
+				for (int d = 0; d < codomain_size(); ++d)
 				{
-					local_vel(i * size() + d) += bs.global[ii].val * data.x(bs.global[ii].index * size() + d);
+					local_vel(i * codomain_size() + d) += bs.global[ii].val * data.x(bs.global[ii].index * codomain_size() + d);
 				}
 			}
 		}
 
-		Eigen::MatrixXd N(size() * n_bases, size() * n_bases);
+		Eigen::MatrixXd N(codomain_size() * n_bases, codomain_size() * n_bases);
 		N.setZero();
 
-		GradMat grad_i(size(), size());
-		GradMat jac_it(size(), size());
+		GradMat grad_i(codomain_size(), codomain_size());
+		GradMat jac_it(codomain_size(), codomain_size());
 
-		Eigen::VectorXd vel(size(), 1);
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> phi_j(size(), 1);
+		Eigen::VectorXd vel(codomain_size(), 1);
+		VectorNd phi_j(codomain_size(), 1);
 
 		for (long p = 0; p < n_pts; ++p)
 		{
@@ -96,9 +96,9 @@ namespace polyfem::assembler
 				const auto &bs = data.vals.basis_values[i];
 				const double val = bs.val(p);
 
-				for (int d = 0; d < size(); ++d)
+				for (int d = 0; d < codomain_size(); ++d)
 				{
-					vel(d) += val * local_vel(i * size() + d);
+					vel(d) += val * local_vel(i * codomain_size() + d);
 				}
 			}
 
@@ -108,7 +108,7 @@ namespace polyfem::assembler
 			for (int i = 0; i < n_bases; ++i)
 			{
 				const auto &bi = data.vals.basis_values[i];
-				for (int m = 0; m < size(); ++m)
+				for (int m = 0; m < codomain_size(); ++m)
 				{
 					grad_i.setZero();
 					grad_i.row(m) = bi.grad.row(p);
@@ -117,11 +117,11 @@ namespace polyfem::assembler
 					for (int j = 0; j < n_bases; ++j)
 					{
 						const auto &bj = data.vals.basis_values[j];
-						for (int n = 0; n < size(); ++n)
+						for (int n = 0; n < codomain_size(); ++n)
 						{
 							phi_j.setZero();
 							phi_j(n) = bj.val(p);
-							N(i * size() + m, j * size() + n) += (grad_i * vel).dot(phi_j) * data.da(p);
+							N(i * codomain_size() + m, j * codomain_size() + n) += (grad_i * vel).dot(phi_j) * data.da(p);
 						}
 					}
 				}
@@ -135,35 +135,35 @@ namespace polyfem::assembler
 
 	Eigen::MatrixXd NavierStokesVelocity::compute_W(const NonLinearAssemblerData &data) const
 	{
-		typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> GradMat;
+		typedef MatrixNd GradMat;
 
 		assert(data.x.cols() == 1);
 
 		const int n_pts = data.da.size();
 		const int n_bases = data.vals.basis_values.size();
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1> local_vel(n_bases * size(), 1);
+		Eigen::Matrix<double, Eigen::Dynamic, 1> local_vel(n_bases * codomain_size(), 1);
 		local_vel.setZero();
 		for (size_t i = 0; i < n_bases; ++i)
 		{
 			const auto &bs = data.vals.basis_values[i];
 			for (size_t ii = 0; ii < bs.global.size(); ++ii)
 			{
-				for (int d = 0; d < size(); ++d)
+				for (int d = 0; d < codomain_size(); ++d)
 				{
-					local_vel(i * size() + d) += bs.global[ii].val * data.x(bs.global[ii].index * size() + d);
+					local_vel(i * codomain_size() + d) += bs.global[ii].val * data.x(bs.global[ii].index * codomain_size() + d);
 				}
 			}
 		}
 
-		Eigen::MatrixXd W(size() * n_bases, size() * n_bases);
+		Eigen::MatrixXd W(codomain_size() * n_bases, codomain_size() * n_bases);
 		W.setZero();
 
-		GradMat grad_v(size(), size());
-		GradMat jac_it(size(), size());
+		GradMat grad_v(codomain_size(), codomain_size());
+		GradMat jac_it(codomain_size(), codomain_size());
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> phi_i(size(), 1);
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> phi_j(size(), 1);
+		VectorNd phi_i(codomain_size(), 1);
+		VectorNd phi_j(codomain_size(), 1);
 
 		for (long p = 0; p < n_pts; ++p)
 		{
@@ -172,14 +172,14 @@ namespace polyfem::assembler
 			for (size_t i = 0; i < n_bases; ++i)
 			{
 				const auto &bs = data.vals.basis_values[i];
-				const Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> grad = bs.grad.row(p);
-				assert(grad.size() == size());
+				const VectorNd grad = bs.grad.row(p);
+				assert(grad.size() == codomain_size());
 
-				for (int d = 0; d < size(); ++d)
+				for (int d = 0; d < codomain_size(); ++d)
 				{
-					for (int c = 0; c < size(); ++c)
+					for (int c = 0; c < codomain_size(); ++c)
 					{
-						grad_v(d, c) += grad(c) * local_vel(i * size() + d);
+						grad_v(d, c) += grad(c) * local_vel(i * codomain_size() + d);
 					}
 				}
 			}
@@ -191,7 +191,7 @@ namespace polyfem::assembler
 			for (int i = 0; i < n_bases; ++i)
 			{
 				const auto &bi = data.vals.basis_values[i];
-				for (int m = 0; m < size(); ++m)
+				for (int m = 0; m < codomain_size(); ++m)
 				{
 					phi_i.setZero();
 					phi_i(m) = bi.val(p);
@@ -199,11 +199,11 @@ namespace polyfem::assembler
 					for (int j = 0; j < n_bases; ++j)
 					{
 						const auto &bj = data.vals.basis_values[j];
-						for (int n = 0; n < size(); ++n)
+						for (int n = 0; n < codomain_size(); ++n)
 						{
 							phi_j.setZero();
 							phi_j(n) = bj.val(p);
-							W(i * size() + m, j * size() + n) += (grad_v * phi_i).dot(phi_j) * data.da(p);
+							W(i * codomain_size() + m, j * codomain_size() + n) += (grad_v * phi_i).dot(phi_j) * data.da(p);
 						}
 					}
 				}

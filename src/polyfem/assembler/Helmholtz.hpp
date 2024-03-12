@@ -15,8 +15,7 @@ namespace polyfem::assembler
 
 		Helmholtz();
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
-		assemble(const LinearAssemblerData &data) const override;
+		FlatMatrixNd assemble(const LinearAssemblerData &data) const override;
 		VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;
 
 		Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> kernel(const int dim, const AutodiffGradPt &rvect, const AutodiffScalarGrad &r) const override;

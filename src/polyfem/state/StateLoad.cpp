@@ -64,10 +64,14 @@ namespace polyfem
 		assemblers.push_back(assembler);
 		assemblers.push_back(mass_matrix_assembler);
 		if (mixed_assembler != nullptr)
+		{
 			// TODO: assemblers.push_back(mixed_assembler);
-			mixed_assembler->set_size(mesh->dimension());
+			mixed_assembler->set_sizes(mesh->is_volume() ? 3 : 2, mesh->dimension());
+		}
 		if (pressure_assembler != nullptr)
+		{
 			assemblers.push_back(pressure_assembler);
+		}
 		set_materials(assemblers);
 
 		timer.stop();
@@ -132,10 +136,14 @@ namespace polyfem
 		assemblers.push_back(assembler);
 		assemblers.push_back(mass_matrix_assembler);
 		if (mixed_assembler != nullptr)
+		{
 			// TODO: assemblers.push_back(mixed_assembler);
-			mixed_assembler->set_size(mesh->dimension());
+			mixed_assembler->set_sizes(mesh->is_volume() ? 3 : 2, mesh->dimension());
+		}
 		if (pressure_assembler != nullptr)
+		{
 			assemblers.push_back(pressure_assembler);
+		}
 		set_materials(assemblers);
 
 		timer.stop();

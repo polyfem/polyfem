@@ -425,9 +425,11 @@ namespace polyfem
 
 	void State::set_materials(std::vector<std::shared_ptr<assembler::Assembler>> &assemblers) const
 	{
-		const int size = (assembler->is_tensor() || assembler->is_fluid()) ? mesh->dimension() : 1;
+		const int codomain_size = (assembler->is_tensor() || assembler->is_fluid()) ? mesh->dimension() : 1;
 		for (auto &a : assemblers)
-			a->set_size(size);
+		{
+			a->set_sizes(mesh->is_volume() ? 3 : 2, codomain_size);
+		}
 
 		if (!utils::is_param_valid(args, "materials"))
 			return;
@@ -512,8 +514,8 @@ namespace polyfem
 
 	void State::set_materials(assembler::Assembler &assembler) const
 	{
-		const int size = (this->assembler->is_tensor() || this->assembler->is_fluid()) ? this->mesh->dimension() : 1;
-		assembler.set_size(size);
+		const int codomain_size = (this->assembler->is_tensor() || this->assembler->is_fluid()) ? this->mesh->dimension() : 1;
+		assembler.set_sizes(mesh->is_volume() ? 3 : 2, codomain_size);
 
 		if (!utils::is_param_valid(args, "materials"))
 			return;

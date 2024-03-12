@@ -226,7 +226,7 @@ if __name__ == "__main__":
             elif name == "linear_elasticity" or name == "neo_hookean":
                 signature = signature + ", const double lambda, const double mu"
 
-            signature = signature + ", Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> &res)"
+            signature = signature + ", VectorNd &res)"
 
             cpp = cpp + signature + " {\nres.resize(" + str(dim) + ");\n" + c99 + "\n}\n\n"
             hpp = hpp + signature + ";\n"

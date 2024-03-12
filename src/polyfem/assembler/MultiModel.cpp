@@ -7,23 +7,23 @@
 
 namespace polyfem::assembler
 {
-	void MultiModel::set_size(const int size)
+	void MultiModel::set_sizes(const unsigned domain_size, const unsigned codomain_size)
 	{
-		Assembler::set_size(size);
+		Assembler::set_sizes(domain_size, codomain_size);
 
-		saint_venant_.set_size(size);
-		neo_hookean_.set_size(size);
-		linear_elasticity_.set_size(size);
+		saint_venant_.set_sizes(domain_size, codomain_size);
+		neo_hookean_.set_sizes(domain_size, codomain_size);
+		linear_elasticity_.set_sizes(domain_size, codomain_size);
 
-		hooke_.set_size(size);
-		mooney_rivlin_elasticity_.set_size(size);
-		unconstrained_ogden_elasticity_.set_size(size);
-		incompressible_ogden_elasticity_.set_size(size);
+		hooke_.set_sizes(domain_size, codomain_size);
+		mooney_rivlin_elasticity_.set_sizes(domain_size, codomain_size);
+		unconstrained_ogden_elasticity_.set_sizes(domain_size, codomain_size);
+		incompressible_ogden_elasticity_.set_sizes(domain_size, codomain_size);
 	}
 
 	void MultiModel::add_multimaterial(const int index, const json &params, const Units &units)
 	{
-		assert(size() == 2 || size() == 3);
+		assert(codomain_size() == 2 || codomain_size() == 3);
 
 		saint_venant_.add_multimaterial(index, params, units);
 		neo_hookean_.add_multimaterial(index, params, units);
@@ -35,11 +35,11 @@ namespace polyfem::assembler
 		incompressible_ogden_elasticity_.add_multimaterial(index, params, units);
 	}
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
+	VectorNd
 	MultiModel::compute_rhs(const AutodiffHessianPt &pt) const
 	{
-		assert(pt.size() == size());
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res;
+		assert(pt.size() == codomain_size());
+		VectorNd res;
 		assert(false);
 
 		return res;

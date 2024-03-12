@@ -19,7 +19,7 @@ namespace polyfem::assembler
 		/// computes local stiffness matrix is R^{dim²} for bases i,j
 		// vals stores the evaluation for that element
 		// da contains both the quadrature weight and the change of metric in the integral
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
+		FlatMatrixNd
 		assemble(const LinearAssemblerData &data) const override;
 
 		// compute elastic energy

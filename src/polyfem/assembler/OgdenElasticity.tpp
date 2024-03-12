@@ -12,23 +12,23 @@ namespace polyfem::assembler
 		const int el_id,
 		const DefGradMatrix<T> &def_grad) const
 	{
-		Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> eigs;
+		VectorN<T> eigs;
 
-		if (size() == 2)
+		if (domain_size() == 2)
 		{
 			// No need to symmetrize F to compute eigen values analytically
 			autogen::eigs_2d<T>(def_grad, eigs);
 		}
 		else
 		{
-			assert(size() == 3);
+			assert(domain_size() == 3);
 			// Symmetrize F to compute eigen values analytically
 			autogen::eigs_3d<T>(def_grad.transpose() * def_grad, eigs);
 			eigs = sqrt(eigs.array());
 		}
 
 		const T J = utils::determinant(def_grad);
-		const T Jdenom = pow(J, -1. / size());
+		const T Jdenom = pow(J, -1. / domain_size());
 
 		for (long i = 0; i < eigs.size(); ++i)
 			eigs(i) = eigs(i) * Jdenom;
@@ -36,7 +36,7 @@ namespace polyfem::assembler
 		auto val = T(0);
 		for (long N = 0; N < alphas_.size(); ++N)
 		{
-			auto tmp = T(-size());
+			auto tmp = T(-domain_size());
 			const double alpha = alphas_[N](p, t, el_id);
 			const double mu = mus_[N](p, t, el_id);
 
@@ -63,17 +63,17 @@ namespace polyfem::assembler
 		const int el_id,
 		const DefGradMatrix<T> &def_grad) const
 	{
-		Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> eigs;
+		VectorN<T> eigs;
 
 		const T J = polyfem::utils::determinant(def_grad);
 		const T log_J = log(J);
 
-		const auto F_tilde = def_grad / pow(J, 1.0 / size());
+		const auto F_tilde = def_grad / pow(J, 1.0 / domain_size());
 		const auto C_tilde = F_tilde * F_tilde.transpose();
 
-		if (size() == 2)
+		if (domain_size() == 2)
 			autogen::eigs_2d<T>(C_tilde, eigs);
-		else if (size() == 3)
+		else if (domain_size() == 3)
 			autogen::eigs_3d<T>(C_tilde, eigs);
 		else
 			assert(false);
@@ -85,7 +85,7 @@ namespace polyfem::assembler
 			const double c = coefficients_[i](p, t, el_id);
 			const double m = expoenents_[i](p, t, el_id);
 
-			auto tmp = T(-size());
+			auto tmp = T(-domain_size());
 			for (long j = 0; j < eigs.size(); ++j)
 				tmp += pow(eigs(j), m);
 

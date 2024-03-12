@@ -1372,7 +1372,7 @@ namespace polyfem
 				}
 			}
 
-			mass.resize(n_bases * assembler->size(), n_bases * assembler->size());
+			mass.resize(n_bases * assembler->codomain_size(), n_bases * assembler->codomain_size());
 			mass.setFromTriplets(mass_blocks.begin(), mass_blocks.end());
 			mass.makeCompressed();
 		}

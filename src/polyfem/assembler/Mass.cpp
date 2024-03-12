@@ -2,7 +2,7 @@
 
 namespace polyfem::assembler
 {
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> Mass::assemble(const LinearAssemblerData &data) const
+	FlatMatrixNd Mass::assemble(const LinearAssemblerData &data) const
 	{
 		double tmp = 0;
 
@@ -14,26 +14,25 @@ namespace polyfem::assembler
 			tmp += rho * data.vals.basis_values[data.i].val(q) * data.vals.basis_values[data.j].val(q) * data.da(q);
 		}
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> res(size() * size(), 1);
+		FlatMatrixNd res(codomain_size() * codomain_size(), 1);
 		res.setZero();
-		for (int i = 0; i < size(); ++i)
-			res(i * size() + i) = tmp;
+		for (int i = 0; i < codomain_size(); ++i)
+			res(i * codomain_size() + i) = tmp;
 
 		return res;
 	}
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> Mass::compute_rhs(const AutodiffHessianPt &pt) const
+	VectorNd Mass::compute_rhs(const AutodiffHessianPt &pt) const
 	{
 		assert(false);
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> result;
+		VectorNd result;
 
 		return result;
 	}
 
 	void Mass::add_multimaterial(const int index, const json &params, const Units &units)
 	{
-		assert(size_ == 1 || size_ == 2 || size_ == 3);
-
+		assert(1 <= codomain_size() && codomain_size() <= 3);
 		density_.add_multimaterial(index, params, units.density());
 	}
 

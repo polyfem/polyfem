@@ -120,12 +120,12 @@ TEST_CASE("mshreader", "[utils]")
 
 TEST_CASE("inverse", "[utils]")
 {
-	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat = Eigen::MatrixXd::Random(1, 1);
-	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat2 = Eigen::MatrixXd::Random(2, 2);
-	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat3 = Eigen::MatrixXd::Random(3, 3);
-	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat_inv = mat.inverse();
-	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat2_inv = mat2.inverse();
-	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat3_inv = mat3.inverse();
+	MatrixNd mat = Eigen::MatrixXd::Random(1, 1);
+	MatrixNd mat2 = Eigen::MatrixXd::Random(2, 2);
+	MatrixNd mat3 = Eigen::MatrixXd::Random(3, 3);
+	MatrixNd mat_inv = mat.inverse();
+	MatrixNd mat2_inv = mat2.inverse();
+	MatrixNd mat3_inv = mat3.inverse();
 
 	REQUIRE(((utils::inverse(mat) - mat_inv)).norm() == Catch::Approx(0).margin(1e-12));
 	REQUIRE(((utils::inverse(mat2) - mat2_inv)).norm() == Catch::Approx(0).margin(1e-12));

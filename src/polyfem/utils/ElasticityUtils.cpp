@@ -28,12 +28,12 @@ namespace polyfem
 		if (is_volume)
 		{
 			A(0, 0) = nu / ((1.0 + nu) * (1.0 - 2.0 * nu));
-			A(0, 1) = (E*(0.5*nu*nu + 0.25))/(pow(nu + 1., 2)*pow(0.5 - nu, 2));
+			A(0, 1) = (E * (0.5 * nu * nu + 0.25)) / (pow(nu + 1., 2) * pow(0.5 - nu, 2));
 		}
 		else
 		{
 			A(0, 0) = nu / (1.0 - nu * nu);
-			A(0, 1) = (E*(1. + nu*nu))/pow(-1. + nu*nu, 2);
+			A(0, 1) = (E * (1. + nu * nu)) / pow(-1. + nu * nu, 2);
 		}
 		A(1, 0) = 1 / (2 * (1 + nu));
 		A(1, 1) = -E / 2 * pow(1 + nu, -2);
@@ -66,7 +66,7 @@ namespace polyfem
 	{
 		if (is_volume)
 			return mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
-		
+
 		return 2 * mu * (2.0 * lambda + 2.0 * mu) / (lambda + 2.0 * mu);
 	}
 
@@ -74,7 +74,7 @@ namespace polyfem
 	{
 		if (is_volume)
 			return lambda / (2.0 * (lambda + mu));
-		
+
 		return lambda / (lambda + 2.0 * mu);
 	}
 
@@ -165,7 +165,7 @@ namespace polyfem
 
 				if (show_message)
 				{
-					logger().debug("[Warning] grad {}^{} not using static sizes", n_bases, size);
+					logger().warn("grad {}^{} not using static sizes", n_bases, size);
 					show_message = false;
 				}
 
@@ -273,24 +273,34 @@ namespace polyfem
 		return hessian;
 	}
 
-	void compute_diplacement_grad(const int size, const ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const int p, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &displacement_grad)
+	void compute_displacement_grad(
+		const int domain_size,
+		const int codomain_size,
+		const ElementAssemblyValues &vals,
+		const Eigen::MatrixXd &local_pts,
+		const int p,
+		const Eigen::MatrixXd &displacement,
+		MatrixNd &displacement_grad)
 	{
 		assert(displacement.cols() == 1);
 
 		displacement_grad.setZero();
 
-		for (std::size_t j = 0; j < vals.basis_values.size(); ++j)
+		for (size_t i = 0; i < vals.basis_values.size(); ++i)
 		{
-			const auto &loc_val = vals.basis_values[j];
+			const auto &loc_val = vals.basis_values[i];
 
 			assert(loc_val.grad.rows() == local_pts.rows());
-			assert(loc_val.grad.cols() == size);
+			assert(loc_val.grad.cols() == codomain_size);
 
-			for (int d = 0; d < size; ++d)
+			for (int j = 0; j < domain_size; ++j)
 			{
-				for (std::size_t ii = 0; ii < loc_val.global.size(); ++ii)
+				for (size_t k = 0; k < loc_val.global.size(); ++k)
 				{
-					displacement_grad.row(d) += loc_val.global[ii].val * loc_val.grad.row(p) * displacement(loc_val.global[ii].index * size + d);
+					displacement_grad.row(j) +=
+						loc_val.global[k].val
+						* loc_val.grad.row(p)
+						* displacement(loc_val.global[k].index * codomain_size + j);
 				}
 			}
 		}
@@ -298,26 +308,39 @@ namespace polyfem
 		displacement_grad = (displacement_grad * vals.jac_it[p]).eval();
 	}
 
-	void compute_diplacement_grad(const int size, const ElementBases &bs, const ElementAssemblyValues &vals, const Eigen::MatrixXd &local_pts, const int p, const Eigen::MatrixXd &displacement, Eigen::MatrixXd &displacement_grad)
+	void compute_displacement_grad(
+		const int domain_size,
+		const int codomain_size,
+		const ElementBases &element,
+		const ElementAssemblyValues &vals,
+		const Eigen::MatrixXd &local_pts,
+		const int p,
+		const Eigen::MatrixXd &displacement,
+		MatrixNd &displacement_grad)
 	{
 		assert(displacement.cols() == 1);
+		assert(element.bases.size() == vals.basis_values.size());
 
+		assert(displacement_grad.rows() == domain_size && displacement_grad.cols() == codomain_size);
 		displacement_grad.setZero();
 
-		for (std::size_t j = 0; j < bs.bases.size(); ++j)
+		// For all bases in the given element
+		for (std::size_t i = 0; i < element.bases.size(); ++i)
 		{
-			const Basis &b = bs.bases[j];
-			const auto &loc_val = vals.basis_values[j];
+			const Basis &b = element.bases[i];                    // basis function
+			const AssemblyValues &loc_val = vals.basis_values[i]; // precomputed values
 
-			assert(bs.bases.size() == vals.basis_values.size());
 			assert(loc_val.grad.rows() == local_pts.rows());
-			assert(loc_val.grad.cols() == size);
+			assert(loc_val.grad.cols() == domain_size);
 
-			for (int d = 0; d < size; ++d)
+			for (int j = 0; j < codomain_size; ++j)
 			{
-				for (std::size_t ii = 0; ii < b.global().size(); ++ii)
+				for (std::size_t k = 0; k < b.global().size(); ++k)
 				{
-					displacement_grad.row(d) += b.global()[ii].val * loc_val.grad.row(p) * displacement(b.global()[ii].index * size + d);
+					displacement_grad.row(j) +=
+						b.global()[k].val
+						* loc_val.grad.row(p)
+						* displacement(b.global()[k].index * codomain_size + j);
 				}
 			}
 		}

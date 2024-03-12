@@ -10,7 +10,6 @@
 #include <Eigen/Dense>
 
 #include <functional>
-#include <iostream>
 #include <vector>
 
 namespace polyfem::assembler
@@ -33,15 +32,12 @@ namespace polyfem::assembler
 			const int el_id,
 			const DefGradMatrix<T> &def_grad) const
 		{
-			using std::pow;
-			using MatrixNT = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>;
-
-			MatrixNT F = MatrixNT::Zero(size(), size());
-			for (int i = 0; i < size(); ++i)
+			MatrixN<T> F = MatrixN<T>::Zero(domain_size(), codomain_size());
+			for (int i = 0; i < domain_size(); ++i)
 			{
-				for (int j = 0; j < size(); ++j)
+				for (int j = 0; j < codomain_size(); ++j)
 				{
-					for (int k = 0; k < size(); ++k)
+					for (int k = 0; k < codomain_size(); ++k)
 					{
 						F(i, j) += def_grad(i, k) * canonical_transformation_[el_id](k, j);
 					}
@@ -49,10 +45,10 @@ namespace polyfem::assembler
 			}
 
 			const T J = polyfem::utils::determinant(F);
-			return (F.transpose() * F).trace() / pow(J, 2. / size());
+			return (F.transpose() * F).trace() / pow(J, 2. / domain_size());
 		}
 
 	private:
-		std::vector<Eigen::MatrixXd> canonical_transformation_;
+		std::vector<MatrixNd> canonical_transformation_;
 	};
 } // namespace polyfem::assembler

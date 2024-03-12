@@ -39,8 +39,8 @@ namespace polyfem::assembler
 
 			const auto powJ = pow(J, -2. / 3);
 			const auto TrB = right_cauchy_green.trace();
-			const auto I1_tilde = powJ * (TrB + (3 - size())) - 3;
-			const auto second_invariant_val = (size() == 3) ? 0.5 * (TrB * TrB - (right_cauchy_green * right_cauchy_green).trace()) : TrB + J * J;
+			const auto I1_tilde = powJ * (TrB + (3 - domain_size())) - 3;
+			const auto second_invariant_val = (domain_size() == 3) ? 0.5 * (TrB * TrB - (right_cauchy_green * right_cauchy_green).trace()) : TrB + J * J;
 			const auto I2_tilde = (powJ * powJ) * second_invariant_val - 3;
 
 			const T val = c1 * I1_tilde + (c2 + c3 * I1_tilde) * I2_tilde + d1 * (J - 1) * (J - 1);

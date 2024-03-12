@@ -114,8 +114,8 @@ if __name__ == "__main__":
         c99 = c99.replace("0.0", "T(0)")
         c99 = c99.replace("   M_PI", "   T(M_PI)")
 
-        signature = "template<typename T>\nvoid eigs_" + str(dim) + "d(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> &m, "
-        signature += "Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> &res)"
+        signature = "template<typename T>\nvoid eigs_" + str(dim) + "d(const MatrixN<T> &m, "
+        signature += "VectorN<T> &res)"
 
         hpp = hpp + signature + " {\nres.resize(" + str(dim) + ");\n" + c99 + "\n}\n\n"
 

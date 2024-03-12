@@ -8,17 +8,16 @@ namespace polyfem::assembler
 	}
 	void StokesVelocity::add_multimaterial(const int index, const json &params, const Units &units)
 	{
-		assert(size() == 2 || size() == 3);
+		assert(domain_size() == 2 || domain_size() == 3);
 
 		viscosity_.add_multimaterial(index, params, units.viscosity());
 	}
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
-	StokesVelocity::assemble(const LinearAssemblerData &data) const
+	FlatMatrixNd StokesVelocity::assemble(const LinearAssemblerData &data) const
 	{
 		// (gradi : gradj)  = <gradi, gradj> * Id
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> res(size() * size());
+		FlatMatrixNd res(codomain_size() * codomain_size());
 		res.setZero();
 
 		const Eigen::MatrixXd &gradi = data.vals.basis_values[data.i].grad_t_m;
@@ -29,23 +28,27 @@ namespace polyfem::assembler
 			dot += gradi.row(k).dot(gradj.row(k)) * data.da(k) * viscosity_(data.vals.val.row(k), data.t, data.vals.element_id);
 		}
 
-		for (int d = 0; d < size(); ++d)
-			res(d * size() + d) = dot;
+		for (int d = 0; d < codomain_size(); ++d)
+		{
+			res(d * codomain_size() + d) = dot;
+		}
 
 		return res;
 	}
 
 	VectorNd StokesVelocity::compute_rhs(const AutodiffHessianPt &pt) const
 	{
-		assert(pt.size() == size());
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res(size());
+		assert(pt.size() == codomain_size());
+		VectorNd res(codomain_size());
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> val(size());
-		for (int d = 0; d < size(); ++d)
+		VectorNd val(codomain_size());
+		for (int d = 0; d < codomain_size(); ++d)
+		{
 			val(d) = pt(d).getValue();
+		}
 
 		const auto nu = viscosity_(val, 0, 0);
-		for (int d = 0; d < size(); ++d)
+		for (int d = 0; d < codomain_size(); ++d)
 		{
 			res(d) = nu * pt(d).getHessian().trace();
 		}
@@ -64,13 +67,11 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-	StokesMixed::assemble(const MixedAssemblerData &data) const
+	VectorNd StokesMixed::assemble(const MixedAssemblerData &data) const
 	{
 		// -(psii : div phij)  = psii * gradphij
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res(rows() * cols());
-		res.setZero();
+		VectorNd res = VectorNd::Zero(rows() * cols());
 
 		const Eigen::MatrixXd &psii = data.psi_vals.basis_values[data.i].val;
 		const Eigen::MatrixXd &gradphij = data.phi_vals.basis_values[data.j].grad_t_m;

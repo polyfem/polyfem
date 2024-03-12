@@ -22,38 +22,36 @@ namespace polyfem
 	{
 		void LinearElasticity::add_multimaterial(const int index, const json &params, const Units &units)
 		{
-			assert(size() == 2 || size() == 3);
-
-			params_.add_multimaterial(index, params, size() == 3, units.stress());
+			params_.add_multimaterial(index, params, domain_size() == 3, units.stress());
 		}
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
+		FlatMatrixNd
 		LinearElasticity::assemble(const LinearAssemblerData &data) const
 		{
 			// mu ((gradi' gradj) Id + ((gradi gradj')') + lambda gradi *gradj';
 			const Eigen::MatrixXd &gradi = data.vals.basis_values[data.i].grad_t_m;
 			const Eigen::MatrixXd &gradj = data.vals.basis_values[data.j].grad_t_m;
 
-			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> res(size() * size());
+			FlatMatrixNd res(codomain_size() * codomain_size());
 			res.setZero();
 
 			for (long k = 0; k < gradi.rows(); ++k)
 			{
-				Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> res_k(size() * size());
+				FlatMatrixNd res_k(codomain_size() * codomain_size());
 				//            res_k.setZero();
-				const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> outer = gradi.row(k).transpose() * gradj.row(k);
+				const MatrixNd outer = gradi.row(k).transpose() * gradj.row(k);
 				const double dot = gradi.row(k).dot(gradj.row(k));
 
 				double lambda, mu;
 				params_.lambda_mu(data.vals.quadrature.points.row(k), data.vals.val.row(k), data.t, data.vals.element_id, lambda, mu);
 
-				for (int ii = 0; ii < size(); ++ii)
+				for (int ii = 0; ii < codomain_size(); ++ii)
 				{
-					for (int jj = 0; jj < size(); ++jj)
+					for (int jj = 0; jj < codomain_size(); ++jj)
 					{
-						res_k(jj * size() + ii) = outer(ii * size() + jj) * mu + outer(jj * size() + ii) * lambda;
+						res_k(jj * codomain_size() + ii) = outer(ii * codomain_size() + jj) * mu + outer(jj * codomain_size() + ii) * lambda;
 						if (ii == jj)
-							res_k(jj * size() + ii) += mu * dot;
+							res_k(jj * codomain_size() + ii) += mu * dot;
 					}
 				}
 				res += res_k * data.da(k);
@@ -71,7 +69,7 @@ namespace polyfem
 		{
 			const int n_bases = data.vals.basis_values.size();
 			return polyfem::gradient_from_energy(
-				size(), n_bases, data,
+				codomain_size(), n_bases, data,
 				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 6, 1>>>(data); },
 				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 8, 1>>>(data); },
 				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 12, 1>>>(data); },
@@ -89,7 +87,7 @@ namespace polyfem
 		{
 			const int n_bases = data.vals.basis_values.size();
 			return polyfem::hessian_from_energy(
-				size(), n_bases, data,
+				codomain_size(), n_bases, data,
 				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 6, 1>, Eigen::Matrix<double, 6, 6>>>(data); },
 				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 8, 1>, Eigen::Matrix<double, 8, 8>>>(data); },
 				[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 12, 1>, Eigen::Matrix<double, 12, 12>>>(data); },
@@ -107,19 +105,19 @@ namespace polyfem
 		T LinearElasticity::compute_energy_aux(const NonLinearAssemblerData &data) const
 		{
 			typedef Eigen::Matrix<T, Eigen::Dynamic, 1> AutoDiffVect;
-			typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
+			typedef MatrixN<T> AutoDiffGradMat;
 
 			AutoDiffVect local_disp;
-			get_local_disp(data, size(), local_disp);
+			get_local_disp(data, codomain_size(), local_disp);
 
-			AutoDiffGradMat disp_grad(size(), size());
+			AutoDiffGradMat disp_grad(codomain_size(), codomain_size());
 
 			T energy = T(0.0);
 
 			const int n_pts = data.da.size();
 			for (long p = 0; p < n_pts; ++p)
 			{
-				compute_disp_grad_at_quad(data, local_disp, p, size(), disp_grad);
+				compute_disp_grad_at_quad(data, local_disp, p, codomain_size(), disp_grad);
 
 				const AutoDiffGradMat strain = (disp_grad + disp_grad.transpose()) / T(2);
 
@@ -133,19 +131,19 @@ namespace polyfem
 			return energy;
 		}
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
+		VectorNd
 		LinearElasticity::compute_rhs(const AutodiffHessianPt &pt) const
 		{
-			assert(pt.size() == size());
-			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res(size());
+			assert(pt.size() == codomain_size());
+			VectorNd res(codomain_size());
 
 			double lambda, mu;
 			// TODO!
-			params_.lambda_mu(0, 0, 0, pt(0).getValue(), pt(1).getValue(), size() == 2 ? 0. : pt(2).getValue(), 0, 0, lambda, mu);
+			params_.lambda_mu(0, 0, 0, pt(0).getValue(), pt(1).getValue(), codomain_size() == 2 ? 0. : pt(2).getValue(), 0, 0, lambda, mu);
 
-			if (size() == 2)
+			if (codomain_size() == 2)
 				autogen::linear_elasticity_2d_function(pt, lambda, mu, res);
-			else if (size() == 3)
+			else if (codomain_size() == 3)
 				autogen::linear_elasticity_3d_function(pt, lambda, mu, res);
 			else
 				assert(false);
@@ -159,7 +157,7 @@ namespace polyfem
 													   const Eigen::MatrixXd &displacement,
 													   Eigen::MatrixXd &tensor) const
 		{
-			tensor.resize(local_pts.rows(), size() * size() * size() * size());
+			tensor.resize(local_pts.rows(), codomain_size() * codomain_size() * codomain_size() * codomain_size());
 			assert(displacement.cols() == 1);
 
 			for (long p = 0; p < local_pts.rows(); ++p)
@@ -167,10 +165,10 @@ namespace polyfem
 				double lambda, mu;
 				params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
 
-				for (int i = 0, idx = 0; i < size(); i++)
-					for (int j = 0; j < size(); j++)
-						for (int k = 0; k < size(); k++)
-							for (int l = 0; l < size(); l++)
+				for (int i = 0, idx = 0; i < codomain_size(); i++)
+					for (int j = 0; j < codomain_size(); j++)
+						for (int k = 0; k < codomain_size(); k++)
+							for (int l = 0; l < codomain_size(); l++)
 								tensor(p, idx++) = mu * delta(i, k) * delta(j, l) + mu * delta(i, l) * delta(j, k) + lambda * delta(i, j) * delta(k, l);
 			}
 		}
@@ -192,18 +190,19 @@ namespace polyfem
 			all.resize(local_pts.rows(), all_size);
 			assert(displacement.cols() == 1);
 
-			Eigen::MatrixXd displacement_grad(size(), size());
+			MatrixNd displacement_grad(domain_size(), codomain_size());
+			const auto I = MatrixNd::Identity(domain_size(), codomain_size());
 
 			ElementAssemblyValues vals;
-			vals.compute(el_id, size() == 3, local_pts, bs, gbs);
+			vals.compute(el_id, codomain_size() == 3, local_pts, bs, gbs);
 
 			for (long p = 0; p < local_pts.rows(); ++p)
 			{
-				compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
+				compute_displacement_grad(domain_size(), codomain_size(), bs, vals, local_pts, p, displacement, displacement_grad);
 
 				if (type == ElasticityTensorType::F)
 				{
-					all.row(p) = fun(displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
+					all.row(p) = fun(displacement_grad + I);
 					continue;
 				}
 
@@ -211,11 +210,11 @@ namespace polyfem
 				params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
 
 				const Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose()) / 2;
-				Eigen::MatrixXd stress = 2 * mu * strain + lambda * strain.trace() * Eigen::MatrixXd::Identity(size(), size());
+				Eigen::MatrixXd stress = 2 * mu * strain + lambda * strain.trace() * I;
 				if (type == ElasticityTensorType::PK1)
-					stress = pk1_from_cauchy(stress, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
+					stress = pk1_from_cauchy(stress, displacement_grad + I);
 				else if (type == ElasticityTensorType::PK2)
-					stress = pk2_from_cauchy(stress, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
+					stress = pk2_from_cauchy(stress, displacement_grad + I);
 
 				all.row(p) = fun(stress);
 			}
@@ -265,8 +264,9 @@ namespace polyfem
 			double lambda, mu;
 			params_.lambda_mu(local_pts, global_pts, t, el_id, lambda, mu);
 
-			stress = mu * (grad_u_i + grad_u_i.transpose()) + lambda * grad_u_i.trace() * Eigen::MatrixXd::Identity(size(), size());
-			result = mu * (mat + mat.transpose()) + lambda * mat.trace() * Eigen::MatrixXd::Identity(size(), size());
+			const auto I = Eigen::MatrixXd::Identity(domain_size(), codomain_size());
+			stress = mu * (grad_u_i + grad_u_i.transpose()) + lambda * grad_u_i.trace() * I;
+			result = mu * (mat + mat.transpose()) + lambda * mat.trace() * I;
 		}
 
 		void LinearElasticity::compute_stress_grad_multiply_stress(
@@ -283,8 +283,9 @@ namespace polyfem
 			double lambda, mu;
 			params_.lambda_mu(local_pts, global_pts, t, el_id, lambda, mu);
 
-			stress = mu * (grad_u_i + grad_u_i.transpose()) + lambda * grad_u_i.trace() * Eigen::MatrixXd::Identity(size(), size());
-			result = mu * (stress + stress.transpose()) + lambda * stress.trace() * Eigen::MatrixXd::Identity(size(), size());
+			const auto I = Eigen::MatrixXd::Identity(domain_size(), codomain_size());
+			stress = mu * (grad_u_i + grad_u_i.transpose()) + lambda * grad_u_i.trace() * I;
+			result = mu * (stress + stress.transpose()) + lambda * stress.trace() * I;
 		}
 
 		void LinearElasticity::compute_dstress_dmu_dlambda(
@@ -302,7 +303,7 @@ namespace polyfem
 		{
 			std::map<std::string, ParamFunc> res;
 			const auto &params = lame_params();
-			const int size = this->size();
+			const int size = this->codomain_size();
 
 			res["lambda"] = [&params](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
 				double lambda, mu;

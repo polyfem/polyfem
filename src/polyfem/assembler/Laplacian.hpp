@@ -19,7 +19,7 @@ namespace polyfem
 			/// computes local stiffness matrix (1x1) for bases i,j
 			/// where i,j is passed in through data
 			/// ie integral of grad(phi_i) dot grad(phi_j)
-			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> assemble(const LinearAssemblerData &data) const override;
+			FlatMatrixNd assemble(const LinearAssemblerData &data) const override;
 
 			/// uses autodiff to compute the rhs for a fabricated solution
 			/// in this case it just return pt.getHessian().trace()

@@ -120,7 +120,7 @@ namespace polyfem::solver
 			  state_(state)
 		{
 			amips_energy_ = assembler::AssemblerUtils::make_assembler("AMIPS");
-			amips_energy_->set_size(state.mesh->dimension());
+			amips_energy_->set_sizes(state.mesh->is_volume() ? 3 : 2, state.mesh->dimension());
 
 			json transform_params = {};
 			transform_params["canonical_transformation"] = json::array();

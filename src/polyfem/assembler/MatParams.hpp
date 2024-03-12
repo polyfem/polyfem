@@ -60,7 +60,7 @@ namespace polyfem::assembler
 		double compute_stress(const std::array<double, DIM> &strain, const int j) const;
 
 	private:
-		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6> stifness_tensor_;
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6> stiffness_tensor_;
 		int size_;
 	};
 

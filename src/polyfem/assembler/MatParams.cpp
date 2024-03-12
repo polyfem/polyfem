@@ -89,11 +89,11 @@ namespace polyfem::assembler
 	void ElasticityTensor::resize(const int size)
 	{
 		if (size == 2)
-			stifness_tensor_.resize(3, 3);
+			stiffness_tensor_.resize(3, 3);
 		else
-			stifness_tensor_.resize(6, 6);
+			stiffness_tensor_.resize(6, 6);
 
-		stifness_tensor_.setZero();
+		stiffness_tensor_.setZero();
 
 		size_ = size;
 	}
@@ -106,7 +106,7 @@ namespace polyfem::assembler
 		}
 
 		assert(j >= i);
-		return stifness_tensor_(i, j);
+		return stiffness_tensor_(i, j);
 	}
 
 	double &ElasticityTensor::operator()(int i, int j)
@@ -117,7 +117,7 @@ namespace polyfem::assembler
 		}
 
 		assert(j >= i);
-		return stifness_tensor_(i, j);
+		return stiffness_tensor_(i, j);
 	}
 
 	void ElasticityTensor::set_from_entries(const std::vector<double> &entries, const std::string &stress_units)
@@ -242,22 +242,22 @@ namespace polyfem::assembler
 	{
 		if (size_ == 2)
 		{
-			stifness_tensor_ << 1.0, nu, 0.0,
+			stiffness_tensor_ << 1.0, nu, 0.0,
 				nu, 1.0, 0.0,
 				0.0, 0.0, (1.0 - nu) / 2.0;
-			stifness_tensor_ *= young / (1.0 - nu * nu);
+			stiffness_tensor_ *= young / (1.0 - nu * nu);
 		}
 		else
 		{
 			assert(size_ == 3);
 			const double v = nu;
-			stifness_tensor_ << 1. - v, v, v, 0, 0, 0,
+			stiffness_tensor_ << 1. - v, v, v, 0, 0, 0,
 				v, 1. - v, v, 0, 0, 0,
 				v, v, 1. - v, 0, 0, 0,
 				0, 0, 0, (1. - 2. * v) / 2., 0, 0,
 				0, 0, 0, 0, (1. - 2. * v) / 2., 0,
 				0, 0, 0, 0, 0, (1. - 2. * v) / 2.;
-			stifness_tensor_ *= young / ((1. + v) * (1. - 2. * v));
+			stiffness_tensor_ *= young / ((1. + v) * (1. - 2. * v));
 		}
 	}
 
@@ -271,7 +271,7 @@ namespace polyfem::assembler
 		// Note: this isn't the flattened compliance tensor! Rather, it is the
 		// matrix inverse of the flattened elasticity tensor. See the tensor
 		// flattening writeup.
-		stifness_tensor_ << 1.0 / Ex, -nuYX / Ey, -nuZX / Ez, 0.0, 0.0, 0.0,
+		stiffness_tensor_ << 1.0 / Ex, -nuYX / Ey, -nuZX / Ez, 0.0, 0.0, 0.0,
 			0.0, 1.0 / Ey, -nuZY / Ez, 0.0, 0.0, 0.0,
 			0.0, 0.0, 1.0 / Ez, 0.0, 0.0, 0.0,
 			0.0, 0.0, 0.0, 1.0 / muYZ, 0.0, 0.0,
@@ -285,7 +285,7 @@ namespace polyfem::assembler
 		assert(size_ == 2);
 		// Note: this isn't the flattened compliance tensor! Rather, it is the
 		// matrix inverse of the flattened elasticity tensor.
-		stifness_tensor_ << 1.0 / Ex, -nuYX / Ey, 0.0,
+		stiffness_tensor_ << 1.0 / Ex, -nuYX / Ey, 0.0,
 			0.0, 1.0 / Ey, 0.0,
 			0.0, 0.0, 1.0 / muXY;
 	}

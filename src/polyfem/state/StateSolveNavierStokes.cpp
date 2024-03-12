@@ -97,9 +97,9 @@ namespace polyfem
 		build_stiffness_mat(stiffness);
 		// coefficient matrix of viscosity
 		assembler::Laplacian lapl_assembler;
-		lapl_assembler.set_size(1);
+		lapl_assembler.set_sizes(mesh->is_volume() ? 3 : 2, 1);
 		lapl_assembler.assemble(mesh->is_volume(), n_bases, bases, gbases, ass_vals_cache, 0, stiffness_viscosity);
-		mass_matrix_assembler->set_size(1);
+		mass_matrix_assembler->set_sizes(mesh->is_volume() ? 3 : 2, 1);
 		mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, gbases, mass_ass_vals_cache, 0, mass, true);
 
 		// coefficient matrix of pressure projection
@@ -108,7 +108,7 @@ namespace polyfem
 		// matrix used to calculate divergence of velocity
 		mixed_assembler->assemble(mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, gbases,
 								  pressure_ass_vals_cache, ass_vals_cache, 0, mixed_stiffness);
-		mass_matrix_assembler->set_size(mesh->dimension());
+		mass_matrix_assembler->set_sizes(mesh->is_volume() ? 3 : 2, mesh->dimension());
 		mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, gbases, mass_ass_vals_cache, 0, velocity_mass, true);
 		mixed_stiffness = mixed_stiffness.transpose();
 		logger().info("Matrices assembly ends!");

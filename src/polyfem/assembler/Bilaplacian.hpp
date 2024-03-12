@@ -13,8 +13,7 @@ namespace polyfem::assembler
 	public:
 		using LinearAssembler::assemble;
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
-		assemble(const LinearAssemblerData &data) const override
+		FlatMatrixNd assemble(const LinearAssemblerData &data) const override
 		{
 			return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
 		}
@@ -31,8 +30,7 @@ namespace polyfem::assembler
 		using MixedAssembler::assemble;
 
 		// res is R
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-		assemble(const MixedAssemblerData &data) const override;
+		VectorNd assemble(const MixedAssemblerData &data) const override;
 
 		inline int rows() const override { return 1; }
 		inline int cols() const override { return 1; }
@@ -44,8 +42,7 @@ namespace polyfem::assembler
 		using LinearAssembler::assemble;
 
 		// res is R
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
-		assemble(const LinearAssemblerData &data) const override;
+		FlatMatrixNd assemble(const LinearAssemblerData &data) const override;
 
 		std::string name() const override { return "BilaplacianAux"; }
 		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }

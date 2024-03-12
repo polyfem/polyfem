@@ -47,7 +47,7 @@ namespace polyfem::assembler
 
 	void HookeLinearElasticity::add_multimaterial(const int index, const json &params, const Units &units)
 	{
-		assert(size() == 2 || size() == 3);
+		assert(codomain_size() == 2 || codomain_size() == 3);
 
 		if (!params.contains("elasticity_tensor") || params["elasticity_tensor"].empty())
 		{
@@ -74,30 +74,29 @@ namespace polyfem::assembler
 		}
 	}
 
-	void HookeLinearElasticity::set_size(const int size)
+	void HookeLinearElasticity::set_sizes(const unsigned domain_size, const unsigned codomain_size)
 	{
-		Assembler::set_size(size);
-		elasticity_tensor_.resize(size);
+		Assembler::set_sizes(domain_size, codomain_size);
+		elasticity_tensor_.resize(codomain_size);
 	}
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
-	HookeLinearElasticity::assemble(const LinearAssemblerData &data) const
+	FlatMatrixNd HookeLinearElasticity::assemble(const LinearAssemblerData &data) const
 	{
 		const Eigen::MatrixXd &gradi = data.vals.basis_values[data.i].grad;
 		const Eigen::MatrixXd &gradj = data.vals.basis_values[data.j].grad;
 
 		// (C : gradi) : gradj
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> res(size() * size());
+		FlatMatrixNd res(codomain_size() * codomain_size());
 		res.setZero();
-		assert(gradi.cols() == size());
-		assert(gradj.cols() == size());
+		assert(gradi.cols() == codomain_size());
+		assert(gradj.cols() == codomain_size());
 		assert(size_t(gradi.rows()) == data.vals.jac_it.size());
 
 		for (long k = 0; k < gradi.rows(); ++k)
 		{
-			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> res_k(size() * size());
+			FlatMatrixNd res_k(codomain_size() * codomain_size());
 
-			if (size() == 2)
+			if (codomain_size() == 2) // TODO: Check if this should be domain_size()
 			{
 				const Eigen::Matrix2d eps_x_i = strain<2>(gradi, data.vals.jac_it[k], k, 0);
 				const Eigen::Matrix2d eps_y_i = strain<2>(gradi, data.vals.jac_it[k], k, 1);
@@ -209,29 +208,30 @@ namespace polyfem::assembler
 		const auto &gbs = data.gbs;
 		const auto el_id = data.el_id;
 
-		Eigen::MatrixXd displacement_grad(size(), size());
+		MatrixNd displacement_grad(domain_size(), codomain_size());
+		const auto I = MatrixNd::Identity(domain_size(), codomain_size());
 
 		assert(displacement.cols() == 1);
 
 		all.resize(local_pts.rows(), all_size);
 
 		ElementAssemblyValues vals;
-		vals.compute(el_id, size() == 3, local_pts, bs, gbs);
+		vals.compute(el_id, domain_size() == 3, local_pts, bs, gbs);
 
 		for (long p = 0; p < local_pts.rows(); ++p)
 		{
-			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
+			compute_displacement_grad(domain_size(), codomain_size(), bs, vals, local_pts, p, displacement, displacement_grad);
 
 			if (type == ElasticityTensorType::F)
 			{
-				all.row(p) = fun(displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
+				all.row(p) = fun(displacement_grad + I);
 				continue;
 			}
 
 			Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose()) / 2;
-			Eigen::MatrixXd sigma(size(), size());
+			Eigen::MatrixXd sigma(codomain_size(), codomain_size());
 
-			if (size() == 2)
+			if (codomain_size() == 2)
 			{
 				std::array<double, 3> eps;
 				eps[0] = strain(0, 0);
@@ -257,23 +257,23 @@ namespace polyfem::assembler
 			}
 
 			if (type == ElasticityTensorType::PK1)
-				sigma = pk1_from_cauchy(sigma, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
+				sigma = pk1_from_cauchy(sigma, displacement_grad + I);
 			else if (type == ElasticityTensorType::PK2)
-				sigma = pk2_from_cauchy(sigma, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
+				sigma = pk2_from_cauchy(sigma, displacement_grad + I);
 
 			all.row(p) = fun(sigma);
 		}
 	}
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
+	VectorNd
 	HookeLinearElasticity::compute_rhs(const AutodiffHessianPt &pt) const
 	{
-		assert(pt.size() == size());
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res;
+		assert(pt.size() == codomain_size());
+		VectorNd res;
 
-		if (size() == 2)
+		if (codomain_size() == 2)
 			autogen::hooke_2d_function(pt, elasticity_tensor_, res);
-		else if (size() == 3)
+		else if (codomain_size() == 3)
 			autogen::hooke_3d_function(pt, elasticity_tensor_, res);
 		else
 			assert(false);
@@ -285,7 +285,7 @@ namespace polyfem::assembler
 	{
 		std::map<std::string, ParamFunc> res;
 		const auto &elast_tensor = elasticity_tensor();
-		const int size = this->size() == 2 ? 3 : 6;
+		const int size = this->codomain_size() == 2 ? 3 : 6;
 
 		for (int i = 0; i < size; ++i)
 		{
@@ -308,7 +308,7 @@ namespace polyfem::assembler
 	{
 		const int n_bases = data.vals.basis_values.size();
 		return polyfem::gradient_from_energy(
-			size(), n_bases, data,
+			codomain_size(), n_bases, data,
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 6, 1>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 8, 1>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 12, 1>>>(data); },
@@ -326,7 +326,7 @@ namespace polyfem::assembler
 	{
 		const int n_bases = data.vals.basis_values.size();
 		return polyfem::hessian_from_energy(
-			size(), n_bases, data,
+			codomain_size(), n_bases, data,
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 6, 1>, Eigen::Matrix<double, 6, 6>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 8, 1>, Eigen::Matrix<double, 8, 8>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 12, 1>, Eigen::Matrix<double, 12, 12>>>(data); },
@@ -343,24 +343,24 @@ namespace polyfem::assembler
 	T HookeLinearElasticity::compute_energy_aux(const NonLinearAssemblerData &data) const
 	{
 		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> AutoDiffVect;
-		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
+		typedef MatrixN<T> AutoDiffGradMat;
 
 		AutoDiffVect local_disp;
-		get_local_disp(data, size(), local_disp);
+		get_local_disp(data, codomain_size(), local_disp);
 
-		AutoDiffGradMat disp_grad(size(), size());
+		AutoDiffGradMat disp_grad(codomain_size(), codomain_size());
 
 		T energy = T(0.0);
 
 		const int n_pts = data.da.size();
 		for (long p = 0; p < n_pts; ++p)
 		{
-			compute_disp_grad_at_quad(data, local_disp, p, size(), disp_grad);
+			compute_disp_grad_at_quad(data, local_disp, p, codomain_size(), disp_grad);
 
 			AutoDiffGradMat strain = strain_from_disp_grad(disp_grad);
-			AutoDiffGradMat stress_tensor(size(), size());
+			AutoDiffGradMat stress_tensor(codomain_size(), codomain_size());
 
-			if (size() == 2)
+			if (codomain_size() == 2)
 			{
 				std::array<T, 3> eps;
 				eps[0] = strain(0, 0);

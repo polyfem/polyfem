@@ -23,10 +23,11 @@ namespace polyfem::assembler
 		Eigen::MatrixXd &all,
 		const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
-		Eigen::MatrixXd deformation_grad(size(), size());
-		Eigen::MatrixXd stress_tensor(size(), size());
+		typedef DScalar1<double, FlatMatrixNd> Diff;
+		typedef Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> MatrixND;
 
-		typedef DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>> Diff;
+		MatrixNd deformation_grad(domain_size(), codomain_size());
+		MatrixNd stress_tensor(codomain_size(), codomain_size());
 
 		const auto &displacement = data.fun;
 		const auto &local_pts = data.local_pts;
@@ -39,18 +40,20 @@ namespace polyfem::assembler
 		all.resize(local_pts.rows(), all_size);
 		DiffScalarBase::setVariableCount(deformation_grad.size());
 
-		Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> def_grad(size(), size());
+		MatrixND def_grad(domain_size(), codomain_size());
 
 		ElementAssemblyValues vals;
-		vals.compute(el_id, size() == 3, local_pts, bs, gbs);
+		vals.compute(el_id, domain_size() == 3, local_pts, bs, gbs);
 
 		for (long p = 0; p < local_pts.rows(); ++p)
 		{
-			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, deformation_grad);
+			compute_displacement_grad(domain_size(), codomain_size(), bs, vals, local_pts, p, displacement, deformation_grad);
 
 			// Id + grad d
-			for (int d = 0; d < size(); ++d)
+			for (int d = 0; d < codomain_size(); ++d)
+			{
 				deformation_grad(d, d) += 1;
+			}
 
 			if (type == ElasticityTensorType::F)
 			{
@@ -58,18 +61,22 @@ namespace polyfem::assembler
 				continue;
 			}
 
-			for (int d1 = 0; d1 < size(); ++d1)
+			for (int d1 = 0; d1 < codomain_size(); ++d1)
 			{
-				for (int d2 = 0; d2 < size(); ++d2)
-					def_grad(d1, d2) = Diff(d1 * size() + d2, deformation_grad(d1, d2));
+				for (int d2 = 0; d2 < codomain_size(); ++d2)
+				{
+					def_grad(d1, d2) = Diff(d1 * codomain_size() + d2, deformation_grad(d1, d2));
+				}
 			}
 
 			const auto val = derived().elastic_energy(local_pts.row(p), data.t, vals.element_id, def_grad);
 
-			for (int d1 = 0; d1 < size(); ++d1)
+			for (int d1 = 0; d1 < codomain_size(); ++d1)
 			{
-				for (int d2 = 0; d2 < size(); ++d2)
-					stress_tensor(d1, d2) = val.getGradient()(d1 * size() + d2);
+				for (int d2 = 0; d2 < codomain_size(); ++d2)
+				{
+					stress_tensor(d1, d2) = val.getGradient()(d1 * codomain_size() + d2);
+				}
 			}
 
 			stress_tensor = 1.0 / deformation_grad.determinant() * stress_tensor * deformation_grad.transpose();
@@ -94,7 +101,7 @@ namespace polyfem::assembler
 	{
 		const int n_bases = data.vals.basis_values.size();
 		return polyfem::gradient_from_energy(
-			size(), n_bases, data,
+			codomain_size(), n_bases, data,
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 6, 1>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 8, 1>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 12, 1>>>(data); },
@@ -113,7 +120,7 @@ namespace polyfem::assembler
 	{
 		const int n_bases = data.vals.basis_values.size();
 		return polyfem::hessian_from_energy(
-			size(), n_bases, data,
+			codomain_size(), n_bases, data,
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 6, 1>, Eigen::Matrix<double, 6, 6>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 8, 1>, Eigen::Matrix<double, 8, 8>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 12, 1>, Eigen::Matrix<double, 12, 12>>>(data); },
@@ -133,7 +140,7 @@ namespace polyfem::assembler
 		Eigen::MatrixXd &stress,
 		Eigen::MatrixXd &result) const
 	{
-		typedef DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9>> Diff;
+		typedef DScalar2<double, FlatMatrixNd, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9>> Diff;
 
 		const double t = data.t;
 		const int el_id = data.el_id;
@@ -141,29 +148,30 @@ namespace polyfem::assembler
 		const Eigen::MatrixXd &global_pts = data.global_pts;
 		const Eigen::MatrixXd &grad_u_i = data.grad_u_i;
 
-		DiffScalarBase::setVariableCount(size() * size());
-		Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> def_grad(size(), size());
+		DiffScalarBase::setVariableCount(codomain_size() * codomain_size());
+		Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>
+			def_grad(codomain_size(), codomain_size());
 
 		Eigen::MatrixXd F = grad_u_i;
-		for (int d = 0; d < size(); ++d)
+		for (int d = 0; d < codomain_size(); ++d)
 			F(d, d) += 1.;
 
 		assert(local_pts.rows() == 1);
-		for (int i = 0; i < size(); ++i)
-			for (int j = 0; j < size(); ++j)
-				def_grad(i, j) = Diff(i + j * size(), F(i, j));
+		for (int i = 0; i < codomain_size(); ++i)
+			for (int j = 0; j < codomain_size(); ++j)
+				def_grad(i, j) = Diff(i + j * codomain_size(), F(i, j));
 
 		auto energy = derived().elastic_energy(global_pts, t, el_id, def_grad);
 
 		// Grad is ∂W(F)/∂F_ij
-		Eigen::MatrixXd grad = energy.getGradient().reshaped(size(), size());
+		Eigen::MatrixXd grad = energy.getGradient().reshaped(codomain_size(), codomain_size());
 		// Hessian is ∂W(F)/(∂F_ij*∂F_kl)
 		Eigen::MatrixXd hess = energy.getHessian();
 
 		// Stress is S_ij = ∂W(F)/∂F_ij
 		stress = grad;
 		// Compute ∂S_ij/∂F_kl * M_kl, same as M_ij * ∂S_ij/∂F_kl since the hessian is symmetric
-		result = (hess * mat.reshaped(size() * size(), 1)).reshaped(size(), size());
+		result = (hess * mat.reshaped(codomain_size() * codomain_size(), 1)).reshaped(codomain_size(), codomain_size());
 	}
 
 	template <typename Derived>
@@ -172,7 +180,7 @@ namespace polyfem::assembler
 		Eigen::MatrixXd &stress,
 		Eigen::MatrixXd &result) const
 	{
-		typedef DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9>> Diff;
+		typedef DScalar2<double, FlatMatrixNd, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9>> Diff;
 
 		const double t = data.t;
 		const int el_id = data.el_id;
@@ -180,29 +188,30 @@ namespace polyfem::assembler
 		const Eigen::MatrixXd &global_pts = data.global_pts;
 		const Eigen::MatrixXd &grad_u_i = data.grad_u_i;
 
-		DiffScalarBase::setVariableCount(size() * size());
-		Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> def_grad(size(), size());
+		DiffScalarBase::setVariableCount(codomain_size() * codomain_size());
+		Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>
+			def_grad(codomain_size(), codomain_size());
 
 		Eigen::MatrixXd F = grad_u_i;
-		for (int d = 0; d < size(); ++d)
+		for (int d = 0; d < codomain_size(); ++d)
 			F(d, d) += 1.;
 
 		assert(local_pts.rows() == 1);
-		for (int i = 0; i < size(); ++i)
-			for (int j = 0; j < size(); ++j)
-				def_grad(i, j) = Diff(i + j * size(), F(i, j));
+		for (int i = 0; i < codomain_size(); ++i)
+			for (int j = 0; j < codomain_size(); ++j)
+				def_grad(i, j) = Diff(i + j * codomain_size(), F(i, j));
 
 		auto energy = derived().elastic_energy(global_pts, t, el_id, def_grad);
 
 		// Grad is ∂W(F)/∂F_ij
-		Eigen::MatrixXd grad = energy.getGradient().reshaped(size(), size());
+		Eigen::MatrixXd grad = energy.getGradient().reshaped(codomain_size(), codomain_size());
 		// Hessian is ∂W(F)/(∂F_ij*∂F_kl)
 		Eigen::MatrixXd hess = energy.getHessian();
 
 		// Stress is S_ij = ∂W(F)/∂F_ij
 		stress = grad;
 		// Compute ∂S_ij/∂F_kl * S_kl, same as S_ij * ∂S_ij/∂F_kl since the hessian is symmetric
-		result = (hess * stress.reshaped(size() * size(), 1)).reshaped(size(), size());
+		result = (hess * stress.reshaped(codomain_size() * codomain_size(), 1)).reshaped(codomain_size(), codomain_size());
 	}
 
 	template <typename Derived>
@@ -212,7 +221,7 @@ namespace polyfem::assembler
 		Eigen::MatrixXd &stress,
 		Eigen::MatrixXd &result) const
 	{
-		typedef DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9>> Diff;
+		typedef DScalar2<double, FlatMatrixNd, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9>> Diff;
 
 		const double t = data.t;
 		const int el_id = data.el_id;
@@ -220,22 +229,22 @@ namespace polyfem::assembler
 		const Eigen::MatrixXd &global_pts = data.global_pts;
 		const Eigen::MatrixXd &grad_u_i = data.grad_u_i;
 
-		DiffScalarBase::setVariableCount(size() * size());
-		Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> def_grad(size(), size());
+		DiffScalarBase::setVariableCount(codomain_size() * codomain_size());
+		Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> def_grad(codomain_size(), codomain_size());
 
 		Eigen::MatrixXd F = grad_u_i;
-		for (int d = 0; d < size(); ++d)
+		for (int d = 0; d < codomain_size(); ++d)
 			F(d, d) += 1.;
 
 		assert(local_pts.rows() == 1);
-		for (int i = 0; i < size(); ++i)
-			for (int j = 0; j < size(); ++j)
-				def_grad(i, j) = Diff(i + j * size(), F(i, j));
+		for (int i = 0; i < codomain_size(); ++i)
+			for (int j = 0; j < codomain_size(); ++j)
+				def_grad(i, j) = Diff(i + j * codomain_size(), F(i, j));
 
 		auto energy = derived().elastic_energy(global_pts, t, el_id, def_grad);
 
 		// Grad is ∂W(F)/∂F_ij
-		Eigen::MatrixXd grad = energy.getGradient().reshaped(size(), size());
+		Eigen::MatrixXd grad = energy.getGradient().reshaped(codomain_size(), codomain_size());
 		// Hessian is ∂W(F)/(∂F_ij*∂F_kl)
 		Eigen::MatrixXd hess = energy.getHessian();
 
@@ -245,11 +254,12 @@ namespace polyfem::assembler
 		for (int i = 0; i < hess.rows(); ++i)
 			if (vect.rows() == 1)
 				// Compute ∂S_ij/∂F_kl * v_k, same as ∂S_ij/∂F_kl * v_i since the hessian is symmetric
-				result.row(i) = vect * hess.row(i).reshaped(size(), size());
+				result.row(i) = vect * hess.row(i).reshaped(codomain_size(), codomain_size());
 			else
 				// Compute ∂S_ij/∂F_kl * v_l, same as ∂S_ij/∂F_kl * v_j since the hessian is symmetric
-				result.row(i) = hess.row(i).reshaped(size(), size()) * vect;
+				result.row(i) = hess.row(i).reshaped(codomain_size(), codomain_size()) * vect;
 	}
+
 	template class GenericElastic<MooneyRivlinElasticity>;
 	template class GenericElastic<MooneyRivlin3ParamElasticity>;
 	template class GenericElastic<AMIPSEnergy>;

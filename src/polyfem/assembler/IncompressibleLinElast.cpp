@@ -6,28 +6,24 @@ namespace polyfem::assembler
 
 	void IncompressibleLinearElasticityDispacement::add_multimaterial(const int index, const json &params, const Units &units)
 	{
-		assert(size() == 2 || size() == 3);
-
-		params_.add_multimaterial(index, params, size() == 3, units.stress());
-
-		// std::cout<<mu_<<std::endl;
-		// std::cout<<lambda_<<std::endl;
+		assert(domain_size() == 2 || domain_size() == 3);
+		params_.add_multimaterial(index, params, domain_size() == 3, units.stress());
 	}
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
+	FlatMatrixNd
 	IncompressibleLinearElasticityDispacement::assemble(const LinearAssemblerData &data) const
 	{
 		// 2mu (epsi : epsj)
-		assert(size() == 2 || size() == 3);
+		assert(codomain_size() == 2 || codomain_size() == 3);
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> res(size() * size());
+		FlatMatrixNd res(codomain_size() * codomain_size());
 		res.setZero();
 
 		const Eigen::MatrixXd &gradi = data.vals.basis_values[data.i].grad_t_m;
 		const Eigen::MatrixXd &gradj = data.vals.basis_values[data.j].grad_t_m;
 
-		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> epsi(size(), size());
-		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> epsj(size(), size());
+		MatrixNd epsi(codomain_size(), codomain_size());
+		MatrixNd epsj(codomain_size(), codomain_size());
 
 		for (long p = 0; p < gradi.rows(); ++p)
 		{
@@ -35,18 +31,18 @@ namespace polyfem::assembler
 			double lambda, mu;
 			params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id, lambda, mu);
 
-			for (int di = 0; di < size(); ++di)
+			for (int di = 0; di < codomain_size(); ++di)
 			{
 				epsi.setZero();
 				epsi.row(di) = gradi.row(p);
 				epsi = ((epsi + epsi.transpose()) / 2).eval();
-				for (int dj = 0; dj < size(); ++dj)
+				for (int dj = 0; dj < codomain_size(); ++dj)
 				{
 					epsj.setZero();
 					epsj.row(dj) = gradj.row(p);
 					epsj = ((epsj + epsj.transpose()) / 2.0).eval();
 
-					res(dj * size() + di) += 2 * mu * (epsi.array() * epsj.array()).sum() * data.da(p);
+					res(dj * codomain_size() + di) += 2 * mu * (epsi.array() * epsj.array()).sum() * data.da(p);
 				}
 			}
 		}
@@ -66,22 +62,23 @@ namespace polyfem::assembler
 		const auto &gbs = data.gbs;
 		const auto el_id = data.el_id;
 
-		assert(size() == 2 || size() == 3);
+		assert(codomain_size() == 2 || codomain_size() == 3);
 		all.resize(local_pts.rows(), all_size);
 		assert(displacement.cols() == 1);
 
-		Eigen::MatrixXd displacement_grad(size(), size());
+		MatrixNd displacement_grad(domain_size(), codomain_size());
+		const auto I = MatrixNd::Identity(domain_size(), codomain_size());
 
 		ElementAssemblyValues vals;
-		vals.compute(el_id, size() == 3, local_pts, bs, gbs);
+		vals.compute(el_id, domain_size() == 3, local_pts, bs, gbs);
 
 		for (long p = 0; p < local_pts.rows(); ++p)
 		{
-			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
+			compute_displacement_grad(domain_size(), codomain_size(), bs, vals, local_pts, p, displacement, displacement_grad);
 
 			if (type == ElasticityTensorType::F)
 			{
-				all.row(p) = fun(displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
+				all.row(p) = fun(displacement_grad + I);
 				continue;
 			}
 
@@ -89,12 +86,12 @@ namespace polyfem::assembler
 			params_.lambda_mu(local_pts.row(p), vals.val.row(p), data.t, vals.element_id, lambda, mu);
 
 			const Eigen::MatrixXd strain = (displacement_grad + displacement_grad.transpose()) / 2;
-			Eigen::MatrixXd stress = 2 * mu * strain + lambda * strain.trace() * Eigen::MatrixXd::Identity(size(), size());
+			Eigen::MatrixXd stress = 2 * mu * strain + lambda * strain.trace() * I;
 
 			if (type == ElasticityTensorType::PK1)
-				stress = pk1_from_cauchy(stress, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
+				stress = pk1_from_cauchy(stress, displacement_grad + I);
 			else if (type == ElasticityTensorType::PK2)
-				stress = pk2_from_cauchy(stress, displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
+				stress = pk2_from_cauchy(stress, displacement_grad + I);
 
 			all.row(p) = fun(stress);
 		}
@@ -104,7 +101,7 @@ namespace polyfem::assembler
 	{
 		std::map<std::string, ParamFunc> res;
 		const auto &params = params_;
-		const int size = this->size();
+		const int domain_size = this->domain_size();
 
 		res["lambda"] = [&params](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
 			double lambda, mu;
@@ -120,22 +117,22 @@ namespace polyfem::assembler
 			return mu;
 		};
 
-		res["E"] = [&params, size](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
+		res["E"] = [&params, domain_size](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
 			double lambda, mu;
 			params.lambda_mu(uv, p, t, e, lambda, mu);
 
-			if (size == 3)
+			if (domain_size == 3)
 				return mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
 			else
 				return 2 * mu * (2.0 * lambda + 2.0 * mu) / (lambda + 2.0 * mu);
 		};
 
-		res["nu"] = [&params, size](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
+		res["nu"] = [&params, domain_size](const RowVectorNd &uv, const RowVectorNd &p, double t, int e) {
 			double lambda, mu;
 
 			params.lambda_mu(uv, p, t, e, lambda, mu);
 
-			if (size == 3)
+			if (domain_size == 3)
 				return lambda / (2.0 * (lambda + mu));
 			else
 				return lambda / (lambda + 2.0 * mu);
@@ -144,12 +141,12 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
+	VectorNd
 	IncompressibleLinearElasticityMixed::assemble(const MixedAssemblerData &data) const
 	{
 		// (psii : div phij)  = -psii * gradphij
-		assert(size() == 2 || size() == 3);
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res(rows() * cols());
+		assert(codomain_size() == 2 || codomain_size() == 3);
+		VectorNd res(rows() * cols());
 		res.setZero();
 
 		const Eigen::MatrixXd &psii = data.psi_vals.basis_values[data.i].val;
@@ -167,12 +164,10 @@ namespace polyfem::assembler
 
 	void IncompressibleLinearElasticityPressure::add_multimaterial(const int index, const json &params, const Units &units)
 	{
-		assert(disp_size_ == 2 || disp_size_ == 3);
-
-		params_.add_multimaterial(index, params, disp_size_ == 3, units.stress());
+		params_.add_multimaterial(index, params, domain_size() == 3, units.stress());
 	}
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
+	FlatMatrixNd
 	IncompressibleLinearElasticityPressure::assemble(const LinearAssemblerData &data) const
 	{
 		// -1/lambda phi_ * phi_j

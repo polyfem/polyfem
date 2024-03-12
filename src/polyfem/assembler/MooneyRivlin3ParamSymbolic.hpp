@@ -9,7 +9,7 @@
 namespace polyfem::assembler
 {
 	template <typename T>
-	using AutoDiffGradMat = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>;
+	using AutoDiffGradMat = MatrixN<T>;
 	template <typename T>
 	using AutoDiffVect = Eigen::Matrix<T, Eigen::Dynamic, 1>;
 

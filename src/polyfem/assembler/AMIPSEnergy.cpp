@@ -1,6 +1,7 @@
 #include "AMIPSEnergy.hpp"
 
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
 
 namespace polyfem::assembler
 {
@@ -22,11 +23,7 @@ namespace polyfem::assembler
 			canonical_transformation_.reserve(params["canonical_transformation"].size());
 			for (int i = 0; i < params["canonical_transformation"].size(); ++i)
 			{
-				Eigen::MatrixXd transform_matrix(size(), size());
-				for (int j = 0; j < size(); ++j)
-					for (int k = 0; k < size(); ++k)
-						transform_matrix(j, k) = params["canonical_transformation"][i][j][k];
-				canonical_transformation_.push_back(transform_matrix);
+				canonical_transformation_.push_back(params["canonical_transformation"][i]);
 			}
 		}
 	}
