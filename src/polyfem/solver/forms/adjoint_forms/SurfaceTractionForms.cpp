@@ -757,8 +757,8 @@ namespace polyfem::solver
 				if (state.get() != &state_)
 					continue;
 
-				if (param_type != ParameterType::Shape)
-					log_and_throw_error("Only support contact force derivative wrt. shape!");
+				if ((param_type != ParameterType::Shape) || (param_type != ParameterType::PressureBC))
+					log_and_throw_error("Only support contact force derivative wrt. shape or pressure!");
 
 				if (grads.size() > 0)
 					gradv += param_map->apply_parametrization_jacobian(grads, x);

@@ -122,7 +122,8 @@
             "damping",
             "macro-strain",
             "initial",
-            "dirichlet"
+            "dirichlet",
+            "pressure"
         ]
     },
     {
@@ -182,6 +183,16 @@
         ]
     },
     {
+        "pointer": "/variable_to_simulation/*",
+        "type_name": "pressure",
+        "type": "object",
+        "required": [
+            "state",
+            "type",
+            "composition"
+        ]
+    },
+    {
         "pointer": "/variable_to_simulation/*/mesh",
         "type": "string"
     },
@@ -220,7 +231,8 @@
             "append-values",
             "append-const",
             "linear-filter",
-            "bounded-biharmonic-weights"
+            "bounded-biharmonic-weights",
+            "scalar-velocity-parametrization"
         ]
     },
     {
@@ -231,6 +243,16 @@
             "num_control_vertices",
             "num_vertices",
             "allow_rotations"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "scalar-velocity-parametrization",
+        "type": "object",
+        "required": [
+            "start_val",
+            "dt"
         ],
         "doc": "TODO"
     },

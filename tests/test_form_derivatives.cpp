@@ -303,6 +303,7 @@ TEST_CASE("pressure form derivatives", "[form][form_derivatives][pressure_form]"
 	PressureForm form(
 		state_ptr->n_bases,
 		state_ptr->local_pressure_boundary,
+		state_ptr->local_pressure_cavity,
 		state_ptr->boundary_nodes,
 		state_ptr->n_boundary_samples(),
 		*state_ptr->elasticity_pressure_assembler,

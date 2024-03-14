@@ -116,6 +116,9 @@ namespace polyfem
 			void update_pressure_boundary(const int id, json val, const std::string &interpolation = "");
 			// void update_pressure_cavity(const int id, json val, const std::string &interpolation = "");
 
+			void update_pressure_boundary(const int id, const int time_step, const double val);
+			const std::vector<ScalarBCValue> &get_pressures() const { return pressures_; }
+
 			void set_rhs(double x, double y, double z);
 
 			void clear() override;

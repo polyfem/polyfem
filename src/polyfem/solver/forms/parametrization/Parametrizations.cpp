@@ -459,4 +459,38 @@ namespace polyfem::solver
 		assert(x.size() == tt_radius_adjacency.rows());
 		return (tt_radius_adjacency * grad).array() / tt_radius_adjacency_row_sum.array();
 	}
+
+	Eigen::VectorXd ScalarVelocityParametrization::inverse_eval(const Eigen::VectorXd &y)
+	{
+		Eigen::VectorXd x;
+		x.setZero(size(y.size()));
+		x(0) = (y(0) - start_val_) / dt_;
+		for (int i = 1; i < x.size(); ++i)
+			x(i) = (y(i) - y(i - 1)) / dt_;
+		return x;
+	}
+
+	Eigen::VectorXd ScalarVelocityParametrization::eval(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd y;
+		y.setZero(size(x.size()));
+		y(0) = start_val_ + dt_ * x(0);
+		for (int i = 1; i < x.size(); ++i)
+			y(i) = y(i - 1) + dt_ * x(i);
+		return y;
+	}
+
+	Eigen::VectorXd ScalarVelocityParametrization::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
+	{
+		assert(x.size() == grad.size());
+
+		Eigen::MatrixXd hess;
+		hess.setZero(x.size(), size(x.size()));
+		for (int i = 0; i < hess.rows(); ++i)
+			for (int j = 0; j <= i; ++j)
+				hess(i, j) = dt_;
+
+		return hess.transpose() * grad;
+	}
+
 } // namespace polyfem::solver

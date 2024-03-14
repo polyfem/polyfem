@@ -928,6 +928,70 @@ namespace polyfem::solver
 		}
 	}
 
+	void AdjointTools::dJ_pressure_static_adjoint_term(
+		const State &state,
+		const std::vector<int> &boundary_ids,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &adjoint,
+		Eigen::VectorXd &one_form)
+	{
+		const int n_pressure_dof = boundary_ids.size();
+
+		one_form.setZero(n_pressure_dof);
+
+		for (int i = 0; i < boundary_ids.size(); ++i)
+		{
+			double pressure_term = state.solve_data.pressure_form->force_pressure_derivative(
+				state.n_geom_bases,
+				0,
+				boundary_ids[i],
+				sol,
+				adjoint);
+			one_form(i) = pressure_term;
+		}
+	}
+
+	void AdjointTools::dJ_pressure_transient_adjoint_term(
+		const State &state,
+		const std::vector<int> &boundary_ids,
+		const Eigen::MatrixXd &adjoint_nu,
+		const Eigen::MatrixXd &adjoint_p,
+		Eigen::VectorXd &one_form)
+	{
+		const double t0 = state.args["time"]["t0"];
+		const double dt = state.args["time"]["dt"];
+		const int time_steps = state.args["time"]["time_steps"];
+		const int bdf_order = get_bdf_order(state);
+
+		const int n_pressure_dof = boundary_ids.size();
+
+		one_form.setZero(time_steps * n_pressure_dof);
+		Eigen::VectorXd cur_p, cur_nu;
+		for (int i = time_steps; i > 0; --i)
+		{
+			const int real_order = std::min(bdf_order, i);
+			double beta = time_integrator::BDF::betas(real_order - 1);
+			double beta_dt = beta * dt;
+			const double t = i * dt + t0;
+
+			cur_p = adjoint_p.col(i);
+			cur_nu = adjoint_nu.col(i);
+			cur_p(state.boundary_nodes).setZero();
+			cur_nu(state.boundary_nodes).setZero();
+
+			for (int b = 0; b < boundary_ids.size(); ++b)
+			{
+				double pressure_term = state.solve_data.pressure_form->force_pressure_derivative(
+					state.n_geom_bases,
+					t,
+					boundary_ids[b],
+					state.diff_cached.u(i),
+					cur_p);
+				one_form((i - 1) * n_pressure_dof + b) = -beta_dt * pressure_term;
+			}
+		}
+	}
+
 	void AdjointTools::dJ_du_step(
 		const State &state,
 		const IntegrableFunctional &j,

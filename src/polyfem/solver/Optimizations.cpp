@@ -397,6 +397,10 @@ namespace polyfem::solver
 		{
 			map = std::make_shared<BoundedBiharmonicWeights2Dto3D>(args["num_control_vertices"], args["num_vertices"], *states[args["state"]], args["allow_rotations"]);
 		}
+		else if (type == "scalar-velocity-parametrization")
+		{
+			map = std::make_shared<ScalarVelocityParametrization>(args["start_val"], args["dt"]);
+		}
 		else
 			log_and_throw_adjoint_error("Unkown parametrization!");
 
@@ -461,6 +465,13 @@ namespace polyfem::solver
 			else
 				log_and_throw_adjoint_error("Invalid composite map indices type!");
 		}
+		else if (composite_map_type == "time_step_indexing")
+		{
+			const int time_steps = cur_states[0]->args["time"]["time_steps"].get<int>();
+			output_indexing.setZero(time_steps);
+			for (int i = 0; i < time_steps; ++i)
+				output_indexing(i) = i;
+		}
 
 		if (type == "shape")
 		{
@@ -486,6 +497,11 @@ namespace polyfem::solver
 		else if (type == "dirichlet")
 		{
 			var2sim = std::make_shared<DirichletVariableToSimulation>(cur_states, composite_map);
+		}
+		else if (type == "pressure")
+		{
+			var2sim = std::make_shared<PressureVariableToSimulation>(cur_states, composite_map, args["surface_selection"]);
+			var2sim->set_output_indexing(output_indexing);
 		}
 
 		return var2sim;

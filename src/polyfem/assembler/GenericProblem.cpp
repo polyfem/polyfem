@@ -631,6 +631,36 @@ namespace polyfem
 			pressures_[index].value.init(val);
 		}
 
+		void GenericTensorProblem::update_pressure_boundary(const int id, const int time_step, const double val)
+		{
+			int index = -1;
+			for (int i = 0; i < pressure_boundary_ids_.size(); ++i)
+			{
+				if (pressure_boundary_ids_[i] == id)
+				{
+					index = i;
+					break;
+				}
+			}
+			if (index == -1)
+			{
+				throw "Invalid boundary id";
+			}
+
+			if (pressures_[index].value.is_mat())
+			{
+				Eigen::MatrixXd curr_val = pressures_[index].value.get_mat();
+				assert(time_step <= curr_val.size());
+				assert(curr_val.cols() == 1);
+				curr_val(time_step) = val;
+				pressures_[index].value.set_mat(curr_val);
+			}
+			else
+			{
+				pressures_[index].value.init(val);
+			}
+		}
+
 		void GenericTensorProblem::set_rhs(double x, double y, double z)
 		{
 			rhs_[0].init(x);
@@ -946,6 +976,8 @@ namespace polyfem
 
 					auto ff = j_boundary[i - offset]["value"];
 					pressures_[i].value.init(ff);
+					if (j_boundary[i - offset].contains("time_reference") && j_boundary[i - offset]["time_reference"].size() > 0)
+						pressures_[i].value.set_t(j_boundary[i - offset]["time_reference"]);
 
 					if (j_boundary[i - offset].contains("interpolation"))
 						pressures_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);

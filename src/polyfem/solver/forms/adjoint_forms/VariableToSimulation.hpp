@@ -155,4 +155,40 @@ namespace polyfem::solver
 	private:
 		std::string variable_to_string(const Eigen::VectorXd &variable);
 	};
+
+	// To optimize the per node pressure boundaries
+	// Each pressure boundary will have the same value
+	// state variable dof = dim * n_time_steps
+	class PressureVariableToSimulation : public VariableToSimulation
+	{
+	public:
+		PressureVariableToSimulation(
+			const std::shared_ptr<State> &states,
+			const CompositeParametrization &parametrization,
+			const std::vector<int> pressure_boundaries)
+			: VariableToSimulation(states, parametrization),
+			  pressure_boundaries_(pressure_boundaries) {}
+		PressureVariableToSimulation(
+			const std::vector<std::shared_ptr<State>> &state,
+			const CompositeParametrization &parametrization,
+			const std::vector<int> pressure_boundaries)
+			: VariableToSimulation(state, parametrization),
+			  pressure_boundaries_(pressure_boundaries) {}
+		virtual ~PressureVariableToSimulation() {}
+
+		std::string name() const override { return "pressure"; }
+
+		ParameterType get_parameter_type() const override { return ParameterType::PressureBC; }
+
+		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;
+		virtual Eigen::VectorXd inverse_eval() override;
+
+	protected:
+		void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) override;
+
+	private:
+		std::string variable_to_string(const Eigen::VectorXd &variable);
+
+		const std::vector<int> pressure_boundaries_;
+	};
 } // namespace polyfem::solver

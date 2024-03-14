@@ -19,6 +19,7 @@ namespace polyfem::solver
 		DampingCoeff,
 		InitialCondition,
 		DirichletBC,
+		PressureBC,
 		MacroStrain
 	};
 
@@ -109,6 +110,18 @@ namespace polyfem::solver
 			Eigen::VectorXd &one_form);
 		static void dJ_dirichlet_transient_adjoint_term(
 			const State &state,
+			const Eigen::MatrixXd &adjoint_nu,
+			const Eigen::MatrixXd &adjoint_p,
+			Eigen::VectorXd &one_form);
+		static void dJ_pressure_static_adjoint_term(
+			const State &state,
+			const std::vector<int> &boundary_ids,
+			const Eigen::MatrixXd &sol,
+			const Eigen::MatrixXd &adjoint,
+			Eigen::VectorXd &one_form);
+		static void dJ_pressure_transient_adjoint_term(
+			const State &state,
+			const std::vector<int> &boundary_ids,
 			const Eigen::MatrixXd &adjoint_nu,
 			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);

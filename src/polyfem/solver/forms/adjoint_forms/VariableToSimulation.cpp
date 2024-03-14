@@ -357,4 +357,74 @@ namespace polyfem::solver
 		log_and_throw_adjoint_error("[{}] inverse_eval not implemented!", name());
 		return Eigen::VectorXd();
 	}
+
+	void PressureVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
+	{
+		auto tensor_problem = std::dynamic_pointer_cast<polyfem::assembler::GenericTensorProblem>(states_[0]->problem);
+		assert(pressure_boundaries_.size() > 0);
+		for (int i = 0; i < indices.size(); ++i)
+			for (const int &b : pressure_boundaries_)
+				tensor_problem->update_pressure_boundary(b, indices(i) + 1, state_variable(i));
+
+		logger().info("Current pressure boundary {} is {}.", pressure_boundaries_[0], state_variable.transpose());
+	}
+
+	Eigen::VectorXd PressureVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd term, cur_term;
+		for (auto state : states_)
+		{
+			if (state->problem->is_time_dependent())
+			{
+				Eigen::MatrixXd adjoint_nu, adjoint_p;
+				adjoint_nu = state->get_adjoint_mat(1);
+				adjoint_p = state->get_adjoint_mat(0);
+				AdjointTools::dJ_pressure_transient_adjoint_term(*state, pressure_boundaries_, adjoint_nu, adjoint_p, cur_term);
+			}
+			else
+			{
+				AdjointTools::dJ_pressure_static_adjoint_term(*state, pressure_boundaries_, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
+			}
+			if (term.size() != cur_term.size())
+				term = cur_term;
+			else
+				term += cur_term;
+		}
+		return apply_parametrization_jacobian(term, x);
+	}
+	std::string PressureVariableToSimulation::variable_to_string(const Eigen::VectorXd &variable)
+	{
+		return "";
+	}
+	Eigen::VectorXd PressureVariableToSimulation::inverse_eval()
+	{
+		assert(pressure_boundaries_.size() > 0);
+		assert(states_.size() > 0);
+
+		Eigen::VectorXd x;
+		for (const auto &b : states_[0]->args["boundary_conditions"]["pressure_boundary"])
+			if (b["id"].get<int>() == pressure_boundaries_[0])
+			{
+				auto value = b["value"];
+				if (value.is_array())
+				{
+					if (!states_[0]->problem->is_time_dependent())
+						log_and_throw_adjoint_error("Simulation must be time dependent for timestep wise pressure.");
+					Eigen::VectorXd pressures = value;
+					x = pressures.segment(1, pressures.size() - 1);
+				}
+				else if (value.is_number())
+				{
+					if (states_[0]->problem->is_time_dependent())
+						log_and_throw_adjoint_error("Simulation must be quasistatic for single value pressure.");
+					x.resize(1);
+					x(0) = value;
+				}
+				else if (value.is_string())
+					assert(false);
+				break;
+			}
+
+		return parametrization_.inverse_eval(x);
+	}
 } // namespace polyfem::solver
