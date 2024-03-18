@@ -32,7 +32,6 @@ namespace polyfem::solver
 			const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator,
 			const double epsv,
 			const double mu,
-			const double dhat,
 			const ipc::BroadPhaseMethod broad_phase_method,
 			const ContactForm &contact_form,
 			const int n_lagging_iters);
@@ -86,9 +85,8 @@ namespace polyfem::solver
 
 		double mu() const { return mu_; }
 		double epsv() const { return epsv_; }
-		ipc::FrictionCollisions get_friction_collision_set() const { return friction_collision_set_; }
-
-		const ipc::FrictionPotential &get_friction_potential() const { return friction_potential_; }
+		const ipc::FrictionCollisions &friction_collision_set() const { return friction_collision_set_; }
+		const ipc::FrictionPotential &friction_potential() const { return friction_potential_; }
 
 	private:
 		/// Reference to the collision mesh
@@ -99,7 +97,6 @@ namespace polyfem::solver
 
 		const double epsv_;                              ///< Smoothing factor between static and dynamic friction
 		const double mu_;                                ///< Global coefficient of friction
-		const double dhat_;                              ///< Barrier activation distance
 		const ipc::BroadPhaseMethod broad_phase_method_; ///< Broad-phase method used for distance computation and collision detection
 		const int n_lagging_iters_;                      ///< Number of lagging iterations
 

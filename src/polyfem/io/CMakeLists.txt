@@ -1,4 +1,6 @@
 set(SOURCES
+	Evaluator.cpp
+	Evaluator.hpp
 	MatrixIO.cpp
 	MatrixIO.hpp
 	MshReader.cpp
@@ -9,8 +11,10 @@ set(SOURCES
 	OBJReader.hpp
 	OBJWriter.cpp
 	OBJWriter.hpp
-	Evaluator.cpp
 	OutData.cpp
+	OutData.hpp
+	YamlToJson.cpp
+	YamlToJson.hpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})

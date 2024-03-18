@@ -145,7 +145,7 @@ target_compile_definitions(polyfem PUBLIC -DEIGEN_STACK_ALLOCATION_LIMIT=0)
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_SMALL_N=${POLYFEM_SMALL_N})
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_BIG_N=${POLYFEM_BIG_N})
 
-set(POLYFEM_JSON_SPEC_DIR "${CMAKE_SOURCE_DIR}/json-specs")
+set(POLYFEM_JSON_SPEC_DIR "${PROJECT_SOURCE_DIR}/json-specs")
 target_compile_definitions(polyfem PUBLIC POLYFEM_JSON_SPEC_DIR="${POLYFEM_JSON_SPEC_DIR}")
 target_compile_definitions(polyfem PUBLIC POLYFEM_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/input-spec.json")
 target_compile_definitions(polyfem PUBLIC POLYFEM_OPT_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/opt-input-spec.json")
@@ -224,7 +224,7 @@ endif()
 
 # SimpleBVH
 include(simple_bvh)
-target_link_libraries(ipc_toolkit PUBLIC simple_bvh::simple_bvh)
+target_link_libraries(polyfem PUBLIC simple_bvh::simple_bvh)
 
 # MSHIO
 include(mshio)
@@ -265,6 +265,10 @@ target_link_libraries(polyfem PUBLIC Glob::Glob)
 # units
 include(units)
 target_link_libraries(polyfem PUBLIC units::units)
+
+# YAML library
+include(yaml)
+target_link_libraries(polyfem PUBLIC yaml-cpp::yaml-cpp)
 
 # FCPW
 # include(fcpw)

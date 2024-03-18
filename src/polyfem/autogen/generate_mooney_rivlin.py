@@ -38,7 +38,7 @@ namespace polyfem {
 
 
 template<>
-void generate_gradient_(const double c1, const double c2, const double c3, const double d1, const Eigen::Matrix<double, 2, 2> &def_grad, Eigen::Matrix<double, 2, 2> &gradient)
+void generate_gradient_templated(const double c1, const double c2, const double c3, const double d1, const Eigen::Matrix<double, 2, 2> &def_grad, Eigen::Matrix<double, 2, 2> &gradient)
 {
 """)
 
@@ -58,7 +58,7 @@ print(R"""
 }
 
 template <>
-void generate_hessian_(const double c1, const double c2, const double c3, const double d1, const Eigen::Matrix<double, 2, 2> &def_grad, Eigen::Matrix<double, 4, 4> &hessian)
+void generate_hessian_templated(const double c1, const double c2, const double c3, const double d1, const Eigen::Matrix<double, 2, 2> &def_grad, Eigen::Matrix<double, 4, 4> &hessian)
 {
 """)
 
@@ -68,7 +68,7 @@ print(R"""
 }
 
 template <>
-void generate_gradient_(const double c1, const double c2, const double c3, const double d1, const Eigen::Matrix<double, 3, 3> &def_grad, Eigen::Matrix<double, 3, 3> &gradient){
+void generate_gradient_templated(const double c1, const double c2, const double c3, const double d1, const Eigen::Matrix<double, 3, 3> &def_grad, Eigen::Matrix<double, 3, 3> &gradient){
 
 """)
 
@@ -86,7 +86,7 @@ print(R"""
 }
 
 template <>
-void generate_hessian_(const double c1, const double c2, const double c3, const double d1, const Eigen::Matrix<double, 3, 3> &def_grad, Eigen::Matrix<double, 9, 9> &hessian)
+void generate_hessian_templated(const double c1, const double c2, const double c3, const double d1, const Eigen::Matrix<double, 3, 3> &def_grad, Eigen::Matrix<double, 9, 9> &hessian)
 {
 """)
 
@@ -102,13 +102,13 @@ void generate_gradient(const double c1, const double c2, const double c3, const 
 if (dim == 2)
 {
 	Eigen::Matrix<double, 2, 2> temp;
-	generate_gradient_<2>(c1, c2, c3, d1, def_grad, temp);
+	generate_gradient_templated<2>(c1, c2, c3, d1, def_grad, temp);
 	gradient = temp;
 }
 if (dim == 3)
 {
 	Eigen::Matrix<double, 3, 3> temp;
-	generate_gradient_<3>(c1, c2, c3, d1, def_grad, temp);
+	generate_gradient_templated<3>(c1, c2, c3, d1, def_grad, temp);
 	gradient = temp;
 }
 }
@@ -120,13 +120,13 @@ void generate_hessian(const double c1, const double c2, const double c3, const d
 if (dim == 2)
 {
 	Eigen::Matrix<double, 4, 4> temp;
-	generate_hessian_<2>(c1, c2, c3, d1, def_grad, temp);
+	generate_hessian_templated<2>(c1, c2, c3, d1, def_grad, temp);
 	hessian = temp;
 }
 if (dim == 3)
 {
 	Eigen::Matrix<double, 9, 9> temp;
-	generate_hessian_<3>(c1, c2, c3, d1, def_grad, temp);
+	generate_hessian_templated<3>(c1, c2, c3, d1, def_grad, temp);
 	hessian = temp;
 }
 }

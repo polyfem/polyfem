@@ -148,11 +148,11 @@ namespace polyfem::mesh
 
 		Eigen::MatrixXd sol = x0;
 
-		const size_t default_max_iterations = nl_solver->max_iterations();
-		nl_solver->max_iterations() = al_max_solver_iter;
+		const size_t default_max_iterations = nl_solver->stop_criteria().iterations;
+		nl_solver->stop_criteria().iterations = al_max_solver_iter;
 		al_solver.solve_al(nl_solver, problem, sol);
 
-		nl_solver->max_iterations() = default_max_iterations;
+		nl_solver->stop_criteria().iterations = default_max_iterations;
 		al_solver.solve_reduced(nl_solver, problem, sol);
 
 #ifndef NDEBUG

@@ -449,7 +449,7 @@ namespace polyfem::assembler
 			const double d1 = d1_(data.vals.val.row(p), t, data.vals.element_id);
 
 			Eigen::Matrix<double, dim, dim> gradient_temp;
-			autogen::generate_gradient_<dim>(c1, c2, c3, d1, def_grad_T, gradient_temp);
+			autogen::generate_gradient_templated<dim>(c1, c2, c3, d1, def_grad_T, gradient_temp);
 
 			Eigen::Matrix<double, n_basis, dim> delF_delU = grad * jac_it;
 			Eigen::Matrix<double, n_basis, dim> gradient = delF_delU * gradient_temp.transpose();
@@ -508,7 +508,7 @@ namespace polyfem::assembler
 			const double d1 = d1_(data.vals.val.row(p), t, data.vals.element_id);
 
 			Eigen::Matrix<double, dim * dim, dim * dim> hessian_temp;
-			autogen::generate_hessian_<dim>(c1, c2, c3, d1, def_grad, hessian_temp);
+			autogen::generate_hessian_templated<dim>(c1, c2, c3, d1, def_grad, hessian_temp);
 
 			// Check by FD
 			/*

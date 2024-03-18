@@ -50,7 +50,10 @@ namespace polyfem
 				return false;
 
 			if (!read_matrix(state_path, x_name, x))
-				log_and_throw_error("Unable to read initial {} from file ({})!", x_name, state_path);
+			{
+				logger().debug("Unable to read initial {} from file ({})", x_name, state_path);
+				return false;
+			}
 
 			if (reorder)
 			{

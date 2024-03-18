@@ -240,7 +240,10 @@
         "optional": [
             "type",
             "extract",
+            "unit",
             "transformation",
+            "n_refs",
+            "advanced",
             "enabled",
             "is_obstacle"
         ],
@@ -522,7 +525,7 @@
         "doc": "Normal of plane (two entries for 2D problems or three entries for 3D problems)."
     },
     {
-        "pointer": "/geometry/*/point/*",
+        "pointer": "/geometry/*/normal/*",
         "type": "float"
     },
     {
@@ -1401,10 +1404,10 @@
             "SH",
             "bvh",
             "BVH",
+            "sweep_and_prune",
+            "SAP",
             "sweep_and_tiniest_queue",
-            "STQ",
-            "sweep_and_tiniest_queue_gpu",
-            "STQ_GPU"
+            "STQ"
         ],
         "doc": "Broad phase collision-detection algorithm to use"
     },

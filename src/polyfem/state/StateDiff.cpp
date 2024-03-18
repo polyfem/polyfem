@@ -110,8 +110,8 @@ namespace polyfem
 			if (!problem->is_time_dependent() || current_step > 0)
 				compute_force_jacobian(sol, disp_grad, gradu_h);
 
-			cur_collision_set = solve_data.contact_form ? solve_data.contact_form->get_collision_set() : ipc::Collisions();
-			cur_friction_set = solve_data.friction_form ? solve_data.friction_form->get_friction_collision_set() : ipc::FrictionCollisions();
+			cur_collision_set = solve_data.contact_form ? solve_data.contact_form->collision_set() : ipc::Collisions();
+			cur_friction_set = solve_data.friction_form ? solve_data.friction_form->friction_collision_set() : ipc::FrictionCollisions();
 		}
 		else
 		{
@@ -218,22 +218,22 @@ namespace polyfem
 						const double dv_dut = -1 / dt;
 
 						hessian_prev =
-							solve_data.friction_form->get_friction_potential().force_jacobian(
+							solve_data.friction_form->friction_potential().force_jacobian(
 								diff_cached.friction_collision_set(force_step),
 								collision_mesh,
 								collision_mesh.rest_positions(),
 								/*lagged_displacements=*/surface_solution_prev,
 								surface_velocities,
-								solve_data.contact_form->dhat(),
+								solve_data.contact_form->barrier_potential(),
 								solve_data.contact_form->barrier_stiffness(),
 								ipc::FrictionPotential::DiffWRT::LAGGED_DISPLACEMENTS)
-							+ solve_data.friction_form->get_friction_potential().force_jacobian(
+							+ solve_data.friction_form->friction_potential().force_jacobian(
 								  diff_cached.friction_collision_set(force_step),
 								  collision_mesh,
 								  collision_mesh.rest_positions(),
 								  /*lagged_displacements=*/surface_solution_prev,
 								  surface_velocities,
-								  solve_data.contact_form->dhat(),
+								  solve_data.contact_form->barrier_potential(),
 								  solve_data.contact_form->barrier_stiffness(),
 								  ipc::FrictionPotential::DiffWRT::VELOCITIES)
 								  * dv_dut;

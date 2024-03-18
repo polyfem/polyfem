@@ -26,6 +26,7 @@ namespace polyfem::solver
 	{
 		assert(sol.size() == nl_problem.full_size());
 
+		const Eigen::VectorXd initial_sol = sol;
 		Eigen::VectorXd tmp_sol = nl_problem.full_to_reduced(sol);
 		assert(tmp_sol.size() == nl_problem.reduced_size());
 
@@ -33,7 +34,7 @@ namespace polyfem::solver
 
 		double al_weight = initial_al_weight;
 		int al_steps = 0;
-		const int iters = nl_solver->max_iterations();
+		const int iters = nl_solver->stop_criteria().iterations;
 
 		const StiffnessMatrix &mask = pen_form->mask();
 		const double initial_error = (pen_form->target() - sol).transpose() * mask * (pen_form->target() - sol);
@@ -63,13 +64,20 @@ namespace polyfem::solver
 
 			sol = tmp_sol;
 			set_al_weight(nl_problem, sol, -1);
-			tmp_sol = nl_problem.full_to_reduced(sol);
-			nl_problem.line_search_begin(sol, tmp_sol);
 
 			const double current_error = (pen_form->target() - sol).transpose() * mask * (pen_form->target() - sol);
 			const double eta = 1 - sqrt(current_error / initial_error);
 
 			logger().debug("Current eta = {}", eta);
+
+			if (eta < 0)
+			{
+				logger().debug("Higher error than initial, increase weight and revert to previous solution");
+				sol = initial_sol;
+			}
+
+			tmp_sol = nl_problem.full_to_reduced(sol);
+			nl_problem.line_search_begin(sol, tmp_sol);
 
 			if (eta < eta_tol && al_weight < max_al_weight)
 				al_weight *= scaling;
@@ -80,7 +88,7 @@ namespace polyfem::solver
 			++al_steps;
 		}
 		nl_problem.line_search_end();
-		nl_solver->max_iterations() = iters;
+		nl_solver->stop_criteria().iterations = iters;
 	}
 
 	void ALSolver::solve_reduced(std::shared_ptr<NLSolver> nl_solver, NLProblem &nl_problem, Eigen::MatrixXd &sol)
@@ -98,7 +106,7 @@ namespace polyfem::solver
 		// --------------------------------------------------------------------
 		// Perform one final solve with the DBC projected out
 
-		logger().debug("Successfully applied boundary conditions; solving in reduced space:");
+		logger().debug("Successfully applied boundary conditions; solving in reduced space");
 
 		nl_problem.init(sol);
 		update_barrier_stiffness(sol);

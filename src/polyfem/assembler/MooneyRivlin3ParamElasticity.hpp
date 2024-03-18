@@ -35,14 +35,15 @@ namespace polyfem::assembler
 			const double d1 = d1_(p, t, el_id);
 
 			const T J = polyfem::utils::determinant(def_grad);
-			const T log_J = log(J);
-			const auto F_tilde = def_grad;
-			const auto right_cauchy_green = F_tilde * F_tilde.transpose();
+			const auto right_cauchy_green = def_grad * def_grad.transpose();
 
-			const auto I1_tilde = pow(J, -2. / size()) * first_invariant(right_cauchy_green);
-			const auto I2_tilde = pow(J, -4. / size()) * second_invariant(right_cauchy_green);
+			const auto powJ = pow(J, -2. / 3);
+			const auto TrB = right_cauchy_green.trace();
+			const auto I1_tilde = powJ * (TrB + (3 - size())) - 3;
+			const auto second_invariant_val = (size() == 3) ? 0.5 * (TrB * TrB - (right_cauchy_green * right_cauchy_green).trace()) : TrB + J * J;
+			const auto I2_tilde = (powJ * powJ) * second_invariant_val - 3;
 
-			const T val = c1 * (I1_tilde - size()) + c2 * (I2_tilde - size()) + c3 * (I1_tilde - size()) * (I2_tilde - size()) + d1 * log_J * log_J;
+			const T val = c1 * I1_tilde + (c2 + c3 * I1_tilde) * I2_tilde + d1 * (J - 1) * (J - 1);
 
 			return val;
 		}
