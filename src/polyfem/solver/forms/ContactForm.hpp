@@ -115,6 +115,8 @@ namespace polyfem::solver
 
 		double dhat() const { return dhat_; }
 
+		virtual int n_contact_pairs() const = 0;
+
 	protected:
 		/// @brief Update the cached candidate set for the current solution
 		/// @param displaced_surface Vertex positions displaced by the current solution

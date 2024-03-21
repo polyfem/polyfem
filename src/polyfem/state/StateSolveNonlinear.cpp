@@ -316,6 +316,7 @@ namespace polyfem
 				 {"info", nl_solver->get_info()}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
+			stats.solver_info.back()["contact_pairs"] = solve_data.contact_form->n_contact_pairs();
 			save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 		};
 

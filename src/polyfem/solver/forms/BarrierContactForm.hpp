@@ -37,6 +37,8 @@ namespace polyfem::solver
 		const ipc::Collisions &get_collision_set() const { return *collision_set_; }
 		const ipc::BarrierPotential &get_potential() const { return *contact_potential_; }
 
+		int n_contact_pairs() const override { return collision_set_->size(); }
+
 	protected:
 		/// @brief Compute the contact barrier potential value
 		/// @param x Current solution

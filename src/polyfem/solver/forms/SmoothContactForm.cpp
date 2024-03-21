@@ -108,11 +108,12 @@ namespace polyfem::solver
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(data.x);
 
 		const double curr_distance = collision_set_->compute_minimum_distance(collision_mesh_, displaced_surface);
+		const double curr_active_distance = collision_set_->compute_active_minimum_distance(collision_mesh_, displaced_surface);
 		if (!std::isinf(curr_distance))
 		{
 			const double ratio = sqrt(curr_distance) / dhat();
 			const auto log_level = (ratio < 1e-6) ? spdlog::level::err : ((ratio < 1e-4) ? spdlog::level::warn : spdlog::level::debug);
-			polyfem::logger().log(log_level, "Minimum distance during solve: {}, dhat: {}", sqrt(curr_distance), dhat());
+			polyfem::logger().log(log_level, "Minimum distance during solve: {}, active distance: {}, dhat: {}", sqrt(curr_distance), sqrt(curr_active_distance), dhat());
 		}
 
 		if (data.iter_num == 0)
