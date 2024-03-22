@@ -107,7 +107,7 @@ namespace polyfem::solver
 
 		if (args["output"]["solution"] != "")
 		{
-			solution_ostream.open(args["output"]["solution"], std::ofstream::out);
+			solution_ostream.open(args["output"]["solution"].get<std::string>(), std::ofstream::out);
 			if (!solution_ostream.is_open())
 				adjoint_logger().error("Cannot open solution file for writing!");
 		}
