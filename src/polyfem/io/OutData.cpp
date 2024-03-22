@@ -1663,20 +1663,20 @@ namespace polyfem::io
 				{
 					state.solve_data.contact_form->first_derivative(sol, potential_grad);
 					potential_grad *= -state.solve_data.contact_form->barrier_stiffness() / state.solve_data.contact_form->weight();
+
+					Evaluator::interpolate_function(
+						mesh, problem.is_scalar(), bases, state.disc_orders,
+						state.polys, state.polys_3d, ref_element_sampler,
+						points.rows(), potential_grad, potential_grad_fun, opts.use_sampler, opts.boundary_only);
+
+					if (obstacle.n_vertices() > 0)
+					{
+						potential_grad_fun.conservativeResize(potential_grad_fun.rows() + obstacle.n_vertices(), potential_grad_fun.cols());
+						potential_grad_fun.bottomRows(obstacle.n_vertices()).setZero();
+					}
+
+					writer.add_field("gradient_of_contact_potential", potential_grad_fun);
 				}
-
-				Evaluator::interpolate_function(
-					mesh, problem.is_scalar(), bases, state.disc_orders,
-					state.polys, state.polys_3d, ref_element_sampler,
-					points.rows(), potential_grad, potential_grad_fun, opts.use_sampler, opts.boundary_only);
-
-				if (obstacle.n_vertices() > 0)
-				{
-					potential_grad_fun.conservativeResize(potential_grad_fun.rows() + obstacle.n_vertices(), potential_grad_fun.cols());
-					potential_grad_fun.bottomRows(obstacle.n_vertices()).setZero();
-				}
-
-				writer.add_field("gradient_of_contact_potential", potential_grad_fun);
 			}
 			catch (std::exception &)
 			{
