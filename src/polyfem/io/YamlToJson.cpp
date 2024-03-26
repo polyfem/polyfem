@@ -2,6 +2,8 @@
 
 #include "YamlToJson.hpp"
 
+#include <polyfem/utils/Logger.hpp>
+
 #include <yaml-cpp/yaml.h>
 
 namespace polyfem::io
@@ -14,6 +16,10 @@ namespace polyfem::io
 			double d;
 			bool b;
 			std::string s;
+
+			// handle special bool values in YAML: y, yes, on, n, no, off
+			if (YAML::convert<std::string>::decode(node, s) && s == "y")
+				log_and_throw_error("ambiguous yaml value: {} could be bool or string", s);
 
 			if (YAML::convert<int>::decode(node, i))
 				return i;
