@@ -1379,4 +1379,28 @@ namespace polyfem::io
 	{
 		return utils::flatten(get_bases_position(n_bases, mesh_nodes) * grad.transpose());
 	}
+
+	Eigen::VectorXd Evaluator::integrate_function(
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const Eigen::MatrixXd &fun,
+			const int dim,
+			const int actual_dim)
+	{
+		Eigen::VectorXd result;
+		result.setZero(actual_dim);
+		for (int e = 0; e < bases.size(); ++e)
+		{
+			ElementAssemblyValues vals;
+			vals.compute(e, dim == 3, bases[e], gbases[e]);
+
+			Eigen::MatrixXd u, grad_u;
+			io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, fun, u, grad_u);
+			const quadrature::Quadrature &quadrature = vals.quadrature;
+			Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
+			result += u.transpose() * da;
+		}
+
+		return result;
+	}
 } // namespace polyfem::io

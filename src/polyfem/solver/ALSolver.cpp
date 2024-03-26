@@ -36,8 +36,7 @@ namespace polyfem::solver
 		int al_steps = 0;
 		const int iters = nl_solver->stop_criteria().iterations;
 
-		const StiffnessMatrix &mask = pen_form->mask();
-		const double initial_error = (pen_form->target() - sol).transpose() * mask * (pen_form->target() - sol);
+		const double initial_error = pen_form->compute_error(sol);
 
 		nl_problem.line_search_begin(sol, tmp_sol);
 
@@ -65,7 +64,7 @@ namespace polyfem::solver
 			sol = tmp_sol;
 			set_al_weight(nl_problem, sol, -1);
 
-			const double current_error = (pen_form->target() - sol).transpose() * mask * (pen_form->target() - sol);
+			const double current_error = pen_form->compute_error(sol);
 			const double eta = 1 - sqrt(current_error / initial_error);
 
 			logger().debug("Current eta = {}", eta);

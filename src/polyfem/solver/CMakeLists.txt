@@ -7,6 +7,8 @@ set(SOURCES
 	NavierStokesSolver.hpp
 	NLProblem.cpp
 	NLProblem.hpp
+	NLHomoProblem.cpp
+	NLHomoProblem.hpp
 	OperatorSplittingSolver.hpp
 	OperatorSplittingSolver.cpp
 	Optimizations.hpp

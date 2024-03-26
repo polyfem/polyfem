@@ -63,7 +63,7 @@ namespace polyfem
 		/// init variables
 		void init_variables();
 
-		void crate_problem();
+		void create_problem();
 
 		void initial_guess(Eigen::VectorXd &x); // shoud be const
 

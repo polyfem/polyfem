@@ -70,7 +70,10 @@ namespace polyfem::solver
 		void update_quantities(const double t, const Eigen::VectorXd &x) override;
 
 		StiffnessMatrix &mask() { return mask_; }
-		Eigen::VectorXd target() { return target_x_; }
+		const StiffnessMatrix &mask() const { return mask_; }
+		Eigen::VectorXd target() const { return target_x_; }
+
+		double compute_error(const Eigen::VectorXd &x) const;
 
 	private:
 		const std::vector<int> &boundary_nodes_;

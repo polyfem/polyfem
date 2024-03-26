@@ -242,7 +242,7 @@ int optimization_simulation(const CLI::App &command_line,
 
 	opt_state.create_states(opt_state.args["compute_objective"].get<bool>() ? polyfem::solver::CacheLevel::Solution : polyfem::solver::CacheLevel::Derivatives, opt_state.args["solver"]["max_threads"].get<int>());
 	opt_state.init_variables();
-	opt_state.crate_problem();
+	opt_state.create_problem();
 
 	Eigen::VectorXd x;
 	opt_state.initial_guess(x);

@@ -1190,7 +1190,8 @@
             "epsv",
             "friction_coefficient",
             "use_convergent_formulation",
-            "collision_mesh"
+            "collision_mesh",
+            "periodic"
         ],
         "doc": "Contact handling parameters."
     },
@@ -1289,6 +1290,12 @@
         "doc": ""
     },
     {
+        "pointer": "/contact/periodic",
+        "default": false,
+        "type": "bool",
+        "doc": "Set to true to check collision between adjacent periodic cells."
+    },
+    {
         "pointer": "/solver",
         "type": "include",
         "spec_file": "polysolve.json",
@@ -1347,6 +1354,13 @@
         "min": 0,
         "type": "float",
         "doc": "Initial weight for AL"
+    },
+    {
+        "pointer": "/solver/augmented_lagrangian/error",
+        "default": 1e-2,
+        "min": 0,
+        "type": "float",
+        "doc": "Don't stop AL unless the error is smaller than this number."
     },
     {
         "pointer": "/solver/augmented_lagrangian/scaling",
@@ -2071,9 +2085,91 @@
             "dirichlet_boundary",
             "neumann_boundary",
             "pressure_boundary",
-            "obstacle_displacements"
+            "obstacle_displacements",
+            "periodic_boundary"
         ],
         "doc": "The settings for boundary conditions."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary",
+        "type": "object",
+        "default": null,
+        "optional": [
+            "enabled",
+            "tolerance",
+            "correspondence",
+            "linear_displacement_offset",
+            "fixed_macro_strain",
+            "force_zero_mean"
+        ],
+        "doc": "Options for periodic boundary conditions."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/force_zero_mean",
+        "type": "bool",
+        "default": false,
+        "doc": "The periodic solution is not unique, set to true to find the solution with zero mean."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/enabled",
+        "type": "bool",
+        "default": false,
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/tolerance",
+        "type": "float",
+        "default": 1e-5,
+        "doc": "Relative tolerance of deciding periodic correspondence"
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/correspondence",
+        "type": "list",
+        "default": [],
+        "doc": "Periodic directions for periodic boundary conditions. If not specified, default to axis-aligned directions."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/correspondence/*",
+        "type": "list",
+        "default": [],
+        "doc": "One periodic direction."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/correspondence/*/*",
+        "type": "float",
+        "doc": "One entry of a periodic direction."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/fixed_macro_strain",
+        "type": "list",
+        "default": [],
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/fixed_macro_strain/*",
+        "type": "int",
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/linear_displacement_offset",
+        "type": "list",
+        "default": [],
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/linear_displacement_offset/*",
+        "type": "list",
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/linear_displacement_offset/*/*",
+        "type": "float",
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/linear_displacement_offset/*/*",
+        "type": "string",
+        "doc": ""
     },
     {
         "pointer": "/boundary_conditions/rhs",

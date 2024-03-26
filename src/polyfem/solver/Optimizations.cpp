@@ -2,7 +2,6 @@
 
 #include <polyfem/mesh/GeometryReader.hpp>
 #include <jse/jse.h>
-#include <polyfem/State.hpp>
 
 #include "AdjointNLProblem.hpp"
 
