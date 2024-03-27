@@ -7,6 +7,8 @@
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
 
+#include <jacobian/element_validity.hpp>
+
 using namespace polyfem::assembler;
 using namespace polyfem::utils;
 

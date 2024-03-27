@@ -179,6 +179,10 @@ target_link_libraries(polyfem PUBLIC polysolve)
 include(ipc_toolkit)
 target_link_libraries(polyfem PUBLIC ipc::toolkit)
 
+# Jacobian
+include(jacobian)
+target_link_libraries(polyfem PUBLIC jacobian)
+
 # Threading
 if(POLYFEM_THREADING STREQUAL "CPP")
     target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_CPP_THREADS)
