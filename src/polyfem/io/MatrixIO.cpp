@@ -73,6 +73,8 @@ namespace polyfem::io
 	bool read_matrix(const std::string &path, const std::string &key, Mat &mat)
 	{
 		h5pp::File hdf5_file(path, h5pp::FileAccess::READONLY);
+		if (!hdf5_file.linkExists(key))
+			return false;
 		mat = hdf5_file.readDataset<Mat>(key);
 		return true;
 	}

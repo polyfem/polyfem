@@ -291,7 +291,7 @@ namespace polyfem::io
 				const int face_id = mesh3d.cell_face(e, lf);
 				// if (!mesh3d.is_boundary_face(face_id))
 				//     continue;
-				int I;
+				int I = -1;
 				Eigen::RowVector3d C;
 				const Eigen::RowVector3d bary = mesh3d.face_barycenter(face_id);
 

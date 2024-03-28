@@ -77,7 +77,7 @@ namespace polyfem::solver
 		log_and_throw_adjoint_error("Invalid nonlinear solver name!");
 	}
 
-	std::shared_ptr<AdjointForm> AdjointOptUtils::create_form(const json &args, const std::vector<std::shared_ptr<VariableToSimulation>> &var2sim, const std::vector<std::shared_ptr<State>> &states)
+	std::shared_ptr<AdjointForm> AdjointOptUtils::create_form(const json &args, const VariableToSimulationGroup &var2sim, const std::vector<std::shared_ptr<State>> &states)
 	{
 		std::shared_ptr<AdjointForm> obj;
 		if (args.is_array())
@@ -94,6 +94,8 @@ namespace polyfem::solver
 			if (type == "transient_integral")
 			{
 				std::shared_ptr<StaticForm> static_obj = std::dynamic_pointer_cast<StaticForm>(create_form(args["static_objective"], var2sim, states));
+				if (!static_obj)
+					log_and_throw_adjoint_error("Transient integral objective must have a static objective!");
 				const auto &state = states[args["state"]];
 				obj = std::make_shared<TransientForm>(var2sim, state->args["time"]["time_steps"], state->args["time"]["dt"], args["integral_type"], args["steps"].get<std::vector<int>>(), static_obj);
 			}
@@ -196,9 +198,7 @@ namespace polyfem::solver
 				std::vector<std::shared_ptr<Parametrization>> map_list;
 				for (const auto &arg : args["parametrization"])
 					map_list.push_back(create_parametrization(arg, states, {}));
-				CompositeParametrization composite_map = CompositeParametrization(map_list);
-
-				obj = std::make_shared<ParametrizedProductForm>(composite_map);
+				obj = std::make_shared<ParametrizedProductForm>(CompositeParametrization(std::move(map_list)));
 			}
 			else
 				log_and_throw_adjoint_error("Objective not implemented!");
@@ -287,15 +287,9 @@ namespace polyfem::solver
 		return map;
 	}
 
-	std::shared_ptr<VariableToSimulation> AdjointOptUtils::create_variable_to_simulation(const json &args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes)
+	std::unique_ptr<VariableToSimulation> AdjointOptUtils::create_variable_to_simulation(const json &args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes)
 	{
-		std::shared_ptr<VariableToSimulation> var2sim;
 		const std::string type = args["type"];
-
-		std::vector<std::shared_ptr<Parametrization>> map_list;
-		for (const auto &arg : args["composition"])
-			map_list.push_back(create_parametrization(arg, states, variable_sizes));
-		CompositeParametrization composite_map;
 
 		std::vector<std::shared_ptr<State>> cur_states;
 		if (args["state"].is_array())
@@ -303,8 +297,6 @@ namespace polyfem::solver
 				cur_states.push_back(states[i]);
 		else
 			cur_states.push_back(states[args["state"]]);
-
-		composite_map = CompositeParametrization(map_list);
 
 		const std::string composite_map_type = args["composite_map_type"];
 		Eigen::VectorXi output_indexing;
@@ -326,9 +318,7 @@ namespace polyfem::solver
 		else if (composite_map_type == "boundary_excluding_surface")
 		{
 			assert(type == "shape");
-			std::vector<int> excluded_surfaces;
-			for (const auto &s : args["surface_selection"])
-				excluded_surfaces.push_back(s);
+			const std::vector<int> excluded_surfaces = args["surface_selection"];
 			VariableToBoundaryNodesExclusive variable_to_node(*cur_states[0], excluded_surfaces);
 			output_indexing = variable_to_node.get_output_indexing();
 		}
@@ -346,36 +336,18 @@ namespace polyfem::solver
 				log_and_throw_adjoint_error("Invalid composite map indices type!");
 		}
 
+		std::vector<std::shared_ptr<Parametrization>> map_list;
+		for (const auto &arg : args["composition"])
+			map_list.push_back(create_parametrization(arg, states, variable_sizes));
+
+		std::unique_ptr<VariableToSimulation> var2sim = VariableToSimulation::create(type, cur_states, CompositeParametrization(std::move(map_list)));
 		if (type == "shape")
-		{
-			var2sim = std::make_shared<ShapeVariableToSimulation>(cur_states, composite_map);
 			var2sim->set_output_indexing(output_indexing);
-		}
-		else if (type == "elastic")
-		{
-			var2sim = std::make_shared<ElasticVariableToSimulation>(cur_states, composite_map);
-		}
-		else if (type == "friction")
-		{
-			var2sim = std::make_shared<FrictionCoeffientVariableToSimulation>(cur_states, composite_map);
-		}
-		else if (type == "damping")
-		{
-			var2sim = std::make_shared<DampingCoeffientVariableToSimulation>(cur_states, composite_map);
-		}
-		else if (type == "initial")
-		{
-			var2sim = std::make_shared<InitialConditionVariableToSimulation>(cur_states, composite_map);
-		}
-		else if (type == "dirichlet")
-		{
-			var2sim = std::make_shared<DirichletVariableToSimulation>(cur_states, composite_map);
-		}
 
 		return var2sim;
 	}
 
-	Eigen::VectorXd AdjointOptUtils::inverse_evaluation(const json &args, const int ndof, const std::vector<int> &variable_sizes, std::vector<std::shared_ptr<VariableToSimulation>> &var2sim)
+	Eigen::VectorXd AdjointOptUtils::inverse_evaluation(const json &args, const int ndof, const std::vector<int> &variable_sizes, VariableToSimulationGroup &var2sim)
 	{
 		Eigen::VectorXd x;
 		x.setZero(ndof);
@@ -383,18 +355,19 @@ namespace polyfem::solver
 		int var = 0;
 		for (const auto &arg : args)
 		{
+			const auto &arg_initial = arg["initial"];
 			Eigen::VectorXd tmp(variable_sizes[var]);
-			if (arg["initial"].is_array() && arg["initial"].size() > 0)
+			if (arg_initial.is_array() && arg_initial.size() > 0)
 			{
-				tmp = arg["initial"];
+				tmp = arg_initial;
 				x.segment(accumulative, tmp.size()) = tmp;
 			}
-			else if (arg["initial"].is_number())
+			else if (arg_initial.is_number())
 			{
-				tmp.setConstant(arg["initial"].get<double>());
+				tmp.setConstant(arg_initial.get<double>());
 				x.segment(accumulative, tmp.size()) = tmp;
 			}
-			else
+			else // arg["initial"] is empty array
 				x += var2sim[var]->inverse_eval();
 
 			accumulative += tmp.size();
@@ -413,15 +386,13 @@ namespace polyfem::solver
 		in_args["solver"]["max_threads"] = max_threads;
 		if (!args.contains("output") || !args["output"].contains("log") || !args["output"]["log"].contains("level"))
 		{
-			auto tmp = R"({
+			const json tmp = R"({
 					"output": {
 						"log": {
-							"level": -1
+							"level": "error"
 						}
 					}
 				})"_json;
-
-			tmp["output"]["log"]["level"] = "error";
 
 			in_args.merge_patch(tmp);
 		}
@@ -597,14 +568,9 @@ namespace polyfem::solver
 
 				return node_ids.size() * states[state_id]->mesh->dimension();
 			}
-			else
-			{
-				log_and_throw_adjoint_error("Incorrect specification for parameters.");
-			}
 		}
-		else
-			log_and_throw_adjoint_error("Incorrect specification for parameters.");
 
+		log_and_throw_adjoint_error("Incorrect specification for parameters.");
 		return -1;
 	}
 } // namespace polyfem::solver

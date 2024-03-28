@@ -9,18 +9,24 @@ namespace polyfem::solver
 	double AdjointForm::value(const Eigen::VectorXd &x) const
 	{
 		double val = Form::value(x);
-		if (print_energy_ == 1)
+		if (print_energy_ == PrintStage::ToPrint)
 		{
 			logger().debug("[{}] {}", print_energy_keyword_, val);
-			print_energy_ = 2;
+			print_energy_ = PrintStage::AlreadyPrinted;
 		}
 		return val;
 	}
 
+	void AdjointForm::enable_energy_print(const std::string &print_energy_keyword)
+	{
+		print_energy_keyword_ = print_energy_keyword;
+		print_energy_ = PrintStage::ToPrint;
+	}
+
 	void AdjointForm::solution_changed(const Eigen::VectorXd &new_x)
 	{
-		if (print_energy_ == 2)
-			print_energy_ = 1;
+		if (print_energy_ == PrintStage::AlreadyPrinted)
+			print_energy_ = PrintStage::ToPrint;
 	}
 
 	void AdjointForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
@@ -28,9 +34,9 @@ namespace polyfem::solver
 		log_and_throw_adjoint_error("[{}] Second derivatives not implemented", name());
 	}
 
-	Eigen::MatrixXd AdjointForm::compute_reduced_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const
+	Eigen::MatrixXd AdjointForm::compute_reduced_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const
 	{
-		Eigen::MatrixXd rhs = compute_adjoint_rhs_unweighted(x, state);
+		Eigen::MatrixXd rhs = compute_adjoint_rhs(x, state);
 		if (!state.problem->is_time_dependent() && !state.lin_solver_cached) // nonlinear static solve only
 		{
 			Eigen::MatrixXd reduced;
@@ -47,30 +53,43 @@ namespace polyfem::solver
 			return rhs;
 	}
 
-	void AdjointForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void AdjointForm::first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv.setZero(x.size());
-		for (const auto &param_map : variable_to_simulations_)
-		{
-			auto adjoint_term = param_map->compute_adjoint_term(x);
-			gradv += adjoint_term;
-		}
-
-		gradv /= weight();
-
 		Eigen::VectorXd partial_grad;
-		compute_partial_gradient_unweighted(x, partial_grad);
-		gradv += partial_grad;
+		compute_partial_gradient(x, partial_grad);
+		gradv = variable_to_simulations_.compute_adjoint_term(x) + partial_grad;
 	}
 
-	void AdjointForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void AdjointForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	{
+		log_and_throw_adjoint_error("first_derivative_unweighted cannot be defined for adjoint forms!");
+	}
+
+	void AdjointForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv = Eigen::VectorXd::Zero(x.size());
 	}
 
-	Eigen::MatrixXd AdjointForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const
+	Eigen::MatrixXd AdjointForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const
 	{
 		return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
+	}
+
+	void AdjointForm::update_quantities(const double t, const Eigen::VectorXd &x)
+	{
+
+	}
+	void AdjointForm::init_lagging(const Eigen::VectorXd &x)
+	{
+
+	}
+	void AdjointForm::update_lagging(const Eigen::VectorXd &x, const int iter_num)
+	{
+
+	}
+	void AdjointForm::set_apply_DBC(const Eigen::VectorXd &x, bool apply_DBC)
+	{
+
 	}
 
 	double StaticForm::value_unweighted(const Eigen::VectorXd &x) const
@@ -78,21 +97,21 @@ namespace polyfem::solver
 		return value_unweighted_step(0, x);
 	}
 
-	void StaticForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void StaticForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		compute_partial_gradient_unweighted_step(0, x, gradv);
+		compute_partial_gradient_step(0, x, gradv);
 	}
 
-	Eigen::VectorXd StaticForm::compute_adjoint_rhs_unweighted_step_prev(const int time_step, const Eigen::VectorXd &x, const State &state) const
+	Eigen::VectorXd StaticForm::compute_adjoint_rhs_step_prev(const int time_step, const Eigen::VectorXd &x, const State &state) const
 	{
 		return Eigen::MatrixXd::Zero(state.ndof(), 1);
 	}
 
-	Eigen::MatrixXd StaticForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const
+	Eigen::MatrixXd StaticForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const
 	{
 		assert(!depends_on_step_prev());
 		Eigen::MatrixXd term = Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
-		term.col(0) = compute_adjoint_rhs_unweighted_step(0, x, state);
+		term.col(0) = compute_adjoint_rhs_step(0, x, state);
 
 		return term;
 	}
@@ -122,12 +141,12 @@ namespace polyfem::solver
 
 		return max_stress.maxCoeff();
 	}
-	Eigen::VectorXd MaxStressForm::compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
+	Eigen::VectorXd MaxStressForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
 	{
 		log_and_throw_adjoint_error("[{}] Not differentiable!", name());
 		return Eigen::VectorXd();
 	}
-	void MaxStressForm::compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void MaxStressForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		log_and_throw_adjoint_error("[{}] Not differentiable!", name());
 	}

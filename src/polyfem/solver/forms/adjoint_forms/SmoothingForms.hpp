@@ -12,14 +12,13 @@ namespace polyfem::solver
 	class BoundarySmoothingForm : public AdjointForm
 	{
 	public:
-		BoundarySmoothingForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const bool scale_invariant, const int power) : AdjointForm(variable_to_simulations),
+		BoundarySmoothingForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const bool scale_invariant, const int power) : AdjointForm(variable_to_simulations),
 																																													state_(state),
 																																													scale_invariant_(scale_invariant),
 																																													power_(power) { init_form(); }
 
 		double value_unweighted(const Eigen::VectorXd &x) const override;
-		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
-		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override;
+		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	private:
 		void init_form();

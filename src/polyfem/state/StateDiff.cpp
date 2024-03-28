@@ -334,12 +334,10 @@ namespace polyfem
 	{
 		Eigen::MatrixXd b = adjoint_rhs;
 
-		Eigen::MatrixXd adjoint;
-		adjoint.setZero(ndof(), adjoint_rhs.cols());
+		Eigen::MatrixXd adjoint = Eigen::MatrixXd::Zero(ndof(), adjoint_rhs.cols());
 		if (lin_solver_cached)
 		{
-			for (int i : boundary_nodes)
-				b.row(i).setZero();
+			b(boundary_nodes, Eigen::all).setZero();
 
 			StiffnessMatrix A = diff_cached.gradu_h(0);
 			const int full_size = A.rows();
@@ -394,24 +392,9 @@ namespace polyfem
 
 					adjoint.col(i) = solve_data.nl_problem->reduced_to_full(x);
 				}
-				// NLProblem sets dirichlet values to forward BC values, but we want zero in adjoint
-				adjoint(boundary_nodes, Eigen::all).setZero();
 			}
-			else
-			{
-				adjoint.setZero(adjoint_rhs.rows(), adjoint_rhs.cols());
-				for (int i = 0; i < b.cols(); i++)
-				{
-					Eigen::MatrixXd tmp = b.col(i);
-
-					Eigen::VectorXd x;
-					x.setZero(tmp.size());
-					solver->solve(tmp, x);
-					x.conservativeResize(adjoint.rows());
-
-					adjoint.col(i) = x;
-				}
-			}
+			// NLProblem sets dirichlet values to forward BC values, but we want zero in adjoint
+			adjoint(boundary_nodes, Eigen::all).setZero();
 		}
 
 		return adjoint;
@@ -451,7 +434,7 @@ namespace polyfem
 
 				const int num = std::min(bdf_order, time_steps - i);
 
-				Eigen::VectorXd bdf_coeffs(num);
+				Eigen::VectorXd bdf_coeffs = Eigen::VectorXd::Zero(num);
 				for (int j = 0; j < bdf_order && i + j < time_steps; ++j)
 					bdf_coeffs(j) = -time_integrator::BDF::alphas(std::min(bdf_order - 1, i + j))[j];
 
@@ -493,7 +476,7 @@ namespace polyfem
 				// TODO: generalize to BDFn
 				Eigen::VectorXd tmp = rhs_(boundary_nodes);
 				if (i + 1 < cols_per_adjoint)
-					tmp += -2. / beta_dt * adjoints(boundary_nodes, i + 1);
+					tmp += (-2. / beta_dt) * adjoints(boundary_nodes, i + 1);
 				if (i + 2 < cols_per_adjoint)
 					tmp += (1. / beta_dt) * adjoints(boundary_nodes, i + 2);
 
