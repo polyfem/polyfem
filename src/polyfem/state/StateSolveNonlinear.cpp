@@ -213,6 +213,8 @@ namespace polyfem
 		damping_assembler = std::make_shared<assembler::ViscousDamping>();
 		set_materials(*damping_assembler);
 
+		elasticity_pressure_assembler = build_pressure_assembler();
+
 		// for backward solve
 		damping_prev_assembler = std::make_shared<assembler::ViscousDampingPrev>();
 		set_materials(*damping_prev_assembler);
@@ -224,8 +226,11 @@ namespace polyfem
 			// Elastic form
 			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache,
 			// Body form
-			n_pressure_bases, boundary_nodes, local_boundary, local_neumann_boundary,
+			n_pressure_bases, boundary_nodes, local_boundary,
+			local_neumann_boundary,
 			n_boundary_samples(), rhs, sol, mass_matrix_assembler->density(),
+			// Pressure form
+			local_pressure_boundary, local_pressure_cavity, elasticity_pressure_assembler,
 			// Inertia form
 			args.value("/time/quasistatic"_json_pointer, true), mass,
 			damping_assembler->is_valid() ? damping_assembler : nullptr,
