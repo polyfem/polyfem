@@ -10,9 +10,9 @@ namespace polyfem::solver
 	class TargetForm : public SpatialIntegralForm
 	{
 	public:
-		TargetForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
+		TargetForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
-			set_integral_type(SpatialIntegralType::surface);
+			set_integral_type(SpatialIntegralType::Surface);
 
 			auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -43,13 +43,13 @@ namespace polyfem::solver
 	class NodeTargetForm : public StaticForm
 	{
 	public:
-		NodeTargetForm(const State &state, const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const json &args);
-		NodeTargetForm(const State &state, const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_);
+		NodeTargetForm(const State &state, const VariableToSimulationGroup &variable_to_simulations, const json &args);
+		NodeTargetForm(const State &state, const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_);
 		~NodeTargetForm() = default;
 
-		Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
+		Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
 		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
-		void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	protected:
 		const State &state_;
@@ -61,14 +61,14 @@ namespace polyfem::solver
 	class BarycenterTargetForm : public StaticForm
 	{
 	public:
-		BarycenterTargetForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const json &args, const std::shared_ptr<State> &state1, const std::shared_ptr<State> &state2);
+		BarycenterTargetForm(const VariableToSimulationGroup &variable_to_simulations, const json &args, const std::shared_ptr<State> &state1, const std::shared_ptr<State> &state2);
 
-		Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
-		void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
+		void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
 
 	private:
-		std::vector<std::shared_ptr<PositionForm>> center1, center2;
+		std::vector<std::unique_ptr<PositionForm>> center1, center2;
 		int dim;
 	};
 } // namespace polyfem::solver

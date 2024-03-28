@@ -7,7 +7,7 @@ namespace polyfem::solver
 	class SpatialIntegralForm : public StaticForm
 	{
 	public:
-		SpatialIntegralForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : StaticForm(variable_to_simulations), state_(state)
+		SpatialIntegralForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : StaticForm(variable_to_simulations), state_(state)
 		{
 		}
 
@@ -17,9 +17,9 @@ namespace polyfem::solver
 
 		void set_integral_type(const SpatialIntegralType type) { spatial_integral_type_ = type; }
 
-		Eigen::VectorXd compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
+		Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
 		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
-		void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	protected:
 		virtual IntegrableFunctional get_integral_functional() const = 0;
@@ -32,9 +32,9 @@ namespace polyfem::solver
 	class ElasticEnergyForm : public SpatialIntegralForm
 	{
 	public:
-		ElasticEnergyForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
+		ElasticEnergyForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
-			set_integral_type(SpatialIntegralType::volume);
+			set_integral_type(SpatialIntegralType::Volume);
 
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -42,7 +42,7 @@ namespace polyfem::solver
 
 		std::string name() const override { return "elastic_energy"; }
 
-		void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	protected:
 		IntegrableFunctional get_integral_functional() const override;
@@ -51,9 +51,9 @@ namespace polyfem::solver
 	class StressNormForm : public SpatialIntegralForm
 	{
 	public:
-		StressNormForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
+		StressNormForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
-			set_integral_type(SpatialIntegralType::volume);
+			set_integral_type(SpatialIntegralType::Volume);
 
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -64,7 +64,7 @@ namespace polyfem::solver
 
 		std::string name() const override { return "stress_norm"; }
 
-		void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	protected:
 		IntegrableFunctional get_integral_functional() const override;
@@ -76,9 +76,9 @@ namespace polyfem::solver
 	class ComplianceForm : public SpatialIntegralForm
 	{
 	public:
-		ComplianceForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
+		ComplianceForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
-			set_integral_type(SpatialIntegralType::volume);
+			set_integral_type(SpatialIntegralType::Volume);
 
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -86,7 +86,7 @@ namespace polyfem::solver
 
 		std::string name() const override { return "compliance"; }
 
-		void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	protected:
 		IntegrableFunctional get_integral_functional() const override;
@@ -95,9 +95,9 @@ namespace polyfem::solver
 	class PositionForm : public SpatialIntegralForm
 	{
 	public:
-		PositionForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
+		PositionForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
-			set_integral_type(SpatialIntegralType::volume);
+			set_integral_type(SpatialIntegralType::Volume);
 
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -117,9 +117,9 @@ namespace polyfem::solver
 	class AccelerationForm : public SpatialIntegralForm
 	{
 	public:
-		AccelerationForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
+		AccelerationForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
-			set_integral_type(SpatialIntegralType::volume);
+			set_integral_type(SpatialIntegralType::Volume);
 
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -139,9 +139,9 @@ namespace polyfem::solver
 	class KineticForm : public SpatialIntegralForm
 	{
 	public:
-		KineticForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
+		KineticForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
-			set_integral_type(SpatialIntegralType::volume);
+			set_integral_type(SpatialIntegralType::Volume);
 
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -154,9 +154,9 @@ namespace polyfem::solver
 	class StressForm : public SpatialIntegralForm
 	{
 	public:
-		StressForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
+		StressForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
-			set_integral_type(SpatialIntegralType::volume);
+			set_integral_type(SpatialIntegralType::Volume);
 
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -166,7 +166,7 @@ namespace polyfem::solver
 
 		std::string name() const override { return "stress"; }
 
-		void compute_partial_gradient_unweighted_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	protected:
 		IntegrableFunctional get_integral_functional() const override;
@@ -177,9 +177,9 @@ namespace polyfem::solver
 	class VolumeForm : public SpatialIntegralForm
 	{
 	public:
-		VolumeForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
+		VolumeForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 		{
-			set_integral_type(SpatialIntegralType::volume);
+			set_integral_type(SpatialIntegralType::Volume);
 
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
