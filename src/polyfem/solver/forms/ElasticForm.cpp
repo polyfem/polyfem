@@ -30,6 +30,41 @@ namespace polyfem::solver
 			}
 		};
 
+		bool isValid(
+			const int dim,
+			const std::vector<basis::ElementBases> &bases, 
+			const std::vector<basis::ElementBases> &gbases, 
+			const Eigen::VectorXd &u)
+		{
+			int order = -1;
+			for (const auto &b : bases)
+			{
+				for (const auto &bs : b.bases)
+				{
+					if (order < 0)
+						order = bs.order();
+					else if (order != bs.order())
+						log_and_throw_error("All bases must have the same order");
+				}
+			}
+
+			Eigen::MatrixXd cp = Eigen::MatrixXd::Zero(bases.size() * bases[0].bases.size(), dim);
+			for (int e = 0; e < bases.size(); ++e)
+			{
+				for (int i = 0; i < bases[e].bases.size(); ++i)
+				{
+					const auto &g = bases[e].bases[i].global()[0];
+
+					cp.row(e * bases[0].bases.size() + i) = g.node + u.segment(g.index * dim, dim).transpose();
+				}
+			}
+
+			if (dim == 2)
+				return element_validity::isValid<2>(cp, element_validity::shapes::TRIANGLE, order);
+			else
+				return element_validity::isValid<3>(cp, element_validity::shapes::TETRAHEDRON, order);
+		}
+
 		double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
 	} // namespace
 	
@@ -91,8 +126,17 @@ namespace polyfem::solver
 		Eigen::VectorXd grad;
 		first_derivative(x1, grad);
 
-		if (grad.array().isNaN().any())
-			return false;
+		// TODO: handle polygon and quad
+		bool flag1 = isValid(is_volume_ ? 3 : 2, bases_, geom_bases_, x1);
+		bool flag2 = !grad.array().isNaN().any();
+
+		if (flag1 == flag2)
+			return flag1;
+		else
+		{
+			logger().debug("Inconsistent positivity check! {} vs {}", flag1, flag2);
+			return flag2;
+		}
 
 		// Check the scalar field in the output does not contain NANs.
 		// WARNING: Does not work because the energy is not evaluated at the same quadrature points.
@@ -100,7 +144,7 @@ namespace polyfem::solver
 		// TVector x1_full;
 		// reduced_to_full(x1, x1_full);
 		// return state_.check_scalar_value(x1_full, true, false);
-		return true;
+		// return true;
 	}
 
 	void ElasticForm::compute_cached_stiffness()

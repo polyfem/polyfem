@@ -21,6 +21,7 @@ namespace polyfem::assembler
 		void set_params(const LameParameters &params) { params_ = params; }
 
 		std::string name() const override { return "IncompressibleLinearElasticity"; }
+		bool allow_inversion() const override { return true; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
 	protected:

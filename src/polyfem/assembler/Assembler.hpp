@@ -349,6 +349,7 @@ namespace polyfem::assembler
 
 		bool is_solution_displacement() const override { return true; }
 		bool is_tensor() const override { return true; }
+		virtual bool allow_inversion() const = 0;
 
 	protected:
 		virtual void assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const = 0;
