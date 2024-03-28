@@ -5,39 +5,21 @@
 
 namespace polyfem::solver
 {
+	/// @brief Computes the dot product of the input x (after parametrization) and the volume of each element on the mesh
 	class WeightedVolumeForm : public ParametrizationForm
 	{
 	public:
-		WeightedVolumeForm(const CompositeParametrization &parametrizations, const State &state) : ParametrizationForm(parametrizations), state_(state)
+		WeightedVolumeForm(CompositeParametrization &&parametrizations, const State &state)
+			: ParametrizationForm(std::move(parametrizations)), state_(state)
 		{
 		}
 
-		inline double value_unweighted_with_param(const Eigen::VectorXd &x) const override
-		{
-			assert(x.size() == state_.mesh->n_elements());
+	protected:
+		/// @param x The input vector, after parametrization, same size as the number of elements on the mesh
+		double value_unweighted_with_param(const Eigen::VectorXd &x) const override;
 
-			double val = 0;
-			assembler::ElementAssemblyValues vals;
-			for (int e = 0; e < state_.bases.size(); e++)
-			{
-				state_.ass_vals_cache.compute(e, state_.mesh->is_volume(), state_.bases[e], state_.geom_bases()[e], vals);
-				val += (vals.det.array() * vals.quadrature.weights.array()).sum() * x(e);
-			}
-			return val;
-		}
-
-		inline void first_derivative_unweighted_with_param(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
-		{
-			assert(x.size() == state_.mesh->n_elements());
-
-			gradv.setZero(x.size());
-			assembler::ElementAssemblyValues vals;
-			for (int e = 0; e < state_.bases.size(); e++)
-			{
-				state_.ass_vals_cache.compute(e, state_.mesh->is_volume(), state_.bases[e], state_.geom_bases()[e], vals);
-				gradv(e) = (vals.det.array() * vals.quadrature.weights.array()).sum();
-			}
-		}
+		/// @brief Computes the gradient of this form wrt. x, assuming that the volume of elements doesn't depend on x
+		void compute_partial_gradient_with_param(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	private:
 		const State &state_;
