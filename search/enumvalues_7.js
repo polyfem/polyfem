@@ -1,9 +1,10 @@
 var searchData=
 [
-  ['macrostrain_0',['MacroStrain',['../namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a9dd66ef403d0478b7300b75f64b62370',1,'polyfem::solver']]],
-  ['material_1',['Material',['../namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59ad92a8333dd3ccb895cc65f7455b71206',1,'polyfem::solver']]],
-  ['middle_2',['MIDDLE',['../structpolyfem_1_1mesh_1_1_wild_remesher_1_1_edge_attributes.html#a6825d0f1b1064de2e3f3efcab246c765a43eedd8685eb86592022f8da962e3474',1,'polyfem::mesh::WildRemesher::EdgeAttributes']]],
-  ['midpoint_3',['MIDPOINT',['../namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626aafa8fd4b90a3f8123b4bd30446518a7e',1,'polyfem::mesh']]],
-  ['multi_5fsingular_5fboundary_5fcube_4',['MULTI_SINGULAR_BOUNDARY_CUBE',['../namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a16296527365f66f9abb8e41bd6e83c2d',1,'polyfem::mesh']]],
-  ['multi_5fsingular_5finterior_5fcube_5',['MULTI_SINGULAR_INTERIOR_CUBE',['../namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a31e4ef24e79a7f6f42adc39e066d9521',1,'polyfem::mesh']]]
+  ['illegal_0',['ILLEGAL',['../namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626a19b6dd9cf8414bce98a4f0b86c3258ec',1,'polyfem::mesh']]],
+  ['inactive_1',['Inactive',['../classpolyfem_1_1solver_1_1_adjoint_form.html#ad9abf38ef5d3a816ee955f57f4fe3225a3cab03c00dbd11bc3569afa0748013f0',1,'polyfem::solver::AdjointForm']]],
+  ['initialcondition_2',['InitialCondition',['../namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a01ba7e77dad0a0033b291edfcfd27898',1,'polyfem::solver']]],
+  ['interface_5fcube_3',['INTERFACE_CUBE',['../namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2aaf859843410667079f8725931ab577a1',1,'polyfem::mesh']]],
+  ['interior_5fpolytope_4',['INTERIOR_POLYTOPE',['../namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abe438b942e9f64180537be34d731916a',1,'polyfem::mesh']]],
+  ['invalid_5',['INVALID',['../namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826accc0377a8afbf50e7094f5c23a8af223',1,'polyfem::mesh']]],
+  ['irregular_6',['IRREGULAR',['../namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989eca575415ac246c79db92133fba5023b6df',1,'polyfem::mesh']]]
 ];

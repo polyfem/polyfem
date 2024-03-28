@@ -1,8 +1,7 @@
 var classpolyfem_1_1solver_1_1_boundary_smoothing_form =
 [
-    [ "BoundarySmoothingForm", "classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#a668d86dc5531203c7205b01ada9a4791", null ],
-    [ "compute_adjoint_rhs_unweighted", "classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#a738a57f2a4d3a4d2d79b49d1dc08727a", null ],
-    [ "compute_partial_gradient_unweighted", "classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#a55bd2a9d7aae7842d029983b569e0c2c", null ],
+    [ "BoundarySmoothingForm", "classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#a6b1ebd02c125b01c93686add7d365cca", null ],
+    [ "compute_partial_gradient", "classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#abe730f230c16d9a8424300f90be2a60f", null ],
     [ "init_form", "classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#a7718ee1a27e26c989b49cc08638bd030", null ],
     [ "value_unweighted", "classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#ab6150d8d1509bb088b2e1fc9913c3b16", null ],
     [ "adj", "classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#a62c5d0671b0ca307de6e5f184820a8ed", null ],

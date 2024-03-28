@@ -16,10 +16,11 @@ var searchData=
   ['polyfem_3a_3arefinement_13',['refinement',['../namespacepolyfem_1_1refinement.html',1,'polyfem']]],
   ['polyfem_3a_3arenderer_14',['renderer',['../namespacepolyfem_1_1renderer.html',1,'polyfem']]],
   ['polyfem_3a_3asolver_15',['solver',['../namespacepolyfem_1_1solver.html',1,'polyfem']]],
-  ['polyfem_3a_3atime_5fintegrator_16',['time_integrator',['../namespacepolyfem_1_1time__integrator.html',1,'polyfem']]],
-  ['polyfem_3a_3autils_17',['utils',['../namespacepolyfem_1_1utils.html',1,'polyfem']]],
-  ['polyfem_3a_3autils_3a_3astringutils_18',['StringUtils',['../namespacepolyfem_1_1utils_1_1_string_utils.html',1,'polyfem::utils']]],
-  ['polysolve_19',['polysolve',['../namespacepolysolve.html',1,'']]],
-  ['polysolve_3a_3anonlinear_20',['nonlinear',['../namespacepolysolve_1_1nonlinear.html',1,'polysolve']]],
-  ['pretty_5fprint_21',['pretty_print',['../namespacepretty__print.html',1,'']]]
+  ['polyfem_3a_3asolver_3a_3aadjointtools_16',['AdjointTools',['../namespacepolyfem_1_1solver_1_1_adjoint_tools.html',1,'polyfem::solver']]],
+  ['polyfem_3a_3atime_5fintegrator_17',['time_integrator',['../namespacepolyfem_1_1time__integrator.html',1,'polyfem']]],
+  ['polyfem_3a_3autils_18',['utils',['../namespacepolyfem_1_1utils.html',1,'polyfem']]],
+  ['polyfem_3a_3autils_3a_3astringutils_19',['StringUtils',['../namespacepolyfem_1_1utils_1_1_string_utils.html',1,'polyfem::utils']]],
+  ['polysolve_20',['polysolve',['../namespacepolysolve.html',1,'']]],
+  ['polysolve_3a_3anonlinear_21',['nonlinear',['../namespacepolysolve_1_1nonlinear.html',1,'polysolve']]],
+  ['pretty_5fprint_22',['pretty_print',['../namespacepretty__print.html',1,'']]]
 ];

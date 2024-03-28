@@ -1,11 +1,11 @@
 <map id="polyfem::solver::ShapeVariableToSimulation::compute_adjoint_term" name="polyfem::solver::ShapeVariableToSimulation::compute_adjoint_term">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,359,267,399"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,308,267,348"/>
 <area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_variable_to_simulation.html#a1468ee2e131cb52898bae709938cc9e0" title=" " alt="" coords="315,165,576,219"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="169,356,386,224,389,229,172,361"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#addcc05e296f84fac4d2feef6b6efe330" title=" " alt="" coords="356,351,535,406"/>
-<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="267,376,342,376,342,381,267,381"/>
-<area shape="rect" id="Node000017" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#abeb523ee2bef0856b888bb49c5cdca8f" title=" " alt="" coords="352,498,539,553"/>
-<area shape="poly" id="edge17_Node000001_Node000017" title=" " alt="" coords="180,396,375,490,373,494,178,401"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="182,305,369,223,371,227,184,310"/>
+<area shape="rect" id="Node000009" href="$namespacepolyfem_1_1solver_1_1_adjoint_tools.html#addcc05e296f84fac4d2feef6b6efe330" title=" " alt="" coords="356,301,535,355"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="267,325,342,325,342,331,267,331"/>
+<area shape="rect" id="Node000015" href="$namespacepolyfem_1_1solver_1_1_adjoint_tools.html#abeb523ee2bef0856b888bb49c5cdca8f" title=" " alt="" coords="352,403,539,458"/>
+<area shape="poly" id="edge15_Node000001_Node000015" title=" " alt="" coords="198,346,350,396,348,401,196,351"/>
 <area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_composite_parametrization.html#a34d19dcd05175faa19ced87215c969be" title=" " alt="" coords="628,165,831,219"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="576,189,614,189,614,195,576,195"/>
 <area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_variable_to_simulation.html#add1131a5cecca74b48bf4d0a0fa9cddb" title=" " alt="" coords="637,62,822,117"/>
@@ -19,39 +19,29 @@
 <area shape="poly" id="edge8_Node000004_Node000008" title=" " alt="" coords="823,110,891,127,890,133,821,115"/>
 <area shape="rect" id="Node000006" href="$namespacepolyfem.html#a4d64be939c7759c782fff98ed87f3399" title="Retrieves the current logger for adjoint." alt="" coords="1133,13,1311,38"/>
 <area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="1074,23,1120,23,1120,28,1074,28"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_diff_cache.html#a77ee0e60b0bbfb42c18edcb5ee6b9b9a" title=" " alt="" coords="632,473,827,513"/>
-<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="503,404,625,458,649,466,647,471,623,462,501,408"/>
-<area shape="rect" id="Node000012" href="$namespacepolyfem_1_1utils.html#adac090350174847f46edfd397abd4ab4" title="Flatten rowwises." alt="" coords="648,309,811,334"/>
-<area shape="poly" id="edge12_Node000009_Node000012" title=" " alt="" coords="534,358,651,334,653,339,535,363"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1_state.html#ae48e7478cf500860b285dfc3f4a80fee" title="does the simulation has contact" alt="" coords="661,359,798,399"/>
-<area shape="poly" id="edge13_Node000009_Node000013" title=" " alt="" coords="535,376,647,376,647,381,535,381"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1_state.html#a5eaa1d1e994fd9fe2ef287e1d623fe67" title=" " alt="" coords="637,244,822,284"/>
-<area shape="poly" id="edge14_Node000009_Node000014" title=" " alt="" coords="499,349,623,294,644,286,646,291,625,298,502,354"/>
-<area shape="rect" id="Node000016" href="$namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" title="Unflatten rowwises, so every dim elements in x become a row." alt="" coords="640,423,819,449"/>
-<area shape="poly" id="edge16_Node000009_Node000016" title=" " alt="" coords="535,394,653,418,651,423,534,399"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1solver_1_1_diff_cache.html#aa58b56179289dbd2980ff06dfd8b2c0d" title=" " alt="" coords="887,616,1081,656"/>
-<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="812,511,836,523,852,536,862,548,871,560,884,574,933,607,930,611,881,578,867,564,857,551,848,539,833,528,810,516"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1_state.html#ab956f7e3ad92b7ffc1ca1a45ee47903f" title="check if using iso parametric bases" alt="" coords="911,524,1057,564"/>
-<area shape="poly" id="edge15_Node000014_Node000015" title=" " alt="" coords="817,282,836,294,863,318,886,345,926,404,955,462,974,510,969,512,950,464,921,407,882,348,859,321,833,298,814,286"/>
-<area shape="poly" id="edge20_Node000017_Node000010" title=" " alt="" coords="538,512,618,503,619,508,539,518"/>
-<area shape="poly" id="edge21_Node000017_Node000012" title=" " alt="" coords="484,496,529,459,574,416,588,396,595,378,605,361,622,345,635,337,638,342,626,349,609,365,600,381,592,399,578,419,532,463,487,500"/>
-<area shape="poly" id="edge26_Node000017_Node000013" title=" " alt="" coords="481,495,546,451,623,408,647,398,649,403,625,413,548,456,484,500"/>
-<area shape="poly" id="edge27_Node000017_Node000014" title=" " alt="" coords="488,496,533,460,574,416,589,383,594,353,601,324,609,309,622,294,628,289,631,294,626,298,613,312,606,326,599,354,594,385,578,419,536,464,492,500"/>
-<area shape="poly" id="edge30_Node000017_Node000016" title=" " alt="" coords="516,495,623,459,657,449,659,455,625,464,518,500"/>
-<area shape="rect" id="Node000018" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a7c8caaa5a781eebfc98153597974ff42" title="Retrieve the alphas used for BDF with i steps." alt="" coords="637,765,822,805"/>
-<area shape="poly" id="edge18_Node000017_Node000018" title=" " alt="" coords="463,552,488,595,525,649,571,704,626,751,635,757,632,761,622,755,567,708,521,653,484,598,458,554"/>
-<area shape="rect" id="Node000019" href="$classpolyfem_1_1time__integrator_1_1_b_d_f.html#a36931fc9cd7efc6ec431d49ddf7330a6" title="Retrieve the value of beta used for BDF with i steps." alt="" coords="637,829,822,869"/>
-<area shape="poly" id="edge19_Node000017_Node000019" title=" " alt="" coords="458,552,480,607,515,678,564,752,593,786,626,815,633,820,630,825,622,819,589,790,559,755,511,681,475,610,453,554"/>
-<area shape="rect" id="Node000020" href="$classpolyfem_1_1solver_1_1_diff_cache.html#afe63549f19253ee5c7ea0083a8a320c5" title=" " alt="" coords="632,601,827,641"/>
-<area shape="poly" id="edge22_Node000017_Node000020" title=" " alt="" coords="521,550,625,587,649,595,648,600,623,592,519,555"/>
-<area shape="rect" id="Node000021" href="$classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053" title="Get a constant reference to the geometry mapping bases." alt="" coords="648,537,811,577"/>
-<area shape="poly" id="edge24_Node000017_Node000021" title=" " alt="" coords="539,533,635,544,634,549,538,538"/>
-<area shape="rect" id="Node000022" href="$classpolyfem_1_1solver_1_1_diff_cache.html#aef49f8d41ce8d8665737f8bc381f94c6" title=" " alt="" coords="624,666,835,691"/>
-<area shape="poly" id="edge28_Node000017_Node000022" title=" " alt="" coords="479,551,543,602,583,628,625,651,647,659,645,664,623,656,581,633,540,606,475,555"/>
-<area shape="rect" id="Node000023" href="$classpolyfem_1_1solver_1_1_diff_cache.html#aee0a6b222a0434b4c1d0cae54a212ec7" title=" " alt="" coords="624,715,835,741"/>
-<area shape="poly" id="edge31_Node000017_Node000023" title=" " alt="" coords="468,551,496,586,532,627,576,668,625,702,639,708,637,713,623,706,573,672,528,631,491,590,464,555"/>
-<area shape="poly" id="edge23_Node000020_Node000011" title=" " alt="" coords="827,624,873,627,873,632,827,630"/>
-<area shape="poly" id="edge25_Node000021_Node000015" title=" " alt="" coords="811,550,898,546,898,551,811,556"/>
-<area shape="poly" id="edge29_Node000022_Node000011" title=" " alt="" coords="805,663,873,652,874,657,806,669"/>
-<area shape="poly" id="edge32_Node000023_Node000011" title=" " alt="" coords="794,713,834,701,885,682,932,660,934,665,887,686,836,707,796,718"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_diff_cache.html#a77ee0e60b0bbfb42c18edcb5ee6b9b9a" title=" " alt="" coords="632,308,827,348"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="535,325,618,325,618,331,535,331"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1_state.html#ae48e7478cf500860b285dfc3f4a80fee" title="does the simulation has contact" alt="" coords="661,372,798,412"/>
+<area shape="poly" id="edge12_Node000009_Node000012" title=" " alt="" coords="536,345,648,371,647,376,534,351"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1_state.html#a5eaa1d1e994fd9fe2ef287e1d623fe67" title=" " alt="" coords="637,244,822,284"/>
+<area shape="poly" id="edge13_Node000009_Node000013" title=" " alt="" coords="534,305,626,284,627,290,536,311"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1solver_1_1_diff_cache.html#aa58b56179289dbd2980ff06dfd8b2c0d" title=" " alt="" coords="887,515,1081,555"/>
+<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="819,346,836,358,849,372,857,387,863,415,868,444,874,458,885,473,904,491,926,506,923,510,900,495,881,476,870,461,863,445,858,416,852,389,845,375,833,362,816,350"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1_state.html#ab956f7e3ad92b7ffc1ca1a45ee47903f" title="check if using iso parametric bases" alt="" coords="911,423,1057,463"/>
+<area shape="poly" id="edge14_Node000013_Node000014" title=" " alt="" coords="811,282,836,294,874,320,908,351,961,410,957,413,904,355,870,324,833,298,809,286"/>
+<area shape="poly" id="edge16_Node000015_Node000010" title=" " alt="" coords="511,401,623,357,646,350,648,355,625,363,513,406"/>
+<area shape="poly" id="edge21_Node000015_Node000012" title=" " alt="" coords="538,415,647,400,647,406,539,421"/>
+<area shape="poly" id="edge22_Node000015_Node000013" title=" " alt="" coords="517,401,547,385,574,365,589,347,597,329,605,312,622,294,631,288,634,293,626,298,610,315,602,332,594,350,578,369,550,389,520,406"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1solver_1_1_diff_cache.html#afe63549f19253ee5c7ea0083a8a320c5" title=" " alt="" coords="632,500,827,540"/>
+<area shape="poly" id="edge17_Node000015_Node000016" title=" " alt="" coords="531,455,625,485,650,493,648,498,623,491,530,461"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053" title="Get a constant reference to the geometry mapping bases." alt="" coords="648,436,811,476"/>
+<area shape="poly" id="edge19_Node000015_Node000017" title=" " alt="" coords="539,436,635,445,634,450,539,442"/>
+<area shape="rect" id="Node000018" href="$classpolyfem_1_1solver_1_1_diff_cache.html#aef49f8d41ce8d8665737f8bc381f94c6" title=" " alt="" coords="624,565,835,590"/>
+<area shape="poly" id="edge23_Node000015_Node000018" title=" " alt="" coords="481,456,545,504,584,529,625,550,648,558,646,563,623,554,582,533,542,509,478,460"/>
+<area shape="rect" id="Node000019" href="$classpolyfem_1_1solver_1_1_diff_cache.html#aee0a6b222a0434b4c1d0cae54a212ec7" title=" " alt="" coords="624,614,835,639"/>
+<area shape="poly" id="edge25_Node000015_Node000019" title=" " alt="" coords="469,456,533,529,577,568,625,600,639,607,637,612,623,605,574,572,529,533,465,460"/>
+<area shape="poly" id="edge18_Node000016_Node000011" title=" " alt="" coords="827,523,873,526,873,531,827,528"/>
+<area shape="poly" id="edge20_Node000017_Node000014" title=" " alt="" coords="811,449,898,444,898,450,811,454"/>
+<area shape="poly" id="edge24_Node000018_Node000011" title=" " alt="" coords="805,562,873,551,874,556,806,567"/>
+<area shape="poly" id="edge26_Node000019_Node000011" title=" " alt="" coords="794,611,834,600,885,580,932,558,934,563,887,585,836,605,796,617"/>
 </map>

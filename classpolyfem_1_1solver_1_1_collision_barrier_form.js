@@ -1,9 +1,8 @@
 var classpolyfem_1_1solver_1_1_collision_barrier_form =
 [
-    [ "CollisionBarrierForm", "classpolyfem_1_1solver_1_1_collision_barrier_form.html#ae9d9e71618eeb10d2a73cb2739ef8c5a", null ],
+    [ "CollisionBarrierForm", "classpolyfem_1_1solver_1_1_collision_barrier_form.html#aabe428904923684cd4213bf02ba6170a", null ],
     [ "build_collision_set", "classpolyfem_1_1solver_1_1_collision_barrier_form.html#a33f5a75351168980dd42656127f1693c", null ],
-    [ "compute_adjoint_rhs_unweighted", "classpolyfem_1_1solver_1_1_collision_barrier_form.html#a8675ce95074378d3f68c09fa43d725ff", null ],
-    [ "compute_partial_gradient_unweighted", "classpolyfem_1_1solver_1_1_collision_barrier_form.html#aae682f9f4eee4132e0ee61699b357e83", null ],
+    [ "compute_partial_gradient", "classpolyfem_1_1solver_1_1_collision_barrier_form.html#ab521276c4d393e1845125386d3f4e26c", null ],
     [ "get_updated_mesh_nodes", "classpolyfem_1_1solver_1_1_collision_barrier_form.html#afa99bbe0187758a168ceeb8960bdad94", null ],
     [ "is_step_collision_free", "classpolyfem_1_1solver_1_1_collision_barrier_form.html#a58f3e2b43ae371db96dfae1a093f550c", null ],
     [ "max_step_size", "classpolyfem_1_1solver_1_1_collision_barrier_form.html#a7a3b924fb69ec5e9dc0a354778796279", null ],

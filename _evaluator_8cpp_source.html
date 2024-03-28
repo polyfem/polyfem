@@ -426,7 +426,7 @@ $(document).ready(function(){initNavTree('_evaluator_8cpp_source.html',''); init
 <div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>                <span class="keyword">const</span> <span class="keywordtype">int</span> face_id = mesh3d.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a862d425f30ed31588e17a69f6209d8c7">cell_face</a>(e, lf);</div>
 <div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>                <span class="comment">// if (!mesh3d.is_boundary_face(face_id))</span></div>
 <div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>                <span class="comment">//     continue;</span></div>
-<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>                <span class="keywordtype">int</span> I;</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>                <span class="keywordtype">int</span> I = -1;</div>
 <div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>                Eigen::RowVector3d C;</div>
 <div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>                <span class="keyword">const</span> Eigen::RowVector3d bary = mesh3d.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_mesh.html#a3cb2c64fbd2615052b400fb1dcd63e4e">face_barycenter</a>(face_id);</div>
 <div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span> </div>

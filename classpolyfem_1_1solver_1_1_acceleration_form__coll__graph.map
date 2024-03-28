@@ -1,31 +1,33 @@
 <map id="polyfem::solver::AccelerationForm" name="polyfem::solver::AccelerationForm">
-<area shape="rect" id="Node000001" title=" " alt="" coords="1331,212,1577,237"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_spatial_integral_form.html" title=" " alt="" coords="1104,205,1281,245"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1295,222,1330,222,1330,227,1295,227"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_static_form.html" title=" " alt="" coords="808,104,1011,129"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="958,132,1140,202,1138,207,956,137"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_adjoint_form.html" title=" " alt="" coords="399,5,610,31"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="625,17,704,26,785,45,845,72,892,102,889,106,843,77,783,50,703,32,624,23"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="1355,240,1601,265"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_spatial_integral_form.html" title=" " alt="" coords="1128,233,1305,273"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1319,250,1354,250,1354,255,1319,255"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_static_form.html" title=" " alt="" coords="832,132,1035,157"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="982,160,1164,230,1162,235,980,165"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_adjoint_form.html" title=" " alt="" coords="423,33,634,59"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="649,45,728,54,809,73,869,100,916,130,913,134,867,105,807,78,727,60,648,51"/>
 <area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_form.html" title=" " alt="" coords="21,5,186,31"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="200,15,399,15,399,21,200,21"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state" alt="" coords="850,236,969,261"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="982,242,1080,234,1104,232,1104,237,1080,239,982,247"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1_units.html" title=" " alt="" coords="445,55,564,80"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="578,65,696,73,749,82,785,96,796,106,800,116,810,139,856,193,896,234,892,238,852,197,806,142,796,118,791,109,783,100,747,87,695,78,578,71"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html" title="Caches basis evaluation and geometric mapping at every element." alt="" coords="424,122,585,162"/>
-<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="599,152,690,169,785,193,839,213,884,234,882,238,836,218,783,198,689,174,598,157"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_solve_data.html" title="class to store time stepping data" alt="" coords="405,187,604,212"/>
-<area shape="poly" id="edge8_Node000006_Node000009" title=" " alt="" coords="618,209,784,229,850,238,849,243,784,234,618,214"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1mesh_1_1_obstacle.html" title=" " alt="" coords="412,236,597,261"/>
-<area shape="poly" id="edge9_Node000006_Node000010" title=" " alt="" coords="611,246,850,246,850,251,611,251"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1io_1_1_out_geometry_data.html" title="Utilies related to export of geometry." alt="" coords="393,285,616,311"/>
-<area shape="poly" id="edge10_Node000006_Node000011" title=" " alt="" coords="629,284,784,266,849,256,850,261,784,271,630,289"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1utils_1_1_ref_element_sampler.html" title=" " alt="" coords="5,278,201,318"/>
-<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="215,295,393,295,393,301,215,301"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1io_1_1_out_runtime_data.html" title="stores all runtime data" alt="" coords="398,335,611,360"/>
-<area shape="poly" id="edge12_Node000006_Node000013" title=" " alt="" coords="625,334,704,322,783,303,838,282,884,259,887,264,841,287,785,309,705,328,626,340"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1io_1_1_out_stats_data.html" title="all stats from polyfem" alt="" coords="409,384,600,409"/>
-<area shape="poly" id="edge13_Node000006_Node000014" title=" " alt="" coords="614,391,699,379,742,367,783,352,818,331,850,306,895,260,899,263,853,310,821,336,785,356,743,372,700,384,614,396"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1solver_1_1_diff_cache.html" title=" " alt="" coords="407,433,602,459"/>
-<area shape="poly" id="edge14_Node000006_Node000015" title=" " alt="" coords="616,448,658,445,701,438,743,426,783,408,825,374,859,333,884,292,900,260,905,263,889,294,863,336,829,378,785,412,745,431,702,443,658,450,616,454"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="200,22,423,36,423,42,199,27"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_variable_to_simulation_group.html" title="A collection of VariableToSimulation." alt="" coords="11,55,196,95"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="210,67,393,55,423,53,423,58,394,61,210,72"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state" alt="" coords="874,264,993,289"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="1006,270,1104,262,1128,260,1128,265,1104,267,1006,275"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1_units.html" title=" " alt="" coords="469,83,588,108"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="602,93,720,101,773,110,809,124,820,134,824,144,834,167,880,221,920,262,916,266,876,225,830,170,820,146,815,137,807,128,771,115,719,106,602,99"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1assembler_1_1_assembly_vals_cache.html" title="Caches basis evaluation and geometric mapping at every element." alt="" coords="448,150,609,190"/>
+<area shape="poly" id="edge8_Node000007_Node000009" title=" " alt="" coords="623,180,714,197,809,221,863,241,908,262,906,266,860,246,807,226,713,202,622,185"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_solve_data.html" title="class to store time stepping data" alt="" coords="429,215,628,240"/>
+<area shape="poly" id="edge9_Node000007_Node000010" title=" " alt="" coords="642,237,808,257,874,266,873,271,808,262,642,242"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1mesh_1_1_obstacle.html" title=" " alt="" coords="436,264,621,289"/>
+<area shape="poly" id="edge10_Node000007_Node000011" title=" " alt="" coords="635,274,874,274,874,279,635,279"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1io_1_1_out_geometry_data.html" title="Utilies related to export of geometry." alt="" coords="417,313,640,339"/>
+<area shape="poly" id="edge11_Node000007_Node000012" title=" " alt="" coords="653,312,808,294,873,284,874,289,808,299,654,317"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1utils_1_1_ref_element_sampler.html" title=" " alt="" coords="5,306,201,346"/>
+<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="215,323,417,323,417,329,215,329"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1io_1_1_out_runtime_data.html" title="stores all runtime data" alt="" coords="422,363,635,388"/>
+<area shape="poly" id="edge13_Node000007_Node000014" title=" " alt="" coords="649,362,728,350,807,331,862,310,908,287,911,292,865,315,809,337,729,356,650,368"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1io_1_1_out_stats_data.html" title="all stats from polyfem" alt="" coords="433,412,624,437"/>
+<area shape="poly" id="edge14_Node000007_Node000015" title=" " alt="" coords="638,419,723,407,766,395,807,380,842,359,874,334,919,288,923,291,877,338,845,364,809,384,767,400,724,412,638,424"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1solver_1_1_diff_cache.html" title=" " alt="" coords="431,461,626,487"/>
+<area shape="poly" id="edge15_Node000007_Node000016" title=" " alt="" coords="640,476,682,473,725,466,767,454,807,436,849,402,883,361,908,320,924,288,929,291,913,322,887,364,853,406,809,440,769,459,726,471,682,478,640,482"/>
 </map>

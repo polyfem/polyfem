@@ -206,7 +206,6 @@ var annotated_dup =
         [ "AdjointForm", "classpolyfem_1_1solver_1_1_adjoint_form.html", "classpolyfem_1_1solver_1_1_adjoint_form" ],
         [ "AdjointNLProblem", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem" ],
         [ "AdjointOptUtils", "structpolyfem_1_1solver_1_1_adjoint_opt_utils.html", null ],
-        [ "AdjointTools", "classpolyfem_1_1solver_1_1_adjoint_tools.html", "classpolyfem_1_1solver_1_1_adjoint_tools" ],
         [ "ALSolver", "classpolyfem_1_1solver_1_1_a_l_solver.html", "classpolyfem_1_1solver_1_1_a_l_solver" ],
         [ "AMIPSForm", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form" ],
         [ "BarycenterTargetForm", "classpolyfem_1_1solver_1_1_barycenter_target_form.html", "classpolyfem_1_1solver_1_1_barycenter_target_form" ],
@@ -278,6 +277,7 @@ var annotated_dup =
         [ "VariableToInteriorNodes", "classpolyfem_1_1solver_1_1_variable_to_interior_nodes.html", "classpolyfem_1_1solver_1_1_variable_to_interior_nodes" ],
         [ "VariableToNodes", "classpolyfem_1_1solver_1_1_variable_to_nodes.html", "classpolyfem_1_1solver_1_1_variable_to_nodes" ],
         [ "VariableToSimulation", "classpolyfem_1_1solver_1_1_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_variable_to_simulation" ],
+        [ "VariableToSimulationGroup", "classpolyfem_1_1solver_1_1_variable_to_simulation_group.html", "classpolyfem_1_1solver_1_1_variable_to_simulation_group" ],
         [ "VolumeForm", "classpolyfem_1_1solver_1_1_volume_form.html", "classpolyfem_1_1solver_1_1_volume_form" ],
         [ "WeightedVolumeForm", "classpolyfem_1_1solver_1_1_weighted_volume_form.html", "classpolyfem_1_1solver_1_1_weighted_volume_form" ]
       ] ],

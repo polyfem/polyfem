@@ -120,9 +120,9 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1_integrable_functional
 
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classpolyfem_1_1_integrable_functional-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">polyfem::IntegrableFunctional Class Reference</div></div>
@@ -131,43 +131,45 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1_integrable_functional
 
 <p><code>#include &lt;<a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>&gt;</code></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structpolyfem_1_1_integrable_functional_1_1_parameter_type.html">ParameterType</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameters for the functional evaluation.  <a href="structpolyfem_1_1_integrable_functional_1_1_parameter_type.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:aad368c9a0102b244845b5470ff731d30" id="r_aad368c9a0102b244845b5470ff731d30"><td class="memItemLeft" align="right" valign="top">typedef std::function&lt; void(const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;, const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;, Eigen::MatrixXd &amp;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a></td></tr>
-<tr class="separator:aad368c9a0102b244845b5470ff731d30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a358db4f5b2f4b54a877d1fee0a17e89f" id="r_a358db4f5b2f4b54a877d1fee0a17e89f"><td class="memItemLeft" align="right" valign="top">typedef std::function&lt; void(const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;, const Eigen::VectorXd &amp;, const Eigen::VectorXd &amp;, const Eigen::MatrixXd &amp;, const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;, const <a class="el" href="structpolyfem_1_1_integrable_functional_1_1_parameter_type.html">ParameterType</a> &amp;, Eigen::MatrixXd &amp;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a></td></tr>
+<tr class="separator:a358db4f5b2f4b54a877d1fee0a17e89f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ab9cce92b1b191a3935edd65059fe2e2f" id="r_ab9cce92b1b191a3935edd65059fe2e2f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#ab9cce92b1b191a3935edd65059fe2e2f">IntegrableFunctional</a> ()=default</td></tr>
 <tr class="separator:ab9cce92b1b191a3935edd65059fe2e2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aac6eb6c1e77a83338598f62c17d81891" id="r_aac6eb6c1e77a83338598f62c17d81891"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#aac6eb6c1e77a83338598f62c17d81891">set_name</a> (const std::string &amp;name_)</td></tr>
-<tr class="separator:aac6eb6c1e77a83338598f62c17d81891"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae005f7bfe815d4a879159722dfd14354" id="r_ae005f7bfe815d4a879159722dfd14354"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#ae005f7bfe815d4a879159722dfd14354">get_name</a> () const</td></tr>
-<tr class="separator:ae005f7bfe815d4a879159722dfd14354"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afcc6c27d6c8f2ed9731279407adac08a" id="r_afcc6c27d6c8f2ed9731279407adac08a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#afcc6c27d6c8f2ed9731279407adac08a">set_j</a> (const <a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a> &amp;j_)</td></tr>
-<tr class="separator:afcc6c27d6c8f2ed9731279407adac08a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa8c0539f60df8e54743b12569f68fe84" id="r_aa8c0539f60df8e54743b12569f68fe84"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#aa8c0539f60df8e54743b12569f68fe84">set_dj_dx</a> (const <a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a> &amp;dj_dx_)</td></tr>
-<tr class="separator:aa8c0539f60df8e54743b12569f68fe84"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af24abb035d76bc7013e67a4fa902ae34" id="r_af24abb035d76bc7013e67a4fa902ae34"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#af24abb035d76bc7013e67a4fa902ae34">set_dj_du</a> (const <a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a> &amp;dj_du_)</td></tr>
-<tr class="separator:af24abb035d76bc7013e67a4fa902ae34"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af57eae75b309cb1edea45a63f5aa5190" id="r_af57eae75b309cb1edea45a63f5aa5190"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#af57eae75b309cb1edea45a63f5aa5190">set_dj_dgradu</a> (const <a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a> &amp;dj_dgradu_)</td></tr>
-<tr class="separator:af57eae75b309cb1edea45a63f5aa5190"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d495ed939dff36dc55dde0b4bc749a0" id="r_a4d495ed939dff36dc55dde0b4bc749a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a4d495ed939dff36dc55dde0b4bc749a0">set_dj_dgradu_local</a> (const <a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a> &amp;dj_dgradu_local_)</td></tr>
-<tr class="separator:a4d495ed939dff36dc55dde0b4bc749a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6bd3f47566281b023f88fee706d1b7fb" id="r_a6bd3f47566281b023f88fee706d1b7fb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a6bd3f47566281b023f88fee706d1b7fb">set_dj_dgradx</a> (const <a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a> &amp;dj_dgradx_)</td></tr>
-<tr class="separator:a6bd3f47566281b023f88fee706d1b7fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2dbc98f95894a044a92f247bedfc4e13" id="r_a2dbc98f95894a044a92f247bedfc4e13"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a2dbc98f95894a044a92f247bedfc4e13">evaluate</a> (const std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">Assembler::ParamFunc</a> &gt; &amp;lame_params, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXd &amp;u, const Eigen::MatrixXd &amp;grad_u, const Eigen::MatrixXd &amp;reference_normals, const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
-<tr class="separator:a2dbc98f95894a044a92f247bedfc4e13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af0c6db48d324c19399b8f435c7c76ffc" id="r_af0c6db48d324c19399b8f435c7c76ffc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#af0c6db48d324c19399b8f435c7c76ffc">dj_dx</a> (const std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">Assembler::ParamFunc</a> &gt; &amp;lame_params, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXd &amp;u, const Eigen::MatrixXd &amp;grad_u, const Eigen::MatrixXd &amp;reference_normals, const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
-<tr class="separator:af0c6db48d324c19399b8f435c7c76ffc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc177e0869c1af0cfa66a6a0abfda46a" id="r_acc177e0869c1af0cfa66a6a0abfda46a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#acc177e0869c1af0cfa66a6a0abfda46a">dj_du</a> (const std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">Assembler::ParamFunc</a> &gt; &amp;lame_params, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXd &amp;u, const Eigen::MatrixXd &amp;grad_u, const Eigen::MatrixXd &amp;reference_normals, const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
-<tr class="separator:acc177e0869c1af0cfa66a6a0abfda46a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4b16decdc688dd7396103642f75bb32f" id="r_a4b16decdc688dd7396103642f75bb32f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a4b16decdc688dd7396103642f75bb32f">dj_dgradu</a> (const std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">Assembler::ParamFunc</a> &gt; &amp;lame_params, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXd &amp;u, const Eigen::MatrixXd &amp;grad_u, const Eigen::MatrixXd &amp;reference_normals, const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
-<tr class="separator:a4b16decdc688dd7396103642f75bb32f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a98f7e99887c130de73832dae1722a54b" id="r_a98f7e99887c130de73832dae1722a54b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a98f7e99887c130de73832dae1722a54b">dj_dgradu_local</a> (const std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">Assembler::ParamFunc</a> &gt; &amp;lame_params, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXd &amp;u, const Eigen::MatrixXd &amp;grad_u, const Eigen::MatrixXd &amp;reference_normals, const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
-<tr class="separator:a98f7e99887c130de73832dae1722a54b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1b1d9a78cf9cf3f2f23d2ba7b4cf33d1" id="r_a1b1d9a78cf9cf3f2f23d2ba7b4cf33d1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a1b1d9a78cf9cf3f2f23d2ba7b4cf33d1">dj_dgradx</a> (const std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">Assembler::ParamFunc</a> &gt; &amp;lame_params, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXd &amp;u, const Eigen::MatrixXd &amp;grad_u, const Eigen::MatrixXd &amp;reference_normals, const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
-<tr class="separator:a1b1d9a78cf9cf3f2f23d2ba7b4cf33d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8e61f2f179fe169a42362de10f03c0d9" id="r_a8e61f2f179fe169a42362de10f03c0d9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a8e61f2f179fe169a42362de10f03c0d9">set_j</a> (const <a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a> &amp;j)</td></tr>
+<tr class="separator:a8e61f2f179fe169a42362de10f03c0d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5de9876ec1d0807aea5fa1d8e7f7755" id="r_af5de9876ec1d0807aea5fa1d8e7f7755"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#af5de9876ec1d0807aea5fa1d8e7f7755">set_dj_dx</a> (const <a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a> &amp;<a class="el" href="classpolyfem_1_1_integrable_functional.html#ad526e25845a14facfcb83e1691867259">dj_dx</a>)</td></tr>
+<tr class="separator:af5de9876ec1d0807aea5fa1d8e7f7755"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a281568a5243acd21a565063f2dcccd79" id="r_a281568a5243acd21a565063f2dcccd79"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a281568a5243acd21a565063f2dcccd79">set_dj_du</a> (const <a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a> &amp;<a class="el" href="classpolyfem_1_1_integrable_functional.html#a5424a9cf6b2e8647ccc0d50e5bab2917">dj_du</a>)</td></tr>
+<tr class="separator:a281568a5243acd21a565063f2dcccd79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a484ec7771dba4c13e08d640c36b96f70" id="r_a484ec7771dba4c13e08d640c36b96f70"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a484ec7771dba4c13e08d640c36b96f70">set_dj_dgradu</a> (const <a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a> &amp;<a class="el" href="classpolyfem_1_1_integrable_functional.html#a87ed851b104868cbbea8c4e09abee313">dj_dgradu</a>)</td></tr>
+<tr class="separator:a484ec7771dba4c13e08d640c36b96f70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99ad69370097cc28c036fccab528e77e" id="r_a99ad69370097cc28c036fccab528e77e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a99ad69370097cc28c036fccab528e77e">set_dj_dgradu_local</a> (const <a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a> &amp;<a class="el" href="classpolyfem_1_1_integrable_functional.html#a51b9feee053074688f939dd962cbe3cf">dj_dgradu_local</a>)</td></tr>
+<tr class="separator:a99ad69370097cc28c036fccab528e77e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae44bfdba39855cab2eddecc2875701d4" id="r_ae44bfdba39855cab2eddecc2875701d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#ae44bfdba39855cab2eddecc2875701d4">set_dj_dgradx</a> (const <a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a> &amp;<a class="el" href="classpolyfem_1_1_integrable_functional.html#a4fdc7347edb7e7e5fd2506b85cfca5ef">dj_dgradx</a>)</td></tr>
+<tr class="separator:ae44bfdba39855cab2eddecc2875701d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88cd26e7a7819f41e8c4e79b3f7c1509" id="r_a88cd26e7a7819f41e8c4e79b3f7c1509"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a88cd26e7a7819f41e8c4e79b3f7c1509">evaluate</a> (const Eigen::MatrixXd &amp;elastic_params, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXd &amp;u, const Eigen::MatrixXd &amp;grad_u, const Eigen::MatrixXd &amp;reference_normals, const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, <a class="el" href="structpolyfem_1_1_integrable_functional_1_1_parameter_type.html">ParameterType</a> &amp;params, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
+<tr class="separator:a88cd26e7a7819f41e8c4e79b3f7c1509"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad526e25845a14facfcb83e1691867259" id="r_ad526e25845a14facfcb83e1691867259"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#ad526e25845a14facfcb83e1691867259">dj_dx</a> (const Eigen::MatrixXd &amp;elastic_params, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXd &amp;u, const Eigen::MatrixXd &amp;grad_u, const Eigen::MatrixXd &amp;reference_normals, const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, <a class="el" href="structpolyfem_1_1_integrable_functional_1_1_parameter_type.html">ParameterType</a> &amp;params, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
+<tr class="separator:ad526e25845a14facfcb83e1691867259"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5424a9cf6b2e8647ccc0d50e5bab2917" id="r_a5424a9cf6b2e8647ccc0d50e5bab2917"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a5424a9cf6b2e8647ccc0d50e5bab2917">dj_du</a> (const Eigen::MatrixXd &amp;elastic_params, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXd &amp;u, const Eigen::MatrixXd &amp;grad_u, const Eigen::MatrixXd &amp;reference_normals, const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, <a class="el" href="structpolyfem_1_1_integrable_functional_1_1_parameter_type.html">ParameterType</a> &amp;params, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
+<tr class="separator:a5424a9cf6b2e8647ccc0d50e5bab2917"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87ed851b104868cbbea8c4e09abee313" id="r_a87ed851b104868cbbea8c4e09abee313"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a87ed851b104868cbbea8c4e09abee313">dj_dgradu</a> (const Eigen::MatrixXd &amp;elastic_params, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXd &amp;u, const Eigen::MatrixXd &amp;grad_u, const Eigen::MatrixXd &amp;reference_normals, const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, <a class="el" href="structpolyfem_1_1_integrable_functional_1_1_parameter_type.html">ParameterType</a> &amp;params, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
+<tr class="separator:a87ed851b104868cbbea8c4e09abee313"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51b9feee053074688f939dd962cbe3cf" id="r_a51b9feee053074688f939dd962cbe3cf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a51b9feee053074688f939dd962cbe3cf">dj_dgradu_local</a> (const Eigen::MatrixXd &amp;elastic_params, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXd &amp;u, const Eigen::MatrixXd &amp;grad_u, const Eigen::MatrixXd &amp;reference_normals, const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, <a class="el" href="structpolyfem_1_1_integrable_functional_1_1_parameter_type.html">ParameterType</a> &amp;params, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
+<tr class="separator:a51b9feee053074688f939dd962cbe3cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4fdc7347edb7e7e5fd2506b85cfca5ef" id="r_a4fdc7347edb7e7e5fd2506b85cfca5ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a4fdc7347edb7e7e5fd2506b85cfca5ef">dj_dgradx</a> (const Eigen::MatrixXd &amp;elastic_params, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXd &amp;u, const Eigen::MatrixXd &amp;grad_u, const Eigen::MatrixXd &amp;reference_normals, const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>, <a class="el" href="structpolyfem_1_1_integrable_functional_1_1_parameter_type.html">ParameterType</a> &amp;params, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const</td></tr>
+<tr class="separator:a4fdc7347edb7e7e5fd2506b85cfca5ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf54869433421863bf860d9cc13a847b" id="r_acf54869433421863bf860d9cc13a847b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#acf54869433421863bf860d9cc13a847b">depend_on_x</a> () const</td></tr>
 <tr class="separator:acf54869433421863bf860d9cc13a847b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f6a82f9e52b76ddc73c4cf32d18dddc" id="r_a3f6a82f9e52b76ddc73c4cf32d18dddc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a3f6a82f9e52b76ddc73c4cf32d18dddc">depend_on_u</a> () const</td></tr>
@@ -179,15 +181,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a466c8fd968a64d639c03ca6a4411873b" id="r_a466c8fd968a64d639c03ca6a4411873b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a466c8fd968a64d639c03ca6a4411873b">depend_on_gradx</a> () const</td></tr>
 <tr class="separator:a466c8fd968a64d639c03ca6a4411873b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
-Private Member Functions</h2></td></tr>
-<tr class="memitem:a171379678cccdd42361b5a2e406d60dc" id="r_a171379678cccdd42361b5a2e406d60dc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a171379678cccdd42361b5a2e406d60dc">lambda_mu</a> (const std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">Assembler::ParamFunc</a> &gt; &amp;lame_params, const int e, const Eigen::MatrixXd &amp;local_pts, const Eigen::MatrixXd &amp;pts, Eigen::MatrixXd &amp;lambda, Eigen::MatrixXd &amp;mu) const</td></tr>
-<tr class="separator:a171379678cccdd42361b5a2e406d60dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a5fd4903d0d0e88560383fcc2196eff70" id="r_a5fd4903d0d0e88560383fcc2196eff70"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a5fd4903d0d0e88560383fcc2196eff70">name</a> = &quot;&quot;</td></tr>
-<tr class="separator:a5fd4903d0d0e88560383fcc2196eff70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ccfcbcb34995f74dfb6857088e91953" id="r_a1ccfcbcb34995f74dfb6857088e91953"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a1ccfcbcb34995f74dfb6857088e91953">has_x</a> = false</td></tr>
 <tr class="separator:a1ccfcbcb34995f74dfb6857088e91953"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a44bd46f73657b872165307252fe732bc" id="r_a44bd46f73657b872165307252fe732bc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a44bd46f73657b872165307252fe732bc">has_u</a> = false</td></tr>
@@ -198,36 +193,36 @@ Private Attributes</h2></td></tr>
 <tr class="separator:acc70c5edc647091e64ee30cfb8cc23c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f3099dd623dfd90cb1bd4b616a82e45" id="r_a3f3099dd623dfd90cb1bd4b616a82e45"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a3f3099dd623dfd90cb1bd4b616a82e45">has_gradx</a> = false</td></tr>
 <tr class="separator:a3f3099dd623dfd90cb1bd4b616a82e45"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0290256b4c43e6eff6d7cb32e12df705" id="r_a0290256b4c43e6eff6d7cb32e12df705"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a0290256b4c43e6eff6d7cb32e12df705">j_func</a></td></tr>
-<tr class="separator:a0290256b4c43e6eff6d7cb32e12df705"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ca14febcebd50db0ef85093d386d1b1" id="r_a3ca14febcebd50db0ef85093d386d1b1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a3ca14febcebd50db0ef85093d386d1b1">dj_dx_func</a></td></tr>
-<tr class="separator:a3ca14febcebd50db0ef85093d386d1b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6592fad18e8a6c50c761f422f963654c" id="r_a6592fad18e8a6c50c761f422f963654c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a6592fad18e8a6c50c761f422f963654c">dj_du_func</a></td></tr>
-<tr class="separator:a6592fad18e8a6c50c761f422f963654c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2c26fdebbfc8381e644d686c80308620" id="r_a2c26fdebbfc8381e644d686c80308620"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a2c26fdebbfc8381e644d686c80308620">dj_dgradu_func</a></td></tr>
-<tr class="separator:a2c26fdebbfc8381e644d686c80308620"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8304cd715c24c20830b1ed5eeb6d02bc" id="r_a8304cd715c24c20830b1ed5eeb6d02bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a8304cd715c24c20830b1ed5eeb6d02bc">dj_dgradu_local_func</a></td></tr>
-<tr class="separator:a8304cd715c24c20830b1ed5eeb6d02bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1841e1b495df0cc39c8abef1517d0b4c" id="r_a1841e1b495df0cc39c8abef1517d0b4c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a1841e1b495df0cc39c8abef1517d0b4c">dj_dgradx_func</a></td></tr>
-<tr class="separator:a1841e1b495df0cc39c8abef1517d0b4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8ffb890d4df7912dba44de7f77d3358" id="r_ad8ffb890d4df7912dba44de7f77d3358"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#ad8ffb890d4df7912dba44de7f77d3358">j_func_</a></td></tr>
+<tr class="separator:ad8ffb890d4df7912dba44de7f77d3358"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9fd507df5aeaa20565387be1dc8ef6b8" id="r_a9fd507df5aeaa20565387be1dc8ef6b8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a9fd507df5aeaa20565387be1dc8ef6b8">dj_dx_func_</a></td></tr>
+<tr class="separator:a9fd507df5aeaa20565387be1dc8ef6b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a390860cd3f07605087c838de2bf3c8eb" id="r_a390860cd3f07605087c838de2bf3c8eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a390860cd3f07605087c838de2bf3c8eb">dj_du_func_</a></td></tr>
+<tr class="separator:a390860cd3f07605087c838de2bf3c8eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a179b8ceed919708036a4a7e7fdfd000f" id="r_a179b8ceed919708036a4a7e7fdfd000f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a179b8ceed919708036a4a7e7fdfd000f">dj_dgradu_func_</a></td></tr>
+<tr class="separator:a179b8ceed919708036a4a7e7fdfd000f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac88b940ad8920fc8e4cd13445cdbe1ac" id="r_ac88b940ad8920fc8e4cd13445cdbe1ac"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#ac88b940ad8920fc8e4cd13445cdbe1ac">dj_dgradu_local_func_</a></td></tr>
+<tr class="separator:ac88b940ad8920fc8e4cd13445cdbe1ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4b61dbd00f15950504275201083bd38" id="r_af4b61dbd00f15950504275201083bd38"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_integrable_functional.html#af4b61dbd00f15950504275201083bd38">dj_dgradx_func_</a></td></tr>
+<tr class="separator:af4b61dbd00f15950504275201083bd38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00013">13</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="aad368c9a0102b244845b5470ff731d30" name="aad368c9a0102b244845b5470ff731d30"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aad368c9a0102b244845b5470ff731d30">&#9670;&#160;</a></span>functionalType</h2>
+<a id="a358db4f5b2f4b54a877d1fee0a17e89f" name="a358db4f5b2f4b54a877d1fee0a17e89f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a358db4f5b2f4b54a877d1fee0a17e89f">&#9670;&#160;</a></span>functionalType</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">typedef std::function&lt;void(const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;, const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;, Eigen::MatrixXd &amp;)&gt; <a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">polyfem::IntegrableFunctional::functionalType</a></td>
+          <td class="memname">typedef std::function&lt;void(const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;, const Eigen::MatrixXd &amp;, const Eigen::VectorXd &amp;, const Eigen::VectorXd &amp;, const Eigen::MatrixXd &amp;, const <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">assembler::ElementAssemblyValues</a> &amp;, const <a class="el" href="structpolyfem_1_1_integrable_functional_1_1_parameter_type.html">ParameterType</a> &amp;, Eigen::MatrixXd &amp;)&gt; <a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">polyfem::IntegrableFunctional::functionalType</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00016">16</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00028">28</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
 
 </div>
 </div>
@@ -281,15 +276,15 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00135">135</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00048">48</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00160">has_gradu</a>.</p>
+<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00053">has_gradu</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00575">polyfem::solver::AdjointTools::compute_macro_strain_derivative_functional_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00336">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l00920">polyfem::solver::AdjointTools::dJ_du_step()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00311">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l00830">polyfem::solver::AdjointTools::dJ_du_step()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a54c5ab6e7a025f2018e96ece8a253121_icgraph.svg" width="100%" height="526"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a54c5ab6e7a025f2018e96ece8a253121_icgraph.svg" width="100%" height="494"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -317,11 +312,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00136">136</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00049">49</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00160">has_gradu_local</a>.</p>
+<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00053">has_gradu_local</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00920">polyfem::solver::AdjointTools::dJ_du_step()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00830">polyfem::solver::AdjointTools::dJ_du_step()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -353,16 +348,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00137">137</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00050">50</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00160">has_gradx</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00336">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>.</p>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a466c8fd968a64d639c03ca6a4411873b_icgraph.svg" width="100%" height="526"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
-</div>
+<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00053">has_gradx</a>.</p>
 
 </div>
 </div>
@@ -389,11 +377,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00134">134</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00047">47</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00160">has_u</a>.</p>
+<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00053">has_u</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00920">polyfem::solver::AdjointTools::dJ_du_step()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00830">polyfem::solver::AdjointTools::dJ_du_step()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -425,33 +413,30 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00133">133</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00046">46</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00160">has_x</a>.</p>
+<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00053">has_x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00336">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00311">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_acf54869433421863bf860d9cc13a847b_icgraph.svg" width="100%" height="526"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_acf54869433421863bf860d9cc13a847b_icgraph.svg" width="100%" height="494"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a4b16decdc688dd7396103642f75bb32f" name="a4b16decdc688dd7396103642f75bb32f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4b16decdc688dd7396103642f75bb32f">&#9670;&#160;</a></span>dj_dgradu()</h2>
+<a id="a87ed851b104868cbbea8c4e09abee313" name="a87ed851b104868cbbea8c4e09abee313"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87ed851b104868cbbea8c4e09abee313">&#9670;&#160;</a></span>dj_dgradu()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void polyfem::IntegrableFunctional::dj_dgradu </td>
           <td>(</td>
-          <td class="paramtype">const std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">Assembler::ParamFunc</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>lame_params</em>, </td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>elastic_params</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -492,7 +477,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="structpolyfem_1_1_integrable_functional_1_1_parameter_type.html">ParameterType</a> &amp;&#160;</td>
           <td class="paramname"><em>params</em>, </td>
         </tr>
         <tr>
@@ -507,45 +492,32 @@ Here is the caller graph for this function:</div>
           <td></td><td> const</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00088">88</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8cpp_source.html#l00056">56</a> of file <a class="el" href="_integrable_functional_8cpp_source.html">IntegrableFunctional.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00161">dj_dgradu_func</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00160">has_gradu</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00140">lambda_mu()</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
+<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00054">dj_dgradu_func_</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00053">has_gradu</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00575">polyfem::solver::AdjointTools::compute_macro_strain_derivative_functional_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00336">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l00920">polyfem::solver::AdjointTools::dJ_du_step()</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a4b16decdc688dd7396103642f75bb32f_cgraph.svg" width="494" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
+<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00311">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00830">polyfem::solver::AdjointTools::dJ_du_step()</a>, and <a class="el" href="_integrable_functional_8cpp_source.html#l00020">set_dj_dgradu()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a4b16decdc688dd7396103642f75bb32f_icgraph.svg" width="100%" height="526"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a87ed851b104868cbbea8c4e09abee313_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a98f7e99887c130de73832dae1722a54b" name="a98f7e99887c130de73832dae1722a54b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a98f7e99887c130de73832dae1722a54b">&#9670;&#160;</a></span>dj_dgradu_local()</h2>
+<a id="a51b9feee053074688f939dd962cbe3cf" name="a51b9feee053074688f939dd962cbe3cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51b9feee053074688f939dd962cbe3cf">&#9670;&#160;</a></span>dj_dgradu_local()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void polyfem::IntegrableFunctional::dj_dgradu_local </td>
           <td>(</td>
-          <td class="paramtype">const std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">Assembler::ParamFunc</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>lame_params</em>, </td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>elastic_params</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -586,7 +558,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="structpolyfem_1_1_integrable_functional_1_1_parameter_type.html">ParameterType</a> &amp;&#160;</td>
           <td class="paramname"><em>params</em>, </td>
         </tr>
         <tr>
@@ -601,45 +573,32 @@ Here is the caller graph for this function:</div>
           <td></td><td> const</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00103">103</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8cpp_source.html#l00062">62</a> of file <a class="el" href="_integrable_functional_8cpp_source.html">IntegrableFunctional.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00161">dj_dgradu_local_func</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00160">has_gradu_local</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00140">lambda_mu()</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
+<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00054">dj_dgradu_local_func_</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00053">has_gradu_local</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00920">polyfem::solver::AdjointTools::dJ_du_step()</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a98f7e99887c130de73832dae1722a54b_cgraph.svg" width="494" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
+<p class="reference">Referenced by <a class="el" href="_integrable_functional_8cpp_source.html#l00026">set_dj_dgradu_local()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a98f7e99887c130de73832dae1722a54b_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a51b9feee053074688f939dd962cbe3cf_icgraph.svg" width="494" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="a1b1d9a78cf9cf3f2f23d2ba7b4cf33d1" name="a1b1d9a78cf9cf3f2f23d2ba7b4cf33d1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1b1d9a78cf9cf3f2f23d2ba7b4cf33d1">&#9670;&#160;</a></span>dj_dgradx()</h2>
+<a id="a4fdc7347edb7e7e5fd2506b85cfca5ef" name="a4fdc7347edb7e7e5fd2506b85cfca5ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4fdc7347edb7e7e5fd2506b85cfca5ef">&#9670;&#160;</a></span>dj_dgradx()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void polyfem::IntegrableFunctional::dj_dgradx </td>
           <td>(</td>
-          <td class="paramtype">const std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">Assembler::ParamFunc</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>lame_params</em>, </td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>elastic_params</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -680,7 +639,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="structpolyfem_1_1_integrable_functional_1_1_parameter_type.html">ParameterType</a> &amp;&#160;</td>
           <td class="paramname"><em>params</em>, </td>
         </tr>
         <tr>
@@ -695,45 +654,32 @@ Here is the caller graph for this function:</div>
           <td></td><td> const</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00118">118</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8cpp_source.html#l00068">68</a> of file <a class="el" href="_integrable_functional_8cpp_source.html">IntegrableFunctional.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00161">dj_dgradx_func</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00160">has_gradx</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00140">lambda_mu()</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
+<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00054">dj_dgradx_func_</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00053">has_gradx</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00336">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a1b1d9a78cf9cf3f2f23d2ba7b4cf33d1_cgraph.svg" width="494" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
+<p class="reference">Referenced by <a class="el" href="_integrable_functional_8cpp_source.html#l00032">set_dj_dgradx()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a1b1d9a78cf9cf3f2f23d2ba7b4cf33d1_icgraph.svg" width="100%" height="526"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a4fdc7347edb7e7e5fd2506b85cfca5ef_icgraph.svg" width="494" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="acc177e0869c1af0cfa66a6a0abfda46a" name="acc177e0869c1af0cfa66a6a0abfda46a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acc177e0869c1af0cfa66a6a0abfda46a">&#9670;&#160;</a></span>dj_du()</h2>
+<a id="a5424a9cf6b2e8647ccc0d50e5bab2917" name="a5424a9cf6b2e8647ccc0d50e5bab2917"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5424a9cf6b2e8647ccc0d50e5bab2917">&#9670;&#160;</a></span>dj_du()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void polyfem::IntegrableFunctional::dj_du </td>
           <td>(</td>
-          <td class="paramtype">const std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">Assembler::ParamFunc</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>lame_params</em>, </td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>elastic_params</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -774,7 +720,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="structpolyfem_1_1_integrable_functional_1_1_parameter_type.html">ParameterType</a> &amp;&#160;</td>
           <td class="paramname"><em>params</em>, </td>
         </tr>
         <tr>
@@ -789,45 +735,32 @@ Here is the caller graph for this function:</div>
           <td></td><td> const</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00073">73</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8cpp_source.html#l00050">50</a> of file <a class="el" href="_integrable_functional_8cpp_source.html">IntegrableFunctional.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00161">dj_du_func</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00160">has_u</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00140">lambda_mu()</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
+<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00054">dj_du_func_</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00053">has_u</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00920">polyfem::solver::AdjointTools::dJ_du_step()</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_acc177e0869c1af0cfa66a6a0abfda46a_cgraph.svg" width="494" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
+<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00830">polyfem::solver::AdjointTools::dJ_du_step()</a>, and <a class="el" href="_integrable_functional_8cpp_source.html#l00014">set_dj_du()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_acc177e0869c1af0cfa66a6a0abfda46a_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a5424a9cf6b2e8647ccc0d50e5bab2917_icgraph.svg" width="100%" height="542"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="af0c6db48d324c19399b8f435c7c76ffc" name="af0c6db48d324c19399b8f435c7c76ffc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af0c6db48d324c19399b8f435c7c76ffc">&#9670;&#160;</a></span>dj_dx()</h2>
+<a id="ad526e25845a14facfcb83e1691867259" name="ad526e25845a14facfcb83e1691867259"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad526e25845a14facfcb83e1691867259">&#9670;&#160;</a></span>dj_dx()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void polyfem::IntegrableFunctional::dj_dx </td>
           <td>(</td>
-          <td class="paramtype">const std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">Assembler::ParamFunc</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>lame_params</em>, </td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>elastic_params</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -868,7 +801,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="structpolyfem_1_1_integrable_functional_1_1_parameter_type.html">ParameterType</a> &amp;&#160;</td>
           <td class="paramname"><em>params</em>, </td>
         </tr>
         <tr>
@@ -883,45 +816,32 @@ Here is the caller graph for this function:</div>
           <td></td><td> const</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00058">58</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8cpp_source.html#l00044">44</a> of file <a class="el" href="_integrable_functional_8cpp_source.html">IntegrableFunctional.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00161">dj_dx_func</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00160">has_x</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00140">lambda_mu()</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
+<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00054">dj_dx_func_</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00053">has_x</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00336">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_af0c6db48d324c19399b8f435c7c76ffc_cgraph.svg" width="494" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
+<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00311">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, and <a class="el" href="_integrable_functional_8cpp_source.html#l00009">set_dj_dx()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_af0c6db48d324c19399b8f435c7c76ffc_icgraph.svg" width="100%" height="526"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_ad526e25845a14facfcb83e1691867259_icgraph.svg" width="100%" height="524"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a2dbc98f95894a044a92f247bedfc4e13" name="a2dbc98f95894a044a92f247bedfc4e13"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2dbc98f95894a044a92f247bedfc4e13">&#9670;&#160;</a></span>evaluate()</h2>
+<a id="a88cd26e7a7819f41e8c4e79b3f7c1509" name="a88cd26e7a7819f41e8c4e79b3f7c1509"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88cd26e7a7819f41e8c4e79b3f7c1509">&#9670;&#160;</a></span>evaluate()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void polyfem::IntegrableFunctional::evaluate </td>
           <td>(</td>
-          <td class="paramtype">const std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">Assembler::ParamFunc</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>lame_params</em>, </td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>elastic_params</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -962,7 +882,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="structpolyfem_1_1_integrable_functional_1_1_parameter_type.html">ParameterType</a> &amp;&#160;</td>
           <td class="paramname"><em>params</em>, </td>
         </tr>
         <tr>
@@ -977,370 +897,209 @@ Here is the caller graph for this function:</div>
           <td></td><td> const</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00050">50</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8cpp_source.html#l00038">38</a> of file <a class="el" href="_integrable_functional_8cpp_source.html">IntegrableFunctional.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00161">j_func</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00140">lambda_mu()</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
+<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00054">j_func_</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00336">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l00202">polyfem::solver::AdjointTools::integrate_objective()</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a2dbc98f95894a044a92f247bedfc4e13_cgraph.svg" width="494" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
+<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00311">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l00176">polyfem::solver::AdjointTools::integrate_objective()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a2dbc98f95894a044a92f247bedfc4e13_icgraph.svg" width="100%" height="526"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a88cd26e7a7819f41e8c4e79b3f7c1509_icgraph.svg" width="100%" height="494"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="ae005f7bfe815d4a879159722dfd14354" name="ae005f7bfe815d4a879159722dfd14354"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae005f7bfe815d4a879159722dfd14354">&#9670;&#160;</a></span>get_name()</h2>
+<a id="a484ec7771dba4c13e08d640c36b96f70" name="a484ec7771dba4c13e08d640c36b96f70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a484ec7771dba4c13e08d640c36b96f70">&#9670;&#160;</a></span>set_dj_dgradu()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string polyfem::IntegrableFunctional::get_name </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00021">21</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00159">name</a>.</p>
-
-</div>
-</div>
-<a id="a171379678cccdd42361b5a2e406d60dc" name="a171379678cccdd42361b5a2e406d60dc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a171379678cccdd42361b5a2e406d60dc">&#9670;&#160;</a></span>lambda_mu()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::IntegrableFunctional::lambda_mu </td>
-          <td>(</td>
-          <td class="paramtype">const std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">Assembler::ParamFunc</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>lame_params</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>e</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>local_pts</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>pts</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>lambda</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>mu</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00140">140</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_integrable_functional_8hpp_source.html#l00088">dj_dgradu()</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00103">dj_dgradu_local()</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00118">dj_dgradx()</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00073">dj_du()</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00058">dj_dx()</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00050">evaluate()</a>.</p>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a171379678cccdd42361b5a2e406d60dc_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
-</div>
-
-</div>
-</div>
-<a id="af57eae75b309cb1edea45a63f5aa5190" name="af57eae75b309cb1edea45a63f5aa5190"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af57eae75b309cb1edea45a63f5aa5190">&#9670;&#160;</a></span>set_dj_dgradu()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void polyfem::IntegrableFunctional::set_dj_dgradu </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a> &amp;&#160;</td>
-          <td class="paramname"><em>dj_dgradu_</em></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a> &amp;&#160;</td>
+          <td class="paramname"><em>dj_dgradu</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00034">34</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8cpp_source.html#l00020">20</a> of file <a class="el" href="_integrable_functional_8cpp_source.html">IntegrableFunctional.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00161">dj_dgradu_func</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00160">has_gradu</a>.</p>
+<p class="reference">References <a class="el" href="_integrable_functional_8cpp_source.html#l00056">dj_dgradu()</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00054">dj_dgradu_func_</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00053">has_gradu</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00053">has_gradu_local</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00053">has_u</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00094">polyfem::solver::ElasticEnergyForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00164">polyfem::solver::StressNormForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00246">polyfem::solver::ComplianceForm::get_integral_functional()</a>, and <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00442">polyfem::solver::StressForm::get_integral_functional()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00082">polyfem::solver::ElasticEnergyForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00145">polyfem::solver::StressNormForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00209">polyfem::solver::ComplianceForm::get_integral_functional()</a>, and <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00362">polyfem::solver::StressForm::get_integral_functional()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a484ec7771dba4c13e08d640c36b96f70_cgraph.svg" width="494" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_af57eae75b309cb1edea45a63f5aa5190_icgraph.svg" width="490" height="259"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a484ec7771dba4c13e08d640c36b96f70_icgraph.svg" width="490" height="259"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="a4d495ed939dff36dc55dde0b4bc749a0" name="a4d495ed939dff36dc55dde0b4bc749a0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4d495ed939dff36dc55dde0b4bc749a0">&#9670;&#160;</a></span>set_dj_dgradu_local()</h2>
+<a id="a99ad69370097cc28c036fccab528e77e" name="a99ad69370097cc28c036fccab528e77e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99ad69370097cc28c036fccab528e77e">&#9670;&#160;</a></span>set_dj_dgradu_local()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void polyfem::IntegrableFunctional::set_dj_dgradu_local </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a> &amp;&#160;</td>
-          <td class="paramname"><em>dj_dgradu_local_</em></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a> &amp;&#160;</td>
+          <td class="paramname"><em>dj_dgradu_local</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00039">39</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8cpp_source.html#l00026">26</a> of file <a class="el" href="_integrable_functional_8cpp_source.html">IntegrableFunctional.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00161">dj_dgradu_local_func</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00160">has_gradu_local</a>.</p>
+<p class="reference">References <a class="el" href="_integrable_functional_8cpp_source.html#l00062">dj_dgradu_local()</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00054">dj_dgradu_local_func_</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00053">has_gradu</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00053">has_gradu_local</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00053">has_u</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a99ad69370097cc28c036fccab528e77e_cgraph.svg" width="494" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
-<a id="a6bd3f47566281b023f88fee706d1b7fb" name="a6bd3f47566281b023f88fee706d1b7fb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6bd3f47566281b023f88fee706d1b7fb">&#9670;&#160;</a></span>set_dj_dgradx()</h2>
+<a id="ae44bfdba39855cab2eddecc2875701d4" name="ae44bfdba39855cab2eddecc2875701d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae44bfdba39855cab2eddecc2875701d4">&#9670;&#160;</a></span>set_dj_dgradx()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void polyfem::IntegrableFunctional::set_dj_dgradx </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a> &amp;&#160;</td>
-          <td class="paramname"><em>dj_dgradx_</em></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a> &amp;&#160;</td>
+          <td class="paramname"><em>dj_dgradx</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00044">44</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8cpp_source.html#l00032">32</a> of file <a class="el" href="_integrable_functional_8cpp_source.html">IntegrableFunctional.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00161">dj_dgradx_func</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00160">has_gradx</a>.</p>
+<p class="reference">References <a class="el" href="_integrable_functional_8cpp_source.html#l00068">dj_dgradx()</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00054">dj_dgradx_func_</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00053">has_gradx</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_ae44bfdba39855cab2eddecc2875701d4_cgraph.svg" width="494" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
-<a id="af24abb035d76bc7013e67a4fa902ae34" name="af24abb035d76bc7013e67a4fa902ae34"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af24abb035d76bc7013e67a4fa902ae34">&#9670;&#160;</a></span>set_dj_du()</h2>
+<a id="a281568a5243acd21a565063f2dcccd79" name="a281568a5243acd21a565063f2dcccd79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a281568a5243acd21a565063f2dcccd79">&#9670;&#160;</a></span>set_dj_du()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void polyfem::IntegrableFunctional::set_dj_du </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a> &amp;&#160;</td>
-          <td class="paramname"><em>dj_du_</em></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a> &amp;&#160;</td>
+          <td class="paramname"><em>dj_du</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00029">29</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8cpp_source.html#l00014">14</a> of file <a class="el" href="_integrable_functional_8cpp_source.html">IntegrableFunctional.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00161">dj_du_func</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00160">has_u</a>.</p>
+<p class="reference">References <a class="el" href="_integrable_functional_8cpp_source.html#l00050">dj_du()</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00054">dj_du_func_</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00053">has_gradu</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00053">has_gradu_local</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00053">has_u</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00346">polyfem::solver::PositionForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00368">polyfem::solver::AccelerationForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00391">polyfem::solver::KineticForm::get_integral_functional()</a>, and <a class="el" href="_target_forms_8cpp_source.html#l00032">polyfem::solver::TargetForm::get_integral_functional()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00286">polyfem::solver::PositionForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00308">polyfem::solver::AccelerationForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00328">polyfem::solver::KineticForm::get_integral_functional()</a>, and <a class="el" href="_target_forms_8cpp_source.html#l00032">polyfem::solver::TargetForm::get_integral_functional()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a281568a5243acd21a565063f2dcccd79_cgraph.svg" width="494" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_af24abb035d76bc7013e67a4fa902ae34_icgraph.svg" width="490" height="243"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a281568a5243acd21a565063f2dcccd79_icgraph.svg" width="490" height="243"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="aa8c0539f60df8e54743b12569f68fe84" name="aa8c0539f60df8e54743b12569f68fe84"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa8c0539f60df8e54743b12569f68fe84">&#9670;&#160;</a></span>set_dj_dx()</h2>
+<a id="af5de9876ec1d0807aea5fa1d8e7f7755" name="af5de9876ec1d0807aea5fa1d8e7f7755"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5de9876ec1d0807aea5fa1d8e7f7755">&#9670;&#160;</a></span>set_dj_dx()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void polyfem::IntegrableFunctional::set_dj_dx </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a> &amp;&#160;</td>
-          <td class="paramname"><em>dj_dx_</em></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a> &amp;&#160;</td>
+          <td class="paramname"><em>dj_dx</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00024">24</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8cpp_source.html#l00009">9</a> of file <a class="el" href="_integrable_functional_8cpp_source.html">IntegrableFunctional.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00161">dj_dx_func</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00160">has_x</a>.</p>
+<p class="reference">References <a class="el" href="_integrable_functional_8cpp_source.html#l00044">dj_dx()</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00054">dj_dx_func_</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00053">has_x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00346">polyfem::solver::PositionForm::get_integral_functional()</a>, and <a class="el" href="_target_forms_8cpp_source.html#l00032">polyfem::solver::TargetForm::get_integral_functional()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00286">polyfem::solver::PositionForm::get_integral_functional()</a>, and <a class="el" href="_target_forms_8cpp_source.html#l00032">polyfem::solver::TargetForm::get_integral_functional()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_af5de9876ec1d0807aea5fa1d8e7f7755_cgraph.svg" width="494" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_aa8c0539f60df8e54743b12569f68fe84_icgraph.svg" width="490" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_af5de9876ec1d0807aea5fa1d8e7f7755_icgraph.svg" width="490" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="afcc6c27d6c8f2ed9731279407adac08a" name="afcc6c27d6c8f2ed9731279407adac08a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afcc6c27d6c8f2ed9731279407adac08a">&#9670;&#160;</a></span>set_j()</h2>
+<a id="a8e61f2f179fe169a42362de10f03c0d9" name="a8e61f2f179fe169a42362de10f03c0d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e61f2f179fe169a42362de10f03c0d9">&#9670;&#160;</a></span>set_j()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void polyfem::IntegrableFunctional::set_j </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a> &amp;&#160;</td>
-          <td class="paramname"><em>j_</em></td><td>)</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a> &amp;&#160;</td>
+          <td class="paramname"><em>j</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00023">23</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8cpp_source.html#l00005">5</a> of file <a class="el" href="_integrable_functional_8cpp_source.html">IntegrableFunctional.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00161">j_func</a>.</p>
+<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00054">j_func_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00094">polyfem::solver::ElasticEnergyForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00164">polyfem::solver::StressNormForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00246">polyfem::solver::ComplianceForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00346">polyfem::solver::PositionForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00368">polyfem::solver::AccelerationForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00391">polyfem::solver::KineticForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00442">polyfem::solver::StressForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00520">polyfem::solver::VolumeForm::get_integral_functional()</a>, and <a class="el" href="_target_forms_8cpp_source.html#l00032">polyfem::solver::TargetForm::get_integral_functional()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00082">polyfem::solver::ElasticEnergyForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00145">polyfem::solver::StressNormForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00209">polyfem::solver::ComplianceForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00286">polyfem::solver::PositionForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00308">polyfem::solver::AccelerationForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00328">polyfem::solver::KineticForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00362">polyfem::solver::StressForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00440">polyfem::solver::VolumeForm::get_integral_functional()</a>, and <a class="el" href="_target_forms_8cpp_source.html#l00032">polyfem::solver::TargetForm::get_integral_functional()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_afcc6c27d6c8f2ed9731279407adac08a_icgraph.svg" width="491" height="579"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_integrable_functional_a8e61f2f179fe169a42362de10f03c0d9_icgraph.svg" width="491" height="579"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
-
-</div>
-</div>
-<a id="aac6eb6c1e77a83338598f62c17d81891" name="aac6eb6c1e77a83338598f62c17d81891"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aac6eb6c1e77a83338598f62c17d81891">&#9670;&#160;</a></span>set_name()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::IntegrableFunctional::set_name </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>name_</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00020">20</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_integrable_functional_8hpp_source.html#l00159">name</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a2c26fdebbfc8381e644d686c80308620" name="a2c26fdebbfc8381e644d686c80308620"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2c26fdebbfc8381e644d686c80308620">&#9670;&#160;</a></span>dj_dgradu_func</h2>
+<a id="a179b8ceed919708036a4a7e7fdfd000f" name="a179b8ceed919708036a4a7e7fdfd000f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a179b8ceed919708036a4a7e7fdfd000f">&#9670;&#160;</a></span>dj_dgradu_func_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1349,7 +1108,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a> polyfem::IntegrableFunctional::dj_dgradu_func</td>
+          <td class="memname"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a> polyfem::IntegrableFunctional::dj_dgradu_func_</td>
         </tr>
       </table>
   </td>
@@ -1359,14 +1118,14 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00161">161</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00054">54</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_integrable_functional_8hpp_source.html#l00088">dj_dgradu()</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00034">set_dj_dgradu()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_integrable_functional_8cpp_source.html#l00056">dj_dgradu()</a>, and <a class="el" href="_integrable_functional_8cpp_source.html#l00020">set_dj_dgradu()</a>.</p>
 
 </div>
 </div>
-<a id="a8304cd715c24c20830b1ed5eeb6d02bc" name="a8304cd715c24c20830b1ed5eeb6d02bc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8304cd715c24c20830b1ed5eeb6d02bc">&#9670;&#160;</a></span>dj_dgradu_local_func</h2>
+<a id="ac88b940ad8920fc8e4cd13445cdbe1ac" name="ac88b940ad8920fc8e4cd13445cdbe1ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac88b940ad8920fc8e4cd13445cdbe1ac">&#9670;&#160;</a></span>dj_dgradu_local_func_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1375,7 +1134,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a> polyfem::IntegrableFunctional::dj_dgradu_local_func</td>
+          <td class="memname"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a> polyfem::IntegrableFunctional::dj_dgradu_local_func_</td>
         </tr>
       </table>
   </td>
@@ -1385,14 +1144,14 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00161">161</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00054">54</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_integrable_functional_8hpp_source.html#l00103">dj_dgradu_local()</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00039">set_dj_dgradu_local()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_integrable_functional_8cpp_source.html#l00062">dj_dgradu_local()</a>, and <a class="el" href="_integrable_functional_8cpp_source.html#l00026">set_dj_dgradu_local()</a>.</p>
 
 </div>
 </div>
-<a id="a1841e1b495df0cc39c8abef1517d0b4c" name="a1841e1b495df0cc39c8abef1517d0b4c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1841e1b495df0cc39c8abef1517d0b4c">&#9670;&#160;</a></span>dj_dgradx_func</h2>
+<a id="af4b61dbd00f15950504275201083bd38" name="af4b61dbd00f15950504275201083bd38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4b61dbd00f15950504275201083bd38">&#9670;&#160;</a></span>dj_dgradx_func_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1401,7 +1160,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a> polyfem::IntegrableFunctional::dj_dgradx_func</td>
+          <td class="memname"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a> polyfem::IntegrableFunctional::dj_dgradx_func_</td>
         </tr>
       </table>
   </td>
@@ -1411,14 +1170,14 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00161">161</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00054">54</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_integrable_functional_8hpp_source.html#l00118">dj_dgradx()</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00044">set_dj_dgradx()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_integrable_functional_8cpp_source.html#l00068">dj_dgradx()</a>, and <a class="el" href="_integrable_functional_8cpp_source.html#l00032">set_dj_dgradx()</a>.</p>
 
 </div>
 </div>
-<a id="a6592fad18e8a6c50c761f422f963654c" name="a6592fad18e8a6c50c761f422f963654c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6592fad18e8a6c50c761f422f963654c">&#9670;&#160;</a></span>dj_du_func</h2>
+<a id="a390860cd3f07605087c838de2bf3c8eb" name="a390860cd3f07605087c838de2bf3c8eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a390860cd3f07605087c838de2bf3c8eb">&#9670;&#160;</a></span>dj_du_func_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1427,7 +1186,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a> polyfem::IntegrableFunctional::dj_du_func</td>
+          <td class="memname"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a> polyfem::IntegrableFunctional::dj_du_func_</td>
         </tr>
       </table>
   </td>
@@ -1437,14 +1196,14 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00161">161</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00054">54</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_integrable_functional_8hpp_source.html#l00073">dj_du()</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00029">set_dj_du()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_integrable_functional_8cpp_source.html#l00050">dj_du()</a>, and <a class="el" href="_integrable_functional_8cpp_source.html#l00014">set_dj_du()</a>.</p>
 
 </div>
 </div>
-<a id="a3ca14febcebd50db0ef85093d386d1b1" name="a3ca14febcebd50db0ef85093d386d1b1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3ca14febcebd50db0ef85093d386d1b1">&#9670;&#160;</a></span>dj_dx_func</h2>
+<a id="a9fd507df5aeaa20565387be1dc8ef6b8" name="a9fd507df5aeaa20565387be1dc8ef6b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9fd507df5aeaa20565387be1dc8ef6b8">&#9670;&#160;</a></span>dj_dx_func_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1453,7 +1212,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a> polyfem::IntegrableFunctional::dj_dx_func</td>
+          <td class="memname"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a> polyfem::IntegrableFunctional::dj_dx_func_</td>
         </tr>
       </table>
   </td>
@@ -1463,9 +1222,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00161">161</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00054">54</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_integrable_functional_8hpp_source.html#l00058">dj_dx()</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00024">set_dj_dx()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_integrable_functional_8cpp_source.html#l00044">dj_dx()</a>, and <a class="el" href="_integrable_functional_8cpp_source.html#l00009">set_dj_dx()</a>.</p>
 
 </div>
 </div>
@@ -1489,9 +1248,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00160">160</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00053">53</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_integrable_functional_8hpp_source.html#l00135">depend_on_gradu()</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00088">dj_dgradu()</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00034">set_dj_dgradu()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_integrable_functional_8hpp_source.html#l00048">depend_on_gradu()</a>, <a class="el" href="_integrable_functional_8cpp_source.html#l00056">dj_dgradu()</a>, <a class="el" href="_integrable_functional_8cpp_source.html#l00020">set_dj_dgradu()</a>, <a class="el" href="_integrable_functional_8cpp_source.html#l00026">set_dj_dgradu_local()</a>, and <a class="el" href="_integrable_functional_8cpp_source.html#l00014">set_dj_du()</a>.</p>
 
 </div>
 </div>
@@ -1515,9 +1274,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00160">160</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00053">53</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_integrable_functional_8hpp_source.html#l00136">depend_on_gradu_local()</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00103">dj_dgradu_local()</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00039">set_dj_dgradu_local()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_integrable_functional_8hpp_source.html#l00049">depend_on_gradu_local()</a>, <a class="el" href="_integrable_functional_8cpp_source.html#l00062">dj_dgradu_local()</a>, <a class="el" href="_integrable_functional_8cpp_source.html#l00020">set_dj_dgradu()</a>, <a class="el" href="_integrable_functional_8cpp_source.html#l00026">set_dj_dgradu_local()</a>, and <a class="el" href="_integrable_functional_8cpp_source.html#l00014">set_dj_du()</a>.</p>
 
 </div>
 </div>
@@ -1541,9 +1300,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00160">160</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00053">53</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_integrable_functional_8hpp_source.html#l00137">depend_on_gradx()</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00118">dj_dgradx()</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00044">set_dj_dgradx()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_integrable_functional_8hpp_source.html#l00050">depend_on_gradx()</a>, <a class="el" href="_integrable_functional_8cpp_source.html#l00068">dj_dgradx()</a>, and <a class="el" href="_integrable_functional_8cpp_source.html#l00032">set_dj_dgradx()</a>.</p>
 
 </div>
 </div>
@@ -1567,9 +1326,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00160">160</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00053">53</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_integrable_functional_8hpp_source.html#l00134">depend_on_u()</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00073">dj_du()</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00029">set_dj_du()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_integrable_functional_8hpp_source.html#l00047">depend_on_u()</a>, <a class="el" href="_integrable_functional_8cpp_source.html#l00050">dj_du()</a>, <a class="el" href="_integrable_functional_8cpp_source.html#l00020">set_dj_dgradu()</a>, <a class="el" href="_integrable_functional_8cpp_source.html#l00026">set_dj_dgradu_local()</a>, and <a class="el" href="_integrable_functional_8cpp_source.html#l00014">set_dj_du()</a>.</p>
 
 </div>
 </div>
@@ -1593,14 +1352,14 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00160">160</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00053">53</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_integrable_functional_8hpp_source.html#l00133">depend_on_x()</a>, <a class="el" href="_integrable_functional_8hpp_source.html#l00058">dj_dx()</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00024">set_dj_dx()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_integrable_functional_8hpp_source.html#l00046">depend_on_x()</a>, <a class="el" href="_integrable_functional_8cpp_source.html#l00044">dj_dx()</a>, and <a class="el" href="_integrable_functional_8cpp_source.html#l00009">set_dj_dx()</a>.</p>
 
 </div>
 </div>
-<a id="a0290256b4c43e6eff6d7cb32e12df705" name="a0290256b4c43e6eff6d7cb32e12df705"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0290256b4c43e6eff6d7cb32e12df705">&#9670;&#160;</a></span>j_func</h2>
+<a id="ad8ffb890d4df7912dba44de7f77d3358" name="ad8ffb890d4df7912dba44de7f77d3358"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8ffb890d4df7912dba44de7f77d3358">&#9670;&#160;</a></span>j_func_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1609,7 +1368,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classpolyfem_1_1_integrable_functional.html#aad368c9a0102b244845b5470ff731d30">functionalType</a> polyfem::IntegrableFunctional::j_func</td>
+          <td class="memname"><a class="el" href="classpolyfem_1_1_integrable_functional.html#a358db4f5b2f4b54a877d1fee0a17e89f">functionalType</a> polyfem::IntegrableFunctional::j_func_</td>
         </tr>
       </table>
   </td>
@@ -1619,40 +1378,15 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00161">161</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00054">54</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_integrable_functional_8hpp_source.html#l00050">evaluate()</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00023">set_j()</a>.</p>
-
-</div>
-</div>
-<a id="a5fd4903d0d0e88560383fcc2196eff70" name="a5fd4903d0d0e88560383fcc2196eff70"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5fd4903d0d0e88560383fcc2196eff70">&#9670;&#160;</a></span>name</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string polyfem::IntegrableFunctional::name = &quot;&quot;</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_integrable_functional_8hpp_source.html#l00159">159</a> of file <a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_integrable_functional_8hpp_source.html#l00021">get_name()</a>, and <a class="el" href="_integrable_functional_8hpp_source.html#l00020">set_name()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_integrable_functional_8cpp_source.html#l00038">evaluate()</a>, and <a class="el" href="_integrable_functional_8cpp_source.html#l00005">set_j()</a>.</p>
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>src/polyfem/utils/<a class="el" href="_integrable_functional_8hpp_source.html">IntegrableFunctional.hpp</a></li>
+<li>src/polyfem/utils/<a class="el" href="_integrable_functional_8cpp_source.html">IntegrableFunctional.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

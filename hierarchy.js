@@ -1,7 +1,6 @@
 var hierarchy =
 [
     [ "polyfem::solver::AdjointOptUtils", "structpolyfem_1_1solver_1_1_adjoint_opt_utils.html", null ],
-    [ "polyfem::solver::AdjointTools", "classpolyfem_1_1solver_1_1_adjoint_tools.html", null ],
     [ "polyfem::solver::ALSolver", "classpolyfem_1_1solver_1_1_a_l_solver.html", null ],
     [ "polyfem::refinement::APriori", "classpolyfem_1_1refinement_1_1_a_priori.html", null ],
     [ "polyfem::mesh::NCMesh2D::ArrayHasher2D", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1_array_hasher2_d.html", null ],
@@ -251,6 +250,7 @@ var hierarchy =
     [ "polyfem::assembler::OutputData", "classpolyfem_1_1assembler_1_1_output_data.html", null ],
     [ "polyfem::io::OutRuntimeData", "classpolyfem_1_1io_1_1_out_runtime_data.html", null ],
     [ "polyfem::io::OutStatsData", "classpolyfem_1_1io_1_1_out_stats_data.html", null ],
+    [ "polyfem::IntegrableFunctional::ParameterType", "structpolyfem_1_1_integrable_functional_1_1_parameter_type.html", null ],
     [ "polyfem::solver::Parametrization", "classpolyfem_1_1solver_1_1_parametrization.html", [
       [ "polyfem::solver::CompositeParametrization", "classpolyfem_1_1solver_1_1_composite_parametrization.html", null ],
       [ "polyfem::solver::ENu2LambdaMu", "classpolyfem_1_1solver_1_1_e_nu2_lambda_mu.html", null ],
@@ -408,6 +408,7 @@ var hierarchy =
       [ "polyfem::solver::InitialConditionVariableToSimulation", "classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html", null ],
       [ "polyfem::solver::ShapeVariableToSimulation", "classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html", null ]
     ] ],
+    [ "polyfem::solver::VariableToSimulationGroup", "classpolyfem_1_1solver_1_1_variable_to_simulation_group.html", null ],
     [ "polyfem::mesh::Vertex", "structpolyfem_1_1mesh_1_1_vertex.html", null ],
     [ "polyfem::mesh::WildRemesher< WMTKMesh >::VertexAttributes", "structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html", null ],
     [ "polyfem::renderer::VertexAttributes", "classpolyfem_1_1renderer_1_1_vertex_attributes.html", null ],

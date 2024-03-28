@@ -137,19 +137,19 @@ Inheritance diagram for polyfem::solver::TransientForm:</div>
 <div class="dynheader">
 Collaboration diagram for polyfem::solver::TransientForm:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_transient_form__coll__graph.svg" width="235" height="183"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_transient_form__coll__graph.svg" width="415" height="214"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8d774bae89c362a68cf1892863a08f13" id="r_a8d774bae89c362a68cf1892863a08f13"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#a8d774bae89c362a68cf1892863a08f13">TransientForm</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html">VariableToSimulation</a> &gt; &gt; &amp;variable_to_simulations, const int time_steps, const double dt, const std::string &amp;transient_integral_type, const std::vector&lt; int &gt; &amp;steps, const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_static_form.html">StaticForm</a> &gt; &amp;obj)</td></tr>
-<tr class="separator:a8d774bae89c362a68cf1892863a08f13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60b71879ec1dc7afa75f72916f09073d" id="r_a60b71879ec1dc7afa75f72916f09073d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#a60b71879ec1dc7afa75f72916f09073d">TransientForm</a> (const <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html">VariableToSimulationGroup</a> &amp;variable_to_simulations, const int time_steps, const double dt, const std::string &amp;transient_integral_type, const std::vector&lt; int &gt; &amp;steps, const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_static_form.html">StaticForm</a> &gt; &amp;obj)</td></tr>
+<tr class="separator:a60b71879ec1dc7afa75f72916f09073d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d58c98ceb91b9a81bbdca41b5d5269d" id="r_a5d58c98ceb91b9a81bbdca41b5d5269d"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#a5d58c98ceb91b9a81bbdca41b5d5269d">~TransientForm</a> ()=default</td></tr>
 <tr class="separator:a5d58c98ceb91b9a81bbdca41b5d5269d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d8e31622c6e688c3c6987714239c897" id="r_a0d8e31622c6e688c3c6987714239c897"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#a0d8e31622c6e688c3c6987714239c897">compute_adjoint_rhs_unweighted</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state) const override</td></tr>
-<tr class="separator:a0d8e31622c6e688c3c6987714239c897"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa570482284f23360e42b4f087be50780" id="r_aa570482284f23360e42b4f087be50780"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#aa570482284f23360e42b4f087be50780">compute_partial_gradient_unweighted</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, Eigen::VectorXd &amp;gradv) const override</td></tr>
-<tr class="separator:aa570482284f23360e42b4f087be50780"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a679841a851c2a66fc7c31116e712a2d1" id="r_a679841a851c2a66fc7c31116e712a2d1"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#a679841a851c2a66fc7c31116e712a2d1">compute_adjoint_rhs</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state) const override</td></tr>
+<tr class="separator:a679841a851c2a66fc7c31116e712a2d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53fa812ec827c9d6e0235bc07dacc768" id="r_a53fa812ec827c9d6e0235bc07dacc768"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#a53fa812ec827c9d6e0235bc07dacc768">compute_partial_gradient</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, Eigen::VectorXd &amp;gradv) const override</td></tr>
+<tr class="separator:a53fa812ec827c9d6e0235bc07dacc768"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a935c1d200ff3c17118138534cf3afaf9" id="r_a935c1d200ff3c17118138534cf3afaf9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#a935c1d200ff3c17118138534cf3afaf9">init</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
 <tr class="memdesc:a935c1d200ff3c17118138534cf3afaf9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the form.  <br /></td></tr>
 <tr class="separator:a935c1d200ff3c17118138534cf3afaf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -171,53 +171,46 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a26d3fc73eb81a8e7d6cf50b9424a42df" id="r_a26d3fc73eb81a8e7d6cf50b9424a42df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#a26d3fc73eb81a8e7d6cf50b9424a42df">solution_changed</a> (const Eigen::VectorXd &amp;new_x) override</td></tr>
 <tr class="memdesc:a26d3fc73eb81a8e7d6cf50b9424a42df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update cached fields upon a change in the solution.  <br /></td></tr>
 <tr class="separator:a26d3fc73eb81a8e7d6cf50b9424a42df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adff75691f37f921c6eb043405b91fbab" id="r_adff75691f37f921c6eb043405b91fbab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#adff75691f37f921c6eb043405b91fbab">update_quantities</a> (const double t, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
-<tr class="memdesc:adff75691f37f921c6eb043405b91fbab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update time-dependent fields.  <br /></td></tr>
-<tr class="separator:adff75691f37f921c6eb043405b91fbab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb82e71869b7170e083ffd271825e859" id="r_adb82e71869b7170e083ffd271825e859"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#adb82e71869b7170e083ffd271825e859">init_lagging</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
-<tr class="memdesc:adb82e71869b7170e083ffd271825e859"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize lagged fields TODO: more than one step.  <br /></td></tr>
-<tr class="separator:adb82e71869b7170e083ffd271825e859"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab30ec270e477303eaa5cd91c8ef840ee" id="r_ab30ec270e477303eaa5cd91c8ef840ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#ab30ec270e477303eaa5cd91c8ef840ee">update_lagging</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const int iter_num) override</td></tr>
-<tr class="memdesc:ab30ec270e477303eaa5cd91c8ef840ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update lagged fields.  <br /></td></tr>
-<tr class="separator:ab30ec270e477303eaa5cd91c8ef840ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a235c9ed91f29e99591d93c16755448ae" id="r_a235c9ed91f29e99591d93c16755448ae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#a235c9ed91f29e99591d93c16755448ae">set_apply_DBC</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, bool apply_DBC) override</td></tr>
-<tr class="memdesc:a235c9ed91f29e99591d93c16755448ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set if the Dirichlet boundary conditions should be enforced.  <br /></td></tr>
-<tr class="separator:a235c9ed91f29e99591d93c16755448ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d2fc5e231aa9ca96a0737757049748f" id="r_a3d2fc5e231aa9ca96a0737757049748f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#a3d2fc5e231aa9ca96a0737757049748f">is_step_collision_free</a> (const Eigen::VectorXd &amp;x0, const Eigen::VectorXd &amp;x1) const override</td></tr>
 <tr class="memdesc:a3d2fc5e231aa9ca96a0737757049748f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the step is collision free.  <br /></td></tr>
 <tr class="separator:a3d2fc5e231aa9ca96a0737757049748f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpolyfem_1_1solver_1_1_adjoint_form')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html">polyfem::solver::AdjointForm</a></td></tr>
-<tr class="memitem:a19d22955e7e75153031bb8a7b778ff92 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a19d22955e7e75153031bb8a7b778ff92"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a19d22955e7e75153031bb8a7b778ff92">AdjointForm</a> (const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html">VariableToSimulation</a> &gt; &gt; &amp;variable_to_simulations)</td></tr>
-<tr class="separator:a19d22955e7e75153031bb8a7b778ff92 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbd817ec8a72496bc3f5edf03aef8d4d inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_adbd817ec8a72496bc3f5edf03aef8d4d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#adbd817ec8a72496bc3f5edf03aef8d4d">AdjointForm</a> (const <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html">VariableToSimulationGroup</a> &amp;variable_to_simulations)</td></tr>
+<tr class="separator:adbd817ec8a72496bc3f5edf03aef8d4d inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a06dc0ab9d0145148389fb0c6dcc594fa inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a06dc0ab9d0145148389fb0c6dcc594fa"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a06dc0ab9d0145148389fb0c6dcc594fa">~AdjointForm</a> ()</td></tr>
 <tr class="separator:a06dc0ab9d0145148389fb0c6dcc594fa inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af5a89c0da39c8c2a00ad29b71ab04e06 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_af5a89c0da39c8c2a00ad29b71ab04e06"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#af5a89c0da39c8c2a00ad29b71ab04e06">name</a> () const override</td></tr>
 <tr class="separator:af5a89c0da39c8c2a00ad29b71ab04e06 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa331f021f999464b69fbc9b42023162 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_aaa331f021f999464b69fbc9b42023162"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#aaa331f021f999464b69fbc9b42023162">enable_energy_print</a> (const std::string &amp;print_energy_keyword)</td></tr>
+<tr class="separator:aaa331f021f999464b69fbc9b42023162 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83da86e0efba5cfcba61af6b05796801 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a83da86e0efba5cfcba61af6b05796801"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a83da86e0efba5cfcba61af6b05796801">value</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const override</td></tr>
 <tr class="memdesc:a83da86e0efba5cfcba61af6b05796801 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the value of the form multiplied with the weigth.  <br /></td></tr>
 <tr class="separator:a83da86e0efba5cfcba61af6b05796801 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaa331f021f999464b69fbc9b42023162 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_aaa331f021f999464b69fbc9b42023162"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#aaa331f021f999464b69fbc9b42023162">enable_energy_print</a> (const std::string &amp;print_energy_keyword)</td></tr>
-<tr class="separator:aaa331f021f999464b69fbc9b42023162 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6dd17bb9dc412eca196fba164513cc8 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_ad6dd17bb9dc412eca196fba164513cc8"><td class="memItemLeft" align="right" valign="top">const auto &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#ad6dd17bb9dc412eca196fba164513cc8">get_variable_to_simulations</a> () const</td></tr>
-<tr class="separator:ad6dd17bb9dc412eca196fba164513cc8 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5848914ae87f71ccebd5c84fbef661e inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_aa5848914ae87f71ccebd5c84fbef661e"><td class="memItemLeft" align="right" valign="top">virtual Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#aa5848914ae87f71ccebd5c84fbef661e">compute_adjoint_rhs</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state) const final</td></tr>
-<tr class="separator:aa5848914ae87f71ccebd5c84fbef661e inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abebce2dce813977787698b3476d9a748 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_abebce2dce813977787698b3476d9a748"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#abebce2dce813977787698b3476d9a748">compute_partial_gradient</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, Eigen::VectorXd &amp;gradv) const final</td></tr>
-<tr class="separator:abebce2dce813977787698b3476d9a748 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a75339fa2280050eb0a11e9c1564c2463 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a75339fa2280050eb0a11e9c1564c2463"><td class="memItemLeft" align="right" valign="top">virtual Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a75339fa2280050eb0a11e9c1564c2463">compute_reduced_adjoint_rhs_unweighted</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state) const</td></tr>
-<tr class="separator:a75339fa2280050eb0a11e9c1564c2463 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67707227b0771154a9a0ef372ac1f25e inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a67707227b0771154a9a0ef372ac1f25e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a67707227b0771154a9a0ef372ac1f25e">second_derivative_unweighted</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hessian) const final override</td></tr>
-<tr class="memdesc:a67707227b0771154a9a0ef372ac1f25e inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the second derivative of the value wrt x.  <br /></td></tr>
-<tr class="separator:a67707227b0771154a9a0ef372ac1f25e inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a185871b84b48eb67a6436c8f2fcfd304 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a185871b84b48eb67a6436c8f2fcfd304"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html">VariableToSimulationGroup</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a185871b84b48eb67a6436c8f2fcfd304">get_variable_to_simulations</a> () const</td></tr>
+<tr class="separator:a185871b84b48eb67a6436c8f2fcfd304 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95fbba22d6a54715d882c151efc587e1 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a95fbba22d6a54715d882c151efc587e1"><td class="memItemLeft" align="right" valign="top">virtual Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a95fbba22d6a54715d882c151efc587e1">compute_reduced_adjoint_rhs</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state) const</td></tr>
+<tr class="separator:a95fbba22d6a54715d882c151efc587e1 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a809444267534055ed66f02df2f4e7fa6 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a809444267534055ed66f02df2f4e7fa6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a809444267534055ed66f02df2f4e7fa6">first_derivative</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, Eigen::VectorXd &amp;gradv) const final override</td></tr>
+<tr class="memdesc:a809444267534055ed66f02df2f4e7fa6 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the first derivative of the value wrt x multiplied with the weigth.  <br /></td></tr>
+<tr class="separator:a809444267534055ed66f02df2f4e7fa6 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2ac7f6f4495c6085ae1d3c51bfdd9de inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_aa2ac7f6f4495c6085ae1d3c51bfdd9de"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#aa2ac7f6f4495c6085ae1d3c51bfdd9de">update_quantities</a> (const double t, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) final override</td></tr>
+<tr class="memdesc:aa2ac7f6f4495c6085ae1d3c51bfdd9de inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update time-dependent fields.  <br /></td></tr>
+<tr class="separator:aa2ac7f6f4495c6085ae1d3c51bfdd9de inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f2d7531e6e27ba87e8e69be3ea89b12 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a6f2d7531e6e27ba87e8e69be3ea89b12"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a6f2d7531e6e27ba87e8e69be3ea89b12">init_lagging</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) final override</td></tr>
+<tr class="memdesc:a6f2d7531e6e27ba87e8e69be3ea89b12 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize lagged fields TODO: more than one step.  <br /></td></tr>
+<tr class="separator:a6f2d7531e6e27ba87e8e69be3ea89b12 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8af74346cbc432616aefaddb3b2b60e4 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a8af74346cbc432616aefaddb3b2b60e4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a8af74346cbc432616aefaddb3b2b60e4">update_lagging</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const int iter_num) final override</td></tr>
+<tr class="memdesc:a8af74346cbc432616aefaddb3b2b60e4 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update lagged fields.  <br /></td></tr>
+<tr class="separator:a8af74346cbc432616aefaddb3b2b60e4 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5288419f616c7eb96784538d09020407 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a5288419f616c7eb96784538d09020407"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a5288419f616c7eb96784538d09020407">set_apply_DBC</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, bool apply_DBC) final override</td></tr>
+<tr class="memdesc:a5288419f616c7eb96784538d09020407 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set if the Dirichlet boundary conditions should be enforced.  <br /></td></tr>
+<tr class="separator:a5288419f616c7eb96784538d09020407 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classpolyfem_1_1solver_1_1_form"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpolyfem_1_1solver_1_1_form')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpolyfem_1_1solver_1_1_form.html">polyfem::solver::Form</a></td></tr>
 <tr class="memitem:aeed3585f6af9b01c48c07809f745f01f inherit pub_methods_classpolyfem_1_1solver_1_1_form" id="r_aeed3585f6af9b01c48c07809f745f01f"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#aeed3585f6af9b01c48c07809f745f01f">~Form</a> ()</td></tr>
 <tr class="separator:aeed3585f6af9b01c48c07809f745f01f inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94b6accf27a754f736a0e022251842b8 inherit pub_methods_classpolyfem_1_1solver_1_1_form" id="r_a94b6accf27a754f736a0e022251842b8"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a94b6accf27a754f736a0e022251842b8">value_per_element</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const</td></tr>
 <tr class="memdesc:a94b6accf27a754f736a0e022251842b8 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the value of the form multiplied with the weigth.  <br /></td></tr>
 <tr class="separator:a94b6accf27a754f736a0e022251842b8 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96dfee30f817cfe008e3aefb04c3544b inherit pub_methods_classpolyfem_1_1solver_1_1_form" id="r_a96dfee30f817cfe008e3aefb04c3544b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a96dfee30f817cfe008e3aefb04c3544b">first_derivative</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, Eigen::VectorXd &amp;gradv) const</td></tr>
-<tr class="memdesc:a96dfee30f817cfe008e3aefb04c3544b inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the first derivative of the value wrt x multiplied with the weigth.  <br /></td></tr>
-<tr class="separator:a96dfee30f817cfe008e3aefb04c3544b inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a82539e6014f006197341fc53034477a6 inherit pub_methods_classpolyfem_1_1solver_1_1_form" id="r_a82539e6014f006197341fc53034477a6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a82539e6014f006197341fc53034477a6">second_derivative</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hessian) const</td></tr>
 <tr class="memdesc:a82539e6014f006197341fc53034477a6 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the second derivative of the value wrt x multiplied with the weigth.  <br /></td></tr>
 <tr class="separator:a82539e6014f006197341fc53034477a6 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -262,9 +255,12 @@ Protected Member Functions</h2></td></tr>
 <tr class="memdesc:a21567315041e870c6169a9e175ff4b10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the value of the form.  <br /></td></tr>
 <tr class="separator:a21567315041e870c6169a9e175ff4b10"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classpolyfem_1_1solver_1_1_adjoint_form')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html">polyfem::solver::AdjointForm</a></td></tr>
-<tr class="memitem:a49dc3a90b9176f980eb81981fe934e05 inherit pro_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a49dc3a90b9176f980eb81981fe934e05"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a49dc3a90b9176f980eb81981fe934e05">first_derivative_unweighted</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, Eigen::VectorXd &amp;gradv) const override</td></tr>
-<tr class="memdesc:a49dc3a90b9176f980eb81981fe934e05 inherit pro_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the first derivative of the value wrt x.  <br /></td></tr>
-<tr class="separator:a49dc3a90b9176f980eb81981fe934e05 inherit pro_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22e441ee85824e2db3c50ec73ae0d901 inherit pro_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a22e441ee85824e2db3c50ec73ae0d901"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a22e441ee85824e2db3c50ec73ae0d901">first_derivative_unweighted</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, Eigen::VectorXd &amp;gradv) const final override</td></tr>
+<tr class="memdesc:a22e441ee85824e2db3c50ec73ae0d901 inherit pro_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the first derivative of the value wrt x.  <br /></td></tr>
+<tr class="separator:a22e441ee85824e2db3c50ec73ae0d901 inherit pro_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a67707227b0771154a9a0ef372ac1f25e inherit pro_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a67707227b0771154a9a0ef372ac1f25e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a67707227b0771154a9a0ef372ac1f25e">second_derivative_unweighted</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hessian) const final override</td></tr>
+<tr class="memdesc:a67707227b0771154a9a0ef372ac1f25e inherit pro_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the second derivative of the value wrt x.  <br /></td></tr>
+<tr class="separator:a67707227b0771154a9a0ef372ac1f25e inherit pro_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classpolyfem_1_1solver_1_1_form"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classpolyfem_1_1solver_1_1_form')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classpolyfem_1_1solver_1_1_form.html">polyfem::solver::Form</a></td></tr>
 <tr class="memitem:abb6d6737f8ad238f0446866402fc9c5b inherit pro_methods_classpolyfem_1_1solver_1_1_form" id="r_abb6d6737f8ad238f0446866402fc9c5b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#abb6d6737f8ad238f0446866402fc9c5b">resolve_output_path</a> (const std::string &amp;path) const</td></tr>
 <tr class="separator:abb6d6737f8ad238f0446866402fc9c5b inherit pro_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -285,10 +281,10 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:a8d4999511a77452f662c2a6be41ca378" id="r_a8d4999511a77452f662c2a6be41ca378"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_static_form.html">StaticForm</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#a8d4999511a77452f662c2a6be41ca378">obj_</a></td></tr>
 <tr class="separator:a8d4999511a77452f662c2a6be41ca378"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classpolyfem_1_1solver_1_1_adjoint_form"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classpolyfem_1_1solver_1_1_adjoint_form')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html">polyfem::solver::AdjointForm</a></td></tr>
-<tr class="memitem:a26e199ab339008ee4f0f22eb97c2a2d9 inherit pro_attribs_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a26e199ab339008ee4f0f22eb97c2a2d9"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html">VariableToSimulation</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a26e199ab339008ee4f0f22eb97c2a2d9">variable_to_simulations_</a></td></tr>
-<tr class="separator:a26e199ab339008ee4f0f22eb97c2a2d9 inherit pro_attribs_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a01cc41c5218640683be460e6d291afc7 inherit pro_attribs_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a01cc41c5218640683be460e6d291afc7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a01cc41c5218640683be460e6d291afc7">print_energy_</a> = 0</td></tr>
-<tr class="separator:a01cc41c5218640683be460e6d291afc7 inherit pro_attribs_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcc0bade58310cc45abfa92c5b17c05b inherit pro_attribs_classpolyfem_1_1solver_1_1_adjoint_form" id="r_afcc0bade58310cc45abfa92c5b17c05b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html">VariableToSimulationGroup</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#afcc0bade58310cc45abfa92c5b17c05b">variable_to_simulations_</a></td></tr>
+<tr class="separator:afcc0bade58310cc45abfa92c5b17c05b inherit pro_attribs_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a238d02c68f6b32c1a20f3cf333a35834 inherit pro_attribs_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a238d02c68f6b32c1a20f3cf333a35834"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#ad9abf38ef5d3a816ee955f57f4fe3225">PrintStage</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a238d02c68f6b32c1a20f3cf333a35834">print_energy_</a> = <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#ad9abf38ef5d3a816ee955f57f4fe3225a3cab03c00dbd11bc3569afa0748013f0">PrintStage::Inactive</a></td></tr>
+<tr class="separator:a238d02c68f6b32c1a20f3cf333a35834 inherit pro_attribs_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a39caed3d271cd5672e04c2f556776b78 inherit pro_attribs_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a39caed3d271cd5672e04c2f556776b78"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a39caed3d271cd5672e04c2f556776b78">print_energy_keyword_</a></td></tr>
 <tr class="separator:a39caed3d271cd5672e04c2f556776b78 inherit pro_attribs_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classpolyfem_1_1solver_1_1_form"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classpolyfem_1_1solver_1_1_form')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classpolyfem_1_1solver_1_1_form.html">polyfem::solver::Form</a></td></tr>
@@ -303,13 +299,22 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:ad3b23922e91c88f9432eb6a0228569ae inherit pro_attribs_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a743891166546a5be4dcafcf3470e6645 inherit pro_attribs_classpolyfem_1_1solver_1_1_form" id="r_a743891166546a5be4dcafcf3470e6645"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a743891166546a5be4dcafcf3470e6645">output_dir_</a></td></tr>
 <tr class="separator:a743891166546a5be4dcafcf3470e6645 inherit pro_attribs_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
+Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header pro_types_classpolyfem_1_1solver_1_1_adjoint_form"><td colspan="2" onclick="javascript:toggleInherit('pro_types_classpolyfem_1_1solver_1_1_adjoint_form')"><img src="closed.png" alt="-"/>&#160;Protected Types inherited from <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html">polyfem::solver::AdjointForm</a></td></tr>
+<tr class="memitem:ad9abf38ef5d3a816ee955f57f4fe3225 inherit pro_types_classpolyfem_1_1solver_1_1_adjoint_form" id="r_ad9abf38ef5d3a816ee955f57f4fe3225"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#ad9abf38ef5d3a816ee955f57f4fe3225">PrintStage</a> { <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#ad9abf38ef5d3a816ee955f57f4fe3225a3cab03c00dbd11bc3569afa0748013f0">Inactive</a>
+, <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#ad9abf38ef5d3a816ee955f57f4fe3225a05507a5fad99ac960385235ce41852d1">AlreadyPrinted</a>
+, <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#ad9abf38ef5d3a816ee955f57f4fe3225a259b45e15f4f04a207b3b7a1d790af72">ToPrint</a>
+ }</td></tr>
+<tr class="separator:ad9abf38ef5d3a816ee955f57f4fe3225 inherit pro_types_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="_transient_form_8hpp_source.html#l00007">7</a> of file <a class="el" href="_transient_form_8hpp_source.html">TransientForm.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a8d774bae89c362a68cf1892863a08f13" name="a8d774bae89c362a68cf1892863a08f13"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8d774bae89c362a68cf1892863a08f13">&#9670;&#160;</a></span>TransientForm()</h2>
+<a id="a60b71879ec1dc7afa75f72916f09073d" name="a60b71879ec1dc7afa75f72916f09073d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a60b71879ec1dc7afa75f72916f09073d">&#9670;&#160;</a></span>TransientForm()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -320,7 +325,7 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="memname">polyfem::solver::TransientForm::TransientForm </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html">VariableToSimulation</a> &gt; &gt; &amp;&#160;</td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html">VariableToSimulationGroup</a> &amp;&#160;</td>
           <td class="paramname"><em>variable_to_simulations</em>, </td>
         </tr>
         <tr>
@@ -396,8 +401,8 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a0d8e31622c6e688c3c6987714239c897" name="a0d8e31622c6e688c3c6987714239c897"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0d8e31622c6e688c3c6987714239c897">&#9670;&#160;</a></span>compute_adjoint_rhs_unweighted()</h2>
+<a id="a679841a851c2a66fc7c31116e712a2d1" name="a679841a851c2a66fc7c31116e712a2d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a679841a851c2a66fc7c31116e712a2d1">&#9670;&#160;</a></span>compute_adjoint_rhs()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -406,7 +411,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Eigen::MatrixXd polyfem::solver::TransientForm::compute_adjoint_rhs_unweighted </td>
+          <td class="memname">Eigen::MatrixXd polyfem::solver::TransientForm::compute_adjoint_rhs </td>
           <td>(</td>
           <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
           <td class="paramname"><em>x</em>, </td>
@@ -430,21 +435,21 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a0c23d531939de93f8978ed8811bbabec">polyfem::solver::AdjointForm</a>.</p>
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a82299700543fc88025773e87c3e3fc52">polyfem::solver::AdjointForm</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00101">101</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00033">get_transient_quadrature_weights()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_state_8hpp_source.html#l00624">polyfem::State::ndof()</a>, <a class="el" href="_transient_form_8hpp_source.html#l00037">obj_</a>, <a class="el" href="_transient_form_8hpp_source.html#l00033">time_steps_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00033">get_transient_quadrature_weights()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_state_8hpp_source.html#l00624">polyfem::State::ndof()</a>, <a class="el" href="_transient_form_8hpp_source.html#l00033">obj_</a>, <a class="el" href="_transient_form_8hpp_source.html#l00029">time_steps_</a>, <a class="el" href="_form_8hpp_source.html#l00126">polyfem::solver::Form::weight()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_transient_form_a0d8e31622c6e688c3c6987714239c897_cgraph.svg" width="484" height="310"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_transient_form_a679841a851c2a66fc7c31116e712a2d1_cgraph.svg" width="484" height="374"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="aa570482284f23360e42b4f087be50780" name="aa570482284f23360e42b4f087be50780"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa570482284f23360e42b4f087be50780">&#9670;&#160;</a></span>compute_partial_gradient_unweighted()</h2>
+<a id="a53fa812ec827c9d6e0235bc07dacc768" name="a53fa812ec827c9d6e0235bc07dacc768"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53fa812ec827c9d6e0235bc07dacc768">&#9670;&#160;</a></span>compute_partial_gradient()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -453,7 +458,7 @@ Here is the call graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void polyfem::solver::TransientForm::compute_partial_gradient_unweighted </td>
+          <td class="memname">void polyfem::solver::TransientForm::compute_partial_gradient </td>
           <td>(</td>
           <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
           <td class="paramname"><em>x</em>, </td>
@@ -477,15 +482,15 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a5422bc128dccf09157fcc25fc05e8fb3">polyfem::solver::AdjointForm</a>.</p>
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a8b5acac84dcdf7cd371dede2144eb06b">polyfem::solver::AdjointForm</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00127">127</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00033">get_transient_quadrature_weights()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_transient_form_8hpp_source.html#l00037">obj_</a>, <a class="el" href="_transient_form_8hpp_source.html#l00033">time_steps_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00033">get_transient_quadrature_weights()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_transient_form_8hpp_source.html#l00033">obj_</a>, <a class="el" href="_transient_form_8hpp_source.html#l00029">time_steps_</a>, <a class="el" href="_form_8hpp_source.html#l00126">polyfem::solver::Form::weight()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_transient_form_aa570482284f23360e42b4f087be50780_cgraph.svg" width="516" height="259"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_transient_form_a53fa812ec827c9d6e0235bc07dacc768_cgraph.svg" width="516" height="323"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -515,13 +520,13 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00033">33</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_transient_form_8hpp_source.html#l00034">dt_</a>, <a class="el" href="_transient_form_8hpp_source.html#l00036">steps_</a>, <a class="el" href="_transient_form_8hpp_source.html#l00033">time_steps_</a>, and <a class="el" href="_transient_form_8hpp_source.html#l00035">transient_integral_type_</a>.</p>
+<p class="reference">References <a class="el" href="_transient_form_8hpp_source.html#l00030">dt_</a>, <a class="el" href="_transient_form_8hpp_source.html#l00032">steps_</a>, <a class="el" href="_transient_form_8hpp_source.html#l00029">time_steps_</a>, and <a class="el" href="_transient_form_8hpp_source.html#l00031">transient_integral_type_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_transient_form_8cpp_source.html#l00101">compute_adjoint_rhs_unweighted()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00127">compute_partial_gradient_unweighted()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00180">solution_changed()</a>, and <a class="el" href="_transient_form_8cpp_source.html#l00078">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_transient_form_8cpp_source.html#l00101">compute_adjoint_rhs()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00127">compute_partial_gradient()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00181">solution_changed()</a>, and <a class="el" href="_transient_form_8cpp_source.html#l00078">value_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_transient_form_ab03941cc1dba20c8335de10ffdd78705_icgraph.svg" width="516" height="274"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_transient_form_ab03941cc1dba20c8335de10ffdd78705_icgraph.svg" width="516" height="243"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -560,49 +565,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a57af020e5b4adb1f79380daade52a514">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00150">150</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00151">151</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_transient_form_8hpp_source.html#l00037">obj_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
-
-</div>
-</div>
-<a id="adb82e71869b7170e083ffd271825e859" name="adb82e71869b7170e083ffd271825e859"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adb82e71869b7170e083ffd271825e859">&#9670;&#160;</a></span>init_lagging()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::solver::TransientForm::init_lagging </td>
-          <td>(</td>
-          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>x</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Initialize lagged fields TODO: more than one step. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">x</td><td>Current solution </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a9c7f35903dc6327f12961fd098cb3e39">polyfem::solver::Form</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00198">198</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_transient_form_8hpp_source.html#l00037">obj_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_transient_form_8hpp_source.html#l00033">obj_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 </div>
 </div>
@@ -645,9 +610,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a52a657c152e9c1448c520c34bc443a3e">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00213">213</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00193">193</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_transient_form_8hpp_source.html#l00037">obj_</a>.</p>
+<p class="reference">References <a class="el" href="_transient_form_8hpp_source.html#l00033">obj_</a>.</p>
 
 </div>
 </div>
@@ -697,9 +662,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a6f6226a2602f5ca5bc5c9a93f7a12fd4">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00155">155</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00156">156</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_transient_form_8hpp_source.html#l00037">obj_</a>.</p>
+<p class="reference">References <a class="el" href="_transient_form_8hpp_source.html#l00033">obj_</a>.</p>
 
 </div>
 </div>
@@ -748,9 +713,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#aa88b23bfc5c51229123b96514d822fa7">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00165">165</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00166">166</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_transient_form_8hpp_source.html#l00037">obj_</a>.</p>
+<p class="reference">References <a class="el" href="_transient_form_8hpp_source.html#l00033">obj_</a>.</p>
 
 </div>
 </div>
@@ -781,9 +746,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#ab7cf0e74998f574f9b51502cb3eae209">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00170">170</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00171">171</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_transient_form_8hpp_source.html#l00037">obj_</a>.</p>
+<p class="reference">References <a class="el" href="_transient_form_8hpp_source.html#l00033">obj_</a>.</p>
 
 </div>
 </div>
@@ -833,9 +798,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#ab9da0c5d97cbb385ffc9b6685d29d06c">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00160">160</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00161">161</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_transient_form_8hpp_source.html#l00037">obj_</a>.</p>
+<p class="reference">References <a class="el" href="_transient_form_8hpp_source.html#l00033">obj_</a>.</p>
 
 </div>
 </div>
@@ -875,60 +840,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#ab29c045a12b7367c9b227f12767e20b4">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00175">175</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00176">176</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_transient_form_8hpp_source.html#l00037">obj_</a>.</p>
-
-</div>
-</div>
-<a id="a235c9ed91f29e99591d93c16755448ae" name="a235c9ed91f29e99591d93c16755448ae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a235c9ed91f29e99591d93c16755448ae">&#9670;&#160;</a></span>set_apply_DBC()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::solver::TransientForm::set_apply_DBC </td>
-          <td>(</td>
-          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>x</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>apply_DBC</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Set if the Dirichlet boundary conditions should be enforced. </p>
-<dl class="section note"><dt>Note</dt><dd>This is specific to the body form. </dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">apply_DBC</td><td>If true, apply Dirichlet boundary conditions to the current RHS. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#aa3bc1982e0d2a817919eba357e1ccb16">polyfem::solver::Form</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00208">208</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_transient_form_8hpp_source.html#l00037">obj_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_transient_form_8hpp_source.html#l00033">obj_</a>.</p>
 
 </div>
 </div>
@@ -966,115 +880,14 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a3f00fafcf3de6cbf9d381d89d093db83">polyfem::solver::AdjointForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00180">180</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00181">181</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_transient_form_8cpp_source.html#l00033">get_transient_quadrature_weights()</a>, <a class="el" href="_transient_form_8hpp_source.html#l00037">obj_</a>, <a class="el" href="_adjoint_form_8cpp_source.html#l00020">polyfem::solver::AdjointForm::solution_changed()</a>, and <a class="el" href="_transient_form_8hpp_source.html#l00033">time_steps_</a>.</p>
+<p class="reference">References <a class="el" href="_transient_form_8cpp_source.html#l00033">get_transient_quadrature_weights()</a>, <a class="el" href="_transient_form_8hpp_source.html#l00033">obj_</a>, <a class="el" href="_adjoint_form_8cpp_source.html#l00026">polyfem::solver::AdjointForm::solution_changed()</a>, and <a class="el" href="_transient_form_8hpp_source.html#l00029">time_steps_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_transient_form_a26d3fc73eb81a8e7d6cf50b9424a42df_cgraph.svg" width="476" height="131"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
-
-</div>
-</div>
-<a id="ab30ec270e477303eaa5cd91c8ef840ee" name="ab30ec270e477303eaa5cd91c8ef840ee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab30ec270e477303eaa5cd91c8ef840ee">&#9670;&#160;</a></span>update_lagging()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::solver::TransientForm::update_lagging </td>
-          <td>(</td>
-          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>x</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>iter_num</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Update lagged fields. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">x</td><td>Current solution </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a15005d528c9e3d19a1af57cf59e334fc">polyfem::solver::Form</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00203">203</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_transient_form_8hpp_source.html#l00037">obj_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
-
-</div>
-</div>
-<a id="adff75691f37f921c6eb043405b91fbab" name="adff75691f37f921c6eb043405b91fbab"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adff75691f37f921c6eb043405b91fbab">&#9670;&#160;</a></span>update_quantities()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::solver::TransientForm::update_quantities </td>
-          <td>(</td>
-          <td class="paramtype">const double&#160;</td>
-          <td class="paramname"><em>t</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>x</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Update time-dependent fields. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">t</td><td>Current time </td></tr>
-    <tr><td class="paramname">x</td><td>Current solution at time t </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a36e58606b6cdc7b4bf16aa1bd7fd351c">polyfem::solver::Form</a>.</p>
-
-<p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00193">193</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_transient_form_8hpp_source.html#l00037">obj_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 </div>
 </div>
@@ -1115,7 +928,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00078">78</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00033">get_transient_quadrature_weights()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_transient_form_8hpp_source.html#l00037">obj_</a>, <a class="el" href="_transient_form_8hpp_source.html#l00033">time_steps_</a>, <a class="el" href="_adjoint_form_8cpp_source.html#l00009">polyfem::solver::AdjointForm::value()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00033">get_transient_quadrature_weights()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_transient_form_8hpp_source.html#l00033">obj_</a>, <a class="el" href="_transient_form_8hpp_source.html#l00029">time_steps_</a>, <a class="el" href="_adjoint_form_8cpp_source.html#l00009">polyfem::solver::AdjointForm::value()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1145,7 +958,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_transient_form_8hpp_source.html#l00034">34</a> of file <a class="el" href="_transient_form_8hpp_source.html">TransientForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_transient_form_8hpp_source.html#l00030">30</a> of file <a class="el" href="_transient_form_8hpp_source.html">TransientForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_transient_form_8cpp_source.html#l00033">get_transient_quadrature_weights()</a>.</p>
 
@@ -1171,9 +984,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_transient_form_8hpp_source.html#l00037">37</a> of file <a class="el" href="_transient_form_8hpp_source.html">TransientForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_transient_form_8hpp_source.html#l00033">33</a> of file <a class="el" href="_transient_form_8hpp_source.html">TransientForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_transient_form_8cpp_source.html#l00101">compute_adjoint_rhs_unweighted()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00127">compute_partial_gradient_unweighted()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00150">init()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00198">init_lagging()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00213">is_step_collision_free()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00155">is_step_valid()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00165">line_search_begin()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00170">line_search_end()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00160">max_step_size()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00175">post_step()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00208">set_apply_DBC()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00180">solution_changed()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00203">update_lagging()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00193">update_quantities()</a>, and <a class="el" href="_transient_form_8cpp_source.html#l00078">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_transient_form_8cpp_source.html#l00101">compute_adjoint_rhs()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00127">compute_partial_gradient()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00151">init()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00193">is_step_collision_free()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00156">is_step_valid()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00166">line_search_begin()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00171">line_search_end()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00161">max_step_size()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00176">post_step()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00181">solution_changed()</a>, and <a class="el" href="_transient_form_8cpp_source.html#l00078">value_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -1197,7 +1010,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_transient_form_8hpp_source.html#l00036">36</a> of file <a class="el" href="_transient_form_8hpp_source.html">TransientForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_transient_form_8hpp_source.html#l00032">32</a> of file <a class="el" href="_transient_form_8hpp_source.html">TransientForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_transient_form_8cpp_source.html#l00033">get_transient_quadrature_weights()</a>.</p>
 
@@ -1223,9 +1036,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_transient_form_8hpp_source.html#l00033">33</a> of file <a class="el" href="_transient_form_8hpp_source.html">TransientForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_transient_form_8hpp_source.html#l00029">29</a> of file <a class="el" href="_transient_form_8hpp_source.html">TransientForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_transient_form_8cpp_source.html#l00101">compute_adjoint_rhs_unweighted()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00127">compute_partial_gradient_unweighted()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00033">get_transient_quadrature_weights()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00180">solution_changed()</a>, and <a class="el" href="_transient_form_8cpp_source.html#l00078">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_transient_form_8cpp_source.html#l00101">compute_adjoint_rhs()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00127">compute_partial_gradient()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00033">get_transient_quadrature_weights()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00181">solution_changed()</a>, and <a class="el" href="_transient_form_8cpp_source.html#l00078">value_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -1249,7 +1062,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_transient_form_8hpp_source.html#l00035">35</a> of file <a class="el" href="_transient_form_8hpp_source.html">TransientForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_transient_form_8hpp_source.html#l00031">31</a> of file <a class="el" href="_transient_form_8hpp_source.html">TransientForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_transient_form_8cpp_source.html#l00033">get_transient_quadrature_weights()</a>.</p>
 

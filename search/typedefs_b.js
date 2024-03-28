@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['operations_0',['operations',['../classpolyfem_1_1mesh_1_1_physics_remesher.html#a3edc19c24e051c52af3ae83f208c3eab',1,'polyfem::mesh::PhysicsRemesher::Operations'],['../classpolyfem_1_1mesh_1_1_sizing_field_remesher.html#aca28f4f2a4b49edc5a696c4edc299e45',1,'polyfem::mesh::SizingFieldRemesher::Operations'],['../classpolyfem_1_1mesh_1_1_wild_remesher.html#a3756ffe58418827404fd3ad783e9c74b',1,'polyfem::mesh::WildRemesher::Operations']]]
+  ['namedmatrix_0',['NamedMatrix',['../classpolyfem_1_1assembler_1_1_assembler.html#a2cb2b720adf98c060d79238859be88ac',1,'polyfem::assembler::Assembler']]],
+  ['nlsolver_1',['NLSolver',['../classpolyfem_1_1solver_1_1_a_l_solver.html#a10bcc29e57d7cf93e747f1b7e7ee19c3',1,'polyfem::solver::ALSolver']]]
 ];

@@ -1,12 +1,12 @@
 var classpolyfem_1_1solver_1_1_static_form =
 [
     [ "~StaticForm", "classpolyfem_1_1solver_1_1_static_form.html#aa3569d3ab37e1d87b49b5c21a00fa39d", null ],
-    [ "AdjointForm", "classpolyfem_1_1solver_1_1_static_form.html#a19d22955e7e75153031bb8a7b778ff92", null ],
-    [ "compute_adjoint_rhs_unweighted", "classpolyfem_1_1solver_1_1_static_form.html#abe5cae4b7dcb21111d20d1985b5803f7", null ],
-    [ "compute_adjoint_rhs_unweighted_step", "classpolyfem_1_1solver_1_1_static_form.html#a66e82914515b9ee3dd0a153314b2dddd", null ],
-    [ "compute_adjoint_rhs_unweighted_step_prev", "classpolyfem_1_1solver_1_1_static_form.html#ada2ebd2330dbaf2e8a848604a33402e3", null ],
-    [ "compute_partial_gradient_unweighted", "classpolyfem_1_1solver_1_1_static_form.html#abd98107ff1b650277357894b6d229d04", null ],
-    [ "compute_partial_gradient_unweighted_step", "classpolyfem_1_1solver_1_1_static_form.html#a0a18c9b23e15783557a92e3581252f92", null ],
+    [ "AdjointForm", "classpolyfem_1_1solver_1_1_static_form.html#adbd817ec8a72496bc3f5edf03aef8d4d", null ],
+    [ "compute_adjoint_rhs", "classpolyfem_1_1solver_1_1_static_form.html#a33c1c6036ebe80f6f950c8bb2f18b425", null ],
+    [ "compute_adjoint_rhs_step", "classpolyfem_1_1solver_1_1_static_form.html#a678e2ff07ab6fbb2ae4712fca32a53db", null ],
+    [ "compute_adjoint_rhs_step_prev", "classpolyfem_1_1solver_1_1_static_form.html#a3cee86ff0ef39d20d846fde11338f928", null ],
+    [ "compute_partial_gradient", "classpolyfem_1_1solver_1_1_static_form.html#a44dd9952e895ef6b3468edf3b886e3ef", null ],
+    [ "compute_partial_gradient_step", "classpolyfem_1_1solver_1_1_static_form.html#a0a3aff89fde436f2d0942b538da66a34", null ],
     [ "depends_on_step_prev", "classpolyfem_1_1solver_1_1_static_form.html#ac3b0ca6e3b45880bfb527e71120a19a6", null ],
     [ "name", "classpolyfem_1_1solver_1_1_static_form.html#a5f57682d8354d371c761eb1b154e8a10", null ],
     [ "solution_changed_step", "classpolyfem_1_1solver_1_1_static_form.html#a42b91810aaf9224c3594cec230c401ba", null ],

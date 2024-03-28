@@ -1,6 +1,7 @@
 var _variable_to_simulation_8hpp =
 [
     [ "polyfem::solver::VariableToSimulation", "classpolyfem_1_1solver_1_1_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_variable_to_simulation" ],
+    [ "polyfem::solver::VariableToSimulationGroup", "classpolyfem_1_1solver_1_1_variable_to_simulation_group.html", "classpolyfem_1_1solver_1_1_variable_to_simulation_group" ],
     [ "polyfem::solver::ShapeVariableToSimulation", "classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_shape_variable_to_simulation" ],
     [ "polyfem::solver::ElasticVariableToSimulation", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation" ],
     [ "polyfem::solver::FrictionCoeffientVariableToSimulation", "classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation" ],

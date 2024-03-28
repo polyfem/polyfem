@@ -1,18 +1,34 @@
 var _adjoint_tools_8hpp =
 [
-    [ "polyfem::solver::AdjointTools", "classpolyfem_1_1solver_1_1_adjoint_tools.html", "classpolyfem_1_1solver_1_1_adjoint_tools" ],
     [ "ParameterType", "_adjoint_tools_8hpp.html#a1c9e86081b90c3ab43c4d722f65d3c59", [
       [ "Shape", "_adjoint_tools_8hpp.html#a1c9e86081b90c3ab43c4d722f65d3c59a880c1273b27d27cfc82004c3a4b205c9", null ],
-      [ "Material", "_adjoint_tools_8hpp.html#a1c9e86081b90c3ab43c4d722f65d3c59ad92a8333dd3ccb895cc65f7455b71206", null ],
-      [ "FrictionCoeff", "_adjoint_tools_8hpp.html#a1c9e86081b90c3ab43c4d722f65d3c59a434e3f38d82d009df521aaa0fc45b0f3", null ],
-      [ "DampingCoeff", "_adjoint_tools_8hpp.html#a1c9e86081b90c3ab43c4d722f65d3c59a17ae61f648751dcd3b9326ff7efcc9e2", null ],
+      [ "LameParameter", "_adjoint_tools_8hpp.html#a1c9e86081b90c3ab43c4d722f65d3c59af85a0e688bf256d124f6dc011c7cb51e", null ],
+      [ "FrictionCoefficient", "_adjoint_tools_8hpp.html#a1c9e86081b90c3ab43c4d722f65d3c59ac52c4cf716836bae440d812a9a7ad553", null ],
+      [ "DampingCoefficient", "_adjoint_tools_8hpp.html#a1c9e86081b90c3ab43c4d722f65d3c59a633e1ddfaf226af9371bec1bdb01ba03", null ],
       [ "InitialCondition", "_adjoint_tools_8hpp.html#a1c9e86081b90c3ab43c4d722f65d3c59a01ba7e77dad0a0033b291edfcfd27898", null ],
       [ "DirichletBC", "_adjoint_tools_8hpp.html#a1c9e86081b90c3ab43c4d722f65d3c59abf475759a5b12fab0ca2c50e7c712112", null ],
       [ "MacroStrain", "_adjoint_tools_8hpp.html#a1c9e86081b90c3ab43c4d722f65d3c59a9dd66ef403d0478b7300b75f64b62370", null ]
     ] ],
     [ "SpatialIntegralType", "_adjoint_tools_8hpp.html#ad27032b2014cdcea2f5718580272f48f", [
-      [ "volume", "_adjoint_tools_8hpp.html#ad27032b2014cdcea2f5718580272f48fa210ab9e731c9c36c2c38db15c28a8d1c", null ],
-      [ "surface", "_adjoint_tools_8hpp.html#ad27032b2014cdcea2f5718580272f48fad302e976c9dd527a9521a88c012437c5", null ],
-      [ "vertex_sum", "_adjoint_tools_8hpp.html#ad27032b2014cdcea2f5718580272f48fa3e9210786f21b5bfb0cd89543e005c13", null ]
-    ] ]
+      [ "Volume", "_adjoint_tools_8hpp.html#ad27032b2014cdcea2f5718580272f48fabd7a9717d29c5ddcab1bc175eda1e298", null ],
+      [ "Surface", "_adjoint_tools_8hpp.html#ad27032b2014cdcea2f5718580272f48faaa0d528ba11ea1485d466dfe1ea40819", null ],
+      [ "VertexSum", "_adjoint_tools_8hpp.html#ad27032b2014cdcea2f5718580272f48faad22a1be59b755962010de3a6aa93458", null ]
+    ] ],
+    [ "compute_shape_derivative_functional_term", "_adjoint_tools_8hpp.html#aa650adfcea9ae851fdf1642e5171b29b", null ],
+    [ "dJ_damping_transient_adjoint_term", "_adjoint_tools_8hpp.html#ae883020211d75b1f28aa7a221e151094", null ],
+    [ "dJ_dirichlet_transient_adjoint_term", "_adjoint_tools_8hpp.html#acd2d76928276e17089aaa83a50d7239f", null ],
+    [ "dJ_du_step", "_adjoint_tools_8hpp.html#afd1c5f4891c34a48045ce552f6f28e3f", null ],
+    [ "dJ_friction_transient_adjoint_term", "_adjoint_tools_8hpp.html#a5ac63404b8f363b91018bbb64975f76e", null ],
+    [ "dJ_initial_condition_adjoint_term", "_adjoint_tools_8hpp.html#a83a0a0adacafbe7876a0a8de0d0ba417", null ],
+    [ "dJ_material_static_adjoint_term", "_adjoint_tools_8hpp.html#ac2d6e588ea62390fae16da18ec65c996", null ],
+    [ "dJ_material_transient_adjoint_term", "_adjoint_tools_8hpp.html#a8c5bd48aac94f33974b81900015f979b", null ],
+    [ "dJ_shape_static_adjoint_term", "_adjoint_tools_8hpp.html#addcc05e296f84fac4d2feef6b6efe330", null ],
+    [ "dJ_shape_transient_adjoint_term", "_adjoint_tools_8hpp.html#abeb523ee2bef0856b888bb49c5cdca8f", null ],
+    [ "edge_normal_gradient", "_adjoint_tools_8hpp.html#a99096782a44628ed8754d46c9d55801b", null ],
+    [ "edge_velocity_divergence", "_adjoint_tools_8hpp.html#a8ef244a2d9d1d64b9ee8c7d876f3b4e1", null ],
+    [ "face_normal_gradient", "_adjoint_tools_8hpp.html#a51c3e2db128d7b83f6461cff5aa17610", null ],
+    [ "face_velocity_divergence", "_adjoint_tools_8hpp.html#a1bd6a5b37bca39571bb8232619a490da", null ],
+    [ "integrate_objective", "_adjoint_tools_8hpp.html#a4c93693417aa7c2cf7f03e5bd0ac03dd", null ],
+    [ "map_node_to_primitive_order", "_adjoint_tools_8hpp.html#af8e122cc77e54fe557a75e10bb5d6f2c", null ],
+    [ "map_primitive_to_node_order", "_adjoint_tools_8hpp.html#aa7f73a425012498c55fca81fd8a24ca5", null ]
 ];

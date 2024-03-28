@@ -1,6 +1,6 @@
 var classpolyfem_1_1_opt_state =
 [
-    [ "~OptState", "classpolyfem_1_1_opt_state.html#a5affd7d9c87258c8bfa48844b1f0c332", null ],
+    [ "~OptState", "classpolyfem_1_1_opt_state.html#ae97fd813e2cbfffb91eb092222faed5d", null ],
     [ "OptState", "classpolyfem_1_1_opt_state.html#af92124a9c75253c4c70e66c46ecf7449", null ],
     [ "crate_problem", "classpolyfem_1_1_opt_state.html#ae4fc316d7ce75aed5d5d95f22c265b44", null ],
     [ "create_states", "classpolyfem_1_1_opt_state.html#ad2f643a88d481c1db7b39ee1397af44c", null ],
@@ -18,9 +18,9 @@ var classpolyfem_1_1_opt_state =
     [ "console_sink_", "classpolyfem_1_1_opt_state.html#ac02e4821c706dd375552aaa47e48f720", null ],
     [ "file_sink_", "classpolyfem_1_1_opt_state.html#a63c46c8dd629f4604866fa476f730e5e", null ],
     [ "ndof", "classpolyfem_1_1_opt_state.html#aa601accd4d2967809ac165aedc3b45a8", null ],
-    [ "nl_problem", "classpolyfem_1_1_opt_state.html#a678ba31b97afca6296dfe59ac721fa9b", null ],
+    [ "nl_problem", "classpolyfem_1_1_opt_state.html#a9d787809d949294df9be646375e2d9fa", null ],
     [ "output_dir", "classpolyfem_1_1_opt_state.html#aa5b86fbc404f7d34534e654b19d13d87", null ],
     [ "states", "classpolyfem_1_1_opt_state.html#a033bf0014e0985c1f63e8fa0a0c8a1f7", null ],
     [ "variable_sizes", "classpolyfem_1_1_opt_state.html#a92db2e5b36ebafaa49ef692b5c6f616c", null ],
-    [ "variable_to_simulations", "classpolyfem_1_1_opt_state.html#aa7c6fdb5cf8f4acfb6bdc0fe54988c01", null ]
+    [ "variable_to_simulations", "classpolyfem_1_1_opt_state.html#ae274543ae0052dea3a0965ed10e06696", null ]
 ];

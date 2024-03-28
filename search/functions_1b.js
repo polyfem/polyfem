@@ -38,7 +38,7 @@ var searchData=
   ['_7enodetargetform_35',['~NodeTargetForm',['../classpolyfem_1_1solver_1_1_node_target_form.html#a323d92263b6546a3437104807af0f473',1,'polyfem::solver::NodeTargetForm']]],
   ['_7eobstacle_36',['~Obstacle',['../classpolyfem_1_1mesh_1_1_obstacle.html#ae7bb4805f07778cc2b4528bc2ce390ec',1,'polyfem::mesh::Obstacle']]],
   ['_7eoperatorsplitting_37',['~OperatorSplitting',['../classpolyfem_1_1assembler_1_1_operator_splitting.html#ae60039c686fdff2163880f584b62478d',1,'polyfem::assembler::OperatorSplitting']]],
-  ['_7eoptstate_38',['~OptState',['../classpolyfem_1_1_opt_state.html#a5affd7d9c87258c8bfa48844b1f0c332',1,'polyfem::OptState']]],
+  ['_7eoptstate_38',['~OptState',['../classpolyfem_1_1_opt_state.html#ae97fd813e2cbfffb91eb092222faed5d',1,'polyfem::OptState']]],
   ['_7eparametrization_39',['~Parametrization',['../classpolyfem_1_1solver_1_1_parametrization.html#ab8823686ddb2ecac9353fda2731aadbf',1,'polyfem::solver::Parametrization']]],
   ['_7eparametrizationform_40',['~ParametrizationForm',['../classpolyfem_1_1solver_1_1_parametrization_form.html#a645a470721b4dbd7501e247c59c4e220',1,'polyfem::solver::ParametrizationForm']]],
   ['_7ephysicsremesher_41',['~PhysicsRemesher',['../classpolyfem_1_1mesh_1_1_physics_remesher.html#a5a03468d6554d3bb222dbf2d56f92f67',1,'polyfem::mesh::PhysicsRemesher']]],

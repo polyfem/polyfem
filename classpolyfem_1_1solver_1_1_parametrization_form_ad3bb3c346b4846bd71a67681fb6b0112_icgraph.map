@@ -1,31 +1,21 @@
 <map id="polyfem::solver::ParametrizationForm::apply_parametrizations" name="polyfem::solver::ParametrizationForm::apply_parametrizations">
-<area shape="rect" id="Node000001" title=" " alt="" coords="580,397,815,437"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a5f270ce437e32738a0985cb67ad41b09" title="Compute the first derivative of the value wrt x." alt="" coords="288,13,532,53"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="688,384,671,317,642,231,621,186,596,142,566,102,530,67,513,55,515,51,534,63,570,98,600,139,626,183,647,229,676,315,693,383"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#aa3b81246ef9b3e24017e6b9cb3e8d680" title="Initialize the form." alt="" coords="293,77,527,117"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="684,384,664,329,633,260,588,190,561,158,530,131,511,119,514,114,534,127,565,155,592,187,637,257,669,327,689,383"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a57a5008ce774dfb549c1294e7c3a9bfc" title="Initialize lagged fields TODO: more than one step." alt="" coords="293,141,527,181"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="679,386,656,342,623,290,581,238,530,195,509,183,512,179,534,190,585,235,627,287,660,339,684,383"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a52780db8ccbc17036e102ddf20a82011" title="Checks if the step is collision free." alt="" coords="293,205,527,245"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="671,387,612,322,573,288,531,259,505,247,507,242,533,254,576,284,615,318,675,384"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a2e65ba041066b0c0d53cbf5287065b28" title="Determine if a step from solution x0 to solution x1 is allowed." alt="" coords="293,269,527,309"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="654,391,597,356,531,323,498,311,500,306,533,318,600,352,657,387"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a0adaea8b789c2ddd0c97f7c1ca2e383c" title="Initialize variables used during the line search." alt="" coords="293,333,527,373"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="593,396,500,375,501,370,594,391"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a06707359c304825d908be85f487b06a3" title="Determine the maximum step size allowable between the current and next solution." alt="" coords="293,397,527,437"/>
-<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="566,419,528,419,528,414,566,414"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#aacc8404e5edcae5f78ffc2cdfc72eb7c" title="Update fields after a step in the optimization." alt="" coords="293,461,527,501"/>
-<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="594,442,501,463,500,458,593,437"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a03d02fe16b50e30e29f9e6ec3c4c098e" title="Set if the Dirichlet boundary conditions should be enforced." alt="" coords="293,525,527,565"/>
-<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="657,447,600,482,533,515,500,527,498,522,531,510,597,477,654,442"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a7ad28408ecb3566eebd9afab7bce0362" title="Update cached fields upon a change in the solution." alt="" coords="293,589,527,629"/>
-<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="675,449,615,515,576,550,533,579,507,591,505,586,531,574,573,545,612,511,671,446"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a798b442c69b82e26514fa7bdde7e361b" title="Update lagged fields." alt="" coords="293,653,527,693"/>
-<area shape="poly" id="edge12_Node000001_Node000013" title=" " alt="" coords="684,450,660,494,627,546,585,599,534,643,512,655,509,650,530,638,581,595,623,543,656,491,679,448"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a0f01c0148ca17e0e08df011c966e644c" title="Update time&#45;dependent fields." alt="" coords="293,717,527,757"/>
-<area shape="poly" id="edge13_Node000001_Node000014" title=" " alt="" coords="689,451,669,507,637,576,592,647,565,679,534,707,514,719,511,714,530,703,561,675,588,643,633,573,664,505,684,449"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#ac3c7909f33cb08868b6200916afcec79" title="Compute the value of the form." alt="" coords="293,781,527,821"/>
-<area shape="poly" id="edge14_Node000001_Node000015" title=" " alt="" coords="693,451,676,518,647,605,626,650,600,694,570,735,534,771,515,783,513,778,530,767,566,732,596,691,621,648,642,603,671,517,688,449"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a1fcd6cec6ab66cd73bab3f99a526fc5d" title=" " alt="" coords="5,5,240,60"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="275,35,240,35,240,30,275,30"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="288,261,523,301"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a8ae48b34f50ecd7cd28503baa8112c15" title=" " alt="" coords="5,5,240,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="387,250,364,207,331,155,289,103,238,60,217,48,220,43,242,55,292,100,335,152,368,204,392,248"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a83cee4bf06bc0d1babac1babb4c6aa77" title="Initialize the form." alt="" coords="5,69,240,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="378,252,319,186,281,153,239,124,213,112,216,107,241,119,284,148,323,183,382,248"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a2c95a0bcec6ca56bb42141b5e966d5c6" title="Checks if the step is collision free." alt="" coords="5,133,240,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="362,256,305,221,239,188,206,176,208,171,241,183,308,216,365,252"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#af39ff0069771bbb7450df3792924169c" title="Determine if a step from solution x0 to solution x1 is allowed." alt="" coords="5,197,240,237"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="302,261,211,240,212,235,304,256"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#ae882d2c545ccec56425d6913345c779b" title="Initialize variables used during the line search." alt="" coords="5,261,240,301"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="274,284,240,284,240,279,274,279"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#abf7b16060b1c89d6a6aaa67eaafc0f37" title="Determine the maximum step size allowable between the current and next solution." alt="" coords="5,325,240,365"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="304,307,212,328,211,323,302,302"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a85a17c2bb4c0bc2a31d9045ccbebaf26" title="Update fields after a step in the optimization." alt="" coords="5,389,240,429"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="365,311,308,346,241,380,208,392,206,387,239,375,305,342,362,307"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a6a225a64e319c2d7d179e9fc0dbd2ff8" title="Update cached fields upon a change in the solution." alt="" coords="5,453,240,493"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="382,315,323,380,284,414,241,444,216,456,213,451,239,439,281,410,319,376,378,311"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_parametrization_form.html#a6a307268e993cba8f9796fa08c162c81" title="Compute the value of the form." alt="" coords="5,517,240,557"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="392,315,368,359,335,411,292,463,242,508,220,520,217,515,238,503,289,459,331,408,364,356,387,312"/>
 </map>

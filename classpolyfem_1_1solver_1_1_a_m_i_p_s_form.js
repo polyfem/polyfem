@@ -1,9 +1,8 @@
 var classpolyfem_1_1solver_1_1_a_m_i_p_s_form =
 [
     [ "AMIPSForm", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#af39ca73197f30c10294200307e8f8325", null ],
-    [ "AMIPSForm", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#ae984024827d348ac57171a0ca13df559", null ],
-    [ "compute_adjoint_rhs_unweighted", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a81096135c2da63eaef854e2283c362cc", null ],
-    [ "compute_partial_gradient_unweighted", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#ac9d153e3821819a05cd8ea2302e17f7d", null ],
+    [ "AMIPSForm", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#ac1772b15a4fb45b906bec50503dbccc4", null ],
+    [ "compute_partial_gradient", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a653eca873137c884a22e958824816f8d", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#aee0ad0b79283d4034d749f97e40c6a74", null ],
     [ "get_updated_mesh_nodes", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a4a09fc78f3e8f84c2d958f495a43a9da", null ],
     [ "is_step_valid", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a839c98ba85e25009fa86add9af0e7e17", null ],

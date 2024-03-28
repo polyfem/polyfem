@@ -1,66 +1,36 @@
 <map id="polyfem::utils::get_local_thread_storage" name="polyfem::utils::get_local_thread_storage">
-<area shape="rect" id="Node000001" title=" " alt="" coords="885,676,1051,716"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html#a331b61c7a70e3d0f42a199d4d87444ef" title="Assembles the mass matrix." alt="" coords="631,30,805,85"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="961,662,948,538,923,369,906,283,885,205,862,141,835,98,821,85,804,76,807,71,824,81,839,94,867,139,891,204,911,282,928,368,953,537,966,662"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1assembler_1_1_n_l_assembler.html#a0dcf0db6270fc7b52a74a498a8d3eb3a" title=" " alt="" coords="624,109,812,163"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="960,663,943,555,916,412,899,340,879,275,858,221,835,184,810,164,814,160,839,181,863,219,885,273,904,339,921,411,948,554,965,662"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1assembler_1_1_n_l_assembler.html#a361a7f8e67d5f122d0cb46f6961f716a" title=" " alt="" coords="323,154,511,209"/>
-<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="960,662,944,561,917,430,900,365,881,306,859,259,836,229,813,215,781,205,697,191,601,184,512,182,512,177,602,179,698,185,782,200,815,211,839,225,864,256,886,304,906,363,923,428,949,560,965,661"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_transient_form.html#a0d8e31622c6e688c3c6987714239c897" title=" " alt="" coords="619,239,817,294"/>
-<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="963,663,955,589,935,494,918,444,897,394,869,348,835,307,816,293,819,288,839,303,874,345,902,392,923,442,940,493,960,589,968,662"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#a81522814c9437df6805a0844b1f5414d" title=" " alt="" coords="624,318,812,373"/>
-<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="959,663,947,604,924,529,908,490,888,452,864,417,836,386,811,369,814,365,839,382,868,414,893,450,913,488,929,527,952,602,965,662"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#a91b3995fb0dd7c11f3661876ab89da62" title=" " alt="" coords="612,397,824,451"/>
-<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="954,664,938,619,913,565,879,511,859,487,836,465,820,454,823,449,839,461,862,483,883,508,918,563,943,617,960,662"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1solver_1_1_transient_form.html#aa570482284f23360e42b4f087be50780" title=" " alt="" coords="603,475,833,530"/>
-<area shape="poly" id="edge11_Node000001_Node000011" title=" " alt="" coords="946,666,900,604,870,571,836,544,817,533,819,528,839,539,874,567,904,600,950,663"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#aa650adfcea9ae851fdf1642e5171b29b" title=" " alt="" coords="599,554,837,609"/>
-<area shape="poly" id="edge12_Node000001_Node000012" title=" " alt="" coords="924,671,882,646,836,622,809,611,811,606,838,618,885,641,927,666"/>
-<area shape="rect" id="Node000018" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#ae883020211d75b1f28aa7a221e151094" title=" " alt="" coords="616,633,820,687"/>
-<area shape="poly" id="edge18_Node000001_Node000018" title=" " alt="" coords="871,685,820,677,821,672,872,680"/>
-<area shape="rect" id="Node000020" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#afd1c5f4891c34a48045ce552f6f28e3f" title=" " alt="" coords="629,712,807,752"/>
-<area shape="poly" id="edge20_Node000001_Node000020" title=" " alt="" coords="872,713,808,722,807,716,871,707"/>
-<area shape="rect" id="Node000022" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#a5ac63404b8f363b91018bbb64975f76e" title=" " alt="" coords="621,777,815,831"/>
-<area shape="poly" id="edge22_Node000001_Node000022" title=" " alt="" coords="921,725,838,766,807,779,805,774,836,762,918,721"/>
-<area shape="rect" id="Node000024" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#a8c5bd48aac94f33974b81900015f979b" title=" " alt="" coords="617,855,819,910"/>
-<area shape="poly" id="edge24_Node000001_Node000024" title=" " alt="" coords="949,729,903,788,872,818,839,845,816,858,814,853,836,840,869,814,899,784,944,726"/>
-<area shape="rect" id="Node000026" href="$classpolyfem_1_1solver_1_1_elastic_form.html#a684521b7ad102ebdbb51d9977f032071" title="Compute the derivative of the force wrt lame/damping parameters, then multiply the resulting matrix w..." alt="" coords="603,935,833,975"/>
-<area shape="poly" id="edge26_Node000001_Node000026" title=" " alt="" coords="959,730,943,774,917,826,883,879,862,902,839,923,817,937,814,932,836,919,858,899,879,875,913,823,938,772,954,728"/>
-<area shape="rect" id="Node000027" href="$classpolyfem_1_1solver_1_1_inertia_form.html#accc5bac64d90e926129a0c02e381d2d7" title=" " alt="" coords="611,999,825,1039"/>
-<area shape="poly" id="edge27_Node000001_Node000027" title=" " alt="" coords="964,730,951,786,928,856,891,927,867,960,839,989,821,1001,818,996,836,985,863,957,887,925,923,854,946,785,959,729"/>
-<area shape="rect" id="Node000028" href="$classpolyfem_1_1solver_1_1_elastic_form.html#a7610f62d04a931837c5641d1defd2a9f" title="Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adj..." alt="" coords="611,1063,825,1103"/>
-<area shape="poly" id="edge28_Node000001_Node000028" title=" " alt="" coords="967,730,958,798,937,885,920,930,899,975,872,1016,839,1053,822,1065,819,1060,836,1049,868,1013,894,972,915,928,931,883,952,797,962,730"/>
-<area shape="rect" id="Node000029" href="$classpolyfem_1_1solver_1_1_body_form.html#a5dd3812e581ac1ca48508abd65fe6c07" title="Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adj..." alt="" coords="619,1127,817,1167"/>
-<area shape="poly" id="edge29_Node000001_Node000029" title=" " alt="" coords="969,730,964,809,945,913,929,968,906,1022,877,1072,839,1117,819,1131,816,1127,836,1113,872,1069,901,1019,924,966,940,911,958,808,964,730"/>
-<area shape="rect" id="Node000030" href="$classpolyfem_1_1solver_1_1_adjoint_tools.html#a4c93693417aa7c2cf7f03e5bd0ac03dd" title=" " alt="" coords="623,1191,813,1231"/>
-<area shape="poly" id="edge30_Node000001_Node000030" title=" " alt="" coords="965,730,948,833,921,968,904,1035,885,1096,863,1146,839,1181,814,1198,811,1193,835,1177,858,1144,880,1094,899,1034,916,967,943,832,959,730"/>
-<area shape="rect" id="Node000032" href="$classpolyfem_1_1solver_1_1_transient_form.html#a21567315041e870c6169a9e175ff4b10" title="Compute the value of the form." alt="" coords="623,1255,813,1295"/>
-<area shape="poly" id="edge32_Node000001_Node000032" title=" " alt="" coords="966,730,951,845,926,999,908,1077,888,1147,865,1205,839,1245,815,1262,812,1257,835,1241,861,1202,883,1145,903,1075,920,998,946,845,960,730"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1mesh_1_1_remesher.html#a60ab7872593bdf1951408bbd870526e4" title="Update the mesh positions and other projection quantities." alt="" coords="320,5,515,45"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="617,49,515,38,515,33,617,44"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_physics_remesher.html#a831328a90694d3a8971428bdffd70653" title=" " alt="" coords="295,69,540,109"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="617,71,540,79,540,74,617,65"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="610,155,512,170,511,165,610,150"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_body_form.html#ae8e6ef01b568dc58996b461788a420d0" title="Compute the value of the body force form." alt="" coords="318,325,517,365"/>
-<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="610,348,517,348,517,343,610,343"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1solver_1_1_spatial_integral_form.html#a215cb78e5ae1ccc9a4ddd1e35a91658d" title=" " alt="" coords="292,547,543,602"/>
-<area shape="poly" id="edge13_Node000012_Node000013" title=" " alt="" coords="585,581,543,580,543,575,585,576"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1solver_1_1_elastic_energy_form.html#a297e740b9c30353e734397679719a7ee" title=" " alt="" coords="13,430,228,485"/>
-<area shape="poly" id="edge14_Node000013_Node000014" title=" " alt="" coords="343,544,235,498,205,487,207,482,237,494,345,539"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1solver_1_1_stress_norm_form.html#a5833930db4dcea6badebdf727c9d7baa" title=" " alt="" coords="5,509,236,563"/>
-<area shape="poly" id="edge15_Node000013_Node000015" title=" " alt="" coords="278,559,236,554,237,548,279,554"/>
-<area shape="rect" id="Node000016" href="$classpolyfem_1_1solver_1_1_compliance_form.html#af7eba4310771b49215ceb4bd1c863876" title=" " alt="" coords="5,587,236,642"/>
-<area shape="poly" id="edge16_Node000013_Node000016" title=" " alt="" coords="279,596,237,602,236,596,278,591"/>
-<area shape="rect" id="Node000017" href="$classpolyfem_1_1solver_1_1_stress_form.html#af831d0f221b997432f4a484d3444cf44" title=" " alt="" coords="18,666,223,721"/>
-<area shape="poly" id="edge17_Node000013_Node000017" title=" " alt="" coords="297,610,285,616,271,625,262,635,237,656,212,668,209,663,235,651,258,631,268,621,283,611,295,605"/>
-<area shape="rect" id="Node000019" href="$classpolyfem_1_1solver_1_1_damping_coeffient_variable_to_simulation.html#a71759bd7ccaffbc2b6b191106be7e94d" title=" " alt="" coords="308,626,527,681"/>
-<area shape="poly" id="edge19_Node000018_Node000019" title=" " alt="" coords="602,660,527,658,527,653,602,655"/>
-<area shape="rect" id="Node000021" href="$classpolyfem_1_1solver_1_1_spatial_integral_form.html#ae6d0bea38bff2aebee5b30d56afd29f1" title=" " alt="" coords="308,705,527,759"/>
-<area shape="poly" id="edge21_Node000020_Node000021" title=" " alt="" coords="615,735,527,735,527,729,615,729"/>
-<area shape="rect" id="Node000023" href="$classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html#a3f07e6f8d3dccd177ae47eb6eb07a55b" title=" " alt="" coords="308,783,527,838"/>
-<area shape="poly" id="edge23_Node000022_Node000023" title=" " alt="" coords="608,809,527,811,527,806,608,804"/>
-<area shape="rect" id="Node000025" href="$classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html#a22c326ff74722077734beaccc1301647" title=" " alt="" coords="330,862,505,917"/>
-<area shape="poly" id="edge25_Node000024_Node000025" title=" " alt="" coords="603,888,505,890,505,885,603,883"/>
-<area shape="rect" id="Node000031" href="$classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac5641105d5303178b79b4c23ef0d7387" title=" " alt="" coords="284,1191,551,1231"/>
-<area shape="poly" id="edge31_Node000030_Node000031" title=" " alt="" coords="610,1213,551,1213,551,1208,610,1208"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="599,415,764,455"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html#a331b61c7a70e3d0f42a199d4d87444ef" title="Assembles the mass matrix." alt="" coords="348,30,523,85"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="674,401,663,337,641,256,625,213,604,171,579,132,549,98,521,79,524,75,552,94,583,129,609,169,630,211,646,254,668,336,679,400"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1assembler_1_1_n_l_assembler.html#a0dcf0db6270fc7b52a74a498a8d3eb3a" title=" " alt="" coords="341,109,529,163"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="669,402,653,354,628,296,593,237,572,209,549,185,521,166,524,161,552,181,576,206,598,234,633,294,658,353,674,401"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1assembler_1_1_n_l_assembler.html#a361a7f8e67d5f122d0cb46f6961f716a" title=" " alt="" coords="45,154,233,209"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="667,402,651,361,626,313,592,266,572,246,549,229,526,218,494,209,411,196,319,188,233,185,233,180,320,183,412,191,495,204,528,213,552,224,575,242,596,263,631,310,656,359,672,401"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_transient_form.html#a679841a851c2a66fc7c31116e712a2d1" title=" " alt="" coords="336,239,535,279"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="658,405,612,347,583,318,549,293,526,281,528,276,552,288,586,314,616,344,662,402"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#a81522814c9437df6805a0844b1f5414d" title=" " alt="" coords="341,303,529,358"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="629,411,550,373,518,361,520,356,552,368,631,406"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_transient_form.html#a53fa812ec827c9d6e0235bc07dacc768" title=" " alt="" coords="320,383,551,423"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="585,425,551,420,551,415,585,420"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1solver_1_1_elastic_form.html#a684521b7ad102ebdbb51d9977f032071" title="Compute the derivative of the force wrt lame/damping parameters, then multiply the resulting matrix w..." alt="" coords="320,447,551,487"/>
+<area shape="poly" id="edge11_Node000001_Node000011" title=" " alt="" coords="585,450,551,454,551,449,585,444"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1solver_1_1_inertia_form.html#accc5bac64d90e926129a0c02e381d2d7" title=" " alt="" coords="328,511,543,551"/>
+<area shape="poly" id="edge12_Node000001_Node000012" title=" " alt="" coords="633,463,552,501,517,513,515,508,550,496,631,459"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1solver_1_1_elastic_form.html#a7610f62d04a931837c5641d1defd2a9f" title="Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adj..." alt="" coords="328,575,543,615"/>
+<area shape="poly" id="edge13_Node000001_Node000013" title=" " alt="" coords="659,467,613,518,584,543,552,565,527,577,524,572,549,560,580,539,609,514,655,464"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1solver_1_1_body_form.html#a5dd3812e581ac1ca48508abd65fe6c07" title="Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adj..." alt="" coords="336,639,535,679"/>
+<area shape="poly" id="edge14_Node000001_Node000014" title=" " alt="" coords="669,468,651,506,625,549,592,592,552,629,531,641,529,636,549,625,588,589,621,546,646,503,664,466"/>
+<area shape="rect" id="Node000015" href="$namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a4c93693417aa7c2cf7f03e5bd0ac03dd" title=" " alt="" coords="341,703,530,743"/>
+<area shape="poly" id="edge15_Node000001_Node000015" title=" " alt="" coords="675,469,660,518,636,579,600,640,578,668,552,693,532,706,529,701,549,689,574,665,596,637,631,576,655,516,670,467"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1solver_1_1_transient_form.html#a21567315041e870c6169a9e175ff4b10" title="Compute the value of the form." alt="" coords="340,767,531,807"/>
+<area shape="poly" id="edge17_Node000001_Node000017" title=" " alt="" coords="679,469,667,530,645,608,628,648,608,688,583,724,552,757,533,770,530,766,549,753,578,721,603,685,624,646,640,606,662,529,674,468"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1mesh_1_1_remesher.html#a60ab7872593bdf1951408bbd870526e4" title="Update the mesh positions and other projection quantities." alt="" coords="41,5,236,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="334,49,236,38,236,33,335,44"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_physics_remesher.html#a831328a90694d3a8971428bdffd70653" title=" " alt="" coords="16,69,261,109"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="335,71,262,79,261,73,334,66"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="328,155,233,170,233,164,327,150"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_body_form.html#ae8e6ef01b568dc58996b461788a420d0" title="Compute the value of the body force form." alt="" coords="39,311,238,351"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="327,333,239,333,239,328,327,328"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac5641105d5303178b79b4c23ef0d7387" title=" " alt="" coords="5,703,272,743"/>
+<area shape="poly" id="edge16_Node000015_Node000016" title=" " alt="" coords="327,725,272,725,272,720,327,720"/>
 </map>

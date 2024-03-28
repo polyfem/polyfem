@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['l_0',['L',['../classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#add36149bb9e25d11991306e000dbbe39',1,'polyfem::solver::BoundarySmoothingForm']]],
+  ['l_0',['l',['../classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#af266275737562749d48c06de25c4afe0',1,'polyfem::solver::VariableToSimulationGroup::L'],['../classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#add36149bb9e25d11991306e000dbbe39',1,'polyfem::solver::BoundarySmoothingForm::L']]],
   ['l2_5ferr_1',['l2_err',['../classpolyfem_1_1io_1_1_out_stats_data.html#a659f5cbff15c4381abbdb3c353b6dc26',1,'polyfem::io::OutStatsData']]],
   ['lagged_5fstiffness_5fmatrix_5f_2',['lagged_stiffness_matrix_',['../classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#ad73bdbed06b8c9fa49695b2910046e0b',1,'polyfem::solver::RayleighDampingForm']]],
   ['lagr_5fform_3',['lagr_form',['../classpolyfem_1_1solver_1_1_a_l_solver.html#a746ccb97b8cbf6caa89d5489da6b5b9c',1,'polyfem::solver::ALSolver']]],

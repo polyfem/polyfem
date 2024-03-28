@@ -1,10 +1,10 @@
 var classpolyfem_1_1solver_1_1_barycenter_target_form =
 [
-    [ "BarycenterTargetForm", "classpolyfem_1_1solver_1_1_barycenter_target_form.html#a949a6ef7d35101ac4396aa6a98536217", null ],
-    [ "compute_adjoint_rhs_unweighted_step", "classpolyfem_1_1solver_1_1_barycenter_target_form.html#a3a149e6b557410f863703169916d0537", null ],
-    [ "compute_partial_gradient_unweighted_step", "classpolyfem_1_1solver_1_1_barycenter_target_form.html#a7d425b07831f20429c34a769dc02b034", null ],
+    [ "BarycenterTargetForm", "classpolyfem_1_1solver_1_1_barycenter_target_form.html#af05cdec3c603440ff705a2dc61c77c19", null ],
+    [ "compute_adjoint_rhs_step", "classpolyfem_1_1solver_1_1_barycenter_target_form.html#a7130e8103eb502b35b9e2b0378f4d44b", null ],
+    [ "compute_partial_gradient_step", "classpolyfem_1_1solver_1_1_barycenter_target_form.html#a917dfe80b06adffcf5028e65e2ed971e", null ],
     [ "value_unweighted_step", "classpolyfem_1_1solver_1_1_barycenter_target_form.html#a9ed522ae2aaf32b82c5b056d1810dc6f", null ],
-    [ "center1", "classpolyfem_1_1solver_1_1_barycenter_target_form.html#ad81ce26c9b467a3d044fab8b156b6c28", null ],
-    [ "center2", "classpolyfem_1_1solver_1_1_barycenter_target_form.html#adbf65afed193937635ab5fc5ce2ac19c", null ],
+    [ "center1", "classpolyfem_1_1solver_1_1_barycenter_target_form.html#a3a5809cb40b8880d6709cdb487466644", null ],
+    [ "center2", "classpolyfem_1_1solver_1_1_barycenter_target_form.html#a4998bbfec9bb3e3ba09a10064c2066a7", null ],
     [ "dim", "classpolyfem_1_1solver_1_1_barycenter_target_form.html#a9ac86c83013541ca7a1bb3423dcaa328", null ]
 ];

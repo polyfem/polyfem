@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['rowvectornd_0',['RowVectorNd',['../namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321',1,'polyfem']]]
+  ['quadraturefunction_0',['QuadratureFunction',['../classpolyfem_1_1basis_1_1_element_bases.html#aae4e7d17943ce89d3f714e3bfb23cbbf',1,'polyfem::basis::ElementBases']]],
+  ['quadraturevector_1',['QuadratureVector',['../namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f',1,'polyfem']]]
 ];
