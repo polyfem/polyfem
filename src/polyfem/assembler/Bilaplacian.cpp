@@ -2,8 +2,7 @@
 
 namespace polyfem::assembler
 {
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-	BilaplacianMixed::assemble(const MixedAssemblerData &data) const
+	VectorNd BilaplacianMixed::assemble(const MixedAssemblerData &data) const
 	{
 		const Eigen::MatrixXd &gradi = data.psi_vals.basis_values[data.i].grad_t_m;
 		const Eigen::MatrixXd &gradj = data.phi_vals.basis_values[data.j].grad_t_m;
@@ -17,8 +16,7 @@ namespace polyfem::assembler
 		return Eigen::Matrix<double, 1, 1>::Constant(res);
 	}
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
-	BilaplacianAux::assemble(const LinearAssemblerData &data) const
+	FlatMatrixNd BilaplacianAux::assemble(const LinearAssemblerData &data) const
 	{
 		const double tmp = (data.vals.basis_values[data.i].val.array() * data.vals.basis_values[data.j].val.array() * data.da.array()).sum();
 		return Eigen::Matrix<double, 1, 1>::Constant(tmp);

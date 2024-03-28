@@ -136,11 +136,7 @@ namespace polyfem::solver
 
 		if (rhs_assembler != nullptr)
 		{
-			// assembler::Mass mass_mat_assembler;
-			// mass_mat_assembler.set_size(dim);
 			StiffnessMatrix mass_tmp = mass;
-			// mass_mat_assembler.assemble(dim == 3, n_bases, bases, geom_bases, mass_ass_vals_cache, mass_tmp, true);
-			// assert(mass_tmp.rows() == mass.rows() && mass_tmp.cols() == mass.cols());
 
 			al_lagr_form = std::make_shared<BCLagrangianForm>(
 				ndof, boundary_nodes, local_boundary, local_neumann_boundary,

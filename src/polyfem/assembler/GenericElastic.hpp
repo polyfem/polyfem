@@ -7,7 +7,7 @@
 namespace polyfem::assembler
 {
 	template <typename T>
-	using DefGradMatrix = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>;
+	using DefGradMatrix = MatrixN<T>;
 
 	template <typename Derived>
 	class GenericElastic : public NLAssembler, public ElasticityAssembler
@@ -59,23 +59,25 @@ namespace polyfem::assembler
 		T compute_energy_aux(const NonLinearAssemblerData &data) const
 		{
 			typedef Eigen::Matrix<T, Eigen::Dynamic, 1> AutoDiffVect;
-			typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
+			typedef MatrixN<T> AutoDiffGradMat;
 
 			AutoDiffVect local_disp;
-			get_local_disp(data, size(), local_disp);
+			get_local_disp(data, codomain_size(), local_disp);
 
-			AutoDiffGradMat def_grad(size(), size());
+			AutoDiffGradMat def_grad(codomain_size(), codomain_size());
 
 			T energy = T(0.0);
 
 			const int n_pts = data.da.size();
 			for (long p = 0; p < n_pts; ++p)
 			{
-				compute_disp_grad_at_quad(data, local_disp, p, size(), def_grad);
+				compute_disp_grad_at_quad(data, local_disp, p, codomain_size(), def_grad);
 
 				// Id + grad d
-				for (int d = 0; d < size(); ++d)
+				for (int d = 0; d < codomain_size(); ++d)
+				{
 					def_grad(d, d) += T(1);
+				}
 
 				const T val = derived().elastic_energy(data.vals.val.row(p), data.t, data.vals.element_id, def_grad);
 

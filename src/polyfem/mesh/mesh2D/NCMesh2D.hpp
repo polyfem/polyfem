@@ -163,6 +163,7 @@ namespace polyfem
 			NCMesh2D(const NCMesh2D &) = default;
 			NCMesh2D &operator=(const NCMesh2D &) = default;
 
+			int dimension() const override { return 2; }
 			bool is_conforming() const override { return false; }
 
 			int n_faces() const override { return n_elements; }
@@ -315,7 +316,6 @@ namespace polyfem
 			};
 
 		protected:
-			bool load(const std::string &path) override;
 			bool load(const GEO::Mesh &mesh) override;
 
 			// index map from vertices to valid ones, and its inverse

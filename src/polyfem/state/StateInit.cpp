@@ -140,6 +140,7 @@ namespace polyfem
 	{
 		json args_in = p_args_in; // mutable copy
 
+		logger().info("Applying common parameters");
 		apply_common_params(args_in);
 
 		// CHECK validity json
@@ -191,6 +192,7 @@ namespace polyfem
 			}
 		}
 
+		logger().info("Verifying input JSON");
 		const bool valid_input = jse.verify_json(args_in, rules);
 
 		if (!valid_input)
@@ -200,6 +202,7 @@ namespace polyfem
 		}
 		// end of check
 
+		logger().info("Injecting defaults into input JSON");
 		this->args = jse.inject_defaults(args_in, rules);
 		units.init(this->args["units"]);
 
@@ -314,7 +317,7 @@ namespace polyfem
 				if (!args["contact"]["use_convergent_formulation"])
 				{
 					args["contact"]["use_convergent_formulation"] = true;
-					logger().info("Use convergent formulation for differentiable contact...");
+					logger().info("Use convergent formulation for differentiable contact");
 				}
 				if (args["/solver/contact/barrier_stiffness"_json_pointer].is_string())
 				{
@@ -422,9 +425,11 @@ namespace polyfem
 
 	void State::set_materials(std::vector<std::shared_ptr<assembler::Assembler>> &assemblers) const
 	{
-		const int size = (assembler->is_tensor() || assembler->is_fluid()) ? mesh->dimension() : 1;
+		const int codomain_size = (assembler->is_tensor() || assembler->is_fluid()) ? mesh->dimension() : 1;
 		for (auto &a : assemblers)
-			a->set_size(size);
+		{
+			a->set_sizes(mesh->is_volume() ? 3 : 2, codomain_size);
+		}
 
 		if (!utils::is_param_valid(args, "materials"))
 			return;
@@ -509,8 +514,8 @@ namespace polyfem
 
 	void State::set_materials(assembler::Assembler &assembler) const
 	{
-		const int size = (this->assembler->is_tensor() || this->assembler->is_fluid()) ? this->mesh->dimension() : 1;
-		assembler.set_size(size);
+		const int codomain_size = (this->assembler->is_tensor() || this->assembler->is_fluid()) ? this->mesh->dimension() : 1;
+		assembler.set_sizes(mesh->is_volume() ? 3 : 2, codomain_size);
 
 		if (!utils::is_param_valid(args, "materials"))
 			return;

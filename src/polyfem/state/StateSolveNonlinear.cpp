@@ -264,6 +264,13 @@ namespace polyfem
 			*solve_data.rhs_assembler, t, forms);
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
+		if (args["output"]["advanced"]["save_nl_solve_sequence"])
+		{
+			solve_data.nl_problem->post_step_callback = [&](const polysolve::nonlinear::PostStepData &data) {
+				logger().trace("Saving nonlinear solver iteration {}", data.iter_num);
+				save_subsolve(data.iter_num, t, data.x, /*pressure=*/Eigen::MatrixXd());
+			};
+		}
 
 		// --------------------------------------------------------------------
 

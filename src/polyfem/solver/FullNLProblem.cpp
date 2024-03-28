@@ -129,5 +129,8 @@ namespace polyfem::solver
 	{
 		for (auto &f : forms_)
 			f->post_step(data);
+
+		if (post_step_callback)
+			post_step_callback(data);
 	}
 } // namespace polyfem::solver

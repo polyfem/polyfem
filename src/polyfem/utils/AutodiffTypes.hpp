@@ -7,13 +7,13 @@
 namespace polyfem
 {
 
-	typedef DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>> AutodiffScalarGrad;
-	typedef DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>> AutodiffScalarHessian;
+	typedef DScalar1<double, VectorNd> AutodiffScalarGrad;
+	typedef DScalar2<double, VectorNd, MatrixNd> AutodiffScalarHessian;
 
-	typedef Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> AutodiffGradPt;
-	typedef Eigen::Matrix<AutodiffScalarHessian, Eigen::Dynamic, 1, 0, 3, 1> AutodiffHessianPt;
+	typedef VectorN<AutodiffScalarGrad> AutodiffGradPt;
+	typedef VectorN<AutodiffScalarHessian> AutodiffHessianPt;
 
-	// typedef DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>> 					AutodiffPt;
+	// typedef DScalar1<double, VectorNd> AutodiffPt;
 
 	template <class T>
 	class AutoDiffAllocator

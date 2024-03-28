@@ -5,21 +5,17 @@
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <Eigen/Dense>
 
-namespace polyfem
+namespace polyfem::autogen
 {
-	namespace autogen
-	{
-		void linear_elasticity_2d_function(const AutodiffHessianPt &pt, const double lambda, const double mu, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> &res);
-		void linear_elasticity_3d_function(const AutodiffHessianPt &pt, const double lambda, const double mu, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> &res);
+	void linear_elasticity_2d_function(const AutodiffHessianPt &pt, const double lambda, const double mu, VectorNd &res);
+	void linear_elasticity_3d_function(const AutodiffHessianPt &pt, const double lambda, const double mu, VectorNd &res);
 
-		void hooke_2d_function(const AutodiffHessianPt &pt, const assembler::ElasticityTensor &C, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> &res);
-		void hooke_3d_function(const AutodiffHessianPt &pt, const assembler::ElasticityTensor &C, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> &res);
+	void hooke_2d_function(const AutodiffHessianPt &pt, const assembler::ElasticityTensor &C, VectorNd &res);
+	void hooke_3d_function(const AutodiffHessianPt &pt, const assembler::ElasticityTensor &C, VectorNd &res);
 
-		void saint_venant_2d_function(const AutodiffHessianPt &pt, const assembler::ElasticityTensor &C, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> &res);
-		void saint_venant_3d_function(const AutodiffHessianPt &pt, const assembler::ElasticityTensor &C, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> &res);
+	void saint_venant_2d_function(const AutodiffHessianPt &pt, const assembler::ElasticityTensor &C, VectorNd &res);
+	void saint_venant_3d_function(const AutodiffHessianPt &pt, const assembler::ElasticityTensor &C, VectorNd &res);
 
-		void neo_hookean_2d_function(const AutodiffHessianPt &pt, const double lambda, const double mu, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> &res);
-		void neo_hookean_3d_function(const AutodiffHessianPt &pt, const double lambda, const double mu, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> &res);
-
-	} // namespace autogen
-} // namespace polyfem
+	void neo_hookean_2d_function(const AutodiffHessianPt &pt, const double lambda, const double mu, VectorNd &res);
+	void neo_hookean_3d_function(const AutodiffHessianPt &pt, const double lambda, const double mu, VectorNd &res);
+} // namespace polyfem::autogen

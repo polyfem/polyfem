@@ -505,6 +505,7 @@ namespace polyfem::io
 
 				for (int n = 0; n < vals.jac_it.size(); ++n)
 				{
+					assert(vals.jac_it[n].rows() == vals.jac_it[n].cols());
 					trafo = vals.jac_it[n].inverse();
 
 					if (problem_dim == 2 || problem_dim == 3)

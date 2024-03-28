@@ -17,8 +17,7 @@ namespace polyfem::assembler
 
 		VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;
 		// res is R^{dim²}
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
-		assemble(const LinearAssemblerData &data) const override;
+		FlatMatrixNd assemble(const LinearAssemblerData &data) const override;
 
 		void add_multimaterial(const int index, const json &params, const Units &units) override;
 
@@ -40,10 +39,9 @@ namespace polyfem::assembler
 		std::string name() const override { return "StokesMixed"; }
 
 		// res is R^{dim}
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-		assemble(const MixedAssemblerData &data) const override;
+		VectorNd assemble(const MixedAssemblerData &data) const override;
 
-		inline int rows() const override { return size(); }
+		inline int rows() const override { return codomain_size(); }
 		inline int cols() const override { return 1; }
 	};
 
@@ -57,15 +55,18 @@ namespace polyfem::assembler
 		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
 
 		// res is R^{dim²}
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
-		assemble(const LinearAssemblerData &data) const override
+		FlatMatrixNd assemble(const LinearAssemblerData &data) const override
 		{
 			return Eigen::Matrix<double, 1, 1>::Zero(1, 1);
 		}
 
 		bool is_fluid() const override { return true; }
 
-		void set_size(const int) override { size_ = 1; }
+		void set_sizes(const unsigned domain_size, const unsigned) override
+		{
+			domain_size_ = domain_size;
+			codomain_size_ = 1;
+		}
 	};
 
 	class OperatorSplitting : public StokesVelocity

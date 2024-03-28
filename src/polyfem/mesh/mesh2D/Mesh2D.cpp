@@ -20,7 +20,7 @@ namespace polyfem
 	{
 		void Mesh2D::get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const
 		{
-			p0.resize(n_edges(), 2);
+			p0.resize(n_edges(), dimension());
 			p1.resize(p0.rows(), p0.cols());
 
 			for (GEO::index_t e = 0; e < n_edges(); ++e)
@@ -44,8 +44,8 @@ namespace polyfem
 				}
 			}
 
-			p0.resize(count, 2);
-			p1.resize(count, 2);
+			p0.resize(count, dimension());
+			p1.resize(count, dimension());
 
 			count = 0;
 
@@ -68,7 +68,7 @@ namespace polyfem
 
 		RowVectorNd Mesh2D::face_barycenter(const int face_index) const
 		{
-			RowVectorNd bary(2);
+			RowVectorNd bary(dimension());
 			bary.setZero();
 
 			const int n_vertices = n_face_vertices(face_index);
@@ -125,14 +125,18 @@ namespace polyfem
 			for (int i = 0; i < n_elements(); ++i)
 			{
 				auto &box = boxes[i];
-				box[0] << std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), 0;
-				box[1] << std::numeric_limits<double>::min(), std::numeric_limits<double>::min(), 0;
+				box[0].setConstant(std::numeric_limits<double>::max());
+				box[1].setConstant(std::numeric_limits<double>::min());
+				if (dimension() == 2)
+				{
+					box[0].z() = box[1].z() = 0;
+				}
 
 				auto index = get_index_from_face(i);
 
 				for (int j = 0; j < n_face_vertices(i); ++j)
 				{
-					for (int d = 0; d < 2; ++d)
+					for (int d = 0; d < dimension(); ++d)
 					{
 						box[0][d] = std::min(box[0][d], point(index.vertex)[d]);
 						box[1][d] = std::max(box[1][d], point(index.vertex)[d]);

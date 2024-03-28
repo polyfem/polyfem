@@ -145,7 +145,7 @@ namespace polyfem
 			/// @brief utily for dimension
 			///
 			/// @return int 2 or 3
-			int dimension() const { return (is_volume() ? 3 : 2); }
+			virtual int dimension() const = 0;
 			///
 			/// @brief if the mesh is conforming
 			///
@@ -257,20 +257,19 @@ namespace polyfem
 
 		public:
 			/// @brief attach high order nodes
-			///
 			/// @param[in] V nodes
 			/// @param[in] nodes list of nodes per element
 			virtual void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) = 0;
+
 			/// @brief order of each element
-			///
 			/// @return matrix containing order
 			inline const Eigen::MatrixXi &orders() const { return orders_; }
+
 			/// @brief check if curved mesh has rational polynomials elements
-			///
 			/// @return if mesh is rational
 			inline bool is_rational() const { return is_rational_; }
+
 			/// @brief Set the is rational object
-			///
 			/// @param[in] in_is_rational flag to enable/disable rational polynomials
 			inline void set_is_rational(const bool in_is_rational) { is_rational_ = in_is_rational; }
 
@@ -647,7 +646,11 @@ namespace polyfem
 			///
 			/// @param[in] path file location
 			/// @return if success
-			virtual bool load(const std::string &path) = 0;
+			virtual bool load(const std::string &path)
+			{
+				assert(false);
+				return false;
+			}
 			/// @brief loads a mesh from a geo mesh
 			///
 			/// @param[in] M geo mesh

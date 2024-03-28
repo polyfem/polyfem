@@ -36,9 +36,7 @@ bool polyfem::mesh::is_planar(const GEO::Mesh &M, const double tol)
 	assert(M.vertices.dimension() == 3);
 	GEO::vec3 min_corner, max_corner;
 	GEO::get_bbox(M, &min_corner[0], &max_corner[0]);
-	const double diff = (max_corner[2] - min_corner[2]);
-
-	return fabs(diff) < tol;
+	return std::abs(max_corner[2] - min_corner[2]) < tol;
 }
 
 GEO::vec3 polyfem::mesh::mesh_vertex(const GEO::Mesh &M, GEO::index_t v)
@@ -285,15 +283,13 @@ namespace
 		using namespace GEO;
 		double result = 0;
 		index_t v0 = M.facet_corners.vertex(M.facets.corners_begin(f));
-		const vec3 &p0 = Geom::mesh_vertex(M, v0);
-		for (index_t c =
-				 M.facets.corners_begin(f) + 1;
-			 c + 1 < M.facets.corners_end(f); c++)
+		const vec3 p0 = polyfem::mesh::mesh_vertex(M, v0);
+		for (index_t c = M.facets.corners_begin(f) + 1; c + 1 < M.facets.corners_end(f); c++)
 		{
 			index_t v1 = M.facet_corners.vertex(c);
-			const vec3 &p1 = polyfem::mesh::mesh_vertex(M, v1);
+			const vec3 p1 = polyfem::mesh::mesh_vertex(M, v1);
 			index_t v2 = M.facet_corners.vertex(c + 1);
-			const vec3 &p2 = polyfem::mesh::mesh_vertex(M, v2);
+			const vec3 p2 = polyfem::mesh::mesh_vertex(M, v2);
 			result += Geom::triangle_signed_area(vec2(&p0[0]), vec2(&p1[0]), vec2(&p2[0]));
 		}
 		return result;

@@ -164,17 +164,14 @@ namespace polyfem::assembler
 		StiffnessMatrix &stiffness,
 		const bool is_mass) const
 	{
-		assert(size() > 0);
+		assert(domain_size() > 0 && codomain_size() > 0);
 
 		const long int max_triplets_size = long(1e7);
-		const long int buffer_size = std::min(long(max_triplets_size), long(n_basis) * size());
-		// #ifdef POLYFEM_WITH_TBB
-		// 		buffer_size /= tbb::task_scheduler_init::default_num_threads();
-		// #endif
-		// logger().trace("buffer_size {}", buffer_size);
+		const long int buffer_size = std::min(long(max_triplets_size), long(n_basis) * codomain_size());
+
 		try
 		{
-			stiffness.resize(n_basis * size(), n_basis * size());
+			stiffness.resize(n_basis * codomain_size(), n_basis * codomain_size());
 			stiffness.setZero();
 
 			auto storage = create_thread_storage(LocalThreadMatStorage(buffer_size, stiffness.rows(), stiffness.cols()));
@@ -193,8 +190,6 @@ namespace polyfem::assembler
 				for (int e = start; e < end; ++e)
 				{
 					ElementAssemblyValues &vals = local_storage.vals;
-					// igl::Timer timer; timer.start();
-					// vals.compute(e, is_volume, bases[e], gbases[e]);
 
 					// compute geometric mapping
 					// evaluate and store basis functions/their gradients at quadrature points
@@ -208,38 +203,33 @@ namespace polyfem::assembler
 
 					for (int i = 0; i < n_loc_bases; ++i)
 					{
-						// const AssemblyValues &values_i = vals.basis_values[i];
-						// const Eigen::MatrixXd &gradi = values_i.grad_t_m;
 						const auto &global_i = vals.basis_values[i].global;
 
 						// loop over other bases up to the current one, taking advantage of symmetry
 						for (int j = 0; j <= i; ++j)
 						{
-							// const AssemblyValues &values_j = vals.basis_values[j];
-							// const Eigen::MatrixXd &gradj = values_j.grad_t_m;
 							const auto &global_j = vals.basis_values[j].global;
 
 							// compute local entry in stiffness matrix
 							const auto stiffness_val = assemble(LinearAssemblerData(vals, t, i, j, local_storage.da));
-							assert(stiffness_val.size() == size() * size());
+							assert(stiffness_val.size() == codomain_size() * codomain_size());
 
-							// igl::Timer t1; t1.start();
 							// loop over dimensions of the problem
-							for (int n = 0; n < size(); ++n)
+							for (int n = 0; n < codomain_size(); ++n)
 							{
-								for (int m = 0; m < size(); ++m)
+								for (int m = 0; m < codomain_size(); ++m)
 								{
-									const double local_value = stiffness_val(n * size() + m);
+									const double local_value = stiffness_val(n * codomain_size() + m);
 
 									// loop over the global nodes corresponding to local element (useful for non-conforming cases)
 									for (size_t ii = 0; ii < global_i.size(); ++ii)
 									{
-										const auto gi = global_i[ii].index * size() + m;
+										const auto gi = global_i[ii].index * codomain_size() + m;
 										const auto wi = global_i[ii].val;
 
 										for (size_t jj = 0; jj < global_j.size(); ++jj)
 										{
-											const auto gj = global_j[jj].index * size() + n;
+											const auto gj = global_j[jj].index * codomain_size() + n;
 											const auto wj = global_j[jj].val;
 
 											// add local value to the global matrix (weighted by corresponding nodes)
@@ -258,14 +248,8 @@ namespace polyfem::assembler
 									}
 								}
 							}
-
-							// t1.stop();
-							// if (!vals.has_parameterization) { std::cout << "-- t1: " << t1.getElapsedTime() << std::endl; }
 						}
 					}
-
-					// timer.stop();
-					// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
 				}
 			});
 
@@ -378,9 +362,6 @@ namespace polyfem::assembler
 		{
 			log_and_throw_error("bad alloc {}", ba.what());
 		}
-
-		// stiffness.resize(n_basis*size(), n_basis*size());
-		// stiffness.setFromTriplets(entries.begin(), entries.end());
 	}
 
 	MixedAssembler::MixedAssembler()
@@ -399,7 +380,7 @@ namespace polyfem::assembler
 		const double t,
 		StiffnessMatrix &stiffness) const
 	{
-		assert(size() > 0);
+		assert(domain_size() > 0 && codomain_size() > 0);
 		assert(phi_bases.size() == psi_bases.size());
 
 		const int max_triplets_size = int(1e7);
@@ -487,9 +468,6 @@ namespace polyfem::assembler
 		stiffness.makeCompressed();
 		timer.stop();
 		logger().trace("done merge assembly {}s...", timer.getElapsedTime());
-
-		// stiffness.resize(n_basis*size(), n_basis*size());
-		// stiffness.setFromTriplets(entries.begin(), entries.end());
 	}
 
 	double NLAssembler::assemble_energy(
@@ -583,7 +561,7 @@ namespace polyfem::assembler
 		const Eigen::MatrixXd &displacement_prev,
 		Eigen::MatrixXd &rhs) const
 	{
-		rhs.resize(n_basis * size(), 1);
+		rhs.resize(n_basis * codomain_size(), 1);
 		rhs.setZero();
 
 		auto storage = create_thread_storage(LocalThreadVecStorage(rhs.size()));
@@ -595,10 +573,7 @@ namespace polyfem::assembler
 
 			for (int e = start; e < end; ++e)
 			{
-				// igl::Timer timer; timer.start();
-
 				ElementAssemblyValues &vals = local_storage.vals;
-				// vals.compute(e, is_volume, bases[e], gbases[e]);
 				cache.compute(e, is_volume, bases[e], gbases[e], vals);
 
 				const Quadrature &quadrature = vals.quadrature;
@@ -608,32 +583,25 @@ namespace polyfem::assembler
 				const int n_loc_bases = int(vals.basis_values.size());
 
 				const auto val = assemble_gradient(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, local_storage.da));
-				assert(val.size() == n_loc_bases * size());
+				assert(val.size() == n_loc_bases * codomain_size());
 
 				for (int j = 0; j < n_loc_bases; ++j)
 				{
 					const auto &global_j = vals.basis_values[j].global;
 
-					// igl::Timer t1; t1.start();
-					for (int m = 0; m < size(); ++m)
+					for (int m = 0; m < codomain_size(); ++m)
 					{
-						const double local_value = val(j * size() + m);
+						const double local_value = val(j * codomain_size() + m);
 
 						for (size_t jj = 0; jj < global_j.size(); ++jj)
 						{
-							const auto gj = global_j[jj].index * size() + m;
+							const auto gj = global_j[jj].index * codomain_size() + m;
 							const auto wj = global_j[jj].val;
 
 							local_storage.vec(gj) += local_value * wj;
 						}
 					}
-
-					// t1.stop();
-					// if (!vals.has_parameterization) { std::cout << "-- t1: " << t1.getElapsedTime() << std::endl; }
 				}
-
-				// timer.stop();
-				// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
 			}
 		});
 
@@ -657,13 +625,9 @@ namespace polyfem::assembler
 		StiffnessMatrix &hess) const
 	{
 		const int max_triplets_size = int(1e7);
-		const int buffer_size = std::min(long(max_triplets_size), long(n_basis) * size());
-		// std::cout<<"buffer_size "<<buffer_size<<std::endl;
+		const int buffer_size = std::min(long(max_triplets_size), long(n_basis) * codomain_size());
 
-		// hess.resize(n_basis * size(), n_basis * size());
-		// hess.setZero();
-
-		mat_cache.init(n_basis * size());
+		mat_cache.init(n_basis * codomain_size());
 		mat_cache.set_zero();
 
 		auto storage = create_thread_storage(LocalThreadMatStorage(buffer_size, mat_cache));
@@ -687,57 +651,37 @@ namespace polyfem::assembler
 				const int n_loc_bases = int(vals.basis_values.size());
 
 				auto stiffness_val = assemble_hessian(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, local_storage.da));
-				assert(stiffness_val.rows() == n_loc_bases * size());
-				assert(stiffness_val.cols() == n_loc_bases * size());
+				assert(stiffness_val.rows() == n_loc_bases * codomain_size());
+				assert(stiffness_val.cols() == n_loc_bases * codomain_size());
 
 				if (project_to_psd)
 					stiffness_val = ipc::project_to_psd(stiffness_val);
-
-				// bool has_nan = false;
-				// for(int k = 0; k < stiffness_val.size(); ++k)
-				// {
-				// 	if(std::isnan(stiffness_val(k)))
-				// 	{
-				// 		has_nan = true;
-				// 		break;
-				// 	}
-				// }
-
-				// if(has_nan)
-				// {
-				// 	local_storage.entries.emplace_back(0, 0, std::nan(""));
-				// 	break;
-				// }
 
 				for (int i = 0; i < n_loc_bases; ++i)
 				{
 					const auto &global_i = vals.basis_values[i].global;
 
 					for (int j = 0; j < n_loc_bases; ++j)
-					// for(int j = 0; j <= i; ++j)
 					{
 						const auto &global_j = vals.basis_values[j].global;
 
-						for (int n = 0; n < size(); ++n)
+						for (int n = 0; n < codomain_size(); ++n)
 						{
-							for (int m = 0; m < size(); ++m)
+							for (int m = 0; m < codomain_size(); ++m)
 							{
-								const double local_value = stiffness_val(i * size() + m, j * size() + n);
+								const double local_value = stiffness_val(i * codomain_size() + m, j * codomain_size() + n);
 
 								for (size_t ii = 0; ii < global_i.size(); ++ii)
 								{
-									const auto gi = global_i[ii].index * size() + m;
+									const auto gi = global_i[ii].index * codomain_size() + m;
 									const auto wi = global_i[ii].val;
 
 									for (size_t jj = 0; jj < global_j.size(); ++jj)
 									{
-										const auto gj = global_j[jj].index * size() + n;
+										const auto gj = global_j[jj].index * codomain_size() + n;
 										const auto wj = global_j[jj].val;
 
 										local_storage.cache->add_value(e, gi, gj, local_value * wi * wj);
-										// if (j < i) {
-										// 	local_storage.entries.emplace_back(gj, gi, local_value * wj * wi);
-										// }
 
 										if (local_storage.cache->entries_size() >= max_triplets_size)
 										{

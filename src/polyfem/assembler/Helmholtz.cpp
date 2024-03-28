@@ -8,8 +8,7 @@ namespace polyfem::assembler
 	{
 	}
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
-	Helmholtz::assemble(const LinearAssemblerData &data) const
+	FlatMatrixNd Helmholtz::assemble(const LinearAssemblerData &data) const
 	{
 		const Eigen::MatrixXd &gradi = data.vals.basis_values[data.i].grad_t_m;
 		const Eigen::MatrixXd &gradj = data.vals.basis_values[data.j].grad_t_m;
@@ -33,8 +32,8 @@ namespace polyfem::assembler
 	{
 		Eigen::Matrix<double, 1, 1> result;
 		assert(pt.size() == 1);
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> val(size());
-		for (int d = 0; d < size(); ++d)
+		VectorNd val(codomain_size());
+		for (int d = 0; d < codomain_size(); ++d)
 			val(d) = 0;
 
 		const double tmp = k_(val, 0, 0);
@@ -51,7 +50,7 @@ namespace polyfem::assembler
 	{
 		Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> res(1);
 
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> val(size());
+		VectorNd val(codomain_size());
 		val.setZero();
 		const double tmp = k_(val, 0, 0);
 

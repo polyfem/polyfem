@@ -14,7 +14,7 @@ namespace polyfem::assembler
 	public:
 		using LinearAssembler::assemble;
 		// res is R^{dim²}
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
+		FlatMatrixNd
 		assemble(const LinearAssemblerData &data) const override;
 
 		void add_multimaterial(const int index, const json &params, const Units &units) override;
@@ -41,10 +41,10 @@ namespace polyfem::assembler
 		std::string name() const override { return "IncompressibleLinearElasticityMixed"; }
 
 		// res is R^{dim}
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
+		VectorNd
 		assemble(const MixedAssemblerData &data) const override;
 
-		inline int rows() const override { return size_; }
+		inline int rows() const override { return codomain_size(); }
 		inline int cols() const override { return 1; }
 	};
 
@@ -55,7 +55,7 @@ namespace polyfem::assembler
 		using LinearAssembler::assemble;
 
 		// res is R^{1}
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
+		FlatMatrixNd
 		assemble(const LinearAssemblerData &data) const override;
 
 		void add_multimaterial(const int index, const json &params, const Units &units) override;
@@ -64,14 +64,15 @@ namespace polyfem::assembler
 		std::string name() const override { return "IncompressibleLinearElasticityPressure"; }
 		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
 
-		void set_size(const int size) override
+		void set_sizes(const unsigned domain_size, const unsigned codomain_size) override
 		{
-			disp_size_ = size;
-			size_ = 1;
+			domain_size_ = domain_size;
+			disp_size_ = codomain_size; // displacement
+			codomain_size_ = 1;         // pressure
 		}
 
 	private:
 		LameParameters params_;
-		int disp_size_ = 0;
+		unsigned disp_size_ = 0;
 	};
 } // namespace polyfem::assembler

@@ -18,7 +18,7 @@ using namespace polyfem::utils;
 
 TEST_CASE("determinant2", "[matrix]")
 {
-	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat(2, 2);
+	MatrixNd mat(2, 2);
 	mat.setRandom();
 
 	REQUIRE(determinant(mat) == Catch::Approx(mat.determinant()).margin(1e-12));
@@ -26,7 +26,7 @@ TEST_CASE("determinant2", "[matrix]")
 
 TEST_CASE("determinant3", "[matrix]")
 {
-	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> mat(3, 3);
+	MatrixNd mat(3, 3);
 	mat.setRandom();
 
 	REQUIRE(determinant(mat) == Catch::Approx(mat.determinant()).margin(1e-12));
@@ -37,7 +37,7 @@ TEST_CASE("eigs2id", "[matrix]")
 	Eigen::Matrix<double, 2, 2> mat;
 	mat.setIdentity();
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> actual_eigs(2);
+	VectorNd actual_eigs(2);
 	autogen::eigs_2d<double>(mat, actual_eigs);
 
 	const auto e0 = Catch::Approx(1).margin(1e-8);
@@ -53,7 +53,7 @@ TEST_CASE("eigs2", "[matrix]")
 	mat << 0.679900336682452, 0.853956838129916,
 		0.853956838129916, 1.654714487848889;
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> actual_eigs(2);
+	VectorNd actual_eigs(2);
 	autogen::eigs_2d<double>(mat, actual_eigs);
 
 	const auto e0 = Catch::Approx(0.184043491073894).margin(1e-8);
@@ -66,7 +66,7 @@ TEST_CASE("eigs2", "[matrix]")
 TEST_CASE("eigs2autodiff", "[matrix]")
 {
 	typedef DScalar2<double, Eigen::Matrix<double, 4, 1>, Eigen::Matrix<double, 4, 4>> T;
-	typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
+	typedef MatrixN<T> AutoDiffGradMat;
 
 	Eigen::Matrix<double, 2, 2> tmp;
 	tmp << 0.679900336682452, 0.853956838129916,
@@ -77,7 +77,7 @@ TEST_CASE("eigs2autodiff", "[matrix]")
 	for (int i = 0; i < 4; ++i)
 		mat(i) = T(i, tmp(i));
 
-	Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> actual_eigs(2);
+	VectorN<T> actual_eigs(2);
 	autogen::eigs_2d<T>(mat, actual_eigs);
 
 	const auto e0 = Catch::Approx(0.184043491073894).margin(1e-8);
@@ -92,7 +92,7 @@ TEST_CASE("eigs3id", "[matrix]")
 	Eigen::Matrix<double, 3, 3> mat;
 	mat.setIdentity();
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> actual_eigs(3);
+	VectorNd actual_eigs(3);
 	autogen::eigs_3d<double>(mat, actual_eigs);
 
 	const auto e0 = Catch::Approx(1).margin(1e-15);
@@ -111,7 +111,7 @@ TEST_CASE("eigs3", "[matrix]")
 		0.738301489180688, 1.868383818516662, 1.880071527849840,
 		0.854652664143603, 1.880071527849840, 1.924739710079838;
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> actual_eigs(3);
+	VectorNd actual_eigs(3);
 	autogen::eigs_3d<double>(mat, actual_eigs);
 
 	const auto e0 = Catch::Approx(4.147907219689489).margin(1e-8);
@@ -126,7 +126,7 @@ TEST_CASE("eigs3", "[matrix]")
 TEST_CASE("eigs3autodiff", "[matrix]")
 {
 	typedef DScalar2<double, Eigen::Matrix<double, 9, 1>, Eigen::Matrix<double, 9, 9>> T;
-	typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
+	typedef MatrixN<T> AutoDiffGradMat;
 	Eigen::Matrix<double, 3, 3> tmp;
 	tmp << 0.723799495850613, 0.738301489180688, 0.854652664143603,
 		0.738301489180688, 1.868383818516662, 1.880071527849840,
@@ -137,7 +137,7 @@ TEST_CASE("eigs3autodiff", "[matrix]")
 	for (int i = 0; i < 9; ++i)
 		mat(i) = T(i, tmp(i));
 
-	Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> actual_eigs(3);
+	VectorN<T> actual_eigs(3);
 	autogen::eigs_3d<T>(mat, actual_eigs);
 
 	const auto e0 = Catch::Approx(4.147907219689489).margin(1e-8);
@@ -165,7 +165,7 @@ TEST_CASE("eigs3autodiff", "[matrix]")
 TEST_CASE("eigs3idautodiff", "[matrix]")
 {
 	typedef DScalar2<double, Eigen::Matrix<double, 9, 1>, Eigen::Matrix<double, 9, 9>> T;
-	typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
+	typedef MatrixN<T> AutoDiffGradMat;
 	Eigen::Matrix<double, 3, 3> tmp;
 	tmp.setIdentity();
 
@@ -174,7 +174,7 @@ TEST_CASE("eigs3idautodiff", "[matrix]")
 	for (int i = 0; i < 9; ++i)
 		mat(i) = T(i, tmp(i));
 
-	Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> actual_eigs(3);
+	VectorN<T> actual_eigs(3);
 	autogen::eigs_3d<T>(mat, actual_eigs);
 
 	const auto e0 = Catch::Approx(1).margin(1e-15);

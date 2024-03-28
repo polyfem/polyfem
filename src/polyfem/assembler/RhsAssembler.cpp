@@ -43,7 +43,7 @@ namespace polyfem
 			  mesh_(mesh),
 			  obstacle_(obstacle),
 			  n_basis_(n_basis),
-			  size_(size),
+			  codomain_size_(size),
 			  bases_(bases),
 			  gbases_(gbases),
 			  ass_vals_cache_(ass_vals_cache),
@@ -61,7 +61,7 @@ namespace polyfem
 		void RhsAssembler::assemble(const Density &density, Eigen::MatrixXd &rhs, const double t) const
 		{
 			// set size of rhs to the number of basis functions * the dimension of the problem
-			rhs = Eigen::MatrixXd::Zero(n_basis_ * size_, 1);
+			rhs = Eigen::MatrixXd::Zero(n_basis_ * codomain_size_, 1);
 			if (!problem_.is_rhs_zero())
 			{
 				Eigen::MatrixXd rhs_fun;
@@ -81,7 +81,7 @@ namespace polyfem
 					// compute rhs values in physical space
 					problem_.rhs(assembler_, vals.val, t, rhs_fun);
 
-					for (int d = 0; d < size_; ++d)
+					for (int d = 0; d < codomain_size_; ++d)
 					{
 						// rhs_fun.col(d) = rhs_fun.col(d).array() * vals.det.array() * quadrature.weights.array();
 						for (int q = 0; q < quadrature.weights.size(); ++q)
@@ -98,13 +98,13 @@ namespace polyfem
 					{
 						const AssemblyValues &v = vals.basis_values[i];
 
-						for (int d = 0; d < size_; ++d)
+						for (int d = 0; d < codomain_size_; ++d)
 						{
 							// integrate rhs function times the given local basis
 							const double rhs_value = (rhs_fun.col(d).array() * v.val.array()).sum();
 							for (std::size_t ii = 0; ii < v.global.size(); ++ii)
 								// add local contribution to the global rhs vector (with some weight for non-conforming bases)
-								rhs(v.global[ii].index * size_ + d) += rhs_value * v.global[ii].val;
+								rhs(v.global[ii].index * codomain_size_ + d) += rhs_value * v.global[ii].val;
 						}
 					}
 				}
@@ -137,7 +137,7 @@ namespace polyfem
 
 		void RhsAssembler::time_bc(const std::function<void(const Mesh &, const Eigen::MatrixXi &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &fun, Eigen::MatrixXd &sol) const
 		{
-			sol = Eigen::MatrixXd::Zero(n_basis_ * size_, 1);
+			sol = Eigen::MatrixXd::Zero(n_basis_ * codomain_size_, 1);
 			Eigen::MatrixXd loc_sol;
 
 			const int n_elements = int(bases_.size());
@@ -163,9 +163,9 @@ namespace polyfem
 						{
 							fun(mesh_, ids, glob[ii].node, loc_sol);
 
-							for (int d = 0; d < size_; ++d)
+							for (int d = 0; d < codomain_size_; ++d)
 							{
-								sol(glob[ii].index * size_ + d) = loc_sol(d) * glob[ii].val;
+								sol(glob[ii].index * codomain_size_ + d) = loc_sol(d) * glob[ii].val;
 							}
 						}
 					}
@@ -185,7 +185,7 @@ namespace polyfem
 					// problem_.initial_solution(vals.val, loc_sol);
 					fun(mesh_, ids, vals.val, loc_sol);
 
-					for (int d = 0; d < size_; ++d)
+					for (int d = 0; d < codomain_size_; ++d)
 						loc_sol.col(d) = loc_sol.col(d).array() * vals.det.array() * quadrature.weights.array();
 
 					const int n_loc_bases_ = int(vals.basis_values.size());
@@ -193,11 +193,11 @@ namespace polyfem
 					{
 						const AssemblyValues &v = vals.basis_values[i];
 
-						for (int d = 0; d < size_; ++d)
+						for (int d = 0; d < codomain_size_; ++d)
 						{
 							const double sol_value = (loc_sol.col(d).array() * v.val.array()).sum();
 							for (std::size_t ii = 0; ii < v.global.size(); ++ii)
-								sol(v.global[ii].index * size_ + d) += sol_value * v.global[ii].val;
+								sol(v.global[ii].index * codomain_size_ + d) += sol_value * v.global[ii].val;
 						}
 					}
 				}
@@ -211,12 +211,12 @@ namespace polyfem
 				if (fabs(mmin) > 1e-8 || fabs(mmax) > 1e-8)
 				{
 					assembler::Mass mass_mat_assembler;
-					mass_mat_assembler.set_size(assembler_.size());
+					mass_mat_assembler.set_sizes(assembler_.domain_size(), assembler_.codomain_size());
 					mass_mat_assembler.add_multimaterial(0, json({}), Units());
 					StiffnessMatrix mass;
 					const int n_fe_basis = n_basis_ - obstacle_.n_vertices();
-					mass_mat_assembler.assemble(size_ == 3, n_fe_basis, bases_, gbases_, ass_vals_cache_, 0, mass, true);
-					assert(mass.rows() == n_basis_ * size_ - obstacle_.ndof() && mass.cols() == n_basis_ * size_ - obstacle_.ndof());
+					mass_mat_assembler.assemble(codomain_size_ == 3, n_fe_basis, bases_, gbases_, ass_vals_cache_, 0, mass, true);
+					assert(mass.rows() == n_basis_ * codomain_size_ - obstacle_.ndof() && mass.cols() == n_basis_ * codomain_size_ - obstacle_.ndof());
 
 					auto solver = linear::Solver::create(solver_params_, logger());
 					logger().info("Solve RHS using {} linear solver", solver->name());
@@ -256,7 +256,7 @@ namespace polyfem
 			}
 			assert(skipped_count <= 1);
 
-			for (int d = 0; d < size_; ++d)
+			for (int d = 0; d < codomain_size_; ++d)
 			{
 				int index = 0;
 				std::vector<int> indices;
@@ -385,7 +385,7 @@ namespace polyfem
 						{
 							const int tag = tags[i];
 							if (problem_.all_dimensions_dirichlet() || problem_.is_dimension_dirichet(tag, d))
-								rhs(indices[i] * size_ + d) = 0;
+								rhs(indices[i] * codomain_size_ + d) = 0;
 						}
 					}
 					else
@@ -413,7 +413,7 @@ namespace polyfem
 						{
 							const int tag = tags[i];
 							if (problem_.all_dimensions_dirichlet() || problem_.is_dimension_dirichet(tag, d))
-								rhs(indices[i] * size_ + d) = coeffs(i);
+								rhs(indices[i] * codomain_size_ + d) = coeffs(i);
 						}
 					}
 				}
@@ -473,12 +473,12 @@ namespace polyfem
 							// TODO, missing UV!!!!
 							df(global_primitive_ids, nans, glob[ii].node, rhs_fun);
 
-							for (int d = 0; d < size_; ++d)
+							for (int d = 0; d < codomain_size_; ++d)
 							{
 								if (problem_.all_dimensions_dirichlet() || problem_.is_dimension_dirichet(tag, d))
 								{
-									assert(problem_.all_dimensions_dirichlet() || std::find(bounday_nodes.begin(), bounday_nodes.end(), glob[ii].index * size_ + d) != bounday_nodes.end());
-									rhs(glob[ii].index * size_ + d) = rhs_fun(0, d);
+									assert(problem_.all_dimensions_dirichlet() || std::find(bounday_nodes.begin(), bounday_nodes.end(), glob[ii].index * codomain_size_ + d) != bounday_nodes.end());
+									rhs(glob[ii].index * codomain_size_ + d) = rhs_fun(0, d);
 								}
 							}
 						}
@@ -534,7 +534,7 @@ namespace polyfem
 
 				df(global_primitive_ids, uv, vals.val, rhs_fun);
 
-				for (int d = 0; d < size_; ++d)
+				for (int d = 0; d < codomain_size_; ++d)
 					rhs_fun.col(d) = rhs_fun.col(d).array() * weights.array();
 
 				for (int i = 0; i < lb.size(); ++i)
@@ -547,13 +547,13 @@ namespace polyfem
 						// const auto &b = bs.bases[nodes(n)];
 						const AssemblyValues &v = vals.basis_values[nodes(n)];
 						const double area = (weights.array() * v.val.array()).sum();
-						for (int d = 0; d < size_; ++d)
+						for (int d = 0; d < codomain_size_; ++d)
 						{
 							const double rhs_value = (rhs_fun.col(d).array() * v.val.array()).sum();
 
 							for (size_t g = 0; g < v.global.size(); ++g)
 							{
-								const int g_index = v.global[g].index * size_ + d;
+								const int g_index = v.global[g].index * codomain_size_ + d;
 								if (problem_.all_dimensions_dirichlet() || std::find(bounday_nodes.begin(), bounday_nodes.end(), g_index) != bounday_nodes.end())
 								{
 									rhs(g_index) += rhs_value * v.global[g].val;
@@ -597,13 +597,13 @@ namespace polyfem
 
 					const int tag = mesh_.get_node_id(n_id);
 					problem_.dirichlet_nodal_value(mesh_, n_id, pt, t, tmp_val);
-					assert(tmp_val.size() == size_);
+					assert(tmp_val.size() == codomain_size_);
 
-					for (int d = 0; d < size_; ++d)
+					for (int d = 0; d < codomain_size_; ++d)
 					{
 						if (!problem_.is_nodal_dimension_dirichlet(n_id, tag, d))
 							continue;
-						const int g_index = n_id * size_ + d;
+						const int g_index = n_id * codomain_size_ + d;
 						rhs(g_index) = tmp_val(d);
 					}
 				}
@@ -642,16 +642,16 @@ namespace polyfem
 
 						if (displacement.size() > 0)
 						{
-							assert(size_ == 2 || size_ == 3);
-							deform_mat.resize(size_, size_);
+							assert(codomain_size_ == 2 || codomain_size_ == 3);
+							deform_mat.resize(codomain_size_, codomain_size_);
 							deform_mat.setZero();
 							for (const auto &b : vals.basis_values)
 							{
 								for (const auto &g : b.global)
 								{
-									for (int d = 0; d < size_; ++d)
+									for (int d = 0; d < codomain_size_; ++d)
 									{
-										deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
+										deform_mat.row(d) += displacement(g.index * codomain_size_ + d) * b.grad.row(n);
 									}
 								}
 							}
@@ -668,20 +668,20 @@ namespace polyfem
 
 					// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(0,1,0));
 
-					for (int d = 0; d < size_; ++d)
+					for (int d = 0; d < codomain_size_; ++d)
 						rhs_fun.col(d) = rhs_fun.col(d).array() * weights.array();
 
 					for (long n = 0; n < nodes.size(); ++n)
 					{
 						// const auto &b = bs.bases[nodes(n)];
 						const AssemblyValues &v = vals.basis_values[nodes(n)];
-						for (int d = 0; d < size_; ++d)
+						for (int d = 0; d < codomain_size_; ++d)
 						{
 							const double rhs_value = (rhs_fun.col(d).array() * v.val.array()).sum();
 
 							for (size_t g = 0; g < v.global.size(); ++g)
 							{
-								const int g_index = v.global[g].index * size_ + d;
+								const int g_index = v.global[g].index * codomain_size_ + d;
 								const bool is_neumann = std::find(bounday_nodes.begin(), bounday_nodes.end(), g_index) == bounday_nodes.end();
 
 								if (is_neumann)
@@ -752,7 +752,7 @@ namespace polyfem
 
 				maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
 					LocalThreadScalarStorage &local_storage = get_local_thread_storage(storage, thread_id);
-					VectorNd local_displacement(size_);
+					VectorNd local_displacement(codomain_size_);
 					Eigen::MatrixXd forces;
 
 					for (int e = start; e < end; ++e)
@@ -766,7 +766,7 @@ namespace polyfem
 
 						problem_.rhs(assembler_, vals.val, t, forces);
 						assert(forces.rows() == da.size());
-						assert(forces.cols() == size_);
+						assert(forces.cols() == codomain_size_);
 
 						for (long p = 0; p < da.size(); ++p)
 						{
@@ -778,18 +778,18 @@ namespace polyfem
 								assert(bs.val.size() == da.size());
 								const double b_val = bs.val(p);
 
-								for (int d = 0; d < size_; ++d)
+								for (int d = 0; d < codomain_size_; ++d)
 								{
 									for (std::size_t ii = 0; ii < bs.global.size(); ++ii)
 									{
-										local_displacement(d) += (bs.global[ii].val * b_val) * displacement(bs.global[ii].index * size_ + d);
+										local_displacement(d) += (bs.global[ii].val * b_val) * displacement(bs.global[ii].index * codomain_size_ + d);
 									}
 								}
 							}
 							// const double rho = problem_.is_time_dependent() ? density(vals.quadrature.points.row(p), vals.val.row(p), vals.element_id) : 1;
 							const double rho = density(vals.quadrature.points.row(p), vals.val.row(p), t, vals.element_id);
 
-							for (int d = 0; d < size_; ++d)
+							for (int d = 0; d < codomain_size_; ++d)
 							{
 								local_storage.val += forces(p, d) * local_displacement(d) * da(p) * rho;
 								// res += forces(p, d) * local_displacement(d) * da(p);
@@ -803,7 +803,7 @@ namespace polyfem
 					res += local_storage.val;
 			}
 
-			VectorNd local_displacement(size_);
+			VectorNd local_displacement(codomain_size_);
 			Eigen::MatrixXd forces;
 
 			ElementAssemblyValues vals;
@@ -830,16 +830,16 @@ namespace polyfem
 
 					if (displacement_prev.size() > 0)
 					{
-						assert(size_ == 2 || size_ == 3);
-						deform_mat.resize(size_, size_);
+						assert(codomain_size_ == 2 || codomain_size_ == 3);
+						deform_mat.resize(codomain_size_, codomain_size_);
 						deform_mat.setZero();
 						for (const auto &b : vals.basis_values)
 						{
 							for (const auto &g : b.global)
 							{
-								for (int d = 0; d < size_; ++d)
+								for (int d = 0; d < codomain_size_; ++d)
 								{
-									deform_mat.row(d) += displacement_prev(g.index * size_ + d) * b.grad.row(n);
+									deform_mat.row(d) += displacement_prev(g.index * codomain_size_ + d) * b.grad.row(n);
 								}
 							}
 						}
@@ -864,16 +864,16 @@ namespace polyfem
 						assert(vv.val.size() == weights.size());
 						const double b_val = vv.val(p);
 
-						for (int d = 0; d < size_; ++d)
+						for (int d = 0; d < codomain_size_; ++d)
 						{
 							for (std::size_t ii = 0; ii < vv.global.size(); ++ii)
 							{
-								local_displacement(d) += (vv.global[ii].val * b_val) * displacement(vv.global[ii].index * size_ + d);
+								local_displacement(d) += (vv.global[ii].val * b_val) * displacement(vv.global[ii].index * codomain_size_ + d);
 							}
 						}
 					}
 
-					for (int d = 0; d < size_; ++d)
+					for (int d = 0; d < codomain_size_; ++d)
 						res -= forces(p, d) * local_displacement(d) * weights(p);
 				}
 			}
@@ -890,7 +890,7 @@ namespace polyfem
 			const bool project_to_psd,
 			StiffnessMatrix &hess) const
 		{
-			hess.resize(n_basis_ * size_, n_basis_ * size_);
+			hess.resize(n_basis_ * codomain_size_, n_basis_ * codomain_size_);
 			if (displacement.size() == 0)
 				return;
 
@@ -930,18 +930,18 @@ namespace polyfem
 					{
 						trafo = vals.jac_it[n].inverse();
 
-						assert(size_ == 2 || size_ == 3);
-						deform_mat.resize(size_, size_);
+						assert(codomain_size_ == 2 || codomain_size_ == 3);
+						deform_mat.resize(codomain_size_, codomain_size_);
 						deform_mat.setZero();
-						jac_mat.resize(size_, vals.basis_values.size());
+						jac_mat.resize(codomain_size_, vals.basis_values.size());
 						int b_idx = 0;
 						for (const auto &b : vals.basis_values)
 						{
 							jac_mat.col(b_idx++) = b.grad.row(n);
 
 							for (const auto &g : b.global)
-								for (int d = 0; d < size_; ++d)
-									deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
+								for (int d = 0; d < codomain_size_; ++d)
+									deform_mat.row(d) += displacement(g.index * codomain_size_ + d) * b.grad.row(n);
 						}
 
 						trafo += deform_mat;
@@ -954,7 +954,7 @@ namespace polyfem
 						{
 							Eigen::MatrixXd vec = -(jac_mat.transpose() * trafo * reference_normals.row(n).transpose());
 							// Gradient of the displaced normal computation
-							for (int k = 0; k < size_; ++k)
+							for (int k = 0; k < codomain_size_; ++k)
 							{
 								Eigen::MatrixXd grad_i(jac_mat.rows(), jac_mat.cols());
 								grad_i.setZero();
@@ -967,19 +967,19 @@ namespace polyfem
 
 						{
 							Eigen::MatrixXd normalization_chain_rule = (normals.row(n).transpose() * normals.row(n));
-							normalization_chain_rule = Eigen::MatrixXd::Identity(size_, size_) - normalization_chain_rule;
+							normalization_chain_rule = Eigen::MatrixXd::Identity(codomain_size_, codomain_size_) - normalization_chain_rule;
 							normalization_chain_rule /= displaced_normal.norm();
 
-							Eigen::VectorXd vec(size_);
+							Eigen::VectorXd vec(codomain_size_);
 							b_idx = 0;
 							for (const auto &b : vals.basis_values)
 							{
-								for (int d = 0; d < size_; ++d)
+								for (int d = 0; d < codomain_size_; ++d)
 								{
-									for (int k = 0; k < size_; ++k)
+									for (int k = 0; k < codomain_size_; ++k)
 										vec(k) = grad[k](d, b_idx);
 									vec = normalization_chain_rule * vec;
-									for (int k = 0; k < size_; ++k)
+									for (int k = 0; k < codomain_size_; ++k)
 										grad[k](d, b_idx) = vec(k);
 								}
 								b_idx++;
@@ -995,17 +995,17 @@ namespace polyfem
 					if (!is_pressure)
 						continue;
 
-					local_hessian.setZero(vals.basis_values.size() * size_, vals.basis_values.size() * size_);
+					local_hessian.setZero(vals.basis_values.size() * codomain_size_, vals.basis_values.size() * codomain_size_);
 
 					for (long n = 0; n < nodes.size(); ++n)
 					{
 						// const auto &b = bs.bases[nodes(n)];
 						const AssemblyValues &v = vals.basis_values[nodes(n)];
-						for (int d = 0; d < size_; ++d)
+						for (int d = 0; d < codomain_size_; ++d)
 						{
 							for (size_t g = 0; g < v.global.size(); ++g)
 							{
-								const int g_index = v.global[g].index * size_ + d;
+								const int g_index = v.global[g].index * codomain_size_ + d;
 								const bool is_neumann = std::find(bounday_nodes.begin(), bounday_nodes.end(), g_index) == bounday_nodes.end();
 
 								if (is_neumann)
@@ -1013,18 +1013,18 @@ namespace polyfem
 									for (long ni = 0; ni < nodes.size(); ++ni)
 									{
 										const AssemblyValues &vi = vals.basis_values[nodes(ni)];
-										for (int di = 0; di < size_; ++di)
+										for (int di = 0; di < codomain_size_; ++di)
 										{
 											for (size_t gi = 0; gi < vi.global.size(); ++gi)
 											{
-												const int gi_index = vi.global[gi].index * size_ + di;
+												const int gi_index = vi.global[gi].index * codomain_size_ + di;
 												double value = 0;
 
 												for (int q = 0; q < vals.jac_it.size(); ++q)
 												{
 													double pressure_val = rhs_fun.row(q).dot(normals.row(q));
 
-													// value += grad_normal[ni](d, nodes(ni) * size_ + di) * pressure_val * weights(q) * vi.val(q);
+													// value += grad_normal[ni](d, nodes(ni) * codomain_size_ + di) * pressure_val * weights(q) * vi.val(q);
 													value += grad_normal[q][d](di, nodes(ni)) * pressure_val * weights(q) * vi.val(q);
 												}
 
@@ -1034,7 +1034,7 @@ namespace polyfem
 
 												if (is_neumann_i)
 												{
-													local_hessian(nodes(n) * size_ + d, nodes(ni) * size_ + di) = value;
+													local_hessian(nodes(n) * codomain_size_ + d, nodes(ni) * codomain_size_ + di) = value;
 												}
 											}
 										}
@@ -1050,21 +1050,21 @@ namespace polyfem
 					for (long n = 0; n < nodes.size(); ++n)
 					{
 						const AssemblyValues &v = vals.basis_values[nodes(n)];
-						for (int d = 0; d < size_; ++d)
+						for (int d = 0; d < codomain_size_; ++d)
 						{
 							for (size_t g = 0; g < v.global.size(); ++g)
 							{
-								const int g_index = v.global[g].index * size_ + d;
+								const int g_index = v.global[g].index * codomain_size_ + d;
 
 								for (long ni = 0; ni < nodes.size(); ++ni)
 								{
 									const AssemblyValues &vi = vals.basis_values[nodes(ni)];
-									for (int di = 0; di < size_; ++di)
+									for (int di = 0; di < codomain_size_; ++di)
 									{
 										for (size_t gi = 0; gi < vi.global.size(); ++gi)
 										{
-											const int gi_index = vi.global[gi].index * size_ + di;
-											entries.push_back(Eigen::Triplet<double>(g_index, gi_index, local_hessian(nodes(n) * size_ + d, nodes(ni) * size_ + di)));
+											const int gi_index = vi.global[gi].index * codomain_size_ + di;
+											entries.push_back(Eigen::Triplet<double>(g_index, gi_index, local_hessian(nodes(n) * codomain_size_ + d, nodes(ni) * codomain_size_ + di)));
 										}
 									}
 								}

@@ -23,7 +23,7 @@ namespace polyfem::assembler
 
 		VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;
 
-		void set_size(const int size) override;
+		void set_sizes(const unsigned domain_size, const unsigned codomain_size) override;
 
 		void set_stiffness_tensor(int i, int j, const double val);
 		double stifness_tensor(int i, int j) const;

@@ -109,8 +109,11 @@ namespace polyfem
 
 	void State::save_subsolve(const int i, const int t, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure)
 	{
-		if (!args["output"]["advanced"]["save_solve_sequence_debug"].get<bool>())
+		if (!args["output"]["advanced"]["save_solve_sequence_debug"].get<bool>()
+			&& !args["output"]["advanced"]["save_nl_solve_sequence"].get<bool>())
+		{
 			return;
+		}
 
 		if (!solve_export_to_file)
 			solution_frames.emplace_back();

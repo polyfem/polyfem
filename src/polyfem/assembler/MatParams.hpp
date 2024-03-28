@@ -60,7 +60,7 @@ namespace polyfem::assembler
 		double compute_stress(const std::array<double, DIM> &strain, const int j) const;
 
 	private:
-		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6> stifness_tensor_;
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6> stiffness_tensor_;
 		int size_;
 	};
 
@@ -75,7 +75,7 @@ namespace polyfem::assembler
 		void lambda_mu(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, double t, int el_id, double &lambda, double &mu) const
 		{
 			assert(param.size() == 2 || param.size() == 3);
-			assert(param.size() == p.size());
+			assert(p.size() == 2 || p.size() == 3);
 			lambda_mu(
 				param(0), param(1), param.size() == 3 ? param(2) : 0.0,
 				p(0), p(1), p.size() == 3 ? p(2) : 0.0,
@@ -105,7 +105,7 @@ namespace polyfem::assembler
 		double operator()(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, double t, int el_id) const
 		{
 			assert(param.size() == 2 || param.size() == 3);
-			assert(param.size() == p.size());
+			assert(p.size() == 2 || p.size() == 3);
 			return (*this)(param(0), param(1), param.size() == 3 ? param(2) : 0.0,
 						   p(0), p(1), p.size() == 3 ? p(2) : 0.0,
 						   t, el_id);

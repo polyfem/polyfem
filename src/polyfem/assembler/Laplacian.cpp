@@ -10,7 +10,7 @@ namespace polyfem::assembler
 		}
 	} // namespace
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> Laplacian::assemble(const LinearAssemblerData &data) const
+	FlatMatrixNd Laplacian::assemble(const LinearAssemblerData &data) const
 	{
 		const Eigen::MatrixXd &gradi = data.vals.basis_values[data.i].grad_t_m;
 		const Eigen::MatrixXd &gradj = data.vals.basis_values[data.j].grad_t_m;
@@ -25,7 +25,7 @@ namespace polyfem::assembler
 		return Eigen::Matrix<double, 1, 1>::Constant(res);
 	}
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> Laplacian::compute_rhs(const AutodiffHessianPt &pt) const
+	VectorNd Laplacian::compute_rhs(const AutodiffHessianPt &pt) const
 	{
 		Eigen::Matrix<double, 1, 1> result;
 		assert(pt.size() == 1);

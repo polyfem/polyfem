@@ -37,16 +37,34 @@ namespace polyfem::assembler
 
 		virtual std::string name() const = 0;
 
-		int size() const { return size_; }
-		virtual void set_size(const int size) { size_ = size; }
+		unsigned domain_size() const { return domain_size_; }
+		unsigned codomain_size() const { return codomain_size_; }
+
+		/// @brief Set both the domain and codomain size/dimension to the same value
+		/// @param size The new dimension of the domain and codomain
+		void set_size(const unsigned size)
+		{
+			set_sizes(size, size);
+		}
+
+		/// @brief Set the domain and codomain sizes/dimensions
+		/// @param domain_size Dimension of the domain
+		/// @param codomain_size Dimension of the codomain
+		virtual void set_sizes(const unsigned domain_size, const unsigned codomain_size)
+		{
+			assert(domain_size > 0 && codomain_size > 0);
+			domain_size_ = domain_size;
+			codomain_size_ = codomain_size;
+		}
 
 	protected:
-		int size_ = -1;
+		unsigned domain_size_ = 0;   // 0 indicates uninitialized
+		unsigned codomain_size_ = 0; // 0 indicates uninitialized
 
 		virtual int rows() const = 0;
 		virtual int cols() const = 0;
 
-		virtual Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> assemble(const MixedAssemblerData &data) const = 0;
+		virtual VectorNd assemble(const MixedAssemblerData &data) const = 0;
 	};
 
 	/// abstract class
@@ -60,8 +78,25 @@ namespace polyfem::assembler
 
 		virtual std::string name() const = 0;
 
-		int size() const { return size_; }
-		virtual void set_size(const int size) { size_ = size; }
+		unsigned domain_size() const { return domain_size_; }
+		unsigned codomain_size() const { return codomain_size_; }
+
+		/// @brief Set both the domain and codomain size/dimension to the same value
+		/// @param size The new dimension of the domain and codomain
+		void set_size(const unsigned size)
+		{
+			set_sizes(size, size);
+		}
+
+		/// @brief Set the domain and codomain sizes/dimensions
+		/// @param domain_size Dimension of the domain
+		/// @param codomain_size Dimension of the codomain
+		virtual void set_sizes(const unsigned domain_size, const unsigned codomain_size)
+		{
+			assert(domain_size > 0 && codomain_size > 0);
+			domain_size_ = domain_size;
+			codomain_size_ = codomain_size;
+		}
 
 		// assembler stiffness matrix, is the mesh is volumetric, number of bases and bases (FE and geom)
 		// gbases and bases can be the same (ie isoparametric)
@@ -73,7 +108,10 @@ namespace polyfem::assembler
 			const AssemblyValsCache &cache,
 			const double t,
 			StiffnessMatrix &stiffness,
-			const bool is_mass = false) const { log_and_throw_error("Assembler not implemented by {}!", name()); }
+			const bool is_mass = false) const
+		{
+			log_and_throw_error("Assembler not implemented by {}!", name());
+		}
 
 		// assemble energy
 		virtual double assemble_energy(
@@ -84,7 +122,10 @@ namespace polyfem::assembler
 			const double t,
 			const double dt,
 			const Eigen::MatrixXd &displacement,
-			const Eigen::MatrixXd &displacement_prev) const { log_and_throw_error("Assemble energy not implemented by {}!", name()); }
+			const Eigen::MatrixXd &displacement_prev) const
+		{
+			log_and_throw_error("Assemble energy not implemented by {}!", name());
+		}
 
 		virtual Eigen::VectorXd assemble_energy_per_element(
 			const bool is_volume,
@@ -94,7 +135,10 @@ namespace polyfem::assembler
 			const double t,
 			const double dt,
 			const Eigen::MatrixXd &displacement,
-			const Eigen::MatrixXd &displacement_prev) const { log_and_throw_error("Assemble energy not implemented by {}!", name()); }
+			const Eigen::MatrixXd &displacement_prev) const
+		{
+			log_and_throw_error("Assemble energy not implemented by {}!", name());
+		}
 
 		// assemble gradient of energy (rhs)
 		virtual void assemble_gradient(
@@ -107,7 +151,10 @@ namespace polyfem::assembler
 			const double dt,
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev,
-			Eigen::MatrixXd &rhs) const { log_and_throw_error("Assemble grad not implemented by {}!", name()); }
+			Eigen::MatrixXd &rhs) const
+		{
+			log_and_throw_error("Assemble grad not implemented by {}!", name());
+		}
 
 		// assemble hessian of energy (grad)
 		virtual void assemble_hessian(
@@ -122,7 +169,10 @@ namespace polyfem::assembler
 			const Eigen::MatrixXd &displacement,
 			const Eigen::MatrixXd &displacement_prev,
 			utils::MatrixCache &mat_cache,
-			StiffnessMatrix &grad) const { log_and_throw_error("Assemble hessian not implemented by {}!", name()); }
+			StiffnessMatrix &grad) const
+		{
+			log_and_throw_error("Assemble hessian not implemented by {}!", name());
+		}
 
 		// plotting (eg von mises), assembler is the name of the formulation
 		virtual void compute_scalar_value(
@@ -132,9 +182,7 @@ namespace polyfem::assembler
 		// computes tensor, assembler is the name of the formulation
 		virtual void compute_tensor_value(
 			const OutputData &data,
-			std::vector<NamedMatrix> &result) const
-		{
-		}
+			std::vector<NamedMatrix> &result) const {}
 
 		// computes tensor, assembler is the name of the formulation
 		virtual void compute_stiffness_value(
@@ -142,18 +190,27 @@ namespace polyfem::assembler
 			const assembler::ElementAssemblyValues &vals,
 			const Eigen::MatrixXd &local_pts,
 			const Eigen::MatrixXd &displacement,
-			Eigen::MatrixXd &tensor) const { log_and_throw_error("Not implemented!"); }
+			Eigen::MatrixXd &tensor) const
+		{
+			log_and_throw_error("Not implemented!");
+		}
 
 		virtual void compute_dstress_dmu_dlambda(
 			const OptAssemblerData &data,
 			Eigen::MatrixXd &dstress_dmu,
-			Eigen::MatrixXd &dstress_dlambda) const { log_and_throw_adjoint_error("Not implemented!"); }
+			Eigen::MatrixXd &dstress_dlambda) const
+		{
+			log_and_throw_adjoint_error("Not implemented!");
+		}
 
 		virtual void compute_stress_grad_multiply_mat(
 			const OptAssemblerData &data,
 			const Eigen::MatrixXd &mat,
 			Eigen::MatrixXd &stress,
-			Eigen::MatrixXd &result) const { log_and_throw_adjoint_error("Not implemented!"); }
+			Eigen::MatrixXd &result) const
+		{
+			log_and_throw_adjoint_error("Not implemented!");
+		}
 
 		virtual void compute_stress_grad_multiply_stress(
 			const OptAssemblerData &data,
@@ -169,22 +226,39 @@ namespace polyfem::assembler
 			const OptAssemblerData &data,
 			const Eigen::MatrixXd &vect,
 			Eigen::MatrixXd &stress,
-			Eigen::MatrixXd &result) const { log_and_throw_error("Not implemented!"); }
+			Eigen::MatrixXd &result) const
+		{
+			log_and_throw_error("Not implemented!");
+		}
 
 		virtual void compute_stress_grad(
 			const OptAssemblerData &data,
 			const Eigen::MatrixXd &prev_grad_u_i,
 			Eigen::MatrixXd &stress,
-			Eigen::MatrixXd &result) const { log_and_throw_adjoint_error("Not implemented!"); }
+			Eigen::MatrixXd &result) const
+		{
+			log_and_throw_adjoint_error("Not implemented!");
+		}
+
 		virtual void compute_stress_prev_grad(
 			const OptAssemblerData &data,
 			const Eigen::MatrixXd &prev_grad_u_i,
-			Eigen::MatrixXd &result) const { log_and_throw_adjoint_error("Not implemented!"); }
+			Eigen::MatrixXd &result) const
+		{
+			log_and_throw_adjoint_error("Not implemented!");
+		}
 
 		virtual std::map<std::string, ParamFunc> parameters() const = 0;
-		virtual VectorNd compute_rhs(const AutodiffHessianPt &pt) const { log_and_throw_error("Rhs not supported by {}!", name()); }
+		virtual VectorNd compute_rhs(const AutodiffHessianPt &pt) const
+		{
+			log_and_throw_error("Rhs not supported by {}!", name());
+		}
 
-		virtual Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1> kernel(const int dim, const AutodiffGradPt &rvect, const AutodiffScalarGrad &r) const { log_and_throw_error("Kernel not supported by {}!", name()); }
+		virtual Eigen::Matrix<AutodiffScalarGrad, Eigen::Dynamic, 1, 0, 3, 1>
+		kernel(const int dim, const AutodiffGradPt &rvect, const AutodiffScalarGrad &r) const
+		{
+			log_and_throw_error("Kernel not supported by {}!", name());
+		}
 
 		void set_materials(const std::vector<int> &body_ids, const json &body_params, const Units &units);
 		virtual void add_multimaterial(const int index, const json &params, const Units &units) {}
@@ -200,7 +274,8 @@ namespace polyfem::assembler
 		virtual bool is_tensor() const { return false; }
 
 	protected:
-		int size_ = -1;
+		unsigned domain_size_ = 0;   // 0 indicates uninitialized
+		unsigned codomain_size_ = 0; // 0 indicates uninitialized
 	};
 
 	/// assemble matrix based on the local assembler
@@ -231,7 +306,7 @@ namespace polyfem::assembler
 
 		/// local assembly function that defines the bilinear form (LHS)
 		/// computes and returns a single local stiffness value
-		virtual Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> assemble(const LinearAssemblerData &data) const = 0;
+		virtual FlatMatrixNd assemble(const LinearAssemblerData &data) const = 0;
 	};
 
 	// non-linear assembler (eg neohookean elasticity)
@@ -339,10 +414,9 @@ namespace polyfem::assembler
 								   const ElasticityTensorType &type,
 								   Eigen::MatrixXd &stresses) const
 		{
-			assign_stress_tensor(data, size() * size(), type, stresses, [&](const Eigen::MatrixXd &stress) {
-				Eigen::MatrixXd tmp = stress;
-				auto a = Eigen::Map<Eigen::MatrixXd>(tmp.data(), 1, size() * size());
-				return Eigen::MatrixXd(a);
+			const int tensor_size = codomain_size() * codomain_size();
+			assign_stress_tensor(data, tensor_size, type, stresses, [&](const Eigen::MatrixXd &stress) -> Eigen::MatrixXd {
+				return Eigen::Map<const Eigen::MatrixXd>(stress.data(), 1, tensor_size);
 			});
 		}
 
@@ -350,9 +424,7 @@ namespace polyfem::assembler
 										Eigen::MatrixXd &stresses) const
 		{
 			assign_stress_tensor(data, 1, ElasticityTensorType::CAUCHY, stresses, [&](const Eigen::MatrixXd &stress) {
-				Eigen::Matrix<double, 1, 1> res;
-				res.setConstant(von_mises_stress_for_stress_tensor(stress));
-				return res;
+				return Eigen::Matrix<double, 1, 1>::Constant(von_mises_stress_for_stress_tensor(stress));
 			});
 		}
 
