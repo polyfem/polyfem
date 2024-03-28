@@ -29,12 +29,12 @@ namespace polyfem
 
 		IntegrableFunctional() = default;
 
-		void set_j(const functionalType &j_);
-		void set_dj_dx(const functionalType &dj_dx_);
-		void set_dj_du(const functionalType &dj_du_);
-		void set_dj_dgradu(const functionalType &dj_dgradu_);
-		void set_dj_dgradu_local(const functionalType &dj_dgradu_local_);
-		void set_dj_dgradx(const functionalType &dj_dgradx_);
+		void set_j(const functionalType &j);
+		void set_dj_dx(const functionalType &dj_dx);
+		void set_dj_du(const functionalType &dj_du);
+		void set_dj_dgradu(const functionalType &dj_dgradu);
+		void set_dj_dgradu_local(const functionalType &dj_dgradu_local);
+		void set_dj_dgradx(const functionalType &dj_dgradx);
 
 		void evaluate(const Eigen::MatrixXd& elastic_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, ParameterType &params, Eigen::MatrixXd &val) const;
 		void dj_dx(const Eigen::MatrixXd& elastic_params, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, ParameterType &params, Eigen::MatrixXd &val) const;
@@ -51,6 +51,6 @@ namespace polyfem
 
 	private:
 		bool has_x = false, has_u = false, has_gradu = false, has_gradu_local = false, has_gradx = false;
-		functionalType j_func, dj_dx_func, dj_du_func, dj_dgradu_func, dj_dgradu_local_func, dj_dgradx_func;
+		functionalType j_func_, dj_dx_func_, dj_du_func_, dj_dgradu_func_, dj_dgradu_local_func_, dj_dgradx_func_;
 	};
 } // namespace polyfem
