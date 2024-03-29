@@ -15,6 +15,8 @@
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
+
+#include <polyfem/utils/Jacobian.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
@@ -138,3 +140,84 @@ TEST_CASE("wmtk_instatiation", "[utils]")
 	wmtk::TriMesh mesh;
 }
 #endif
+
+TEST_CASE("Validity queries")
+{
+	static Eigen::MatrixX3d tet1Std(4, 3);
+	static Eigen::MatrixX3d tet1Inv(4, 3);
+	static Eigen::MatrixX3d tet1StdInv(2 * 4, 3);
+	static Eigen::MatrixX3d tet2Std(10, 3);
+	static Eigen::MatrixX3d tet2Inv(10, 3);
+	static Eigen::MatrixX3d tet2Unc(10, 3);
+	tet1Std << 0., 0., 0.,
+		1., 0., 0.,
+		0., 1., 0.,
+		0., 0., 1.;
+	tet1Inv << 
+		.5,.5,.5,
+		1.,0.,0.,
+		0.,1.,0.,
+		0.,0.,1.;
+	tet1StdInv << 0., 0., 0.,
+		1., 0., 0.,
+		0., 1., 0.,
+		0., 0., 1.,
+		.5, .5, .5,
+		1., 0., 0.,
+		0., 1., 0.,
+		0., 0., 1.;
+	tet2Std << 0., 0., 0.,
+		1., 0., 0.,
+		0., 1., 0.,
+		0., 0., 1.,
+		.5, 0., 0.,
+		.5, .5, 0.,
+		0., .5, 0.,
+		0., 0., .5,
+		.5, 0., .5,
+		0., .5, .5;
+	tet2Inv << .5, .5, .5,
+		1., 0., 0.,
+		0., 1., 0.,
+		0., 0., 1.,
+		.5, 0., 0.,
+		.5, .5, 0.,
+		0., .5, 0.,
+		0., 0., .5,
+		.5, 0., .5,
+		0., .5, .5;
+	tet2Unc << 0., 0., 0.,
+		1., 0., 0.,
+		0., 1., 0.,
+		0., 0., 1.,
+		.5, 0., 0.,
+		.25, .5, 0.,
+		0., .5, 0.,
+		0., 0., .5,
+		.5, 0., .5,
+		0., .5, .5;
+	{
+		const bool valid = isValid<3>(tet1Std, 1);
+		CHECK(valid);
+	}
+	{
+		const bool valid = isValid<3>(tet1Inv, 1);
+		CHECK(!valid);
+	}
+	{
+		const bool valid = isValid<3>(tet1StdInv, 1);
+		CHECK(!valid);
+	}
+	{
+		const bool valid = isValid<3>(tet2Std, 2);
+		CHECK(valid);
+	}
+	{
+		const bool valid = isValid<3>(tet2Inv, 2);
+		CHECK(!valid);
+	}
+	{
+		const bool valid = isValid<3>(tet2Unc, 2);
+		CHECK(!valid);
+	}
+}

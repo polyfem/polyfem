@@ -7,7 +7,7 @@
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
 
-#include <jacobian/element_validity.hpp>
+#include <polyfem/utils/Jacobian.hpp>
 
 using namespace polyfem::assembler;
 using namespace polyfem::utils;
@@ -29,41 +29,6 @@ namespace polyfem::solver
 				vec.setZero();
 			}
 		};
-
-		bool isValid(
-			const int dim,
-			const std::vector<basis::ElementBases> &bases, 
-			const std::vector<basis::ElementBases> &gbases, 
-			const Eigen::VectorXd &u)
-		{
-			int order = -1;
-			for (const auto &b : bases)
-			{
-				for (const auto &bs : b.bases)
-				{
-					if (order < 0)
-						order = bs.order();
-					else if (order != bs.order())
-						log_and_throw_error("All bases must have the same order");
-				}
-			}
-
-			Eigen::MatrixXd cp = Eigen::MatrixXd::Zero(bases.size() * bases[0].bases.size(), dim);
-			for (int e = 0; e < bases.size(); ++e)
-			{
-				for (int i = 0; i < bases[e].bases.size(); ++i)
-				{
-					const auto &g = bases[e].bases[i].global()[0];
-
-					cp.row(e * bases[0].bases.size() + i) = g.node + u.segment(g.index * dim, dim).transpose();
-				}
-			}
-
-			if (dim == 2)
-				return element_validity::isValid<2>(cp, element_validity::shapes::TRIANGLE, order);
-			else
-				return element_validity::isValid<3>(cp, element_validity::shapes::TETRAHEDRON, order);
-		}
 
 		double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
 	} // namespace
@@ -123,19 +88,34 @@ namespace polyfem::solver
 
 	bool ElasticForm::is_step_valid(const Eigen::VectorXd &, const Eigen::VectorXd &x1) const
 	{
-		Eigen::VectorXd grad;
-		first_derivative(x1, grad);
-
 		// TODO: handle polygon and quad
-		bool flag1 = isValid(is_volume_ ? 3 : 2, bases_, geom_bases_, x1);
-		bool flag2 = !grad.array().isNaN().any();
+		bool flag1;
+		{
+			POLYFEM_SCOPED_TIMER("Conservative Jacobian Check");
+			flag1 = isValid(is_volume_ ? 3 : 2, bases_, x1);
+		}
+		bool flag2;
+		{
+			POLYFEM_SCOPED_TIMER("Compute gradient");
+			Eigen::VectorXd grad;
+			first_derivative(x1, grad);
+			flag2 = !grad.array().isNaN().any();
+		}
 
 		if (flag1 == flag2)
 			return flag1;
-		else
+		else 
 		{
-			logger().debug("Inconsistent positivity check! {} vs {}", flag1, flag2);
-			return flag2;
+			if (flag1)
+			{
+				logger().warn("Conservative check is wrong!");
+				return flag2;
+			}
+			else
+			{
+				logger().debug("Conservative check did a good job!");
+				return flag1;
+			}
 		}
 
 		// Check the scalar field in the output does not contain NANs.

@@ -181,7 +181,7 @@ target_link_libraries(polyfem PUBLIC ipc::toolkit)
 
 # Jacobian
 include(jacobian)
-target_link_libraries(polyfem PUBLIC jacobian)
+target_link_libraries(polyfem PRIVATE jacobian)
 
 # Threading
 if(POLYFEM_THREADING STREQUAL "CPP")
