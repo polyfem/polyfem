@@ -1093,7 +1093,10 @@ namespace polyfem
 
 		if ((!problem->is_time_dependent() || args["time"]["quasistatic"]) && boundary_nodes.empty())
 		{
-			logger().warn("(Quasi-)Static problem without Dirichlet nodes, will fix solution at one node to find a unique solution!");
+			if (has_periodic_bc())
+				logger().warn("(Quasi-)Static problem without Dirichlet nodes, will fix solution at one node to find a unique solution!");
+			else
+				log_and_throw_error("Static problem need to have some Dirichlet nodes!");
 		}
 	}
 

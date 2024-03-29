@@ -1,5 +1,6 @@
 #include "AdjointForm.hpp"
 #include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/NLHomoProblem.hpp>
 #include <polyfem/State.hpp>
 #include <polyfem/assembler/Assembler.hpp>
