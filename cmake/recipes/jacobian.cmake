@@ -9,6 +9,9 @@ message(STATUS "Third-party: creating target 'jacobian'")
 
 option(PARAVIEW_OUTPUT "Export elements to Paraview" OFF)
 option(IPRED_ARITHMETIC "Use the efficient Indirect Predicates library" ON)
+if (IPRED_ARITHMETIC)
+    add_compile_definitions(IPRED_ARITHMETIC)
+endif()
 
 include(CPM)
-CPMAddPackage("gh:fsichetti/jacobian#e0716e28d0a86ce84d92bf923f1f7b71ab12fb16")
+CPMAddPackage("gh:fsichetti/jacobian#aa804deb40ad294f212e18155346de24f0d48fb8")
