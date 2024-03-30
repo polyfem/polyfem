@@ -1490,7 +1490,8 @@
             "contact",
             "rayleigh_damping",
             "ignore_inertia",
-            "advanced"
+            "advanced",
+            "check_inversion"
         ],
         "doc": "The settings for the solver including linear solver, nonlinear solver, and some advanced options."
     },
@@ -2248,6 +2249,17 @@
         "default": false,
         "type": "bool",
         "doc": "Ignore inertia in time dependent. Used for doing incremental load."
+    },
+    {
+        "pointer": "/solver/check_inversion",
+        "default": "discrete",
+        "type": "string",
+        "options": [
+            "discrete",
+            "conservative",
+            "transient"
+        ],
+        "doc": "The method for checking if any element is flipped."
     },
     {
         "pointer": "/solver/advanced",

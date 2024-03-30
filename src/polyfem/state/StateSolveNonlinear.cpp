@@ -33,6 +33,14 @@ namespace polyfem
 	using namespace io;
 	using namespace utils;
 
+	namespace solver {
+		NLOHMANN_JSON_SERIALIZE_ENUM(
+			ElementInversionCheck,
+			{{ElementInversionCheck::Discrete, "discrete"},
+			{ElementInversionCheck::Conservative, "conservative"},
+			{ElementInversionCheck::Transient, "transient"}})
+	}
+
 	template <typename ProblemType>
 	std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> State::make_nl_solver(
 		const std::string &linear_solver_type) const
@@ -189,7 +197,7 @@ namespace polyfem
 			units,
 			mesh->dimension(), t,
 			// Elastic form
-			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache,
+			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache, args["solver"]["check_inversion"].template get<ElementInversionCheck>(),
 			// Body form
 			n_pressure_bases, boundary_nodes, local_boundary, local_neumann_boundary,
 			n_boundary_samples(), rhs, sol, mass_matrix_assembler->density(),

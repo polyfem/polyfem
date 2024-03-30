@@ -71,6 +71,8 @@ option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
 set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
 set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
 
+add_compile_definitions(JSON_DIAGNOSTICS=1)
+
 # Set default minimum C++ standard
 if(POLYFEM_TOPLEVEL_PROJECT)
     set(CMAKE_CXX_STANDARD 17)

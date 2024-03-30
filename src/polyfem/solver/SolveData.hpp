@@ -38,6 +38,7 @@ namespace polyfem::solver
 	class BCPenaltyForm;
 	class InertiaForm;
 	class ElasticForm;
+	enum class ElementInversionCheck;
 
 	/// class to store time stepping data
 	class SolveData
@@ -58,6 +59,7 @@ namespace polyfem::solver
 			const assembler::Assembler &assembler,
 			const assembler::AssemblyValsCache &ass_vals_cache,
 			const assembler::AssemblyValsCache &mass_ass_vals_cache,
+			const solver::ElementInversionCheck check_inversion,
 
 			// Body form
 			const int n_pressure_bases,

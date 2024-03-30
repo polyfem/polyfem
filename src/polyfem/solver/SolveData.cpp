@@ -33,6 +33,7 @@ namespace polyfem::solver
 		const assembler::Assembler &assembler,
 		const assembler::AssemblyValsCache &ass_vals_cache,
 		const assembler::AssemblyValsCache &mass_ass_vals_cache,
+		const ElementInversionCheck check_inversion,
 
 		// Body form
 		const int n_pressure_bases,
@@ -93,7 +94,7 @@ namespace polyfem::solver
 
 		elastic_form = std::make_shared<ElasticForm>(
 			n_bases, bases, geom_bases, assembler, ass_vals_cache,
-			dt, is_volume);
+			dt, is_volume, check_inversion);
 		forms.push_back(elastic_form);
 
 		if (rhs_assembler != nullptr)

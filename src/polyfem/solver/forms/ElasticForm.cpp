@@ -39,12 +39,14 @@ namespace polyfem::solver
 							 const assembler::Assembler &assembler,
 							 const assembler::AssemblyValsCache &ass_vals_cache,
 							 const double dt,
-							 const bool is_volume)
+							 const bool is_volume,
+							 const ElementInversionCheck check_inversion)
 		: n_bases_(n_bases),
 		  bases_(bases),
 		  geom_bases_(geom_bases),
 		  assembler_(assembler),
 		  ass_vals_cache_(ass_vals_cache),
+		  check_inversion_(check_inversion),
 		  dt_(dt),
 		  is_volume_(is_volume)
 	{
@@ -86,37 +88,52 @@ namespace polyfem::solver
 		}
 	}
 
-	bool ElasticForm::is_step_valid(const Eigen::VectorXd &, const Eigen::VectorXd &x1) const
+	double ElasticForm::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
+		if (check_inversion_ == ElementInversionCheck::Transient)
+		{
+			POLYFEM_SCOPED_TIMER("Conservative Transient Jacobian Check");
+			return maxTimeStep(is_volume_ ? 3 : 2, bases_, x0, x1, 1e-1);
+		}
+		else
+			return 1.;
+	}
+
+	bool ElasticForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
+	{
+		if (check_inversion_ == ElementInversionCheck::Discrete)
+			return true;
+
+		// static conservative check
 		// TODO: handle polygon and quad
-		bool flag1;
+		bool flag;
 		{
 			POLYFEM_SCOPED_TIMER("Conservative Jacobian Check");
-			flag1 = isValid(is_volume_ ? 3 : 2, bases_, x1);
-		}
-		bool flag2;
-		{
-			POLYFEM_SCOPED_TIMER("Compute gradient");
-			Eigen::VectorXd grad;
-			first_derivative(x1, grad);
-			flag2 = !grad.array().isNaN().any();
+			flag = isValid(is_volume_ ? 3 : 2, bases_, x1);
 		}
 
-		if (flag1 == flag2)
-			return flag1;
-		else 
-		{
-			if (flag1)
-			{
-				logger().warn("Conservative check is wrong!");
-				return flag2;
-			}
-			else
-			{
-				logger().debug("Conservative check did a good job!");
-				return flag1;
-			}
-		}
+		if (!flag)
+			logger().debug("Conservative check did a good job!");
+		else
+			logger().warn("Conservative check is wrong!");
+
+		// TODO: Implement transient check
+		// if (check_inversion_ == ElementInversionCheck::Conservative)
+			return flag;
+	}
+
+	bool ElasticForm::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
+	{
+		// check inversion on quadrature points
+		Eigen::VectorXd grad;
+		first_derivative(x1, grad);
+		if (grad.array().isNaN().any())
+			return false;
+		
+		if (check_inversion_ == ElementInversionCheck::Conservative)
+			return is_step_collision_free(x0, x1);
+		
+		return true;
 
 		// Check the scalar field in the output does not contain NANs.
 		// WARNING: Does not work because the energy is not evaluated at the same quadrature points.

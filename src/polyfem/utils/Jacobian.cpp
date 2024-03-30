@@ -52,4 +52,43 @@ namespace polyfem::utils
 
     template bool isValid<2>(const Eigen::Matrix<double, -1, 2> &cp, int order);
     template bool isValid<3>(const Eigen::Matrix<double, -1, 3> &cp, int order);
+
+    double maxTimeStep(
+        const int dim,
+        const std::vector<basis::ElementBases> &bases, 
+        const Eigen::VectorXd &u1,
+        const Eigen::VectorXd &u2,
+        double precision)
+    {
+        int order = -1;
+        for (const auto &b : bases)
+        {
+            for (const auto &bs : b.bases)
+            {
+                if (order < 0)
+                    order = bs.order();
+                else if (order != bs.order())
+                    log_and_throw_error("All bases must have the same order");
+            }
+        }
+
+        const int n_basis_per_cell = bases[0].bases.size();
+        Eigen::MatrixXd cp1 = Eigen::MatrixXd::Zero(bases.size() * n_basis_per_cell, dim);
+        Eigen::MatrixXd cp2 = Eigen::MatrixXd::Zero(bases.size() * n_basis_per_cell, dim);
+        for (int e = 0; e < bases.size(); ++e)
+        {
+            for (int i = 0; i < bases[e].bases.size(); ++i)
+            {
+                const auto &g = bases[e].bases[i].global()[0];
+
+                cp1.row(e * n_basis_per_cell + i) = g.node + u1.segment(g.index * dim, dim).transpose();
+                cp2.row(e * n_basis_per_cell + i) = g.node + u2.segment(g.index * dim, dim).transpose();
+            }
+        }
+
+        if (dim == 2)
+            return element_validity::maxTimeStep<2>(cp1, cp2, element_validity::shapes::TRIANGLE, order, precision);
+        else
+            return element_validity::maxTimeStep<3>(cp1, cp2, element_validity::shapes::TETRAHEDRON, order, precision);
+    }
 }

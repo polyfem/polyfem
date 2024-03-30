@@ -10,6 +10,7 @@
 
 namespace polyfem::solver
 {
+	enum class ElementInversionCheck { Discrete, Conservative, Transient };
 	/// @brief Form of the elasticity potential and forces
 	class ElasticForm : public Form
 	{
@@ -22,7 +23,8 @@ namespace polyfem::solver
 					const assembler::Assembler &assembler,
 					const assembler::AssemblyValsCache &ass_vals_cache,
 					const double dt,
-					const bool is_volume);
+					const bool is_volume,
+					const ElementInversionCheck check_inversion = ElementInversionCheck::Discrete);
 
 	protected:
 		/// @brief Compute the elastic potential value
@@ -47,10 +49,20 @@ namespace polyfem::solver
 		/// @return True if the step is allowed
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
+		/// @brief Checks if the step is inversion free
+		/// @return True if the step is inversion free else false
+		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
+
 		/// @brief Update time-dependent fields
 		/// @param t Current time
 		/// @param x Current solution at time t
 		void update_quantities(const double t, const Eigen::VectorXd &x) override { x_prev_ = x; }
+
+		/// @brief Determine the maximum step size allowable between the current and next solution
+		/// @param x0 Current solution (step size = 0)
+		/// @param x1 Next solution (step size = 1)
+		/// @return Maximum allowable step size
+		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
 		/// @brief Compute the derivative of the force wrt lame/damping parameters, then multiply the resulting matrix with adjoint_sol.
 		/// @param[in] x Current solution
@@ -72,6 +84,7 @@ namespace polyfem::solver
 
 		const assembler::Assembler &assembler_; ///< Reference to the assembler
 		const assembler::AssemblyValsCache &ass_vals_cache_;
+		const ElementInversionCheck check_inversion_;
 		const double dt_;
 		const bool is_volume_;
 
