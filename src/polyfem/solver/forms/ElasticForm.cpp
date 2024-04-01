@@ -114,8 +114,6 @@ namespace polyfem::solver
 
 		if (!flag)
 			logger().debug("Conservative check did a good job!");
-		else
-			logger().warn("Conservative check is wrong!");
 
 		// TODO: Implement transient check
 		// if (check_inversion_ == ElementInversionCheck::Conservative)
