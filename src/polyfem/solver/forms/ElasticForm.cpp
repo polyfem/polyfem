@@ -104,7 +104,6 @@ namespace polyfem::solver
 		if (check_inversion_ == ElementInversionCheck::Discrete)
 			return true;
 
-		// static conservative check
 		// TODO: handle polygon and quad
 		bool flag;
 		{
@@ -113,11 +112,23 @@ namespace polyfem::solver
 		}
 
 		if (!flag)
+		{
 			logger().debug("Conservative check did a good job!");
-
-		// TODO: Implement transient check
-		// if (check_inversion_ == ElementInversionCheck::Conservative)
 			return flag;
+		}
+
+		if (check_inversion_ == ElementInversionCheck::Conservative)
+			return flag;
+
+		{
+			POLYFEM_SCOPED_TIMER("Transient Jacobian Check");
+			flag = isValid(is_volume_ ? 3 : 2, bases_, x0, x1);
+		}
+
+		if (!flag)
+			logger().debug("Transient check did a good job!");
+		
+		return flag;
 	}
 
 	bool ElasticForm::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
