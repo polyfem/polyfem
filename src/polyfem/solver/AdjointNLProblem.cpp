@@ -9,7 +9,9 @@
 #include <igl/boundary_facets.h>
 #include <igl/writeOBJ.h>
 
-#include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/io/Evaluator.hpp>
+#include <polyfem/solver/forms/PeriodicContactForm.hpp>
+#include <polyfem/solver/NLHomoProblem.hpp>
 
 #include <list>
 #include <stack>
