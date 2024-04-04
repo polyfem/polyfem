@@ -151,13 +151,17 @@ var hierarchy =
       [ "polyfem::solver::BCLagrangianForm", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html", null ],
       [ "polyfem::solver::BCPenaltyForm", "classpolyfem_1_1solver_1_1_b_c_penalty_form.html", null ],
       [ "polyfem::solver::BodyForm", "classpolyfem_1_1solver_1_1_body_form.html", null ],
-      [ "polyfem::solver::ContactForm", "classpolyfem_1_1solver_1_1_contact_form.html", null ],
+      [ "polyfem::solver::ContactForm", "classpolyfem_1_1solver_1_1_contact_form.html", [
+        [ "polyfem::solver::PeriodicContactForm", "classpolyfem_1_1solver_1_1_periodic_contact_form.html", null ]
+      ] ],
       [ "polyfem::solver::ElasticForm", "classpolyfem_1_1solver_1_1_elastic_form.html", null ],
       [ "polyfem::solver::FrictionForm", "classpolyfem_1_1solver_1_1_friction_form.html", null ],
       [ "polyfem::solver::InertiaForm", "classpolyfem_1_1solver_1_1_inertia_form.html", null ],
       [ "polyfem::solver::InversionBarrierForm", "classpolyfem_1_1solver_1_1_inversion_barrier_form.html", null ],
       [ "polyfem::solver::L2ProjectionForm", "classpolyfem_1_1solver_1_1_l2_projection_form.html", null ],
       [ "polyfem::solver::LaggedRegForm", "classpolyfem_1_1solver_1_1_lagged_reg_form.html", null ],
+      [ "polyfem::solver::MacroStrainALForm", "classpolyfem_1_1solver_1_1_macro_strain_a_l_form.html", null ],
+      [ "polyfem::solver::MacroStrainLagrangianForm", "classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html", null ],
       [ "polyfem::solver::RayleighDampingForm", "classpolyfem_1_1solver_1_1_rayleigh_damping_form.html", null ]
     ] ],
     [ "polyfem::renderer::FragmentAttributes", "classpolyfem_1_1renderer_1_1_fragment_attributes.html", null ],
@@ -202,6 +206,7 @@ var hierarchy =
     [ "polyfem::mesh::LocalBoundary", "classpolyfem_1_1mesh_1_1_local_boundary.html", null ],
     [ "polyfem::mesh::LocalMesh< M >", "classpolyfem_1_1mesh_1_1_local_mesh.html", null ],
     [ "polyfem::mesh::LocalRelaxationData< M >", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html", null ],
+    [ "polyfem::assembler::MacroStrainValue", "classpolyfem_1_1assembler_1_1_macro_strain_value.html", null ],
     [ "polyfem::assembler::MassMatrixAssembler", "classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html", null ],
     [ "polyfem::renderer::Material", "structpolyfem_1_1renderer_1_1_material.html", null ],
     [ "polyfem::utils::MatrixCache", "classpolyfem_1_1utils_1_1_matrix_cache.html", [
@@ -264,6 +269,7 @@ var hierarchy =
       [ "polyfem::solver::SliceMap", "classpolyfem_1_1solver_1_1_slice_map.html", null ]
     ] ],
     [ "polyfem::solver::ParametrizationFactory", "classpolyfem_1_1solver_1_1_parametrization_factory.html", null ],
+    [ "polyfem::utils::PeriodicBoundary", "classpolyfem_1_1utils_1_1_periodic_boundary.html", null ],
     [ "polyfem::mesh::Obstacle::Plane", "classpolyfem_1_1mesh_1_1_obstacle_1_1_plane.html", null ],
     [ "polyfem::basis::PolygonalBasis2d", "classpolyfem_1_1basis_1_1_polygonal_basis2d.html", null ],
     [ "polyfem::basis::PolygonalBasis3d", "classpolyfem_1_1basis_1_1_polygonal_basis3d.html", null ],
@@ -325,6 +331,7 @@ var hierarchy =
       [ "polyfem::solver::FullNLProblem", "classpolyfem_1_1solver_1_1_full_n_l_problem.html", [
         [ "polyfem::solver::AdjointNLProblem", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html", null ],
         [ "polyfem::solver::NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html", [
+          [ "polyfem::solver::NLHomoProblem", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html", null ],
           [ "polyfem::solver::StaticBoundaryNLProblem", "classpolyfem_1_1solver_1_1_static_boundary_n_l_problem.html", null ]
         ] ]
       ] ]

@@ -36,7 +36,7 @@ var searchData=
   ['disc_5forders_33',['disc_orders',['../classpolyfem_1_1_state.html#ae949933dff0a8e595e0a17b4916d33b4',1,'polyfem::State']]],
   ['discretization_5forder_34',['discretization_order',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a7447fd2073bacc976bc635315b8ec421',1,'polyfem::io::OutGeometryData::ExportOptions']]],
   ['disp_5fgrad_35',['disp_grad',['../namespaceelasticity__rhs.html#a3f0474d50037ed8ad5b1d0031dbadcef',1,'elasticity_rhs']]],
-  ['disp_5fgrad_5f_36',['disp_grad_',['../classpolyfem_1_1solver_1_1_diff_cache.html#a1def9f986a9f781b34e7ce7c56572403',1,'polyfem::solver::DiffCache']]],
+  ['disp_5fgrad_5f_36',['disp_grad_',['../classpolyfem_1_1solver_1_1_diff_cache.html#aa4ab6e7c4142b6ac6f8e6f89b6a3acc9',1,'polyfem::solver::DiffCache']]],
   ['disp_5fsize_5f_37',['disp_size_',['../classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_pressure.html#aea862548f09ad819fad26997cbb26805',1,'polyfem::assembler::IncompressibleLinearElasticityPressure']]],
   ['displacements_5f_38',['displacements_',['../classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a6531e3879479f407975f684fee6386ea',1,'polyfem::assembler::GenericTensorProblem::displacements_'],['../classpolyfem_1_1mesh_1_1_obstacle.html#abf187844b625e545eeebaf937b560744',1,'polyfem::mesh::Obstacle::displacements_']]],
   ['div_39',['div',['../namespaceelasticity__rhs.html#a73bf37da80758b94a64b53160d436f53',1,'elasticity_rhs']]],

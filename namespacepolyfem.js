@@ -83,6 +83,11 @@ var namespacepolyfem =
     [ "StiffnessMatrix", "namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4", null ],
     [ "VectorNd", "namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c", null ],
     [ "VectorNi", "namespacepolyfem.html#ab97febca5b8b70517cc760a5409fa522", null ],
+    [ "CacheLevel", "namespacepolyfem.html#a346219dfb830a5a1bcc0f368fc8a9e6e", [
+      [ "None", "namespacepolyfem.html#a346219dfb830a5a1bcc0f368fc8a9e6ea6adf97f83acf6453d4a6a4b1070f3754", null ],
+      [ "Solution", "namespacepolyfem.html#a346219dfb830a5a1bcc0f368fc8a9e6ea49b21ad0d38942f635877e7bbc5d7a1e", null ],
+      [ "Derivatives", "namespacepolyfem.html#a346219dfb830a5a1bcc0f368fc8a9e6ea2a7f1476b6ddab6d53b03d77dacdbd1e", null ]
+    ] ],
     [ "ElasticityTensorType", "namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1", [
       [ "CAUCHY", "namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a9d0e3157464d10e95bff71bbcf0001ad", null ],
       [ "PK1", "namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ac34dd77ffb9238275b93ea1897664a7e", null ],

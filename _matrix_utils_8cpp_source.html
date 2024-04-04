@@ -204,175 +204,182 @@ $(document).ready(function(){initNavTree('_matrix_utils_8cpp_source.html',''); i
 <div class="foldopen" id="foldopen00069" data-start="{" data-end="}">
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1utils.html#a75043e8afe913f3bc6279fd5349a4fd4">   69</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacepolyfem_1_1utils.html#a75043e8afe913f3bc6279fd5349a4fd4">polyfem::utils::vector2matrix</a>(<span class="keyword">const</span> Eigen::VectorXd &amp;<a class="code hl_variable" href="_assembler_8cpp.html#a0ceb8b1b1b63245b857fa3d925c17858">vec</a>, Eigen::MatrixXd &amp;<a class="code hl_variable" href="_transient_form_8cpp.html#aca46d143aa5c7474d00d969201e78fc5">mat</a>)</div>
 <div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>{</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">int</span> size = sqrt(<a class="code hl_variable" href="_assembler_8cpp.html#a0ceb8b1b1b63245b857fa3d925c17858">vec</a>.size());</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    assert(size * size == <a class="code hl_variable" href="_assembler_8cpp.html#a0ceb8b1b1b63245b857fa3d925c17858">vec</a>.size());</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <a class="code hl_variable" href="_transient_form_8cpp.html#aca46d143aa5c7474d00d969201e78fc5">mat</a> = <a class="code hl_function" href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5">unflatten</a>(<a class="code hl_variable" href="_assembler_8cpp.html#a0ceb8b1b1b63245b857fa3d925c17858">vec</a>, size);</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>}</div>
-</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
-<div class="foldopen" id="foldopen00077" data-start="{" data-end="}">
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1utils.html#a2fb8d51756a3b76bee0485fa58e65226">   77</a></span>Eigen::SparseMatrix&lt;double&gt; <a class="code hl_function" href="namespacepolyfem_1_1utils.html#a2fb8d51756a3b76bee0485fa58e65226">polyfem::utils::lump_matrix</a>(<span class="keyword">const</span> Eigen::SparseMatrix&lt;double&gt; &amp;M)</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>{</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    std::vector&lt;Eigen::Triplet&lt;double&gt;&gt; triplets;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">int</span> size = 1;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="_assembler_8cpp.html#a0ceb8b1b1b63245b857fa3d925c17858">vec</a>.size() == 9)</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        size = 3;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="_assembler_8cpp.html#a0ceb8b1b1b63245b857fa3d925c17858">vec</a>.size() == 4)</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        size = 2;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Invalid size in vector2matrix!&quot;</span>);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    </div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    assert(size * size == <a class="code hl_variable" href="_assembler_8cpp.html#a0ceb8b1b1b63245b857fa3d925c17858">vec</a>.size());</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; M.outerSize(); ++k)</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    {</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keywordflow">for</span> (Eigen::SparseMatrix&lt;double&gt;::InnerIterator it(M, k); it; ++it)</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        {</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            triplets.emplace_back(it.row(), it.row(), it.value());</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        }</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    }</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    Eigen::SparseMatrix&lt;double&gt; lumped(M.rows(), M.rows());</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    lumped.setFromTriplets(triplets.begin(), triplets.end());</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>    lumped.makeCompressed();</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keywordflow">return</span> lumped;</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <a class="code hl_variable" href="_transient_form_8cpp.html#aca46d143aa5c7474d00d969201e78fc5">mat</a> = <a class="code hl_function" href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5">unflatten</a>(<a class="code hl_variable" href="_assembler_8cpp.html#a0ceb8b1b1b63245b857fa3d925c17858">vec</a>, size);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>}</div>
 </div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="foldopen" id="foldopen00084" data-start="{" data-end="}">
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1utils.html#a2fb8d51756a3b76bee0485fa58e65226">   84</a></span>Eigen::SparseMatrix&lt;double&gt; <a class="code hl_function" href="namespacepolyfem_1_1utils.html#a2fb8d51756a3b76bee0485fa58e65226">polyfem::utils::lump_matrix</a>(<span class="keyword">const</span> Eigen::SparseMatrix&lt;double&gt; &amp;M)</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>{</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    std::vector&lt;Eigen::Triplet&lt;double&gt;&gt; triplets;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; M.outerSize(); ++k)</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordflow">for</span> (Eigen::SparseMatrix&lt;double&gt;::InnerIterator it(M, k); it; ++it)</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        {</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            triplets.emplace_back(it.row(), it.row(), it.value());</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        }</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    }</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
-<div class="foldopen" id="foldopen00096" data-start="{" data-end="}">
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1utils.html#af03329969960f2decea3c0752c243b2a">   96</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacepolyfem_1_1utils.html#af03329969960f2decea3c0752c243b2a">polyfem::utils::full_to_reduced_matrix</a>(</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> full_size,</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> reduced_size,</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keyword">const</span> std::vector&lt;int&gt; &amp;removed_vars,</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;full,</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <a class="code hl_typedef" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;reduced)</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>{</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <a class="code hl_define" href="_timer_8hpp.html#a9b9dcda2187614bc17a1a91c5de80b56">POLYFEM_SCOPED_TIMER</a>(<span class="stringliteral">&quot;full to reduced matrix&quot;</span>);</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keywordflow">if</span> (reduced_size == full_size || reduced_size == full.rows())</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    {</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        assert(reduced_size == full.rows() &amp;&amp; reduced_size == full.cols());</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        reduced = full;</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    }</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    assert(full.rows() == full_size &amp;&amp; full.cols() == full_size);</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    Eigen::VectorXi indices(full_size);</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    <span class="keywordtype">int</span> index = 0;</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordtype">size_t</span> kk = 0;</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; full_size; ++i)</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    {</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <span class="keywordflow">if</span> (kk &lt; removed_vars.size() &amp;&amp; removed_vars[kk] == i)</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        {</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            ++kk;</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            indices(i) = -1;</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        }</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        {</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>            indices(i) = index++;</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        }</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    }</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    assert(index == reduced_size);</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    std::vector&lt;Eigen::Triplet&lt;double&gt;&gt; <a class="code hl_variable" href="_mass_matrix_assembler_8cpp.html#ab74b878e460e8e6616a56665c01d7ab2">entries</a>;</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <a class="code hl_variable" href="_mass_matrix_assembler_8cpp.html#ab74b878e460e8e6616a56665c01d7ab2">entries</a>.reserve(full.nonZeros()); <span class="comment">// Conservative estimate</span></div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; full.outerSize(); ++k)</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    {</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="keywordflow">if</span> (indices(k) &lt; 0)</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>            <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    Eigen::SparseMatrix&lt;double&gt; lumped(M.rows(), M.rows());</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    lumped.setFromTriplets(triplets.begin(), triplets.end());</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    lumped.makeCompressed();</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <span class="keywordflow">return</span> lumped;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>}</div>
+</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="foldopen" id="foldopen00103" data-start="{" data-end="}">
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1utils.html#af03329969960f2decea3c0752c243b2a">  103</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacepolyfem_1_1utils.html#af03329969960f2decea3c0752c243b2a">polyfem::utils::full_to_reduced_matrix</a>(</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> full_size,</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> reduced_size,</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    <span class="keyword">const</span> std::vector&lt;int&gt; &amp;removed_vars,</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    <span class="keyword">const</span> <a class="code hl_typedef" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;full,</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    <a class="code hl_typedef" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;reduced)</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>{</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <a class="code hl_define" href="_timer_8hpp.html#a9b9dcda2187614bc17a1a91c5de80b56">POLYFEM_SCOPED_TIMER</a>(<span class="stringliteral">&quot;full to reduced matrix&quot;</span>);</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordflow">if</span> (reduced_size == full_size || reduced_size == full.rows())</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>    {</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        assert(reduced_size == full.rows() &amp;&amp; reduced_size == full.cols());</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        reduced = full;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    }</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    assert(full.rows() == full_size &amp;&amp; full.cols() == full_size);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    Eigen::VectorXi indices(full_size);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordtype">int</span> index = 0;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordtype">size_t</span> kk = 0;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; full_size; ++i)</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    {</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        <span class="keywordflow">if</span> (kk &lt; removed_vars.size() &amp;&amp; removed_vars[kk] == i)</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        {</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>            ++kk;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>            indices(i) = -1;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        }</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        {</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>            indices(i) = index++;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        }</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    }</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    assert(index == reduced_size);</div>
 <div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        <span class="keywordflow">for</span> (StiffnessMatrix::InnerIterator it(full, k); it; ++it)</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        {</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>            assert(it.col() == k);</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>            <span class="keywordflow">if</span> (indices(it.row()) &lt; 0 || indices(it.col()) &lt; 0)</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>                <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>            assert(indices(it.row()) &gt;= 0);</div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>            assert(indices(it.col()) &gt;= 0);</div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>            <a class="code hl_variable" href="_mass_matrix_assembler_8cpp.html#ab74b878e460e8e6616a56665c01d7ab2">entries</a>.emplace_back(indices(it.row()), indices(it.col()), it.value());</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        }</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    }</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    std::vector&lt;Eigen::Triplet&lt;double&gt;&gt; <a class="code hl_variable" href="_mass_matrix_assembler_8cpp.html#ab74b878e460e8e6616a56665c01d7ab2">entries</a>;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    <a class="code hl_variable" href="_mass_matrix_assembler_8cpp.html#ab74b878e460e8e6616a56665c01d7ab2">entries</a>.reserve(full.nonZeros()); <span class="comment">// Conservative estimate</span></div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; full.outerSize(); ++k)</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    {</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        <span class="keywordflow">if</span> (indices(k) &lt; 0)</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>            <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        <span class="keywordflow">for</span> (StiffnessMatrix::InnerIterator it(full, k); it; ++it)</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        {</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>            assert(it.col() == k);</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>            <span class="keywordflow">if</span> (indices(it.row()) &lt; 0 || indices(it.col()) &lt; 0)</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>                <span class="keywordflow">continue</span>;</div>
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    reduced.resize(reduced_size, reduced_size);</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    reduced.setFromTriplets(<a class="code hl_variable" href="_mass_matrix_assembler_8cpp.html#ab74b878e460e8e6616a56665c01d7ab2">entries</a>.begin(), <a class="code hl_variable" href="_mass_matrix_assembler_8cpp.html#ab74b878e460e8e6616a56665c01d7ab2">entries</a>.end());</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    reduced.makeCompressed();</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>}</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>            assert(indices(it.row()) &gt;= 0);</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>            assert(indices(it.col()) &gt;= 0);</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span> </div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>            <a class="code hl_variable" href="_mass_matrix_assembler_8cpp.html#ab74b878e460e8e6616a56665c01d7ab2">entries</a>.emplace_back(indices(it.row()), indices(it.col()), it.value());</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        }</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    }</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    reduced.resize(reduced_size, reduced_size);</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    reduced.setFromTriplets(<a class="code hl_variable" href="_mass_matrix_assembler_8cpp.html#ab74b878e460e8e6616a56665c01d7ab2">entries</a>.begin(), <a class="code hl_variable" href="_mass_matrix_assembler_8cpp.html#ab74b878e460e8e6616a56665c01d7ab2">entries</a>.end());</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    reduced.makeCompressed();</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>}</div>
 </div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span> </div>
-<div class="foldopen" id="foldopen00155" data-start="{" data-end="}">
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1utils.html#a4d994983e63be19cec7d739baba363a1">  155</a></span>Eigen::MatrixXd <a class="code hl_function" href="namespacepolyfem_1_1utils.html#a4d994983e63be19cec7d739baba363a1">polyfem::utils::reorder_matrix</a>(</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keyword">const</span> Eigen::MatrixXd &amp;in,</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keyword">const</span> Eigen::VectorXi &amp;in_to_out,</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    <span class="keywordtype">int</span> out_blocks,</div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> block_size)</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>{</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keyword">constexpr</span> <span class="keywordtype">double</span> NaN = std::numeric_limits&lt;double&gt;::quiet_NaN();</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    assert(in.rows() % block_size == 0);</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    assert(in_to_out.size() == in.rows() / block_size);</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <span class="keywordflow">if</span> (out_blocks &lt; 0)</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>        out_blocks = in.rows() / block_size;</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    Eigen::MatrixXd out = Eigen::MatrixXd::Constant(</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        out_blocks * block_size, in.cols(), NaN);</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> in_blocks = in.rows() / block_size;</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; in_blocks; ++i)</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    {</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> j = in_to_out[i];</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        <span class="keywordflow">if</span> (j &lt; 0)</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>            <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span> </div>
+<div class="foldopen" id="foldopen00162" data-start="{" data-end="}">
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1utils.html#a4d994983e63be19cec7d739baba363a1">  162</a></span>Eigen::MatrixXd <a class="code hl_function" href="namespacepolyfem_1_1utils.html#a4d994983e63be19cec7d739baba363a1">polyfem::utils::reorder_matrix</a>(</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    <span class="keyword">const</span> Eigen::MatrixXd &amp;in,</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keyword">const</span> Eigen::VectorXi &amp;in_to_out,</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keywordtype">int</span> out_blocks,</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> block_size)</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>{</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keyword">constexpr</span> <span class="keywordtype">double</span> NaN = std::numeric_limits&lt;double&gt;::quiet_NaN();</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    assert(in.rows() % block_size == 0);</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    assert(in_to_out.size() == in.rows() / block_size);</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keywordflow">if</span> (out_blocks &lt; 0)</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        out_blocks = in.rows() / block_size;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>    Eigen::MatrixXd out = Eigen::MatrixXd::Constant(</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        out_blocks * block_size, in.cols(), NaN);</div>
 <div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        out.middleRows(block_size * j, block_size) =</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>            in.middleRows(block_size * i, block_size);</div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    }</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span> </div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    <span class="keywordflow">return</span> out;</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>}</div>
-</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> in_blocks = in.rows() / block_size;</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; in_blocks; ++i)</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    {</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> j = in_to_out[i];</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>        <span class="keywordflow">if</span> (j &lt; 0)</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>            <span class="keywordflow">continue</span>;</div>
 <div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
-<div class="foldopen" id="foldopen00186" data-start="{" data-end="}">
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1utils.html#aac783c2b2ed8d267c159ea45235b17f4">  186</a></span>Eigen::MatrixXd <a class="code hl_function" href="namespacepolyfem_1_1utils.html#aac783c2b2ed8d267c159ea45235b17f4">polyfem::utils::unreorder_matrix</a>(</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>    <span class="keyword">const</span> Eigen::MatrixXd &amp;out,</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    <span class="keyword">const</span> Eigen::VectorXi &amp;in_to_out,</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    <span class="keywordtype">int</span> in_blocks,</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> block_size)</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>{</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    <span class="keyword">constexpr</span> <span class="keywordtype">double</span> NaN = std::numeric_limits&lt;double&gt;::quiet_NaN();</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    assert(out.rows() % block_size == 0);</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span> </div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    <span class="keywordflow">if</span> (in_blocks &lt; 0)</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        in_blocks = out.rows() / block_size;</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    assert(in_to_out.size() == in_blocks);</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    Eigen::MatrixXd in = Eigen::MatrixXd::Constant(</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>        in_blocks * block_size, out.cols(), NaN);</div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; in_blocks; i++)</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    {</div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> j = in_to_out[i];</div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <span class="keywordflow">if</span> (j &lt; 0)</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>            <span class="keywordflow">continue</span>;</div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        in.middleRows(block_size * i, block_size) =</div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>            out.middleRows(block_size * j, block_size);</div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    }</div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span> </div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="keywordflow">return</span> in;</div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>}</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        out.middleRows(block_size * j, block_size) =</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>            in.middleRows(block_size * i, block_size);</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    }</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span> </div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>}</div>
 </div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span> </div>
+<div class="foldopen" id="foldopen00193" data-start="{" data-end="}">
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1utils.html#aac783c2b2ed8d267c159ea45235b17f4">  193</a></span>Eigen::MatrixXd <a class="code hl_function" href="namespacepolyfem_1_1utils.html#aac783c2b2ed8d267c159ea45235b17f4">polyfem::utils::unreorder_matrix</a>(</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    <span class="keyword">const</span> Eigen::MatrixXd &amp;out,</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    <span class="keyword">const</span> Eigen::VectorXi &amp;in_to_out,</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    <span class="keywordtype">int</span> in_blocks,</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keyword">const</span> <span class="keywordtype">int</span> block_size)</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>{</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keyword">constexpr</span> <span class="keywordtype">double</span> NaN = std::numeric_limits&lt;double&gt;::quiet_NaN();</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span> </div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    assert(out.rows() % block_size == 0);</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <span class="keywordflow">if</span> (in_blocks &lt; 0)</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        in_blocks = out.rows() / block_size;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    assert(in_to_out.size() == in_blocks);</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span> </div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    Eigen::MatrixXd in = Eigen::MatrixXd::Constant(</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        in_blocks * block_size, out.cols(), NaN);</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span> </div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; in_blocks; i++)</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>    {</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> j = in_to_out[i];</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        <span class="keywordflow">if</span> (j &lt; 0)</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>            <span class="keywordflow">continue</span>;</div>
 <div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span> </div>
-<div class="foldopen" id="foldopen00216" data-start="{" data-end="}">
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1utils.html#aea6bd161d2a5a24993e13435a0a2ea52">  216</a></span>Eigen::MatrixXi <a class="code hl_function" href="namespacepolyfem_1_1utils.html#aea6bd161d2a5a24993e13435a0a2ea52">polyfem::utils::map_index_matrix</a>(</div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    <span class="keyword">const</span> Eigen::MatrixXi &amp;in,</div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="keyword">const</span> Eigen::VectorXi &amp;index_mapping)</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>{</div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    Eigen::MatrixXi out(in.rows(), in.cols());</div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; in.rows(); i++)</div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>    {</div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; in.cols(); j++)</div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        {</div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>            out(i, j) = index_mapping[in(i, j)];</div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>        }</div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    }</div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    <span class="keywordflow">return</span> out;</div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>}</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        in.middleRows(block_size * i, block_size) =</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>            out.middleRows(block_size * j, block_size);</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    }</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    <span class="keywordflow">return</span> in;</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>}</div>
+</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span> </div>
+<div class="foldopen" id="foldopen00223" data-start="{" data-end="}">
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1utils.html#aea6bd161d2a5a24993e13435a0a2ea52">  223</a></span>Eigen::MatrixXi <a class="code hl_function" href="namespacepolyfem_1_1utils.html#aea6bd161d2a5a24993e13435a0a2ea52">polyfem::utils::map_index_matrix</a>(</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    <span class="keyword">const</span> Eigen::MatrixXi &amp;in,</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    <span class="keyword">const</span> Eigen::VectorXi &amp;index_mapping)</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>{</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    Eigen::MatrixXi out(in.rows(), in.cols());</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; in.rows(); i++)</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    {</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; in.cols(); j++)</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>        {</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>            out(i, j) = index_mapping[in(i, j)];</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>        }</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    }</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    <span class="keywordflow">return</span> out;</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>}</div>
 </div>
 <div class="ttc" id="a_assembler_8cpp_html_a0ceb8b1b1b63245b857fa3d925c17858"><div class="ttname"><a href="_assembler_8cpp.html#a0ceb8b1b1b63245b857fa3d925c17858">vec</a></div><div class="ttdeci">Eigen::MatrixXd vec</div><div class="ttdef"><b>Definition</b> <a href="_assembler_8cpp_source.html#l00072">Assembler.cpp:72</a></div></div>
 <div class="ttc" id="a_logger_8hpp_html"><div class="ttname"><a href="_logger_8hpp.html">Logger.hpp</a></div></div>
@@ -383,15 +390,15 @@ $(document).ready(function(){initNavTree('_matrix_utils_8cpp_source.html',''); i
 <div class="ttc" id="a_timer_8hpp_html"><div class="ttname"><a href="_timer_8hpp.html">Timer.hpp</a></div></div>
 <div class="ttc" id="a_timer_8hpp_html_a9b9dcda2187614bc17a1a91c5de80b56"><div class="ttname"><a href="_timer_8hpp.html#a9b9dcda2187614bc17a1a91c5de80b56">POLYFEM_SCOPED_TIMER</a></div><div class="ttdeci">#define POLYFEM_SCOPED_TIMER(...)</div><div class="ttdef"><b>Definition</b> <a href="_timer_8hpp_source.html#l00010">Timer.hpp:10</a></div></div>
 <div class="ttc" id="a_transient_form_8cpp_html_aca46d143aa5c7474d00d969201e78fc5"><div class="ttname"><a href="_transient_form_8cpp.html#aca46d143aa5c7474d00d969201e78fc5">mat</a></div><div class="ttdeci">Eigen::MatrixXd mat</div><div class="ttdef"><b>Definition</b> <a href="_transient_form_8cpp_source.html#l00024">TransientForm.cpp:24</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1utils_html_a2fb8d51756a3b76bee0485fa58e65226"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a2fb8d51756a3b76bee0485fa58e65226">polyfem::utils::lump_matrix</a></div><div class="ttdeci">Eigen::SparseMatrix&lt; double &gt; lump_matrix(const Eigen::SparseMatrix&lt; double &gt; &amp;M)</div><div class="ttdoc">Lump each row of a matrix into the diagonal.</div><div class="ttdef"><b>Definition</b> <a href="_matrix_utils_8cpp_source.html#l00077">MatrixUtils.cpp:77</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1utils_html_a2fb8d51756a3b76bee0485fa58e65226"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a2fb8d51756a3b76bee0485fa58e65226">polyfem::utils::lump_matrix</a></div><div class="ttdeci">Eigen::SparseMatrix&lt; double &gt; lump_matrix(const Eigen::SparseMatrix&lt; double &gt; &amp;M)</div><div class="ttdoc">Lump each row of a matrix into the diagonal.</div><div class="ttdef"><b>Definition</b> <a href="_matrix_utils_8cpp_source.html#l00084">MatrixUtils.cpp:84</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1utils_html_a3a719017c6c406fba78aee8fbaa4103b"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a3a719017c6c406fba78aee8fbaa4103b">polyfem::utils::show_matrix_stats</a></div><div class="ttdeci">void show_matrix_stats(const Eigen::MatrixXd &amp;M)</div><div class="ttdef"><b>Definition</b> <a href="_matrix_utils_8cpp_source.html#l00008">MatrixUtils.cpp:8</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1utils_html_a4d994983e63be19cec7d739baba363a1"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a4d994983e63be19cec7d739baba363a1">polyfem::utils::reorder_matrix</a></div><div class="ttdeci">Eigen::MatrixXd reorder_matrix(const Eigen::MatrixXd &amp;in, const Eigen::VectorXi &amp;in_to_out, int out_blocks=-1, const int block_size=1)</div><div class="ttdoc">Reorder row blocks in a matrix.</div><div class="ttdef"><b>Definition</b> <a href="_matrix_utils_8cpp_source.html#l00155">MatrixUtils.cpp:155</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1utils_html_a4d994983e63be19cec7d739baba363a1"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a4d994983e63be19cec7d739baba363a1">polyfem::utils::reorder_matrix</a></div><div class="ttdeci">Eigen::MatrixXd reorder_matrix(const Eigen::MatrixXd &amp;in, const Eigen::VectorXi &amp;in_to_out, int out_blocks=-1, const int block_size=1)</div><div class="ttdoc">Reorder row blocks in a matrix.</div><div class="ttdef"><b>Definition</b> <a href="_matrix_utils_8cpp_source.html#l00162">MatrixUtils.cpp:162</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1utils_html_a75043e8afe913f3bc6279fd5349a4fd4"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a75043e8afe913f3bc6279fd5349a4fd4">polyfem::utils::vector2matrix</a></div><div class="ttdeci">void vector2matrix(const Eigen::VectorXd &amp;vec, Eigen::MatrixXd &amp;mat)</div><div class="ttdef"><b>Definition</b> <a href="_matrix_utils_8cpp_source.html#l00069">MatrixUtils.cpp:69</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1utils_html_aac783c2b2ed8d267c159ea45235b17f4"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#aac783c2b2ed8d267c159ea45235b17f4">polyfem::utils::unreorder_matrix</a></div><div class="ttdeci">Eigen::MatrixXd unreorder_matrix(const Eigen::MatrixXd &amp;out, const Eigen::VectorXi &amp;in_to_out, int in_blocks=-1, const int block_size=1)</div><div class="ttdoc">Undo the reordering of row blocks in a matrix.</div><div class="ttdef"><b>Definition</b> <a href="_matrix_utils_8cpp_source.html#l00186">MatrixUtils.cpp:186</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1utils_html_aac783c2b2ed8d267c159ea45235b17f4"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#aac783c2b2ed8d267c159ea45235b17f4">polyfem::utils::unreorder_matrix</a></div><div class="ttdeci">Eigen::MatrixXd unreorder_matrix(const Eigen::MatrixXd &amp;out, const Eigen::VectorXi &amp;in_to_out, int in_blocks=-1, const int block_size=1)</div><div class="ttdoc">Undo the reordering of row blocks in a matrix.</div><div class="ttdef"><b>Definition</b> <a href="_matrix_utils_8cpp_source.html#l00193">MatrixUtils.cpp:193</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1utils_html_aafdbbff4a81a4fcba11129097b1109e5"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5">polyfem::utils::unflatten</a></div><div class="ttdeci">Eigen::MatrixXd unflatten(const Eigen::VectorXd &amp;x, int dim)</div><div class="ttdoc">Unflatten rowwises, so every dim elements in x become a row.</div><div class="ttdef"><b>Definition</b> <a href="_matrix_utils_8cpp_source.html#l00053">MatrixUtils.cpp:53</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1utils_html_adac090350174847f46edfd397abd4ab4"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#adac090350174847f46edfd397abd4ab4">polyfem::utils::flatten</a></div><div class="ttdeci">Eigen::VectorXd flatten(const Eigen::MatrixXd &amp;X)</div><div class="ttdoc">Flatten rowwises.</div><div class="ttdef"><b>Definition</b> <a href="_matrix_utils_8cpp_source.html#l00034">MatrixUtils.cpp:34</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1utils_html_aea6bd161d2a5a24993e13435a0a2ea52"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#aea6bd161d2a5a24993e13435a0a2ea52">polyfem::utils::map_index_matrix</a></div><div class="ttdeci">Eigen::MatrixXi map_index_matrix(const Eigen::MatrixXi &amp;in, const Eigen::VectorXi &amp;index_mapping)</div><div class="ttdoc">Map the entrys of an index matrix to new indices.</div><div class="ttdef"><b>Definition</b> <a href="_matrix_utils_8cpp_source.html#l00216">MatrixUtils.cpp:216</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1utils_html_af03329969960f2decea3c0752c243b2a"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#af03329969960f2decea3c0752c243b2a">polyfem::utils::full_to_reduced_matrix</a></div><div class="ttdeci">void full_to_reduced_matrix(const int full_size, const int reduced_size, const std::vector&lt; int &gt; &amp;removed_vars, const StiffnessMatrix &amp;full, StiffnessMatrix &amp;reduced)</div><div class="ttdoc">Map a full size matrix to a reduced one by dropping rows and columns.</div><div class="ttdef"><b>Definition</b> <a href="_matrix_utils_8cpp_source.html#l00096">MatrixUtils.cpp:96</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1utils_html_aea6bd161d2a5a24993e13435a0a2ea52"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#aea6bd161d2a5a24993e13435a0a2ea52">polyfem::utils::map_index_matrix</a></div><div class="ttdeci">Eigen::MatrixXi map_index_matrix(const Eigen::MatrixXi &amp;in, const Eigen::VectorXi &amp;index_mapping)</div><div class="ttdoc">Map the entrys of an index matrix to new indices.</div><div class="ttdef"><b>Definition</b> <a href="_matrix_utils_8cpp_source.html#l00223">MatrixUtils.cpp:223</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1utils_html_af03329969960f2decea3c0752c243b2a"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#af03329969960f2decea3c0752c243b2a">polyfem::utils::full_to_reduced_matrix</a></div><div class="ttdeci">void full_to_reduced_matrix(const int full_size, const int reduced_size, const std::vector&lt; int &gt; &amp;removed_vars, const StiffnessMatrix &amp;full, StiffnessMatrix &amp;reduced)</div><div class="ttdoc">Map a full size matrix to a reduced one by dropping rows and columns.</div><div class="ttdef"><b>Definition</b> <a href="_matrix_utils_8cpp_source.html#l00103">MatrixUtils.cpp:103</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_a03f3d75072d2fd19f70cd886a51d10dd"><div class="ttname"><a href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">polyfem::logger</a></div><div class="ttdeci">spdlog::logger &amp; logger()</div><div class="ttdoc">Retrieves the current logger.</div><div class="ttdef"><b>Definition</b> <a href="_logger_8cpp_source.html#l00042">Logger.cpp:42</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_af952b2322cc7cfb3abcca5212e2f16d4"><div class="ttname"><a href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">polyfem::StiffnessMatrix</a></div><div class="ttdeci">Eigen::SparseMatrix&lt; double, Eigen::ColMajor &gt; StiffnessMatrix</div><div class="ttdef"><b>Definition</b> <a href="_types_8hpp_source.html#l00020">Types.hpp:20</a></div></div>
 </div><!-- fragment --></div><!-- contents -->

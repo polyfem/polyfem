@@ -48,7 +48,7 @@
 <script type="application/ecmascript">
 var viewWidth = 742;
 var viewHeight = 258;
-var sectionId = 'dynsection-13';
+var sectionId = 'dynsection-19';
 </script>
 <script type="application/ecmascript" xlink:href="svg.min.js"/>
 <svg id="graph" class="graph">
@@ -67,10 +67,10 @@ var sectionId = 'dynsection-13';
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_n_l_problem.html#a7000e6d7044be55a8bdb4db462f95d91" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_n_l_problem.html#a439a8f0538b3bb8f306cb98ac30c7873" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="349,-185 197,-185 197,-155 349,-155 349,-185"/>
 <text text-anchor="start" x="205" y="-173" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::NLProblem</text>
-<text text-anchor="middle" x="273" y="-162" font-family="Helvetica,sans-Serif" font-size="10.00">::full_to_reduced</text>
+<text text-anchor="middle" x="273" y="-162" font-family="Helvetica,sans-Serif" font-size="10.00">::full_to_reduced_grad</text>
 </a>
 </g>
 </g>
@@ -162,10 +162,10 @@ var sectionId = 'dynsection-13';
 <!-- Node6 -->
 <g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_Node000006"><a xlink:href="classpolyfem_1_1solver_1_1_n_l_problem.html#a203d0a565a01b4075a8aac1e93a922b6" target="_top" xlink:title=" ">
+<g id="a_Node000006"><a xlink:href="classpolyfem_1_1solver_1_1_n_l_problem.html#a22438ddae389736c23f57b40c5f2ee84" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="546,-250 394,-250 394,-220 546,-220 546,-250"/>
 <text text-anchor="start" x="402" y="-238" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::NLProblem</text>
-<text text-anchor="middle" x="470" y="-227" font-family="Helvetica,sans-Serif" font-size="10.00">::full_to_reduced_aux</text>
+<text text-anchor="middle" x="470" y="-227" font-family="Helvetica,sans-Serif" font-size="10.00">::full_to_reduced_aux_grad</text>
 </a>
 </g>
 </g>
@@ -264,7 +264,7 @@ var sectionId = 'dynsection-13';
 <!-- Node11 -->
 <g id="Node000011" class="node">
 <title>Node11</title>
-<g id="a_Node000011"><a xlink:href="classpolyfem_1_1solver_1_1_n_l_problem.html#aa1c6070db825c4830242808e26908ce0" target="_top" xlink:title=" ">
+<g id="a_Node000011"><a xlink:href="classpolyfem_1_1solver_1_1_n_l_problem.html#a73b546ba6adb7cafb178404460f1f6b5" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="546,-116 394,-116 394,-86 546,-86 546,-116"/>
 <text text-anchor="start" x="402" y="-104" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::NLProblem</text>
 <text text-anchor="middle" x="470" y="-93" font-family="Helvetica,sans-Serif" font-size="10.00">::reduced_to_full_aux</text>

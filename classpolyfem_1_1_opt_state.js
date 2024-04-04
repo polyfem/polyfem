@@ -2,7 +2,7 @@ var classpolyfem_1_1_opt_state =
 [
     [ "~OptState", "classpolyfem_1_1_opt_state.html#ae97fd813e2cbfffb91eb092222faed5d", null ],
     [ "OptState", "classpolyfem_1_1_opt_state.html#af92124a9c75253c4c70e66c46ecf7449", null ],
-    [ "crate_problem", "classpolyfem_1_1_opt_state.html#ae4fc316d7ce75aed5d5d95f22c265b44", null ],
+    [ "create_problem", "classpolyfem_1_1_opt_state.html#af6e0a0dbf67bc5b8d22c7fec7a9bd9b6", null ],
     [ "create_states", "classpolyfem_1_1_opt_state.html#ad2f643a88d481c1db7b39ee1397af44c", null ],
     [ "eval", "classpolyfem_1_1_opt_state.html#a8ce170f4f3bc85947966358984a8ea8b", null ],
     [ "init", "classpolyfem_1_1_opt_state.html#a49a90bfd024bab8f1d0a0565911b20ca", null ],

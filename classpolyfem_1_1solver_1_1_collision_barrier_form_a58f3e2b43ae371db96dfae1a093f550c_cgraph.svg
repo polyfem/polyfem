@@ -46,7 +46,7 @@
   </g>
 </defs>
 <script type="application/ecmascript">
-var viewWidth = 884;
+var viewWidth = 1032;
 var viewHeight = 115;
 var sectionId = 'dynsection-7';
 </script>
@@ -84,19 +84,19 @@ var sectionId = 'dynsection-7';
 </a>
 </g>
 </g>
-<!-- Node7 -->
-<g id="Node000007" class="node">
-<title>Node7</title>
-<g id="a_Node000007"><a xlink:href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" target="_top" xlink:title="Unflatten rowwises, so every dim elements in x become a row.">
+<!-- Node8 -->
+<g id="Node000008" class="node">
+<title>Node8</title>
+<g id="a_Node000008"><a xlink:href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" target="_top" xlink:title="Unflatten rowwises, so every dim elements in x become a row.">
 <polygon fill="white" stroke="#666666" points="358.5,-19 224.5,-19 224.5,0 358.5,0 358.5,-19"/>
 <text text-anchor="middle" x="291.5" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::unflatten</text>
 </a>
 </g>
 </g>
-<!-- Node1&#45;&gt;Node7 -->
-<g id="edge6_Node000001_Node000007" class="edge">
-<title>Node1&#45;&gt;Node7</title>
-<g id="a_edge6_Node000001_Node000007"><a xlink:title=" ">
+<!-- Node1&#45;&gt;Node8 -->
+<g id="edge7_Node000001_Node000008" class="edge">
+<title>Node1&#45;&gt;Node8</title>
+<g id="a_edge7_Node000001_Node000008"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M185.08,-22.34C194.82,-21.16 204.65,-19.96 214.19,-18.8"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="214.9,-22.24 224.41,-17.55 214.06,-15.29 214.9,-22.24"/>
 </a>
@@ -177,6 +177,25 @@ var sectionId = 'dynsection-7';
 <g id="a_edge5_Node000005_Node000006"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M731.34,-27.5C739.74,-27.5 748.29,-27.5 756.61,-27.5"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="756.61,-31 766.61,-27.5 756.61,-24 756.61,-31"/>
+</a>
+</g>
+</g>
+<!-- Node7 -->
+<g id="Node000007" class="node">
+<title>Node7</title>
+<g id="a_Node000007"><a xlink:href="classpolyfem_1_1_state.html#a7447e954de5980b45223f7cf49738073" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="1024,-42.5 912,-42.5 912,-12.5 1024,-12.5 1024,-42.5"/>
+<text text-anchor="start" x="920" y="-30.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::has</text>
+<text text-anchor="middle" x="968" y="-19.5" font-family="Helvetica,sans-Serif" font-size="10.00">_periodic_bc</text>
+</a>
+</g>
+</g>
+<!-- Node6&#45;&gt;Node7 -->
+<g id="edge6_Node000006_Node000007" class="edge">
+<title>Node6&#45;&gt;Node7</title>
+<g id="a_edge6_Node000006_Node000007"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M876.31,-27.5C884.52,-27.5 893.08,-27.5 901.51,-27.5"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="901.7,-31 911.7,-27.5 901.7,-24 901.7,-31"/>
 </a>
 </g>
 </g>

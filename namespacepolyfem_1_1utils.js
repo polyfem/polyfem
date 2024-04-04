@@ -30,6 +30,7 @@ var namespacepolyfem_1_1utils =
     [ "MatrixCache", "classpolyfem_1_1utils_1_1_matrix_cache.html", "classpolyfem_1_1utils_1_1_matrix_cache" ],
     [ "NoInterpolation", "classpolyfem_1_1utils_1_1_no_interpolation.html", "classpolyfem_1_1utils_1_1_no_interpolation" ],
     [ "NThread", "classpolyfem_1_1utils_1_1_n_thread.html", "classpolyfem_1_1utils_1_1_n_thread" ],
+    [ "PeriodicBoundary", "classpolyfem_1_1utils_1_1_periodic_boundary.html", "classpolyfem_1_1utils_1_1_periodic_boundary" ],
     [ "PiecewiseConstantInterpolation", "classpolyfem_1_1utils_1_1_piecewise_constant_interpolation.html", "classpolyfem_1_1utils_1_1_piecewise_constant_interpolation" ],
     [ "PiecewiseCubicInterpolation", "classpolyfem_1_1utils_1_1_piecewise_cubic_interpolation.html", "classpolyfem_1_1utils_1_1_piecewise_cubic_interpolation" ],
     [ "PiecewiseInterpolation", "classpolyfem_1_1utils_1_1_piecewise_interpolation.html", "classpolyfem_1_1utils_1_1_piecewise_interpolation" ],

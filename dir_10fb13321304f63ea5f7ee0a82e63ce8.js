@@ -13,6 +13,8 @@ var dir_10fb13321304f63ea5f7ee0a82e63ce8 =
     [ "FullNLProblem.hpp", "_full_n_l_problem_8hpp.html", "_full_n_l_problem_8hpp" ],
     [ "NavierStokesSolver.cpp", "_navier_stokes_solver_8cpp.html", null ],
     [ "NavierStokesSolver.hpp", "_navier_stokes_solver_8hpp.html", "_navier_stokes_solver_8hpp" ],
+    [ "NLHomoProblem.cpp", "_n_l_homo_problem_8cpp.html", null ],
+    [ "NLHomoProblem.hpp", "_n_l_homo_problem_8hpp.html", "_n_l_homo_problem_8hpp" ],
     [ "NLProblem.cpp", "_n_l_problem_8cpp.html", null ],
     [ "NLProblem.hpp", "_n_l_problem_8hpp.html", "_n_l_problem_8hpp" ],
     [ "OperatorSplittingSolver.cpp", "_operator_splitting_solver_8cpp.html", null ],

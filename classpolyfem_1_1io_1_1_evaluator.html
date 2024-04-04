@@ -186,6 +186,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a2ee6a772b00696a954e6a29fc3d77a8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a453d2d3b31e7bfd76037ab9e17777f0e" id="r_a453d2d3b31e7bfd76037ab9e17777f0e"><td class="memItemLeft" align="right" valign="top">static Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_evaluator.html#a453d2d3b31e7bfd76037ab9e17777f0e">get_bases_position</a> (const int n_bases, const std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_mesh_nodes.html">mesh::MeshNodes</a> &gt; mesh_nodes)</td></tr>
 <tr class="separator:a453d2d3b31e7bfd76037ab9e17777f0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af34a8367f9c2e1ae2c11fa01af320f91" id="r_af34a8367f9c2e1ae2c11fa01af320f91"><td class="memItemLeft" align="right" valign="top">static Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_evaluator.html#af34a8367f9c2e1ae2c11fa01af320f91">integrate_function</a> (const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const Eigen::MatrixXd &amp;fun, const int dim, const int actual_dim)</td></tr>
+<tr class="separator:af34a8367f9c2e1ae2c11fa01af320f91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -774,7 +776,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_evaluator_a3b45cd92988cf3f1737cc8c454d8fb3f_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_evaluator_a3b45cd92988cf3f1737cc8c454d8fb3f_icgraph.svg" width="100%" height="416"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1055,10 +1057,17 @@ Here is the call graph for this function:</div>
 <p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l01375">1375</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_matrix_utils_8cpp_source.html#l00034">polyfem::utils::flatten()</a>, and <a class="el" href="_evaluator_8cpp_source.html#l01362">get_bases_position()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00235">polyfem::solver::NLHomoProblem::full_to_reduced()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00263">polyfem::solver::NLHomoProblem::reduced_to_full()</a>, and <a class="el" href="_state_homogenization_8cpp_source.html#l00271">polyfem::State::solve_homogenization()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_evaluator_a2ee6a772b00696a954e6a29fc3d77a8b_cgraph.svg" width="392" height="102"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_evaluator_a2ee6a772b00696a954e6a29fc3d77a8b_icgraph.svg" width="100%" height="477"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1099,11 +1108,11 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l01362">1362</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l01375">generate_linear_field()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00371">polyfem::solver::NLHomoProblem::constraint_grad()</a>, and <a class="el" href="_evaluator_8cpp_source.html#l01375">generate_linear_field()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_evaluator_a453d2d3b31e7bfd76037ab9e17777f0e_icgraph.svg" width="392" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_evaluator_a453d2d3b31e7bfd76037ab9e17777f0e_icgraph.svg" width="100%" height="573"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1172,6 +1181,76 @@ Here is the caller graph for this function:</div>
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_evaluator_a018d5895da038557902f72ad0bef27a4_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="af34a8367f9c2e1ae2c11fa01af320f91" name="af34a8367f9c2e1ae2c11fa01af320f91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af34a8367f9c2e1ae2c11fa01af320f91">&#9670;&#160;</a></span>integrate_function()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd polyfem::io::Evaluator::integrate_function </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>bases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>gbases</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>fun</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>dim</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>actual_dim</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_evaluator_8cpp_source.html#l01383">1383</a> of file <a class="el" href="_evaluator_8cpp_source.html">Evaluator.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_element_assembly_values_8cpp_source.html#l00151">polyfem::assembler::ElementAssemblyValues::compute()</a>, <a class="el" href="_assembler_8cpp_source.html#l00023">da</a>, <a class="el" href="_evaluator_8cpp_source.html#l00983">interpolate_at_local_vals()</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00030">quadrature</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_state_homogenization_8cpp_source.html#l00119">polyfem::State::solve_homogenization_step()</a>, and <a class="el" href="_state_solve_linear_8cpp_source.html#l00069">polyfem::State::solve_linear()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_evaluator_af34a8367f9c2e1ae2c11fa01af320f91_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_evaluator_af34a8367f9c2e1ae2c11fa01af320f91_icgraph.svg" width="100%" height="418"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1347,7 +1426,7 @@ Here is the call graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00148">polyfem::mesh::Mesh::dimension()</a>, and <a class="el" href="_evaluator_8cpp_source.html#l00983">interpolate_at_local_vals()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00244">polyfem::solver::ComplianceForm::compute_partial_gradient_step()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00125">polyfem::solver::ElasticForm::force_material_derivative()</a>, <a class="el" href="_inertia_form_8cpp_source.html#l00060">polyfem::solver::InertiaForm::force_shape_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00215">polyfem::solver::ElasticForm::force_shape_derivative()</a>, <a class="el" href="_body_form_8cpp_source.html#l00115">polyfem::solver::BodyForm::force_shape_derivative()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00308">polyfem::solver::AccelerationForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00328">polyfem::solver::KineticForm::get_integral_functional()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00032">polyfem::solver::TargetForm::get_integral_functional()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00176">polyfem::solver::AdjointTools::integrate_objective()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00983">interpolate_at_local_vals()</a>, <a class="el" href="_out_data_8cpp_source.html#l01743">polyfem::io::OutGeometryData::save_surface()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01170">polyfem::io::OutGeometryData::save_volume()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00245">polyfem::solver::ComplianceForm::compute_partial_gradient_step()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00125">polyfem::solver::ElasticForm::force_material_derivative()</a>, <a class="el" href="_inertia_form_8cpp_source.html#l00060">polyfem::solver::InertiaForm::force_shape_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00215">polyfem::solver::ElasticForm::force_shape_derivative()</a>, <a class="el" href="_body_form_8cpp_source.html#l00115">polyfem::solver::BodyForm::force_shape_derivative()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00309">polyfem::solver::AccelerationForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00329">polyfem::solver::KineticForm::get_integral_functional()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00032">polyfem::solver::TargetForm::get_integral_functional()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01383">integrate_function()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00176">polyfem::solver::AdjointTools::integrate_objective()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00983">interpolate_at_local_vals()</a>, <a class="el" href="_out_data_8cpp_source.html#l01743">polyfem::io::OutGeometryData::save_surface()</a>, and <a class="el" href="_out_data_8cpp_source.html#l01170">polyfem::io::OutGeometryData::save_volume()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
