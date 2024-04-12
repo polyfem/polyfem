@@ -198,7 +198,6 @@ int forward_simulation(const CLI::App &command_line,
 	State state;
 	state.init(in_args, is_strict);
 	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
-	state.optimization_enabled = true;
 
 	// Mesh was not loaded successfully; load_mesh() logged the error.
 	if (state.mesh == nullptr)
