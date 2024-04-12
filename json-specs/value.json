@@ -1,0 +1,36 @@
+[
+    {
+        "pointer": "/",
+        "type": "string",
+        "doc": "Value as an expression of $x,y,z,t$ or a file"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "required": [
+            "value",
+            "unit"
+        ],
+        "doc": "Value with unit"
+    },
+    {
+        "pointer": "/unit",
+        "type": "string",
+        "doc": "The unit of the Value"
+    },
+    {
+        "pointer": "/value",
+        "type": "float",
+        "doc": "The value of the constant"
+    },
+    {
+        "pointer": "/value",
+        "type": "string",
+        "doc": "The value as an expression"
+    },
+    {
+        "pointer": "/value",
+        "type": "file",
+        "doc": "The value as a file"
+    }
+]

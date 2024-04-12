@@ -167,14 +167,34 @@ namespace polyfem
 		for (int i = 0; i < bases.size(); i++)
 		{
 			const basis::ElementBases &element = bases[i];
-			assert(element.bases.size() == F.cols());
 			for (int j = 0; j < element.bases.size(); j++)
 			{
 				const basis::Basis &basis = element.bases[j];
 				assert(basis.global().size() == 1);
 				V.row(basis.global()[0].index) = basis.global()[0].node;
-				F(i, j) = basis.global()[0].index;
+				if (j < F.cols()) // Only grab the corners of the triangles/tetrahedra
+					F(i, j) = basis.global()[0].index;
 			}
 		}
+	}
+
+	std::unordered_map<int, std::array<bool, 3>>
+	State::boundary_conditions_ids(const std::string &bc_type) const
+	{
+		assert(args["boundary_conditions"].contains(bc_type));
+		const std::vector<json> json_bcs = json_as_array(args["boundary_conditions"][bc_type]);
+		std::unordered_map<int, std::array<bool, 3>> bcs;
+		for (const json &bc : json_bcs)
+		{
+			assert(bc["dimension"].size() >= mesh->dimension());
+			std::array<bool, 3> dimension{{true, true, true}};
+			for (int d = 0; d < bc["dimension"].size(); ++d)
+				dimension[d] = bc["dimension"][d];
+
+			assert(bc.contains("id") && bc["id"].is_number_integer());
+			bcs[bc["id"].get<int>()] = dimension;
+		}
+
+		return bcs;
 	}
 } // namespace polyfem

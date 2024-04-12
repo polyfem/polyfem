@@ -14,10 +14,14 @@ set(SOURCES
 	EnableWarnings.hpp
 	ExpressionValue.cpp
 	ExpressionValue.hpp
+	GeogramUtils.cpp
+	GeogramUtils.hpp
 	GeometryUtils.cpp
 	GeometryUtils.hpp
 	getRSS.c
 	HashUtils.hpp
+	IntegrableFunctional.cpp
+	IntegrableFunctional.hpp
 	InterpolatedFunction.cpp
 	InterpolatedFunction.hpp
 	Interpolation.cpp
@@ -26,6 +30,8 @@ set(SOURCES
 	JSONUtils.hpp
 	Logger.cpp
 	Logger.hpp
+	MatrixCache.cpp
+	MatrixCache.hpp
 	MatrixUtils.cpp
 	MatrixUtils.hpp
 	MaybeParallelFor.hpp

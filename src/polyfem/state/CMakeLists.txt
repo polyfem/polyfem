@@ -1,12 +1,14 @@
 set(SOURCES
+	StateDiff.cpp
 	StateInit.cpp
 	StateLoad.cpp
+	StateHomogenization.cpp
+	StateOutput.cpp
+	StateRemesh.cpp
 	StateSolve.cpp
-	StateDiff.cpp
 	StateSolveLinear.cpp
 	StateSolveNavierStokes.cpp
 	StateSolveNonlinear.cpp
-	StateOutput.cpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})

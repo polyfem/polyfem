@@ -10,6 +10,7 @@
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
+#include <polyfem/assembler/MacroStrain.hpp>
 #include <polyfem/assembler/Problem.hpp>
 #include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
@@ -26,30 +27,28 @@
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/assembler/PeriodicBoundary.hpp>
 
 #include <polyfem/io/OutData.hpp>
 
-#include <polysolve/LinearSolver.hpp>
+#include <polysolve/linear/Solver.hpp>
 
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
-
-#ifdef POLYFEM_WITH_TBB
-#include <tbb/global_control.h>
-#endif
 
 #include <memory>
 #include <string>
 #include <unordered_map>
 
+#include <spdlog/sinks/basic_file_sink.h>
+
 #include <ipc/collision_mesh.hpp>
 #include <ipc/utils/logger.hpp>
 
 // Forward declaration
-namespace cppoptlib
+namespace polysolve::nonlinear
 {
-	template <typename ProblemType>
-	class NonlinearSolver;
+	class Solver;
 }
 
 namespace polyfem::assembler
@@ -67,6 +66,13 @@ namespace polyfem
 		class Mesh3D;
 	} // namespace mesh
 
+	enum class CacheLevel
+	{
+		None,
+		Solution,
+		Derivatives
+	};
+
 	/// main class that contains the polyfem solver and all its state
 	class State
 	{
@@ -80,7 +86,7 @@ namespace polyfem
 		State();
 
 		/// @param[in] max_threads max number of threads
-		void set_max_threads(const unsigned int max_threads = std::numeric_limits<unsigned int>::max());
+		void set_max_threads(const int max_threads = std::numeric_limits<int>::max());
 
 		/// initialize the polyfem solver with a json settings
 		/// @param[in] args input arguments
@@ -100,8 +106,13 @@ namespace polyfem
 		/// initializing the logger
 		/// @param[in] log_file is to write it to a file (use log_file="") to output to stdout
 		/// @param[in] log_level 0 all message, 6 no message. 2 is info, 1 is debug
+		/// @param[in] file_log_level 0 all message, 6 no message. 2 is info, 1 is debug
 		/// @param[in] is_quit quiets the log
-		void init_logger(const std::string &log_file, const spdlog::level::level_enum log_level, const bool is_quiet);
+		void init_logger(
+			const std::string &log_file,
+			const spdlog::level::level_enum log_level,
+			const spdlog::level::level_enum file_log_level,
+			const bool is_quiet);
 
 		/// initializing the logger writes to an output stream
 		/// @param[in] os output stream
@@ -126,6 +137,10 @@ namespace polyfem
 		/// initializing the logger meant for internal usage
 		void init_logger(const std::vector<spdlog::sink_ptr> &sinks, const spdlog::level::level_enum log_level);
 
+		/// logger sink to stdout
+		spdlog::sink_ptr console_sink_ = nullptr;
+		spdlog::sink_ptr file_sink_ = nullptr;
+
 	public:
 		//---------------------------------------------------
 		//-----------------assembly--------------------------
@@ -134,7 +149,10 @@ namespace polyfem
 		Units units;
 
 		/// assemblers
+
+		/// assembler corresponding to governing physical equations
 		std::shared_ptr<assembler::Assembler> assembler = nullptr;
+
 		std::shared_ptr<assembler::Mass> mass_matrix_assembler = nullptr;
 
 		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
@@ -205,10 +223,17 @@ namespace polyfem
 		}
 
 		/// builds the bases step 2 of solve
+		/// modifies bases, pressure_bases, geom_bases_, boundary_nodes,
+		/// dirichlet_nodes, neumann_nodes, local_boundary, total_local_boundary
+		/// local_neumann_boundary, polys, poly_edge_to_data, rhs
 		void build_basis();
 		/// compute rhs, step 3 of solve
+		/// build rhs vector based on defined basis and given rhs of the problem
+		/// modifies rhs (and maybe more?)
 		void assemble_rhs();
 		/// assemble mass, step 4 of solve
+		/// build mass matrix based on defined basis
+		/// modifies mass (and maybe more?)
 		void assemble_mass_mat();
 
 		/// build a RhsAssembler for the problem
@@ -347,9 +372,14 @@ namespace polyfem
 
 		/// factory to create the nl solver depending on input
 		/// @return nonlinear solver (eg newton or LBFGS)
-		template <typename ProblemType>
-		std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> make_nl_solver(
-			const std::string &linear_solver_type = "") const;
+		std::shared_ptr<polysolve::nonlinear::Solver> make_nl_solver(bool for_al) const;
+
+		/// periodic BC and periodic mesh utils
+		std::shared_ptr<utils::PeriodicBoundary> periodic_bc;
+		bool has_periodic_bc() const
+		{
+			return args["boundary_conditions"]["periodic_boundary"]["enabled"].get<bool>();
+		}
 
 		/// @brief Solve the linear problem with the given solver and system.
 		/// @param solver Linear solver.
@@ -359,7 +389,7 @@ namespace polyfem
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
 		void solve_linear(
-			const std::unique_ptr<polysolve::LinearSolver> &solver,
+			const std::unique_ptr<polysolve::linear::Solver> &solver,
 			StiffnessMatrix &A,
 			Eigen::VectorXd &b,
 			const bool compute_spectrum,
@@ -375,6 +405,10 @@ namespace polyfem
 		//---------------------------------------------------
 
 	public:
+		/// Construct a vector of boundary conditions ids with their dimension flags.
+		std::unordered_map<int, std::array<bool, 3>>
+		boundary_conditions_ids(const std::string &bc_type) const;
+
 		/// list of boundary nodes
 		std::vector<int> boundary_nodes;
 		/// list of neumann boundary nodes
@@ -469,6 +503,15 @@ namespace polyfem
 		/// Build the mesh matrices (vertices and elements) from the mesh using the bases node ordering
 		void build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F);
 
+#ifdef POLYFEM_WITH_REMESHING
+		/// @brief Remesh the FE space and update solution(s).
+		/// @param time Current time.
+		/// @param dt Time step size.
+		/// @param sol Current solution.
+		/// @return True if remeshing performed any changes to the mesh/solution.
+		bool remesh(const double time, const double dt, Eigen::MatrixXd &sol);
+#endif
+
 		//---------------------------------------------------
 		//-----------------IPC-------------------------------
 		//---------------------------------------------------
@@ -476,11 +519,27 @@ namespace polyfem
 		/// @brief IPC collision mesh
 		ipc::CollisionMesh collision_mesh;
 
-		/// extracts the boundary mesh for collision, called in build_basis
-		void build_collision_mesh(
-			ipc::CollisionMesh &collision_mesh_,
-			const int n_bases_,
-			const std::vector<basis::ElementBases> &bases_) const;
+		/// @brief IPC collision mesh under periodic BC
+		ipc::CollisionMesh periodic_collision_mesh;
+		/// index mapping from periodic 2x2 collision mesh to FE periodic mesh
+		Eigen::VectorXi periodic_collision_mesh_to_basis;
+
+		/// @brief extracts the boundary mesh for collision, called in build_basis
+		static void build_collision_mesh(
+			const mesh::Mesh &mesh,
+			const int n_bases,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &geom_bases,
+			const std::vector<mesh::LocalBoundary> &total_local_boundary,
+			const mesh::Obstacle &obstacle,
+			const json &args,
+			const std::function<std::string(const std::string &)> &resolve_input_path,
+			const Eigen::VectorXi &in_node_to_node,
+			ipc::CollisionMesh &collision_mesh);
+
+		/// @brief extracts the boundary mesh for collision, called in build_basis
+		void build_collision_mesh();
+		void build_periodic_collision_mesh();
 
 		/// checks if vertex is obstacle
 		/// @param[in] vi vertex index
@@ -517,6 +576,9 @@ namespace polyfem
 		io::OutRuntimeData timings;
 		/// Other statistics
 		io::OutStatsData stats;
+		double starting_min_edge_length = -1;
+		double starting_max_edge_length = -1;
+		double min_boundary_edge_length = -1;
 
 		/// saves all data on the disk according to the input params
 		/// @param[in] sol solution
@@ -571,20 +633,15 @@ namespace polyfem
 		/// @return resolvedpath
 		std::string resolve_output_path(const std::string &path) const;
 
-#ifdef POLYFEM_WITH_TBB
-		/// limits the number of used threads
-		std::shared_ptr<tbb::global_control> thread_limiter;
-#endif
-
 		//---------------------------------------------------
 		//-----------------differentiable--------------------
 		//---------------------------------------------------
 	public:
-		bool optimization_enabled = false;
+		solver::CacheLevel optimization_enabled = solver::CacheLevel::None;
 		void cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad);
 		solver::DiffCache diff_cached;
 
-		std::unique_ptr<polysolve::LinearSolver> lin_solver_cached; // matrix factorization of last linear solve
+		std::unique_ptr<polysolve::linear::Solver> lin_solver_cached; // matrix factorization of last linear solve
 
 		int ndof() const
 		{
@@ -612,7 +669,7 @@ namespace polyfem
 				else if (type == 1)
 					return diff_cached.adjoint_mat().middleCols(diff_cached.adjoint_mat().cols() / 2, diff_cached.adjoint_mat().cols() / 2);
 				else
-					log_and_throw_error("Invalid adjoint type!");
+					log_and_throw_adjoint_error("Invalid adjoint type!");
 			}
 
 			return diff_cached.adjoint_mat();
@@ -638,6 +695,18 @@ namespace polyfem
 		void dump_basis_nodes_transient(const std::string &path) const;
 
 		std::string hdf5_outpath;
+		
+		//---------------------------------------------------
+		//-----------------homogenization--------------------
+		//---------------------------------------------------
+	public:
+		assembler::MacroStrainValue macro_strain_constraint;
+
+		/// In Elasticity PDE, solve for "min W(disp_grad + \grad u)" instead of "min W(\grad u)"
+		void solve_homogenization_step(Eigen::MatrixXd &sol, const int t = 0, bool adaptive_initial_weight = false); // sol is the extended solution, i.e. [periodic fluctuation, macro strain]
+		void init_homogenization_solve(const double t);
+		void solve_homogenization(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol);
+		bool is_homogenization() const { return args["boundary_conditions"]["periodic_boundary"]["linear_displacement_offset"].size() > 0; }
 	};
 
 } // namespace polyfem

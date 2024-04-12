@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/utils/Types.hpp>
+#include <polysolve/nonlinear/PostStepData.hpp>
 
 #include <filesystem>
 
@@ -10,6 +11,8 @@ namespace polyfem::solver
 	{
 	public:
 		virtual ~Form() {}
+
+		virtual std::string name() const = 0;
 
 		/// @brief Initialize the form
 		/// @param x Current solution
@@ -21,6 +24,14 @@ namespace polyfem::solver
 		inline virtual double value(const Eigen::VectorXd &x) const
 		{
 			return weight() * value_unweighted(x);
+		}
+
+		/// @brief Compute the value of the form multiplied with the weigth
+		/// @param x Current solution
+		/// @return Computed value
+		inline Eigen::VectorXd value_per_element(const Eigen::VectorXd &x) const
+		{
+			return weight_ * value_per_element_unweighted(x);
 		}
 
 		/// @brief Compute the first derivative of the value wrt x multiplied with the weigth
@@ -65,7 +76,8 @@ namespace polyfem::solver
 		/// @brief Update fields after a step in the optimization
 		/// @param iter_num Optimization iteration number
 		/// @param x Current solution
-		virtual void post_step(const int iter_num, const Eigen::VectorXd &x) {}
+		/// @param data Data containing info about the current iteration
+		virtual void post_step(const polysolve::nonlinear::PostStepData &data) {}
 
 		/// @brief Update cached fields upon a change in the solution
 		/// @param new_x New solution
@@ -150,6 +162,14 @@ namespace polyfem::solver
 		/// @param x Current solution
 		/// @return Computed value
 		virtual double value_unweighted(const Eigen::VectorXd &x) const = 0;
+
+		/// @brief Compute the value of the form multiplied per element
+		/// @param x Current solution
+		/// @return Computed value per element
+		virtual Eigen::VectorXd value_per_element_unweighted(const Eigen::VectorXd &x) const
+		{
+			throw std::runtime_error("Not implemented");
+		}
 
 		/// @brief Compute the first derivative of the value wrt x
 		/// @param[in] x Current solution

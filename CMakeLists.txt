@@ -7,7 +7,7 @@ else()
 endif()
 
 # Check required CMake version
-set(REQUIRED_CMAKE_VERSION "3.18.0")
+set(REQUIRED_CMAKE_VERSION "3.25.0")
 if(POLYFEM_TOPLEVEL_PROJECT)
     cmake_minimum_required(VERSION ${REQUIRED_CMAKE_VERSION})
 else()
@@ -66,10 +66,22 @@ option(POLYFEM_WITH_TESTS     "Build tests"                                 ON)
 option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"  ON)
 option(POLYFEM_WITH_REMESHING "Uses WMTK for remeshing"                    OFF)
 option(POLYFEM_WITH_MMG       "Build MMG utils for remeshing"              OFF)
+option(POLYFEM_WITH_TRIANGLE  "Build target igl_restricted::triangle"      OFF)
 option(POLYFEM_BUILD_DOCS     "Build documentation using Doxygen"          OFF)
 option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
 set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
 set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
+option(POLYFEM_CODE_COVERAGE "Enable coverage reporting" OFF)
+
+add_library(polyfem_coverage_config INTERFACE)
+if(POLYFEM_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+  # Add required flags (GCC & LLVM/Clang)
+  target_compile_options(polyfem_coverage_config INTERFACE
+    -g         # generate debug info
+    --coverage # sets all required flags
+  )
+  target_link_options(polyfem_coverage_config INTERFACE --coverage)
+endif()
 
 add_compile_definitions(JSON_DIAGNOSTICS=1)
 
@@ -103,6 +115,8 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 add_library(polyfem)
 add_library(polyfem::polyfem ALIAS polyfem)
 
+target_link_libraries(polyfem PUBLIC polyfem_coverage_config)
+
 # Must be call in the same "CMakeLists.txt" where add_library(polyfem ...) is called
 polyfem_autogen(polyfem eigs.py auto_eigs)
 polyfem_autogen(polyfem p_bases.py auto_p_bases)
@@ -128,9 +142,11 @@ target_compile_definitions(polyfem PUBLIC -DEIGEN_STACK_ALLOCATION_LIMIT=0)
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_SMALL_N=${POLYFEM_SMALL_N})
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_BIG_N=${POLYFEM_BIG_N})
 
-target_compile_definitions(polyfem PUBLIC POLYFEM_INPUT_SPEC="${CMAKE_SOURCE_DIR}/input-spec.json")
-target_compile_definitions(polyfem PUBLIC POLYFEM_OPT_INPUT_SPEC="${CMAKE_SOURCE_DIR}/opt-input-spec.json")
-target_compile_definitions(polyfem PUBLIC POLYFEM_OBJECTIVE_INPUT_SPEC="${CMAKE_SOURCE_DIR}/objective-spec.json")
+set(POLYFEM_JSON_SPEC_DIR "${PROJECT_SOURCE_DIR}/json-specs")
+target_compile_definitions(polyfem PUBLIC POLYFEM_JSON_SPEC_DIR="${POLYFEM_JSON_SPEC_DIR}")
+target_compile_definitions(polyfem PUBLIC POLYFEM_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/input-spec.json")
+target_compile_definitions(polyfem PUBLIC POLYFEM_OPT_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/opt-input-spec.json")
+target_compile_definitions(polyfem PUBLIC POLYFEM_OBJECTIVE_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/objective-spec.json")
 
 if (MSVC)
     add_compile_options(/bigobj)
@@ -175,7 +191,7 @@ target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
 
 # polysolve
 include(polysolve)
-target_link_libraries(polyfem PUBLIC polysolve)
+target_link_libraries(polyfem PUBLIC polysolve::polysolve)
 
 # IPC Toolkit
 include(ipc_toolkit)
@@ -201,14 +217,14 @@ endif()
 include(libigl)
 target_link_libraries(polyfem PUBLIC igl::core)
 
-if(LIBIGL_WITH_TRIANGLE)
-    target_link_libraries(polyfem PUBLIC igl::triangle)
+if(POLYFEM_WITH_TRIANGLE)
+    target_link_libraries(polyfem PUBLIC igl_restricted::triangle)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_TRIANGLE)
 endif()
 
-# BVH
-include(BVH)
-target_link_libraries(polyfem PUBLIC BVH_lib)
+# SimpleBVH
+include(simple_bvh)
+target_link_libraries(polyfem PUBLIC simple_bvh::simple_bvh)
 
 # MSHIO
 include(mshio)
@@ -226,14 +242,6 @@ target_link_libraries(polyfem PUBLIC paraviewo::paraviewo)
 include(spdlog)
 target_link_libraries(polyfem PUBLIC spdlog::spdlog)
 
-# CppNumericalSolvers
-include(cppoptlib)
-target_link_libraries(polyfem PUBLIC cppoptlib)
-
-# LBFGSpp
-include(LBFGSpp)
-target_link_libraries(polyfem PUBLIC LBFGSpp::LBFGSpp)
-
 # TinyExpr library
 include(tinyexpr)
 target_link_libraries(polyfem PUBLIC tinyexpr::tinyexpr)
@@ -250,13 +258,21 @@ target_link_libraries(polyfem PUBLIC natsort::natsort)
 include(glob)
 target_link_libraries(polyfem PUBLIC Glob::Glob)
 
-# polysolve
+# units
 include(units)
 target_link_libraries(polyfem PUBLIC units::units)
 
 # GMP
 find_package(GMP REQUIRED)
 target_link_libraries(tight_inclusion PUBLIC gmp::gmp)
+
+# YAML library
+include(yaml)
+target_link_libraries(polyfem PUBLIC yaml-cpp::yaml-cpp)
+
+# FCPW
+# include(fcpw)
+# target_link_libraries(polyfem PUBLIC fcpw::fcpw)
 
 ################################################################################
 # Optional libraries
@@ -282,6 +298,9 @@ if(POLYFEM_WITH_CLIPPER)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_CLIPPER)
 endif()
 
+include(polyclipper)
+target_link_libraries(polyfem PUBLIC PolyClipper::PolyClipper)
+
 # Extra warnings (link this here so it has top priority)
 include(polyfem_warnings)
 target_link_libraries(polyfem PRIVATE polyfem::warnings)
@@ -294,7 +313,7 @@ target_link_libraries(polyfem PRIVATE polyfem::warnings)
 if(POLYFEM_TOPLEVEL_PROJECT)
     add_executable(${PROJECT_NAME}_bin src/polyfem/main.cpp)
 
-    target_compile_features(${PROJECT_NAME}_bin PUBLIC ${CXX14_FEATURES})
+    target_compile_features(${PROJECT_NAME}_bin PUBLIC cxx_std_14)
 
 
     target_link_libraries(${PROJECT_NAME}_bin PUBLIC polyfem::polyfem polyfem::warnings)

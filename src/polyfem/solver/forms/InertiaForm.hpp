@@ -11,13 +11,13 @@ namespace polyfem
 	{
 		class Mass;
 		class AssemblyValsCache;
-	}
-	
+	} // namespace assembler
+
 	namespace basis
 	{
 		class ElementBases;
 	}
-}
+} // namespace polyfem
 
 namespace polyfem::solver
 {
@@ -31,16 +31,20 @@ namespace polyfem::solver
 		InertiaForm(const StiffnessMatrix &mass,
 					const time_integrator::ImplicitTimeIntegrator &time_integrator);
 
+		std::string name() const override { return "inertia"; }
+
 		static void force_shape_derivative(
 			bool is_volume,
 			const int n_geom_bases,
+			const double t, 
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &geom_bases,
 			const assembler::Mass &assembler,
 			const assembler::AssemblyValsCache &ass_vals_cache,
-			const Eigen::MatrixXd &velocity, 
-			const Eigen::MatrixXd &adjoint, 
+			const Eigen::MatrixXd &velocity,
+			const Eigen::MatrixXd &adjoint,
 			Eigen::VectorXd &term);
+
 	protected:
 		/// @brief Compute the value of the form
 		/// @param x Current solution
@@ -58,6 +62,7 @@ namespace polyfem::solver
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
 	private:
+		// TODO mass might be time dependent
 		const StiffnessMatrix &mass_;                                    ///< Mass matrix
 		const time_integrator::ImplicitTimeIntegrator &time_integrator_; ///< Time integrator
 	};

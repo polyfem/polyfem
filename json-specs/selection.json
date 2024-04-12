@@ -1,0 +1,192 @@
+[
+    {
+        "pointer": "/",
+        "type": "int",
+        "doc": "Assign specified ID to all elements of the geometry."
+    },
+    {
+        "pointer": "/",
+        "type": "file",
+        "extensions": [
+            ".txt"
+        ],
+        "doc": "Load ids from a file; the file is required to have one ID per element of the geometry"
+    },
+    {
+        "pointer": "/*/threshold",
+        "type": "float",
+        "doc": "Threshold for box side selection."
+    },
+    {
+        "pointer": "/*",
+        "type": "object",
+        "required": [
+            "id",
+            "box"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "default": null,
+        "#type_name": "box",
+        "doc": "Assign the ID to all elements with barycenters inside an axis-aligned box given by the list of its 2 corners, one with min, the other with max coordinates along all axes.  If relative option is set to true, the coordinates of the box corners are specified in bilinear/trilinear coordinates  with respect to the bounding box of the geometry."
+    },
+    {
+        "pointer": "/*",
+        "type": "object",
+        "required": [
+            "id",
+            "radius",
+            "center"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "default": null,
+        "#type_name": "sphere",
+        "doc": "Assign the ID to all elements with barycenters inside a sphere with specified center and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
+    },
+    {
+        "pointer": "/*",
+        "type": "object",
+        "required": [
+            "id",
+            "radius",
+            "p1",
+            "p2"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "default": null,
+        "#type_name": "cylinder",
+        "doc": "Assign the ID to all elements with barycenters inside a cylinder with specified axis (p1, p2) and radius.  If relative option is set to true, the coordinates of the  center are specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry, and the radius is specified relative to the bounding box diagonal length."
+    },
+    {
+        "pointer": "/*",
+        "type": "object",
+        "required": [
+            "id",
+            "point",
+            "normal"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "default": null,
+        "#type_name": "plane",
+        "doc": "Assign the ID to all elements with barycenters in a halfspace. The halfspace boundary plane is defined by a point in the plane and the normal, which points to the halfspace. The option relative set to true indicates that the point position is specified in bilinear/trilinear coordinates with respect to the bounding box of the geometry."
+    },
+    {
+        "pointer": "/*",
+        "type": "object",
+        "required": [
+            "id",
+            "axis",
+            "position"
+        ],
+        "optional": [
+            "relative"
+        ],
+        "default": null,
+        "#type_name": "axis",
+        "doc": "Same as halfspace, but the boundary plane is axis-aligned. The choice of axis is specified either by a string matching the regexp r\"[+-][xyzXYZ]\" or an int matching the regular expression [+-]?[123] where the sign is the side of the plane to select and letter or number indicates the axis to which the plane is perpendicular. The offset is the plane offset from the origin. If the relative option is set to true, the offset is with respect to the center of the bounding box."
+    },
+    {
+        "pointer": "/*/id",
+        "type": "int"
+    },
+    {
+        "pointer": "/*/radius",
+        "type": "float"
+    },
+    {
+        "pointer": "/*/center",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/*/center/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/*/p1",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/*/p1/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/*/p2",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/*/p2/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/*/axis",
+        "type": "int"
+    },
+    {
+        "pointer": "/*/axis",
+        "type": "string"
+    },
+    {
+        "pointer": "/*/offset",
+        "type": "float"
+    },
+    {
+        "pointer": "/*/position",
+        "type": "float"
+    },
+    {
+        "pointer": "/*/relative",
+        "type": "bool",
+        "default": false
+    },
+    {
+        "pointer": "/*/point",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/*/point/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/*/normal",
+        "type": "list",
+        "min": 2,
+        "max": 3
+    },
+    {
+        "pointer": "/*/normal/*",
+        "type": "float"
+    },
+    {
+        "pointer": "/*/box",
+        "type": "list",
+        "min": 2,
+        "max": 2
+    },
+    {
+        "pointer": "/*/box/*",
+        "type": "list",
+        "min": 2,
+        "max": 3,
+        "default": []
+    },
+    {
+        "pointer": "/*/box/*/*",
+        "type": "float",
+        "default": 0
+    }
+]

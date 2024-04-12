@@ -5,7 +5,7 @@
 #include <polyfem/assembler/NavierStokes.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 
-#include <polysolve/LinearSolver.hpp>
+#include <polysolve/linear/Solver.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 
@@ -22,6 +22,7 @@ namespace polyfem
 
 			void minimize(const int n_bases,
 						  const int n_pressure_bases,
+						  const double t,
 						  const std::vector<basis::ElementBases> &bases,
 						  const std::vector<basis::ElementBases> &gbases,
 						  assembler::NavierStokesVelocity &velocity_assembler,
@@ -46,6 +47,7 @@ namespace polyfem
 							 const std::vector<int> &skipping,
 							 const int n_bases,
 							 const int n_pressure_bases,
+							 const double t,
 							 const std::vector<basis::ElementBases> &bases,
 							 const std::vector<basis::ElementBases> &gbases,
 							 assembler::NavierStokesVelocity &velocity_assembler,
@@ -57,12 +59,10 @@ namespace polyfem
 							 const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 							 const StiffnessMatrix &velocity_mass,
 							 const Eigen::VectorXd &rhs, const double grad_norm,
-							 std::unique_ptr<polysolve::LinearSolver> &solver, double &nlres_norm,
+							 std::unique_ptr<polysolve::linear::Solver> &solver, double &nlres_norm,
 							 Eigen::VectorXd &x);
 
 			const json solver_param;
-			const std::string solver_type;
-			const std::string precond_type;
 
 			double gradNorm;
 			int iterations;

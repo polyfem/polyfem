@@ -2,13 +2,8 @@
 
 #include <polyfem/mesh/GeometryReader.hpp>
 #include <jse/jse.h>
-#include <polyfem/State.hpp>
 
 #include "AdjointNLProblem.hpp"
-#include "LBFGSBSolver.hpp"
-#include "LBFGSSolver.hpp"
-#include "BFGSSolver.hpp"
-#include "GradientDescentSolver.hpp"
 
 #include <polyfem/solver/forms/adjoint_forms/SpatialIntegralForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
@@ -20,7 +15,6 @@
 #include <polyfem/solver/forms/adjoint_forms/TargetForms.hpp>
 
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
-#include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
 
 #include <polyfem/solver/forms/adjoint_forms/ParametrizedProductForm.hpp>
@@ -28,6 +22,28 @@
 #include <polyfem/io/OBJReader.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/io/MatrixIO.hpp>
+
+#include <polysolve/nonlinear/BoxConstraintSolver.hpp>
+
+namespace spdlog::level
+{
+	NLOHMANN_JSON_SERIALIZE_ENUM(
+		spdlog::level::level_enum,
+		{{spdlog::level::level_enum::trace, "trace"},
+		 {spdlog::level::level_enum::debug, "debug"},
+		 {spdlog::level::level_enum::info, "info"},
+		 {spdlog::level::level_enum::warn, "warning"},
+		 {spdlog::level::level_enum::err, "error"},
+		 {spdlog::level::level_enum::critical, "critical"},
+		 {spdlog::level::level_enum::off, "off"},
+		 {spdlog::level::level_enum::trace, 0},
+		 {spdlog::level::level_enum::debug, 1},
+		 {spdlog::level::level_enum::info, 2},
+		 {spdlog::level::level_enum::warn, 3},
+		 {spdlog::level::level_enum::err, 3},
+		 {spdlog::level::level_enum::critical, 4},
+		 {spdlog::level::level_enum::off, 5}})
+}
 
 namespace polyfem::solver
 {
@@ -48,36 +64,20 @@ namespace polyfem::solver
 		}
 	} // namespace
 
-	std::shared_ptr<cppoptlib::NonlinearSolver<AdjointNLProblem>> AdjointOptUtils::make_nl_solver(const json &solver_params, const double characteristic_length)
+	std::shared_ptr<polysolve::nonlinear::Solver> AdjointOptUtils::make_nl_solver(const json &solver_params, const json &linear_solver_params, const double characteristic_length)
 	{
-		const std::string name = solver_params["solver"].template get<std::string>();
-		if (name == "GradientDescent" || name == "gradient_descent" || name == "gradient")
-		{
-			return std::make_shared<cppoptlib::GradientDescentSolver<AdjointNLProblem>>(
-				solver_params, 0., characteristic_length);
-		}
-		else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
-		{
-			return std::make_shared<cppoptlib::LBFGSSolver<AdjointNLProblem>>(
-				solver_params, 0., characteristic_length);
-		}
-		else if (name == "bfgs" || name == "BFGS" || name == "BFGS")
-		{
-			return std::make_shared<cppoptlib::BFGSSolver<AdjointNLProblem>>(
-				solver_params, 0., characteristic_length);
-		}
-		else if (name == "lbfgsb" || name == "LBFGSB" || name == "L-BFGS-B")
-		{
-			return std::make_shared<cppoptlib::LBFGSBSolver<AdjointNLProblem>>(
-				solver_params, 0., characteristic_length);
-		}
-		else
-		{
-			throw std::invalid_argument(fmt::format("invalid nonlinear solver type: {}", name));
-		}
+		auto names = polysolve::nonlinear::Solver::available_solvers();
+		if (std::find(names.begin(), names.end(), solver_params["solver"]) != names.end())
+			return polysolve::nonlinear::Solver::create(solver_params, linear_solver_params, characteristic_length, adjoint_logger());
+
+		names = polysolve::nonlinear::BoxConstraintSolver::available_solvers();
+		if (std::find(names.begin(), names.end(), solver_params["solver"]) != names.end())
+			return polysolve::nonlinear::BoxConstraintSolver::create(solver_params, linear_solver_params, characteristic_length, adjoint_logger());
+
+		log_and_throw_adjoint_error("Invalid nonlinear solver name!");
 	}
 
-	std::shared_ptr<AdjointForm> AdjointOptUtils::create_form(const json &args, const std::vector<std::shared_ptr<VariableToSimulation>> &var2sim, const std::vector<std::shared_ptr<State>> &states)
+	std::shared_ptr<AdjointForm> AdjointOptUtils::create_form(const json &args, const VariableToSimulationGroup &var2sim, const std::vector<std::shared_ptr<State>> &states)
 	{
 		std::shared_ptr<AdjointForm> obj;
 		if (args.is_array())
@@ -94,6 +94,8 @@ namespace polyfem::solver
 			if (type == "transient_integral")
 			{
 				std::shared_ptr<StaticForm> static_obj = std::dynamic_pointer_cast<StaticForm>(create_form(args["static_objective"], var2sim, states));
+				if (!static_obj)
+					log_and_throw_adjoint_error("Transient integral objective must have a static objective!");
 				const auto &state = states[args["state"]];
 				obj = std::make_shared<TransientForm>(var2sim, state->args["time"]["time_steps"], state->args["time"]["dt"], args["integral_type"], args["steps"].get<std::vector<int>>(), static_obj);
 			}
@@ -150,10 +152,6 @@ namespace polyfem::solver
 			{
 				obj = std::make_shared<StressForm>(var2sim, *(states[args["state"]]), args);
 			}
-			else if (type == "disp_grad")
-			{
-				obj = std::make_shared<DispGradForm>(var2sim, *(states[args["state"]]), args);
-			}
 			else if (type == "stress_norm")
 			{
 				obj = std::make_shared<StressNormForm>(var2sim, *(states[args["state"]]), args);
@@ -173,8 +171,7 @@ namespace polyfem::solver
 			else if (type == "soft_constraint")
 			{
 				std::vector<std::shared_ptr<AdjointForm>> forms({create_form(args["objective"], var2sim, states)});
-				Eigen::VectorXd bounds;
-				nlohmann::adl_serializer<Eigen::VectorXd>::from_json(args["soft_bound"], bounds);
+				Eigen::VectorXd bounds = args["soft_bound"];
 				obj = std::make_shared<InequalityConstraintForm>(forms, bounds, args["power"]);
 			}
 			else if (type == "AMIPS")
@@ -189,20 +186,22 @@ namespace polyfem::solver
 			{
 				obj = std::make_shared<CollisionBarrierForm>(var2sim, *(states[args["state"]]), args["dhat"]);
 			}
+			else if (type == "deformed_collision_barrier")
+			{
+				obj = std::make_shared<DeformedCollisionBarrierForm>(var2sim, *(states[args["state"]]), args["dhat"]);
+			}
 			else if (type == "parametrized_product")
 			{
 				if (args["parametrization"].contains("parameter_index"))
-					log_and_throw_error("Parametrizations in parametrized forms don't support parameter_index!");
+					log_and_throw_adjoint_error("Parametrizations in parametrized forms don't support parameter_index!");
 
 				std::vector<std::shared_ptr<Parametrization>> map_list;
 				for (const auto &arg : args["parametrization"])
 					map_list.push_back(create_parametrization(arg, states, {}));
-				CompositeParametrization composite_map = CompositeParametrization(map_list);
-
-				obj = std::make_shared<ParametrizedProductForm>(composite_map);
+				obj = std::make_shared<ParametrizedProductForm>(CompositeParametrization(std::move(map_list)));
 			}
 			else
-				log_and_throw_error("Objective not implemented!");
+				log_and_throw_adjoint_error("Objective not implemented!");
 
 			obj->set_weight(args["weight"]);
 			if (args["print_energy"].get<std::string>() != "")
@@ -255,7 +254,7 @@ namespace polyfem::solver
 				map = std::make_shared<SliceMap>(from, to, last);
 			}
 			else
-				log_and_throw_error("Incorrect spec for SliceMap!");
+				log_and_throw_adjoint_error("Incorrect spec for SliceMap!");
 		}
 		else if (type == "exp")
 		{
@@ -271,8 +270,7 @@ namespace polyfem::solver
 		}
 		else if (type == "append-values")
 		{
-			Eigen::VectorXd vals;
-			nlohmann::adl_serializer<Eigen::VectorXd>::from_json(args["values"], vals);
+			Eigen::VectorXd vals = args["values"];
 			map = std::make_shared<InsertConstantMap>(vals);
 		}
 		else if (type == "append-const")
@@ -283,47 +281,15 @@ namespace polyfem::solver
 		{
 			map = std::make_shared<LinearFilter>(*(states[args["state"]]->mesh), args["radius"]);
 		}
-		else if (type == "custom-symmetric")
-		{
-			map = std::make_shared<CustomSymmetric>(args);
-		}
-		else if (type == "periodic-mesh-tile")
-		{
-			Eigen::VectorXi dims;
-			nlohmann::adl_serializer<Eigen::VectorXi>::from_json(args["dimensions"], dims);
-			map = std::make_shared<MeshTiling>(dims, args["input_path"], args["output_path"]);
-		}
-		else if (type == "mesh-affine")
-		{
-			const std::string unit = args["unit"];
-			double unit_scale = 1;
-			if (!unit.empty())
-				unit_scale = Units::convert(1, unit, states[args["state"]]->units.length());
-
-			MatrixNd A;
-			VectorNd b;
-			mesh::construct_affine_transformation(
-				unit_scale,
-				args["transformation"],
-				VectorNd::Ones(args["dimension"]),
-				A, b);
-			map = std::make_shared<MeshAffine>(A, b, args["input_path"], args["output_path"]);
-		}
 		else
-			log_and_throw_error("Unkown parametrization!");
+			log_and_throw_adjoint_error("Unkown parametrization!");
 
 		return map;
 	}
 
-	std::shared_ptr<VariableToSimulation> AdjointOptUtils::create_variable_to_simulation(const json &args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes)
+	std::unique_ptr<VariableToSimulation> AdjointOptUtils::create_variable_to_simulation(const json &args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes)
 	{
-		std::shared_ptr<VariableToSimulation> var2sim;
 		const std::string type = args["type"];
-
-		std::vector<std::shared_ptr<Parametrization>> map_list;
-		for (const auto &arg : args["composition"])
-			map_list.push_back(create_parametrization(arg, states, variable_sizes));
-		CompositeParametrization composite_map;
 
 		std::vector<std::shared_ptr<State>> cur_states;
 		if (args["state"].is_array())
@@ -331,8 +297,6 @@ namespace polyfem::solver
 				cur_states.push_back(states[i]);
 		else
 			cur_states.push_back(states[args["state"]]);
-
-		composite_map = CompositeParametrization(map_list);
 
 		const std::string composite_map_type = args["composite_map_type"];
 		Eigen::VectorXi output_indexing;
@@ -354,9 +318,7 @@ namespace polyfem::solver
 		else if (composite_map_type == "boundary_excluding_surface")
 		{
 			assert(type == "shape");
-			std::vector<int> excluded_surfaces;
-			for (const auto &s : args["surface_selection"])
-				excluded_surfaces.push_back(s);
+			const std::vector<int> excluded_surfaces = args["surface_selection"];
 			VariableToBoundaryNodesExclusive variable_to_node(*cur_states[0], excluded_surfaces);
 			output_indexing = variable_to_node.get_output_indexing();
 		}
@@ -369,45 +331,53 @@ namespace polyfem::solver
 				output_indexing = tmp_mat;
 			}
 			else if (args["composite_map_indices"].is_array())
-				nlohmann::adl_serializer<Eigen::VectorXi>::from_json(args["composite_map_indices"], output_indexing);
+				output_indexing = args["composite_map_indices"];
 			else
-				log_and_throw_error("Invalid composite map indices type!");
+				log_and_throw_adjoint_error("Invalid composite map indices type!");
 		}
 
+		std::vector<std::shared_ptr<Parametrization>> map_list;
+		for (const auto &arg : args["composition"])
+			map_list.push_back(create_parametrization(arg, states, variable_sizes));
+
+		std::unique_ptr<VariableToSimulation> var2sim = VariableToSimulation::create(type, cur_states, CompositeParametrization(std::move(map_list)));
 		if (type == "shape")
-		{
-			var2sim = std::make_shared<ShapeVariableToSimulation>(cur_states, composite_map);
 			var2sim->set_output_indexing(output_indexing);
-		}
-		else if (type == "elastic")
-		{
-			var2sim = std::make_shared<ElasticVariableToSimulation>(cur_states, composite_map);
-		}
-		else if (type == "friction")
-		{
-			var2sim = std::make_shared<FrictionCoeffientVariableToSimulation>(cur_states, composite_map);
-		}
-		else if (type == "damping")
-		{
-			var2sim = std::make_shared<DampingCoeffientVariableToSimulation>(cur_states, composite_map);
-		}
-		else if (type == "initial")
-		{
-			var2sim = std::make_shared<InitialConditionVariableToSimulation>(cur_states, composite_map);
-		}
-		else if (type == "sdf-shape")
-		{
-			var2sim = std::make_shared<SDFShapeVariableToSimulation>(cur_states, composite_map, args);
-		}
-		else if (type == "dirichlet")
-		{
-			var2sim = std::make_shared<DirichletVariableToSimulation>(cur_states, composite_map);
-		}
 
 		return var2sim;
 	}
 
-	std::shared_ptr<State> AdjointOptUtils::create_state(const json &args, const size_t max_threads)
+	Eigen::VectorXd AdjointOptUtils::inverse_evaluation(const json &args, const int ndof, const std::vector<int> &variable_sizes, VariableToSimulationGroup &var2sim)
+	{
+		Eigen::VectorXd x;
+		x.setZero(ndof);
+		int accumulative = 0;
+		int var = 0;
+		for (const auto &arg : args)
+		{
+			const auto &arg_initial = arg["initial"];
+			Eigen::VectorXd tmp(variable_sizes[var]);
+			if (arg_initial.is_array() && arg_initial.size() > 0)
+			{
+				tmp = arg_initial;
+				x.segment(accumulative, tmp.size()) = tmp;
+			}
+			else if (arg_initial.is_number())
+			{
+				tmp.setConstant(arg_initial.get<double>());
+				x.segment(accumulative, tmp.size()) = tmp;
+			}
+			else // arg["initial"] is empty array
+				x += var2sim[var]->inverse_eval();
+
+			accumulative += tmp.size();
+			var++;
+		}
+
+		return x;
+	}
+
+	std::shared_ptr<State> AdjointOptUtils::create_state(const json &args, CacheLevel level, const size_t max_threads)
 	{
 		std::shared_ptr<State> state = std::make_shared<State>();
 		state->set_max_threads(max_threads);
@@ -416,21 +386,19 @@ namespace polyfem::solver
 		in_args["solver"]["max_threads"] = max_threads;
 		if (!args.contains("output") || !args["output"].contains("log") || !args["output"]["log"].contains("level"))
 		{
-			auto tmp = R"({
+			const json tmp = R"({
 					"output": {
 						"log": {
-							"level": -1
+							"level": "error"
 						}
 					}
 				})"_json;
 
-			tmp["output"]["log"]["level"] = "error";
-
 			in_args.merge_patch(tmp);
 		}
 
-		state->optimization_enabled = true;
-		state->init(in_args, false);
+		state->optimization_enabled = level;
+		state->init(in_args, true);
 		state->load_mesh();
 		Eigen::MatrixXd sol, pressure;
 		state->build_basis();
@@ -438,6 +406,21 @@ namespace polyfem::solver
 		state->assemble_mass_mat();
 
 		return state;
+	}
+
+	std::vector<std::shared_ptr<State>> AdjointOptUtils::create_states(const json &state_args, const CacheLevel &level, const size_t max_threads)
+	{
+		std::vector<std::shared_ptr<State>> states(state_args.size());
+		int i = 0;
+		for (const json &args : state_args)
+		{
+			json cur_args;
+			if (!load_json(args["path"], cur_args))
+				log_and_throw_adjoint_error("Can't find json for State {}", i);
+
+			states[i++] = AdjointOptUtils::create_state(cur_args, level, max_threads);
+		}
+		return states;
 	}
 
 	void AdjointOptUtils::solve_pde(State &state)
@@ -485,17 +468,24 @@ namespace polyfem::solver
 		jse::JSE jse;
 		{
 			jse.strict = strict_validation;
-			const std::string polyfem_input_spec = POLYFEM_OPT_INPUT_SPEC;
-			std::ifstream file(polyfem_input_spec);
+			std::ifstream file(POLYFEM_OPT_INPUT_SPEC);
 
 			if (file.is_open())
 				file >> rules;
 			else
 			{
-				logger().error("unable to open {} rules", polyfem_input_spec);
+				logger().error("unable to open {} rules", POLYFEM_OPT_INPUT_SPEC);
 				throw std::runtime_error("Invald spec file");
 			}
+
+			jse.include_directories.push_back(POLYFEM_JSON_SPEC_DIR);
+			jse.include_directories.push_back(POLYSOLVE_JSON_SPEC_DIR);
+			rules = jse.inject_include(rules);
+
+			// polysolve::linear::Solver::apply_default_solver(rules, "/solver/linear");
 		}
+
+		// polysolve::linear::Solver::select_valid_solver(args_in["solver"]["linear"], logger());
 
 		const bool valid_input = jse.verify_json(args_in, rules);
 
@@ -578,15 +568,9 @@ namespace polyfem::solver
 
 				return node_ids.size() * states[state_id]->mesh->dimension();
 			}
-			else
-			{
-				log_and_throw_error("Incorrect specification for parameters.");
-			}
 		}
-		else
-			log_and_throw_error("Incorrect specification for parameters.");
 
+		log_and_throw_adjoint_error("Incorrect specification for parameters.");
 		return -1;
 	}
-
 } // namespace polyfem::solver

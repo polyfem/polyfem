@@ -39,10 +39,10 @@ namespace polyfem::solver
 		  boundary_nodes_(boundary_nodes),
 		  full_size_(full_size),
 		  reduced_size_(full_size_ - boundary_nodes.size()),
+		  t_(0),
 		  rhs_assembler_(nullptr),
 		  local_boundary_(nullptr),
 		  n_boundary_samples_(0),
-		  t_(0),
 		  state(state)
 	{
 		use_reduced_size();
@@ -54,17 +54,20 @@ namespace polyfem::solver
 		const std::vector<mesh::LocalBoundary> &local_boundary,
 		const int n_boundary_samples,
 		const assembler::RhsAssembler &rhs_assembler,
+		const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
 		const double t,
 		const std::vector<std::shared_ptr<Form>> &forms,
 		State &state)
 		: FullNLProblem(forms),
-		  boundary_nodes_(boundary_nodes),
+		  full_boundary_nodes_(boundary_nodes),
+		  boundary_nodes_(periodic_bc ? periodic_bc->full_to_periodic(boundary_nodes) : boundary_nodes),
 		  full_size_(full_size),
-		  reduced_size_(full_size_ - boundary_nodes.size()),
+		  reduced_size_((periodic_bc ? periodic_bc->n_periodic_dof() : full_size) - boundary_nodes_.size()),
+		  periodic_bc_(periodic_bc),
+		  t_(t),
 		  rhs_assembler_(&rhs_assembler),
 		  local_boundary_(&local_boundary),
 		  n_boundary_samples_(n_boundary_samples),
-		  t_(t),
 		  state(state)
 	{
 		assert(std::is_sorted(boundary_nodes.begin(), boundary_nodes.end()));
@@ -90,146 +93,22 @@ namespace polyfem::solver
 			f->update_quantities(t, full);
 	}
 
-	void NLProblem::before_line_search(const TVector &x0, const TVector &x1)
-	{
-		static int useless_iter = 0;
-		const int dim = state.mesh->dimension();
-		const int n_elem = state.bases.size();
-		const int n_loc_nodes = state.bases[0].bases.size();
-		TVector u = reduced_to_full(x1);
-		TVector u0 = reduced_to_full(x0);
-
-		static int save_idx = 0;
-		if (state.hdf5_outpath.empty())
-			return;
-		const std::string path = state.resolve_output_path(state.hdf5_outpath + "_" + std::to_string(save_idx++) + ".hdf5");
-
-		std::vector<int> mask(n_elem, 0);
-		utils::maybe_parallel_for(n_elem, [&](int start, int end, int thread_id) {
-			for (int e = start; e < end; e++)
-			{
-				const auto& bs = state.bases[e];
-				polyfem::assembler::ElementAssemblyValues vals;
-				state.ass_vals_cache.compute(e, dim == 3, state.bases[e], state.geom_bases()[e], vals);
-				const int n_pts = vals.det.size();
-				
-				Eigen::Matrix<double, -1, -1, Eigen::ColMajor, -1, 3> local_pos = Eigen::MatrixXd::Zero(vals.basis_values.size(), dim);
-				for (size_t i = 0; i < vals.basis_values.size(); ++i)
-				{
-					const auto &bs = vals.basis_values[i];
-					for (const auto& g : bs.global)
-					{
-						local_pos.row(i) += g.val * (u.segment(g.index * dim, dim) + g.node.transpose());
-					}
-				}
-
-				double m = std::numeric_limits<double>::max();
-				double M = 0;
-
-				Eigen::Matrix<double, -1, -1, Eigen::ColMajor, 3, 3> tmp(dim, dim);
-				for (long k = 0; k < n_pts; ++k)
-				{
-					tmp.setZero();
-					for (int j = 0; j < vals.basis_values.size(); j++)
-					{
-						// for (int d = 0; d < dim; d++)
-						// 	tmp.row(d) += b.grad(k, d) * local_pos.row(j);
-						
-						tmp += vals.basis_values[j].grad.row(k).transpose() * local_pos.row(j);
-					}
-
-					double det = tmp.determinant();
-					m = std::min(det, m);
-					M = std::max(det, M);
-				}
-
-				// std::cout << "det min " << m << " max " << M << ", ";
-				if (m < 0 || m < 0.2 * M)
-					mask[e] = 1;
-			}
-		});
-		// std::cout << "\n";
-
-		int total = 0;
-		for (int i = 0; i < mask.size(); i++)
-		{
-			if (mask[i])
-				mask[i] = total++;
-			else
-				mask[i] = -1;
-		}
-		logger().info("{} out of {} elements exported!", total, n_elem);
-
-		if (total < 0.01 * n_elem)
-		{
-			useless_iter++;
-			if (useless_iter > 10)
-				exit(0);
-			return;
-		}
-		else
-		{
-			useless_iter = 0;
-		}
-
-		std::vector<std::string> nodes_rational;
-		nodes_rational.resize(total * n_loc_nodes * 4 * dim);
-		utils::maybe_parallel_for(n_elem, [&](int start, int end, int thread_id) {
-			for (int e = start; e < end; e++)
-			{
-				const auto& bs = state.bases[e];
-				if (mask[e] < 0)
-					continue;
-				
-				for (int i = 0; i < bs.bases.size(); i++)
-				{
-					const int idx = i + n_loc_nodes * mask[e];
-					assert(bs.bases[i].global().size() == 1);
-					Eigen::Matrix<double, -1, 1, Eigen::ColMajor, 3, 1> pos = bs.bases[i].global()[0].node.transpose() + u.segment(bs.bases[i].global()[0].index * dim, dim);
-					// nodes.row(idx) = bs.bases[i].global()[0].node;
-					// nodes.row(idx) += u.block(bs.bases[i].global()[0].index * dim, 0, dim, 1).transpose();
-
-					for (int d = 0; d < dim; d++)
-					{
-						utils::Rational num(pos(d));
-						nodes_rational[idx * (4 * dim) + d * 4 + 2] = num.get_numerator_str();
-						nodes_rational[idx * (4 * dim) + d * 4 + 3] = num.get_denominator_str();
-					}
-
-					pos = bs.bases[i].global()[0].node.transpose() + u0.segment(bs.bases[i].global()[0].index * dim, dim);
-
-					for (int d = 0; d < dim; d++)
-					{
-						utils::Rational num(pos(d));
-						nodes_rational[idx * (4 * dim) + d * 4 + 0] = num.get_numerator_str();
-						nodes_rational[idx * (4 * dim) + d * 4 + 1] = num.get_denominator_str();
-					}
-				}
-			}
-		});
-		// paraviewo::HDF5MatrixWriter::write_matrix(rawname + ".hdf5", dim, bases.size(), n_loc_nodes, nodes);
-		paraviewo::HDF5MatrixWriter::write_matrix(path, dim, total, n_loc_nodes, nodes_rational);
-		// for (auto& s : nodes_rational)
-		// 	std::cout << s << ",";
-		logger().info("Save to {}", path);
-	}
-
 	void NLProblem::line_search_begin(const TVector &x0, const TVector &x1)
 	{
 		FullNLProblem::line_search_begin(reduced_to_full(x0), reduced_to_full(x1));
 	}
 
-	double NLProblem::max_step_size(const TVector &x0, const TVector &x1) const
+	double NLProblem::max_step_size(const TVector &x0, const TVector &x1)
 	{
 		return FullNLProblem::max_step_size(reduced_to_full(x0), reduced_to_full(x1));
 	}
 
-	bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1) const
+	bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1)
 	{
 		return FullNLProblem::is_step_valid(reduced_to_full(x0), reduced_to_full(x1));
 	}
 
-	bool NLProblem::is_step_collision_free(const TVector &x0, const TVector &x1) const
+	bool NLProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
 	{
 		return FullNLProblem::is_step_collision_free(reduced_to_full(x0), reduced_to_full(x1));
 	}
@@ -244,16 +123,15 @@ namespace polyfem::solver
 	{
 		TVector full_grad;
 		FullNLProblem::gradient(reduced_to_full(x), full_grad);
-		grad = full_to_reduced(full_grad);
+		grad = full_to_reduced_grad(full_grad);
 	}
 
 	void NLProblem::hessian(const TVector &x, THessian &hessian)
 	{
 		THessian full_hessian;
 		FullNLProblem::hessian(reduced_to_full(x), full_hessian);
-		assert(full_hessian.rows() == full_size());
-		assert(full_hessian.cols() == full_size());
-		utils::full_to_reduced_matrix(full_size(), current_size(), boundary_nodes_, full_hessian, hessian);
+
+		full_hessian_to_reduced_hessian(full_hessian, hessian);
 	}
 
 	void NLProblem::solution_changed(const TVector &newX)
@@ -261,9 +139,9 @@ namespace polyfem::solver
 		FullNLProblem::solution_changed(reduced_to_full(newX));
 	}
 
-	void NLProblem::post_step(const int iter_num, const TVector &x)
+	void NLProblem::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
-		FullNLProblem::post_step(iter_num, reduced_to_full(x));
+		FullNLProblem::post_step(polysolve::nonlinear::PostStepData(data.iter_num, data.solver_info, reduced_to_full(data.x), reduced_to_full(data.grad)));
 
 		// TODO: add me back
 		// if (state_.args["output"]["advanced"]["save_nl_solve_sequence"])
@@ -290,6 +168,13 @@ namespace polyfem::solver
 		return reduced;
 	}
 
+	NLProblem::TVector NLProblem::full_to_reduced_grad(const TVector &full) const
+	{
+		TVector reduced;
+		full_to_reduced_aux_grad(boundary_nodes_, full_size(), current_size(), full, reduced);
+		return reduced;
+	}
+
 	NLProblem::TVector NLProblem::reduced_to_full(const TVector &reduced) const
 	{
 		TVector full;
@@ -301,12 +186,12 @@ namespace polyfem::solver
 	{
 		Eigen::MatrixXd result = Eigen::MatrixXd::Zero(full_size(), 1);
 		// rhs_assembler->set_bc(*local_boundary_, boundary_nodes_, n_boundary_samples_, local_neumann_boundary_, result, t_);
-		rhs_assembler_->set_bc(*local_boundary_, boundary_nodes_, n_boundary_samples_, std::vector<mesh::LocalBoundary>(), result, Eigen::MatrixXd(), t_);
+		rhs_assembler_->set_bc(*local_boundary_, full_boundary_nodes_, n_boundary_samples_, std::vector<mesh::LocalBoundary>(), result, Eigen::MatrixXd(), t_);
 		return result;
 	}
 
 	template <class FullMat, class ReducedMat>
-	void NLProblem::full_to_reduced_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced)
+	void NLProblem::full_to_reduced_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const
 	{
 		using namespace polyfem;
 
@@ -321,11 +206,17 @@ namespace polyfem::solver
 		assert(full.cols() == 1);
 		reduced.resize(reduced_size, 1);
 
+		Eigen::MatrixXd mid;
+		if (periodic_bc_)
+			mid = periodic_bc_->full_to_periodic(full, false);
+		else
+			mid = full;
+		
 		assert(std::is_sorted(boundary_nodes.begin(), boundary_nodes.end()));
 
 		long j = 0;
 		size_t k = 0;
-		for (int i = 0; i < full.size(); ++i)
+		for (int i = 0; i < mid.size(); ++i)
 		{
 			if (k < boundary_nodes.size() && boundary_nodes[k] == i)
 			{
@@ -333,13 +224,13 @@ namespace polyfem::solver
 				continue;
 			}
 
-			reduced(j++) = full(i);
+			assert(j < reduced.size());
+			reduced(j++) = mid(i);
 		}
-		assert(j == reduced.size());
 	}
 
 	template <class ReducedMat, class FullMat>
-	void NLProblem::reduced_to_full_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full)
+	void NLProblem::reduced_to_full_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full) const
 	{
 		using namespace polyfem;
 
@@ -358,18 +249,69 @@ namespace polyfem::solver
 
 		long j = 0;
 		size_t k = 0;
-		for (int i = 0; i < full.size(); ++i)
+		Eigen::MatrixXd mid(reduced_size + boundary_nodes.size(), 1);
+		for (int i = 0; i < mid.size(); ++i)
 		{
 			if (k < boundary_nodes.size() && boundary_nodes[k] == i)
 			{
 				++k;
-				full(i) = rhs(i);
+				mid(i) = rhs(i);
 				continue;
 			}
 
-			full(i) = reduced(j++);
+			mid(i) = reduced(j++);
+		}
+		
+		full = periodic_bc_ ? periodic_bc_->periodic_to_full(full_size, mid) : mid;
+	}
+
+	template <class FullMat, class ReducedMat>
+	void NLProblem::full_to_reduced_aux_grad(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const
+	{
+		using namespace polyfem;
+
+		// Reduced is already at the full size
+		if (full_size == reduced_size || full.size() == reduced_size)
+		{
+			reduced = full;
+			return;
 		}
 
-		assert(j == reduced.size());
+		assert(full.size() == full_size);
+		assert(full.cols() == 1);
+		reduced.resize(reduced_size, 1);
+
+		Eigen::MatrixXd mid;
+		if (periodic_bc_)
+			mid = periodic_bc_->full_to_periodic(full, true);
+		else
+			mid = full;
+
+		long j = 0;
+		size_t k = 0;
+		for (int i = 0; i < mid.size(); ++i)
+		{
+			if (k < boundary_nodes.size() && boundary_nodes[k] == i)
+			{
+				++k;
+				continue;
+			}
+
+			reduced(j++) = mid(i);
+		}
+	}
+
+	void NLProblem::full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const
+	{
+		// POLYFEM_SCOPED_TIMER("\tfull hessian to reduced hessian");
+		THessian mid = full;
+		
+		if (periodic_bc_)
+			periodic_bc_->full_to_periodic(mid);
+
+		if (current_size() < full_size())
+			utils::full_to_reduced_matrix(mid.rows(), mid.rows() - boundary_nodes_.size(), boundary_nodes_, mid, reduced);
+		else
+			reduced = mid;
 	}
 } // namespace polyfem::solver

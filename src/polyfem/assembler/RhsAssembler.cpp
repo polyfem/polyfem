@@ -5,7 +5,7 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <ipc/utils/eigen_ext.hpp>
-#include <polysolve/LinearSolver.hpp>
+#include <polysolve/linear/Solver.hpp>
 
 namespace polyfem
 {
@@ -38,7 +38,7 @@ namespace polyfem
 								   const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
 								   const Problem &problem,
 								   const std::string bc_method,
-								   const std::string &solver, const std::string &preconditioner, const json &solver_params)
+								   const json &solver_params)
 			: assembler_(assembler),
 			  mesh_(mesh),
 			  obstacle_(obstacle),
@@ -49,8 +49,6 @@ namespace polyfem
 			  ass_vals_cache_(ass_vals_cache),
 			  problem_(problem),
 			  bc_method_(bc_method),
-			  solver_(solver),
-			  preconditioner_(preconditioner),
 			  solver_params_(solver_params),
 			  dirichlet_nodes_(dirichlet_nodes),
 			  dirichlet_nodes_position_(dirichlet_nodes_position),
@@ -62,6 +60,7 @@ namespace polyfem
 
 		void RhsAssembler::assemble(const Density &density, Eigen::MatrixXd &rhs, const double t) const
 		{
+			// set size of rhs to the number of basis functions * the dimension of the problem
 			rhs = Eigen::MatrixXd::Zero(n_basis_ * size_, 1);
 			if (!problem_.is_rhs_zero())
 			{
@@ -72,10 +71,14 @@ namespace polyfem
 				for (int e = 0; e < n_elements; ++e)
 				{
 					// vals.compute(e, mesh_.is_volume(), bases_[e], gbases_[e]);
+
+					// compute geometric mapping
+					// evaluate and store basis functions/their gradients at quadrature points
 					ass_vals_cache_.compute(e, mesh_.is_volume(), bases_[e], gbases_[e], vals);
 
 					const Quadrature &quadrature = vals.quadrature;
 
+					// compute rhs values in physical space
 					problem_.rhs(assembler_, vals.val, t, rhs_fun);
 
 					for (int d = 0; d < size_; ++d)
@@ -84,7 +87,8 @@ namespace polyfem
 						for (int q = 0; q < quadrature.weights.size(); ++q)
 						{
 							// const double rho = problem_.is_time_dependent() ? density(vals.quadrature.points.row(q), vals.val.row(q), vals.element_id) : 1;
-							const double rho = density(vals.quadrature.points.row(q), vals.val.row(q), vals.element_id);
+							const double rho = density(vals.quadrature.points.row(q), vals.val.row(q), t, vals.element_id);
+							// prepare for integration by weighing rhs by determinant and quadrature weights
 							rhs_fun(q, d) *= vals.det(q) * quadrature.weights(q) * rho;
 						}
 					}
@@ -96,8 +100,10 @@ namespace polyfem
 
 						for (int d = 0; d < size_; ++d)
 						{
+							// integrate rhs function times the given local basis
 							const double rhs_value = (rhs_fun.col(d).array() * v.val.array()).sum();
 							for (std::size_t ii = 0; ii < v.global.size(); ++ii)
+								// add local contribution to the global rhs vector (with some weight for non-conforming bases)
 								rhs(v.global[ii].index * size_ + d) += rhs_value * v.global[ii].val;
 						}
 					}
@@ -209,12 +215,12 @@ namespace polyfem
 					mass_mat_assembler.add_multimaterial(0, json({}), Units());
 					StiffnessMatrix mass;
 					const int n_fe_basis = n_basis_ - obstacle_.n_vertices();
-					mass_mat_assembler.assemble(size_ == 3, n_fe_basis, bases_, gbases_, ass_vals_cache_, mass, true);
+					mass_mat_assembler.assemble(size_ == 3, n_fe_basis, bases_, gbases_, ass_vals_cache_, 0, mass, true);
 					assert(mass.rows() == n_basis_ * size_ - obstacle_.ndof() && mass.cols() == n_basis_ * size_ - obstacle_.ndof());
 
-					auto solver = LinearSolver::create(solver_, preconditioner_);
-					solver->setParameters(solver_params_);
-					solver->analyzePattern(mass, mass.rows());
+					auto solver = linear::Solver::create(solver_params_, logger());
+					logger().info("Solve RHS using {} linear solver", solver->name());
+					solver->analyze_pattern(mass, mass.rows());
 					solver->factorize(mass);
 
 					for (long i = 0; i < b.cols(); ++i)
@@ -394,9 +400,9 @@ namespace polyfem
 						Eigen::VectorXd b = mat_t * global_rhs;
 
 						Eigen::VectorXd coeffs(b.rows(), 1);
-						auto solver = LinearSolver::create(solver_, preconditioner_);
-						solver->setParameters(solver_params_);
-						solver->analyzePattern(A, A.rows());
+						auto solver = linear::Solver::create(solver_params_, logger());
+						logger().info("Solve RHS using {} linear solver", solver->name());
+						solver->analyze_pattern(A, A.rows());
 						solver->factorize(A);
 						coeffs.setZero();
 						solver->solve(b, coeffs);
@@ -614,60 +620,56 @@ namespace polyfem
 			for (const auto &lb : local_neumann_boundary)
 			{
 				const int e = lb.element_id();
-				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, false, uv, points, normals, weights, global_primitive_ids);
-
-				if (!has_samples)
-					continue;
-
 				const basis::ElementBases &gbs = gbases_[e];
 				const basis::ElementBases &bs = bases_[e];
-
-				vals.compute(e, mesh_.is_volume(), points, bs, gbs);
-
-				for (int n = 0; n < vals.jac_it.size(); ++n)
-				{
-					Eigen::MatrixXd ppp(1, size_);
-					ppp = vals.val.row(n);
-
-					trafo = vals.jac_it[n].inverse();
-
-					if (displacement.size() > 0)
-					{
-						assert(size_ == 2 || size_ == 3);
-						deform_mat.resize(size_, size_);
-						deform_mat.setZero();
-						for (const auto &b : vals.basis_values)
-						{
-							for (const auto &g : b.global)
-							{
-								for (int d = 0; d < size_; ++d)
-								{
-									deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
-
-									ppp(d) += displacement(g.index * size_ + d) * b.val(n);
-								}
-							}
-						}
-
-						trafo += deform_mat;
-					}
-
-					normals.row(n) = normals.row(n) * trafo.inverse();
-					normals.row(n).normalize();
-				}
-
-				// problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, t, rhs_fun);
-				nf(global_primitive_ids, uv, vals.val, normals, rhs_fun);
-
-				// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(0,1,0));
-
-				for (int d = 0; d < size_; ++d)
-					rhs_fun.col(d) = rhs_fun.col(d).array() * weights.array();
 
 				for (int i = 0; i < lb.size(); ++i)
 				{
 					const int primitive_global_id = lb.global_primitive_id(i);
 					const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
+
+					bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, i, false, uv, points, normals, weights);
+
+					if (!has_samples)
+						continue;
+
+					global_primitive_ids.setConstant(weights.size(), primitive_global_id);
+					vals.compute(e, mesh_.is_volume(), points, bs, gbs);
+
+					for (int n = 0; n < vals.jac_it.size(); ++n)
+					{
+						trafo = vals.jac_it[n].inverse();
+
+						if (displacement.size() > 0)
+						{
+							assert(size_ == 2 || size_ == 3);
+							deform_mat.resize(size_, size_);
+							deform_mat.setZero();
+							for (const auto &b : vals.basis_values)
+							{
+								for (const auto &g : b.global)
+								{
+									for (int d = 0; d < size_; ++d)
+									{
+										deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
+									}
+								}
+							}
+
+							trafo += deform_mat;
+						}
+
+						normals.row(n) = normals.row(n) * trafo.inverse();
+						normals.row(n).normalize();
+					}
+
+					// problem_.neumann_bc(mesh_, global_primitive_ids, vals.val, t, rhs_fun);
+					nf(global_primitive_ids, uv, vals.val, normals, rhs_fun);
+
+					// UIState::ui_state().debug_data().add_points(vals.val, Eigen::RowVector3d(0,1,0));
+
+					for (int d = 0; d < size_; ++d)
+						rhs_fun.col(d) = rhs_fun.col(d).array() * weights.array();
 
 					for (long n = 0; n < nodes.size(); ++n)
 					{
@@ -733,7 +735,12 @@ namespace polyfem
 			}
 		}
 
-		double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement, const std::vector<LocalBoundary> &local_neumann_boundary, const Density &density, const int resolution, const double t) const
+		double RhsAssembler::compute_energy(const Eigen::MatrixXd &displacement,
+											const Eigen::MatrixXd &displacement_prev,
+											const std::vector<LocalBoundary> &local_neumann_boundary,
+											const Density &density,
+											const int resolution,
+											const double t) const
 		{
 
 			double res = 0;
@@ -780,7 +787,7 @@ namespace polyfem
 								}
 							}
 							// const double rho = problem_.is_time_dependent() ? density(vals.quadrature.points.row(p), vals.val.row(p), vals.element_id) : 1;
-							const double rho = density(vals.quadrature.points.row(p), vals.val.row(p), vals.element_id);
+							const double rho = density(vals.quadrature.points.row(p), vals.val.row(p), t, vals.element_id);
 
 							for (int d = 0; d < size_; ++d)
 							{
@@ -821,7 +828,7 @@ namespace polyfem
 				{
 					trafo = vals.jac_it[n].inverse();
 
-					if (displacement.size() > 0)
+					if (displacement_prev.size() > 0)
 					{
 						assert(size_ == 2 || size_ == 3);
 						deform_mat.resize(size_, size_);
@@ -832,7 +839,7 @@ namespace polyfem
 							{
 								for (int d = 0; d < size_; ++d)
 								{
-									deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
+									deform_mat.row(d) += displacement_prev(g.index * size_ + d) * b.grad.row(n);
 								}
 							}
 						}
@@ -899,88 +906,90 @@ namespace polyfem
 			for (const auto &lb : local_neumann_boundary)
 			{
 				const int e = lb.element_id();
-				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, false, uv, points, normals, weights, global_primitive_ids);
-
-				if (!has_samples)
-					continue;
-
 				const basis::ElementBases &gbs = gbases_[e];
 				const basis::ElementBases &bs = bases_[e];
-
-				Eigen::MatrixXd reference_normals = normals;
-
-				vals.compute(e, mesh_.is_volume(), points, bs, gbs);
-
-				std::vector<std::vector<Eigen::MatrixXd>> grad_normal;
-				for (int n = 0; n < vals.jac_it.size(); ++n)
-				{
-					trafo = vals.jac_it[n].inverse();
-
-					assert(size_ == 2 || size_ == 3);
-					deform_mat.resize(size_, size_);
-					deform_mat.setZero();
-					jac_mat.resize(size_, vals.basis_values.size());
-					int b_idx = 0;
-					for (const auto &b : vals.basis_values)
-					{
-						jac_mat.col(b_idx++) = b.grad.row(n);
-
-						for (const auto &g : b.global)
-							for (int d = 0; d < size_; ++d)
-								deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
-					}
-
-					trafo += deform_mat;
-					trafo = trafo.inverse();
-
-					Eigen::VectorXd displaced_normal = normals.row(n) * trafo;
-					normals.row(n) = displaced_normal / displaced_normal.norm();
-
-					std::vector<Eigen::MatrixXd> grad;
-					{
-						Eigen::MatrixXd vec = -(jac_mat.transpose() * trafo * reference_normals.row(n).transpose());
-						// Gradient of the displaced normal computation
-						for (int k = 0; k < size_; ++k)
-						{
-							Eigen::MatrixXd grad_i(jac_mat.rows(), jac_mat.cols());
-							grad_i.setZero();
-							for (int m = 0; m < jac_mat.rows(); ++m)
-								for (int l = 0; l < jac_mat.cols(); ++l)
-									grad_i(m, l) = -(reference_normals.row(n) * trafo)(m) * (jac_mat.transpose() * trafo)(l, k);
-							grad.push_back(grad_i);
-						}
-					}
-
-					{
-						Eigen::MatrixXd normalization_chain_rule = (normals.row(n).transpose() * normals.row(n));
-						normalization_chain_rule = Eigen::MatrixXd::Identity(size_, size_) - normalization_chain_rule;
-						normalization_chain_rule /= displaced_normal.norm();
-
-						Eigen::VectorXd vec(size_);
-						b_idx = 0;
-						for (const auto &b : vals.basis_values)
-						{
-							for (int d = 0; d < size_; ++d)
-							{
-								for (int k = 0; k < size_; ++k)
-									vec(k) = grad[k](d, b_idx);
-								vec = normalization_chain_rule * vec;
-								for (int k = 0; k < size_; ++k)
-									grad[k](d, b_idx) = vec(k);
-							}
-							b_idx++;
-						}
-					}
-
-					grad_normal.push_back(grad);
-				}
-				Eigen::MatrixXd rhs_fun;
-				problem_.neumann_bc(mesh_, global_primitive_ids, uv, vals.val, normals, t, rhs_fun);
 
 				for (int i = 0; i < lb.size(); ++i)
 				{
 					const int primitive_global_id = lb.global_primitive_id(i);
 					const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
+
+					bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, i, false, uv, points, normals, weights);
+
+					if (!has_samples)
+						continue;
+
+					global_primitive_ids.setConstant(weights.size(), primitive_global_id);
+
+					Eigen::MatrixXd reference_normals = normals;
+
+					vals.compute(e, mesh_.is_volume(), points, bs, gbs);
+
+					std::vector<std::vector<Eigen::MatrixXd>> grad_normal;
+					for (int n = 0; n < vals.jac_it.size(); ++n)
+					{
+						trafo = vals.jac_it[n].inverse();
+
+						assert(size_ == 2 || size_ == 3);
+						deform_mat.resize(size_, size_);
+						deform_mat.setZero();
+						jac_mat.resize(size_, vals.basis_values.size());
+						int b_idx = 0;
+						for (const auto &b : vals.basis_values)
+						{
+							jac_mat.col(b_idx++) = b.grad.row(n);
+
+							for (const auto &g : b.global)
+								for (int d = 0; d < size_; ++d)
+									deform_mat.row(d) += displacement(g.index * size_ + d) * b.grad.row(n);
+						}
+
+						trafo += deform_mat;
+						trafo = trafo.inverse();
+
+						Eigen::VectorXd displaced_normal = normals.row(n) * trafo;
+						normals.row(n) = displaced_normal / displaced_normal.norm();
+
+						std::vector<Eigen::MatrixXd> grad;
+						{
+							Eigen::MatrixXd vec = -(jac_mat.transpose() * trafo * reference_normals.row(n).transpose());
+							// Gradient of the displaced normal computation
+							for (int k = 0; k < size_; ++k)
+							{
+								Eigen::MatrixXd grad_i(jac_mat.rows(), jac_mat.cols());
+								grad_i.setZero();
+								for (int m = 0; m < jac_mat.rows(); ++m)
+									for (int l = 0; l < jac_mat.cols(); ++l)
+										grad_i(m, l) = -(reference_normals.row(n) * trafo)(m) * (jac_mat.transpose() * trafo)(l, k);
+								grad.push_back(grad_i);
+							}
+						}
+
+						{
+							Eigen::MatrixXd normalization_chain_rule = (normals.row(n).transpose() * normals.row(n));
+							normalization_chain_rule = Eigen::MatrixXd::Identity(size_, size_) - normalization_chain_rule;
+							normalization_chain_rule /= displaced_normal.norm();
+
+							Eigen::VectorXd vec(size_);
+							b_idx = 0;
+							for (const auto &b : vals.basis_values)
+							{
+								for (int d = 0; d < size_; ++d)
+								{
+									for (int k = 0; k < size_; ++k)
+										vec(k) = grad[k](d, b_idx);
+									vec = normalization_chain_rule * vec;
+									for (int k = 0; k < size_; ++k)
+										grad[k](d, b_idx) = vec(k);
+								}
+								b_idx++;
+							}
+						}
+
+						grad_normal.push_back(grad);
+					}
+					Eigen::MatrixXd rhs_fun;
+					problem_.neumann_bc(mesh_, global_primitive_ids, uv, vals.val, normals, t, rhs_fun);
 
 					const bool is_pressure = problem_.is_boundary_pressure(mesh_.get_boundary_id(primitive_global_id));
 					if (!is_pressure)

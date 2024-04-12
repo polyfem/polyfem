@@ -1,6 +1,8 @@
 #pragma once
 
+#include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/assembler/Assembler.hpp>
+
 #include <polyfem/utils/AutodiffTypes.hpp>
 
 // local assembler for helmolhz equation, see Laplace
@@ -11,6 +13,8 @@ namespace polyfem::assembler
 	public:
 		using LinearAssembler::assemble;
 
+		Helmholtz();
+
 		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
 		assemble(const LinearAssemblerData &data) const override;
 		VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;
@@ -20,12 +24,12 @@ namespace polyfem::assembler
 		// sets the k parameter
 		void add_multimaterial(const int index, const json &params, const Units &units) override;
 
-		double k() const { return k_; }
+		GenericMatParam k() const { return k_; }
 
 		std::string name() const override { return "Helmholtz"; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
 	private:
-		double k_ = 1;
+		GenericMatParam k_;
 	};
 } // namespace polyfem::assembler

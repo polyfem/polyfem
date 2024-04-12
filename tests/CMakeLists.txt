@@ -5,9 +5,11 @@
 set(test_sources
   test_assembler.cpp
   test_bases.cpp
+  test_clipping.cpp
   test_diff.cpp
   test_opt.cpp
   test_cmesh.cpp
+  test_collision_proxy.cpp
   test_form_derivatives.cpp
   test_geometry_utils.cpp
   test_hdf5.cpp
@@ -21,7 +23,6 @@ set(test_sources
   test_quadrature.cpp
   test_rbf.cpp
   test_restart.cpp
-  test_solver.cpp
   test_tbb.cpp
   test_time_integrators.cpp
   test_utils.cpp

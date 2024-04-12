@@ -18,14 +18,22 @@ namespace polyfem
 			// initialization with assembler factory mesh
 			// size of the problem, bases
 			// and solver used internally
-			RhsAssembler(const Assembler &assembler, const mesh::Mesh &mesh, const mesh::Obstacle &obstacle,
-						 const std::vector<int> &dirichlet_nodes, const std::vector<int> &neumann_nodes,
-						 const std::vector<RowVectorNd> &dirichlet_nodes_position, const std::vector<RowVectorNd> &neumann_nodes_position,
-						 const int n_basis, const int size,
-						 const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const AssemblyValsCache &ass_vals_cache,
-						 const Problem &problem,
-						 const std::string bc_method,
-						 const std::string &solver, const std::string &preconditioner, const json &solver_params);
+			RhsAssembler(
+				const Assembler &assembler,
+				const mesh::Mesh &mesh,
+				const mesh::Obstacle &obstacle,
+				const std::vector<int> &dirichlet_nodes,
+				const std::vector<int> &neumann_nodes,
+				const std::vector<RowVectorNd> &dirichlet_nodes_position,
+				const std::vector<RowVectorNd> &neumann_nodes_position,
+				const int n_basis,
+				const int size,
+				const std::vector<basis::ElementBases> &bases,
+				const std::vector<basis::ElementBases> &gbases,
+				const AssemblyValsCache &ass_vals_cache,
+				const Problem &problem,
+				const std::string bc_method,
+				const json &solver_params);
 
 			// computes the rhs of a problem by \int \phi rho rhs
 			void assemble(const Density &density, Eigen::MatrixXd &rhs, const double t = 1) const;
@@ -41,12 +49,33 @@ namespace polyfem
 			// local boundary stores the mapping from elemment to nodes for Dirichlet nodes
 			// local local_neumann_boundary stores the mapping from elemment to nodes for Neumann nodes
 			// calls set_bc
-			void set_bc(const std::vector<mesh::LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<mesh::LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const Eigen::MatrixXd &displacement = Eigen::MatrixXd(), const double t = 1) const;
+			void set_bc(
+				const std::vector<mesh::LocalBoundary> &local_boundary,
+				const std::vector<int> &bounday_nodes,
+				const int resolution,
+				const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
+				Eigen::MatrixXd &rhs,
+				const Eigen::MatrixXd &displacement = Eigen::MatrixXd(),
+				const double t = 1) const;
 
 			// compute body energy
-			double compute_energy(const Eigen::MatrixXd &displacement, const std::vector<mesh::LocalBoundary> &local_neumann_boundary, const Density &density, const int resolution, const double t) const;
+			double compute_energy(
+				const Eigen::MatrixXd &displacement,
+				const Eigen::MatrixXd &displacement_prev,
+				const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
+				const Density &density,
+				const int resolution,
+				const double t) const;
 			// compute body energy gradient, hessian is zero, rhs is a linear function
-			void compute_energy_grad(const std::vector<mesh::LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const Density &density, const int resolution, const std::vector<mesh::LocalBoundary> &local_neumann_boundary, const Eigen::MatrixXd &final_rhs, const double t, Eigen::MatrixXd &rhs) const;
+			void compute_energy_grad(
+				const std::vector<mesh::LocalBoundary> &local_boundary,
+				const std::vector<int> &bounday_nodes,
+				const Density &density,
+				const int resolution,
+				const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
+				const Eigen::MatrixXd &final_rhs,
+				const double t,
+				Eigen::MatrixXd &rhs) const;
 
 			// compute body hessian wrt to previous solution
 			void compute_energy_hess(const std::vector<int> &bounday_nodes, const int resolution, const std::vector<mesh::LocalBoundary> &local_neumann_boundary, const Eigen::MatrixXd &displacement, const double t, const bool project_to_psd, StiffnessMatrix &hess) const;
@@ -89,13 +118,12 @@ namespace polyfem
 			const mesh::Mesh &mesh_;
 			const mesh::Obstacle &obstacle_;
 			const int n_basis_;
-			const int size_;
-			const std::vector<basis::ElementBases> &bases_;
-			const std::vector<basis::ElementBases> &gbases_;
+			const int size_; ///< dimension of problem
+			const std::vector<basis::ElementBases> &bases_; ///< basis functions associated with solution
+			const std::vector<basis::ElementBases> &gbases_; ///< basis functions associated with geometric mapping
 			const AssemblyValsCache &ass_vals_cache_;
 			const Problem &problem_;
 			const std::string bc_method_;
-			const std::string solver_, preconditioner_;
 			const json solver_params_;
 			const std::vector<int> &dirichlet_nodes_;
 			const std::vector<RowVectorNd> &dirichlet_nodes_position_;

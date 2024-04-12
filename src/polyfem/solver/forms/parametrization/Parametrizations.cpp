@@ -215,7 +215,7 @@ namespace polyfem::solver
 					if (node_id_to_body_id_(g.index) < 0)
 						node_id_to_body_id_(g.index) = id;
 					else if (node_id_to_body_id_(g.index) != id)
-						log_and_throw_error("Same node on different bodies!");
+						log_and_throw_adjoint_error("Same node on different bodies!");
 				}
 			}
 		}
@@ -319,7 +319,7 @@ namespace polyfem::solver
 	SliceMap::SliceMap(const int from, const int to, const int total) : from_(from), to_(to), total_(total)
 	{
 		if (to_ - from_ < 0)
-			log_and_throw_error("Invalid Slice Map input!");
+			log_and_throw_adjoint_error("Invalid Slice Map input!");
 	}
 
 	Eigen::VectorXd SliceMap::inverse_eval(const Eigen::VectorXd &y)
@@ -329,7 +329,7 @@ namespace polyfem::solver
 		else
 		{
 			if (y.size() != size(0))
-				log_and_throw_error("Inverse eval on SliceMap is inconsistent in size!");
+				log_and_throw_adjoint_error("Inverse eval on SliceMap is inconsistent in size!");
 			Eigen::VectorXd y_;
 			y_.setZero(total_);
 			y_.segment(from_, to_ - from_) = y;
@@ -349,10 +349,10 @@ namespace polyfem::solver
 		return grad_full;
 	}
 
-	InsertConstantMap::InsertConstantMap(const int size, const double val, const int start_index): start_index_(start_index)
+	InsertConstantMap::InsertConstantMap(const int size, const double val, const int start_index) : start_index_(start_index)
 	{
 		if (size <= 0)
-			log_and_throw_error("Invalid InsertConstantMap input!");
+			log_and_throw_adjoint_error("Invalid InsertConstantMap input!");
 		values_.setConstant(size, val);
 	}
 
@@ -458,69 +458,5 @@ namespace polyfem::solver
 	{
 		assert(x.size() == tt_radius_adjacency.rows());
 		return (tt_radius_adjacency * grad).array() / tt_radius_adjacency_row_sum.array();
-	}
-
-	CustomSymmetric::CustomSymmetric(const json &args)
-	{
-		for (const auto &entry : args["fixed_entries"])
-			fixed_entries.push_back(entry.get<int>());
-
-		for (const auto &pair : args["equal_pairs"])
-			equal_pairs.emplace_back(pair[0].get<int>(), pair[1].get<int>());
-
-		for (const auto &pair : args["sum_equal_pairs"])
-			sum_equal_pairs.emplace_back(pair[0].get<int>(), pair[1].get<int>());
-	}
-	int CustomSymmetric::size(const int x_size) const
-	{
-		return x_size;
-	}
-	Eigen::VectorXd CustomSymmetric::eval(const Eigen::VectorXd &x) const
-	{
-		Eigen::VectorXd y = x;
-		// y(8) = 1.0 - y(3);
-		// y(9) = y(4);
-		// y(10) = 1.0 - y(1);
-		// y(11) = y(2);
-		// y(18) = y(15);
-		// y(19) = y(14);
-		// y(5) = 0.5;
-		// y(6) = 0.5;
-
-		for (const auto &pair : equal_pairs)
-			y(pair.second) = y(pair.first);
-
-		for (const auto &pair : sum_equal_pairs)
-			y(pair.second) = 1.0 - y(pair.first);
-
-		return y;
-	}
-	Eigen::VectorXd CustomSymmetric::apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const
-	{
-		Eigen::VectorXd grad_new = grad;
-		// grad_new(3) -= grad_new(8);
-		// grad_new(4) += grad_new(9);
-		// grad_new(1) -= grad_new(10);
-		// grad_new(2) += grad_new(11);
-		// grad_new(15) += grad_new(18);
-		// grad_new(14) += grad_new(19);
-
-		// grad_new({5,6,8,9,10,11,18,19}).setZero();
-
-		grad_new(fixed_entries).setZero();
-
-		for (const auto &pair : equal_pairs)
-		{
-			grad_new(pair.first) += grad_new(pair.second);
-			grad_new(pair.second) = 0;
-		}
-
-		for (const auto &pair : sum_equal_pairs)
-		{
-			grad_new(pair.first) -= grad_new(pair.second);
-			grad_new(pair.second) = 0;
-		}
-
-		return grad_new;
 	}
 } // namespace polyfem::solver

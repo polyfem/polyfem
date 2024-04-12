@@ -1,6 +1,8 @@
 #include "OperatorSplittingSolver.hpp"
 #include <unsupported/Eigen/SparseExtra>
 
+#include <polysolve/linear/FEMSolver.hpp>
+
 #ifdef POLYFEM_WITH_OPENVDB
 #include <openvdb/openvdb.h>
 #endif
@@ -168,16 +170,13 @@ namespace polyfem::solver
 													 const StiffnessMatrix &mass_velocity,
 													 const double &dt,
 													 const double &viscosity_,
-													 const std::string &solver_type,
-													 const std::string &precond,
-													 const json &params) : solver_type(solver_type)
+													 const json &params)
 	{
 		initialize_solver(mesh, shape, n_el, local_boundary, bnd_nodes);
 
 		logger().info("Prefactorization begins...");
 
-		solver_mass = polysolve::LinearSolver::create(solver_type, precond);
-		solver_mass->setParameters(params);
+		solver_mass = polysolve::linear::Solver::create(params, logger());
 		// if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
 		{
 			StiffnessMatrix mat1 = mass_velocity;
@@ -186,8 +185,7 @@ namespace polyfem::solver
 
 		mat_diffusion = mass + viscosity_ * dt * stiffness_viscosity;
 
-		solver_diffusion = polysolve::LinearSolver::create(solver_type, precond);
-		solver_diffusion->setParameters(params);
+		solver_diffusion = polysolve::linear::Solver::create(params, logger());
 		// if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
 		{
 			StiffnessMatrix mat1 = mat_diffusion;
@@ -222,8 +220,7 @@ namespace polyfem::solver
 		}
 
 		mat_projection.setFromTriplets(coefficients.begin(), coefficients.end());
-		solver_projection = polysolve::LinearSolver::create(solver_type, precond);
-		solver_projection->setParameters(params);
+		solver_projection = polysolve::linear::Solver::create(params, logger());
 		logger().info("{}...", solver_projection->name());
 		// if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
 		{
@@ -994,7 +991,7 @@ namespace polyfem::solver
 		if (pressure_boundary_nodes.size() == 0)
 			rhs = Eigen::VectorXd::Zero(mixed_stiffness.rows() + 1); // mixed_stiffness * sol;
 		else
-			rhs = Eigen::VectorXd::Zero(mixed_stiffness.rows());     // mixed_stiffness * sol;
+			rhs = Eigen::VectorXd::Zero(mixed_stiffness.rows()); // mixed_stiffness * sol;
 
 		Eigen::VectorXd temp = mixed_stiffness * sol;
 		for (int i = 0; i < temp.rows(); i++)
@@ -1038,7 +1035,7 @@ namespace polyfem::solver
 			rhs(boundary_nodes_[i]) = 0;
 		}
 
-		if (solver_type == "Pardiso" || solver_type == "Eigen::SimplicialLDLT" || solver_type == "Eigen::SparseLU")
+		if (solver_diffusion->name() == "Pardiso" || solver_diffusion->name() == "Eigen::SimplicialLDLT" || solver_diffusion->name() == "Eigen::SparseLU")
 		{
 			dirichlet_solve_prefactorized(*solver_mass, velocity_mass, rhs, boundary_nodes_, dx);
 		}

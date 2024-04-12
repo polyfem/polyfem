@@ -63,7 +63,7 @@ namespace polyfem::solver
 
 	double BodyForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		return rhs_assembler_.compute_energy(x, local_neumann_boundary_, density_, n_boundary_samples_, t_);
+		return rhs_assembler_.compute_energy(x, x_prev_, local_neumann_boundary_, density_, n_boundary_samples_, t_);
 	}
 
 	void BodyForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
@@ -80,6 +80,7 @@ namespace polyfem::solver
 	void BodyForm::update_quantities(const double t, const Eigen::VectorXd &x)
 	{
 		this->t_ = t;
+		this->x_prev_ = x;
 		update_current_rhs(x);
 	}
 
@@ -144,7 +145,7 @@ namespace polyfem::solver
 				rhs_function *= -1;
 				for (int q = 0; q < vals.val.rows(); q++)
 				{
-					const double rho = density_(quadrature.points.row(q), vals.val.row(q), e);
+					const double rho = density_(quadrature.points.row(q), vals.val.row(q), t, e);
 					rhs_function.row(q) *= rho;
 				}
 

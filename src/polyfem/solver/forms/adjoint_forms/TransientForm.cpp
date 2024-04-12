@@ -98,7 +98,7 @@ namespace polyfem::solver
 
 		return value;
 	}
-	Eigen::MatrixXd TransientForm::compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const
+	Eigen::MatrixXd TransientForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const
 	{
 		Eigen::MatrixXd terms;
 		terms.setZero(state.ndof(), time_steps_ + 1);
@@ -113,18 +113,18 @@ namespace polyfem::solver
 			{
 				if (weights[i] == 0)
 					continue;
-				local_storage.mat.col(i) = (weights[i] * obj_->weight()) * obj_->compute_adjoint_rhs_unweighted_step(i, x, state);
+				local_storage.mat.col(i) = weights[i] * obj_->compute_adjoint_rhs_step(i, x, state);
 				if (obj_->depends_on_step_prev() && i > 0)
-					local_storage.mat.col(i - 1) = (weights[i] * obj_->weight()) * obj_->compute_adjoint_rhs_unweighted_step_prev(i, x, state);
+					local_storage.mat.col(i - 1) = weights[i] * obj_->compute_adjoint_rhs_step_prev(i, x, state);
 			}
 		});
 
 		for (const LocalThreadMatStorage &local_storage : storage)
 			terms += local_storage.mat;
 
-		return terms;
+		return terms * weight();
 	}
-	void TransientForm::compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void TransientForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv.setZero(x.size());
 		std::vector<double> weights = get_transient_quadrature_weights();
@@ -138,13 +138,14 @@ namespace polyfem::solver
 			{
 				if (weights[i] == 0)
 					continue;
-				obj_->compute_partial_gradient_unweighted_step(i, x, tmp);
-				local_storage.mat += (weights[i] * obj_->weight()) * tmp;
+				obj_->compute_partial_gradient_step(i, x, tmp);
+				local_storage.mat += weights[i] * tmp;
 			}
 		});
 
 		for (const LocalThreadMatStorage &local_storage : storage)
 			gradv += local_storage.mat;
+		gradv *= weight();
 	}
 
 	void TransientForm::init(const Eigen::VectorXd &x)
@@ -172,9 +173,9 @@ namespace polyfem::solver
 		obj_->line_search_end();
 	}
 
-	void TransientForm::post_step(const int iter_num, const Eigen::VectorXd &x)
+	void TransientForm::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
-		obj_->post_step(iter_num, x);
+		obj_->post_step(data);
 	}
 
 	void TransientForm::solution_changed(const Eigen::VectorXd &new_x)
@@ -189,27 +190,6 @@ namespace polyfem::solver
 			obj_->solution_changed_step(i, new_x);
 		}
 	}
-
-	void TransientForm::update_quantities(const double t, const Eigen::VectorXd &x)
-	{
-		obj_->update_quantities(t, x);
-	}
-
-	void TransientForm::init_lagging(const Eigen::VectorXd &x)
-	{
-		obj_->init_lagging(x);
-	}
-
-	void TransientForm::update_lagging(const Eigen::VectorXd &x, const int iter_num)
-	{
-		obj_->update_lagging(x, iter_num);
-	}
-
-	void TransientForm::set_apply_DBC(const Eigen::VectorXd &x, bool apply_DBC)
-	{
-		obj_->set_apply_DBC(x, apply_DBC);
-	}
-
 	bool TransientForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
 		return obj_->is_step_collision_free(x0, x1);

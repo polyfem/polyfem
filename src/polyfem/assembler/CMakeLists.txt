@@ -25,12 +25,19 @@ set(SOURCES
 	Laplacian.hpp
 	LinearElasticity.cpp
 	LinearElasticity.hpp
+	MacroStrain.hpp
 	Mass.cpp
 	Mass.hpp
+	MassMatrixAssembler.cpp
+	MassMatrixAssembler.hpp
 	MatParams.cpp
 	MatParams.hpp
 	MooneyRivlinElasticity.cpp
 	MooneyRivlinElasticity.hpp
+	MooneyRivlin3ParamElasticity.cpp
+	MooneyRivlin3ParamElasticity.hpp
+	MooneyRivlin3ParamSymbolic.cpp
+	MooneyRivlin3ParamSymbolic.hpp
 	MultiModel.cpp
 	MultiModel.hpp
 	NavierStokes.cpp
@@ -54,6 +61,8 @@ set(SOURCES
 	ViscousDamping.hpp
 	AMIPSEnergy.hpp
 	AMIPSEnergy.cpp
+	PeriodicBoundary.cpp
+	PeriodicBoundary.hpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})

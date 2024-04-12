@@ -25,6 +25,7 @@ namespace polyfem::time_integrator
 namespace polyfem::assembler
 {
 	class ViscousDamping;
+	class MacroStrainValue;
 } // namespace polyfem::assembler
 
 namespace polyfem::solver
@@ -32,10 +33,14 @@ namespace polyfem::solver
 	class NLProblem;
 	class Form;
 	class ContactForm;
+	class PeriodicContactForm;
+	class MacroStrainALForm;
 	class FrictionForm;
 	class BodyForm;
 	class BCLagrangianForm;
 	class BCPenaltyForm;
+	class MacroStrainLagrangianForm;
+	class MacroStrainALForm;
 	class InertiaForm;
 	class ElasticForm;
 	enum class ElementInversionCheck;
@@ -86,7 +91,7 @@ namespace polyfem::solver
 			// const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
 			// const int n_boundary_samples,
 			// const StiffnessMatrix &mass,
-			const polyfem::mesh::Obstacle &obstacle,
+			const size_t obstacle_ndof,
 
 			// Contact form
 			const bool contact_enabled,
@@ -99,6 +104,13 @@ namespace polyfem::solver
 			const double ccd_tolerance,
 			const long ccd_max_iterations,
 			const bool enable_shape_derivatives,
+
+			// Homogenization
+			const assembler::MacroStrainValue &macro_strain_constraint,
+
+			// Periodic contact
+			const bool periodic_contact,
+			const Eigen::VectorXi &tiled_to_single,
 
 			// Friction form
 			const double friction_coefficient,
@@ -115,7 +127,7 @@ namespace polyfem::solver
 		/// @brief updates the dt inside the different forms
 		void update_dt();
 
-		std::unordered_map<std::string, std::shared_ptr<solver::Form>> named_forms() const;
+		std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> named_forms() const;
 
 	public:
 		std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
@@ -123,12 +135,16 @@ namespace polyfem::solver
 
 		std::shared_ptr<solver::BCLagrangianForm> al_lagr_form;
 		std::shared_ptr<solver::BCPenaltyForm> al_pen_form;
+		std::shared_ptr<solver::MacroStrainLagrangianForm> strain_al_lagr_form;
+		std::shared_ptr<solver::MacroStrainALForm> strain_al_pen_form;
 		std::shared_ptr<solver::BodyForm> body_form;
 		std::shared_ptr<solver::ContactForm> contact_form;
 		std::shared_ptr<solver::ElasticForm> damping_form;
 		std::shared_ptr<solver::ElasticForm> elastic_form;
 		std::shared_ptr<solver::FrictionForm> friction_form;
 		std::shared_ptr<solver::InertiaForm> inertia_form;
+
+		std::shared_ptr<solver::PeriodicContactForm> periodic_contact_form;
 
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 	};

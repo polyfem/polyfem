@@ -12,12 +12,22 @@ set(SOURCES
 	InertiaForm.cpp
 	InertiaForm.hpp
 	InertiaForm.cpp
+	InversionBarrierForm.cpp
+	InversionBarrierForm.hpp
+	L2ProjectionForm.cpp
+	L2ProjectionForm.hpp
 	LaggedRegForm.cpp
 	LaggedRegForm.hpp
 	FrictionForm.cpp
 	FrictionForm.hpp
 	ContactForm.cpp
 	ContactForm.hpp
+	PeriodicContactForm.cpp
+	PeriodicContactForm.hpp
+	MacroStrainLagrangianForm.cpp
+	MacroStrainLagrangianForm.hpp
+	MacroStrainALForm.cpp
+	MacroStrainALForm.hpp
 	RayleighDampingForm.cpp
 	RayleighDampingForm.hpp
 )

@@ -10,6 +10,8 @@
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
+#include <polyfem/solver/forms/InversionBarrierForm.hpp>
+#include <polyfem/solver/forms/L2ProjectionForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
 
@@ -33,38 +35,23 @@ using namespace polyfem::assembler;
 
 namespace
 {
-	std::shared_ptr<State> get_state()
+	std::shared_ptr<State> get_state(int dim)
 	{
 		const std::string path = POLYFEM_DATA_DIR;
 		json in_args = R"(
 		{
 			"materials": {
-                "type": "NeoHookean",
-                "E": 20000,
-                "nu": 0.3,
-                "rho": 1000,
+				"type": "NeoHookean",
+				"E": 20000,
+				"nu": 0.3,
+				"rho": 1000,
 				"phi": 1,
 				"psi": 1
-            },
-
-			"geometry": [{
-				"mesh": "",
-				"enabled": true,
-				"type": "mesh",
-				"surface_selection": 7
-			}],
+			},
 
 			"time": {
 				"dt": 0.001,
 				"tend": 1.0
-			},
-
-			"boundary_conditions": {
-				"dirichlet_boundary": [{
-					"id": "all",
-					"value": [0, 0]
-				}],
-				"rhs": [10, 10]
 			},
 
 			"output": {
@@ -74,7 +61,56 @@ namespace
 			}
 
 		})"_json;
-		in_args["geometry"][0]["mesh"] = path + "/contact/meshes/2D/simple/circle/circle36.obj";
+		if (dim == 2)
+		{
+			in_args["geometry"] = R"([{
+				"enabled": true,
+				"surface_selection": 7
+			}])"_json;
+			in_args["geometry"][0]["mesh"] = path + "/contact/meshes/2D/simple/circle/circle36.obj";
+			in_args["boundary_conditions"] = R"({
+				"dirichlet_boundary": [{
+					"id": "all",
+					"value": [0, 0]
+				}],
+				"rhs": [10, 10]
+			})"_json;
+		}
+		else
+		{
+			in_args["geometry"] = R"([{
+				"transformation": {
+					"scale": [0.1, 1, 1]
+				},
+				"surface_selection": [
+					{
+						"id": 1,
+						"axis": "z",
+						"position": 0.8,
+						"relative": true
+					},
+					{
+						"id": 2,
+						"axis": "-z",
+						"position": 0.2,
+						"relative": true
+					}
+				],
+				"n_refs": 1
+			}])"_json;
+			in_args["geometry"][0]["mesh"] = path + "/contact/meshes/3D/simple/bar/bar-6.msh";
+			in_args["boundary_conditions"] = R"({
+				"neumann_boundary": [{
+					"id": 1,
+					"value": [1000, 1000, 1000]
+				}],
+				"pressure_boundary": [{
+					"id": 2,
+					"value": -2000
+				}],
+				"rhs": [0, 0, 0]
+			})"_json;
+		}
 
 		auto state = std::make_shared<State>();
 		state->init(in_args, true);
@@ -95,7 +131,7 @@ void test_form(Form &form, const State &state)
 {
 	static const int n_rand = 10;
 
-	Eigen::VectorXd x = Eigen::VectorXd::Zero(state.n_bases * 2);
+	Eigen::VectorXd x = Eigen::VectorXd::Zero(state.n_bases * state.mesh->dimension());
 
 	form.init(x);
 	form.init_lagging(x);
@@ -151,9 +187,10 @@ void test_form(Form &form, const State &state)
 	}
 }
 
-TEST_CASE("body form derivatives", "[form][form_derivatives][body_form]")
+TEST_CASE("body form derivatives 3d", "[form][form_derivatives][body_form]")
 {
-	const auto state_ptr = get_state();
+	const int dim = GENERATE(2, 3);
+	const auto state_ptr = get_state(dim);
 	const auto rhs_assembler_ptr = state_ptr->build_rhs_assembler();
 	const bool apply_DBC = false; // GENERATE(true, false);
 	const int ndof = state_ptr->n_bases * state_ptr->mesh->dimension();
@@ -167,7 +204,37 @@ TEST_CASE("body form derivatives", "[form][form_derivatives][body_form]")
 				  *rhs_assembler_ptr,
 				  state_ptr->mass_matrix_assembler->density(),
 				  apply_DBC, false, state_ptr->problem->is_time_dependent());
-	form.update_quantities(state_ptr->args["time"]["t0"].get<double>(), Eigen::VectorXd());
+	Eigen::VectorXd x_prev;
+	x_prev.setRandom(state_ptr->n_bases * 3);
+	x_prev /= 100.;
+	form.update_quantities(state_ptr->args["time"]["t0"].get<double>() + 5 * state_ptr->args["time"]["dt"].get<double>(), x_prev);
+
+	CAPTURE(apply_DBC);
+	test_form(form, *state_ptr);
+}
+
+TEST_CASE("body form derivatives", "[form][form_derivatives][body_form]")
+{
+	const int dim = GENERATE(2, 3);
+	const auto state_ptr = get_state(dim);
+	const auto rhs_assembler_ptr = state_ptr->build_rhs_assembler();
+	const bool apply_DBC = false; // GENERATE(true, false);
+	const int ndof = state_ptr->n_bases * state_ptr->mesh->dimension();
+
+	BodyForm form(ndof, state_ptr->n_pressure_bases,
+				  state_ptr->boundary_nodes,
+				  state_ptr->local_boundary,
+				  state_ptr->local_neumann_boundary,
+				  state_ptr->n_boundary_samples(),
+				  state_ptr->rhs,
+				  *rhs_assembler_ptr,
+				  state_ptr->mass_matrix_assembler->density(),
+				  apply_DBC, false, state_ptr->problem->is_time_dependent());
+
+	Eigen::VectorXd x_prev;
+	x_prev.setRandom(state_ptr->n_bases * dim);
+	x_prev /= 100.;
+	form.update_quantities(state_ptr->args["time"]["t0"].get<double>() + 5 * state_ptr->args["time"]["dt"].get<double>(), x_prev);
 
 	CAPTURE(apply_DBC);
 	test_form(form, *state_ptr);
@@ -175,7 +242,8 @@ TEST_CASE("body form derivatives", "[form][form_derivatives][body_form]")
 
 TEST_CASE("contact form derivatives", "[form][form_derivatives][contact_form]")
 {
-	const auto state_ptr = get_state();
+	const int dim = GENERATE(2, 3);
+	const auto state_ptr = get_state(dim);
 
 	const double dhat = 1e-3;
 	const bool use_adaptive_barrier_stiffness = true; // GENERATE(true, false);
@@ -198,13 +266,15 @@ TEST_CASE("contact form derivatives", "[form][form_derivatives][contact_form]")
 
 TEST_CASE("elastic form derivatives", "[form][form_derivatives][elastic_form]")
 {
-	const auto state_ptr = get_state();
+	const int dim = GENERATE(2, 3);
+	const auto state_ptr = get_state(dim);
 	ElasticForm form(
 		state_ptr->n_bases,
 		state_ptr->bases,
 		state_ptr->geom_bases(),
 		*state_ptr->assembler,
 		state_ptr->ass_vals_cache,
+		0,
 		state_ptr->args["time"]["dt"],
 		state_ptr->mesh->is_volume());
 	test_form(form, *state_ptr);
@@ -212,7 +282,8 @@ TEST_CASE("elastic form derivatives", "[form][form_derivatives][elastic_form]")
 
 TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]")
 {
-	const auto state_ptr = get_state();
+	const int dim = GENERATE(2, 3);
+	const auto state_ptr = get_state(dim);
 	const bool use_convergent_formulation = GENERATE(true, false);
 	const double epsv = 1e-3;
 	const double mu = GENERATE(0.0, 0.01, 0.1, 1.0);
@@ -232,15 +303,16 @@ TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]"
 		ccd_tolerance, ccd_max_iterations);
 
 	FrictionForm form(
-		state_ptr->collision_mesh, nullptr, epsv, mu, dhat, broad_phase_method,
-		contact_form, /*n_lagging_iters=*/-1);
+		state_ptr->collision_mesh, nullptr, epsv, mu, broad_phase_method, contact_form,
+		/*n_lagging_iters=*/-1);
 
 	test_form(form, *state_ptr);
 }
 
 TEST_CASE("damping form derivatives", "[form][form_derivatives][damping_form]")
 {
-	const auto state_ptr = get_state();
+	const int dim = GENERATE(2, 3);
+	const auto state_ptr = get_state(dim);
 	const double dt = 1e-2;
 	std::shared_ptr<assembler::ViscousDamping> damping_assembler = std::make_shared<assembler::ViscousDamping>();
 	state_ptr->set_materials(*damping_assembler);
@@ -251,22 +323,24 @@ TEST_CASE("damping form derivatives", "[form][form_derivatives][damping_form]")
 		state_ptr->geom_bases(),
 		*damping_assembler,
 		state_ptr->ass_vals_cache,
+		0,
 		dt,
 		state_ptr->mesh->is_volume());
-	form.update_quantities(0, Eigen::VectorXd::Ones(state_ptr->n_bases * 2));
+	form.update_quantities(0, Eigen::VectorXd::Ones(state_ptr->n_bases * dim));
 	test_form(form, *state_ptr);
 }
 
 TEST_CASE("inertia form derivatives", "[form][form_derivatives][inertia_form]")
 {
-	const auto state_ptr = get_state();
+	const int dim = GENERATE(2, 3);
+	const auto state_ptr = get_state(dim);
 
 	const double dt = 1e-3;
 	ImplicitEuler time_integrator;
 	time_integrator.init(
-		Eigen::VectorXd::Zero(state_ptr->n_bases * 2),
-		Eigen::VectorXd::Zero(state_ptr->n_bases * 2),
-		Eigen::VectorXd::Zero(state_ptr->n_bases * 2),
+		Eigen::VectorXd::Zero(state_ptr->n_bases * dim),
+		Eigen::VectorXd::Zero(state_ptr->n_bases * dim),
+		Eigen::VectorXd::Zero(state_ptr->n_bases * dim),
 		dt);
 
 	InertiaForm form(state_ptr->mass, time_integrator);
@@ -276,7 +350,8 @@ TEST_CASE("inertia form derivatives", "[form][form_derivatives][inertia_form]")
 
 TEST_CASE("lagged regularization form derivatives", "[form][form_derivatives][lagged_reg_form]")
 {
-	const auto state_ptr = get_state();
+	const int dim = GENERATE(2, 3);
+	const auto state_ptr = get_state(dim);
 
 	const double weight = 1e3;
 	LaggedRegForm form(/*n_lagging_iters=*/-1);
@@ -287,22 +362,24 @@ TEST_CASE("lagged regularization form derivatives", "[form][form_derivatives][la
 
 TEST_CASE("Rayleigh damping form derivatives", "[form][form_derivatives][rayleigh_damping_form]")
 {
-	const auto state_ptr = get_state();
+	const int dim = GENERATE(2, 3);
+	const auto state_ptr = get_state(dim);
 	ElasticForm elastic_form(
 		state_ptr->n_bases,
 		state_ptr->bases,
 		state_ptr->geom_bases(),
 		*state_ptr->assembler,
 		state_ptr->ass_vals_cache,
+		0,
 		state_ptr->args["time"]["dt"],
 		state_ptr->mesh->is_volume());
 
 	const double dt = 1e-3;
 	ImplicitEuler time_integrator;
 	time_integrator.init(
-		Eigen::VectorXd::Zero(state_ptr->n_bases * 2),
-		Eigen::VectorXd::Zero(state_ptr->n_bases * 2),
-		Eigen::VectorXd::Zero(state_ptr->n_bases * 2),
+		Eigen::VectorXd::Zero(state_ptr->n_bases * dim),
+		Eigen::VectorXd::Zero(state_ptr->n_bases * dim),
+		Eigen::VectorXd::Zero(state_ptr->n_bases * dim),
 		dt);
 
 	RayleighDampingForm form(
@@ -315,17 +392,20 @@ TEST_CASE("BC lagrangian form derivatives", "[form][form_derivatives][bc_lagr_fo
 {
 	static const int n_rand = 10;
 
-	const auto state_ptr = get_state();
-	const int dim = state_ptr->mesh->dimension();
+	const int dim = GENERATE(2, 3);
+	const auto state_ptr = get_state(dim);
 	const int ndof = state_ptr->n_bases * dim;
 	const auto rhs_assembler_ptr = state_ptr->build_rhs_assembler();
 
+	assembler::Mass mass_mat_assembler;
+	mass_mat_assembler.set_size(dim);
 	StiffnessMatrix mass_tmp;
 	state_ptr->mass_matrix_assembler->assemble(dim == 3,
 											   state_ptr->n_bases,
 											   state_ptr->bases,
 											   state_ptr->geom_bases(),
 											   state_ptr->mass_ass_vals_cache,
+											   0,
 											   mass_tmp,
 											   true);
 
@@ -337,7 +417,7 @@ TEST_CASE("BC lagrangian form derivatives", "[form][form_derivatives][bc_lagr_fo
 		state_ptr->n_boundary_samples(),
 		mass_tmp,
 		*rhs_assembler_ptr,
-		state_ptr->obstacle,
+		state_ptr->obstacle.ndof(),
 		state_ptr->problem->is_time_dependent(),
 		0);
 
@@ -364,17 +444,20 @@ TEST_CASE("BC penalty form derivatives", "[form][form_derivatives][bc_penalty_fo
 {
 	static const int n_rand = 10;
 
-	const auto state_ptr = get_state();
-	const int dim = state_ptr->mesh->dimension();
+	const int dim = GENERATE(2, 3);
+	const auto state_ptr = get_state(dim);
 	const int ndof = state_ptr->n_bases * dim;
 	const auto rhs_assembler_ptr = state_ptr->build_rhs_assembler();
 
+	assembler::Mass mass_mat_assembler;
+	mass_mat_assembler.set_size(dim);
 	StiffnessMatrix mass_tmp;
 	state_ptr->mass_matrix_assembler->assemble(dim == 3,
 											   state_ptr->n_bases,
 											   state_ptr->bases,
 											   state_ptr->geom_bases(),
 											   state_ptr->mass_ass_vals_cache,
+											   0,
 											   mass_tmp,
 											   true);
 
@@ -386,9 +469,37 @@ TEST_CASE("BC penalty form derivatives", "[form][form_derivatives][bc_penalty_fo
 		state_ptr->n_boundary_samples(),
 		mass_tmp,
 		*rhs_assembler_ptr,
-		state_ptr->obstacle,
+		state_ptr->obstacle.ndof(),
 		state_ptr->problem->is_time_dependent(),
 		0);
+
+	test_form(form, *state_ptr);
+}
+
+TEST_CASE("Inversion barrier form derivatives", "[form][form_derivatives][inversion_barrier]")
+{
+
+	const int dim = GENERATE(2, 3);
+	const auto state_ptr = get_state(dim);
+
+	const double vhat = 1e-3;
+
+	Eigen::MatrixXd V;
+	Eigen::MatrixXi F;
+	state_ptr->build_mesh_matrices(V, F);
+
+	InversionBarrierForm form(V, F, state_ptr->mesh->dimension(), vhat);
+
+	test_form(form, *state_ptr);
+}
+
+TEST_CASE("L2 projection form derivatives", "[form][form_derivatives][L2]")
+{
+	const int dim = GENERATE(2, 3);
+	const auto state_ptr = get_state(dim);
+
+	REQUIRE(state_ptr->mass.size() > 0);
+	L2ProjectionForm form(state_ptr->mass, state_ptr->mass, Eigen::VectorXd::Ones(state_ptr->mass.cols()));
 
 	test_form(form, *state_ptr);
 }

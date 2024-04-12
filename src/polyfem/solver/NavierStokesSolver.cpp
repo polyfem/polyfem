@@ -1,8 +1,7 @@
 #include "NavierStokesSolver.hpp"
 
 #include <polyfem/utils/MatrixUtils.hpp>
-#include <polysolve/FEMSolver.hpp>
-#include <polysolve/LinearSolver.hpp>
+#include <polysolve/linear/FEMSolver.hpp>
 
 #include <polyfem/assembler/AssemblerUtils.hpp>
 
@@ -23,9 +22,7 @@ namespace polyfem
 	namespace solver
 	{
 		NavierStokesSolver::NavierStokesSolver(const json &solver_param)
-			: solver_param(solver_param),
-			  solver_type(solver_param["linear"]["solver"]),
-			  precond_type(solver_param["linear"]["precond"])
+			: solver_param(solver_param)
 		{
 			gradNorm = solver_param["nonlinear"]["grad_norm"];
 			iterations = solver_param["nonlinear"]["max_iterations"];
@@ -51,8 +48,7 @@ namespace polyfem
 		{
 			assert(velocity_assembler.name() == "NavierStokes");
 
-			auto solver = LinearSolver::create(solver_type, precond_type);
-			solver->setParameters(solver_param["linear"]);
+			auto solver = linear::Solver::create(solver_param["linear"], logger());
 			logger().debug("\tinternal solver {}", solver->name());
 
 			const int precond_num = problem_dim * n_bases;
@@ -62,9 +58,9 @@ namespace polyfem
 			time.start();
 			StiffnessMatrix stoke_stiffness;
 			StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
-			velocity_stokes_assembler.assemble(is_volume, n_bases, bases, gbases, ass_vals_cache, velocity_stiffness);
-			mixed_assembler.assemble(is_volume, n_pressure_bases, n_bases, pressure_bases, bases, gbases, pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
-			pressure_assembler.assemble(is_volume, n_pressure_bases, pressure_bases, gbases, pressure_ass_vals_cache, pressure_stiffness);
+			velocity_stokes_assembler.assemble(is_volume, n_bases, bases, gbases, ass_vals_cache, 0, velocity_stiffness);
+			mixed_assembler.assemble(is_volume, n_pressure_bases, n_bases, pressure_bases, bases, gbases, pressure_ass_vals_cache, ass_vals_cache, 0, mixed_stiffness);
+			pressure_assembler.assemble(is_volume, n_pressure_bases, pressure_bases, gbases, pressure_ass_vals_cache, 0, pressure_stiffness);
 
 			AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure,
 												 velocity_stiffness, mixed_stiffness, pressure_stiffness,
@@ -161,7 +157,7 @@ namespace polyfem
 			const bool is_volume,
 			const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 			const Eigen::VectorXd &rhs, const double grad_norm,
-			std::unique_ptr<LinearSolver> &solver, double &nlres_norm,
+			std::unique_ptr<linear::Solver> &solver, double &nlres_norm,
 			Eigen::VectorXd &x)
 		{
 			igl::Timer time;
@@ -174,7 +170,7 @@ namespace polyfem
 
 			time.start();
 			velocity_assembler.set_picard(true);
-			velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
+			velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
 			AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure,
 												 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 												 total_matrix);
@@ -201,7 +197,7 @@ namespace polyfem
 				if (!is_picard)
 				{
 					velocity_assembler.set_picard(false);
-					velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
+					velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
 					AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure,
 														 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 														 total_matrix);
@@ -219,7 +215,7 @@ namespace polyfem
 
 				time.start();
 				velocity_assembler.set_picard(true);
-				velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
+				velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
 				AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure,
 													 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 													 total_matrix);

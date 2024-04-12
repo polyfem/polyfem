@@ -23,15 +23,22 @@ namespace polyfem::solver
 					const std::vector<basis::ElementBases> &geom_bases,
 					const assembler::Assembler &assembler,
 					const assembler::AssemblyValsCache &ass_vals_cache,
-					const double dt,
+					const double t, const double dt,
 					const bool is_volume,
 					const ElementInversionCheck check_inversion = ElementInversionCheck::Discrete);
+
+		std::string name() const override { return "elastic"; }
 
 	protected:
 		/// @brief Compute the elastic potential value
 		/// @param x Current solution
 		/// @return Value of the elastic potential
 		virtual double value_unweighted(const Eigen::VectorXd &x) const override;
+
+		/// @brief Compute the value of the form multiplied with the weigth
+		/// @param x Current solution
+		/// @return Computed value
+		Eigen::VectorXd value_per_element_unweighted(const Eigen::VectorXd &x) const override;
 
 		/// @brief Compute the first derivative of the value wrt x
 		/// @param[in] x Current solution
@@ -57,7 +64,11 @@ namespace polyfem::solver
 		/// @brief Update time-dependent fields
 		/// @param t Current time
 		/// @param x Current solution at time t
-		void update_quantities(const double t, const Eigen::VectorXd &x) override { x_prev_ = x; }
+		void update_quantities(const double t, const Eigen::VectorXd &x) override
+		{
+			t_ = t;
+			x_prev_ = x;
+		}
 
 		/// @brief Determine the maximum step size allowable between the current and next solution
 		/// @param x0 Current solution (step size = 0)
@@ -66,17 +77,19 @@ namespace polyfem::solver
 		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
 		/// @brief Compute the derivative of the force wrt lame/damping parameters, then multiply the resulting matrix with adjoint_sol.
+		/// @param t Current time
 		/// @param[in] x Current solution
 		/// @param[in] adjoint Current adjoint solution
 		/// @param[out] term Derivative of force multiplied by the adjoint
-		void force_material_derivative(const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term);
+		void force_material_derivative(const double t, const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term);
 
 		/// @brief Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adjoint_sol.
+		/// @param t Current time
 		/// @param[in] n_verts Number of vertices
 		/// @param[in] x Current solution
 		/// @param[in] adjoint Current adjoint solution
 		/// @param[out] term Derivative of force multiplied by the adjoint
-		void force_shape_derivative(const int n_verts, const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term);
+		void force_shape_derivative(const double t, const int n_verts, const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term);
 
 	private:
 		const int n_bases_;
@@ -86,11 +99,12 @@ namespace polyfem::solver
 		const assembler::Assembler &assembler_; ///< Reference to the assembler
 		const assembler::AssemblyValsCache &ass_vals_cache_;
 		const ElementInversionCheck check_inversion_;
+		double t_;
 		const double dt_;
 		const bool is_volume_;
 
-		StiffnessMatrix cached_stiffness_;           ///< Cached stiffness matrix for linear elasticity
-		mutable utils::SparseMatrixCache mat_cache_; ///< Matrix cache (mutable because it is modified in second_derivative_unweighted)
+		StiffnessMatrix cached_stiffness_;                      ///< Cached stiffness matrix for linear elasticity
+		mutable std::unique_ptr<utils::MatrixCache> mat_cache_; ///< Matrix cache (mutable because it is modified in second_derivative_unweighted)
 
 		/// @brief Compute the stiffness matrix (cached)
 		void compute_cached_stiffness();

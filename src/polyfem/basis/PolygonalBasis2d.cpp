@@ -176,6 +176,8 @@ namespace polyfem
 		void PolygonalBasis2d::compute_integral_constraints(const LinearAssembler &assembler, const Mesh2D &mesh, const int n_bases,
 															const std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases, Eigen::MatrixXd &basis_integrals)
 		{
+			// TODO
+			const double t = 0;
 			assert(!mesh.is_volume());
 
 			const int dim = assembler.is_tensor() ? 2 : 1;
@@ -214,7 +216,7 @@ namespace polyfem
 
 					for (int d = 0; d < 5; ++d)
 					{
-						const auto tmp = assembler.assemble(LinearAssemblerData(vals, n_local_bases + d, j, da));
+						const auto tmp = assembler.assemble(LinearAssemblerData(vals, t, n_local_bases + d, j, da));
 
 						for (size_t ii = 0; ii < v.global.size(); ++ii)
 						{
