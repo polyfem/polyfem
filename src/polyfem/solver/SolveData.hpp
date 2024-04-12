@@ -54,7 +54,7 @@ namespace polyfem::solver
 
 			// Elastic form
 			const int n_bases,
-			const std::vector<basis::ElementBases> &bases,
+			std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &geom_bases,
 			const assembler::Assembler &assembler,
 			const assembler::AssemblyValsCache &ass_vals_cache,

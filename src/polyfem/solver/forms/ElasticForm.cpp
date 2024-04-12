@@ -1,13 +1,13 @@
 #include "ElasticForm.hpp"
 
+#include <polyfem/quadrature/TriQuadrature.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
-
-#include <polyfem/utils/Jacobian.hpp>
 
 using namespace polyfem::assembler;
 using namespace polyfem::utils;
@@ -34,7 +34,7 @@ namespace polyfem::solver
 	} // namespace
 	
 	ElasticForm::ElasticForm(const int n_bases,
-							 const std::vector<basis::ElementBases> &bases,
+							 std::vector<basis::ElementBases> &bases,
 							 const std::vector<basis::ElementBases> &geom_bases,
 							 const assembler::Assembler &assembler,
 							 const assembler::AssemblyValsCache &ass_vals_cache,
@@ -106,14 +106,23 @@ namespace polyfem::solver
 
 		// TODO: handle polygon and quad
 		bool flag;
+		int invalidID;
+		Tree subdivision_tree;
 		{
 			POLYFEM_SCOPED_TIMER("Conservative Jacobian Check");
-			flag = isValid(is_volume_ ? 3 : 2, bases_, x1);
+			std::tie(flag, invalidID, subdivision_tree) = isValid(is_volume_ ? 3 : 2, bases_, x1);
 		}
 
 		if (!flag)
 		{
 			logger().debug("Conservative check did a good job!");
+			// update quadrature to capture the point with negative jacobian
+			// quadrature_hierarchy_[invalidID].merge(subdivision_tree);
+			// const int real_order = AssemblerUtils::quadrature_order(assembler_, bases_[invalidID].bases[0].order(), AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 2);
+			// bases_[invalidID].set_quadrature([real_order](quadrature::Quadrature &quadrature) {
+			// 	TriQuadrature tri_quadrature;
+			// 	tri_quadrature.get_quadrature(real_order, quad);
+			// });
 			return flag;
 		}
 

@@ -6,6 +6,7 @@
 #include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 
+#include <polyfem/utils/Jacobian.hpp>
 #include <polyfem/utils/Types.hpp>
 
 namespace polyfem::solver
@@ -18,7 +19,7 @@ namespace polyfem::solver
 		/// @brief Construct a new Elastic Form object
 		/// @param state Reference to the simulation state
 		ElasticForm(const int n_bases,
-					const std::vector<basis::ElementBases> &bases,
+					std::vector<basis::ElementBases> &bases,
 					const std::vector<basis::ElementBases> &geom_bases,
 					const assembler::Assembler &assembler,
 					const assembler::AssemblyValsCache &ass_vals_cache,
@@ -79,7 +80,7 @@ namespace polyfem::solver
 
 	private:
 		const int n_bases_;
-		const std::vector<basis::ElementBases> &bases_;
+		std::vector<basis::ElementBases> &bases_;
 		const std::vector<basis::ElementBases> &geom_bases_;
 
 		const assembler::Assembler &assembler_; ///< Reference to the assembler
@@ -95,5 +96,7 @@ namespace polyfem::solver
 		void compute_cached_stiffness();
 
 		Eigen::VectorXd x_prev_;
+
+		std::vector<utils::Tree> quadrature_hierarchy_;
 	};
 } // namespace polyfem::solver
