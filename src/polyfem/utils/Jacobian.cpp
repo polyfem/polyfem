@@ -65,6 +65,19 @@ namespace polyfem::utils
         {
             typename element_validity::BezierChecker<3>::SubdivisionHierarchy hierarchy(element_validity::shapes::TETRAHEDRON);
             flag = element_validity::isValid<3>(cp, element_validity::shapes::TETRAHEDRON, order, &invalid_id, &hierarchy);
+            if (!flag)
+            {
+                std::function<void(const typename element_validity::BezierChecker<3>::SubdivisionHierarchy::Node &, Tree &)> copy_hierarchy = [&copy_hierarchy](const typename element_validity::BezierChecker<3>::SubdivisionHierarchy::Node &src, Tree &dst) {
+                    if (src.hasChildren())
+                    {
+                        dst.add_children(8);
+                        for (int i = 0; i < 8; i++)
+                            copy_hierarchy(*(src.children[i]), dst.child(i));
+                    }
+                };
+
+                copy_hierarchy(hierarchy.get_root(), tree);
+            }
         }
 
         // export invalid element in rational form

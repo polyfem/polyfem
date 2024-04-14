@@ -36,6 +36,14 @@ namespace polyfem::utils
         }
         bool has_children() const { return !children.empty(); }
         int n_children() const { return children.size(); }
+        int n_leaves() const {
+            if (!has_children())
+                return 1;
+            int n = 0;
+            for (int i = 0; i < n_children(); i++)
+                n += child(i).n_leaves();
+            return n;
+        }
         Tree& child(int i) { return *children[i]; }
         const Tree& child(int i) const { return *children[i]; }
         void add_children(int n) {

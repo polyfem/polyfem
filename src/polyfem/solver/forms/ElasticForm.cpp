@@ -1,6 +1,7 @@
 #include "ElasticForm.hpp"
 
 #include <polyfem/quadrature/TriQuadrature.hpp>
+#include <polyfem/quadrature/TetQuadrature.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/basis/ElementBases.hpp>
@@ -8,6 +9,9 @@
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
+
+#include <igl/writeMSH.h>
+#include <igl/writeOBJ.h>
 
 using namespace polyfem::assembler;
 using namespace polyfem::utils;
@@ -31,16 +35,210 @@ namespace polyfem::solver
 		};
 
 		double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
+
+		Eigen::MatrixXd refined_nodes(const int dim, const int i)
+		{
+			Eigen::MatrixXd A(dim + 1, dim);
+			if (dim == 2)
+			{
+				A << 0., 0., 1., 0., 0., 1.;
+				switch (i)
+				{
+				case 0:
+					break;
+				case 1:
+					A.rowwise() += Eigen::Vector2d(1., 0.).transpose();
+					break;
+				case 2:
+					A.rowwise() += Eigen::Vector2d(0., 1.).transpose();
+					break;
+				case 3:
+					A.rowwise() -= Eigen::Vector2d(1., 1.).transpose();
+					A *= -1;
+					break;
+				default:
+					throw std::runtime_error("Invalid node index");
+				}
+			}
+			else
+			{
+				A << 0, 0, 0, 
+					1, 0, 0, 
+					0, 1, 0, 
+					0, 0, 1;
+				switch (i)
+				{
+				case 0:
+					break;
+				case 1:
+					A.col(0).array() += 1;
+					break;
+				case 2:
+					A.col(1).array() += 1;
+					break;
+				case 3:
+					A.col(2).array() += 1;
+					break;
+				case 4:
+				{
+					Eigen::VectorXd tmp = 1 - A.col(1).array() - A.col(2).array();
+					A.col(2) += A.col(0) + A.col(1);
+					A.col(0) = tmp;
+					break;
+				}
+				case 5:
+				{
+					Eigen::VectorXd tmp = 1. - A.col(1).array();
+					A.col(2) += A.col(1);
+					A.col(1) += A.col(0);
+					A.col(0) = tmp;
+					break;
+				}
+				case 6:
+				{
+					Eigen::VectorXd tmp = A.col(0) + A.col(1);
+					A.col(1) = 1. - A.col(0).array();
+					A.col(0) = tmp;
+					break;
+				}
+				case 7:
+				{
+					Eigen::VectorXd tmp = 1. - A.col(0).array() - A.col(1).array();
+					A.col(1) += A.col(2);
+					A.col(2) = tmp;
+					break;
+				}
+				default:
+					throw std::runtime_error("Invalid node index");
+				}
+			}
+			return A / 2;
+		}
+
+		/// @brief given the position of the vertices of a triangle, extract the subtriangle vertices based on the tree
+		/// @param pts vertices of the triangle
+		/// @param tree refinement hiararchy
+		/// @return vertices of the subtriangles, and the refinement level of each subtriangle
+		std::tuple<Eigen::MatrixXd, std::vector<int>> extract_subelement(const Eigen::MatrixXd &pts, const Tree &tree)
+		{
+			if (!tree.has_children())
+				return {pts, std::vector<int>{0}};
+
+			const int dim = pts.cols();
+			Eigen::MatrixXd out;
+			std::vector<int> levels;
+			for (int i = 0; i < tree.n_children(); i++)
+			{
+				Eigen::MatrixXd uv;
+				uv.setZero(dim+1, dim+1);
+				uv.leftCols(dim) = refined_nodes(dim, i);
+				if (dim == 2)
+					uv.col(2) = 1. - uv.col(0).array() - uv.col(1).array();
+				else
+					uv.col(3) = 1. - uv.col(0).array() - uv.col(1).array() - uv.col(2).array();
+				
+				Eigen::MatrixXd pts_ = uv * pts;
+
+				auto [tmp, L] = extract_subelement(pts_, tree.child(i));
+				if (out.size() == 0)
+					out = tmp;
+				else
+				{
+					out.conservativeResize(out.rows() + tmp.rows(), Eigen::NoChange);
+					out.bottomRows(tmp.rows()) = tmp;
+				}
+				for (int &i : L)
+					++i;
+				levels.insert(levels.end(), L.begin(), L.end());
+			}
+			return {out, levels};
+		}
+	
+		quadrature::Quadrature refine_quadrature(const Tree &tree, const int dim, const int order)
+		{
+			using namespace quadrature;
+
+			Eigen::MatrixXd pts(dim + 1, dim);
+			if (dim == 2)
+				pts << 0., 0.,
+					1., 0.,
+					0., 1.;
+			else
+				pts << 0, 0, 0,
+					1, 0, 0,
+					0, 1, 0,
+					0, 0, 1;
+			auto [quad_points, levels] = extract_subelement(pts, tree);
+
+			Quadrature tmp, quad;
+			if (dim == 2)
+			{
+				TriQuadrature tri_quadrature;
+				tri_quadrature.get_quadrature(order, tmp);
+				tmp.points.conservativeResize(tmp.points.rows(), dim + 1);
+				tmp.points.col(dim) = 1. - tmp.points.col(0).array() - tmp.points.col(1).array();
+			}
+			else
+			{
+				TetQuadrature tet_quadrature;
+				tet_quadrature.get_quadrature(order, tmp);
+				tmp.points.conservativeResize(tmp.points.rows(), dim + 1);
+				tmp.points.col(dim) = 1. - tmp.points.col(0).array() - tmp.points.col(1).array() - tmp.points.col(2).array();
+			}
+
+			quad.points.resize(tmp.size() * levels.size(), dim);
+			quad.weights.resize(tmp.size() * levels.size());
+
+			for (int i = 0; i < levels.size(); i++)
+			{
+				quad.points.middleRows(i * tmp.size(), tmp.size()) = tmp.points * quad_points.middleRows(i * (dim + 1), dim + 1);
+				quad.weights.segment(i * tmp.size(), tmp.size()) = tmp.weights / pow(2, dim * levels[i]);
+			}
+			assert (fabs(quad.weights.sum() - tmp.weights.sum()) < 1e-8);
+
+			return quad;
+		}
+
+		double evaluate_jacobian(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &uv, const Eigen::VectorXd &disp)
+		{
+			assembler::ElementAssemblyValues vals;
+			vals.compute(0, uv.cols() == 3, uv, bs, gbs);
+
+			double min_det = 1;
+			for (long p = 0; p < uv.rows(); ++p)
+			{
+				Eigen::MatrixXd disp_grad;
+				disp_grad.setZero(uv.cols(), uv.cols());
+
+				for (std::size_t j = 0; j < vals.basis_values.size(); ++j)
+				{
+					const auto &loc_val = vals.basis_values[j];
+
+					for (int d = 0; d < uv.cols(); ++d)
+					{
+						for (std::size_t ii = 0; ii < loc_val.global.size(); ++ii)
+						{
+							disp_grad.row(d) += loc_val.global[ii].val * loc_val.grad.row(p) * disp(loc_val.global[ii].index * uv.cols() + d);
+						}
+					}
+				}
+
+				disp_grad = (disp_grad * vals.jac_it[p]).eval() + Eigen::MatrixXd::Identity(uv.cols(), uv.cols());
+				min_det = std::min(min_det, disp_grad.determinant());
+			}
+			return min_det;
+		}
 	} // namespace
 
 	ElasticForm::ElasticForm(const int n_bases,
 							 std::vector<basis::ElementBases> &bases,
 							 const std::vector<basis::ElementBases> &geom_bases,
 							 const assembler::Assembler &assembler,
-							 const assembler::AssemblyValsCache &ass_vals_cache,
+							 assembler::AssemblyValsCache &ass_vals_cache,
 							 const double t, const double dt,
 							 const bool is_volume,
-							 const ElementInversionCheck check_inversion)
+							 const ElementInversionCheck check_inversion,
+							 const QuadratureRefinementScheme quad_scheme)
 		: n_bases_(n_bases),
 		  bases_(bases),
 		  geom_bases_(geom_bases),
@@ -48,6 +246,7 @@ namespace polyfem::solver
 		  ass_vals_cache_(ass_vals_cache),
 		  t_(t),
 		  check_inversion_(check_inversion),
+		  quad_scheme_(quad_scheme),
 		  dt_(dt),
 		  is_volume_(is_volume)
 	{
@@ -55,6 +254,12 @@ namespace polyfem::solver
 			compute_cached_stiffness();
 		// mat_cache_ = std::make_unique<utils::DenseMatrixCache>();
 		mat_cache_ = std::make_unique<utils::SparseMatrixCache>();
+		quadrature_hierarchy_.resize(bases_.size());
+
+		const int real_order = AssemblerUtils::quadrature_order(assembler_.name(), bases_[0].bases[0].order(), AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, is_volume_ ? 3 : 2);
+		quadrature_order_.assign(bases_.size(), real_order);
+
+		logger().debug("Check inversion: {}, Quadrature refinement: {}", check_inversion_, quad_scheme_);
 	}
 
 	double ElasticForm::value_unweighted(const Eigen::VectorXd &x) const
@@ -102,7 +307,7 @@ namespace polyfem::solver
 
 	double ElasticForm::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		if (check_inversion_ == ElementInversionCheck::Transient)
+		if (check_inversion_ == "Transient")
 		{
 			POLYFEM_SCOPED_TIMER("Conservative Transient Jacobian Check");
 			return maxTimeStep(is_volume_ ? 3 : 2, bases_, x0, x1, 1e-1);
@@ -113,7 +318,7 @@ namespace polyfem::solver
 
 	bool ElasticForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		if (check_inversion_ == ElementInversionCheck::Discrete)
+		if (check_inversion_ == "Discrete")
 			return true;
 
 		// TODO: handle polygon and quad
@@ -125,20 +330,82 @@ namespace polyfem::solver
 			std::tie(flag, invalidID, subdivision_tree) = isValid(is_volume_ ? 3 : 2, bases_, x1);
 		}
 
+		const int dim = is_volume_ ? 3 : 2;
 		if (!flag)
 		{
-			logger().debug("Conservative check did a good job!");
-			// update quadrature to capture the point with negative jacobian
-			// quadrature_hierarchy_[invalidID].merge(subdivision_tree);
-			// const int real_order = AssemblerUtils::quadrature_order(assembler_, bases_[invalidID].bases[0].order(), AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 2);
-			// bases_[invalidID].set_quadrature([real_order](quadrature::Quadrature &quadrature) {
-			// 	TriQuadrature tri_quadrature;
-			// 	tri_quadrature.get_quadrature(real_order, quad);
-			// });
+			logger().warn("Conservative check did a good job!");
+
+			quadrature_hierarchy_[invalidID].merge(subdivision_tree);
+			
+			// save hierarchy as a mesh
+			// {
+			// 	Eigen::MatrixXd points;
+			// 	Eigen::MatrixXi elements;
+			// 	get_refined_mesh(x0, points, elements);
+			// 	if (points.cols() == 2)
+			// 	{
+			// 		points.conservativeResize(points.rows(), 3);
+			// 		points.col(2).setZero();
+			// 		igl::writeOBJ("hierarchy.obj", points, elements);
+			// 	}
+			// 	else
+			// 		igl::writeMSH("hierarchy.msh", points, Eigen::MatrixXi(), elements, Eigen::MatrixXi(), Eigen::MatrixXi::Ones(elements.rows(), 1), {}, {}, {}, {}, {});
+			// }
+
+			using namespace quadrature;
+
+			// switch (quad_scheme_)
+			{
+			if (quad_scheme_ == "H")
+			{
+				// update quadrature to capture the point with negative jacobian
+				const Quadrature quad = refine_quadrature(quadrature_hierarchy_[invalidID], dim, quadrature_order_[invalidID]);
+
+				// capture the flipped point by refining the quadrature
+				bases_[invalidID].set_quadrature([quad](Quadrature &quad_) {
+					quad_ = quad;
+				});
+				logger().debug("New number of quadrature points: {}", quad.size());
+				logger().debug("Min jacobian on new quadrature points: {}", evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x0));
+				// break;
+			}
+			else if (quad_scheme_ == "P")
+			{
+				// capture the flipped point by increasing the quadrature order
+				const int real_order = ++quadrature_order_[invalidID];
+				bases_[invalidID].set_quadrature([real_order, dim](Quadrature &quad_) {
+					if (dim == 3)
+					{
+						TetQuadrature tet_quadrature;
+						tet_quadrature.get_quadrature(real_order, quad_);
+					}
+					else
+					{
+						TriQuadrature tri_quadrature;
+						tri_quadrature.get_quadrature(real_order, quad_);
+					}
+				});
+				logger().debug("New order of quadrature: {}", real_order);
+				// break;
+			}
+			// default:
+			// 	throw std::runtime_error("Invalid quadrature refinement scheme");
+			}
+
+			if (ass_vals_cache_.is_initialized())
+				ass_vals_cache_.update(invalidID, is_volume_, bases_[invalidID], geom_bases_[invalidID]);
+			
+			Eigen::VectorXd grad;
+			first_derivative(x0, grad);
+			if (grad.array().isNaN().any())
+			{
+				log_and_throw_error("Gradient NAN after quadrature refinement!");
+			}
+			
 			return flag;
 		}
 
-		if (check_inversion_ == ElementInversionCheck::Conservative)
+		if (check_inversion_ == "Conservative")
 			return flag;
 
 		{
@@ -148,7 +415,7 @@ namespace polyfem::solver
 
 		if (!flag)
 			logger().debug("Transient check did a good job!");
-		
+
 		return flag;
 	}
 
@@ -159,10 +426,10 @@ namespace polyfem::solver
 		first_derivative(x1, grad);
 		if (grad.array().isNaN().any())
 			return false;
-		
-		if (check_inversion_ == ElementInversionCheck::Conservative)
+
+		if (check_inversion_ != "Discrete")
 			return is_step_collision_free(x0, x1);
-		
+
 		return true;
 
 		// Check the scalar field in the output does not contain NANs.
@@ -407,5 +674,34 @@ namespace polyfem::solver
 
 		for (const LocalThreadVecStorage &local_storage : storage)
 			term += local_storage.vec;
+	}
+
+	void ElasticForm::get_refined_mesh(const Eigen::VectorXd &x, Eigen::MatrixXd &points, Eigen::MatrixXi &elements) const
+	{
+		const int dim = is_volume_ ? 3 : 2;
+		int n_elem = 0;
+		for (int e = 0; e < bases_.size(); e++)
+			n_elem += quadrature_hierarchy_[e].n_leaves();
+
+		points.setZero(n_elem * (dim + 1), dim);
+		int idx = 0;
+		for (int e = 0; e < bases_.size(); e++)
+		{
+			const auto &tree = quadrature_hierarchy_[e];
+			const auto &bs = bases_[e];
+
+			Eigen::MatrixXd pts(dim + 1, dim);
+			for (int i = 0; i < dim + 1; i++)
+				pts.row(i) = bs.bases[i].global()[0].node + x.segment(bs.bases[i].global()[0].index * dim, dim).transpose();
+
+			const auto [tmp, levels] = extract_subelement(pts, tree);
+			points.middleRows(idx, tmp.rows()) = tmp;
+			idx += tmp.rows();
+		}
+
+		elements.setZero(n_elem, dim + 1);
+		for (int i = 0; i < elements.rows(); i++)
+			for (int j = 0; j < elements.cols(); j++)
+				elements(i, j) = i * (dim + 1) + j;
 	}
 } // namespace polyfem::solver

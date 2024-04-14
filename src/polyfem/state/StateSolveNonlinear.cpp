@@ -32,14 +32,6 @@ namespace polyfem
 	using namespace io;
 	using namespace utils;
 
-	namespace solver {
-		NLOHMANN_JSON_SERIALIZE_ENUM(
-			ElementInversionCheck,
-			{{ElementInversionCheck::Discrete, "discrete"},
-			{ElementInversionCheck::Conservative, "conservative"},
-			{ElementInversionCheck::Transient, "transient"}})
-	}
-
 	std::shared_ptr<polysolve::nonlinear::Solver> State::make_nl_solver(bool for_al) const
 	{
 		return polysolve::nonlinear::Solver::create(for_al ? args["solver"]["augmented_lagrangian"]["nonlinear"] : args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger());
@@ -226,12 +218,14 @@ namespace polyfem
 		damping_prev_assembler = std::make_shared<assembler::ViscousDampingPrev>();
 		set_materials(*damping_prev_assembler);
 
+		const ElementInversionCheck check_inversion = args["solver"]["advanced"]["check_inversion"];
+		const QuadratureRefinementScheme quad_scheme = args["solver"]["advanced"]["quadrature_refinement"];
 		const std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(
 			// General
 			units,
 			mesh->dimension(), t,
 			// Elastic form
-			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache, args["solver"]["check_inversion"].template get<ElementInversionCheck>(),
+			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache, check_inversion, quad_scheme,
 			// Body form
 			n_pressure_bases, boundary_nodes, local_boundary, local_neumann_boundary,
 			n_boundary_samples(), rhs, sol, mass_matrix_assembler->density(),

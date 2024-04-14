@@ -1313,8 +1313,7 @@
             "augmented_lagrangian",
             "contact",
             "rayleigh_damping",
-            "advanced",
-            "check_inversion"
+            "advanced"
         ],
         "doc": "The settings for the solver including linear solver, nonlinear solver, and some advanced options."
     },
@@ -1523,15 +1522,39 @@
         "doc": "Maximum number of update iterations for lagging."
     },
     {
-        "pointer": "/solver/check_inversion",
-        "default": "discrete",
+        "pointer": "/solver/advanced/check_inversion",
         "type": "string",
         "options": [
-            "discrete",
-            "conservative",
-            "transient"
+            "Discrete",
+            "Conservative",
+            "Transient"
         ],
         "doc": "The method for checking if any element is flipped."
+    },
+    {
+        "pointer": "/solver/advanced/check_inversion",
+        "default": 0,
+        "type": "int",
+        "min": 0,
+        "max": 2,
+        "doc": "The method for checking if any element is flipped."
+    },
+    {
+        "pointer": "/solver/advanced/quadrature_refinement",
+        "default": 1,
+        "type": "int",
+        "min": 0,
+        "max": 1,
+        "doc": "The scheme for refining quadrature rules."
+    },
+    {
+        "pointer": "/solver/advanced/quadrature_refinement",
+        "type": "string",
+        "options": [
+            "H",
+            "P"
+        ],
+        "doc": "The scheme for refining quadrature rules."
     },
     {
         "pointer": "/solver/advanced",
@@ -1541,7 +1564,9 @@
             "cache_size",
             "lump_mass_matrix",
             "lagged_regularization_weight",
-            "lagged_regularization_iterations"
+            "lagged_regularization_iterations",
+            "check_inversion",
+            "quadrature_refinement"
         ],
         "doc": "Advanced settings for the solver"
     },

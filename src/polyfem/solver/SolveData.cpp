@@ -35,9 +35,10 @@ namespace polyfem::solver
 		std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &geom_bases,
 		const assembler::Assembler &assembler,
-		const assembler::AssemblyValsCache &ass_vals_cache,
+		assembler::AssemblyValsCache &ass_vals_cache,
 		const assembler::AssemblyValsCache &mass_ass_vals_cache,
 		const ElementInversionCheck check_inversion,
+		const QuadratureRefinementScheme refine_scheme,
 
 		// Body form
 		const int n_pressure_bases,
@@ -105,7 +106,7 @@ namespace polyfem::solver
 
 		elastic_form = std::make_shared<ElasticForm>(
 			n_bases, bases, geom_bases, assembler, ass_vals_cache,
-			t, dt, is_volume, check_inversion);
+			t, dt, is_volume, check_inversion, refine_scheme);
 		forms.push_back(elastic_form);
 
 		if (rhs_assembler != nullptr)
@@ -133,7 +134,7 @@ namespace polyfem::solver
 			if (damping_assembler != nullptr)
 			{
 				damping_form = std::make_shared<ElasticForm>(
-					n_bases, bases, geom_bases, *damping_assembler, ass_vals_cache, t, dt, is_volume);
+					n_bases, bases, geom_bases, *damping_assembler, ass_vals_cache, t, dt, is_volume, "Discrete", "P");
 				forms.push_back(damping_form);
 			}
 		}

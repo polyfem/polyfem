@@ -11,7 +11,26 @@
 
 namespace polyfem::solver
 {
-	enum class ElementInversionCheck { Discrete, Conservative, Transient };
+	using ElementInversionCheck = std::string;
+	using QuadratureRefinementScheme = std::string;
+	// enum class ElementInversionCheck { Discrete, Conservative, Transient };
+	// NLOHMANN_JSON_SERIALIZE_ENUM(
+	// 	polyfem::solver::ElementInversionCheck,
+	// 	{{polyfem::solver::"Discrete", "discrete"},
+	// 	{polyfem::solver::ElementInversionCheck::Conservative, "conservative"},
+	// 	{polyfem::solver::ElementInversionCheck::Transient, "transient"},
+	// 	{polyfem::solver::"Discrete", 0},
+	// 	{polyfem::solver::ElementInversionCheck::Conservative, 1},
+	// 	{polyfem::solver::ElementInversionCheck::Transient, 2}})
+
+	// enum class QuadratureRefinementScheme { H, P };
+	// NLOHMANN_JSON_SERIALIZE_ENUM(
+	// 	polyfem::solver::QuadratureRefinementScheme,
+	// 	{{polyfem::solver::QuadratureRefinementScheme::H, "H"},
+	// 	{polyfem::solver::"P", "P"},
+	// 	{polyfem::solver::QuadratureRefinementScheme::H, 0},
+	// 	{polyfem::solver::"P", 1}})
+
 	/// @brief Form of the elasticity potential and forces
 	class ElasticForm : public Form
 	{
@@ -22,10 +41,11 @@ namespace polyfem::solver
 					std::vector<basis::ElementBases> &bases,
 					const std::vector<basis::ElementBases> &geom_bases,
 					const assembler::Assembler &assembler,
-					const assembler::AssemblyValsCache &ass_vals_cache,
+					assembler::AssemblyValsCache &ass_vals_cache,
 					const double t, const double dt,
 					const bool is_volume,
-					const ElementInversionCheck check_inversion = ElementInversionCheck::Discrete);
+					const ElementInversionCheck check_inversion,
+					const QuadratureRefinementScheme quad_scheme);
 
 		std::string name() const override { return "elastic"; }
 
@@ -97,9 +117,10 @@ namespace polyfem::solver
 		const std::vector<basis::ElementBases> &geom_bases_;
 
 		const assembler::Assembler &assembler_; ///< Reference to the assembler
-		const assembler::AssemblyValsCache &ass_vals_cache_;
-		const ElementInversionCheck check_inversion_;
+		assembler::AssemblyValsCache &ass_vals_cache_;
 		double t_;
+		const ElementInversionCheck check_inversion_;
+		const QuadratureRefinementScheme quad_scheme_;
 		const double dt_;
 		const bool is_volume_;
 
@@ -111,6 +132,9 @@ namespace polyfem::solver
 
 		Eigen::VectorXd x_prev_;
 
-		std::vector<utils::Tree> quadrature_hierarchy_;
+		mutable std::vector<utils::Tree> quadrature_hierarchy_;
+		mutable std::vector<int> quadrature_order_;
+
+		void get_refined_mesh(const Eigen::VectorXd &x, Eigen::MatrixXd &points, Eigen::MatrixXi &elements) const;
 	};
 } // namespace polyfem::solver

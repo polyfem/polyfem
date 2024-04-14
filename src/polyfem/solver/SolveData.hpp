@@ -17,6 +17,8 @@
 #include <string>
 #include <unordered_map>
 
+#include <polyfem/solver/forms/ElasticForm.hpp>
+
 namespace polyfem::time_integrator
 {
 	class ImplicitTimeIntegrator;
@@ -43,7 +45,8 @@ namespace polyfem::solver
 	class MacroStrainALForm;
 	class InertiaForm;
 	class ElasticForm;
-	enum class ElementInversionCheck;
+	// enum class ElementInversionCheck;
+	// enum class QuadratureRefinementScheme;
 
 	/// class to store time stepping data
 	class SolveData
@@ -62,9 +65,10 @@ namespace polyfem::solver
 			std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &geom_bases,
 			const assembler::Assembler &assembler,
-			const assembler::AssemblyValsCache &ass_vals_cache,
+			assembler::AssemblyValsCache &ass_vals_cache,
 			const assembler::AssemblyValsCache &mass_ass_vals_cache,
 			const solver::ElementInversionCheck check_inversion,
+			const solver::QuadratureRefinementScheme refine_scheme,
 
 			// Body form
 			const int n_pressure_bases,

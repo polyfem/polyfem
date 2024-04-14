@@ -187,6 +187,19 @@ void test_form(Form &form, const State &state)
 	}
 }
 
+TEST_CASE("json", "[form]")
+{
+	json j = R"({
+		"solver": {
+			"advanced": {
+				"check_inversion": "Discrete"
+			}
+		}
+	})"_json;
+	ElementInversionCheck check_inversion = j["solver"]["advanced"]["check_inversion"];
+	REQUIRE(check_inversion == "Discrete");
+}
+
 TEST_CASE("body form derivatives 3d", "[form][form_derivatives][body_form]")
 {
 	const int dim = GENERATE(2, 3);
@@ -276,7 +289,9 @@ TEST_CASE("elastic form derivatives", "[form][form_derivatives][elastic_form]")
 		state_ptr->ass_vals_cache,
 		0,
 		state_ptr->args["time"]["dt"],
-		state_ptr->mesh->is_volume());
+		state_ptr->mesh->is_volume(),
+		"Discrete",
+		"P");
 	test_form(form, *state_ptr);
 }
 
@@ -325,7 +340,9 @@ TEST_CASE("damping form derivatives", "[form][form_derivatives][damping_form]")
 		state_ptr->ass_vals_cache,
 		0,
 		dt,
-		state_ptr->mesh->is_volume());
+		state_ptr->mesh->is_volume(),
+		"Discrete",
+		"P");
 	form.update_quantities(0, Eigen::VectorXd::Ones(state_ptr->n_bases * dim));
 	test_form(form, *state_ptr);
 }
@@ -372,7 +389,9 @@ TEST_CASE("Rayleigh damping form derivatives", "[form][form_derivatives][rayleig
 		state_ptr->ass_vals_cache,
 		0,
 		state_ptr->args["time"]["dt"],
-		state_ptr->mesh->is_volume());
+		state_ptr->mesh->is_volume(),
+		"Discrete",
+		"P");
 
 	const double dt = 1e-3;
 	ImplicitEuler time_integrator;
