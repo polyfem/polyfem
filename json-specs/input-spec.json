@@ -1524,6 +1524,7 @@
     {
         "pointer": "/solver/advanced/check_inversion",
         "type": "string",
+        "default": "Discrete",
         "options": [
             "Discrete",
             "Conservative",
@@ -1532,24 +1533,9 @@
         "doc": "The method for checking if any element is flipped."
     },
     {
-        "pointer": "/solver/advanced/check_inversion",
-        "default": 0,
-        "type": "int",
-        "min": 0,
-        "max": 2,
-        "doc": "The method for checking if any element is flipped."
-    },
-    {
-        "pointer": "/solver/advanced/quadrature_refinement",
-        "default": 1,
-        "type": "int",
-        "min": 0,
-        "max": 1,
-        "doc": "The scheme for refining quadrature rules."
-    },
-    {
         "pointer": "/solver/advanced/quadrature_refinement",
         "type": "string",
+        "default": "H",
         "options": [
             "H",
             "P"
