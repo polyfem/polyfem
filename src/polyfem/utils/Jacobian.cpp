@@ -8,8 +8,27 @@
 #include <paraviewo/ParaviewWriter.hpp>
 #include <paraviewo/VTUWriter.hpp>
 #include <paraviewo/HDF5VTUWriter.hpp>
+
+using namespace element_validity;
+
 namespace polyfem::utils
 {
+    Eigen::MatrixXd extract_nodes(const int dim, const std::vector<basis::ElementBases> &bases, const Eigen::VectorXd &u)
+    {
+        const int n_basis_per_cell = bases[0].bases.size();
+        Eigen::MatrixXd cp = Eigen::MatrixXd::Zero(bases.size() * n_basis_per_cell, dim);
+        for (int e = 0; e < bases.size(); ++e)
+        {
+            for (int i = 0; i < bases[e].bases.size(); ++i)
+            {
+                const auto &g = bases[e].bases[i].global()[0];
+
+                cp.row(e * n_basis_per_cell + i) = g.node + u.segment(g.index * dim, dim).transpose();
+            }
+        }
+        return cp;
+    }
+
     std::tuple<bool, int, Tree>
     isValid(
         const int dim,
@@ -29,27 +48,19 @@ namespace polyfem::utils
         }
 
         const int n_basis_per_cell = bases[0].bases.size();
-        Eigen::MatrixXd cp = Eigen::MatrixXd::Zero(bases.size() * n_basis_per_cell, dim);
-        for (int e = 0; e < bases.size(); ++e)
-        {
-            for (int i = 0; i < bases[e].bases.size(); ++i)
-            {
-                const auto &g = bases[e].bases[i].global()[0];
-
-                cp.row(e * n_basis_per_cell + i) = g.node + u.segment(g.index * dim, dim).transpose();
-            }
-        }
+        Eigen::MatrixXd cp = extract_nodes(dim, bases, u);
 
         bool flag = false;
         unsigned invalid_id = 0;
         Tree tree;
         if (dim == 2)
         {
-            typename element_validity::BezierChecker<2>::SubdivisionHierarchy hierarchy(element_validity::shapes::TRIANGLE);
-            flag = element_validity::isValid<2>(cp, element_validity::shapes::TRIANGLE, order, &invalid_id, &hierarchy);
+            SubdivisionHierarchy<2> hierarchy(shapes::TRIANGLE);
+            flag = isValid<2>(cp, shapes::TRIANGLE, order, &invalid_id, &hierarchy);
             if (!flag)
             {
-                std::function<void(const typename element_validity::BezierChecker<2>::SubdivisionHierarchy::Node &, Tree &)> copy_hierarchy = [&copy_hierarchy](const typename element_validity::BezierChecker<2>::SubdivisionHierarchy::Node &src, Tree &dst) {
+            //     std::cout << hierarchy << "\n";
+                std::function<void(const SubdivisionHierarchy<2>::Node &, Tree &)> copy_hierarchy = [&copy_hierarchy](const SubdivisionHierarchy<2>::Node &src, Tree &dst) {
                     if (src.hasChildren())
                     {
                         dst.add_children(4);
@@ -59,15 +70,16 @@ namespace polyfem::utils
                 };
 
                 copy_hierarchy(hierarchy.get_root(), tree);
+            //     std::cout << tree << "\n";
             }
         }
         else
         {
-            typename element_validity::BezierChecker<3>::SubdivisionHierarchy hierarchy(element_validity::shapes::TETRAHEDRON);
-            flag = element_validity::isValid<3>(cp, element_validity::shapes::TETRAHEDRON, order, &invalid_id, &hierarchy);
+            SubdivisionHierarchy<3> hierarchy(shapes::TETRAHEDRON);
+            flag = isValid<3>(cp, shapes::TETRAHEDRON, order, &invalid_id, &hierarchy);
             if (!flag)
             {
-                std::function<void(const typename element_validity::BezierChecker<3>::SubdivisionHierarchy::Node &, Tree &)> copy_hierarchy = [&copy_hierarchy](const typename element_validity::BezierChecker<3>::SubdivisionHierarchy::Node &src, Tree &dst) {
+                std::function<void(const SubdivisionHierarchy<3>::Node &, Tree &)> copy_hierarchy = [&copy_hierarchy](const SubdivisionHierarchy<3>::Node &src, Tree &dst) {
                     if (src.hasChildren())
                     {
                         dst.add_children(8);
@@ -120,9 +132,9 @@ namespace polyfem::utils
     bool isValid(const Eigen::Matrix<double, -1, nVar> &cp, int order)
     {
         if constexpr (nVar == 2)
-            return element_validity::isValid<2>(cp, element_validity::shapes::TRIANGLE, order);
+            return isValid<2>(cp, shapes::TRIANGLE, order);
         else if constexpr (nVar == 3)
-            return element_validity::isValid<3>(cp, element_validity::shapes::TETRAHEDRON, order);
+            return isValid<3>(cp, shapes::TETRAHEDRON, order);
         else
             log_and_throw_error("Invalid dimension");
     }
@@ -149,25 +161,18 @@ namespace polyfem::utils
         }
 
         const int n_basis_per_cell = bases[0].bases.size();
-        Eigen::MatrixXd cp1 = Eigen::MatrixXd::Zero(bases.size() * n_basis_per_cell, dim);
-        Eigen::MatrixXd cp2 = Eigen::MatrixXd::Zero(bases.size() * n_basis_per_cell, dim);
-        for (int e = 0; e < bases.size(); ++e)
-        {
-            for (int i = 0; i < bases[e].bases.size(); ++i)
-            {
-                const auto &g = bases[e].bases[i].global()[0];
+        Eigen::MatrixXd cp1 = extract_nodes(dim, bases, u1);
+        Eigen::MatrixXd cp2 = extract_nodes(dim, bases, u2);
 
-                cp1.row(e * n_basis_per_cell + i) = g.node + u1.segment(g.index * dim, dim).transpose();
-                cp2.row(e * n_basis_per_cell + i) = g.node + u2.segment(g.index * dim, dim).transpose();
-            }
-        }
+        std::ofstream fout("jacobian.txt");
+        fout << std::setprecision(15) << "matrix\n" << cp1 << "\nmatrix\n" << cp2 << "\n";
 
         bool flag = false;
         unsigned invalid_id = 0;
         if (dim == 2)
-            flag = element_validity::isValid<2>(cp1, cp2, element_validity::shapes::TRIANGLE, order, &invalid_id);
+            flag = isValid<2>(cp1, cp2, shapes::TRIANGLE, order, &invalid_id);
         else
-            flag = element_validity::isValid<3>(cp1, cp2, element_validity::shapes::TETRAHEDRON, order, &invalid_id);
+            flag = isValid<3>(cp1, cp2, shapes::TETRAHEDRON, order, &invalid_id);
         
         return flag;
     }
@@ -192,22 +197,13 @@ namespace polyfem::utils
         }
 
         const int n_basis_per_cell = bases[0].bases.size();
-        Eigen::MatrixXd cp1 = Eigen::MatrixXd::Zero(bases.size() * n_basis_per_cell, dim);
-        Eigen::MatrixXd cp2 = Eigen::MatrixXd::Zero(bases.size() * n_basis_per_cell, dim);
-        for (int e = 0; e < bases.size(); ++e)
-        {
-            for (int i = 0; i < bases[e].bases.size(); ++i)
-            {
-                const auto &g = bases[e].bases[i].global()[0];
+        Eigen::MatrixXd cp1 = extract_nodes(dim, bases, u1);
+        Eigen::MatrixXd cp2 = extract_nodes(dim, bases, u2);
 
-                cp1.row(e * n_basis_per_cell + i) = g.node + u1.segment(g.index * dim, dim).transpose();
-                cp2.row(e * n_basis_per_cell + i) = g.node + u2.segment(g.index * dim, dim).transpose();
-            }
-        }
-
-        if (dim == 2)
-            return element_validity::maxTimeStep<2>(cp1, cp2, element_validity::shapes::TRIANGLE, order, precision);
-        else
-            return element_validity::maxTimeStep<3>(cp1, cp2, element_validity::shapes::TETRAHEDRON, order, precision);
+        return 1.;
+        // if (dim == 2)
+        //     return maxTimeStep<2>(cp1, cp2, shapes::TRIANGLE, order, precision);
+        // else
+        //     return maxTimeStep<3>(cp1, cp2, shapes::TETRAHEDRON, order, precision);
     }
 }

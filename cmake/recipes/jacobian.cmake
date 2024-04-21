@@ -15,4 +15,4 @@ if (IPRED_ARITHMETIC)
 endif()
 
 include(CPM)
-CPMAddPackage("gh:fsichetti/jacobian#f43d8f937e2d4215144f67329d7e74fe9fe08d7a")
+CPMAddPackage("gh:fsichetti/jacobian#5b7a117f51a30aadd0aa5860ba73411d9cc8a5bc")

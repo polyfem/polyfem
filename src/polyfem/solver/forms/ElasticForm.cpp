@@ -41,19 +41,21 @@ namespace polyfem::solver
 			Eigen::MatrixXd A(dim + 1, dim);
 			if (dim == 2)
 			{
-				A << 0., 0., 1., 0., 0., 1.;
+				A << 0., 0., 
+					1., 0., 
+					0., 1.;
 				switch (i)
 				{
 				case 0:
 					break;
 				case 1:
-					A.rowwise() += Eigen::Vector2d(1., 0.).transpose();
+					A.col(0).array() += 1;
 					break;
 				case 2:
-					A.rowwise() += Eigen::Vector2d(0., 1.).transpose();
+					A.col(1).array() += 1;
 					break;
 				case 3:
-					A.rowwise() -= Eigen::Vector2d(1., 1.).transpose();
+					A.array() -= 1;
 					A *= -1;
 					break;
 				default:
@@ -131,11 +133,11 @@ namespace polyfem::solver
 			{
 				Eigen::MatrixXd uv;
 				uv.setZero(dim+1, dim+1);
-				uv.leftCols(dim) = refined_nodes(dim, i);
+				uv.rightCols(dim) = refined_nodes(dim, i);
 				if (dim == 2)
-					uv.col(2) = 1. - uv.col(0).array() - uv.col(1).array();
+					uv.col(0) = 1. - uv.col(2).array() - uv.col(1).array();
 				else
-					uv.col(3) = 1. - uv.col(0).array() - uv.col(1).array() - uv.col(2).array();
+					uv.col(0) = 1. - uv.col(3).array() - uv.col(1).array() - uv.col(2).array();
 				
 				Eigen::MatrixXd pts_ = uv * pts;
 
@@ -199,6 +201,23 @@ namespace polyfem::solver
 			return quad;
 		}
 
+		Eigen::MatrixXd dense_uv_samples(const int dim, const int o)
+		{
+			assert(dim == 2);
+			Eigen::MatrixXd uv((o+2)*(o+1)/2, dim);
+			int id = 0;
+			for (int i = 0; i <= o; i++)
+			{
+				for (int j = 0; i + j <= o; j++)
+				{
+					uv(id, 0) = i / double(o);
+					uv(id, 1) = j / double(o);
+					id++;
+				}
+			}
+			return uv;
+		}
+
 		double evaluate_jacobian(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &uv, const Eigen::VectorXd &disp)
 		{
 			assembler::ElementAssemblyValues vals;
@@ -223,7 +242,7 @@ namespace polyfem::solver
 					}
 				}
 
-				disp_grad = (disp_grad * vals.jac_it[p]).eval() + Eigen::MatrixXd::Identity(uv.cols(), uv.cols());
+				disp_grad = disp_grad * vals.jac_it[p] + Eigen::MatrixXd::Identity(uv.cols(), uv.cols());
 				min_det = std::min(min_det, disp_grad.determinant());
 			}
 			return min_det;
@@ -322,84 +341,112 @@ namespace polyfem::solver
 			return true;
 
 		// TODO: handle polygon and quad
+		const int dim = is_volume_ ? 3 : 2;
 		bool flag;
 		int invalidID;
 		Tree subdivision_tree;
 		{
 			POLYFEM_SCOPED_TIMER("Conservative Jacobian Check");
-			std::tie(flag, invalidID, subdivision_tree) = isValid(is_volume_ ? 3 : 2, bases_, x1);
+			std::tie(flag, invalidID, subdivision_tree) = isValid(dim, bases_, x1);
 		}
 
-		const int dim = is_volume_ ? 3 : 2;
 		if (!flag)
 		{
-			logger().warn("Conservative check did a good job!");
+			logger().warn("Conservative check did a good job! Element {} is flipped!", invalidID);
 
-			quadrature_hierarchy_[invalidID].merge(subdivision_tree);
-			
-			// save hierarchy as a mesh
-			// {
-			// 	Eigen::MatrixXd points;
-			// 	Eigen::MatrixXi elements;
-			// 	get_refined_mesh(x0, points, elements);
-			// 	if (points.cols() == 2)
-			// 	{
-			// 		points.conservativeResize(points.rows(), 3);
-			// 		points.col(2).setZero();
-			// 		igl::writeOBJ("hierarchy.obj", points, elements);
-			// 	}
-			// 	else
-			// 		igl::writeMSH("hierarchy.msh", points, Eigen::MatrixXi(), elements, Eigen::MatrixXi(), Eigen::MatrixXi::Ones(elements.rows(), 1), {}, {}, {}, {}, {});
-			// }
-
-			using namespace quadrature;
-
-			// switch (quad_scheme_)
+			if (quadrature_hierarchy_[invalidID].merge(subdivision_tree))
 			{
-			if (quad_scheme_ == "H")
-			{
-				// update quadrature to capture the point with negative jacobian
-				const Quadrature quad = refine_quadrature(quadrature_hierarchy_[invalidID], dim, quadrature_order_[invalidID]);
+				// save hierarchy as a mesh
+				// {
+				// 	static int id = 0;
+				// 	Eigen::MatrixXd points;
+				// 	Eigen::MatrixXi elements;
+				// 	get_refined_mesh(x0, points, elements);
+				// 	if (points.cols() == 2)
+				// 	{
+				// 		points.conservativeResize(points.rows(), 3);
+				// 		points.col(2).setZero();
+				// 		igl::writeOBJ("hierarchy"+std::to_string(id++)+".obj", points, elements);
+				// 	}
+				// 	else
+				// 		igl::writeMSH("hierarchy"+std::to_string(id++)+".msh", points, Eigen::MatrixXi(), elements, Eigen::MatrixXi(), Eigen::MatrixXi::Ones(elements.rows(), 1), {}, {}, {}, {}, {});
+				// }
 
-				// capture the flipped point by refining the quadrature
-				bases_[invalidID].set_quadrature([quad](Quadrature &quad_) {
-					quad_ = quad;
-				});
-				logger().debug("New number of quadrature points: {}", quad.size());
-				logger().debug("Min jacobian on new quadrature points: {}", evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x0));
-				// break;
-			}
-			else if (quad_scheme_ == "P")
-			{
-				// capture the flipped point by increasing the quadrature order
-				const int real_order = ++quadrature_order_[invalidID];
-				bases_[invalidID].set_quadrature([real_order, dim](Quadrature &quad_) {
-					if (dim == 3)
+				// {
+				// 	const auto [flag_, invalidID_, subdivision_tree_] = isValid(dim, bases_, x0);
+				// 	if (!flag_)
+				// 		log_and_throw_error("Starting point invalid!");
+				// }
+
+				using namespace quadrature;
+
+				// switch (quad_scheme_)
+				{
+					if (quad_scheme_ == "H")
 					{
-						TetQuadrature tet_quadrature;
-						tet_quadrature.get_quadrature(real_order, quad_);
+						// update quadrature to capture the point with negative jacobian
+						const Quadrature quad = refine_quadrature(quadrature_hierarchy_[invalidID], dim, quadrature_order_[invalidID]);
+
+						// capture the flipped point by refining the quadrature
+						bases_[invalidID].set_quadrature([quad](Quadrature &quad_) {
+							quad_ = quad;
+						});
+						logger().debug("New number of quadrature points: {}", quad.size());
+
+						const double jac0 = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x0);
+						const double jac1 = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x1);
+						// const double jac2 = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], dense_uv_samples(dim, 10), x1);
+						logger().debug("Min jacobian on new quadrature points: {}, {}", jac0, jac1);
+
+						// if (jac1 > 0)
+						// {
+						// 	Eigen::MatrixXd cp = extract_nodes(dim, bases_, x1);
+						// 	bool flag = isValid<2>(cp, bases_[0].bases[0].order());
+						// 	logger().debug("Double check: {}", flag);
+						// 	cp = cp.middleRows(invalidID * bases_[0].bases.size(), bases_[0].bases.size()).eval();
+						// 	bool flag = isValid<2>(cp, bases_[0].bases[0].order());
+						// 	logger().debug("Double check: {}", flag);
+						// }
+					}
+					else if (quad_scheme_ == "P")
+					{
+						// capture the flipped point by increasing the quadrature order
+						const int real_order = ++quadrature_order_[invalidID];
+						bases_[invalidID].set_quadrature([real_order, dim](Quadrature &quad_) {
+							if (dim == 3)
+							{
+								TetQuadrature tet_quadrature;
+								tet_quadrature.get_quadrature(real_order, quad_);
+							}
+							else
+							{
+								TriQuadrature tri_quadrature;
+								tri_quadrature.get_quadrature(real_order, quad_);
+							}
+						});
+						logger().debug("New order of quadrature: {}", real_order);
 					}
 					else
-					{
-						TriQuadrature tri_quadrature;
-						tri_quadrature.get_quadrature(real_order, quad_);
-					}
-				});
-				logger().debug("New order of quadrature: {}", real_order);
-				// break;
-			}
-			// default:
-			// 	throw std::runtime_error("Invalid quadrature refinement scheme");
-			}
+						throw std::runtime_error("Invalid quadrature refinement scheme");
+				}
 
-			if (ass_vals_cache_.is_initialized())
-				ass_vals_cache_.update(invalidID, is_volume_, bases_[invalidID], geom_bases_[invalidID]);
-			
-			Eigen::VectorXd grad;
-			first_derivative(x0, grad);
-			if (grad.array().isNaN().any())
-			{
-				log_and_throw_error("Gradient NAN after quadrature refinement!");
+				if (ass_vals_cache_.is_initialized())
+					ass_vals_cache_.update(invalidID, is_volume_, bases_[invalidID], geom_bases_[invalidID]);
+				
+				Eigen::VectorXd grad;
+				first_derivative(x0, grad);
+				if (grad.array().isNaN().any())
+				{
+					logger().error("Gradient NAN on x0 after quadrature refinement!");
+					std::terminate();
+				}
+
+				first_derivative(x1, grad);
+				if (!grad.array().isNaN().any())
+				{
+					logger().error("Gradient no NAN on x1 after quadrature refinement!");
+					std::terminate();
+				}
 			}
 			
 			return flag;
@@ -414,7 +461,7 @@ namespace polyfem::solver
 		}
 
 		if (!flag)
-			logger().debug("Transient check did a good job!");
+			logger().warn("Transient check did a good job!");
 
 		return flag;
 	}
@@ -676,17 +723,24 @@ namespace polyfem::solver
 			term += local_storage.vec;
 	}
 
-	void ElasticForm::get_refined_mesh(const Eigen::VectorXd &x, Eigen::MatrixXd &points, Eigen::MatrixXi &elements) const
+	void ElasticForm::get_refined_mesh(const Eigen::VectorXd &x, Eigen::MatrixXd &points, Eigen::MatrixXi &elements, const int elem) const
 	{
 		const int dim = is_volume_ ? 3 : 2;
 		int n_elem = 0;
 		for (int e = 0; e < bases_.size(); e++)
+		{
+			if (elem >= 0 && e != elem)
+				continue;
 			n_elem += quadrature_hierarchy_[e].n_leaves();
+		}
 
 		points.setZero(n_elem * (dim + 1), dim);
 		int idx = 0;
 		for (int e = 0; e < bases_.size(); e++)
 		{
+			if (elem >= 0 && e != elem)
+				continue;
+			
 			const auto &tree = quadrature_hierarchy_[e];
 			const auto &bs = bases_[e];
 

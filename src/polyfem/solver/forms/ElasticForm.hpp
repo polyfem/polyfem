@@ -135,6 +135,6 @@ namespace polyfem::solver
 		mutable std::vector<utils::Tree> quadrature_hierarchy_;
 		mutable std::vector<int> quadrature_order_;
 
-		void get_refined_mesh(const Eigen::VectorXd &x, Eigen::MatrixXd &points, Eigen::MatrixXi &elements) const;
+		void get_refined_mesh(const Eigen::VectorXd &x, Eigen::MatrixXd &points, Eigen::MatrixXi &elements, const int elem = -1) const;
 	};
 } // namespace polyfem::solver
