@@ -1,13 +1,10 @@
 #pragma once
 
 #include "Form.hpp"
-
 #include <polyfem/assembler/RhsAssembler.hpp>
 
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
-
-#include <polyfem/utils/Types.hpp>
 
 namespace polyfem::solver
 {

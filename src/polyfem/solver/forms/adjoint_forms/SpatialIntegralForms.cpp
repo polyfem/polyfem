@@ -6,6 +6,7 @@
 #include <polyfem/assembler/Mass.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/NLHomoProblem.hpp>
 
 #include <polyfem/utils/IntegrableFunctional.hpp>
 

@@ -153,7 +153,7 @@ namespace polyfem
 		variable_to_simulations.init(args["variable_to_simulation"], states, variable_sizes);
 	}
 
-	void OptState::crate_problem()
+	void OptState::create_problem()
 	{
 		/* forms */
 		std::shared_ptr<solver::AdjointForm> obj = solver::AdjointOptUtils::create_form(
