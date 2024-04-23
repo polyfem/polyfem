@@ -59,7 +59,6 @@ namespace polyfem::utils
             flag = isValid<2>(cp, shapes::TRIANGLE, order, &invalid_id, &hierarchy);
             if (!flag)
             {
-            //     std::cout << hierarchy << "\n";
                 std::function<void(const SubdivisionHierarchy<2>::Node &, Tree &)> copy_hierarchy = [&copy_hierarchy](const SubdivisionHierarchy<2>::Node &src, Tree &dst) {
                     if (src.hasChildren())
                     {
@@ -70,7 +69,6 @@ namespace polyfem::utils
                 };
 
                 copy_hierarchy(hierarchy.get_root(), tree);
-            //     std::cout << tree << "\n";
             }
         }
         else
