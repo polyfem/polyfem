@@ -776,11 +776,11 @@ namespace polyfem
 				starting_volumes_[v.first] = compute_volume(Eigen::VectorXd(), v.second, 5, 0, false);
 
 			if (!is_closed_or_boundary_fixed(local_pressure_boundary, dirichlet_nodes))
-				log_and_throw_error("Pressure boundary condition must be applied to a closed volume or have dirichlet fixed boundary.");
+				logger().error("Pressure boundary condition must be applied to a closed volume or have dirichlet fixed boundary.");
 
 			for (const auto &b : local_pressure_cavity)
 				if (!is_closed_or_boundary_fixed(b.second, dirichlet_nodes))
-					log_and_throw_error("Pressure cavity boundary condition must be applied to a closed volume or have dirichlet fixed boundary.");
+					logger().error("Pressure cavity boundary condition must be applied to a closed volume or have dirichlet fixed boundary.");
 
 			cavity_thermodynamics_ = std::make_unique<AdiabaticProcess>();
 			// cavity_thermodynamics_ = std::make_unique<IsothermalProcess>();
