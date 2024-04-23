@@ -703,15 +703,16 @@ namespace polyfem
 				{
 					const auto &lb = local_boundary[lb_id];
 					const int e = lb.element_id();
+					const basis::ElementBases &bs = bases_[e];
 					const basis::ElementBases &gbs = gbases_[e];
 
 					for (int i = 0; i < lb.size(); ++i)
 					{
 						const int primitive_global_id = lb.global_primitive_id(i);
-						const auto nodes = gbs.local_nodes_for_primitive(primitive_global_id, mesh_);
+						const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
 
 						points.resize(0, size_);
-						vals.compute(e, mesh_.is_volume(), points, gbs, gbs);
+						vals.compute(e, mesh_.is_volume(), points, bs, gbs);
 
 						if (!((lb.type() == BoundaryType::TRI_LINE) || (lb.type() == BoundaryType::TRI)))
 						{
@@ -720,7 +721,8 @@ namespace polyfem
 						}
 
 						Eigen::VectorXi face(size_);
-						for (int n = 0; n < nodes.size(); ++n)
+						// Assuming the geometric nodes are listed in the beginning
+						for (int n = 0; n < size_; ++n)
 						{
 							const AssemblyValues &v = vals.basis_values[nodes(n)];
 							assert(v.global.size() == 1);
