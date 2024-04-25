@@ -70,6 +70,21 @@ namespace polyfem
 				g1_up = (wedge_product(g1, g2) * g2) / (g1.dot(wedge_product(g1, g2) * g2));
 				g2_up = (wedge_product(g2, g1) * g1) / (g2.dot(wedge_product(g2, g1) * g1));
 			}
+
+			void boundary_loop_2d(const Eigen::MatrixXi &F, std::vector<int> &L)
+			{
+				std::set<int> vertices_set;
+				for (int i = 0; i < F.rows(); ++i)
+					for (int j = 0; j < 2; ++j)
+					{
+						if (vertices_set.find(F(i, j)) != vertices_set.end())
+							vertices_set.erase(F(i, j));
+						else
+							vertices_set.insert(F(i, j));
+					}
+
+				L = std::vector<int>(vertices_set.begin(), vertices_set.end());
+			}
 		} // namespace
 
 		double PressureAssembler::compute_volume(
@@ -472,11 +487,6 @@ namespace polyfem
 							}
 						}
 
-						// if (project_to_psd)
-						// {
-						// 	log_and_throw_error("Cannot project pressure to PSD!");
-						// }
-
 						for (long ni = 0; ni < nodes.size(); ++ni)
 						{
 							const AssemblyValues &vi = vals.basis_values[nodes(ni)];
@@ -646,11 +656,6 @@ namespace polyfem
 							}
 						}
 
-						// if (project_to_psd)
-						// {
-						// 	log_and_throw_error("Cannot project pressure to PSD!");
-						// }
-
 						for (long ni = 0; ni < nodes.size(); ++ni)
 						{
 							const AssemblyValues &vi = vals.basis_values[nodes(ni)];
@@ -746,7 +751,11 @@ namespace polyfem
 			}
 
 			std::vector<int> L;
-			igl::boundary_loop(F, L);
+			if (size_ == 2)
+				boundary_loop_2d(F, L);
+			else
+				igl::boundary_loop(F, L);
+
 			for (const int &l : L)
 				if (std::find(dirichlet_nodes.begin(), dirichlet_nodes.end(), l * size_) == dirichlet_nodes.end())
 					return false;
