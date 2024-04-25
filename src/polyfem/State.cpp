@@ -729,7 +729,8 @@ namespace polyfem
 		}
 
 		// shape optimization needs continuous geometric basis
-		const bool use_continuous_gbasis = optimization_enabled == solver::CacheLevel::Derivatives;
+		// const bool use_continuous_gbasis = optimization_enabled == solver::CacheLevel::Derivatives;
+		const bool use_continuous_gbasis = true;
 
 		if (mesh->is_volume())
 		{
