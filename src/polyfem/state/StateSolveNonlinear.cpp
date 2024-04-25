@@ -68,6 +68,8 @@ namespace polyfem
 				solve_tensor_nonlinear(sol, t);
 			}
 
+			recurrent_mesh(t, sol);
+
 #ifdef POLYFEM_WITH_REMESHING
 			if (remesh_enabled)
 			{

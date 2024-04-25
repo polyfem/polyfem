@@ -161,6 +161,9 @@ namespace polyfem
 		std::vector<basis::ElementBases> pressure_bases;
 		/// Geometric mapping bases, if the elements are isoparametric, this list is empty
 		std::vector<basis::ElementBases> geom_bases_;
+		
+		/// recurrent geometry
+		std::vector<json> recurrent_geometry;
 
 		/// number of bases
 		int n_bases;
@@ -459,6 +462,12 @@ namespace polyfem
 			mesh = mesh::Mesh::create(V, F, non_conforming);
 			load_mesh(non_conforming);
 		}
+
+		/// loads the recurrent mesh from the json arguments
+		/// @param[in] time_step the current time step
+		/// @param[in] sol solution
+		/// @return True if the mesh has been updated
+		bool recurrent_mesh(int time_step, Eigen::MatrixXd &sol);
 
 		/// set the boundary sideset from a lambda that takes the face/edge barycenter
 		/// @param[in] boundary_marker function from face/edge barycenter that returns the sideset id

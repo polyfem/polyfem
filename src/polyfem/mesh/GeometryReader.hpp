@@ -34,10 +34,27 @@ namespace polyfem::mesh
 	std::unique_ptr<Mesh> read_fem_geometry(
 		const Units &units,
 		const json &geometry,
+		const json &args,
 		const std::string &root_path,
+		std::vector<json> &recurrent_geometry,
 		const std::vector<std::string> &names = std::vector<std::string>(),
 		const std::vector<Eigen::MatrixXd> &vertices = std::vector<Eigen::MatrixXd>(),
 		const std::vector<Eigen::MatrixXi> &cells = std::vector<Eigen::MatrixXi>(),
+		const bool non_conforming = false);
+	
+	///
+	/// @brief 		read a single FEM mesh from a geometry JSON
+	///
+	/// @param[in] geometry 		geometry JSON object
+	/// @param root_path 			root path of JSON
+	///
+	/// @return created Mesh object
+	///
+	void read_single_fem_geometry(
+		const Units &units,
+		const json &geometry,
+		const std::string &root_path,
+		std::unique_ptr<Mesh> &mesh,
 		const bool non_conforming = false);
 
 	///
@@ -93,6 +110,7 @@ namespace polyfem::mesh
 	void construct_affine_transformation(
 		const double unit_scale,
 		const json &transform,
+		const json &random,
 		const VectorNd &mesh_dimensions,
 		MatrixNd &A,
 		VectorNd &b);
