@@ -10,6 +10,7 @@
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
+#include <polyfem/assembler/PressureAssembler.hpp>
 #include <polyfem/assembler/MacroStrain.hpp>
 #include <polyfem/assembler/Problem.hpp>
 #include <polyfem/assembler/Assembler.hpp>
@@ -158,6 +159,8 @@ namespace polyfem
 		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
 		std::shared_ptr<assembler::Assembler> pressure_assembler = nullptr;
 
+		std::shared_ptr<assembler::PressureAssembler> elasticity_pressure_assembler = nullptr;
+
 		std::shared_ptr<assembler::ViscousDamping> damping_assembler = nullptr;
 		std::shared_ptr<assembler::ViscousDampingPrev> damping_prev_assembler = nullptr;
 
@@ -245,6 +248,14 @@ namespace polyfem
 		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler() const
 		{
 			return build_rhs_assembler(n_bases, bases, mass_ass_vals_cache);
+		}
+
+		std::shared_ptr<assembler::PressureAssembler> build_pressure_assembler(
+			const int n_bases_,
+			const std::vector<basis::ElementBases> &bases_) const;
+		std::shared_ptr<assembler::PressureAssembler> build_pressure_assembler() const
+		{
+			return build_pressure_assembler(n_bases, bases);
 		}
 
 		/// quadrature used for projecting boundary conditions
@@ -395,6 +406,9 @@ namespace polyfem
 			const bool compute_spectrum,
 			Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
 
+		/// @brief Returns whether the system is linear. Collisions and pressure add nonlinearity to the problem.
+		bool is_problem_linear() const { return assembler->is_linear() && !is_contact_enabled() && !is_pressure_enabled(); }
+
 	public:
 		/// @brief utility that builds the stiffness matrix and collects stats, used only for linear problems
 		/// @param[out] stiffness matrix
@@ -419,6 +433,10 @@ namespace polyfem
 		std::vector<mesh::LocalBoundary> local_boundary;
 		/// mapping from elements to nodes for neumann boundary conditions
 		std::vector<mesh::LocalBoundary> local_neumann_boundary;
+		/// mapping from elements to nodes for pressure boundary conditions
+		std::vector<mesh::LocalBoundary> local_pressure_boundary;
+		/// mapping from elements to nodes for pressure boundary conditions
+		std::unordered_map<int, std::vector<mesh::LocalBoundary>> local_pressure_cavity;
 		/// nodes on the boundary of polygonal elements, used for harmonic bases
 		std::map<int, basis::InterfaceData> poly_edge_to_data;
 		/// per node dirichlet
@@ -554,6 +572,15 @@ namespace polyfem
 		///
 		/// @return true/false
 		bool is_contact_enabled() const { return args["contact"]["enabled"]; }
+
+		/// @brief does the simulation has pressure
+		///
+		/// @return true/false
+		bool is_pressure_enabled() const
+		{
+			return (args["boundary_conditions"]["pressure_boundary"].size() > 0)
+				   || (args["boundary_conditions"]["pressure_cavity"].size() > 0);
+		}
 
 		/// stores if input json contains dhat
 		bool has_dhat = false;

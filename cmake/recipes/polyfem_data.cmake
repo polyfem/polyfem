@@ -15,6 +15,7 @@ if(POLYFEM_USE_EXISTING_DATA_DIR)
         polyfem_data_download
         PREFIX ${FETCHCONTENT_BASE_DIR}/polyfem-test-data
         SOURCE_DIR ${POLYFEM_DATA_DIR}
+
         # NOTE: No download step
         CONFIGURE_COMMAND ""
         BUILD_COMMAND ""
@@ -41,4 +42,4 @@ add_library(polyfem::data ALIAS polyfem_data)
 
 add_dependencies(polyfem_data polyfem_data_download)
 
-target_compile_definitions(polyfem_data INTERFACE  POLYFEM_DATA_DIR=\"${POLYFEM_DATA_DIR}\")
+target_compile_definitions(polyfem_data INTERFACE POLYFEM_DATA_DIR=\"${POLYFEM_DATA_DIR}\")

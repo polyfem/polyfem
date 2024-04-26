@@ -7,6 +7,7 @@
 #include <polyfem/solver/forms/MacroStrainLagrangianForm.hpp>
 #include <polyfem/solver/forms/MacroStrainALForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
+#include <polyfem/solver/forms/PressureForm.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/forms/MacroStrainALForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
@@ -16,6 +17,7 @@
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/assembler/PressureAssembler.hpp>
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/MacroStrain.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -47,6 +49,11 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &rhs,
 		const Eigen::MatrixXd &sol,
 		const assembler::Density &density,
+
+		// Pressure form
+		const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
+		const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity,
+		const std::shared_ptr<assembler::PressureAssembler> pressure_assembler,
 
 		// Inertia form
 		const bool ignore_inertia,
@@ -116,6 +123,19 @@ namespace polyfem::solver
 				is_time_dependent);
 			body_form->update_quantities(t, sol);
 			forms.push_back(body_form);
+		}
+
+		if (pressure_assembler != nullptr)
+		{
+			pressure_form = std::make_shared<PressureForm>(
+				ndof,
+				local_pressure_boundary,
+				local_pressure_cavity,
+				boundary_nodes,
+				n_boundary_samples, *pressure_assembler,
+				is_time_dependent);
+			pressure_form->update_quantities(t, sol);
+			forms.push_back(pressure_form);
 		}
 
 		inertia_form = nullptr;
@@ -217,7 +237,7 @@ namespace polyfem::solver
 					contact_form->set_barrier_stiffness(barrier_stiffness);
 					// logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
 				}
-				
+
 				if (contact_form)
 					forms.push_back(contact_form);
 
@@ -266,8 +286,8 @@ namespace polyfem::solver
 			return;
 
 		Eigen::VectorXd grad_energy = Eigen::VectorXd::Zero(x.size());
-		const std::array<std::shared_ptr<Form>, 3> energy_forms{
-			{elastic_form, inertia_form, body_form}};
+		const std::array<std::shared_ptr<Form>, 4> energy_forms{
+			{elastic_form, inertia_form, body_form, pressure_form}};
 		for (const std::shared_ptr<Form> &form : energy_forms)
 		{
 			if (form == nullptr || !form->enabled())
@@ -286,8 +306,8 @@ namespace polyfem::solver
 		if (time_integrator == nullptr) // if is not time dependent
 			return;
 
-		const std::array<std::shared_ptr<Form>, 5> energy_forms{
-			{elastic_form, body_form, damping_form, contact_form, friction_form}};
+		const std::array<std::shared_ptr<Form>, 6> energy_forms{
+			{elastic_form, body_form, pressure_form, damping_form, contact_form, friction_form}};
 		for (const std::shared_ptr<Form> &form : energy_forms)
 		{
 			if (form == nullptr)
@@ -305,6 +325,7 @@ namespace polyfem::solver
 			{"contact", contact_form},
 			{"friction", friction_form},
 			{"damping", damping_form},
+			{"pressure", pressure_form},
 			{"augmented_lagrangian_lagr", al_lagr_form},
 			{"augmented_lagrangian_penalty", al_pen_form},
 			{"strain_augmented_lagrangian_lagr", strain_al_lagr_form},
