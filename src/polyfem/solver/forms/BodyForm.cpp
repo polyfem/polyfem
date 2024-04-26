@@ -183,7 +183,7 @@ namespace polyfem::solver
 					const int global_primitive_id = lb.global_primitive_id(i);
 
 					utils::BoundarySampler::boundary_quadrature(lb, n_boundary_samples_, rhs_assembler_.mesh(), i, false, uv, points, normals, weights);
-					global_ids.setConstant(points.rows(), 1, global_primitive_id);
+					global_ids.setConstant(points.rows(), global_primitive_id);
 
 					Eigen::MatrixXd reference_normals = normals;
 

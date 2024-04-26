@@ -65,7 +65,7 @@ namespace
 		return true;
 	}
 
-	std::tuple<std::shared_ptr<AdjointForm>, std::vector<std::shared_ptr<VariableToSimulation>>, std::vector<std::shared_ptr<State>>> prepare_test(json &opt_args)
+	std::tuple<std::shared_ptr<AdjointForm>, VariableToSimulationGroup, std::vector<std::shared_ptr<State>>> prepare_test(json &opt_args)
 	{
 		opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
@@ -82,7 +82,7 @@ namespace
 		}
 
 		/* variable to simulations */
-		std::vector<std::shared_ptr<VariableToSimulation>> var2sim;
+		VariableToSimulationGroup var2sim;
 		for (const auto &arg : opt_args["variable_to_simulation"])
 			var2sim.push_back(
 				AdjointOptUtils::create_variable_to_simulation(arg, states, variable_sizes));
@@ -91,7 +91,7 @@ namespace
 		std::shared_ptr<AdjointForm> obj = AdjointOptUtils::create_form(
 			opt_args["functionals"], var2sim, states);
 
-		return {obj, var2sim, states};
+		return {obj, std::move(var2sim), states};
 	}
 
 	// std::vector<double> read_energy(const std::string &file)
@@ -286,15 +286,15 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
 			log_and_throw_adjoint_error("Can't find json for State {}", i);
 
-		states[i++] = AdjointOptUtils::create_state(cur_args);
+		states[i++] = AdjointOptUtils::create_state(cur_args, solver::CacheLevel::Derivatives, -1);
 	}
 
 	Eigen::VectorXd x(2);
 	x << 0., 1.;
 
-	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+	VariableToSimulationGroup variable_to_simulations;
 	{
-		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization()));
+		variable_to_simulations.push_back(std::make_unique<ShapeVariableToSimulation>(states[0], CompositeParametrization()));
 
 		VariableToBoundaryNodesExclusive variable_to_node(*states[0], {1});
 		variable_to_simulations[0]->set_output_indexing(variable_to_node.get_output_indexing());
@@ -419,12 +419,12 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	}
 // 	x.resize(opt_bnodes * dim);
 
-// 	std::vector<std::shared_ptr<VariableToSimulation>>
+// 	VariableToSimulationGroup
 // 		variable_to_simulations;
 // 	{
 // 		std::vector<std::shared_ptr<Parametrization>> spline_boundary_map_list = {};
 
-// 		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization(spline_boundary_map_list)));
+// 		variable_to_simulations.push_back(std::make_unique<ShapeVariableToSimulation>(states[0], CompositeParametrization(spline_boundary_map_list)));
 // 		VariableToBoundaryNodes variable_to_node(*states[0], {4});
 // 		variable_to_simulations[0]->set_output_indexing(variable_to_node.get_output_indexing());
 // 	}
@@ -540,12 +540,12 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 		1,
 // 		1;
 
-// 	std::vector<std::shared_ptr<VariableToSimulation>>
+// 	VariableToSimulationGroup
 // 		variable_to_simulations;
 // 	{
 // 		std::vector<std::shared_ptr<Parametrization>> spline_boundary_map_list = {std::make_shared<BSplineParametrization1DTo2D>(initial_control_points, knots, opt_bnodes, true)};
 
-// 		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization(spline_boundary_map_list)));
+// 		variable_to_simulations.push_back(std::make_unique<ShapeVariableToSimulation>(states[0], CompositeParametrization(spline_boundary_map_list)));
 
 // 		VariableToBoundaryNodes variable_to_node(*states[0], 4);
 // 		variable_to_simulations[0]->set_output_indexing(variable_to_node.get_output_indexing());
@@ -608,7 +608,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
 // 	std::vector<std::shared_ptr<State>> states(state_args.size());
 // 	Eigen::VectorXd x;
-// 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+// 	VariableToSimulationGroup variable_to_simulations;
 // 	{
 // 		// create simulators based on json inputs
 // 		int i = 0;
@@ -781,7 +781,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
 // 	std::vector<std::shared_ptr<State>> states(state_args.size());
 // 	Eigen::VectorXd x;
-// 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+// 	VariableToSimulationGroup variable_to_simulations;
 // 	{
 // 		// create simulators based on json inputs
 // 		int i = 0;
@@ -854,7 +854,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
 // 	std::vector<std::shared_ptr<State>> states(state_args.size());
 // 	Eigen::VectorXd x;
-// 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+// 	VariableToSimulationGroup variable_to_simulations;
 // 	{
 // 		// create simulators based on json inputs
 // 		int i = 0;
@@ -925,7 +925,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
 // 	std::vector<std::shared_ptr<State>> states(state_args.size());
 // 	Eigen::VectorXd x;
-// 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+// 	VariableToSimulationGroup variable_to_simulations;
 // 	{
 // 		// create simulators based on json inputs
 // 		int i = 0;

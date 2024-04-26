@@ -29,6 +29,8 @@ namespace polyfem
 
 			virtual void dirichlet_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const = 0;
 			virtual void neumann_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const {}
+			virtual void pressure_bc(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &normals, const double t, Eigen::MatrixXd &val) const {}
+			virtual double pressure_cavity_bc(const int boundary_id, const double t) const { return 0; }
 
 			virtual bool is_boundary_pressure(const int boundary_id) const { return std::find(pressure_boundary_ids_.begin(), pressure_boundary_ids_.end(), boundary_id) != pressure_boundary_ids_.end(); }
 
@@ -65,6 +67,8 @@ namespace polyfem
 						  const int n_bases, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &geom_bases, const std::vector<basis::ElementBases> &pressure_bases,
 						  std::vector<mesh::LocalBoundary> &local_boundary, std::vector<int> &boundary_nodes,
 						  std::vector<mesh::LocalBoundary> &local_neumann_boundary,
+						  std::vector<mesh::LocalBoundary> &local_pressure_boundary,
+						  std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity,
 						  std::vector<int> &pressure_boundary_nodes,
 						  std::vector<int> &dirichlet_nodes, std::vector<int> &neumann_nodes);
 
@@ -73,7 +77,9 @@ namespace polyfem
 		protected:
 			std::vector<int> boundary_ids_;
 			std::vector<int> neumann_boundary_ids_;
+			std::vector<int> normal_aligned_neumann_boundary_ids_;
 			std::vector<int> pressure_boundary_ids_;
+			std::vector<int> pressure_cavity_ids_;
 			std::vector<int> splitting_pressure_boundary_ids_;
 
 		private:

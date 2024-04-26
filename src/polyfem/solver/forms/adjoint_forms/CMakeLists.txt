@@ -7,11 +7,13 @@ set(SOURCES
 	SpatialIntegralForms.hpp
 	VariableToSimulation.cpp
 	VariableToSimulation.hpp
+	CompositeForm.cpp
 	CompositeForm.hpp
 	CompositeForms.cpp
 	CompositeForms.hpp
 	SumCompositeForm.hpp
 	AMIPSForm.hpp
+	WeightedVolumeForm.cpp
 	WeightedVolumeForm.hpp
 	ParametrizedProductForm.hpp
 	TransientForm.hpp

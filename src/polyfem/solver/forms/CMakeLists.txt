@@ -22,8 +22,16 @@ set(SOURCES
 	FrictionForm.hpp
 	ContactForm.cpp
 	ContactForm.hpp
+	PeriodicContactForm.cpp
+	PeriodicContactForm.hpp
+	MacroStrainLagrangianForm.cpp
+	MacroStrainLagrangianForm.hpp
+	MacroStrainALForm.cpp
+	MacroStrainALForm.hpp
 	RayleighDampingForm.cpp
 	RayleighDampingForm.hpp
+	PressureForm.cpp
+	PressureForm.hpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})

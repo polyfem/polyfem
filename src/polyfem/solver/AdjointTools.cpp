@@ -13,6 +13,7 @@
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
+#include <polyfem/solver/forms/PressureForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
@@ -152,52 +153,26 @@ namespace polyfem::solver
 			normal = normal / normal.norm();
 			return normal;
 		}
-	} // namespace
 
-	void AdjointTools::dJ_macro_strain_adjoint_term(
-		const State &state,
-		const Eigen::MatrixXd &sol,
-		const Eigen::MatrixXd &adjoint,
-		Eigen::VectorXd &one_form)
-	{
-		// doesn't support transient simulation
-		const double t = 0;
+		Eigen::MatrixXd extract_lame_params(const std::map<std::string, Assembler::ParamFunc> &lame_params, const int e, const int t, const Eigen::MatrixXd& local_pts, const Eigen::MatrixXd& pts)
+		{
+			Eigen::MatrixXd params = Eigen::MatrixXd::Zero(local_pts.rows(), 2);
 
-		const int dim = state.mesh->dimension();
-		const auto &bases = state.bases;
-		const auto &gbases = state.geom_bases();
+			auto search_lambda = lame_params.find("lambda");
+			auto search_mu = lame_params.find("mu");
 
-		one_form.setZero(dim * dim);
-		auto storage = utils::create_thread_storage(LocalThreadVecStorage(one_form.size()));
-		utils::maybe_parallel_for(bases.size(), [&](int start, int end, int thread_id) {
-			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
-			Eigen::MatrixXd stiffnesses;
-			Eigen::MatrixXd p, grad_p;
-			for (int e = start; e < end; ++e)
+			if (search_lambda == lame_params.end() || search_mu == lame_params.end())
+				return params;
+
+			for (int p = 0; p < local_pts.rows(); p++)
 			{
-				assembler::ElementAssemblyValues &vals = local_storage.vals;
-				state.ass_vals_cache.compute(e, dim == 3, bases[e], gbases[e], vals);
-
-				const quadrature::Quadrature &quadrature = vals.quadrature;
-				local_storage.da = vals.det.array() * quadrature.weights.array();
-
-				state.assembler->compute_stiffness_value(t, vals, quadrature.points, sol, stiffnesses);
-				stiffnesses.array().colwise() *= local_storage.da.array();
-
-				io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, adjoint, p, grad_p);
-
-				for (int a = 0; a < dim; a++)
-					for (int b = 0; b < dim; b++)
-					{
-						int X = a * dim + b;
-						local_storage.vec(X) -= dot(stiffnesses.block(0, X * dim * dim, local_storage.da.size(), dim * dim), grad_p);
-					}
+				params(p, 0) = search_lambda->second(local_pts.row(p), pts.row(p), t, e);
+				params(p, 1) = search_mu->second(local_pts.row(p), pts.row(p), t, e);
 			}
-		});
 
-		for (const LocalThreadVecStorage &local_storage : storage)
-			one_form += local_storage.vec;
-	}
+			return params;
+		}
+	} // namespace
 
 	double AdjointTools::integrate_objective(
 		const State &state,
@@ -217,18 +192,17 @@ namespace polyfem::solver
 		const double dt = state.problem->is_time_dependent() ? state.args["time"]["dt"].get<double>() : 0.0;
 
 		double integral = 0;
-		if (spatial_integral_type == SpatialIntegralType::volume)
+		if (spatial_integral_type == SpatialIntegralType::Volume)
 		{
 			auto storage = utils::create_thread_storage(LocalThreadScalarStorage());
 			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
 				LocalThreadScalarStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
-				json params = {};
-				params["t"] = dt * cur_step + t0;
-				params["step"] = cur_step;
+				IntegrableFunctional::ParameterType params;
+				params.t = dt * cur_step + t0;
+				params.step = cur_step;
 
 				Eigen::MatrixXd u, grad_u;
-				Eigen::MatrixXd lambda, mu;
 				Eigen::MatrixXd result;
 
 				for (int e = start; e < end; ++e)
@@ -243,9 +217,11 @@ namespace polyfem::solver
 					const quadrature::Quadrature &quadrature = vals.quadrature;
 					local_storage.da = vals.det.array() * quadrature.weights.array();
 
-					params["elem"] = e;
-					params["body_id"] = state.mesh->get_body_id(e);
-					j.evaluate(state.assembler->parameters(), quadrature.points, vals.val, u, grad_u, Eigen::MatrixXd::Zero(0, 0) /*Not used*/, vals, params, result);
+					const Eigen::MatrixXd lame_params = extract_lame_params(state.assembler->parameters(), e, params.t, quadrature.points, vals.val);
+
+					params.elem = e;
+					params.body_id = state.mesh->get_body_id(e);
+					j.evaluate(lame_params, quadrature.points, vals.val, u, grad_u, Eigen::MatrixXd::Zero(0, 0) /*Not used*/, vals, params, result);
 
 					local_storage.val += dot(result, local_storage.da);
 				}
@@ -253,22 +229,21 @@ namespace polyfem::solver
 			for (const LocalThreadScalarStorage &local_storage : storage)
 				integral += local_storage.val;
 		}
-		else if (spatial_integral_type == SpatialIntegralType::surface)
+		else if (spatial_integral_type == SpatialIntegralType::Surface)
 		{
 			auto storage = utils::create_thread_storage(LocalThreadScalarStorage());
 			utils::maybe_parallel_for(state.total_local_boundary.size(), [&](int start, int end, int thread_id) {
 				LocalThreadScalarStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
-				Eigen::MatrixXd uv, samples, gtmp;
+				Eigen::MatrixXd uv;
 				Eigen::MatrixXd points, normal;
 				Eigen::VectorXd weights;
 
 				Eigen::MatrixXd u, grad_u;
-				Eigen::MatrixXd lambda, mu;
 				Eigen::MatrixXd result;
-				json params = {};
-				params["t"] = dt * cur_step + t0;
-				params["step"] = cur_step;
+				IntegrableFunctional::ParameterType params;
+				params.t = dt * cur_step + t0;
+				params.step = cur_step;
 
 				for (int lb_id = start; lb_id < end; ++lb_id)
 				{
@@ -287,12 +262,12 @@ namespace polyfem::solver
 						vals.compute(e, state.mesh->is_volume(), points, bases[e], gbases[e]);
 						io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, solution, u, grad_u);
 
-						// normal = normal * vals.jac_it[0]; // assuming linear geometry
+						const Eigen::MatrixXd lame_params = extract_lame_params(state.assembler->parameters(), e, params.t, points, vals.val);
 
-						params["elem"] = e;
-						params["body_id"] = state.mesh->get_body_id(e);
-						params["boundary_id"] = state.mesh->get_boundary_id(global_primitive_id);
-						j.evaluate(state.assembler->parameters(), points, vals.val, u, grad_u, normal, vals, params, result);
+						params.elem = e;
+						params.body_id = state.mesh->get_body_id(e);
+						params.boundary_id = state.mesh->get_boundary_id(global_primitive_id);
+						j.evaluate(lame_params, points, vals.val, u, grad_u, normal, vals, params, result);
 
 						local_storage.val += dot(result, weights);
 					}
@@ -301,12 +276,12 @@ namespace polyfem::solver
 			for (const LocalThreadScalarStorage &local_storage : storage)
 				integral += local_storage.val;
 		}
-		else if (spatial_integral_type == SpatialIntegralType::vertex_sum)
+		else if (spatial_integral_type == SpatialIntegralType::VertexSum)
 		{
 			std::vector<bool> traversed(state.n_bases, false);
-			json params = {};
-			params["t"] = dt * cur_step + t0;
-			params["step"] = cur_step;
+			IntegrableFunctional::ParameterType params;
+			params.t = dt * cur_step + t0;
+			params.step = cur_step;
 			for (int e = 0; e < bases.size(); e++)
 			{
 				const auto &bs = bases[e];
@@ -318,12 +293,13 @@ namespace polyfem::solver
 					if (traversed[g.index])
 						continue;
 
-					params["node"] = g.index;
-					params["elem"] = e;
-					params["body_id"] = state.mesh->get_body_id(e);
-					params["boundary_id"] = -1;
+					const Eigen::MatrixXd lame_params = extract_lame_params(state.assembler->parameters(), e, params.t, Eigen::MatrixXd::Zero(1, dim) /*Not used*/, g.node);
+
+					params.node = g.index;
+					params.elem = e;
+					params.body_id = state.mesh->get_body_id(e);
 					Eigen::MatrixXd val;
-					j.evaluate(state.assembler->parameters(), Eigen::MatrixXd::Zero(1, dim) /*Not used*/, g.node, solution.block(g.index * dim, 0, dim, 1).transpose(), Eigen::MatrixXd::Zero(1, dim * actual_dim) /*Not used*/, Eigen::MatrixXd::Zero(0, 0) /*Not used*/, assembler::ElementAssemblyValues(), params, val);
+					j.evaluate(lame_params, Eigen::MatrixXd::Zero(1, dim) /*Not used*/, g.node, solution.block(g.index * dim, 0, dim, 1).transpose(), Eigen::MatrixXd::Zero(1, dim * actual_dim) /*Not used*/, Eigen::MatrixXd::Zero(0, 0) /*Not used*/, assembler::ElementAssemblyValues(), params, val);
 					integral += val(0);
 					traversed[g.index] = true;
 				}
@@ -354,27 +330,16 @@ namespace polyfem::solver
 
 		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
 
-		// Eigen::MatrixXd global_positions;
-		// global_positions.setZero(state.n_geom_bases * dim, 1);
-
-		// for (int e = 0; e < gbases.size(); ++e)
-		// {
-		// 	const auto &gbs = gbases[e].bases;
-		// 	const Eigen::MatrixXd pos = gbases[e].nodes();
-		// 	for (int i = 0; i < gbs.size(); ++i)
-		// 		global_positions.block(gbs[i].global()[0].index * dim, 0, dim, 1) = pos.row(i).transpose();
-		// }
-
-		if (spatial_integral_type == SpatialIntegralType::volume)
+		if (spatial_integral_type == SpatialIntegralType::Volume)
 		{
 			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
 				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
-				Eigen::MatrixXd u, grad_u, j_val, dj_dgradu, dj_dx, lambda, mu;
+				Eigen::MatrixXd u, grad_u, j_val, dj_dgradu, dj_dx;
 
-				json params = {};
-				params["t"] = cur_time_step * dt + t0;
-				params["step"] = cur_time_step;
+				IntegrableFunctional::ParameterType params;
+				params.t = cur_time_step * dt + t0;
+				params.step = cur_time_step;
 
 				for (int e = start; e < end; ++e)
 				{
@@ -391,16 +356,18 @@ namespace polyfem::solver
 					const quadrature::Quadrature &quadrature = vals.quadrature;
 					local_storage.da = vals.det.array() * quadrature.weights.array();
 
-					params["elem"] = e;
-					params["body_id"] = state.mesh->get_body_id(e);
+					const Eigen::MatrixXd lame_params = extract_lame_params(state.assembler->parameters(), e, params.t, quadrature.points, vals.val);
 
-					j.evaluate(state.assembler->parameters(), quadrature.points, vals.val, u, grad_u, Eigen::MatrixXd::Zero(0, 0) /*Not used*/, vals, params, j_val);
+					params.elem = e;
+					params.body_id = state.mesh->get_body_id(e);
+
+					j.evaluate(lame_params, quadrature.points, vals.val, u, grad_u, Eigen::MatrixXd::Zero(0, 0) /*Not used*/, vals, params, j_val);
 
 					if (j.depend_on_gradu())
-						j.dj_dgradu(state.assembler->parameters(), quadrature.points, vals.val, u, grad_u, Eigen::MatrixXd::Zero(0, 0) /*Not used*/, vals, params, dj_dgradu);
+						j.dj_dgradu(lame_params, quadrature.points, vals.val, u, grad_u, Eigen::MatrixXd::Zero(0, 0) /*Not used*/, vals, params, dj_dgradu);
 
 					if (j.depend_on_x())
-						j.dj_dx(state.assembler->parameters(), quadrature.points, vals.val, u, grad_u, Eigen::MatrixXd::Zero(0, 0) /*Not used*/, vals, params, dj_dx);
+						j.dj_dx(lame_params, quadrature.points, vals.val, u, grad_u, Eigen::MatrixXd::Zero(0, 0) /*Not used*/, vals, params, dj_dx);
 
 					Eigen::MatrixXd tau_q, grad_u_q;
 					for (auto &v : gvals.basis_values)
@@ -432,7 +399,7 @@ namespace polyfem::solver
 				}
 			});
 		}
-		else if (spatial_integral_type == SpatialIntegralType::surface)
+		else if (spatial_integral_type == SpatialIntegralType::Surface)
 		{
 			utils::maybe_parallel_for(state.total_local_boundary.size(), [&](int start, int end, int thread_id) {
 				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
@@ -440,11 +407,11 @@ namespace polyfem::solver
 				Eigen::MatrixXd uv, points, normal;
 				Eigen::VectorXd &weights = local_storage.da;
 
-				Eigen::MatrixXd u, grad_u, x, grad_x, j_val, dj_dgradu, dj_dgradx, dj_dx, lambda, mu;
+				Eigen::MatrixXd u, grad_u, x, grad_x, j_val, dj_dgradu, dj_dgradx, dj_dx;
 
-				json params = {};
-				params["t"] = cur_time_step * dt + t0;
-				params["step"] = cur_time_step;
+				IntegrableFunctional::ParameterType params;
+				params.t = cur_time_step * dt + t0;
+				params.step = cur_time_step;
 
 				for (int lb_id = start; lb_id < end; ++lb_id)
 				{
@@ -469,28 +436,30 @@ namespace polyfem::solver
 
 						const int n_loc_bases_ = int(vals.basis_values.size());
 
-						params["elem"] = e;
-						params["body_id"] = state.mesh->get_body_id(e);
-						params["boundary_id"] = state.mesh->get_boundary_id(global_primitive_id);
+						const Eigen::MatrixXd lame_params = extract_lame_params(state.assembler->parameters(), e, params.t, points, vals.val);
 
-						j.evaluate(state.assembler->parameters(), points, vals.val, u, grad_u, normal, vals, params, j_val);
+						params.elem = e;
+						params.body_id = state.mesh->get_body_id(e);
+						params.boundary_id = state.mesh->get_boundary_id(global_primitive_id);
+
+						j.evaluate(lame_params, points, vals.val, u, grad_u, normal, vals, params, j_val);
 						j_val = j_val.array().colwise() * weights.array();
 
 						if (j.depend_on_gradu())
 						{
-							j.dj_dgradu(state.assembler->parameters(), points, vals.val, u, grad_u, normal, vals, params, dj_dgradu);
+							j.dj_dgradu(lame_params, points, vals.val, u, grad_u, normal, vals, params, dj_dgradu);
 							dj_dgradu = dj_dgradu.array().colwise() * weights.array();
 						}
 
 						if (j.depend_on_gradx())
 						{
-							j.dj_dgradx(state.assembler->parameters(), points, vals.val, u, grad_u, normal, vals, params, dj_dgradx);
+							j.dj_dgradx(lame_params, points, vals.val, u, grad_u, normal, vals, params, dj_dgradx);
 							dj_dgradx = dj_dgradx.array().colwise() * weights.array();
 						}
 
 						if (j.depend_on_x())
 						{
-							j.dj_dx(state.assembler->parameters(), points, vals.val, u, grad_u, normal, vals, params, dj_dx);
+							j.dj_dx(lame_params, points, vals.val, u, grad_u, normal, vals, params, dj_dx);
 							dj_dx = dj_dx.array().colwise() * weights.array();
 						}
 
@@ -532,6 +501,7 @@ namespace polyfem::solver
 
 							// integrate j * div(gbases) over the whole boundary
 							if (j.depend_on_gradu())
+							{
 								for (int q = 0; q < weights.size(); ++q)
 								{
 									if (dim == actual_dim) // Elasticity PDE
@@ -548,6 +518,7 @@ namespace polyfem::solver
 									for (int d = 0; d < dim; d++)
 										local_storage.vec(v.global[0].index * dim + d) += -dot(tau_q, grad_u_q.col(d) * v.grad_t_m.row(q));
 								}
+							}
 
 							if (j.depend_on_gradx())
 							{
@@ -562,7 +533,7 @@ namespace polyfem::solver
 				}
 			});
 		}
-		else if (spatial_integral_type == SpatialIntegralType::vertex_sum)
+		else if (spatial_integral_type == SpatialIntegralType::VertexSum)
 		{
 			log_and_throw_adjoint_error("Shape derivative of vertex sum type functional is not implemented!");
 		}
@@ -572,73 +543,13 @@ namespace polyfem::solver
 		term = utils::flatten(utils::unflatten(term, dim)(state.primitive_to_node(), Eigen::all));
 	}
 
-	void AdjointTools::compute_macro_strain_derivative_functional_term(
-		const State &state,
-		const Eigen::MatrixXd &solution,
-		const IntegrableFunctional &j,
-		const std::set<int> &interested_ids, // either body id or surface id
-		const SpatialIntegralType spatial_integral_type,
-		Eigen::VectorXd &term,
-		const int cur_time_step)
-	{
-		const auto &gbases = state.geom_bases();
-		const auto &bases = state.bases;
-		const int dim = state.mesh->dimension();
-		const int actual_dim = state.problem->is_scalar() ? 1 : dim;
-
-		const int n_elements = int(bases.size());
-		term.setZero(dim * dim, 1);
-
-		if (!j.depend_on_gradu())
-			return;
-
-		auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
-
-		if (spatial_integral_type == SpatialIntegralType::volume)
-		{
-			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
-				LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
-
-				Eigen::MatrixXd u, grad_u, dj_du;
-
-				json params = {};
-				params["step"] = cur_time_step;
-
-				for (int e = start; e < end; ++e)
-				{
-					if (interested_ids.size() != 0 && interested_ids.find(state.mesh->get_body_id(e)) == interested_ids.end())
-						continue;
-
-					assembler::ElementAssemblyValues &vals = local_storage.vals;
-					state.ass_vals_cache.compute(e, state.mesh->is_volume(), bases[e], gbases[e], vals);
-					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, solution, u, grad_u);
-
-					const quadrature::Quadrature &quadrature = vals.quadrature;
-					local_storage.da = vals.det.array() * quadrature.weights.array();
-
-					params["elem"] = e;
-					params["body_id"] = state.mesh->get_body_id(e);
-
-					j.dj_dgradu(state.assembler->parameters(), quadrature.points, vals.val, u, grad_u, Eigen::MatrixXd::Zero(0, 0) /*Not used*/, vals, params, dj_du);
-
-					local_storage.vec += dj_du.transpose() * local_storage.da;
-				}
-			});
-		}
-		else
-			log_and_throw_adjoint_error("Not implemented!");
-
-		for (const LocalThreadVecStorage &local_storage : storage)
-			term += local_storage.vec;
-	}
-
 	void AdjointTools::dJ_shape_static_adjoint_term(
 		const State &state,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &adjoint,
 		Eigen::VectorXd &one_form)
 	{
-		Eigen::VectorXd elasticity_term, rhs_term, contact_term;
+		Eigen::VectorXd elasticity_term, rhs_term, pressure_term, contact_term;
 
 		one_form.setZero(state.n_geom_bases * state.mesh->dimension());
 
@@ -650,6 +561,14 @@ namespace polyfem::solver
 			else
 				rhs_term.setZero(one_form.size());
 
+			if (state.solve_data.pressure_form)
+			{
+				state.solve_data.pressure_form->force_shape_derivative(state.n_geom_bases, 0, sol, adjoint, pressure_term);
+				pressure_term = state.gbasis_nodes_to_basis_nodes * pressure_term;
+			}
+			else
+				pressure_term.setZero(one_form.size());
+
 			if (state.is_contact_enabled())
 			{
 				state.solve_data.contact_form->force_shape_derivative(state.diff_cached.collision_set(0), sol, adjoint, contact_term);
@@ -657,7 +576,7 @@ namespace polyfem::solver
 			}
 			else
 				contact_term.setZero(elasticity_term.size());
-			one_form -= elasticity_term + rhs_term + contact_term;
+			one_form -= elasticity_term + rhs_term + pressure_term + contact_term;
 		}
 
 		one_form = utils::flatten(utils::unflatten(one_form, state.mesh->dimension())(state.primitive_to_node(), Eigen::all));
@@ -674,7 +593,7 @@ namespace polyfem::solver
 		const int time_steps = state.args["time"]["time_steps"];
 		const int bdf_order = get_bdf_order(state);
 
-		Eigen::VectorXd elasticity_term, rhs_term, damping_term, mass_term, contact_term, friction_term;
+		Eigen::VectorXd elasticity_term, rhs_term, pressure_term, damping_term, mass_term, contact_term, friction_term;
 		one_form.setZero(state.n_geom_bases * state.mesh->dimension());
 
 		Eigen::VectorXd cur_p, cur_nu;
@@ -696,6 +615,8 @@ namespace polyfem::solver
 				state.solve_data.inertia_form->force_shape_derivative(state.mesh->is_volume(), state.n_geom_bases, t, state.bases, state.geom_bases(), *(state.mass_matrix_assembler), state.mass_ass_vals_cache, velocity, cur_nu, mass_term);
 				state.solve_data.elastic_form->force_shape_derivative(t, state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i), cur_p, elasticity_term);
 				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, t, state.diff_cached.u(i - 1), cur_p, rhs_term);
+				state.solve_data.pressure_form->force_shape_derivative(state.n_geom_bases, t, state.diff_cached.u(i), cur_p, pressure_term);
+				pressure_term = state.gbasis_nodes_to_basis_nodes * pressure_term;
 
 				if (state.solve_data.damping_form)
 					state.solve_data.damping_form->force_shape_derivative(t, state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i - 1), cur_p, damping_term);
@@ -721,7 +642,7 @@ namespace polyfem::solver
 					friction_term.setZero(mass_term.size());
 			}
 
-			one_form += beta_dt * (elasticity_term + rhs_term + damping_term + contact_term + friction_term + mass_term);
+			one_form += beta_dt * (elasticity_term + rhs_term + pressure_term + damping_term + contact_term + friction_term + mass_term);
 		}
 
 		// time step 0
@@ -940,7 +861,7 @@ namespace polyfem::solver
 		if (!j.depend_on_u() && !j.depend_on_gradu() && !j.depend_on_gradu_local())
 			return;
 
-		if (spatial_integral_type == SpatialIntegralType::volume)
+		if (spatial_integral_type == SpatialIntegralType::Volume)
 		{
 			auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
 			utils::maybe_parallel_for(n_elements, [&](int start, int end, int thread_id) {
@@ -950,9 +871,9 @@ namespace polyfem::solver
 				Eigen::MatrixXd lambda, mu;
 				Eigen::MatrixXd dj_du, dj_dgradu, dj_dgradx;
 
-				json params = {};
-				params["t"] = dt * cur_step + t0;
-				params["step"] = cur_step;
+				IntegrableFunctional::ParameterType params;
+				params.t = dt * cur_step + t0;
+				params.step = cur_step;
 
 				for (int e = start; e < end; ++e)
 				{
@@ -965,17 +886,19 @@ namespace polyfem::solver
 					const quadrature::Quadrature &quadrature = vals.quadrature;
 					local_storage.da = vals.det.array() * quadrature.weights.array();
 
+					const Eigen::MatrixXd lame_params = extract_lame_params(state.assembler->parameters(), e, params.t, quadrature.points, vals.val);
+
 					const int n_loc_bases_ = int(vals.basis_values.size());
 
 					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, solution, u, grad_u);
 
-					params["elem"] = e;
-					params["body_id"] = state.mesh->get_body_id(e);
+					params.elem = e;
+					params.body_id = state.mesh->get_body_id(e);
 
 					dj_dgradu.resize(0, 0);
 					if (j.depend_on_gradu())
 					{
-						j.dj_dgradu(state.assembler->parameters(), quadrature.points, vals.val, u, grad_u, Eigen::MatrixXd::Zero(0, 0) /*Not used*/, vals, params, dj_dgradu);
+						j.dj_dgradu(lame_params, quadrature.points, vals.val, u, grad_u, Eigen::MatrixXd::Zero(0, 0) /*Not used*/, vals, params, dj_dgradu);
 						for (int q = 0; q < dj_dgradu.rows(); q++)
 							dj_dgradu.row(q) *= local_storage.da(q);
 					}
@@ -983,7 +906,7 @@ namespace polyfem::solver
 					dj_du.resize(0, 0);
 					if (j.depend_on_u())
 					{
-						j.dj_du(state.assembler->parameters(), quadrature.points, vals.val, u, grad_u, Eigen::MatrixXd::Zero(0, 0) /*Not used*/, vals, params, dj_du);
+						j.dj_du(lame_params, quadrature.points, vals.val, u, grad_u, Eigen::MatrixXd::Zero(0, 0) /*Not used*/, vals, params, dj_du);
 						for (int q = 0; q < dj_du.rows(); q++)
 							dj_du.row(q) *= local_storage.da(q);
 					}
@@ -1017,7 +940,7 @@ namespace polyfem::solver
 			for (const LocalThreadVecStorage &local_storage : storage)
 				term += local_storage.vec;
 		}
-		else if (spatial_integral_type == SpatialIntegralType::surface)
+		else if (spatial_integral_type == SpatialIntegralType::Surface)
 		{
 			auto storage = utils::create_thread_storage(LocalThreadVecStorage(term.size()));
 			utils::maybe_parallel_for(state.total_local_boundary.size(), [&](int start, int end, int thread_id) {
@@ -1030,9 +953,10 @@ namespace polyfem::solver
 				Eigen::MatrixXd u, grad_u;
 				Eigen::MatrixXd lambda, mu;
 				Eigen::MatrixXd dj_du, dj_dgradu, dj_dgradu_local;
-				json params = {};
-				params["t"] = dt * cur_step + t0;
-				params["step"] = cur_step;
+
+				IntegrableFunctional::ParameterType params;
+				params.t = dt * cur_step + t0;
+				params.step = cur_step;
 
 				for (int lb_id = start; lb_id < end; ++lb_id)
 				{
@@ -1051,18 +975,20 @@ namespace polyfem::solver
 						vals.compute(e, state.mesh->is_volume(), points, bases[e], gbases[e]);
 						io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, solution, u, grad_u);
 
+						const Eigen::MatrixXd lame_params = extract_lame_params(state.assembler->parameters(), e, params.t, points, vals.val);
+
 						// normal = normal * vals.jac_it[0]; // assuming linear geometry
 
 						const int n_loc_bases_ = int(vals.basis_values.size());
 
-						params["elem"] = e;
-						params["body_id"] = state.mesh->get_body_id(e);
-						params["boundary_id"] = state.mesh->get_boundary_id(global_primitive_id);
+						params.elem = e;
+						params.body_id = state.mesh->get_body_id(e);
+						params.boundary_id = state.mesh->get_boundary_id(global_primitive_id);
 
 						dj_dgradu.resize(0, 0);
 						if (j.depend_on_gradu())
 						{
-							j.dj_dgradu(state.assembler->parameters(), points, vals.val, u, grad_u, normal, vals, params, dj_dgradu);
+							j.dj_dgradu(lame_params, points, vals.val, u, grad_u, normal, vals, params, dj_dgradu);
 							for (int q = 0; q < dj_dgradu.rows(); q++)
 								dj_dgradu.row(q) *= weights(q);
 						}
@@ -1070,7 +996,7 @@ namespace polyfem::solver
 						dj_dgradu_local.resize(0, 0);
 						if (j.depend_on_gradu_local())
 						{
-							j.dj_dgradu_local(state.assembler->parameters(), points, vals.val, u, grad_u, normal, vals, params, dj_dgradu_local);
+							j.dj_dgradu_local(lame_params, points, vals.val, u, grad_u, normal, vals, params, dj_dgradu_local);
 							for (int q = 0; q < dj_dgradu_local.rows(); q++)
 								dj_dgradu_local.row(q) *= weights(q);
 						}
@@ -1078,7 +1004,7 @@ namespace polyfem::solver
 						dj_du.resize(0, 0);
 						if (j.depend_on_u())
 						{
-							j.dj_du(state.assembler->parameters(), points, vals.val, u, grad_u, normal, vals, params, dj_du);
+							j.dj_du(lame_params, points, vals.val, u, grad_u, normal, vals, params, dj_du);
 							for (int q = 0; q < dj_du.rows(); q++)
 								dj_du.row(q) *= weights(q);
 						}
@@ -1123,12 +1049,12 @@ namespace polyfem::solver
 			for (const LocalThreadVecStorage &local_storage : storage)
 				term += local_storage.vec;
 		}
-		else if (spatial_integral_type == SpatialIntegralType::vertex_sum)
+		else if (spatial_integral_type == SpatialIntegralType::VertexSum)
 		{
 			std::vector<bool> traversed(state.n_bases, false);
-			json params = {};
-			params["t"] = dt * cur_step + t0;
-			params["step"] = cur_step;
+			IntegrableFunctional::ParameterType params;
+			params.t = dt * cur_step + t0;
+			params.step = cur_step;
 			for (int e = 0; e < bases.size(); e++)
 			{
 				const auto &bs = bases[e];
@@ -1140,12 +1066,13 @@ namespace polyfem::solver
 					if (traversed[g.index])
 						continue;
 
-					params["node"] = g.index;
-					params["elem"] = e;
-					params["body_id"] = state.mesh->get_body_id(e);
-					params["boundary_id"] = -1;
+					const Eigen::MatrixXd lame_params = extract_lame_params(state.assembler->parameters(), e, params.t, Eigen::MatrixXd::Zero(1, dim) /*Not used*/, g.node);
+
+					params.node = g.index;
+					params.elem = e;
+					params.body_id = state.mesh->get_body_id(e);
 					Eigen::MatrixXd val;
-					j.dj_du(state.assembler->parameters(), Eigen::MatrixXd::Zero(1, dim) /*Not used*/, g.node, solution.block(g.index * dim, 0, dim, 1).transpose(), Eigen::MatrixXd::Zero(1, dim * actual_dim) /*Not used*/, Eigen::MatrixXd::Zero(0, 0) /*Not used*/, assembler::ElementAssemblyValues(), params, val);
+					j.dj_du(lame_params, Eigen::MatrixXd::Zero(1, dim) /*Not used*/, g.node, solution.block(g.index * dim, 0, dim, 1).transpose(), Eigen::MatrixXd::Zero(1, dim * actual_dim) /*Not used*/, Eigen::MatrixXd::Zero(0, 0) /*Not used*/, assembler::ElementAssemblyValues(), params, val);
 					term.block(g.index * actual_dim, 0, actual_dim, 1) += val.transpose();
 					traversed[g.index] = true;
 				}
