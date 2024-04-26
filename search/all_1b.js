@@ -29,7 +29,7 @@ var searchData=
   ['_7emesh3d_26',['~Mesh3D',['../classpolyfem_1_1mesh_1_1_mesh3_d.html#a3de844749eb1dfc19950dec5363dbc5d',1,'polyfem::mesh::Mesh3D']]],
   ['_7emixedassembler_27',['~MixedAssembler',['../classpolyfem_1_1assembler_1_1_mixed_assembler.html#a80a11df0e960d7c5c9c19576407ffc13',1,'polyfem::assembler::MixedAssembler']]],
   ['_7encboundary_28',['~ncboundary',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_boundary.html#a5c8a1aa803b69cdedb829bca62ad6281',1,'polyfem::mesh::NCMesh2D::ncBoundary::~ncBoundary()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_boundary.html#a28893b58fb7adebbfaf32f0b07ac859b',1,'polyfem::mesh::NCMesh3D::ncBoundary::~ncBoundary()']]],
-  ['_7encelem_29',['~ncelem',['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_elem.html#a01b65d850702ab315fdc3a6f529bf912',1,'polyfem::mesh::NCMesh3D::ncElem::~ncElem()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#ab9092f5082f7368dc0cd5721a1df0944',1,'polyfem::mesh::NCMesh2D::ncElem::~ncElem()']]],
+  ['_7encelem_29',['~ncelem',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#ab9092f5082f7368dc0cd5721a1df0944',1,'polyfem::mesh::NCMesh2D::ncElem::~ncElem()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_elem.html#a01b65d850702ab315fdc3a6f529bf912',1,'polyfem::mesh::NCMesh3D::ncElem::~ncElem()']]],
   ['_7encmesh2d_30',['~NCMesh2D',['../classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#adfd91c2af7ba1dd12ec046331052c3fd',1,'polyfem::mesh::NCMesh2D']]],
   ['_7encmesh3d_31',['~NCMesh3D',['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a6e98614dee4326776b2b050d5847d780',1,'polyfem::mesh::NCMesh3D']]],
   ['_7encvert_32',['~ncvert',['../structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_vert.html#a378f488ec992c17fab0c1b7d9e43b8db',1,'polyfem::mesh::NCMesh2D::ncVert::~ncVert()'],['../structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_vert.html#ad9d0f9708ed8b304872812850cef9f1d',1,'polyfem::mesh::NCMesh3D::ncVert::~ncVert()']]],
@@ -55,9 +55,10 @@ var searchData=
   ['_7estaticform_52',['~StaticForm',['../classpolyfem_1_1solver_1_1_static_form.html#aa3569d3ab37e1d87b49b5c21a00fa39d',1,'polyfem::solver::StaticForm']]],
   ['_7esumcompositeform_53',['~SumCompositeForm',['../classpolyfem_1_1solver_1_1_sum_composite_form.html#a29f672aefe3bbafc9d6d147713acc92d',1,'polyfem::solver::SumCompositeForm']]],
   ['_7etargetform_54',['~TargetForm',['../classpolyfem_1_1solver_1_1_target_form.html#a3db4cf13a46f052ec57edf2ab49d8c81',1,'polyfem::solver::TargetForm']]],
-  ['_7etimer_55',['~Timer',['../classpolyfem_1_1utils_1_1_timer.html#a2f566e08413b0bb9ddf9a3b1819f186e',1,'polyfem::utils::Timer']]],
-  ['_7etransientform_56',['~TransientForm',['../classpolyfem_1_1solver_1_1_transient_form.html#a5d58c98ceb91b9a81bbdca41b5d5269d',1,'polyfem::solver::TransientForm']]],
-  ['_7evariabletonodes_57',['~VariableToNodes',['../classpolyfem_1_1solver_1_1_variable_to_nodes.html#a8168d71a02f471991185019f0e770141',1,'polyfem::solver::VariableToNodes']]],
-  ['_7evariabletosimulation_58',['~VariableToSimulation',['../classpolyfem_1_1solver_1_1_variable_to_simulation.html#aecf9055bb17202ab44a0433562190ded',1,'polyfem::solver::VariableToSimulation']]],
-  ['_7ewildremesher_59',['~WildRemesher',['../classpolyfem_1_1mesh_1_1_wild_remesher.html#a924a741cb7e95d93c4ed54963dc816d0',1,'polyfem::mesh::WildRemesher']]]
+  ['_7ethermodynamicprocess_55',['~ThermodynamicProcess',['../classpolyfem_1_1assembler_1_1_thermodynamic_process.html#af02c7563813163d32cf39e34c5481b49',1,'polyfem::assembler::ThermodynamicProcess']]],
+  ['_7etimer_56',['~Timer',['../classpolyfem_1_1utils_1_1_timer.html#a2f566e08413b0bb9ddf9a3b1819f186e',1,'polyfem::utils::Timer']]],
+  ['_7etransientform_57',['~TransientForm',['../classpolyfem_1_1solver_1_1_transient_form.html#a5d58c98ceb91b9a81bbdca41b5d5269d',1,'polyfem::solver::TransientForm']]],
+  ['_7evariabletonodes_58',['~VariableToNodes',['../classpolyfem_1_1solver_1_1_variable_to_nodes.html#a8168d71a02f471991185019f0e770141',1,'polyfem::solver::VariableToNodes']]],
+  ['_7evariabletosimulation_59',['~VariableToSimulation',['../classpolyfem_1_1solver_1_1_variable_to_simulation.html#aecf9055bb17202ab44a0433562190ded',1,'polyfem::solver::VariableToSimulation']]],
+  ['_7ewildremesher_60',['~WildRemesher',['../classpolyfem_1_1mesh_1_1_wild_remesher.html#a924a741cb7e95d93c4ed54963dc816d0',1,'polyfem::mesh::WildRemesher']]]
 ];

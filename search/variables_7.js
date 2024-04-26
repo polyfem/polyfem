@@ -1,8 +1,8 @@
 var searchData=
 [
   ['g_5fbasis_5fvalues_5fcache_5f_0',['g_basis_values_cache_',['../classpolyfem_1_1assembler_1_1_element_assembly_values.html#a6d25809476f9acbaf3918d9cce8b49dc',1,'polyfem::assembler::ElementAssemblyValues']]],
-  ['gamma_5f_1',['gamma_',['../classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a77af9590b17627b1bf8b505fd14c9600',1,'polyfem::time_integrator::ImplicitNewmark']]],
-  ['gbases_5f_2',['gbases_',['../classpolyfem_1_1assembler_1_1_rhs_assembler.html#a4d5c44bede4e786b11c337710a2e4481',1,'polyfem::assembler::RhsAssembler']]],
+  ['gamma_5f_1',['gamma_',['../classpolyfem_1_1assembler_1_1_adiabatic_process.html#aafb3ee3cc490100ec027796bbc7178f5',1,'polyfem::assembler::AdiabaticProcess::gamma_'],['../classpolyfem_1_1time__integrator_1_1_implicit_newmark.html#a77af9590b17627b1bf8b505fd14c9600',1,'polyfem::time_integrator::ImplicitNewmark::gamma_']]],
+  ['gbases_5f_2',['gbases_',['../classpolyfem_1_1assembler_1_1_pressure_assembler.html#a26dd62a660a3f91e72c02afff0a53a46',1,'polyfem::assembler::PressureAssembler::gbases_'],['../classpolyfem_1_1assembler_1_1_rhs_assembler.html#a4d5c44bede4e786b11c337710a2e4481',1,'polyfem::assembler::RhsAssembler::gbases_']]],
   ['gbasis_5fnodes_5fto_5fbasis_5fnodes_3',['gbasis_nodes_to_basis_nodes',['../classpolyfem_1_1_state.html#a73185c3b1ee963adc0d96e3bbc9d5601',1,'polyfem::State']]],
   ['gbs_4',['gbs',['../classpolyfem_1_1assembler_1_1_output_data.html#a9d5273f72f16e48846d1261068d5439a',1,'polyfem::assembler::OutputData']]],
   ['geom_5fbases_5f_5',['geom_bases_',['../classpolyfem_1_1solver_1_1_elastic_form.html#a88fa9299f3aa6eb0c2baddf3b38e09ca',1,'polyfem::solver::ElasticForm::geom_bases_'],['../classpolyfem_1_1_state.html#a38df0e77102a74f3c091de71b7ceee73',1,'polyfem::State::geom_bases_']]],

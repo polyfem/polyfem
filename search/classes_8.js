@@ -16,5 +16,6 @@ var searchData=
   ['interfacedata_13',['InterfaceData',['../structpolyfem_1_1basis_1_1_interface_data.html',1,'polyfem::basis']]],
   ['interpolatedfunction2d_14',['InterpolatedFunction2d',['../classpolyfem_1_1utils_1_1_interpolated_function2d.html',1,'polyfem::utils']]],
   ['interpolation_15',['Interpolation',['../classpolyfem_1_1utils_1_1_interpolation.html',1,'polyfem::utils']]],
-  ['inversionbarrierform_16',['InversionBarrierForm',['../classpolyfem_1_1solver_1_1_inversion_barrier_form.html',1,'polyfem::solver']]]
+  ['inversionbarrierform_16',['InversionBarrierForm',['../classpolyfem_1_1solver_1_1_inversion_barrier_form.html',1,'polyfem::solver']]],
+  ['isothermalprocess_17',['IsothermalProcess',['../classpolyfem_1_1assembler_1_1_isothermal_process.html',1,'polyfem::assembler']]]
 ];

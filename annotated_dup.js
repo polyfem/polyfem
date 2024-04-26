@@ -6,6 +6,7 @@ var annotated_dup =
     ] ],
     [ "polyfem", "namespacepolyfem.html", [
       [ "assembler", "namespacepolyfem_1_1assembler.html", [
+        [ "AdiabaticProcess", "classpolyfem_1_1assembler_1_1_adiabatic_process.html", "classpolyfem_1_1assembler_1_1_adiabatic_process" ],
         [ "AMIPSEnergy", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy" ],
         [ "Assembler", "classpolyfem_1_1assembler_1_1_assembler.html", "classpolyfem_1_1assembler_1_1_assembler" ],
         [ "AssemblerUtils", "classpolyfem_1_1assembler_1_1_assembler_utils.html", "classpolyfem_1_1assembler_1_1_assembler_utils" ],
@@ -29,6 +30,7 @@ var annotated_dup =
         [ "IncompressibleLinearElasticityMixed", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed.html", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed" ],
         [ "IncompressibleLinearElasticityPressure", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_pressure.html", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_pressure" ],
         [ "IncompressibleOgdenElasticity", "classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html", "classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity" ],
+        [ "IsothermalProcess", "classpolyfem_1_1assembler_1_1_isothermal_process.html", "classpolyfem_1_1assembler_1_1_isothermal_process" ],
         [ "LameParameters", "classpolyfem_1_1assembler_1_1_lame_parameters.html", "classpolyfem_1_1assembler_1_1_lame_parameters" ],
         [ "Laplacian", "classpolyfem_1_1assembler_1_1_laplacian.html", "classpolyfem_1_1assembler_1_1_laplacian" ],
         [ "LinearAssembler", "classpolyfem_1_1assembler_1_1_linear_assembler.html", "classpolyfem_1_1assembler_1_1_linear_assembler" ],
@@ -52,6 +54,7 @@ var annotated_dup =
         [ "OperatorSplitting", "classpolyfem_1_1assembler_1_1_operator_splitting.html", "classpolyfem_1_1assembler_1_1_operator_splitting" ],
         [ "OptAssemblerData", "classpolyfem_1_1assembler_1_1_opt_assembler_data.html", "classpolyfem_1_1assembler_1_1_opt_assembler_data" ],
         [ "OutputData", "classpolyfem_1_1assembler_1_1_output_data.html", "classpolyfem_1_1assembler_1_1_output_data" ],
+        [ "PressureAssembler", "classpolyfem_1_1assembler_1_1_pressure_assembler.html", "classpolyfem_1_1assembler_1_1_pressure_assembler" ],
         [ "Problem", "classpolyfem_1_1assembler_1_1_problem.html", "classpolyfem_1_1assembler_1_1_problem" ],
         [ "RhsAssembler", "classpolyfem_1_1assembler_1_1_rhs_assembler.html", "classpolyfem_1_1assembler_1_1_rhs_assembler" ],
         [ "SaintVenantElasticity", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity" ],
@@ -60,6 +63,7 @@ var annotated_dup =
         [ "StokesPressure", "classpolyfem_1_1assembler_1_1_stokes_pressure.html", "classpolyfem_1_1assembler_1_1_stokes_pressure" ],
         [ "StokesVelocity", "classpolyfem_1_1assembler_1_1_stokes_velocity.html", "classpolyfem_1_1assembler_1_1_stokes_velocity" ],
         [ "TensorBCValue", "structpolyfem_1_1assembler_1_1_tensor_b_c_value.html", "structpolyfem_1_1assembler_1_1_tensor_b_c_value" ],
+        [ "ThermodynamicProcess", "classpolyfem_1_1assembler_1_1_thermodynamic_process.html", "classpolyfem_1_1assembler_1_1_thermodynamic_process" ],
         [ "UnconstrainedOgdenElasticity", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity" ],
         [ "ViscousDamping", "classpolyfem_1_1assembler_1_1_viscous_damping.html", "classpolyfem_1_1assembler_1_1_viscous_damping" ],
         [ "ViscousDampingPrev", "classpolyfem_1_1assembler_1_1_viscous_damping_prev.html", "classpolyfem_1_1assembler_1_1_viscous_damping_prev" ]
@@ -263,6 +267,7 @@ var annotated_dup =
         [ "PositionForm", "classpolyfem_1_1solver_1_1_position_form.html", "classpolyfem_1_1solver_1_1_position_form" ],
         [ "PowerForm", "classpolyfem_1_1solver_1_1_power_form.html", "classpolyfem_1_1solver_1_1_power_form" ],
         [ "PowerMap", "classpolyfem_1_1solver_1_1_power_map.html", "classpolyfem_1_1solver_1_1_power_map" ],
+        [ "PressureForm", "classpolyfem_1_1solver_1_1_pressure_form.html", "classpolyfem_1_1solver_1_1_pressure_form" ],
         [ "RayleighDampingForm", "classpolyfem_1_1solver_1_1_rayleigh_damping_form.html", "classpolyfem_1_1solver_1_1_rayleigh_damping_form" ],
         [ "Scaling", "classpolyfem_1_1solver_1_1_scaling.html", "classpolyfem_1_1solver_1_1_scaling" ],
         [ "ShapeVariableToSimulation", "classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_shape_variable_to_simulation" ],

@@ -79,6 +79,7 @@ var namespacepolyfem_1_1solver =
     [ "PositionForm", "classpolyfem_1_1solver_1_1_position_form.html", "classpolyfem_1_1solver_1_1_position_form" ],
     [ "PowerForm", "classpolyfem_1_1solver_1_1_power_form.html", "classpolyfem_1_1solver_1_1_power_form" ],
     [ "PowerMap", "classpolyfem_1_1solver_1_1_power_map.html", "classpolyfem_1_1solver_1_1_power_map" ],
+    [ "PressureForm", "classpolyfem_1_1solver_1_1_pressure_form.html", "classpolyfem_1_1solver_1_1_pressure_form" ],
     [ "RayleighDampingForm", "classpolyfem_1_1solver_1_1_rayleigh_damping_form.html", "classpolyfem_1_1solver_1_1_rayleigh_damping_form" ],
     [ "Scaling", "classpolyfem_1_1solver_1_1_scaling.html", "classpolyfem_1_1solver_1_1_scaling" ],
     [ "ShapeVariableToSimulation", "classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_shape_variable_to_simulation" ],

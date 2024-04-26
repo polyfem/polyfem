@@ -2,7 +2,7 @@ var searchData=
 [
   ['obj_5f_0',['obj_',['../classpolyfem_1_1solver_1_1_transient_form.html#a8d4999511a77452f662c2a6be41ca378',1,'polyfem::solver::TransientForm']]],
   ['obstacle_1',['obstacle',['../classpolyfem_1_1_state.html#a22084ebd017a5b2775e1027bcbfd9759',1,'polyfem::State']]],
-  ['obstacle_5f_2',['obstacle_',['../classpolyfem_1_1assembler_1_1_rhs_assembler.html#aadf285b97992411c93f3bf94fe0cb76b',1,'polyfem::assembler::RhsAssembler']]],
+  ['obstacle_5f_2',['obstacle_',['../classpolyfem_1_1assembler_1_1_pressure_assembler.html#aa269ae7cfd4b5d1a6ec2936e5be7ace4',1,'polyfem::assembler::PressureAssembler::obstacle_'],['../classpolyfem_1_1assembler_1_1_rhs_assembler.html#aadf285b97992411c93f3bf94fe0cb76b',1,'polyfem::assembler::RhsAssembler::obstacle_']]],
   ['only_5fsymmetric_3',['only_symmetric',['../classpolyfem_1_1solver_1_1_n_l_homo_problem.html#ac4ddbee323b4546c5f9a837f16f92a6c',1,'polyfem::solver::NLHomoProblem']]],
   ['op_5fattempts_4',['op_attempts',['../structpolyfem_1_1mesh_1_1_wild_remesher_1_1_edge_attributes.html#aa8c7277789496e6b3fc6af19e72a32da',1,'polyfem::mesh::WildRemesher::EdgeAttributes']]],
   ['op_5fcache_5',['op_cache',['../classpolyfem_1_1mesh_1_1_wild_remesher.html#a1d17f5498ef6191bf35fa919dbb6d2cc',1,'polyfem::mesh::WildRemesher']]],

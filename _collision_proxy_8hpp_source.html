@@ -181,7 +181,7 @@ $(document).ready(function(){initNavTree('_collision_proxy_8hpp_source.html','')
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        Eigen::MatrixXd &amp;vertices,</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        Eigen::VectorXi &amp;codim_vertices,</div>
 <div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        Eigen::MatrixXi &amp;edges,</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        Eigen::MatrixXi &amp;faces,</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        Eigen::MatrixXi &amp;<a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>,</div>
 <div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        std::vector&lt;Eigen::Triplet&lt;double&gt;&gt; &amp;displacement_map_entries);</div>
 <div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
 <div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a8b354410bd3ee20974de06b0131f8036">load_collision_proxy_mesh</a>(</div>
@@ -190,7 +190,7 @@ $(document).ready(function(){initNavTree('_collision_proxy_8hpp_source.html','')
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        Eigen::MatrixXd &amp;vertices,</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>        Eigen::VectorXi &amp;codim_vertices,</div>
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        Eigen::MatrixXi &amp;edges,</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        Eigen::MatrixXi &amp;faces);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        Eigen::MatrixXi &amp;<a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>);</div>
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
 <div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#ac69cc240a806f402d61f1eaf7eb2d819">load_collision_proxy_displacement_map</a>(</div>
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="keyword">const</span> std::string &amp;weights_filename,</div>
@@ -201,6 +201,7 @@ $(document).ready(function(){initNavTree('_collision_proxy_8hpp_source.html','')
 <div class="ttc" id="a_element_bases_8hpp_html"><div class="ttname"><a href="_element_bases_8hpp.html">ElementBases.hpp</a></div></div>
 <div class="ttc" id="a_local_boundary_8hpp_html"><div class="ttname"><a href="_local_boundary_8hpp.html">LocalBoundary.hpp</a></div></div>
 <div class="ttc" id="a_mesh_8hpp_html"><div class="ttname"><a href="_mesh_8hpp.html">Mesh.hpp</a></div></div>
+<div class="ttc" id="a_pressure_assembler_8cpp_html_a26f342872e2db31d6dcf7862b29f64d9"><div class="ttname"><a href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a></div><div class="ttdeci">std::vector&lt; Eigen::VectorXi &gt; faces</div><div class="ttdef"><b>Definition</b> <a href="_pressure_assembler_8cpp_source.html#l00052">PressureAssembler.cpp:52</a></div></div>
 <div class="ttc" id="a_types_8hpp_html"><div class="ttname"><a href="_types_8hpp.html">Types.hpp</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1mesh_html"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html">polyfem::mesh</a></div><div class="ttdef"><b>Definition</b> <a href="_periodic_boundary_8hpp_source.html#l00015">PeriodicBoundary.hpp:16</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1mesh_html_a15b9f6e84b61e94823dad7a365835542"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#a15b9f6e84b61e94823dad7a365835542">polyfem::mesh::load_collision_proxy</a></div><div class="ttdeci">void load_collision_proxy(const std::string &amp;mesh_filename, const std::string &amp;weights_filename, const Eigen::VectorXi &amp;in_node_to_node, const json &amp;transformation, Eigen::MatrixXd &amp;vertices, Eigen::VectorXi &amp;codim_vertices, Eigen::MatrixXi &amp;edges, Eigen::MatrixXi &amp;faces, std::vector&lt; Eigen::Triplet&lt; double &gt; &gt; &amp;displacement_map_entries)</div><div class="ttdoc">Load a collision proxy mesh and displacement map from files.</div><div class="ttdef"><b>Definition</b> <a href="_collision_proxy_8cpp_source.html#l00315">CollisionProxy.cpp:315</a></div></div>

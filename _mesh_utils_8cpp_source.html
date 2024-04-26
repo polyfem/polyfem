@@ -1130,7 +1130,7 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="line"><a id="l00986" name="l00986"></a><span class="lineno"><a class="line" href="_mesh_utils_8cpp.html#a1364b05c4ec8b3f6a114effcf77b9557">  986</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="_mesh_utils_8cpp.html#a1364b05c4ec8b3f6a114effcf77b9557">find_codim_vertices</a>(</div>
 <div class="line"><a id="l00987" name="l00987"></a><span class="lineno">  987</span>    <span class="keyword">const</span> Eigen::MatrixXd &amp;vertices,</div>
 <div class="line"><a id="l00988" name="l00988"></a><span class="lineno">  988</span>    <span class="keyword">const</span> Eigen::MatrixXi &amp;codim_edges,</div>
-<div class="line"><a id="l00989" name="l00989"></a><span class="lineno">  989</span>    <span class="keyword">const</span> Eigen::MatrixXi &amp;faces,</div>
+<div class="line"><a id="l00989" name="l00989"></a><span class="lineno">  989</span>    <span class="keyword">const</span> Eigen::MatrixXi &amp;<a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>,</div>
 <div class="line"><a id="l00990" name="l00990"></a><span class="lineno">  990</span>    Eigen::VectorXi &amp;codim_vertices)</div>
 <div class="line"><a id="l00991" name="l00991"></a><span class="lineno">  991</span>{</div>
 <div class="line"><a id="l00992" name="l00992"></a><span class="lineno">  992</span>    std::vector&lt;bool&gt; is_vertex_codim(vertices.rows(), <span class="keyword">true</span>);</div>
@@ -1141,11 +1141,11 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="line"><a id="l00997" name="l00997"></a><span class="lineno">  997</span>            is_vertex_codim[codim_edges(i, j)] = <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00998" name="l00998"></a><span class="lineno">  998</span>        }</div>
 <div class="line"><a id="l00999" name="l00999"></a><span class="lineno">  999</span>    }</div>
-<div class="line"><a id="l01000" name="l01000"></a><span class="lineno"> 1000</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; faces.rows(); i++)</div>
+<div class="line"><a id="l01000" name="l01000"></a><span class="lineno"> 1000</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>.rows(); i++)</div>
 <div class="line"><a id="l01001" name="l01001"></a><span class="lineno"> 1001</span>    {</div>
-<div class="line"><a id="l01002" name="l01002"></a><span class="lineno"> 1002</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; faces.cols(); j++)</div>
+<div class="line"><a id="l01002" name="l01002"></a><span class="lineno"> 1002</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; <a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>.cols(); j++)</div>
 <div class="line"><a id="l01003" name="l01003"></a><span class="lineno"> 1003</span>        {</div>
-<div class="line"><a id="l01004" name="l01004"></a><span class="lineno"> 1004</span>            is_vertex_codim[faces(i, j)] = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l01004" name="l01004"></a><span class="lineno"> 1004</span>            is_vertex_codim[<a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>(i, j)] = <span class="keyword">false</span>;</div>
 <div class="line"><a id="l01005" name="l01005"></a><span class="lineno"> 1005</span>        }</div>
 <div class="line"><a id="l01006" name="l01006"></a><span class="lineno"> 1006</span>    }</div>
 <div class="line"><a id="l01007" name="l01007"></a><span class="lineno"> 1007</span>    <span class="keyword">const</span> <span class="keyword">auto</span> n_codim_vertices = std::count(is_vertex_codim.begin(), is_vertex_codim.end(), <span class="keyword">true</span>);</div>
@@ -1163,7 +1163,7 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="foldopen" id="foldopen01018" data-start="{" data-end="}">
 <div class="line"><a id="l01018" name="l01018"></a><span class="lineno"><a class="line" href="_mesh_utils_8cpp.html#a26e2b97a59af3a9b388784bdfd2beb4b"> 1018</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="_mesh_utils_8cpp.html#a26e2b97a59af3a9b388784bdfd2beb4b">find_triangle_surface_from_tets</a>(</div>
 <div class="line"><a id="l01019" name="l01019"></a><span class="lineno"> 1019</span>    <span class="keyword">const</span> Eigen::MatrixXi &amp;tets,</div>
-<div class="line"><a id="l01020" name="l01020"></a><span class="lineno"> 1020</span>    Eigen::MatrixXi &amp;faces)</div>
+<div class="line"><a id="l01020" name="l01020"></a><span class="lineno"> 1020</span>    Eigen::MatrixXi &amp;<a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>)</div>
 <div class="line"><a id="l01021" name="l01021"></a><span class="lineno"> 1021</span>{</div>
 <div class="line"><a id="l01022" name="l01022"></a><span class="lineno"> 1022</span>    std::unordered_set&lt;Eigen::Vector3i, HashMatrix&gt; tri_to_tet(4 * tets.rows());</div>
 <div class="line"><a id="l01023" name="l01023"></a><span class="lineno"> 1023</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; tets.rows(); i++)</div>
@@ -1188,10 +1188,10 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="line"><a id="l01042" name="l01042"></a><span class="lineno"> 1042</span>        }</div>
 <div class="line"><a id="l01043" name="l01043"></a><span class="lineno"> 1043</span>    }</div>
 <div class="line"><a id="l01044" name="l01044"></a><span class="lineno"> 1044</span> </div>
-<div class="line"><a id="l01045" name="l01045"></a><span class="lineno"> 1045</span>    faces.resize(faces_vector.size(), 3);</div>
-<div class="line"><a id="l01046" name="l01046"></a><span class="lineno"> 1046</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; faces.rows(); i++)</div>
+<div class="line"><a id="l01045" name="l01045"></a><span class="lineno"> 1045</span>    <a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>.resize(faces_vector.size(), 3);</div>
+<div class="line"><a id="l01046" name="l01046"></a><span class="lineno"> 1046</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>.rows(); i++)</div>
 <div class="line"><a id="l01047" name="l01047"></a><span class="lineno"> 1047</span>    {</div>
-<div class="line"><a id="l01048" name="l01048"></a><span class="lineno"> 1048</span>        faces.row(i) = faces_vector[i];</div>
+<div class="line"><a id="l01048" name="l01048"></a><span class="lineno"> 1048</span>        <a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>.row(i) = faces_vector[i];</div>
 <div class="line"><a id="l01049" name="l01049"></a><span class="lineno"> 1049</span>    }</div>
 <div class="line"><a id="l01050" name="l01050"></a><span class="lineno"> 1050</span>}</div>
 </div>
@@ -1243,12 +1243,12 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="line"><a id="l01093" name="l01093"></a><span class="lineno"> 1093</span>    Eigen::MatrixXd &amp;vertices,</div>
 <div class="line"><a id="l01094" name="l01094"></a><span class="lineno"> 1094</span>    Eigen::VectorXi &amp;codim_vertices,</div>
 <div class="line"><a id="l01095" name="l01095"></a><span class="lineno"> 1095</span>    Eigen::MatrixXi &amp;codim_edges,</div>
-<div class="line"><a id="l01096" name="l01096"></a><span class="lineno"> 1096</span>    Eigen::MatrixXi &amp;faces)</div>
+<div class="line"><a id="l01096" name="l01096"></a><span class="lineno"> 1096</span>    Eigen::MatrixXi &amp;<a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>)</div>
 <div class="line"><a id="l01097" name="l01097"></a><span class="lineno"> 1097</span>{</div>
 <div class="line"><a id="l01098" name="l01098"></a><span class="lineno"> 1098</span>    vertices.resize(0, 0);</div>
 <div class="line"><a id="l01099" name="l01099"></a><span class="lineno"> 1099</span>    codim_vertices.resize(0);</div>
 <div class="line"><a id="l01100" name="l01100"></a><span class="lineno"> 1100</span>    codim_edges.resize(0, 0);</div>
-<div class="line"><a id="l01101" name="l01101"></a><span class="lineno"> 1101</span>    faces.resize(0, 0);</div>
+<div class="line"><a id="l01101" name="l01101"></a><span class="lineno"> 1101</span>    <a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>.resize(0, 0);</div>
 <div class="line"><a id="l01102" name="l01102"></a><span class="lineno"> 1102</span> </div>
 <div class="line"><a id="l01103" name="l01103"></a><span class="lineno"> 1103</span>    std::string lowername = mesh_path;</div>
 <div class="line"><a id="l01104" name="l01104"></a><span class="lineno"> 1104</span>    std::transform(</div>
@@ -1271,7 +1271,7 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="line"><a id="l01121" name="l01121"></a><span class="lineno"> 1121</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (cells.cols() == 2)</div>
 <div class="line"><a id="l01122" name="l01122"></a><span class="lineno"> 1122</span>            codim_edges = cells;</div>
 <div class="line"><a id="l01123" name="l01123"></a><span class="lineno"> 1123</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (cells.cols() == 3)</div>
-<div class="line"><a id="l01124" name="l01124"></a><span class="lineno"> 1124</span>            faces = cells;</div>
+<div class="line"><a id="l01124" name="l01124"></a><span class="lineno"> 1124</span>            <a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a> = cells;</div>
 <div class="line"><a id="l01125" name="l01125"></a><span class="lineno"> 1125</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (cells.cols() == 4)</div>
 <div class="line"><a id="l01126" name="l01126"></a><span class="lineno"> 1126</span>        {</div>
 <div class="line"><a id="l01127" name="l01127"></a><span class="lineno"> 1127</span>            <span class="keywordflow">if</span> (vertices.cols() == 2)</div>
@@ -1284,7 +1284,7 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="line"><a id="l01134" name="l01134"></a><span class="lineno"> 1134</span>                <span class="comment">// TODO: how to distinguish between 3D tet mesh and 3D surface quad mesh?</span></div>
 <div class="line"><a id="l01135" name="l01135"></a><span class="lineno"> 1135</span>                assert(vertices.cols() == 3);</div>
 <div class="line"><a id="l01136" name="l01136"></a><span class="lineno"> 1136</span>                Eigen::MatrixXd surface_vertices;</div>
-<div class="line"><a id="l01137" name="l01137"></a><span class="lineno"> 1137</span>                <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a614178cdb624f2eff9500fabb9a4f432">extract_triangle_surface_from_tets</a>(vertices, cells, surface_vertices, faces);</div>
+<div class="line"><a id="l01137" name="l01137"></a><span class="lineno"> 1137</span>                <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a614178cdb624f2eff9500fabb9a4f432">extract_triangle_surface_from_tets</a>(vertices, cells, surface_vertices, <a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>);</div>
 <div class="line"><a id="l01138" name="l01138"></a><span class="lineno"> 1138</span>                vertices = surface_vertices;</div>
 <div class="line"><a id="l01139" name="l01139"></a><span class="lineno"> 1139</span>            }</div>
 <div class="line"><a id="l01140" name="l01140"></a><span class="lineno"> 1140</span>        }</div>
@@ -1296,13 +1296,13 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="line"><a id="l01146" name="l01146"></a><span class="lineno"> 1146</span>    }</div>
 <div class="line"><a id="l01147" name="l01147"></a><span class="lineno"> 1147</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_function" href="namespacepolyfem_1_1utils_1_1_string_utils.html#ac716d9eff97c92c06c752fe151a714ae">StringUtils::endswith</a>(lowername, <span class="stringliteral">&quot;.obj&quot;</span>)) <span class="comment">// Use specialized OBJ reader function with polyline support</span></div>
 <div class="line"><a id="l01148" name="l01148"></a><span class="lineno"> 1148</span>    {</div>
-<div class="line"><a id="l01149" name="l01149"></a><span class="lineno"> 1149</span>        <span class="keywordflow">if</span> (!<a class="code hl_function" href="classpolyfem_1_1io_1_1_o_b_j_reader.html#a5aaf18ddd73e237912d47f2c4a998ec2">OBJReader::read</a>(mesh_path, vertices, codim_edges, faces))</div>
+<div class="line"><a id="l01149" name="l01149"></a><span class="lineno"> 1149</span>        <span class="keywordflow">if</span> (!<a class="code hl_function" href="classpolyfem_1_1io_1_1_o_b_j_reader.html#a5aaf18ddd73e237912d47f2c4a998ec2">OBJReader::read</a>(mesh_path, vertices, codim_edges, <a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>))</div>
 <div class="line"><a id="l01150" name="l01150"></a><span class="lineno"> 1150</span>        {</div>
 <div class="line"><a id="l01151" name="l01151"></a><span class="lineno"> 1151</span>            <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().error(<span class="stringliteral">&quot;Unable to load mesh: {}&quot;</span>, mesh_path);</div>
 <div class="line"><a id="l01152" name="l01152"></a><span class="lineno"> 1152</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a id="l01153" name="l01153"></a><span class="lineno"> 1153</span>        }</div>
 <div class="line"><a id="l01154" name="l01154"></a><span class="lineno"> 1154</span>    }</div>
-<div class="line"><a id="l01155" name="l01155"></a><span class="lineno"> 1155</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!igl::read_triangle_mesh(mesh_path, vertices, faces))</div>
+<div class="line"><a id="l01155" name="l01155"></a><span class="lineno"> 1155</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!igl::read_triangle_mesh(mesh_path, vertices, <a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>))</div>
 <div class="line"><a id="l01156" name="l01156"></a><span class="lineno"> 1156</span>    {</div>
 <div class="line"><a id="l01157" name="l01157"></a><span class="lineno"> 1157</span>        GEO::Mesh mesh;</div>
 <div class="line"><a id="l01158" name="l01158"></a><span class="lineno"> 1158</span>        <span class="keywordflow">if</span> (!GEO::mesh_load(mesh_path, mesh))</div>
@@ -1325,18 +1325,18 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="line"><a id="l01175" name="l01175"></a><span class="lineno"> 1175</span>        <span class="comment">// TODO: Check that this works even for a volumetric mesh</span></div>
 <div class="line"><a id="l01176" name="l01176"></a><span class="lineno"> 1176</span>        assert(mesh.facets.nb());</div>
 <div class="line"><a id="l01177" name="l01177"></a><span class="lineno"> 1177</span>        <span class="keywordtype">int</span> face_cols = mesh.facets.nb_vertices(0);</div>
-<div class="line"><a id="l01178" name="l01178"></a><span class="lineno"> 1178</span>        faces.resize(mesh.facets.nb(), face_cols);</div>
+<div class="line"><a id="l01178" name="l01178"></a><span class="lineno"> 1178</span>        <a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>.resize(mesh.facets.nb(), face_cols);</div>
 <div class="line"><a id="l01179" name="l01179"></a><span class="lineno"> 1179</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> fi = 0; fi &lt; mesh.facets.nb(); fi++)</div>
 <div class="line"><a id="l01180" name="l01180"></a><span class="lineno"> 1180</span>        {</div>
 <div class="line"><a id="l01181" name="l01181"></a><span class="lineno"> 1181</span>            assert(face_cols == mesh.facets.nb_vertices(fi));</div>
 <div class="line"><a id="l01182" name="l01182"></a><span class="lineno"> 1182</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> fj = 0; fj &lt; mesh.facets.nb_vertices(fi); fj++)</div>
 <div class="line"><a id="l01183" name="l01183"></a><span class="lineno"> 1183</span>            {</div>
-<div class="line"><a id="l01184" name="l01184"></a><span class="lineno"> 1184</span>                faces(fi, fj) = mesh.facets.vertex(fi, fj);</div>
+<div class="line"><a id="l01184" name="l01184"></a><span class="lineno"> 1184</span>                <a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>(fi, fj) = mesh.facets.vertex(fi, fj);</div>
 <div class="line"><a id="l01185" name="l01185"></a><span class="lineno"> 1185</span>            }</div>
 <div class="line"><a id="l01186" name="l01186"></a><span class="lineno"> 1186</span>        }</div>
 <div class="line"><a id="l01187" name="l01187"></a><span class="lineno"> 1187</span>    }</div>
 <div class="line"><a id="l01188" name="l01188"></a><span class="lineno"> 1188</span> </div>
-<div class="line"><a id="l01189" name="l01189"></a><span class="lineno"> 1189</span>    <a class="code hl_function" href="_mesh_utils_8cpp.html#a1364b05c4ec8b3f6a114effcf77b9557">find_codim_vertices</a>(vertices, codim_edges, faces, codim_vertices);</div>
+<div class="line"><a id="l01189" name="l01189"></a><span class="lineno"> 1189</span>    <a class="code hl_function" href="_mesh_utils_8cpp.html#a1364b05c4ec8b3f6a114effcf77b9557">find_codim_vertices</a>(vertices, codim_edges, <a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>, codim_vertices);</div>
 <div class="line"><a id="l01190" name="l01190"></a><span class="lineno"> 1190</span> </div>
 <div class="line"><a id="l01191" name="l01191"></a><span class="lineno"> 1191</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a id="l01192" name="l01192"></a><span class="lineno"> 1192</span>}</div>
@@ -1448,6 +1448,7 @@ $(document).ready(function(){initNavTree('_mesh_utils_8cpp_source.html',''); ini
 <div class="ttc" id="a_mesh_utils_8hpp_html"><div class="ttname"><a href="_mesh_utils_8hpp.html">MeshUtils.hpp</a></div></div>
 <div class="ttc" id="a_msh_reader_8hpp_html"><div class="ttname"><a href="_msh_reader_8hpp.html">MshReader.hpp</a></div></div>
 <div class="ttc" id="a_o_b_j_reader_8hpp_html"><div class="ttname"><a href="_o_b_j_reader_8hpp.html">OBJReader.hpp</a></div></div>
+<div class="ttc" id="a_pressure_assembler_8cpp_html_a26f342872e2db31d6dcf7862b29f64d9"><div class="ttname"><a href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a></div><div class="ttdeci">std::vector&lt; Eigen::VectorXi &gt; faces</div><div class="ttdef"><b>Definition</b> <a href="_pressure_assembler_8cpp_source.html#l00052">PressureAssembler.cpp:52</a></div></div>
 <div class="ttc" id="a_spline_basis3d_8cpp_html_a14f94e529dff0b8bfba8e16fbe9755d6"><div class="ttname"><a href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a></div><div class="ttdeci">int z</div><div class="ttdef"><b>Definition</b> <a href="_spline_basis3d_8cpp_source.html#l00055">SplineBasis3d.cpp:55</a></div></div>
 <div class="ttc" id="a_string_utils_8hpp_html"><div class="ttname"><a href="_string_utils_8hpp.html">StringUtils.hpp</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1io_1_1_msh_reader_html_a5658ce8a7801dca50f265efe95ec6e64"><div class="ttname"><a href="classpolyfem_1_1io_1_1_msh_reader.html#a5658ce8a7801dca50f265efe95ec6e64">polyfem::io::MshReader::load</a></div><div class="ttdeci">static bool load(const std::string &amp;path, Eigen::MatrixXd &amp;vertices, Eigen::MatrixXi &amp;cells, std::vector&lt; std::vector&lt; int &gt; &gt; &amp;elements, std::vector&lt; std::vector&lt; double &gt; &gt; &amp;weights, std::vector&lt; int &gt; &amp;body_ids)</div><div class="ttdef"><b>Definition</b> <a href="_msh_reader_8cpp_source.html#l00029">MshReader.cpp:29</a></div></div>

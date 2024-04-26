@@ -33,6 +33,8 @@ var classpolyfem_1_1assembler_1_1_generic_tensor_problem =
     [ "might_have_no_dirichlet", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#ada4dc69fbd13ad2b53d52ad9d557b354", null ],
     [ "neumann_bc", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a21f9ade09719d477675f76e787f77bc3", null ],
     [ "neumann_nodal_value", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a8d57b6de64d26b07e21b2d7989ee8f12", null ],
+    [ "pressure_bc", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a9b1d1a7cb4ff60641df3ec8da9ed3bdc", null ],
+    [ "pressure_cavity_bc", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#abb156f2c383c8bfeefccdad3a2213656", null ],
     [ "rhs", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#af6b751523b4242cee6ebdf5f88c7bd0e", null ],
     [ "set_parameters", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a3286b846bdcde273f9713d019d6053d2", null ],
     [ "set_rhs", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a4cfa2e07afdd64419a9ad645a9c43f9e", null ],
@@ -49,6 +51,7 @@ var classpolyfem_1_1assembler_1_1_generic_tensor_problem =
     [ "update_pressure_boundary", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a513c58398b4b3f7478af810f8959bf26", null ],
     [ "update_pressure_boundary", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a2c6b251a88d2166c1cc333aad8a7128b", null ],
     [ "all_dimensions_dirichlet_", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a4919a4ab517e58db248bfea3c0a7557d", null ],
+    [ "cavity_pressures_", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a21a4aaa48e44eff9000598ae54cf463f", null ],
     [ "displacements_", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a6531e3879479f407975f684fee6386ea", null ],
     [ "exact_", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#af8cdcfeee105441905126b4a4f3be33a", null ],
     [ "exact_grad_", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#aa829e52d35b06d98c9cf6188204316e6", null ],
@@ -63,6 +66,7 @@ var classpolyfem_1_1assembler_1_1_generic_tensor_problem =
     [ "nodal_dirichlet_", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a9d78b368886ea417146801612637d2bf", null ],
     [ "nodal_dirichlet_mat_", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#afd31b10524307631368c0ec22bed91d4", null ],
     [ "nodal_neumann_", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a0a9386224112e7428051d3216119d229", null ],
+    [ "normal_aligned_forces_", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a6b7a85ff518eca088301134a88fa67bc", null ],
     [ "pressures_", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#ac1482f0eb1b15b9972e2c56cb9f79a56", null ],
     [ "rhs_", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#aa204764d5f7e4030c9ac9db0883949cc", null ]
 ];

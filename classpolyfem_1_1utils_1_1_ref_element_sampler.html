@@ -156,9 +156,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:af6d85c307864408c637f83caeae86043"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9c16d89d5433f08f5bc520f4eb5a4b2a" id="r_a9c16d89d5433f08f5bc520f4eb5a4b2a"><td class="memItemLeft" align="right" valign="top">const Eigen::MatrixXi &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_ref_element_sampler.html#a9c16d89d5433f08f5bc520f4eb5a4b2a">simplex_edges</a> () const</td></tr>
 <tr class="separator:a9c16d89d5433f08f5bc520f4eb5a4b2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f7010c355152a152997097c1543e16f" id="r_a3f7010c355152a152997097c1543e16f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_ref_element_sampler.html#a3f7010c355152a152997097c1543e16f">sample_polygon</a> (const Eigen::MatrixXd &amp;poly, Eigen::MatrixXd &amp;pts, Eigen::MatrixXi &amp;faces, Eigen::MatrixXi &amp;edges) const</td></tr>
+<tr class="memitem:a3f7010c355152a152997097c1543e16f" id="r_a3f7010c355152a152997097c1543e16f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_ref_element_sampler.html#a3f7010c355152a152997097c1543e16f">sample_polygon</a> (const Eigen::MatrixXd &amp;poly, Eigen::MatrixXd &amp;pts, Eigen::MatrixXi &amp;<a class="el" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>, Eigen::MatrixXi &amp;edges) const</td></tr>
 <tr class="separator:a3f7010c355152a152997097c1543e16f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a747e43b420e9ef348218dea62e4a8cf9" id="r_a747e43b420e9ef348218dea62e4a8cf9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_ref_element_sampler.html#a747e43b420e9ef348218dea62e4a8cf9">sample_polyhedron</a> (const Eigen::MatrixXd &amp;vertices, const Eigen::MatrixXi &amp;f, Eigen::MatrixXd &amp;pts, Eigen::MatrixXi &amp;faces, Eigen::MatrixXi &amp;edges) const</td></tr>
+<tr class="memitem:a747e43b420e9ef348218dea62e4a8cf9" id="r_a747e43b420e9ef348218dea62e4a8cf9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_ref_element_sampler.html#a747e43b420e9ef348218dea62e4a8cf9">sample_polyhedron</a> (const Eigen::MatrixXd &amp;vertices, const Eigen::MatrixXi &amp;f, Eigen::MatrixXd &amp;pts, Eigen::MatrixXi &amp;<a class="el" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>, Eigen::MatrixXi &amp;edges) const</td></tr>
 <tr class="separator:a747e43b420e9ef348218dea62e4a8cf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f28b1443c2c42b543adc8b8869a905e" id="r_a1f28b1443c2c42b543adc8b8869a905e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_ref_element_sampler.html#a1f28b1443c2c42b543adc8b8869a905e">num_samples</a> () const</td></tr>
 <tr class="separator:a1f28b1443c2c42b543adc8b8869a905e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -252,7 +252,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8cpp_source.html#l00214">214</a> of file <a class="el" href="_ref_element_sampler_8cpp_source.html">RefElementSampler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_ref_element_sampler_8hpp_source.html#l00072">area_param_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00062">cube_corners_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00065">cube_edges_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00064">cube_faces_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00063">cube_points_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00059">cube_tets_</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00946">polyfem::mesh::extract_parent_edges()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00073">is_volume_</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00031">polyfem::utils::regular_2d_grid()</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00116">polyfem::utils::regular_3d_grid()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00067">simplex_corners_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00070">simplex_edges_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00069">simplex_faces_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00068">simplex_points_</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00060">simplex_tets_</a>.</p>
+<p class="reference">References <a class="el" href="_ref_element_sampler_8hpp_source.html#l00072">area_param_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00062">cube_corners_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00065">cube_edges_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00064">cube_faces_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00063">cube_points_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00059">cube_tets_</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00946">polyfem::mesh::extract_parent_edges()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00052">faces</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00073">is_volume_</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00031">polyfem::utils::regular_2d_grid()</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00116">polyfem::utils::regular_3d_grid()</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00067">simplex_corners_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00070">simplex_edges_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00069">simplex_faces_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00068">simplex_points_</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00060">simplex_tets_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00202">init()</a>.</p>
 <div class="dynheader">
@@ -463,7 +463,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_ref_element_sampler_8hpp_source.html#l00072">area_param_</a>, <a class="el" href="_ref_element_sampler_8cpp_source.html#l00214">build()</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00073">is_volume_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l02288">polyfem::io::OutGeometryData::init_sampler()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l02309">polyfem::io::OutGeometryData::init_sampler()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -504,7 +504,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_ref_element_sampler_8hpp_source.html#l00072">area_param_</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00073">is_volume_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l00371">polyfem::io::OutGeometryData::build_vis_boundary_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l00392">polyfem::io::OutGeometryData::build_vis_boundary_mesh()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -553,7 +553,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8cpp_source.html#l00368">368</a> of file <a class="el" href="_ref_element_sampler_8cpp_source.html">RefElementSampler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_ref_element_sampler_8hpp_source.html#l00072">area_param_</a>.</p>
+<p class="reference">References <a class="el" href="_ref_element_sampler_8hpp_source.html#l00072">area_param_</a>, and <a class="el" href="_pressure_assembler_8cpp_source.html#l00052">faces</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l01083">polyfem::io::Evaluator::check_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01165">polyfem::io::Evaluator::compute_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01263">polyfem::io::Evaluator::compute_tensor_value()</a>, and <a class="el" href="_evaluator_8cpp_source.html#l00893">polyfem::io::Evaluator::interpolate_function()</a>.</p>
 <div class="dynheader">
@@ -609,6 +609,8 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8cpp_source.html#l00409">409</a> of file <a class="el" href="_ref_element_sampler_8cpp_source.html">RefElementSampler.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_pressure_assembler_8cpp_source.html#l00052">faces</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l01083">polyfem::io::Evaluator::check_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01165">polyfem::io::Evaluator::compute_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01263">polyfem::io::Evaluator::compute_tensor_value()</a>, and <a class="el" href="_evaluator_8cpp_source.html#l00893">polyfem::io::Evaluator::interpolate_function()</a>.</p>
 <div class="dynheader">
@@ -740,7 +742,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_ref_element_sampler_8hpp_source.html#l00068">simplex_points_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l01083">polyfem::io::Evaluator::check_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01165">polyfem::io::Evaluator::compute_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01263">polyfem::io::Evaluator::compute_tensor_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00893">polyfem::io::Evaluator::interpolate_function()</a>, and <a class="el" href="_out_data_8cpp_source.html#l02036">polyfem::io::OutGeometryData::save_wire()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_evaluator_8cpp_source.html#l01083">polyfem::io::Evaluator::check_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01165">polyfem::io::Evaluator::compute_scalar_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01263">polyfem::io::Evaluator::compute_tensor_value()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00893">polyfem::io::Evaluator::interpolate_function()</a>, and <a class="el" href="_out_data_8cpp_source.html#l02057">polyfem::io::OutGeometryData::save_wire()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -776,7 +778,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_ref_element_sampler_8hpp_source.html#l00073">is_volume_</a>, <a class="el" href="_ref_element_sampler_8hpp_source.html#l00069">simplex_faces_</a>, and <a class="el" href="_ref_element_sampler_8hpp_source.html#l00060">simplex_tets_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l00619">polyfem::io::OutGeometryData::build_vis_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_out_data_8cpp_source.html#l00640">polyfem::io::OutGeometryData::build_vis_mesh()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">

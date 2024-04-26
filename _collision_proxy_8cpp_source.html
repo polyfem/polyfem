@@ -450,10 +450,10 @@ $(document).ready(function(){initNavTree('_collision_proxy_8cpp_source.html','')
 <div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>        Eigen::MatrixXd &amp;vertices,</div>
 <div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>        Eigen::VectorXi &amp;codim_vertices,</div>
 <div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>        Eigen::MatrixXi &amp;edges,</div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>        Eigen::MatrixXi &amp;faces,</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>        Eigen::MatrixXi &amp;<a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>,</div>
 <div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>        std::vector&lt;Eigen::Triplet&lt;double&gt;&gt; &amp;displacement_map_entries)</div>
 <div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>    {</div>
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>        <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a8b354410bd3ee20974de06b0131f8036">load_collision_proxy_mesh</a>(mesh_filename, transformation, vertices, codim_vertices, edges, faces);</div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>        <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a8b354410bd3ee20974de06b0131f8036">load_collision_proxy_mesh</a>(mesh_filename, transformation, vertices, codim_vertices, edges, <a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>);</div>
 <div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>        <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#ac69cc240a806f402d61f1eaf7eb2d819">load_collision_proxy_displacement_map</a>(weights_filename, in_node_to_node, vertices.rows(), displacement_map_entries);</div>
 <div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>    }</div>
 </div>
@@ -465,13 +465,13 @@ $(document).ready(function(){initNavTree('_collision_proxy_8cpp_source.html','')
 <div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>        Eigen::MatrixXd &amp;vertices,</div>
 <div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>        Eigen::VectorXi &amp;codim_vertices,</div>
 <div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>        Eigen::MatrixXi &amp;edges,</div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>        Eigen::MatrixXi &amp;faces)</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>        Eigen::MatrixXi &amp;<a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>)</div>
 <div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>    {</div>
 <div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>        Eigen::MatrixXi codim_edges;</div>
-<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>        <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#ad5cb1c08fb1f96a1f0c2bd635457e25f">read_surface_mesh</a>(mesh_filename, vertices, codim_vertices, codim_edges, faces);</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>        <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#ad5cb1c08fb1f96a1f0c2bd635457e25f">read_surface_mesh</a>(mesh_filename, vertices, codim_vertices, codim_edges, <a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>);</div>
 <div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span> </div>
-<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>        <span class="keywordflow">if</span> (faces.size())</div>
-<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>            igl::edges(faces, edges);</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>.size())</div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>            igl::edges(<a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>, edges);</div>
 <div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span> </div>
 <div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>        utils::append_rows(edges, codim_edges);</div>
 <div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span> </div>
@@ -533,6 +533,7 @@ $(document).ready(function(){initNavTree('_collision_proxy_8cpp_source.html','')
 <div class="ttc" id="a_logger_8hpp_html"><div class="ttname"><a href="_logger_8hpp.html">Logger.hpp</a></div></div>
 <div class="ttc" id="a_matrix_utils_8hpp_html"><div class="ttname"><a href="_matrix_utils_8hpp.html">MatrixUtils.hpp</a></div></div>
 <div class="ttc" id="a_mesh_utils_8hpp_html"><div class="ttname"><a href="_mesh_utils_8hpp.html">MeshUtils.hpp</a></div></div>
+<div class="ttc" id="a_pressure_assembler_8cpp_html_a26f342872e2db31d6dcf7862b29f64d9"><div class="ttname"><a href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a></div><div class="ttdeci">std::vector&lt; Eigen::VectorXi &gt; faces</div><div class="ttdef"><b>Definition</b> <a href="_pressure_assembler_8cpp_source.html#l00052">PressureAssembler.cpp:52</a></div></div>
 <div class="ttc" id="a_spline_basis3d_8cpp_html_a6150e0515f7202e2fb518f7206ed97dc"><div class="ttname"><a href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a></div><div class="ttdeci">int x</div><div class="ttdef"><b>Definition</b> <a href="_spline_basis3d_8cpp_source.html#l00055">SplineBasis3d.cpp:55</a></div></div>
 <div class="ttc" id="a_upsample_mesh_8hpp_html"><div class="ttname"><a href="_upsample_mesh_8hpp.html">UpsampleMesh.hpp</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1basis_1_1_basis_html"><div class="ttname"><a href="classpolyfem_1_1basis_1_1_basis.html">polyfem::basis::Basis</a></div><div class="ttdoc">Represents one basis function and its gradient.</div><div class="ttdef"><b>Definition</b> <a href="_basis_8hpp_source.html#l00043">Basis.hpp:44</a></div></div>
