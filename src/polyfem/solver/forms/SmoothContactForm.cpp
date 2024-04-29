@@ -4,6 +4,7 @@
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/io/OBJWriter.hpp>
 
 #include <ipc/barrier/adaptive_stiffness.hpp>
 #include <ipc/utils/world_bbox_diagonal_length.hpp>
@@ -97,6 +98,12 @@ namespace polyfem::solver
     template <int _dim>
 	void SmoothContactForm<_dim>::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
+		// {
+		// 	io::OBJWriter::write(
+		// 		"collision_mesh.obj",
+		// 		compute_displaced_surface(x),
+		// 		collision_mesh_.edges(), collision_mesh_.faces());
+		// }
 		POLYFEM_SCOPED_TIMER("barrier hessian");
 		hessian = contact_potential_->hessian(*collision_set_, collision_mesh_, compute_displaced_surface(x), project_to_psd_);
 		hessian = collision_mesh_.to_full_dof(hessian);
