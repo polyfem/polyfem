@@ -329,6 +329,12 @@ namespace polyfem
 		nl_solver = make_nl_solver(false);
 		al_solver.solve_reduced(nl_solver, nl_problem, sol);
 
+		if (args["solver"]["advanced"]["count_flipped_els"])
+		{
+			const auto [valid, invalid, uncertain] = count_invalid(mesh->dimension(), bases, sol);
+			logger().debug("Flipped elements: {}, uncertain elements: {}, total: {}", invalid, uncertain, invalid + uncertain + valid);
+		}
+
 		// ---------------------------------------------------------------------
 
 		// TODO: Make this more general

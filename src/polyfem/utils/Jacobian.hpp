@@ -1,3 +1,5 @@
+#pragma once
+
 #include <polyfem/basis/ElementBases.hpp>
 
 namespace polyfem::utils
@@ -26,19 +28,17 @@ namespace polyfem::utils
             return *this;
         }
         bool merge(const Tree &T) {
-            if (T.has_children())
-            {
-                bool flag = false;
-                if (!this->has_children())
-                {
-                    this->add_children(T.n_children());
-                    flag = true;
-                }
-                for (int i = 0; i < T.n_children(); i++)
-                    flag = this->child(i).merge(T.child(i)) || flag;
+            bool flag = false;
+            if (!T.has_children())
                 return flag;
+            if (!this->has_children())
+            {
+                this->add_children(T.n_children());
+                flag = true;
             }
-            return false;
+            for (int i = 0; i < T.n_children(); i++)
+                flag = this->child(i).merge(T.child(i)) || flag;
+            return flag;
         }
 
         // Debug print
@@ -83,6 +83,11 @@ namespace polyfem::utils
     private:
         std::vector<std::unique_ptr<Tree>> children;
     };
+
+    std::tuple<uint, uint, uint> count_invalid(
+        const int dim,
+        const std::vector<basis::ElementBases> &bases, 
+        const Eigen::VectorXd &u);
 
     std::tuple<bool, int, Tree> isValid(
         const int dim,

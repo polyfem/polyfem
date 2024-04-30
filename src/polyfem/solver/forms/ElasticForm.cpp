@@ -438,6 +438,8 @@ namespace polyfem::solver
 				if (grad.array().isNaN().any())
 				{
 					logger().error("Gradient NAN on x0 after quadrature refinement!");
+					Eigen::MatrixXd cp = extract_nodes(dim, bases_, x0);
+					std::cout << std::setprecision(16) << "flipped element\n" << cp.block(invalidID * bases_[0].bases.size(), 0, bases_[0].bases.size(), dim) << "\n";
 					std::terminate();
 				}
 
@@ -445,7 +447,8 @@ namespace polyfem::solver
 				if (!grad.array().isNaN().any())
 				{
 					logger().error("Gradient no NAN on x1 after quadrature refinement!");
-					std::terminate();
+					Eigen::MatrixXd cp = extract_nodes(dim, bases_, x1);
+					std::cout << std::setprecision(16) << "flipped element\n" << cp.block(invalidID * bases_[0].bases.size(), 0, bases_[0].bases.size(), dim) << "\n";
 				}
 			}
 			

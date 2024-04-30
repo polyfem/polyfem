@@ -29,6 +29,41 @@ namespace polyfem::utils
         return cp;
     }
 
+    std::tuple<uint, uint, uint> count_invalid(
+        const int dim,
+        const std::vector<basis::ElementBases> &bases, 
+        const Eigen::VectorXd &u)
+    {
+        int order = -1;
+        for (const auto &b : bases)
+        {
+            for (const auto &bs : b.bases)
+            {
+                if (order < 0)
+                    order = bs.order();
+                else if (order != bs.order())
+                    log_and_throw_error("All bases must have the same order");
+            }
+        }
+
+        const int n_basis_per_cell = bases[0].bases.size();
+        Eigen::MatrixXd cp = extract_nodes(dim, bases, u);
+
+        std::tuple<uint, uint, uint> counters{0,0,0};
+        if (dim == 2)
+        {
+            SubdivisionHierarchy<2> hierarchy(shapes::TRIANGLE);
+            isValid<2>(cp, shapes::TRIANGLE, order, nullptr, &hierarchy, &counters);
+        }
+        else
+        {
+            SubdivisionHierarchy<3> hierarchy(shapes::TETRAHEDRON);
+            isValid<3>(cp, shapes::TETRAHEDRON, order, nullptr, &hierarchy, &counters);
+        }
+        
+        return counters;
+    }
+
     std::tuple<bool, int, Tree>
     isValid(
         const int dim,
