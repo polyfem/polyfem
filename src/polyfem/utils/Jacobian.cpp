@@ -53,12 +53,12 @@ namespace polyfem::utils
         if (dim == 2)
         {
             SubdivisionHierarchy<2> hierarchy(shapes::TRIANGLE);
-            isValid<2>(cp, shapes::TRIANGLE, order, nullptr, &hierarchy, &counters);
+            isValid<2>(cp, shapes::TRIANGLE, order, 0, nullptr, &hierarchy, &counters);
         }
         else
         {
             SubdivisionHierarchy<3> hierarchy(shapes::TETRAHEDRON);
-            isValid<3>(cp, shapes::TETRAHEDRON, order, nullptr, &hierarchy, &counters);
+            isValid<3>(cp, shapes::TETRAHEDRON, order, 0, nullptr, &hierarchy, &counters);
         }
         
         return counters;
@@ -91,7 +91,7 @@ namespace polyfem::utils
         if (dim == 2)
         {
             SubdivisionHierarchy<2> hierarchy(shapes::TRIANGLE);
-            flag = isValid<2>(cp, shapes::TRIANGLE, order, &invalid_id, &hierarchy);
+            flag = isValid<2>(cp, shapes::TRIANGLE, order, 0, &invalid_id, &hierarchy);
             if (!flag)
             {
                 std::function<void(const SubdivisionHierarchy<2>::Node &, Tree &)> copy_hierarchy = [&copy_hierarchy](const SubdivisionHierarchy<2>::Node &src, Tree &dst) {
@@ -109,7 +109,7 @@ namespace polyfem::utils
         else
         {
             SubdivisionHierarchy<3> hierarchy(shapes::TETRAHEDRON);
-            flag = isValid<3>(cp, shapes::TETRAHEDRON, order, &invalid_id, &hierarchy);
+            flag = isValid<3>(cp, shapes::TETRAHEDRON, order, 0, &invalid_id, &hierarchy);
             if (!flag)
             {
                 std::function<void(const SubdivisionHierarchy<3>::Node &, Tree &)> copy_hierarchy = [&copy_hierarchy](const SubdivisionHierarchy<3>::Node &src, Tree &dst) {
@@ -165,9 +165,9 @@ namespace polyfem::utils
     bool isValid(const Eigen::Matrix<double, -1, nVar> &cp, int order)
     {
         if constexpr (nVar == 2)
-            return isValid<2>(cp, shapes::TRIANGLE, order);
+            return isValid<2>(cp, shapes::TRIANGLE, order, 0);
         else if constexpr (nVar == 3)
-            return isValid<3>(cp, shapes::TETRAHEDRON, order);
+            return isValid<3>(cp, shapes::TETRAHEDRON, order, 0);
         else
             log_and_throw_error("Invalid dimension");
     }
@@ -203,40 +203,39 @@ namespace polyfem::utils
         bool flag = false;
         unsigned invalid_id = 0;
         if (dim == 2)
-            flag = isValid<2>(cp1, cp2, shapes::TRIANGLE, order, &invalid_id);
+            flag = isValid<2>(cp1, cp2, shapes::TRIANGLE, order, 0, &invalid_id);
         else
-            flag = isValid<3>(cp1, cp2, shapes::TETRAHEDRON, order, &invalid_id);
+            flag = isValid<3>(cp1, cp2, shapes::TETRAHEDRON, order, 0, &invalid_id);
         
         return flag;
     }
 
-    double maxTimeStep(
-        const int dim,
-        const std::vector<basis::ElementBases> &bases, 
-        const Eigen::VectorXd &u1,
-        const Eigen::VectorXd &u2,
-        double precision)
-    {
-        int order = -1;
-        for (const auto &b : bases)
-        {
-            for (const auto &bs : b.bases)
-            {
-                if (order < 0)
-                    order = bs.order();
-                else if (order != bs.order())
-                    log_and_throw_error("All bases must have the same order");
-            }
-        }
+    // double maxTimeStep(
+    //     const int dim,
+    //     const std::vector<basis::ElementBases> &bases, 
+    //     const Eigen::VectorXd &u1,
+    //     const Eigen::VectorXd &u2,
+    //     double precision)
+    // {
+    //     int order = -1;
+    //     for (const auto &b : bases)
+    //     {
+    //         for (const auto &bs : b.bases)
+    //         {
+    //             if (order < 0)
+    //                 order = bs.order();
+    //             else if (order != bs.order())
+    //                 log_and_throw_error("All bases must have the same order");
+    //         }
+    //     }
 
-        const int n_basis_per_cell = bases[0].bases.size();
-        Eigen::MatrixXd cp1 = extract_nodes(dim, bases, u1);
-        Eigen::MatrixXd cp2 = extract_nodes(dim, bases, u2);
+    //     const int n_basis_per_cell = bases[0].bases.size();
+    //     Eigen::MatrixXd cp1 = extract_nodes(dim, bases, u1);
+    //     Eigen::MatrixXd cp2 = extract_nodes(dim, bases, u2);
 
-        return 1.;
-        // if (dim == 2)
-        //     return maxTimeStep<2>(cp1, cp2, shapes::TRIANGLE, order, precision);
-        // else
-        //     return maxTimeStep<3>(cp1, cp2, shapes::TETRAHEDRON, order, precision);
-    }
+    //     if (dim == 2)
+    //         return maxTimeStep<2>(cp1, cp2, shapes::TRIANGLE, order, 0, precision);
+    //     else
+    //         return maxTimeStep<3>(cp1, cp2, shapes::TETRAHEDRON, order, 0, precision);
+    // }
 }

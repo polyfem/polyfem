@@ -103,12 +103,12 @@ namespace polyfem::utils
         const Eigen::VectorXd &u1,
         const Eigen::VectorXd &u2);
 
-    double maxTimeStep(
-        const int dim,
-        const std::vector<basis::ElementBases> &bases, 
-        const Eigen::VectorXd &u1,
-        const Eigen::VectorXd &u2,
-        double precision);
+    // double maxTimeStep(
+    //     const int dim,
+    //     const std::vector<basis::ElementBases> &bases, 
+    //     const Eigen::VectorXd &u1,
+    //     const Eigen::VectorXd &u2,
+    //     double precision);
 
     Eigen::MatrixXd extract_nodes(const int dim, const std::vector<basis::ElementBases> &bases, const Eigen::VectorXd &u);
 }

@@ -326,13 +326,7 @@ namespace polyfem::solver
 
 	double ElasticForm::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		if (check_inversion_ == "Transient")
-		{
-			POLYFEM_SCOPED_TIMER("Conservative Transient Jacobian Check");
-			return maxTimeStep(is_volume_ ? 3 : 2, bases_, x0, x1, 1e-1);
-		}
-		else
-			return 1.;
+		return 1.;
 	}
 
 	bool ElasticForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
