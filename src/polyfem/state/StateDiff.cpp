@@ -111,7 +111,7 @@ namespace polyfem
 				compute_force_jacobian(sol, disp_grad, gradu_h);
 
 			if (solve_data.contact_form)
-				cur_collision_set = solve_data.contact_form->get_collision_set();
+				cur_collision_set = solve_data.contact_form->get_collision_set()->deepcopy();
 			if (solve_data.friction_form)
 				cur_friction_set = solve_data.friction_form->get_friction_collision_set();
 		}
