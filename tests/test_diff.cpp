@@ -1130,3 +1130,30 @@ TEST_CASE("initial-contact-smooth", "[test_adjoint]")
 
 	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-5, 1e-7);
 }
+
+TEST_CASE("shape-transient-smooth", "[test_adjoint]")
+{
+	json opt_args;
+	load_json(append_root_path("shape-transient-friction-opt.json"), opt_args);
+	auto [obj, var2sim, states] = prepare_test(opt_args);
+	for (auto &state : states)
+	{
+		state->args["contact"]["use_smooth_formulation"] = true;
+		state->args["contact"]["alpha_t"] = 0.95;
+		state->args["contact"]["friction_coefficient"] = 0;
+	}
+
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
+
+	Eigen::MatrixXd velocity_discrete;
+	velocity_discrete.setZero(states[0]->n_geom_bases * 2, 1);
+	for (int i = 0; i < velocity_discrete.size(); ++i)
+		velocity_discrete(i) = rand() % 1000;
+	velocity_discrete.normalize();
+
+	Eigen::MatrixXd V;
+	states[0]->get_vertices(V);
+	Eigen::VectorXd x = utils::flatten(V);
+
+	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-6, 1e-5);
+}
