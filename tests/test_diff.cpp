@@ -1084,3 +1084,49 @@ TEST_CASE("barycenter", "[test_adjoint]")
 
 // 	verify_adjoint_dirichlet(func, state_ptr, control_param, velocity_discrete, perturb_fn_json, 1e-7, 1e-5);
 // }
+
+TEST_CASE("shape-contact-smooth", "[test_adjoint]")
+{
+	json opt_args;
+	load_json(append_root_path("shape-contact-opt.json"), opt_args);
+	auto [obj, var2sim, states] = prepare_test(opt_args);
+	for (auto &state : states)
+	{
+		state->args["contact"]["use_smooth_formulation"] = true;
+		state->args["contact"]["alpha_t"] = 0.95;
+	}
+
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
+
+	Eigen::MatrixXd V;
+	states[0]->get_vertices(V);
+	Eigen::VectorXd x = utils::flatten(V);
+
+	nl_problem->solution_changed(x);
+	Eigen::VectorXd one_form;
+	nl_problem->gradient(x, one_form);
+
+	verify_adjoint(*nl_problem, x, one_form.normalized(), 1e-6, 1e-6);
+}
+
+TEST_CASE("initial-contact-smooth", "[test_adjoint]")
+{
+	json opt_args;
+	load_json(append_root_path("initial-contact-opt.json"), opt_args);
+	auto [obj, var2sim, states] = prepare_test(opt_args);
+	for (auto &state : states)
+	{
+		state->args["contact"]["use_smooth_formulation"] = true;
+		state->args["contact"]["alpha_t"] = 0.95;
+		state->args["contact"]["friction_coefficient"] = 0;
+	}
+
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
+
+	Eigen::MatrixXd velocity_discrete;
+	velocity_discrete.setRandom(states[0]->ndof() * 2, 1);
+
+	Eigen::VectorXd x = var2sim[0]->inverse_eval();
+
+	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-5, 1e-7);
+}
