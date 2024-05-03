@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ContactForm.hpp"
+#include <ipc/smooth_contact/smooth_collisions.hpp>
 #include <ipc/smooth_contact/smooth_contact_potential.hpp>
 #include <cmath>
 
@@ -35,8 +36,6 @@ namespace polyfem::solver
 		ipc::SmoothCollisions<_dim> &get_smooth_collision_set() { return *std::dynamic_pointer_cast<ipc::SmoothCollisions<_dim>>(collision_set_); }
 		const ipc::SmoothCollisions<_dim> &get_smooth_collision_set() const { return *std::dynamic_pointer_cast<ipc::SmoothCollisions<_dim>>(collision_set_); }
 		const ipc::Potential<ipc::SmoothCollisions<_dim>> &get_potential() const { return *contact_potential_; }
-
-		int n_contact_pairs() const override { return collision_set_->size(); }
 
 	protected:
 		/// @brief Compute the contact barrier potential value

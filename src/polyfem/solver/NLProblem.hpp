@@ -4,10 +4,10 @@
 #include <polyfem/assembler/RhsAssembler.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 
-namespace polyfem
-{
-	class State;
-}
+// namespace polyfem
+// {
+// 	class State;
+// }
 
 namespace polyfem::solver
 {
@@ -64,7 +64,7 @@ namespace polyfem::solver
 
 		void set_apply_DBC(const TVector &x, const bool val);
 
-		State* state = nullptr;
+		// State* state = nullptr;
 
 	protected:
 		virtual Eigen::MatrixXd boundary_values() const;

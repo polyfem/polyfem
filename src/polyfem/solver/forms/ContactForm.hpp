@@ -5,7 +5,7 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/Types.hpp>
 
-#include <ipc/smooth_contact/smooth_collisions.hpp>
+#include <ipc/collisions/collisions.hpp>
 #include <ipc/collision_mesh.hpp>
 #include <ipc/broad_phase/broad_phase.hpp>
 #include <ipc/potentials/potential.hpp>
@@ -115,7 +115,7 @@ namespace polyfem::solver
 
 		double dhat() const { return dhat_; }
 
-		virtual int n_contact_pairs() const { return collision_set_->size(); }
+		int n_contact_pairs() const { if (!collision_set_) return 0; return collision_set_->size(); }
 
 		auto get_collision_set() const { return collision_set_; }
 

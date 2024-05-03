@@ -265,7 +265,7 @@ namespace polyfem
 			*solve_data.rhs_assembler, t, forms);
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
-		solve_data.nl_problem->state = this;
+		// solve_data.nl_problem->state = this;
 
 		// --------------------------------------------------------------------
 
@@ -316,7 +316,8 @@ namespace polyfem
 				 {"info", nl_solver->get_info()}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
-			stats.solver_info.back()["contact_pairs"] = solve_data.contact_form->n_contact_pairs();
+			if (solve_data.contact_form)
+				stats.solver_info.back()["contact_pairs"] = solve_data.contact_form->n_contact_pairs();
 			save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 		};
 

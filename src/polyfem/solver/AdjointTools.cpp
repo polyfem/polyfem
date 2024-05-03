@@ -10,7 +10,7 @@
 #include <polyfem/utils/BoundarySampler.hpp>
 
 #include <polyfem/solver/forms/ElasticForm.hpp>
-#include <polyfem/solver/forms/BarrierContactForm.hpp>
+#include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
