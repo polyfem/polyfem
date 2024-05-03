@@ -8,4 +8,4 @@ endif()
 message(STATUS "Third-party: creating target 'ipc::toolkit'")
 
 include(CPM)
-CPMAddPackage("gh:geometryprocessing/smooth-ipc#bd3dd2656ae5b1e1ad8c855ab08b64a61b4c8c4b")
+CPMAddPackage("gh:geometryprocessing/smooth-ipc#1461cd3acd1f75f472902feb2d04f0965d5cd3ad")

@@ -102,7 +102,7 @@ namespace polyfem
 		if (current_step == 0)
 			diff_cached.init(ndof(), problem->is_time_dependent() ? args["time"]["time_steps"].get<int>() : 0);
 
-		ipc::Collisions cur_collision_set = ipc::Collisions();
+		std::shared_ptr<ipc::CollisionsBase> cur_collision_set;
 		ipc::FrictionCollisions cur_friction_set = ipc::FrictionCollisions();
 
 		if (optimization_enabled == solver::CacheLevel::Derivatives)
@@ -111,18 +111,9 @@ namespace polyfem
 				compute_force_jacobian(sol, disp_grad, gradu_h);
 
 			if (solve_data.contact_form)
-			{
-				auto contact_form_ptr = std::dynamic_pointer_cast<solver::BarrierContactForm>(solve_data.contact_form);
-				if (contact_form_ptr)
-					cur_collision_set = contact_form_ptr->get_collision_set();
-			}
+				cur_collision_set = solve_data.contact_form->get_collision_set();
 			if (solve_data.friction_form)
 				cur_friction_set = solve_data.friction_form->get_friction_collision_set();
-		}
-		else
-		{
-			cur_collision_set = ipc::Collisions();
-			cur_friction_set = ipc::FrictionCollisions();
 		}
 
 		if (problem->is_time_dependent())

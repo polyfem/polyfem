@@ -2049,7 +2049,7 @@ namespace polyfem::io
 				{
 					const auto form = std::dynamic_pointer_cast<solver::SmoothContactForm<2>>(contact_form);
 					assert(form);
-					const auto &set = form->get_collision_set();
+					const auto &set = form->get_smooth_collision_set();
 					Eigen::VectorXd dhats(collision_mesh.num_edges());
 					dhats.setConstant(dhat);
 					for (int e = 0; e < dhats.size(); e++)
@@ -2061,7 +2061,7 @@ namespace polyfem::io
 				{
 					const auto form = std::dynamic_pointer_cast<solver::SmoothContactForm<3>>(contact_form);
 					assert(form);
-					const auto &set = form->get_collision_set();
+					const auto &set = form->get_smooth_collision_set();
 					Eigen::VectorXd dhats(collision_mesh.num_faces());
 					dhats.setConstant(dhat);
 					for (int e = 0; e < dhats.size(); e++)

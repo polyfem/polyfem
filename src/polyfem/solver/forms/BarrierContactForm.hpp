@@ -32,12 +32,11 @@ namespace polyfem::solver
 
 		bool use_convergent_formulation() const override { return collision_set_->use_convergent_formulation(); }
 
-		void force_shape_derivative(const ipc::Collisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term);
+		void force_shape_derivative(ipc::CollisionsBase *collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) override;
 
-		const ipc::Collisions &get_collision_set() const { return *collision_set_; }
+		ipc::Collisions &get_barrier_collision_set() { return *std::dynamic_pointer_cast<ipc::Collisions>(collision_set_); }
+		const ipc::Collisions &get_barrier_collision_set() const { return *std::dynamic_pointer_cast<ipc::Collisions>(collision_set_); }
 		const ipc::BarrierPotential &get_potential() const { return *contact_potential_; }
-
-		int n_contact_pairs() const override { return collision_set_->size(); }
 
 	protected:
 		/// @brief Compute the contact barrier potential value
@@ -61,9 +60,6 @@ namespace polyfem::solver
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
 		void update_collision_set(const Eigen::MatrixXd &displaced_surface) override;
-
-		/// @brief Cached constraint set for the current solution
-		std::shared_ptr<ipc::Collisions> collision_set_;
 
 		/// @brief Contact potential
 		std::shared_ptr<ipc::BarrierPotential> contact_potential_;

@@ -26,7 +26,7 @@ namespace polyfem::solver
 		params.set_adaptive_dhat_ratio(args["min_distance_ratio"]);
 		if (use_adaptive_dhat)
 		{
-			collision_set_->compute_adaptive_dhat(collision_mesh, collision_mesh.rest_positions(), params, broad_phase_method_);
+			get_smooth_collision_set().compute_adaptive_dhat(collision_mesh, collision_mesh.rest_positions(), params, broad_phase_method_);
 			if (use_adaptive_barrier_stiffness)
 				logger().error("Adaptive dhat is not compatible with adaptive barrier stiffness");
 		}
@@ -59,6 +59,18 @@ namespace polyfem::solver
 		// logger().debug("adaptive barrier form stiffness {}", barrier_stiffness());
     }
 
+	template <int _dim>
+	void SmoothContactForm<_dim>::force_shape_derivative(ipc::CollisionsBase *collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
+	{
+		if (!collision_set)
+		{
+			term.setZero(solution.size());
+			return;
+		}
+		StiffnessMatrix hessian = contact_potential_->hessian(*dynamic_cast<ipc::SmoothCollisions<_dim>*>(collision_set), collision_mesh_, compute_displaced_surface(solution), false);
+		term = barrier_stiffness() * collision_mesh_.to_full_dof(hessian) * adjoint_sol;
+	}
+
     template <int _dim>
     void SmoothContactForm<_dim>::update_collision_set(const Eigen::MatrixXd &displaced_surface)
 	{
@@ -68,10 +80,10 @@ namespace polyfem::solver
 			return;
 
 		if (use_cached_candidates_)
-			collision_set_->build(
+			get_smooth_collision_set().build(
 				candidates_, collision_mesh_, displaced_surface, params, use_adaptive_dhat);
 		else
-			collision_set_->build(
+			get_smooth_collision_set().build(
 				collision_mesh_, displaced_surface, params, use_adaptive_dhat, broad_phase_method_);
 		cached_displaced_surface = displaced_surface;
 	}
@@ -79,7 +91,7 @@ namespace polyfem::solver
     template <int _dim>
 	double SmoothContactForm<_dim>::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		return (*contact_potential_)(*collision_set_, collision_mesh_, compute_displaced_surface(x));
+		return (*contact_potential_)(get_smooth_collision_set(), collision_mesh_, compute_displaced_surface(x));
 	}
 
     template <int _dim>
@@ -91,7 +103,7 @@ namespace polyfem::solver
     template <int _dim>
 	void SmoothContactForm<_dim>::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = contact_potential_->gradient(*collision_set_, collision_mesh_, compute_displaced_surface(x));
+		gradv = contact_potential_->gradient(get_smooth_collision_set(), collision_mesh_, compute_displaced_surface(x));
 		gradv = collision_mesh_.to_full_dof(gradv);
 	}
 
@@ -105,7 +117,7 @@ namespace polyfem::solver
 		// 		collision_mesh_.edges(), collision_mesh_.faces());
 		// }
 		POLYFEM_SCOPED_TIMER("barrier hessian");
-		hessian = contact_potential_->hessian(*collision_set_, collision_mesh_, compute_displaced_surface(x), project_to_psd_);
+		hessian = contact_potential_->hessian(get_smooth_collision_set(), collision_mesh_, compute_displaced_surface(x), project_to_psd_);
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
 
@@ -114,8 +126,8 @@ namespace polyfem::solver
 	{
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(data.x);
 
-		const double curr_distance = collision_set_->compute_minimum_distance(collision_mesh_, displaced_surface);
-		const double curr_active_distance = collision_set_->compute_active_minimum_distance(collision_mesh_, displaced_surface);
+		const double curr_distance = get_smooth_collision_set().compute_minimum_distance(collision_mesh_, displaced_surface);
+		const double curr_active_distance = get_smooth_collision_set().compute_active_minimum_distance(collision_mesh_, displaced_surface);
 		if (!std::isinf(curr_distance))
 		{
 			const double ratio = sqrt(curr_distance) / dhat();

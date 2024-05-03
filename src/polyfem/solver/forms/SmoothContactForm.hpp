@@ -23,6 +23,8 @@ namespace polyfem::solver
 
         void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) override;
 
+		void force_shape_derivative(ipc::CollisionsBase *collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) override;
+
 		/// @brief Update fields after a step in the optimization
 		/// @param iter_num Optimization iteration number
 		/// @param x Current solution
@@ -30,7 +32,8 @@ namespace polyfem::solver
 
 		bool using_adaptive_dhat() const { return use_adaptive_dhat; }
 		const ipc::ParameterType &get_params() const { return params; }
-		const ipc::SmoothCollisions<_dim> &get_collision_set() const { return *collision_set_; }
+		ipc::SmoothCollisions<_dim> &get_smooth_collision_set() { return *std::dynamic_pointer_cast<ipc::SmoothCollisions<_dim>>(collision_set_); }
+		const ipc::SmoothCollisions<_dim> &get_smooth_collision_set() const { return *std::dynamic_pointer_cast<ipc::SmoothCollisions<_dim>>(collision_set_); }
 		const ipc::Potential<ipc::SmoothCollisions<_dim>> &get_potential() const { return *contact_potential_; }
 
 		int n_contact_pairs() const override { return collision_set_->size(); }
@@ -59,9 +62,6 @@ namespace polyfem::solver
 		double barrier_support_size() const override { return dhat_; }
 
 		void update_collision_set(const Eigen::MatrixXd &displaced_surface) override;
-
-		/// @brief Cached constraint set for the current solution
-		std::shared_ptr<ipc::SmoothCollisions<_dim>> collision_set_;
 
 		/// @brief Contact potential
 		std::shared_ptr<ipc::SmoothContactPotential<ipc::SmoothCollisions<_dim>>> contact_potential_;
