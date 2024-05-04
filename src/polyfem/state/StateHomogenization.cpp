@@ -37,7 +37,7 @@ void State::init_homogenization_solve(const double t)
 		units,
         mesh->dimension(), t,
         // Elastic form
-        n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache, args["solver"]["advanced"]["check_inversion"], args["solver"]["advanced"]["quadrature_refinement"],
+        n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache, args["solver"]["advanced"]["jacobian_threshold"], args["solver"]["advanced"]["check_inversion"], args["solver"]["advanced"]["quadrature_refinement"],
         // Body form
         n_pressure_bases, boundary_nodes, local_boundary, local_neumann_boundary,
         n_boundary_samples(), rhs, Eigen::VectorXd::Zero(ndof) /* only to set neumann BC, not used*/, mass_matrix_assembler->density(),

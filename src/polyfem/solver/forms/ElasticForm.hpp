@@ -44,6 +44,7 @@ namespace polyfem::solver
 					assembler::AssemblyValsCache &ass_vals_cache,
 					const double t, const double dt,
 					const bool is_volume,
+					const double jacobian_threshold,
 					const ElementInversionCheck check_inversion,
 					const QuadratureRefinementScheme quad_scheme);
 
@@ -119,6 +120,7 @@ namespace polyfem::solver
 		const assembler::Assembler &assembler_; ///< Reference to the assembler
 		assembler::AssemblyValsCache &ass_vals_cache_;
 		double t_;
+		const double jacobian_threshold_;
 		const ElementInversionCheck check_inversion_;
 		const QuadratureRefinementScheme quad_scheme_;
 		const double dt_;

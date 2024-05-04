@@ -27,17 +27,18 @@ namespace polyfem::utils
             }
             return *this;
         }
-        bool merge(const Tree &T) {
+        bool merge(const Tree &T, int max_depth = 2) {
             bool flag = false;
-            if (!T.has_children())
+            if (!T.has_children() || max_depth <= 0)
                 return flag;
             if (!this->has_children())
             {
                 this->add_children(T.n_children());
                 flag = true;
+                max_depth--;
             }
             for (int i = 0; i < T.n_children(); i++)
-                flag = this->child(i).merge(T.child(i)) || flag;
+                flag = this->child(i).merge(T.child(i), max_depth) || flag;
             return flag;
         }
 
@@ -84,6 +85,11 @@ namespace polyfem::utils
         std::vector<std::unique_ptr<Tree>> children;
     };
 
+    Eigen::VectorXd robust_evaluate_jacobian(
+        const int order,
+        const Eigen::MatrixXd &cp,
+        const Eigen::MatrixXd &uv);
+
     std::tuple<uint, uint, uint> count_invalid(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
@@ -92,16 +98,15 @@ namespace polyfem::utils
     std::tuple<bool, int, Tree> isValid(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
-        const Eigen::VectorXd &u);
-
-    template<unsigned int nVar>
-    bool isValid(const Eigen::Matrix<double, -1, nVar> &cp, int order);
+        const Eigen::VectorXd &u,
+        const double threshold = 0);
 
     bool isValid(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
         const Eigen::VectorXd &u1,
-        const Eigen::VectorXd &u2);
+        const Eigen::VectorXd &u2,
+        const double threshold = 0);
 
     // double maxTimeStep(
     //     const int dim,

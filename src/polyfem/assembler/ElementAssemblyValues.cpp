@@ -144,6 +144,7 @@ namespace polyfem
 
 		void ElementAssemblyValues::compute(const int el_index, const bool is_volume, const ElementBases &basis, const ElementBases &gbasis)
 		{
+			order = basis.bases[0].order();
 			basis.compute_quadrature(quadrature);
 			compute(el_index, is_volume, quadrature.points, basis, gbasis);
 		}
@@ -151,6 +152,7 @@ namespace polyfem
 		void ElementAssemblyValues::compute(const int el_index, const bool is_volume, const Eigen::MatrixXd &pts, const ElementBases &basis, const ElementBases &gbasis)
 		{
 			element_id = el_index;
+			order = basis.bases[0].order();
 			// const bool poly = !gbasis.has_parameterization;
 
 			basis_values.resize(basis.bases.size());

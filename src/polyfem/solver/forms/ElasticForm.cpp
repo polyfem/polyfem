@@ -256,6 +256,7 @@ namespace polyfem::solver
 							 assembler::AssemblyValsCache &ass_vals_cache,
 							 const double t, const double dt,
 							 const bool is_volume,
+							 const double jacobian_threshold,
 							 const ElementInversionCheck check_inversion,
 							 const QuadratureRefinementScheme quad_scheme)
 		: n_bases_(n_bases),
@@ -264,6 +265,7 @@ namespace polyfem::solver
 		  assembler_(assembler),
 		  ass_vals_cache_(ass_vals_cache),
 		  t_(t),
+		  jacobian_threshold_(jacobian_threshold),
 		  check_inversion_(check_inversion),
 		  quad_scheme_(quad_scheme),
 		  dt_(dt),
@@ -341,7 +343,7 @@ namespace polyfem::solver
 		Tree subdivision_tree;
 		{
 			POLYFEM_SCOPED_TIMER("Conservative Jacobian Check");
-			std::tie(flag, invalidID, subdivision_tree) = isValid(dim, bases_, x1);
+			std::tie(flag, invalidID, subdivision_tree) = isValid(dim, bases_, x1, jacobian_threshold_);
 		}
 
 		if (!flag)
@@ -385,22 +387,11 @@ namespace polyfem::solver
 						bases_[invalidID].set_quadrature([quad](Quadrature &quad_) {
 							quad_ = quad;
 						});
-						logger().debug("New number of quadrature points: {}", quad.size());
+						logger().debug("New number of quadrature points: {}, level: {}", quad.size(), quadrature_hierarchy_[invalidID].depth());
 
 						const double jac0 = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x0);
 						const double jac1 = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x1);
-						// const double jac2 = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], dense_uv_samples(dim, 10), x1);
 						logger().debug("Min jacobian on new quadrature points: {}, {}", jac0, jac1);
-
-						// if (jac1 > 0)
-						// {
-						// 	Eigen::MatrixXd cp = extract_nodes(dim, bases_, x1);
-						// 	bool flag = isValid<2>(cp, bases_[0].bases[0].order());
-						// 	logger().debug("Double check: {}", flag);
-						// 	cp = cp.middleRows(invalidID * bases_[0].bases.size(), bases_[0].bases.size()).eval();
-						// 	bool flag = isValid<2>(cp, bases_[0].bases[0].order());
-						// 	logger().debug("Double check: {}", flag);
-						// }
 					}
 					else if (quad_scheme_ == "P")
 					{
@@ -437,13 +428,13 @@ namespace polyfem::solver
 					std::terminate();
 				}
 
-				first_derivative(x1, grad);
-				if (!grad.array().isNaN().any())
-				{
-					logger().error("Gradient no NAN on x1 after quadrature refinement!");
-					Eigen::MatrixXd cp = extract_nodes(dim, bases_, x1);
-					std::cout << std::setprecision(16) << "flipped element\n" << cp.block(invalidID * bases_[0].bases.size(), 0, bases_[0].bases.size(), dim) << "\n";
-				}
+				// first_derivative(x1, grad);
+				// if (!grad.array().isNaN().any())
+				// {
+				// 	logger().error("Gradient no NAN on x1 after quadrature refinement!");
+				// 	Eigen::MatrixXd cp = extract_nodes(dim, bases_, x1);
+				// 	std::cout << std::setprecision(16) << "flipped element\n" << cp.block(invalidID * bases_[0].bases.size(), 0, bases_[0].bases.size(), dim) << "\n";
+				// }
 			}
 			
 			return flag;

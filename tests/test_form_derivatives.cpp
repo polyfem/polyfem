@@ -290,6 +290,7 @@ TEST_CASE("elastic form derivatives", "[form][form_derivatives][elastic_form]")
 		0,
 		state_ptr->args["time"]["dt"],
 		state_ptr->mesh->is_volume(),
+		0.,
 		"Discrete",
 		"P");
 	test_form(form, *state_ptr);
@@ -341,6 +342,7 @@ TEST_CASE("damping form derivatives", "[form][form_derivatives][damping_form]")
 		0,
 		dt,
 		state_ptr->mesh->is_volume(),
+		0.,
 		"Discrete",
 		"P");
 	form.update_quantities(0, Eigen::VectorXd::Ones(state_ptr->n_bases * dim));
@@ -390,6 +392,7 @@ TEST_CASE("Rayleigh damping form derivatives", "[form][form_derivatives][rayleig
 		0,
 		state_ptr->args["time"]["dt"],
 		state_ptr->mesh->is_volume(),
+		0.,
 		"Discrete",
 		"P");
 

@@ -23,6 +23,7 @@ namespace polyfem
 
 			// quadrature rule to use (stores points and weights)
 			quadrature::Quadrature quadrature;
+			int order;
 			int element_id;
 
 			// img of quadrature points through the geom mapping (global pos in the mesh)

@@ -29,6 +29,23 @@ namespace polyfem::utils
         return cp;
     }
 
+    Eigen::VectorXd robust_evaluate_jacobian(
+        const int order,
+        const Eigen::MatrixXd &cp,
+        const Eigen::MatrixXd &uv)
+    {
+        if (cp.cols() == 2)
+        {
+            StaticChecker<2> check(cp, shapes::TRIANGLE, order);
+            return check.jacobian(0, uv);
+        }
+        else
+        {
+            StaticChecker<3> check(cp, shapes::TETRAHEDRON, order);
+            return check.jacobian(0, uv);
+        }
+    }
+
     std::tuple<uint, uint, uint> count_invalid(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
@@ -47,18 +64,18 @@ namespace polyfem::utils
         }
 
         const int n_basis_per_cell = bases[0].bases.size();
-        Eigen::MatrixXd cp = extract_nodes(dim, bases, u);
+        const Eigen::MatrixXd cp = extract_nodes(dim, bases, u);
 
         std::tuple<uint, uint, uint> counters{0,0,0};
         if (dim == 2)
         {
-            SubdivisionHierarchy<2> hierarchy(shapes::TRIANGLE);
-            isValid<2>(cp, shapes::TRIANGLE, order, 0, nullptr, &hierarchy, &counters);
+            StaticChecker<2> check(cp, shapes::TRIANGLE, order);
+            check.isValid(0, nullptr, nullptr, &counters);
         }
         else
         {
-            SubdivisionHierarchy<3> hierarchy(shapes::TETRAHEDRON);
-            isValid<3>(cp, shapes::TETRAHEDRON, order, 0, nullptr, &hierarchy, &counters);
+            StaticChecker<3> check(cp, shapes::TETRAHEDRON, order);
+            check.isValid(0, nullptr, nullptr, &counters);
         }
         
         return counters;
@@ -68,7 +85,8 @@ namespace polyfem::utils
     isValid(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
-        const Eigen::VectorXd &u)
+        const Eigen::VectorXd &u,
+        const double threshold)
     {
         int order = -1;
         for (const auto &b : bases)
@@ -91,7 +109,9 @@ namespace polyfem::utils
         if (dim == 2)
         {
             SubdivisionHierarchy<2> hierarchy(shapes::TRIANGLE);
-            flag = isValid<2>(cp, shapes::TRIANGLE, order, 0, &invalid_id, &hierarchy);
+            StaticChecker<2> check(cp, shapes::TRIANGLE, order);
+            flag = check.isValid(threshold, &invalid_id, &hierarchy);
+
             if (!flag)
             {
                 std::function<void(const SubdivisionHierarchy<2>::Node &, Tree &)> copy_hierarchy = [&copy_hierarchy](const SubdivisionHierarchy<2>::Node &src, Tree &dst) {
@@ -109,7 +129,9 @@ namespace polyfem::utils
         else
         {
             SubdivisionHierarchy<3> hierarchy(shapes::TETRAHEDRON);
-            flag = isValid<3>(cp, shapes::TETRAHEDRON, order, 0, &invalid_id, &hierarchy);
+            StaticChecker<3> check(cp, shapes::TETRAHEDRON, order);
+            flag = check.isValid(threshold, &invalid_id, &hierarchy);
+
             if (!flag)
             {
                 std::function<void(const SubdivisionHierarchy<3>::Node &, Tree &)> copy_hierarchy = [&copy_hierarchy](const SubdivisionHierarchy<3>::Node &src, Tree &dst) {
@@ -122,6 +144,16 @@ namespace polyfem::utils
                 };
 
                 copy_hierarchy(hierarchy.get_root(), tree);
+            }
+
+            if (tree.depth() > 25)
+            {
+                std::cout << "hard element:" << threshold << " " << invalid_id << "\n";
+                std::cout << std::setprecision(20) << cp.middleRows(n_basis_per_cell * invalid_id, n_basis_per_cell) << "\n";
+                std::cout << hierarchy << "\n";
+                std::ofstream file("hard-elem.txt");
+                file << std::setprecision(20) << cp << "\n";
+                std::terminate();
             }
         }
 
@@ -161,25 +193,12 @@ namespace polyfem::utils
         return {flag, invalid_id, tree};
     }
 
-    template<unsigned int nVar>
-    bool isValid(const Eigen::Matrix<double, -1, nVar> &cp, int order)
-    {
-        if constexpr (nVar == 2)
-            return isValid<2>(cp, shapes::TRIANGLE, order, 0);
-        else if constexpr (nVar == 3)
-            return isValid<3>(cp, shapes::TETRAHEDRON, order, 0);
-        else
-            log_and_throw_error("Invalid dimension");
-    }
-
-    template bool isValid<2>(const Eigen::Matrix<double, -1, 2> &cp, int order);
-    template bool isValid<3>(const Eigen::Matrix<double, -1, 3> &cp, int order);
-
     bool isValid(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
         const Eigen::VectorXd &u1,
-        const Eigen::VectorXd &u2)
+        const Eigen::VectorXd &u2,
+        const double threshold)
     {
         int order = -1;
         for (const auto &b : bases)
@@ -194,18 +213,21 @@ namespace polyfem::utils
         }
 
         const int n_basis_per_cell = bases[0].bases.size();
-        Eigen::MatrixXd cp1 = extract_nodes(dim, bases, u1);
-        Eigen::MatrixXd cp2 = extract_nodes(dim, bases, u2);
-
-        std::ofstream fout("jacobian.txt");
-        fout << std::setprecision(15) << "matrix\n" << cp1 << "\nmatrix\n" << cp2 << "\n";
+        const Eigen::MatrixXd cp1 = extract_nodes(dim, bases, u1);
+        const Eigen::MatrixXd cp2 = extract_nodes(dim, bases, u2);
 
         bool flag = false;
         unsigned invalid_id = 0;
         if (dim == 2)
-            flag = isValid<2>(cp1, cp2, shapes::TRIANGLE, order, 0, &invalid_id);
+        {
+            DynamicChecker<2> check(cp1, cp2, shapes::TRIANGLE, order);
+            flag = check.isValid(threshold, &invalid_id);
+        }
         else
-            flag = isValid<3>(cp1, cp2, shapes::TETRAHEDRON, order, 0, &invalid_id);
+        {
+            DynamicChecker<3> check(cp1, cp2, shapes::TETRAHEDRON, order);
+            flag = check.isValid(threshold, &invalid_id);
+        }
         
         return flag;
     }
