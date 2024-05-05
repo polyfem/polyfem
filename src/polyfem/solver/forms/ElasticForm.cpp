@@ -393,24 +393,6 @@ namespace polyfem::solver
 						const double jac1 = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x1);
 						logger().debug("Min jacobian on new quadrature points: {}, {}", jac0, jac1);
 					}
-					else if (quad_scheme_ == "P")
-					{
-						// capture the flipped point by increasing the quadrature order
-						const int real_order = ++quadrature_order_[invalidID];
-						bases_[invalidID].set_quadrature([real_order, dim](Quadrature &quad_) {
-							if (dim == 3)
-							{
-								TetQuadrature tet_quadrature;
-								tet_quadrature.get_quadrature(real_order, quad_);
-							}
-							else
-							{
-								TriQuadrature tri_quadrature;
-								tri_quadrature.get_quadrature(real_order, quad_);
-							}
-						});
-						logger().debug("New order of quadrature: {}", real_order);
-					}
 					else
 						throw std::runtime_error("Invalid quadrature refinement scheme");
 				}
