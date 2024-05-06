@@ -8,6 +8,7 @@
 #include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/utils/getRSS.h>
 #include <polyfem/assembler/ViscousDamping.hpp>
 
 #include <igl/writeMSH.h>
@@ -218,12 +219,13 @@ namespace polyfem::solver
 			return uv;
 		}
 
-		double evaluate_jacobian(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &uv, const Eigen::VectorXd &disp)
+		std::tuple<double, double> evaluate_jacobian(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &uv, const Eigen::VectorXd &disp)
 		{
 			assembler::ElementAssemblyValues vals;
 			vals.compute(0, uv.cols() == 3, uv, bs, gbs);
 
-			double min_det = 1;
+			double min_disp_det = 1;
+			double min_geo_det = 1;
 			for (long p = 0; p < uv.rows(); ++p)
 			{
 				Eigen::MatrixXd disp_grad;
@@ -243,9 +245,10 @@ namespace polyfem::solver
 				}
 
 				disp_grad = disp_grad * vals.jac_it[p] + Eigen::MatrixXd::Identity(uv.cols(), uv.cols());
-				min_det = std::min(min_det, disp_grad.determinant());
+				min_disp_det = std::min(min_disp_det, disp_grad.determinant());
+				min_geo_det = std::min(disp_grad.determinant() / vals.jac_it[p].determinant(), min_geo_det);
 			}
-			return min_det;
+			return {min_geo_det, min_disp_det};
 		}
 	} // namespace
 
@@ -281,6 +284,14 @@ namespace polyfem::solver
 		quadrature_order_.assign(bases_.size(), real_order);
 
 		logger().debug("Check inversion: {}, Quadrature refinement: {}", check_inversion_, quad_scheme_);
+	
+		if (check_inversion_ != "Discrete")
+		{
+			Eigen::VectorXd x0;
+			x0.setZero(n_bases_ * (is_volume_ ? 3 : 2));
+			if (!is_step_collision_free(x0, x0))
+				log_and_throw_error("Initial state has inverted elements!");
+		}
 	}
 
 	double ElasticForm::value_unweighted(const Eigen::VectorXd &x) const
@@ -333,6 +344,8 @@ namespace polyfem::solver
 
 	bool ElasticForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
+		using namespace quadrature;
+		
 		if (check_inversion_ == "Discrete")
 			return true;
 
@@ -349,6 +362,11 @@ namespace polyfem::solver
 		if (!flag)
 		{
 			logger().warn("Conservative check did a good job! Element {} is flipped!", invalidID);
+
+			const Quadrature quad = refine_quadrature(quadrature_hierarchy_[invalidID], dim, quadrature_order_[invalidID]);
+			const auto [geo_jac0, jac0] = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x0);
+			const auto [geo_jac1, jac1] = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x1);
+			logger().debug("Min jacobian on quadrature points: {} {}, {} {}", geo_jac0, jac0, geo_jac1, jac1);
 
 			if (quadrature_hierarchy_[invalidID].merge(subdivision_tree))
 			{
@@ -374,8 +392,6 @@ namespace polyfem::solver
 				// 		log_and_throw_error("Starting point invalid!");
 				// }
 
-				using namespace quadrature;
-
 				// switch (quad_scheme_)
 				{
 					if (quad_scheme_ == "H")
@@ -389,9 +405,9 @@ namespace polyfem::solver
 						});
 						logger().debug("New number of quadrature points: {}, level: {}", quad.size(), quadrature_hierarchy_[invalidID].depth());
 
-						const double jac0 = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x0);
-						const double jac1 = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x1);
-						logger().debug("Min jacobian on new quadrature points: {}, {}", jac0, jac1);
+						const auto [geo_jac0, jac0] = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x0);
+						const auto [geo_jac1, jac1] = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x1);
+						logger().debug("Min jacobian on quadrature points: {} {}, {} {}", geo_jac0, jac0, geo_jac1, jac1);
 					}
 					else
 						throw std::runtime_error("Invalid quadrature refinement scheme");
@@ -399,6 +415,8 @@ namespace polyfem::solver
 
 				if (ass_vals_cache_.is_initialized())
 					ass_vals_cache_.update(invalidID, is_volume_, bases_[invalidID], geom_bases_[invalidID]);
+
+				logger().debug("Peak memory: {} MB", getPeakRSS() / (1024. * 1024));
 				
 				Eigen::VectorXd grad;
 				first_derivative(x0, grad);
