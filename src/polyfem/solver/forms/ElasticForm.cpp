@@ -16,6 +16,7 @@
 
 using namespace polyfem::assembler;
 using namespace polyfem::utils;
+using namespace polyfem::quadrature;
 
 namespace polyfem::solver
 {
@@ -159,8 +160,6 @@ namespace polyfem::solver
 	
 		quadrature::Quadrature refine_quadrature(const Tree &tree, const int dim, const int order)
 		{
-			using namespace quadrature;
-
 			Eigen::MatrixXd pts(dim + 1, dim);
 			if (dim == 2)
 				pts << 0., 0.,
@@ -249,6 +248,21 @@ namespace polyfem::solver
 				min_geo_det = std::min(disp_grad.determinant() / vals.jac_it[p].determinant(), min_geo_det);
 			}
 			return {min_geo_det, min_disp_det};
+		}
+
+		void update_quadrature(const int invalidID, const int dim, Tree &tree, const int quad_order, basis::ElementBases &bs, const basis::ElementBases &gbs, assembler::AssemblyValsCache &ass_vals_cache)
+		{
+			// update quadrature to capture the point with negative jacobian
+			const Quadrature quad = refine_quadrature(tree, dim, quad_order);
+
+			// capture the flipped point by refining the quadrature
+			bs.set_quadrature([quad](Quadrature &quad_) {
+				quad_ = quad;
+			});
+			logger().debug("New number of quadrature points: {}, level: {}", quad.size(), tree.depth());
+
+			if (ass_vals_cache.is_initialized())
+				ass_vals_cache.update(invalidID, dim == 3, bs, gbs);
 		}
 	} // namespace
 
@@ -339,13 +353,56 @@ namespace polyfem::solver
 
 	double ElasticForm::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
+		// TODO: handle polygon and quad
+		if (check_inversion_ != "Discrete")
+		{
+			const int dim = is_volume_ ? 3 : 2;
+			double step;
+			int invalidID;
+			Tree subdivision_tree;
+			{
+				POLYFEM_SCOPED_TIMER("Transient Jacobian Check");
+				std::tie(step, invalidID, subdivision_tree) = maxTimeStep(dim, bases_, geom_bases_, x0, x1);
+
+				logger().log(step < 1? spdlog::level::debug : spdlog::level::trace, "Jacobian max step size: {}", step);
+			}
+
+			if (quadrature_hierarchy_[invalidID].merge(subdivision_tree))
+			{
+				update_quadrature(invalidID, dim, quadrature_hierarchy_[invalidID], quadrature_order_[invalidID], bases_[invalidID], geom_bases_[invalidID], ass_vals_cache_);
+
+				// verify that new quadrature points don't make x0 invalid
+				{
+					Quadrature quad;
+					bases_[invalidID].compute_quadrature(quad);
+					const auto [geo_jac0, jac0] = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x0);
+					const auto [geo_jac1, jac1] = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x1);
+					logger().debug("Min jacobian on quadrature points: {} {}, {} {}", geo_jac0, jac0, geo_jac1, jac1);
+				}
+
+				logger().debug("Peak memory: {} MB", getPeakRSS() / (1024. * 1024));
+				
+				const int order = std::max(bases_[0].bases.front().order(), geom_bases_[0].bases.front().order());
+				const int n_basis_per_cell = std::max(bases_[0].bases.size(), geom_bases_[0].bases.size());
+
+				Eigen::VectorXd grad;
+				first_derivative(x0, grad);
+				if (grad.array().isNaN().any())
+				{
+					logger().error("Gradient NAN on x0 after quadrature refinement!");
+					Eigen::MatrixXd cp = extract_nodes(dim, bases_, geom_bases_, x0, order);
+					std::cout << std::setprecision(16) << "flipped element\n" << cp.block(invalidID * n_basis_per_cell, 0, n_basis_per_cell, dim) << "\n";
+					std::terminate();
+				}
+			}
+
+			return step;
+		}
 		return 1.;
 	}
 
 	bool ElasticForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
-	{
-		using namespace quadrature;
-		
+	{		
 		if (check_inversion_ == "Discrete")
 			return true;
 
@@ -356,85 +413,40 @@ namespace polyfem::solver
 		Tree subdivision_tree;
 		{
 			POLYFEM_SCOPED_TIMER("Conservative Jacobian Check");
-			std::tie(flag, invalidID, subdivision_tree) = isValid(dim, bases_, x1, jacobian_threshold_);
+			std::tie(flag, invalidID, subdivision_tree) = isValid(dim, bases_, geom_bases_, x1, jacobian_threshold_);
 		}
 
 		if (!flag)
 		{
 			logger().warn("Conservative check did a good job! Element {} is flipped!", invalidID);
 
-			const Quadrature quad = refine_quadrature(quadrature_hierarchy_[invalidID], dim, quadrature_order_[invalidID]);
-			const auto [geo_jac0, jac0] = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x0);
-			const auto [geo_jac1, jac1] = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x1);
-			logger().debug("Min jacobian on quadrature points: {} {}, {} {}", geo_jac0, jac0, geo_jac1, jac1);
+			// const Quadrature quad = refine_quadrature(quadrature_hierarchy_[invalidID], dim, quadrature_order_[invalidID]);
+			// const auto [geo_jac0, jac0] = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x0);
+			// const auto [geo_jac1, jac1] = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x1);
+			// logger().debug("Min jacobian on quadrature points: {} {}, {} {}", geo_jac0, jac0, geo_jac1, jac1);
 
 			if (quadrature_hierarchy_[invalidID].merge(subdivision_tree))
 			{
-				// save hierarchy as a mesh
-				// {
-				// 	static int id = 0;
-				// 	Eigen::MatrixXd points;
-				// 	Eigen::MatrixXi elements;
-				// 	get_refined_mesh(x0, points, elements);
-				// 	if (points.cols() == 2)
-				// 	{
-				// 		points.conservativeResize(points.rows(), 3);
-				// 		points.col(2).setZero();
-				// 		igl::writeOBJ("hierarchy"+std::to_string(id++)+".obj", points, elements);
-				// 	}
-				// 	else
-				// 		igl::writeMSH("hierarchy"+std::to_string(id++)+".msh", points, Eigen::MatrixXi(), elements, Eigen::MatrixXi(), Eigen::MatrixXi::Ones(elements.rows(), 1), {}, {}, {}, {}, {});
-				// }
+				update_quadrature(invalidID, dim, quadrature_hierarchy_[invalidID], quadrature_order_[invalidID], bases_[invalidID], geom_bases_[invalidID], ass_vals_cache_);
 
-				// {
-				// 	const auto [flag_, invalidID_, subdivision_tree_] = isValid(dim, bases_, x0);
-				// 	if (!flag_)
-				// 		log_and_throw_error("Starting point invalid!");
-				// }
-
-				// switch (quad_scheme_)
-				{
-					if (quad_scheme_ == "H")
-					{
-						// update quadrature to capture the point with negative jacobian
-						const Quadrature quad = refine_quadrature(quadrature_hierarchy_[invalidID], dim, quadrature_order_[invalidID]);
-
-						// capture the flipped point by refining the quadrature
-						bases_[invalidID].set_quadrature([quad](Quadrature &quad_) {
-							quad_ = quad;
-						});
-						logger().debug("New number of quadrature points: {}, level: {}", quad.size(), quadrature_hierarchy_[invalidID].depth());
-
-						const auto [geo_jac0, jac0] = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x0);
-						const auto [geo_jac1, jac1] = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x1);
-						logger().debug("Min jacobian on quadrature points: {} {}, {} {}", geo_jac0, jac0, geo_jac1, jac1);
-					}
-					else
-						throw std::runtime_error("Invalid quadrature refinement scheme");
-				}
-
-				if (ass_vals_cache_.is_initialized())
-					ass_vals_cache_.update(invalidID, is_volume_, bases_[invalidID], geom_bases_[invalidID]);
-
+				Quadrature quad;
+				bases_[invalidID].compute_quadrature(quad);
+				const auto [geo_jac0, jac0] = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x0);
+				const auto [geo_jac1, jac1] = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x1);
 				logger().debug("Peak memory: {} MB", getPeakRSS() / (1024. * 1024));
 				
+				const int order = std::max(bases_[0].bases.front().order(), geom_bases_[0].bases.front().order());
+				const int n_basis_per_cell = std::max(bases_[0].bases.size(), geom_bases_[0].bases.size());
+
 				Eigen::VectorXd grad;
 				first_derivative(x0, grad);
 				if (grad.array().isNaN().any())
 				{
 					logger().error("Gradient NAN on x0 after quadrature refinement!");
-					Eigen::MatrixXd cp = extract_nodes(dim, bases_, x0);
-					std::cout << std::setprecision(16) << "flipped element\n" << cp.block(invalidID * bases_[0].bases.size(), 0, bases_[0].bases.size(), dim) << "\n";
+					Eigen::MatrixXd cp = extract_nodes(dim, bases_, geom_bases_, x0, order);
+					std::cout << std::setprecision(16) << "flipped element\n" << cp.block(invalidID * n_basis_per_cell, 0, n_basis_per_cell, dim) << "\n";
 					std::terminate();
 				}
-
-				// first_derivative(x1, grad);
-				// if (!grad.array().isNaN().any())
-				// {
-				// 	logger().error("Gradient no NAN on x1 after quadrature refinement!");
-				// 	Eigen::MatrixXd cp = extract_nodes(dim, bases_, x1);
-				// 	std::cout << std::setprecision(16) << "flipped element\n" << cp.block(invalidID * bases_[0].bases.size(), 0, bases_[0].bases.size(), dim) << "\n";
-				// }
 			}
 			
 			return flag;
@@ -445,7 +457,7 @@ namespace polyfem::solver
 
 		{
 			POLYFEM_SCOPED_TIMER("Transient Jacobian Check");
-			flag = isValid(is_volume_ ? 3 : 2, bases_, x0, x1);
+			flag = isValid(is_volume_ ? 3 : 2, bases_, geom_bases_, x0, x1);
 		}
 
 		if (!flag)
@@ -462,8 +474,8 @@ namespace polyfem::solver
 		if (grad.array().isNaN().any())
 			return false;
 
-		if (check_inversion_ != "Discrete")
-			return is_step_collision_free(x0, x1);
+		// if (check_inversion_ != "Discrete")
+		// 	return is_step_collision_free(x0, x1);
 
 		return true;
 

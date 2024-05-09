@@ -8,23 +8,65 @@
 #include <paraviewo/ParaviewWriter.hpp>
 #include <paraviewo/VTUWriter.hpp>
 #include <paraviewo/HDF5VTUWriter.hpp>
+#include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/io/Evaluator.hpp>
 
 using namespace element_validity;
+using namespace polyfem::assembler;
 
 namespace polyfem::utils
 {
-    Eigen::MatrixXd extract_nodes(const int dim, const std::vector<basis::ElementBases> &bases, const Eigen::VectorXd &u)
+    Eigen::MatrixXd extract_nodes(const int dim, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const Eigen::VectorXd &u, int order)
     {
-        const int n_basis_per_cell = bases[0].bases.size();
+        Eigen::MatrixXd local_pts;
+        if (dim == 3)
+            autogen::p_nodes_3d(order, local_pts);
+        else
+            autogen::p_nodes_2d(order, local_pts);
+        const int n_basis_per_cell = local_pts.rows();
         Eigen::MatrixXd cp = Eigen::MatrixXd::Zero(bases.size() * n_basis_per_cell, dim);
+        // auto tmp = cp;
         for (int e = 0; e < bases.size(); ++e)
         {
-            for (int i = 0; i < bases[e].bases.size(); ++i)
-            {
-                const auto &g = bases[e].bases[i].global()[0];
+            // for (int i = 0; i < bases[e].bases.size(); ++i)
+            // {
+            //     const auto &g = bases[e].bases[i].global()[0];
 
-                cp.row(e * n_basis_per_cell + i) = g.node + u.segment(g.index * dim, dim).transpose();
+            //     tmp.row(e * n_basis_per_cell + i) = g.node + u.segment(g.index * dim, dim).transpose();
+
+            //     if (bases[e].bases[i].global().size() > 1 || g.val < 1)
+            //         logger().error("More than 1 global! {}", g.val);
+            // }
+
+            ElementAssemblyValues vals;
+            vals.compute(e, dim == 3, local_pts, bases[e], gbases[e]);
+            for (int p = 0; p < local_pts.rows(); p++)
+            {
+                for (std::size_t j = 0; j < vals.basis_values.size(); ++j)
+                {
+                    for (const auto &g : vals.basis_values[j].global)
+                        cp.row(e * n_basis_per_cell + p) += g.val * u.segment(g.index * dim, dim).transpose() * vals.basis_values[j].val;
+                }
             }
+
+            Eigen::MatrixXd mapped;
+            gbases[e].eval_geom_mapping(local_pts, mapped);
+            cp.middleRows(e * n_basis_per_cell, n_basis_per_cell) += mapped;
+
+            // if (order == bases[0].bases[0].order() && (tmp.middleRows(e * n_basis_per_cell, n_basis_per_cell) - cp.middleRows(e * n_basis_per_cell, n_basis_per_cell)).norm() > 1e-8)
+            // {
+            //     std::cout << std::setprecision(16) << "method 1:\n" << tmp.middleRows(e * n_basis_per_cell, n_basis_per_cell) << 
+            //     "\nmethod 2:\n" << cp.middleRows(e * n_basis_per_cell, n_basis_per_cell) << 
+            //     "\ndiff:\n" << (tmp.middleRows(e * n_basis_per_cell, n_basis_per_cell) - cp.middleRows(e * n_basis_per_cell, n_basis_per_cell)) << "\n";
+            //     std::cout << "mapped:\n" << mapped << "\nnodes:\n";
+            //     for (int i = 0; i < bases[e].bases.size(); ++i)
+            //     {
+            //         const auto &g = bases[e].bases[i].global()[0];
+            //         std::cout << g.node << "\n";
+            //     }
+            //     std::cout << std::endl;
+            //     std::terminate();
+            // }
         }
         return cp;
     }
@@ -49,22 +91,12 @@ namespace polyfem::utils
     std::tuple<uint, uint, uint> count_invalid(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
+        const std::vector<basis::ElementBases> &gbases, 
         const Eigen::VectorXd &u)
     {
-        int order = -1;
-        for (const auto &b : bases)
-        {
-            for (const auto &bs : b.bases)
-            {
-                if (order < 0)
-                    order = bs.order();
-                else if (order != bs.order())
-                    log_and_throw_error("All bases must have the same order");
-            }
-        }
-
-        const int n_basis_per_cell = bases[0].bases.size();
-        const Eigen::MatrixXd cp = extract_nodes(dim, bases, u);
+        const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
+        const int n_basis_per_cell = std::max(bases[0].bases.size(), gbases[0].bases.size());
+        const Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
 
         std::tuple<uint, uint, uint> counters{0,0,0};
         if (dim == 2)
@@ -85,23 +117,13 @@ namespace polyfem::utils
     isValid(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
+        const std::vector<basis::ElementBases> &gbases, 
         const Eigen::VectorXd &u,
         const double threshold)
     {
-        int order = -1;
-        for (const auto &b : bases)
-        {
-            for (const auto &bs : b.bases)
-            {
-                if (order < 0)
-                    order = bs.order();
-                else if (order != bs.order())
-                    log_and_throw_error("All bases must have the same order");
-            }
-        }
-
-        const int n_basis_per_cell = bases[0].bases.size();
-        Eigen::MatrixXd cp = extract_nodes(dim, bases, u);
+        const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
+        const int n_basis_per_cell = std::max(bases[0].bases.size(), gbases[0].bases.size());
+        Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
 
         bool flag = false;
         unsigned invalid_id = 0;
@@ -110,7 +132,8 @@ namespace polyfem::utils
         {
             SubdivisionHierarchy<2> hierarchy(shapes::TRIANGLE);
             StaticChecker<2> check(cp, shapes::TRIANGLE, order);
-            flag = check.isValid(threshold, &invalid_id, &hierarchy);
+            const auto flag_ = check.isValid(threshold, &invalid_id, &hierarchy);
+            flag = flag_ == Validity::Valid;
 
             if (!flag)
             {
@@ -130,7 +153,8 @@ namespace polyfem::utils
         {
             SubdivisionHierarchy<3> hierarchy(shapes::TETRAHEDRON);
             StaticChecker<3> check(cp, shapes::TETRAHEDRON, order);
-            flag = check.isValid(threshold, &invalid_id, &hierarchy);
+            const auto flag_ = check.isValid(threshold, &invalid_id, &hierarchy);
+            flag = flag_ == Validity::Valid;
 
             if (!flag)
             {
@@ -157,37 +181,24 @@ namespace polyfem::utils
             }
         }
 
-        // export invalid element in rational form
-        // if (!flag)
         // {
-        //     static Eigen::MatrixXd invalid_cp;
-        //     if (invalid_cp.rows() == 0)
-        //         invalid_cp = cp.block(invalid_id * n_basis_per_cell, 0, n_basis_per_cell, dim);
-        //     else
-        //     {
-        //         invalid_cp.conservativeResize(invalid_cp.rows() + n_basis_per_cell, Eigen::NoChange);
-        //         invalid_cp.block(invalid_cp.rows() - n_basis_per_cell, 0, n_basis_per_cell, dim) = cp.block(invalid_id * n_basis_per_cell, 0, n_basis_per_cell, dim);
-        //     }
+        //     std::vector<std::string> nodes_rational;
+        //     nodes_rational.resize(cp.rows() * 2 * dim);
 
-        //     if (invalid_cp.rows() % (10*n_basis_per_cell) == 0)
+        //     for (int i = 0; i < cp.rows(); i++)
         //     {
-        //         std::vector<std::string> nodes_rational;
-        //         nodes_rational.resize(invalid_cp.rows() * 2 * dim);
-
-        //         for (int i = 0; i < invalid_cp.rows(); i++)
+        //         for (int d = 0; d < dim; d++)
         //         {
-        //             for (int d = 0; d < dim; d++)
-        //             {
-        //                 utils::Rational num(invalid_cp(i, d));
-        //                 nodes_rational[i * (2 * dim) + d * 2 + 0] = num.get_numerator_str();
-        //                 nodes_rational[i * (2 * dim) + d * 2 + 1] = num.get_denominator_str();
-        //             }
+        //             utils::Rational num(cp(i, d));
+        //             nodes_rational[i * (2 * dim) + d * 2 + 0] = num.get_numerator_str();
+        //             nodes_rational[i * (2 * dim) + d * 2 + 1] = num.get_denominator_str();
         //         }
-        //         std::string path = "/home/zizhou/positive-jacobian/result/positive-jacobian/validation/invalid_element.hdf5";
-        //         std::filesystem::remove(path);
-        //         paraviewo::HDF5MatrixWriter::write_matrix(path, dim, invalid_cp.rows() / n_basis_per_cell, n_basis_per_cell, nodes_rational);
-        //         logger().debug("Saved invalid element to invalid_element.hdf5");
         //     }
+        //     std::string path = "check.hdf5";
+        //     std::filesystem::remove(path);
+        //     paraviewo::HDF5MatrixWriter::write_matrix(path, dim, cp.rows() / n_basis_per_cell, n_basis_per_cell, nodes_rational);
+        //     logger().debug("Saved invalid element to check.hdf5");
+        //     std::terminate();
         // }
         
         return {flag, invalid_id, tree};
@@ -196,68 +207,130 @@ namespace polyfem::utils
     bool isValid(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
+        const std::vector<basis::ElementBases> &gbases, 
         const Eigen::VectorXd &u1,
         const Eigen::VectorXd &u2,
         const double threshold)
     {
-        int order = -1;
-        for (const auto &b : bases)
-        {
-            for (const auto &bs : b.bases)
-            {
-                if (order < 0)
-                    order = bs.order();
-                else if (order != bs.order())
-                    log_and_throw_error("All bases must have the same order");
-            }
-        }
+        const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
+        const int n_basis_per_cell = std::max(bases[0].bases.size(), gbases[0].bases.size());
 
-        const int n_basis_per_cell = bases[0].bases.size();
-        const Eigen::MatrixXd cp1 = extract_nodes(dim, bases, u1);
-        const Eigen::MatrixXd cp2 = extract_nodes(dim, bases, u2);
+        const Eigen::MatrixXd cp1 = extract_nodes(dim, bases, gbases, u1, order);
+        const Eigen::MatrixXd cp2 = extract_nodes(dim, bases, gbases, u2, order);
 
         bool flag = false;
         unsigned invalid_id = 0;
         if (dim == 2)
         {
             DynamicChecker<2> check(cp1, cp2, shapes::TRIANGLE, order);
-            flag = check.isValid(threshold, &invalid_id);
+            const auto flag_ = check.isValid(threshold, &invalid_id);
+            flag = flag_ == Validity::Valid;
         }
         else
         {
             DynamicChecker<3> check(cp1, cp2, shapes::TETRAHEDRON, order);
-            flag = check.isValid(threshold, &invalid_id);
+            const auto flag_ = check.isValid(threshold, &invalid_id);
+            flag = flag_ == Validity::Valid;
         }
         
         return flag;
     }
 
-    // double maxTimeStep(
-    //     const int dim,
-    //     const std::vector<basis::ElementBases> &bases, 
-    //     const Eigen::VectorXd &u1,
-    //     const Eigen::VectorXd &u2,
-    //     double precision)
-    // {
-    //     int order = -1;
-    //     for (const auto &b : bases)
-    //     {
-    //         for (const auto &bs : b.bases)
-    //         {
-    //             if (order < 0)
-    //                 order = bs.order();
-    //             else if (order != bs.order())
-    //                 log_and_throw_error("All bases must have the same order");
-    //         }
-    //     }
+    std::tuple<double, int, Tree> maxTimeStep(
+        const int dim,
+        const std::vector<basis::ElementBases> &bases, 
+        const std::vector<basis::ElementBases> &gbases, 
+        const Eigen::VectorXd &u1,
+        const Eigen::VectorXd &u2,
+        double precision)
+    {
+        const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
+        const int n_basis_per_cell = std::max(bases[0].bases.size(), gbases[0].bases.size());
+        Eigen::MatrixXd cp1 = extract_nodes(dim, bases, gbases, u1, order);
+        Eigen::MatrixXd cp2 = extract_nodes(dim, bases, gbases, u2, order);
 
-    //     const int n_basis_per_cell = bases[0].bases.size();
-    //     Eigen::MatrixXd cp1 = extract_nodes(dim, bases, u1);
-    //     Eigen::MatrixXd cp2 = extract_nodes(dim, bases, u2);
+        unsigned invalidID = -1;
+        bool gaveUp = false;
+        double step = 1;
+        Tree tree;
+        if (dim == 2)
+        {
+            SubdivisionHierarchy<2> hierarchy(shapes::TRIANGLE);
+            DynamicChecker<2> check(cp1, cp2, shapes::TRIANGLE, order);
+            step = check.maxTimeStep(0, precision, &invalidID, &hierarchy, &gaveUp);
+            if (step < 1)
+            {
+                std::function<void(const SubdivisionHierarchy<2>::Node &, Tree &)> copy_hierarchy = [&copy_hierarchy](const SubdivisionHierarchy<2>::Node &src, Tree &dst) {
+                    if (src.hasChildren())
+                    {
+                        dst.add_children(4);
+                        for (int i = 0; i < 4; i++)
+                            copy_hierarchy(*(src.children[i]), dst.child(i));
+                    }
+                };
 
-    //     if (dim == 2)
-    //         return maxTimeStep<2>(cp1, cp2, shapes::TRIANGLE, order, 0, precision);
-    //     else
-    //         return maxTimeStep<3>(cp1, cp2, shapes::TETRAHEDRON, order, 0, precision);
-    // }
+                copy_hierarchy(hierarchy.get_root(), tree);
+            }
+        }
+        else
+        {
+            SubdivisionHierarchy<3> hierarchy(shapes::TETRAHEDRON);
+            DynamicChecker<3> check(cp1, cp2, shapes::TETRAHEDRON, order);
+            step = check.maxTimeStep(0, precision, &invalidID, &hierarchy, &gaveUp);
+            if (step < 1)
+            {
+                std::function<void(const SubdivisionHierarchy<3>::Node &, Tree &)> copy_hierarchy = [&copy_hierarchy](const SubdivisionHierarchy<3>::Node &src, Tree &dst) {
+                    if (src.hasChildren())
+                    {
+                        dst.add_children(8);
+                        for (int i = 0; i < 8; i++)
+                            copy_hierarchy(*(src.children[i]), dst.child(i));
+                    }
+                };
+
+                copy_hierarchy(hierarchy.get_root(), tree);
+            }
+        }
+
+        // {
+        //     std::string path = "check.hdf5";
+        //     const int n_elem = bases.size();
+        //     std::vector<std::string> nodes_rational;
+        //     nodes_rational.resize(n_elem * n_basis_per_cell * 4 * dim);
+        //     // utils::maybe_parallel_for(n_elem, [&](int start, int end, int thread_id) {
+        //         for (int e = 0; e < n_elem; e++)
+        //         {
+        //             for (int i = 0; i < n_basis_per_cell; i++)
+        //             {
+        //                 const int idx = i + n_basis_per_cell * e;
+        //                 Eigen::Matrix<double, -1, 1, Eigen::ColMajor, 3, 1> pos = cp2.row(idx);
+
+        //                 for (int d = 0; d < dim; d++)
+        //                 {
+        //                     utils::Rational num(pos(d));
+        //                     nodes_rational[idx * (4 * dim) + d * 4 + 2] = num.get_numerator_str();
+        //                     nodes_rational[idx * (4 * dim) + d * 4 + 3] = num.get_denominator_str();
+        //                 }
+
+        //                 pos = cp1.row(idx);
+
+        //                 for (int d = 0; d < dim; d++)
+        //                 {
+        //                     utils::Rational num(pos(d));
+        //                     nodes_rational[idx * (4 * dim) + d * 4 + 0] = num.get_numerator_str();
+        //                     nodes_rational[idx * (4 * dim) + d * 4 + 1] = num.get_denominator_str();
+        //                 }
+        //             }
+        //         }
+        //     // });
+        //     // paraviewo::HDF5MatrixWriter::write_matrix(rawname + ".hdf5", dim, bases.size(), n_basis_per_cell, nodes);
+        //     paraviewo::HDF5MatrixWriter::write_matrix(path, dim, n_elem, n_basis_per_cell, nodes_rational);
+        //     // for (auto& s : nodes_rational)
+        //     // 	std::cout << s << ",";
+        //     logger().info("Save to {}", path);
+        //     std::terminate();
+        // }
+
+        return {step, invalidID, tree};
+    }
 }

@@ -331,7 +331,7 @@ namespace polyfem
 
 		if (args["solver"]["advanced"]["count_flipped_els"])
 		{
-			const auto [valid, invalid, uncertain] = count_invalid(mesh->dimension(), bases, sol);
+			const auto [valid, invalid, uncertain] = count_invalid(mesh->dimension(), bases, geom_bases(), sol);
 			logger().debug("Flipped elements: {}, uncertain elements: {}, total: {}", invalid, uncertain, invalid + uncertain + valid);
 		}
 

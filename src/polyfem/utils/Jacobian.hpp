@@ -93,27 +93,31 @@ namespace polyfem::utils
     std::tuple<uint, uint, uint> count_invalid(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
+        const std::vector<basis::ElementBases> &gbases,
         const Eigen::VectorXd &u);
 
     std::tuple<bool, int, Tree> isValid(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
+        const std::vector<basis::ElementBases> &gbases,
         const Eigen::VectorXd &u,
         const double threshold = 0);
 
     bool isValid(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
+        const std::vector<basis::ElementBases> &gbases,
         const Eigen::VectorXd &u1,
         const Eigen::VectorXd &u2,
         const double threshold = 0);
 
-    // double maxTimeStep(
-    //     const int dim,
-    //     const std::vector<basis::ElementBases> &bases, 
-    //     const Eigen::VectorXd &u1,
-    //     const Eigen::VectorXd &u2,
-    //     double precision);
+    std::tuple<double, int, Tree> maxTimeStep(
+        const int dim,
+        const std::vector<basis::ElementBases> &bases, 
+        const std::vector<basis::ElementBases> &gbases,
+        const Eigen::VectorXd &u1,
+        const Eigen::VectorXd &u2,
+        double precision = 1. / 8);
 
-    Eigen::MatrixXd extract_nodes(const int dim, const std::vector<basis::ElementBases> &bases, const Eigen::VectorXd &u);
+    Eigen::MatrixXd extract_nodes(const int dim, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const Eigen::VectorXd &u, int order);
 }
