@@ -32,7 +32,8 @@
             "soft_constraint",
             "layer_thickness",
             "AMIPS",
-            "parametrized_product"
+            "parametrized_product",
+            "smooth_contact_force_norm"
         ],
         "doc": "TODO"
     },
@@ -805,5 +806,19 @@
             "print_energy"
         ],
         "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "smooth_contact_force_norm",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "surface_selection",
+            "weight",
+            "print_energy"
+        ]
     }
 ]

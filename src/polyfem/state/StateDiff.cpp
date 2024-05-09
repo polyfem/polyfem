@@ -214,26 +214,50 @@ namespace polyfem
 						const Eigen::MatrixXd surface_velocities = (surface_solution - surface_solution_prev) / dt;
 						const double dv_dut = -1 / dt;
 
-						hessian_prev =
-							solve_data.friction_form->get_friction_potential().force_jacobian(
-								diff_cached.friction_collision_set(force_step),
-								collision_mesh,
-								collision_mesh.rest_positions(),
-								/*lagged_displacements=*/surface_solution_prev,
-								surface_velocities,
-								solve_data.contact_form->dhat(),
-								solve_data.contact_form->barrier_stiffness(),
-								ipc::FrictionPotential::DiffWRT::LAGGED_DISPLACEMENTS)
-							+ solve_data.friction_form->get_friction_potential().force_jacobian(
-								  diff_cached.friction_collision_set(force_step),
-								  collision_mesh,
-								  collision_mesh.rest_positions(),
-								  /*lagged_displacements=*/surface_solution_prev,
-								  surface_velocities,
-								  solve_data.contact_form->dhat(),
-								  solve_data.contact_form->barrier_stiffness(),
-								  ipc::FrictionPotential::DiffWRT::VELOCITIES)
-								  * dv_dut;
+						if (solve_data.contact_form->name() == "barrier-contact")
+						{
+							hessian_prev =
+								solve_data.friction_form->get_friction_potential().force_jacobian(
+									diff_cached.friction_collision_set(force_step),
+									collision_mesh,
+									collision_mesh.rest_positions(),
+									/*lagged_displacements=*/surface_solution_prev,
+									surface_velocities,
+									solve_data.contact_form->dhat(),
+									solve_data.contact_form->barrier_stiffness(),
+									ipc::FrictionPotential::DiffWRT::LAGGED_DISPLACEMENTS)
+								+ solve_data.friction_form->get_friction_potential().force_jacobian(
+									diff_cached.friction_collision_set(force_step),
+									collision_mesh,
+									collision_mesh.rest_positions(),
+									/*lagged_displacements=*/surface_solution_prev,
+									surface_velocities,
+									solve_data.contact_form->dhat(),
+									solve_data.contact_form->barrier_stiffness(),
+									ipc::FrictionPotential::DiffWRT::VELOCITIES)
+									* dv_dut;
+						}
+						// else if (solve_data.contact_form->name() == "smooth-contact")
+						// {
+						// 	hessian_prev =
+						// 		solve_data.friction_form->get_friction_potential().smooth_contact_force_jacobian(
+						// 			diff_cached.friction_collision_set(force_step),
+						// 			collision_mesh,
+						// 			collision_mesh.rest_positions(),
+						// 			/*lagged_displacements=*/surface_solution_prev,
+						// 			surface_velocities,
+						// 			ipc::FrictionPotential::DiffWRT::LAGGED_DISPLACEMENTS)
+						// 		+ solve_data.friction_form->get_friction_potential().smooth_contact_force_jacobian(
+						// 			diff_cached.friction_collision_set(force_step),
+						// 			collision_mesh,
+						// 			collision_mesh.rest_positions(),
+						// 			/*lagged_displacements=*/surface_solution_prev,
+						// 			surface_velocities,
+						// 			ipc::FrictionPotential::DiffWRT::VELOCITIES)
+						// 			* dv_dut;
+						// }
+						else
+							log_and_throw_error("Invalid contact form name!");
 
 						hessian_prev *= -1;
 

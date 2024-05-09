@@ -167,12 +167,12 @@ namespace polyfem::solver
 				if (collision_mesh.dim() == 2)
 					contact_form = std::make_shared<SmoothContactForm<2>>(
 						collision_mesh, contact_params, avg_mass,
-						use_adaptive_barrier_stiffness, is_time_dependent, broad_phase, 
+						use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, 
 						ccd_tolerance * units.characteristic_length(), ccd_max_iterations);
 				else
 					contact_form = std::make_shared<SmoothContactForm<3>>(
 						collision_mesh, contact_params, avg_mass,
-						use_adaptive_barrier_stiffness, is_time_dependent, broad_phase, 
+						use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, 
 						ccd_tolerance * units.characteristic_length(), ccd_max_iterations);
 			else
 				contact_form = std::make_shared<BarrierContactForm>(

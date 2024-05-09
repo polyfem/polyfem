@@ -23,8 +23,8 @@ namespace polyfem::solver
 					const int ccd_max_iterations): ContactForm(collision_mesh, dhat, avg_mass, use_convergent_formulation, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations)
     {
 		collision_set_ = std::make_shared<ipc::Collisions>();
-		get_barrier_collision_set().set_use_convergent_formulation(use_convergent_formulation);
-		get_barrier_collision_set().set_are_shape_derivatives_enabled(enable_shape_derivatives);
+		collision_set_->set_use_convergent_formulation(use_convergent_formulation);
+		collision_set_->set_are_shape_derivatives_enabled(enable_shape_derivatives);
 
         contact_potential_ = std::make_shared<ipc::BarrierPotential>(dhat);
     }

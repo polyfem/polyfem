@@ -163,6 +163,14 @@ namespace polyfem::solver
 			{
 				obj = std::make_shared<MaxStressForm>(var2sim, *(states[args["state"]]), args);
 			}
+			else if (type == "smooth_contact_force_norm")
+			{
+				assert(states[args["state"]]->args["contact"]["use_smooth_formulation"]);
+				if (states[args["state"]]->mesh->is_volume())
+					obj = std::make_shared<SmoothContactForceForm<3>>(var2sim, *(states[args["state"]]), args);
+				else
+					obj = std::make_shared<SmoothContactForceForm<2>>(var2sim, *(states[args["state"]]), args);
+			}
 			else if (type == "volume")
 			{
 				obj = std::make_shared<VolumeForm>(var2sim, *(states[args["state"]]), args);

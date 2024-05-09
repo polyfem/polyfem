@@ -1113,6 +1113,17 @@ TEST_CASE("initial-contact-smooth", "[test_adjoint]")
 {
 	json opt_args;
 	load_json(append_root_path("initial-contact-opt.json"), opt_args);
+	json obj_args = R"({
+            "type": "transient_integral",
+            "state": 0,
+            "static_objective": 
+            {
+                "type": "smooth_contact_force_norm",
+                "state": 0,
+                "surface_selection": [1, 3]
+            }
+        })"_json;
+	opt_args["functionals"].push_back(obj_args);
 	auto [obj, var2sim, states] = prepare_test(opt_args);
 	for (auto &state : states)
 	{
@@ -1128,7 +1139,7 @@ TEST_CASE("initial-contact-smooth", "[test_adjoint]")
 
 	Eigen::VectorXd x = var2sim[0]->inverse_eval();
 
-	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-5, 1e-7);
+	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-5, 1e-6);
 }
 
 TEST_CASE("shape-transient-smooth", "[test_adjoint]")

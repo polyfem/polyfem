@@ -16,6 +16,7 @@ namespace polyfem::solver
 					const double avg_mass,
 					const bool use_adaptive_barrier_stiffness,
 					const bool is_time_dependent,
+					const bool enable_shape_derivatives,
 					const ipc::BroadPhaseMethod broad_phase_method,
 					const double ccd_tolerance,
 					const int ccd_max_iterations);

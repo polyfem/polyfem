@@ -284,7 +284,7 @@ TEST_CASE("smooth contact form derivatives", "[form][form_derivatives][contact_f
 
 	SmoothContactForm form(
 		state_ptr->collision_mesh, contact_args, state_ptr->avg_mass,
-		use_adaptive_barrier_stiffness, is_time_dependent, broad_phase_method, 
+		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method, 
 		ccd_tolerance, ccd_max_iterations);
 
 	test_form(form, *state_ptr);
