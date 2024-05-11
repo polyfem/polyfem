@@ -45,7 +45,7 @@ namespace polyfem::utils
                 for (std::size_t j = 0; j < vals.basis_values.size(); ++j)
                 {
                     for (const auto &g : vals.basis_values[j].global)
-                        cp.row(e * n_basis_per_cell + p) += g.val * u.segment(g.index * dim, dim).transpose() * vals.basis_values[j].val;
+                        cp.row(e * n_basis_per_cell + p) += g.val * u.segment(g.index * dim, dim).transpose() * vals.basis_values[j].val(p);
                 }
             }
 
@@ -88,7 +88,7 @@ namespace polyfem::utils
         }
     }
 
-    std::tuple<uint, uint, uint> count_invalid(
+    std::vector<uint> count_invalid(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
         const std::vector<basis::ElementBases> &gbases, 
@@ -99,18 +99,19 @@ namespace polyfem::utils
         const Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
 
         std::tuple<uint, uint, uint> counters{0,0,0};
+        std::vector<uint> invalidList;
         if (dim == 2)
         {
             StaticChecker<2> check(cp, shapes::TRIANGLE, order);
-            check.isValid(0, nullptr, nullptr, &counters);
+            check.isValid(0, nullptr, nullptr, &counters, &invalidList);
         }
         else
         {
             StaticChecker<3> check(cp, shapes::TETRAHEDRON, order);
-            check.isValid(0, nullptr, nullptr, &counters);
+            check.isValid(0, nullptr, nullptr, &counters, &invalidList);
         }
         
-        return counters;
+        return invalidList;
     }
 
     std::tuple<bool, int, Tree>
@@ -292,44 +293,45 @@ namespace polyfem::utils
             }
         }
 
-        // {
-        //     std::string path = "check.hdf5";
-        //     const int n_elem = bases.size();
-        //     std::vector<std::string> nodes_rational;
-        //     nodes_rational.resize(n_elem * n_basis_per_cell * 4 * dim);
-        //     // utils::maybe_parallel_for(n_elem, [&](int start, int end, int thread_id) {
-        //         for (int e = 0; e < n_elem; e++)
-        //         {
-        //             for (int i = 0; i < n_basis_per_cell; i++)
-        //             {
-        //                 const int idx = i + n_basis_per_cell * e;
-        //                 Eigen::Matrix<double, -1, 1, Eigen::ColMajor, 3, 1> pos = cp2.row(idx);
+        if (gaveUp || step == 0) {
+            static int idx = 0;
+            std::string path = "zero_step_" + std::to_string(idx++) + ".hdf5";
+            const int n_elem = bases.size();
+            std::vector<std::string> nodes_rational;
+            nodes_rational.resize(n_elem * n_basis_per_cell * 4 * dim);
+            // utils::maybe_parallel_for(n_elem, [&](int start, int end, int thread_id) {
+                for (int e = 0; e < n_elem; e++)
+                {
+                    for (int i = 0; i < n_basis_per_cell; i++)
+                    {
+                        const int idx = i + n_basis_per_cell * e;
+                        Eigen::Matrix<double, -1, 1, Eigen::ColMajor, 3, 1> pos = cp2.row(idx);
 
-        //                 for (int d = 0; d < dim; d++)
-        //                 {
-        //                     utils::Rational num(pos(d));
-        //                     nodes_rational[idx * (4 * dim) + d * 4 + 2] = num.get_numerator_str();
-        //                     nodes_rational[idx * (4 * dim) + d * 4 + 3] = num.get_denominator_str();
-        //                 }
+                        for (int d = 0; d < dim; d++)
+                        {
+                            utils::Rational num(pos(d));
+                            nodes_rational[idx * (4 * dim) + d * 4 + 2] = num.get_numerator_str();
+                            nodes_rational[idx * (4 * dim) + d * 4 + 3] = num.get_denominator_str();
+                        }
 
-        //                 pos = cp1.row(idx);
+                        pos = cp1.row(idx);
 
-        //                 for (int d = 0; d < dim; d++)
-        //                 {
-        //                     utils::Rational num(pos(d));
-        //                     nodes_rational[idx * (4 * dim) + d * 4 + 0] = num.get_numerator_str();
-        //                     nodes_rational[idx * (4 * dim) + d * 4 + 1] = num.get_denominator_str();
-        //                 }
-        //             }
-        //         }
-        //     // });
-        //     // paraviewo::HDF5MatrixWriter::write_matrix(rawname + ".hdf5", dim, bases.size(), n_basis_per_cell, nodes);
-        //     paraviewo::HDF5MatrixWriter::write_matrix(path, dim, n_elem, n_basis_per_cell, nodes_rational);
-        //     // for (auto& s : nodes_rational)
-        //     // 	std::cout << s << ",";
-        //     logger().info("Save to {}", path);
-        //     std::terminate();
-        // }
+                        for (int d = 0; d < dim; d++)
+                        {
+                            utils::Rational num(pos(d));
+                            nodes_rational[idx * (4 * dim) + d * 4 + 0] = num.get_numerator_str();
+                            nodes_rational[idx * (4 * dim) + d * 4 + 1] = num.get_denominator_str();
+                        }
+                    }
+                }
+            // });
+            // paraviewo::HDF5MatrixWriter::write_matrix(rawname + ".hdf5", dim, bases.size(), n_basis_per_cell, nodes);
+            paraviewo::HDF5MatrixWriter::write_matrix(path, dim, n_elem, n_basis_per_cell, nodes_rational);
+            // for (auto& s : nodes_rational)
+            // 	std::cout << s << ",";
+            logger().info("Save to {}", path);
+            // std::terminate();
+        }
 
         return {step, invalidID, tree};
     }

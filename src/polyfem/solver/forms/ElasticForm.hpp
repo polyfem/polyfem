@@ -97,6 +97,10 @@ namespace polyfem::solver
 		/// @return Maximum allowable step size
 		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
+		/// @brief Update cached fields upon a change in the solution
+		/// @param new_x New solution
+		void solution_changed(const Eigen::VectorXd &new_x) override;
+
 		/// @brief Compute the derivative of the force wrt lame/damping parameters, then multiply the resulting matrix with adjoint_sol.
 		/// @param t Current time
 		/// @param[in] x Current solution
@@ -135,7 +139,10 @@ namespace polyfem::solver
 		Eigen::VectorXd x_prev_;
 
 		mutable std::vector<utils::Tree> quadrature_hierarchy_;
-		mutable std::vector<int> quadrature_order_;
+		int quadrature_order_;
+
+		// debug stuffs
+		mutable Eigen::VectorXd cache_x0, cache_x1;
 
 		void get_refined_mesh(const Eigen::VectorXd &x, Eigen::MatrixXd &points, Eigen::MatrixXi &elements, const int elem = -1) const;
 	};

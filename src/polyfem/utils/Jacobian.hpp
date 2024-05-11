@@ -90,7 +90,7 @@ namespace polyfem::utils
         const Eigen::MatrixXd &cp,
         const Eigen::MatrixXd &uv);
 
-    std::tuple<uint, uint, uint> count_invalid(
+    std::vector<uint> count_invalid(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
         const std::vector<basis::ElementBases> &gbases,

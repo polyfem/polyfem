@@ -294,8 +294,7 @@ namespace polyfem::solver
 		mat_cache_ = std::make_unique<utils::SparseMatrixCache>();
 		quadrature_hierarchy_.resize(bases_.size());
 
-		const int real_order = AssemblerUtils::quadrature_order(assembler_.name(), bases_[0].bases[0].order(), AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, is_volume_ ? 3 : 2);
-		quadrature_order_.assign(bases_.size(), real_order);
+		quadrature_order_ = AssemblerUtils::quadrature_order(assembler_.name(), bases_[0].bases[0].order(), AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, is_volume_ ? 3 : 2);
 
 		logger().debug("Check inversion: {}, Quadrature refinement: {}", check_inversion_, quad_scheme_);
 	
@@ -305,6 +304,20 @@ namespace polyfem::solver
 			x0.setZero(n_bases_ * (is_volume_ ? 3 : 2));
 			if (!is_step_collision_free(x0, x0))
 				log_and_throw_error("Initial state has inverted elements!");
+				
+			int basis_order = 0;
+			int gbasis_order = 0;
+			for (int e = 0; e < bases_.size(); e++)
+			{
+				if (basis_order == 0)
+					basis_order = bases_[e].bases.front().order();
+				else if (basis_order != bases_[e].bases.front().order())
+					log_and_throw_error("Non-uniform basis order!!");
+				if (gbasis_order == 0)
+					gbasis_order = geom_bases_[e].bases.front().order();
+				else if (gbasis_order != geom_bases_[e].bases.front().order())
+					log_and_throw_error("Non-uniform gbasis order!!");
+			}
 		}
 	}
 
@@ -359,17 +372,40 @@ namespace polyfem::solver
 			const int dim = is_volume_ ? 3 : 2;
 			double step;
 			int invalidID;
+
+			// debug, static check on x0
+			// {
+			// 	const int order = std::max(bases_[0].bases.front().order(), geom_bases_[0].bases.front().order());
+			// 	const int n_basis_per_cell = std::max(bases_[0].bases.size(), geom_bases_[0].bases.size());
+			// 	const auto [isvalid, id, tree] = isValid(dim, bases_, geom_bases_, x0);
+			// 	if (!isvalid)
+			// 	{
+			// 		logger().error("Element {} is invalid!", id);
+			// 		Eigen::MatrixXd cp = extract_nodes(dim, bases_, geom_bases_, x0, order);
+			// 		std::cout << std::setprecision(20) << "flipped element\n" << cp.block(id * n_basis_per_cell, 0, n_basis_per_cell, dim) << std::endl;
+			// 		std::terminate();
+			// 	}
+			// }
+
 			Tree subdivision_tree;
 			{
 				POLYFEM_SCOPED_TIMER("Transient Jacobian Check");
 				std::tie(step, invalidID, subdivision_tree) = maxTimeStep(dim, bases_, geom_bases_, x0, x1);
 
-				logger().log(step < 1? spdlog::level::debug : spdlog::level::trace, "Jacobian max step size: {}", step);
+				if (step == 0)
+					logger().warn("Jacobian max step size: {} at element {}", step, invalidID);
+				else if (step < 1)
+					logger().debug("Jacobian max step size: {} at element {}", step, invalidID);
+				else
+					logger().trace("Jacobian max step size: {}", step);
+				
+				// cache_x0 = x0;
+				// cache_x1 = x1;
 			}
 
-			if (quadrature_hierarchy_[invalidID].merge(subdivision_tree))
+			if (step > 0 && step < 1 && quadrature_hierarchy_[invalidID].merge(subdivision_tree))
 			{
-				update_quadrature(invalidID, dim, quadrature_hierarchy_[invalidID], quadrature_order_[invalidID], bases_[invalidID], geom_bases_[invalidID], ass_vals_cache_);
+				update_quadrature(invalidID, dim, quadrature_hierarchy_[invalidID], quadrature_order_, bases_[invalidID], geom_bases_[invalidID], ass_vals_cache_);
 
 				// verify that new quadrature points don't make x0 invalid
 				{
@@ -385,15 +421,15 @@ namespace polyfem::solver
 				const int order = std::max(bases_[0].bases.front().order(), geom_bases_[0].bases.front().order());
 				const int n_basis_per_cell = std::max(bases_[0].bases.size(), geom_bases_[0].bases.size());
 
-				Eigen::VectorXd grad;
-				first_derivative(x0, grad);
-				if (grad.array().isNaN().any())
-				{
-					logger().error("Gradient NAN on x0 after quadrature refinement!");
-					Eigen::MatrixXd cp = extract_nodes(dim, bases_, geom_bases_, x0, order);
-					std::cout << std::setprecision(16) << "flipped element\n" << cp.block(invalidID * n_basis_per_cell, 0, n_basis_per_cell, dim) << "\n";
-					std::terminate();
-				}
+				// Eigen::VectorXd grad;
+				// first_derivative(x0, grad);
+				// if (grad.array().isNaN().any())
+				// {
+				// 	logger().error("Gradient NAN on x0 after quadrature refinement!");
+				// 	Eigen::MatrixXd cp = extract_nodes(dim, bases_, geom_bases_, x0, order);
+				// 	std::cout << std::setprecision(16) << "flipped element\n" << cp.block(invalidID * n_basis_per_cell, 0, n_basis_per_cell, dim) << "\n";
+				// 	std::terminate();
+				// }
 			}
 
 			return step;
@@ -420,14 +456,14 @@ namespace polyfem::solver
 		{
 			logger().warn("Conservative check did a good job! Element {} is flipped!", invalidID);
 
-			// const Quadrature quad = refine_quadrature(quadrature_hierarchy_[invalidID], dim, quadrature_order_[invalidID]);
+			// const Quadrature quad = refine_quadrature(quadrature_hierarchy_[invalidID], dim, quadrature_order_);
 			// const auto [geo_jac0, jac0] = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x0);
 			// const auto [geo_jac1, jac1] = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x1);
 			// logger().debug("Min jacobian on quadrature points: {} {}, {} {}", geo_jac0, jac0, geo_jac1, jac1);
 
 			if (quadrature_hierarchy_[invalidID].merge(subdivision_tree))
 			{
-				update_quadrature(invalidID, dim, quadrature_hierarchy_[invalidID], quadrature_order_[invalidID], bases_[invalidID], geom_bases_[invalidID], ass_vals_cache_);
+				update_quadrature(invalidID, dim, quadrature_hierarchy_[invalidID], quadrature_order_, bases_[invalidID], geom_bases_[invalidID], ass_vals_cache_);
 
 				Quadrature quad;
 				bases_[invalidID].compute_quadrature(quad);
@@ -474,9 +510,6 @@ namespace polyfem::solver
 		if (grad.array().isNaN().any())
 			return false;
 
-		// if (check_inversion_ != "Discrete")
-		// 	return is_step_collision_free(x0, x1);
-
 		return true;
 
 		// Check the scalar field in the output does not contain NANs.
@@ -486,6 +519,36 @@ namespace polyfem::solver
 		// reduced_to_full(x1, x1_full);
 		// return state_.check_scalar_value(x1_full, true, false);
 		// return true;
+	}
+
+	void ElasticForm::solution_changed(const Eigen::VectorXd &new_x)
+	{
+		// if (check_inversion_ != "Discrete")
+		// {
+		// 	const int dim = is_volume_ ? 3 : 2;
+		// 	double step;
+		// 	int invalidID;
+
+		// 	// debug, static check on x0
+		// 	{
+		// 		const int order = std::max(bases_[0].bases.front().order(), geom_bases_[0].bases.front().order());
+		// 		const int n_basis_per_cell = std::max(bases_[0].bases.size(), geom_bases_[0].bases.size());
+		// 		const auto [isvalid, id, tree] = isValid(dim, bases_, geom_bases_, new_x);
+		// 		if (!isvalid)
+		// 		{
+		// 			logger().error("Element {} is invalid!", id);
+		// 			Eigen::VectorXd tmp = (cache_x1 - new_x).array() / (cache_x1 - cache_x0).array();
+		// 			logger().info("Linearity: {} to {}", tmp.maxCoeff(), tmp.minCoeff());
+		// 			Eigen::MatrixXd cp = extract_nodes(dim, bases_, geom_bases_, cache_x0, order);
+		// 			std::cout << std::setprecision(20) << "flipped element (last iter)\n" << cp.block(id * n_basis_per_cell, 0, n_basis_per_cell, dim) << std::endl;
+		// 			cp = extract_nodes(dim, bases_, geom_bases_, cache_x1, order);
+		// 			std::cout << std::setprecision(20) << "flipped element (valid step)\n" << cp.block(id * n_basis_per_cell, 0, n_basis_per_cell, dim) << std::endl;
+		// 			cp = extract_nodes(dim, bases_, geom_bases_, new_x, order);
+		// 			std::cout << std::setprecision(20) << "flipped element (current)\n" << cp.block(id * n_basis_per_cell, 0, n_basis_per_cell, dim) << std::endl;
+		// 			std::terminate();
+		// 		}
+		// 	}
+		// }
 	}
 
 	void ElasticForm::compute_cached_stiffness()
