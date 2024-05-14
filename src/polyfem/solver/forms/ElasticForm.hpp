@@ -141,9 +141,6 @@ namespace polyfem::solver
 		mutable std::vector<utils::Tree> quadrature_hierarchy_;
 		int quadrature_order_;
 
-		// debug stuffs
-		mutable Eigen::VectorXd cache_x0, cache_x1;
-
 		void get_refined_mesh(const Eigen::VectorXd &x, Eigen::MatrixXd &points, Eigen::MatrixXi &elements, const int elem = -1) const;
 	};
 } // namespace polyfem::solver

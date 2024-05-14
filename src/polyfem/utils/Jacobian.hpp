@@ -27,7 +27,7 @@ namespace polyfem::utils
             }
             return *this;
         }
-        bool merge(const Tree &T, int max_depth = 1) {
+        bool merge(const Tree &T, int max_depth = 100) {
             bool flag = false;
             if (!T.has_children() || max_depth <= 0)
                 return flag;
@@ -111,13 +111,14 @@ namespace polyfem::utils
         const Eigen::VectorXd &u2,
         const double threshold = 0);
 
-    std::tuple<double, int, Tree> maxTimeStep(
+    std::tuple<double, int, double, Tree> maxTimeStep(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
         const std::vector<basis::ElementBases> &gbases,
         const Eigen::VectorXd &u1,
         const Eigen::VectorXd &u2,
-        double precision = 1. / 8);
+        double precision = .25);
 
-    Eigen::MatrixXd extract_nodes(const int dim, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const Eigen::VectorXd &u, int order);
+    Eigen::MatrixXd extract_nodes(const int dim, const basis::ElementBases &basis, const basis::ElementBases &gbasis, const Eigen::VectorXd &u, int order);
+    Eigen::MatrixXd extract_nodes(const int dim, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const Eigen::VectorXd &u, int order, int n_elem = -1);
 }
