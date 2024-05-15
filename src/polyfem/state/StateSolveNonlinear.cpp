@@ -389,6 +389,7 @@ namespace polyfem
 				nl_problem.init(sol);
 				solve_data.update_barrier_stiffness(sol);
 				nl_solver->minimize(nl_problem, tmp_sol);
+				nl_problem.finish();
 				prev_sol = sol;
 				sol = nl_problem.reduced_to_full(tmp_sol);
 

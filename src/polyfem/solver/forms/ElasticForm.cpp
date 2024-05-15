@@ -369,6 +369,12 @@ namespace polyfem::solver
 		}
 	}
 
+	void ElasticForm::finish()
+	{
+		for (auto &t : quadrature_hierarchy_)
+			t = Tree();
+	}
+
 	double ElasticForm::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
 		// TODO: handle polygon and quad
@@ -464,7 +470,7 @@ namespace polyfem::solver
 				// }
 			}
 
-			if (step < 1)
+			if (invalidID >= 0 && step < 0.5)
 			{
 				if (quadrature_hierarchy_[invalidID].merge(subdivision_tree))
 					update_quadrature(invalidID, dim, quadrature_hierarchy_[invalidID], quadrature_order_, bases_[invalidID], geom_bases_[invalidID], ass_vals_cache_);
@@ -475,7 +481,8 @@ namespace polyfem::solver
 					bases_[invalidID].compute_quadrature(quad);
 					const auto [geo_jac0, jac0] = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x0);
 					const auto [geo_jac1, jac1] = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x0 + (x1 - x0) * step);
-					logger().debug("Min jacobian on quadrature points: {}, {}", geo_jac0, geo_jac1);
+					const auto [geo_jac2, jac2] = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x0 + (x1 - x0) * invalidStep);
+					logger().debug("Min jacobian on quadrature points: {}, {}, {}", geo_jac0, geo_jac1, geo_jac2);
 				}
 
 				logger().debug("Peak memory: {} GB", getPeakRSS() / (1024. * 1024 * 1024));

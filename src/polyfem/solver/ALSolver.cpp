@@ -56,6 +56,7 @@ namespace polyfem::solver
 			try
 			{
 				nl_solver->minimize(nl_problem, tmp_sol);
+				nl_problem.finish();
 			}
 			catch (const std::runtime_error &e)
 			{
@@ -115,6 +116,7 @@ namespace polyfem::solver
 		try
 		{
 			nl_solver->minimize(nl_problem, tmp_sol);
+			nl_problem.finish();
 		}
 		catch (const std::runtime_error &e)
 		{
