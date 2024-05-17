@@ -468,9 +468,22 @@ namespace polyfem::solver
 		else if (composite_map_type == "time_step_indexing")
 		{
 			const int time_steps = cur_states[0]->args["time"]["time_steps"].get<int>();
-			output_indexing.setZero(time_steps);
-			for (int i = 0; i < time_steps; ++i)
-				output_indexing(i) = i;
+			const int dim = cur_states[0]->mesh->dimension();
+			if (type == "dirichlet")
+			{
+				output_indexing.setZero(time_steps * dim);
+				for (int i = 0; i < time_steps; ++i)
+					for (int k = 0; k < dim; ++k)
+						output_indexing(i * dim + k) = i;
+			}
+			else if (type == "pressure")
+			{
+				output_indexing.setZero(time_steps);
+				for (int i = 0; i < time_steps; ++i)
+					output_indexing(i) = i;
+			}
+			else
+				log_and_throw_adjoint_error("time_step_indexing only works with dirichlet and pressure type variables!");
 		}
 
 		if (type == "shape")

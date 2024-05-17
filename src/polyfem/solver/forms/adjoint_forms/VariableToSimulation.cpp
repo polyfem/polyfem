@@ -354,24 +354,27 @@ namespace polyfem::solver
 		assert(dirichlet_boundaries_.size() > 0);
 		assert(states_.size() > 0);
 
+		int dim = states_[0]->mesh->dimension();
 		Eigen::VectorXd x;
 		for (const auto &b : states_[0]->args["boundary_conditions"]["dirichlet_boundary"])
 			if (b["id"].get<int>() == dirichlet_boundaries_[0])
 			{
 				auto value = b["value"];
-				if (value.is_array())
+				if (value[0].is_array())
 				{
 					if (!states_[0]->problem->is_time_dependent())
 						log_and_throw_adjoint_error("Simulation must be time dependent for timestep wise dirichlet.");
-					Eigen::VectorXd dirichlet = value;
-					x = dirichlet.segment(1, dirichlet.size() - 1);
+					Eigen::MatrixXd dirichlet = value;
+					x.setZero(dirichlet.rows() * (dirichlet.cols() - 1));
+					for (int j = 1; j < dirichlet.cols(); ++j)
+						x.segment((j - 1) * dim, dim) = dirichlet.col(j);
 				}
-				else if (value.is_number())
+				else if (value[0].is_number())
 				{
 					if (states_[0]->problem->is_time_dependent())
 						log_and_throw_adjoint_error("Simulation must be quasistatic for single value dirichlet.");
-					x.resize(1);
-					x(0) = value;
+					x.resize(dim);
+					x = value;
 				}
 				else if (value.is_string())
 					assert(false);
