@@ -1513,6 +1513,8 @@ namespace polyfem
 				   || collision_mesh.to_full_vertex_id(vj) < num_fe_collision_vertices;
 		};
 
+		logger().debug("Collision mesh: {} vertices, {} edges, {} faces.", collision_mesh.num_vertices(), collision_mesh.num_edges(), collision_mesh.num_faces());
+
 		collision_mesh.init_area_jacobians();
 	}
 

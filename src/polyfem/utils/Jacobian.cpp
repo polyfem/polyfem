@@ -286,7 +286,7 @@ namespace polyfem::utils
         if (gaveUp)
             logger().warn("Jacobian check gave up!");
 
-        // {
+        // if (gaveUp) {
         //     static int idx = 0;
         //     std::string path = "transient_" + std::to_string(idx++) + ".hdf5";
         //     const int n_elem = bases.size();

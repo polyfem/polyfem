@@ -27,7 +27,7 @@ namespace polyfem::utils
             }
             return *this;
         }
-        bool merge(const Tree &T, int max_depth = 100) {
+        bool merge(const Tree &T, int max_depth = 2) {
             bool flag = false;
             if (!T.has_children() || max_depth <= 0)
                 return flag;
