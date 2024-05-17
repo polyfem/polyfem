@@ -311,20 +311,17 @@ namespace polyfem::solver
 
 	void DirichletVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
-		log_and_throw_adjoint_error("[{}] update_state not implemented!", name());
-		// auto &problem = *dynamic_cast<assembler::GenericTensorProblem *>(state_ptr_->problem.get());
-		// // This should eventually update dirichlet boundaries per boundary element, using the shape constraint.
-		// auto constraint_string = control_constraints_->constraint_to_string(state_variable);
-		// for (const auto &kv : boundary_id_to_reduced_param)
-		// {
-		// 	json dirichlet_bc = constraint_string[kv.first];
-		// 	// Need time_steps + 1 entry, though unused.
-		// 	for (int k = 0; k < states_ptr_[0]->mesh->dimension(); ++k)
-		// 		dirichlet_bc[k].push_back(dirichlet_bc[k][time_steps - 1]);
-		// 	logger().trace("Updating boundary id {} to dirichlet bc {}", kv.first, dirichlet_bc);
-		// 	problem.update_dirichlet_boundary(kv.first, dirichlet_bc, true, true, true, "");
-		// }
+		auto tensor_problem = std::dynamic_pointer_cast<polyfem::assembler::GenericTensorProblem>(states_[0]->problem);
+		assert(dirichlet_boundaries_.size() > 0);
+		int dim = states_[0]->mesh->dimension();
+		int num_steps = indices.size() / dim;
+		for (int i = 0; i < num_steps; ++i)
+			for (const int &b : dirichlet_boundaries_)
+				tensor_problem->update_dirichlet_boundary(b, indices(i * dim) + 1, state_variable.segment(i * dim, dim));
+
+		logger().info("Current dirichlet boundary {} is {}.", dirichlet_boundaries_[0], state_variable.transpose());
 	}
+
 	Eigen::VectorXd DirichletVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd term, cur_term;
@@ -354,8 +351,34 @@ namespace polyfem::solver
 	}
 	Eigen::VectorXd DirichletVariableToSimulation::inverse_eval()
 	{
-		log_and_throw_adjoint_error("[{}] inverse_eval not implemented!", name());
-		return Eigen::VectorXd();
+		assert(dirichlet_boundaries_.size() > 0);
+		assert(states_.size() > 0);
+
+		Eigen::VectorXd x;
+		for (const auto &b : states_[0]->args["boundary_conditions"]["dirichlet_boundary"])
+			if (b["id"].get<int>() == dirichlet_boundaries_[0])
+			{
+				auto value = b["value"];
+				if (value.is_array())
+				{
+					if (!states_[0]->problem->is_time_dependent())
+						log_and_throw_adjoint_error("Simulation must be time dependent for timestep wise dirichlet.");
+					Eigen::VectorXd dirichlet = value;
+					x = dirichlet.segment(1, dirichlet.size() - 1);
+				}
+				else if (value.is_number())
+				{
+					if (states_[0]->problem->is_time_dependent())
+						log_and_throw_adjoint_error("Simulation must be quasistatic for single value dirichlet.");
+					x.resize(1);
+					x(0) = value;
+				}
+				else if (value.is_string())
+					assert(false);
+				break;
+			}
+
+		return parametrization_.inverse_eval(x);
 	}
 
 	void PressureVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)

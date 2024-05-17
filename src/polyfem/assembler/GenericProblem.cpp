@@ -644,7 +644,7 @@ namespace polyfem
 			}
 			if (index == -1)
 			{
-				throw "Invalid boundary id";
+				throw "Invalid boundary id for pressure update";
 			}
 
 			if (pressures_[index].value.is_mat())
@@ -658,6 +658,39 @@ namespace polyfem
 			else
 			{
 				pressures_[index].value.init(val);
+			}
+		}
+
+		void GenericTensorProblem::update_dirichlet_boundary(const int id, const int time_step, const Eigen::VectorXd &val)
+		{
+			int index = -1;
+			for (int i = 0; i < boundary_ids_.size(); ++i)
+			{
+				if (boundary_ids_[i] == id)
+				{
+					index = i;
+					break;
+				}
+			}
+			if (index == -1)
+			{
+				throw "Invalid boundary id for dirichlet update";
+			}
+
+			for (int i = 0; i < val.size(); ++i)
+			{
+				if (displacements_[index].value[i].is_mat())
+				{
+					Eigen::MatrixXd curr_val = displacements_[index].value[i].get_mat();
+					assert(time_step <= curr_val.size());
+					assert(curr_val.cols() == 1);
+					curr_val(time_step) = val(i);
+					displacements_[index].value[i].set_mat(curr_val);
+				}
+				else
+				{
+					displacements_[index].value[i].init(val(i));
+				}
 			}
 		}
 

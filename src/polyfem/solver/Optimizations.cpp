@@ -496,7 +496,8 @@ namespace polyfem::solver
 		}
 		else if (type == "dirichlet")
 		{
-			var2sim = std::make_shared<DirichletVariableToSimulation>(cur_states, composite_map);
+			var2sim = std::make_shared<DirichletVariableToSimulation>(cur_states, composite_map, args["surface_selection"]);
+			var2sim->set_output_indexing(output_indexing);
 		}
 		else if (type == "pressure")
 		{

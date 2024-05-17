@@ -184,12 +184,32 @@
     },
     {
         "pointer": "/variable_to_simulation/*",
+        "type_name": "dirichlet",
+        "type": "object",
+        "required": [
+            "state",
+            "type",
+            "composition",
+            "surface_selection"
+        ],
+        "optional": [
+            "composite_map_type",
+            "composite_map_indices"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*",
         "type_name": "pressure",
         "type": "object",
         "required": [
             "state",
             "type",
-            "composition"
+            "composition",
+            "surface_selection"
+        ],
+        "optional": [
+            "composite_map_type",
+            "composite_map_indices"
         ]
     },
     {

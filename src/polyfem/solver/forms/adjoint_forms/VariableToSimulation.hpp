@@ -139,7 +139,18 @@ namespace polyfem::solver
 	class DirichletVariableToSimulation : public VariableToSimulation
 	{
 	public:
-		using VariableToSimulation::VariableToSimulation;
+		DirichletVariableToSimulation(
+			const std::shared_ptr<State> &states,
+			const CompositeParametrization &parametrization,
+			const std::vector<int> dirichlet_boundaries)
+			: VariableToSimulation(states, parametrization),
+			  dirichlet_boundaries_(dirichlet_boundaries) {}
+		DirichletVariableToSimulation(
+			const std::vector<std::shared_ptr<State>> &state,
+			const CompositeParametrization &parametrization,
+			const std::vector<int> dirichlet_boundaries)
+			: VariableToSimulation(state, parametrization),
+			  dirichlet_boundaries_(dirichlet_boundaries) {}
 		virtual ~DirichletVariableToSimulation() {}
 
 		std::string name() const override { return "dirichlet"; }
@@ -154,6 +165,8 @@ namespace polyfem::solver
 
 	private:
 		std::string variable_to_string(const Eigen::VectorXd &variable);
+
+		const std::vector<int> dirichlet_boundaries_;
 	};
 
 	// To optimize the per node pressure boundaries
