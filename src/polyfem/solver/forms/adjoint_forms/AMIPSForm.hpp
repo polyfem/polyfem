@@ -115,7 +115,7 @@ namespace polyfem::solver
 	class AMIPSForm : public AdjointForm
 	{
 	public:
-		AMIPSForm(const std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulation, const State &state)
+		AMIPSForm(const VariableToSimulationGroup &variable_to_simulation, const State &state)
 			: AdjointForm(variable_to_simulation),
 			  state_(state)
 		{
@@ -203,36 +203,17 @@ namespace polyfem::solver
 		{
 			Eigen::VectorXd X = get_updated_mesh_nodes(x);
 
-			double energy = amips_energy_->assemble_energy(state_.mesh->is_volume(), rest_geom_bases_, rest_geom_bases_, rest_ass_vals_cache_, 0, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_rest), Eigen::VectorXd());
-
-			return energy;
+			return amips_energy_->assemble_energy(state_.mesh->is_volume(), rest_geom_bases_, rest_geom_bases_, rest_ass_vals_cache_, 0, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_rest), Eigen::VectorXd());
 		}
 
-		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
+		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
 		{
-			Eigen::VectorXd X = get_updated_mesh_nodes(x);
-
-			Eigen::MatrixXd grad;
-			amips_energy_->assemble_gradient(state_.mesh->is_volume(), state_.n_geom_bases, rest_geom_bases_, rest_geom_bases_, rest_ass_vals_cache_, 0, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_rest), Eigen::VectorXd(), grad); // grad wrt. gbases
-			grad = AdjointTools::map_node_to_primitive_order(state_, grad);                                                                                                                                                                          // grad wrt. vertices
-
-			assert(grad.cols() == 1);
-
-			gradv.setZero(x.size());
-			for (auto &p : variable_to_simulations_)
-			{
-				for (const auto &state : p->get_states())
-					if (state.get() != &state_)
-						continue;
-				if (p->get_parameter_type() != ParameterType::Shape)
-					continue;
-				gradv += p->apply_parametrization_jacobian(grad, x);
-			}
-		}
-
-		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override
-		{
-			return Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
+			gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, &state_, x, [this, &x]() {
+				const Eigen::VectorXd X = get_updated_mesh_nodes(x);
+				Eigen::MatrixXd grad;
+				amips_energy_->assemble_gradient(state_.mesh->is_volume(), state_.n_geom_bases, rest_geom_bases_, rest_geom_bases_, rest_ass_vals_cache_, 0, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_rest), Eigen::VectorXd(), grad); // grad wrt. gbases
+				return AdjointTools::map_node_to_primitive_order(state_, grad);
+			});
 		}
 
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override
@@ -262,20 +243,7 @@ namespace polyfem::solver
 		Eigen::VectorXd get_updated_mesh_nodes(const Eigen::VectorXd &x) const
 		{
 			Eigen::VectorXd X = X_rest;
-
-			for (auto &p : variable_to_simulations_)
-			{
-				for (const auto &state : p->get_states())
-					if (state.get() != &state_)
-						continue;
-				if (p->get_parameter_type() != ParameterType::Shape)
-					continue;
-				auto state_variable = p->get_parametrization().eval(x);
-				auto output_indexing = p->get_output_indexing(x);
-				for (int i = 0; i < output_indexing.size(); ++i)
-					X(output_indexing(i)) = state_variable(i);
-			}
-
+			variable_to_simulations_.compute_state_variable(ParameterType::Shape, &state_, x, X);
 			return X;
 		}
 

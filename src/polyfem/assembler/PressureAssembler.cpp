@@ -10,6 +10,8 @@
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/io/Evaluator.hpp>
 
+#include <igl/boundary_loop.h>
+
 namespace polyfem
 {
 	using namespace polysolve;
@@ -44,6 +46,14 @@ namespace polyfem
 				}
 			};
 
+			class LocalThreadPrimitiveStorage
+			{
+			public:
+				std::vector<Eigen::VectorXi> faces;
+
+				LocalThreadPrimitiveStorage() {}
+			};
+
 			class LocalThreadMatStorage
 			{
 			public:
@@ -59,6 +69,21 @@ namespace polyfem
 			{
 				g1_up = (wedge_product(g1, g2) * g2) / (g1.dot(wedge_product(g1, g2) * g2));
 				g2_up = (wedge_product(g2, g1) * g1) / (g2.dot(wedge_product(g2, g1) * g1));
+			}
+
+			void boundary_loop_2d(const Eigen::MatrixXi &F, std::vector<int> &L)
+			{
+				std::set<int> vertices_set;
+				for (int i = 0; i < F.rows(); ++i)
+					for (int j = 0; j < 2; ++j)
+					{
+						if (vertices_set.find(F(i, j)) != vertices_set.end())
+							vertices_set.erase(F(i, j));
+						else
+							vertices_set.insert(F(i, j));
+					}
+
+				L = std::vector<int>(vertices_set.begin(), vertices_set.end());
 			}
 		} // namespace
 
@@ -803,9 +828,87 @@ namespace polyfem
 			hess.setFromTriplets(all_entries.begin(), all_entries.end());
 		}
 
+		bool PressureAssembler::is_closed_or_boundary_fixed(
+			const std::vector<mesh::LocalBoundary> &local_boundary,
+			const std::vector<int> &dirichlet_nodes) const
+		{
+			if (local_boundary.size() == 0)
+				return true;
+
+			auto storage = utils::create_thread_storage(LocalThreadPrimitiveStorage());
+
+			utils::maybe_parallel_for(local_boundary.size(), [&](int start, int end, int thread_id) {
+				LocalThreadPrimitiveStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
+
+				ElementAssemblyValues vals;
+				Eigen::MatrixXd points, uv, normals, deform_mat, trafo;
+				Eigen::VectorXd weights;
+				Eigen::VectorXi global_primitive_ids;
+				for (int lb_id = start; lb_id < end; ++lb_id)
+				{
+					const auto &lb = local_boundary[lb_id];
+					const int e = lb.element_id();
+					const basis::ElementBases &bs = bases_[e];
+					const basis::ElementBases &gbs = gbases_[e];
+
+					for (int i = 0; i < lb.size(); ++i)
+					{
+						const int primitive_global_id = lb.global_primitive_id(i);
+						const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, mesh_);
+
+						points.resize(0, size_);
+						vals.compute(e, mesh_.is_volume(), points, bs, gbs);
+
+						if (!((lb.type() == BoundaryType::TRI_LINE) || (lb.type() == BoundaryType::TRI)))
+						{
+							logger().warn("Detected element not triangle or tet, cannot check if pressure boundary is closed");
+							return;
+						}
+
+						Eigen::VectorXi face(size_);
+						// Assuming the geometric nodes are listed in the beginning
+						for (int n = 0; n < size_; ++n)
+						{
+							const AssemblyValues &v = vals.basis_values[nodes(n)];
+							assert(v.global.size() == 1);
+							face(n) = v.global[0].index;
+						}
+						local_storage.faces.push_back(face);
+					}
+				}
+			});
+
+			Eigen::MatrixXi F(0, size_);
+			int count = 0;
+			for (const LocalThreadPrimitiveStorage &local_storage : storage)
+			{
+				for (int i = 0; i < local_storage.faces.size(); ++i)
+				{
+					F.conservativeResize(count + 1, size_);
+					F.row(count) = local_storage.faces[i];
+					++count;
+				}
+			}
+
+			std::vector<int> L;
+			if (size_ == 2)
+				boundary_loop_2d(F, L);
+			else
+				igl::boundary_loop(F, L);
+
+			for (const int &l : L)
+				if (std::find(dirichlet_nodes.begin(), dirichlet_nodes.end(), l * size_) == dirichlet_nodes.end())
+					return false;
+
+			return true;
+		}
+
 		PressureAssembler::PressureAssembler(const Assembler &assembler, const Mesh &mesh, const Obstacle &obstacle,
 											 const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
-											 const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity, const std::vector<int> &primitive_to_nodes, const std::vector<int> &node_to_primitives,
+											 const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity,
+											 const std::vector<int> &dirichlet_nodes,
+											 const std::vector<int> &primitive_to_nodes,
+											 const std::vector<int> &node_to_primitives,
 											 const int n_basis, const int size,
 											 const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases,
 											 const Problem &problem)
@@ -822,6 +925,13 @@ namespace polyfem
 		{
 			for (const auto &v : local_pressure_cavity)
 				starting_volumes_[v.first] = compute_volume(Eigen::VectorXd(), v.second, 5, 0, false);
+
+			if (!is_closed_or_boundary_fixed(local_pressure_boundary, dirichlet_nodes))
+				logger().error("Pressure boundary condition must be applied to a closed volume or have dirichlet fixed boundary.");
+
+			for (const auto &b : local_pressure_cavity)
+				if (!is_closed_or_boundary_fixed(b.second, dirichlet_nodes))
+					logger().error("Pressure cavity boundary condition must be applied to a closed volume or have dirichlet fixed boundary.");
 
 			cavity_thermodynamics_ = std::make_unique<AdiabaticProcess>();
 			// cavity_thermodynamics_ = std::make_unique<IsothermalProcess>();

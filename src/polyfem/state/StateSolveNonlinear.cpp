@@ -10,6 +10,7 @@
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
+#include <polyfem/solver/forms/BCLagrangianForm.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/ALSolver.hpp>
@@ -240,13 +241,17 @@ namespace polyfem
 			// Augmented lagrangian form
 			obstacle.ndof(),
 			// Contact form
-			args["contact"]["enabled"], collision_mesh, args["contact"]["dhat"],
+			args["contact"]["enabled"], args["contact"]["periodic"].get<bool>() ? periodic_collision_mesh : collision_mesh, args["contact"]["dhat"],
 			avg_mass, args["contact"]["use_convergent_formulation"],
 			args["solver"]["contact"]["barrier_stiffness"],
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
 			optimization_enabled == solver::CacheLevel::Derivatives,
+			// Homogenization
+        	macro_strain_constraint,
+			// Periodic contact
+			args["contact"]["periodic"], periodic_collision_mesh_to_basis,
 			// Friction form
 			args["contact"]["friction_coefficient"],
 			args["contact"]["epsv"],
@@ -266,10 +271,9 @@ namespace polyfem
 		const int ndof = n_bases * mesh->dimension();
 		solve_data.nl_problem = std::make_shared<NLProblem>(
 			ndof, boundary_nodes, local_boundary, n_boundary_samples(),
-			*solve_data.rhs_assembler, t, forms);
+			*solve_data.rhs_assembler, periodic_bc, t, forms);
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
-
 		// --------------------------------------------------------------------
 
 		stats.solver_info = json::array();
