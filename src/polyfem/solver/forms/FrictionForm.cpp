@@ -147,9 +147,12 @@ namespace polyfem::solver
 		else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm<2>*>(&contact_form_))
 		{
 			ipc::SmoothCollisions<2> collision_set;
+			if (smooth_contact->using_adaptive_dhat())
+				collision_set.compute_adaptive_dhat(collision_mesh_, collision_mesh_.rest_positions(), smooth_contact->get_params(), broad_phase_method_);
 			collision_set.build(
 				collision_mesh_, displaced_surface, smooth_contact->get_params(), 
 				smooth_contact->using_adaptive_dhat(), broad_phase_method_);
+
 			collision_set.set_are_shape_derivatives_enabled(contact_form_.enable_shape_derivatives());
 			friction_collision_set_.build(
 				collision_mesh_, displaced_surface, 
@@ -158,9 +161,12 @@ namespace polyfem::solver
 		else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm<3>*>(&contact_form_))
 		{
 			ipc::SmoothCollisions<3> collision_set;
+			if (smooth_contact->using_adaptive_dhat())
+				collision_set.compute_adaptive_dhat(collision_mesh_, collision_mesh_.rest_positions(), smooth_contact->get_params(), broad_phase_method_);
 			collision_set.build(
 				collision_mesh_, displaced_surface, smooth_contact->get_params(), 
 				smooth_contact->using_adaptive_dhat(), broad_phase_method_);
+
 			collision_set.set_are_shape_derivatives_enabled(contact_form_.enable_shape_derivatives());
 			friction_collision_set_.build(
 				collision_mesh_, displaced_surface, 
