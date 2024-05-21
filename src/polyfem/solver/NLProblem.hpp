@@ -29,6 +29,7 @@ namespace polyfem::solver
 				  const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
 				  const double t,
 				  const std::vector<std::shared_ptr<Form>> &forms);
+		virtual ~NLProblem() = default;
 
 		virtual double value(const TVector &x) override;
 		virtual void gradient(const TVector &x, TVector &gradv) override;
