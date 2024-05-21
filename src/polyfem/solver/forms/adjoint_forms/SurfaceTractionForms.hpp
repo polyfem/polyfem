@@ -78,12 +78,14 @@ namespace polyfem::solver
 				return;
 
 			collision_set_indicator_.setZero();
-			build_collision_mesh();
+			// build_collision_mesh();
+			build_forward_collision_mesh();
 			curr_x_ = x;
 		}
 
 	protected:
 		void build_collision_mesh();
+		void build_forward_collision_mesh();
 		const ipc::Collisions &get_or_compute_collision_set(const int time_step, const Eigen::MatrixXd &displaced_surface) const;
 		// ipc::Collisions compute_collision_set(const int time_step, const Eigen::MatrixXd &displaced_surface) const;
 
