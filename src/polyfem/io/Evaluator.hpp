@@ -414,5 +414,12 @@ namespace polyfem::io
 		static Eigen::MatrixXd get_bases_position(
 			const int n_bases,
 			const std::shared_ptr<mesh::MeshNodes> mesh_nodes);
+		
+		static Eigen::VectorXd integrate_function(
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const Eigen::MatrixXd &fun,
+			const int dim,
+			const int actual_dim);
 	};
 } // namespace polyfem::io

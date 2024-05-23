@@ -68,7 +68,14 @@ Eigen::MatrixXd polyfem::utils::unflatten(const Eigen::VectorXd &x, int dim)
 
 void polyfem::utils::vector2matrix(const Eigen::VectorXd &vec, Eigen::MatrixXd &mat)
 {
-	int size = sqrt(vec.size());
+	int size = 1;
+	if (vec.size() == 9)
+		size = 3;
+	else if (vec.size() == 4)
+		size = 2;
+	else
+		throw std::runtime_error("Invalid size in vector2matrix!");
+	
 	assert(size * size == vec.size());
 
 	mat = unflatten(vec, size);

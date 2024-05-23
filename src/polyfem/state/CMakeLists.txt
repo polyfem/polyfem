@@ -2,6 +2,7 @@ set(SOURCES
 	StateDiff.cpp
 	StateInit.cpp
 	StateLoad.cpp
+	StateHomogenization.cpp
 	StateOutput.cpp
 	StateRemesh.cpp
 	StateSolve.cpp

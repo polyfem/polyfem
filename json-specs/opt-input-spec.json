@@ -61,7 +61,8 @@
         "optional": [
             "log",
             "save_frequency",
-            "directory"
+            "directory",
+            "solution"
         ],
         "doc": "Optimization output options"
     },
@@ -82,6 +83,12 @@
         "spec_file": "log.json",
         "type": "include",
         "doc": "Setting for the output log."
+    },
+    {
+        "pointer": "/output/solution",
+        "default": "",
+        "type": "file",
+        "doc": "Export optimization variables to file at every iteration."
     },
     {
         "pointer": "/solver",

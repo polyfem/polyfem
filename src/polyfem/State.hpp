@@ -11,6 +11,7 @@
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
 #include <polyfem/assembler/PressureAssembler.hpp>
+#include <polyfem/assembler/MacroStrain.hpp>
 #include <polyfem/assembler/Problem.hpp>
 #include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
@@ -27,6 +28,7 @@
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/assembler/PeriodicBoundary.hpp>
 
 #include <polyfem/io/OutData.hpp>
 
@@ -64,6 +66,13 @@ namespace polyfem
 		class Mesh2D;
 		class Mesh3D;
 	} // namespace mesh
+
+	enum class CacheLevel
+	{
+		None,
+		Solution,
+		Derivatives
+	};
 
 	/// main class that contains the polyfem solver and all its state
 	class State
@@ -376,6 +385,13 @@ namespace polyfem
 		/// @return nonlinear solver (eg newton or LBFGS)
 		std::shared_ptr<polysolve::nonlinear::Solver> make_nl_solver(bool for_al) const;
 
+		/// periodic BC and periodic mesh utils
+		std::shared_ptr<utils::PeriodicBoundary> periodic_bc;
+		bool has_periodic_bc() const
+		{
+			return args["boundary_conditions"]["periodic_boundary"]["enabled"].get<bool>();
+		}
+
 		/// @brief Solve the linear problem with the given solver and system.
 		/// @param solver Linear solver.
 		/// @param A Linear system matrix.
@@ -389,6 +405,9 @@ namespace polyfem
 			Eigen::VectorXd &b,
 			const bool compute_spectrum,
 			Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
+
+		/// @brief Returns whether the system is linear. Collisions and pressure add nonlinearity to the problem.
+		bool is_problem_linear() const { return assembler->is_linear() && !is_contact_enabled() && !is_pressure_enabled(); }
 
 	public:
 		/// @brief utility that builds the stiffness matrix and collects stats, used only for linear problems
@@ -520,6 +539,11 @@ namespace polyfem
 		/// @brief IPC collision mesh
 		ipc::CollisionMesh collision_mesh;
 
+		/// @brief IPC collision mesh under periodic BC
+		ipc::CollisionMesh periodic_collision_mesh;
+		/// index mapping from periodic 2x2 collision mesh to FE periodic mesh
+		Eigen::VectorXi periodic_collision_mesh_to_basis;
+
 		/// @brief extracts the boundary mesh for collision, called in build_basis
 		static void build_collision_mesh(
 			const mesh::Mesh &mesh,
@@ -535,6 +559,7 @@ namespace polyfem
 
 		/// @brief extracts the boundary mesh for collision, called in build_basis
 		void build_collision_mesh();
+		void build_periodic_collision_mesh();
 
 		/// checks if vertex is obstacle
 		/// @param[in] vi vertex index
@@ -692,8 +717,20 @@ namespace polyfem
 
 		// to replace the initial condition in json during initial condition optimization
 		Eigen::MatrixXd initial_sol_update, initial_vel_update;
-		// mapping from positions of geometric nodes to positions of FE basis nodes
-		StiffnessMatrix gbasis_nodes_to_basis_nodes;
+		// mapping from positions of FE basis nodes to positions of geometry nodes
+		StiffnessMatrix basis_nodes_to_gbasis_nodes;
+
+		//---------------------------------------------------
+		//-----------------homogenization--------------------
+		//---------------------------------------------------
+	public:
+		assembler::MacroStrainValue macro_strain_constraint;
+
+		/// In Elasticity PDE, solve for "min W(disp_grad + \grad u)" instead of "min W(\grad u)"
+		void solve_homogenization_step(Eigen::MatrixXd &sol, const int t = 0, bool adaptive_initial_weight = false); // sol is the extended solution, i.e. [periodic fluctuation, macro strain]
+		void init_homogenization_solve(const double t);
+		void solve_homogenization(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol);
+		bool is_homogenization() const { return args["boundary_conditions"]["periodic_boundary"]["linear_displacement_offset"].size() > 0; }
 	};
 
 } // namespace polyfem

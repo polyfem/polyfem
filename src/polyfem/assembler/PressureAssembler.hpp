@@ -80,6 +80,7 @@ namespace polyfem
 			PressureAssembler(const Assembler &assembler, const mesh::Mesh &mesh, const mesh::Obstacle &obstacle,
 							  const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
 							  const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity,
+							  const std::vector<int> &dirichlet_nodes,
 							  const std::vector<int> &primitive_to_nodes, const std::vector<int> &node_to_primitives,
 							  const int n_basis, const int size,
 							  const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const Problem &problem);
@@ -150,6 +151,7 @@ namespace polyfem
 										const double t = 0,
 										const bool multiply_pressure = false) const;
 
+		private:
 			double compute_volume(
 				const Eigen::MatrixXd &displacement,
 				const std::vector<mesh::LocalBoundary> &local_boundary,
@@ -179,6 +181,10 @@ namespace polyfem
 				StiffnessMatrix &hess,
 				const double t = 0,
 				const bool multiply_pressure = false) const;
+
+			bool is_closed_or_boundary_fixed(
+				const std::vector<mesh::LocalBoundary> &local_boundary,
+				const std::vector<int> &dirichlet_nodes) const;
 
 		private:
 			const Assembler &assembler_;

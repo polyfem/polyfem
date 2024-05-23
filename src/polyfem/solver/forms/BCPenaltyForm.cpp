@@ -101,6 +101,11 @@ namespace polyfem::solver
 			update_target(t);
 	}
 
+	double BCPenaltyForm::compute_error(const Eigen::VectorXd &x) const
+	{
+		return (this->target() - x).transpose() * this->mask() * (this->target() - x);
+	}
+
 	void BCPenaltyForm::update_target(const double t)
 	{
 		assert(rhs_assembler_ != nullptr);

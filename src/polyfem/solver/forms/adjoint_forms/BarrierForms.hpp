@@ -11,15 +11,15 @@ namespace polyfem::solver
 	class CollisionBarrierForm : public AdjointForm
 	{
 	public:
-		CollisionBarrierForm(const std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulation, const State &state, const double dhat, const double dmin = 0);
+		CollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, const State &state, const double dhat, const double dmin = 0);
 
 		double value_unweighted(const Eigen::VectorXd &x) const override;
 
-		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 		void solution_changed(const Eigen::VectorXd &x) override;
 
-		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override;
+		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
 		std::string name() const override { return "collision barrier"; }
 
@@ -46,7 +46,7 @@ namespace polyfem::solver
 	class LayerThicknessForm : public CollisionBarrierForm
 	{
 	public:
-		LayerThicknessForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations,
+		LayerThicknessForm(const VariableToSimulationGroup &variable_to_simulations,
 						   const State &state,
 						   const std::vector<int> &boundary_ids,
 						   const double dhat,
@@ -68,17 +68,15 @@ namespace polyfem::solver
 	class DeformedCollisionBarrierForm : public AdjointForm
 	{
 	public:
-		DeformedCollisionBarrierForm(const std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulation, const State &state, const double dhat);
+		DeformedCollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, const State &state, const double dhat);
 
 		std::string name() const override { return "deformed_collision_barrier"; }
 
 		double value_unweighted(const Eigen::VectorXd &x) const override;
 
-		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 		void solution_changed(const Eigen::VectorXd &x) override;
-
-		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override;
 
 		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 

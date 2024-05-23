@@ -6,6 +6,7 @@
 #include <polyfem/utils/Logger.hpp>
 
 #include <polyfem/solver/DiffCache.hpp>
+#include <polyfem/solver/forms/adjoint_forms/VariableToSimulation.hpp>
 
 namespace polyfem
 {
@@ -13,7 +14,6 @@ namespace polyfem
 
 	namespace solver
 	{
-		class VariableToSimulation;
 		class AdjointNLProblem;
 	} // namespace solver
 
@@ -25,7 +25,7 @@ namespace polyfem
 		//-----------------initialization--------------------
 		//---------------------------------------------------
 
-		~OptState() = default;
+		~OptState();
 		/// Constructor
 		OptState();
 
@@ -63,7 +63,7 @@ namespace polyfem
 		/// init variables
 		void init_variables();
 
-		void crate_problem();
+		void create_problem();
 
 		void initial_guess(Eigen::VectorXd &x); // shoud be const
 
@@ -97,9 +97,9 @@ namespace polyfem
 		std::vector<int> variable_sizes;
 		int ndof;
 
-		std::vector<std::shared_ptr<solver::VariableToSimulation>> variable_to_simulations;
+		solver::VariableToSimulationGroup variable_to_simulations;
 
-		std::shared_ptr<solver::AdjointNLProblem> nl_problem;
+		std::unique_ptr<solver::AdjointNLProblem> nl_problem;
 
 	public:
 		/// Directory for output files

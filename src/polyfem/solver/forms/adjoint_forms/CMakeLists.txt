@@ -7,11 +7,13 @@ set(SOURCES
 	SpatialIntegralForms.hpp
 	VariableToSimulation.cpp
 	VariableToSimulation.hpp
+	CompositeForm.cpp
 	CompositeForm.hpp
 	CompositeForms.cpp
 	CompositeForms.hpp
 	SumCompositeForm.hpp
 	AMIPSForm.hpp
+	WeightedVolumeForm.cpp
 	WeightedVolumeForm.hpp
 	ParametrizedProductForm.hpp
 	TransientForm.hpp
@@ -28,3 +30,6 @@ set(SOURCES
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
 target_sources(polyfem PRIVATE ${SOURCES})
+
+include(finite_diff)
+target_link_libraries(polyfem PUBLIC finitediff::finitediff)
