@@ -8,7 +8,7 @@
 #include <polyfem/utils/BoundarySampler.hpp>
 #include <polyfem/State.hpp>
 
-#include <finitediff.hpp>
+// #include <finitediff.hpp>
 
 using namespace polyfem::utils;
 
@@ -213,77 +213,6 @@ namespace polyfem::solver
 			collision_mesh.can_collide = [&can_collide_cache](size_t vi, size_t vj) {
 				// return true;
 				return (bool)can_collide_cache(vi, vj);
-			};
-
-			collision_mesh.init_area_jacobians();
-
-			Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(utils::unflatten(u, collision_mesh.dim()));
-
-			ipc::Collisions cs_ = cs_func(displaced_surface);
-			cs_.build(collision_mesh, displaced_surface, dhat, dmin, ipc::BroadPhaseMethod::HASH_GRID);
-
-			Eigen::MatrixXd forces = collision_mesh.to_full_dof(barrier_potential.gradient(cs_, collision_mesh, displaced_surface));
-
-			double sum = (forces.array() * forces.array()).sum();
-
-			return sum;
-		}
-
-		void compute_forward_collision_mesh_quantities(
-			const State &state,
-			const std::set<int> &boundary_ids,
-			const ipc::CollisionMesh &collision_mesh,
-			Eigen::MatrixXd &node_positions,
-			Eigen::MatrixXi &boundary_edges,
-			Eigen::MatrixXi &boundary_triangles,
-			Eigen::SparseMatrix<double> &displacement_map,
-			std::vector<bool> &is_on_surface,
-			Eigen::MatrixXi &can_collide_cache)
-		{
-			std::vector<Eigen::Triplet<double>> displacement_map_entries;
-			io::OutGeometryData::extract_boundary_mesh(*state.mesh, state.n_bases, state.bases, state.total_local_boundary,
-													   node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
-
-			const int num_fe_nodes = state.n_bases;
-			const int num_fe_collision_vertices = node_positions.rows();
-
-			is_on_surface = ipc::CollisionMesh::construct_is_on_surface(
-				node_positions.rows(), boundary_edges);
-
-			if (!displacement_map_entries.empty())
-			{
-				displacement_map.resize(node_positions.rows(), state.n_bases);
-				displacement_map.setFromTriplets(displacement_map_entries.begin(), displacement_map_entries.end());
-			}
-		}
-
-		double compute_forward_quantity(
-			const Eigen::MatrixXd &node_positions,
-			const Eigen::MatrixXi &boundary_edges,
-			const Eigen::MatrixXi &boundary_triangles,
-			const Eigen::SparseMatrix<double> &displacement_map,
-			const std::vector<bool> &is_on_surface,
-			const Eigen::MatrixXi &can_collide_cache,
-			const double dhat,
-			const double dmin,
-			std::function<ipc::Collisions(const Eigen::MatrixXd &)> cs_func,
-			const Eigen::MatrixXd &u,
-			const ipc::BarrierPotential &barrier_potential)
-
-		{
-			static int count = 0;
-			std::cout << "computing " << ((double)count / 2) / u.size() * 100. << std::endl;
-			++count;
-			ipc::CollisionMesh collision_mesh = ipc::CollisionMesh(is_on_surface,
-																   node_positions,
-																   boundary_edges,
-																   boundary_triangles,
-																   displacement_map);
-
-			collision_mesh.can_collide = [&collision_mesh, &node_positions](size_t vi, size_t vj) {
-				// obstacles do not collide with other obstacles
-				return collision_mesh.to_full_vertex_id(vi) < node_positions.rows()
-					   || collision_mesh.to_full_vertex_id(vj) < node_positions.rows();
 			};
 
 			collision_mesh.init_area_jacobians();
@@ -869,8 +798,7 @@ namespace polyfem::solver
 		auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
 		boundary_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 
-		// build_collision_mesh();
-		build_forward_collision_mesh();
+		build_collision_mesh();
 
 		broad_phase_method_ = ipc::BroadPhaseMethod::HASH_GRID;
 
@@ -1023,42 +951,6 @@ namespace polyfem::solver
 		collision_mesh_.init_area_jacobians();
 	}
 
-	void ProxyContactForceForm::build_forward_collision_mesh()
-	{
-		node_positions_.resize(0, 0);
-
-		Eigen::MatrixXi collision_edges, collision_triangles;
-		std::vector<Eigen::Triplet<double>> displacement_map_entries;
-
-		io::OutGeometryData::extract_boundary_mesh(*state_.mesh, state_.n_bases, state_.bases, state_.total_local_boundary,
-												   node_positions_, collision_edges, collision_triangles, displacement_map_entries);
-
-		const int num_fe_nodes = state_.n_bases;
-		const int num_fe_collision_vertices = node_positions_.rows();
-
-		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(
-			node_positions_.rows(), collision_edges);
-
-		Eigen::SparseMatrix<double> displacement_map;
-		if (!displacement_map_entries.empty())
-		{
-			displacement_map.resize(node_positions_.rows(), state_.n_bases);
-			displacement_map.setFromTriplets(displacement_map_entries.begin(), displacement_map_entries.end());
-		}
-
-		collision_mesh_ = ipc::CollisionMesh(
-			is_on_surface, node_positions_, collision_edges, collision_triangles,
-			displacement_map);
-
-		collision_mesh_.can_collide = [this, num_fe_collision_vertices](size_t vi, size_t vj) {
-			// obstacles do not collide with other obstacles
-			return collision_mesh_.to_full_vertex_id(vi) < num_fe_collision_vertices
-				   || collision_mesh_.to_full_vertex_id(vj) < num_fe_collision_vertices;
-		};
-
-		collision_mesh_.init_area_jacobians();
-	}
-
 	const ipc::Collisions &ProxyContactForceForm::get_or_compute_collision_set(const int time_step, const Eigen::MatrixXd &displaced_surface) const
 	{
 		if (!collision_set_indicator_(time_step))
@@ -1069,13 +961,6 @@ namespace polyfem::solver
 		}
 		return *collision_sets_[time_step];
 	}
-
-	// ipc::Collisions ProxyContactForceForm::compute_collision_set(const int time_step, const Eigen::MatrixXd &displaced_surface) const
-	// {
-	// 	ipc::Collisions cs = *collision_sets_[time_step];
-	// 	cs.build(collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_method_);
-	// 	return cs;
-	// }
 
 	double ProxyContactForceForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
 	{
@@ -1133,40 +1018,6 @@ namespace polyfem::solver
 		assert(state_.solve_data.time_integrator != nullptr);
 		assert(state_.solve_data.contact_form != nullptr);
 
-		// const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh_.dim()));
-		// auto collision_set = get_or_compute_collision_set(time_step, displaced_surface);
-
-		// Eigen::MatrixXd forces = Eigen::MatrixXd::Zero(collision_mesh_.ndof(), 1);
-		// forces -= barrier_potential_.gradient(collision_set, collision_mesh_, displaced_surface);
-		// forces = collision_mesh_.to_full_dof(forces);
-
-		// StiffnessMatrix shape_derivative(collision_mesh_.ndof(), collision_mesh_.ndof());
-		// shape_derivative -= barrier_potential_.shape_derivative(collision_set, collision_mesh_, displaced_surface);
-		// shape_derivative = collision_mesh_.to_full_dof(shape_derivative);
-
-		// Eigen::VectorXd grads = 2 * shape_derivative.transpose() * forces;
-		// grads = state_.basis_nodes_to_gbasis_nodes * grads;
-		// grads = AdjointTools::map_node_to_primitive_order(state_, grads);
-
-		// gradv.setZero(x.size());
-
-		// for (const auto &param_map : variable_to_simulations_)
-		// {
-		// 	const auto &param_type = param_map->get_parameter_type();
-
-		// 	for (const auto &state : param_map->get_states())
-		// 	{
-		// 		if (state.get() != &state_)
-		// 			continue;
-
-		// 		if ((param_type != ParameterType::Shape) && (param_type != ParameterType::PressureBC))
-		// 			log_and_throw_error("Only support contact force derivative wrt. shape or pressure!");
-
-		// 		if (grads.size() > 0)
-		// 			gradv += param_map->apply_parametrization_jacobian(grads, x);
-		// 	}
-		// }
-
 		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, &state_, x, [this, time_step, &x]() {
 			const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh_.dim()));
 
@@ -1200,11 +1051,11 @@ namespace polyfem::solver
 			// 		[this, time_step](const Eigen::MatrixXd &displaced_surface) {return get_or_compute_collision_set(time_step, displaced_surface);},
 			// 		state_.diff_cached.u(time_step),
 			// 		barrier_potential_); },
-			// 	G, fd::AccuracyOrder::SECOND, 1e-6);
-			// Eigen::MatrixXd diff(G.size(), 3);
+			// 	G, fd::AccuracyOrder::SECOND, 1e-7);
+
+			// Eigen::MatrixXd diff(G.size(), 2);
 			// diff.col(0) = G;
 			// diff.col(1) = grads;
-			// diff.col(2) = forces;
 			// std::cout << "diff " << diff << std::endl;
 			// std::cout << "size " << G.size() << " " << grads.size() << std::endl;
 			// std::cout << "fd norm " << G.norm() << std::endl;

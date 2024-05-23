@@ -960,7 +960,7 @@ TEST_CASE("shape-contact-force-norm-3d", "[test_adjoint]")
 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
 	VariableToSimulationGroup variable_to_simulations;
-	variable_to_simulations.push_back(AdjointOptUtils::create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {12}));
+	variable_to_simulations.push_back(AdjointOptUtils::create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {42}));
 
 	auto obj = AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states);
 
@@ -976,7 +976,7 @@ TEST_CASE("shape-contact-force-norm-3d", "[test_adjoint]")
 	Eigen::MatrixXd velocity_discrete;
 
 	Eigen::VectorXd x;
-	x.resize(12);
+	x.resize(42);
 
 	Eigen::MatrixXd V;
 	state.get_vertices(V);
