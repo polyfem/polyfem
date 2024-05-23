@@ -3,6 +3,8 @@
 #include <polyfem/utils/Jacobian.hpp>
 #include <polyfem/autogen/auto_elasticity_rhs.hpp>
 
+#include <type_traits>
+
 namespace polyfem::assembler
 {
 	namespace
@@ -11,6 +13,39 @@ namespace polyfem::assembler
 		{
 			return (i == j) ? true : false;
 		}
+
+		template <class T, int p = 3>
+		class barrier {
+			constexpr static double C = 1e2;
+		public:
+			static_assert(p % 2 == 1);
+			static T value(T J)
+			{
+				if (J >= 0.5)
+					return T(0.);
+				const T tmp1 = 2 * J - 1;
+				const T tmp2 = pow(tmp1, p);
+				return C * (1 / (tmp2 + 1) - 1);
+			}
+
+			static T first_derivatives(T J)
+			{
+				if (J >= 0.5)
+					return T(0);
+				const T tmp1 = 2 * J - 1;
+				const T tmp2 = pow(tmp1, p);
+				return C * -2 * p * tmp2 / tmp1 / pow(1 + tmp2, 2);
+			}
+
+			static T second_derivatives(T J)
+			{
+				if (J >= 0.5)
+					return T(0);
+				const T tmp1 = 2 * J - 1;
+				const T tmp2 = pow(tmp1, p);
+				return C * 4 * p * tmp2 / pow(tmp1, 2) * ((1 - p) + (1 + p) * tmp2) / pow(1 + tmp2, 3);
+			}
+		};
 	} // namespace
 
 	NeoHookeanElasticity::NeoHookeanElasticity()
@@ -351,8 +386,10 @@ namespace polyfem::assembler
 
 				const T J = use_robust_jacobian ? jacs(p) * jac_it.determinant() : def_grad.determinant();
 				const T log_det_j = log(J);
-				// const T val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) + lambda / 2 * log_det_j * log_det_j;
-				const T val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * (1 - 1. / J)) + lambda / 2 * log_det_j * log_det_j;
+				const T val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) + 
+								lambda / 2 * log_det_j * log_det_j + 
+								mu * barrier<double>::value(J);
+
 
 				energy += val * data.da(p);
 			}
@@ -504,12 +541,14 @@ namespace polyfem::assembler
 
 			Eigen::Matrix<double, n_basis, dim> delF_delU = grad * jac_it;
 
-			// Eigen::Matrix<double, dim, dim> gradient_temp = mu * def_grad - mu * (1 / J) * delJ_delF + lambda * log_det_j * (1 / J) * delJ_delF;
-			Eigen::Matrix<double, dim, dim> gradient_temp = mu * def_grad - mu * (1 / J / J) * delJ_delF + lambda * log_det_j * (1 / J) * delJ_delF;
+			Eigen::Matrix<double, dim, dim> gradient_temp = mu * def_grad - mu * (1 / J) * delJ_delF + 
+																lambda * log_det_j * (1 / J) * delJ_delF + 
+																mu * barrier<double>::first_derivatives(J) * delJ_delF;
 			Eigen::Matrix<double, n_basis, dim> gradient = delF_delU * gradient_temp.transpose();
 
-			// double val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) + lambda / 2 * log_det_j * log_det_j;
-			double val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * (1 - 1. / J)) + lambda / 2 * log_det_j * log_det_j;
+			double val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) +
+							lambda / 2 * log_det_j * log_det_j +
+							mu * barrier<double>::value(J);
 
 			G.noalias() += gradient * data.da(p);
 		}
@@ -608,12 +647,15 @@ namespace polyfem::assembler
 			double lambda, mu;
 			params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id, lambda, mu);
 
-			Eigen::Matrix<double, dim * dim, dim * dim> id = Eigen::Matrix<double, dim * dim, dim * dim>::Identity(size() * size(), size() * size());
+			Eigen::Matrix<double, dim * dim, dim *dim> id = Eigen::Matrix<double, dim * dim, dim * dim>::Identity(size() * size(), size() * size());
 
 			Eigen::Matrix<double, dim * dim, 1> g_j = Eigen::Map<const Eigen::Matrix<double, dim * dim, 1>>(delJ_delF.data(), delJ_delF.size());
 
-			// Eigen::Matrix<double, dim * dim, dim * dim> hessian_temp = (mu * id) + (((mu + lambda * (1 - log_det_j)) / (J * J)) * (g_j * g_j.transpose())) + (((lambda * log_det_j - mu) / (J)) * del2J_delF2);
-			Eigen::Matrix<double, dim * dim, dim * dim> hessian_temp = (mu * id) + (((mu * (2. / J) + lambda * (1 - log_det_j)) / (J * J)) * (g_j * g_j.transpose())) + (((lambda * log_det_j - mu / J) / (J)) * del2J_delF2);
+			Eigen::Matrix<double, dim * dim, dim * dim> hessian_temp = (mu * id) + (((mu + lambda * (1 - log_det_j)) / (J * J)) * (g_j * g_j.transpose())) + 
+																			(((lambda * log_det_j - mu) / (J)) * del2J_delF2) +
+																			mu * barrier<double>::first_derivatives(J) * del2J_delF2 +
+																			mu * barrier<double>::second_derivatives(J) * (g_j * g_j.transpose());
+																		
 
 			Eigen::Matrix<double, dim * dim, N> delF_delU_tensor(jac_it.size(), grad.size());
 
@@ -632,8 +674,9 @@ namespace polyfem::assembler
 
 			Eigen::Matrix<double, N, N> hessian = delF_delU_tensor.transpose() * hessian_temp * delF_delU_tensor;
 
-			// double val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) + lambda / 2 * log_det_j * log_det_j;
-			double val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * (1 - 1. / J)) + lambda / 2 * log_det_j * log_det_j;
+			double val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) + 
+							lambda / 2 * log_det_j * log_det_j +
+							mu * barrier<double>::value(J);
 
 			H += hessian * data.da(p);
 		}
