@@ -180,7 +180,7 @@ namespace polyfem::solver
         : AdjointForm(variable_to_simulation),
             state_(state)
     {
-        amips_energy_ = assembler::AssemblerUtils::make_assembler("AMIPS");
+        amips_energy_ = assembler::AssemblerUtils::make_assembler("AMIPSAutodiff");
         amips_energy_->set_size(state.mesh->dimension());
 
         json transform_params = {};
