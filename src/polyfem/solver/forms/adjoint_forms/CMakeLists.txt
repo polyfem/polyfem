@@ -12,6 +12,7 @@ set(SOURCES
 	CompositeForms.cpp
 	CompositeForms.hpp
 	SumCompositeForm.hpp
+	AMIPSForm.cpp
 	AMIPSForm.hpp
 	WeightedVolumeForm.cpp
 	WeightedVolumeForm.hpp

@@ -5,6 +5,7 @@
 
 #include "AdjointNLProblem.hpp"
 
+#include <polyfem/State.hpp>
 #include <polyfem/solver/forms/adjoint_forms/SpatialIntegralForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
 #include <polyfem/solver/forms/adjoint_forms/CompositeForms.hpp>
@@ -174,9 +175,17 @@ namespace polyfem::solver
 				Eigen::VectorXd bounds = args["soft_bound"];
 				obj = std::make_shared<InequalityConstraintForm>(forms, bounds, args["power"]);
 			}
+			else if (type == "min-jacobian")
+			{
+				obj = std::make_shared<MinJacobianForm>(var2sim, *(states[args["state"]]));
+			}
 			else if (type == "AMIPS")
 			{
 				obj = std::make_shared<AMIPSForm>(var2sim, *(states[args["state"]]));
+			}
+			else if (type == "AMIPS-clean")
+			{
+				obj = std::make_shared<AMIPSFormClean>(var2sim, *(states[args["state"]]));
 			}
 			else if (type == "boundary_smoothing")
 			{

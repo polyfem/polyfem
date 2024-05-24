@@ -93,6 +93,8 @@ namespace polyfem
 
 			else if (formulation == "AMIPS")
 				return std::make_shared<AMIPSEnergy>();
+			else if (formulation == "AMIPSAutodiff")
+				return std::make_shared<AMIPSEnergyAutodiff>();
 
 			log_and_throw_error("Inavalid assembler name {}", formulation);
 		}
