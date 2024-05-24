@@ -575,7 +575,8 @@
         "optional": [
             "solve_in_parallel",
             "solve_in_order",
-            "characteristic_length"
+            "characteristic_length",
+            "enable_slim"
         ],
         "doc": "Advanced settings for arranging forward simulations"
     },
@@ -584,6 +585,12 @@
         "default": 1,
         "type": "float",
         "doc": "A scaling on the nonlinear problem for better stability."
+    },
+    {
+        "pointer": "/solver/advanced/enable_slim",
+        "default": false,
+        "type": "bool",
+        "doc": "Run shape optimization with slim."
     },
     {
         "pointer": "/solver/advanced/solve_in_parallel",

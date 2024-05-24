@@ -8,6 +8,7 @@
 #include <polyfem/State.hpp>
 #include <igl/boundary_facets.h>
 #include <igl/writeOBJ.h>
+#include <polyfem/mesh/SlimSmooth.hpp>
 
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
@@ -103,6 +104,7 @@ namespace polyfem::solver
 		  variables_to_simulation_(variables_to_simulation),
 		  all_states_(all_states),
 		  save_freq(args["output"]["save_frequency"]),
+		  enable_slim(args["solver"]["advanced"]["enable_slim"]),
 		  solve_in_parallel(args["solver"]["advanced"]["solve_in_parallel"])
 	{
 		cur_grad.setZero(0);
@@ -278,12 +280,43 @@ namespace polyfem::solver
 	{
 		bool need_rebuild_basis = false;
 
+		std::vector<Eigen::MatrixXd> V_old_list;
+		for (auto state : all_states_)
+		{
+			Eigen::MatrixXd V;
+			state->get_vertices(V);
+			V_old_list.push_back(V);
+		}
+
 		// update to new parameter and check if the new parameter is valid to solve
 		for (const auto &v : variables_to_simulation_)
 		{
 			v->update(newX);
 			if (v->get_parameter_type() == ParameterType::Shape)
 				need_rebuild_basis = true;
+		}
+
+		// Apply slim to all states on a frequency
+		if (need_rebuild_basis && enable_slim && curr_x.size() > 0)
+		{
+			int state_num = 0;
+			for (auto state : all_states_)
+			{
+				Eigen::MatrixXd V_new, V_smooth;
+				Eigen::MatrixXi F;
+				state->get_vertices(V_new);
+				state->get_elements(F);
+
+				bool slim_success = polyfem::mesh::apply_slim(V_old_list[state_num], F, V_new, V_smooth, 50);
+
+				if (!slim_success)
+					log_and_throw_adjoint_error("SLIM cannot succeed, something went wrong!");
+
+				for (int i = 0; i < V_smooth.rows(); ++i)
+					state->set_mesh_vertex(i, V_smooth.row(i));
+
+				state_num++;
+			}
 		}
 
 		if (need_rebuild_basis)
@@ -296,6 +329,8 @@ namespace polyfem::solver
 		solve_pde();
 
 		form_->solution_changed(newX);
+
+		curr_x = newX;
 	}
 
 	void AdjointNLProblem::solve_pde()

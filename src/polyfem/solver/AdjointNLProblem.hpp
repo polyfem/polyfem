@@ -44,9 +44,12 @@ namespace polyfem::solver
 		std::vector<std::shared_ptr<State>> all_states_;
 		std::vector<bool> active_state_mask;
 		Eigen::VectorXd cur_grad;
+		Eigen::VectorXd curr_x;
 
 		const int save_freq;
 		std::ofstream solution_ostream;
+
+		const bool enable_slim;
 
 		const bool solve_in_parallel;
 		std::vector<int> solve_in_order;
