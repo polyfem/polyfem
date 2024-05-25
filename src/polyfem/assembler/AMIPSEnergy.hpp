@@ -59,7 +59,7 @@ namespace polyfem::assembler
 		// sets material params
 		void add_multimaterial(const int index, const json &params, const Units &units) override;
 
-		std::string name() const override { return "AMIPS-Autodiff"; }
+		std::string name() const override { return "AMIPSAutodiff"; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
 		template <typename T>
@@ -84,7 +84,9 @@ namespace polyfem::assembler
 				}
 			}
 
-			const T J = polyfem::utils::determinant(F);
+			T J = polyfem::utils::determinant(F);
+			if (J <= 0)
+				J = T(std::nan(""));
 			return (F.transpose() * F).trace() / pow(J, 2. / size());
 		}
 

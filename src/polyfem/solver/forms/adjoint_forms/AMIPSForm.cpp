@@ -173,7 +173,7 @@ namespace polyfem::solver
 
     void MinJacobianForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
     {
-
+        log_and_throw_adjoint_error("{} is not differentiable!", name());
     }
 
     AMIPSForm::AMIPSForm(const VariableToSimulationGroup& variable_to_simulation, const State &state)
@@ -284,20 +284,23 @@ namespace polyfem::solver
         return !flipped;
     }
 
-
     AMIPSFormClean::AMIPSFormClean(const VariableToSimulationGroup& variable_to_simulation, const State &state)
         : AdjointForm(variable_to_simulation),
             state_(state)
     {
+        Eigen::MatrixXd V;
+        state_.get_vertices(V);
+        X = utils::flatten(V);
+        state_.get_elements(F);
     }
 
     double AMIPSFormClean::value_unweighted(const Eigen::VectorXd &x) const
     {
         auto amips_energy_ = assembler::AssemblerUtils::make_assembler("AMIPS");
         amips_energy_->set_size(state_.mesh->dimension());
+
         const Eigen::VectorXd disp = Eigen::VectorXd::Zero(state_.n_geom_bases * state_.mesh->dimension());
         assembler::AssemblyValsCache cache;
-
         return amips_energy_->assemble_energy(state_.mesh->is_volume(), state_.geom_bases(), state_.geom_bases(), cache, 0, 0, disp, disp);
     }
 
@@ -306,10 +309,10 @@ namespace polyfem::solver
         auto amips_energy_ = assembler::AssemblerUtils::make_assembler("AMIPS");
         amips_energy_->set_size(state_.mesh->dimension());
         const Eigen::VectorXd disp = Eigen::VectorXd::Zero(state_.n_geom_bases * state_.mesh->dimension());
-        assembler::AssemblyValsCache cache;
 
         gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, &state_, x, [&]() {
             Eigen::MatrixXd grad;
+            assembler::AssemblyValsCache cache;
             amips_energy_->assemble_gradient(state_.mesh->is_volume(), state_.n_geom_bases, state_.geom_bases(), state_.geom_bases(), cache, 0, 0, disp, disp, grad); // grad wrt. gbases
             return AdjointTools::map_node_to_primitive_order(state_, grad);
         });
@@ -317,6 +320,14 @@ namespace polyfem::solver
 
     bool AMIPSFormClean::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
     {
-        return true;
+        auto Y = X;
+        variable_to_simulations_.compute_state_variable(ParameterType::Shape, &state_, x1, Y);
+        Eigen::MatrixXd V1 = utils::unflatten(Y, state_.mesh->dimension());
+        bool flipped = is_flipped(V1, F);
+
+        if (flipped)
+            adjoint_logger().trace("[{}] Step flips elements.", name());
+
+        return !flipped;
     }
 }

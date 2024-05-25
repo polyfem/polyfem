@@ -430,7 +430,7 @@ namespace polyfem
 		if (!utils::is_param_valid(args, "materials"))
 			return;
 
-		if (!args["materials"].is_array() && args["materials"]["type"] == "AMIPS")
+		if (!args["materials"].is_array() && args["materials"]["type"] == "AMIPSAutodiff")
 		{
 			json transform_params = {};
 			transform_params["canonical_transformation"] = json::array();

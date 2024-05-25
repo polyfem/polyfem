@@ -124,6 +124,16 @@ namespace polyfem::assembler
 
 		T energy = T(0.0);
 
+		Eigen::MatrixXd standard(size(), size());
+		if (size() == 2)
+			standard << 1 ,                 0,
+						0.5, std::sqrt(3) / 2;
+		else
+			standard << 1,                    0,                 0,
+						0.5,  std::sqrt(3) / 2.,                 0,
+						0.5, 0.5 / std::sqrt(3), std::sqrt(3) / 2.;
+		standard = standard.inverse().transpose().eval();
+
 		const int n_pts = data.da.size();
 		for (long p = 0; p < n_pts; ++p)
 		{
@@ -138,8 +148,10 @@ namespace polyfem::assembler
 			for (long k = 0; k < jac_it.size(); ++k)
 				jac_it(k) = T(data.vals.jac_it[p](k));
 			def_grad += jac_it.inverse();
+			def_grad = def_grad * standard;
 
-			const T val = (def_grad.transpose() * def_grad).trace() / pow(polyfem::utils::determinant(def_grad), 2. / size());
+			const T powJ = size() == 2 ? polyfem::utils::determinant(def_grad) : pow(polyfem::utils::determinant(def_grad), 2. / 3.);
+			const T val = (def_grad.transpose() * def_grad).trace() / powJ;
 
 			energy += val * data.da(p);
 		}
@@ -172,6 +184,16 @@ namespace polyfem::assembler
 		Eigen::Matrix<double, n_basis, dim> G(data.vals.basis_values.size(), size());
 		G.setZero();
 
+		Eigen::MatrixXd standard(size(), size());
+		if (size() == 2)
+			standard << 1 ,                 0,
+						0.5, std::sqrt(3) / 2;
+		else
+			standard << 1,                    0,                 0,
+						0.5,  std::sqrt(3) / 2.,                 0,
+						0.5, 0.5 / std::sqrt(3), std::sqrt(3) / 2.;
+		standard = standard.inverse().transpose().eval();
+
 		for (long p = 0; p < n_pts; ++p)
 		{
 			Eigen::Matrix<double, n_basis, dim> grad(data.vals.basis_values.size(), size());
@@ -184,9 +206,11 @@ namespace polyfem::assembler
 			Eigen::Matrix<double, dim, dim> jac_it = data.vals.jac_it[p];
 
 			// Id + grad d
-			def_grad = local_disp.transpose() * grad + jac_it.inverse();
+			def_grad = (local_disp.transpose() * grad + jac_it.inverse()) * standard;
 
-			const double J = def_grad.determinant();
+			double J = def_grad.determinant();
+			if (J <= 0)
+				J = std::nan("");
 
 			Eigen::Matrix<double, dim, dim> delJ_delF(size(), size());
 			delJ_delF.setZero();
@@ -215,8 +239,9 @@ namespace polyfem::assembler
 				delJ_delF.col(2) = cross<dim>(u, v);
 			}
 
-			Eigen::Matrix<double, dim, dim> gradient_temp = 2 * (def_grad - (def_grad.squaredNorm() / dim) / J * delJ_delF) / pow(J, 2. / dim);
-			Eigen::Matrix<double, n_basis, dim> gradient = grad * gradient_temp.transpose();
+			const double powJ = dim == 2 ? J : pow(J, 2. / 3.);
+			Eigen::Matrix<double, dim, dim> gradient_temp = 2 * (def_grad - (def_grad.squaredNorm() / dim) / J * delJ_delF) / powJ;
+			Eigen::Matrix<double, n_basis, dim> gradient = grad * standard * gradient_temp.transpose();
 
 			G.noalias() += gradient * data.da(p);
 		}
@@ -329,6 +354,16 @@ namespace polyfem::assembler
 
 		Eigen::Matrix<double, dim, dim> def_grad(size(), size());
 
+		Eigen::MatrixXd standard(size(), size());
+		if (size() == 2)
+			standard << 1 ,                 0,
+						0.5, std::sqrt(3) / 2;
+		else
+			standard << 1,                    0,                 0,
+						0.5,  std::sqrt(3) / 2.,                 0,
+						0.5, 0.5 / std::sqrt(3), std::sqrt(3) / 2.;
+		standard = standard.inverse().transpose().eval();
+
 		for (long p = 0; p < n_pts; ++p)
 		{
 			Eigen::Matrix<double, n_basis, dim> grad(data.vals.basis_values.size(), size());
@@ -341,7 +376,7 @@ namespace polyfem::assembler
 			Eigen::Matrix<double, dim, dim> jac_it = data.vals.jac_it[p];
 
 			// Id + grad d
-			def_grad = local_disp.transpose() * grad + jac_it.inverse();
+			def_grad = (local_disp.transpose() * grad + jac_it.inverse()) * standard;
 
 			Eigen::Matrix<double, dim * dim, dim * dim> hessian_temp;
 			{
@@ -418,6 +453,7 @@ namespace polyfem::assembler
 					Eigen::Matrix<double, dim, dim> temp(size(), size());
 					temp.setZero();
 					temp.row(j) = grad.row(i);
+					temp = temp * standard;
 					Eigen::Matrix<double, dim * dim, 1> temp_flattened(Eigen::Map<Eigen::Matrix<double, dim * dim, 1>>(temp.data(), temp.size()));
 					delF_delU_tensor.col(i * size() + j) = temp_flattened;
 				}

@@ -32,7 +32,9 @@
             "soft_constraint",
             "layer_thickness",
             "AMIPS",
-            "parametrized_product"
+            "AMIPS-clean",
+            "parametrized_product",
+            "min_jacobian"
         ],
         "doc": "TODO"
     },
@@ -801,6 +803,35 @@
         ],
         "optional": [
             "volume_selection",
+            "weight",
+            "print_energy"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "AMIPS-clean",
+        "required": [
+            "type",
+            "state"
+        ],
+        "optional": [
+            "volume_selection",
+            "weight",
+            "print_energy"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "min_jacobian",
+        "required": [
+            "type",
+            "state"
+        ],
+        "optional": [
             "weight",
             "print_energy"
         ],

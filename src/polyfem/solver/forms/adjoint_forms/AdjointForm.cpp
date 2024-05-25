@@ -12,7 +12,7 @@ namespace polyfem::solver
 		double val = Form::value(x);
 		if (print_energy_ == PrintStage::ToPrint)
 		{
-			logger().debug("[{}] {}", print_energy_keyword_, val);
+			adjoint_logger().debug("[{}] {}", print_energy_keyword_, val);
 			print_energy_ = PrintStage::AlreadyPrinted;
 		}
 		return val;

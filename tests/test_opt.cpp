@@ -70,6 +70,7 @@ namespace
 		opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
 		std::vector<std::shared_ptr<State>> states = AdjointOptUtils::create_states(opt_args["states"], solver::CacheLevel::Derivatives, 16);
+		adjoint_logger().set_level(spdlog::level::trace);
 
 		/* DOF */
 		int ndof = 0;

@@ -175,7 +175,7 @@ namespace polyfem::solver
 				Eigen::VectorXd bounds = args["soft_bound"];
 				obj = std::make_shared<InequalityConstraintForm>(forms, bounds, args["power"]);
 			}
-			else if (type == "min-jacobian")
+			else if (type == "min_jacobian")
 			{
 				obj = std::make_shared<MinJacobianForm>(var2sim, *(states[args["state"]]));
 			}

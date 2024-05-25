@@ -78,6 +78,8 @@ namespace polyfem::solver
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
 	private:
+		Eigen::VectorXd X;
+		Eigen::MatrixXi F;
 		const State &state_;
 	};
 } // namespace polyfem::solver
