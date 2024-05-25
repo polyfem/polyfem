@@ -110,7 +110,7 @@ namespace polyfem::assembler
 		return gradient;
 	}
 
-	// Compute ∫ tr(FᵀF) / J^(2/dim) du
+	// Compute ∫ tr(FᵀF) / J^(1+2/dim) dxdydz
 	template <typename T>
 	T AMIPSEnergy::compute_energy_aux(const NonLinearAssemblerData &data) const
 	{
@@ -150,7 +150,7 @@ namespace polyfem::assembler
 			def_grad += jac_it.inverse();
 			def_grad = def_grad * standard;
 
-			const T powJ = size() == 2 ? polyfem::utils::determinant(def_grad) : pow(polyfem::utils::determinant(def_grad), 2. / 3.);
+			const T powJ = pow(polyfem::utils::determinant(def_grad), size() == 2 ? 2. : 5. / 3.);
 			const T val = (def_grad.transpose() * def_grad).trace() / powJ;
 
 			energy += val * data.da(p);
@@ -239,8 +239,9 @@ namespace polyfem::assembler
 				delJ_delF.col(2) = cross<dim>(u, v);
 			}
 
-			const double powJ = dim == 2 ? J : pow(J, 2. / 3.);
-			Eigen::Matrix<double, dim, dim> gradient_temp = 2 * (def_grad - (def_grad.squaredNorm() / dim) / J * delJ_delF) / powJ;
+			const double m = (dim == 2) ? 2. : 5. / 3.;
+			const double powJ = pow(J, m);
+			Eigen::Matrix<double, dim, dim> gradient_temp = (2 * def_grad - (def_grad.squaredNorm() * m) / J * delJ_delF) / powJ;
 			Eigen::Matrix<double, n_basis, dim> gradient = grad * standard * gradient_temp.transpose();
 
 			G.noalias() += gradient * data.da(p);
@@ -387,7 +388,7 @@ namespace polyfem::assembler
 				for (int i = 0; i < def_grad.size(); i++)
 					def_grad_ad(i) = Diff(i, def_grad(i));
 
-				Diff val = pow(utils::determinant(def_grad_ad), -2. / dim) * def_grad_ad.squaredNorm();
+				Diff val = pow(utils::determinant(def_grad_ad), -1. - 2. / dim) * def_grad_ad.squaredNorm();
 
 				hessian_temp = val.getHessian();
 			}
