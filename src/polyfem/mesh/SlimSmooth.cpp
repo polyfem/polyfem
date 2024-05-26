@@ -52,7 +52,7 @@ namespace polyfem::mesh
 
         if (is_flipped(V_new, F))
         {
-            logger().warn("Mesh is flipped before SLIM!");
+            adjoint_logger().warn("Mesh is flipped before SLIM!");
             return false;
         }
 

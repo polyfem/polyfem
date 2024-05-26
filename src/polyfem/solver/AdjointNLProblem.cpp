@@ -109,6 +109,9 @@ namespace polyfem::solver
 	{
 		cur_grad.setZero(0);
 
+		if (enable_slim && args["solver"]["nonlinear"]["advanced"]["apply_gradient_fd"] != "None")
+			adjoint_logger().warn("SLIM may affect the finite difference result!");
+
 		if (args["output"]["solution"] != "")
 		{
 			solution_ostream.open(args["output"]["solution"].get<std::string>(), std::ofstream::out);
@@ -310,7 +313,7 @@ namespace polyfem::solver
 				bool slim_success = polyfem::mesh::apply_slim(V_old_list[state_num], F, V_new, V_smooth, 50);
 
 				if (!slim_success)
-					log_and_throw_adjoint_error("SLIM cannot succeed, something went wrong!");
+					log_and_throw_adjoint_error("SLIM cannot succeed");
 
 				for (int i = 0; i < V_smooth.rows(); ++i)
 					state->set_mesh_vertex(i, V_smooth.row(i));

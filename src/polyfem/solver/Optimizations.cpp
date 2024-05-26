@@ -315,13 +315,13 @@ namespace polyfem::solver
 		else if (composite_map_type == "interior")
 		{
 			assert(type == "shape");
-			VariableToInteriorNodes variable_to_node(*cur_states[0], args["volume_selection"][0]);
+			VariableToInteriorNodes variable_to_node(*cur_states[0], args["volume_selection"]);
 			output_indexing = variable_to_node.get_output_indexing();
 		}
 		else if (composite_map_type == "boundary")
 		{
 			assert(type == "shape");
-			VariableToBoundaryNodes variable_to_node(*cur_states[0], args["surface_selection"][0]);
+			VariableToBoundaryNodes variable_to_node(*cur_states[0], args["surface_selection"]);
 			output_indexing = variable_to_node.get_output_indexing();
 		}
 		else if (composite_map_type == "boundary_excluding_surface")
