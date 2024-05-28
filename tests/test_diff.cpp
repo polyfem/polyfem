@@ -103,32 +103,6 @@ namespace
 		REQUIRE(derivative == Catch::Approx(finite_difference).epsilon(tol));
 	}
 
-	void verify_adjoint_individual(AdjointNLProblem &problem, const Eigen::VectorXd &x, const Eigen::MatrixXd &theta, const double dt, const double tol)
-	{
-		problem.solution_changed(x);
-		problem.save_to_file(0, x);
-		double functional_val = problem.value(x);
-
-		Eigen::VectorXd one_form;
-		problem.gradient(x, one_form);
-
-		for (int i = 0; i < x.size(); ++i)
-		{
-			Eigen::VectorXd x_ = x;
-			x_(i) += dt;
-			problem.solution_changed(x_);
-			double next_functional_val = problem.value(x_);
-
-			x_(i) -= 2 * dt;
-			problem.solution_changed(x_);
-			double former_functional_val = problem.value(x_);
-
-			double finite_difference = (next_functional_val - former_functional_val) / dt / 2;
-			std::cout << std::setprecision(16) << "i " << i << " derivative " << one_form(i) << " finite_difference " << finite_difference << "\n";
-			// REQUIRE(one_form(i) == Catch::Approx(finite_difference).epsilon(tol));
-		}
-	}
-
 	std::tuple<std::shared_ptr<AdjointForm>, VariableToSimulationGroup, std::vector<std::shared_ptr<State>>> prepare_test(json &opt_args)
 	{
 		opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
@@ -988,7 +962,6 @@ TEST_CASE("shape-contact-force-norm-3d", "[test_adjoint]")
 
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 
-	// verify_adjoint_individual(*nl_problem, x, velocity_discrete, 1e-3, 1e-3);
 	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-6, 1e-3);
 }
 
