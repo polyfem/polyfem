@@ -240,7 +240,10 @@
         "optional": [
             "type",
             "extract",
+            "unit",
             "transformation",
+            "n_refs",
+            "advanced",
             "enabled",
             "is_obstacle"
         ],
@@ -522,7 +525,7 @@
         "doc": "Normal of plane (two entries for 2D problems or three entries for 3D problems)."
     },
     {
-        "pointer": "/geometry/*/point/*",
+        "pointer": "/geometry/*/normal/*",
         "type": "float"
     },
     {
@@ -1187,7 +1190,8 @@
             "epsv",
             "friction_coefficient",
             "use_convergent_formulation",
-            "collision_mesh"
+            "collision_mesh",
+            "periodic"
         ],
         "doc": "Contact handling parameters."
     },
@@ -1286,6 +1290,12 @@
         "doc": ""
     },
     {
+        "pointer": "/contact/periodic",
+        "default": false,
+        "type": "bool",
+        "doc": "Set to true to check collision between adjacent periodic cells."
+    },
+    {
         "pointer": "/solver",
         "type": "include",
         "spec_file": "polysolve.json",
@@ -1346,6 +1356,13 @@
         "doc": "Initial weight for AL"
     },
     {
+        "pointer": "/solver/augmented_lagrangian/error",
+        "default": 1e-2,
+        "min": 0,
+        "type": "float",
+        "doc": "Don't stop AL unless the error is smaller than this number."
+    },
+    {
         "pointer": "/solver/augmented_lagrangian/scaling",
         "default": 2.0,
         "type": "float",
@@ -1355,7 +1372,7 @@
         "pointer": "/solver/augmented_lagrangian/max_weight",
         "default": 1e8,
         "type": "float",
-        "doc": "Maximum weigth"
+        "doc": "Maximum weight"
     },
     {
         "pointer": "/solver/augmented_lagrangian/eta",
@@ -1399,10 +1416,12 @@
             "BF",
             "spatial_hash",
             "SH",
+            "bvh",
+            "BVH",
+            "sweep_and_prune",
+            "SAP",
             "sweep_and_tiniest_queue",
-            "STQ",
-            "sweep_and_tiniest_queue_gpu",
-            "STQ_GPU"
+            "STQ"
         ],
         "doc": "Broad phase collision-detection algorithm to use"
     },
@@ -1597,6 +1616,23 @@
         "pointer": "/materials/*",
         "type": "object",
         "type_name": "MooneyRivlin3Param",
+        "required": [
+            "type",
+            "c1",
+            "c2",
+            "c3",
+            "d1"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "MooneyRivlin3ParamSymbolic",
         "required": [
             "type",
             "c1",
@@ -1870,6 +1906,7 @@
             "NeoHookean",
             "MooneyRivlin",
             "MooneyRivlin3Param",
+            "MooneyRivlin3ParamSymbolic",
             "UnconstrainedOgden",
             "IncompressibleOgden",
             "Stokes",
@@ -1984,13 +2021,13 @@
         "pointer": "/materials/*/c3",
         "type": "include",
         "spec_file": "value-no.json",
-        "doc": "Third Parameter for Mooney-Rivlin"
+        "doc": "Third Parameter for 3 parameter Mooney-Rivlin"
     },
     {
         "pointer": "/materials/*/d1",
         "type": "include",
         "spec_file": "value-no.json",
-        "doc": "MooneyRivlin third parameter"
+        "doc": "MooneyRivlin third parameterFourth Parameter for 3 parameter Mooney-Rivlin"
     },
     {
         "pointer": "/materials/*/alphas",
@@ -2065,10 +2102,94 @@
             "rhs",
             "dirichlet_boundary",
             "neumann_boundary",
+            "normal_aligned_neumann_boundary",
             "pressure_boundary",
-            "obstacle_displacements"
+            "pressure_cavity",
+            "obstacle_displacements",
+            "periodic_boundary"
         ],
         "doc": "The settings for boundary conditions."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary",
+        "type": "object",
+        "default": null,
+        "optional": [
+            "enabled",
+            "tolerance",
+            "correspondence",
+            "linear_displacement_offset",
+            "fixed_macro_strain",
+            "force_zero_mean"
+        ],
+        "doc": "Options for periodic boundary conditions."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/force_zero_mean",
+        "type": "bool",
+        "default": false,
+        "doc": "The periodic solution is not unique, set to true to find the solution with zero mean."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/enabled",
+        "type": "bool",
+        "default": false,
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/tolerance",
+        "type": "float",
+        "default": 1e-5,
+        "doc": "Relative tolerance of deciding periodic correspondence"
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/correspondence",
+        "type": "list",
+        "default": [],
+        "doc": "Periodic directions for periodic boundary conditions. If not specified, default to axis-aligned directions."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/correspondence/*",
+        "type": "list",
+        "default": [],
+        "doc": "One periodic direction."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/correspondence/*/*",
+        "type": "float",
+        "doc": "One entry of a periodic direction."
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/fixed_macro_strain",
+        "type": "list",
+        "default": [],
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/fixed_macro_strain/*",
+        "type": "int",
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/linear_displacement_offset",
+        "type": "list",
+        "default": [],
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/linear_displacement_offset/*",
+        "type": "list",
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/linear_displacement_offset/*/*",
+        "type": "float",
+        "doc": ""
+    },
+    {
+        "pointer": "/boundary_conditions/periodic_boundary/linear_displacement_offset/*/*",
+        "type": "string",
+        "doc": ""
     },
     {
         "pointer": "/boundary_conditions/rhs",
@@ -2104,6 +2225,7 @@
             "value"
         ],
         "optional": [
+            "time_reference",
             "interpolation",
             "dimension"
         ],
@@ -2131,6 +2253,17 @@
         "doc": "value"
     },
     {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/time_reference",
+        "default": [],
+        "type": "list",
+        "doc": "List of times when the Dirichlet boundary condition is specified"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/time_reference/*",
+        "type": "float",
+        "doc": "Values of Dirichlet boundary condition for timestep"
+    },
+    {
         "pointer": "/boundary_conditions/neumann_boundary",
         "type": "include",
         "spec_file": "boundary-condition.json",
@@ -2150,6 +2283,44 @@
         "doc": "Neumann boundary condition"
     },
     {
+        "pointer": "/boundary_conditions/normal_aligned_neumann_boundary",
+        "default": [],
+        "type": "list",
+        "doc": "Neumann boundary condition for normal times value for vector-valued PDEs."
+    },
+    {
+        "pointer": "/boundary_conditions/normal_aligned_neumann_boundary/*",
+        "type": "object",
+        "default": null,
+        "required": [
+            "id",
+            "value"
+        ],
+        "optional": [
+            "interpolation"
+        ],
+        "doc": "pressure BC entry"
+    },
+    {
+        "pointer": "/boundary_conditions/normal_aligned_neumann_boundary/*/id",
+        "type": "int",
+        "min": 0,
+        "max": 2147483646,
+        "doc": "ID for the pressure Neumann boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/normal_aligned_neumann_boundary/*/value",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Values of pressure boundary condition as a function of $x,y,z,t$"
+    },
+    {
+        "pointer": "/boundary_conditions/normal_aligned_neumann_boundary/*/interpolation",
+        "type": "include",
+        "spec_file": "interpolation.json",
+        "doc": "interpolation of boundary condition"
+    },
+    {
         "pointer": "/boundary_conditions/pressure_boundary",
         "default": [],
         "type": "list",
@@ -2164,8 +2335,7 @@
             "value"
         ],
         "optional": [
-            "interpolation",
-            "dimension"
+            "interpolation"
         ],
         "doc": "pressure BC entry"
     },
@@ -2180,29 +2350,42 @@
         "pointer": "/boundary_conditions/pressure_boundary/*/value",
         "type": "include",
         "spec_file": "value-no.json",
-        "doc": "Values of pressure Neumann boundary condition as a function of $x,y,z,t$"
-    },
-    {
-        "pointer": "/boundary_conditions/pressure_boundary/*/dimension",
-        "type": "list",
-        "default": [
-            true,
-            true,
-            true
-        ],
-        "doc": "List of 2 (2D) or 3 (3D) boolean values indicating if the Pressure boundary condition is applied for a particular dimension."
-    },
-    {
-        "pointer": "/boundary_conditions/pressure_boundary/*/dimension/*",
-        "type": "bool",
-        "default": true,
-        "doc": "value"
+        "doc": "Values of pressure boundary condition as a function of $x,y,z,t$"
     },
     {
         "pointer": "/boundary_conditions/pressure_boundary/*/interpolation",
         "type": "include",
         "spec_file": "interpolation.json",
         "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_cavity",
+        "default": [],
+        "type": "list",
+        "doc": "Neumann boundary condition for normal times value for vector-valued PDEs."
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_cavity/*",
+        "type": "object",
+        "default": null,
+        "required": [
+            "id",
+            "value"
+        ],
+        "doc": "pressure BC entry"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_cavity/*/id",
+        "type": "int",
+        "min": 0,
+        "max": 2147483646,
+        "doc": "ID for the pressure Neumann boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_cavity/*/value",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Values of pressure boundary condition as a function of $x,y,z,t$"
     },
     {
         "pointer": "/boundary_conditions/obstacle_displacements",
@@ -2582,7 +2765,7 @@
         "pointer": "/output/data/rest_mesh",
         "default": "",
         "type": "string",
-        "doc": "Writes the rest mesh in OBJ format, used to restart the sim"
+        "doc": "Writes the rest mesh in MSH format, used to restart the sim"
     },
     {
         "pointer": "/output/data/mises",

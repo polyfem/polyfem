@@ -9,7 +9,9 @@
 #include <igl/boundary_facets.h>
 #include <igl/writeOBJ.h>
 
-#include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/io/Evaluator.hpp>
+#include <polyfem/solver/forms/PeriodicContactForm.hpp>
+#include <polyfem/solver/NLHomoProblem.hpp>
 
 #include <list>
 #include <stack>
@@ -95,7 +97,7 @@ namespace polyfem::solver
 		}
 	} // namespace
 
-	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args)
+	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form, const VariableToSimulationGroup &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args)
 		: FullNLProblem({form}),
 		  form_(form),
 		  variables_to_simulation_(variables_to_simulation),
@@ -104,6 +106,13 @@ namespace polyfem::solver
 		  solve_in_parallel(args["solver"]["advanced"]["solve_in_parallel"])
 	{
 		cur_grad.setZero(0);
+
+		if (args["output"]["solution"] != "")
+		{
+			solution_ostream.open(args["output"]["solution"].get<std::string>(), std::ofstream::out);
+			if (!solution_ostream.is_open())
+				adjoint_logger().error("Cannot open solution file for writing!");
+		}
 
 		solve_in_order.clear();
 		{
@@ -135,7 +144,7 @@ namespace polyfem::solver
 		}
 	}
 
-	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<AdjointForm>> stopping_conditions, const std::vector<std::shared_ptr<VariableToSimulation>> &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args) : AdjointNLProblem(form, variables_to_simulation, all_states, args)
+	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<AdjointForm>> stopping_conditions, const VariableToSimulationGroup &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args) : AdjointNLProblem(form, variables_to_simulation, all_states, args)
 	{
 		stopping_conditions_ = stopping_conditions;
 	}
@@ -161,7 +170,7 @@ namespace polyfem::solver
 			{
 				POLYFEM_SCOPED_TIMER("adjoint solve");
 				for (int i = 0; i < all_states_.size(); i++)
-					all_states_[i]->solve_adjoint_cached(form_->compute_adjoint_rhs(x, *all_states_[i])); // caches inside state
+					all_states_[i]->solve_adjoint_cached(form_->compute_reduced_adjoint_rhs(x, *all_states_[i])); // caches inside state
 			}
 
 			{
@@ -173,17 +182,17 @@ namespace polyfem::solver
 		}
 	}
 
-	bool AdjointNLProblem::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
+	bool AdjointNLProblem::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
 	{
 		return form_->is_step_valid(x0, x1);
 	}
 
-	bool AdjointNLProblem::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
+	bool AdjointNLProblem::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
 	{
 		return form_->is_step_collision_free(x0, x1);
 	}
 
-	double AdjointNLProblem::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
+	double AdjointNLProblem::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
 	{
 		return form_->max_step_size(x0, x1);
 	}
@@ -208,6 +217,14 @@ namespace polyfem::solver
 	void AdjointNLProblem::save_to_file(const int iter_num, const Eigen::VectorXd &x0)
 	{
 		int id = 0;
+
+		if (solution_ostream.is_open())
+		{
+			adjoint_logger().debug("Save solution at iteration {} to file...", iter_num);
+			solution_ostream << iter_num << ": " << std::setprecision(16) << x0.transpose() << std::endl;
+			solution_ostream.flush();
+		}
+
 		if (iter_num % save_freq != 0)
 			return;
 		adjoint_logger().info("Saving iteration {}", iter_num);
@@ -257,27 +274,6 @@ namespace polyfem::solver
 		}
 	}
 
-	void AdjointNLProblem::solution_changed_no_solve(const Eigen::VectorXd &newX)
-	{
-		bool need_rebuild_basis = false;
-
-		// update to new parameter and check if the new parameter is valid to solve
-		for (const auto &v : variables_to_simulation_)
-		{
-			v->update(newX);
-			if (v->get_parameter_type() == ParameterType::Shape)
-				need_rebuild_basis = true;
-		}
-
-		if (need_rebuild_basis)
-		{
-			for (const auto &state : all_states_)
-				state->build_basis();
-		}
-
-		form_->solution_changed(newX);
-	}
-
 	void AdjointNLProblem::solution_changed(const Eigen::VectorXd &newX)
 	{
 		bool need_rebuild_basis = false;
@@ -324,6 +320,8 @@ namespace polyfem::solver
 		}
 		else
 		{
+			adjoint_logger().info("Run simulations in serial...");
+
 			Eigen::MatrixXd sol, pressure; // solution is also cached in state
 			for (int i : solve_in_order)
 			{

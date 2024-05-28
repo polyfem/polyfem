@@ -16,6 +16,7 @@
 
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
+#include <polyfem/OptState.hpp>
 
 #include <polysolve/nonlinear/BoxConstraintSolver.hpp>
 
@@ -64,7 +65,7 @@ namespace
 		return true;
 	}
 
-	std::tuple<std::shared_ptr<AdjointForm>, std::vector<std::shared_ptr<VariableToSimulation>>, std::vector<std::shared_ptr<State>>> prepare_test(json &opt_args)
+	std::tuple<std::shared_ptr<AdjointForm>, VariableToSimulationGroup, std::vector<std::shared_ptr<State>>> prepare_test(json &opt_args)
 	{
 		opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
@@ -81,7 +82,7 @@ namespace
 		}
 
 		/* variable to simulations */
-		std::vector<std::shared_ptr<VariableToSimulation>> var2sim;
+		VariableToSimulationGroup var2sim;
 		for (const auto &arg : opt_args["variable_to_simulation"])
 			var2sim.push_back(
 				AdjointOptUtils::create_variable_to_simulation(arg, states, variable_sizes));
@@ -90,7 +91,7 @@ namespace
 		std::shared_ptr<AdjointForm> obj = AdjointOptUtils::create_form(
 			opt_args["functionals"], var2sim, states);
 
-		return {obj, var2sim, states};
+		return {obj, std::move(var2sim), states};
 	}
 
 	// std::vector<double> read_energy(const std::string &file)
@@ -157,7 +158,7 @@ TEST_CASE("material-opt", tagsopt)
 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], 1);
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
-	json params = nl_solver->get_info();
+	json params = nl_solver->info();
 	std::cout << "final energy " << params["energy"].get<double>() << "\n";
 
 	REQUIRE(params["energy"].get<double>() == Catch::Approx(0.0023793444).epsilon(1e-2));
@@ -181,14 +182,42 @@ TEST_CASE("material-opt", tagsopt)
 // 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(2.12684299792e-09).epsilon(1e-3));
 // }
 
-// // TEST_CASE("initial-opt", "[optimization]")
-// // {
-// // 	run_trajectory_opt("initial-opt");
-// // 	auto energies = read_energy("initial-opt");
+TEST_CASE("initial-opt", "[optimization]")
+{
+	const std::string name = "initial-condition-trajectory-opt";
+	const std::string root_folder = POLYFEM_DATA_DIR + std::string("/differentiable/optimizations/") + name + "/";
 
-// // 	REQUIRE(energies[0] == Catch::Approx(0.147092).epsilon(1e-4));
-// // 	REQUIRE(energies[energies.size() - 1] == Catch::Approx(0.109971).epsilon(1e-4));
-// // }
+	json opt_args;
+	load_json(root_folder + "run.json", opt_args);
+	for (auto &arg : opt_args["states"])
+		arg["path"] = root_folder + arg["path"].get<std::string>();
+
+	OptState opt_state;
+	opt_state.init(opt_args, false);
+
+	auto [obj, var2sim, states] = prepare_test(opt_args);
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
+
+	/* DOF */
+	int ndof = 0;
+	std::vector<int> variable_sizes;
+	for (const auto &arg : opt_args["parameters"])
+	{
+		int size = AdjointOptUtils::compute_variable_size(arg, states);
+		ndof += size;
+		variable_sizes.push_back(size);
+	}
+
+	Eigen::VectorXd x = opt_args["parameters"][0]["initial"];
+
+	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], 1);
+	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
+
+	json params = nl_solver->info();
+	std::cout << "final energy " << params["energy"].get<double>() << "\n";
+
+	REQUIRE(params["energy"].get<double>() == Catch::Approx(4.58399e-05).epsilon(1e-2));
+}
 
 TEST_CASE("topology-opt", "[optimization]")
 {
@@ -230,7 +259,7 @@ TEST_CASE("topology-opt", "[optimization]")
 	// run the optimization for a few steps
 	nl_solver->minimize(*nl_problem, x);
 
-	const json &params = nl_solver->get_info();
+	const json &params = nl_solver->info();
 	std::cout << "final energy " << params["energy"].get<double>() << "\n";
 
 	REQUIRE(params["energy"].get<double>() == Catch::Approx(0.726565).epsilon(1e-4));
@@ -257,15 +286,15 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
 			log_and_throw_adjoint_error("Can't find json for State {}", i);
 
-		states[i++] = AdjointOptUtils::create_state(cur_args);
+		states[i++] = AdjointOptUtils::create_state(cur_args, solver::CacheLevel::Derivatives, -1);
 	}
 
 	Eigen::VectorXd x(2);
 	x << 0., 1.;
 
-	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+	VariableToSimulationGroup variable_to_simulations;
 	{
-		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization()));
+		variable_to_simulations.push_back(std::make_unique<ShapeVariableToSimulation>(states[0], CompositeParametrization()));
 
 		VariableToBoundaryNodesExclusive variable_to_node(*states[0], {1});
 		variable_to_simulations[0]->set_output_indexing(variable_to_node.get_output_indexing());
@@ -284,7 +313,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], 1);
 	nl_solver->minimize(*nl_problem, x);
 
-	const json &params = nl_solver->get_info();
+	const json &params = nl_solver->info();
 	std::cout << "final energy " << params["energy"].get<double>() << "\n";
 
 	REQUIRE(params["energy"].get<double>() == Catch::Approx(1.00006).epsilon(1e-4));
@@ -320,7 +349,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], 1);
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
-	const json &params = nl_solver->get_info();
+	const json &params = nl_solver->info();
 	std::cout << "final energy " << params["energy"].get<double>() << "\n";
 
 	// REQUIRE(energies[0] == Catch::Approx(0.105955475999).epsilon(1e-4));
@@ -390,12 +419,12 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	}
 // 	x.resize(opt_bnodes * dim);
 
-// 	std::vector<std::shared_ptr<VariableToSimulation>>
+// 	VariableToSimulationGroup
 // 		variable_to_simulations;
 // 	{
 // 		std::vector<std::shared_ptr<Parametrization>> spline_boundary_map_list = {};
 
-// 		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization(spline_boundary_map_list)));
+// 		variable_to_simulations.push_back(std::make_unique<ShapeVariableToSimulation>(states[0], CompositeParametrization(spline_boundary_map_list)));
 // 		VariableToBoundaryNodes variable_to_node(*states[0], {4});
 // 		variable_to_simulations[0]->set_output_indexing(variable_to_node.get_output_indexing());
 // 	}
@@ -511,12 +540,12 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 		1,
 // 		1;
 
-// 	std::vector<std::shared_ptr<VariableToSimulation>>
+// 	VariableToSimulationGroup
 // 		variable_to_simulations;
 // 	{
 // 		std::vector<std::shared_ptr<Parametrization>> spline_boundary_map_list = {std::make_shared<BSplineParametrization1DTo2D>(initial_control_points, knots, opt_bnodes, true)};
 
-// 		variable_to_simulations.push_back(std::make_shared<ShapeVariableToSimulation>(states[0], CompositeParametrization(spline_boundary_map_list)));
+// 		variable_to_simulations.push_back(std::make_unique<ShapeVariableToSimulation>(states[0], CompositeParametrization(spline_boundary_map_list)));
 
 // 		VariableToBoundaryNodes variable_to_node(*states[0], 4);
 // 		variable_to_simulations[0]->set_output_indexing(variable_to_node.get_output_indexing());
@@ -579,7 +608,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
 // 	std::vector<std::shared_ptr<State>> states(state_args.size());
 // 	Eigen::VectorXd x;
-// 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+// 	VariableToSimulationGroup variable_to_simulations;
 // 	{
 // 		// create simulators based on json inputs
 // 		int i = 0;
@@ -752,7 +781,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
 // 	std::vector<std::shared_ptr<State>> states(state_args.size());
 // 	Eigen::VectorXd x;
-// 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+// 	VariableToSimulationGroup variable_to_simulations;
 // 	{
 // 		// create simulators based on json inputs
 // 		int i = 0;
@@ -825,7 +854,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
 // 	std::vector<std::shared_ptr<State>> states(state_args.size());
 // 	Eigen::VectorXd x;
-// 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+// 	VariableToSimulationGroup variable_to_simulations;
 // 	{
 // 		// create simulators based on json inputs
 // 		int i = 0;
@@ -896,7 +925,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	std::shared_ptr<solver::AdjointNLProblem> nl_problem;
 // 	std::vector<std::shared_ptr<State>> states(state_args.size());
 // 	Eigen::VectorXd x;
-// 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
+// 	VariableToSimulationGroup variable_to_simulations;
 // 	{
 // 		// create simulators based on json inputs
 // 		int i = 0;

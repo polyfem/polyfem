@@ -20,6 +20,8 @@ set(SOURCES
 	GeometryUtils.hpp
 	getRSS.c
 	HashUtils.hpp
+	IntegrableFunctional.cpp
+	IntegrableFunctional.hpp
 	InterpolatedFunction.cpp
 	InterpolatedFunction.hpp
 	Interpolation.cpp

@@ -10,15 +10,13 @@ namespace polyfem::solver
 	class CollisionBarrierForm : public AdjointForm
 	{
 	public:
-		CollisionBarrierForm(const std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulation, const State &state, const double dhat);
+		CollisionBarrierForm(const VariableToSimulationGroup& variable_to_simulation, const State &state, const double dhat);
 
 		double value_unweighted(const Eigen::VectorXd &x) const override;
 
-		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 		void solution_changed(const Eigen::VectorXd &x) override;
-
-		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override;
 
 		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
@@ -44,7 +42,7 @@ namespace polyfem::solver
 	// class LayerThicknessForm : public ParametrizationForm
 	// {
 	// public:
-	// 	LayerThicknessForm(const std::vector<std::shared_ptr<VariableToSimulation>> &variable_to_simulations, const CompositeParametrization &parametrizations, const State &state) : ParametrizationForm(variable_to_simulations, parametrizations), state_(state)
+	// 	LayerThicknessForm(const VariableToSimulationGroup &variable_to_simulations, const CompositeParametrization &parametrizations, const State &state) : ParametrizationForm(variable_to_simulations, parametrizations), state_(state)
 	// 	{
 	// 	}
 	// }
@@ -52,17 +50,15 @@ namespace polyfem::solver
 	class DeformedCollisionBarrierForm : public AdjointForm
 	{
 	public:
-		DeformedCollisionBarrierForm(const std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulation, const State &state, const double dhat);
+		DeformedCollisionBarrierForm(const VariableToSimulationGroup& variable_to_simulation, const State &state, const double dhat);
 
 		std::string name() const override { return "deformed_collision_barrier"; }
 
 		double value_unweighted(const Eigen::VectorXd &x) const override;
 
-		void compute_partial_gradient_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 		void solution_changed(const Eigen::VectorXd &x) override;
-
-		Eigen::MatrixXd compute_adjoint_rhs_unweighted(const Eigen::VectorXd &x, const State &state) const override;
 
 		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 

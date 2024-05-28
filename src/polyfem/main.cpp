@@ -9,6 +9,7 @@
 
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/io/YamlToJson.hpp>
 
 using namespace polyfem;
 using namespace solver;
@@ -37,17 +38,32 @@ bool load_json(const std::string &json_file, json &out)
 	return true;
 }
 
+bool load_yaml(const std::string &yaml_file, json &out)
+{
+	try
+	{
+		out = io::yaml_file_to_json(yaml_file);
+		if (!out.contains("root_path"))
+			out["root_path"] = yaml_file;
+	}
+	catch (...)
+	{
+		return false;
+	}
+	return true;
+}
+
 int forward_simulation(const CLI::App &command_line,
 					   const std::string &hdf5_file,
 					   const std::string output_dir,
-					   const size_t max_threads,
+					   const unsigned max_threads,
 					   const bool is_strict,
 					   const bool fallback_solver,
 					   const spdlog::level::level_enum &log_level,
 					   json &in_args);
 
 int optimization_simulation(const CLI::App &command_line,
-							const size_t max_threads,
+							const unsigned max_threads,
 							const bool is_strict,
 							const spdlog::level::level_enum &log_level,
 							json &opt_args);
@@ -62,14 +78,21 @@ int main(int argc, char **argv)
 	command_line.ignore_underscore();
 
 	// Eigen::setNbThreads(1);
-	size_t max_threads = std::numeric_limits<size_t>::max();
+	unsigned max_threads = std::numeric_limits<unsigned>::max();
 	command_line.add_option("--max_threads", max_threads, "Maximum number of threads");
 
+	auto input = command_line.add_option_group("input");
+
 	std::string json_file = "";
-	command_line.add_option("-j,--json", json_file, "Simulation JSON file")->check(CLI::ExistingFile);
+	input->add_option("-j,--json", json_file, "Simulation JSON file")->check(CLI::ExistingFile);
+
+	std::string yaml_file = "";
+	input->add_option("-y,--yaml", yaml_file, "Simulation YAML file")->check(CLI::ExistingFile);
 
 	std::string hdf5_file = "";
-	command_line.add_option("--hdf5", hdf5_file, "Simulation hdf5 file")->check(CLI::ExistingFile);
+	input->add_option("--hdf5", hdf5_file, "Simulation HDF5 file")->check(CLI::ExistingFile);
+
+	input->require_option(1);
 
 	std::string output_dir = "";
 	command_line.add_option("-o,--output_dir", output_dir, "Directory for output files")->check(CLI::ExistingDirectory | CLI::NonexistentPath);
@@ -78,7 +101,7 @@ int main(int argc, char **argv)
 	command_line.add_flag("-s,--strict_validation,!--ns,!--no_strict_validation", is_strict, "Disables strict validation of input JSON");
 
 	bool fallback_solver = false;
-	command_line.add_flag("--enable_overwrite_solver", fallback_solver, "If solver in json is not present, falls back to default");
+	command_line.add_flag("--enable_overwrite_solver", fallback_solver, "If solver in input is not present, falls back to default.");
 
 	const std::vector<std::pair<std::string, spdlog::level::level_enum>>
 		SPDLOG_LEVEL_NAMES_TO_LEVELS = {
@@ -97,9 +120,9 @@ int main(int argc, char **argv)
 
 	json in_args = json({});
 
-	if (!json_file.empty())
+	if (!json_file.empty() || !yaml_file.empty())
 	{
-		const bool ok = load_json(json_file, in_args);
+		const bool ok = !json_file.empty() ? load_json(json_file, in_args) : load_yaml(yaml_file, in_args);
 
 		if (!ok)
 			log_and_throw_error(fmt::format("unable to open {} file", json_file));
@@ -118,7 +141,7 @@ int main(int argc, char **argv)
 int forward_simulation(const CLI::App &command_line,
 					   const std::string &hdf5_file,
 					   const std::string output_dir,
-					   const size_t max_threads,
+					   const unsigned max_threads,
 					   const bool is_strict,
 					   const bool fallback_solver,
 					   const spdlog::level::level_enum &log_level,
@@ -148,7 +171,7 @@ int forward_simulation(const CLI::App &command_line,
 		cells.resize(names.size());
 		vertices.resize(names.size());
 
-		for (size_t i = 0; i < names.size(); ++i)
+		for (int i = 0; i < names.size(); ++i)
 		{
 			const std::string &name = names[i];
 			cells[i] = file.readDataset<MatrixXl>("/meshes/" + name + "/c").cast<int>();
@@ -202,7 +225,7 @@ int forward_simulation(const CLI::App &command_line,
 }
 
 int optimization_simulation(const CLI::App &command_line,
-							const size_t max_threads,
+							const unsigned max_threads,
 							const bool is_strict,
 							const spdlog::level::level_enum &log_level,
 							json &opt_args)
@@ -219,7 +242,7 @@ int optimization_simulation(const CLI::App &command_line,
 
 	opt_state.create_states(opt_state.args["compute_objective"].get<bool>() ? polyfem::solver::CacheLevel::Solution : polyfem::solver::CacheLevel::Derivatives, opt_state.args["solver"]["max_threads"].get<int>());
 	opt_state.init_variables();
-	opt_state.crate_problem();
+	opt_state.create_problem();
 
 	Eigen::VectorXd x;
 	opt_state.initial_guess(x);

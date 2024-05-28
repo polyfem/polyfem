@@ -15,6 +15,7 @@ if(POLYFEM_USE_EXISTING_DATA_DIR)
         polyfem_data_download
         PREFIX ${FETCHCONTENT_BASE_DIR}/polyfem-test-data
         SOURCE_DIR ${POLYFEM_DATA_DIR}
+
         # NOTE: No download step
         CONFIGURE_COMMAND ""
         BUILD_COMMAND ""
@@ -27,7 +28,7 @@ else()
         PREFIX ${FETCHCONTENT_BASE_DIR}/polyfem-test-data
         SOURCE_DIR ${POLYFEM_DATA_DIR}
         GIT_REPOSITORY https://github.com/polyfem/polyfem-data
-        GIT_TAG cfd3651
+        GIT_TAG fbfcf330e3a5725414917c9fa33e5a2476a754a7
         CONFIGURE_COMMAND ""
         BUILD_COMMAND ""
         INSTALL_COMMAND ""
@@ -41,4 +42,4 @@ add_library(polyfem::data ALIAS polyfem_data)
 
 add_dependencies(polyfem_data polyfem_data_download)
 
-target_compile_definitions(polyfem_data INTERFACE  POLYFEM_DATA_DIR=\"${POLYFEM_DATA_DIR}\")
+target_compile_definitions(polyfem_data INTERFACE POLYFEM_DATA_DIR=\"${POLYFEM_DATA_DIR}\")

@@ -116,10 +116,14 @@ namespace polyfem::solver
 			max_barrier_stiffness_ *= scaling_factor;
 		}
 
-		// Remove the acceleration scaling from the barrier stiffness because it will be applied later.
+		// The barrier stiffness is choosen based on including the acceleration scaling,
+		// but the acceleration scaling will be applied later. Therefore, we need to remove it.
 		barrier_stiffness_ /= weight_;
+		max_barrier_stiffness_ /= weight_;
 
-		logger().debug("adaptive barrier form stiffness {}", barrier_stiffness());
+		logger().debug(
+			"Setting adaptive barrier stiffness to {} (max barrier stiffness: {})",
+			barrier_stiffness(), max_barrier_stiffness_);
 	}
 
 	void ContactForm::update_collision_set(const Eigen::MatrixXd &displaced_surface)
@@ -226,14 +230,14 @@ namespace polyfem::solver
 		}
 
 		double max_step;
-		if (use_cached_candidates_ && broad_phase_method_ != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU)
+		if (use_cached_candidates_ && broad_phase_method_ != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE)
 			max_step = candidates_.compute_collision_free_stepsize(
 				collision_mesh_, V0, V1, dmin_, ccd_tolerance_, ccd_max_iterations_);
 		else
 			max_step = ipc::compute_collision_free_stepsize(
 				collision_mesh_, V0, V1, broad_phase_method_, ccd_tolerance_, ccd_max_iterations_);
 
-		if (save_ccd_debug_meshes && ipc::has_intersections(collision_mesh_, (V1 - V0) * max_step + V0))
+		if (save_ccd_debug_meshes && ipc::has_intersections(collision_mesh_, (V1 - V0) * max_step + V0, broad_phase_method_))
 		{
 			log_and_throw_error("Taking max_step results in intersections (max_step={})", max_step);
 		}
@@ -242,7 +246,7 @@ namespace polyfem::solver
 		// This will check for static intersections as a failsafe. Not needed if we use our conservative CCD.
 		Eigen::MatrixXd V_toi = (V1 - V0) * max_step + V0;
 
-		while (ipc::has_intersections(collision_mesh_, V_toi))
+		while (ipc::has_intersections(collision_mesh_, V_toi, broad_phase_method_))
 		{
 			logger().error("Taking max_step results in intersections (max_step={:g})", max_step);
 			max_step /= 2.0;
@@ -298,8 +302,8 @@ namespace polyfem::solver
 				if (barrier_stiffness() != prev_barrier_stiffness)
 				{
 					polyfem::logger().debug(
-						"updated barrier stiffness from {:g} to {:g}",
-						prev_barrier_stiffness, barrier_stiffness());
+						"updated barrier stiffness from {:g} to {:g} (max barrier stiffness: )",
+						prev_barrier_stiffness, barrier_stiffness(), max_barrier_stiffness_);
 				}
 			}
 			else

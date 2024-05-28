@@ -94,7 +94,28 @@ namespace polyfem::io
 
 				for (int n = 0; n < normals.rows(); ++n)
 				{
-					normals.row(n) = normals.row(n) * vals.jac_it[n];
+					trafo = vals.jac_it[n].inverse();
+
+					if (solution.size() > 0)
+					{
+						assert(actual_dim == 2 || actual_dim == 3);
+						deform_mat.resize(actual_dim, actual_dim);
+						deform_mat.setZero();
+						for (const auto &b : vals.basis_values)
+						{
+							for (const auto &g : b.global)
+							{
+								for (int d = 0; d < actual_dim; ++d)
+								{
+									deform_mat.row(d) += solution(g.index * actual_dim + d) * b.grad.row(n);
+								}
+							}
+						}
+
+						trafo += deform_mat;
+					}
+
+					normals.row(n) = normals.row(n) * trafo.inverse();
 					normals.row(n).normalize();
 				}
 
@@ -1999,7 +2020,7 @@ namespace polyfem::io
 				ipc::FrictionCollisions friction_collision_set;
 				friction_collision_set.build(
 					collision_mesh, displaced_surface, collision_set,
-					dhat, barrier_stiffness, friction_coefficient);
+					barrier_potential, barrier_stiffness, friction_coefficient);
 
 				ipc::FrictionPotential friction_potential(epsv);
 
@@ -2935,18 +2956,18 @@ namespace polyfem::io
 		total_remeshing_time += remeshing;
 		total_global_relaxation_time += global_relaxation;
 
-		logger().debug(
-			"Forward (cur, avg, total): {} s, {} s, {} s",
-			forward, total_forward_solve_time / t, total_forward_solve_time);
-		logger().debug(
-			"Remeshing (cur, avg, total): {} s, {} s, {} s",
-			remeshing, total_remeshing_time / t, total_remeshing_time);
-		logger().debug(
-			"Global relaxation (cur, avg, total): {} s, {} s, {} s",
-			global_relaxation, total_global_relaxation_time / t, total_global_relaxation_time);
+		// logger().debug(
+		// 	"Forward (cur, avg, total): {} s, {} s, {} s",
+		// 	forward, total_forward_solve_time / t, total_forward_solve_time);
+		// logger().debug(
+		// 	"Remeshing (cur, avg, total): {} s, {} s, {} s",
+		// 	remeshing, total_remeshing_time / t, total_remeshing_time);
+		// logger().debug(
+		// 	"Global relaxation (cur, avg, total): {} s, {} s, {} s",
+		// 	global_relaxation, total_global_relaxation_time / t, total_global_relaxation_time);
 
 		const double peak_mem = getPeakRSS() / double(1 << 30);
-		logger().debug("Peak mem: {} GiB", peak_mem);
+		// logger().debug("Peak mem: {} GiB", peak_mem);
 
 		file << fmt::format(
 			"{},{},{},{},{},{},{},{}\n",
