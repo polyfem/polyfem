@@ -1,6 +1,7 @@
 var classpolyfem_1_1solver_1_1_full_n_l_problem =
 [
     [ "FullNLProblem", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#a178d12af13034427c7663f534cb22504", null ],
+    [ "~FullNLProblem", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#ae2cd463e7800096057fa0c75b7709a4b", null ],
     [ "forms", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#a7612662ef357ab012b69ef33f16890fe", null ],
     [ "gradient", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#aa05408a71fb2ce3ecc27591d73154b68", null ],
     [ "hessian", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#a1adb9f2892b235bd537cff0a02b35e25", null ],

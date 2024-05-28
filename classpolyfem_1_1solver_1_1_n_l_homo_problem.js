@@ -1,6 +1,7 @@
 var classpolyfem_1_1solver_1_1_n_l_homo_problem =
 [
     [ "NLHomoProblem", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#ace5a7f3136c99276c61629e593237063", null ],
+    [ "~NLHomoProblem", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a8b8e79453cb452aa0334e6ed3e40578b", null ],
     [ "add_form", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#ae628c757aa4d6ca51dd76ba650a6038c", null ],
     [ "boundary_values", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#acafa6f3c89dae4e29d31c6713c604e25", null ],
     [ "constraint_grad", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a98a632068fd8dd697cd99730c2deb5dc", null ],

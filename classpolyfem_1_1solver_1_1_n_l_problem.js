@@ -6,6 +6,7 @@ var classpolyfem_1_1solver_1_1_n_l_problem =
     ] ],
     [ "NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html#a30654bc9dc046644f0aad7b915836a33", null ],
     [ "NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html#a4e351d2f4bee2b359a77fdb72b63a6d5", null ],
+    [ "~NLProblem", "classpolyfem_1_1solver_1_1_n_l_problem.html#abe089a966ba671cee247759584e62868", null ],
     [ "boundary_values", "classpolyfem_1_1solver_1_1_n_l_problem.html#aa7612805538e997b3f4eaa6f3b3cb56a", null ],
     [ "current_size", "classpolyfem_1_1solver_1_1_n_l_problem.html#a4bb4f627d02af65c8b32b50ea19e13c2", null ],
     [ "full_hessian_to_reduced_hessian", "classpolyfem_1_1solver_1_1_n_l_problem.html#aa8229373ddda67eb8752559d34977939", null ],

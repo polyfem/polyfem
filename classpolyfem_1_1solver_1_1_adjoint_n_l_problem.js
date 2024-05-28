@@ -2,6 +2,7 @@ var classpolyfem_1_1solver_1_1_adjoint_n_l_problem =
 [
     [ "AdjointNLProblem", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a871490ecbe9f82dafc2ea2affd680ec8", null ],
     [ "AdjointNLProblem", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a572d71608e4706f724477372c4acda19", null ],
+    [ "~AdjointNLProblem", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#afe950f67bec760262590e323e4fa15e8", null ],
     [ "gradient", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a2465b3b989f5f836202bb38a32346b58", null ],
     [ "hessian", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a703e9b37b69297bfec21eb0879fe65f5", null ],
     [ "is_step_collision_free", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#aa085cc16befc7837399eaeabb7cca712", null ],

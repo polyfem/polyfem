@@ -243,10 +243,10 @@ var NAVTREEINDEX25 =
 "classpolyfem_1_1problem_1_1_kovnaszy.html#ae961c8a221680d3c6d38d89b7327cd37":[5,0,5,5,21,11],
 "classpolyfem_1_1problem_1_1_kovnaszy.html#af65806ac8250906e032843540562add0":[6,0,1,4,21,9],
 "classpolyfem_1_1problem_1_1_kovnaszy.html#af65806ac8250906e032843540562add0":[5,0,5,5,21,9],
-"classpolyfem_1_1problem_1_1_linear_elastic_problem_exact.html":[5,0,5,5,22],
 "classpolyfem_1_1problem_1_1_linear_elastic_problem_exact.html":[6,0,1,4,22],
-"classpolyfem_1_1problem_1_1_linear_elastic_problem_exact.html#a1e4ad1dabb15894df2a2b74335e29241":[6,0,1,4,22,4],
+"classpolyfem_1_1problem_1_1_linear_elastic_problem_exact.html":[5,0,5,5,22],
 "classpolyfem_1_1problem_1_1_linear_elastic_problem_exact.html#a1e4ad1dabb15894df2a2b74335e29241":[5,0,5,5,22,4],
+"classpolyfem_1_1problem_1_1_linear_elastic_problem_exact.html#a1e4ad1dabb15894df2a2b74335e29241":[6,0,1,4,22,4],
 "classpolyfem_1_1problem_1_1_linear_elastic_problem_exact.html#a2d3fe587200a3bcccf48c1851be44d36":[5,0,5,5,22,3],
 "classpolyfem_1_1problem_1_1_linear_elastic_problem_exact.html#a2d3fe587200a3bcccf48c1851be44d36":[6,0,1,4,22,3],
 "classpolyfem_1_1problem_1_1_linear_elastic_problem_exact.html#a88413e50aa86554e2336ef3edb950f37":[5,0,5,5,22,2]

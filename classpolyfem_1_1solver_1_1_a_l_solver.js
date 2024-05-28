@@ -2,6 +2,7 @@ var classpolyfem_1_1solver_1_1_a_l_solver =
 [
     [ "NLSolver", "classpolyfem_1_1solver_1_1_a_l_solver.html#a10bcc29e57d7cf93e747f1b7e7ee19c3", null ],
     [ "ALSolver", "classpolyfem_1_1solver_1_1_a_l_solver.html#a407b2361ee14b85c48286c0a6a34435d", null ],
+    [ "~ALSolver", "classpolyfem_1_1solver_1_1_a_l_solver.html#a8987f3f13a08637173037f7eb2b0e070", null ],
     [ "set_al_weight", "classpolyfem_1_1solver_1_1_a_l_solver.html#a37b1f3b8343a9f2a4858a29546e9b015", null ],
     [ "solve_al", "classpolyfem_1_1solver_1_1_a_l_solver.html#a7c7c1b4390262e9f0a8d0eca94d0ba08", null ],
     [ "solve_reduced", "classpolyfem_1_1solver_1_1_a_l_solver.html#a7afca1345526c6208b5fd6cf33e1310d", null ],
