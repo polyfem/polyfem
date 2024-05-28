@@ -20,6 +20,7 @@ namespace polyfem::solver
 	public:
 		AdjointNLProblem(std::shared_ptr<AdjointForm> form, const VariableToSimulationGroup &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args);
 		AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<AdjointForm>> &stopping_conditions, const VariableToSimulationGroup &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args);
+		virtual ~AdjointNLProblem() = default;
 
 		double value(const Eigen::VectorXd &x) override;
 
