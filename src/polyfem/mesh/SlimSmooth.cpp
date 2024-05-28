@@ -96,15 +96,6 @@ namespace polyfem::mesh
 
         V_smooth.setZero(V.rows(), V.cols());
 
-        auto is_good_enough = [](const Eigen::MatrixXd &V, const Eigen::VectorXi &b, const Eigen::MatrixXd &C, double &error, double tol = 1e-6) {
-            error = 0.0;
-
-            for (unsigned i = 0; i < b.rows(); i++)
-                error += (C.row(i) - V.row(b(i))).squaredNorm();
-
-            return error < tol;
-        };
-
         double error = 0;
         int it = 0;
         bool good_enough = false;
@@ -112,9 +103,8 @@ namespace polyfem::mesh
         do
         {
             igl::slim_solve(slim_data, slim_iters);
-            // good_enough = is_good_enough(slim_data.V_o, boundary_indices, boundary_constraints, error, 1e-8);
-            error = (slim_data.V_o(boundary_indices, Eigen::all) - boundary_constraints).squaredNorm();
-            good_enough = error < 1e-8;
+            error = (slim_data.V_o(boundary_indices, Eigen::all) - boundary_constraints).squaredNorm() / boundary_indices.size();
+            good_enough = error < 1e-7;
             V_smooth = slim_data.V_o.leftCols(dim);
             it += slim_iters;
         } while (it < max_iters && !good_enough);

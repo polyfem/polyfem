@@ -283,14 +283,6 @@ namespace polyfem::solver
 	{
 		bool need_rebuild_basis = false;
 
-		std::vector<Eigen::MatrixXd> V_old_list;
-		for (auto state : all_states_)
-		{
-			Eigen::MatrixXd V;
-			state->get_vertices(V);
-			V_old_list.push_back(V);
-		}
-
 		// update to new parameter and check if the new parameter is valid to solve
 		for (const auto &v : variables_to_simulation_)
 		{
@@ -299,28 +291,36 @@ namespace polyfem::solver
 				need_rebuild_basis = true;
 		}
 
+		// std::vector<Eigen::MatrixXd> V_old_list;
+		// for (auto state : all_states_)
+		// {
+		// 	Eigen::MatrixXd V;
+		// 	state->get_vertices(V);
+		// 	V_old_list.push_back(V);
+		// }
+
 		// Apply slim to all states on a frequency
-		if (need_rebuild_basis && enable_slim && curr_x.size() > 0)
-		{
-			int state_num = 0;
-			for (auto state : all_states_)
-			{
-				Eigen::MatrixXd V_new, V_smooth;
-				Eigen::MatrixXi F;
-				state->get_vertices(V_new);
-				state->get_elements(F);
+		// if (need_rebuild_basis && enable_slim && curr_x.size() > 0)
+		// {
+		// 	int state_num = 0;
+		// 	for (auto state : all_states_)
+		// 	{
+		// 		Eigen::MatrixXd V_new, V_smooth;
+		// 		Eigen::MatrixXi F;
+		// 		state->get_vertices(V_new);
+		// 		state->get_elements(F);
 
-				bool slim_success = polyfem::mesh::apply_slim(V_old_list[state_num], F, V_new, V_smooth, 50);
+		// 		bool slim_success = polyfem::mesh::apply_slim(V_old_list[state_num], F, V_new, V_smooth, 50);
 
-				if (!slim_success)
-					log_and_throw_adjoint_error("SLIM cannot succeed");
+		// 		if (!slim_success)
+		// 			log_and_throw_adjoint_error("SLIM cannot succeed");
 
-				for (int i = 0; i < V_smooth.rows(); ++i)
-					state->set_mesh_vertex(i, V_smooth.row(i));
+		// 		for (int i = 0; i < V_smooth.rows(); ++i)
+		// 			state->set_mesh_vertex(i, V_smooth.row(i));
 
-				state_num++;
-			}
-		}
+		// 		state_num++;
+		// 	}
+		// }
 
 		if (need_rebuild_basis)
 		{
@@ -334,6 +334,47 @@ namespace polyfem::solver
 		form_->solution_changed(newX);
 
 		curr_x = newX;
+	}
+
+	bool AdjointNLProblem::smooth_step(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
+	{
+		if (!enable_slim)
+			return false;
+		
+		for (const auto &v : variables_to_simulation_)
+			v->update(x0);
+
+		std::vector<Eigen::MatrixXd> V_old_list;
+		for (auto state : all_states_)
+		{
+			Eigen::MatrixXd V;
+			state->get_vertices(V);
+			V_old_list.push_back(V);
+		}
+
+		for (const auto &v : variables_to_simulation_)
+			v->update(x1);
+
+		// Apply slim to all states on a frequency
+		int state_num = 0;
+		for (auto state : all_states_)
+		{
+			Eigen::MatrixXd V_new, V_smooth;
+			Eigen::MatrixXi F;
+			state->get_vertices(V_new);
+			state->get_elements(F);
+
+			bool slim_success = polyfem::mesh::apply_slim(V_old_list[state_num++], F, V_new, V_smooth, 50);
+
+			if (!slim_success)
+				log_and_throw_adjoint_error("SLIM cannot succeed");
+
+			for (int i = 0; i < V_smooth.rows(); ++i)
+				state->set_mesh_vertex(i, V_smooth.row(i));
+		}
+		adjoint_logger().debug("SLIM succeeded!");
+
+		return true;
 	}
 
 	void AdjointNLProblem::solve_pde()

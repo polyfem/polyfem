@@ -36,6 +36,7 @@ namespace polyfem::solver
 		bool stop(const TVector &x) override;
 
 		void solution_changed(const Eigen::VectorXd &new_x) override;
+		bool smooth_step(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 		void solve_pde();
 		
 	private:
