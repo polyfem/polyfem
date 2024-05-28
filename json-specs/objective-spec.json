@@ -630,38 +630,6 @@
     {
         "pointer": "/",
         "type": "object",
-        "type_name": "traction_norm",
-        "required": [
-            "state",
-            "type"
-        ],
-        "optional": [
-            "surface_selection",
-            "power",
-            "weight",
-            "print_energy"
-        ],
-        "doc": "Lp Norm of elastic stress over the volume selection"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "contact_force_norm",
-        "required": [
-            "state",
-            "type"
-        ],
-        "optional": [
-            "surface_selection",
-            "power",
-            "weight",
-            "print_energy"
-        ],
-        "doc": "Lp Norm of elastic stress over the volume selection"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
         "type_name": "quadratic_contact_force_norm",
         "required": [
             "state",
@@ -686,23 +654,6 @@
         "optional": [
             "surface_selection",
             "dhat",
-            "weight",
-            "print_energy"
-        ],
-        "doc": "Lp Norm of elastic stress over the volume selection"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "contact_force_match",
-        "required": [
-            "state",
-            "type",
-            "force_matching_function"
-        ],
-        "optional": [
-            "surface_selection",
-            "power",
             "weight",
             "print_energy"
         ],

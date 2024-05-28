@@ -589,7 +589,6 @@ namespace polyfem
 		pressure_bases.clear();
 		geom_bases_.clear();
 		boundary_nodes.clear();
-		input_dirichlet.clear();
 		dirichlet_nodes.clear();
 		neumann_nodes.clear();
 		local_boundary.clear();
