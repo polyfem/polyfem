@@ -16,26 +16,10 @@
 
 namespace polyfem::solver
 {
-	namespace
-	{
-		class LocalThreadVecStorage
-		{
-		public:
-			Eigen::MatrixXd vec;
-			assembler::ElementAssemblyValues vals, gvals;
-			QuadratureVector da;
-
-			LocalThreadVecStorage(const int size)
-			{
-				vec.resize(size, 1);
-				vec.setZero();
-			}
-		};
-	} // namespace
 	PressureForm::PressureForm(const int ndof,
 							   const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
 							   const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity,
-							   const std::vector<int> dirichlet_nodes,
+							   const std::vector<int> &dirichlet_nodes,
 							   const int n_boundary_samples,
 							   const assembler::PressureAssembler &pressure_assembler,
 							   const bool is_time_dependent)

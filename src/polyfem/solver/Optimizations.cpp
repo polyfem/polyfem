@@ -243,14 +243,6 @@ namespace polyfem::solver
 			{
 				obj = std::make_shared<ElasticEnergyForm>(var2sim, *(states[args["state"]]), args);
 			}
-			// else if (type == "traction_norm")
-			// {
-			// 	obj = std::make_shared<TractionNormForm>(var2sim, *(states[args["state"]]), args);
-			// }
-			// else if (type == "contact_force_norm")
-			// {
-			// 	obj = std::make_shared<TrueContactForceForm>(var2sim, *(states[args["state"]]), args);
-			// }
 			else if (type == "quadratic_contact_force_norm")
 			{
 				obj = std::make_shared<ProxyContactForceForm>(var2sim, *(states[args["state"]]), args["dhat"], true, args);
@@ -259,10 +251,6 @@ namespace polyfem::solver
 			{
 				obj = std::make_shared<ProxyContactForceForm>(var2sim, *(states[args["state"]]), args["dhat"], false, args);
 			}
-			// else if (type == "contact_force_match")
-			// {
-			// 	obj = std::make_shared<ContactForceMatchForm>(var2sim, *(states[args["state"]]), args);
-			// }
 			else if (type == "max_stress")
 			{
 				obj = std::make_shared<MaxStressForm>(var2sim, *(states[args["state"]]), args);

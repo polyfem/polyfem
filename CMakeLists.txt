@@ -1,6 +1,5 @@
 # Detects whether this is a top-level project
 get_directory_property(HAS_PARENT PARENT_DIRECTORY)
-
 if(HAS_PARENT)
     set(POLYFEM_TOPLEVEL_PROJECT OFF)
 else()
@@ -9,7 +8,6 @@ endif()
 
 # Check required CMake version
 set(REQUIRED_CMAKE_VERSION "3.25.0")
-
 if(POLYFEM_TOPLEVEL_PROJECT)
     cmake_minimum_required(VERSION ${REQUIRED_CMAKE_VERSION})
 else()
@@ -28,52 +26,49 @@ endif()
 
 # Enable ccache if available
 find_program(CCACHE_PROGRAM ccache)
-
 if(CCACHE_PROGRAM)
-    option(POLYFEM_WITH_CCACHE "Enable ccache when building PolyFEM" ${POLYFEM_TOPLEVEL_PROJECT})
+  option(POLYFEM_WITH_CCACHE "Enable ccache when building PolyFEM" ${POLYFEM_TOPLEVEL_PROJECT})
 else()
-    option(POLYFEM_WITH_CCACHE "Enable ccache when building PolyFEM" OFF)
+  option(POLYFEM_WITH_CCACHE "Enable ccache when building PolyFEM" OFF)
 endif()
-
 if(POLYFEM_WITH_CCACHE AND CCACHE_PROGRAM)
-    message(STATUS "Enabling Ccache support")
-    set(ccacheEnv
-        CCACHE_BASEDIR=${CMAKE_BINARY_DIR}
-        CCACHE_SLOPPINESS=clang_index_store,include_file_ctime,include_file_mtime,locale,pch_defines,time_macros
+  message(STATUS "Enabling Ccache support")
+  set(ccacheEnv
+    CCACHE_BASEDIR=${CMAKE_BINARY_DIR}
+    CCACHE_SLOPPINESS=clang_index_store,include_file_ctime,include_file_mtime,locale,pch_defines,time_macros
+  )
+  foreach(lang IN ITEMS C CXX)
+    set(CMAKE_${lang}_COMPILER_LAUNCHER
+      ${CMAKE_COMMAND} -E env ${ccacheEnv} ${CCACHE_PROGRAM}
     )
-
-    foreach(lang IN ITEMS C CXX)
-        set(CMAKE_${lang}_COMPILER_LAUNCHER
-            ${CMAKE_COMMAND} -E env ${ccacheEnv} ${CCACHE_PROGRAM}
-        )
-    endforeach()
+  endforeach()
 endif()
 
-# ###############################################################################
+################################################################################
 # CMake Policies
-# ###############################################################################
+################################################################################
+
 cmake_policy(SET CMP0054 NEW) # Only interpret if() arguments as variables or keywords when unquoted.
 cmake_policy(SET CMP0076 NEW) # target_sources() command converts relative paths to absolute.
-
 if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.24")
-    cmake_policy(SET CMP0135 NEW) # Set the timestamps of all extracted contents to the time of the extraction.
+  cmake_policy(SET CMP0135 NEW) # Set the timestamps of all extracted contents to the time of the extraction.
 endif()
 
-# ###############################################################################
+################################################################################
 project(PolyFEM DESCRIPTION "A polyvalent C++ FEM library" LANGUAGES C CXX)
 
 # Polyfem options
-set(POLYFEM_SMALL_N 80 CACHE STRING "Maximum length for stack-allocated vectors (gradient + Hessian).")
-set(POLYFEM_BIG_N 1000 CACHE STRING "Maximum length for stack-allocated vectors (gradient only).")
+set(POLYFEM_SMALL_N  80 CACHE STRING "Maximum length for stack-allocated vectors (gradient + Hessian).")
+set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vectors (gradient only).")
 
 # Polyfem options for enabling/disabling optional libraries
-option(POLYFEM_WITH_TESTS "Build tests" ON)
-option(POLYFEM_WITH_CLIPPER "Use clipper, necessary for polygonal bases" ON)
-option(POLYFEM_WITH_REMESHING "Uses WMTK for remeshing" OFF)
-option(POLYFEM_WITH_MMG "Build MMG utils for remeshing" OFF)
-option(POLYFEM_WITH_TRIANGLE "Build target igl_restricted::triangle" OFF)
-option(POLYFEM_BUILD_DOCS "Build documentation using Doxygen" OFF)
-option(POLYFEM_REGENERATE_AUTOGEN "Generate the python autogen files" OFF)
+option(POLYFEM_WITH_TESTS     "Build tests"                                 ON)
+option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"  ON)
+option(POLYFEM_WITH_REMESHING "Uses WMTK for remeshing"                    OFF)
+option(POLYFEM_WITH_MMG       "Build MMG utils for remeshing"              OFF)
+option(POLYFEM_WITH_TRIANGLE  "Build target igl_restricted::triangle"      OFF)
+option(POLYFEM_BUILD_DOCS     "Build documentation using Doxygen"          OFF)
+option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
 set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
 set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
 option(POLYFEM_CODE_COVERAGE "Enable coverage reporting" OFF)
@@ -95,7 +90,7 @@ if(POLYFEM_TOPLEVEL_PROJECT)
     set(CMAKE_CXX_EXTENSIONS OFF)
 endif()
 
-# ## Configuration
+### Configuration
 set(POLYFEM_SOURCE_DIR "${PROJECT_SOURCE_DIR}/src/polyfem")
 set(POLYFEM_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/src")
 
@@ -110,9 +105,9 @@ include(polyfem_use_colors)
 # Generate position independent code by default
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# ###############################################################################
+################################################################################
 # Polyfem library
-# ###############################################################################
+################################################################################
 
 # Add an empty library and fill in the list of sources in `src/CMakeLists.txt`.
 add_library(polyfem)
@@ -151,17 +146,17 @@ target_compile_definitions(polyfem PUBLIC POLYFEM_INPUT_SPEC="${POLYFEM_JSON_SPE
 target_compile_definitions(polyfem PUBLIC POLYFEM_OPT_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/opt-input-spec.json")
 target_compile_definitions(polyfem PUBLIC POLYFEM_OBJECTIVE_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/objective-spec.json")
 
-if(MSVC)
+if (MSVC)
     add_compile_options(/bigobj)
-endif()
+endif ()
 
-# ###############################################################################
+################################################################################
 # CUDA
-# ###############################################################################
+################################################################################
+
 if(IPC_TOOLKIT_WITH_CUDA OR POLYSOLVE_WITH_CUSOLVER)
     include(CheckLanguage)
     check_language(CUDA)
-
     if(CMAKE_CUDA_COMPILER)
         enable_language(CUDA)
     else()
@@ -184,9 +179,9 @@ if(IPC_TOOLKIT_WITH_CUDA OR POLYSOLVE_WITH_CUSOLVER)
     endif()
 endif()
 
-# ###############################################################################
+################################################################################
 # Required libraries
-# ###############################################################################
+################################################################################
 
 # Eigen
 include(eigen)
@@ -203,7 +198,6 @@ target_link_libraries(polyfem PUBLIC ipc::toolkit)
 # Threading
 if(POLYFEM_THREADING STREQUAL "CPP")
     target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_CPP_THREADS)
-
     # These definitions help avoid problems with GCC using TBB backend
     target_compile_definitions(polyfem PUBLIC PSTL_USE_PARALLEL_POLICIES=0)
     target_compile_definitions(polyfem PUBLIC _GLIBCXX_USE_TBB_PAR_BACKEND=0)
@@ -274,9 +268,9 @@ target_link_libraries(polyfem PUBLIC yaml-cpp::yaml-cpp)
 # include(fcpw)
 # target_link_libraries(polyfem PUBLIC fcpw::fcpw)
 
-# ###############################################################################
+################################################################################
 # Optional libraries
-# ###############################################################################
+################################################################################
 
 # # MMG wrapper
 if(POLYFEM_WITH_MMG)
@@ -305,9 +299,9 @@ target_link_libraries(polyfem PUBLIC PolyClipper::PolyClipper)
 include(polyfem_warnings)
 target_link_libraries(polyfem PRIVATE polyfem::warnings)
 
-# ###############################################################################
+################################################################################
 # Polyfem binary
-# ###############################################################################
+################################################################################
 
 # Main executable
 if(POLYFEM_TOPLEVEL_PROJECT)
@@ -315,34 +309,34 @@ if(POLYFEM_TOPLEVEL_PROJECT)
 
     target_compile_features(${PROJECT_NAME}_bin PUBLIC cxx_std_14)
 
+
     target_link_libraries(${PROJECT_NAME}_bin PUBLIC polyfem::polyfem polyfem::warnings)
 
     include(cli11)
     target_link_libraries(${PROJECT_NAME}_bin PUBLIC CLI11::CLI11)
 
-    if(NOT(${CMAKE_VERSION} VERSION_LESS "3.6.0"))
+    if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
         set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME}_bin)
     endif()
 
     if(POLYFEM_BUILD_DOCS)
         # check if Doxygen is installed
         find_package(Doxygen)
-
-        if(DOXYGEN_FOUND)
+        if (DOXYGEN_FOUND)
             add_custom_target(polyfem_doc_doxygen ALL
                 COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile
                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                 COMMENT "Generating API documentation with Doxygen"
                 VERBATIM)
-        else(DOXYGEN_FOUND)
+        else (DOXYGEN_FOUND)
             message("Doxygen need to be installed to generate the doxygen documentation")
-        endif(DOXYGEN_FOUND)
+        endif (DOXYGEN_FOUND)
     endif()
 endif()
 
-# ###############################################################################
+################################################################################
 # Tests
-# ###############################################################################
+################################################################################
 
 # Compile extras only if this is a top-level project
 if(POLYFEM_TOPLEVEL_PROJECT AND POLYFEM_WITH_TESTS)
