@@ -182,17 +182,13 @@ endif()
 # Required libraries
 ################################################################################
 
-# polysolve
-include(polysolve)
-target_link_libraries(polyfem PUBLIC polysolve::polysolve)
-
 # Eigen
 include(eigen)
 target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
 
-# libigl
-include(libigl)
-target_link_libraries(polyfem PUBLIC igl::core)
+# polysolve
+include(polysolve)
+target_link_libraries(polyfem PUBLIC polysolve::polysolve)
 
 # IPC Toolkit
 include(ipc_toolkit)
@@ -209,6 +205,10 @@ elseif(POLYFEM_THREADING STREQUAL "TBB")
     target_link_libraries(polyfem PUBLIC TBB::tbb)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_TBB)
 endif()
+
+# libigl
+include(libigl)
+target_link_libraries(polyfem PUBLIC igl::core)
 
 if(POLYFEM_WITH_TRIANGLE)
     target_link_libraries(polyfem PUBLIC igl_restricted::triangle)
@@ -255,20 +255,9 @@ target_link_libraries(polyfem PUBLIC Glob::Glob)
 include(units)
 target_link_libraries(polyfem PUBLIC units::units)
 
-# wmtk library
-include(wmtk)
-target_link_libraries(polyfem PUBLIC wmtk::toolkit)
-
-include(polyclipper)
-target_link_libraries(polyfem PUBLIC PolyClipper::PolyClipper)
-
 # YAML library
 include(yaml)
 target_link_libraries(polyfem PUBLIC yaml-cpp::yaml-cpp)
-
-# FCPW
-# include(fcpw)
-# target_link_libraries(polyfem PUBLIC fcpw::fcpw)
 
 ################################################################################
 # Optional libraries
@@ -281,11 +270,18 @@ if(POLYFEM_WITH_MMG)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_MMG)
 endif()
 
+# wmtk library
+include(wmtk)
+target_link_libraries(polyfem PUBLIC wmtk::toolkit)
+
 if(POLYFEM_WITH_CLIPPER)
     include(clipper)
     target_link_libraries(polyfem PUBLIC clipper::clipper)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_CLIPPER)
 endif()
+
+include(polyclipper)
+target_link_libraries(polyfem PUBLIC PolyClipper::PolyClipper)
 
 # Extra warnings (link this here so it has top priority)
 include(polyfem_warnings)
