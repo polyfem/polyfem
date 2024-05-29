@@ -2,9 +2,6 @@ var namespacepolyfem =
 [
     [ "assembler", "namespacepolyfem_1_1assembler.html", "namespacepolyfem_1_1assembler" ],
     [ "autogen", "namespacepolyfem_1_1autogen.html", [
-      [ "AMIPS2D_energy", "namespacepolyfem_1_1autogen.html#a80c555da2579d6f3a208d040baae04ff", null ],
-      [ "AMIPS2D_gradient", "namespacepolyfem_1_1autogen.html#a5f867b56d8333fba59ccad907c64efe3", null ],
-      [ "AMIPS2D_hessian", "namespacepolyfem_1_1autogen.html#a18e4eb0262d8a5466eef3ab0b7b4c3e2", null ],
       [ "convert_local_index_to_ijk", "namespacepolyfem_1_1autogen.html#ac52a919ee75e5b46c7792683f227a0d1", null ],
       [ "eigs_2d", "namespacepolyfem_1_1autogen.html#aa2b00b3913d4be74a323ed7cb81b8b96", null ],
       [ "eigs_3d", "namespacepolyfem_1_1autogen.html#a048e18759622a9d960c4bb71cee11fd3", null ],

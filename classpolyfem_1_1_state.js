@@ -57,6 +57,7 @@ var classpolyfem_1_1_state =
     [ "ndof", "classpolyfem_1_1_state.html#acbf1bd51beeb042d38c595223fe348a5", null ],
     [ "node_to_primitive", "classpolyfem_1_1_state.html#a8094354c829985f700975c1c72607a06", null ],
     [ "primitive_to_node", "classpolyfem_1_1_state.html#a5eaa1d1e994fd9fe2ef287e1d623fe67", null ],
+    [ "remesh", "classpolyfem_1_1_state.html#a5ddafd77c68a90e74e41d4591f387f75", null ],
     [ "reset_mesh", "classpolyfem_1_1_state.html#a6d904b274f338bfa96d3110531cc0aa7", null ],
     [ "resolve_input_path", "classpolyfem_1_1_state.html#acfcd600796cd24e1555454a1d31f2fc2", null ],
     [ "resolve_output_path", "classpolyfem_1_1_state.html#a2d27977bcc27d9827913ea573e6fef3a", null ],

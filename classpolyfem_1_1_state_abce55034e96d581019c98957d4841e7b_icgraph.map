@@ -1,21 +1,27 @@
 <map id="polyfem::State::build_rhs_assembler" name="polyfem::State::build_rhs_assembler">
-<area shape="rect" id="Node000001" title="build a RhsAssembler for the problem" alt="" coords="793,53,952,93"/>
-<area shape="poly" id="edge6_Node000001_Node000001" title=" " alt="" coords="906,41,894,34,873,31,854,33,842,38,838,44,840,52,835,53,833,43,839,34,852,28,873,26,896,29,909,36"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1_state.html#a92ca4b0169412ddc297a77744bd0e724" title="compute rhs, step 3 of solve build rhs vector based on defined basis and given rhs of the problem mod..." alt="" coords="335,31,551,56"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="779,69,551,53,551,48,780,64"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1_state.html#ac5c4dd2be369c759c68e0a36a45bfcc7" title="initialize solver" alt="" coords="599,81,745,121"/>
-<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="780,88,746,93,745,88,779,83"/>
-<area shape="rect" id="Node000003" href="$main_8cpp.html#aec889c702a246ad7f332c75ab7adb438" title=" " alt="" coords="123,5,271,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="321,33,271,28,272,23,321,28"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="117,55,278,80"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="321,58,278,62,278,57,321,53"/>
-<area shape="rect" id="Node000006" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acac3e8ce8646ddd1544ed034c71bec96" title=" " alt="" coords="108,105,287,145"/>
-<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="365,62,336,71,312,83,288,95,258,107,256,102,286,90,309,78,334,66,363,57"/>
-<area shape="rect" id="Node000004" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,5,60,31"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="109,21,60,21,60,15,109,15"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="362,81,523,121"/>
-<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="585,103,524,103,524,98,585,98"/>
-<area shape="poly" id="edge9_Node000008_Node000003" title=" " alt="" coords="354,79,334,71,286,46,249,33,250,28,288,41,336,66,356,74"/>
-<area shape="poly" id="edge10_Node000008_Node000005" title=" " alt="" coords="348,91,278,81,279,76,349,85"/>
-<area shape="poly" id="edge11_Node000008_Node000006" title=" " alt="" coords="348,113,287,119,286,113,348,107"/>
+<area shape="rect" id="Node000001" title="build a RhsAssembler for the problem" alt="" coords="1281,101,1440,141"/>
+<area shape="poly" id="edge12_Node000001_Node000001" title=" " alt="" coords="1401,90,1387,83,1361,80,1338,82,1324,87,1319,93,1322,100,1317,102,1314,92,1321,82,1337,77,1361,75,1388,78,1403,85"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1_state.html#a92ca4b0169412ddc297a77744bd0e724" title="compute rhs, step 3 of solve build rhs vector based on defined basis and given rhs of the problem mod..." alt="" coords="1017,109,1233,134"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1268,124,1234,124,1234,119,1268,119"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1_state.html#a5ddafd77c68a90e74e41d4591f387f75" title="Remesh the FE space and update solution(s)." alt="" coords="795,19,969,45"/>
+<area shape="poly" id="edge15_Node000001_Node000005" title=" " alt="" coords="1267,106,1233,100,951,47,952,42,1234,95,1268,101"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1_state.html#ac5c4dd2be369c759c68e0a36a45bfcc7" title="initialize solver" alt="" coords="809,171,955,211"/>
+<area shape="poly" id="edge13_Node000001_Node000010" title=" " alt="" coords="1268,143,1234,149,1086,170,956,186,955,180,1085,165,1233,144,1267,138"/>
+<area shape="rect" id="Node000003" href="$main_8cpp.html#aec889c702a246ad7f332c75ab7adb438" title=" " alt="" coords="123,219,271,245"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1102,145,1045,188,1009,209,970,225,875,249,776,263,677,271,580,272,404,263,271,247,272,242,405,258,580,267,677,265,775,258,874,243,969,220,1006,205,1042,184,1099,141"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="1076,106,917,47,919,42,1078,101"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="117,166,278,191"/>
+<area shape="poly" id="edge10_Node000002_Node000008" title=" " alt="" coords="1004,126,700,136,517,147,335,161,276,169,275,163,334,156,517,141,699,131,1003,121"/>
+<area shape="rect" id="Node000009" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acac3e8ce8646ddd1544ed034c71bec96" title=" " alt="" coords="108,76,287,116"/>
+<area shape="poly" id="edge11_Node000002_Node000009" title=" " alt="" coords="1003,119,969,117,287,100,287,95,969,112,1004,113"/>
+<area shape="rect" id="Node000004" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,219,60,245"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="109,235,60,235,60,229,109,229"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1_state.html#a4d91e8c971fc121b0cff2f0c02ca79e7" title="solves transient tensor nonlinear problem" alt="" coords="544,5,747,45"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="781,32,747,31,747,26,781,26"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="335,171,496,211"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="607,56,446,173,443,168,604,51"/>
+<area shape="poly" id="edge7_Node000007_Node000003" title=" " alt="" coords="321,211,265,222,264,217,320,206"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="321,188,278,186,278,180,321,183"/>
+<area shape="poly" id="edge9_Node000007_Node000009" title=" " alt="" coords="355,168,243,118,245,114,357,163"/>
+<area shape="poly" id="edge14_Node000010_Node000007" title=" " alt="" coords="794,193,496,193,496,188,794,188"/>
 </map>

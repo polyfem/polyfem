@@ -2,7 +2,7 @@ var dir_2823641f5a686d1462a98610dd766f27 =
 [
     [ "AdjointForm.cpp", "_adjoint_form_8cpp.html", null ],
     [ "AdjointForm.hpp", "_adjoint_form_8hpp.html", "_adjoint_form_8hpp" ],
-    [ "AMIPSForm.hpp", "solver_2forms_2adjoint__forms_2_a_m_i_p_s_form_8hpp.html", "solver_2forms_2adjoint__forms_2_a_m_i_p_s_form_8hpp" ],
+    [ "AMIPSForm.hpp", "_a_m_i_p_s_form_8hpp.html", "_a_m_i_p_s_form_8hpp" ],
     [ "BarrierForms.cpp", "_barrier_forms_8cpp.html", null ],
     [ "BarrierForms.hpp", "_barrier_forms_8hpp.html", "_barrier_forms_8hpp" ],
     [ "CompositeForm.cpp", "_composite_form_8cpp.html", null ],

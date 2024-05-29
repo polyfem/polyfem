@@ -111,7 +111,6 @@ var hierarchy =
     [ "polyfem::mesh::NCMesh2D::follower_face", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__face.html", null ],
     [ "polyfem::mesh::NCMesh3D::follower_face", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1follower__face.html", null ],
     [ "polyfem::solver::Form", "classpolyfem_1_1solver_1_1_form.html", [
-      [ "polyfem::solver::AMIPSForm", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html", null ],
       [ "polyfem::solver::AdjointForm", "classpolyfem_1_1solver_1_1_adjoint_form.html", [
         [ "polyfem::solver::AMIPSForm", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html", null ],
         [ "polyfem::solver::BoundarySmoothingForm", "classpolyfem_1_1solver_1_1_boundary_smoothing_form.html", null ],

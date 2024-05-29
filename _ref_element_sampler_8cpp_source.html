@@ -503,8 +503,8 @@ $(document).ready(function(){initNavTree('_ref_element_sampler_8cpp_source.html'
 <div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>            <span class="keyword">const</span> Eigen::MatrixXi rt = Eigen::MatrixXi::Zero(poly.rows(), 1);</div>
 <div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>            <a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>.resize(0, 0);</div>
 <div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>            Eigen::VectorXi I;</div>
-<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>            Eigen::MatrixXd np, area;</div>
-<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>            igl::predicates::ear_clipping(poly, rt, I, <a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>, np);</div>
+<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>            Eigen::MatrixXd area;</div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>            igl::predicates::ear_clipping(poly, rt, <a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>, I);</div>
 <div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span> </div>
 <div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>            igl::doublearea(poly, <a class="code hl_variable" href="_pressure_assembler_8cpp.html#a26f342872e2db31d6dcf7862b29f64d9">faces</a>, area);</div>
 <div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span> </div>

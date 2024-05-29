@@ -1,8 +1,5 @@
 var NAVTREEINDEX2 =
 {
-"_logger_8hpp.html#ac64c417f742692869f9528d2cd10d569":[7,0,1,0,11,31,7],
-"_logger_8hpp.html#adc7e749e0c40939b7323961c6a41e391":[7,0,1,0,11,31,3],
-"_logger_8hpp.html#ae4cde5432ad6f53159237d00d3c14623":[7,0,1,0,11,31,4],
 "_logger_8hpp_source.html":[7,0,1,0,11,31],
 "_m_m_g_remesh_8cpp.html":[7,0,1,0,4,3,3],
 "_m_m_g_remesh_8cpp_source.html":[7,0,1,0,4,3,3],
@@ -249,5 +246,8 @@ var NAVTREEINDEX2 =
 "_n_l_homo_problem_8cpp.html":[7,0,1,0,8,13],
 "_n_l_homo_problem_8cpp_source.html":[7,0,1,0,8,13],
 "_n_l_homo_problem_8hpp.html":[7,0,1,0,8,14],
-"_n_l_homo_problem_8hpp_source.html":[7,0,1,0,8,14]
+"_n_l_homo_problem_8hpp_source.html":[7,0,1,0,8,14],
+"_n_l_problem_8cpp.html":[7,0,1,0,8,15],
+"_n_l_problem_8cpp_source.html":[7,0,1,0,8,15],
+"_n_l_problem_8hpp.html":[7,0,1,0,8,16]
 };

@@ -23,6 +23,8 @@ var classpolyfem_1_1mesh_1_1_local_relaxation_data =
     [ "local_boundary", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a7b640497f320c5f7239286efe4fc796c", null ],
     [ "local_mesh", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a6eaec5c0b53fe0ac47987e9ecb7d8021", null ],
     [ "local_neumann_boundary", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a28bd8bc3fc9f4b6b41f63f50c7ae6d51", null ],
+    [ "local_pressure_boundary", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html#ab9b580c2a1ae20293850847469b1c587", null ],
+    [ "local_pressure_cavity", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a323c93a6f66b29101058f4c2f5ce0eb9", null ],
     [ "m_n_bases", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html#ab1c86ddf550ac3d88ecb7b163e113468", null ],
     [ "mass", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html#ad2f4260c3b70fa4cd8244cf87393463a", null ],
     [ "mass_assembly_vals_cache", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html#aacdb31b44d00e0b2587405db02a4ef22", null ],
@@ -30,6 +32,8 @@ var classpolyfem_1_1mesh_1_1_local_relaxation_data =
     [ "mesh", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html#aa31729739df5cc9a7108635f5491254c", null ],
     [ "neumann_nodes", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a2e76541d7a86de80048e7a73b4c0e1b3", null ],
     [ "neumann_nodes_position", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a413db52a018be05c77cd6c8638b52961", null ],
+    [ "pressure_assembler", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a66599d7843102f7c3f733763ed75687c", null ],
+    [ "pressure_boundary_nodes", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a863e8dd96e3a4fa1d59ff53926de43cf", null ],
     [ "problem", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html#adf31961f34eb05bf056b193523a2736e", null ],
     [ "rhs", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html#acfb45b358239660a7ae0b42244c70842", null ],
     [ "solve_data", "classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a8873c67b721823b8d109782ea93316c1", null ]

@@ -194,6 +194,8 @@ Private Attributes</h2></td></tr>
 <tr class="separator:aacdb31b44d00e0b2587405db02a4ef22"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad2f4260c3b70fa4cd8244cf87393463a" id="r_ad2f4260c3b70fa4cd8244cf87393463a"><td class="memItemLeft" align="right" valign="top">Eigen::SparseMatrix&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html#ad2f4260c3b70fa4cd8244cf87393463a">mass</a></td></tr>
 <tr class="separator:ad2f4260c3b70fa4cd8244cf87393463a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a66599d7843102f7c3f733763ed75687c" id="r_a66599d7843102f7c3f733763ed75687c"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html">assembler::PressureAssembler</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a66599d7843102f7c3f733763ed75687c">pressure_assembler</a></td></tr>
+<tr class="separator:a66599d7843102f7c3f733763ed75687c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adf31961f34eb05bf056b193523a2736e" id="r_adf31961f34eb05bf056b193523a2736e"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html">assembler::Problem</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html#adf31961f34eb05bf056b193523a2736e">problem</a></td></tr>
 <tr class="memdesc:adf31961f34eb05bf056b193523a2736e"><td class="mdescLeft">&#160;</td><td class="mdescRight">current problem, it contains rhs and bc  <br /></td></tr>
 <tr class="separator:adf31961f34eb05bf056b193523a2736e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -206,6 +208,9 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a28bd8bc3fc9f4b6b41f63f50c7ae6d51" id="r_a28bd8bc3fc9f4b6b41f63f50c7ae6d51"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a28bd8bc3fc9f4b6b41f63f50c7ae6d51">local_neumann_boundary</a></td></tr>
 <tr class="memdesc:a28bd8bc3fc9f4b6b41f63f50c7ae6d51"><td class="mdescLeft">&#160;</td><td class="mdescRight">mapping from elements to nodes for neumann boundary conditions  <br /></td></tr>
 <tr class="separator:a28bd8bc3fc9f4b6b41f63f50c7ae6d51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9b580c2a1ae20293850847469b1c587" id="r_ab9b580c2a1ae20293850847469b1c587"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html#ab9b580c2a1ae20293850847469b1c587">local_pressure_boundary</a></td></tr>
+<tr class="memdesc:ab9b580c2a1ae20293850847469b1c587"><td class="mdescLeft">&#160;</td><td class="mdescRight">mapping from elements to nodes for pressure boundary conditions  <br /></td></tr>
+<tr class="separator:ab9b580c2a1ae20293850847469b1c587"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a401bc91b285012402b209c90aa2b7365" id="r_a401bc91b285012402b209c90aa2b7365"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a401bc91b285012402b209c90aa2b7365">dirichlet_nodes</a></td></tr>
 <tr class="memdesc:a401bc91b285012402b209c90aa2b7365"><td class="mdescLeft">&#160;</td><td class="mdescRight">per node dirichlet  <br /></td></tr>
 <tr class="separator:a401bc91b285012402b209c90aa2b7365"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -216,6 +221,10 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a2e76541d7a86de80048e7a73b4c0e1b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a413db52a018be05c77cd6c8638b52961" id="r_a413db52a018be05c77cd6c8638b52961"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321">RowVectorNd</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a413db52a018be05c77cd6c8638b52961">neumann_nodes_position</a></td></tr>
 <tr class="separator:a413db52a018be05c77cd6c8638b52961"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a323c93a6f66b29101058f4c2f5ce0eb9" id="r_a323c93a6f66b29101058f4c2f5ce0eb9"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; int, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">LocalBoundary</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a323c93a6f66b29101058f4c2f5ce0eb9">local_pressure_cavity</a></td></tr>
+<tr class="separator:a323c93a6f66b29101058f4c2f5ce0eb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a863e8dd96e3a4fa1d59ff53926de43cf" id="r_a863e8dd96e3a4fa1d59ff53926de43cf"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a863e8dd96e3a4fa1d59ff53926de43cf">pressure_boundary_nodes</a></td></tr>
+<tr class="separator:a863e8dd96e3a4fa1d59ff53926de43cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acfb45b358239660a7ae0b42244c70842" id="r_acfb45b358239660a7ae0b42244c70842"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html#acfb45b358239660a7ae0b42244c70842">rhs</a></td></tr>
 <tr class="separator:acfb45b358239660a7ae0b42244c70842"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab9828eec895558109a9b5e5c889515f6" id="r_ab9828eec895558109a9b5e5c889515f6"><td class="memItemLeft" align="right" valign="top">ipc::CollisionMesh&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html#ab9828eec895558109a9b5e5c889515f6">collision_mesh</a></td></tr>
@@ -268,7 +277,7 @@ template&lt;typename M &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8cpp_source.html#l00016">16</a> of file <a class="el" href="_local_relaxation_data_8cpp_source.html">LocalRelaxationData.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_local_relaxation_data_8cpp_source.html#l00148">polyfem::mesh::LocalRelaxationData&lt; M &gt;::init_assembler()</a>, <a class="el" href="_local_relaxation_data_8cpp_source.html#l00071">polyfem::mesh::LocalRelaxationData&lt; M &gt;::init_bases()</a>, <a class="el" href="_local_relaxation_data_8cpp_source.html#l00101">polyfem::mesh::LocalRelaxationData&lt; M &gt;::init_boundary_conditions()</a>, <a class="el" href="_local_relaxation_data_8cpp_source.html#l00164">polyfem::mesh::LocalRelaxationData&lt; M &gt;::init_mass_matrix()</a>, <a class="el" href="_local_relaxation_data_8cpp_source.html#l00034">polyfem::mesh::LocalRelaxationData&lt; M &gt;::init_mesh()</a>, <a class="el" href="_local_relaxation_data_8cpp_source.html#l00185">polyfem::mesh::LocalRelaxationData&lt; M &gt;::init_solve_data()</a>, and <a class="el" href="_local_relaxation_data_8hpp_source.html#l00063">polyfem::mesh::LocalRelaxationData&lt; M &gt;::problem</a>.</p>
+<p class="reference">References <a class="el" href="_local_relaxation_data_8cpp_source.html#l00148">polyfem::mesh::LocalRelaxationData&lt; M &gt;::init_assembler()</a>, <a class="el" href="_local_relaxation_data_8cpp_source.html#l00071">polyfem::mesh::LocalRelaxationData&lt; M &gt;::init_bases()</a>, <a class="el" href="_local_relaxation_data_8cpp_source.html#l00101">polyfem::mesh::LocalRelaxationData&lt; M &gt;::init_boundary_conditions()</a>, <a class="el" href="_local_relaxation_data_8cpp_source.html#l00166">polyfem::mesh::LocalRelaxationData&lt; M &gt;::init_mass_matrix()</a>, <a class="el" href="_local_relaxation_data_8cpp_source.html#l00034">polyfem::mesh::LocalRelaxationData&lt; M &gt;::init_mesh()</a>, <a class="el" href="_local_relaxation_data_8cpp_source.html#l00187">polyfem::mesh::LocalRelaxationData&lt; M &gt;::init_solve_data()</a>, and <a class="el" href="_local_relaxation_data_8hpp_source.html#l00065">polyfem::mesh::LocalRelaxationData&lt; M &gt;::problem</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -474,7 +483,7 @@ template&lt;typename M &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8cpp_source.html#l00164">164</a> of file <a class="el" href="_local_relaxation_data_8cpp_source.html">LocalRelaxationData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8cpp_source.html#l00166">166</a> of file <a class="el" href="_local_relaxation_data_8cpp_source.html">LocalRelaxationData.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_state_8hpp_source.html#l00204">polyfem::State::avg_mass</a>, and <a class="el" href="_remesher_8hpp_source.html#l00015">POLYFEM_REMESHER_SCOPED_TIMER</a>.</p>
 
@@ -573,7 +582,7 @@ template&lt;typename M &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8cpp_source.html#l00185">185</a> of file <a class="el" href="_local_relaxation_data_8cpp_source.html">LocalRelaxationData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8cpp_source.html#l00187">187</a> of file <a class="el" href="_local_relaxation_data_8cpp_source.html">LocalRelaxationData.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_state_8hpp_source.html#l00101">polyfem::State::args</a>, <a class="el" href="_state_8hpp_source.html#l00204">polyfem::State::avg_mass</a>, <a class="el" href="_implicit_time_integrator_8cpp_source.html#l00066">polyfem::time_integrator::ImplicitTimeIntegrator::construct_time_integrator()</a>, <a class="el" href="_solve_data_8hpp_source.html#l00147">polyfem::solver::SolveData::contact_form</a>, <a class="el" href="_state_8hpp_source.html#l00263">polyfem::State::n_boundary_samples()</a>, <a class="el" href="_remesher_8hpp_source.html#l00015">POLYFEM_REMESHER_SCOPED_TIMER</a>, <a class="el" href="_state_8hpp_source.html#l00168">polyfem::State::problem</a>, <a class="el" href="_state_8hpp_source.html#l00324">polyfem::State::solve_data</a>, <a class="el" href="_remesher_8cpp_source.html#l00396">polyfem::mesh::Remesher::split_time_integrator_quantities()</a>, and <a class="el" href="_state_8hpp_source.html#l00150">polyfem::State::units</a>.</p>
 
@@ -687,7 +696,7 @@ template&lt;typename M &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00030">30</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_local_relaxation_data_8hpp_source.html#l00066">polyfem::mesh::LocalRelaxationData&lt; M &gt;::boundary_nodes</a>, and <a class="el" href="_local_relaxation_data_8hpp_source.html#l00029">polyfem::mesh::LocalRelaxationData&lt; M &gt;::ndof()</a>.</p>
+<p class="reference">References <a class="el" href="_local_relaxation_data_8hpp_source.html#l00068">polyfem::mesh::LocalRelaxationData&lt; M &gt;::boundary_nodes</a>, and <a class="el" href="_local_relaxation_data_8hpp_source.html#l00029">polyfem::mesh::LocalRelaxationData&lt; M &gt;::ndof()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_local_relaxation_8cpp_source.html#l00032">polyfem::mesh::PhysicsRemesher&lt; WMTKMesh &gt;::local_relaxation()</a>.</p>
 <div class="dynheader">
@@ -894,7 +903,7 @@ template&lt;typename M &gt; </div>
 
 <p>list of boundary nodes </p>
 
-<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00066">66</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00068">68</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_local_relaxation_data_8hpp_source.html#l00030">polyfem::mesh::LocalRelaxationData&lt; M &gt;::n_free_dof()</a>.</p>
 
@@ -922,7 +931,7 @@ template&lt;typename M &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00080">80</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00087">87</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
 
 </div>
 </div>
@@ -950,7 +959,7 @@ template&lt;typename M &gt; </div>
 
 <p>per node dirichlet </p>
 
-<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00072">72</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00076">76</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
 
 </div>
 </div>
@@ -976,7 +985,7 @@ template&lt;typename M &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00073">73</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00077">77</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
 
 </div>
 </div>
@@ -1004,7 +1013,7 @@ template&lt;typename M &gt; </div>
 
 <p>mapping from elements to nodes for dirichlet boundary conditions </p>
 
-<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00068">68</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00070">70</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
 
 </div>
 </div>
@@ -1052,7 +1061,61 @@ template&lt;typename M &gt; </div>
 
 <p>mapping from elements to nodes for neumann boundary conditions </p>
 
-<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00070">70</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00072">72</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
+
+</div>
+</div>
+<a id="ab9b580c2a1ae20293850847469b1c587" name="ab9b580c2a1ae20293850847469b1c587"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9b580c2a1ae20293850847469b1c587">&#9670;&#160;</a></span>local_pressure_boundary</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename M &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a>&gt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html">polyfem::mesh::LocalRelaxationData</a>&lt; M &gt;::local_pressure_boundary</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>mapping from elements to nodes for pressure boundary conditions </p>
+
+<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00074">74</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a323c93a6f66b29101058f4c2f5ce0eb9" name="a323c93a6f66b29101058f4c2f5ce0eb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a323c93a6f66b29101058f4c2f5ce0eb9">&#9670;&#160;</a></span>local_pressure_cavity</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename M &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_map&lt;int, std::vector&lt;<a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">LocalBoundary</a>&gt; &gt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html">polyfem::mesh::LocalRelaxationData</a>&lt; M &gt;::local_pressure_cavity</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00082">82</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
 
 </div>
 </div>
@@ -1214,7 +1277,7 @@ template&lt;typename M &gt; </div>
 
 <p>per node neumann </p>
 
-<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00075">75</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00079">79</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
 
 </div>
 </div>
@@ -1240,7 +1303,59 @@ template&lt;typename M &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00076">76</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00080">80</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a66599d7843102f7c3f733763ed75687c" name="a66599d7843102f7c3f733763ed75687c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a66599d7843102f7c3f733763ed75687c">&#9670;&#160;</a></span>pressure_assembler</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename M &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html">assembler::PressureAssembler</a>&gt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html">polyfem::mesh::LocalRelaxationData</a>&lt; M &gt;::pressure_assembler</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00062">62</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a863e8dd96e3a4fa1d59ff53926de43cf" name="a863e8dd96e3a4fa1d59ff53926de43cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a863e8dd96e3a4fa1d59ff53926de43cf">&#9670;&#160;</a></span>pressure_boundary_nodes</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename M &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int&gt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_relaxation_data.html">polyfem::mesh::LocalRelaxationData</a>&lt; M &gt;::pressure_boundary_nodes</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00083">83</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
 
 </div>
 </div>
@@ -1268,7 +1383,7 @@ template&lt;typename M &gt; </div>
 
 <p>current problem, it contains rhs and bc </p>
 
-<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00063">63</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00065">65</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_local_relaxation_data_8cpp_source.html#l00016">polyfem::mesh::LocalRelaxationData&lt; M &gt;::LocalRelaxationData()</a>.</p>
 
@@ -1296,7 +1411,7 @@ template&lt;typename M &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00078">78</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_local_relaxation_data_8hpp_source.html#l00085">85</a> of file <a class="el" href="_local_relaxation_data_8hpp_source.html">LocalRelaxationData.hpp</a>.</p>
 
 </div>
 </div>

@@ -10,7 +10,7 @@
 <meta property="og:description" content="A polyvalent C++ FEM library." />
 <meta property="og:url" content="https://polyfem.github.io/polyfem/" />
 <!-- END opengraph metadata -->
-<title>PolyFEM: src/polyfem/mesh/remesh/wild_remesh/AMIPSForm.hpp File Reference</title>
+<title>PolyFEM: src/polyfem/solver/forms/adjoint_forms/AMIPSForm.hpp File Reference</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -93,7 +93,7 @@ $(function() {
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('mesh_2remesh_2wild__remesh_2_a_m_i_p_s_form_8hpp.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('_a_m_i_p_s_form_8hpp.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -121,24 +121,29 @@ $(document).ready(function(){initNavTree('mesh_2remesh_2wild__remesh_2_a_m_i_p_s
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
-<a href="#namespaces">Namespaces</a> &#124;
-<a href="#func-members">Functions</a>  </div>
+<a href="#namespaces">Namespaces</a>  </div>
   <div class="headertitle"><div class="title">AMIPSForm.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;<a class="el" href="_form_8hpp_source.html">polyfem/solver/forms/Form.hpp</a>&gt;</code><br />
+<div class="textblock"><code>#include &lt;<a class="el" href="_variable_to_simulation_8hpp_source.html">polyfem/solver/forms/adjoint_forms/VariableToSimulation.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_state_8hpp_source.html">polyfem/State.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_assembler_8hpp_source.html">polyfem/assembler/Assembler.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_mesh2_d_8hpp_source.html">polyfem/mesh/mesh2D/Mesh2D.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_mesh3_d_8hpp_source.html">polyfem/mesh/mesh3D/Mesh3D.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_generic_elastic_8hpp_source.html">polyfem/assembler/GenericElastic.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_a_m_i_p_s_energy_8hpp_source.html">polyfem/assembler/AMIPSEnergy.hpp</a>&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for AMIPSForm.hpp:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mesh_2remesh_2wild__remesh_2_a_m_i_p_s_form_8hpp__incl.svg" width="506" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="_a_m_i_p_s_form_8hpp__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="mesh_2remesh_2wild__remesh_2_a_m_i_p_s_form_8hpp__dep__incl.svg" width="226" height="139"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="_a_m_i_p_s_form_8hpp__dep__incl.svg" width="170" height="154"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 </div>
-<p><a href="mesh_2remesh_2wild__remesh_2_a_m_i_p_s_form_8hpp_source.html">Go to the source code of this file.</a></p>
+<p><a href="_a_m_i_p_s_form_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
@@ -151,17 +156,6 @@ Namespaces</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:namespacepolyfem_1_1solver" id="r_namespacepolyfem_1_1solver"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html">polyfem::solver</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:namespacepolyfem_1_1autogen" id="r_namespacepolyfem_1_1autogen"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1autogen.html">polyfem::autogen</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
-Functions</h2></td></tr>
-<tr class="memitem:a80c555da2579d6f3a208d040baae04ff" id="r_a80c555da2579d6f3a208d040baae04ff"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1autogen.html#a80c555da2579d6f3a208d040baae04ff">polyfem::autogen::AMIPS2D_energy</a> (double x0_rest, double y0_rest, double x1_rest, double y1_rest, double x2_rest, double y2_rest, double x0, double y0, double x1, double y1, double x2, double y2)</td></tr>
-<tr class="separator:a80c555da2579d6f3a208d040baae04ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5f867b56d8333fba59ccad907c64efe3" id="r_a5f867b56d8333fba59ccad907c64efe3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1autogen.html#a5f867b56d8333fba59ccad907c64efe3">polyfem::autogen::AMIPS2D_gradient</a> (double x0_rest, double y0_rest, double x1_rest, double y1_rest, double x2_rest, double y2_rest, double x0, double y0, double x1, double y1, double x2, double y2, double g[2])</td></tr>
-<tr class="separator:a5f867b56d8333fba59ccad907c64efe3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a18e4eb0262d8a5466eef3ab0b7b4c3e2" id="r_a18e4eb0262d8a5466eef3ab0b7b4c3e2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1autogen.html#a18e4eb0262d8a5466eef3ab0b7b4c3e2">polyfem::autogen::AMIPS2D_hessian</a> (double x0_rest, double y0_rest, double x1_rest, double y1_rest, double x2_rest, double y2_rest, double x0, double y0, double x1, double y1, double x2, double y2, double H[4])</td></tr>
-<tr class="separator:a18e4eb0262d8a5466eef3ab0b7b4c3e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -169,7 +163,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_15d4893607df4bf7106bb9ed16128612.html">mesh</a></li><li class="navelem"><a class="el" href="dir_27f30189200bd742b46527538e957bcb.html">remesh</a></li><li class="navelem"><a class="el" href="dir_1aff46779d3acb1fe80407191539595b.html">wild_remesh</a></li><li class="navelem"><a class="el" href="mesh_2remesh_2wild__remesh_2_a_m_i_p_s_form_8hpp.html">AMIPSForm.hpp</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_10fb13321304f63ea5f7ee0a82e63ce8.html">solver</a></li><li class="navelem"><a class="el" href="dir_d0a37fccf9a2cf369fc4713384d4cf61.html">forms</a></li><li class="navelem"><a class="el" href="dir_2823641f5a686d1462a98610dd766f27.html">adjoint_forms</a></li><li class="navelem"><a class="el" href="_a_m_i_p_s_form_8hpp.html">AMIPSForm.hpp</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>

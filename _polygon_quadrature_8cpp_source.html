@@ -250,18 +250,17 @@ $(document).ready(function(){initNavTree('_polygon_quadrature_8cpp_source.html',
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                <span class="keyword">const</span> Eigen::MatrixXi rt = Eigen::MatrixXi::Zero(poly.rows(), 1);</div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                tris.resize(0, 0);</div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>                Eigen::VectorXi I;</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                Eigen::MatrixXd np;</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                igl::predicates::ear_clipping(poly, rt, I, tris, np);</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                assign_quadrature(tri_quadr_pts, tris, poly, quadr);</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>            }</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>            assert(quadr.<a class="code hl_variable" href="classpolyfem_1_1quadrature_1_1_quadrature.html#aa4c4c3ae343c37060d42ebe0611f6034">weights</a>.minCoeff() &gt;= 0);</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                igl::predicates::ear_clipping(poly, rt, tris, I);</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                assign_quadrature(tri_quadr_pts, tris, poly, quadr);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>            }</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>            assert(quadr.<a class="code hl_variable" href="classpolyfem_1_1quadrature_1_1_quadrature.html#aa4c4c3ae343c37060d42ebe0611f6034">weights</a>.minCoeff() &gt;= 0);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        }</div>
 </div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    } <span class="comment">// namespace quadrature</span></div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>} <span class="comment">// namespace polyfem</span></div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    } <span class="comment">// namespace quadrature</span></div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>} <span class="comment">// namespace polyfem</span></div>
 <div class="ttc" id="a_mass_matrix_assembler_8cpp_html_a6e6c474c9eedb0961390091003af5685"><div class="ttname"><a href="_mass_matrix_assembler_8cpp.html#a6e6c474c9eedb0961390091003af5685">quadrature</a></div><div class="ttdeci">Quadrature quadrature</div><div class="ttdef"><b>Definition</b> <a href="_mass_matrix_assembler_8cpp_source.html#l00030">MassMatrixAssembler.cpp:30</a></div></div>
 <div class="ttc" id="a_polygon_quadrature_8hpp_html"><div class="ttname"><a href="_polygon_quadrature_8hpp.html">PolygonQuadrature.hpp</a></div></div>
 <div class="ttc" id="a_tri_quadrature_8hpp_html"><div class="ttname"><a href="_tri_quadrature_8hpp.html">TriQuadrature.hpp</a></div></div>
