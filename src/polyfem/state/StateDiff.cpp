@@ -309,9 +309,9 @@ namespace polyfem
 
 				if (sol_step == force_step - 1)
 				{
-					// StiffnessMatrix body_force_hessian(u.size(), u.size());
-					// solve_data.body_form->hessian_wrt_u_prev(u_prev, force_step * dt, body_force_hessian);
-					// hessian_prev += body_force_hessian;
+					StiffnessMatrix body_force_hessian(u.size(), u.size());
+					solve_data.body_form->hessian_wrt_u_prev(u_prev, force_step * dt, body_force_hessian);
+					hessian_prev += body_force_hessian;
 				}
 			}
 		}
