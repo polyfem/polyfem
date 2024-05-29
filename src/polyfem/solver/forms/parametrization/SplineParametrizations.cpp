@@ -301,7 +301,7 @@ namespace polyfem::solver
 		Eigen::VectorXi point_handles_idx(point_handles.rows());
 		for (int i = 0; i < point_handles_idx.size(); ++i)
 			point_handles_idx(i) = i;
-		igl::boundary_conditions(V, F, point_handles, point_handles_idx, Eigen::VectorXi(), Eigen::VectorXi(), b, bc);
+		igl::boundary_conditions(V, F, point_handles, point_handles_idx, Eigen::VectorXi(), Eigen::VectorXi(), Eigen::VectorXi(), b, bc);
 
 		igl::BBWData bbw_data;
 		bbw_data.active_set_params.max_iter = 500;
