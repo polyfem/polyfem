@@ -21,7 +21,4 @@ target_sources(polyfem PRIVATE ${SOURCES})
 add_subdirectory(mesh2D)
 add_subdirectory(mesh3D)
 add_subdirectory(collision_proxy)
-
-if(POLYFEM_WITH_REMESHING)
-	add_subdirectory(remesh)
-endif()
+add_subdirectory(remesh)
