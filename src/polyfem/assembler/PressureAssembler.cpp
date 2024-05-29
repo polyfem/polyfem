@@ -210,7 +210,7 @@ namespace polyfem
 		void PressureAssembler::compute_grad_volume(
 			const Eigen::MatrixXd &displacement,
 			const std::vector<mesh::LocalBoundary> &local_boundary,
-			const std::vector<int> dirichlet_nodes,
+			const std::vector<int> &dirichlet_nodes,
 			const int resolution,
 			Eigen::VectorXd &grad,
 			const double t,
@@ -336,7 +336,7 @@ namespace polyfem
 			const Eigen::MatrixXd &displacement,
 			const int boundary_id,
 			const std::vector<mesh::LocalBoundary> &local_boundary,
-			const std::vector<int> dirichlet_nodes,
+			const std::vector<int> &dirichlet_nodes,
 			const int resolution,
 			Eigen::VectorXd &grad,
 			const double t,
@@ -465,7 +465,7 @@ namespace polyfem
 		void PressureAssembler::compute_hess_volume_3d(
 			const Eigen::MatrixXd &displacement,
 			const std::vector<mesh::LocalBoundary> &local_boundary,
-			const std::vector<int> dirichlet_nodes,
+			const std::vector<int> &dirichlet_nodes,
 			const int resolution,
 			StiffnessMatrix &hess,
 			const double t,
@@ -617,11 +617,6 @@ namespace polyfem
 							}
 						}
 
-						// if (project_to_psd)
-						// {
-						// 	log_and_throw_error("Cannot project pressure to PSD!");
-						// }
-
 						for (long ni = 0; ni < nodes.size(); ++ni)
 						{
 							const AssemblyValues &vi = vals.basis_values[nodes(ni)];
@@ -657,7 +652,7 @@ namespace polyfem
 		void PressureAssembler::compute_hess_volume_2d(
 			const Eigen::MatrixXd &displacement,
 			const std::vector<mesh::LocalBoundary> &local_boundary,
-			const std::vector<int> dirichlet_nodes,
+			const std::vector<int> &dirichlet_nodes,
 			const int resolution,
 			StiffnessMatrix &hess,
 			const double t,
@@ -790,11 +785,6 @@ namespace polyfem
 								}
 							}
 						}
-
-						// if (project_to_psd)
-						// {
-						// 	log_and_throw_error("Cannot project pressure to PSD!");
-						// }
 
 						for (long ni = 0; ni < nodes.size(); ++ni)
 						{
@@ -958,7 +948,7 @@ namespace polyfem
 		void PressureAssembler::compute_cavity_energy_grad(
 			const Eigen::MatrixXd &displacement,
 			const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity,
-			const std::vector<int> dirichlet_nodes,
+			const std::vector<int> &dirichlet_nodes,
 			const int resolution,
 			const double t,
 			Eigen::VectorXd &grad) const
@@ -983,7 +973,7 @@ namespace polyfem
 		void PressureAssembler::compute_cavity_energy_hess(
 			const Eigen::MatrixXd &displacement,
 			const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity,
-			const std::vector<int> dirichlet_nodes,
+			const std::vector<int> &dirichlet_nodes,
 			const int resolution,
 			const double t,
 			const bool project_to_psd,
@@ -1031,7 +1021,7 @@ namespace polyfem
 		void PressureAssembler::compute_energy_grad(
 			const Eigen::MatrixXd &displacement,
 			const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
-			const std::vector<int> dirichlet_nodes,
+			const std::vector<int> &dirichlet_nodes,
 			const int resolution,
 			const double t,
 			Eigen::VectorXd &grad) const
@@ -1042,7 +1032,7 @@ namespace polyfem
 		void PressureAssembler::compute_energy_hess(
 			const Eigen::MatrixXd &displacement,
 			const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
-			const std::vector<int> dirichlet_nodes,
+			const std::vector<int> &dirichlet_nodes,
 			const int resolution,
 			const double t,
 			const bool project_to_psd,
@@ -1062,7 +1052,7 @@ namespace polyfem
 		void PressureAssembler::compute_force_jacobian(
 			const Eigen::MatrixXd &displacement,
 			const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
-			const std::vector<int> dirichlet_nodes,
+			const std::vector<int> &dirichlet_nodes,
 			const int resolution,
 			const double t,
 			const int n_vertices,
