@@ -4,7 +4,7 @@
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <igl/bbw.h>
 #include <igl/boundary_conditions.h>
-#include <igl/normalize_row_sums.h>
+// #include <igl/normalize_row_sums.h>
 #include <igl/boundary_loop.h>
 #include <igl/exact_geodesic.h>
 #include <igl/bounding_box.h>
@@ -311,7 +311,8 @@ namespace polyfem::solver
 		bool computation = igl::bbw(V, F, b, bc, bbw_data, complete_bbw_weights);
 		if (!computation)
 			log_and_throw_error("Bounded Bihamonic Weight computation failed!");
-		igl::normalize_row_sums(complete_bbw_weights, complete_bbw_weights);
+		// Deprecated: igl::normalize_row_sums(complete_bbw_weights, complete_bbw_weights);
+		complete_bbw_weights = (complete_bbw_weights.array().colwise() / complete_bbw_weights.array().rowwise().sum()).eval();
 		bbw_weights_ = complete_bbw_weights.block(0, 0, V.rows(), num_control_vertices_).matrix();
 		boundary_bbw_weights_ = complete_bbw_weights.block(0, num_control_vertices_, V.rows(), V_outer_loop.rows()).matrix();
 
