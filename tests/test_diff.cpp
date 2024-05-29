@@ -561,53 +561,6 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 // 	}
 // }
 
-TEST_CASE("shape-pressure-nodes-3d", "[test_adjoint]")
-{
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
-	json in_args;
-	load_json(path + "shape-pressure-nodes-3d.json", in_args);
-	auto state_ptr = create_state_and_solve(in_args);
-	State &state = *state_ptr;
-
-	std::vector<std::shared_ptr<State>> states({state_ptr});
-
-	json opt_args;
-	load_json(path + "shape-pressure-nodes-3d-opt.json", opt_args);
-	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
-
-	VariableToSimulationGroup variable_to_simulations;
-	variable_to_simulations.push_back(AdjointOptUtils::create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {972}));
-
-	auto obj = AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states);
-
-	auto velocity = [](const Eigen::MatrixXd &position) {
-		auto vel = position;
-		for (int i = 0; i < vel.size(); i++)
-		{
-			vel(i) = (rand() % 1000) / 1000.0;
-		}
-		return vel;
-	};
-	Eigen::MatrixXd velocity_discrete;
-
-	Eigen::VectorXd x;
-	int opt_bnodes = 0;
-	x.resize(972);
-
-	Eigen::MatrixXd V;
-	state.get_vertices(V);
-	Eigen::VectorXd V_flat = utils::flatten(V);
-	auto b_idx = variable_to_simulations[0]->get_output_indexing(x);
-	std::cout << "b_idx " << b_idx.size() << std::endl;
-	for (int i = 0; i < b_idx.size(); ++i)
-		x(i) = V_flat(b_idx(i));
-	velocity_discrete = velocity(x);
-
-	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
-
-	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-3);
-}
-
 TEST_CASE("shape-pressure-nodes-2d", "[test_adjoint]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
@@ -652,51 +605,6 @@ TEST_CASE("shape-pressure-nodes-2d", "[test_adjoint]")
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 
 	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-3);
-}
-
-TEST_CASE("control-pressure-nodes-3d", "[test_adjoint]")
-{
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
-	json in_args;
-	load_json(path + "control-pressure-nodes-3d.json", in_args);
-	auto state_ptr = create_state_and_solve(in_args);
-	State &state = *state_ptr;
-
-	std::vector<std::shared_ptr<State>> states({state_ptr});
-
-	json opt_args;
-	load_json(path + "control-pressure-nodes-3d-opt.json", opt_args);
-	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
-
-	VariableToSimulationGroup variable_to_simulations;
-	{
-		std::vector<int> pressure_boundaries = {2};
-		auto v2s = std::make_shared<PressureVariableToSimulation>(state_ptr, CompositeParametrization());
-		v2s->set_pressure_boundaries(pressure_boundaries);
-		Eigen::VectorXi indexing(5);
-		indexing << 0, 1, 2, 3, 4;
-		v2s->set_output_indexing(indexing);
-		variable_to_simulations.push_back(v2s);
-	}
-
-	auto obj = AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states);
-
-	auto velocity = [](const Eigen::MatrixXd &position) {
-		auto vel = position;
-		for (int i = 0; i < vel.size(); i++)
-		{
-			vel(i) = (rand() % 1000) / 1000.0;
-		}
-		return vel;
-	};
-	Eigen::MatrixXd velocity_discrete;
-
-	Eigen::VectorXd x = variable_to_simulations[0]->inverse_eval();
-	velocity_discrete = velocity(x);
-
-	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
-
-	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-8, 1e-3);
 }
 
 TEST_CASE("static-control-pressure-nodes-3d", "[test_adjoint]")
@@ -1180,91 +1088,22 @@ TEST_CASE("barycenter", "[test_adjoint]")
 
 // TEST_CASE("dirichlet-sdf", "[test_adjoint]")
 // {
-// 	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
-// 	json in_args;
-// 	load_json(path + "dirichlet-sdf.json", in_args);
-
 // 	json opt_args;
-// 	load_json(path + "dirichlet-sdf-opt.json", opt_args);
-// 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
+// 	load_json(append_root_path("dirichlet-sdf-opt.json"), opt_args);
+// 	auto [obj, var2sim, states] = prepare_test(opt_args);
 
-// 	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
-// 	State &state = *state_ptr;
-
-// 	Eigen::MatrixXd control_points, delta;
-// 	Eigen::VectorXd knots;
-// 	control_points.setZero(4, 2);
-// 	control_points << -2.5, -0.1,
-// 		-1, -1,
-// 		1, 1,
-// 		2.5, -0.1;
-// 	knots.setZero(8);
-// 	knots << 0,
-// 		0,
-// 		0,
-// 		0,
-// 		1,
-// 		1,
-// 		1,
-// 		1;
-// 	delta.setZero(1, 2);
-// 	delta << 0.5, 0.5;
-
-// 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-// 	std::shared_ptr<ControlParameter> control_param = std::make_shared<ControlParameter>(states_ptr, opt_args["parameters"][0]);
-// 	auto sdf_aux = std::make_shared<SDFTargetObjective>(state, nullptr, opt_args["functionals"][0]);
-// 	sdf_aux->set_bspline_target(control_points, knots, delta(0));
-// 	std::shared_ptr<StaticObjective> func_aux = sdf_aux;
-// 	json functional_args = opt_args["functionals"][0];
-
-// 	std::string transient_integral_type;
-// 	if (opt_args["functionals"][0]["transient_integral_type"] == "steps")
-// 	{
-// 		auto steps = opt_args["functionals"][0]["steps"].get<std::vector<int>>();
-// 		transient_integral_type = "[";
-// 		for (auto s : steps)
-// 			transient_integral_type += std::to_string(s) + ",";
-// 		transient_integral_type.pop_back();
-// 		transient_integral_type += "]";
-// 	}
-// 	else
-// 		transient_integral_type = opt_args["functionals"][0]["transient_integral_type"];
-// 	TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], transient_integral_type, func_aux);
-
-// 	int time_steps = state.args["time"]["time_steps"].get<int>();
+// 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
 
 // 	int dirichlet_dof = 3;
 // 	Eigen::MatrixXd velocity_discrete;
-// 	velocity_discrete.setZero(time_steps * 3 * dirichlet_dof, 1);
-// 	for (int j = 0; j < time_steps; ++j)
-// 		for (int k = 0; k < dirichlet_dof; ++k)
-// 		{
-// 			for (int i = 0; i < 3; ++i)
-// 			{
-// 				double random_val = (rand() % 200) / 100. - 1.;
-// 				velocity_discrete(j * 3 * dirichlet_dof + i * dirichlet_dof + k) = random_val;
-// 			}
-// 		}
+// 	velocity_discrete.setRandom(states[0]->args["time"]["time_steps"].get<int>() * states[0]->mesh->dimension() * dirichlet_dof, 1);
 
-// 	auto initial_guess = control_param->initial_guess();
-// 	auto perturb_fn = [&initial_guess](std::shared_ptr<Parameter> param, std::shared_ptr<State> &state, const Eigen::MatrixXd &dx) {
-// 		initial_guess += dx;
-// 		param->pre_solve(initial_guess);
-// 	};
+// 	Eigen::VectorXd x(60);
+// 	x.segment(0, 20) = var2sim[0]->inverse_eval();
+// 	x.segment(20, 20) = var2sim[1]->inverse_eval();
+// 	x.segment(40, 20) = var2sim[2]->inverse_eval();
 
-// 	verify_adjoint_dirichlet(func, state_ptr, control_param, velocity_discrete, perturb_fn, 1e-4, 1e-3);
-
-// 	json temp_args = in_args;
-// 	auto perturb_fn_json = [&temp_args, time_steps](std::shared_ptr<Parameter> param, std::shared_ptr<State> &state, const Eigen::MatrixXd &dx) {
-// 		for (int t = 0; t < time_steps; ++t)
-// 			for (int k = 0; k < 2; ++k)
-// 				for (int i = 0; i < 3; ++i)
-// 					temp_args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t] = temp_args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t].get<double>() + dx(t * 3 * 3 + i * 3 + k);
-// 		state->init(temp_args, false);
-// 		state->optimization_enabled = true;
-// 	};
-
-// 	verify_adjoint_dirichlet(func, state_ptr, control_param, velocity_discrete, perturb_fn_json, 1e-7, 1e-5);
+// 	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-5, 1e-5);
 // }
 
 // TEST_CASE("dirichlet-ref", "[test_adjoint]")
@@ -1329,3 +1168,98 @@ TEST_CASE("barycenter", "[test_adjoint]")
 
 // 	verify_adjoint_dirichlet(func, state_ptr, control_param, velocity_discrete, perturb_fn_json, 1e-7, 1e-5);
 // }
+
+#ifdef NDEBUG
+TEST_CASE("shape-pressure-nodes-3d", "[test_adjoint]")
+{
+	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	json in_args;
+	load_json(path + "shape-pressure-nodes-3d.json", in_args);
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
+
+	std::vector<std::shared_ptr<State>> states({state_ptr});
+
+	json opt_args;
+	load_json(path + "shape-pressure-nodes-3d-opt.json", opt_args);
+	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
+
+	VariableToSimulationGroup variable_to_simulations;
+	variable_to_simulations.push_back(AdjointOptUtils::create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {972}));
+
+	auto obj = AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states);
+
+	auto velocity = [](const Eigen::MatrixXd &position) {
+		auto vel = position;
+		for (int i = 0; i < vel.size(); i++)
+		{
+			vel(i) = (rand() % 1000) / 1000.0;
+		}
+		return vel;
+	};
+	Eigen::MatrixXd velocity_discrete;
+
+	Eigen::VectorXd x;
+	int opt_bnodes = 0;
+	x.resize(972);
+
+	Eigen::MatrixXd V;
+	state.get_vertices(V);
+	Eigen::VectorXd V_flat = utils::flatten(V);
+	auto b_idx = variable_to_simulations[0]->get_output_indexing(x);
+	std::cout << "b_idx " << b_idx.size() << std::endl;
+	for (int i = 0; i < b_idx.size(); ++i)
+		x(i) = V_flat(b_idx(i));
+	velocity_discrete = velocity(x);
+
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
+
+	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-3);
+}
+
+TEST_CASE("control-pressure-nodes-3d", "[test_adjoint]")
+{
+	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	json in_args;
+	load_json(path + "control-pressure-nodes-3d.json", in_args);
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
+
+	std::vector<std::shared_ptr<State>> states({state_ptr});
+
+	json opt_args;
+	load_json(path + "control-pressure-nodes-3d-opt.json", opt_args);
+	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
+
+	VariableToSimulationGroup variable_to_simulations;
+	{
+		std::vector<int> pressure_boundaries = {2};
+		auto v2s = std::make_shared<PressureVariableToSimulation>(state_ptr, CompositeParametrization());
+		v2s->set_pressure_boundaries(pressure_boundaries);
+		Eigen::VectorXi indexing(5);
+		indexing << 0, 1, 2, 3, 4;
+		v2s->set_output_indexing(indexing);
+		variable_to_simulations.push_back(v2s);
+	}
+
+	auto obj = AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states);
+
+	auto velocity = [](const Eigen::MatrixXd &position) {
+		auto vel = position;
+		for (int i = 0; i < vel.size(); i++)
+		{
+			vel(i) = (rand() % 1000) / 1000.0;
+		}
+		return vel;
+	};
+	Eigen::MatrixXd velocity_discrete;
+
+	Eigen::VectorXd x = variable_to_simulations[0]->inverse_eval();
+	velocity_discrete = velocity(x);
+
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
+
+	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-8, 1e-3);
+}
+
+#endif

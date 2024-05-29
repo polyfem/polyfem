@@ -2237,6 +2237,17 @@
         "doc": "Dirichlet boundary condition loaded from a file, <node_id> <bc values>, 1 for scalar, 2/3 for tensor depending on dimension."
     },
     {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*",
+        "type": "list",
+        "doc": "Dirichlet boundary condition specified per timestep."
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*/*",
+        "type": "include",
+        "spec_file": "value0.json",
+        "doc": "Dirichlet boundary condition specified per timestep."
+    },
+    {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension",
         "type": "list",
         "default": [
