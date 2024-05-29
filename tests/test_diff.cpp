@@ -96,8 +96,8 @@ namespace
 		double finite_difference = (next_functional_val - former_functional_val) / dt / 2;
 		double back_finite_difference = (functional_val - former_functional_val) / dt;
 		double front_finite_difference = (next_functional_val - functional_val) / dt;
-		std::cout << std::setprecision(16) << "forward " << front_finite_difference << " backward " << back_finite_difference << "\n";
 		std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
+		std::cout << std::setprecision(16) << "forward fd " << front_finite_difference << " backward fd " << back_finite_difference << "\n";
 		std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
 		std::cout << std::setprecision(12) << "relative error: " << abs((finite_difference - derivative) / derivative) << "\n";
 		REQUIRE(derivative == Catch::Approx(finite_difference).epsilon(tol));
@@ -573,7 +573,6 @@ TEST_CASE("shape-pressure-nodes-3d", "[test_adjoint]")
 
 	json opt_args;
 	load_json(path + "shape-pressure-nodes-3d-opt.json", opt_args);
-	// opt_args["functionals"][1]["static_objective"]["mesh_path"] = POLYFEM_DATA_DIR + std::string("/") + opt_args["functionals"][1]["static_objective"]["mesh_path"].get<std::string>();
 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
 	VariableToSimulationGroup variable_to_simulations;
