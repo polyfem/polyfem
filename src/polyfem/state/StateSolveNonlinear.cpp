@@ -69,7 +69,6 @@ namespace polyfem
 				solve_tensor_nonlinear(sol, t);
 			}
 
-#ifdef POLYFEM_WITH_REMESHING
 			if (remesh_enabled)
 			{
 				energy_csv.write(save_i, sol);
@@ -94,7 +93,7 @@ namespace polyfem
 					solve_tensor_nonlinear(sol, t, false); // solve the scene again after remeshing
 				}
 			}
-#endif
+
 			// Always save the solution for consistency
 			energy_csv.write(save_i, sol);
 			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
@@ -135,7 +134,8 @@ namespace polyfem
 
 			// save restart file
 			save_restart_json(t0, dt, t);
-			stats_csv.write(t, forward_solve_time, remeshing_time, global_relaxation_time, sol);
+			if (remesh_enabled)
+				stats_csv.write(t, forward_solve_time, remeshing_time, global_relaxation_time, sol);
 		}
 	}
 
