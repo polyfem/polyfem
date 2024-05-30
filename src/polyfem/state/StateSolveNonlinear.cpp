@@ -46,10 +46,6 @@ namespace polyfem
 		EnergyCSVWriter energy_csv(resolve_output_path("energy.csv"), solve_data);
 		RuntimeStatsCSVWriter stats_csv(resolve_output_path("stats.csv"), *this, t0, dt);
 		const bool remesh_enabled = args["space"]["remesh"]["enabled"];
-#ifndef POLYFEM_WITH_REMESHING
-		if (remesh_enabled)
-			log_and_throw_error("Remeshing is not enabled in this build! Set POLYFEM_WITH_REMESHING=ON in CMake to enable it.");
-#endif
 		// const double save_dt = remesh_enabled ? (dt / 3) : dt;
 
 		// Save the initial solution
@@ -249,7 +245,7 @@ namespace polyfem
 			args["solver"]["contact"]["CCD"]["max_iterations"],
 			optimization_enabled == solver::CacheLevel::Derivatives,
 			// Homogenization
-        	macro_strain_constraint,
+			macro_strain_constraint,
 			// Periodic contact
 			args["contact"]["periodic"], periodic_collision_mesh_to_basis,
 			// Friction form
