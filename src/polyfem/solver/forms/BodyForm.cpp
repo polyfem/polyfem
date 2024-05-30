@@ -163,7 +163,11 @@ namespace polyfem::solver
 		// Zero entries in p that correspond to nodes lying between dirichlet and neumann surfaces
 		// DO NOT PARALLELIZE since they both write to the same location
 		Eigen::MatrixXd adjoint_zeroed = adjoint;
+#if EIGEN_VERSION_AT_LEAST(3, 4, 90)
+		adjoint_zeroed(boundary_nodes_, Eigen::indexing::all).setZero();
+#else
 		adjoint_zeroed(boundary_nodes_, Eigen::all).setZero();
+#endif
 
 		utils::maybe_parallel_for(local_neumann_boundary_.size(), [&](int start, int end, int thread_id) {
 			LocalThreadVecStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);

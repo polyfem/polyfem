@@ -62,9 +62,15 @@ namespace polyfem::mesh
 		}
 
 		const Eigen::MatrixXd H = M(free_nodes, free_nodes);
+#if EIGEN_VERSION_AT_LEAST(3, 4, 90)
+		const Eigen::MatrixXd g = -((M * x - A * y)(free_nodes, Eigen::indexing::all));
+		const Eigen::MatrixXd sol = H.llt().solve(g);
+		x(free_nodes, Eigen::indexing::all) += sol;
+#else
 		const Eigen::MatrixXd g = -((M * x - A * y)(free_nodes, Eigen::all));
 		const Eigen::MatrixXd sol = H.llt().solve(g);
 		x(free_nodes, Eigen::all) += sol;
+#endif
 	}
 
 	Eigen::VectorXd constrained_L2_projection(

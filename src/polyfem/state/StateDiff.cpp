@@ -337,7 +337,11 @@ namespace polyfem
 		Eigen::MatrixXd adjoint = Eigen::MatrixXd::Zero(ndof(), adjoint_rhs.cols());
 		if (lin_solver_cached)
 		{
+#if EIGEN_VERSION_AT_LEAST(3, 4, 90)
+			b(boundary_nodes, Eigen::indexing::all).setZero();
+#else
 			b(boundary_nodes, Eigen::all).setZero();
+#endif
 
 			StiffnessMatrix A = diff_cached.gradu_h(0);
 			const int full_size = A.rows();
@@ -394,7 +398,11 @@ namespace polyfem
 				}
 			}
 			// NLProblem sets dirichlet values to forward BC values, but we want zero in adjoint
+#if EIGEN_VERSION_AT_LEAST(3, 4, 90)
+			adjoint(boundary_nodes, Eigen::indexing::all).setZero();
+#else
 			adjoint(boundary_nodes, Eigen::all).setZero();
+#endif
 		}
 
 		return adjoint;

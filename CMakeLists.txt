@@ -182,13 +182,14 @@ endif()
 # Required libraries
 ################################################################################
 
+# polysolve
+include(polysolve)
+target_link_libraries(polyfem PUBLIC polysolve::polysolve)
+
 # Eigen
 include(eigen)
 target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
 
-# polysolve
-include(polysolve)
-target_link_libraries(polyfem PUBLIC polysolve::polysolve)
 
 # IPC Toolkit
 include(ipc_toolkit)

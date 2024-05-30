@@ -29,9 +29,15 @@ namespace polyfem::solver
 			double &local_potential = utils::get_local_thread_storage(storage, thread_id);
 			for (int i = start; i < end; i++)
 			{
+#if EIGEN_VERSION_AT_LEAST(3, 4, 90)
+				local_potential +=
+					scale * element_volume(rest_positions_(elements_.row(i), Eigen::indexing::all))
+					* ipc::barrier(element_volume(V(elements_.row(i), Eigen::indexing::all)), vhat_);
+#else
 				local_potential +=
 					scale * element_volume(rest_positions_(elements_.row(i), Eigen::all))
 					* ipc::barrier(element_volume(V(elements_.row(i), Eigen::all)), vhat_);
+#endif
 			}
 		});
 
@@ -53,12 +59,21 @@ namespace polyfem::solver
 			Eigen::VectorXd &grad = utils::get_local_thread_storage(storage, thread_id);
 			for (int i = start; i < end; i++)
 			{
+#if EIGEN_VERSION_AT_LEAST(3, 4, 90)
+				const Eigen::MatrixXd element_vertices = V(elements_.row(i), Eigen::indexing::all);
+
+				Eigen::VectorXd local_grad =
+					(scale * element_volume(rest_positions_(elements_.row(i), Eigen::indexing::all))
+					 * ipc::barrier_first_derivative(element_volume(element_vertices), vhat_))
+					* element_volume_gradient(element_vertices);
+#else
 				const Eigen::MatrixXd element_vertices = V(elements_.row(i), Eigen::all);
 
 				Eigen::VectorXd local_grad =
 					(scale * element_volume(rest_positions_(elements_.row(i), Eigen::all))
 					 * ipc::barrier_first_derivative(element_volume(element_vertices), vhat_))
 					* element_volume_gradient(element_vertices);
+#endif
 
 				ipc::local_gradient_to_global_gradient(local_grad, elements_.row(i), dim_, grad);
 			}
@@ -83,6 +98,14 @@ namespace polyfem::solver
 
 			for (int i = start; i < end; i++)
 			{
+#if EIGEN_VERSION_AT_LEAST(3, 4, 90)
+				const Eigen::MatrixXd element_vertices = V(elements_.row(i), Eigen::indexing::all);
+
+				const double volume = element_volume(element_vertices);
+				const Eigen::VectorXd volume_grad = element_volume_gradient(element_vertices);
+
+				const double rest_volume = element_volume(rest_positions_(elements_.row(i), Eigen::indexing::all));
+#else
 				const Eigen::MatrixXd element_vertices = V(elements_.row(i), Eigen::all);
 
 				const double volume = element_volume(element_vertices);
@@ -90,6 +113,7 @@ namespace polyfem::solver
 
 				const double rest_volume = element_volume(rest_positions_(elements_.row(i), Eigen::all));
 
+#endif
 				Eigen::MatrixXd local_hess =
 					(scale * rest_volume * ipc::barrier_second_derivative(volume, vhat_)) * volume_grad * volume_grad.transpose()
 					+ (scale * rest_volume * ipc::barrier_first_derivative(volume, vhat_)) * element_volume_hessian(element_vertices);
@@ -177,7 +201,11 @@ namespace polyfem::solver
 		for (size_t i = 0; i < elements_.rows(); ++i)
 		{
 			// TODO: use exact predicate for this
+#if EIGEN_VERSION_AT_LEAST(3, 4, 90)
+			if (element_volume(V(elements_.row(i), Eigen::indexing::all)) <= 0)
+#else
 			if (element_volume(V(elements_.row(i), Eigen::all)) <= 0)
+#endif
 			{
 				return false;
 			}
