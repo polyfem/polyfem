@@ -306,39 +306,53 @@ namespace polyfem::solver
 
 	bool AdjointNLProblem::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
 	{
-		Eigen::MatrixXd X, V0, V1, V_smooth;
-		Eigen::MatrixXi F;
+		bool need_rebuild_basis = false;
 
-		int state_count = 0;
-		for (auto state_ : all_states_)
+		// update to new parameter and check if the new parameter is valid to solve
+		for (const auto &v : variables_to_simulation_)
 		{
+			v->update(newX);
+			if (v->get_parameter_type() == ParameterType::Shape)
+				need_rebuild_basis = true;
+		}
 
-			V1 = utils::unflatten(
-				get_updated_mesh_nodes(variables_to_simulation_, state_, x1),
-				state_->mesh->dimension());
-			state_->get_vertices(V0);
-			state_->get_elements(F);
+		if (need_rebuild_basis)
+		{
+			Eigen::MatrixXd X, V0, V1;
+			Eigen::MatrixXi F;
 
-			if (smooth_line_search)
+			int state_count = 0;
+			for (auto state_ : all_states_)
 			{
-				bool slim_success = polyfem::mesh::apply_slim(V0, F, V1, V_smooth);
-				if (!slim_success)
+
+				V1 = utils::unflatten(
+					get_updated_mesh_nodes(variables_to_simulation_, state_, x1),
+					state_->mesh->dimension());
+				state_->get_vertices(V0);
+				state_->get_elements(F);
+
+				if (smooth_line_search)
 				{
-					adjoint_logger().info("SLIM failed, step not valid!");
+					Eigen::MatrixXd V_smooth;
+					bool slim_success = polyfem::mesh::apply_slim(V0, F, V1, V_smooth);
+					if (!slim_success)
+					{
+						adjoint_logger().info("SLIM failed, step not valid!");
+						return false;
+					}
+
+					V1 = V_smooth;
+				}
+
+				bool flipped = is_flipped(V1, F);
+				if (flipped)
+				{
+					adjoint_logger().info("Found flipped element in LS, step not valid!");
 					return false;
 				}
 
-				V1 = V_smooth;
+				state_count++;
 			}
-
-			bool flipped = is_flipped(V1, F);
-			if (flipped)
-			{
-				adjoint_logger().info("Found flipped element in LS, step not valid!");
-				return false;
-			}
-
-			state_count++;
 		}
 
 		return form_->is_step_valid(x0, x1);
@@ -435,14 +449,6 @@ namespace polyfem::solver
 	{
 		bool need_rebuild_basis = false;
 
-		std::vector<Eigen::MatrixXd> V_old_list;
-		for (auto state : all_states_)
-		{
-			Eigen::MatrixXd V;
-			state->get_vertices(V);
-			V_old_list.push_back(V);
-		}
-
 		// update to new parameter and check if the new parameter is valid to solve
 		for (const auto &v : variables_to_simulation_)
 		{
@@ -454,6 +460,14 @@ namespace polyfem::solver
 		// Apply slim to all states on a frequency
 		if (need_rebuild_basis && enable_slim && curr_x.size() > 0)
 		{
+			std::vector<Eigen::MatrixXd> V_old_list;
+			for (auto state : all_states_)
+			{
+				Eigen::MatrixXd V;
+				state->get_vertices(V);
+				V_old_list.push_back(V);
+			}
+
 			int state_num = 0;
 			for (auto state : all_states_)
 			{
