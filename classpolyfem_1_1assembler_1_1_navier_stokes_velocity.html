@@ -160,6 +160,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a40545084c0865df4acf81fca8c1e0fa2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59637e08a7f2113b7ba507b52b316d9d" id="r_a59637e08a7f2113b7ba507b52b316d9d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a59637e08a7f2113b7ba507b52b316d9d">is_fluid</a> () const override</td></tr>
 <tr class="separator:a59637e08a7f2113b7ba507b52b316d9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42e5a86e9d669cd3ddac0d9f9002ce55" id="r_a42e5a86e9d669cd3ddac0d9f9002ce55"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a42e5a86e9d669cd3ddac0d9f9002ce55">is_tensor</a> () const override</td></tr>
+<tr class="separator:a42e5a86e9d669cd3ddac0d9f9002ce55"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a47835d60981a83d3919d1a37751b4917" id="r_a47835d60981a83d3919d1a37751b4917"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a47835d60981a83d3919d1a37751b4917">set_picard</a> (const bool <a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>)</td></tr>
 <tr class="separator:a47835d60981a83d3919d1a37751b4917"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0dcf0db6270fc7b52a74a498a8d3eb3a" id="r_a0dcf0db6270fc7b52a74a498a8d3eb3a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a0dcf0db6270fc7b52a74a498a8d3eb3a">assemble_energy</a> (const bool is_volume, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;<a class="el" href="_assembler_8cpp.html#ac67a22d4c9279979f58f5ebca27a2c79">cache</a>, const double t, const double dt, const Eigen::MatrixXd &amp;displacement, const Eigen::MatrixXd &amp;displacement_prev) const override</td></tr>
@@ -220,8 +222,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a4dc3aedabca1d63c5a489cb129916679 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40fad32c421398dc8455c9f18f5189e5 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler" id="r_a40fad32c421398dc8455c9f18f5189e5"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a40fad32c421398dc8455c9f18f5189e5">is_solution_displacement</a> () const</td></tr>
 <tr class="separator:a40fad32c421398dc8455c9f18f5189e5 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a719343427b7a8ea6a643b2f745cb71a9 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler" id="r_a719343427b7a8ea6a643b2f745cb71a9"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a719343427b7a8ea6a643b2f745cb71a9">is_tensor</a> () const</td></tr>
-<tr class="separator:a719343427b7a8ea6a643b2f745cb71a9 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -316,7 +316,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_8cpp_source.html#l00011">11</a> of file <a class="el" href="_navier_stokes_8cpp_source.html">NavierStokes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00028">polyfem::assembler::GenericMatParam::add_multimaterial()</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_units_8hpp_source.html#l00032">polyfem::Units::viscosity()</a>, and <a class="el" href="_navier_stokes_8hpp_source.html#l00051">viscosity_</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00028">polyfem::assembler::GenericMatParam::add_multimaterial()</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_units_8hpp_source.html#l00032">polyfem::Units::viscosity()</a>, and <a class="el" href="_navier_stokes_8hpp_source.html#l00052">viscosity_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -678,7 +678,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_8cpp_source.html#l00045">45</a> of file <a class="el" href="_navier_stokes_8cpp_source.html">NavierStokes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navier_stokes_8cpp_source.html#l00058">compute_N()</a>, <a class="el" href="_navier_stokes_8cpp_source.html#l00136">compute_W()</a>, and <a class="el" href="_navier_stokes_8hpp_source.html#l00054">full_gradient_</a>.</p>
+<p class="reference">References <a class="el" href="_navier_stokes_8cpp_source.html#l00058">compute_N()</a>, <a class="el" href="_navier_stokes_8cpp_source.html#l00136">compute_W()</a>, and <a class="el" href="_navier_stokes_8hpp_source.html#l00055">full_gradient_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00161">polyfem::solver::TransientNavierStokesSolver::minimize_aux()</a>, and <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00145">polyfem::solver::NavierStokesSolver::minimize_aux()</a>.</p>
 <div class="dynheader">
@@ -822,7 +822,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_8cpp_source.html#l00019">19</a> of file <a class="el" href="_navier_stokes_8cpp_source.html">NavierStokes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_navier_stokes_8hpp_source.html#l00051">viscosity_</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_navier_stokes_8hpp_source.html#l00052">viscosity_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -902,6 +902,35 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
+<a id="a42e5a86e9d669cd3ddac0d9f9002ce55" name="a42e5a86e9d669cd3ddac0d9f9002ce55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42e5a86e9d669cd3ddac0d9f9002ce55">&#9670;&#160;</a></span>is_tensor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::assembler::NavierStokesVelocity::is_tensor </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a719343427b7a8ea6a643b2f745cb71a9">polyfem::assembler::Assembler</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_8hpp_source.html#l00047">47</a> of file <a class="el" href="_navier_stokes_8hpp_source.html">NavierStokes.hpp</a>.</p>
+
+</div>
+</div>
 <a id="ae33ed1b2b8c2d555fa08fce19dc00f76" name="ae33ed1b2b8c2d555fa08fce19dc00f76"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae33ed1b2b8c2d555fa08fce19dc00f76">&#9670;&#160;</a></span>name()</h2>
 
@@ -965,7 +994,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_navier_stokes_8cpp_source.html#l00216">216</a> of file <a class="el" href="_navier_stokes_8cpp_source.html">NavierStokes.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navier_stokes_8hpp_source.html#l00051">viscosity_</a>.</p>
+<p class="reference">References <a class="el" href="_navier_stokes_8hpp_source.html#l00052">viscosity_</a>.</p>
 
 </div>
 </div>
@@ -993,9 +1022,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_8hpp_source.html#l00048">48</a> of file <a class="el" href="_navier_stokes_8hpp_source.html">NavierStokes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_8hpp_source.html#l00049">49</a> of file <a class="el" href="_navier_stokes_8hpp_source.html">NavierStokes.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_navier_stokes_8hpp_source.html#l00054">full_gradient_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>.</p>
+<p class="reference">References <a class="el" href="_navier_stokes_8hpp_source.html#l00055">full_gradient_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_transient_navier_stokes_solver_8cpp_source.html#l00161">polyfem::solver::TransientNavierStokesSolver::minimize_aux()</a>, and <a class="el" href="_navier_stokes_solver_8cpp_source.html#l00145">polyfem::solver::NavierStokesSolver::minimize_aux()</a>.</p>
 <div class="dynheader">
@@ -1027,9 +1056,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_8hpp_source.html#l00054">54</a> of file <a class="el" href="_navier_stokes_8hpp_source.html">NavierStokes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_8hpp_source.html#l00055">55</a> of file <a class="el" href="_navier_stokes_8hpp_source.html">NavierStokes.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_navier_stokes_8cpp_source.html#l00045">assemble_hessian()</a>, and <a class="el" href="_navier_stokes_8hpp_source.html#l00048">set_picard()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_navier_stokes_8cpp_source.html#l00045">assemble_hessian()</a>, and <a class="el" href="_navier_stokes_8hpp_source.html#l00049">set_picard()</a>.</p>
 
 </div>
 </div>
@@ -1053,7 +1082,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_navier_stokes_8hpp_source.html#l00051">51</a> of file <a class="el" href="_navier_stokes_8hpp_source.html">NavierStokes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_navier_stokes_8hpp_source.html#l00052">52</a> of file <a class="el" href="_navier_stokes_8hpp_source.html">NavierStokes.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_navier_stokes_8cpp_source.html#l00011">add_multimaterial()</a>, <a class="el" href="_navier_stokes_8cpp_source.html#l00019">compute_rhs()</a>, and <a class="el" href="_navier_stokes_8cpp_source.html#l00216">parameters()</a>.</p>
 

@@ -162,6 +162,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aae21e8da2cf39bb3ffecda44a29eb2b1 inherit pub_methods_classpolyfem_1_1assembler_1_1_stokes_velocity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a07f3fd226e669cd7f84a8088eb092d3e inherit pub_methods_classpolyfem_1_1assembler_1_1_stokes_velocity" id="r_a07f3fd226e669cd7f84a8088eb092d3e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_stokes_velocity.html#a07f3fd226e669cd7f84a8088eb092d3e">is_fluid</a> () const override</td></tr>
 <tr class="separator:a07f3fd226e669cd7f84a8088eb092d3e inherit pub_methods_classpolyfem_1_1assembler_1_1_stokes_velocity"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7821a6aa029c9acf5c6316a7d5cdf50 inherit pub_methods_classpolyfem_1_1assembler_1_1_stokes_velocity" id="r_aa7821a6aa029c9acf5c6316a7d5cdf50"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_stokes_velocity.html#aa7821a6aa029c9acf5c6316a7d5cdf50">is_tensor</a> () const override</td></tr>
+<tr class="separator:aa7821a6aa029c9acf5c6316a7d5cdf50 inherit pub_methods_classpolyfem_1_1assembler_1_1_stokes_velocity"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3a2430e7c06e87719b5eb23682ff3d9c inherit pub_methods_classpolyfem_1_1assembler_1_1_stokes_velocity" id="r_a3a2430e7c06e87719b5eb23682ff3d9c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_stokes_velocity.html#a3a2430e7c06e87719b5eb23682ff3d9c">assemble</a> (const bool is_volume, const int n_basis, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;<a class="el" href="_assembler_8cpp.html#ac67a22d4c9279979f58f5ebca27a2c79">cache</a>, const double t, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;stiffness, const bool is_mass=false) const override</td></tr>
 <tr class="memdesc:a3a2430e7c06e87719b5eb23682ff3d9c inherit pub_methods_classpolyfem_1_1assembler_1_1_stokes_velocity"><td class="mdescLeft">&#160;</td><td class="mdescRight">assembles the stiffness matrix for the given basis the bilinear form (local assembler) is encoded by the overloaded assemble (see below) function that the subclass (eg <a class="el" href="classpolyfem_1_1assembler_1_1_laplacian.html">Laplacian</a>) defines sets stiffness and modifies cache if it has not already been computed  <br /></td></tr>
 <tr class="separator:a3a2430e7c06e87719b5eb23682ff3d9c inherit pub_methods_classpolyfem_1_1assembler_1_1_stokes_velocity"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -216,8 +218,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a4dc3aedabca1d63c5a489cb129916679 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40fad32c421398dc8455c9f18f5189e5 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler" id="r_a40fad32c421398dc8455c9f18f5189e5"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a40fad32c421398dc8455c9f18f5189e5">is_solution_displacement</a> () const</td></tr>
 <tr class="separator:a40fad32c421398dc8455c9f18f5189e5 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a719343427b7a8ea6a643b2f745cb71a9 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler" id="r_a719343427b7a8ea6a643b2f745cb71a9"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a719343427b7a8ea6a643b2f745cb71a9">is_tensor</a> () const</td></tr>
-<tr class="separator:a719343427b7a8ea6a643b2f745cb71a9 inherit pub_methods_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -232,7 +232,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_stokes_8hpp_source.html#l00071">71</a> of file <a class="el" href="_stokes_8hpp_source.html">Stokes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_stokes_8hpp_source.html#l00072">72</a> of file <a class="el" href="_stokes_8hpp_source.html">Stokes.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a478adf43625a4c9f32578eba4eb5c3e7" name="a478adf43625a4c9f32578eba4eb5c3e7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a478adf43625a4c9f32578eba4eb5c3e7">&#9670;&#160;</a></span>OperatorSplitting()</h2>
@@ -310,7 +310,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_stokes_velocity.html#a50308ea2e91ca778c269d6039d171d7d">polyfem::assembler::StokesVelocity</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_stokes_8hpp_source.html#l00077">77</a> of file <a class="el" href="_stokes_8hpp_source.html">Stokes.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_stokes_8hpp_source.html#l00078">78</a> of file <a class="el" href="_stokes_8hpp_source.html">Stokes.hpp</a>.</p>
 
 </div>
 </div>

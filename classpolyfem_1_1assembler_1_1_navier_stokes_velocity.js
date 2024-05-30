@@ -14,6 +14,7 @@ var classpolyfem_1_1assembler_1_1_navier_stokes_velocity =
     [ "compute_rhs", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a588452fff934f1c86c4cfa52d819fcc4", null ],
     [ "compute_W", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#af8ae92910f6b7011d03cf6d79366a9e1", null ],
     [ "is_fluid", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a59637e08a7f2113b7ba507b52b316d9d", null ],
+    [ "is_tensor", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a42e5a86e9d669cd3ddac0d9f9002ce55", null ],
     [ "name", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#ae33ed1b2b8c2d555fa08fce19dc00f76", null ],
     [ "parameters", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a9aee6e2c827fa366e978779c5139cff1", null ],
     [ "set_picard", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a47835d60981a83d3919d1a37751b4917", null ],

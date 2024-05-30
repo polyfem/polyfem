@@ -1774,7 +1774,7 @@ $(document).ready(function(){initNavTree('_out_data_8cpp_source.html',''); initR
 <div class="line"><a id="l01630" name="l01630"></a><span class="lineno"> 1630</span>        <span class="comment">// interpolate_function(pts_index, rhs, fun, opts.boundary_only);</span></div>
 <div class="line"><a id="l01631" name="l01631"></a><span class="lineno"> 1631</span>        <span class="comment">// writer.add_field(&quot;rhs&quot;, fun);</span></div>
 <div class="line"><a id="l01632" name="l01632"></a><span class="lineno"> 1632</span> </div>
-<div class="line"><a id="l01633" name="l01633"></a><span class="lineno"> 1633</span>        <span class="keywordflow">if</span> (fun.cols() != 1)</div>
+<div class="line"><a id="l01633" name="l01633"></a><span class="lineno"> 1633</span>        <span class="keywordflow">if</span> (fun.cols() != 1 &amp;&amp; state.<a class="code hl_variable" href="classpolyfem_1_1_state.html#afb2787cd632703450c654a4feb140890">mixed_assembler</a> == <span class="keyword">nullptr</span>)</div>
 <div class="line"><a id="l01634" name="l01634"></a><span class="lineno"> 1634</span>        {</div>
 <div class="line"><a id="l01635" name="l01635"></a><span class="lineno"> 1635</span>            Eigen::MatrixXd traction_forces, traction_forces_fun;</div>
 <div class="line"><a id="l01636" name="l01636"></a><span class="lineno"> 1636</span>            compute_traction_forces(state, sol, t, traction_forces, <span class="keyword">false</span>);</div>
@@ -1793,7 +1793,7 @@ $(document).ready(function(){initNavTree('_out_data_8cpp_source.html',''); initR
 <div class="line"><a id="l01649" name="l01649"></a><span class="lineno"> 1649</span>            writer.add_field(<span class="stringliteral">&quot;traction_force&quot;</span>, traction_forces_fun);</div>
 <div class="line"><a id="l01650" name="l01650"></a><span class="lineno"> 1650</span>        }</div>
 <div class="line"><a id="l01651" name="l01651"></a><span class="lineno"> 1651</span> </div>
-<div class="line"><a id="l01652" name="l01652"></a><span class="lineno"> 1652</span>        <span class="keywordflow">if</span> (fun.cols() != 1)</div>
+<div class="line"><a id="l01652" name="l01652"></a><span class="lineno"> 1652</span>        <span class="keywordflow">if</span> (fun.cols() != 1 &amp;&amp; state.<a class="code hl_variable" href="classpolyfem_1_1_state.html#afb2787cd632703450c654a4feb140890">mixed_assembler</a> == <span class="keyword">nullptr</span>)</div>
 <div class="line"><a id="l01653" name="l01653"></a><span class="lineno"> 1653</span>        {</div>
 <div class="line"><a id="l01654" name="l01654"></a><span class="lineno"> 1654</span>            <span class="keywordflow">try</span></div>
 <div class="line"><a id="l01655" name="l01655"></a><span class="lineno"> 1655</span>            {</div>
