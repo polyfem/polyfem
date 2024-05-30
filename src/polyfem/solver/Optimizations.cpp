@@ -258,7 +258,7 @@ namespace polyfem::solver
 		}
 		else if (type == "exp")
 		{
-			map = std::make_shared<ExponentialMap>();
+			map = std::make_shared<ExponentialMap>(args["from"], args["to"]);
 		}
 		else if (type == "scale")
 		{
