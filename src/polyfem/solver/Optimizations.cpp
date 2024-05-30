@@ -145,6 +145,10 @@ namespace polyfem::solver
 				tmp->set_reference(args["target_function"], args["target_function_gradient"]);
 				obj = tmp;
 			}
+			else if (type == "node-target")
+			{
+				obj = std::make_shared<NodeTargetForm>(*(states[args["state"]]), var2sim, args);
+			}
 			else if (type == "position")
 			{
 				obj = std::make_shared<PositionForm>(var2sim, *(states[args["state"]]), args);

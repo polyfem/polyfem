@@ -188,28 +188,42 @@ namespace polyfem::solver
 
 	NodeTargetForm::NodeTargetForm(const State &state, const VariableToSimulationGroup &variable_to_simulations, const json &args) : StaticForm(variable_to_simulations), state_(state)
 	{
-		std::string target_data_path = args["target_data_path"];
+		const int dim = state.mesh->dimension();
+		const std::string target_data_path = args["target_data_path"];
 		if (!std::filesystem::is_regular_file(target_data_path))
 		{
 			throw std::runtime_error("Marker path invalid!");
 		}
-		Eigen::MatrixXd tmp;
-		io::read_matrix(target_data_path, tmp);
+		// N x (dim * 2), each row is [rest_x, rest_y, rest_z, deform_x, deform_y, deform_z]
+		Eigen::MatrixXd data;
+		io::read_matrix(target_data_path, data);
 
 		// markers to nodes
-		Eigen::VectorXi nodes = tmp.col(0).cast<int>();
-		target_vertex_positions.setZero(nodes.size(), state_.mesh->dimension());
-		active_nodes.reserve(nodes.size());
-		for (int s = 0; s < nodes.size(); s++)
+		target_vertex_positions.setZero(data.rows(), dim);
+		active_nodes.reserve(data.rows());
+		for (int s = 0; s < data.rows(); s++)
 		{
-			const int node_id = state_.in_node_to_node(nodes(s));
-			target_vertex_positions.row(s) = tmp.block(s, 1, 1, tmp.cols() - 1);
-			active_nodes.push_back(node_id);
+			target_vertex_positions.row(s) = data.block(s, dim, 1, dim);
+
+			const RowVectorNd node = data.block(s, 0, 1, dim);
+			bool not_found = true;
+			for (int v = 0; v < state_.mesh_nodes->n_nodes(); v++)
+			{
+				if ((state_.mesh_nodes->node_position(v) - node).norm() < 1e-8)
+				{
+					active_nodes.push_back(v);
+					not_found = false;
+					break;
+				}
+			}
+			if (not_found)
+				log_and_throw_adjoint_error("Failed to find corresponding node for {}!", node);
 		}
 	}
 
 	NodeTargetForm::NodeTargetForm(const State &state, const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_) : StaticForm(variable_to_simulations), state_(state), target_vertex_positions(target_vertex_positions_), active_nodes(active_nodes_)
 	{
+		log_and_throw_adjoint_error("[{}] Constructor not implemented!", name());
 	}
 
 	Eigen::VectorXd NodeTargetForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
@@ -222,10 +236,10 @@ namespace polyfem::solver
 		if (&state == &state_)
 		{
 			int i = 0;
-			Eigen::VectorXd disp = state_.diff_cached.u(time_step);
+			const Eigen::VectorXd disp = state_.diff_cached.u(time_step);
 			for (int v : active_nodes)
 			{
-				RowVectorNd cur_pos = state_.mesh_nodes->node_position(v) + disp.segment(v * dim, dim).transpose();
+				const RowVectorNd cur_pos = state_.mesh_nodes->node_position(v) + disp.segment(v * dim, dim).transpose();
 
 				rhs.segment(v * dim, dim) = 2 * (cur_pos - target_vertex_positions.row(i++));
 			}
@@ -239,10 +253,10 @@ namespace polyfem::solver
 		const int dim = state_.mesh->dimension();
 		double val = 0;
 		int i = 0;
-		Eigen::VectorXd disp = state_.diff_cached.u(time_step);
+		const Eigen::VectorXd disp = state_.diff_cached.u(time_step);
 		for (int v : active_nodes)
 		{
-			RowVectorNd cur_pos = state_.mesh_nodes->node_position(v) + disp.segment(v * dim, dim).transpose();
+			const RowVectorNd cur_pos = state_.mesh_nodes->node_position(v) + disp.segment(v * dim, dim).transpose();
 			val += (cur_pos - target_vertex_positions.row(i++)).squaredNorm();
 		}
 		return val;

@@ -107,14 +107,17 @@
         "required": [
             "state",
             "type",
-            "targets",
-            "node_ids"
+            "target_data_path"
         ],
         "optional": [
             "weight",
             "print_energy"
         ],
         "doc": "TODO"
+    },
+    {
+        "pointer": "/*/target_data_path",
+        "type": "file"
     },
     {
         "pointer": "/",
