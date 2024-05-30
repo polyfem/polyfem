@@ -19,6 +19,8 @@
 #include <igl/writeMSH.h>
 #include <igl/writeOBJ.h>
 
+#include <polyfem/State.hpp>
+
 using namespace polyfem::assembler;
 using namespace polyfem::utils;
 using namespace polyfem::quadrature;
@@ -223,13 +225,12 @@ namespace polyfem::solver
 			return uv;
 		}
 
-		std::tuple<double, double> evaluate_jacobian(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &uv, const Eigen::VectorXd &disp)
+		Eigen::MatrixXd evaluate_jacobian(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &uv, const Eigen::VectorXd &disp)
 		{
 			assembler::ElementAssemblyValues vals;
 			vals.compute(0, uv.cols() == 3, uv, bs, gbs);
 
-			double min_disp_det = 1;
-			double min_geo_det = 1;
+			Eigen::MatrixXd out(uv.rows(), 2);
 			for (long p = 0; p < uv.rows(); ++p)
 			{
 				Eigen::MatrixXd disp_grad;
@@ -249,10 +250,9 @@ namespace polyfem::solver
 				}
 
 				disp_grad = disp_grad * vals.jac_it[p] + Eigen::MatrixXd::Identity(uv.cols(), uv.cols());
-				min_disp_det = std::min(min_disp_det, disp_grad.determinant());
-				min_geo_det = std::min(disp_grad.determinant() / vals.jac_it[p].determinant(), min_geo_det);
+				out.row(p) << disp_grad.determinant(), disp_grad.determinant() / vals.jac_it[p].determinant();
 			}
-			return {min_geo_det, min_disp_det};
+			return out;
 		}
 
 		void update_quadrature(const int invalidID, const int dim, Tree &tree, const int quad_order, basis::ElementBases &bs, const basis::ElementBases &gbs, assembler::AssemblyValsCache &ass_vals_cache)
@@ -317,11 +317,11 @@ namespace polyfem::solver
 				if (basis_order == 0)
 					basis_order = bases_[e].bases.front().order();
 				else if (basis_order != bases_[e].bases.front().order())
-					log_and_throw_error("Non-uniform basis order!!");
+					log_and_throw_error("Non-uniform basis order not supported for conservative Jacobian check!!");
 				if (gbasis_order == 0)
 					gbasis_order = geom_bases_[e].bases.front().order();
 				else if (gbasis_order != geom_bases_[e].bases.front().order())
-					log_and_throw_error("Non-uniform gbasis order!!");
+					log_and_throw_error("Non-uniform gbasis order not supported for conservative Jacobian check!!");
 			}
 		}
 	}
@@ -402,67 +402,15 @@ namespace polyfem::solver
 				// 	{
 				// 		logger().error("Element {} is invalid!", id);
 
-						// const int order = std::max(bases_[0].bases.front().order(), geom_bases_[0].bases.front().order());
-						// const int n_basis_per_cell = std::max(bases_[0].bases.size(), geom_bases_[0].bases.size());
-				// 		Eigen::MatrixXd cp = extract_nodes(dim, bases_, geom_bases_, xmid, order);
-				// 		// std::cout << std::setprecision(20) << "flipped element\n" << cp.block(id * n_basis_per_cell, 0, n_basis_per_cell, dim) << std::endl;
-
-						// {
-						// 	std::string path = "transient_fail.hdf5";
-						// 	const int n_elem = bases_.size();
-						// 	std::vector<std::string> nodes_rational;
-						// 	nodes_rational.resize(n_elem * n_basis_per_cell * 4 * dim);
-						// 	Eigen::MatrixXd cp1 = extract_nodes(dim, bases_, geom_bases_, x0, order);
-						// 	Eigen::MatrixXd cp2 = extract_nodes(dim, bases_, geom_bases_, x1, order);
-						// 	for (int e = 0; e < n_elem; e++)
-						// 	{
-						// 		for (int i = 0; i < n_basis_per_cell; i++)
-						// 		{
-						// 			const int idx = i + n_basis_per_cell * e;
-						// 			Eigen::Matrix<double, -1, 1, Eigen::ColMajor, 3, 1> pos = cp2.row(idx);
-
-						// 			for (int d = 0; d < dim; d++)
-						// 			{
-						// 				utils::Rational num(pos(d));
-						// 				nodes_rational[idx * (4 * dim) + d * 4 + 2] = num.get_numerator_str();
-						// 				nodes_rational[idx * (4 * dim) + d * 4 + 3] = num.get_denominator_str();
-						// 			}
-
-						// 			pos = cp1.row(idx);
-
-						// 			for (int d = 0; d < dim; d++)
-						// 			{
-						// 				utils::Rational num(pos(d));
-						// 				nodes_rational[idx * (4 * dim) + d * 4 + 0] = num.get_numerator_str();
-						// 				nodes_rational[idx * (4 * dim) + d * 4 + 1] = num.get_denominator_str();
-						// 			}
-						// 		}
-						// 	}
-						// 	paraviewo::HDF5MatrixWriter::write_matrix(path, dim, n_elem, n_basis_per_cell, nodes_rational);
-						// 	logger().info("Save to {}", path);
-						// }
+				// 		{
+				// 			std::string path = "transient_fail.hdf5";
+				// 			export_transient_hdf5(path, dim, bases_, geom_bases_, x0, x1);
+				// 			logger().info("Save to {}", path);
+				// 		}
 
 				// 		{
 				// 			std::string path = "static_fail.hdf5";
-				// 			const int n_elem = bases_.size();
-				// 			std::vector<std::string> nodes_rational;
-				// 			nodes_rational.resize(n_elem * n_basis_per_cell * 2 * dim);
-				// 			for (int e = 0; e < n_elem; e++)
-				// 			{
-				// 				for (int i = 0; i < n_basis_per_cell; i++)
-				// 				{
-				// 					const int idx = i + n_basis_per_cell * e;
-				// 					Eigen::Matrix<double, -1, 1, Eigen::ColMajor, 3, 1> pos = cp.row(idx);
-
-				// 					for (int d = 0; d < dim; d++)
-				// 					{
-				// 						utils::Rational num(pos(d));
-				// 						nodes_rational[idx * (2 * dim) + d * 2 + 0] = num.get_numerator_str();
-				// 						nodes_rational[idx * (2 * dim) + d * 2 + 1] = num.get_denominator_str();
-				// 					}
-				// 				}
-				// 			}
-				// 			paraviewo::HDF5MatrixWriter::write_matrix(path, dim, n_elem, n_basis_per_cell, nodes_rational);
+				// 			export_transient_hdf5(path, dim, bases_, geom_bases_, xmid);
 				// 			logger().info("Save to {}", path);
 				// 		}
 				// 		std::terminate();
@@ -470,19 +418,38 @@ namespace polyfem::solver
 				// }
 			}
 
-			if (invalidID >= 0 && step < 0.5)
+			if (invalidID >= 0 && step <= 0.25)
 			{
+				auto& bs = bases_[invalidID];
+				auto& gbs = geom_bases_[invalidID];
 				if (quadrature_hierarchy_[invalidID].merge(subdivision_tree))
-					update_quadrature(invalidID, dim, quadrature_hierarchy_[invalidID], quadrature_order_, bases_[invalidID], geom_bases_[invalidID], ass_vals_cache_);
+					update_quadrature(invalidID, dim, quadrature_hierarchy_[invalidID], quadrature_order_, bs, gbs, ass_vals_cache_);
 
 				// verify that new quadrature points don't make x0 invalid
 				{
 					Quadrature quad;
-					bases_[invalidID].compute_quadrature(quad);
-					const auto [geo_jac0, jac0] = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x0);
-					const auto [geo_jac1, jac1] = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x0 + (x1 - x0) * step);
-					const auto [geo_jac2, jac2] = evaluate_jacobian(bases_[invalidID], geom_bases_[invalidID], quad.points, x0 + (x1 - x0) * invalidStep);
-					logger().debug("Min jacobian on quadrature points: {}, {}, {}", geo_jac0, geo_jac1, geo_jac2);
+					bs.compute_quadrature(quad);
+					const Eigen::MatrixXd jacs0 = evaluate_jacobian(bs, gbs, quad.points, x0);
+					const Eigen::MatrixXd jacs1 = evaluate_jacobian(bs, gbs, quad.points, x0 + (x1 - x0) * step);
+					const Eigen::VectorXd min_jac0 = jacs0.colwise().minCoeff();
+					const Eigen::VectorXd min_jac1 = jacs1.colwise().minCoeff();
+					logger().debug("Min jacobian on quadrature points: before step {}, {}; after step {}, {}", min_jac0.transpose(), min_jac1.transpose());
+
+					// if (jacs0.minCoeff() < 1e-14)
+					// {
+					// 	static int id = 0;
+					// 	const int order = std::max(bs.bases.front().order(), gbs.bases.front().order());
+					// 	const Eigen::MatrixXd cp = extract_nodes(dim, bs, gbs, x0, order);
+					// 	std::cout << std::setprecision(20) << "control points\n" << cp.transpose() << "\nquadrature points\n" << quad.points.transpose() << "\nquadrature weights\n" << quad.weights.transpose() << "\njacobian determinant\n" << jacs0.transpose() << std::endl;
+					
+					// 	state->out_geom.save_volume(
+					// 		state->resolve_output_path(fmt::format("jacobian_{:d}.vtu", id++)),
+					// 		*state, x0, Eigen::VectorXd(), 0, 0,
+					// 		io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar(), state->solve_export_to_file),
+					// 		state->solution_frames);
+					// 	if (id > 100)
+					// 		std::terminate();
+					// }
 				}
 
 				logger().debug("Peak memory: {} GB", getPeakRSS() / (1024. * 1024 * 1024));

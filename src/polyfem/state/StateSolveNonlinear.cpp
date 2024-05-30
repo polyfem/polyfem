@@ -262,6 +262,9 @@ namespace polyfem
 		if (solve_data.contact_form != nullptr)
 			solve_data.contact_form->save_ccd_debug_meshes = args["output"]["advanced"]["save_ccd_debug_meshes"];
 
+		if (solve_data.elastic_form)
+			solve_data.elastic_form->state = this;
+
 		// --------------------------------------------------------------------
 		// Initialize nonlinear problems
 

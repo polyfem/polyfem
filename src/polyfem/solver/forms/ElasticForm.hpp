@@ -9,6 +9,11 @@
 #include <polyfem/utils/Jacobian.hpp>
 #include <polyfem/utils/Types.hpp>
 
+namespace polyfem
+{
+	class State;
+}
+
 namespace polyfem::solver
 {
 	using ElementInversionCheck = std::string;
@@ -116,7 +121,10 @@ namespace polyfem::solver
 		/// @param[out] term Derivative of force multiplied by the adjoint
 		void force_shape_derivative(const double t, const int n_verts, const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term);
 
+		/// @brief Reset adaptive quadrature refinement after each complete nonlinear solve.
 		void finish() override;
+
+		State* state;
 
 	private:
 		const int n_bases_;

@@ -222,6 +222,79 @@ namespace polyfem::utils
         }
     }
 
+    void export_static_hdf5(
+        const std::string &path,
+        const int dim,
+        const std::vector<basis::ElementBases> &bases, 
+        const std::vector<basis::ElementBases> &gbases,
+        const Eigen::VectorXd &u)
+    {
+        const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
+        const int n_basis_per_cell = std::max(bases[0].bases.size(), gbases[0].bases.size());
+        Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
+        const int n_elem = bases.size();
+        std::vector<std::string> nodes_rational;
+        nodes_rational.resize(n_elem * n_basis_per_cell * 2 * dim);
+        for (int e = 0; e < n_elem; e++)
+        {
+            for (int i = 0; i < n_basis_per_cell; i++)
+            {
+                const int idx = i + n_basis_per_cell * e;
+                Eigen::Matrix<double, -1, 1, Eigen::ColMajor, 3, 1> pos = cp.row(idx);
+
+                for (int d = 0; d < dim; d++)
+                {
+                    utils::Rational num(pos(d));
+                    nodes_rational[idx * (2 * dim) + d * 2 + 0] = num.get_numerator_str();
+                    nodes_rational[idx * (2 * dim) + d * 2 + 1] = num.get_denominator_str();
+                }
+            }
+        }
+        paraviewo::HDF5MatrixWriter::write_matrix(path, dim, n_elem, n_basis_per_cell, nodes_rational);
+    }
+
+    void export_transient_hdf5(
+        const std::string &path,
+        const int dim,
+        const std::vector<basis::ElementBases> &bases, 
+        const std::vector<basis::ElementBases> &gbases,
+        const Eigen::VectorXd &u1,
+        const Eigen::VectorXd &u2)
+    {
+        const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
+        const int n_basis_per_cell = std::max(bases[0].bases.size(), gbases[0].bases.size());
+        Eigen::MatrixXd cp1 = extract_nodes(dim, bases, gbases, u1, order);
+        Eigen::MatrixXd cp2 = extract_nodes(dim, bases, gbases, u2, order);
+        const int n_elem = bases.size();
+        std::vector<std::string> nodes_rational;
+        nodes_rational.resize(n_elem * n_basis_per_cell * 4 * dim);
+        for (int e = 0; e < n_elem; e++)
+        {
+            for (int i = 0; i < n_basis_per_cell; i++)
+            {
+                const int idx = i + n_basis_per_cell * e;
+                Eigen::Matrix<double, -1, 1, Eigen::ColMajor, 3, 1> pos = cp2.row(idx);
+
+                for (int d = 0; d < dim; d++)
+                {
+                    utils::Rational num(pos(d));
+                    nodes_rational[idx * (4 * dim) + d * 4 + 2] = num.get_numerator_str();
+                    nodes_rational[idx * (4 * dim) + d * 4 + 3] = num.get_denominator_str();
+                }
+
+                pos = cp1.row(idx);
+
+                for (int d = 0; d < dim; d++)
+                {
+                    utils::Rational num(pos(d));
+                    nodes_rational[idx * (4 * dim) + d * 4 + 0] = num.get_numerator_str();
+                    nodes_rational[idx * (4 * dim) + d * 4 + 1] = num.get_denominator_str();
+                }
+            }
+        }
+        paraviewo::HDF5MatrixWriter::write_matrix(path, dim, n_elem, n_basis_per_cell, nodes_rational);
+    }
+
     std::tuple<double, int, double, Tree> maxTimeStep(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
@@ -289,39 +362,7 @@ namespace polyfem::utils
         // if (gaveUp) {
         //     static int idx = 0;
         //     std::string path = "transient_" + std::to_string(idx++) + ".hdf5";
-        //     const int n_elem = bases.size();
-        //     std::vector<std::string> nodes_rational;
-        //     nodes_rational.resize(n_elem * n_basis_per_cell * 4 * dim);
-        //     // utils::maybe_parallel_for(n_elem, [&](int start, int end, int thread_id) {
-        //         for (int e = 0; e < n_elem; e++)
-        //         {
-        //             for (int i = 0; i < n_basis_per_cell; i++)
-        //             {
-        //                 const int idx = i + n_basis_per_cell * e;
-        //                 Eigen::Matrix<double, -1, 1, Eigen::ColMajor, 3, 1> pos = cp2.row(idx);
-
-        //                 for (int d = 0; d < dim; d++)
-        //                 {
-        //                     utils::Rational num(pos(d));
-        //                     nodes_rational[idx * (4 * dim) + d * 4 + 2] = num.get_numerator_str();
-        //                     nodes_rational[idx * (4 * dim) + d * 4 + 3] = num.get_denominator_str();
-        //                 }
-
-        //                 pos = cp1.row(idx);
-
-        //                 for (int d = 0; d < dim; d++)
-        //                 {
-        //                     utils::Rational num(pos(d));
-        //                     nodes_rational[idx * (4 * dim) + d * 4 + 0] = num.get_numerator_str();
-        //                     nodes_rational[idx * (4 * dim) + d * 4 + 1] = num.get_denominator_str();
-        //                 }
-        //             }
-        //         }
-        //     // });
-        //     // paraviewo::HDF5MatrixWriter::write_matrix(rawname + ".hdf5", dim, bases.size(), n_basis_per_cell, nodes);
-        //     paraviewo::HDF5MatrixWriter::write_matrix(path, dim, n_elem, n_basis_per_cell, nodes_rational);
-        //     // for (auto& s : nodes_rational)
-        //     // 	std::cout << s << ",";
+        //     export_transient_hdf5(path, dim, bases, gbases, u1, u2);
         //     logger().info("Save to {}", path);
         //     // std::terminate();
         // }
