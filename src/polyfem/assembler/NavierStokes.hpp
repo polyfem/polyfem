@@ -44,6 +44,7 @@ namespace polyfem::assembler
 		void add_multimaterial(const int index, const json &params, const Units &units) override;
 
 		bool is_fluid() const override { return true; }
+		bool is_tensor() const override { return true; }
 
 		void set_picard(const bool val) { full_gradient_ = !val; }
 
