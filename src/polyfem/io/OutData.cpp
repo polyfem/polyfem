@@ -92,12 +92,6 @@ namespace polyfem::io
 
 				vals.compute(e, state.mesh->is_volume(), points, bs, gbs);
 
-				// for (int n = 0; n < normals.rows(); ++n)
-				// {
-				// 	normals.row(n) = normals.row(n) * vals.jac_it[n];
-				// 	normals.row(n).normalize();
-				// }
-
 				for (int n = 0; n < normals.rows(); ++n)
 				{
 					trafo = vals.jac_it[n].inverse();
