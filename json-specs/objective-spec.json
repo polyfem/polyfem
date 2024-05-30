@@ -111,13 +111,19 @@
         ],
         "optional": [
             "weight",
-            "print_energy"
+            "print_energy",
+            "tolerance"
         ],
         "doc": "TODO"
     },
     {
-        "pointer": "/*/target_data_path",
+        "pointer": "/target_data_path",
         "type": "file"
+    },
+    {
+        "pointer": "/tolerance",
+        "type": "float",
+        "default": 1e-7
     },
     {
         "pointer": "/",

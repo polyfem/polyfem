@@ -207,9 +207,11 @@ namespace polyfem::solver
 
 			const RowVectorNd node = data.block(s, 0, 1, dim);
 			bool not_found = true;
+			double min_dist = std::numeric_limits<double>::max();
 			for (int v = 0; v < state_.mesh_nodes->n_nodes(); v++)
 			{
-				if ((state_.mesh_nodes->node_position(v) - node).norm() < 1e-8)
+				min_dist = std::min(min_dist, (state_.mesh_nodes->node_position(v) - node).norm());
+				if ((state_.mesh_nodes->node_position(v) - node).norm() < args["tolerance"])
 				{
 					active_nodes.push_back(v);
 					not_found = false;
@@ -217,7 +219,7 @@ namespace polyfem::solver
 				}
 			}
 			if (not_found)
-				log_and_throw_adjoint_error("Failed to find corresponding node for {}!", node);
+				log_and_throw_adjoint_error("Failed to find corresponding node for {}! Minimum distance {}", node, min_dist);
 		}
 	}
 
