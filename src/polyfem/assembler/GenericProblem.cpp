@@ -86,8 +86,46 @@ namespace polyfem
 		{
 			if (assembler.is_fluid())
 			{
-				// TODO
-				assert(false);
+				for (int i = 0; i < 3; ++i)
+				{
+					rhs_[i].set_unit_type(units.force());
+					exact_[i].set_unit_type(units.velocity());
+				}
+				for (int i = 0; i < 3; ++i)
+					exact_grad_[i].set_unit_type("");
+
+				for (auto &v : displacements_)
+					v.set_unit_type(units.velocity());
+
+				for (auto &v : forces_)
+					v.set_unit_type(units.force());
+
+				for (auto &v : normal_aligned_forces_)
+					v.set_unit_type(units.pressure());
+
+				for (auto &v : pressures_)
+					v.set_unit_type(units.pressure());
+
+				for (auto &v : cavity_pressures_)
+					v.second.set_unit_type(units.pressure());
+
+				for (auto &v : initial_position_)
+					for (int i = 0; i < 3; ++i)
+						v.second[i].set_unit_type(units.velocity());
+
+				for (auto &v : initial_velocity_)
+					for (int i = 0; i < 3; ++i)
+						v.second[i].set_unit_type(units.velocity());
+
+				for (auto &v : initial_acceleration_)
+					for (int i = 0; i < 3; ++i)
+						v.second[i].set_unit_type(units.acceleration());
+
+				for (auto &v : nodal_dirichlet_)
+					v.second.set_unit_type(units.velocity());
+
+				for (auto &v : nodal_neumann_)
+					v.second.set_unit_type(units.force());
 			}
 			else
 			{
