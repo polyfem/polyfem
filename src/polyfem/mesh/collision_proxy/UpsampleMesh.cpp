@@ -89,22 +89,12 @@ namespace polyfem::mesh
 		double max_edge_length = 0;
 		for (int i = 0; i < F.cols(); i++)
 		{
-
-#if EIGEN_VERSION_AT_LEAST(3, 4, 90)
-			max_edge_length = std::max(
-				max_edge_length,
-				(V(F.col(i), Eigen::indexing::all) - V(F.col((i + 1) % F.cols()), Eigen::indexing::all))
-					.rowwise()
-					.norm()
-					.maxCoeff());
-#else
 			max_edge_length = std::max(
 				max_edge_length,
 				(V(F.col(i), Eigen::all) - V(F.col((i + 1) % F.cols()), Eigen::all))
 					.rowwise()
 					.norm()
 					.maxCoeff());
-#endif
 		}
 		return max_edge_length;
 	}

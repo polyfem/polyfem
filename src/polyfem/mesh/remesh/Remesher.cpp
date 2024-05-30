@@ -63,11 +63,7 @@ namespace polyfem::mesh
 		for (const auto &[body_id, rows] : body_elements)
 		{
 			Eigen::MatrixXi boundary_facets;
-#if EIGEN_VERSION_AT_LEAST(3, 4, 90)
-			igl::boundary_facets(elements(rows, Eigen::indexing::all), boundary_facets);
-#else
 			igl::boundary_facets(elements(rows, Eigen::all), boundary_facets);
-#endif
 
 			for (int i = 0; i < boundary_facets.rows(); ++i)
 				for (int j = 0; j < boundary_facets.cols(); ++j)

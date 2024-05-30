@@ -540,11 +540,7 @@ namespace polyfem::solver
 		for (const LocalThreadVecStorage &local_storage : storage)
 			term += local_storage.vec;
 
-#if EIGEN_VERSION_AT_LEAST(3, 4, 90)
-		term = utils::flatten(utils::unflatten(term, dim)(state.primitive_to_node(), Eigen::indexing::all));
-#else
 		term = utils::flatten(utils::unflatten(term, dim)(state.primitive_to_node(), Eigen::all));
-#endif
 	}
 
 	void AdjointTools::dJ_shape_static_adjoint_term(
@@ -582,12 +578,7 @@ namespace polyfem::solver
 				contact_term.setZero(elasticity_term.size());
 			one_form -= elasticity_term + rhs_term + pressure_term + contact_term;
 		}
-
-#if EIGEN_VERSION_AT_LEAST(3, 4, 90)
-		one_form = utils::flatten(utils::unflatten(one_form, state.mesh->dimension())(state.primitive_to_node(), Eigen::indexing::all));
-#else
 		one_form = utils::flatten(utils::unflatten(one_form, state.mesh->dimension())(state.primitive_to_node(), Eigen::all));
-#endif
 	}
 
 	void AdjointTools::dJ_shape_transient_adjoint_term(
@@ -669,11 +660,7 @@ namespace polyfem::solver
 
 		one_form += mass_term;
 
-#if EIGEN_VERSION_AT_LEAST(3, 4, 90)
-		one_form = utils::flatten(utils::unflatten(one_form, state.mesh->dimension())(state.primitive_to_node(), Eigen::indexing::all));
-#else
 		one_form = utils::flatten(utils::unflatten(one_form, state.mesh->dimension())(state.primitive_to_node(), Eigen::all));
-#endif
 	}
 
 	void AdjointTools::dJ_material_static_adjoint_term(

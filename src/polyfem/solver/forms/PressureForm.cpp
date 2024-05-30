@@ -67,11 +67,7 @@ namespace polyfem::solver
 	void PressureForm::force_shape_derivative(const int n_verts, const double t, const Eigen::MatrixXd &x, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
 	{
 		Eigen::MatrixXd adjoint_zeroed = adjoint;
-#if EIGEN_VERSION_AT_LEAST(3, 4, 90)
-		adjoint_zeroed(dirichlet_nodes_, Eigen::indexing::all).setZero();
-#else
 		adjoint_zeroed(dirichlet_nodes_, Eigen::all).setZero();
-#endif
 
 		StiffnessMatrix hessian;
 		pressure_assembler_.compute_force_jacobian(x, local_pressure_boundary_, dirichlet_nodes_, n_boundary_samples_, t, n_verts, hessian);
