@@ -8,6 +8,7 @@
 
 #include <polyfem/utils/IntegrableFunctional.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
+#include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
@@ -722,42 +723,46 @@ namespace polyfem::solver
 
 		one_form.setZero(1);
 
-		auto storage = utils::create_thread_storage(LocalThreadScalarStorage());
+		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator = 
+		 time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
+		{
+			Eigen::MatrixXd solution, velocity, acceleration;
+			solution = state.diff_cached.u(0);
+			state.initial_velocity(velocity);
+			state.initial_acceleration(acceleration);
+			if (state.initial_vel_update.size() == state.ndof())
+				velocity = state.initial_vel_update;
+			const double dt = state.args["time"]["dt"];
+			time_integrator->init(solution, velocity, acceleration, dt);
+		}
 
-		utils::maybe_parallel_for(time_steps, [&](int start, int end, int thread_id) {
-			LocalThreadScalarStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
-			for (int t_aux = start; t_aux < end; ++t_aux)
-			{
-				const int t = time_steps - t_aux;
-				const int real_order = std::min(bdf_order, t);
-				double beta = time_integrator::BDF::betas(real_order - 1);
+		for (int t = 1; t <= time_steps; ++t)
+		{
+			const int real_order = std::min(bdf_order, t);
+			double beta = time_integrator::BDF::betas(real_order - 1);
 
-				const Eigen::MatrixXd surface_solution_prev = state.collision_mesh.vertices(utils::unflatten(state.diff_cached.u(t - 1), dim));
-				const Eigen::MatrixXd surface_solution = state.collision_mesh.vertices(utils::unflatten(state.diff_cached.u(t), dim));
+			const Eigen::MatrixXd surface_solution_prev = state.collision_mesh.vertices(utils::unflatten(state.diff_cached.u(t - 1), dim));
+			// const Eigen::MatrixXd surface_solution = state.collision_mesh.vertices(utils::unflatten(state.diff_cached.u(t), dim));
 
-				// TODO: use the time integration to compute the velocity
-				const Eigen::MatrixXd surface_velocities = (surface_solution - surface_solution_prev) / dt;
+			const Eigen::MatrixXd surface_velocities = state.collision_mesh.map_displacements(utils::unflatten(time_integrator->compute_velocity(state.diff_cached.u(t)), state.collision_mesh.dim()));
+			time_integrator->update_quantities(state.diff_cached.u(t));
 
-				Eigen::MatrixXd force = state.collision_mesh.to_full_dof(
-					-state.solve_data.friction_form->friction_potential().force(
-						state.diff_cached.friction_collision_set(t),
-						state.collision_mesh,
-						state.collision_mesh.rest_positions(),
-						/*lagged_displacements=*/surface_solution_prev,
-						surface_velocities,
-						state.solve_data.contact_form->barrier_potential(),
-						state.solve_data.contact_form->barrier_stiffness(),
-						state.solve_data.friction_form->epsv()));
+			Eigen::MatrixXd force = state.collision_mesh.to_full_dof(
+				-state.solve_data.friction_form->friction_potential().force(
+					state.diff_cached.friction_collision_set(t),
+					state.collision_mesh,
+					state.collision_mesh.rest_positions(),
+					/*lagged_displacements=*/surface_solution_prev,
+					surface_velocities,
+					state.solve_data.contact_form->barrier_potential(),
+					state.solve_data.contact_form->barrier_stiffness(),
+					0, true));
 
-				Eigen::VectorXd cur_p = adjoint_p.col(t);
-				cur_p(state.boundary_nodes).setZero();
+			Eigen::VectorXd cur_p = adjoint_p.col(t);
+			cur_p(state.boundary_nodes).setZero();
 
-				local_storage.val += dot(cur_p, force) / (beta * mu * dt);
-			}
-		});
-
-		for (const LocalThreadScalarStorage &local_storage : storage)
-			one_form(0) += local_storage.val;
+			one_form(0) += dot(cur_p, force) * beta * dt;
+		}
 	}
 
 	void AdjointTools::dJ_damping_transient_adjoint_term(
