@@ -1,27 +1,31 @@
 <map id="polyfem::State::initial_acceleration" name="polyfem::State::initial_acceleration">
-<area shape="rect" id="Node000001" title="Load or compute the initial acceleration." alt="" coords="1245,113,1408,153"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1_state.html#ac904ade9c3fa1d665ff5976766c499c4" title="initialize the linear solve" alt="" coords="809,5,955,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1232,113,1197,104,955,45,956,40,1198,99,1233,107"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1_state.html#ae0de6ea3bdc69e3e21ddfbcdb144180b" title="initialize the nonlinear solver" alt="" coords="1017,113,1197,153"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="1232,136,1198,136,1198,131,1232,131"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1_state.html#af5afb70dc127d3ce190116321e83f190" title="solves transient linear problem" alt="" coords="565,199,726,239"/>
-<area shape="poly" id="edge13_Node000001_Node000011" title=" " alt="" coords="1240,159,1198,168,1069,187,940,201,726,217,726,212,939,196,1068,182,1197,163,1239,154"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="335,92,496,132"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="795,32,675,43,609,53,545,67,463,94,461,89,543,61,608,48,675,38,795,27"/>
-<area shape="rect" id="Node000004" href="$main_8cpp.html#aec889c702a246ad7f332c75ab7adb438" title=" " alt="" coords="123,50,271,75"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="321,93,254,78,255,73,322,88"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="117,99,278,125"/>
-<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="321,115,278,115,278,109,321,109"/>
-<area shape="rect" id="Node000007" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acac3e8ce8646ddd1544ed034c71bec96" title=" " alt="" coords="108,149,287,189"/>
-<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="326,138,275,152,273,147,325,133"/>
-<area shape="rect" id="Node000005" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,50,60,75"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="109,65,60,65,60,60,109,60"/>
-<area shape="poly" id="edge11_Node000008_Node000003" title=" " alt="" coords="1003,115,969,111,840,103,710,102,496,109,496,104,710,96,840,98,970,105,1004,110"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1_state.html#a5ddafd77c68a90e74e41d4591f387f75" title="Remesh the FE space and update solution(s)." alt="" coords="795,121,969,146"/>
-<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="1003,136,969,136,969,131,1003,131"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1_state.html#a4d91e8c971fc121b0cff2f0c02ca79e7" title="solves transient tensor nonlinear problem" alt="" coords="544,120,747,160"/>
-<area shape="poly" id="edge12_Node000008_Node000010" title=" " alt="" coords="1004,156,970,160,882,164,794,160,747,156,747,151,795,155,882,159,969,155,1003,151"/>
-<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="781,139,747,140,747,134,781,134"/>
-<area shape="poly" id="edge10_Node000010_Node000003" title=" " alt="" coords="530,129,496,124,496,119,530,123"/>
-<area shape="poly" id="edge14_Node000011_Node000003" title=" " alt="" coords="587,195,543,174,458,134,460,130,545,170,589,190"/>
+<area shape="rect" id="Node000001" title="Load or compute the initial acceleration." alt="" coords="1303,107,1465,147"/>
+<area shape="rect" id="Node000002" href="$namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a5ac63404b8f363b91018bbb64975f76e" title=" " alt="" coords="1061,5,1255,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1322,104,1223,63,1225,58,1324,99"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1_state.html#ac904ade9c3fa1d665ff5976766c499c4" title="initialize the linear solve" alt="" coords="572,71,719,111"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="1289,125,719,98,719,92,1289,120"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1_state.html#ae0de6ea3bdc69e3e21ddfbcdb144180b" title="initialize the nonlinear solver" alt="" coords="1068,158,1248,198"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="1289,151,1248,161,1247,155,1288,146"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1_state.html#af5afb70dc127d3ce190116321e83f190" title="solves transient linear problem" alt="" coords="823,287,985,327"/>
+<area shape="poly" id="edge15_Node000001_Node000013" title=" " alt="" coords="1347,158,1304,186,1256,212,1186,240,1114,263,985,295,984,290,1113,258,1184,235,1254,208,1302,182,1344,153"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html#a3f07e6f8d3dccd177ae47eb6eb07a55b" title=" " alt="" coords="795,5,1013,60"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1048,35,1014,35,1014,30,1048,30"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="335,158,496,198"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="579,119,470,160,469,155,577,114"/>
+<area shape="rect" id="Node000006" href="$main_8cpp.html#aec889c702a246ad7f332c75ab7adb438" title=" " alt="" coords="123,116,271,141"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="321,159,254,144,255,139,322,154"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="117,165,278,191"/>
+<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="321,181,278,181,278,175,321,175"/>
+<area shape="rect" id="Node000009" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acac3e8ce8646ddd1544ed034c71bec96" title=" " alt="" coords="108,215,287,255"/>
+<area shape="poly" id="edge8_Node000005_Node000009" title=" " alt="" coords="326,204,275,218,273,213,325,199"/>
+<area shape="rect" id="Node000007" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,116,60,141"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="109,131,60,131,60,126,109,126"/>
+<area shape="poly" id="edge13_Node000010_Node000005" title=" " alt="" coords="1054,177,1013,177,779,174,544,177,496,178,496,172,544,171,779,169,1013,171,1054,172"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1_state.html#a5ddafd77c68a90e74e41d4591f387f75" title="Remesh the FE space and update solution(s)." alt="" coords="817,187,991,212"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="1054,189,992,195,991,189,1054,184"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1_state.html#a4d91e8c971fc121b0cff2f0c02ca79e7" title="solves transient tensor nonlinear problem" alt="" coords="544,186,747,226"/>
+<area shape="poly" id="edge14_Node000010_Node000012" title=" " alt="" coords="1094,205,1055,217,1014,226,945,233,874,234,747,224,747,219,874,228,944,227,1013,221,1054,212,1093,200"/>
+<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="803,205,747,206,747,201,802,199"/>
+<area shape="poly" id="edge12_Node000012_Node000005" title=" " alt="" coords="530,195,496,190,496,185,530,189"/>
+<area shape="poly" id="edge16_Node000013_Node000005" title=" " alt="" coords="809,299,682,276,612,260,543,241,495,221,452,201,454,196,497,217,545,235,613,255,683,271,810,293"/>
 </map>

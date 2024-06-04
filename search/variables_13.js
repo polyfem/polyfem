@@ -74,5 +74,6 @@ var searchData=
   ['strain_5fal_5flagr_5fform_71',['strain_al_lagr_form',['../classpolyfem_1_1solver_1_1_solve_data.html#aaab1ffd791e8bf7d4ab46c4c7f4c9405',1,'polyfem::solver::SolveData']]],
   ['strain_5fal_5fpen_5fform_72',['strain_al_pen_form',['../classpolyfem_1_1solver_1_1_solve_data.html#ac0d53f5825d6221f37dabac57c356f30',1,'polyfem::solver::SolveData']]],
   ['suffix_73',['suffix',['../namespacep__bases.html#a822dea5e649d4c49c76600caa3cc5bc1',1,'p_bases.suffix'],['../namespaceq__bases.html#a1bff7004fe9c07031e9cf368e2e53b30',1,'q_bases.suffix']]],
-  ['surface_74',['surface',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a9e51bea3166ca250ed6dd6d4bc6d8c78',1,'polyfem::io::OutGeometryData::ExportOptions']]]
+  ['surface_74',['surface',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a9e51bea3166ca250ed6dd6d4bc6d8c78',1,'polyfem::io::OutGeometryData::ExportOptions']]],
+  ['surface_5fids_5f_75',['surface_ids_',['../classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#acd5f3b5c2ba1c5efb528c86e385925eb',1,'polyfem::solver::BoundarySmoothingForm']]]
 ];
