@@ -186,6 +186,10 @@ endif()
 include(polysolve)
 target_link_libraries(polyfem PUBLIC polysolve::polysolve)
 
+# libigl
+include(libigl)
+target_link_libraries(polyfem PUBLIC igl::core)
+
 # Eigen
 include(eigen)
 target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
@@ -207,9 +211,6 @@ elseif(POLYFEM_THREADING STREQUAL "TBB")
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_TBB)
 endif()
 
-# libigl
-include(libigl)
-target_link_libraries(polyfem PUBLIC igl::core)
 
 if(POLYFEM_WITH_TRIANGLE)
     target_link_libraries(polyfem PUBLIC igl_restricted::triangle)
