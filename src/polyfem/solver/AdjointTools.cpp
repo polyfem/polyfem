@@ -155,7 +155,7 @@ namespace polyfem::solver
 			return normal;
 		}
 
-		Eigen::MatrixXd extract_lame_params(const std::map<std::string, Assembler::ParamFunc> &lame_params, const int e, const int t, const Eigen::MatrixXd& local_pts, const Eigen::MatrixXd& pts)
+		Eigen::MatrixXd extract_lame_params(const std::map<std::string, Assembler::ParamFunc> &lame_params, const int e, const int t, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts)
 		{
 			Eigen::MatrixXd params = Eigen::MatrixXd::Zero(local_pts.rows(), 2);
 
@@ -579,7 +579,6 @@ namespace polyfem::solver
 				contact_term.setZero(elasticity_term.size());
 			one_form -= elasticity_term + rhs_term + pressure_term + contact_term;
 		}
-
 		one_form = utils::flatten(utils::unflatten(one_form, state.mesh->dimension())(state.primitive_to_node(), Eigen::all));
 	}
 
