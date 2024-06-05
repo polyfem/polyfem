@@ -280,9 +280,6 @@ namespace polyfem::solver
 			}
 			else if (type == "parametrized_product")
 			{
-				if (args["parametrization"].contains("parameter_index"))
-					log_and_throw_adjoint_error("Parametrizations in parametrized forms don't support parameter_index!");
-
 				std::vector<std::shared_ptr<Parametrization>> map_list;
 				for (const auto &arg : args["parametrization"])
 					map_list.push_back(create_parametrization(arg, states, {}));
@@ -317,15 +314,10 @@ namespace polyfem::solver
 		}
 		else if (type == "slice")
 		{
-			if (args.contains("from") && args.contains("to"))
-			{
-				assert(args["from"] != -1);
-				assert(args["to"] != -1);
+			if (args["from"] != -1 || args["to"] != -1)
 				map = std::make_shared<SliceMap>(args["from"], args["to"], args["last"]);
-			}
-			else if (args.contains("parameter_index"))
+			else if (args["parameter_index"] != -1)
 			{
-				assert(args["parameter_index"] != -1);
 				int idx = args["parameter_index"].get<int>();
 				int from, to, last;
 				int cumulative = 0;

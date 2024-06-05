@@ -333,31 +333,24 @@
         "type_name": "slice",
         "type": "object",
         "required": [
-            "from",
-            "to",
             "type"
         ],
         "optional": [
+            "from",
+            "to",
+            "parameter_index",
             "last"
         ],
         "doc": "Ouputs x[from:to], where x is the input vector"
     },
     {
-        "pointer": "/variable_to_simulation/*/composition/*",
-        "type_name": "slice",
-        "type": "object",
-        "required": [
-            "parameter_index",
-            "type"
-        ],
-        "doc": "Ouputs x[from:to], where x is the input vector"
-    },
-    {
         "pointer": "/variable_to_simulation/*/composition/*/from",
+        "default": -1,
         "type": "int"
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/to",
+        "default": -1,
         "type": "int"
     },
     {
@@ -367,6 +360,7 @@
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/parameter_index",
+        "default": -1,
         "type": "int"
     },
     {
@@ -388,7 +382,9 @@
         "type_name": "exp",
         "type": "object",
         "required": [
-            "type",
+            "type"
+        ],
+        "optional": [
             "from",
             "to"
         ],
