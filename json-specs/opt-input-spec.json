@@ -354,13 +354,11 @@
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/from",
-        "type": "int",
-        "default": -1
+        "type": "int"
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/to",
-        "type": "int",
-        "default": -1
+        "type": "int"
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/last",
@@ -390,9 +388,7 @@
         "type_name": "exp",
         "type": "object",
         "required": [
-            "type"
-        ],
-        "optional": [
+            "type",
             "from",
             "to"
         ],
