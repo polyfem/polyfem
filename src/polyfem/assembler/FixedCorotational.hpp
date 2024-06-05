@@ -56,7 +56,7 @@ namespace polyfem::assembler
 			params_.mu_mat_ = mus;
 		}
 
-		std::string name() const override { return "NeoHookean"; }
+		std::string name() const override { return "FixedCorotational"; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
 		void assign_stress_tensor(const OutputData &data,
