@@ -83,26 +83,6 @@ namespace polyfem::assembler
 		params_.add_multimaterial(index, params, size() == 3, units.stress());
 	}
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
-	FixedCorotational::compute_rhs(const AutodiffHessianPt &pt) const
-	{
-		assert(pt.size() == size());
-		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res;
-
-		double lambda, mu;
-		// TODO!
-		params_.lambda_mu(0, 0, 0, pt(0).getValue(), pt(1).getValue(), size() == 2 ? 0. : pt(2).getValue(), 0, 0, lambda, mu);
-
-		if (size() == 2)
-			autogen::neo_hookean_2d_function(pt, lambda, mu, res);
-		else if (size() == 3)
-			autogen::neo_hookean_3d_function(pt, lambda, mu, res);
-		else
-			assert(false);
-
-		return res;
-	}
-
 	Eigen::VectorXd
 	FixedCorotational::assemble_gradient(const NonLinearAssemblerData &data) const
 	{
@@ -171,41 +151,6 @@ namespace polyfem::assembler
 		}
 
 		return gradient;
-	}
-
-	void FixedCorotational::compute_stiffness_value(const double t,
-													   const assembler::ElementAssemblyValues &vals,
-													   const Eigen::MatrixXd &local_pts,
-													   const Eigen::MatrixXd &displacement,
-													   Eigen::MatrixXd &tensor) const
-	{
-		tensor.resize(local_pts.rows(), size() * size() * size() * size());
-		assert(displacement.cols() == 1);
-
-		Eigen::MatrixXd displacement_grad(size(), size());
-
-		for (long p = 0; p < local_pts.rows(); ++p)
-		{
-			double lambda, mu;
-			params_.lambda_mu(local_pts.row(p), vals.val.row(p), t, vals.element_id, lambda, mu);
-
-			compute_diplacement_grad(size(), vals, local_pts, p, displacement, displacement_grad);
-			const Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(size(), size()) + displacement_grad;
-			const Eigen::MatrixXd FmT = def_grad.inverse().transpose();
-			const Eigen::VectorXd FmT_vec = utils::flatten(FmT);
-			const double J = def_grad.determinant();
-			const double tmp1 = mu - lambda * std::log(J);
-			for (int i = 0, idx = 0; i < size(); i++)
-				for (int j = 0; j < size(); j++)
-					for (int k = 0; k < size(); k++)
-						for (int l = 0; l < size(); l++)
-						{
-							tensor(p, idx) = mu * delta(i, k) * delta(j, l) + tmp1 * FmT(i, l) * FmT(k, j);
-							idx++;
-						}
-
-			tensor.row(p) += lambda * utils::flatten(FmT_vec * FmT_vec.transpose());
-		}
 	}
 
 	Eigen::MatrixXd
