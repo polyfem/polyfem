@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Eigen/Dense>
+#include "p_n_bases.hpp"
 #include <cassert>
 
 namespace polyfem {

@@ -277,7 +277,7 @@ switch(p){
 	case 2: p_2_nodes_2d(val); break;
 	case 3: p_3_nodes_2d(val); break;
 	case 4: p_4_nodes_2d(val); break;
-	default: assert(false);
+	default: p_n_nodes_2d(p, val);
 }}
 void p_basis_value_2d(const int p, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val){
 switch(p){
@@ -286,7 +286,7 @@ switch(p){
 	case 2: p_2_basis_value_2d(local_index, uv, val); break;
 	case 3: p_3_basis_value_2d(local_index, uv, val); break;
 	case 4: p_4_basis_value_2d(local_index, uv, val); break;
-	default: assert(false);
+	default: p_n_basis_value_2d(p, local_index, uv, val);
 }}
 
 void p_grad_basis_value_2d(const int p, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val){
@@ -296,7 +296,7 @@ switch(p){
 	case 2: p_2_basis_grad_value_2d(local_index, uv, val); break;
 	case 3: p_3_basis_grad_value_2d(local_index, uv, val); break;
 	case 4: p_4_basis_grad_value_2d(local_index, uv, val); break;
-	default: assert(false);
+	default: p_n_basis_grad_value_2d(p, local_index, uv, val);
 }}
 
 namespace {
@@ -979,7 +979,7 @@ switch(p){
 	case 2: p_2_nodes_3d(val); break;
 	case 3: p_3_nodes_3d(val); break;
 	case 4: p_4_nodes_3d(val); break;
-	default: assert(false);
+	default: p_n_nodes_3d(p, val);
 }}
 void p_basis_value_3d(const int p, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val){
 switch(p){
@@ -988,7 +988,7 @@ switch(p){
 	case 2: p_2_basis_value_3d(local_index, uv, val); break;
 	case 3: p_3_basis_value_3d(local_index, uv, val); break;
 	case 4: p_4_basis_value_3d(local_index, uv, val); break;
-	default: assert(false);
+	default: p_n_basis_value_3d(p, local_index, uv, val);
 }}
 
 void p_grad_basis_value_3d(const int p, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val){
@@ -998,7 +998,7 @@ switch(p){
 	case 2: p_2_basis_grad_value_3d(local_index, uv, val); break;
 	case 3: p_3_basis_grad_value_3d(local_index, uv, val); break;
 	case 4: p_4_basis_grad_value_3d(local_index, uv, val); break;
-	default: assert(false);
+	default: p_n_basis_grad_value_3d(p, local_index, uv, val);
 }}
 
 namespace {
