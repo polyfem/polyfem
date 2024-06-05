@@ -45,7 +45,7 @@ if(POLYSOLVE_WITH_ACCELERATE)
     endforeach()
     list(POP_BACK PATCH_COMMAND_FOR_CPM)
 
-    message(STATUS "Patch command: ${PATCH_COMMAND_FOR_CPM}")
+    message(DEBUG "Patch command: ${PATCH_COMMAND_FOR_CPM}")
 
     CPMAddPackage(
         NAME libigl

@@ -182,7 +182,7 @@ if __name__ == "__main__":
     cpp = cpp + \
         "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
 
-    hpp = "#pragma once\n\n#include <Eigen/Dense>\n\n"
+    hpp = "#pragma once\n\n#include <Eigen/Dense>\n#include <cassert>\n\n"
     hpp = hpp + "namespace polyfem {\nnamespace autogen " + "{\n"
 
     for dim in dims:

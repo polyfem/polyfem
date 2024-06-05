@@ -3,6 +3,7 @@
 #include <polyfem/utils/ClipperUtils.hpp>
 #include <geogram/numerics/predicates.h>
 #include <igl/barycenter.h>
+#include <cassert>
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace
