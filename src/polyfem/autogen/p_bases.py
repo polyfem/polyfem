@@ -144,8 +144,8 @@ class Lagrange:
 
         A = create_matrix(equations, coeffs)
 
-        if A.shape[0] > 25:
-            A = A.evalf()
+        # if A.shape[0] > 25:
+        #     A = A.evalf()
 
         Ainv = A.inv()
 
