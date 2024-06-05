@@ -1038,11 +1038,6 @@ namespace polyfem
 			const bool project_to_psd,
 			StiffnessMatrix &hess) const
 		{
-			if (project_to_psd && (local_pressure_boundary.size() > 0))
-			{
-				log_and_throw_error("Cannot project pressure to PSD!");
-			}
-
 			if (size_ == 2)
 				compute_hess_volume_2d(displacement, local_pressure_boundary, dirichlet_nodes, resolution, hess, t, true);
 			else if (size_ == 3)
