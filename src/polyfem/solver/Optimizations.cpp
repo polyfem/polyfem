@@ -284,7 +284,7 @@ namespace polyfem::solver
 		else if (type == "append-values")
 		{
 			Eigen::VectorXd vals = args["values"];
-			map = std::make_shared<InsertConstantMap>(vals);
+			map = std::make_shared<InsertConstantMap>(vals, args["start"]);
 		}
 		else if (type == "append-const")
 		{
