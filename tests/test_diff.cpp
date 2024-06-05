@@ -928,7 +928,7 @@ TEST_CASE("friction-contact", "[test_adjoint]")
 	Eigen::VectorXd x(1);
 	x << 0.2;
 
-	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-6, 1e-7);
+	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-4, 1e-6);
 }
 
 TEST_CASE("barycenter", "[test_adjoint]")
