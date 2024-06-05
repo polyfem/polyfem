@@ -1,0 +1,11 @@
+diff --git a/src/wmtk/utils/EnergyHarmonicTet.cpp b/src/wmtk/utils/EnergyHarmonicTet.cpp
+index 5ceef32..e8b2678 100644
+--- a/src/wmtk/utils/EnergyHarmonicTet.cpp
++++ b/src/wmtk/utils/EnergyHarmonicTet.cpp
+@@ -1,5 +1,6 @@
+ #include "EnergyHarmonicTet.hpp"
+ #include <limits>
++#include <cassert>
+ // Generated with following snippet with some text replacement.
+ // Also modified for infinity evaluation
+ // ```python
