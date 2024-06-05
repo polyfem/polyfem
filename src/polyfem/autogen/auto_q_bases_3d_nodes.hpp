@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Eigen/Dense>
+#include <cassert>
 
 namespace polyfem {
 namespace autogen {
