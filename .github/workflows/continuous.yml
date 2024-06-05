@@ -143,7 +143,7 @@ jobs:
         threading: [TBB]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@v4.1.6
         with:
           fetch-depth: 10
 
