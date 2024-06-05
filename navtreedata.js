@@ -129,12 +129,12 @@ var NAVTREEINDEX =
 "classpolyfem_1_1utils_1_1_periodic_boundary.html#a40ddf2c03af62452052037d445e471f6",
 "classpolyfem_1_1utils_1_1_sparse_matrix_cache.html#accc92cb48d9e9440e652c8a6b4480e6e",
 "functions_vars.html",
-"namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f",
-"namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626ab4daca084ad9eabfc8de231929477ed6",
-"p__bases_8py.html#a82f76c32f1ed8a175feda8bc947c7f42",
-"structpolyfem_1_1assembler_1_1_tensor_b_c_value.html#a811829027b98e8aa2674e0e95daae979",
-"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1follower__face.html",
-"triangle_8py.html#a562269204da12a71842d6cb8bb768090"
+"namespacepolyfem.html#a62aec6e705390cac4c531c6bf2cd7441",
+"namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626a16514e6f648a594f5399a6b3a58e9c93",
+"p__bases_8py.html#a77a7c70028f8cd520192c7e3bf76d109",
+"structpolyfem_1_1assembler_1_1_tensor_b_c_value.html#a1e523fcbaf6327c09837f06ac20a7942",
+"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1follower__edge.html#a45a0bf993b23ca46252cb87545c2bb02",
+"tetrahedron_8py.html#ad7f1ad54c2b30703fb514566fd6b06ee"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

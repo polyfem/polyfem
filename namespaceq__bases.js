@@ -15,7 +15,7 @@ var namespaceq__bases =
     [ "dims", "namespaceq__bases.html#af9ee1db492ab9311fe8a9a6e72eb862a", null ],
     [ "dunique_fun", "namespaceq__bases.html#a9cdc7bb000b258396161a8f08fad9ada", null ],
     [ "eextern", "namespaceq__bases.html#a0e6648928f13a0155f1f024ffae81642", null ],
-    [ "fe", "namespaceq__bases.html#a93c79eb3b68da0f6448e14984290f8cc", null ],
+    [ "fe", "namespaceq__bases.html#a7fbcfc08c2423713346d12940ddf4578", null ],
     [ "func", "namespaceq__bases.html#ae3df94f8ee763aa3091c847aeddc6f04", null ],
     [ "hpp", "namespaceq__bases.html#abdb99d34c9d6a79acb7c069a813ae826", null ],
     [ "hppg", "namespaceq__bases.html#ae375fafba92f640c058c6b1f424e9084", null ],
