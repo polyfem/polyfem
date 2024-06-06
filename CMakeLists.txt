@@ -196,11 +196,11 @@ target_link_libraries(polyfem PUBLIC polysolve::polysolve)
 include(libigl)
 target_link_libraries(polyfem PUBLIC igl::core)
 
-if(NOT WIN32)
-    # Eigen
-    include(eigen)
-    target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
-endif()
+# if(NOT WIN32)
+#     # Eigen
+#     include(eigen)
+#     target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
+# endif()
 
 # IPC Toolkit
 include(ipc_toolkit)
