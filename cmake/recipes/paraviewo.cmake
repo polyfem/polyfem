@@ -8,4 +8,4 @@ endif()
 message(STATUS "Third-party: creating target 'paraviewo::paraviewo'")
 
 include(CPM)
-CPMAddPackage("gh:polyfem/paraviewo#5e0218b48ad2ed19c6c92eef158dc6e8768f7eb6")
+CPMAddPackage("gh:polyfem/paraviewo#119e825ee3907b34a7d2f0efaa9b0f7790f8c2d6")

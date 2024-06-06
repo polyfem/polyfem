@@ -1,0 +1,51 @@
+diff --git a/include/igl/remove_duplicate_vertices.cpp b/include/igl/remove_duplicate_vertices.cpp
+index 9f6609c..930c0f5 100644
+--- a/include/igl/remove_duplicate_vertices.cpp
++++ b/include/igl/remove_duplicate_vertices.cpp
+@@ -32,7 +32,7 @@ IGL_INLINE void igl::remove_duplicate_vertices(
+     DerivedV rV,rSV;
+     round((V/(epsilon)).eval(),rV);
+     unique_rows(rV,rSV,SVI,SVJ);
+-    SV = V(SVI.derived(),Eigen::all);
++    SV = V(SVI.derived(),Eigen::indexing::all);
+   }else
+   {
+     unique_rows(V,SV,SVI,SVJ);
+diff --git a/include/igl/remove_unreferenced.cpp b/include/igl/remove_unreferenced.cpp
+index edf0175..09b6515 100644
+--- a/include/igl/remove_unreferenced.cpp
++++ b/include/igl/remove_unreferenced.cpp
+@@ -46,7 +46,7 @@ IGL_INLINE void igl::remove_unreferenced(
+   NF = F;
+   std::for_each(NF.data(),NF.data()+NF.size(),
+     [&I](typename DerivedNF::Scalar & a){a=I(a);});
+-  NV = V(J.derived(),Eigen::all);
++  NV = V(J.derived(),Eigen::indexing::all);
+ }
+ 
+ template <
+diff --git a/include/igl/resolve_duplicated_faces.cpp b/include/igl/resolve_duplicated_faces.cpp
+index a3ce9fd..bac6b33 100644
+--- a/include/igl/resolve_duplicated_faces.cpp
++++ b/include/igl/resolve_duplicated_faces.cpp
+@@ -81,7 +81,7 @@ IGL_INLINE void igl::resolve_duplicated_faces(
+   const size_t num_kept = kept_faces.size();
+   J.resize(num_kept, 1);
+   std::copy(kept_faces.begin(), kept_faces.end(), J.data());
+-  F2 = F1(J.derived(),Eigen::all);
++  F2 = F1(J.derived(),Eigen::indexing::all);
+ }
+ 
+ #ifdef IGL_STATIC_LIBRARY
+diff --git a/include/igl/slice.cpp b/include/igl/slice.cpp
+index 54093cc..1e20020 100644
+--- a/include/igl/slice.cpp
++++ b/include/igl/slice.cpp
+@@ -9,6 +9,7 @@
+ #include "colon.h"
+ 
+ #include <vector>
++#include <cassert>
+ 
+ template <
+     typename TX,

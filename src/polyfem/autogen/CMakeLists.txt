@@ -50,8 +50,7 @@ add_library(polyfem_autogen ${AUTOGEN_BASES})
 target_include_directories(polyfem_autogen PRIVATE ${PROJECT_BINARY_DIR}/include)
 target_link_libraries(polyfem_autogen PRIVATE Eigen3::Eigen lib_n_bases)
 
-# Use C++14
-target_compile_features(polyfem_autogen PRIVATE ${CXX11_FEATURES})
+target_compile_features(polyfem_autogen PRIVATE cxx_std_17)
 
 target_link_libraries(polyfem PRIVATE polyfem_autogen)
 target_sources(polyfem PRIVATE ${SOURCES} ${AUTOGEN})
