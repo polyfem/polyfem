@@ -579,7 +579,6 @@ namespace polyfem::solver
 				contact_term.setZero(elasticity_term.size());
 			one_form -= elasticity_term + rhs_term + pressure_term + contact_term;
 		}
-
 		one_form = utils::flatten(utils::unflatten(one_form, state.mesh->dimension())(state.primitive_to_node(), Eigen::all));
 	}
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Eigen/Dense>
+#include <cassert>
 
 #include "auto_q_bases_2d_val.hpp"
 #include "auto_q_bases_2d_nodes.hpp"
