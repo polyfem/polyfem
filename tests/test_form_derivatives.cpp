@@ -36,20 +36,42 @@ using namespace polyfem::assembler;
 
 namespace
 {
-	std::shared_ptr<State> get_state(int dim)
+	std::shared_ptr<State> get_state(int dim, const std::string &material_type = "NeoHookean")
 	{
 		const std::string path = POLYFEM_DATA_DIR;
-		json in_args = R"(
+
+		json material;
+		if (material_type == "NeoHookean")
 		{
-			"materials": {
+			material = R"(
+			{
 				"type": "NeoHookean",
 				"E": 20000,
 				"nu": 0.3,
 				"rho": 1000,
 				"phi": 1,
 				"psi": 1
-			},
+			}
+			)"_json;
+		}
+		else if (material_type == "MooneyRivlin3ParamSymbolic")
+		{
+			material = R"(
+			{
+				"type": "MooneyRivlin3ParamSymbolic",
+				"c1": 1e5,
+				"c2": 1e3,
+				"c3": 1e3,
+				"d1": 1e5,
+				"rho": 1000
+			}
+			)"_json;
+		}
+		else
+			assert(false);
 
+		json in_args = R"(
+		{
 			"time": {
 				"dt": 0.001,
 				"tend": 1.0
@@ -62,6 +84,7 @@ namespace
 			}
 
 		})"_json;
+		in_args["materials"] = material;
 		if (dim == 2)
 		{
 			in_args["geometry"] = R"([{
@@ -159,7 +182,7 @@ void test_form(Form &form, const State &state)
 
 			Eigen::VectorXd fgrad;
 			fd::finite_gradient(
-				x, [&form](const Eigen::VectorXd &x) -> double { return form.value(x); }, fgrad);
+				x, [&form](const Eigen::VectorXd &x) -> double { return form.value(x); }, fgrad, fd::SECOND, 1e-7);
 
 			if (!fd::compare_gradient(grad, fgrad))
 			{
@@ -184,7 +207,7 @@ void test_form(Form &form, const State &state)
 					form.first_derivative(x, grad);
 					return grad;
 				},
-				fhess);
+				fhess, fd::SECOND, 1e-7);
 
 			if (!fd::compare_hessian(Eigen::MatrixXd(hess), fhess))
 			{
@@ -281,7 +304,7 @@ TEST_CASE("contact form derivatives", "[form][form_derivatives][contact_form]")
 TEST_CASE("elastic form derivatives", "[form][form_derivatives][elastic_form]")
 {
 	const int dim = GENERATE(2, 3);
-	const auto state_ptr = get_state(dim);
+	const auto state_ptr = get_state(dim, GENERATE("NeoHookean", "MooneyRivlin3ParamSymbolic"));
 	ElasticForm form(
 		state_ptr->n_bases,
 		state_ptr->bases,
