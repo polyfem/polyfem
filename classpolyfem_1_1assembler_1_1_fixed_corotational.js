@@ -1,0 +1,27 @@
+var classpolyfem_1_1assembler_1_1_fixed_corotational =
+[
+    [ "FixedCorotational", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#a1a417d60e01e8a2b63567087ebdf1b7f", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#a768fa2d079a3e4288fbee414402995c9", null ],
+    [ "assemble_energy", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#a0dcf0db6270fc7b52a74a498a8d3eb3a", null ],
+    [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#a66c7fdd502a6e57c6ef821261ec22b19", null ],
+    [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#ae06f6b00fc7d6e03d0a5b07a9d5b2d03", null ],
+    [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#ad2e994c678b777f3eb669cbfc78c35f2", null ],
+    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#a7234151319ae629f17fc364dcaf4ee9b", null ],
+    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#a5edbf81c65cbcb3c5f6fb0077b47c4b0", null ],
+    [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#aa1e5295c0a989f1a74ef29bcf2bef15b", null ],
+    [ "assign_stress_tensor", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#a9f8b766502ad83a7e9345d81cf2c5ecf", null ],
+    [ "compute_dstress_dmu_dlambda", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#afb552cb2a58aa7c3e50428245d850c45", null ],
+    [ "compute_energy", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#a881078160272154df813a7430016c53e", null ],
+    [ "compute_energy_aux", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#a834d3461ea3f86bc16c30319affb389d", null ],
+    [ "compute_energy_aux_gradient_fast", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#a10d7753fe9e5965c50da2d4c68ded451", null ],
+    [ "compute_energy_aux_gradient_fast", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#a5946524a7514eba13d6eae69d7a03bd4", null ],
+    [ "compute_energy_hessian_aux_fast", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#acc1ddf62977170c59b397fbaddb57965", null ],
+    [ "compute_stress_grad_multiply_mat", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#aa72cc2330128605ac9b4f2b25a98ef06", null ],
+    [ "compute_stress_grad_multiply_stress", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#afa82f3280b8a93eb127a79ab532e6aad", null ],
+    [ "lame_params", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#a15f0106ef617c71f6bb7f334d46fa292", null ],
+    [ "name", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#abc09edccd9a96311295778e883e41f72", null ],
+    [ "parameters", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#a956aa89d72e112d765f3ead5cb9baadb", null ],
+    [ "set_params", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#ab407fe11f8dd160e1ede87fbb4f3e206", null ],
+    [ "update_lame_params", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#aca2d82a142dbeaed8c2c16ab052f481c", null ],
+    [ "params_", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#a4503e3e86a5750078294f525bd3b834a", null ]
+];

@@ -1,5 +1,12 @@
 var annotated_dup =
 [
+    [ "JIXIE", "namespace_j_i_x_i_e.html", [
+      [ "INTERNAL", "namespace_j_i_x_i_e_1_1_i_n_t_e_r_n_a_l.html", [
+        [ "ScalarTypeHelper", "struct_j_i_x_i_e_1_1_i_n_t_e_r_n_a_l_1_1_scalar_type_helper.html", "struct_j_i_x_i_e_1_1_i_n_t_e_r_n_a_l_1_1_scalar_type_helper" ],
+        [ "ScalarTypeHelper< T, enable_if_t< is_arithmetic< T >::value > >", "struct_j_i_x_i_e_1_1_i_n_t_e_r_n_a_l_1_1_scalar_type_helper_3_01_t_00_01enable__if__t_3_01is__ara00440a77029283525c7acb539df9499.html", "struct_j_i_x_i_e_1_1_i_n_t_e_r_n_a_l_1_1_scalar_type_helper_3_01_t_00_01enable__if__t_3_01is__ara00440a77029283525c7acb539df9499" ]
+      ] ],
+      [ "GivensRotation", "class_j_i_x_i_e_1_1_givens_rotation.html", "class_j_i_x_i_e_1_1_givens_rotation" ]
+    ] ],
     [ "p_bases", "namespacep__bases.html", [
       [ "Lagrange", "classp__bases_1_1_lagrange.html", "classp__bases_1_1_lagrange" ],
       [ "ReferenceSimplex", "classp__bases_1_1_reference_simplex.html", "classp__bases_1_1_reference_simplex" ]
@@ -19,6 +26,7 @@ var annotated_dup =
         [ "ElasticityAssembler", "classpolyfem_1_1assembler_1_1_elasticity_assembler.html", "classpolyfem_1_1assembler_1_1_elasticity_assembler" ],
         [ "ElasticityTensor", "classpolyfem_1_1assembler_1_1_elasticity_tensor.html", "classpolyfem_1_1assembler_1_1_elasticity_tensor" ],
         [ "ElementAssemblyValues", "classpolyfem_1_1assembler_1_1_element_assembly_values.html", "classpolyfem_1_1assembler_1_1_element_assembly_values" ],
+        [ "FixedCorotational", "classpolyfem_1_1assembler_1_1_fixed_corotational.html", "classpolyfem_1_1assembler_1_1_fixed_corotational" ],
         [ "GenericElastic", "classpolyfem_1_1assembler_1_1_generic_elastic.html", "classpolyfem_1_1assembler_1_1_generic_elastic" ],
         [ "GenericMatParam", "classpolyfem_1_1assembler_1_1_generic_mat_param.html", "classpolyfem_1_1assembler_1_1_generic_mat_param" ],
         [ "GenericMatParams", "classpolyfem_1_1assembler_1_1_generic_mat_params.html", "classpolyfem_1_1assembler_1_1_generic_mat_params" ],
@@ -298,6 +306,7 @@ var annotated_dup =
         [ "ImplicitTimeIntegrator", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html", "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator" ]
       ] ],
       [ "utils", "namespacepolyfem_1_1utils.html", [
+        [ "AutoFlipSVD", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d" ],
         [ "AxisPlaneSelection", "classpolyfem_1_1utils_1_1_axis_plane_selection.html", "classpolyfem_1_1utils_1_1_axis_plane_selection" ],
         [ "BoundarySampler", "classpolyfem_1_1utils_1_1_boundary_sampler.html", null ],
         [ "BoxSelection", "classpolyfem_1_1utils_1_1_box_selection.html", "classpolyfem_1_1utils_1_1_box_selection" ],

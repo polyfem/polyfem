@@ -1,0 +1,25 @@
+var classpolyfem_1_1utils_1_1_auto_flip_s_v_d =
+[
+    [ "AutoFlipSVD", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html#a094c5e2f956854eb4c92562c7afc9808", null ],
+    [ "AutoFlipSVD", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html#a59ed056ea6cc3dd3af3b645fb2ec2b98", null ],
+    [ "compute", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html#af272d0b8fc9abf818e768dba6425a1cb", null ],
+    [ "compute", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html#a1b8a88e72b83ea55138fce300c3ace98", null ],
+    [ "computeCofactorMtr", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html#a8d802bf85a29775863f1695792f6034a", null ],
+    [ "fastComputeSingularValues3d", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html#a2243e3c6b2e46fb55f3691b0a89d491d", null ],
+    [ "fastEigenvalues", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html#ad882303adc6956663beba0c9f8898c02", null ],
+    [ "fastEigenvectors", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html#a4264bb21ac0c8c48c48e7d5c9cdfbed5", null ],
+    [ "fastSolveEigenproblem", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html#a27b6f3f4ef9502d03013cde1c3c2bc6b", null ],
+    [ "fastSVD3d", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html#a8b9d6c8a8ef930509f7601fdbd580ba8", null ],
+    [ "flip2d", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html#a61c113b6a921471b40fce64b507b9f38", null ],
+    [ "matrixU", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html#abf22ff0c82adc2510af490530737b3ba", null ],
+    [ "matrixV", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html#a57a91fc9bcaae66d59fca9d532740a5f", null ],
+    [ "set", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html#af2fe789d0c5620479782d00211f5b6c0", null ],
+    [ "setIdentity", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html#ad1b268a19890440bf77059943c15cb24", null ],
+    [ "singularValues", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html#a0d3043ae28b66993e6cc2072750efb93", null ],
+    [ "flipped_sigma", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html#a25ae29ef55c12e4a9e79bd053ae9302f", null ],
+    [ "flipped_U", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html#a587461094460396627777fa198615edd", null ],
+    [ "flipped_V", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html#ae2eb6bddaaa6d5fa049b686925a04dca", null ],
+    [ "matrixU_flipped", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html#a3b065fd619dc24a41d6195fc7cd0d125", null ],
+    [ "matrixV_flipped", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html#ae2c88a4ffe0887e2ac8f89359c8a59a0", null ],
+    [ "singularValues_flipped", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html#acff8cda0497683d9e2a110b7142cf0c2", null ]
+];

@@ -1,5 +1,92 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$classpolyfem_1_1assembler_1_1_density.html" title=" " alt="" coords="5,5,157,45"/>
-<area shape="rect" id="Node000001" href="$classpolyfem_1_1assembler_1_1_no_density.html" title=" " alt="" coords="205,5,357,45"/>
-<area shape="poly" id="edge54_Node000000_Node000001" title=" " alt="" coords="171,23,205,23,205,28,171,28"/>
+<area shape="rect" id="Node000000" href="$classpolyfem_1_1assembler_1_1_assembler.html" title="abstract class" alt="" coords="5,549,157,589"/>
+<area shape="rect" id="Node000001" href="$classpolyfem_1_1assembler_1_1_elasticity_assembler.html" title=" " alt="" coords="205,485,364,525"/>
+<area shape="poly" id="edge4_Node000000_Node000001" title=" " alt="" coords="158,542,220,522,221,527,160,547"/>
+<area shape="rect" id="Node000018" href="$classpolyfem_1_1assembler_1_1_linear_assembler.html" title="assemble matrix based on the local assembler local assembler is eg Laplace, LinearElasticity etc" alt="" coords="209,1282,361,1322"/>
+<area shape="poly" id="edge26_Node000000_Node000018" title=" " alt="" coords="94,601,280,1281,275,1282,89,603"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1assembler_1_1_n_l_assembler.html" title=" " alt="" coords="209,549,361,589"/>
+<area shape="poly" id="edge39_Node000000_Node000004" title=" " alt="" coords="171,566,209,566,209,571,171,571"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_generic_elastic.html" title=" " alt="" coords="412,85,651,125"/>
+<area shape="poly" id="edge5_Node000001_Node000002" title=" " alt="" coords="285,471,293,401,312,310,328,263,350,216,377,173,410,135,426,123,429,127,414,139,381,176,354,219,333,265,317,312,298,402,290,471"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1assembler_1_1_generic_elastic.html" title=" " alt="" coords="413,149,650,204"/>
+<area shape="poly" id="edge7_Node000001_Node000005" title=" " alt="" coords="289,470,302,415,325,347,360,276,383,244,410,215,427,202,430,206,414,219,387,247,365,279,330,349,307,417,294,472"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1assembler_1_1_generic_elastic.html" title=" " alt="" coords="414,613,649,668"/>
+<area shape="poly" id="edge9_Node000001_Node000007" title=" " alt="" coords="358,529,366,535,381,551,390,568,398,583,414,599,434,611,432,616,410,603,394,587,385,570,377,554,362,539,355,534"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1assembler_1_1_generic_elastic.html" title=" " alt="" coords="418,692,645,747"/>
+<area shape="poly" id="edge11_Node000001_Node000009" title=" " alt="" coords="362,531,366,535,380,554,387,572,390,608,394,643,401,660,414,677,429,690,426,694,410,681,396,663,388,645,385,609,382,573,375,556,362,538,358,535"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1assembler_1_1_generic_elastic.html" title=" " alt="" coords="421,771,642,825"/>
+<area shape="poly" id="edge13_Node000001_Node000011" title=" " alt="" coords="363,532,366,535,384,564,392,593,393,621,390,648,387,675,388,702,396,729,414,756,428,768,424,772,410,760,391,731,383,703,382,675,384,648,387,621,387,594,379,566,362,538,359,535"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1assembler_1_1_generic_elastic.html" title=" " alt="" coords="415,5,647,60"/>
+<area shape="poly" id="edge15_Node000001_Node000013" title=" " alt="" coords="283,471,288,390,306,284,322,227,344,171,373,118,410,71,425,58,429,62,414,75,377,121,349,173,327,229,311,285,294,391,289,471"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1assembler_1_1_fixed_corotational.html" title=" " alt="" coords="455,229,607,269"/>
+<area shape="poly" id="edge17_Node000001_Node000015" title=" " alt="" coords="293,470,309,427,334,375,367,323,387,299,410,279,431,266,454,257,456,262,434,271,414,283,391,303,371,326,338,377,314,429,298,472"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1assembler_1_1_generic_elastic.html" title=" " alt="" coords="429,293,633,333"/>
+<area shape="poly" id="edge18_Node000001_Node000016" title=" " alt="" coords="301,471,344,406,375,371,411,342,433,330,436,335,413,347,379,375,349,409,305,474"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html" title=" " alt="" coords="446,914,617,954"/>
+<area shape="poly" id="edge19_Node000001_Node000017" title=" " alt="" coords="364,532,366,535,382,560,393,584,401,631,397,677,388,722,378,767,376,811,379,833,386,855,397,878,414,900,429,913,447,922,444,927,426,917,410,904,393,880,381,857,374,834,370,811,373,766,382,721,392,676,396,631,388,585,377,562,362,538,360,535"/>
+<area shape="rect" id="Node000022" href="$classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html" title=" " alt="" coords="417,979,646,1033"/>
+<area shape="poly" id="edge20_Node000001_Node000022" title=" " alt="" coords="364,532,366,535,385,564,397,592,404,620,406,647,401,701,389,753,377,805,373,857,375,883,383,910,395,937,414,964,427,977,423,980,410,968,391,940,378,912,370,884,367,857,372,804,384,752,396,700,401,647,398,621,392,594,380,566,362,538,360,535"/>
+<area shape="rect" id="Node000025" href="$classpolyfem_1_1assembler_1_1_linear_elasticity.html" title=" " alt="" coords="455,1058,607,1098"/>
+<area shape="poly" id="edge21_Node000001_Node000025" title=" " alt="" coords="364,532,366,535,377,555,385,581,392,642,392,715,389,792,385,870,386,941,394,1001,403,1024,414,1043,433,1059,456,1068,454,1073,430,1063,410,1046,398,1027,389,1002,381,942,380,870,383,792,387,714,387,642,380,582,372,557,362,538,360,535"/>
+<area shape="rect" id="Node000030" href="$classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_symbolic.html" title=" " alt="" coords="417,357,645,397"/>
+<area shape="poly" id="edge22_Node000001_Node000030" title=" " alt="" coords="316,473,359,438,411,406,440,394,442,399,413,411,362,443,319,477"/>
+<area shape="rect" id="Node000031" href="$classpolyfem_1_1assembler_1_1_multi_model.html" title=" " alt="" coords="455,421,607,461"/>
+<area shape="poly" id="edge23_Node000001_Node000031" title=" " alt="" coords="375,479,454,458,456,463,376,484"/>
+<area shape="rect" id="Node000033" href="$classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html" title=" " alt="" coords="445,485,618,525"/>
+<area shape="poly" id="edge24_Node000001_Node000033" title=" " alt="" coords="378,502,445,502,445,507,378,507"/>
+<area shape="rect" id="Node000034" href="$classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html" title=" " alt="" coords="447,549,615,589"/>
+<area shape="poly" id="edge25_Node000001_Node000034" title=" " alt="" coords="376,526,454,546,453,551,375,531"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html" title=" " alt="" coords="738,85,890,125"/>
+<area shape="poly" id="edge6_Node000002_Node000003" title=" " alt="" coords="665,102,738,102,738,107,665,107"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html" title=" " alt="" coords="699,157,929,197"/>
+<area shape="poly" id="edge8_Node000005_Node000006" title=" " alt="" coords="664,174,699,174,699,179,664,179"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_elasticity.html" title=" " alt="" coords="700,621,928,661"/>
+<area shape="poly" id="edge10_Node000007_Node000008" title=" " alt="" coords="662,638,700,638,700,643,662,643"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1assembler_1_1_mooney_rivlin_elasticity.html" title=" " alt="" coords="725,699,903,739"/>
+<area shape="poly" id="edge12_Node000009_Node000010" title=" " alt="" coords="659,717,724,717,724,722,659,722"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1assembler_1_1_neo_hookean_autodiff.html" title=" " alt="" coords="732,778,896,818"/>
+<area shape="poly" id="edge14_Node000011_Node000012" title=" " alt="" coords="656,795,732,795,732,801,656,801"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html" title=" " alt="" coords="701,13,927,53"/>
+<area shape="poly" id="edge16_Node000013_Node000014" title=" " alt="" coords="661,30,700,30,700,35,661,35"/>
+<area shape="poly" id="edge30_Node000018_Node000017" title=" " alt="" coords="286,1268,296,1204,317,1122,333,1079,353,1037,379,998,410,964,444,944,447,949,414,968,383,1001,358,1040,338,1081,322,1123,301,1205,291,1269"/>
+<area shape="poly" id="edge31_Node000018_Node000022" title=" " alt="" coords="291,1268,306,1219,330,1159,364,1097,386,1069,410,1044,428,1031,431,1036,414,1048,390,1073,369,1100,335,1161,311,1220,296,1269"/>
+<area shape="poly" id="edge34_Node000018_Node000025" title=" " alt="" coords="296,1268,314,1230,339,1187,371,1144,410,1108,431,1096,454,1087,456,1092,434,1100,414,1112,375,1148,343,1190,319,1233,301,1270"/>
+<area shape="rect" id="Node000019" href="$classpolyfem_1_1assembler_1_1_bilaplacian_aux.html" title=" " alt="" coords="455,1314,607,1354"/>
+<area shape="poly" id="edge27_Node000018_Node000019" title=" " alt="" coords="375,1311,455,1322,455,1327,374,1316"/>
+<area shape="rect" id="Node000020" href="$classpolyfem_1_1assembler_1_1_bilaplacian_main.html" title=" " alt="" coords="455,1378,607,1418"/>
+<area shape="poly" id="edge28_Node000018_Node000020" title=" " alt="" coords="334,1326,413,1364,456,1378,454,1383,411,1368,332,1331"/>
+<area shape="rect" id="Node000021" href="$classpolyfem_1_1assembler_1_1_helmholtz.html" title=" " alt="" coords="455,1442,607,1482"/>
+<area shape="poly" id="edge29_Node000018_Node000021" title=" " alt="" coords="311,1331,355,1381,383,1406,413,1428,456,1446,454,1451,411,1432,379,1411,351,1385,307,1335"/>
+<area shape="rect" id="Node000023" href="$classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_pressure.html" title=" " alt="" coords="417,1507,646,1561"/>
+<area shape="poly" id="edge32_Node000018_Node000023" title=" " alt="" coords="302,1333,319,1370,344,1413,376,1455,414,1492,433,1504,430,1509,410,1496,372,1459,340,1416,315,1373,297,1336"/>
+<area shape="rect" id="Node000024" href="$classpolyfem_1_1assembler_1_1_laplacian.html" title=" " alt="" coords="455,1586,607,1626"/>
+<area shape="poly" id="edge33_Node000018_Node000024" title=" " alt="" coords="295,1335,308,1387,331,1452,366,1517,388,1546,414,1572,434,1585,456,1594,454,1599,431,1590,410,1576,384,1550,361,1520,326,1454,303,1389,289,1336"/>
+<area shape="rect" id="Node000026" href="$classpolyfem_1_1assembler_1_1_mass.html" title=" " alt="" coords="455,1650,607,1690"/>
+<area shape="poly" id="edge35_Node000018_Node000026" title=" " alt="" coords="291,1335,301,1399,322,1481,338,1523,358,1564,383,1603,414,1636,434,1650,456,1659,454,1664,431,1654,410,1640,379,1606,353,1567,333,1525,317,1482,296,1400,286,1336"/>
+<area shape="rect" id="Node000027" href="$classpolyfem_1_1assembler_1_1_stokes_pressure.html" title=" " alt="" coords="455,1186,607,1226"/>
+<area shape="poly" id="edge36_Node000018_Node000027" title=" " alt="" coords="332,1273,411,1236,454,1221,456,1226,413,1240,334,1278"/>
+<area shape="rect" id="Node000028" href="$classpolyfem_1_1assembler_1_1_stokes_velocity.html" title=" " alt="" coords="455,1250,607,1290"/>
+<area shape="poly" id="edge37_Node000018_Node000028" title=" " alt="" coords="374,1288,455,1277,455,1282,375,1293"/>
+<area shape="rect" id="Node000029" href="$classpolyfem_1_1assembler_1_1_operator_splitting.html" title=" " alt="" coords="738,1250,890,1290"/>
+<area shape="poly" id="edge38_Node000028_Node000029" title=" " alt="" coords="621,1267,738,1267,738,1273,621,1273"/>
+<area shape="poly" id="edge40_Node000004_Node000002" title=" " alt="" coords="360,538,362,535,379,509,390,483,396,458,398,433,393,384,382,335,371,286,368,236,371,211,378,186,391,161,410,135,423,123,427,127,414,138,396,163,383,188,376,212,373,236,377,285,387,333,399,383,403,433,401,459,395,485,383,511,366,538,364,541"/>
+<area shape="poly" id="edge41_Node000004_Node000005" title=" " alt="" coords="359,538,362,535,385,494,393,454,391,415,384,376,377,337,375,297,385,256,410,215,423,202,427,206,414,218,390,258,381,298,382,336,389,375,397,414,399,455,390,496,366,538,364,541"/>
+<area shape="poly" id="edge42_Node000004_Node000007" title=" " alt="" coords="368,590,438,611,437,616,366,595"/>
+<area shape="poly" id="edge43_Node000004_Node000009" title=" " alt="" coords="315,597,359,638,413,677,438,689,436,694,411,682,356,642,312,601"/>
+<area shape="poly" id="edge44_Node000004_Node000011" title=" " alt="" coords="302,600,320,637,345,678,376,720,414,756,433,768,431,773,410,760,372,724,340,681,315,639,297,603"/>
+<area shape="poly" id="edge45_Node000004_Node000013" title=" " alt="" coords="360,538,362,535,381,505,394,475,401,446,403,417,397,360,383,304,370,247,365,190,368,161,375,131,389,101,410,71,423,58,427,62,414,74,394,104,380,133,373,162,370,190,375,246,389,303,402,359,408,417,406,446,399,477,386,507,366,538,364,541"/>
+<area shape="poly" id="edge46_Node000004_Node000015" title=" " alt="" coords="359,538,362,535,381,502,389,470,388,439,383,407,379,376,379,344,388,311,410,279,430,263,454,253,456,258,433,268,414,282,393,314,384,344,384,375,389,407,393,438,394,471,386,504,366,538,363,541"/>
+<area shape="poly" id="edge47_Node000004_Node000016" title=" " alt="" coords="359,538,362,535,378,511,384,487,384,439,382,415,384,391,392,367,410,343,427,329,431,334,414,347,397,369,389,392,388,415,389,439,390,488,382,513,366,538,363,542"/>
+<area shape="poly" id="edge48_Node000004_Node000017" title=" " alt="" coords="291,602,301,666,322,746,338,788,358,829,383,867,414,900,447,919,444,924,410,904,379,870,354,832,333,790,317,748,296,667,286,603"/>
+<area shape="poly" id="edge49_Node000004_Node000025" title=" " alt="" coords="293,602,309,704,335,836,352,902,371,961,392,1010,414,1043,433,1057,456,1067,454,1072,431,1062,410,1047,387,1013,366,963,347,903,330,837,304,705,288,603"/>
+<area shape="poly" id="edge50_Node000004_Node000030" title=" " alt="" coords="358,538,362,535,374,519,380,503,384,471,389,439,397,423,410,407,427,395,430,399,414,411,401,426,394,441,390,472,386,505,379,522,366,538,362,542"/>
+<area shape="poly" id="edge51_Node000004_Node000031" title=" " alt="" coords="355,540,362,535,377,519,385,503,394,486,410,470,454,451,456,455,414,475,398,490,390,505,381,522,366,539,358,544"/>
+<area shape="poly" id="edge53_Node000004_Node000033" title=" " alt="" coords="373,543,453,522,454,527,375,548"/>
+<area shape="poly" id="edge54_Node000004_Node000034" title=" " alt="" coords="375,566,447,566,447,571,375,571"/>
+<area shape="rect" id="Node000032" href="$classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html" title=" " alt="" coords="447,850,615,890"/>
+<area shape="poly" id="edge52_Node000004_Node000032" title=" " alt="" coords="295,601,308,653,332,716,366,780,388,809,414,835,448,854,445,859,410,839,384,813,362,783,327,718,303,655,290,603"/>
+<area shape="rect" id="Node000035" href="$classpolyfem_1_1assembler_1_1_viscous_damping.html" title=" " alt="" coords="455,1122,607,1162"/>
+<area shape="poly" id="edge55_Node000004_Node000035" title=" " alt="" coords="292,602,306,716,331,868,347,944,367,1014,389,1070,414,1108,433,1123,456,1132,454,1137,430,1127,410,1112,384,1073,362,1015,342,946,325,869,301,717,287,603"/>
+<area shape="rect" id="Node000036" href="$classpolyfem_1_1assembler_1_1_viscous_damping_prev.html" title=" " alt="" coords="730,1122,898,1162"/>
+<area shape="poly" id="edge56_Node000035_Node000036" title=" " alt="" coords="621,1139,730,1139,730,1145,621,1145"/>
 </map>

@@ -15,6 +15,7 @@ var classpolyfem_1_1assembler_1_1_multi_model =
     [ "name", "classpolyfem_1_1assembler_1_1_multi_model.html#abc01d2a6415dac7ebc4475203344066a", null ],
     [ "parameters", "classpolyfem_1_1assembler_1_1_multi_model.html#a9721c87380d5295659cacf67c3e80e32", null ],
     [ "set_size", "classpolyfem_1_1assembler_1_1_multi_model.html#a3a87c3eb8dcfe7d14723ff8d9f3d78a5", null ],
+    [ "fixed_corotational_", "classpolyfem_1_1assembler_1_1_multi_model.html#a2e80cca03286fac56d8ba3ffe609ec9b", null ],
     [ "hooke_", "classpolyfem_1_1assembler_1_1_multi_model.html#aa3e52fd8394e56f36648163b8c07ed94", null ],
     [ "incompressible_ogden_elasticity_", "classpolyfem_1_1assembler_1_1_multi_model.html#a996e273a2aaafcda7b43c517d11f7e8e", null ],
     [ "linear_elasticity_", "classpolyfem_1_1assembler_1_1_multi_model.html#a1d9d27829cc506596c73f42a0c3c7353", null ],

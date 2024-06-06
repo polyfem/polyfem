@@ -60,6 +60,7 @@ var namespaces_dup =
       [ "hess", "namespacegenerate__mooney__rivlin.html#a810c21d1f8e04c917030814a38029037", null ]
     ] ],
     [ "ipc", "namespaceipc.html", null ],
+    [ "JIXIE", "namespace_j_i_x_i_e.html", "namespace_j_i_x_i_e" ],
     [ "p_bases", "namespacep__bases.html", "namespacep__bases" ],
     [ "polyfem", "namespacepolyfem.html", "namespacepolyfem" ],
     [ "polysolve", "namespacepolysolve.html", "namespacepolysolve" ],

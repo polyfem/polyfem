@@ -8,6 +8,7 @@ var namespacepolyfem_1_1utils =
       [ "startswith", "namespacepolyfem_1_1utils_1_1_string_utils.html#a8df4a1f29bc95ee539adb419f19b83b7", null ],
       [ "trim", "namespacepolyfem_1_1utils_1_1_string_utils.html#a5ea2c1e360cb00a431694ced69344bea", null ]
     ] ],
+    [ "AutoFlipSVD", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d" ],
     [ "AxisPlaneSelection", "classpolyfem_1_1utils_1_1_axis_plane_selection.html", "classpolyfem_1_1utils_1_1_axis_plane_selection" ],
     [ "BoundarySampler", "classpolyfem_1_1utils_1_1_boundary_sampler.html", null ],
     [ "BoxSelection", "classpolyfem_1_1utils_1_1_box_selection.html", "classpolyfem_1_1utils_1_1_box_selection" ],
@@ -77,6 +78,7 @@ var namespacepolyfem_1_1utils =
     [ "reorder_matrix", "namespacepolyfem_1_1utils.html#a4d994983e63be19cec7d739baba363a1", null ],
     [ "resolve_path", "namespacepolyfem_1_1utils.html#a4dc2e59d21d66809d2273ae115be0b73", null ],
     [ "show_matrix_stats", "namespacepolyfem_1_1utils.html#a3a719017c6c406fba78aee8fbaa4103b", null ],
+    [ "singular_values", "namespacepolyfem_1_1utils.html#a0f79faa7c3de675d3bd4ea4778cdf852", null ],
     [ "sparse_identity", "namespacepolyfem_1_1utils.html#a691a83ca0c9ab36d64ab2bd56eb394e0", null ],
     [ "tetrahedron_intersects_ball", "namespacepolyfem_1_1utils.html#a0e076b0bb2f5dba6104e2977df78e127", null ],
     [ "tetrahedron_volume", "namespacepolyfem_1_1utils.html#ac722675794eb1f2ef7ea016c9aceb846", null ],

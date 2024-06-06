@@ -18,5 +18,6 @@ var searchData=
   ['assemblyvalues_15',['AssemblyValues',['../classpolyfem_1_1assembler_1_1_assembly_values.html',1,'polyfem::assembler']]],
   ['autodiffallocator_16',['AutoDiffAllocator',['../classpolyfem_1_1_auto_diff_allocator.html',1,'polyfem']]],
   ['autodiffallocator_3c_20double_20_3e_17',['AutoDiffAllocator&lt; double &gt;',['../classpolyfem_1_1_auto_diff_allocator_3_01double_01_4.html',1,'polyfem']]],
-  ['axisplaneselection_18',['AxisPlaneSelection',['../classpolyfem_1_1utils_1_1_axis_plane_selection.html',1,'polyfem::utils']]]
+  ['autoflipsvd_18',['AutoFlipSVD',['../classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html',1,'polyfem::utils']]],
+  ['axisplaneselection_19',['AxisPlaneSelection',['../classpolyfem_1_1utils_1_1_axis_plane_selection.html',1,'polyfem::utils']]]
 ];

@@ -134,6 +134,8 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html">AutoFlipSVD</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_axis_plane_selection.html">AxisPlaneSelection</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_boundary_sampler.html">BoundarySampler</a></td></tr>
@@ -351,6 +353,9 @@ Functions</h2></td></tr>
 <tr class="separator:a1cdf057fa8c31024c63a2104c61ae16e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4dc2e59d21d66809d2273ae115be0b73" id="r_a4dc2e59d21d66809d2273ae115be0b73"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a4dc2e59d21d66809d2273ae115be0b73">resolve_path</a> (const std::string &amp;path, const std::string &amp;input_file_path, const bool only_if_exists=false)</td></tr>
 <tr class="separator:a4dc2e59d21d66809d2273ae115be0b73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f79faa7c3de675d3bd4ea4778cdf852" id="r_a0f79faa7c3de675d3bd4ea4778cdf852"><td class="memTemplParams" colspan="2">template&lt;int dim&gt; </td></tr>
+<tr class="memitem:a0f79faa7c3de675d3bd4ea4778cdf852"><td class="memTemplItemLeft" align="right" valign="top">Eigen::Vector&lt; double, dim &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a0f79faa7c3de675d3bd4ea4778cdf852">singular_values</a> (const Eigen::Matrix&lt; double, dim, dim &gt; &amp;A)</td></tr>
+<tr class="separator:a0f79faa7c3de675d3bd4ea4778cdf852"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="abfd143acb03ac1513784509e3185b980" name="abfd143acb03ac1513784509e3185b980"></a>
@@ -819,7 +824,7 @@ template&lt;typename T &gt; </div>
 
 <p class="reference">References <a class="el" href="_transient_form_8cpp_source.html#l00024">mat</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00307">polyfem::assembler::NeoHookeanElasticity::compute_energy_aux()</a>, <a class="el" href="_a_m_i_p_s_energy_8hpp_source.html#l00030">polyfem::assembler::AMIPSEnergy::elastic_energy()</a>, <a class="el" href="_mooney_rivlin3_param_elasticity_8hpp_source.html#l00026">polyfem::assembler::MooneyRivlin3ParamElasticity::elastic_energy()</a>, <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00025">polyfem::assembler::MooneyRivlinElasticity::elastic_energy()</a>, <a class="el" href="_neo_hookean_elasticity_autodiff_8hpp_source.html#l00022">polyfem::assembler::NeoHookeanAutodiff::elastic_energy()</a>, <a class="el" href="_mooney_rivlin3_param_symbolic_8cpp_source.html#l00317">polyfem::assembler::MooneyRivlin3ParamSymbolic::elastic_energy()</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00032">inverse()</a>, and <a class="el" href="_elasticity_utils_8hpp_source.html#l00152">polyfem::third_invariant()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00307">polyfem::assembler::NeoHookeanElasticity::compute_energy_aux()</a>, <a class="el" href="_a_m_i_p_s_energy_8hpp_source.html#l00030">polyfem::assembler::AMIPSEnergy::elastic_energy()</a>, <a class="el" href="_mooney_rivlin3_param_elasticity_8hpp_source.html#l00026">polyfem::assembler::MooneyRivlin3ParamElasticity::elastic_energy()</a>, <a class="el" href="_mooney_rivlin_elasticity_8hpp_source.html#l00025">polyfem::assembler::MooneyRivlinElasticity::elastic_energy()</a>, <a class="el" href="_neo_hookean_elasticity_autodiff_8hpp_source.html#l00022">polyfem::assembler::NeoHookeanAutodiff::elastic_energy()</a>, <a class="el" href="_mooney_rivlin3_param_symbolic_8cpp_source.html#l00317">polyfem::assembler::MooneyRivlin3ParamSymbolic::elastic_energy()</a>, <a class="el" href="svd_8hpp_source.html#l00076">polyfem::utils::AutoFlipSVD&lt; MatrixType &gt;::flip2d()</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00032">inverse()</a>, and <a class="el" href="_elasticity_utils_8hpp_source.html#l00152">polyfem::third_invariant()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1677,6 +1682,42 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_a3a719017c6c406fba78aee8fbaa4103b_icgraph.svg" width="100%" height="408"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="a0f79faa7c3de675d3bd4ea4778cdf852" name="a0f79faa7c3de675d3bd4ea4778cdf852"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f79faa7c3de675d3bd4ea4778cdf852">&#9670;&#160;</a></span>singular_values()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int dim&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::Vector&lt; double, dim &gt; polyfem::utils::singular_values </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::Matrix&lt; double, dim, dim &gt; &amp;&#160;</td>
+          <td class="paramname"><em>A</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="svd_8hpp_source.html#l00358">358</a> of file <a class="el" href="svd_8hpp_source.html">svd.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="svd_8hpp_source.html#l00317">polyfem::utils::AutoFlipSVD&lt; MatrixType &gt;::singularValues()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="svd_8hpp_source.html#l00300">polyfem::utils::AutoFlipSVD&lt; MatrixType &gt;::fastComputeSingularValues3d()</a>, and <a class="el" href="svd_8hpp_source.html#l00257">polyfem::utils::AutoFlipSVD&lt; MatrixType &gt;::fastSVD3d()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_a0f79faa7c3de675d3bd4ea4778cdf852_cgraph.svg" width="406" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_a0f79faa7c3de675d3bd4ea4778cdf852_icgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>

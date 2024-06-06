@@ -26,6 +26,7 @@ var hierarchy =
         [ "polyfem::assembler::GenericElastic< UnconstrainedOgdenElasticity >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", [
           [ "polyfem::assembler::UnconstrainedOgdenElasticity", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html", null ]
         ] ],
+        [ "polyfem::assembler::FixedCorotational", "classpolyfem_1_1assembler_1_1_fixed_corotational.html", null ],
         [ "polyfem::assembler::GenericElastic< Derived >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
         [ "polyfem::assembler::HookeLinearElasticity", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html", null ],
         [ "polyfem::assembler::IncompressibleLinearElasticityDispacement", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html", null ],
@@ -57,6 +58,7 @@ var hierarchy =
         [ "polyfem::assembler::GenericElastic< MooneyRivlinElasticity >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
         [ "polyfem::assembler::GenericElastic< NeoHookeanAutodiff >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
         [ "polyfem::assembler::GenericElastic< UnconstrainedOgdenElasticity >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
+        [ "polyfem::assembler::FixedCorotational", "classpolyfem_1_1assembler_1_1_fixed_corotational.html", null ],
         [ "polyfem::assembler::GenericElastic< Derived >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
         [ "polyfem::assembler::HookeLinearElasticity", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html", null ],
         [ "polyfem::assembler::LinearElasticity", "classpolyfem_1_1assembler_1_1_linear_elasticity.html", null ],
@@ -169,6 +171,7 @@ var hierarchy =
     [ "polyfem::assembler::GenericMatParam", "classpolyfem_1_1assembler_1_1_generic_mat_param.html", null ],
     [ "polyfem::assembler::GenericMatParams", "classpolyfem_1_1assembler_1_1_generic_mat_params.html", null ],
     [ "polyfem::utils::GeogramUtils", "classpolyfem_1_1utils_1_1_geogram_utils.html", null ],
+    [ "JIXIE::GivensRotation< T >", "class_j_i_x_i_e_1_1_givens_rotation.html", null ],
     [ "polyfem::mesh::Remesher::GlobalProjectionCache", "structpolyfem_1_1mesh_1_1_remesher_1_1_global_projection_cache.html", null ],
     [ "polyfem::utils::HashMatrix", "structpolyfem_1_1utils_1_1_hash_matrix.html", null ],
     [ "polyfem::utils::HashPair", "structpolyfem_1_1utils_1_1_hash_pair.html", null ],
@@ -194,6 +197,9 @@ var hierarchy =
         [ "polyfem::utils::PiecewiseCubicInterpolation", "classpolyfem_1_1utils_1_1_piecewise_cubic_interpolation.html", null ],
         [ "polyfem::utils::PiecewiseLinearInterpolation", "classpolyfem_1_1utils_1_1_piecewise_linear_interpolation.html", null ]
       ] ]
+    ] ],
+    [ "Eigen::JacobiSVD", null, [
+      [ "polyfem::utils::AutoFlipSVD< MatrixType >", "classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html", null ]
     ] ],
     [ "p_bases.Lagrange", "classp__bases_1_1_lagrange.html", null ],
     [ "q_bases.Lagrange", "classq__bases_1_1_lagrange.html", null ],
@@ -368,6 +374,8 @@ var hierarchy =
     [ "polyfem::assembler::RhsAssembler", "classpolyfem_1_1assembler_1_1_rhs_assembler.html", null ],
     [ "polyfem::io::RuntimeStatsCSVWriter", "classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html", null ],
     [ "polyfem::assembler::ScalarBCValue", "structpolyfem_1_1assembler_1_1_scalar_b_c_value.html", null ],
+    [ "JIXIE::INTERNAL::ScalarTypeHelper< T, Enable >", "struct_j_i_x_i_e_1_1_i_n_t_e_r_n_a_l_1_1_scalar_type_helper.html", null ],
+    [ "JIXIE::INTERNAL::ScalarTypeHelper< T, enable_if_t< is_arithmetic< T >::value > >", "struct_j_i_x_i_e_1_1_i_n_t_e_r_n_a_l_1_1_scalar_type_helper_3_01_t_00_01enable__if__t_3_01is__ara00440a77029283525c7acb539df9499.html", null ],
     [ "polyfem::utils::Selection", "classpolyfem_1_1utils_1_1_selection.html", [
       [ "polyfem::utils::AxisPlaneSelection", "classpolyfem_1_1utils_1_1_axis_plane_selection.html", null ],
       [ "polyfem::utils::BoxSelection", "classpolyfem_1_1utils_1_1_box_selection.html", null ],
