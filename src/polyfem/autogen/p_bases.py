@@ -144,8 +144,8 @@ class Lagrange:
 
         A = create_matrix(equations, coeffs)
 
-        if A.shape[0] > 25:
-            A = A.evalf()
+        # if A.shape[0] > 25:
+        #     A = A.evalf()
 
         Ainv = A.inv()
 
@@ -182,7 +182,7 @@ if __name__ == "__main__":
     cpp = cpp + \
         "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
 
-    hpp = "#pragma once\n\n#include <Eigen/Dense>\n\n"
+    hpp = "#pragma once\n\n#include <Eigen/Dense>\n#include \"p_n_bases.hpp\"\n#include <cassert>\n\n"
     hpp = hpp + "namespace polyfem {\nnamespace autogen " + "{\n"
 
     for dim in dims:
@@ -395,6 +395,10 @@ if __name__ == "__main__":
             # hpp = hpp + func + ";\n"
             # hpp = hpp + dfunc + ";\n"
 
+            default_base = "p_n_basis_value_3d(p, local_index, uv, val);" if dim == 3 else "p_n_basis_value_2d(p, local_index, uv, val);"
+            default_dbase = "p_n_basis_grad_value_3d(p, local_index, uv, val);" if dim == 3 else "p_n_basis_grad_value_2d(p, local_index, uv, val);"
+            default_nodes = "p_n_nodes_3d(p, val);" if dim == 3 else "p_n_nodes_2d(p, val);"
+
             base = "auto x=uv.col(0).array();\nauto y=uv.col(1).array();"
             if dim == 3:
                 base = base + "\nauto z=uv.col(2).array();"
@@ -435,10 +439,10 @@ if __name__ == "__main__":
             cpp = cpp + dfunc + "{\n\n"
             cpp = cpp + dbase + "}\n\n\n" + nodes + "\n\n\n"
 
-        unique_nodes = unique_nodes + "\tdefault: assert(false);\n}}"
+        unique_nodes = unique_nodes + "\tdefault: "+default_nodes+"\n}}"
 
-        unique_fun = unique_fun + "\tdefault: assert(false);\n}}"
-        dunique_fun = dunique_fun + "\tdefault: assert(false);\n}}"
+        unique_fun = unique_fun + "\tdefault: "+default_base+"\n}}"
+        dunique_fun = dunique_fun + "\tdefault: "+default_dbase+"\n}}"
 
         cpp = cpp + "}\n\n" + unique_nodes + "\n" + unique_fun + \
             "\n\n" + dunique_fun + "\n" + "\nnamespace " + "{\n"

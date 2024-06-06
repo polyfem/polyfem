@@ -22,15 +22,6 @@ namespace polyfem::assembler
 		Eigen::VectorXd assemble_gradient(const NonLinearAssemblerData &data) const override;
 		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const override;
 
-		// rhs for fabbricated solution, compute with automatic sympy code
-		VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;
-
-		void compute_stiffness_value(const double t,
-									 const assembler::ElementAssemblyValues &vals,
-									 const Eigen::MatrixXd &local_pts,
-									 const Eigen::MatrixXd &displacement,
-									 Eigen::MatrixXd &tensor) const override;
-
 		void compute_stress_grad_multiply_mat(const OptAssemblerData &data,
 											  const Eigen::MatrixXd &mat,
 											  Eigen::MatrixXd &stress,

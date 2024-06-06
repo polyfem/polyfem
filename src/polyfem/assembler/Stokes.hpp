@@ -28,6 +28,7 @@ namespace polyfem::assembler
 		std::map<std::string, ParamFunc> parameters() const override;
 
 		bool is_fluid() const override { return true; }
+		bool is_tensor() const override { return true; }
 
 	private:
 		GenericMatParam viscosity_;

@@ -1630,7 +1630,7 @@ namespace polyfem::io
 		// interpolate_function(pts_index, rhs, fun, opts.boundary_only);
 		// writer.add_field("rhs", fun);
 
-		if (fun.cols() != 1)
+		if (fun.cols() != 1 && state.mixed_assembler == nullptr)
 		{
 			Eigen::MatrixXd traction_forces, traction_forces_fun;
 			compute_traction_forces(state, sol, t, traction_forces, false);
@@ -1649,7 +1649,7 @@ namespace polyfem::io
 			writer.add_field("traction_force", traction_forces_fun);
 		}
 
-		if (fun.cols() != 1)
+		if (fun.cols() != 1 && state.mixed_assembler == nullptr)
 		{
 			try
 			{

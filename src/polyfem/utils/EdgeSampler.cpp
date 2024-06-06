@@ -1,5 +1,7 @@
 #include "EdgeSampler.hpp"
 
+#include <cassert>
+
 namespace polyfem
 {
 	namespace utils
@@ -64,19 +66,19 @@ namespace polyfem
 			samples.setZero();
 			const Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(resolution, 0, 1);
 			const Eigen::MatrixXd oo = Eigen::VectorXd::Ones(resolution);
-			//X
+			// X
 			int ii = 0;
 			samples.block(ii * resolution, 0, resolution, 1) = t;
 			samples.block(ii * resolution, 1, resolution, 1).setZero();
 			samples.block(ii * resolution, 2, resolution, 1).setZero();
 
-			//Y
+			// Y
 			++ii;
 			samples.block(ii * resolution, 0, resolution, 1).setZero();
 			samples.block(ii * resolution, 1, resolution, 1) = t;
 			samples.block(ii * resolution, 2, resolution, 1).setZero();
 
-			//Z
+			// Z
 			++ii;
 			samples.block(ii * resolution, 0, resolution, 1).setZero();
 			samples.block(ii * resolution, 1, resolution, 1).setZero();
@@ -102,7 +104,7 @@ namespace polyfem
 		{
 			samples.resize(12 * resolution, 3);
 			const Eigen::MatrixXd t = Eigen::VectorXd::LinSpaced(resolution, 0, 1);
-			//X
+			// X
 			int ii = 0;
 			samples.block(ii * resolution, 0, resolution, 1) = t;
 			samples.block(ii * resolution, 1, resolution, 1).setZero();
@@ -123,7 +125,7 @@ namespace polyfem
 			samples.block(ii * resolution, 1, resolution, 1).setOnes();
 			samples.block(ii * resolution, 2, resolution, 1).setOnes();
 
-			//Y
+			// Y
 			++ii;
 			samples.block(ii * resolution, 0, resolution, 1).setZero();
 			samples.block(ii * resolution, 1, resolution, 1) = t;
@@ -144,7 +146,7 @@ namespace polyfem
 			samples.block(ii * resolution, 1, resolution, 1) = t;
 			samples.block(ii * resolution, 2, resolution, 1).setOnes();
 
-			//Z
+			// Z
 			++ii;
 			samples.block(ii * resolution, 0, resolution, 1).setZero();
 			samples.block(ii * resolution, 1, resolution, 1).setZero();

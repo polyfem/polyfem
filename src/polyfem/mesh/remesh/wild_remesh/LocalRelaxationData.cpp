@@ -109,8 +109,8 @@ namespace polyfem::mesh
 		state.problem->setup_bc(
 			*mesh, n_bases() - state.obstacle.n_vertices(), bases, /*geom_bases=*/bases,
 			/*pressure_bases=*/std::vector<basis::ElementBases>(), local_boundary,
-			boundary_nodes, local_neumann_boundary, pressure_boundary_nodes,
-			dirichlet_nodes, neumann_nodes);
+			boundary_nodes, local_neumann_boundary, local_pressure_boundary,
+			local_pressure_cavity, pressure_boundary_nodes, dirichlet_nodes, neumann_nodes);
 
 		auto find_node_position = [&](const int n_id) {
 			for (const auto &bs : bases)
@@ -158,6 +158,8 @@ namespace polyfem::mesh
 		mass_matrix_assembler = std::make_shared<assembler::Mass>();
 		mass_matrix_assembler->set_size(dim());
 		mass_matrix_assembler->set_materials(local_mesh.body_ids(), state.args["materials"], state.units);
+
+		pressure_assembler = nullptr; // TODO: implement this
 	}
 
 	template <typename M>
@@ -260,6 +262,8 @@ namespace polyfem::mesh
 				/*n_pressure_bases=*/0, boundary_nodes, local_boundary,
 				local_neumann_boundary, state.n_boundary_samples(), rhs,
 				target_x, mass_matrix_assembler->density(),
+				// Pressure form
+				local_pressure_boundary, local_pressure_cavity, pressure_assembler,
 				// Inertia form
 				state.args.value("/time/quasistatic"_json_pointer, true), mass,
 				/*damping_assembler=*/nullptr,
@@ -276,6 +280,10 @@ namespace polyfem::mesh
 				state.args["solver"]["contact"]["CCD"]["tolerance"],
 				state.args["solver"]["contact"]["CCD"]["max_iterations"],
 				/*enable_shape_derivatives=*/false,
+				// Homogenization
+				assembler::MacroStrainValue(),
+				// Periodic contact
+				/*periodic_contact=*/false, /*tiled_to_single=*/Eigen::VectorXi(),
 				// Friction form
 				state.args["contact"]["friction_coefficient"],
 				state.args["contact"]["epsv"],

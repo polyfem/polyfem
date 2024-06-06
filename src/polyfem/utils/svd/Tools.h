@@ -67,43 +67,6 @@ namespace JIXIE {
 template <bool B, class T = void>
 using enable_if_t = typename std::enable_if<B, T>::type;
 
-/**
-    Random number generator.
-*/
-template <class T>
-class RandomNumber {
-public:
-    std::mt19937 generator;
-
-    RandomNumber(unsigned s = 123)
-        : generator(s)
-    {
-    }
-
-    ~RandomNumber()
-    {
-    }
-
-    /**
-       Random real number from an interval
-    */
-    T randReal(T a, T b)
-    {
-        std::uniform_real_distribution<T> distribution(a, b);
-        return distribution(generator);
-    }
-
-    /**
-      Fill with uniform random numbers
-    */
-    template <class Derived>
-    void fill(Eigen::DenseBase<Derived>& x, T a, T b)
-    {
-        for (typename Derived::Index i = 0; i < x.size(); i++)
-            x(i) = randReal(a, b);
-    }
-};
-
 namespace MATH_TOOLS {
 
 /**
@@ -146,40 +109,6 @@ inline double rsqrt(double a)
     return 1 / sqrt(a);
 }
 } // namespace MATH_TOOLS
-
-/**
-    Timer. We can use either system timer or stready timer
-*/
-class Timer {
-public:
-    Timer() {}
-
-    ~Timer() {}
-
-    /**
-          \brief Start timing
-        */
-    void start()
-    {
-        start_time = std::chrono::steady_clock::now();
-    }
-
-    /**
-         \return time elapsed since last click in seconds
-*/
-    double click()
-    {
-        to_time = std::chrono::steady_clock::now();
-        elapsed_seconds = to_time - start_time;
-        start_time = to_time;
-        return elapsed_seconds.count();
-    }
-
-private:
-    std::chrono::time_point<std::chrono::steady_clock> start_time;
-    std::chrono::time_point<std::chrono::steady_clock> to_time;
-    std::chrono::duration<double> elapsed_seconds;
-};
 
 namespace INTERNAL {
 using namespace std;

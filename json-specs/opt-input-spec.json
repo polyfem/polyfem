@@ -281,11 +281,11 @@
         "type_name": "slice",
         "type": "object",
         "required": [
-            "from",
-            "to",
             "type"
         ],
         "optional": [
+            "from",
+            "to",
             "last"
         ],
         "doc": "Ouputs x[from:to], where x is the input vector"

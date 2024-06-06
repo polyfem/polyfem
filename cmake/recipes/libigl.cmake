@@ -27,4 +27,31 @@ cmake_dependent_option(LIBIGL_RESTRICTED_TRIANGLE "Build target igl_restricted::
 include(eigen)
 
 include(CPM)
-CPMAddPackage("gh:libigl/libigl@2.4.0")
+if(POLYSOLVE_WITH_ACCELERATE)
+    find_package(Patch REQUIRED)
+    set(PATCH_COMMAND_ARGS "-rnN")
+
+    file(GLOB_RECURSE patches_for_libigl CONFIGURE_DEPENDS
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/igl_*.patch"
+    )
+
+    set(PATCH_COMMAND_FOR_CPM_BASE "${Patch_EXECUTABLE}" ${PATCH_COMMAND_ARGS} -p1 < )
+
+    set(PATCH_COMMAND_FOR_CPM "")
+    foreach(patch_filename IN LISTS patches_for_libigl)
+        list(APPEND PATCH_COMMAND_FOR_CPM ${PATCH_COMMAND_FOR_CPM_BASE})
+        list(APPEND PATCH_COMMAND_FOR_CPM ${patch_filename})
+        list(APPEND PATCH_COMMAND_FOR_CPM &&)
+    endforeach()
+    list(POP_BACK PATCH_COMMAND_FOR_CPM)
+
+    message(DEBUG "Patch command: ${PATCH_COMMAND_FOR_CPM}")
+
+    CPMAddPackage(
+        NAME libigl
+        GITHUB_REPOSITORY "libigl/libigl"
+        GIT_TAG "v2.5.0"
+        PATCH_COMMAND ${PATCH_COMMAND_FOR_CPM})
+else()
+    CPMAddPackage("gh:libigl/libigl@2.5.0")
+endif()

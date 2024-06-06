@@ -193,7 +193,10 @@ namespace polyfem::solver
 			}
 			else if (type == "boundary_smoothing")
 			{
-				obj = std::make_shared<BoundarySmoothingForm>(var2sim, *(states[args["state"]]), args["scale_invariant"], args["power"], args["surface_selection"]);
+				if (args["surface_selection"].is_array())
+					obj = std::make_shared<BoundarySmoothingForm>(var2sim, *(states[args["state"]]), args["scale_invariant"], args["power"], args["surface_selection"].get<std::vector<int>>());
+				else
+					obj = std::make_shared<BoundarySmoothingForm>(var2sim, *(states[args["state"]]), args["scale_invariant"], args["power"], std::vector<int>{args["surface_selection"].get<int>()});
 			}
 			else if (type == "collision_barrier")
 			{

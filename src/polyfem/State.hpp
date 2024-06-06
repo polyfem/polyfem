@@ -521,14 +521,12 @@ namespace polyfem
 		/// Build the mesh matrices (vertices and elements) from the mesh using the bases node ordering
 		void build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F);
 
-#ifdef POLYFEM_WITH_REMESHING
 		/// @brief Remesh the FE space and update solution(s).
 		/// @param time Current time.
 		/// @param dt Time step size.
 		/// @param sol Current solution.
 		/// @return True if remeshing performed any changes to the mesh/solution.
 		bool remesh(const double time, const double dt, Eigen::MatrixXd &sol);
-#endif
 
 		//---------------------------------------------------
 		//-----------------IPC-------------------------------

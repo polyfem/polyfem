@@ -62,6 +62,7 @@ namespace polyfem::mesh
 		}
 
 		const Eigen::MatrixXd H = M(free_nodes, free_nodes);
+
 		const Eigen::MatrixXd g = -((M * x - A * y)(free_nodes, Eigen::all));
 		const Eigen::MatrixXd sol = H.llt().solve(g);
 		x(free_nodes, Eigen::all) += sol;
