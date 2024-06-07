@@ -302,7 +302,7 @@ namespace polyfem
 				{
 					utils::SparseMatrixCache mat_cache;
 					StiffnessMatrix damping_hessian_prev(u.size(), u.size());
-					damping_prev_assembler->assemble_hessian(mesh->is_volume(), n_bases, false, bases, geom_bases(), ass_vals_cache, force_step * args["time"]["dt"].get<double>() + args["time"]["t0"].get<double>(), dt, u, u_prev, mat_cache, damping_hessian_prev);
+					damping_prev_assembler->assemble_hessian(mesh->is_volume(), n_bases, ipc::ProjectType::None, bases, geom_bases(), ass_vals_cache, force_step * args["time"]["dt"].get<double>() + args["time"]["t0"].get<double>(), dt, u, u_prev, mat_cache, damping_hessian_prev);
 
 					hessian_prev += damping_hessian_prev;
 				}

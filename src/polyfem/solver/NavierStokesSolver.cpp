@@ -170,7 +170,7 @@ namespace polyfem
 
 			time.start();
 			velocity_assembler.set_picard(true);
-			velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
+			velocity_assembler.assemble_hessian(is_volume, n_bases, ipc::ProjectType::None, bases, gbases, ass_vals_cache, 0, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
 			AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure,
 												 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 												 total_matrix);
@@ -197,7 +197,7 @@ namespace polyfem
 				if (!is_picard)
 				{
 					velocity_assembler.set_picard(false);
-					velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
+					velocity_assembler.assemble_hessian(is_volume, n_bases, ipc::ProjectType::None, bases, gbases, ass_vals_cache, 0, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
 					AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure,
 														 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 														 total_matrix);
@@ -215,7 +215,7 @@ namespace polyfem
 
 				time.start();
 				velocity_assembler.set_picard(true);
-				velocity_assembler.assemble_hessian(is_volume, n_bases, false, bases, gbases, ass_vals_cache, 0, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
+				velocity_assembler.assemble_hessian(is_volume, n_bases, ipc::ProjectType::None, bases, gbases, ass_vals_cache, 0, 0, x, Eigen::MatrixXd(), mat_cache, nl_matrix);
 				AssemblerUtils::merge_mixed_matrices(n_bases, n_pressure_bases, problem_dim, use_avg_pressure,
 													 velocity_stiffness + nl_matrix, mixed_stiffness, pressure_stiffness,
 													 total_matrix);

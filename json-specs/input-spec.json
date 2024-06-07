@@ -1529,9 +1529,20 @@
             "cache_size",
             "lump_mass_matrix",
             "lagged_regularization_weight",
-            "lagged_regularization_iterations"
+            "lagged_regularization_iterations",
+            "project_psd_method"
         ],
         "doc": "Advanced settings for the solver"
+    },
+    {
+        "pointer": "/solver/advanced/project_psd_method",
+        "default": "clamp",
+        "options": [
+            "clamp",
+            "abs"
+        ],
+        "type": "string",
+        "doc": "Method to project the hessian matrix to PSD."
     },
     {
         "pointer": "/solver/advanced/cache_size",

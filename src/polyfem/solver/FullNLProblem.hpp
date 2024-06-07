@@ -6,6 +6,14 @@
 #include <memory>
 #include <vector>
 
+namespace ipc
+{
+	NLOHMANN_JSON_SERIALIZE_ENUM(
+		ipc::ProjectType,
+		{{ipc::ProjectType::Clamp, "clamp"}, // also default
+		 {ipc::ProjectType::Abs, "abs"}})
+} // namespace ipc
+
 namespace polyfem::solver
 {
 	class FullNLProblem : public polysolve::nonlinear::Problem
@@ -28,6 +36,7 @@ namespace polyfem::solver
 		virtual void post_step(const polysolve::nonlinear::PostStepData &data) override;
 
 		virtual void set_project_to_psd(bool val) override;
+		void set_project_to_psd_method(const ipc::ProjectType type);
 
 		virtual void solution_changed(const TVector &new_x) override;
 
@@ -41,6 +50,7 @@ namespace polyfem::solver
 		virtual bool stop(const TVector &x) override { return false; }
 
 	protected:
+		ipc::ProjectType project_to_psd_ = ipc::ProjectType::Clamp;
 		std::vector<std::shared_ptr<Form>> forms_;
 	};
 } // namespace polyfem::solver

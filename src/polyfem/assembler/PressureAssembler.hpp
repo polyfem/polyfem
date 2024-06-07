@@ -103,7 +103,7 @@ namespace polyfem
 				const std::vector<int> &dirichlet_nodes,
 				const int resolution,
 				const double t,
-				const bool project_to_psd,
+				const ipc::ProjectType project_to_psd,
 				StiffnessMatrix &hess) const;
 
 			double compute_cavity_energy(
@@ -124,7 +124,7 @@ namespace polyfem
 				const std::vector<int> &dirichlet_nodes,
 				const int resolution,
 				const double t,
-				const bool project_to_psd,
+				const ipc::ProjectType project_to_psd,
 				StiffnessMatrix &hess) const;
 
 			void compute_force_jacobian(

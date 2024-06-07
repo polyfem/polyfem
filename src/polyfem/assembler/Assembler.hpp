@@ -10,6 +10,10 @@
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/utils/Logger.hpp>
 
+namespace ipc {
+	enum class ProjectType;
+}
+
 // this casses are instantiated in the cpp, cannot be used with generic assembler
 // without adding template instantiation
 namespace polyfem::assembler
@@ -113,7 +117,7 @@ namespace polyfem::assembler
 		virtual void assemble_hessian(
 			const bool is_volume,
 			const int n_basis,
-			const bool project_to_psd,
+			const ipc::ProjectType project_to_psd,
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &cache,
@@ -279,7 +283,7 @@ namespace polyfem::assembler
 		void assemble_hessian(
 			const bool is_volume,
 			const int n_basis,
-			const bool project_to_psd,
+			const ipc::ProjectType project_to_psd,
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const AssemblyValsCache &cache,

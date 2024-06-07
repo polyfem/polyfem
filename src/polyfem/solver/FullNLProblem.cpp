@@ -13,10 +13,16 @@ namespace polyfem::solver
 			f->init(x);
 	}
 
+	void FullNLProblem::set_project_to_psd_method(const ipc::ProjectType type)
+	{
+		project_to_psd_ = type;
+	}
+
 	void FullNLProblem::set_project_to_psd(bool project_to_psd)
 	{
-		for (auto &f : forms_)
-			f->set_project_to_psd(project_to_psd);
+		if (project_to_psd)
+			for (auto &f : forms_)
+				f->set_project_to_psd(project_to_psd_);
 	}
 
 	void FullNLProblem::init_lagging(const TVector &x)

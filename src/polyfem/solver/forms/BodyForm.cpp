@@ -340,7 +340,7 @@ namespace polyfem::solver
 
 	void BodyForm::hessian_wrt_u_prev(const Eigen::VectorXd &u_prev, const double t, StiffnessMatrix &hessian) const
 	{
-		rhs_assembler_.compute_energy_hess(boundary_nodes_, n_boundary_samples_, local_neumann_boundary_, u_prev, t, false, hessian);
+		rhs_assembler_.compute_energy_hess(boundary_nodes_, n_boundary_samples_, local_neumann_boundary_, u_prev, t, /*always PSD*/ ipc::ProjectType::None, hessian);
 		hessian *= -1;
 	}
 } // namespace polyfem::solver

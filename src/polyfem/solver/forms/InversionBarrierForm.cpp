@@ -94,8 +94,8 @@ namespace polyfem::solver
 					(scale * rest_volume * ipc::barrier_second_derivative(volume, vhat_)) * volume_grad * volume_grad.transpose()
 					+ (scale * rest_volume * ipc::barrier_first_derivative(volume, vhat_)) * element_volume_hessian(element_vertices);
 
-				if (project_to_psd_)
-					local_hess = ipc::project_to_psd(local_hess);
+				if (project_to_psd_ != ipc::ProjectType::None)
+					local_hess = ipc::project_to_psd(local_hess, project_to_psd_);
 
 				ipc::local_hessian_to_global_triplets(local_hess, elements_.row(i), dim_, hess_triplets);
 			}

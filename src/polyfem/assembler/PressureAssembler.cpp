@@ -846,10 +846,10 @@ namespace polyfem
 			const std::vector<int> &dirichlet_nodes,
 			const int resolution,
 			const double t,
-			const bool project_to_psd,
+			const ipc::ProjectType project_to_psd,
 			StiffnessMatrix &hess) const
 		{
-			if (project_to_psd && local_pressure_cavity.size() > 0)
+			if (project_to_psd != ipc::ProjectType::None && local_pressure_cavity.size() > 0)
 			{
 				log_and_throw_error("Cannot project caivity pressure to PSD!");
 			}
@@ -906,7 +906,7 @@ namespace polyfem
 			const std::vector<int> &dirichlet_nodes,
 			const int resolution,
 			const double t,
-			const bool project_to_psd,
+			const ipc::ProjectType project_to_psd,
 			StiffnessMatrix &hess) const
 		{
 			if (size_ == 2)
@@ -924,7 +924,7 @@ namespace polyfem
 			const int n_vertices,
 			StiffnessMatrix &hess) const
 		{
-			compute_energy_hess(displacement, local_pressure_boundary, dirichlet_nodes, resolution, t, false, hess);
+			compute_energy_hess(displacement, local_pressure_boundary, dirichlet_nodes, resolution, t, ipc::ProjectType::None, hess);
 		}
 
 	} // namespace assembler

@@ -645,7 +645,7 @@ namespace polyfem::assembler
 	void NLAssembler::assemble_hessian(
 		const bool is_volume,
 		const int n_basis,
-		const bool project_to_psd,
+		const ipc::ProjectType project_to_psd,
 		const std::vector<ElementBases> &bases,
 		const std::vector<ElementBases> &gbases,
 		const AssemblyValsCache &cache,
@@ -690,8 +690,8 @@ namespace polyfem::assembler
 				assert(stiffness_val.rows() == n_loc_bases * size());
 				assert(stiffness_val.cols() == n_loc_bases * size());
 
-				if (project_to_psd)
-					stiffness_val = ipc::project_to_psd(stiffness_val);
+				if (project_to_psd != ipc::ProjectType::None)
+					stiffness_val = ipc::project_to_psd(stiffness_val, project_to_psd);
 
 				// bool has_nan = false;
 				// for(int k = 0; k < stiffness_val.size(); ++k)

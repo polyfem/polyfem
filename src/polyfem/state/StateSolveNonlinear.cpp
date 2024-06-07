@@ -270,6 +270,7 @@ namespace polyfem
 			*solve_data.rhs_assembler, periodic_bc, t, forms);
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
+		solve_data.nl_problem->set_project_to_psd_method(args["solver"]["advanced"]["project_psd_method"]);
 		// --------------------------------------------------------------------
 
 		stats.solver_info = json::array();

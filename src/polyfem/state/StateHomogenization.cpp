@@ -114,6 +114,7 @@ namespace polyfem
 			homo_problem->add_form(solve_data.strain_al_pen_form);
 
 		solve_data.nl_problem = homo_problem;
+		solve_data.nl_problem->set_project_to_psd_method(args["solver"]["advanced"]["project_psd_method"]);
 		solve_data.nl_problem->init(Eigen::VectorXd::Zero(homo_problem->reduced_size() + homo_problem->macro_reduced_size()));
 		solve_data.nl_problem->update_quantities(t, Eigen::VectorXd::Zero(homo_problem->reduced_size() + homo_problem->macro_reduced_size()));
 	}

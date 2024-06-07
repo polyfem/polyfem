@@ -5,6 +5,8 @@
 
 #include <filesystem>
 
+#include <ipc/utils/eigen_ext.hpp>
+
 namespace polyfem::solver
 {
 	class Form
@@ -106,10 +108,10 @@ namespace polyfem::solver
 
 		/// @brief Set project to psd
 		/// @param val If true, the form's second derivative is projected to be positive semidefinite
-		void set_project_to_psd(bool val) { project_to_psd_ = val; }
+		void set_project_to_psd(ipc::ProjectType val) { project_to_psd_ = val; }
 
 		/// @brief Get if the form's second derivative is projected to psd
-		bool is_project_to_psd() const { return project_to_psd_; }
+		bool is_project_to_psd() const { return project_to_psd_ != ipc::ProjectType::None; }
 
 		/// @brief Enable the form
 		void enable() { enabled_ = true; }
@@ -143,7 +145,7 @@ namespace polyfem::solver
 		void set_output_dir(const std::string &output_dir) { output_dir_ = output_dir; }
 
 	protected:
-		bool project_to_psd_ = false; ///< If true, the form's second derivative is projected to be positive semidefinite
+		ipc::ProjectType project_to_psd_ = ipc::ProjectType::None; ///< If not None, the form's second derivative is projected to be positive semidefinite
 
 		double weight_ = 1; ///< weight of the form (e.g., AL penalty weight or Δt²)
 

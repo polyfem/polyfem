@@ -78,7 +78,7 @@ namespace polyfem
 				Eigen::MatrixXd &rhs) const;
 
 			// compute body hessian wrt to previous solution
-			void compute_energy_hess(const std::vector<int> &bounday_nodes, const int resolution, const std::vector<mesh::LocalBoundary> &local_neumann_boundary, const Eigen::MatrixXd &displacement, const double t, const bool project_to_psd, StiffnessMatrix &hess) const;
+			void compute_energy_hess(const std::vector<int> &bounday_nodes, const int resolution, const std::vector<mesh::LocalBoundary> &local_neumann_boundary, const Eigen::MatrixXd &displacement, const double t, const ipc::ProjectType project_to_psd, StiffnessMatrix &hess) const;
 
 			inline const Problem &problem() const { return problem_; }
 			inline const mesh::Mesh &mesh() const { return mesh_; }

@@ -894,7 +894,7 @@ namespace polyfem
 			const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
 			const Eigen::MatrixXd &displacement,
 			const double t,
-			const bool project_to_psd,
+			const ipc::ProjectType project_to_psd,
 			StiffnessMatrix &hess) const
 		{
 			hess.resize(n_basis_ * size_, n_basis_ * size_);
@@ -1051,8 +1051,8 @@ namespace polyfem
 						}
 					}
 
-					if (project_to_psd)
-						local_hessian = ipc::project_to_psd(local_hessian);
+					if (project_to_psd != ipc::ProjectType::None)
+						local_hessian = ipc::project_to_psd(local_hessian, project_to_psd);
 
 					for (long n = 0; n < nodes.size(); ++n)
 					{

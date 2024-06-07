@@ -300,6 +300,7 @@ namespace polyfem::mesh
 
 		solve_data.nl_problem = std::make_shared<polyfem::solver::StaticBoundaryNLProblem>(
 			ndof(), boundary_nodes, target_x, forms);
+		solve_data.nl_problem->set_project_to_psd_method(state.args["solver"]["advanced"]["project_psd_method"]);
 
 		assert(solve_data.time_integrator != nullptr);
 		solve_data.nl_problem->update_quantities(current_time, solve_data.time_integrator->x_prev());
