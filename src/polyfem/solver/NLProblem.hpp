@@ -5,6 +5,11 @@
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/assembler/PeriodicBoundary.hpp>
 
+namespace polyfem
+{
+	class State;
+}
+
 namespace polyfem::solver
 {
 	class NLProblem : public FullNLProblem
@@ -63,6 +68,8 @@ namespace polyfem::solver
 		virtual TVector reduced_to_full(const TVector &reduced) const;
 
 		void set_apply_DBC(const TVector &x, const bool val);
+
+		State *state_ = nullptr;
 
 	protected:
 		virtual Eigen::MatrixXd boundary_values() const;
