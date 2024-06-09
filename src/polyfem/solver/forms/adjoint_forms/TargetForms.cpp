@@ -225,7 +225,7 @@ namespace polyfem::solver
 
 	NodeTargetForm::NodeTargetForm(const State &state, const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_) : StaticForm(variable_to_simulations), state_(state), target_vertex_positions(target_vertex_positions_), active_nodes(active_nodes_)
 	{
-		log_and_throw_adjoint_error("[{}] Constructor not implemented!", name());
+		// log_and_throw_adjoint_error("[{}] Constructor not implemented!", name());
 	}
 
 	Eigen::VectorXd NodeTargetForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
