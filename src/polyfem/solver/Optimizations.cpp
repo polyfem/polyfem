@@ -100,6 +100,16 @@ namespace polyfem::solver
 				const auto &state = states[args["state"]];
 				obj = std::make_shared<TransientForm>(var2sim, state->args["time"]["time_steps"], state->args["time"]["dt"], args["integral_type"], args["steps"].get<std::vector<int>>(), static_obj);
 			}
+			else if (type == "proxy_transient_integral")
+			{
+				std::shared_ptr<StaticForm> static_obj = std::dynamic_pointer_cast<StaticForm>(create_form(args["static_objective"], var2sim, states));
+				if (!static_obj)
+					log_and_throw_adjoint_error("Transient integral objective must have a static objective!");
+				if (args["steps"].size() == 0)
+					log_and_throw_adjoint_error("ProxyTransientForm requires non-empty \"steps\"!");
+				const auto &state = states[args["state"]];
+				obj = std::make_shared<ProxyTransientForm>(var2sim, state->args["time"]["time_steps"], state->args["time"]["dt"], args["integral_type"], args["steps"].get<std::vector<int>>(), static_obj);
+			}
 			else if (type == "power")
 			{
 				std::shared_ptr<AdjointForm> obj_aux = create_form(args["objective"], var2sim, states);
@@ -148,6 +158,10 @@ namespace polyfem::solver
 			else if (type == "node-target")
 			{
 				obj = std::make_shared<NodeTargetForm>(*(states[args["state"]]), var2sim, args);
+			}
+			else if (type == "min-dist-target")
+			{
+				obj = std::make_shared<MinTargetDistForm>(var2sim, args["steps"], args["target"], args, states[args["state"]]);
 			}
 			else if (type == "position")
 			{

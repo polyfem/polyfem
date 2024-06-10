@@ -144,4 +144,68 @@ namespace polyfem::solver
 	{
 		return obj_->is_step_collision_free(x0, x1);
 	}
+
+	double ProxyTransientForm::value_unweighted(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd vals(steps_.size());
+		int j = 0;
+		for (int i : steps_)
+		{
+			vals(j++) = obj_->value_unweighted_step(i, x);
+		}
+
+		return eval(vals);
+	}
+	Eigen::MatrixXd ProxyTransientForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const
+	{
+		Eigen::VectorXd vals(steps_.size());
+		Eigen::MatrixXd terms;
+		terms.setZero(state.ndof(), steps_.size());
+		
+		int j = 0;
+		for (int i : steps_)
+		{
+			vals(j) = obj_->value_unweighted_step(i, x);
+			terms.col(j++) = obj_->compute_adjoint_rhs_step(i, x, state);
+		}
+
+		const Eigen::VectorXd g = eval_grad(vals);
+		Eigen::MatrixXd out;
+		out.setZero(state.ndof(), time_steps_ + 1);
+		j = 0;
+		for (int i : steps_)
+		{
+			out.col(i) = terms.col(j) * (g(j) * weight());
+			j++;
+		}
+
+		return out;
+	}
+	void ProxyTransientForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	{
+		Eigen::VectorXd vals(steps_.size());
+		Eigen::MatrixXd terms;
+		terms.setZero(x.size(), steps_.size());
+		
+		int j = 0;
+		Eigen::VectorXd tmp;
+		for (int i : steps_)
+		{
+			vals(j) = obj_->value_unweighted_step(i, x);
+			obj_->compute_partial_gradient_step(i, x, tmp);
+			terms.col(j++) = tmp;
+		}
+
+		gradv = terms * eval_grad(vals) * weight();
+	}
+
+	double ProxyTransientForm::eval(const Eigen::VectorXd &y) const
+	{
+		return 1. / y.array().inverse().sum();
+	}
+
+	Eigen::VectorXd ProxyTransientForm::eval_grad(const Eigen::VectorXd &y) const
+	{
+		return y.array().pow(-2.0) * pow(eval(y), 2);
+	}
 } // namespace polyfem::solver

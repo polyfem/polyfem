@@ -317,4 +317,90 @@ namespace polyfem::solver
 
 		return dist;
 	}
+
+	MinTargetDistForm::MinTargetDistForm(const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &steps, const Eigen::VectorXd &target, const json &args, const std::shared_ptr<State> &state)
+	 : AdjointForm(variable_to_simulations), steps_(steps), target_(target) 
+	{
+		dim = state->mesh->dimension();
+		json tmp_args = args;
+		for (int d = 0; d < dim; d++)
+		{
+			tmp_args["dim"] = d;
+			objs.push_back(std::make_unique<PositionForm>(variable_to_simulations, *state, tmp_args));
+		}
+		objs.push_back(std::make_unique<VolumeForm>(variable_to_simulations, *state, args));
+	}
+	Eigen::MatrixXd MinTargetDistForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const
+	{
+		Eigen::VectorXd values(steps_.size());
+		std::vector<Eigen::MatrixXd> grads(steps_.size(), Eigen::MatrixXd::Zero(state.ndof(), objs.size()));
+		Eigen::MatrixXd g2(steps_.size(), objs.size());
+		int i = 0;
+		for (int s : steps_)
+		{
+			Eigen::VectorXd input(objs.size());
+			Eigen::VectorXd tmp;
+			for (int d = 0; d < objs.size(); d++)
+			{
+				input(d) = objs[d]->value_unweighted_step(s, x);
+				grads[i].col(d) = objs[d]->compute_adjoint_rhs_step(s, x, state);
+			}
+			values[i] = eval2(input);
+			g2.row(i++) = eval2_grad(input);
+		}
+
+		Eigen::VectorXd g1 = eval1_grad(values);
+		Eigen::MatrixXd terms = Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
+		i = 0;
+		for (int s : steps_)
+		{
+			terms.col(s) += g1(i) * grads[i] * g2.row(i).transpose();
+			i++;
+		}
+		
+		return terms;
+	}
+	void MinTargetDistForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	{
+		Eigen::VectorXd values(steps_.size());
+		std::vector<Eigen::MatrixXd> grads(steps_.size(), Eigen::MatrixXd::Zero(x.size(), objs.size()));
+		Eigen::MatrixXd g2(steps_.size(), objs.size());
+		int i = 0;
+		for (int s : steps_)
+		{
+			Eigen::VectorXd input(objs.size());
+			Eigen::VectorXd tmp;
+			for (int d = 0; d < objs.size(); d++)
+			{
+				input(d) = objs[d]->value_unweighted_step(s, x);
+				objs[d]->compute_partial_gradient_step(s, x, tmp);
+				grads[i].col(d) = tmp;
+			}
+			values[i] = eval2(input);
+			g2.row(i++) = eval2_grad(input);
+		}
+
+		Eigen::VectorXd g1 = eval1_grad(values);
+		gradv.setZero(x.size());
+		i = 0;
+		for (int s : steps_)
+		{
+			gradv += g1(i) * grads[i] * g2.row(i).transpose();
+			i++;
+		}
+	}
+	double MinTargetDistForm::value_unweighted(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd values(steps_.size());
+		int i = 0;
+		for (int s : steps_)
+		{
+			Eigen::VectorXd input(objs.size());
+			for (int d = 0; d < objs.size(); d++)
+				input(d) = objs[d]->value_unweighted_step(s, x);
+			values[i++] = eval2(input);
+		}
+
+		return eval1(values);
+	}
 } // namespace polyfem::solver

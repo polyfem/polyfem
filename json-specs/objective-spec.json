@@ -34,7 +34,8 @@
             "AMIPS",
             "AMIPS-clean",
             "parametrized_product",
-            "min_jacobian"
+            "min_jacobian",
+            "min-dist-target"
         ],
         "doc": "TODO"
     },
@@ -176,6 +177,23 @@
         "doc": "TODO"
     },
     {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "min-dist-target",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "weight",
+            "print_energy",
+            "volume_selection",
+            "target",
+            "steps"
+        ],
+        "doc": "TODO"
+    },
+    {
         "pointer": "/value",
         "type": "float",
         "doc": "TODO"
@@ -278,6 +296,17 @@
     },
     {
         "pointer": "/target_displacement/*",
+        "type": "float",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/target",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/target/*",
         "type": "float",
         "doc": "TODO"
     },
