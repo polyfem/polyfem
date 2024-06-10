@@ -901,6 +901,14 @@ TEST_CASE("initial-contact", "[test_adjoint]")
 {
 	json opt_args;
 	load_json(append_root_path("initial-contact-opt.json"), opt_args);
+	json new_obj = R"({
+            "type": "min-dist-target",
+            "state": 0,
+            "target": [0.05, 0.2],
+            "volume_selection": [1],
+            "steps": [2, 4]
+        })"_json;
+	opt_args["functionals"].push_back(new_obj);
 	auto [obj, var2sim, states] = prepare_test(opt_args);
 
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
