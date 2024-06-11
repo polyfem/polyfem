@@ -181,6 +181,11 @@ namespace polyfem::solver
 			{
 				POLYFEM_SCOPED_TIMER("gradient assembly");
 				form_->first_derivative(x, gradv);
+				if (x.size() < 10)
+				{
+					adjoint_logger().trace("x {}", x.transpose());
+					adjoint_logger().trace("gradient {}", gradv.transpose());
+				}
 			}
 
 			cur_grad = gradv;
