@@ -5,14 +5,9 @@
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/io/OBJWriter.hpp>
+#include <polyfem/io/MshWriter.hpp>
 #include <polyfem/State.hpp>
-#include <igl/boundary_facets.h>
-#include <igl/writeOBJ.h>
 #include <polyfem/mesh/SlimSmooth.hpp>
-
-#include <polyfem/io/Evaluator.hpp>
-#include <polyfem/solver/forms/PeriodicContactForm.hpp>
-#include <polyfem/solver/NLHomoProblem.hpp>
 
 #include <list>
 #include <stack>
@@ -244,7 +239,8 @@ namespace polyfem::solver
 			bool save_rest_mesh = true;
 
 			std::string vis_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.vtu", id, iter_num));
-			std::string rest_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}.obj", id, iter_num));
+			std::string mesh_ext = state->mesh->is_volume() ? ".msh" : ".obj";
+			std::string rest_mesh_path = state->resolve_output_path(fmt::format("opt_state_{:d}_iter_{:d}" + mesh_ext, id, iter_num));
 			id++;
 
 			if (!save_vtu)
@@ -277,10 +273,10 @@ namespace polyfem::solver
 			Eigen::MatrixXi F;
 			state->get_vertices(V);
 			state->get_elements(F);
-			if (state->mesh->dimension() == 3)
-				F = igl::boundary_facets<Eigen::MatrixXi, Eigen::MatrixXi>(F);
-
-			io::OBJWriter::write(rest_mesh_path, V, F);
+			if (state->mesh->is_volume())
+				io::MshWriter::write(rest_mesh_path, V, F, state->mesh->get_body_ids(), true, false);
+			else
+				io::OBJWriter::write(rest_mesh_path, V, F);
 		}
 	}
 

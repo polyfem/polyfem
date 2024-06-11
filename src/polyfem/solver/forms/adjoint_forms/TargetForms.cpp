@@ -358,7 +358,7 @@ namespace polyfem::solver
 			i++;
 		}
 		
-		return terms;
+		return terms * weight();
 	}
 	void MinTargetDistForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
@@ -388,6 +388,7 @@ namespace polyfem::solver
 			gradv += g1(i) * grads[i] * g2.row(i).transpose();
 			i++;
 		}
+		gradv *= weight();
 	}
 	double MinTargetDistForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
