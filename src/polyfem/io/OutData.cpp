@@ -1093,7 +1093,7 @@ namespace polyfem::io
 
 		scalar_values = args["output"]["paraview"]["options"]["scalar_values"];
 		tensor_values = args["output"]["paraview"]["options"]["tensor_values"] && !is_problem_scalar;
-		discretization_order = args["output"]["paraview"]["options"]["discretization_order"] && !is_problem_scalar;
+		discretization_order = args["output"]["paraview"]["options"]["discretization_order"];
 		nodes = args["output"]["paraview"]["options"]["nodes"] && !is_problem_scalar;
 
 		use_spline = args["space"]["basis_type"] == "Spline";
