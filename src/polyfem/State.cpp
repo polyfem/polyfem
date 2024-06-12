@@ -1305,6 +1305,7 @@ namespace polyfem
 				if (!periodic_bc->is_periodic_dof(E(i, 0)) || !periodic_bc->is_periodic_dof(E(i, 1)))
 					ind.push_back(i);
 			}
+
 			E = E(ind, Eigen::all).eval();
 		}
 
@@ -1354,6 +1355,7 @@ namespace polyfem
 		Eigen::VectorXi potentially_duplicate_mask(Vtmp.rows());
 		potentially_duplicate_mask.setZero();
 		potentially_duplicate_mask(indices).array() = 1;
+
 		Eigen::MatrixXd candidates = Vtmp(indices, Eigen::all);
 
 		Eigen::VectorXi SVI;
@@ -1377,6 +1379,7 @@ namespace polyfem
 				id++;
 			}
 		}
+
 		Vnew = Vtmp(SVJ, Eigen::all);
 
 		Enew.resizeLike(Etmp);

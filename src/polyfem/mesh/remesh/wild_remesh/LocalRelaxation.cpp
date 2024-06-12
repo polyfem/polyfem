@@ -68,7 +68,7 @@ namespace polyfem::mesh
 		auto nl_solver = state.make_nl_solver(/*for_al=*/false); // TODO: Use Eigen::LLT
 		nl_solver->stop_criteria().iterations = args["local_relaxation"]["max_nl_iterations"];
 		if (this->is_boundary_op())
-			nl_solver->stop_criteria().iterations = std::max(nl_solver->stop_criteria().iterations, 5ul);
+			nl_solver->stop_criteria().iterations = std::max(nl_solver->stop_criteria().iterations, size_t(5));
 		nl_solver->allow_out_of_iterations = true;
 
 		Eigen::VectorXd reduced_sol = solve_data.nl_problem->full_to_reduced(data.sol());

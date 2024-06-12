@@ -54,6 +54,7 @@ namespace polyfem::solver
 					const ipc::BroadPhaseMethod broad_phase_method,
 					const double ccd_tolerance,
 					const int ccd_max_iterations);
+		virtual ~ContactForm() = default;
 
 		std::string name() const override { return "contact"; }
 

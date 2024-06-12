@@ -28,6 +28,7 @@ namespace polyfem::solver
 				  const State &state,
 				  const double t, const std::vector<std::shared_ptr<Form>> &forms, 
 				  const bool solve_symmetric_macro_strain);
+		virtual ~NLHomoProblem() = default;
 
 		double value(const TVector &x) override;
 		void gradient(const TVector &x, TVector &gradv) override;

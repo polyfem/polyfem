@@ -46,10 +46,6 @@ namespace polyfem
 		EnergyCSVWriter energy_csv(resolve_output_path("energy.csv"), solve_data);
 		RuntimeStatsCSVWriter stats_csv(resolve_output_path("stats.csv"), *this, t0, dt);
 		const bool remesh_enabled = args["space"]["remesh"]["enabled"];
-#ifndef POLYFEM_WITH_REMESHING
-		if (remesh_enabled)
-			log_and_throw_error("Remeshing is not enabled in this build! Set POLYFEM_WITH_REMESHING=ON in CMake to enable it.");
-#endif
 		// const double save_dt = remesh_enabled ? (dt / 3) : dt;
 
 		// Save the initial solution
@@ -71,7 +67,7 @@ namespace polyfem
 
 			recurrent_mesh(t, sol);
 
-#ifdef POLYFEM_WITH_REMESHING
+
 			if (remesh_enabled)
 			{
 				energy_csv.write(save_i, sol);
@@ -96,7 +92,7 @@ namespace polyfem
 					solve_tensor_nonlinear(sol, t, false); // solve the scene again after remeshing
 				}
 			}
-#endif
+
 			// Always save the solution for consistency
 			energy_csv.write(save_i, sol);
 			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
@@ -137,7 +133,8 @@ namespace polyfem
 
 			// save restart file
 			save_restart_json(t0, dt, t);
-			stats_csv.write(t, forward_solve_time, remeshing_time, global_relaxation_time, sol);
+			if (remesh_enabled)
+				stats_csv.write(t, forward_solve_time, remeshing_time, global_relaxation_time, sol);
 		}
 	}
 
@@ -251,7 +248,7 @@ namespace polyfem
 			args["solver"]["contact"]["CCD"]["max_iterations"],
 			optimization_enabled == solver::CacheLevel::Derivatives,
 			// Homogenization
-        	macro_strain_constraint,
+			macro_strain_constraint,
 			// Periodic contact
 			args["contact"]["periodic"], periodic_collision_mesh_to_basis,
 			// Friction form

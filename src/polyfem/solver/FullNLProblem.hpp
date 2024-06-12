@@ -12,6 +12,7 @@ namespace polyfem::solver
 	{
 	public:
 		FullNLProblem(const std::vector<std::shared_ptr<Form>> &forms);
+		virtual ~FullNLProblem() = default;
 		virtual void init(const TVector &x0) override;
 
 		virtual double value(const TVector &x) override;

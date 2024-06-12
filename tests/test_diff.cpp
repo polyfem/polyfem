@@ -913,6 +913,24 @@ TEST_CASE("initial-contact", "[test_adjoint]")
 	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-5, 1e-5);
 }
 
+TEST_CASE("friction-contact", "[test_adjoint]")
+{
+	json opt_args;
+	load_json(append_root_path("initial-contact-opt.json"), opt_args);
+	opt_args["variable_to_simulation"][0]["type"] = "friction";
+	auto [obj, var2sim, states] = prepare_test(opt_args);
+
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
+
+	Eigen::VectorXd velocity_discrete(1);
+	velocity_discrete << 1.;
+
+	Eigen::VectorXd x(1);
+	x << 0.2;
+
+	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-4, 1e-6);
+}
+
 TEST_CASE("barycenter", "[test_adjoint]")
 {
 	json opt_args;

@@ -1946,6 +1946,40 @@
         "doc": "Material Parameters including ID"
     },
     {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "FixedCorotational",
+        "required": [
+            "type",
+            "E",
+            "nu"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "phi",
+            "psi"
+        ],
+        "doc": "Material Parameters including ID"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "FixedCorotational",
+        "required": [
+            "type",
+            "lambda",
+            "mu"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "phi",
+            "psi"
+        ],
+        "doc": "Material Parameters including ID"
+    },
+    {
         "pointer": "/materials/*/type",
         "type": "string",
         "options": [
@@ -1965,7 +1999,8 @@
             "Laplacian",
             "Helmholtz",
             "Bilaplacian",
-            "AMIPS"
+            "AMIPS",
+            "FixedCorotational"
         ],
         "doc": "Type of material"
     },

@@ -1,4 +1,5 @@
 #include <Eigen/Dense>
+#include <cassert>
  namespace polyfem {
 namespace autogen {void q_0_basis_grad_value_3d(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val){
 
