@@ -19,7 +19,6 @@ namespace polyfem::assembler
 		mooney_rivlin_elasticity_.set_size(size);
 		unconstrained_ogden_elasticity_.set_size(size);
 		incompressible_ogden_elasticity_.set_size(size);
-		fixed_corotational_.set_size(size);
 	}
 
 	void MultiModel::add_multimaterial(const int index, const json &params, const Units &units)
@@ -34,7 +33,6 @@ namespace polyfem::assembler
 		mooney_rivlin_elasticity_.add_multimaterial(index, params, units);
 		unconstrained_ogden_elasticity_.add_multimaterial(index, params, units);
 		incompressible_ogden_elasticity_.add_multimaterial(index, params, units);
-		fixed_corotational_.add_multimaterial(index, params, units);
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1>
@@ -69,8 +67,6 @@ namespace polyfem::assembler
 			return unconstrained_ogden_elasticity_.assemble_gradient(data);
 		else if (model == "IncompressibleOgden")
 			return incompressible_ogden_elasticity_.assemble_gradient(data);
-		else if (model == "FixedCorotational")
-			return fixed_corotational_.assemble_gradient(data);
 		else
 		{
 			assert(false);
@@ -100,8 +96,6 @@ namespace polyfem::assembler
 			return unconstrained_ogden_elasticity_.assemble_hessian(data);
 		else if (model == "IncompressibleOgden")
 			return incompressible_ogden_elasticity_.assemble_hessian(data);
-		else if (model == "FixedCorotational")
-			return fixed_corotational_.assemble_hessian(data);
 		else
 		{
 			assert(false);
@@ -130,8 +124,6 @@ namespace polyfem::assembler
 			return unconstrained_ogden_elasticity_.compute_energy(data);
 		else if (model == "IncompressibleOgden")
 			return incompressible_ogden_elasticity_.compute_energy(data);
-		else if (model == "FixedCorotational")
-			return fixed_corotational_.compute_energy(data);
 		else
 		{
 			assert(false);
@@ -164,8 +156,6 @@ namespace polyfem::assembler
 			return unconstrained_ogden_elasticity_.assign_stress_tensor(data, all_size, type, all, fun);
 		else if (model == "IncompressibleOgden")
 			return incompressible_ogden_elasticity_.assign_stress_tensor(data, all_size, type, all, fun);
-		else if (model == "FixedCorotational")
-			return fixed_corotational_.assign_stress_tensor(data, all_size, type, all, fun);
 		else
 		{
 			assert(false);

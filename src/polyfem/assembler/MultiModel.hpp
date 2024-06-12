@@ -7,7 +7,6 @@
 #include <polyfem/assembler/MooneyRivlinElasticity.hpp>
 #include <polyfem/assembler/MooneyRivlin3ParamElasticity.hpp>
 #include <polyfem/assembler/OgdenElasticity.hpp>
-#include <polyfem/assembler/FixedCorotational.hpp>
 #include <polyfem/basis/Basis.hpp>
 
 namespace polyfem::assembler
@@ -59,6 +58,5 @@ namespace polyfem::assembler
 		MooneyRivlin3ParamElasticity mooney_rivlin_3_param_elasticity_;
 		UnconstrainedOgdenElasticity unconstrained_ogden_elasticity_;
 		IncompressibleOgdenElasticity incompressible_ogden_elasticity_;
-		FixedCorotational fixed_corotational_;
 	};
 } // namespace polyfem::assembler

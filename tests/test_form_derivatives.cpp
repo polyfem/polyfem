@@ -2,7 +2,6 @@
 
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
-#include <polyfem/assembler/FixedCorotational.hpp>
 
 #include <polyfem/solver/forms/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/BCPenaltyForm.hpp>
@@ -142,7 +141,7 @@ namespace
 } // namespace
 
 template <typename Form>
-void test_form(Form &form, const State &state, double step = 1e-8, double tol = 1e-4)
+void test_form(Form &form, const State &state)
 {
 	static const int n_rand = 10;
 
@@ -160,8 +159,7 @@ void test_form(Form &form, const State &state, double step = 1e-8, double tol = 
 
 			Eigen::VectorXd fgrad;
 			fd::finite_gradient(
-				x, [&form](const Eigen::VectorXd &x) -> double { return form.value(x); }, fgrad,
-				fd::AccuracyOrder::SECOND, step);
+				x, [&form](const Eigen::VectorXd &x) -> double { return form.value(x); }, fgrad);
 
 			if (!fd::compare_gradient(grad, fgrad))
 			{
@@ -170,7 +168,7 @@ void test_form(Form &form, const State &state, double step = 1e-8, double tol = 
 				std::cout << "Finite gradient: " << fgrad.transpose() << std::endl;
 			}
 
-			CHECK(fd::compare_gradient(grad, fgrad, tol));
+			CHECK(fd::compare_gradient(grad, fgrad));
 		}
 
 		// Test hessian with finite differences
@@ -186,8 +184,7 @@ void test_form(Form &form, const State &state, double step = 1e-8, double tol = 
 					form.first_derivative(x, grad);
 					return grad;
 				},
-				fhess,
-				fd::AccuracyOrder::SECOND, step);
+				fhess);
 
 			if (!fd::compare_hessian(Eigen::MatrixXd(hess), fhess))
 			{
@@ -196,7 +193,7 @@ void test_form(Form &form, const State &state, double step = 1e-8, double tol = 
 				std::cout << "Finite hessian: " << fhess << std::endl;
 			}
 
-			CHECK(fd::compare_hessian(Eigen::MatrixXd(hess), fhess, tol));
+			CHECK(fd::compare_hessian(Eigen::MatrixXd(hess), fhess));
 		}
 
 		x.setRandom();
@@ -536,24 +533,4 @@ TEST_CASE("L2 projection form derivatives", "[form][form_derivatives][L2]")
 	L2ProjectionForm form(state_ptr->mass, state_ptr->mass, Eigen::VectorXd::Ones(state_ptr->mass.cols()));
 
 	test_form(form, *state_ptr);
-}
-
-TEST_CASE("Fixed corotational form derivatives", "[form][form_derivatives][elastic_form]")
-{
-	const int dim = GENERATE(2, 3);
-	const auto state_ptr = get_state(dim);
-	std::shared_ptr<assembler::FixedCorotational> assembler = std::make_shared<assembler::FixedCorotational>();
-	state_ptr->set_materials(*assembler);
-
-	ElasticForm form(
-		state_ptr->n_bases,
-		state_ptr->bases,
-		state_ptr->geom_bases(),
-		*assembler,
-		state_ptr->ass_vals_cache,
-		0,
-		1,
-		state_ptr->mesh->is_volume());
-	form.update_quantities(0, Eigen::VectorXd::Ones(state_ptr->n_bases * dim));
-	test_form(form, *state_ptr, 1e-7, 1e-4);
 }
