@@ -50,6 +50,9 @@ target_link_libraries(unit_tests PUBLIC finitediff::finitediff)
 include(polyfem_data)
 target_link_libraries(unit_tests PUBLIC polyfem::data)
 
+include(polyfem_pref)
+target_link_libraries(unit_tests PUBLIC polyfem::pref)
+
 ################################################################################
 # Compiler options
 ################################################################################

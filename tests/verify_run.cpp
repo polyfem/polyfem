@@ -193,10 +193,11 @@ std::string tagsrun = "[run]";
 #else
 std::string tagsrun = "[.][run]";
 #endif
-TEST_CASE("runners", tagsrun)
+
+void run_data(const std::string &test_file, const std::string &dir)
 {
 	// Disabled on Windows CI, due to the requirement for Pardiso.
-	std::ifstream file(POLYFEM_TEST_DIR "/system_test_list.txt");
+	std::ifstream file(POLYFEM_TEST_DIR "/" + test_file + ".txt");
 	std::vector<std::string> failing_tests;
 	std::string line;
 	while (std::getline(file, line))
@@ -210,7 +211,7 @@ TEST_CASE("runners", tagsrun)
 			line = line.substr(1);
 		}
 		spdlog::info("Processing {}", line);
-		AuthenticateResult result = authenticate_json(POLYFEM_DATA_DIR "/" + line, compute_validation);
+		AuthenticateResult result = authenticate_json(dir + "/" + line, compute_validation);
 		CAPTURE(line);
 		CHECK(result == SUCCESS);
 		if (result != SUCCESS)
@@ -222,4 +223,14 @@ TEST_CASE("runners", tagsrun)
 		for (auto &t : failing_tests)
 			std::cout << t << std::endl;
 	}
+}
+
+TEST_CASE("runners", tagsrun)
+{
+	run_data("system_test_list", POLYFEM_DATA_DIR);
+}
+
+TEST_CASE("runners-pref", tagsrun)
+{
+	run_data("pref_test_list", POLYFEM_PREF_DIR);
 }
