@@ -607,7 +607,7 @@ TEST_CASE("shape-pressure-nodes-2d", "[test_adjoint]")
 	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-3);
 }
 
-TEST_CASE("static-control-pressure-nodes-3d", "[test_adjoint]")
+TEST_CASE("static-control-pressure-nodes-3d", "[.][test_adjoint]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
 	json in_args;
@@ -1023,7 +1023,7 @@ TEST_CASE("shape-transient-friction-sdf", "[test_adjoint]")
 	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-5);
 }
 
-TEST_CASE("3d-shape-mesh-target", "[test_adjoint]")
+TEST_CASE("3d-shape-mesh-target", "[.][test_adjoint]")
 {
 	json opt_args;
 	load_json(append_root_path("3d-shape-mesh-target-opt.json"), opt_args);
@@ -1187,8 +1187,7 @@ TEST_CASE("barycenter", "[test_adjoint]")
 // 	verify_adjoint_dirichlet(func, state_ptr, control_param, velocity_discrete, perturb_fn_json, 1e-7, 1e-5);
 // }
 
-#ifdef NDEBUG
-TEST_CASE("shape-pressure-nodes-3d", "[test_adjoint]")
+TEST_CASE("shape-pressure-nodes-3d", "[.][test_adjoint]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
 	json in_args;
@@ -1235,7 +1234,7 @@ TEST_CASE("shape-pressure-nodes-3d", "[test_adjoint]")
 	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-3);
 }
 
-TEST_CASE("control-pressure-nodes-3d", "[test_adjoint]")
+TEST_CASE("control-pressure-nodes-3d", "[.][test_adjoint]")
 {
 	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
 	json in_args;
@@ -1279,5 +1278,3 @@ TEST_CASE("control-pressure-nodes-3d", "[test_adjoint]")
 
 	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-8, 1e-3);
 }
-
-#endif
