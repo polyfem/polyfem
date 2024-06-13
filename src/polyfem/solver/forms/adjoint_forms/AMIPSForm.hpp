@@ -10,115 +10,19 @@
 #include <polyfem/assembler/GenericElastic.hpp>
 #include <polyfem/assembler/AMIPSEnergy.hpp>
 
+#include <polyfem/solver/AdjointTools.hpp>
+
 namespace polyfem::solver
 {
-	namespace
-	{
-		double triangle_jacobian(const Eigen::VectorXd &v1, const Eigen::VectorXd &v2, const Eigen::VectorXd &v3)
-		{
-			Eigen::VectorXd a = v2 - v1, b = v3 - v1;
-			return a(0) * b(1) - b(0) * a(1);
-		}
-
-		double tet_determinant(const Eigen::VectorXd &v1, const Eigen::VectorXd &v2, const Eigen::VectorXd &v3, const Eigen::VectorXd &v4)
-		{
-			Eigen::Matrix3d mat;
-			mat.col(0) << v2 - v1;
-			mat.col(1) << v3 - v1;
-			mat.col(2) << v4 - v1;
-			return mat.determinant();
-		}
-
-		void scaled_jacobian(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, Eigen::VectorXd &quality)
-		{
-			const int dim = F.cols() - 1;
-
-			quality.setZero(F.rows());
-			if (dim == 2)
-			{
-				for (int i = 0; i < F.rows(); i++)
-				{
-					Eigen::RowVector3d e0;
-					e0(2) = 0;
-					e0.head(2) = V.row(F(i, 2)) - V.row(F(i, 1));
-					Eigen::RowVector3d e1;
-					e1(2) = 0;
-					e1.head(2) = V.row(F(i, 0)) - V.row(F(i, 2));
-					Eigen::RowVector3d e2;
-					e2(2) = 0;
-					e2.head(2) = V.row(F(i, 1)) - V.row(F(i, 0));
-
-					double l0 = e0.norm();
-					double l1 = e1.norm();
-					double l2 = e2.norm();
-
-					double A = 0.5 * (e0.cross(e1)).norm();
-					double Lmax = std::max(l0 * l1, std::max(l1 * l2, l0 * l2));
-
-					quality(i) = 2 * A * (2 / sqrt(3)) / Lmax;
-				}
-			}
-			else
-			{
-				for (int i = 0; i < F.rows(); i++)
-				{
-					Eigen::RowVector3d e0 = V.row(F(i, 1)) - V.row(F(i, 0));
-					Eigen::RowVector3d e1 = V.row(F(i, 2)) - V.row(F(i, 1));
-					Eigen::RowVector3d e2 = V.row(F(i, 0)) - V.row(F(i, 2));
-					Eigen::RowVector3d e3 = V.row(F(i, 3)) - V.row(F(i, 0));
-					Eigen::RowVector3d e4 = V.row(F(i, 3)) - V.row(F(i, 1));
-					Eigen::RowVector3d e5 = V.row(F(i, 3)) - V.row(F(i, 2));
-
-					double l0 = e0.norm();
-					double l1 = e1.norm();
-					double l2 = e2.norm();
-					double l3 = e3.norm();
-					double l4 = e4.norm();
-					double l5 = e5.norm();
-
-					double J = std::abs((e0.cross(e3)).dot(e2));
-
-					double a1 = l0 * l2 * l3;
-					double a2 = l0 * l1 * l4;
-					double a3 = l1 * l2 * l5;
-					double a4 = l3 * l4 * l5;
-
-					double a = std::max({a1, a2, a3, a4, J});
-					quality(i) = J * sqrt(2) / a;
-				}
-			}
-		}
-
-		bool is_flipped(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
-		{
-			if (F.cols() == 3)
-			{
-				for (int i = 0; i < F.rows(); i++)
-					if (triangle_jacobian(V.row(F(i, 0)), V.row(F(i, 1)), V.row(F(i, 2))) <= 0)
-						return true;
-			}
-			else if (F.cols() == 4)
-			{
-				for (int i = 0; i < F.rows(); i++)
-					if (tet_determinant(V.row(F(i, 0)), V.row(F(i, 1)), V.row(F(i, 2)), V.row(F(i, 3))) <= 0)
-						return true;
-			}
-			else
-			{
-				return true;
-			}
-
-			return false;
-		}
-	} // namespace
-
 	class AMIPSForm : public AdjointForm
 	{
 	public:
-		AMIPSForm(const VariableToSimulationGroup& variable_to_simulation, const State &state)
+		AMIPSForm(const VariableToSimulationGroup &variable_to_simulation, const State &state)
 			: AdjointForm(variable_to_simulation),
 			  state_(state)
 		{
+			logger().error("Don't use amips in the optimization!");
+
 			amips_energy_ = assembler::AssemblerUtils::make_assembler("AMIPS");
 			amips_energy_->set_size(state.mesh->dimension());
 
@@ -190,8 +94,9 @@ namespace polyfem::solver
 			Eigen::MatrixXd V;
 			state_.get_vertices(V);
 			state_.get_elements(F);
-			X_init = utils::flatten(V);
-			init_geom_bases_ = state_.geom_bases();
+			X_rest = utils::flatten(V);
+			rest_geom_bases_ = state_.geom_bases();
+			rest_ass_vals_cache_.init(state_.mesh->is_volume(), rest_geom_bases_, rest_geom_bases_);
 		}
 
 		virtual std::string name() const override { return "AMIPS"; }
@@ -200,7 +105,7 @@ namespace polyfem::solver
 		{
 			Eigen::VectorXd X = get_updated_mesh_nodes(x);
 
-			return amips_energy_->assemble_energy(state_.mesh->is_volume(), init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_init), Eigen::VectorXd());
+			return amips_energy_->assemble_energy(state_.mesh->is_volume(), rest_geom_bases_, rest_geom_bases_, rest_ass_vals_cache_, 0, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_rest), Eigen::VectorXd());
 		}
 
 		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override
@@ -208,7 +113,7 @@ namespace polyfem::solver
 			gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, &state_, x, [this, &x]() {
 				const Eigen::VectorXd X = get_updated_mesh_nodes(x);
 				Eigen::MatrixXd grad;
-				amips_energy_->assemble_gradient(state_.mesh->is_volume(), state_.n_geom_bases, init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_init), Eigen::VectorXd(), grad); // grad wrt. gbases
+				amips_energy_->assemble_gradient(state_.mesh->is_volume(), state_.n_geom_bases, rest_geom_bases_, rest_geom_bases_, rest_ass_vals_cache_, 0, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_rest), Eigen::VectorXd(), grad); // grad wrt. gbases
 				return AdjointTools::map_node_to_primitive_order(state_, grad);
 			});
 		}
@@ -217,7 +122,7 @@ namespace polyfem::solver
 		{
 			Eigen::VectorXd X = get_updated_mesh_nodes(x1);
 			Eigen::MatrixXd V1 = utils::unflatten(X, state_.mesh->dimension());
-			bool flipped = is_flipped(V1, F);
+			bool flipped = AdjointTools::is_flipped(V1, F);
 
 			if (flipped)
 				adjoint_logger().trace("[{}] Step flips elements.", name());
@@ -225,20 +130,31 @@ namespace polyfem::solver
 			return !flipped;
 		}
 
+		/*
+		void solution_changed(const Eigen::VectorXd &newX) override
+		{
+			Eigen::MatrixXd V;
+			state_.get_vertices(V);
+			X_rest = utils::flatten(V);
+			rest_geom_bases_ = state_.geom_bases();
+			rest_ass_vals_cache_.init(state_.mesh->is_volume(), rest_geom_bases_, rest_geom_bases_);
+		}
+		*/
+
 	private:
 		Eigen::VectorXd get_updated_mesh_nodes(const Eigen::VectorXd &x) const
 		{
-			Eigen::VectorXd X = X_init;
+			Eigen::VectorXd X = X_rest;
 			variable_to_simulations_.compute_state_variable(ParameterType::Shape, &state_, x, X);
 			return X;
 		}
 
 		const State &state_;
 
-		Eigen::VectorXd X_init;
+		Eigen::VectorXd X_rest;
 		Eigen::MatrixXi F;
-		std::vector<polyfem::basis::ElementBases> init_geom_bases_;
-		assembler::AssemblyValsCache init_ass_vals_cache_;
+		std::vector<polyfem::basis::ElementBases> rest_geom_bases_;
+		assembler::AssemblyValsCache rest_ass_vals_cache_;
 
 		std::shared_ptr<assembler::Assembler> amips_energy_;
 	};

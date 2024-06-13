@@ -2056,13 +2056,13 @@
         "pointer": "/materials/*/c3",
         "type": "include",
         "spec_file": "value-no.json",
-        "doc": "Third Parameter for 3 parameter Mooney-Rivlin"
+        "doc": "Third Parameter for Mooney-Rivlin"
     },
     {
         "pointer": "/materials/*/d1",
         "type": "include",
         "spec_file": "value-no.json",
-        "doc": "MooneyRivlin third parameterFourth Parameter for 3 parameter Mooney-Rivlin"
+        "doc": "Fourth Parameter for Mooney-Rivlin"
     },
     {
         "pointer": "/materials/*/alphas",
@@ -2272,6 +2272,17 @@
         "doc": "Dirichlet boundary condition loaded from a file, <node_id> <bc values>, 1 for scalar, 2/3 for tensor depending on dimension."
     },
     {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*",
+        "type": "list",
+        "doc": "Dirichlet boundary condition specified per timestep."
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*/*",
+        "type": "include",
+        "spec_file": "value0.json",
+        "doc": "Dirichlet boundary condition specified per timestep."
+    },
+    {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension",
         "type": "list",
         "default": [
@@ -2370,7 +2381,7 @@
             "value"
         ],
         "optional": [
-            "interpolation"
+            "time_reference"
         ],
         "doc": "pressure BC entry"
     },
@@ -2388,10 +2399,26 @@
         "doc": "Values of pressure boundary condition as a function of $x,y,z,t$"
     },
     {
-        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation",
+        "pointer": "/boundary_conditions/pressure_boundary/*/value",
+        "type": "list",
+        "doc": "Values of pressure boundary condition specified per timestep"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/value/*",
         "type": "include",
-        "spec_file": "interpolation.json",
-        "doc": "interpolation of boundary condition"
+        "spec_file": "value0.json",
+        "doc": "Values of pressure boundary condition specified per timestep"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/time_reference",
+        "default": [],
+        "type": "list",
+        "doc": "List of times when the pressure boundary condition is specified"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/time_reference/*",
+        "type": "float",
+        "doc": "Values of pressure boundary condition for timestep"
     },
     {
         "pointer": "/boundary_conditions/pressure_cavity",

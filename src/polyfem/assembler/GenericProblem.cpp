@@ -672,6 +672,69 @@ namespace polyfem
 			pressures_[index].value.init(val);
 		}
 
+		void GenericTensorProblem::update_pressure_boundary(const int id, const int time_step, const double val)
+		{
+			int index = -1;
+			for (int i = 0; i < pressure_boundary_ids_.size(); ++i)
+			{
+				if (pressure_boundary_ids_[i] == id)
+				{
+					index = i;
+					break;
+				}
+			}
+			if (index == -1)
+			{
+				throw "Invalid boundary id for pressure update";
+			}
+
+			if (pressures_[index].value.is_mat())
+			{
+				Eigen::MatrixXd curr_val = pressures_[index].value.get_mat();
+				assert(time_step <= curr_val.size());
+				assert(curr_val.cols() == 1);
+				curr_val(time_step) = val;
+				pressures_[index].value.set_mat(curr_val);
+			}
+			else
+			{
+				pressures_[index].value.init(val);
+			}
+		}
+
+		void GenericTensorProblem::update_dirichlet_boundary(const int id, const int time_step, const Eigen::VectorXd &val)
+		{
+			int index = -1;
+			for (int i = 0; i < boundary_ids_.size(); ++i)
+			{
+				if (boundary_ids_[i] == id)
+				{
+					index = i;
+					break;
+				}
+			}
+			if (index == -1)
+			{
+				throw "Invalid boundary id for dirichlet update";
+			}
+
+			for (int i = 0; i < val.size(); ++i)
+			{
+				if (displacements_[index].value[i].is_mat())
+				{
+					Eigen::MatrixXd curr_val = displacements_[index].value[i].get_mat();
+					assert(time_step <= curr_val.size());
+					assert(curr_val.cols() == 1);
+					curr_val(time_step) = val(i);
+					displacements_[index].value[i].set_mat(curr_val);
+				}
+				else
+				{
+					displacements_[index].value[i].init(val(i));
+				}
+			}
+		}
+
 		void GenericTensorProblem::set_rhs(double x, double y, double z)
 		{
 			rhs_[0].init(x);
@@ -1011,11 +1074,10 @@ namespace polyfem
 
 					auto ff = j_boundary[i - offset]["value"];
 					pressures_[i].value.init(ff);
+					if (j_boundary[i - offset].contains("time_reference") && j_boundary[i - offset]["time_reference"].size() > 0)
+						pressures_[i].value.set_t(j_boundary[i - offset]["time_reference"]);
 
-					if (j_boundary[i - offset].contains("interpolation"))
-						pressures_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
-					else
-						pressures_[i].interpolation = std::make_shared<NoInterpolation>();
+					pressures_[i].interpolation = std::make_shared<NoInterpolation>();
 				}
 			}
 
@@ -1039,6 +1101,8 @@ namespace polyfem
 
 						auto ff = j_boundary[i - offset]["value"];
 						cavity_pressures_[boundary_id].value.init(ff);
+
+						cavity_pressures_[boundary_id].interpolation = std::make_shared<NoInterpolation>();
 					}
 				}
 			}
