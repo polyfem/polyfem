@@ -390,7 +390,7 @@ namespace polyfem
 		{
 			logger().error("specify some 'materials'");
 			assert(!args["materials"].is_null());
-			throw "invalid input";
+			throw std::runtime_error("invalid input");
 		}
 
 		if (args["materials"].is_array())
@@ -425,13 +425,13 @@ namespace polyfem
 						else
 						{
 							logger().error("Current material is {}, new material is {}, multimaterial supported only for LinearElasticity and NeoHookean", current, tmp);
-							throw "invalid input";
+							throw std::runtime_error("invalid input");
 						}
 					}
 					else
 					{
 						logger().error("Current material is {}, new material is {}, multimaterial supported only for LinearElasticity and NeoHookean", current, tmp);
-						throw "invalid input";
+						throw std::runtime_error("invalid input");
 					}
 				}
 			}
@@ -684,7 +684,7 @@ namespace polyfem
 		else
 		{
 			logger().error("space/discr_order must be either a number a path or an array");
-			throw "invalid json";
+			throw std::runtime_error("invalid json");
 		}
 		// TODO: same for pressure!
 
@@ -1207,7 +1207,7 @@ namespace polyfem
 				if (args["space"]["poly_basis_type"] == "MeanValue" || args["space"]["poly_basis_type"] == "Wachspress")
 				{
 					logger().error("Barycentric bases not supported in 3D");
-					throw "not implemented";
+					throw std::runtime_error("not implemented");
 				}
 				else
 				{
