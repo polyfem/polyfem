@@ -260,7 +260,7 @@ $(document).ready(function(){initNavTree('_wild_tri_remesher_8cpp_source.html','
 <div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keyword">template</span> &lt;&gt;</div>
 <div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    <span class="keywordtype">bool</span> WildTriRemesher::is_body_boundary_edge(<span class="keyword">const</span> Tuple &amp;e)<span class="keyword"> const</span></div>
 <div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="keyword">const</span> <span class="keyword">auto</span> adj_face = e.switch_face(*<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="keyword">const</span> <span class="keyword">auto</span> adj_face = <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>.switch_face(*<span class="keyword">this</span>);</div>
 <div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        <span class="keywordflow">return</span> !adj_face.has_value()</div>
 <div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>               || element_attrs[element_id(e)].body_id</div>
 <div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>                      != element_attrs[element_id(*adj_face)].body_id;</div>
@@ -276,7 +276,7 @@ $(document).ready(function(){initNavTree('_wild_tri_remesher_8cpp_source.html','
 <div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keywordtype">bool</span> WildTriRemesher::is_body_boundary_vertex(<span class="keyword">const</span> Tuple &amp;v)<span class="keyword"> const</span></div>
 <div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span><span class="keyword">    </span>{</div>
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;e : get_one_ring_edges_for_vertex(v))</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>            if (is_body_boundary_edge(e))</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>            if (is_body_boundary_edge(<a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>))</div>
 <div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>                return true;</div>
 <div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    }</div>
@@ -304,7 +304,7 @@ $(document).ready(function(){initNavTree('_wild_tri_remesher_8cpp_source.html','
 <div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>            BE(i, 1) = boundary_edge_tuples[i].switch_vertex(*this).vid(*<span class="keyword">this</span>);</div>
 <div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        }</div>
 <div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        <span class="keywordflow">if</span> (obstacle().n_edges() &gt; 0)</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>            utils::append_rows(BE, obstacle().e().array() + vert_capacity());</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>            utils::append_rows(BE, obstacle().<a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>().array() + vert_capacity());</div>
 <div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        <span class="keywordflow">return</span> BE;</div>
 <div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>    }</div>
 <div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span> </div>
@@ -368,8 +368,8 @@ $(document).ready(function(){initNavTree('_wild_tri_remesher_8cpp_source.html','
 <div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span><span class="keyword">    </span>{</div>
 <div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        std::vector&lt;Tuple&gt; edges;</div>
 <div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;e : get_one_ring_edges_for_vertex(v))</div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>            if (is_boundary_edge(e))</div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>                edges.push_back(e);</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>            if (is_boundary_edge(<a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>))</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>                edges.push_back(<a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>);</div>
 <div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>        <span class="keywordflow">return</span> edges;</div>
 <div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    }</div>
 <div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
@@ -385,9 +385,9 @@ $(document).ready(function(){initNavTree('_wild_tri_remesher_8cpp_source.html','
 <div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    <span class="keyword">template</span> &lt;&gt;</div>
 <div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    <a class="code hl_enumeration" href="namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626">CollapseEdgeTo</a> WildTriRemesher::collapse_boundary_edge_to(<span class="keyword">const</span> Tuple &amp;e)<span class="keyword"> const</span></div>
 <div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> eid = e.eid(*<span class="keyword">this</span>);</div>
-<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> v0i = e.vid(*<span class="keyword">this</span>);</div>
-<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> v1i = e.switch_vertex(*this).vid(*<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> eid = <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>.eid(*<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> v0i = <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>.vid(*<span class="keyword">this</span>);</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> v1i = <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>.switch_vertex(*this).vid(*<span class="keyword">this</span>);</div>
 <div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span> </div>
 <div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>        <span class="keyword">const</span> Eigen::Vector2d &amp;v0 = vertex_attrs[v0i].rest_position;</div>
 <div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>        <span class="keyword">const</span> Eigen::Vector2d &amp;v1 = vertex_attrs[v1i].rest_position;</div>
@@ -409,7 +409,7 @@ $(document).ready(function(){initNavTree('_wild_tri_remesher_8cpp_source.html','
 <div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>        <span class="keyword">const</span> std::vector&lt;Tuple&gt; v0_edges = get_one_ring_edges_for_vertex(e);</div>
 <div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> is_v0_collinear = std::any_of(v0_edges.begin(), v0_edges.end(), is_collinear);</div>
 <div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span> </div>
-<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>        <span class="keyword">const</span> std::vector&lt;Tuple&gt; v1_edges = get_one_ring_edges_for_vertex(e.switch_vertex(*<span class="keyword">this</span>));</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>        <span class="keyword">const</span> std::vector&lt;Tuple&gt; v1_edges = get_one_ring_edges_for_vertex(<a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>.switch_vertex(*<span class="keyword">this</span>));</div>
 <div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> is_v1_collinear = std::any_of(v1_edges.begin(), v1_edges.end(), is_collinear);</div>
 <div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span> </div>
 <div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>        <span class="keywordflow">if</span> (!is_v0_collinear &amp;&amp; !is_v1_collinear)</div>
@@ -440,6 +440,7 @@ $(document).ready(function(){initNavTree('_wild_tri_remesher_8cpp_source.html','
 <div class="ttc" id="a_wild_remesher_8hpp_html"><div class="ttname"><a href="_wild_remesher_8hpp.html">WildRemesher.hpp</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1mesh_1_1_wild_remesher_html_a2821e5f17fd1c05437576ceea151eb44"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a2821e5f17fd1c05437576ceea151eb44">polyfem::mesh::WildRemesher&lt; wmtk::TriMesh &gt;::init_attributes_and_connectivity</a></div><div class="ttdeci">void init_attributes_and_connectivity(const size_t num_vertices, const Eigen::MatrixXi &amp;elements) override</div><div class="ttdoc">Create an internal mesh representation and associate attributes.</div></div>
 <div class="ttc" id="aclasspolyfem_1_1mesh_1_1_wild_remesher_html_a68008fadcf8fbab3d0242adf3608a81f"><div class="ttname"><a href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a68008fadcf8fbab3d0242adf3608a81f">polyfem::mesh::WildRemesher&lt; wmtk::TriMesh &gt;::Tuple</a></div><div class="ttdeci">typename WMTKMesh::Tuple Tuple</div><div class="ttdef"><b>Definition</b> <a href="_wild_remesher_8hpp_source.html#l00064">WildRemesher.hpp:64</a></div></div>
+<div class="ttc" id="anamespacegenerate__rotation__mtx_html_a05ead5be75902c33b319cf3438f29dae"><div class="ttname"><a href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">generate_rotation_mtx.e</a></div><div class="ttdeci">list e</div><div class="ttdef"><b>Definition</b> <a href="generate__rotation__mtx_8py_source.html#l00049">generate_rotation_mtx.py:49</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1mesh_html"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html">polyfem::mesh</a></div><div class="ttdef"><b>Definition</b> <a href="_periodic_boundary_8hpp_source.html#l00015">PeriodicBoundary.hpp:16</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1mesh_html_a12a2c540a3924398980d3d24af8dd83a"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#a12a2c540a3924398980d3d24af8dd83a">polyfem::mesh::Tuple</a></div><div class="ttdeci">WildTetRemesher::Tuple Tuple</div><div class="ttdef"><b>Definition</b> <a href="_wild_tet_remesher_8cpp_source.html#l00014">WildTetRemesher.cpp:14</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1mesh_html_afcdb91386e85983bbabc057711ef1626"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626">polyfem::mesh::CollapseEdgeTo</a></div><div class="ttdeci">CollapseEdgeTo</div><div class="ttdef"><b>Definition</b> <a href="_wild_remesher_8hpp_source.html#l00014">WildRemesher.hpp:15</a></div></div>

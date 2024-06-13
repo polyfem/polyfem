@@ -11,6 +11,7 @@ var classpolyfem_1_1assembler_1_1_pressure_assembler =
     [ "compute_energy_hess", "classpolyfem_1_1assembler_1_1_pressure_assembler.html#a4e88cf7febfb307f2b87a71b2b8927b3", null ],
     [ "compute_force_jacobian", "classpolyfem_1_1assembler_1_1_pressure_assembler.html#a96e1942f6f5262a054f3d1f40f8b18e0", null ],
     [ "compute_grad_volume", "classpolyfem_1_1assembler_1_1_pressure_assembler.html#a81cda3766f8cc44d9d507f298d523458", null ],
+    [ "compute_grad_volume_id", "classpolyfem_1_1assembler_1_1_pressure_assembler.html#a2be016da1df0b4f4945313d20de5cc13", null ],
     [ "compute_hess_volume_2d", "classpolyfem_1_1assembler_1_1_pressure_assembler.html#a468c678a958a1cfff6a563328a0c1b21", null ],
     [ "compute_hess_volume_3d", "classpolyfem_1_1assembler_1_1_pressure_assembler.html#a2fd8e0683734a7af8f6721473581d991", null ],
     [ "compute_volume", "classpolyfem_1_1assembler_1_1_pressure_assembler.html#a7eccb04026b1e9380dd4dc629987fe4b", null ],
@@ -28,6 +29,7 @@ var classpolyfem_1_1assembler_1_1_pressure_assembler =
     [ "obstacle_", "classpolyfem_1_1assembler_1_1_pressure_assembler.html#aa269ae7cfd4b5d1a6ec2936e5be7ace4", null ],
     [ "primitive_to_nodes_", "classpolyfem_1_1assembler_1_1_pressure_assembler.html#a18cf5661d2df75602b8c457ae2cf65a1", null ],
     [ "problem_", "classpolyfem_1_1assembler_1_1_pressure_assembler.html#aec7455a5a8b3fb92b031ba71c905eb60", null ],
+    [ "relevant_pressure_nodes_", "classpolyfem_1_1assembler_1_1_pressure_assembler.html#ade77398c1914b5ee8be732e60fa8e87d", null ],
     [ "size_", "classpolyfem_1_1assembler_1_1_pressure_assembler.html#a32d0c72b9b00ceac1f1b497c9f7f400c", null ],
     [ "starting_volumes_", "classpolyfem_1_1assembler_1_1_pressure_assembler.html#ac27f12c304f899237acf445a0fd0f587", null ]
 ];

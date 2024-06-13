@@ -9,6 +9,8 @@ var searchData=
   ['kernelproblem_2ecpp_6',['KernelProblem.cpp',['../_kernel_problem_8cpp.html',1,'']]],
   ['kernelproblem_2ehpp_7',['KernelProblem.hpp',['../_kernel_problem_8hpp.html',1,'']]],
   ['kineticform_8',['kineticform',['../classpolyfem_1_1solver_1_1_kinetic_form.html#ace1a08a36ed736bf41f088ea0351b4e1',1,'polyfem::solver::KineticForm::KineticForm()'],['../classpolyfem_1_1solver_1_1_kinetic_form.html',1,'polyfem::solver::KineticForm']]],
-  ['knots_5f_9',['knots_',['../classpolyfem_1_1basis_1_1_quadratic_b_spline.html#afbb473c4a6348979923cb838277d31f6',1,'polyfem::basis::QuadraticBSpline']]],
-  ['kovnaszy_10',['kovnaszy',['../classpolyfem_1_1problem_1_1_kovnaszy.html',1,'polyfem::problem::Kovnaszy'],['../classpolyfem_1_1problem_1_1_kovnaszy.html#a852ff56bd75f951540d42120499d5cb1',1,'polyfem::problem::Kovnaszy::Kovnaszy()']]]
+  ['knots_5f_9',['knots_',['../classpolyfem_1_1basis_1_1_quadratic_b_spline.html#afbb473c4a6348979923cb838277d31f6',1,'polyfem::basis::QuadraticBSpline::knots_'],['../classpolyfem_1_1solver_1_1_b_spline_parametrization1_d_to2_d.html#a17a951f9a0c966bdecd2d85048145a19',1,'polyfem::solver::BSplineParametrization1DTo2D::knots_']]],
+  ['knots_5fu_5f_10',['knots_u_',['../classpolyfem_1_1solver_1_1_b_spline_parametrization2_d_to3_d.html#a3f5e07862e0667e783b2164a45121fff',1,'polyfem::solver::BSplineParametrization2DTo3D']]],
+  ['knots_5fv_5f_11',['knots_v_',['../classpolyfem_1_1solver_1_1_b_spline_parametrization2_d_to3_d.html#add07c2183add9fc9fba399159104836f',1,'polyfem::solver::BSplineParametrization2DTo3D']]],
+  ['kovnaszy_12',['kovnaszy',['../classpolyfem_1_1problem_1_1_kovnaszy.html',1,'polyfem::problem::Kovnaszy'],['../classpolyfem_1_1problem_1_1_kovnaszy.html#a852ff56bd75f951540d42120499d5cb1',1,'polyfem::problem::Kovnaszy::Kovnaszy()']]]
 ];

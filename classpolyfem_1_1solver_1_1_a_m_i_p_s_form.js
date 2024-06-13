@@ -8,8 +8,8 @@ var classpolyfem_1_1solver_1_1_a_m_i_p_s_form =
     [ "value_unweighted", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a0c61cd7c58f329bfb9b7d9c4749a2b62", null ],
     [ "amips_energy_", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#aa246090d3bd1ebf814f26718a00d48e2", null ],
     [ "F", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a7ee9c8678871a068391684d02cddc0ba", null ],
-    [ "init_ass_vals_cache_", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#aa8575ee4713417f39266c1d2849f7466", null ],
-    [ "init_geom_bases_", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a5431e1cf06ee309a9da74d548d7bb107", null ],
+    [ "rest_ass_vals_cache_", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a85cdfa589ead016f79d27ba352a85228", null ],
+    [ "rest_geom_bases_", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#afd96cbe6d798d5f904c08acca5c5537d", null ],
     [ "state_", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#ab11a10e7789e9728f1afef353a2321a8", null ],
-    [ "X_init", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a5d566fb47abe578489c1b576e19c2406", null ]
+    [ "X_rest", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a6ce4f1ea7a0af7b8c41073edc089aee1", null ]
 ];

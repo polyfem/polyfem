@@ -15,5 +15,7 @@ var dir_15d4893607df4bf7106bb9ed16128612 =
     [ "MeshUtils.cpp", "_mesh_utils_8cpp.html", "_mesh_utils_8cpp" ],
     [ "MeshUtils.hpp", "_mesh_utils_8hpp.html", "_mesh_utils_8hpp" ],
     [ "Obstacle.cpp", "_obstacle_8cpp.html", null ],
-    [ "Obstacle.hpp", "_obstacle_8hpp.html", "_obstacle_8hpp" ]
+    [ "Obstacle.hpp", "_obstacle_8hpp.html", "_obstacle_8hpp" ],
+    [ "SlimSmooth.cpp", "_slim_smooth_8cpp.html", "_slim_smooth_8cpp" ],
+    [ "SlimSmooth.hpp", "_slim_smooth_8hpp.html", "_slim_smooth_8hpp" ]
 ];

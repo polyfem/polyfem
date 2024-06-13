@@ -167,6 +167,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a85d26d3ef8d2ad6941dab6edb6b5efbf inherit pub_methods_classpolyfem_1_1solver_1_1_static_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3cee86ff0ef39d20d846fde11338f928 inherit pub_methods_classpolyfem_1_1solver_1_1_static_form" id="r_a3cee86ff0ef39d20d846fde11338f928"><td class="memItemLeft" align="right" valign="top">virtual Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#a3cee86ff0ef39d20d846fde11338f928">compute_adjoint_rhs_step_prev</a> (const int time_step, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state) const</td></tr>
 <tr class="separator:a3cee86ff0ef39d20d846fde11338f928 inherit pub_methods_classpolyfem_1_1solver_1_1_static_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aebe03b410b4ba7f4fa6b0f3547c5902e inherit pub_methods_classpolyfem_1_1solver_1_1_static_form" id="r_aebe03b410b4ba7f4fa6b0f3547c5902e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#aebe03b410b4ba7f4fa6b0f3547c5902e">solution_changed</a> (const Eigen::VectorXd &amp;new_x) final override</td></tr>
+<tr class="memdesc:aebe03b410b4ba7f4fa6b0f3547c5902e inherit pub_methods_classpolyfem_1_1solver_1_1_static_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update cached fields upon a change in the solution.  <br /></td></tr>
+<tr class="separator:aebe03b410b4ba7f4fa6b0f3547c5902e inherit pub_methods_classpolyfem_1_1solver_1_1_static_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a42b91810aaf9224c3594cec230c401ba inherit pub_methods_classpolyfem_1_1solver_1_1_static_form" id="r_a42b91810aaf9224c3594cec230c401ba"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#a42b91810aaf9224c3594cec230c401ba">solution_changed_step</a> (const int time_step, const Eigen::VectorXd &amp;new_x)</td></tr>
 <tr class="separator:a42b91810aaf9224c3594cec230c401ba inherit pub_methods_classpolyfem_1_1solver_1_1_static_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac3b0ca6e3b45880bfb527e71120a19a6 inherit pub_methods_classpolyfem_1_1solver_1_1_static_form" id="r_ac3b0ca6e3b45880bfb527e71120a19a6"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#ac3b0ca6e3b45880bfb527e71120a19a6">depends_on_step_prev</a> () const final</td></tr>
@@ -183,9 +186,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a83da86e0efba5cfcba61af6b05796801 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a83da86e0efba5cfcba61af6b05796801"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a83da86e0efba5cfcba61af6b05796801">value</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const override</td></tr>
 <tr class="memdesc:a83da86e0efba5cfcba61af6b05796801 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the value of the form multiplied with the weigth.  <br /></td></tr>
 <tr class="separator:a83da86e0efba5cfcba61af6b05796801 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3f00fafcf3de6cbf9d381d89d093db83 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a3f00fafcf3de6cbf9d381d89d093db83"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a3f00fafcf3de6cbf9d381d89d093db83">solution_changed</a> (const Eigen::VectorXd &amp;new_x) override</td></tr>
-<tr class="memdesc:a3f00fafcf3de6cbf9d381d89d093db83 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update cached fields upon a change in the solution.  <br /></td></tr>
-<tr class="separator:a3f00fafcf3de6cbf9d381d89d093db83 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a185871b84b48eb67a6436c8f2fcfd304 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a185871b84b48eb67a6436c8f2fcfd304"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html">VariableToSimulationGroup</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a185871b84b48eb67a6436c8f2fcfd304">get_variable_to_simulations</a> () const</td></tr>
 <tr class="separator:a185871b84b48eb67a6436c8f2fcfd304 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95fbba22d6a54715d882c151efc587e1 inherit pub_methods_classpolyfem_1_1solver_1_1_adjoint_form" id="r_a95fbba22d6a54715d882c151efc587e1"><td class="memItemLeft" align="right" valign="top">virtual Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a95fbba22d6a54715d882c151efc587e1">compute_reduced_adjoint_rhs</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state) const</td></tr>
@@ -323,7 +323,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_target_forms_8hpp_source.html#l00043">43</a> of file <a class="el" href="_target_forms_8hpp_source.html">TargetForms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_target_forms_8hpp_source.html#l00107">107</a> of file <a class="el" href="_target_forms_8hpp_source.html">TargetForms.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a1d05ba6551254d1da69833246b2b270c" name="a1d05ba6551254d1da69833246b2b270c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1d05ba6551254d1da69833246b2b270c">&#9670;&#160;</a></span>NodeTargetForm() <span class="overload">[1/2]</span></h2>
@@ -357,9 +357,9 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_target_forms_8cpp_source.html#l00189">189</a> of file <a class="el" href="_target_forms_8cpp_source.html">TargetForms.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_target_forms_8cpp_source.html#l00473">473</a> of file <a class="el" href="_target_forms_8cpp_source.html">TargetForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_target_forms_8hpp_source.html#l00058">active_nodes</a>, <a class="el" href="_state_8hpp_source.html#l00450">polyfem::State::in_node_to_node</a>, <a class="el" href="_state_8hpp_source.html#l00466">polyfem::State::mesh</a>, <a class="el" href="_matrix_i_o_8cpp_source.html#l00018">polyfem::io::read_matrix()</a>, <a class="el" href="_target_forms_8hpp_source.html#l00055">state_</a>, and <a class="el" href="_target_forms_8hpp_source.html#l00057">target_vertex_positions</a>.</p>
+<p class="reference">References <a class="el" href="_target_forms_8hpp_source.html#l00122">active_nodes</a>, <a class="el" href="_state_8hpp_source.html#l00450">polyfem::State::in_node_to_node</a>, <a class="el" href="_state_8hpp_source.html#l00466">polyfem::State::mesh</a>, <a class="el" href="_matrix_i_o_8cpp_source.html#l00018">polyfem::io::read_matrix()</a>, <a class="el" href="_target_forms_8hpp_source.html#l00119">state_</a>, and <a class="el" href="_target_forms_8hpp_source.html#l00121">target_vertex_positions</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -406,7 +406,7 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_target_forms_8cpp_source.html#l00211">211</a> of file <a class="el" href="_target_forms_8cpp_source.html">TargetForms.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_target_forms_8cpp_source.html#l00495">495</a> of file <a class="el" href="_target_forms_8cpp_source.html">TargetForms.cpp</a>.</p>
 
 </div>
 </div>
@@ -478,9 +478,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#a678e2ff07ab6fbb2ae4712fca32a53db">polyfem::solver::StaticForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_target_forms_8cpp_source.html#l00215">215</a> of file <a class="el" href="_target_forms_8cpp_source.html">TargetForms.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_target_forms_8cpp_source.html#l00499">499</a> of file <a class="el" href="_target_forms_8cpp_source.html">TargetForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_target_forms_8hpp_source.html#l00058">active_nodes</a>, <a class="el" href="_state_8hpp_source.html#l00667">polyfem::State::diff_cached</a>, <a class="el" href="_state_8hpp_source.html#l00466">polyfem::State::mesh</a>, <a class="el" href="_state_8hpp_source.html#l00193">polyfem::State::mesh_nodes</a>, <a class="el" href="_target_forms_8hpp_source.html#l00055">state_</a>, <a class="el" href="_target_forms_8hpp_source.html#l00057">target_vertex_positions</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00112">polyfem::solver::DiffCache::u()</a>, and <a class="el" href="_form_8hpp_source.html#l00126">polyfem::solver::Form::weight()</a>.</p>
+<p class="reference">References <a class="el" href="_target_forms_8hpp_source.html#l00122">active_nodes</a>, <a class="el" href="_state_8hpp_source.html#l00667">polyfem::State::diff_cached</a>, <a class="el" href="_state_8hpp_source.html#l00466">polyfem::State::mesh</a>, <a class="el" href="_state_8hpp_source.html#l00193">polyfem::State::mesh_nodes</a>, <a class="el" href="_target_forms_8hpp_source.html#l00119">state_</a>, <a class="el" href="_target_forms_8hpp_source.html#l00121">target_vertex_positions</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00112">polyfem::solver::DiffCache::u()</a>, and <a class="el" href="_form_8hpp_source.html#l00126">polyfem::solver::Form::weight()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -531,9 +531,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#a0a3aff89fde436f2d0942b538da66a34">polyfem::solver::StaticForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_target_forms_8cpp_source.html#l00251">251</a> of file <a class="el" href="_target_forms_8cpp_source.html">TargetForms.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_target_forms_8cpp_source.html#l00535">535</a> of file <a class="el" href="_target_forms_8cpp_source.html">TargetForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_variable_to_simulation_8cpp_source.html#l00090">polyfem::solver::VariableToSimulationGroup::apply_parametrization_jacobian()</a>, <a class="el" href="_logger_8cpp_source.html#l00077">polyfem::log_and_throw_adjoint_error()</a>, <a class="el" href="_adjoint_form_8hpp_source.html#l00056">polyfem::solver::StaticForm::name()</a>, <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a880c1273b27d27cfc82004c3a4b205c9">polyfem::solver::Shape</a>, <a class="el" href="_target_forms_8hpp_source.html#l00055">state_</a>, <a class="el" href="_adjoint_form_8hpp_source.html#l00037">polyfem::solver::AdjointForm::variable_to_simulations_</a>, <a class="el" href="_form_8hpp_source.html#l00126">polyfem::solver::Form::weight()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_variable_to_simulation_8cpp_source.html#l00092">polyfem::solver::VariableToSimulationGroup::apply_parametrization_jacobian()</a>, <a class="el" href="_logger_8cpp_source.html#l00077">polyfem::log_and_throw_adjoint_error()</a>, <a class="el" href="_adjoint_form_8hpp_source.html#l00056">polyfem::solver::StaticForm::name()</a>, <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a880c1273b27d27cfc82004c3a4b205c9">polyfem::solver::Shape</a>, <a class="el" href="_target_forms_8hpp_source.html#l00119">state_</a>, <a class="el" href="_adjoint_form_8hpp_source.html#l00037">polyfem::solver::AdjointForm::variable_to_simulations_</a>, <a class="el" href="_form_8hpp_source.html#l00126">polyfem::solver::Form::weight()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -578,9 +578,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#ab971208c618160943abf980ad1776949">polyfem::solver::StaticForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_target_forms_8cpp_source.html#l00237">237</a> of file <a class="el" href="_target_forms_8cpp_source.html">TargetForms.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_target_forms_8cpp_source.html#l00521">521</a> of file <a class="el" href="_target_forms_8cpp_source.html">TargetForms.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_target_forms_8hpp_source.html#l00058">active_nodes</a>, <a class="el" href="_state_8hpp_source.html#l00667">polyfem::State::diff_cached</a>, <a class="el" href="_state_8hpp_source.html#l00466">polyfem::State::mesh</a>, <a class="el" href="_state_8hpp_source.html#l00193">polyfem::State::mesh_nodes</a>, <a class="el" href="_target_forms_8hpp_source.html#l00055">state_</a>, <a class="el" href="_target_forms_8hpp_source.html#l00057">target_vertex_positions</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00112">polyfem::solver::DiffCache::u()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>.</p>
+<p class="reference">References <a class="el" href="_target_forms_8hpp_source.html#l00122">active_nodes</a>, <a class="el" href="_state_8hpp_source.html#l00667">polyfem::State::diff_cached</a>, <a class="el" href="_state_8hpp_source.html#l00466">polyfem::State::mesh</a>, <a class="el" href="_state_8hpp_source.html#l00193">polyfem::State::mesh_nodes</a>, <a class="el" href="_target_forms_8hpp_source.html#l00119">state_</a>, <a class="el" href="_target_forms_8hpp_source.html#l00121">target_vertex_positions</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00112">polyfem::solver::DiffCache::u()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -610,9 +610,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_target_forms_8hpp_source.html#l00058">58</a> of file <a class="el" href="_target_forms_8hpp_source.html">TargetForms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_target_forms_8hpp_source.html#l00122">122</a> of file <a class="el" href="_target_forms_8hpp_source.html">TargetForms.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_target_forms_8cpp_source.html#l00215">compute_adjoint_rhs_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00189">NodeTargetForm()</a>, and <a class="el" href="_target_forms_8cpp_source.html#l00237">value_unweighted_step()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_target_forms_8cpp_source.html#l00499">compute_adjoint_rhs_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00473">NodeTargetForm()</a>, and <a class="el" href="_target_forms_8cpp_source.html#l00521">value_unweighted_step()</a>.</p>
 
 </div>
 </div>
@@ -636,9 +636,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_target_forms_8hpp_source.html#l00055">55</a> of file <a class="el" href="_target_forms_8hpp_source.html">TargetForms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_target_forms_8hpp_source.html#l00119">119</a> of file <a class="el" href="_target_forms_8hpp_source.html">TargetForms.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_target_forms_8cpp_source.html#l00215">compute_adjoint_rhs_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00251">compute_partial_gradient_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00189">NodeTargetForm()</a>, and <a class="el" href="_target_forms_8cpp_source.html#l00237">value_unweighted_step()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_target_forms_8cpp_source.html#l00499">compute_adjoint_rhs_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00535">compute_partial_gradient_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00473">NodeTargetForm()</a>, and <a class="el" href="_target_forms_8cpp_source.html#l00521">value_unweighted_step()</a>.</p>
 
 </div>
 </div>
@@ -662,9 +662,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_target_forms_8hpp_source.html#l00057">57</a> of file <a class="el" href="_target_forms_8hpp_source.html">TargetForms.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_target_forms_8hpp_source.html#l00121">121</a> of file <a class="el" href="_target_forms_8hpp_source.html">TargetForms.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_target_forms_8cpp_source.html#l00215">compute_adjoint_rhs_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00189">NodeTargetForm()</a>, and <a class="el" href="_target_forms_8cpp_source.html#l00237">value_unweighted_step()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_target_forms_8cpp_source.html#l00499">compute_adjoint_rhs_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00473">NodeTargetForm()</a>, and <a class="el" href="_target_forms_8cpp_source.html#l00521">value_unweighted_step()</a>.</p>
 
 </div>
 </div>

@@ -11,6 +11,7 @@ var searchData=
   ['constantvelocity_8',['ConstantVelocity',['../classpolyfem_1_1problem_1_1_constant_velocity.html',1,'polyfem::problem']]],
   ['contactform_9',['ContactForm',['../classpolyfem_1_1solver_1_1_contact_form.html',1,'polyfem::solver']]],
   ['cornerflow_10',['CornerFlow',['../classpolyfem_1_1problem_1_1_corner_flow.html',1,'polyfem::problem']]],
-  ['cubicproblem_11',['CubicProblem',['../classpolyfem_1_1problem_1_1_cubic_problem.html',1,'polyfem::problem']]],
-  ['cylinderselection_12',['CylinderSelection',['../classpolyfem_1_1utils_1_1_cylinder_selection.html',1,'polyfem::utils']]]
+  ['cubichermitesplineparametrization_11',['CubicHermiteSplineParametrization',['../classpolyfem_1_1_cubic_hermite_spline_parametrization.html',1,'polyfem']]],
+  ['cubicproblem_12',['CubicProblem',['../classpolyfem_1_1problem_1_1_cubic_problem.html',1,'polyfem::problem']]],
+  ['cylinderselection_13',['CylinderSelection',['../classpolyfem_1_1utils_1_1_cylinder_selection.html',1,'polyfem::utils']]]
 ];

@@ -32,8 +32,10 @@ var searchData=
   ['powermap_29',['PowerMap',['../classpolyfem_1_1solver_1_1_power_map.html',1,'polyfem::solver']]],
   ['pressureassembler_30',['PressureAssembler',['../classpolyfem_1_1assembler_1_1_pressure_assembler.html',1,'polyfem::assembler']]],
   ['pressureform_31',['PressureForm',['../classpolyfem_1_1solver_1_1_pressure_form.html',1,'polyfem::solver']]],
-  ['problem_32',['Problem',['../classpolyfem_1_1assembler_1_1_problem.html',1,'polyfem::assembler']]],
-  ['problemfactory_33',['ProblemFactory',['../classpolyfem_1_1problem_1_1_problem_factory.html',1,'polyfem::problem']]],
-  ['problemwithsolution_34',['ProblemWithSolution',['../classpolyfem_1_1problem_1_1_problem_with_solution.html',1,'polyfem::problem']]],
-  ['program_35',['Program',['../classpolyfem_1_1renderer_1_1_program.html',1,'polyfem::renderer']]]
+  ['pressurevariabletosimulation_32',['PressureVariableToSimulation',['../classpolyfem_1_1solver_1_1_pressure_variable_to_simulation.html',1,'polyfem::solver']]],
+  ['problem_33',['Problem',['../classpolyfem_1_1assembler_1_1_problem.html',1,'polyfem::assembler']]],
+  ['problemfactory_34',['ProblemFactory',['../classpolyfem_1_1problem_1_1_problem_factory.html',1,'polyfem::problem']]],
+  ['problemwithsolution_35',['ProblemWithSolution',['../classpolyfem_1_1problem_1_1_problem_with_solution.html',1,'polyfem::problem']]],
+  ['program_36',['Program',['../classpolyfem_1_1renderer_1_1_program.html',1,'polyfem::renderer']]],
+  ['proxycontactforceform_37',['ProxyContactForceForm',['../classpolyfem_1_1solver_1_1_proxy_contact_force_form.html',1,'polyfem::solver']]]
 ];

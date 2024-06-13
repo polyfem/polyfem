@@ -18,5 +18,7 @@ var searchData=
   ['bodyform_2ecpp_15',['BodyForm.cpp',['../_body_form_8cpp.html',1,'']]],
   ['bodyform_2ehpp_16',['BodyForm.hpp',['../_body_form_8hpp.html',1,'']]],
   ['boundarysampler_2ecpp_17',['BoundarySampler.cpp',['../_boundary_sampler_8cpp.html',1,'']]],
-  ['boundarysampler_2ehpp_18',['BoundarySampler.hpp',['../_boundary_sampler_8hpp.html',1,'']]]
+  ['boundarysampler_2ehpp_18',['BoundarySampler.hpp',['../_boundary_sampler_8hpp.html',1,'']]],
+  ['bsplineparametrization_2ecpp_19',['BSplineParametrization.cpp',['../_b_spline_parametrization_8cpp.html',1,'']]],
+  ['bsplineparametrization_2ehpp_20',['BSplineParametrization.hpp',['../_b_spline_parametrization_8hpp.html',1,'']]]
 ];

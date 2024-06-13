@@ -1,0 +1,25 @@
+var classpolyfem_1_1solver_1_1_proxy_contact_force_form =
+[
+    [ "ProxyContactForceForm", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#aebf059a06ac5be4bbefbccaa726466bc", null ],
+    [ "~ProxyContactForceForm", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a7606bc34011d3201424cf9496200ae57", null ],
+    [ "build_collision_mesh", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#ab7fb0453693274d35caf72b36e229b95", null ],
+    [ "build_forward_collision_mesh", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a9dff95a626312c0d676ee149dd23aed2", null ],
+    [ "compute_adjoint_rhs_step", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a899b1243350be94b02fdb93ec527e7e1", null ],
+    [ "compute_partial_gradient_step", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#aac0ea4d95a34ed7287b36b5f1dbfa0cd", null ],
+    [ "get_or_compute_collision_set", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a2f52c5bef470cec39624f7a0de2c9897", null ],
+    [ "solution_changed_step", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a882b62bb50f60c92dc12657f573f9cea", null ],
+    [ "value_unweighted_step", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a524170a459038f9bf13e983449228ad7", null ],
+    [ "barrier_potential_", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a18c0410f679785708c00b7f2c66ca25c", null ],
+    [ "boundary_ids_", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#ac2b3e4fd43bea1c2b040fa6e339ad7e6", null ],
+    [ "boundary_ids_to_dof_", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a832373bca746c76c86cb9acce53af509", null ],
+    [ "broad_phase_method_", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a28b1ad7e4df016a18a5fe60bef946d8e", null ],
+    [ "can_collide_cache_", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#aab6c5d2bbfaf778a05d652718e1078dd", null ],
+    [ "collision_mesh_", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#affbabcfd4ca7c90debb71f55d0742bf2", null ],
+    [ "collision_set_indicator_", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a1ae086d070dbee380e56f66c5b474040", null ],
+    [ "collision_sets_", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a33fafc6f3e3d8799878f1722d68affdf", null ],
+    [ "curr_x_", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a5481ad0a598fd0efdeaeb46addbfba2a", null ],
+    [ "dhat_", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a7a613f9ad65f15e50bd206155dac11f2", null ],
+    [ "dmin_", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#af7ddd65aafde1bc1939f8fbbfea00e79", null ],
+    [ "node_positions_", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a81a19b8698375a6ad6cb49a4eaa5b81d", null ],
+    [ "state_", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a5e53423a73430a8f9d1fe5f1c643044d", null ]
+];

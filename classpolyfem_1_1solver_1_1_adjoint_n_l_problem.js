@@ -1,7 +1,7 @@
 var classpolyfem_1_1solver_1_1_adjoint_n_l_problem =
 [
     [ "AdjointNLProblem", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a871490ecbe9f82dafc2ea2affd680ec8", null ],
-    [ "AdjointNLProblem", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a572d71608e4706f724477372c4acda19", null ],
+    [ "AdjointNLProblem", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a963e5a6fc7050d6e90cfb228f7a822ce", null ],
     [ "~AdjointNLProblem", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#afe950f67bec760262590e323e4fa15e8", null ],
     [ "gradient", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a2465b3b989f5f836202bb38a32346b58", null ],
     [ "hessian", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a703e9b37b69297bfec21eb0879fe65f5", null ],
@@ -19,9 +19,12 @@ var classpolyfem_1_1solver_1_1_adjoint_n_l_problem =
     [ "active_state_mask", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#ac76af7dec4d0c1fed8fd4029f16ab6e9", null ],
     [ "all_states_", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#adfc870e7be37ea664cd31cf27bb9b61e", null ],
     [ "cur_grad", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a80bb8f48bb2942e0698064b92f51836c", null ],
+    [ "curr_x", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a9620f6eae6d809ad41ea41538286c6f0", null ],
+    [ "enable_slim", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#ad7b7354337937b982ca51335ea038607", null ],
     [ "form_", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#ae379d4a80106913981f6acf3874c7e19", null ],
     [ "save_freq", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#aacecbd532ec78e70b03c76daa28b5815", null ],
     [ "save_iter", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#aba97a50b0012266602dc92f25b72cfd7", null ],
+    [ "smooth_line_search", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a4926b5e39d267cba2d120a880b358ece", null ],
     [ "solution_ostream", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a30a6cc5790bf02485f258fccde3fc405", null ],
     [ "solve_in_order", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#aa8f28a5d1c3cbc820a8cfed81180e5f1", null ],
     [ "solve_in_parallel", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#afd5bfdcda004b24c00ab58fb13aadee3", null ],

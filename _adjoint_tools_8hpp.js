@@ -7,6 +7,7 @@ var _adjoint_tools_8hpp =
       [ "DampingCoefficient", "_adjoint_tools_8hpp.html#a1c9e86081b90c3ab43c4d722f65d3c59a633e1ddfaf226af9371bec1bdb01ba03", null ],
       [ "InitialCondition", "_adjoint_tools_8hpp.html#a1c9e86081b90c3ab43c4d722f65d3c59a01ba7e77dad0a0033b291edfcfd27898", null ],
       [ "DirichletBC", "_adjoint_tools_8hpp.html#a1c9e86081b90c3ab43c4d722f65d3c59abf475759a5b12fab0ca2c50e7c712112", null ],
+      [ "PressureBC", "_adjoint_tools_8hpp.html#a1c9e86081b90c3ab43c4d722f65d3c59a9f7433a078e50b71061edcf112bc9cb5", null ],
       [ "MacroStrain", "_adjoint_tools_8hpp.html#a1c9e86081b90c3ab43c4d722f65d3c59a9dd66ef403d0478b7300b75f64b62370", null ]
     ] ],
     [ "SpatialIntegralType", "_adjoint_tools_8hpp.html#ad27032b2014cdcea2f5718580272f48f", [
@@ -22,6 +23,8 @@ var _adjoint_tools_8hpp =
     [ "dJ_initial_condition_adjoint_term", "_adjoint_tools_8hpp.html#a83a0a0adacafbe7876a0a8de0d0ba417", null ],
     [ "dJ_material_static_adjoint_term", "_adjoint_tools_8hpp.html#ac2d6e588ea62390fae16da18ec65c996", null ],
     [ "dJ_material_transient_adjoint_term", "_adjoint_tools_8hpp.html#a8c5bd48aac94f33974b81900015f979b", null ],
+    [ "dJ_pressure_static_adjoint_term", "_adjoint_tools_8hpp.html#a05b06d15b00427c97602f6b7e878b54e", null ],
+    [ "dJ_pressure_transient_adjoint_term", "_adjoint_tools_8hpp.html#a6f41a3fc55f3273044cf7b94068e95f1", null ],
     [ "dJ_shape_static_adjoint_term", "_adjoint_tools_8hpp.html#addcc05e296f84fac4d2feef6b6efe330", null ],
     [ "dJ_shape_transient_adjoint_term", "_adjoint_tools_8hpp.html#abeb523ee2bef0856b888bb49c5cdca8f", null ],
     [ "edge_normal_gradient", "_adjoint_tools_8hpp.html#a99096782a44628ed8754d46c9d55801b", null ],
@@ -29,6 +32,10 @@ var _adjoint_tools_8hpp =
     [ "face_normal_gradient", "_adjoint_tools_8hpp.html#a51c3e2db128d7b83f6461cff5aa17610", null ],
     [ "face_velocity_divergence", "_adjoint_tools_8hpp.html#a1bd6a5b37bca39571bb8232619a490da", null ],
     [ "integrate_objective", "_adjoint_tools_8hpp.html#a4c93693417aa7c2cf7f03e5bd0ac03dd", null ],
+    [ "is_flipped", "_adjoint_tools_8hpp.html#aef63c67d63c752e30a1b040950f7b1d0", null ],
     [ "map_node_to_primitive_order", "_adjoint_tools_8hpp.html#af8e122cc77e54fe557a75e10bb5d6f2c", null ],
-    [ "map_primitive_to_node_order", "_adjoint_tools_8hpp.html#aa7f73a425012498c55fca81fd8a24ca5", null ]
+    [ "map_primitive_to_node_order", "_adjoint_tools_8hpp.html#aa7f73a425012498c55fca81fd8a24ca5", null ],
+    [ "scaled_jacobian", "_adjoint_tools_8hpp.html#a33b920ae29e72a1b27a62e059acf0a5e", null ],
+    [ "tet_determinant", "_adjoint_tools_8hpp.html#a02d0d3d2eac060807c163fce8ddb5422", null ],
+    [ "triangle_jacobian", "_adjoint_tools_8hpp.html#ac247fac09d44fb8145e00cc6f9d4b0db", null ]
 ];

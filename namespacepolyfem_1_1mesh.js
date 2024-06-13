@@ -105,6 +105,7 @@ var namespacepolyfem_1_1mesh =
       [ "HEX", "namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5caa58c9566f3c750ce7147b045fdd14202b", null ]
     ] ],
     [ "add_solver_timings", "namespacepolyfem_1_1mesh.html#a47b36fa8a7d89d878d53cd21e83bfb1b", null ],
+    [ "apply_slim", "namespacepolyfem_1_1mesh.html#a8afa0d7d4eea0a8a77b59df01f204ca3", null ],
     [ "build_collision_proxy", "namespacepolyfem_1_1mesh.html#a290ded340a51fb051467b479ff7dfccc", null ],
     [ "build_collision_proxy", "namespacepolyfem_1_1mesh.html#aa0aff2ad64ded82a861fd4aa657544a4", null ],
     [ "build_collision_proxy_displacement_map", "namespacepolyfem_1_1mesh.html#a7c9d0b37c424e46de1752b5f1c302f43", null ],

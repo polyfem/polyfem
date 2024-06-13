@@ -7,5 +7,6 @@ var _variable_to_simulation_8hpp =
     [ "polyfem::solver::FrictionCoeffientVariableToSimulation", "classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation" ],
     [ "polyfem::solver::DampingCoeffientVariableToSimulation", "classpolyfem_1_1solver_1_1_damping_coeffient_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_damping_coeffient_variable_to_simulation" ],
     [ "polyfem::solver::InitialConditionVariableToSimulation", "classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation" ],
-    [ "polyfem::solver::DirichletVariableToSimulation", "classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation" ]
+    [ "polyfem::solver::DirichletVariableToSimulation", "classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation" ],
+    [ "polyfem::solver::PressureVariableToSimulation", "classpolyfem_1_1solver_1_1_pressure_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_pressure_variable_to_simulation" ]
 ];

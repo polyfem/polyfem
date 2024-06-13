@@ -9,6 +9,7 @@ var classpolyfem_1_1solver_1_1_static_form =
     [ "compute_partial_gradient_step", "classpolyfem_1_1solver_1_1_static_form.html#a0a3aff89fde436f2d0942b538da66a34", null ],
     [ "depends_on_step_prev", "classpolyfem_1_1solver_1_1_static_form.html#ac3b0ca6e3b45880bfb527e71120a19a6", null ],
     [ "name", "classpolyfem_1_1solver_1_1_static_form.html#a5f57682d8354d371c761eb1b154e8a10", null ],
+    [ "solution_changed", "classpolyfem_1_1solver_1_1_static_form.html#aebe03b410b4ba7f4fa6b0f3547c5902e", null ],
     [ "solution_changed_step", "classpolyfem_1_1solver_1_1_static_form.html#a42b91810aaf9224c3594cec230c401ba", null ],
     [ "value_unweighted", "classpolyfem_1_1solver_1_1_static_form.html#a85d26d3ef8d2ad6941dab6edb6b5efbf", null ],
     [ "value_unweighted_step", "classpolyfem_1_1solver_1_1_static_form.html#ab971208c618160943abf980ad1776949", null ],

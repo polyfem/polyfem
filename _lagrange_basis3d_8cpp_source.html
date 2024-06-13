@@ -322,8 +322,8 @@ $(document).ready(function(){initNavTree('_lagrange_basis3d_8cpp_source.html',''
 <div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>        <span class="keywordtype">int</span> min = std::numeric_limits&lt;int&gt;::max();</div>
 <div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        <span class="keywordtype">int</span> elem = -1;</div>
 <div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> e : elem_list)</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>            if (discr_orders[e] &lt; min)</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>                elem = e;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>            if (discr_orders[<a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>] &lt; min)</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>                elem = <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>;</div>
 <div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>        <span class="keywordflow">return</span> elem;</div>
 <div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    }</div>
 <div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
@@ -362,7 +362,7 @@ $(document).ready(function(){initNavTree('_lagrange_basis3d_8cpp_source.html',''
 <div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>            <a class="code hl_variable" href="namespaceelasticity__rhs.html#a40cac4cd15d87571365bca9e062442d8">f</a>[lf] = index;</div>
 <div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        }</div>
 <div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span> </div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        Eigen::Matrix&lt;Navigation3D::Index, 6, 1&gt; e;</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        Eigen::Matrix&lt;Navigation3D::Index, 6, 1&gt; <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>;</div>
 <div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        Eigen::Matrix&lt;int, 6, 2&gt; ev;</div>
 <div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        ev.row(0) &lt;&lt; v[0], v[1];</div>
 <div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        ev.row(1) &lt;&lt; v[1], v[2];</div>
@@ -372,11 +372,11 @@ $(document).ready(function(){initNavTree('_lagrange_basis3d_8cpp_source.html',''
 <div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>        ev.row(4) &lt;&lt; v[1], v[3];</div>
 <div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>        ev.row(5) &lt;&lt; v[2], v[3];</div>
 <div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span> </div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> le = 0; le &lt; e.rows(); ++le)</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> le = 0; le &lt; <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>.rows(); ++le)</div>
 <div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>        {</div>
 <div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>            <span class="comment">// const auto index =  find_edge(mesh, c, ev(le, 0), ev(le, 1));</span></div>
 <div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>            <span class="keyword">const</span> <span class="keyword">auto</span> index = mesh.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a35f2e4458053f4e6afa11f7918272e08">get_index_from_element_edge</a>(c, ev(le, 0), ev(le, 1));</div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>            e[le] = index;</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>            <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>[le] = index;</div>
 <div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>        }</div>
 <div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span> </div>
 <div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>        <span class="comment">// vertices</span></div>
@@ -396,9 +396,9 @@ $(document).ready(function(){initNavTree('_lagrange_basis3d_8cpp_source.html',''
 <div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>        }</div>
 <div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span> </div>
 <div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>        <span class="comment">// Edges</span></div>
-<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> le = 0; le &lt; e.rows(); ++le)</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> le = 0; le &lt; <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>.rows(); ++le)</div>
 <div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>        {</div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>            <span class="keyword">const</span> <span class="keyword">auto</span> index = e[le];</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>            <span class="keyword">const</span> <span class="keyword">auto</span> index = <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>[le];</div>
 <div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>            <span class="keyword">auto</span> neighs = mesh.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a8bae5d8ae2745f6f2a599d2d6a75d6a4">edge_neighs</a>(index.edge);</div>
 <div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>            <span class="keywordtype">int</span> min_p = discr_order.size() &gt; 0 ? discr_order(c) : 0;</div>
 <div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span> </div>
@@ -546,7 +546,7 @@ $(document).ready(function(){initNavTree('_lagrange_basis3d_8cpp_source.html',''
 <div class="line"><a id="l00419" name="l00419"></a><span class="lineno">  419</span>        <span class="keyword">auto</span> v = hex_vertices_local_to_global(mesh, c);</div>
 <div class="line"><a id="l00420" name="l00420"></a><span class="lineno">  420</span> </div>
 <div class="line"><a id="l00421" name="l00421"></a><span class="lineno">  421</span>        <span class="comment">// Edge nodes</span></div>
-<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span>        Eigen::Matrix&lt;Navigation3D::Index, 12, 1&gt; e;</div>
+<div class="line"><a id="l00422" name="l00422"></a><span class="lineno">  422</span>        Eigen::Matrix&lt;Navigation3D::Index, 12, 1&gt; <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>;</div>
 <div class="line"><a id="l00423" name="l00423"></a><span class="lineno">  423</span>        Eigen::Matrix&lt;int, 12, 2&gt; ev;</div>
 <div class="line"><a id="l00424" name="l00424"></a><span class="lineno">  424</span>        ev.row(0) &lt;&lt; v[0], v[1];</div>
 <div class="line"><a id="l00425" name="l00425"></a><span class="lineno">  425</span>        ev.row(1) &lt;&lt; v[1], v[2];</div>
@@ -560,10 +560,10 @@ $(document).ready(function(){initNavTree('_lagrange_basis3d_8cpp_source.html',''
 <div class="line"><a id="l00433" name="l00433"></a><span class="lineno">  433</span>        ev.row(9) &lt;&lt; v[5], v[6];</div>
 <div class="line"><a id="l00434" name="l00434"></a><span class="lineno">  434</span>        ev.row(10) &lt;&lt; v[6], v[7];</div>
 <div class="line"><a id="l00435" name="l00435"></a><span class="lineno">  435</span>        ev.row(11) &lt;&lt; v[7], v[4];</div>
-<div class="line"><a id="l00436" name="l00436"></a><span class="lineno">  436</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> le = 0; le &lt; e.rows(); ++le)</div>
+<div class="line"><a id="l00436" name="l00436"></a><span class="lineno">  436</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> le = 0; le &lt; <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>.rows(); ++le)</div>
 <div class="line"><a id="l00437" name="l00437"></a><span class="lineno">  437</span>        {</div>
 <div class="line"><a id="l00438" name="l00438"></a><span class="lineno">  438</span>            <span class="comment">// e[le] = find_edge(mesh, c, ev(le, 0), ev(le, 1)).edge;</span></div>
-<div class="line"><a id="l00439" name="l00439"></a><span class="lineno">  439</span>            e[le] = mesh.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a35f2e4458053f4e6afa11f7918272e08">get_index_from_element_edge</a>(c, ev(le, 0), ev(le, 1));</div>
+<div class="line"><a id="l00439" name="l00439"></a><span class="lineno">  439</span>            <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>[le] = mesh.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a35f2e4458053f4e6afa11f7918272e08">get_index_from_element_edge</a>(c, ev(le, 0), ev(le, 1));</div>
 <div class="line"><a id="l00440" name="l00440"></a><span class="lineno">  440</span>        }</div>
 <div class="line"><a id="l00441" name="l00441"></a><span class="lineno">  441</span> </div>
 <div class="line"><a id="l00442" name="l00442"></a><span class="lineno">  442</span>        <span class="comment">// Face nodes</span></div>
@@ -589,9 +589,9 @@ $(document).ready(function(){initNavTree('_lagrange_basis3d_8cpp_source.html',''
 <div class="line"><a id="l00462" name="l00462"></a><span class="lineno">  462</span>        assert(res.size() == <span class="keywordtype">size_t</span>(8));</div>
 <div class="line"><a id="l00463" name="l00463"></a><span class="lineno">  463</span> </div>
 <div class="line"><a id="l00464" name="l00464"></a><span class="lineno">  464</span>        <span class="comment">// Edges</span></div>
-<div class="line"><a id="l00465" name="l00465"></a><span class="lineno">  465</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> le = 0; le &lt; e.rows(); ++le)</div>
+<div class="line"><a id="l00465" name="l00465"></a><span class="lineno">  465</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> le = 0; le &lt; <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>.rows(); ++le)</div>
 <div class="line"><a id="l00466" name="l00466"></a><span class="lineno">  466</span>        {</div>
-<div class="line"><a id="l00467" name="l00467"></a><span class="lineno">  467</span>            <span class="keyword">const</span> <span class="keyword">auto</span> index = e[le];</div>
+<div class="line"><a id="l00467" name="l00467"></a><span class="lineno">  467</span>            <span class="keyword">const</span> <span class="keyword">auto</span> index = <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>[le];</div>
 <div class="line"><a id="l00468" name="l00468"></a><span class="lineno">  468</span>            <span class="keyword">auto</span> neighs = mesh.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_mesh3_d.html#a8bae5d8ae2745f6f2a599d2d6a75d6a4">edge_neighs</a>(index.edge);</div>
 <div class="line"><a id="l00469" name="l00469"></a><span class="lineno">  469</span>            <span class="keywordtype">int</span> min_q = discr_order.size() &gt; 0 ? discr_order(c) : 0;</div>
 <div class="line"><a id="l00470" name="l00470"></a><span class="lineno">  470</span> </div>
@@ -1594,7 +1594,7 @@ $(document).ready(function(){initNavTree('_lagrange_basis3d_8cpp_source.html',''
 <div class="line"><a id="l01495" name="l01495"></a><span class="lineno"> 1495</span> </div>
 <div class="line"><a id="l01496" name="l01496"></a><span class="lineno"> 1496</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; n_el_bases; ++j)</div>
 <div class="line"><a id="l01497" name="l01497"></a><span class="lineno"> 1497</span>            {</div>
-<div class="line"><a id="l01498" name="l01498"></a><span class="lineno"> 1498</span>                <span class="keyword">const</span> <span class="keywordtype">int</span> global_index = element_nodes_id[e][j];</div>
+<div class="line"><a id="l01498" name="l01498"></a><span class="lineno"> 1498</span>                <span class="keyword">const</span> <span class="keywordtype">int</span> global_index = element_nodes_id[<a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>][j];</div>
 <div class="line"><a id="l01499" name="l01499"></a><span class="lineno"> 1499</span> </div>
 <div class="line"><a id="l01500" name="l01500"></a><span class="lineno"> 1500</span>                b.<a class="code hl_variable" href="classpolyfem_1_1basis_1_1_element_bases.html#ab3e049455c895d613294cfd10a1bbd9e">bases</a>[j].init(discr_order, global_index, j, <a class="code hl_variable" href="namespacep__bases.html#a7bf70f5e25a9247c8c0d614187883157">nodes</a>.node_position(global_index));</div>
 <div class="line"><a id="l01501" name="l01501"></a><span class="lineno"> 1501</span> </div>
@@ -1637,7 +1637,7 @@ $(document).ready(function(){initNavTree('_lagrange_basis3d_8cpp_source.html',''
 <div class="line"><a id="l01538" name="l01538"></a><span class="lineno"> 1538</span> </div>
 <div class="line"><a id="l01539" name="l01539"></a><span class="lineno"> 1539</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; n_el_bases; ++j)</div>
 <div class="line"><a id="l01540" name="l01540"></a><span class="lineno"> 1540</span>            {</div>
-<div class="line"><a id="l01541" name="l01541"></a><span class="lineno"> 1541</span>                <span class="keyword">const</span> <span class="keywordtype">int</span> global_index = element_nodes_id[e][j];</div>
+<div class="line"><a id="l01541" name="l01541"></a><span class="lineno"> 1541</span>                <span class="keyword">const</span> <span class="keywordtype">int</span> global_index = element_nodes_id[<a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>][j];</div>
 <div class="line"><a id="l01542" name="l01542"></a><span class="lineno"> 1542</span>                <span class="keywordflow">if</span> (!skip_interface_element)</div>
 <div class="line"><a id="l01543" name="l01543"></a><span class="lineno"> 1543</span>                {</div>
 <div class="line"><a id="l01544" name="l01544"></a><span class="lineno"> 1544</span>                    b.<a class="code hl_variable" href="classpolyfem_1_1basis_1_1_element_bases.html#ab3e049455c895d613294cfd10a1bbd9e">bases</a>[j].init(discr_order, global_index, j, <a class="code hl_variable" href="namespacep__bases.html#a7bf70f5e25a9247c8c0d614187883157">nodes</a>.node_position(global_index));</div>
@@ -1664,7 +1664,7 @@ $(document).ready(function(){initNavTree('_lagrange_basis3d_8cpp_source.html',''
 <div class="line"><a id="l01565" name="l01565"></a><span class="lineno"> 1565</span>            {</div>
 <div class="line"><a id="l01566" name="l01566"></a><span class="lineno"> 1566</span>                <span class="keyword">const</span> <span class="keywordtype">int</span> max_order = discr_orders.maxCoeff(), min_order = discr_orders.minCoeff();</div>
 <div class="line"><a id="l01567" name="l01567"></a><span class="lineno"> 1567</span>                <span class="keywordtype">int</span> max_level = 0;</div>
-<div class="line"><a id="l01568" name="l01568"></a><span class="lineno"> 1568</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> e = 0; e &lt; ncmesh.n_cells(); e++)</div>
+<div class="line"><a id="l01568" name="l01568"></a><span class="lineno"> 1568</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> e = 0; <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a> &lt; ncmesh.n_cells(); <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>++)</div>
 <div class="line"><a id="l01569" name="l01569"></a><span class="lineno"> 1569</span>                    <span class="keywordflow">if</span> (max_level &lt; ncmesh.cell_ref_level(e))</div>
 <div class="line"><a id="l01570" name="l01570"></a><span class="lineno"> 1570</span>                        max_level = ncmesh.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a17fbbd159d8c4e9d3da70d50cf98a8c1">cell_ref_level</a>(e);</div>
 <div class="line"><a id="l01571" name="l01571"></a><span class="lineno"> 1571</span> </div>
@@ -2136,9 +2136,9 @@ $(document).ready(function(){initNavTree('_lagrange_basis3d_8cpp_source.html',''
 <div class="line"><a id="l02037" name="l02037"></a><span class="lineno"> 2037</span>            {</div>
 <div class="line"><a id="l02038" name="l02038"></a><span class="lineno"> 2038</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> e : interface_elements)</div>
 <div class="line"><a id="l02039" name="l02039"></a><span class="lineno"> 2039</span>                {</div>
-<div class="line"><a id="l02040" name="l02040"></a><span class="lineno"> 2040</span>                    <a class="code hl_class" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &amp;b = bases[e];</div>
+<div class="line"><a id="l02040" name="l02040"></a><span class="lineno"> 2040</span>                    <a class="code hl_class" href="classpolyfem_1_1basis_1_1_element_bases.html">ElementBases</a> &amp;b = bases[<a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>];</div>
 <div class="line"><a id="l02041" name="l02041"></a><span class="lineno"> 2041</span>                    <span class="keyword">const</span> <span class="keywordtype">int</span> discr_order = discr_orders(e);</div>
-<div class="line"><a id="l02042" name="l02042"></a><span class="lineno"> 2042</span>                    <span class="keyword">const</span> <span class="keywordtype">int</span> n_el_bases = element_nodes_id[e].size();</div>
+<div class="line"><a id="l02042" name="l02042"></a><span class="lineno"> 2042</span>                    <span class="keyword">const</span> <span class="keywordtype">int</span> n_el_bases = element_nodes_id[<a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>].size();</div>
 <div class="line"><a id="l02043" name="l02043"></a><span class="lineno"> 2043</span>                    assert(discr_order &gt; 1);</div>
 <div class="line"><a id="l02044" name="l02044"></a><span class="lineno"> 2044</span>                    <span class="keywordflow">if</span> (discr_order != pp)</div>
 <div class="line"><a id="l02045" name="l02045"></a><span class="lineno"> 2045</span>                        <span class="keywordflow">continue</span>;</div>
@@ -2152,7 +2152,7 @@ $(document).ready(function(){initNavTree('_lagrange_basis3d_8cpp_source.html',''
 <div class="line"><a id="l02053" name="l02053"></a><span class="lineno"> 2053</span>                    {</div>
 <div class="line"><a id="l02054" name="l02054"></a><span class="lineno"> 2054</span>                        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; n_el_bases; ++j)</div>
 <div class="line"><a id="l02055" name="l02055"></a><span class="lineno"> 2055</span>                        {</div>
-<div class="line"><a id="l02056" name="l02056"></a><span class="lineno"> 2056</span>                            <span class="keyword">const</span> <span class="keywordtype">int</span> global_index = element_nodes_id[e][j];</div>
+<div class="line"><a id="l02056" name="l02056"></a><span class="lineno"> 2056</span>                            <span class="keyword">const</span> <span class="keywordtype">int</span> global_index = element_nodes_id[<a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">e</a>][j];</div>
 <div class="line"><a id="l02057" name="l02057"></a><span class="lineno"> 2057</span> </div>
 <div class="line"><a id="l02058" name="l02058"></a><span class="lineno"> 2058</span>                            <span class="keywordflow">if</span> (global_index &gt;= 0)</div>
 <div class="line"><a id="l02059" name="l02059"></a><span class="lineno"> 2059</span>                                b.<a class="code hl_variable" href="classpolyfem_1_1basis_1_1_element_bases.html#ab3e049455c895d613294cfd10a1bbd9e">bases</a>[j].init(discr_order, global_index, j, <a class="code hl_variable" href="namespacep__bases.html#a7bf70f5e25a9247c8c0d614187883157">nodes</a>.node_position(global_index));</div>
@@ -2417,6 +2417,7 @@ $(document).ready(function(){initNavTree('_lagrange_basis3d_8cpp_source.html',''
 <div class="ttc" id="anamespaceelasticity__rhs_html_a40cac4cd15d87571365bca9e062442d8"><div class="ttname"><a href="namespaceelasticity__rhs.html#a40cac4cd15d87571365bca9e062442d8">elasticity_rhs.f</a></div><div class="ttdeci">f</div><div class="ttdef"><b>Definition</b> <a href="elasticity__rhs_8py_source.html#l00173">elasticity_rhs.py:173</a></div></div>
 <div class="ttc" id="anamespacegenerate__mooney__rivlin_html_ac615cabfdefed4f65294ae19ad24d1f7"><div class="ttname"><a href="namespacegenerate__mooney__rivlin.html#ac615cabfdefed4f65294ae19ad24d1f7">generate_mooney_rivlin.c2</a></div><div class="ttdeci">c2</div><div class="ttdef"><b>Definition</b> <a href="generate__mooney__rivlin_8py_source.html#l00005">generate_mooney_rivlin.py:5</a></div></div>
 <div class="ttc" id="anamespacegenerate__mooney__rivlin_html_aca2415ae8c0df86d447adf341caf4830"><div class="ttname"><a href="namespacegenerate__mooney__rivlin.html#aca2415ae8c0df86d447adf341caf4830">generate_mooney_rivlin.dim</a></div><div class="ttdeci">int dim</div><div class="ttdef"><b>Definition</b> <a href="generate__mooney__rivlin_8py_source.html#l00046">generate_mooney_rivlin.py:46</a></div></div>
+<div class="ttc" id="anamespacegenerate__rotation__mtx_html_a05ead5be75902c33b319cf3438f29dae"><div class="ttname"><a href="namespacegenerate__rotation__mtx.html#a05ead5be75902c33b319cf3438f29dae">generate_rotation_mtx.e</a></div><div class="ttdeci">list e</div><div class="ttdef"><b>Definition</b> <a href="generate__rotation__mtx_8py_source.html#l00049">generate_rotation_mtx.py:49</a></div></div>
 <div class="ttc" id="anamespacep__bases_html_a545f876b401f1042d3b57d92fb694df8"><div class="ttname"><a href="namespacep__bases.html#a545f876b401f1042d3b57d92fb694df8">p_bases.tmp</a></div><div class="ttdeci">list tmp</div><div class="ttdef"><b>Definition</b> <a href="p__bases_8py_source.html#l00339">p_bases.py:339</a></div></div>
 <div class="ttc" id="anamespacep__bases_html_a5d5986f971533a0ab1b2d910d61d764c"><div class="ttname"><a href="namespacep__bases.html#a5d5986f971533a0ab1b2d910d61d764c">p_bases.nn</a></div><div class="ttdeci">nn</div><div class="ttdef"><b>Definition</b> <a href="p__bases_8py_source.html#l00315">p_bases.py:315</a></div></div>
 <div class="ttc" id="anamespacep__bases_html_a7bf70f5e25a9247c8c0d614187883157"><div class="ttname"><a href="namespacep__bases.html#a7bf70f5e25a9247c8c0d614187883157">p_bases.nodes</a></div><div class="ttdeci">str nodes</div><div class="ttdef"><b>Definition</b> <a href="p__bases_8py_source.html#l00372">p_bases.py:372</a></div></div>

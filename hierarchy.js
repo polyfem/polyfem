@@ -81,7 +81,12 @@ var hierarchy =
     [ "polyfem::basis::Basis", "classpolyfem_1_1basis_1_1_basis.html", null ],
     [ "polyfem::problem::PointBasedTensorProblem::BCValue", "classpolyfem_1_1problem_1_1_point_based_tensor_problem_1_1_b_c_value.html", null ],
     [ "polyfem::utils::BoundarySampler", "classpolyfem_1_1utils_1_1_boundary_sampler.html", null ],
+    [ "polyfem::BSplineParametrization", "classpolyfem_1_1_b_spline_parametrization.html", [
+      [ "polyfem::BSplineParametrization2D", "classpolyfem_1_1_b_spline_parametrization2_d.html", null ],
+      [ "polyfem::BSplineParametrization3D", "classpolyfem_1_1_b_spline_parametrization3_d.html", null ]
+    ] ],
     [ "polyfem::mesh::Mesh::CellNodes", "classpolyfem_1_1mesh_1_1_mesh_1_1_cell_nodes.html", null ],
+    [ "polyfem::CubicHermiteSplineParametrization", "classpolyfem_1_1_cubic_hermite_spline_parametrization.html", null ],
     [ "polyfem::assembler::Density", "classpolyfem_1_1assembler_1_1_density.html", [
       [ "polyfem::assembler::NoDensity", "classpolyfem_1_1assembler_1_1_no_density.html", null ]
     ] ],
@@ -116,7 +121,9 @@ var hierarchy =
       [ "polyfem::solver::AdjointForm", "classpolyfem_1_1solver_1_1_adjoint_form.html", [
         [ "polyfem::solver::AMIPSForm", "classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html", null ],
         [ "polyfem::solver::BoundarySmoothingForm", "classpolyfem_1_1solver_1_1_boundary_smoothing_form.html", null ],
-        [ "polyfem::solver::CollisionBarrierForm", "classpolyfem_1_1solver_1_1_collision_barrier_form.html", null ],
+        [ "polyfem::solver::CollisionBarrierForm", "classpolyfem_1_1solver_1_1_collision_barrier_form.html", [
+          [ "polyfem::solver::LayerThicknessForm", "classpolyfem_1_1solver_1_1_layer_thickness_form.html", null ]
+        ] ],
         [ "polyfem::solver::CompositeForm", "classpolyfem_1_1solver_1_1_composite_form.html", [
           [ "polyfem::solver::DivideForm", "classpolyfem_1_1solver_1_1_divide_form.html", null ],
           [ "polyfem::solver::HomoCompositeForm", "classpolyfem_1_1solver_1_1_homo_composite_form.html", null ],
@@ -135,12 +142,15 @@ var hierarchy =
           [ "polyfem::solver::BarycenterTargetForm", "classpolyfem_1_1solver_1_1_barycenter_target_form.html", null ],
           [ "polyfem::solver::MaxStressForm", "classpolyfem_1_1solver_1_1_max_stress_form.html", null ],
           [ "polyfem::solver::NodeTargetForm", "classpolyfem_1_1solver_1_1_node_target_form.html", null ],
+          [ "polyfem::solver::ProxyContactForceForm", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html", null ],
           [ "polyfem::solver::SpatialIntegralForm", "classpolyfem_1_1solver_1_1_spatial_integral_form.html", [
             [ "polyfem::solver::AccelerationForm", "classpolyfem_1_1solver_1_1_acceleration_form.html", null ],
             [ "polyfem::solver::ComplianceForm", "classpolyfem_1_1solver_1_1_compliance_form.html", null ],
             [ "polyfem::solver::ElasticEnergyForm", "classpolyfem_1_1solver_1_1_elastic_energy_form.html", null ],
             [ "polyfem::solver::KineticForm", "classpolyfem_1_1solver_1_1_kinetic_form.html", null ],
+            [ "polyfem::solver::MeshTargetForm", "classpolyfem_1_1solver_1_1_mesh_target_form.html", null ],
             [ "polyfem::solver::PositionForm", "classpolyfem_1_1solver_1_1_position_form.html", null ],
+            [ "polyfem::solver::SDFTargetForm", "classpolyfem_1_1solver_1_1_s_d_f_target_form.html", null ],
             [ "polyfem::solver::StressForm", "classpolyfem_1_1solver_1_1_stress_form.html", null ],
             [ "polyfem::solver::StressNormForm", "classpolyfem_1_1solver_1_1_stress_norm_form.html", null ],
             [ "polyfem::solver::TargetForm", "classpolyfem_1_1solver_1_1_target_form.html", null ],
@@ -206,6 +216,7 @@ var hierarchy =
     [ "polyfem::basis::LagrangeBasis2d", "classpolyfem_1_1basis_1_1_lagrange_basis2d.html", null ],
     [ "polyfem::basis::LagrangeBasis3d", "classpolyfem_1_1basis_1_1_lagrange_basis3d.html", null ],
     [ "polyfem::assembler::LameParameters", "classpolyfem_1_1assembler_1_1_lame_parameters.html", null ],
+    [ "polyfem::LazyCubicInterpolator", "classpolyfem_1_1_lazy_cubic_interpolator.html", null ],
     [ "polyfem::assembler::LinearAssemblerData", "classpolyfem_1_1assembler_1_1_linear_assembler_data.html", null ],
     [ "polyfem::quadrature::LineQuadrature", "classpolyfem_1_1quadrature_1_1_line_quadrature.html", null ],
     [ "polyfem::basis::Local2Global", "classpolyfem_1_1basis_1_1_local2_global.html", null ],
@@ -263,6 +274,9 @@ var hierarchy =
     [ "polyfem::io::OutStatsData", "classpolyfem_1_1io_1_1_out_stats_data.html", null ],
     [ "polyfem::IntegrableFunctional::ParameterType", "structpolyfem_1_1_integrable_functional_1_1_parameter_type.html", null ],
     [ "polyfem::solver::Parametrization", "classpolyfem_1_1solver_1_1_parametrization.html", [
+      [ "polyfem::solver::BSplineParametrization1DTo2D", "classpolyfem_1_1solver_1_1_b_spline_parametrization1_d_to2_d.html", null ],
+      [ "polyfem::solver::BSplineParametrization2DTo3D", "classpolyfem_1_1solver_1_1_b_spline_parametrization2_d_to3_d.html", null ],
+      [ "polyfem::solver::BoundedBiharmonicWeights2Dto3D", "classpolyfem_1_1solver_1_1_bounded_biharmonic_weights2_dto3_d.html", null ],
       [ "polyfem::solver::CompositeParametrization", "classpolyfem_1_1solver_1_1_composite_parametrization.html", null ],
       [ "polyfem::solver::ENu2LambdaMu", "classpolyfem_1_1solver_1_1_e_nu2_lambda_mu.html", null ],
       [ "polyfem::solver::ExponentialMap", "classpolyfem_1_1solver_1_1_exponential_map.html", null ],
@@ -271,6 +285,7 @@ var hierarchy =
       [ "polyfem::solver::PerBody2PerElem", "classpolyfem_1_1solver_1_1_per_body2_per_elem.html", null ],
       [ "polyfem::solver::PerBody2PerNode", "classpolyfem_1_1solver_1_1_per_body2_per_node.html", null ],
       [ "polyfem::solver::PowerMap", "classpolyfem_1_1solver_1_1_power_map.html", null ],
+      [ "polyfem::solver::ScalarVelocityParametrization", "classpolyfem_1_1solver_1_1_scalar_velocity_parametrization.html", null ],
       [ "polyfem::solver::Scaling", "classpolyfem_1_1solver_1_1_scaling.html", null ],
       [ "polyfem::solver::SliceMap", "classpolyfem_1_1solver_1_1_slice_map.html", null ]
     ] ],
@@ -426,6 +441,7 @@ var hierarchy =
       [ "polyfem::solver::ElasticVariableToSimulation", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html", null ],
       [ "polyfem::solver::FrictionCoeffientVariableToSimulation", "classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html", null ],
       [ "polyfem::solver::InitialConditionVariableToSimulation", "classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html", null ],
+      [ "polyfem::solver::PressureVariableToSimulation", "classpolyfem_1_1solver_1_1_pressure_variable_to_simulation.html", null ],
       [ "polyfem::solver::ShapeVariableToSimulation", "classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html", null ]
     ] ],
     [ "polyfem::solver::VariableToSimulationGroup", "classpolyfem_1_1solver_1_1_variable_to_simulation_group.html", null ],

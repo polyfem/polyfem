@@ -9,5 +9,6 @@ var _parametrizations_8hpp =
     [ "polyfem::solver::PerBody2PerElem", "classpolyfem_1_1solver_1_1_per_body2_per_elem.html", "classpolyfem_1_1solver_1_1_per_body2_per_elem" ],
     [ "polyfem::solver::SliceMap", "classpolyfem_1_1solver_1_1_slice_map.html", "classpolyfem_1_1solver_1_1_slice_map" ],
     [ "polyfem::solver::InsertConstantMap", "classpolyfem_1_1solver_1_1_insert_constant_map.html", "classpolyfem_1_1solver_1_1_insert_constant_map" ],
-    [ "polyfem::solver::LinearFilter", "classpolyfem_1_1solver_1_1_linear_filter.html", "classpolyfem_1_1solver_1_1_linear_filter" ]
+    [ "polyfem::solver::LinearFilter", "classpolyfem_1_1solver_1_1_linear_filter.html", "classpolyfem_1_1solver_1_1_linear_filter" ],
+    [ "polyfem::solver::ScalarVelocityParametrization", "classpolyfem_1_1solver_1_1_scalar_velocity_parametrization.html", "classpolyfem_1_1solver_1_1_scalar_velocity_parametrization" ]
 ];
