@@ -3,6 +3,8 @@
 #include <polyfem/solver/forms/parametrization/Parametrization.hpp>
 #include <polyfem/solver/AdjointTools.hpp>
 
+#include <iostream>
+
 namespace polyfem::solver
 {
 	/// @brief Maps the optimization variable to the state variable
@@ -13,7 +15,7 @@ namespace polyfem::solver
 		VariableToSimulation(const std::shared_ptr<State> &state, const CompositeParametrization &parametrization) : states_({state}), parametrization_(parametrization) {}
 		virtual ~VariableToSimulation() {}
 
-		static std::unique_ptr<VariableToSimulation> create(const std::string& type, const std::vector<std::shared_ptr<State>>& states, CompositeParametrization&& parametrization);
+		static std::unique_ptr<VariableToSimulation> create(const std::string &type, const std::vector<std::shared_ptr<State>> &states, CompositeParametrization &&parametrization);
 
 		inline virtual void update(const Eigen::VectorXd &x)
 		{
@@ -51,7 +53,7 @@ namespace polyfem::solver
 
 		VariableToSimulationGroup() = default;
 
-		void init(const json& args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes);
+		void init(const json &args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes);
 
 		/// @brief Update parameters in simulators
 		/// @param x Optimization variable
@@ -64,7 +66,7 @@ namespace polyfem::solver
 		/// @brief Evaluate the variable to simulations and overwrite the state_variable based on x
 		/// @param x Optimization variable
 		/// @param state_variable The state variable in state_ptr with type
-		void compute_state_variable(const ParameterType type, const State* state_ptr, const Eigen::VectorXd &x, Eigen::VectorXd &state_variable) const;
+		void compute_state_variable(const ParameterType type, const State *state_ptr, const Eigen::VectorXd &x, Eigen::VectorXd &state_variable) const;
 
 		/// @brief Computes the sum of adjoint terms for all VariableToSimulation
 		/// @param x Optimization variable
@@ -77,15 +79,16 @@ namespace polyfem::solver
 		/// @param x Optimization variable
 		/// @param grad Partial gradient wrt. the state variable, lambda function to allow lazy evaluation of the gradient
 		/// @return Partial gradient wrt. the optimization variable
-		Eigen::VectorXd apply_parametrization_jacobian(const ParameterType type, const State* state_ptr, const Eigen::VectorXd &x, const std::function<Eigen::VectorXd()>& grad) const;
+		Eigen::VectorXd apply_parametrization_jacobian(const ParameterType type, const State *state_ptr, const Eigen::VectorXd &x, const std::function<Eigen::VectorXd()> &grad) const;
 
 		typedef std::vector<ValueType>::const_iterator const_iterator;
 
-		inline ValueType& operator[](size_t i) { return L[i]; }
+		inline ValueType &operator[](size_t i) { return L[i]; }
 		inline const_iterator begin() const { return L.begin(); }
 		inline const_iterator end() const { return L.end(); }
 		inline void push_back(const ValueType &v2s) { L.push_back(v2s); }
 		inline void clear() { L.clear(); }
+
 	private:
 		std::vector<ValueType> L;
 	};
@@ -194,6 +197,11 @@ namespace polyfem::solver
 
 		std::string name() const override { return "dirichlet"; }
 
+		void set_dirichlet_boundaries(const std::vector<int> &dirichlet_boundaries)
+		{
+			dirichlet_boundaries_ = dirichlet_boundaries;
+		}
+
 		ParameterType get_parameter_type() const override { return ParameterType::DirichletBC; }
 
 		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;
@@ -204,5 +212,37 @@ namespace polyfem::solver
 
 	private:
 		std::string variable_to_string(const Eigen::VectorXd &variable);
+
+		std::vector<int> dirichlet_boundaries_;
+	};
+
+	// To optimize the per node pressure boundaries
+	// Each pressure boundary will have the same value
+	// state variable dof = dim * n_time_steps
+	class PressureVariableToSimulation : public VariableToSimulation
+	{
+	public:
+		using VariableToSimulation::VariableToSimulation;
+		virtual ~PressureVariableToSimulation() {}
+
+		std::string name() const override { return "pressure"; }
+
+		void set_pressure_boundaries(const std::vector<int> &pressure_boundaries)
+		{
+			pressure_boundaries_ = pressure_boundaries;
+		}
+
+		ParameterType get_parameter_type() const override { return ParameterType::PressureBC; }
+
+		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;
+		virtual Eigen::VectorXd inverse_eval() override;
+
+	protected:
+		void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) override;
+
+	private:
+		std::string variable_to_string(const Eigen::VectorXd &variable);
+
+		std::vector<int> pressure_boundaries_;
 	};
 } // namespace polyfem::solver

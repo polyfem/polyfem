@@ -45,10 +45,24 @@ namespace polyfem
 					return true;
 				return false;
 			}
+
 			const Eigen::MatrixXd &get_mat() const
 			{
 				assert(is_mat());
 				return mat_;
+			}
+
+			void set_mat(const Eigen::MatrixXd &mat)
+			{
+				assert(is_mat());
+				assert(mat_.rows() == mat.rows());
+				assert(mat_.cols() == mat.cols());
+				mat_ = mat;
+			}
+
+			double get_val() const
+			{
+				return value_;
 			}
 
 		private:

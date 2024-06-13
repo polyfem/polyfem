@@ -713,8 +713,8 @@ namespace polyfem
 
 		// to replace the initial condition in json during initial condition optimization
 		Eigen::MatrixXd initial_sol_update, initial_vel_update;
-		// mapping from positions of geometric nodes to positions of FE basis nodes
-		StiffnessMatrix gbasis_nodes_to_basis_nodes;
+		// mapping from positions of FE basis nodes to positions of geometry nodes
+		StiffnessMatrix basis_nodes_to_gbasis_nodes;
 
 		//---------------------------------------------------
 		//-----------------homogenization--------------------

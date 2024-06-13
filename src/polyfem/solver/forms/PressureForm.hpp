@@ -61,6 +61,18 @@ namespace polyfem::solver
 			const Eigen::MatrixXd &adjoint,
 			Eigen::VectorXd &term);
 
+		/// @brief Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adjoint_sol.
+		/// @param[in] n_verts Number of vertices
+		/// @param[in] x Current solution
+		/// @param[in] adjoint Current adjoint solution
+		/// @param[out] term Derivative of force multiplied by the adjoint
+		double force_pressure_derivative(
+			const int n_verts,
+			const double t,
+			const int pressure_boundary_id,
+			const Eigen::MatrixXd &x,
+			const Eigen::MatrixXd &adjoint);
+
 	private:
 		double t_;       ///< Current time
 		const int ndof_; ///< Number of degrees of freedom
