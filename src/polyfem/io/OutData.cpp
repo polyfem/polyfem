@@ -159,6 +159,12 @@ namespace polyfem::io
 
 		if (mesh.is_volume())
 		{
+			if (mesh.has_poly())
+			{
+				logger().warn("Skipping as the mesh has polygons");
+				return;
+			}
+
 			const bool is_simplicial = mesh.is_simplicial();
 
 			node_positions.resize(n_bases + (is_simplicial ? 0 : mesh.n_faces()), 3);

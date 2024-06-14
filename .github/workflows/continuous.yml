@@ -60,7 +60,6 @@ jobs:
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
-            -DPOLYFEM_WITH_CLIPPER=OFF \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
       - name: Build
@@ -119,7 +118,6 @@ jobs:
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
-            -DPOLYFEM_WITH_CLIPPER=OFF \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
       - name: Build

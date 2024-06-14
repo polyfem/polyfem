@@ -373,7 +373,7 @@ namespace polyfem
 			}
 			if (index == -1)
 			{
-				throw "Invalid boundary id";
+				throw std::runtime_error("Invalid boundary id");
 			}
 
 			displacements_[index].interpolation.clear();
@@ -411,7 +411,7 @@ namespace polyfem
 			}
 			if (index == -1)
 			{
-				throw "Invalid boundary id";
+				throw std::runtime_error("Invalid boundary id");
 			}
 
 			forces_[index].interpolation.clear();
@@ -441,7 +441,7 @@ namespace polyfem
 			}
 			if (index == -1)
 			{
-				throw "Invalid boundary id";
+				throw std::runtime_error("Invalid boundary id");
 			}
 			pressures_[index].interpolation = interp;
 			pressures_[index].value.init(val);
@@ -474,7 +474,7 @@ namespace polyfem
 			}
 			if (index == -1)
 			{
-				throw "Invalid boundary id";
+				throw std::runtime_error("Invalid boundary id");
 			}
 			displacements_[index].interpolation.clear();
 			displacements_[index].interpolation.push_back(interp);
@@ -509,7 +509,7 @@ namespace polyfem
 			}
 			if (index == -1)
 			{
-				throw "Invalid boundary id";
+				throw std::runtime_error("Invalid boundary id");
 			}
 
 			forces_[index].interpolation.clear();
@@ -539,7 +539,7 @@ namespace polyfem
 			}
 			if (index == -1)
 			{
-				throw "Invalid boundary id";
+				throw std::runtime_error("Invalid boundary id");
 			}
 
 			pressures_[index].interpolation = interp;
@@ -549,7 +549,7 @@ namespace polyfem
 		void GenericTensorProblem::add_dirichlet_boundary(const int id, const json &val, const bool isx, const bool isy, const bool isz, const std::string &interpolation)
 		{
 			if (!val.is_array())
-				throw "Val must be an array";
+				throw std::runtime_error("Val must be an array");
 
 			boundary_ids_.push_back(id);
 			displacements_.emplace_back();
@@ -568,7 +568,7 @@ namespace polyfem
 		void GenericTensorProblem::add_neumann_boundary(const int id, const json &val, const std::string &interpolation)
 		{
 			if (!val.is_array())
-				throw "Val must be an array";
+				throw std::runtime_error("Val must be an array");
 
 			neumann_boundary_ids_.push_back(id);
 
@@ -595,7 +595,7 @@ namespace polyfem
 		void GenericTensorProblem::update_dirichlet_boundary(const int id, const json &val, const bool isx, const bool isy, const bool isz, const std::string &interpolation)
 		{
 			if (!val.is_array())
-				throw "Val must be an array";
+				throw std::runtime_error("Val must be an array");
 			int index = -1;
 			for (int i = 0; i < boundary_ids_.size(); ++i)
 			{
@@ -607,7 +607,7 @@ namespace polyfem
 			}
 			if (index == -1)
 			{
-				throw "Invalid boundary id";
+				throw std::runtime_error("Invalid boundary id");
 			}
 
 			displacements_[index].interpolation.clear();
@@ -626,7 +626,7 @@ namespace polyfem
 		void GenericTensorProblem::update_neumann_boundary(const int id, const json &val, const std::string &interpolation)
 		{
 			if (!val.is_array())
-				throw "Val must be an array";
+				throw std::runtime_error("Val must be an array");
 
 			int index = -1;
 			for (int i = 0; i < neumann_boundary_ids_.size(); ++i)
@@ -639,7 +639,7 @@ namespace polyfem
 			}
 			if (index == -1)
 			{
-				throw "Invalid boundary id";
+				throw std::runtime_error("Invalid boundary id");
 			}
 			forces_[index].interpolation.clear();
 			if (!interpolation.empty())
@@ -662,7 +662,7 @@ namespace polyfem
 			}
 			if (index == -1)
 			{
-				throw "Invalid boundary id";
+				throw std::runtime_error("Invalid boundary id");
 			}
 
 			if (interpolation.empty())
@@ -1676,7 +1676,7 @@ namespace polyfem
 			}
 			if (index == -1)
 			{
-				throw "Invalid boundary id";
+				throw std::runtime_error("Invalid boundary id");
 			}
 
 			dirichlet_[index].value.init(val);
@@ -1704,7 +1704,7 @@ namespace polyfem
 			}
 			if (index == -1)
 			{
-				throw "Invalid boundary id";
+				throw std::runtime_error("Invalid boundary id");
 			}
 
 			neumann_[index].value.init(val);
@@ -1732,7 +1732,7 @@ namespace polyfem
 			}
 			if (index == -1)
 			{
-				throw "Invalid boundary id";
+				throw std::runtime_error("Invalid boundary id");
 			}
 			dirichlet_[index].value.init(func);
 			dirichlet_[index].interpolation = interp;
@@ -1759,7 +1759,7 @@ namespace polyfem
 			}
 			if (index == -1)
 			{
-				throw "Invalid boundary id";
+				throw std::runtime_error("Invalid boundary id");
 			}
 			neumann_[index].value.init(func);
 			neumann_[index].interpolation = interp;
@@ -1800,7 +1800,7 @@ namespace polyfem
 			}
 			if (index == -1)
 			{
-				throw "Invalid boundary id";
+				throw std::runtime_error("Invalid boundary id");
 			}
 
 			dirichlet_[index].value.init(val);
@@ -1823,7 +1823,7 @@ namespace polyfem
 			}
 			if (index == -1)
 			{
-				throw "Invalid boundary id";
+				throw std::runtime_error("Invalid boundary id");
 			}
 			neumann_[index].value.init(val);
 
