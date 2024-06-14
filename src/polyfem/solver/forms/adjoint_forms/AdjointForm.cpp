@@ -117,6 +117,12 @@ namespace polyfem::solver
 		return term;
 	}
 
+	void StaticForm::solution_changed(const Eigen::VectorXd &new_x)
+	{
+		AdjointForm::solution_changed(new_x);
+		solution_changed_step(0, new_x);
+	}
+
 	double MaxStressForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
 	{
 		const double t = state_.problem->is_time_dependent() ? time_step * state_.args["time"]["dt"].get<double>() + state_.args["time"]["t0"].get<double>() : 0;

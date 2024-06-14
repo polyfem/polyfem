@@ -42,7 +42,6 @@ namespace polyfem::solver
 					const int v2 = mesh.boundary_element_vertex(b, lv2);
 					T_adj.emplace_back(v2, v1, true);
 					T_adj.emplace_back(v1, v2, true);
-					// adjoint_logger().trace("smooth edge {}, {}", mesh.point(v1), mesh.point(v2));
 				}
 		}
 

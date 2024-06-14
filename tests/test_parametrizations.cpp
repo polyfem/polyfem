@@ -4,10 +4,10 @@
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
-#include <polyfem/io/MshReader.hpp>
-#include <polyfem/io/OBJWriter.hpp>
+#include <polyfem/io/OBJReader.hpp>
 
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
+#include <polyfem/solver/forms/parametrization/SplineParametrizations.hpp>
 
 #include <iostream>
 #include <fstream>
@@ -50,6 +50,20 @@ void verify_apply_jacobian(Parametrization &parametrization, const Eigen::Vector
 			std::cout << std::setprecision(16) << grad_x.norm() << std::endl;
 		REQUIRE((grad_x - (dydx * grad_y)).norm() < 1e-8);
 	}
+}
+
+TEST_CASE("bbw-test", "[parametrization]")
+{
+	Eigen::MatrixXd V;
+	Eigen::MatrixXi E, F;
+	const std::string mesh_path = POLYFEM_DATA_DIR + std::string("/contact/meshes/2D/simple/circle/circle140.obj");
+	io::OBJReader::read(mesh_path, V, E, F);
+	V.conservativeResizeLike(Eigen::MatrixXd::Zero(V.rows(), 3));
+
+	BoundedBiharmonicWeights2Dto3D lbs_with_bbw(5, V.rows(), V, F);
+
+	Eigen::VectorXd y = utils::flatten(V);
+	verify_apply_jacobian(lbs_with_bbw, y);
 }
 
 #endif
