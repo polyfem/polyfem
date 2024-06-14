@@ -88,6 +88,9 @@ namespace polyfem
 
 			void clear() override;
 
+			void update_dirichlet_boundary(const int id, const int time_step, const Eigen::VectorXd &val);
+			void update_pressure_boundary(const int id, const int time_step, const double val);
+
 		private:
 			bool all_dimensions_dirichlet_ = true;
 			bool has_exact_ = false;
