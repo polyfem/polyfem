@@ -406,12 +406,11 @@ namespace polyfem
 				edges.row(i) << loop[i], loop[(i + 1) % loop.size()];
 		}
 
-		void RefElementSampler::sample_polyhedron(const Eigen::MatrixXd &vertices, const Eigen::MatrixXi &f, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXi &edges) const
+		void RefElementSampler::sample_polyhedron(const Eigen::MatrixXd &vertices, const Eigen::MatrixXi &f, Eigen::MatrixXd &pts, Eigen::MatrixXi &tets, Eigen::MatrixXi &faces) const
 		{
-			// TODO
-			pts = vertices;
-			faces = f;
-			throw "Not implemented";
+			const Eigen::MatrixXd kernel = vertices.colwise().mean();
+
+			polyfem::mesh::tertrahedralize_star_shaped_surface(vertices, f, kernel, pts, faces, tets);
 		}
 	} // namespace utils
 } // namespace polyfem

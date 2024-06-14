@@ -234,3 +234,8 @@ TEST_CASE("runners-pref", tagsrun)
 {
 	run_data("pref_test_list", POLYFEM_PREF_DIR);
 }
+
+TEST_CASE("runners-polyspline", tagsrun)
+{
+	run_data("polyspline_test_list", POLYFEM_POLYSPLINE_DIR);
+}

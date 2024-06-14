@@ -194,7 +194,7 @@ void polyfem::mesh::offset_polygon(const Eigen::MatrixXd &IV, Eigen::MatrixXd &O
 	// Convert back to double
 	OV = PolygonClipping::fromClipperPolygon(solution.front());
 #else
-	throw "Compile with clipper!";
+	throw std::runtime_error("Compile with clipper!");
 #endif
 }
 
