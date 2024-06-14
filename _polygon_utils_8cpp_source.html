@@ -327,7 +327,7 @@ $(document).ready(function(){initNavTree('_polygon_utils_8cpp_source.html',''); 
 <div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>    <span class="comment">// Convert back to double</span></div>
 <div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    OV = PolygonClipping::fromClipperPolygon(solution.front());</div>
 <div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span><span class="preprocessor">#else</span></div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keywordflow">throw</span> <span class="stringliteral">&quot;Compile with clipper!&quot;</span>;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Compile with clipper!&quot;</span>);</div>
 <div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span><span class="preprocessor">#endif</span></div>
 <div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>}</div>
 </div>
