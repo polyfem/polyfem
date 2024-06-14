@@ -677,11 +677,10 @@ namespace polyfem
 
 					auto ff = j_boundary[i - offset]["value"];
 					pressures_[i].value.init(ff);
+					if (j_boundary[i - offset].contains("time_reference") && j_boundary[i - offset]["time_reference"].size() > 0)
+						pressures_[i].value.set_t(j_boundary[i - offset]["time_reference"]);
 
-					if (j_boundary[i - offset].contains("interpolation"))
-						pressures_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
-					else
-						pressures_[i].interpolation = std::make_shared<NoInterpolation>();
+					pressures_[i].interpolation = std::make_shared<NoInterpolation>();
 				}
 			}
 
@@ -705,6 +704,8 @@ namespace polyfem
 
 						auto ff = j_boundary[i - offset]["value"];
 						cavity_pressures_[boundary_id].value.init(ff);
+
+						cavity_pressures_[boundary_id].interpolation = std::make_shared<NoInterpolation>();
 					}
 				}
 			}

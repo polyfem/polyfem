@@ -3,6 +3,7 @@
 
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/io/Evaluator.hpp>
+#include <polyfem/io/Evaluator.hpp>
 
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/MultiModel.hpp>
@@ -598,6 +599,7 @@ namespace polyfem
 		polys.clear();
 		poly_edge_to_data.clear();
 		rhs.resize(0, 0);
+		basis_nodes_to_gbasis_nodes.resize(0, 0);
 
 		if (assembler::MultiModel *mm = dynamic_cast<assembler::MultiModel *>(assembler.get()))
 		{
@@ -864,8 +866,8 @@ namespace polyfem
 				for (int d = 0; d < dim; d++)
 					coeffs.emplace_back(iter.first[0] * dim + d, iter.first[1] * dim + d, iter.second);
 
-			gbasis_nodes_to_basis_nodes.resize(n_geom_bases * mesh->dimension(), n_bases * mesh->dimension());
-			gbasis_nodes_to_basis_nodes.setFromTriplets(coeffs.begin(), coeffs.end());
+			basis_nodes_to_gbasis_nodes.resize(n_geom_bases * mesh->dimension(), n_bases * mesh->dimension());
+			basis_nodes_to_gbasis_nodes.setFromTriplets(coeffs.begin(), coeffs.end());
 		}
 
 		for (const auto &lb : local_boundary)

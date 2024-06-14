@@ -142,6 +142,15 @@ namespace polyfem
 			inline const std::vector<basis::ElementBases> &gbases() const { return gbases_; }
 			inline const Assembler &assembler() const { return assembler_; }
 
+			void compute_grad_volume_id(const Eigen::MatrixXd &displacement,
+										const int boundary_id,
+										const std::vector<mesh::LocalBoundary> &local_boundary,
+										const std::vector<int> &dirichlet_nodes,
+										const int resolution,
+										Eigen::VectorXd &grad,
+										const double t = 0,
+										const bool multiply_pressure = false) const;
+
 		private:
 			double compute_volume(
 				const Eigen::MatrixXd &displacement,
@@ -177,6 +186,7 @@ namespace polyfem
 				const std::vector<mesh::LocalBoundary> &local_boundary,
 				const std::vector<int> &dirichlet_nodes) const;
 
+		private:
 			const Assembler &assembler_;
 			const mesh::Mesh &mesh_;
 			const mesh::Obstacle &obstacle_;
@@ -191,6 +201,7 @@ namespace polyfem
 
 			const std::vector<int> primitive_to_nodes_;
 			const std::vector<int> node_to_primitives_;
+			std::set<int> relevant_pressure_nodes_;
 		};
 	} // namespace assembler
 } // namespace polyfem
