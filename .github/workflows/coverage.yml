@@ -74,7 +74,9 @@ jobs:
           lcov --remove coverage.info '/usr/*' "${HOME}"'/.cache/*' '*tests/*.cpp' '*/polyfem/problem/*.cpp' '*/polyfem/problem/*.hpp' --output-file coverage.info
 
       - name: Upload Coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
             flags: polyfem # optional
             files: coverage.info
