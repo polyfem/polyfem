@@ -72,8 +72,8 @@ AuthenticateResult authenticate_json(const std::string &json_file, const bool co
 	else
 		time_steps = args[tests_key]["time_steps"];
 
-	args["output"] = json({});
-	args["output"]["advanced"]["save_time_sequence"] = false;
+	// args["output"] = json({});
+	// args["output"]["advanced"]["save_time_sequence"] = false;
 
 	if (time_steps.is_number())
 	{
