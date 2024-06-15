@@ -1529,7 +1529,8 @@
             "cache_size",
             "lump_mass_matrix",
             "lagged_regularization_weight",
-            "lagged_regularization_iterations"
+            "lagged_regularization_iterations",
+            "intersection_free_initial_displacement"
         ],
         "doc": "Advanced settings for the solver"
     },
@@ -1556,6 +1557,13 @@
         "default": 1,
         "type": "int",
         "doc": "Number of regularize singular static problems."
+    },
+    {
+        "pointer": "/solver/advanced/intersection_free_initial_displacement",
+        "default": 0,
+        "min": 0,
+        "type": "float",
+        "doc": "In the case where two objects have exactly overlapping surfaces, IPC cannot solve. We move the nodes on the overlapping surface towards the interior of the objects (by a distance specified here) to avoid intersection and use it as an initial guess for contact simulations."
     },
     {
         "pointer": "/materials",
