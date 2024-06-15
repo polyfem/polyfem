@@ -1,5 +1,6 @@
 #include "SlimSmooth.hpp"
 
+#include <ipc/utils/eigen_ext.hpp>
 #include <igl/boundary_facets.h>
 #include <polyfem/utils/Logger.hpp>
 #include <igl/slim.h>
