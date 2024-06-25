@@ -104,15 +104,11 @@ namespace polyfem
 				ids.insert(ids.begin(), mesh_.edges[e_id].neighbor_hs.begin(), mesh_.edges[e_id].neighbor_hs.end());
 			}
 
-			void compute_boundary_ids(const double eps) override;
-			void compute_boundary_ids(const std::function<int(const RowVectorNd &)> &marker) override;
-			void compute_boundary_ids(const std::function<int(const RowVectorNd &, bool)> &marker) override;
-			void compute_boundary_ids(const std::function<int(const size_t, const RowVectorNd &, bool)> &marker) override;
-			void compute_boundary_ids(const std::function<int(const std::vector<int> &, bool)> &marker) override;
-			void compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker) override;
 			void compute_boundary_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &marker) override;
 
-			void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
+			void compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker) override;
+
+			// void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
 
 			// used for sweeping 2D mesh
 			Mesh3DStorage &mesh_storge()
