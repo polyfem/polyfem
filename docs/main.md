@@ -80,7 +80,7 @@ In this section, a brief, high-level code walkthrough for a simple example probl
 
 ### JSON File
 
-For this example, we solve the Laplacian on a (triangular) plate-hole mesh with Dirichlet boundary conditions and a constant RHS. We choose P1 elements implicitly (as this is the default). See the [JSON specificiation](https://polyfem.github.io/json_defaults_and_spec/) for more details.
+For this example, we solve the Laplacian on a (triangular) plate-hole mesh with Dirichlet boundary conditions and a constant RHS. We choose P1 elements implicitly (as this is the default). See the [JSON specification](https://polyfem.github.io/json_defaults_and_spec/) for more details.
 
 ```json
 {
@@ -136,7 +136,7 @@ In order to evaluate local basis functions and construct mass/stiffness matrices
 
 The `assembler::ElementAssemblyValues` class stores per element information, including quadrature points in real space, the geometric mapping's determinant, and a vector of `assembler::AssemblyValues` objects (one for each local basis function).
 
-Finallly, `assembler::AssemblyValsCache` is stores a vector of `assembler::ElementAssemblyValues`, boosting performance by caching the per element information. Its data can be accessed through its `compute` function.
+Finallly, `assembler::AssemblyValsCache` stores a vector of `assembler::ElementAssemblyValues`, boosting performance by caching the per element information. Its data can be accessed through its `compute` function.
 
 These three classes are the core data storage objects used during matrix assembly. These classes use the previously constructed `basis::ElementBases` objects to evaluate basis functions and their gradients.
 
