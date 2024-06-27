@@ -65,6 +65,9 @@ namespace polyfem
 				solve_tensor_nonlinear(sol, t);
 			}
 
+			recurrent_mesh(t, sol);
+
+
 			if (remesh_enabled)
 			{
 				energy_csv.write(save_i, sol);

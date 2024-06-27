@@ -276,6 +276,8 @@ namespace polyfem
 		{
 			const double time = t0 + t * dt;
 
+			recurrent_mesh(t, sol);
+
 			StiffnessMatrix A;
 			Eigen::VectorXd b;
 			bool compute_spectrum = args["output"]["advanced"]["spectrum"];

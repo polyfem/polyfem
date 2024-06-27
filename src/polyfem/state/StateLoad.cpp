@@ -8,6 +8,9 @@
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
 
+#include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
+
 #include <polyfem/utils/Selection.hpp>
 
 #include <polyfem/utils/JSONUtils.hpp>
@@ -107,7 +110,8 @@ namespace polyfem
 			assert(is_param_valid(args, "geometry"));
 			mesh = mesh::read_fem_geometry(
 				units,
-				args["geometry"], args["root_path"],
+				args["geometry"], args, args["root_path"],
+				recurrent_geometry,
 				names, vertices, cells, non_conforming);
 		}
 
@@ -153,6 +157,100 @@ namespace polyfem
 			args["root_path"], mesh->dimension(), names, vertices, cells);
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
+	}
+
+	bool State::recurrent_mesh(int time_step, Eigen::MatrixXd &sol)
+	{
+		if(time_step == 1)
+			return false;
+
+		Eigen::MatrixXd old_sol = sol;
+		igl::Timer timer;
+		timer.start();
+
+		const int dim = mesh->dimension();
+		int ndof = sol.size();
+		assert(sol.cols() == 1);
+		int ndof_mesh = mesh->n_vertices() * dim;
+		int ndof_obstacle = obstacle.n_vertices() * dim;
+		assert(ndof == ndof_mesh + ndof_obstacle);
+
+		logger().info("Loading mesh ...");
+		bool found = false;
+
+		for(auto &recurrent : recurrent_geometry)
+		{
+			auto recurrent_time = recurrent["each_time_step"].get<int>();
+			if (time_step % recurrent_time == 0) {
+				found = true;
+				read_single_fem_geometry(
+					units,
+					recurrent, args["root_path"],
+					mesh, false);
+			}
+		}
+
+		if (!found)
+			return false;
+
+		if (mesh == nullptr)
+		{
+			log_and_throw_error("unable to load the mesh!");
+		}
+
+		RowVectorNd min, max;
+		mesh->bounding_box(min, max);
+
+		logger().info("mesh bb min [{}], max [{}]", min, max);
+
+		std::vector<std::shared_ptr<assembler::Assembler>> assemblers;
+		assemblers.push_back(assembler);
+		assemblers.push_back(mass_matrix_assembler);
+		if (mixed_assembler != nullptr)
+			// TODO: assemblers.push_back(mixed_assembler);
+			mixed_assembler->set_size(mesh->dimension());
+		if (pressure_assembler != nullptr)
+			assemblers.push_back(pressure_assembler);
+		set_materials(assemblers);
+
+		timer.stop();
+		logger().info(" took {}s", timer.getElapsedTime());
+
+		out_geom.init_sampler(*mesh, args["output"]["paraview"]["vismesh_rel_area"]);
+
+		build_basis();
+		assemble_rhs();
+		assemble_mass_mat();
+
+		// --------------------------------------------------------------------
+
+		const int old_ndof = ndof;
+		const int old_ndof_mesh = ndof_mesh;
+		const int old_ndof_obstacle = ndof_obstacle;
+
+		ndof_mesh = mesh->n_vertices() * dim;
+		ndof_obstacle = obstacle.n_vertices() * dim;
+		assert(ndof_obstacle == old_ndof_obstacle);
+		ndof = n_bases * dim;
+		assert(ndof == ndof_mesh + ndof_obstacle);
+
+		solve_data.rhs_assembler = build_rhs_assembler();
+
+		const Eigen::MatrixXd obstacle_sol = sol.bottomRows(ndof_obstacle);
+
+		sol.conservativeResize(ndof, 1);
+		sol.block(old_ndof_mesh, 0, sol.rows() - old_ndof_mesh - 1, sol.cols()).setZero();
+
+		if (ndof_obstacle > 0)
+			sol.bottomRows(ndof_obstacle) = obstacle_sol;
+
+		const double t0 = args["time"]["t0"];
+		const double dt = args["time"]["dt"];
+		const double time = t0 + time_step * dt;
+
+		init_nonlinear_tensor_solve(sol, time, /*init_time_integrator=*/true);
+
+		return true;
 	}
 
 	void State::build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F)

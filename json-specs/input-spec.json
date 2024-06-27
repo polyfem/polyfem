@@ -172,7 +172,9 @@
             "n_refs",
             "advanced",
             "enabled",
-            "is_obstacle"
+            "is_obstacle",
+            "each_time_step",
+            "random"
         ],
         "#type_name": "mesh",
         "doc": "Each geometry object stores a mesh, a set of transformations applied to it after loading, and a set of selections, which can be used to specify boundary conditions, materials, optimization parameters and other quantities that can be associated with a part of an object."
@@ -503,6 +505,53 @@
         "type": "bool",
         "default": false,
         "doc": "The geometry elements are not included in deforming geometry, only in collision computations"
+    },
+    {
+        "pointer": "/geometry/*/each_time_step",
+        "type": "int",
+        "default": 0,
+        "doc": "Adds a new geometry after a number of time steps"
+    },
+    {
+        "pointer": "/geometry/*/random",
+        "type": "object",
+        "optional": [
+            "rotation"
+        ],
+        "default": null,
+        "doc": "Generate random rotation for each new instance"
+    },
+    {
+        "pointer": "/geometry/*/random/rotation",
+        "type": "object",
+        "optional": [
+            "min",
+            "max"
+        ],
+        "default": null,
+        "doc": "Generate random rotation for each new instance"
+    },
+    {
+        "pointer": "/geometry/*/random/rotation/min",
+        "type": "list",
+        "default": [],
+        "doc": "Random minimal rotation"
+    },
+    {
+        "pointer": "/geometry/*/random/rotation/max",
+        "type": "list",
+        "default": [],
+        "doc": "Random max rotation"
+    },
+    {
+        "pointer": "/geometry/*/random/rotation/min/*",
+        "default": 0,
+        "type": "float"
+    },
+    {
+        "pointer": "/geometry/*/random/rotation/max/*",
+        "default": 0,
+        "type": "float"
     },
     {
         "pointer": "/geometry/*/enabled",

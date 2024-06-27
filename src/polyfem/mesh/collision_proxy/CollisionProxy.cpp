@@ -317,19 +317,21 @@ namespace polyfem::mesh
 		const std::string &weights_filename,
 		const Eigen::VectorXi &in_node_to_node,
 		const json &transformation,
+		const json &random,
 		Eigen::MatrixXd &vertices,
 		Eigen::VectorXi &codim_vertices,
 		Eigen::MatrixXi &edges,
 		Eigen::MatrixXi &faces,
 		std::vector<Eigen::Triplet<double>> &displacement_map_entries)
 	{
-		load_collision_proxy_mesh(mesh_filename, transformation, vertices, codim_vertices, edges, faces);
+		load_collision_proxy_mesh(mesh_filename, transformation, random, vertices, codim_vertices, edges, faces);
 		load_collision_proxy_displacement_map(weights_filename, in_node_to_node, vertices.rows(), displacement_map_entries);
 	}
 
 	void load_collision_proxy_mesh(
 		const std::string &mesh_filename,
 		const json &transformation,
+		const json &random,
 		Eigen::MatrixXd &vertices,
 		Eigen::VectorXi &codim_vertices,
 		Eigen::MatrixXi &edges,
@@ -352,7 +354,7 @@ namespace polyfem::mesh
 		VectorNd b;
 		// TODO: pass correct unit scale
 		construct_affine_transformation(
-			/*unit_scale=*/1, transformation,
+			/*unit_scale=*/1, transformation, random,
 			(bbox[1] - bbox[0]).cwiseAbs().transpose(),
 			A, b);
 		vertices = (vertices * A.transpose()).rowwise() + b.transpose();

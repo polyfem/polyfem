@@ -76,6 +76,7 @@ namespace polyfem::mesh
 		const std::string &weights_filename,
 		const Eigen::VectorXi &in_node_to_node,
 		const json &transformation,
+		const json &random,
 		Eigen::MatrixXd &vertices,
 		Eigen::VectorXi &codim_vertices,
 		Eigen::MatrixXi &edges,
@@ -92,6 +93,7 @@ namespace polyfem::mesh
 	void load_collision_proxy_mesh(
 		const std::string &mesh_filename,
 		const json &transformation,
+		const json &random,
 		Eigen::MatrixXd &vertices,
 		Eigen::VectorXi &codim_vertices,
 		Eigen::MatrixXi &edges,

@@ -17,6 +17,7 @@
 #include <strnatcmp.h>
 #include <glob/glob.h>
 #include <filesystem>
+#include <random>
 
 namespace polyfem::mesh
 {
@@ -58,6 +59,7 @@ namespace polyfem::mesh
 			construct_affine_transformation(
 				unit_scale,
 				j_mesh["transformation"],
+				j_mesh["random"],
 				(bbox[1] - bbox[0]).cwiseAbs().transpose(),
 				A, b);
 			mesh->apply_affine_transformation(A, b);
@@ -230,7 +232,9 @@ namespace polyfem::mesh
 	std::unique_ptr<Mesh> read_fem_geometry(
 		const Units &units,
 		const json &geometry,
+		const json &args,
 		const std::string &root_path,
+		std::vector<json> &recurrent_geometry,
 		const std::vector<std::string> &_names,
 		const std::vector<Eigen::MatrixXd> &_vertices,
 		const std::vector<Eigen::MatrixXi> &_cells,
@@ -271,55 +275,86 @@ namespace polyfem::mesh
 
 		for (const json &geometry : geometries)
 		{
-			if (!geometry["enabled"].get<bool>() || geometry["is_obstacle"].get<bool>())
-				continue;
+			if (geometry.contains("each_time_step") && geometry["each_time_step"].get<int>() > 0) {
+				recurrent_geometry.push_back(geometry);
+				if (!args["input"]["data"]["state"].is_null() && args["time"]["t0"].get<int>() > 0) {
+					const double t0 = args["time"]["t0"];
+					const double dt = args["time"]["dt"];
+					const int ets = geometry["each_time_step"].get<int>();
+					const int current_time_step = std::floor(t0 / dt);
+					for (int i = 0; i < current_time_step / ets; i++)
+						read_single_fem_geometry(units, geometry, root_path, mesh, non_conforming);
+				}
+			}
 
-			if (geometry["type"] != "mesh" && geometry["type"] != "mesh_array")
-				log_and_throw_error("Invalid geometry type \"{}\" for FEM mesh!", geometry["type"]);
+			read_single_fem_geometry(units, geometry, root_path, mesh, non_conforming);
+		}
 
-			const std::unique_ptr<Mesh> tmp_mesh = read_fem_mesh(units, geometry, root_path, non_conforming);
+		// --------------------------------------------------------------------
 
-			if (mesh == nullptr)
-				mesh = tmp_mesh->copy();
-			else
-				mesh->append(tmp_mesh);
+		return mesh;
+	}
 
-			if (geometry["type"] == "mesh_array")
+	void read_single_fem_geometry(
+		const Units &units,
+		const json &geometry,
+		const std::string &root_path,
+		std::unique_ptr<Mesh> &mesh,
+		const bool non_conforming)
+	{
+		// --------------------------------------------------------------------
+
+		if (geometry.empty())
+			log_and_throw_error("Provided geometry is empty!");
+
+		// --------------------------------------------------------------------
+
+		if (!geometry["enabled"].get<bool>() || geometry["is_obstacle"].get<bool>())
+			return;
+
+		if (geometry["type"] != "mesh" && geometry["type"] != "mesh_array")
+			log_and_throw_error("Invalid geometry type \"{}\" for FEM mesh!", geometry["type"]);
+
+		const std::unique_ptr<Mesh> tmp_mesh = read_fem_mesh(units, geometry, root_path, non_conforming);
+
+		if (mesh == nullptr)
+			mesh = tmp_mesh->copy();
+		else
+			mesh->append(tmp_mesh);
+
+		if (geometry["type"] == "mesh_array")
+		{
+			Selection::BBox bbox;
+			tmp_mesh->bounding_box(bbox[0], bbox[1]);
+
+			const long dim = tmp_mesh->dimension();
+			const bool is_offset_relative = geometry["array"]["relative"];
+			const double offset = geometry["array"]["offset"];
+			const VectorNd dimensions = (bbox[1] - bbox[0]);
+			const VectorNi size = geometry["array"]["size"];
+
+			for (int i = 0; i < size[0]; ++i)
 			{
-				Selection::BBox bbox;
-				tmp_mesh->bounding_box(bbox[0], bbox[1]);
-
-				const long dim = tmp_mesh->dimension();
-				const bool is_offset_relative = geometry["array"]["relative"];
-				const double offset = geometry["array"]["offset"];
-				const VectorNd dimensions = (bbox[1] - bbox[0]);
-				const VectorNi size = geometry["array"]["size"];
-
-				for (int i = 0; i < size[0]; ++i)
+				for (int j = 0; j < size[1]; ++j)
 				{
-					for (int j = 0; j < size[1]; ++j)
+					for (int k = 0; k < (size.size() > 2 ? size[2] : 1); ++k)
 					{
-						for (int k = 0; k < (size.size() > 2 ? size[2] : 1); ++k)
-						{
-							if (i == 0 && j == 0 && k == 0)
-								continue;
+						if (i == 0 && j == 0 && k == 0)
+							continue;
 
-							RowVectorNd translation = offset * Eigen::RowVector3d(i, j, k).head(dim);
-							if (is_offset_relative)
-								translation.array() *= dimensions.array();
+						RowVectorNd translation = offset * Eigen::RowVector3d(i, j, k).head(dim);
+						if (is_offset_relative)
+							translation.array() *= dimensions.array();
 
-							const std::unique_ptr<Mesh> copy_mesh = tmp_mesh->copy();
-							copy_mesh->apply_affine_transformation(MatrixNd::Identity(dim, dim), translation);
-							mesh->append(copy_mesh);
-						}
+						const std::unique_ptr<Mesh> copy_mesh = tmp_mesh->copy();
+						copy_mesh->apply_affine_transformation(MatrixNd::Identity(dim, dim), translation);
+						mesh->append(copy_mesh);
 					}
 				}
 			}
 		}
 
 		// --------------------------------------------------------------------
-
-		return mesh;
 	}
 
 	// ========================================================================
@@ -362,7 +397,7 @@ namespace polyfem::mesh
 			const VectorNd mesh_dimensions = (vertices.colwise().maxCoeff() - vertices.colwise().minCoeff()).cwiseAbs();
 			MatrixNd A;
 			VectorNd b;
-			construct_affine_transformation(unit_scale, j_mesh["transformation"], mesh_dimensions, A, b);
+			construct_affine_transformation(unit_scale, j_mesh["transformation"], json{}, mesh_dimensions, A, b);
 			vertices = vertices * A.transpose();
 			vertices.rowwise() += b.transpose();
 		}
@@ -688,6 +723,7 @@ namespace polyfem::mesh
 	void construct_affine_transformation(
 		const double unit_scale,
 		const json &transform,
+		const json &random,
 		const VectorNd &mesh_dimensions,
 		MatrixNd &A,
 		VectorNd &b)
@@ -750,7 +786,43 @@ namespace polyfem::mesh
 			}
 			else if (dim == 3)
 			{
-				R = to_rotation_matrix(transform["rotation"], transform["rotation_mode"]);
+				auto rotation = transform["rotation"];
+
+				if (!random.is_null() && !random["rotation"].is_null()) {
+					auto r_max = random["rotation"]["max"];
+					auto r_min = random["rotation"]["min"];
+
+					assert(r_max.is_array());
+					assert(r_min.is_array());
+
+					if (r_max.size() == 3 && r_min.size() == 3) {
+						const int r_x_max = json_as_array(r_max)[0].get<int>();
+						const int r_x_min = json_as_array(r_min)[0].get<int>();
+
+						std::random_device rd;
+						std::mt19937 gen(rd());
+						std::uniform_int_distribution<> dis_x(r_x_min, r_x_max);	
+						int r_x = dis_x(gen);
+
+						const int r_y_max = json_as_array(r_max)[1].get<int>();
+						const int r_y_min = json_as_array(r_min)[1].get<int>();
+
+						std::uniform_int_distribution<> dis_y(r_y_min, r_y_max);	
+						int r_y = dis_y(gen);
+
+						const int r_z_max = json_as_array(r_max)[2].get<int>();
+						const int r_z_min = json_as_array(r_min)[2].get<int>();
+
+						std::uniform_int_distribution<> dis_z(r_z_min, r_z_max);	
+						int r_z = dis_z(gen);
+
+						rotation[0] = r_x;
+						rotation[1] = r_y;
+						rotation[2] = r_z;
+					}
+				}
+
+				R = to_rotation_matrix(rotation, transform["rotation_mode"]);
 			}
 		}
 
