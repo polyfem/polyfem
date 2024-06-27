@@ -52,9 +52,9 @@ namespace polyfem::assembler
 
 		void set_orthotropic(
 			double Ex, double Ey, double Ez,
-			double nuYX, double nuZX, double nuZY,
+			double nuXY, double nuXZ, double nuYZ,
 			double muYZ, double muZX, double muXY, const std::string &stress_unit);
-		void set_orthotropic(double Ex, double Ey, double nuYX, double muXY, const std::string &stress_unit);
+		void set_orthotropic(double Ex, double Ey, double nuXY, double muXY, const std::string &stress_unit);
 
 		template <int DIM>
 		double compute_stress(const std::array<double, DIM> &strain, const int j) const;
