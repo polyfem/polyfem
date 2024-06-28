@@ -18,13 +18,13 @@ The high-level functions of PolyFEM are in `polyfem::State`, a class containing 
 `polyfem::basis` contains the implementation of finite element basis functions.
 
 The module supports the following 2 dimensional elements:
-* Lagrangian triangular elements of degree 1 to 8 (`LagrangeBasis2d.hpp`)
+* Lagrangian triangular elements of degrees 1 to 8 (`LagrangeBasis2d.hpp`)
 * Lagrangian quadrilateral elements of degree 1 to 8 (`LagrangeBasis2d.hpp`)
 * Spline (IGA) elements of degree 1 to 4 (`SplineBasis2d.hpp`)
 * Polygonal elements (`PolygonalBasis2d.hpp`)
 
 The module supports the following 3 dimensional elements:
-* Lagrangian tetrahedral elements of degree 1 to 8 (`LagrangeBasis3d.hpp`)
+* Lagrangian tetrahedral elements of degrees 1 to 8 (`LagrangeBasis3d.hpp`)
 * Lagrangian hexahedral elements of degree 1 to 8 (`LagrangeBasis3d.hpp`)
 * Spline (IGA) elements of degree 1 to 4 (`SplineBasis3d.hpp`)
 * Polygonal elements (`PolygonalBasis3d.hpp`)
@@ -33,7 +33,7 @@ The module supports the following 3 dimensional elements:
 
 `polyfem::mesh` contains data structures and algorithms for simplicial and polygonal meshes.
 
-The interface is generic (`Mesh2D.hpp`, `Mesh3D.hpp`). There are two specializations: a conforming implementation which supports conforming polygonal meshes (`CMesh2D.hpp`, `CMesh3D.hpp`) without hanging nodes, and a non-conforming version (`CMesh2D.hpp`, `CMesh3D.hpp`) specialized for simplicial meshes only but supporting hanging nodes, which are used to implement adaptive h-refinement.
+The interface is generic (`Mesh2D.hpp`, `Mesh3D.hpp`). There are two specializations: a conforming implementation that supports conforming polygonal meshes (`CMesh2D.hpp`, `CMesh3D.hpp`) without hanging nodes, and a non-conforming version (`CMesh2D.hpp`, `CMesh3D.hpp`) specialized for simplicial meshes only but supporting hanging nodes, which are used to implement adaptive h-refinement.
 
 Many input formats are supported (see the JSON documentation for the complete list), and it outputs meshes in VTU (the format used by paraview/VTK).
 
