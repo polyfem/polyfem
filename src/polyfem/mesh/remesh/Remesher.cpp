@@ -142,13 +142,13 @@ namespace polyfem::mesh
 		Eigen::SparseMatrix<double> M, A;
 		{
 			MassMatrixAssembler assembler;
-			NoDensity no_density; // Density of one (i.e., no scaling of mass matrix)
+			assembler::Mass mass_matrix_assembler;
 			AssemblyValsCache cache;
 
-			assembler.assemble(
-				is_volume(), dim(),
-				n_to_basis, no_density, to_bases, to_bases,
-				cache, M);
+			mass_matrix_assembler.assemble(
+				is_volume(),
+				n_to_basis, to_bases, to_bases,
+				cache, 0, M, true);
 			assert(M.rows() == to_projection_quantities.rows());
 
 			// if (lump_mass_matrix)

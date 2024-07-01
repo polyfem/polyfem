@@ -225,9 +225,29 @@ void run_data(const std::string &test_file, const std::string &dir)
 	}
 }
 
-TEST_CASE("runners", tagsrun)
+TEST_CASE("contact_2d", tagsrun)
 {
-	run_data("system_test_list", POLYFEM_DATA_DIR);
+	run_data("contact_2d", POLYFEM_DATA_DIR);
+}
+
+TEST_CASE("contact_3d", tagsrun)
+{
+	run_data("contact_3d", POLYFEM_DATA_DIR);
+}
+
+TEST_CASE("selection", tagsrun)
+{
+	run_data("selection", POLYFEM_DATA_DIR);
+}
+
+TEST_CASE("standard", tagsrun)
+{
+	run_data("standard", POLYFEM_DATA_DIR);
+}
+
+TEST_CASE("time_int", tagsrun)
+{
+	run_data("time_int", POLYFEM_DATA_DIR);
 }
 
 TEST_CASE("runners-pref", tagsrun)

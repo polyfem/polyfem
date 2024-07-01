@@ -38,7 +38,7 @@ namespace polyfem
 		n_pressure_bases = 0;
 	}
 
-	void State::load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd &)> &boundary_marker, bool non_conforming, bool skip_boundary_sideset)
+	void State::load_mesh(GEO::Mesh &meshin, const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &boundary_marker, bool non_conforming, bool skip_boundary_sideset)
 	{
 		reset_mesh();
 
