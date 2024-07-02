@@ -185,7 +185,7 @@ Simple Example / Code Walkthrough</h1>
 <p>In this section, a brief, high-level code walkthrough for a simple example problem is given.</p>
 <h2><a class="anchor" id="autotoc_md11"></a>
 JSON File</h2>
-<p>For this example, we solve the Laplacian on a (triangular) plate-hole mesh with Dirichlet boundary conditions and a constant RHS. We choose P1 elements implicitly (as this is the default). See the <a href="https://polyfem.github.io/json_defaults_and_spec/">JSON specificiation</a> for more details.</p>
+<p>For this example, we solve the Laplacian on a (triangular) plate-hole mesh with Dirichlet boundary conditions and a constant RHS. We choose P1 elements implicitly (as this is the default). See the <a href="https://polyfem.github.io/json_defaults_and_spec/">JSON specification</a> for more details.</p>
 <div class="fragment"><div class="line">{</div>
 <div class="line">    &quot;geometry&quot;: {</div>
 <div class="line">        &quot;advanced&quot;: {</div>
@@ -231,7 +231,7 @@ Basis Building</h2>
 Basis/Gradient Evaluation and Storage</h2>
 <p>In order to evaluate local basis functions and construct mass/stiffness matrices, PolyFEM makes use of a series of data storage classes. The lowest level of these classes is <code>assembler::AssemblyValues</code>, which stores the evaluation and gradient of a single local basis function on its element's quadrature points. A vector of <code>basis::Local2Global</code> objects is also stored. This is used to constrain nodes at the interface between different order elements (allowing for refinement).</p>
 <p>The <code>assembler::ElementAssemblyValues</code> class stores per element information, including quadrature points in real space, the geometric mapping's determinant, and a vector of <code>assembler::AssemblyValues</code> objects (one for each local basis function).</p>
-<p>Finallly, <code>assembler::AssemblyValsCache</code> is stores a vector of <code>assembler::ElementAssemblyValues</code>, boosting performance by caching the per element information. Its data can be accessed through its <code>compute</code> function.</p>
+<p>Finallly, <code>assembler::AssemblyValsCache</code> stores a vector of <code>assembler::ElementAssemblyValues</code>, boosting performance by caching the per element information. Its data can be accessed through its <code>compute</code> function.</p>
 <p>These three classes are the core data storage objects used during matrix assembly. These classes use the previously constructed <code>basis::ElementBases</code> objects to evaluate basis functions and their gradients.</p>
 <h2><a class="anchor" id="autotoc_md15"></a>
 RHS Assembly</h2>
