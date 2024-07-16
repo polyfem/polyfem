@@ -23,7 +23,7 @@ On Linux, `zenity` is required for the file dialog window to work. On macOS and 
 
 
 ### Optional
-The formula for higher-order bases is optionally computed at CMake time using an external python script. Consequently, PolyFEM might requires a working installation of Python and some additional packages to build correctly:
+The formula for higher-order bases is optionally computed at CMake time using an external python script. Consequently, PolyFEM might require a working installation of Python and some additional packages to build correctly:
 
 - `numpy` and `sympy` (optional)
 - `quadpy` (optional)
