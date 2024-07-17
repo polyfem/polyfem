@@ -130,9 +130,6 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1assembler_1_1_mass_mat
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a331b61c7a70e3d0f42a199d4d87444ef" id="r_a331b61c7a70e3d0f42a199d4d87444ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html#a331b61c7a70e3d0f42a199d4d87444ef">assemble</a> (const bool is_volume, const int size, const int n_basis, const <a class="el" href="classpolyfem_1_1assembler_1_1_density.html">Density</a> &amp;density, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;<a class="el" href="_assembler_8cpp.html#ac67a22d4c9279979f58f5ebca27a2c79">cache</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mass) const</td></tr>
-<tr class="memdesc:a331b61c7a70e3d0f42a199d4d87444ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assembles the mass matrix.  <br /></td></tr>
-<tr class="separator:a331b61c7a70e3d0f42a199d4d87444ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46a5d0af0ac8125650fe418548274ae6" id="r_a46a5d0af0ac8125650fe418548274ae6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html#a46a5d0af0ac8125650fe418548274ae6">assemble_cross</a> (const bool is_volume, const int size, const int n_from_basis, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;from_bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;from_gbases, const int n_to_basis, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;to_bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;to_gbases, const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;<a class="el" href="_assembler_8cpp.html#ac67a22d4c9279979f58f5ebca27a2c79">cache</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;mass) const</td></tr>
 <tr class="memdesc:a46a5d0af0ac8125650fe418548274ae6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assembles the cross mass matrix between to function spaces.  <br /></td></tr>
 <tr class="separator:a46a5d0af0ac8125650fe418548274ae6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -141,101 +138,6 @@ Public Member Functions</h2></td></tr>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="_mass_matrix_assembler_8hpp_source.html#l00016">16</a> of file <a class="el" href="_mass_matrix_assembler_8hpp_source.html">MassMatrixAssembler.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a331b61c7a70e3d0f42a199d4d87444ef" name="a331b61c7a70e3d0f42a199d4d87444ef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a331b61c7a70e3d0f42a199d4d87444ef">&#9670;&#160;</a></span>assemble()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::assembler::MassMatrixAssembler::assemble </td>
-          <td>(</td>
-          <td class="paramtype">const bool&#160;</td>
-          <td class="paramname"><em>is_volume</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>size</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>n_basis</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_density.html">Density</a> &amp;&#160;</td>
-          <td class="paramname"><em>density</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>bases</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;&#160;</td>
-          <td class="paramname"><em>gbases</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html">AssemblyValsCache</a> &amp;&#160;</td>
-          <td class="paramname"><em>cache</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;&#160;</td>
-          <td class="paramname"><em>mass</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Assembles the mass matrix. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">is_volume</td><td>True if the mesh is volumetric. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Size of the problem (e.g., 1 for Laplace). </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">n_basis</td><td>Number of basis functions (bases and geometric bases). </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">density</td><td>Class that can evaluate per point density. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">bases</td><td>Finite element bases. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">gbases</td><td>Geometric bases. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">cache</td><td>Assembly values cache. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">mass</td><td>Output constructed mass matrix. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00068">68</a> of file <a class="el" href="_mass_matrix_assembler_8cpp_source.html">MassMatrixAssembler.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b">polyfem::utils::get_local_thread_storage()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00030">quadrature</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_remesher_8cpp_source.html#l00094">polyfem::mesh::Remesher::project_quantities()</a>, and <a class="el" href="_smooth_8cpp_source.html#l00279">polyfem::mesh::PhysicsRemesher&lt; wmtk::TetMesh &gt;::smooth_after()</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_mass_matrix_assembler_a331b61c7a70e3d0f42a199d4d87444ef_cgraph.svg" width="399" height="179"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_mass_matrix_assembler_a331b61c7a70e3d0f42a199d4d87444ef_icgraph.svg" width="479" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
-
-</div>
-</div>
 <a id="a46a5d0af0ac8125650fe418548274ae6" name="a46a5d0af0ac8125650fe418548274ae6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a46a5d0af0ac8125650fe418548274ae6">&#9670;&#160;</a></span>assemble_cross()</h2>
 
@@ -327,11 +229,11 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00186">186</a> of file <a class="el" href="_mass_matrix_assembler_8cpp_source.html">MassMatrixAssembler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00083">83</a> of file <a class="el" href="_mass_matrix_assembler_8cpp_source.html">MassMatrixAssembler.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_geometry_utils_8cpp_source.html#l00088">polyfem::utils::barycentric_coordinates()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00027">polyfem::basis::ElementBases::bases</a>, <a class="el" href="_clipper_utils_8cpp_source.html#l00119">polyfem::utils::TetrahedronClipping::clip()</a>, <a class="el" href="_clipper_utils_8cpp_source.html#l00103">polyfem::utils::TriangleClipping::clip()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00019">polyfem::basis::ElementBases::eval_geom_mapping()</a>, <a class="el" href="_element_bases_8hpp_source.html#l00071">polyfem::basis::ElementBases::evaluate_bases()</a>, <a class="el" href="_tet_quadrature_8cpp_source.html#l00031">polyfem::quadrature::TetQuadrature::get_quadrature()</a>, <a class="el" href="_tri_quadrature_8cpp_source.html#l00030">polyfem::quadrature::TriQuadrature::get_quadrature()</a>, <a class="el" href="_element_bases_8cpp_source.html#l00134">polyfem::basis::ElementBases::nodes()</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00030">quadrature</a>, <a class="el" href="_geometry_utils_8cpp_source.html#l00043">polyfem::utils::tetrahedron_volume()</a>, <a class="el" href="_geometry_utils_8cpp_source.html#l00030">polyfem::utils::triangle_area()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_remesher_8cpp_source.html#l00094">polyfem::mesh::Remesher::project_quantities()</a>, and <a class="el" href="_smooth_8cpp_source.html#l00279">polyfem::mesh::PhysicsRemesher&lt; wmtk::TetMesh &gt;::smooth_after()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_remesher_8cpp_source.html#l00094">polyfem::mesh::Remesher::project_quantities()</a>, and <a class="el" href="_smooth_8cpp_source.html#l00280">polyfem::mesh::PhysicsRemesher&lt; wmtk::TetMesh &gt;::smooth_after()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">

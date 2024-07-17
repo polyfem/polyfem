@@ -12,7 +12,6 @@ var classpolyfem_1_1assembler_1_1_rhs_assembler =
     [ "initial_acceleration", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#ace9f88097549d2f3f8f841fcff8f00e0", null ],
     [ "initial_solution", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a9fbef8e4d3db02b46bfb752161c5ac68", null ],
     [ "initial_velocity", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#ad4cc2fad5130fc413d4349928ae88831", null ],
-    [ "integrate_bc", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#af14667877fc2174de0f495dffeb38456", null ],
     [ "lsq_bc", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#ab0e74deabcecef2c1a43eea386ac116d", null ],
     [ "mesh", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a43e01a7e7652431b753f7c89bee66202", null ],
     [ "problem", "classpolyfem_1_1assembler_1_1_rhs_assembler.html#a4e2fb8d7059e5523cb6381bb4f142857", null ],

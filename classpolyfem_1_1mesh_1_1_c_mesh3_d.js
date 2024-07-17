@@ -14,12 +14,7 @@ var classpolyfem_1_1mesh_1_1_c_mesh3_d =
     [ "cell_face", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a275901c3d3366331625cd2ac14571433", null ],
     [ "cell_vertex", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#af5f8e6a7533debfba249a418ce072466", null ],
     [ "compute_body_ids", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a2f01a08cddb886224bfd1a01f45112c0", null ],
-    [ "compute_boundary_ids", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#adbac62d52d0803e374400d53fa2a3836", null ],
-    [ "compute_boundary_ids", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a626ac6f8128ec4c7cf2f504690d92fa0", null ],
-    [ "compute_boundary_ids", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a4fbd95de6515c541ec5772e705b99306", null ],
-    [ "compute_boundary_ids", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a9aec0f93c9198a676982a968fe25a75a", null ],
     [ "compute_boundary_ids", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a5cbcebd5f099b06f64077417e38c71d1", null ],
-    [ "compute_boundary_ids", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#abcd05d7fc8bb6f557ed3d7e4aca99bf5", null ],
     [ "compute_elements_tag", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#ae6ea04faec176d822e71c9a5ad7e6048", null ],
     [ "copy", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#ae474c1d14537ca8ee22114317a287619", null ],
     [ "edge_barycenter", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a100dda92f0537ef1d0b97d0d6f602468", null ],
@@ -65,7 +60,6 @@ var classpolyfem_1_1mesh_1_1_c_mesh3_d =
     [ "switch_element", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a3cfea403309bceeed37f9451562db2fb", null ],
     [ "switch_face", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#aef9a81ceaffffad57aaa36e910c567b0", null ],
     [ "switch_vertex", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#acd084e2cdfad9b39a433bf760b8579e5", null ],
-    [ "triangulate_faces", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a64cfaa0c7c2c6369783f1ae865f3bd78", null ],
     [ "vertex_neighs", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a7c62ad297f20ab5316a4430d88cc7a6d", null ],
     [ "mesh_", "classpolyfem_1_1mesh_1_1_c_mesh3_d.html#a6510798b911e049fecc2f113bc54bda7", null ]
 ];
