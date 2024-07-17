@@ -133,13 +133,13 @@ Finite Element Assembler</h2>
 Finite Element Bases</h2>
 <p><code><a class="el" href="namespacepolyfem_1_1basis.html">polyfem::basis</a></code> contains the implementation of finite element basis functions.</p>
 <p>The module supports the following 2 dimensional elements:</p><ul>
-<li>Lagrangian triangular elements of degree 1 to 8 (<code><a class="el" href="_lagrange_basis2d_8hpp.html">LagrangeBasis2d.hpp</a></code>)</li>
+<li>Lagrangian triangular elements of degrees 1 to 8 (<code><a class="el" href="_lagrange_basis2d_8hpp.html">LagrangeBasis2d.hpp</a></code>)</li>
 <li>Lagrangian quadrilateral elements of degree 1 to 8 (<code><a class="el" href="_lagrange_basis2d_8hpp.html">LagrangeBasis2d.hpp</a></code>)</li>
 <li>Spline (IGA) elements of degree 1 to 4 (<code><a class="el" href="_spline_basis2d_8hpp.html">SplineBasis2d.hpp</a></code>)</li>
 <li>Polygonal elements (<code><a class="el" href="_polygonal_basis2d_8hpp.html">PolygonalBasis2d.hpp</a></code>)</li>
 </ul>
 <p>The module supports the following 3 dimensional elements:</p><ul>
-<li>Lagrangian tetrahedral elements of degree 1 to 8 (<code><a class="el" href="_lagrange_basis3d_8hpp.html">LagrangeBasis3d.hpp</a></code>)</li>
+<li>Lagrangian tetrahedral elements of degrees 1 to 8 (<code><a class="el" href="_lagrange_basis3d_8hpp.html">LagrangeBasis3d.hpp</a></code>)</li>
 <li>Lagrangian hexahedral elements of degree 1 to 8 (<code><a class="el" href="_lagrange_basis3d_8hpp.html">LagrangeBasis3d.hpp</a></code>)</li>
 <li>Spline (IGA) elements of degree 1 to 4 (<code><a class="el" href="_spline_basis3d_8hpp.html">SplineBasis3d.hpp</a></code>)</li>
 <li>Polygonal elements (<code><a class="el" href="_polygonal_basis3d_8hpp.html">PolygonalBasis3d.hpp</a></code>)</li>
@@ -147,7 +147,7 @@ Finite Element Bases</h2>
 <h2><a class="anchor" id="autotoc_md4"></a>
 Mesh data structure, Input/Output, and Navigation</h2>
 <p><code><a class="el" href="namespacepolyfem_1_1mesh.html">polyfem::mesh</a></code> contains data structures and algorithms for simplicial and polygonal meshes.</p>
-<p>The interface is generic (<code><a class="el" href="_mesh2_d_8hpp.html">Mesh2D.hpp</a></code>, <code><a class="el" href="_mesh3_d_8hpp.html">Mesh3D.hpp</a></code>). There are two specializations: a conforming implementation which supports conforming polygonal meshes (<code><a class="el" href="_c_mesh2_d_8hpp.html">CMesh2D.hpp</a></code>, <code><a class="el" href="_c_mesh3_d_8hpp.html">CMesh3D.hpp</a></code>) without hanging nodes, and a non-conforming version (<code><a class="el" href="_c_mesh2_d_8hpp.html">CMesh2D.hpp</a></code>, <code><a class="el" href="_c_mesh3_d_8hpp.html">CMesh3D.hpp</a></code>) specialized for simplicial meshes only but supporting hanging nodes, which are used to implement adaptive h-refinement.</p>
+<p>The interface is generic (<code><a class="el" href="_mesh2_d_8hpp.html">Mesh2D.hpp</a></code>, <code><a class="el" href="_mesh3_d_8hpp.html">Mesh3D.hpp</a></code>). There are two specializations: a conforming implementation that supports conforming polygonal meshes (<code><a class="el" href="_c_mesh2_d_8hpp.html">CMesh2D.hpp</a></code>, <code><a class="el" href="_c_mesh3_d_8hpp.html">CMesh3D.hpp</a></code>) without hanging nodes, and a non-conforming version (<code><a class="el" href="_c_mesh2_d_8hpp.html">CMesh2D.hpp</a></code>, <code><a class="el" href="_c_mesh3_d_8hpp.html">CMesh3D.hpp</a></code>) specialized for simplicial meshes only but supporting hanging nodes, which are used to implement adaptive h-refinement.</p>
 <p>Many input formats are supported (see the JSON documentation for the complete list), and it outputs meshes in VTU (the format used by paraview/VTK).</p>
 <p>In PolyFEM the mesh is used to define a collection of dofs (in case of linear elements, they correspond to the nodes of the mesh, but this is not the case for other elements). The mesh is then discarded and not used by other modules.</p>
 <h2><a class="anchor" id="autotoc_md5"></a>
