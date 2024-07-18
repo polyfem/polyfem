@@ -136,7 +136,7 @@ In order to evaluate local basis functions and construct mass/stiffness matrices
 
 The `assembler::ElementAssemblyValues` class stores per element information, including quadrature points in real space, the geometric mapping's determinant, and a vector of `assembler::AssemblyValues` objects (one for each local basis function).
 
-Finallly, `assembler::AssemblyValsCache` stores a vector of `assembler::ElementAssemblyValues`, boosting performance by caching the per element information. Its data can be accessed through its `compute` function.
+Finally, `assembler::AssemblyValsCache` stores a vector of `assembler::ElementAssemblyValues`, boosting performance by caching the per element information. Its data can be accessed through its `compute` function.
 
 These three classes are the core data storage objects used during matrix assembly. These classes use the previously constructed `basis::ElementBases` objects to evaluate basis functions and their gradients.
 
