@@ -263,31 +263,40 @@ namespace polyfem::assembler
 
 	void ElasticityTensor::set_orthotropic(
 		double Ex, double Ey, double Ez,
-		double nuYX, double nuZX, double nuZY,
+		double nuXY, double nuXZ, double nuYZ,
 		double muYZ, double muZX, double muXY, const std::string &stress_units)
 	{
-		// copied from Julian
 		assert(size_ == 3);
-		// Note: this isn't the flattened compliance tensor! Rather, it is the
-		// matrix inverse of the flattened elasticity tensor. See the tensor
-		// flattening writeup.
-		stifness_tensor_ << 1.0 / Ex, -nuYX / Ey, -nuZX / Ez, 0.0, 0.0, 0.0,
-			0.0, 1.0 / Ey, -nuZY / Ez, 0.0, 0.0, 0.0,
-			0.0, 0.0, 1.0 / Ez, 0.0, 0.0, 0.0,
-			0.0, 0.0, 0.0, 1.0 / muYZ, 0.0, 0.0,
-			0.0, 0.0, 0.0, 0.0, 1.0 / muZX, 0.0,
-			0.0, 0.0, 0.0, 0.0, 0.0, 1.0 / muXY;
+
+		// from https://www.efunda.com/formulae/solid_mechanics/mat_mechanics/hooke_orthotropic.cfm
+		double nuYX = nuXY * Ey / Ex;
+		double nuZX = nuXZ * Ez / Ex;
+		double nuZY = nuYZ * Ez / Ey;
+
+		Eigen::MatrixXd compliance;
+		compliance.setZero(6, 6);
+		compliance << 1 / Ex, -nuYX / Ey, -nuZX / Ez, 0, 0, 0,
+			-nuXY / Ex, 1 / Ey, -nuZY / Ez, 0, 0, 0,
+			-nuXZ / Ex, -nuYZ / Ey, 1 / Ez, 0, 0, 0,
+			0, 0, 0, 1 / (2 * muYZ), 0, 0,
+			0, 0, 0, 0, 1 / (2 * muZX), 0,
+			0, 0, 0, 0, 0, 1 / (2 * muXY);
+		stifness_tensor_ = compliance.inverse();
 	}
 
-	void ElasticityTensor::set_orthotropic(double Ex, double Ey, double nuYX, double muXY, const std::string &stress_units)
+	void ElasticityTensor::set_orthotropic(double Ex, double Ey, double nuXY, double muXY, const std::string &stress_units)
 	{
-		// copied from Julian
 		assert(size_ == 2);
-		// Note: this isn't the flattened compliance tensor! Rather, it is the
-		// matrix inverse of the flattened elasticity tensor.
-		stifness_tensor_ << 1.0 / Ex, -nuYX / Ey, 0.0,
-			0.0, 1.0 / Ey, 0.0,
-			0.0, 0.0, 1.0 / muXY;
+
+		// from https://www.efunda.com/formulae/solid_mechanics/mat_mechanics/hooke_orthotropic.cfm
+		double nuYX = nuXY * Ey / Ex;
+
+		Eigen::MatrixXd compliance;
+		compliance.setZero(3, 3);
+		compliance << 1.0 / Ex, -nuYX / Ey, 0.0,
+			-nuXY / Ex, 1.0 / Ey, 0.0,
+			0.0, 0.0, 1.0 / (2 * muXY);
+		stifness_tensor_ = compliance.inverse();
 	}
 
 	template <int DIM>
