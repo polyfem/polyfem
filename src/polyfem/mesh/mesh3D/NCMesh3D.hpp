@@ -40,8 +40,8 @@ namespace polyfem
 
 			struct ncVert
 			{
-				ncVert(const Eigen::VectorXd pos_) : pos(pos_){};
-				~ncVert(){};
+				ncVert(const Eigen::VectorXd pos_) : pos(pos_) {};
+				~ncVert() {};
 
 				int n_elem() const
 				{
@@ -76,7 +76,7 @@ namespace polyfem
 				{
 					weights.setConstant(-1);
 				};
-				~ncBoundary(){};
+				~ncBoundary() {};
 
 				int n_elem() const
 				{
@@ -145,7 +145,7 @@ namespace polyfem
 					faces.setConstant(4 * (dim - 2), 1, -1);
 					children.setConstant(std::round(pow(2, dim)), 1, -1);
 				};
-				~ncElem(){};
+				~ncElem() {};
 
 				bool is_valid() const
 				{
@@ -256,11 +256,6 @@ namespace polyfem
 
 			void bounding_box(RowVectorNd &min, RowVectorNd &max) const override;
 
-			void compute_boundary_ids(const double eps) override;
-			void compute_boundary_ids(const std::function<int(const RowVectorNd &)> &marker) override;
-			void compute_boundary_ids(const std::function<int(const RowVectorNd &, bool)> &marker) override;
-			void compute_boundary_ids(const std::function<int(const size_t, const RowVectorNd &, bool)> &marker) override;
-			void compute_boundary_ids(const std::function<int(const std::vector<int> &, bool)> &marker) override;
 			void compute_boundary_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &marker) override;
 
 			void compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker) override;
@@ -270,7 +265,7 @@ namespace polyfem
 			int get_boundary_id(const int primitive) const override { return faces[valid_to_all_face(primitive)].boundary_id; };
 			int get_body_id(const int primitive) const override { return elements[valid_to_all_elem(primitive)].body_id; };
 
-			void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
+			// void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const override;
 
 			RowVectorNd kernel(const int cell_id) const override;
 			// navigation wrapper
