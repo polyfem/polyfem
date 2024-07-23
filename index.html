@@ -231,7 +231,7 @@ Basis Building</h2>
 Basis/Gradient Evaluation and Storage</h2>
 <p>In order to evaluate local basis functions and construct mass/stiffness matrices, PolyFEM makes use of a series of data storage classes. The lowest level of these classes is <code>assembler::AssemblyValues</code>, which stores the evaluation and gradient of a single local basis function on its element's quadrature points. A vector of <code>basis::Local2Global</code> objects is also stored. This is used to constrain nodes at the interface between different order elements (allowing for refinement).</p>
 <p>The <code>assembler::ElementAssemblyValues</code> class stores per element information, including quadrature points in real space, the geometric mapping's determinant, and a vector of <code>assembler::AssemblyValues</code> objects (one for each local basis function).</p>
-<p>Finallly, <code>assembler::AssemblyValsCache</code> stores a vector of <code>assembler::ElementAssemblyValues</code>, boosting performance by caching the per element information. Its data can be accessed through its <code>compute</code> function.</p>
+<p>Finally, <code>assembler::AssemblyValsCache</code> stores a vector of <code>assembler::ElementAssemblyValues</code>, boosting performance by caching the per element information. Its data can be accessed through its <code>compute</code> function.</p>
 <p>These three classes are the core data storage objects used during matrix assembly. These classes use the previously constructed <code>basis::ElementBases</code> objects to evaluate basis functions and their gradients.</p>
 <h2><a class="anchor" id="autotoc_md15"></a>
 RHS Assembly</h2>
