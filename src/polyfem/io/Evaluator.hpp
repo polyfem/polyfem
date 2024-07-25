@@ -14,7 +14,7 @@ namespace polyfem::io
 	class Evaluator
 	{
 	private:
-		Evaluator(){};
+		Evaluator() {};
 
 	public:
 		/// evaluates the function fun at the vertices on the mesh
@@ -395,17 +395,6 @@ namespace polyfem::io
 			Eigen::MatrixXd &mises,
 			const bool skip_orientation = false);
 
-		/// returns a triangulated representation of the sideset. sidesets contains integers mapping to faces
-		/// @param[in] mesh mesh
-		/// @param[out] pts boundary points
-		/// @param[out] faces boundary faces
-		/// @param[out] sidesets resulting sidesets
-		static void get_sidesets(
-			const mesh::Mesh &mesh,
-			Eigen::MatrixXd &pts,
-			Eigen::MatrixXi &faces,
-			Eigen::MatrixXd &sidesets);
-
 		static Eigen::MatrixXd generate_linear_field(
 			const int n_bases,
 			const std::shared_ptr<mesh::MeshNodes> mesh_nodes,
@@ -414,7 +403,7 @@ namespace polyfem::io
 		static Eigen::MatrixXd get_bases_position(
 			const int n_bases,
 			const std::shared_ptr<mesh::MeshNodes> mesh_nodes);
-		
+
 		static Eigen::VectorXd integrate_function(
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,

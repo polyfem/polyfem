@@ -53,101 +53,6 @@ namespace polyfem::io
 		}
 	} // namespace
 
-	void Evaluator::get_sidesets(
-		const mesh::Mesh &mesh,
-		Eigen::MatrixXd &pts,
-		Eigen::MatrixXi &faces,
-		Eigen::MatrixXd &sidesets)
-	{
-		// if (!mesh)
-		// {
-		// 	logger().error("Load the mesh first!");
-		// 	return;
-		// }
-
-		if (mesh.is_volume())
-		{
-			const Mesh3D &tmp_mesh = dynamic_cast<const Mesh3D &>(mesh);
-			int n_pts = 0;
-			int n_faces = 0;
-			for (int f = 0; f < tmp_mesh.n_faces(); ++f)
-			{
-				if (tmp_mesh.get_boundary_id(f) > 0)
-				{
-					n_pts += tmp_mesh.n_face_vertices(f) + 1;
-					n_faces += tmp_mesh.n_face_vertices(f);
-				}
-			}
-
-			pts.resize(n_pts, 3);
-			faces.resize(n_faces, 3);
-			sidesets.resize(n_pts, 1);
-
-			n_pts = 0;
-			n_faces = 0;
-			for (int f = 0; f < tmp_mesh.n_faces(); ++f)
-			{
-				const int sideset = tmp_mesh.get_boundary_id(f);
-				if (sideset > 0)
-				{
-					const int n_face_vertices = tmp_mesh.n_face_vertices(f);
-
-					for (int i = 0; i < n_face_vertices; ++i)
-					{
-						if (n_face_vertices == 3)
-							faces.row(n_faces) << ((i + 1) % n_face_vertices + n_pts), (i + n_pts), (n_pts + n_face_vertices);
-						else
-							faces.row(n_faces) << (i + n_pts), ((i + 1) % n_face_vertices + n_pts), (n_pts + n_face_vertices);
-						++n_faces;
-					}
-
-					for (int i = 0; i < n_face_vertices; ++i)
-					{
-						pts.row(n_pts) = tmp_mesh.point(tmp_mesh.face_vertex(f, i));
-						sidesets(n_pts) = sideset;
-
-						++n_pts;
-					}
-
-					pts.row(n_pts) = tmp_mesh.face_barycenter(f);
-					sidesets(n_pts) = sideset;
-					++n_pts;
-				}
-			}
-		}
-		else
-		{
-			const Mesh2D &tmp_mesh = dynamic_cast<const Mesh2D &>(mesh);
-			int n_siteset = 0;
-			for (int e = 0; e < tmp_mesh.n_edges(); ++e)
-			{
-				if (tmp_mesh.get_boundary_id(e) > 0)
-					++n_siteset;
-			}
-
-			pts.resize(n_siteset * 2, 2);
-			faces.resize(n_siteset, 2);
-			sidesets.resize(n_siteset, 1);
-
-			n_siteset = 0;
-			for (int e = 0; e < tmp_mesh.n_edges(); ++e)
-			{
-				const int sideset = tmp_mesh.get_boundary_id(e);
-				if (sideset > 0)
-				{
-					pts.row(2 * n_siteset) = tmp_mesh.point(tmp_mesh.edge_vertex(e, 0));
-					pts.row(2 * n_siteset + 1) = tmp_mesh.point(tmp_mesh.edge_vertex(e, 1));
-					faces.row(n_siteset) << 2 * n_siteset, 2 * n_siteset + 1;
-					sidesets(n_siteset) = sideset;
-					++n_siteset;
-				}
-			}
-
-			pts.conservativeResize(n_siteset * 2, 3);
-			pts.col(2).setZero();
-		}
-	}
-
 	void Evaluator::interpolate_boundary_function(
 		const mesh::Mesh &mesh,
 		const bool is_problem_scalar,
@@ -1381,11 +1286,11 @@ namespace polyfem::io
 	}
 
 	Eigen::VectorXd Evaluator::integrate_function(
-			const std::vector<basis::ElementBases> &bases,
-			const std::vector<basis::ElementBases> &gbases,
-			const Eigen::MatrixXd &fun,
-			const int dim,
-			const int actual_dim)
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<basis::ElementBases> &gbases,
+		const Eigen::MatrixXd &fun,
+		const int dim,
+		const int actual_dim)
 	{
 		Eigen::VectorXd result;
 		result.setZero(actual_dim);
