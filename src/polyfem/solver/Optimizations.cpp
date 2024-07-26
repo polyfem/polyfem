@@ -78,6 +78,48 @@ namespace polyfem::solver
 		log_and_throw_adjoint_error("Invalid nonlinear solver name!");
 	}
 
+	std::shared_ptr<AdjointForm> AdjointOptUtils::create_simple_form(const std::string &obj_type, const std::string &param_type, const std::shared_ptr<State> &state, const json &args)
+	{
+		std::shared_ptr<AdjointForm> obj;
+		VariableToSimulationGroup var2sim;
+		var2sim.push_back(VariableToSimulation::create(param_type, {state}, CompositeParametrization()));
+		if (obj_type == "compliance")
+			obj = std::make_shared<ComplianceForm>(var2sim, *state, args);
+		else if (obj_type == "acceleration")
+			obj = std::make_shared<AccelerationForm>(var2sim, *state, args);
+		else if (obj_type == "kinetic")
+			obj = std::make_shared<AccelerationForm>(var2sim, *state, args);
+		else if (obj_type == "position")
+			obj = std::make_shared<PositionForm>(var2sim, *state, args);
+		else if (obj_type == "stress")
+			obj = std::make_shared<StressForm>(var2sim, *state, args);
+		else if (obj_type == "stress_norm")
+			obj = std::make_shared<StressNormForm>(var2sim, *state, args);
+		else if (obj_type == "elastic_energy")
+			obj = std::make_shared<ElasticEnergyForm>(var2sim, *state, args);
+		else if (obj_type == "max_stress")
+			obj = std::make_shared<MaxStressForm>(var2sim, *state, args);
+		else if (obj_type == "volume")
+			obj = std::make_shared<VolumeForm>(var2sim, *state, args);
+		else if (obj_type == "min_jacobian")
+			obj = std::make_shared<MinJacobianForm>(var2sim, *state);
+		else if (obj_type == "AMIPS")
+			obj = std::make_shared<AMIPSForm>(var2sim, *state);
+		else if (obj_type == "AMIPS-clean")
+			obj = std::make_shared<AMIPSFormClean>(var2sim, *state);
+		else if (obj_type == "boundary_smoothing")
+		{
+			if (args["surface_selection"].is_array())
+				obj = std::make_shared<BoundarySmoothingForm>(var2sim, *state, args["scale_invariant"], args["power"], args["surface_selection"].get<std::vector<int>>());
+			else
+				obj = std::make_shared<BoundarySmoothingForm>(var2sim, *state, args["scale_invariant"], args["power"], std::vector<int>{args["surface_selection"].get<int>()});
+		}
+		else
+			log_and_throw_adjoint_error("Invalid simple form type {}!", obj_type);
+		
+		return obj;
+	}
+
 	std::shared_ptr<AdjointForm> AdjointOptUtils::create_form(const json &args, const VariableToSimulationGroup &var2sim, const std::vector<std::shared_ptr<State>> &states)
 	{
 		std::shared_ptr<AdjointForm> obj;
