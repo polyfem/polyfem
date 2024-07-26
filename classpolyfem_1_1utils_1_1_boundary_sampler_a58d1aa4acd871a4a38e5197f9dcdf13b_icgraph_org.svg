@@ -12,9 +12,9 @@
 <g id="Node000001" class="node">
 <title>Node1</title>
 <g id="a_Node000001"><a xlink:title=" ">
-<polygon fill="#999999" stroke="#666666" points="1877,-151.74 1705,-151.74 1705,-121.74 1877,-121.74 1877,-151.74"/>
-<text text-anchor="start" x="1713" y="-139.74" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::Boundary</text>
-<text text-anchor="middle" x="1791" y="-128.74" font-family="Helvetica,sans-Serif" font-size="10.00">Sampler::normal_for_quad_face</text>
+<polygon fill="#999999" stroke="#666666" points="1877,-178.74 1705,-178.74 1705,-148.74 1877,-148.74 1877,-178.74"/>
+<text text-anchor="start" x="1713" y="-166.74" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::Boundary</text>
+<text text-anchor="middle" x="1791" y="-155.74" font-family="Helvetica,sans-Serif" font-size="10.00">Sampler::normal_for_quad_face</text>
 </a>
 </g>
 </g>
@@ -32,28 +32,8 @@
 <g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
 <g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1694.82,-149.18C1686.26,-150.3 1677.63,-151.43 1669.15,-152.54"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1695.35,-152.64 1704.82,-147.88 1694.45,-145.7 1695.35,-152.64"/>
-</a>
-</g>
-</g>
-<!-- Node22 -->
-<g id="Node000022" class="node">
-<title>Node22</title>
-<g id="a_Node000022"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#a3a1ff3d5a56e90fb2cc9f89a78466e58" target="_top" xlink:title="computes traction forces for fun (tensor * surface normal) result, stress tensor, and von mises,...">
-<polygon fill="white" stroke="#666666" points="1646,-130.24 1519,-130.24 1519,-89.24 1646,-89.24 1646,-130.24"/>
-<text text-anchor="start" x="1527" y="-118.24" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::Evaluator</text>
-<text text-anchor="start" x="1527" y="-107.24" font-family="Helvetica,sans-Serif" font-size="10.00">::interpolate_boundary</text>
-<text text-anchor="middle" x="1582.5" y="-96.24" font-family="Helvetica,sans-Serif" font-size="10.00">_tensor_function</text>
-</a>
-</g>
-</g>
-<!-- Node1&#45;&gt;Node22 -->
-<g id="edge30_Node000001_Node000022" class="edge">
-<title>Node1&#45;&gt;Node22</title>
-<g id="a_edge30_Node000001_Node000022"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1694.61,-124.27C1678.14,-122.11 1661.41,-119.92 1646.09,-117.92"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1694.45,-127.77 1704.82,-125.6 1695.35,-120.83 1694.45,-127.77"/>
+<path fill="none" stroke="#63b8ff" d="M1694.54,-163.74C1686.07,-163.74 1677.53,-163.74 1669.15,-163.74"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1694.82,-167.24 1704.82,-163.74 1694.82,-160.24 1694.82,-167.24"/>
 </a>
 </g>
 </g>
@@ -492,26 +472,6 @@
 <g id="a_edge28_Node000021_Node000011"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M419.61,-110.01C414.29,-111.83 409.03,-113.75 404,-115.74 380.19,-125.16 354.3,-138.37 335.49,-148.55"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="420.82,-113.3 429.22,-106.84 418.62,-106.65 420.82,-113.3"/>
-</a>
-</g>
-</g>
-<!-- Node23 -->
-<g id="Node000023" class="node">
-<title>Node23</title>
-<g id="a_Node000023"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#a4cfb1b4d4c1536ec08a47f61a2e804ce" target="_top" xlink:title="same as interpolate_boundary_tensor_function with disp=0">
-<polygon fill="white" stroke="#666666" points="1451.5,-130.24 1324.5,-130.24 1324.5,-89.24 1451.5,-89.24 1451.5,-130.24"/>
-<text text-anchor="start" x="1332.5" y="-118.24" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::Evaluator</text>
-<text text-anchor="start" x="1332.5" y="-107.24" font-family="Helvetica,sans-Serif" font-size="10.00">::interpolate_boundary</text>
-<text text-anchor="middle" x="1388" y="-96.24" font-family="Helvetica,sans-Serif" font-size="10.00">_tensor_function</text>
-</a>
-</g>
-</g>
-<!-- Node22&#45;&gt;Node23 -->
-<g id="edge31_Node000022_Node000023" class="edge">
-<title>Node22&#45;&gt;Node23</title>
-<g id="a_edge31_Node000022_Node000023"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1508.49,-109.74C1489.78,-109.74 1469.82,-109.74 1451.68,-109.74"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1508.73,-113.24 1518.73,-109.74 1508.73,-106.24 1508.73,-113.24"/>
 </a>
 </g>
 </g>
