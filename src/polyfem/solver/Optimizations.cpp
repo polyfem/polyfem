@@ -107,6 +107,12 @@ namespace polyfem::solver
 			obj = std::make_shared<AMIPSForm>(var2sim, *state);
 		else if (obj_type == "AMIPS-clean")
 			obj = std::make_shared<AMIPSFormClean>(var2sim, *state);
+		else if (obj_type == "function-target")
+		{
+			std::shared_ptr<TargetForm> tmp = std::make_shared<TargetForm>(var2sim, *state, args);
+			tmp->set_reference(args["target_function"], args["target_function_gradient"]);
+			obj = tmp;
+		}
 		else if (obj_type == "boundary_smoothing")
 		{
 			if (args["surface_selection"].is_array())
