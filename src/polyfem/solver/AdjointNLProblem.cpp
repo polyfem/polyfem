@@ -351,18 +351,12 @@ namespace polyfem::solver
 	{
 		bool need_rebuild_basis = false;
 
-		// update to new parameter and check if the new parameter is valid to solve
 		for (const auto &v : variables_to_simulation_)
-		{
-			v->update(newX);
 			if (v->get_parameter_type() == ParameterType::Shape)
 				need_rebuild_basis = true;
-		}
 
-		// Apply slim to all states on a frequency
-		if (need_rebuild_basis && enable_slim && curr_x.size() > 0)
-		{
-			std::vector<Eigen::MatrixXd> V_old_list;
+		std::vector<Eigen::MatrixXd> V_old_list;
+		if (need_rebuild_basis)
 			for (auto state : all_states_)
 			{
 				Eigen::MatrixXd V;
@@ -370,6 +364,13 @@ namespace polyfem::solver
 				V_old_list.push_back(V);
 			}
 
+		// update to new parameter and check if the new parameter is valid to solve
+		for (const auto &v : variables_to_simulation_)
+			v->update(newX);
+
+		// Apply slim to all states on a frequency
+		if (need_rebuild_basis && enable_slim && curr_x.size() > 0)
+		{
 			int state_num = 0;
 			for (auto state : all_states_)
 			{
