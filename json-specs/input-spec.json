@@ -1817,6 +1817,20 @@
     {
         "pointer": "/materials/*",
         "type": "object",
+        "type_name": "Electrostatics",
+        "required": [
+            "type",
+            "epsilon"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
         "type_name": "IncompressibleLinearElasticity",
         "required": [
             "type",
@@ -1960,6 +1974,7 @@
             "Stokes",
             "NavierStokes",
             "OperatorSplitting",
+            "Electrostatics",
             "IncompressibleLinearElasticity",
             "Laplacian",
             "Helmholtz",
@@ -2022,6 +2037,12 @@
         "spec_file": "value1.json",
         "doc": "Density",
         "default": 1
+    },
+    {
+        "pointer": "/materials/*/epsilon",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "permittivity"
     },
     {
         "pointer": "/materials/*/phi",

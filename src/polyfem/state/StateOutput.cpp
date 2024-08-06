@@ -3,6 +3,8 @@
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
 
+#include <polyfem/assembler/Electrostatics.hpp>
+
 #include <filesystem>
 
 namespace polyfem
@@ -173,6 +175,13 @@ namespace polyfem
 			stress_path,
 			mises_path,
 			is_contact_enabled(), solution_frames);
+
+		if (assembler->name() == "Electrostatics")
+		{
+			std::shared_ptr<assembler::Electrostatics> electrostatics_assembler = std::dynamic_pointer_cast<assembler::Electrostatics>(assembler);
+			double energy = electrostatics_assembler->compute_stored_energy(mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, 0, sol);
+			logger().info("Stored electric energy: {}", energy);
+		}
 	}
 
 	void State::save_restart_json(const double t0, const double dt, const int t) const
