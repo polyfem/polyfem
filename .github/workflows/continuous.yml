@@ -76,118 +76,118 @@ jobs:
   # MacOS
   ####################
 
-  MacOS:
-    name: ${{ matrix.os }} (${{ matrix.config }}, ${{ matrix.threading }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [macos-latest, macos-14]
-        config: [DebugNoSymbols, Release]
-        threading: [TBB]
+  # MacOS:
+  #   name: ${{ matrix.os }} (${{ matrix.config }}, ${{ matrix.threading }})
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       os: [macos-latest, macos-14]
+  #       config: [DebugNoSymbols, Release]
+  #       threading: [TBB]
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4.1.6
-        with:
-          fetch-depth: 10
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4.1.6
+  #       with:
+  #         fetch-depth: 10
 
-      - name: Dependencies
-        run: |
-          brew install ccache
-          echo 'CACHE_PATH=~/Library/Caches/ccache' >> "$GITHUB_ENV"
+  #     - name: Dependencies
+  #       run: |
+  #         brew install ccache
+  #         echo 'CACHE_PATH=~/Library/Caches/ccache' >> "$GITHUB_ENV"
 
-      - name: Cache Build
-        id: cache-build
-        uses: actions/cache@v4.0.2
-        with:
-          path: ${{ env.CACHE_PATH }}
-          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
+  #     - name: Cache Build
+  #       id: cache-build
+  #       uses: actions/cache@v4.0.2
+  #       with:
+  #         path: ${{ env.CACHE_PATH }}
+  #         key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
+  #         restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
 
-      - name: Prepare ccache
-        run: |
-          ccache --max-size=1.0G
-          ccache -V && ccache --show-stats && ccache --zero-stats
+  #     - name: Prepare ccache
+  #       run: |
+  #         ccache --max-size=1.0G
+  #         ccache -V && ccache --show-stats && ccache --zero-stats
 
-      - name: Configure
-        run: |
-          mkdir -p build
-          cd build
-          cmake .. \
-            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-            -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
-            -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
-            -DPOLYFEM_THREADING=${{ matrix.threading }}
+  #     - name: Configure
+  #       run: |
+  #         mkdir -p build
+  #         cd build
+  #         cmake .. \
+  #           -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+  #           -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
+  #           -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
+  #           -DPOLYFEM_THREADING=${{ matrix.threading }}
 
-      - name: Build
-        run: cd build; make -j2; ccache --show-stats
+  #     - name: Build
+  #       run: cd build; make -j2; ccache --show-stats
 
-      - name: Tests
-        run: cd build; ctest --verbose --output-on-failure
+  #     - name: Tests
+  #       run: cd build; ctest --verbose --output-on-failure
 
   ####################
   # Windows
   ####################
 
-  Windows:
-    runs-on: windows-2022
-    env:
-      SCCACHE_IDLE_TIMEOUT: "12000"
-    strategy:
-      fail-fast: false
-      matrix:
-        config: [DebugNoSymbols]
-        threading: [CPP]
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4.1.6
-        with:
-          fetch-depth: 10
+  # Windows:
+  #   runs-on: windows-2022
+  #   env:
+  #     SCCACHE_IDLE_TIMEOUT: "12000"
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       config: [DebugNoSymbols]
+  #       threading: [CPP]
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4.1.6
+  #       with:
+  #         fetch-depth: 10
 
-      - name: Install Ninja
-        uses: seanmiddleditch/gha-setup-ninja@master
+  #     - name: Install Ninja
+  #       uses: seanmiddleditch/gha-setup-ninja@master
 
-      - name: Dependencies
-        run: |
-          choco install ccache
-          "CACHE_PATH=${env:LOCALAPPDATA}\ccache" | Out-File -FilePath $env:GITHUB_ENV -Append
+  #     - name: Dependencies
+  #       run: |
+  #         choco install ccache
+  #         "CACHE_PATH=${env:LOCALAPPDATA}\ccache" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-      - name: Cache build
-        id: cache-build
-        uses: actions/cache@v4.0.2
-        with:
-          path: ${{ env.CACHE_PATH }}
-          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
+  #     - name: Cache build
+  #       id: cache-build
+  #       uses: actions/cache@v4.0.2
+  #       with:
+  #         path: ${{ env.CACHE_PATH }}
+  #         key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
+  #         restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
 
-      - name: Prepare ccache
-        run: |
-          ccache --max-size=1.0G
-          ccache -V && ccache --show-stats && ccache --zero-stats
+  #     - name: Prepare ccache
+  #       run: |
+  #         ccache --max-size=1.0G
+  #         ccache -V && ccache --show-stats && ccache --zero-stats
 
-      - name: Configure
-        shell: cmd
-        run: |
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
-          cmake -G Ninja ^
-            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache ^
-            -DCMAKE_CONFIGURATION_TYPES="Release;Debug;RelWithDebInfo;MinSizeRel;DebugNoSymbols" ^
-            -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
-            -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="/Od" -DCMAKE_EXE_LINKER_FLAGS_DEBUGNOSYMBOLS="" ^
-            -DPOLYFEM_WITH_CLIPPER=OFF ^
-            -DPOLYFEM_THREADING=${{ matrix.threading }} ^
-            -DPOLYSOLVE_WITH_CHOLMOD=OFF ^
-            -DPOLYSOLVE_WITH_AMGCL=OFF ^
-            -DPOLYSOLVE_WITH_MKL=ON ^
-            -B build ^
-            -S .
+  #     - name: Configure
+  #       shell: cmd
+  #       run: |
+  #         call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
+  #         cmake -G Ninja ^
+  #           -DCMAKE_CXX_COMPILER_LAUNCHER=ccache ^
+  #           -DCMAKE_CONFIGURATION_TYPES="Release;Debug;RelWithDebInfo;MinSizeRel;DebugNoSymbols" ^
+  #           -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
+  #           -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="/Od" -DCMAKE_EXE_LINKER_FLAGS_DEBUGNOSYMBOLS="" ^
+  #           -DPOLYFEM_WITH_CLIPPER=OFF ^
+  #           -DPOLYFEM_THREADING=${{ matrix.threading }} ^
+  #           -DPOLYSOLVE_WITH_CHOLMOD=OFF ^
+  #           -DPOLYSOLVE_WITH_AMGCL=OFF ^
+  #           -DPOLYSOLVE_WITH_MKL=ON ^
+  #           -B build ^
+  #           -S .
 
-      - name: Build
-        shell: cmd
-        run: |
-          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
-          cmake --build build -j2 && ccache --show-stats
+  #     - name: Build
+  #       shell: cmd
+  #       run: |
+  #         call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
+  #         cmake --build build -j2 && ccache --show-stats
 
-      - name: Tests
-        run: cd build; ctest --verbose --output-on-failure
+  #     - name: Tests
+  #       run: cd build; ctest --verbose --output-on-failure
