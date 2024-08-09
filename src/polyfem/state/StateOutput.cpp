@@ -180,7 +180,8 @@ namespace polyfem
 		{
 			std::shared_ptr<assembler::Electrostatics> electrostatics_assembler = std::dynamic_pointer_cast<assembler::Electrostatics>(assembler);
 			double energy = electrostatics_assembler->compute_stored_energy(mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, 0, sol);
-			logger().info("Stored electric energy: {}", energy);
+			double capacitance = 2 * energy;
+			logger().info("Capacitance computation: {}", capacitance);
 		}
 	}
 

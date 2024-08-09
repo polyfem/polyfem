@@ -1,0 +1,68 @@
+{
+    "geometry": [
+        {
+            "mesh": "data/contact/meshes/3D/simple/cube-denser.msh",
+            "volume_selection": 1,
+            "transformation": {
+                "scale": [
+                    1,
+                    1,
+                    0.1
+                ]
+            },
+            "n_refs": 0,
+            "surface_selection": [
+                {
+                    "id": 1,
+                    "axis": "-z",
+                    "position": 0.001,
+                    "relative": true
+                },
+                {
+                    "id": 2,
+                    "axis": "z",
+                    "position": 0.999,
+                    "relative": true
+                }
+            ]
+        }
+    ],
+    "space": {
+        "discr_order": 2
+    },
+    "solver": {
+        "linear": {
+            "solver": [
+                "Eigen::PardisoLDLT",
+                "Eigen::SimplicialLDLT"
+            ]
+        }
+    },
+    "boundary_conditions": {
+        "rhs": 0,
+        "dirichlet_boundary": [
+            {
+                "id": 1,
+                "value": 0
+            },
+            {
+                "id": 2,
+                "value": 1
+            }
+        ]
+    },
+    "materials": {
+        "type": "Electrostatics",
+        "epsilon": 8.85e-12
+    },
+    "output": {
+        "log": {
+            "level": "info"
+        },
+        "paraview": {
+            "vismesh_rel_area": 1e9,
+            "file_name": "output.vtu",
+            "surface": true
+        }
+    }
+}
