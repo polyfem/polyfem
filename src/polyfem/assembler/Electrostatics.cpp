@@ -87,7 +87,7 @@ namespace polyfem::assembler
 		StiffnessMatrix K;
 		assemble(is_volume, n_basis, bases, gbases, cache, t, K);
 
-		Eigen::MatrixXd energy = solution.transpose() * (K * solution);
+		Eigen::MatrixXd energy = 0.5 * solution.transpose() * (K * solution);
 		assert(energy.size() == 1);
 		return energy(0);
 	}
