@@ -1,7 +1,6 @@
 #include "NLProblem.hpp"
 
 #include <polyfem/io/OBJWriter.hpp>
-#include <polyfem/State.hpp>
 
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <paraviewo/ParaviewWriter.hpp>
@@ -33,8 +32,7 @@ namespace polyfem::solver
 	NLProblem::NLProblem(
 		const int full_size,
 		const std::vector<int> &boundary_nodes,
-		const std::vector<std::shared_ptr<Form>> &forms,
-		State &state)
+		const std::vector<std::shared_ptr<Form>> &forms)
 		: FullNLProblem(forms),
 		  boundary_nodes_(boundary_nodes),
 		  full_size_(full_size),
@@ -42,8 +40,7 @@ namespace polyfem::solver
 		  t_(0),
 		  rhs_assembler_(nullptr),
 		  local_boundary_(nullptr),
-		  n_boundary_samples_(0),
-		  state(state)
+		  n_boundary_samples_(0)
 	{
 		use_reduced_size();
 	}
@@ -56,8 +53,7 @@ namespace polyfem::solver
 		const assembler::RhsAssembler &rhs_assembler,
 		const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
 		const double t,
-		const std::vector<std::shared_ptr<Form>> &forms,
-		State &state)
+		const std::vector<std::shared_ptr<Form>> &forms)
 		: FullNLProblem(forms),
 		  full_boundary_nodes_(boundary_nodes),
 		  boundary_nodes_(periodic_bc ? periodic_bc->full_to_periodic(boundary_nodes) : boundary_nodes),
@@ -67,8 +63,7 @@ namespace polyfem::solver
 		  t_(t),
 		  rhs_assembler_(&rhs_assembler),
 		  local_boundary_(&local_boundary),
-		  n_boundary_samples_(n_boundary_samples),
-		  state(state)
+		  n_boundary_samples_(n_boundary_samples)
 	{
 		assert(std::is_sorted(boundary_nodes.begin(), boundary_nodes.end()));
 		assert(boundary_nodes.size() == 0 || (boundary_nodes.front() >= 0 && boundary_nodes.back() < full_size_));

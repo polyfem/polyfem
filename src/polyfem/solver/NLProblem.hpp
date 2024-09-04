@@ -5,11 +5,6 @@
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/assembler/PeriodicBoundary.hpp>
 
-namespace polyfem
-{
-	class State;
-}
-
 namespace polyfem::solver
 {
 	class NLProblem : public FullNLProblem
@@ -23,8 +18,7 @@ namespace polyfem::solver
 		NLProblem(
 			const int full_size,
 			const std::vector<int> &boundary_nodes,
-			const std::vector<std::shared_ptr<Form>> &forms,
-			State &state);
+			const std::vector<std::shared_ptr<Form>> &forms);
 
 	public:
 		NLProblem(const int full_size,
@@ -34,8 +28,7 @@ namespace polyfem::solver
 				  const assembler::RhsAssembler &rhs_assembler,
 				  const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
 				  const double t,
-				  const std::vector<std::shared_ptr<Form>> &forms,
-				  State &state);
+				  const std::vector<std::shared_ptr<Form>> &forms);
 		virtual ~NLProblem() = default;
 
 		virtual double value(const TVector &x) override;
@@ -99,8 +92,6 @@ namespace polyfem::solver
 		const assembler::RhsAssembler *rhs_assembler_;
 		const std::vector<mesh::LocalBoundary> *local_boundary_;
 		const int n_boundary_samples_;
-
-		State &state;
 
 		template <class FullMat, class ReducedMat>
 		void full_to_reduced_aux(const std::vector<int> &boundary_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const;
