@@ -46,10 +46,6 @@ namespace polyfem
 		EnergyCSVWriter energy_csv(resolve_output_path("energy.csv"), solve_data);
 		RuntimeStatsCSVWriter stats_csv(resolve_output_path("stats.csv"), *this, t0, dt);
 		const bool remesh_enabled = args["space"]["remesh"]["enabled"];
-#ifndef POLYFEM_WITH_REMESHING
-		if (remesh_enabled)
-			log_and_throw_error("Remeshing is not enabled in this build! Set POLYFEM_WITH_REMESHING=ON in CMake to enable it.");
-#endif
 		// const double save_dt = remesh_enabled ? (dt / 3) : dt;
 
 		// Save the initial solution
@@ -69,7 +65,6 @@ namespace polyfem
 				solve_tensor_nonlinear(sol, t);
 			}
 
-#ifdef POLYFEM_WITH_REMESHING
 			if (remesh_enabled)
 			{
 				energy_csv.write(save_i, sol);
@@ -94,7 +89,7 @@ namespace polyfem
 					solve_tensor_nonlinear(sol, t, false); // solve the scene again after remeshing
 				}
 			}
-#endif
+
 			// Always save the solution for consistency
 			energy_csv.write(save_i, sol);
 			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
@@ -135,7 +130,8 @@ namespace polyfem
 
 			// save restart file
 			save_restart_json(t0, dt, t);
-			stats_csv.write(t, forward_solve_time, remeshing_time, global_relaxation_time, sol);
+			if (remesh_enabled)
+				stats_csv.write(t, forward_solve_time, remeshing_time, global_relaxation_time, sol);
 		}
 	}
 
@@ -214,6 +210,8 @@ namespace polyfem
 		damping_assembler = std::make_shared<assembler::ViscousDamping>();
 		set_materials(*damping_assembler);
 
+		elasticity_pressure_assembler = build_pressure_assembler();
+
 		// for backward solve
 		damping_prev_assembler = std::make_shared<assembler::ViscousDampingPrev>();
 		set_materials(*damping_prev_assembler);
@@ -227,8 +225,11 @@ namespace polyfem
 			// Elastic form
 			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache, args["solver"]["advanced"]["jacobian_threshold"], check_inversion, quad_scheme,
 			// Body form
-			n_pressure_bases, boundary_nodes, local_boundary, local_neumann_boundary,
+			n_pressure_bases, boundary_nodes, local_boundary,
+			local_neumann_boundary,
 			n_boundary_samples(), rhs, sol, mass_matrix_assembler->density(),
+			// Pressure form
+			local_pressure_boundary, local_pressure_cavity, elasticity_pressure_assembler,
 			// Inertia form
 			args.value("/time/quasistatic"_json_pointer, true), mass,
 			damping_assembler->is_valid() ? damping_assembler : nullptr,
@@ -246,7 +247,7 @@ namespace polyfem
 			args["solver"]["contact"]["CCD"]["max_iterations"],
 			optimization_enabled == solver::CacheLevel::Derivatives,
 			// Homogenization
-        	macro_strain_constraint,
+			macro_strain_constraint,
 			// Periodic contact
 			args["contact"]["periodic"], periodic_collision_mesh_to_basis,
 			// Friction form

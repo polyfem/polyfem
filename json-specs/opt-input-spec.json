@@ -1,4 +1,5 @@
-[{
+[
+    {
         "pointer": "/",
         "type": "object",
         "required": [
@@ -128,7 +129,8 @@
             "damping",
             "macro-strain",
             "initial",
-            "dirichlet"
+            "dirichlet",
+            "pressure"
         ]
     },
     {
@@ -188,6 +190,36 @@
         ]
     },
     {
+        "pointer": "/variable_to_simulation/*",
+        "type_name": "dirichlet",
+        "type": "object",
+        "required": [
+            "state",
+            "type",
+            "composition",
+            "surface_selection"
+        ],
+        "optional": [
+            "composite_map_type",
+            "composite_map_indices"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*",
+        "type_name": "pressure",
+        "type": "object",
+        "required": [
+            "state",
+            "type",
+            "composition",
+            "surface_selection"
+        ],
+        "optional": [
+            "composite_map_type",
+            "composite_map_indices"
+        ]
+    },
+    {
         "pointer": "/variable_to_simulation/*/mesh",
         "type": "string"
     },
@@ -225,8 +257,31 @@
             "power",
             "append-values",
             "append-const",
-            "linear-filter"
+            "linear-filter",
+            "bounded-biharmonic-weights",
+            "scalar-velocity-parametrization"
         ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "bounded-biharmonic-weights",
+        "type": "object",
+        "required": [
+            "num_control_vertices",
+            "num_vertices",
+            "allow_rotations"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/composition/*",
+        "type_name": "scalar-velocity-parametrization",
+        "type": "object",
+        "required": [
+            "start_val",
+            "dt"
+        ],
+        "doc": "TODO"
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*",
@@ -278,31 +333,24 @@
         "type_name": "slice",
         "type": "object",
         "required": [
-            "from",
-            "to",
             "type"
         ],
         "optional": [
+            "from",
+            "to",
+            "parameter_index",
             "last"
         ],
         "doc": "Ouputs x[from:to], where x is the input vector"
     },
     {
-        "pointer": "/variable_to_simulation/*/composition/*",
-        "type_name": "slice",
-        "type": "object",
-        "required": [
-            "parameter_index",
-            "type"
-        ],
-        "doc": "Ouputs x[from:to], where x is the input vector"
-    },
-    {
         "pointer": "/variable_to_simulation/*/composition/*/from",
+        "default": -1,
         "type": "int"
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/to",
+        "default": -1,
         "type": "int"
     },
     {
@@ -312,6 +360,7 @@
     },
     {
         "pointer": "/variable_to_simulation/*/composition/*/parameter_index",
+        "default": -1,
         "type": "int"
     },
     {
@@ -334,6 +383,10 @@
         "type": "object",
         "required": [
             "type"
+        ],
+        "optional": [
+            "from",
+            "to"
         ],
         "doc": "Ouputs exp(x), where x is the input vector"
     },
@@ -575,7 +628,9 @@
         "optional": [
             "solve_in_parallel",
             "solve_in_order",
-            "characteristic_length"
+            "characteristic_length",
+            "enable_slim",
+            "smooth_line_search"
         ],
         "doc": "Advanced settings for arranging forward simulations"
     },
@@ -607,5 +662,17 @@
         "type": "bool",
         "default": false,
         "doc": "Evaluate the functionals and exit."
+    },
+    {
+        "pointer": "/solver/advanced/enable_slim",
+        "default": false,
+        "type": "bool",
+        "doc": "Whether to apply slim smoothing to the optimization when step is accepted."
+    },
+    {
+        "pointer": "/solver/advanced/smooth_line_search",
+        "default": false,
+        "type": "bool",
+        "doc": "Whether to apply slim smoothing to the optimization line search."
     }
 ]

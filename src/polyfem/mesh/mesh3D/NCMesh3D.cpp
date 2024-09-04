@@ -163,103 +163,6 @@ namespace polyfem
 			}
 		}
 
-		void NCMesh3D::compute_boundary_ids(const double eps)
-		{
-			boundary_ids_.resize(n_faces());
-			std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
-
-			RowVectorNd minV, maxV;
-			bounding_box(minV, maxV);
-
-			for (int f = 0; f < n_faces(); ++f)
-			{
-				if (!is_boundary_face(f))
-					continue;
-
-				const auto p = face_barycenter(f);
-
-				if (fabs(p(0) - minV(0)) < eps)
-					boundary_ids_[f] = 1;
-				else if (fabs(p(1) - minV(1)) < eps)
-					boundary_ids_[f] = 2;
-				else if (fabs(p(2) - minV(2)) < eps)
-					boundary_ids_[f] = 5;
-
-				else if (fabs(p(0) - maxV(0)) < eps)
-					boundary_ids_[f] = 3;
-				else if (fabs(p(1) - maxV(1)) < eps)
-					boundary_ids_[f] = 4;
-				else if (fabs(p(2) - maxV(2)) < eps)
-					boundary_ids_[f] = 6;
-				else
-					boundary_ids_[f] = 7;
-
-				faces[valid_to_all_face(f)].boundary_id = boundary_ids_[f];
-			}
-		}
-		void NCMesh3D::compute_boundary_ids(const std::function<int(const RowVectorNd &)> &marker)
-		{
-			boundary_ids_.resize(n_faces());
-			std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
-
-			for (int f = 0; f < n_faces(); ++f)
-			{
-				if (!is_boundary_face(f))
-					continue;
-
-				const auto p = face_barycenter(f);
-				boundary_ids_[f] = marker(p);
-
-				faces[valid_to_all_face(f)].boundary_id = boundary_ids_[f];
-			}
-		}
-		void NCMesh3D::compute_boundary_ids(const std::function<int(const RowVectorNd &, bool)> &marker)
-		{
-			boundary_ids_.resize(n_faces());
-			std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
-
-			for (int f = 0; f < n_faces(); ++f)
-			{
-				const bool is_boundary = is_boundary_face(f);
-				const auto p = face_barycenter(f);
-				boundary_ids_[f] = marker(p, is_boundary);
-
-				faces[valid_to_all_face(f)].boundary_id = boundary_ids_[f];
-			}
-		}
-		void NCMesh3D::compute_boundary_ids(const std::function<int(const size_t, const RowVectorNd &, bool)> &marker)
-		{
-			boundary_ids_.resize(n_faces());
-			std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
-
-			for (int f = 0; f < n_faces(); ++f)
-			{
-				const bool is_boundary = is_boundary_face(f);
-				const auto p = face_barycenter(f);
-				boundary_ids_[f] = marker(f, p, is_boundary);
-
-				faces[valid_to_all_face(f)].boundary_id = boundary_ids_[f];
-			}
-		}
-		void NCMesh3D::compute_boundary_ids(const std::function<int(const std::vector<int> &, bool)> &marker)
-		{
-			boundary_ids_.resize(n_faces());
-			std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
-
-			for (int f = 0; f < n_faces(); ++f)
-			{
-				const bool is_boundary = is_boundary_face(f);
-				std::vector<int> vs(n_face_vertices(f));
-				for (int vid = 0; vid < vs.size(); ++vid)
-					vs[vid] = face_vertex(f, vid);
-
-				std::sort(vs.begin(), vs.end());
-				boundary_ids_[f] = marker(vs, is_boundary);
-
-				faces[valid_to_all_face(f)].boundary_id = boundary_ids_[f];
-			}
-		}
-
 		void NCMesh3D::compute_boundary_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &marker)
 		{
 			boundary_ids_.resize(n_faces());
@@ -310,109 +213,109 @@ namespace polyfem
 			}
 		}
 
-		void NCMesh3D::triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const
-		{
-			ranges.clear();
+		// void NCMesh3D::triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const
+		// {
+		// 	ranges.clear();
 
-			std::vector<Eigen::MatrixXi> local_tris(n_cells());
-			std::vector<Eigen::MatrixXd> local_pts(n_cells());
-			Eigen::MatrixXi tets;
+		// 	std::vector<Eigen::MatrixXi> local_tris(n_cells());
+		// 	std::vector<Eigen::MatrixXd> local_pts(n_cells());
+		// 	Eigen::MatrixXi tets;
 
-			int total_tris = 0;
-			int total_pts = 0;
+		// 	int total_tris = 0;
+		// 	int total_pts = 0;
 
-			ranges.push_back(0);
+		// 	ranges.push_back(0);
 
-			Eigen::MatrixXd face_barys;
-			face_barycenters(face_barys);
+		// 	Eigen::MatrixXd face_barys;
+		// 	face_barycenters(face_barys);
 
-			Eigen::MatrixXd cell_barys;
-			cell_barycenters(cell_barys);
+		// 	Eigen::MatrixXd cell_barys;
+		// 	cell_barycenters(cell_barys);
 
-			for (std::size_t e = 0; e < n_cells(); ++e)
-			{
-				const int n_vertices = n_cell_vertices(e);
-				const int n_faces = n_cell_faces(e);
+		// 	for (std::size_t e = 0; e < n_cells(); ++e)
+		// 	{
+		// 		const int n_vertices = n_cell_vertices(e);
+		// 		const int n_faces = n_cell_faces(e);
 
-				Eigen::MatrixXd local_pt(n_vertices + n_faces, 3);
+		// 		Eigen::MatrixXd local_pt(n_vertices + n_faces, 3);
 
-				std::map<int, int> global_to_local;
+		// 		std::map<int, int> global_to_local;
 
-				for (int i = 0; i < n_vertices; ++i)
-				{
-					const int global_index = cell_vertex(e, i);
-					local_pt.row(i) = point(global_index);
-					global_to_local[global_index] = i;
-				}
+		// 		for (int i = 0; i < n_vertices; ++i)
+		// 		{
+		// 			const int global_index = cell_vertex(e, i);
+		// 			local_pt.row(i) = point(global_index);
+		// 			global_to_local[global_index] = i;
+		// 		}
 
-				int n_local_faces = 0;
-				for (int i = 0; i < n_faces; ++i)
-				{
-					const int f_id = cell_face(e, i);
-					n_local_faces += n_face_vertices(f_id);
+		// 		int n_local_faces = 0;
+		// 		for (int i = 0; i < n_faces; ++i)
+		// 		{
+		// 			const int f_id = cell_face(e, i);
+		// 			n_local_faces += n_face_vertices(f_id);
 
-					local_pt.row(n_vertices + i) = face_barys.row(f_id);
-				}
+		// 			local_pt.row(n_vertices + i) = face_barys.row(f_id);
+		// 		}
 
-				Eigen::MatrixXi local_faces(n_local_faces, 3);
+		// 		Eigen::MatrixXi local_faces(n_local_faces, 3);
 
-				int face_index = 0;
-				for (int i = 0; i < n_faces; ++i)
-				{
-					const int f_id = cell_face(e, i);
+		// 		int face_index = 0;
+		// 		for (int i = 0; i < n_faces; ++i)
+		// 		{
+		// 			const int f_id = cell_face(e, i);
 
-					const Eigen::RowVector3d e0 = (point(face_vertex(f_id, 0)) - local_pt.row(n_vertices + i));
-					const Eigen::RowVector3d e1 = (point(face_vertex(f_id, 1)) - local_pt.row(n_vertices + i));
-					const Eigen::RowVector3d normal = e0.cross(e1);
-					// const Eigen::RowVector3d check_dir = (node_from_element(e)-p);
-					const Eigen::RowVector3d check_dir = (cell_barys.row(e) - point(face_vertex(f_id, 1)));
+		// 			const Eigen::RowVector3d e0 = (point(face_vertex(f_id, 0)) - local_pt.row(n_vertices + i));
+		// 			const Eigen::RowVector3d e1 = (point(face_vertex(f_id, 1)) - local_pt.row(n_vertices + i));
+		// 			const Eigen::RowVector3d normal = e0.cross(e1);
+		// 			// const Eigen::RowVector3d check_dir = (node_from_element(e)-p);
+		// 			const Eigen::RowVector3d check_dir = (cell_barys.row(e) - point(face_vertex(f_id, 1)));
 
-					const bool reverse_order = normal.dot(check_dir) > 0;
+		// 			const bool reverse_order = normal.dot(check_dir) > 0;
 
-					for (int j = 0; j < n_face_vertices(f_id); ++j)
-					{
-						const int jp = (j + 1) % n_face_vertices(f_id);
-						if (reverse_order)
-						{
-							local_faces(face_index, 0) = global_to_local[face_vertex(f_id, jp)];
-							local_faces(face_index, 1) = global_to_local[face_vertex(f_id, j)];
-						}
-						else
-						{
-							local_faces(face_index, 0) = global_to_local[face_vertex(f_id, j)];
-							local_faces(face_index, 1) = global_to_local[face_vertex(f_id, jp)];
-						}
-						local_faces(face_index, 2) = n_vertices + i;
+		// 			for (int j = 0; j < n_face_vertices(f_id); ++j)
+		// 			{
+		// 				const int jp = (j + 1) % n_face_vertices(f_id);
+		// 				if (reverse_order)
+		// 				{
+		// 					local_faces(face_index, 0) = global_to_local[face_vertex(f_id, jp)];
+		// 					local_faces(face_index, 1) = global_to_local[face_vertex(f_id, j)];
+		// 				}
+		// 				else
+		// 				{
+		// 					local_faces(face_index, 0) = global_to_local[face_vertex(f_id, j)];
+		// 					local_faces(face_index, 1) = global_to_local[face_vertex(f_id, jp)];
+		// 				}
+		// 				local_faces(face_index, 2) = n_vertices + i;
 
-						++face_index;
-					}
-				}
+		// 				++face_index;
+		// 			}
+		// 		}
 
-				local_pts[e] = local_pt;
-				local_tris[e] = local_faces;
+		// 		local_pts[e] = local_pt;
+		// 		local_tris[e] = local_faces;
 
-				total_tris += local_tris[e].rows();
-				total_pts += local_pts[e].rows();
+		// 		total_tris += local_tris[e].rows();
+		// 		total_pts += local_pts[e].rows();
 
-				ranges.push_back(total_tris);
+		// 		ranges.push_back(total_tris);
 
-				assert(local_pts[e].rows() == local_pt.rows());
-			}
+		// 		assert(local_pts[e].rows() == local_pt.rows());
+		// 	}
 
-			tris.resize(total_tris, 3);
-			pts.resize(total_pts, 3);
+		// 	tris.resize(total_tris, 3);
+		// 	pts.resize(total_pts, 3);
 
-			int tri_index = 0;
-			int pts_index = 0;
-			for (std::size_t i = 0; i < local_tris.size(); ++i)
-			{
-				tris.block(tri_index, 0, local_tris[i].rows(), local_tris[i].cols()) = local_tris[i].array() + pts_index;
-				tri_index += local_tris[i].rows();
+		// 	int tri_index = 0;
+		// 	int pts_index = 0;
+		// 	for (std::size_t i = 0; i < local_tris.size(); ++i)
+		// 	{
+		// 		tris.block(tri_index, 0, local_tris[i].rows(), local_tris[i].cols()) = local_tris[i].array() + pts_index;
+		// 		tri_index += local_tris[i].rows();
 
-				pts.block(pts_index, 0, local_pts[i].rows(), local_pts[i].cols()) = local_pts[i];
-				pts_index += local_pts[i].rows();
-			}
-		}
+		// 		pts.block(pts_index, 0, local_pts[i].rows(), local_pts[i].cols()) = local_pts[i];
+		// 		pts_index += local_pts[i].rows();
+		// 	}
+		// }
 
 		RowVectorNd NCMesh3D::kernel(const int cell_id) const
 		{

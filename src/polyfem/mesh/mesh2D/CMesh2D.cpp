@@ -493,66 +493,66 @@ namespace polyfem
 			return false;
 		}
 
-		void CMesh2D::triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const
-		{
-			ranges.clear();
+		// void CMesh2D::triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const
+		// {
+		// 	ranges.clear();
 
-			std::vector<Eigen::MatrixXi> local_tris(mesh_.facets.nb());
-			std::vector<Eigen::MatrixXd> local_pts(mesh_.facets.nb());
+		// 	std::vector<Eigen::MatrixXi> local_tris(mesh_.facets.nb());
+		// 	std::vector<Eigen::MatrixXd> local_pts(mesh_.facets.nb());
 
-			int total_tris = 0;
-			int total_pts = 0;
+		// 	int total_tris = 0;
+		// 	int total_pts = 0;
 
-			ranges.push_back(0);
+		// 	ranges.push_back(0);
 
-			for (GEO::index_t f = 0; f < mesh_.facets.nb(); ++f)
-			{
-				const int n_vertices = mesh_.facets.nb_vertices(f);
+		// 	for (GEO::index_t f = 0; f < mesh_.facets.nb(); ++f)
+		// 	{
+		// 		const int n_vertices = mesh_.facets.nb_vertices(f);
 
-				Eigen::MatrixXd face_pts(n_vertices, 2);
-				// Eigen::MatrixXi edges(n_vertices,2);
-				local_tris[f].resize(n_vertices - 2, 3);
+		// 		Eigen::MatrixXd face_pts(n_vertices, 2);
+		// 		// Eigen::MatrixXi edges(n_vertices,2);
+		// 		local_tris[f].resize(n_vertices - 2, 3);
 
-				for (int i = 0; i < n_vertices; ++i)
-				{
-					const int vertex = mesh_.facets.vertex(f, i);
-					const double *pt = mesh_.vertices.point_ptr(vertex);
-					face_pts(i, 0) = pt[0];
-					face_pts(i, 1) = pt[1];
+		// 		for (int i = 0; i < n_vertices; ++i)
+		// 		{
+		// 			const int vertex = mesh_.facets.vertex(f, i);
+		// 			const double *pt = mesh_.vertices.point_ptr(vertex);
+		// 			face_pts(i, 0) = pt[0];
+		// 			face_pts(i, 1) = pt[1];
 
-					// edges(i, 0) = i;
-					// edges(i, 1) = (i+1) % n_vertices;
-				}
+		// 			// edges(i, 0) = i;
+		// 			// edges(i, 1) = (i+1) % n_vertices;
+		// 		}
 
-				for (int i = 1; i < n_vertices - 1; ++i)
-				{
-					local_tris[f].row(i - 1) << 0, i, i + 1;
-				}
+		// 		for (int i = 1; i < n_vertices - 1; ++i)
+		// 		{
+		// 			local_tris[f].row(i - 1) << 0, i, i + 1;
+		// 		}
 
-				local_pts[f] = face_pts;
+		// 		local_pts[f] = face_pts;
 
-				total_tris += local_tris[f].rows();
-				total_pts += local_pts[f].rows();
+		// 		total_tris += local_tris[f].rows();
+		// 		total_pts += local_pts[f].rows();
 
-				ranges.push_back(total_tris);
+		// 		ranges.push_back(total_tris);
 
-				assert(local_pts[f].rows() == face_pts.rows());
-			}
+		// 		assert(local_pts[f].rows() == face_pts.rows());
+		// 	}
 
-			tris.resize(total_tris, 3);
-			pts.resize(total_pts, 2);
+		// 	tris.resize(total_tris, 3);
+		// 	pts.resize(total_pts, 2);
 
-			int tri_index = 0;
-			int pts_index = 0;
-			for (std::size_t i = 0; i < local_tris.size(); ++i)
-			{
-				tris.block(tri_index, 0, local_tris[i].rows(), local_tris[i].cols()) = local_tris[i].array() + pts_index;
-				tri_index += local_tris[i].rows();
+		// 	int tri_index = 0;
+		// 	int pts_index = 0;
+		// 	for (std::size_t i = 0; i < local_tris.size(); ++i)
+		// 	{
+		// 		tris.block(tri_index, 0, local_tris[i].rows(), local_tris[i].cols()) = local_tris[i].array() + pts_index;
+		// 		tri_index += local_tris[i].rows();
 
-				pts.block(pts_index, 0, local_pts[i].rows(), local_pts[i].cols()) = local_pts[i];
-				pts_index += local_pts[i].rows();
-			}
-		}
+		// 		pts.block(pts_index, 0, local_pts[i].rows(), local_pts[i].cols()) = local_pts[i];
+		// 		pts_index += local_pts[i].rows();
+		// 	}
+		// }
 
 		void CMesh2D::compute_elements_tag()
 		{
@@ -582,90 +582,6 @@ namespace polyfem
 			{
 				const auto bary = face_barycenter(e);
 				body_ids_[e] = marker(e, bary);
-			}
-		}
-
-		void CMesh2D::compute_boundary_ids(const double eps)
-		{
-			boundary_ids_.resize(n_edges());
-			std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
-
-			RowVectorNd min_corner, max_corner;
-			bounding_box(min_corner, max_corner);
-
-			// implement me properly
-			for (int e = 0; e < n_edges(); ++e)
-			{
-				if (!is_boundary_edge(e))
-					continue;
-
-				const auto p = edge_barycenter(e);
-
-				if (fabs(p(0) - min_corner[0]) < eps)
-					boundary_ids_[e] = 1;
-				else if (fabs(p(1) - min_corner[1]) < eps)
-					boundary_ids_[e] = 2;
-				else if (fabs(p(0) - max_corner[0]) < eps)
-					boundary_ids_[e] = 3;
-				else if (fabs(p(1) - max_corner[1]) < eps)
-					boundary_ids_[e] = 4;
-
-				else
-					boundary_ids_[e] = 7;
-			}
-		}
-
-		void CMesh2D::compute_boundary_ids(const std::function<int(const RowVectorNd &)> &marker)
-		{
-			boundary_ids_.resize(n_edges());
-			std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
-
-			// implement me properly
-			for (int e = 0; e < n_edges(); ++e)
-			{
-				if (!is_boundary_edge(e))
-					continue;
-
-				const auto p = edge_barycenter(e);
-
-				boundary_ids_[e] = marker(p);
-			}
-		}
-
-		void CMesh2D::compute_boundary_ids(const std::function<int(const RowVectorNd &, bool)> &marker)
-		{
-			boundary_ids_.resize(n_edges());
-
-			for (int e = 0; e < n_edges(); ++e)
-			{
-				const bool is_boundary = is_boundary_edge(e);
-				const auto p = edge_barycenter(e);
-				boundary_ids_[e] = marker(p, is_boundary);
-			}
-		}
-
-		void CMesh2D::compute_boundary_ids(const std::function<int(const size_t, const RowVectorNd &, bool)> &marker)
-		{
-			boundary_ids_.resize(n_edges());
-
-			for (int e = 0; e < n_edges(); ++e)
-			{
-				const bool is_boundary = is_boundary_edge(e);
-				const auto p = edge_barycenter(e);
-				boundary_ids_[e] = marker(e, p, is_boundary);
-			}
-		}
-
-		void CMesh2D::compute_boundary_ids(const std::function<int(const std::vector<int> &, bool)> &marker)
-		{
-			boundary_ids_.resize(n_edges());
-
-			for (int e = 0; e < n_edges(); ++e)
-			{
-				bool is_boundary = is_boundary_edge(e);
-				std::vector<int> vs = {edge_vertex(e, 0), edge_vertex(e, 1)};
-				std::sort(vs.begin(), vs.end());
-				boundary_ids_[e] = marker(vs, is_boundary);
 			}
 		}
 

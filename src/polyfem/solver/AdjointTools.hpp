@@ -7,7 +7,7 @@ namespace polyfem
 {
 	class State;
 	class IntegrableFunctional;
-}
+} // namespace polyfem
 
 namespace polyfem::solver
 {
@@ -19,6 +19,7 @@ namespace polyfem::solver
 		DampingCoefficient,
 		InitialCondition,
 		DirichletBC,
+		PressureBC,
 		MacroStrain
 	};
 
@@ -94,6 +95,18 @@ namespace polyfem::solver
 			const Eigen::MatrixXd &adjoint_nu,
 			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
+		void dJ_pressure_static_adjoint_term(
+			const State &state,
+			const std::vector<int> &boundary_ids,
+			const Eigen::MatrixXd &sol,
+			const Eigen::MatrixXd &adjoint,
+			Eigen::VectorXd &one_form);
+		void dJ_pressure_transient_adjoint_term(
+			const State &state,
+			const std::vector<int> &boundary_ids,
+			const Eigen::MatrixXd &adjoint_nu,
+			const Eigen::MatrixXd &adjoint_p,
+			Eigen::VectorXd &one_form);
 
 		Eigen::VectorXd map_primitive_to_node_order(
 			const State &state,
@@ -111,5 +124,10 @@ namespace polyfem::solver
 			const Eigen::MatrixXd &V);
 		Eigen::MatrixXd face_velocity_divergence(
 			const Eigen::MatrixXd &V);
-	};
+
+		double triangle_jacobian(const Eigen::VectorXd &v1, const Eigen::VectorXd &v2, const Eigen::VectorXd &v3);
+		double tet_determinant(const Eigen::VectorXd &v1, const Eigen::VectorXd &v2, const Eigen::VectorXd &v3, const Eigen::VectorXd &v4);
+		void scaled_jacobian(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, Eigen::VectorXd &quality);
+		bool is_flipped(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F);
+	}; // namespace AdjointTools
 } // namespace polyfem::solver

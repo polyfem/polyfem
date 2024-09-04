@@ -94,7 +94,28 @@ namespace polyfem::io
 
 				for (int n = 0; n < normals.rows(); ++n)
 				{
-					normals.row(n) = normals.row(n) * vals.jac_it[n];
+					trafo = vals.jac_it[n].inverse();
+
+					if (solution.size() > 0)
+					{
+						assert(actual_dim == 2 || actual_dim == 3);
+						deform_mat.resize(actual_dim, actual_dim);
+						deform_mat.setZero();
+						for (const auto &b : vals.basis_values)
+						{
+							for (const auto &g : b.global)
+							{
+								for (int d = 0; d < actual_dim; ++d)
+								{
+									deform_mat.row(d) += solution(g.index * actual_dim + d) * b.grad.row(n);
+								}
+							}
+						}
+
+						trafo += deform_mat;
+					}
+
+					normals.row(n) = normals.row(n) * trafo.inverse();
 					normals.row(n).normalize();
 				}
 
@@ -138,6 +159,12 @@ namespace polyfem::io
 
 		if (mesh.is_volume())
 		{
+			if (mesh.has_poly())
+			{
+				logger().warn("Skipping as the mesh has polygons");
+				return;
+			}
+
 			const bool is_simplicial = mesh.is_simplicial();
 
 			node_positions.resize(n_bases + (is_simplicial ? 0 : mesh.n_faces()), 3);
@@ -1072,7 +1099,7 @@ namespace polyfem::io
 
 		scalar_values = args["output"]["paraview"]["options"]["scalar_values"];
 		tensor_values = args["output"]["paraview"]["options"]["tensor_values"] && !is_problem_scalar;
-		discretization_order = args["output"]["paraview"]["options"]["discretization_order"] && !is_problem_scalar;
+		discretization_order = args["output"]["paraview"]["options"]["discretization_order"];
 		nodes = args["output"]["paraview"]["options"]["nodes"] && !is_problem_scalar;
 
 		use_spline = args["space"]["basis_type"] == "Spline";
@@ -1618,7 +1645,7 @@ namespace polyfem::io
 		// interpolate_function(pts_index, rhs, fun, opts.boundary_only);
 		// writer.add_field("rhs", fun);
 
-		if (fun.cols() != 1)
+		if (fun.cols() != 1 && state.mixed_assembler == nullptr)
 		{
 			Eigen::MatrixXd traction_forces, traction_forces_fun;
 			compute_traction_forces(state, sol, t, traction_forces, false);
@@ -1637,7 +1664,7 @@ namespace polyfem::io
 			writer.add_field("traction_force", traction_forces_fun);
 		}
 
-		if (fun.cols() != 1)
+		if (fun.cols() != 1 && state.mixed_assembler == nullptr)
 		{
 			try
 			{

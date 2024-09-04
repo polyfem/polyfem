@@ -496,7 +496,7 @@
         "pointer": "/geometry/*/advanced/min_component",
         "type": "int",
         "default": -1,
-        "doc": "Size of the minumum component for collision"
+        "doc": "Size of the minimum component for collision"
     },
     {
         "pointer": "/geometry/*/is_obstacle",
@@ -1674,6 +1674,23 @@
     {
         "pointer": "/materials/*",
         "type": "object",
+        "type_name": "MooneyRivlin3ParamSymbolic",
+        "required": [
+            "type",
+            "c1",
+            "c2",
+            "c3",
+            "d1"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
         "type_name": "UnconstrainedOgden",
         "required": [
             "type",
@@ -1922,6 +1939,40 @@
         "doc": "Material Parameters including ID"
     },
     {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "FixedCorotational",
+        "required": [
+            "type",
+            "E",
+            "nu"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "phi",
+            "psi"
+        ],
+        "doc": "Material Parameters including ID"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "FixedCorotational",
+        "required": [
+            "type",
+            "lambda",
+            "mu"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "phi",
+            "psi"
+        ],
+        "doc": "Material Parameters including ID"
+    },
+    {
         "pointer": "/materials/*/type",
         "type": "string",
         "options": [
@@ -1931,6 +1982,7 @@
             "NeoHookean",
             "MooneyRivlin",
             "MooneyRivlin3Param",
+            "MooneyRivlin3ParamSymbolic",
             "UnconstrainedOgden",
             "IncompressibleOgden",
             "Stokes",
@@ -1940,7 +1992,8 @@
             "Laplacian",
             "Helmholtz",
             "Bilaplacian",
-            "AMIPS"
+            "AMIPS",
+            "FixedCorotational"
         ],
         "doc": "Type of material"
     },
@@ -2051,7 +2104,7 @@
         "pointer": "/materials/*/d1",
         "type": "include",
         "spec_file": "value-no.json",
-        "doc": "MooneyRivlin third parameter"
+        "doc": "Fourth Parameter for Mooney-Rivlin"
     },
     {
         "pointer": "/materials/*/alphas",
@@ -2126,7 +2179,9 @@
             "rhs",
             "dirichlet_boundary",
             "neumann_boundary",
+            "normal_aligned_neumann_boundary",
             "pressure_boundary",
+            "pressure_cavity",
             "obstacle_displacements",
             "periodic_boundary"
         ],
@@ -2247,6 +2302,7 @@
             "value"
         ],
         "optional": [
+            "time_reference",
             "interpolation",
             "dimension"
         ],
@@ -2256,6 +2312,17 @@
         "pointer": "/boundary_conditions/dirichlet_boundary/*",
         "type": "string",
         "doc": "Dirichlet boundary condition loaded from a file, <node_id> <bc values>, 1 for scalar, 2/3 for tensor depending on dimension."
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*",
+        "type": "list",
+        "doc": "Dirichlet boundary condition specified per timestep."
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*/*",
+        "type": "include",
+        "spec_file": "value0.json",
+        "doc": "Dirichlet boundary condition specified per timestep."
     },
     {
         "pointer": "/boundary_conditions/dirichlet_boundary/*/dimension",
@@ -2272,6 +2339,17 @@
         "type": "bool",
         "default": true,
         "doc": "value"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/time_reference",
+        "default": [],
+        "type": "list",
+        "doc": "List of times when the Dirichlet boundary condition is specified"
+    },
+    {
+        "pointer": "/boundary_conditions/dirichlet_boundary/*/time_reference/*",
+        "type": "float",
+        "doc": "Values of Dirichlet boundary condition for timestep"
     },
     {
         "pointer": "/boundary_conditions/neumann_boundary",
@@ -2293,6 +2371,44 @@
         "doc": "Neumann boundary condition"
     },
     {
+        "pointer": "/boundary_conditions/normal_aligned_neumann_boundary",
+        "default": [],
+        "type": "list",
+        "doc": "Neumann boundary condition for normal times value for vector-valued PDEs."
+    },
+    {
+        "pointer": "/boundary_conditions/normal_aligned_neumann_boundary/*",
+        "type": "object",
+        "default": null,
+        "required": [
+            "id",
+            "value"
+        ],
+        "optional": [
+            "interpolation"
+        ],
+        "doc": "pressure BC entry"
+    },
+    {
+        "pointer": "/boundary_conditions/normal_aligned_neumann_boundary/*/id",
+        "type": "int",
+        "min": 0,
+        "max": 2147483646,
+        "doc": "ID for the pressure Neumann boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/normal_aligned_neumann_boundary/*/value",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Values of pressure boundary condition as a function of $x,y,z,t$"
+    },
+    {
+        "pointer": "/boundary_conditions/normal_aligned_neumann_boundary/*/interpolation",
+        "type": "include",
+        "spec_file": "interpolation.json",
+        "doc": "interpolation of boundary condition"
+    },
+    {
         "pointer": "/boundary_conditions/pressure_boundary",
         "default": [],
         "type": "list",
@@ -2307,8 +2423,7 @@
             "value"
         ],
         "optional": [
-            "interpolation",
-            "dimension"
+            "time_reference"
         ],
         "doc": "pressure BC entry"
     },
@@ -2323,29 +2438,58 @@
         "pointer": "/boundary_conditions/pressure_boundary/*/value",
         "type": "include",
         "spec_file": "value-no.json",
-        "doc": "Values of pressure Neumann boundary condition as a function of $x,y,z,t$"
+        "doc": "Values of pressure boundary condition as a function of $x,y,z,t$"
     },
     {
-        "pointer": "/boundary_conditions/pressure_boundary/*/dimension",
+        "pointer": "/boundary_conditions/pressure_boundary/*/value",
         "type": "list",
-        "default": [
-            true,
-            true,
-            true
-        ],
-        "doc": "List of 2 (2D) or 3 (3D) boolean values indicating if the Pressure boundary condition is applied for a particular dimension."
+        "doc": "Values of pressure boundary condition specified per timestep"
     },
     {
-        "pointer": "/boundary_conditions/pressure_boundary/*/dimension/*",
-        "type": "bool",
-        "default": true,
-        "doc": "value"
-    },
-    {
-        "pointer": "/boundary_conditions/pressure_boundary/*/interpolation",
+        "pointer": "/boundary_conditions/pressure_boundary/*/value/*",
         "type": "include",
-        "spec_file": "interpolation.json",
-        "doc": "interpolation of boundary condition"
+        "spec_file": "value0.json",
+        "doc": "Values of pressure boundary condition specified per timestep"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/time_reference",
+        "default": [],
+        "type": "list",
+        "doc": "List of times when the pressure boundary condition is specified"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_boundary/*/time_reference/*",
+        "type": "float",
+        "doc": "Values of pressure boundary condition for timestep"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_cavity",
+        "default": [],
+        "type": "list",
+        "doc": "Neumann boundary condition for normal times value for vector-valued PDEs."
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_cavity/*",
+        "type": "object",
+        "default": null,
+        "required": [
+            "id",
+            "value"
+        ],
+        "doc": "pressure BC entry"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_cavity/*/id",
+        "type": "int",
+        "min": 0,
+        "max": 2147483646,
+        "doc": "ID for the pressure Neumann boundary condition"
+    },
+    {
+        "pointer": "/boundary_conditions/pressure_cavity/*/value",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Values of pressure boundary condition as a function of $x,y,z,t$"
     },
     {
         "pointer": "/boundary_conditions/obstacle_displacements",

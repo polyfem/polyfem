@@ -12,10 +12,12 @@
 #include <polyfem/solver/forms/adjoint_forms/SmoothingForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/AMIPSForm.hpp>
 #include <polyfem/solver/forms/adjoint_forms/BarrierForms.hpp>
+#include <polyfem/solver/forms/adjoint_forms/SurfaceTractionForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/TargetForms.hpp>
 
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
+#include <polyfem/solver/forms/parametrization/SplineParametrizations.hpp>
 
 #include <polyfem/solver/forms/adjoint_forms/ParametrizedProductForm.hpp>
 
@@ -134,9 +136,76 @@ namespace polyfem::solver
 				tmp->set_reference(states[args["target_state"]], std::set(reference_cached.begin(), reference_cached.end()));
 				obj = tmp;
 			}
+			else if (type == "displacement-target")
+			{
+				std::shared_ptr<TargetForm> tmp = std::make_shared<TargetForm>(var2sim, *(states[args["state"]]), args);
+				Eigen::VectorXd target_displacement;
+				target_displacement.setZero(states[args["state"]]->mesh->dimension());
+				if (target_displacement.size() != args["target_displacement"].size())
+					log_and_throw_error("Target displacement shape must match the dimension of the simulation");
+				for (int i = 0; i < target_displacement.size(); ++i)
+					target_displacement(i) = args["target_displacement"][i].get<double>();
+				if (args["active_dimension"].size() > 0)
+				{
+					if (target_displacement.size() != args["active_dimension"].size())
+						log_and_throw_error("Active dimension shape must match the dimension of the simulation");
+					std::vector<bool> active_dimension_mask(args["active_dimension"].size());
+					for (int i = 0; i < args["active_dimension"].size(); ++i)
+						active_dimension_mask[i] = args["active_dimension"][i].get<bool>();
+					tmp->set_active_dimension(active_dimension_mask);
+				}
+				tmp->set_reference(target_displacement);
+				obj = tmp;
+			}
 			else if (type == "center-target")
 			{
 				obj = std::make_shared<BarycenterTargetForm>(var2sim, args, states[args["state"]], states[args["target_state"]]);
+			}
+			else if (type == "sdf-target")
+			{
+				std::shared_ptr<SDFTargetForm> tmp = std::make_shared<SDFTargetForm>(var2sim, *(states[args["state"]]), args);
+				double delta = args["delta"].get<double>();
+				if (!states[args["state"]]->mesh->is_volume())
+				{
+					int dim = 2;
+					Eigen::MatrixXd control_points(args["control_points"].size(), dim);
+					for (int i = 0; i < control_points.rows(); ++i)
+						for (int j = 0; j < control_points.cols(); ++j)
+							control_points(i, j) = args["control_points"][i][j].get<double>();
+					Eigen::VectorXd knots(args["knots"].size());
+					for (int i = 0; i < knots.size(); ++i)
+						knots(i) = args["knots"][i].get<double>();
+					tmp->set_bspline_target(control_points, knots, delta);
+				}
+				else
+				{
+					int dim = 3;
+					Eigen::MatrixXd control_points_grid(args["control_points_grid"].size(), dim);
+					for (int i = 0; i < control_points_grid.rows(); ++i)
+						for (int j = 0; j < control_points_grid.cols(); ++j)
+							control_points_grid(i, j) = args["control_points_grid"][i][j].get<double>();
+					Eigen::VectorXd knots_u(args["knots_u"].size());
+					for (int i = 0; i < knots_u.size(); ++i)
+						knots_u(i) = args["knots_u"][i].get<double>();
+					Eigen::VectorXd knots_v(args["knots_v"].size());
+					for (int i = 0; i < knots_v.size(); ++i)
+						knots_v(i) = args["knots_v"][i].get<double>();
+					tmp->set_bspline_target(control_points_grid, knots_u, knots_v, delta);
+				}
+
+				obj = tmp;
+			}
+			else if (type == "mesh-target")
+			{
+				std::shared_ptr<MeshTargetForm> tmp = std::make_shared<MeshTargetForm>(var2sim, *(states[args["state"]]), args);
+				double delta = args["delta"].get<double>();
+				Eigen::MatrixXd V;
+				Eigen::MatrixXi E, F;
+				bool read = polyfem::io::OBJReader::read(args["mesh_path"], V, E, F);
+				if (!read)
+					log_and_throw_error(fmt::format("Could not read mesh! {}", args["mesh"]));
+				tmp->set_surface_mesh_target(V, F, delta);
+				obj = tmp;
 			}
 			else if (type == "function-target")
 			{
@@ -160,6 +229,14 @@ namespace polyfem::solver
 			{
 				obj = std::make_shared<ElasticEnergyForm>(var2sim, *(states[args["state"]]), args);
 			}
+			else if (type == "quadratic_contact_force_norm")
+			{
+				obj = std::make_shared<ProxyContactForceForm>(var2sim, *(states[args["state"]]), args["dhat"], true, args);
+			}
+			else if (type == "log_contact_force_norm")
+			{
+				obj = std::make_shared<ProxyContactForceForm>(var2sim, *(states[args["state"]]), args["dhat"], false, args);
+			}
 			else if (type == "max_stress")
 			{
 				obj = std::make_shared<MaxStressForm>(var2sim, *(states[args["state"]]), args);
@@ -180,11 +257,22 @@ namespace polyfem::solver
 			}
 			else if (type == "boundary_smoothing")
 			{
-				obj = std::make_shared<BoundarySmoothingForm>(var2sim, *(states[args["state"]]), args["scale_invariant"], args["power"]);
+				if (args["surface_selection"].is_array())
+					obj = std::make_shared<BoundarySmoothingForm>(var2sim, *(states[args["state"]]), args["scale_invariant"], args["power"], args["surface_selection"].get<std::vector<int>>());
+				else
+					obj = std::make_shared<BoundarySmoothingForm>(var2sim, *(states[args["state"]]), args["scale_invariant"], args["power"], std::vector<int>{args["surface_selection"].get<int>()});
 			}
 			else if (type == "collision_barrier")
 			{
 				obj = std::make_shared<CollisionBarrierForm>(var2sim, *(states[args["state"]]), args["dhat"]);
+			}
+			else if (type == "layer_thickness")
+			{
+				obj = std::make_shared<LayerThicknessForm>(var2sim, *(states[args["state"]]), args["boundary_ids"].get<std::vector<int>>(), args["dhat"]);
+			}
+			else if (type == "layer_thickness_log")
+			{
+				obj = std::make_shared<LayerThicknessForm>(var2sim, *(states[args["state"]]), args["boundary_ids"].get<std::vector<int>>(), args["dhat"], true, args["dmin"]);
 			}
 			else if (type == "deformed_collision_barrier")
 			{
@@ -192,9 +280,6 @@ namespace polyfem::solver
 			}
 			else if (type == "parametrized_product")
 			{
-				if (args["parametrization"].contains("parameter_index"))
-					log_and_throw_adjoint_error("Parametrizations in parametrized forms don't support parameter_index!");
-
 				std::vector<std::shared_ptr<Parametrization>> map_list;
 				for (const auto &arg : args["parametrization"])
 					map_list.push_back(create_parametrization(arg, states, {}));
@@ -229,15 +314,10 @@ namespace polyfem::solver
 		}
 		else if (type == "slice")
 		{
-			if (args.contains("from") && args.contains("to"))
-			{
-				assert(args["from"] != -1);
-				assert(args["to"] != -1);
+			if (args["from"] != -1 || args["to"] != -1)
 				map = std::make_shared<SliceMap>(args["from"], args["to"], args["last"]);
-			}
-			else if (args.contains("parameter_index"))
+			else if (args["parameter_index"] != -1)
 			{
-				assert(args["parameter_index"] != -1);
 				int idx = args["parameter_index"].get<int>();
 				int from, to, last;
 				int cumulative = 0;
@@ -258,7 +338,7 @@ namespace polyfem::solver
 		}
 		else if (type == "exp")
 		{
-			map = std::make_shared<ExponentialMap>();
+			map = std::make_shared<ExponentialMap>(args["from"], args["to"]);
 		}
 		else if (type == "scale")
 		{
@@ -280,6 +360,14 @@ namespace polyfem::solver
 		else if (type == "linear-filter")
 		{
 			map = std::make_shared<LinearFilter>(*(states[args["state"]]->mesh), args["radius"]);
+		}
+		else if (type == "bounded-biharmonic-weights")
+		{
+			map = std::make_shared<BoundedBiharmonicWeights2Dto3D>(args["num_control_vertices"], args["num_vertices"], *states[args["state"]], args["allow_rotations"]);
+		}
+		else if (type == "scalar-velocity-parametrization")
+		{
+			map = std::make_shared<ScalarVelocityParametrization>(args["start_val"], args["dt"]);
 		}
 		else
 			log_and_throw_adjoint_error("Unkown parametrization!");
@@ -335,6 +423,26 @@ namespace polyfem::solver
 			else
 				log_and_throw_adjoint_error("Invalid composite map indices type!");
 		}
+		else if (composite_map_type == "time_step_indexing")
+		{
+			const int time_steps = cur_states[0]->args["time"]["time_steps"].get<int>();
+			const int dim = cur_states[0]->mesh->dimension();
+			if (type == "dirichlet")
+			{
+				output_indexing.setZero(time_steps * dim);
+				for (int i = 0; i < time_steps; ++i)
+					for (int k = 0; k < dim; ++k)
+						output_indexing(i * dim + k) = i;
+			}
+			else if (type == "pressure")
+			{
+				output_indexing.setZero(time_steps);
+				for (int i = 0; i < time_steps; ++i)
+					output_indexing(i) = i;
+			}
+			else
+				log_and_throw_adjoint_error("time_step_indexing only works with dirichlet and pressure type variables!");
+		}
 
 		std::vector<std::shared_ptr<Parametrization>> map_list;
 		for (const auto &arg : args["composition"])
@@ -343,6 +451,18 @@ namespace polyfem::solver
 		std::unique_ptr<VariableToSimulation> var2sim = VariableToSimulation::create(type, cur_states, CompositeParametrization(std::move(map_list)));
 		if (type == "shape")
 			var2sim->set_output_indexing(output_indexing);
+		else if (type == "dirichlet")
+		{
+			var2sim->set_output_indexing(output_indexing);
+			auto dirichlet_var2sim = static_cast<DirichletVariableToSimulation *>(var2sim.get());
+			dirichlet_var2sim->set_dirichlet_boundaries(args["surface_selection"]);
+		}
+		else if (type == "pressure")
+		{
+			var2sim->set_output_indexing(output_indexing);
+			auto pressure_var2sim = static_cast<PressureVariableToSimulation *>(var2sim.get());
+			pressure_var2sim->set_pressure_boundaries(args["surface_selection"]);
+		}
 
 		return var2sim;
 	}

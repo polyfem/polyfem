@@ -44,6 +44,9 @@ set(SOURCES
 	RBFInterpolation.hpp
 	RefElementSampler.cpp
 	RefElementSampler.hpp
+	BSplineParametrization.cpp
+	BSplineParametrization.hpp
+	CubicHermiteSplineParametrization.hpp
 	Selection.cpp
 	Selection.hpp
 	StringUtils.cpp
@@ -53,6 +56,11 @@ set(SOURCES
 	Rational.hpp
 	Jacobian.hpp
 	Jacobian.cpp
+	LazyCubicInterpolator.cpp
+	LazyCubicInterpolator.hpp
+	svd/ImplicitQRSVD.h
+	svd/Tools.h
+	svd.hpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})

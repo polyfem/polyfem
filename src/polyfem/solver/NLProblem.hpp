@@ -36,6 +36,7 @@ namespace polyfem::solver
 				  const double t,
 				  const std::vector<std::shared_ptr<Form>> &forms,
 				  State &state);
+		virtual ~NLProblem() = default;
 
 		virtual double value(const TVector &x) override;
 		virtual void gradient(const TVector &x, TVector &gradv) override;

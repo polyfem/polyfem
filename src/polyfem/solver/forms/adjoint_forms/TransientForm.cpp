@@ -181,7 +181,7 @@ namespace polyfem::solver
 	void TransientForm::solution_changed(const Eigen::VectorXd &new_x)
 	{
 		AdjointForm::solution_changed(new_x);
-		obj_->solution_changed(new_x);
+		// obj_->solution_changed(new_x);
 		std::vector<double> weights = get_transient_quadrature_weights();
 		for (int i = 0; i <= time_steps_; i++)
 		{

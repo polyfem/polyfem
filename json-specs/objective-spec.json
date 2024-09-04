@@ -8,8 +8,11 @@
             "divide",
             "plus-const",
             "target",
+            "sdf-target",
+            "mesh-target",
             "center-target",
             "function-target",
+            "displacement-target",
             "node-target",
             "position",
             "acceleration",
@@ -19,6 +22,8 @@
             "stress",
             "stress_norm",
             "elastic_energy",
+            "quadratic_contact_force_norm",
+            "log_contact_force_norm",
             "max_stress",
             "compliance",
             "weighted_solution",
@@ -31,6 +36,7 @@
             "volume",
             "soft_constraint",
             "layer_thickness",
+            "layer_thickness_log",
             "AMIPS",
             "parametrized_product"
         ],
@@ -101,6 +107,44 @@
     {
         "pointer": "/",
         "type": "object",
+        "type_name": "sdf-target",
+        "required": [
+            "state",
+            "type",
+            "delta"
+        ],
+        "optional": [
+            "control_points",
+            "control_points_grid",
+            "knots",
+            "knots_u",
+            "knots_v",
+            "weight",
+            "print_energy",
+            "surface_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "mesh-target",
+        "required": [
+            "state",
+            "type",
+            "delta",
+            "mesh_path"
+        ],
+        "optional": [
+            "weight",
+            "print_energy",
+            "surface_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
         "type_name": "node-target",
         "required": [
             "state",
@@ -151,6 +195,23 @@
     {
         "pointer": "/",
         "type": "object",
+        "type_name": "displacement-target",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "weight",
+            "print_energy",
+            "target_displacement",
+            "active_dimension",
+            "surface_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
         "type_name": "center-target",
         "required": [
             "state",
@@ -182,6 +243,11 @@
     },
     {
         "pointer": "/volume_selection/*",
+        "type": "int",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/surface_selection",
         "type": "int",
         "doc": "TODO"
     },
@@ -567,6 +633,38 @@
         "doc": "Lp Norm of elastic stress over the volume selection"
     },
     {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "quadratic_contact_force_norm",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "surface_selection",
+            "dhat",
+            "weight",
+            "print_energy"
+        ],
+        "doc": "Lp Norm of elastic stress over the volume selection"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "log_contact_force_norm",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "surface_selection",
+            "dhat",
+            "weight",
+            "print_energy"
+        ],
+        "doc": "Lp Norm of elastic stress over the volume selection"
+    },
+    {
         "pointer": "/force_matching_function",
         "type": "list"
     },
@@ -725,9 +823,29 @@
         "pointer": "/",
         "type": "object",
         "type_name": "layer_thickness",
+        "required": [
+            "type",
+            "state"
+        ],
         "optional": [
-            "adjacent_boundary_id",
-            "dmin",
+            "boundary_ids",
+            "dhat",
+            "weight",
+            "print_energy"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "layer_thickness_log",
+        "required": [
+            "type",
+            "state",
+            "dmin"
+        ],
+        "optional": [
+            "boundary_ids",
             "dhat",
             "weight",
             "print_energy"
@@ -741,15 +859,19 @@
         "doc": "The support size of barrier function"
     },
     {
-        "pointer": "/adjacent_boundary_id",
-        "type": "int",
-        "default": -1,
+        "pointer": "/dmin",
+        "type": "float",
+        "doc": "The min distance of barrier function"
+    },
+    {
+        "pointer": "/boundary_ids",
+        "type": "list",
+        "default": [],
         "doc": "TODO"
     },
     {
-        "pointer": "/dmin",
-        "type": "float",
-        "default": 0.0,
+        "pointer": "/boundary_ids/*",
+        "type": "int",
         "doc": "TODO"
     },
     {

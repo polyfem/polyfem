@@ -59,10 +59,14 @@ set(SOURCES
 	Stokes.hpp
 	ViscousDamping.cpp
 	ViscousDamping.hpp
-	AMIPSEnergy.hpp
 	AMIPSEnergy.cpp
+	AMIPSEnergy.hpp
+	PressureAssembler.cpp
+	PressureAssembler.hpp
 	PeriodicBoundary.cpp
 	PeriodicBoundary.hpp
+	FixedCorotational.hpp
+	FixedCorotational.cpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})

@@ -2,12 +2,14 @@
 
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/assembler/FixedCorotational.hpp>
 
 #include <polyfem/solver/forms/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/BCPenaltyForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
+#include <polyfem/solver/forms/PressureForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/InversionBarrierForm.hpp>
@@ -35,20 +37,42 @@ using namespace polyfem::assembler;
 
 namespace
 {
-	std::shared_ptr<State> get_state(int dim)
+	std::shared_ptr<State> get_state(int dim, const std::string &material_type = "NeoHookean")
 	{
 		const std::string path = POLYFEM_DATA_DIR;
-		json in_args = R"(
+
+		json material;
+		if (material_type == "NeoHookean")
 		{
-			"materials": {
+			material = R"(
+			{
 				"type": "NeoHookean",
 				"E": 20000,
 				"nu": 0.3,
 				"rho": 1000,
 				"phi": 1,
 				"psi": 1
-			},
+			}
+			)"_json;
+		}
+		else if (material_type == "MooneyRivlin3ParamSymbolic")
+		{
+			material = R"(
+			{
+				"type": "MooneyRivlin3ParamSymbolic",
+				"c1": 1e5,
+				"c2": 1e3,
+				"c3": 1e3,
+				"d1": 1e5,
+				"rho": 1000
+			}
+			)"_json;
+		}
+		else
+			assert(false);
 
+		json in_args = R"(
+		{
 			"time": {
 				"dt": 0.001,
 				"tend": 1.0
@@ -61,6 +85,7 @@ namespace
 			}
 
 		})"_json;
+		in_args["materials"] = material;
 		if (dim == 2)
 		{
 			in_args["geometry"] = R"([{
@@ -94,6 +119,11 @@ namespace
 						"axis": "-z",
 						"position": 0.2,
 						"relative": true
+					},
+					{
+						"id": 3,
+						"box": [[0, 0, 0.2], [1, 1, 0.8]],
+						"relative": true
 					}
 				],
 				"n_refs": 1
@@ -105,7 +135,15 @@ namespace
 					"value": [1000, 1000, 1000]
 				}],
 				"pressure_boundary": [{
+					"id": 1,
+					"value": -2000
+				},
+				{
 					"id": 2,
+					"value": -2000
+				},
+				{
+					"id": 3,
 					"value": -2000
 				}],
 				"rhs": [0, 0, 0]
@@ -127,7 +165,7 @@ namespace
 } // namespace
 
 template <typename Form>
-void test_form(Form &form, const State &state)
+void test_form(Form &form, const State &state, double step = 1e-8, double tol = 1e-4)
 {
 	static const int n_rand = 10;
 
@@ -145,7 +183,8 @@ void test_form(Form &form, const State &state)
 
 			Eigen::VectorXd fgrad;
 			fd::finite_gradient(
-				x, [&form](const Eigen::VectorXd &x) -> double { return form.value(x); }, fgrad);
+				x, [&form](const Eigen::VectorXd &x) -> double { return form.value(x); }, fgrad,
+				fd::AccuracyOrder::SECOND, step);
 
 			if (!fd::compare_gradient(grad, fgrad))
 			{
@@ -154,7 +193,7 @@ void test_form(Form &form, const State &state)
 				std::cout << "Finite gradient: " << fgrad.transpose() << std::endl;
 			}
 
-			CHECK(fd::compare_gradient(grad, fgrad));
+			CHECK(fd::compare_gradient(grad, fgrad, tol));
 		}
 
 		// Test hessian with finite differences
@@ -170,7 +209,8 @@ void test_form(Form &form, const State &state)
 					form.first_derivative(x, grad);
 					return grad;
 				},
-				fhess);
+				fhess,
+				fd::AccuracyOrder::SECOND, step);
 
 			if (!fd::compare_hessian(Eigen::MatrixXd(hess), fhess))
 			{
@@ -179,7 +219,7 @@ void test_form(Form &form, const State &state)
 				std::cout << "Finite hessian: " << fhess << std::endl;
 			}
 
-			CHECK(fd::compare_hessian(Eigen::MatrixXd(hess), fhess));
+			CHECK(fd::compare_hessian(Eigen::MatrixXd(hess), fhess, tol));
 		}
 
 		x.setRandom();
@@ -280,7 +320,7 @@ TEST_CASE("contact form derivatives", "[form][form_derivatives][contact_form]")
 TEST_CASE("elastic form derivatives", "[form][form_derivatives][elastic_form]")
 {
 	const int dim = GENERATE(2, 3);
-	const auto state_ptr = get_state(dim);
+	const auto state_ptr = get_state(dim, GENERATE("NeoHookean", "MooneyRivlin3ParamSymbolic"));
 	ElasticForm form(
 		state_ptr->n_bases,
 		state_ptr->bases,
@@ -293,6 +333,23 @@ TEST_CASE("elastic form derivatives", "[form][form_derivatives][elastic_form]")
 		0.,
 		"Discrete",
 		"P");
+	test_form(form, *state_ptr, 1e-7);
+}
+
+TEST_CASE("pressure form derivatives", "[form][form_derivatives][pressure_form]")
+{
+	const int dim = GENERATE(3);
+	const bool is_time_dependent = GENERATE(true);
+	const auto state_ptr = get_state(dim);
+	state_ptr->elasticity_pressure_assembler = state_ptr->build_pressure_assembler();
+	PressureForm form(
+		state_ptr->n_bases,
+		state_ptr->local_pressure_boundary,
+		state_ptr->local_pressure_cavity,
+		state_ptr->boundary_nodes,
+		state_ptr->n_boundary_samples(),
+		*state_ptr->elasticity_pressure_assembler,
+		is_time_dependent);
 	test_form(form, *state_ptr);
 }
 
@@ -524,4 +581,24 @@ TEST_CASE("L2 projection form derivatives", "[form][form_derivatives][L2]")
 	L2ProjectionForm form(state_ptr->mass, state_ptr->mass, Eigen::VectorXd::Ones(state_ptr->mass.cols()));
 
 	test_form(form, *state_ptr);
+}
+
+TEST_CASE("Fixed corotational form derivatives", "[form][form_derivatives][elastic_form]")
+{
+	const int dim = GENERATE(2, 3);
+	const auto state_ptr = get_state(dim);
+	std::shared_ptr<assembler::FixedCorotational> assembler = std::make_shared<assembler::FixedCorotational>();
+	state_ptr->set_materials(*assembler);
+
+	ElasticForm form(
+		state_ptr->n_bases,
+		state_ptr->bases,
+		state_ptr->geom_bases(),
+		*assembler,
+		state_ptr->ass_vals_cache,
+		0,
+		1,
+		state_ptr->mesh->is_volume());
+	form.update_quantities(0, Eigen::VectorXd::Ones(state_ptr->n_bases * dim));
+	test_form(form, *state_ptr, 1e-7, 1e-4);
 }

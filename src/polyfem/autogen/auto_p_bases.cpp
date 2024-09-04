@@ -652,10 +652,9 @@ namespace polyfem
 				case 3:
 				{
 					{
-						const auto helper_0 = 24 * y;
-						const auto helper_1 = pow(x, 2);
-						const auto helper_2 = pow(y, 2);
-						result_0 = -16 * helper_0 * helper_1 + 16 * helper_0 * x + 288 * helper_1 - 256 * helper_2 * x + 96 * helper_2 - 512.0 / 3.0 * pow(x, 3) - 416.0 / 3.0 * x - 128.0 / 3.0 * pow(y, 3) - 208.0 / 3.0 * y + 16;
+						const auto helper_0 = pow(x, 2);
+						const auto helper_1 = pow(y, 2);
+						result_0 = -384 * helper_0 * y + 288 * helper_0 - 256 * helper_1 * x + 96 * helper_1 - 512.0 / 3.0 * pow(x, 3) + 384 * x * y - 416.0 / 3.0 * x - 128.0 / 3.0 * pow(y, 3) - 208.0 / 3.0 * y + 16;
 						val.col(0) = result_0;
 					}
 					{
@@ -763,10 +762,9 @@ namespace polyfem
 						val.col(0) = result_0;
 					}
 					{
-						const auto helper_0 = 24 * x;
-						const auto helper_1 = pow(x, 2);
-						const auto helper_2 = pow(y, 2);
-						result_0 = -16 * helper_0 * helper_2 + 16 * helper_0 * y - 256 * helper_1 * y + 96 * helper_1 + 288 * helper_2 - 128.0 / 3.0 * pow(x, 3) - 208.0 / 3.0 * x - 512.0 / 3.0 * pow(y, 3) - 416.0 / 3.0 * y + 16;
+						const auto helper_0 = pow(x, 2);
+						const auto helper_1 = pow(y, 2);
+						result_0 = -256 * helper_0 * y + 96 * helper_0 - 384 * helper_1 * x + 288 * helper_1 - 128.0 / 3.0 * pow(x, 3) + 384 * x * y - 208.0 / 3.0 * x - 512.0 / 3.0 * pow(y, 3) - 416.0 / 3.0 * y + 16;
 						val.col(1) = result_0;
 					}
 				}
@@ -1351,15 +1349,13 @@ namespace polyfem
 				{
 				case 0:
 				{
-					const auto helper_0 = 18 * x;
-					const auto helper_1 = y * z;
-					const auto helper_2 = pow(x, 2);
-					const auto helper_3 = pow(y, 2);
-					const auto helper_4 = pow(z, 2);
-					const auto helper_5 = (27.0 / 2.0) * x;
-					const auto helper_6 = (27.0 / 2.0) * y;
-					const auto helper_7 = (27.0 / 2.0) * z;
-					result_0 = helper_0 * y + helper_0 * z - 27 * helper_1 * x + 18 * helper_1 - helper_2 * helper_6 - helper_2 * helper_7 + 9 * helper_2 - helper_3 * helper_5 - helper_3 * helper_7 + 9 * helper_3 - helper_4 * helper_5 - helper_4 * helper_6 + 9 * helper_4 - 9.0 / 2.0 * pow(x, 3) - 11.0 / 2.0 * x - 9.0 / 2.0 * pow(y, 3) - 11.0 / 2.0 * y - 9.0 / 2.0 * pow(z, 3) - 11.0 / 2.0 * z + 1;
+					const auto helper_0 = pow(x, 2);
+					const auto helper_1 = pow(y, 2);
+					const auto helper_2 = pow(z, 2);
+					const auto helper_3 = (27.0 / 2.0) * x;
+					const auto helper_4 = (27.0 / 2.0) * y;
+					const auto helper_5 = (27.0 / 2.0) * z;
+					result_0 = -helper_0 * helper_4 - helper_0 * helper_5 + 9 * helper_0 - helper_1 * helper_3 - helper_1 * helper_5 + 9 * helper_1 - helper_2 * helper_3 - helper_2 * helper_4 + 9 * helper_2 - 9.0 / 2.0 * pow(x, 3) - 27 * x * y * z + 18 * x * y + 18 * x * z - 11.0 / 2.0 * x - 9.0 / 2.0 * pow(y, 3) + 18 * y * z - 11.0 / 2.0 * y - 9.0 / 2.0 * pow(z, 3) - 11.0 / 2.0 * z + 1;
 				}
 				break;
 				case 1:
@@ -2184,14 +2180,12 @@ namespace polyfem
 				case 4:
 				{
 					{
-						const auto helper_0 = 24 * x;
-						const auto helper_1 = y * z;
-						const auto helper_2 = pow(x, 2);
-						const auto helper_3 = pow(y, 2);
-						const auto helper_4 = pow(z, 2);
-						const auto helper_5 = 16 * x;
-						const auto helper_6 = 24 * helper_2;
-						result_0 = 16 * helper_0 * y + 16 * helper_0 * z - 512 * helper_1 * x + 192 * helper_1 + 288 * helper_2 - 16 * helper_3 * helper_5 - 128 * helper_3 * z + 96 * helper_3 - 16 * helper_4 * helper_5 - 128 * helper_4 * y + 96 * helper_4 - 16 * helper_6 * y - 16 * helper_6 * z - 512.0 / 3.0 * pow(x, 3) - 416.0 / 3.0 * x - 128.0 / 3.0 * pow(y, 3) - 208.0 / 3.0 * y - 128.0 / 3.0 * pow(z, 3) - 208.0 / 3.0 * z + 16;
+						const auto helper_0 = pow(x, 2);
+						const auto helper_1 = pow(y, 2);
+						const auto helper_2 = pow(z, 2);
+						const auto helper_3 = 16 * x;
+						const auto helper_4 = 24 * helper_0;
+						result_0 = 288 * helper_0 - 16 * helper_1 * helper_3 - 128 * helper_1 * z + 96 * helper_1 - 16 * helper_2 * helper_3 - 128 * helper_2 * y + 96 * helper_2 - 16 * helper_4 * y - 16 * helper_4 * z - 512.0 / 3.0 * pow(x, 3) - 512 * x * y * z + 384 * x * y + 384 * x * z - 416.0 / 3.0 * x - 128.0 / 3.0 * pow(y, 3) + 192 * y * z - 208.0 / 3.0 * y - 128.0 / 3.0 * pow(z, 3) - 208.0 / 3.0 * z + 16;
 						val.col(0) = result_0;
 					}
 					{
@@ -2233,10 +2227,9 @@ namespace polyfem
 				case 6:
 				{
 					{
-						const auto helper_0 = 4 * x;
-						const auto helper_1 = pow(x, 2);
-						const auto helper_2 = 8 * helper_1;
-						result_0 = 16 * helper_0 * y + 16 * helper_0 * z + 224 * helper_1 - 16 * helper_2 * y - 16 * helper_2 * z - 512.0 / 3.0 * pow(x, 3) - 224.0 / 3.0 * x - 16.0 / 3.0 * y - 16.0 / 3.0 * z + 16.0 / 3.0;
+						const auto helper_0 = pow(x, 2);
+						const auto helper_1 = 8 * helper_0;
+						result_0 = 224 * helper_0 - 16 * helper_1 * y - 16 * helper_1 * z - 512.0 / 3.0 * pow(x, 3) + 64 * x * y + 64 * x * z - 224.0 / 3.0 * x - 16.0 / 3.0 * y - 16.0 / 3.0 * z + 16.0 / 3.0;
 						val.col(0) = result_0;
 					}
 					{
@@ -2306,10 +2299,9 @@ namespace polyfem
 						val.col(0) = result_0;
 					}
 					{
-						const auto helper_0 = 4 * y;
-						const auto helper_1 = pow(y, 2);
-						const auto helper_2 = 8 * helper_1;
-						result_0 = 16 * helper_0 * x + 16 * helper_0 * z + 224 * helper_1 - 16 * helper_2 * x - 16 * helper_2 * z - 16.0 / 3.0 * x - 512.0 / 3.0 * pow(y, 3) - 224.0 / 3.0 * y - 16.0 / 3.0 * z + 16.0 / 3.0;
+						const auto helper_0 = pow(y, 2);
+						const auto helper_1 = 8 * helper_0;
+						result_0 = 224 * helper_0 - 16 * helper_1 * x - 16 * helper_1 * z + 64 * x * y - 16.0 / 3.0 * x - 512.0 / 3.0 * pow(y, 3) + 64 * y * z - 224.0 / 3.0 * y - 16.0 / 3.0 * z + 16.0 / 3.0;
 						val.col(1) = result_0;
 					}
 					{
@@ -2350,14 +2342,12 @@ namespace polyfem
 						val.col(0) = result_0;
 					}
 					{
-						const auto helper_0 = 24 * y;
-						const auto helper_1 = x * z;
-						const auto helper_2 = pow(x, 2);
-						const auto helper_3 = pow(y, 2);
-						const auto helper_4 = pow(z, 2);
-						const auto helper_5 = 24 * helper_3;
-						const auto helper_6 = 16 * y;
-						result_0 = 16 * helper_0 * x + 16 * helper_0 * z - 512 * helper_1 * y + 192 * helper_1 - 16 * helper_2 * helper_6 - 128 * helper_2 * z + 96 * helper_2 + 288 * helper_3 - 16 * helper_4 * helper_6 - 128 * helper_4 * x + 96 * helper_4 - 16 * helper_5 * x - 16 * helper_5 * z - 128.0 / 3.0 * pow(x, 3) - 208.0 / 3.0 * x - 512.0 / 3.0 * pow(y, 3) - 416.0 / 3.0 * y - 128.0 / 3.0 * pow(z, 3) - 208.0 / 3.0 * z + 16;
+						const auto helper_0 = pow(x, 2);
+						const auto helper_1 = pow(y, 2);
+						const auto helper_2 = pow(z, 2);
+						const auto helper_3 = 24 * helper_1;
+						const auto helper_4 = 16 * y;
+						result_0 = -16 * helper_0 * helper_4 - 128 * helper_0 * z + 96 * helper_0 + 288 * helper_1 - 16 * helper_2 * helper_4 - 128 * helper_2 * x + 96 * helper_2 - 16 * helper_3 * x - 16 * helper_3 * z - 128.0 / 3.0 * pow(x, 3) - 512 * x * y * z + 384 * x * y + 192 * x * z - 208.0 / 3.0 * x - 512.0 / 3.0 * pow(y, 3) + 384 * y * z - 416.0 / 3.0 * y - 128.0 / 3.0 * pow(z, 3) - 208.0 / 3.0 * z + 16;
 						val.col(1) = result_0;
 					}
 					{
@@ -2380,14 +2370,12 @@ namespace polyfem
 						val.col(1) = result_0;
 					}
 					{
-						const auto helper_0 = x * y;
-						const auto helper_1 = 24 * z;
-						const auto helper_2 = pow(x, 2);
-						const auto helper_3 = pow(y, 2);
-						const auto helper_4 = pow(z, 2);
-						const auto helper_5 = 24 * helper_4;
-						const auto helper_6 = 16 * z;
-						result_0 = -512 * helper_0 * z + 192 * helper_0 + 16 * helper_1 * x + 16 * helper_1 * y - 16 * helper_2 * helper_6 - 128 * helper_2 * y + 96 * helper_2 - 16 * helper_3 * helper_6 - 128 * helper_3 * x + 96 * helper_3 + 288 * helper_4 - 16 * helper_5 * x - 16 * helper_5 * y - 128.0 / 3.0 * pow(x, 3) - 208.0 / 3.0 * x - 128.0 / 3.0 * pow(y, 3) - 208.0 / 3.0 * y - 512.0 / 3.0 * pow(z, 3) - 416.0 / 3.0 * z + 16;
+						const auto helper_0 = pow(x, 2);
+						const auto helper_1 = pow(y, 2);
+						const auto helper_2 = pow(z, 2);
+						const auto helper_3 = 24 * helper_2;
+						const auto helper_4 = 16 * z;
+						result_0 = -16 * helper_0 * helper_4 - 128 * helper_0 * y + 96 * helper_0 - 16 * helper_1 * helper_4 - 128 * helper_1 * x + 96 * helper_1 + 288 * helper_2 - 16 * helper_3 * x - 16 * helper_3 * y - 128.0 / 3.0 * pow(x, 3) - 512 * x * y * z + 192 * x * y + 384 * x * z - 208.0 / 3.0 * x - 128.0 / 3.0 * pow(y, 3) + 384 * y * z - 208.0 / 3.0 * y - 512.0 / 3.0 * pow(z, 3) - 416.0 / 3.0 * z + 16;
 						val.col(2) = result_0;
 					}
 				}
@@ -2427,10 +2415,9 @@ namespace polyfem
 						val.col(1) = result_0;
 					}
 					{
-						const auto helper_0 = 4 * z;
-						const auto helper_1 = pow(z, 2);
-						const auto helper_2 = 8 * helper_1;
-						result_0 = 16 * helper_0 * x + 16 * helper_0 * y + 224 * helper_1 - 16 * helper_2 * x - 16 * helper_2 * y - 16.0 / 3.0 * x - 16.0 / 3.0 * y - 512.0 / 3.0 * pow(z, 3) - 224.0 / 3.0 * z + 16.0 / 3.0;
+						const auto helper_0 = pow(z, 2);
+						const auto helper_1 = 8 * helper_0;
+						result_0 = 224 * helper_0 - 16 * helper_1 * x - 16 * helper_1 * y + 64 * x * z - 16.0 / 3.0 * x + 64 * y * z - 16.0 / 3.0 * y - 512.0 / 3.0 * pow(z, 3) - 224.0 / 3.0 * z + 16.0 / 3.0;
 						val.col(2) = result_0;
 					}
 				}

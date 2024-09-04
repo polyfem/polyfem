@@ -4,15 +4,20 @@
 
 namespace polyfem::solver
 {
-	void BoundarySmoothingForm::init_form()
+	BoundarySmoothingForm::BoundarySmoothingForm(
+		const VariableToSimulationGroup &variable_to_simulations, 
+		const State &state, 
+		const bool scale_invariant, 
+		const int power, 
+		const std::vector<int> &surface_selections) : 
+		AdjointForm(variable_to_simulations), state_(state), scale_invariant_(scale_invariant), power_(power)
 	{
 		const auto &mesh = *(state_.mesh);
 		const int dim = mesh.dimension();
 		const int n_verts = mesh.n_vertices();
 		assert(mesh.is_simplicial());
 
-		std::vector<int> tmp = {}; // args_["surface_selection"];
-		std::set<int> surface_ids = std::set(tmp.begin(), tmp.end());
+		surface_ids_ = std::set(surface_selections.begin(), surface_selections.end());
 
 		// collect active nodes
 		std::vector<bool> active_mask;
@@ -22,7 +27,7 @@ namespace polyfem::solver
 		for (int b = 0; b < mesh.n_boundary_elements(); b++)
 		{
 			const int boundary_id = mesh.get_boundary_id(b);
-			if (!surface_ids.empty() && surface_ids.find(boundary_id) == surface_ids.end())
+			if (!surface_ids_.empty() && surface_ids_.find(boundary_id) == surface_ids_.end())
 				continue;
 			
 			for (int lv = 0; lv < dim; lv++)
@@ -33,8 +38,10 @@ namespace polyfem::solver
 			for (int lv1 = 0; lv1 < dim; lv1++)
 				for (int lv2 = 0; lv2 < lv1; lv2++)
 				{
-					T_adj.emplace_back(mesh.boundary_element_vertex(b, lv2), mesh.boundary_element_vertex(b, lv1), true);
-					T_adj.emplace_back(mesh.boundary_element_vertex(b, lv1), mesh.boundary_element_vertex(b, lv2), true);
+					const int v1 = mesh.boundary_element_vertex(b, lv1);
+					const int v2 = mesh.boundary_element_vertex(b, lv2);
+					T_adj.emplace_back(v2, v1, true);
+					T_adj.emplace_back(v1, v2, true);
 				}
 		}
 
@@ -56,11 +63,11 @@ namespace polyfem::solver
 			{
 				if (!active_mask[k])
 					continue;
-				T_L.emplace_back(k, k, degrees[k]);
+				T_L.emplace_back(k, k, 1);
 				for (Eigen::SparseMatrix<bool, Eigen::RowMajor>::InnerIterator it(adj, k); it; ++it)
 				{
 					assert(it.row() == k);
-					T_L.emplace_back(it.row(), it.col(), -1);
+					T_L.emplace_back(it.row(), it.col(), -1. / degrees[k]);
 				}
 			}
 			L.setFromTriplets(T_L.begin(), T_L.end());

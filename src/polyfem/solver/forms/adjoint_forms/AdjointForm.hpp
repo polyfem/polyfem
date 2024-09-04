@@ -63,6 +63,7 @@ namespace polyfem::solver
 		virtual Eigen::VectorXd compute_adjoint_rhs_step_prev(const int time_step, const Eigen::VectorXd &x, const State &state) const;
 		virtual void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const = 0;
 		virtual double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const = 0;
+		virtual void solution_changed(const Eigen::VectorXd &new_x) final override;
 		virtual void solution_changed_step(const int time_step, const Eigen::VectorXd &new_x) {}
 		virtual bool depends_on_step_prev() const final { return depends_on_step_prev_; }
 

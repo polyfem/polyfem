@@ -64,7 +64,6 @@ set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vector
 # Polyfem options for enabling/disabling optional libraries
 option(POLYFEM_WITH_TESTS     "Build tests"                                 ON)
 option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"  ON)
-option(POLYFEM_WITH_REMESHING "Uses WMTK for remeshing"                    OFF)
 option(POLYFEM_WITH_MMG       "Build MMG utils for remeshing"              OFF)
 option(POLYFEM_WITH_TRIANGLE  "Build target igl_restricted::triangle"       ON)
 option(POLYFEM_BUILD_DOCS     "Build documentation using Doxygen"          OFF)
@@ -82,8 +81,6 @@ if(POLYFEM_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   )
   target_link_options(polyfem_coverage_config INTERFACE --coverage)
 endif()
-
-add_compile_definitions(JSON_DIAGNOSTICS=1)
 
 # Set default minimum C++ standard
 if(POLYFEM_TOPLEVEL_PROJECT)
@@ -185,13 +182,25 @@ endif()
 # Required libraries
 ################################################################################
 
-# Eigen
-include(eigen)
-target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
+if(WIN32)
+    # Eigen
+    include(eigen)
+    target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
+endif()
 
 # polysolve
 include(polysolve)
 target_link_libraries(polyfem PUBLIC polysolve::polysolve)
+
+# libigl
+include(libigl)
+target_link_libraries(polyfem PUBLIC igl::core)
+
+if(NOT WIN32)
+    # Eigen
+    include(eigen)
+    target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
+endif()
 
 # IPC Toolkit
 include(ipc_toolkit)
@@ -213,9 +222,6 @@ elseif(POLYFEM_THREADING STREQUAL "TBB")
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_TBB)
 endif()
 
-# libigl
-include(libigl)
-target_link_libraries(polyfem PUBLIC igl::core)
 
 if(POLYFEM_WITH_TRIANGLE)
     target_link_libraries(polyfem PUBLIC igl_restricted::triangle)
@@ -229,6 +235,10 @@ target_link_libraries(polyfem PUBLIC simple_bvh::simple_bvh)
 # MSHIO
 include(mshio)
 target_link_libraries(polyfem PUBLIC mshio)
+
+# Nanospline
+include(nanospline)
+target_link_libraries(polyfem PUBLIC nanospline)
 
 # Geogram
 include(geogram)
@@ -270,10 +280,6 @@ target_link_libraries(tight_inclusion PUBLIC gmp::gmp)
 include(yaml)
 target_link_libraries(polyfem PUBLIC yaml-cpp::yaml-cpp)
 
-# FCPW
-# include(fcpw)
-# target_link_libraries(polyfem PUBLIC fcpw::fcpw)
-
 ################################################################################
 # Optional libraries
 ################################################################################
@@ -285,12 +291,9 @@ if(POLYFEM_WITH_MMG)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_MMG)
 endif()
 
-if(POLYFEM_WITH_REMESHING)
-    # wmtk library
-    include(wmtk)
-    target_link_libraries(polyfem PUBLIC wmtk::toolkit)
-    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_REMESHING)
-endif()
+# wmtk library
+include(wmtk)
+target_link_libraries(polyfem PUBLIC wmtk::toolkit)
 
 if(POLYFEM_WITH_CLIPPER)
     include(clipper)
@@ -314,7 +317,6 @@ if(POLYFEM_TOPLEVEL_PROJECT)
     add_executable(${PROJECT_NAME}_bin src/polyfem/main.cpp)
 
     target_compile_features(${PROJECT_NAME}_bin PUBLIC cxx_std_14)
-
 
     target_link_libraries(${PROJECT_NAME}_bin PUBLIC polyfem::polyfem polyfem::warnings)
 

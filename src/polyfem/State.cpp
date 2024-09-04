@@ -2,6 +2,8 @@
 #include <polyfem/Common.hpp>
 
 #include <polyfem/io/MatrixIO.hpp>
+#include <polyfem/io/Evaluator.hpp>
+#include <polyfem/io/Evaluator.hpp>
 
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/MultiModel.hpp>
@@ -389,7 +391,7 @@ namespace polyfem
 		{
 			logger().error("specify some 'materials'");
 			assert(!args["materials"].is_null());
-			throw "invalid input";
+			throw std::runtime_error("invalid input");
 		}
 
 		if (args["materials"].is_array())
@@ -424,13 +426,13 @@ namespace polyfem
 						else
 						{
 							logger().error("Current material is {}, new material is {}, multimaterial supported only for LinearElasticity and NeoHookean", current, tmp);
-							throw "invalid input";
+							throw std::runtime_error("invalid input");
 						}
 					}
 					else
 					{
 						logger().error("Current material is {}, new material is {}, multimaterial supported only for LinearElasticity and NeoHookean", current, tmp);
-						throw "invalid input";
+						throw std::runtime_error("invalid input");
 					}
 				}
 			}
@@ -548,7 +550,7 @@ namespace polyfem
 
 		if (has_periodic_bc())
 			return false;
-		
+
 		if (optimization_enabled == solver::CacheLevel::Derivatives)
 			return false;
 
@@ -592,9 +594,12 @@ namespace polyfem
 		local_boundary.clear();
 		total_local_boundary.clear();
 		local_neumann_boundary.clear();
+		local_pressure_boundary.clear();
+		local_pressure_cavity.clear();
 		polys.clear();
 		poly_edge_to_data.clear();
 		rhs.resize(0, 0);
+		basis_nodes_to_gbasis_nodes.resize(0, 0);
 
 		if (assembler::MultiModel *mm = dynamic_cast<assembler::MultiModel *>(assembler.get()))
 		{
@@ -627,6 +632,8 @@ namespace polyfem
 
 		local_boundary.clear();
 		local_neumann_boundary.clear();
+		local_pressure_boundary.clear();
+		local_pressure_cavity.clear();
 		std::map<int, basis::InterfaceData> poly_edge_to_data_geom; // temp dummy variable
 
 		const auto &tmp_json = args["space"]["discr_order"];
@@ -679,7 +686,7 @@ namespace polyfem
 		else
 		{
 			logger().error("space/discr_order must be either a number a path or an array");
-			throw "invalid json";
+			throw std::runtime_error("invalid json");
 		}
 		// TODO: same for pressure!
 
@@ -724,7 +731,8 @@ namespace polyfem
 		}
 
 		// shape optimization needs continuous geometric basis
-		const bool use_continuous_gbasis = optimization_enabled == solver::CacheLevel::Derivatives;
+		// const bool use_continuous_gbasis = optimization_enabled == solver::CacheLevel::Derivatives;
+		const bool use_continuous_gbasis = true;
 
 		if (mesh->is_volume())
 		{
@@ -858,8 +866,8 @@ namespace polyfem
 				for (int d = 0; d < dim; d++)
 					coeffs.emplace_back(iter.first[0] * dim + d, iter.first[1] * dim + d, iter.second);
 
-			gbasis_nodes_to_basis_nodes.resize(n_geom_bases * mesh->dimension(), n_bases * mesh->dimension());
-			gbasis_nodes_to_basis_nodes.setFromTriplets(coeffs.begin(), coeffs.end());
+			basis_nodes_to_gbasis_nodes.resize(n_geom_bases * mesh->dimension(), n_bases * mesh->dimension());
+			basis_nodes_to_gbasis_nodes.setFromTriplets(coeffs.begin(), coeffs.end());
 		}
 
 		for (const auto &lb : local_boundary)
@@ -888,10 +896,10 @@ namespace polyfem
 			}
 
 			periodic_bc = std::make_shared<PeriodicBoundary>(problem->is_scalar(), n_bases, bases, mesh_nodes, tile_offset, args["boundary_conditions"]["periodic_boundary"]["tolerance"].get<double>());
-		
+
 			macro_strain_constraint.init(dim, args["boundary_conditions"]["periodic_boundary"]);
 		}
-		
+
 		if (args["space"]["advanced"]["count_flipped_els"])
 			stats.count_flipped_elements(*mesh, geom_bases());
 
@@ -918,7 +926,12 @@ namespace polyfem
 		const int prev_b_size = local_boundary.size();
 		problem->setup_bc(*mesh, n_bases - obstacle.n_vertices(),
 						  bases, geom_bases(), pressure_bases,
-						  local_boundary, boundary_nodes, local_neumann_boundary, pressure_boundary_nodes,
+						  local_boundary,
+						  boundary_nodes,
+						  local_neumann_boundary,
+						  local_pressure_boundary,
+						  local_pressure_cavity,
+						  pressure_boundary_nodes,
 						  dirichlet_nodes, neumann_nodes);
 
 		// setp nodal values
@@ -1196,7 +1209,7 @@ namespace polyfem
 				if (args["space"]["poly_basis_type"] == "MeanValue" || args["space"]["poly_basis_type"] == "Wachspress")
 				{
 					logger().error("Barycentric bases not supported in 3D");
-					throw "not implemented";
+					throw std::runtime_error("not implemented");
 				}
 				else
 				{
@@ -1277,14 +1290,14 @@ namespace polyfem
 			for (const auto &b : bs.bases)
 				for (const auto &g : b.global())
 					V.row(g.index) = g.node;
-		
+
 		Eigen::MatrixXi E = collision_mesh.edges();
 		for (int i = 0; i < E.size(); i++)
 			E(i) = collision_mesh.to_full_vertex_id(E(i));
 
-        Eigen::MatrixXd bbox(V.cols(), 2);
-        bbox.col(0) = V.colwise().minCoeff();
-        bbox.col(1) = V.colwise().maxCoeff();
+		Eigen::MatrixXd bbox(V.cols(), 2);
+		bbox.col(0) = V.colwise().minCoeff();
+		bbox.col(1) = V.colwise().maxCoeff();
 
 		// remove boundary edges on periodic BC, buggy
 		{
@@ -1294,13 +1307,14 @@ namespace polyfem
 				if (!periodic_bc->is_periodic_dof(E(i, 0)) || !periodic_bc->is_periodic_dof(E(i, 1)))
 					ind.push_back(i);
 			}
+
 			E = E(ind, Eigen::all).eval();
 		}
 
-        Eigen::MatrixXd Vtmp, Vnew;
-        Eigen::MatrixXi Etmp, Enew;
-        Vtmp.setZero(V.rows() * n_tiles * n_tiles, V.cols());
-        Etmp.setZero(E.rows() * n_tiles * n_tiles, E.cols());
+		Eigen::MatrixXd Vtmp, Vnew;
+		Eigen::MatrixXi Etmp, Enew;
+		Vtmp.setZero(V.rows() * n_tiles * n_tiles, V.cols());
+		Etmp.setZero(E.rows() * n_tiles * n_tiles, E.cols());
 
 		Eigen::MatrixXd tile_offset = periodic_bc->get_affine_matrix();
 
@@ -1322,73 +1336,75 @@ namespace polyfem
 			}
 		}
 
-        // clean duplicated vertices
-        Eigen::VectorXi indices;
-        {
-            std::vector<int> tmp;
-            for (int i = 0; i < V.rows(); i++)
-            {
-                if (periodic_bc->is_periodic_dof(i))
-                    tmp.push_back(i);
-            }
+		// clean duplicated vertices
+		Eigen::VectorXi indices;
+		{
+			std::vector<int> tmp;
+			for (int i = 0; i < V.rows(); i++)
+			{
+				if (periodic_bc->is_periodic_dof(i))
+					tmp.push_back(i);
+			}
 
-            indices.resize(tmp.size() * n_tiles * n_tiles);
-            for (int i = 0; i < n_tiles * n_tiles; i++)
-            {
-                indices.segment(i * tmp.size(), tmp.size()) = Eigen::Map<Eigen::VectorXi, Eigen::Unaligned>(tmp.data(), tmp.size());
-                indices.segment(i * tmp.size(), tmp.size()).array() += i * V.rows();
-            }
-        }
+			indices.resize(tmp.size() * n_tiles * n_tiles);
+			for (int i = 0; i < n_tiles * n_tiles; i++)
+			{
+				indices.segment(i * tmp.size(), tmp.size()) = Eigen::Map<Eigen::VectorXi, Eigen::Unaligned>(tmp.data(), tmp.size());
+				indices.segment(i * tmp.size(), tmp.size()).array() += i * V.rows();
+			}
+		}
 
-        Eigen::VectorXi potentially_duplicate_mask(Vtmp.rows());
-        potentially_duplicate_mask.setZero();
-        potentially_duplicate_mask(indices).array() = 1;
-        Eigen::MatrixXd candidates = Vtmp(indices, Eigen::all);
+		Eigen::VectorXi potentially_duplicate_mask(Vtmp.rows());
+		potentially_duplicate_mask.setZero();
+		potentially_duplicate_mask(indices).array() = 1;
 
-        Eigen::VectorXi SVI;
-        std::vector<int> SVJ;
-        SVI.setConstant(Vtmp.rows(), -1);
-        int id = 0;
+		Eigen::MatrixXd candidates = Vtmp(indices, Eigen::all);
+
+		Eigen::VectorXi SVI;
+		std::vector<int> SVJ;
+		SVI.setConstant(Vtmp.rows(), -1);
+		int id = 0;
 		const double eps = (bbox.col(1) - bbox.col(0)).maxCoeff() * args["boundary_conditions"]["periodic_boundary"]["tolerance"].get<double>();
-        for (int i = 0; i < Vtmp.rows(); i++)
-        {
-            if (SVI[i] < 0)
-            {
-                SVI[i] = id;
-                SVJ.push_back(i);
-                if (potentially_duplicate_mask(i))
-                {
-                    Eigen::VectorXd diffs = (candidates.rowwise() - Vtmp.row(i)).rowwise().norm();
-                    for (int j = 0; j < diffs.size(); j++)
-                        if (diffs(j) < eps)
-                            SVI[indices[j]] = id;
-                }
-                id++;
-            }
-        }
-        Vnew = Vtmp(SVJ, Eigen::all);
+		for (int i = 0; i < Vtmp.rows(); i++)
+		{
+			if (SVI[i] < 0)
+			{
+				SVI[i] = id;
+				SVJ.push_back(i);
+				if (potentially_duplicate_mask(i))
+				{
+					Eigen::VectorXd diffs = (candidates.rowwise() - Vtmp.row(i)).rowwise().norm();
+					for (int j = 0; j < diffs.size(); j++)
+						if (diffs(j) < eps)
+							SVI[indices[j]] = id;
+				}
+				id++;
+			}
+		}
 
-        Enew.resizeLike(Etmp);
-        for (int d = 0; d < Etmp.cols(); d++)
-            Enew.col(d) = SVI(Etmp.col(d));
+		Vnew = Vtmp(SVJ, Eigen::all);
+
+		Enew.resizeLike(Etmp);
+		for (int d = 0; d < Etmp.cols(); d++)
+			Enew.col(d) = SVI(Etmp.col(d));
 
 		std::vector<bool> is_on_surface = ipc::CollisionMesh::construct_is_on_surface(Vnew.rows(), Enew);
 
 		Eigen::MatrixXi boundary_triangles;
 		Eigen::SparseMatrix<double> displacement_map;
 		periodic_collision_mesh = ipc::CollisionMesh(is_on_surface,
-											 Vnew,
-											 Enew,
-											 boundary_triangles,
-											 displacement_map);
-		
+													 Vnew,
+													 Enew,
+													 boundary_triangles,
+													 displacement_map);
+
 		periodic_collision_mesh.init_area_jacobians();
 
 		periodic_collision_mesh_to_basis.setConstant(Vnew.rows(), -1);
 		for (int i = 0; i < V.rows(); i++)
 			for (int j = 0; j < n_tiles * n_tiles; j++)
 				periodic_collision_mesh_to_basis(SVI[j * V.rows() + i]) = i;
-		
+
 		if (periodic_collision_mesh_to_basis.maxCoeff() + 1 != V.rows())
 			log_and_throw_error("Failed to tile mesh!");
 	}
@@ -1627,6 +1643,21 @@ namespace polyfem
 			rhs_solver_params);
 	}
 
+	std::shared_ptr<PressureAssembler> State::build_pressure_assembler(
+		const int n_bases_,
+		const std::vector<basis::ElementBases> &bases_) const
+	{
+		const int size = problem->is_scalar() ? 1 : mesh->dimension();
+
+		return std::make_shared<PressureAssembler>(
+			*assembler, *mesh, obstacle,
+			local_pressure_boundary,
+			local_pressure_cavity,
+			boundary_nodes,
+			primitive_to_node(), node_to_primitive(),
+			n_bases_, size, bases_, geom_bases(), *problem);
+	}
+
 	void State::assemble_rhs()
 	{
 		if (!mesh)
@@ -1747,7 +1778,7 @@ namespace polyfem
 				solve_transient_navier_stokes_split(time_steps, dt, sol, pressure);
 			else if (is_homogenization())
 				solve_homogenization(time_steps, t0, dt, sol);
-			else if (assembler->is_linear() && !is_contact_enabled()) // Collisions add nonlinearity to the problem
+			else if (is_problem_linear())
 				solve_transient_linear(time_steps, t0, dt, sol, pressure);
 			else if (!assembler->is_linear() && problem->is_scalar())
 				throw std::runtime_error("Nonlinear scalar problems are not supported yet!");
@@ -1760,7 +1791,7 @@ namespace polyfem
 				solve_navier_stokes(sol, pressure);
 			else if (is_homogenization())
 				solve_homogenization(/* time steps */ 0, /* t0 */ 0, /* dt */ 0, sol);
-			else if (assembler->is_linear() && !is_contact_enabled())
+			else if (is_problem_linear())
 			{
 				init_linear_solve(sol);
 				solve_linear(sol, pressure);

@@ -3,6 +3,8 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
+#include <ipc/utils/eigen_ext.hpp>
+
 namespace polyfem
 {
 	// Stack-allocated vectors of size either 2 or 3
