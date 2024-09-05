@@ -19,7 +19,7 @@ namespace polyfem::solver
 	{
 	public:
 		AdjointNLProblem(std::shared_ptr<AdjointForm> form, const VariableToSimulationGroup &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args);
-		AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<AdjointForm>> stopping_conditions, const VariableToSimulationGroup &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args);
+		AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<AdjointForm>> &stopping_conditions, const VariableToSimulationGroup &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args);
 		virtual ~AdjointNLProblem() = default;
 
 		double value(const Eigen::VectorXd &x) override;
@@ -39,7 +39,7 @@ namespace polyfem::solver
 		void solution_changed(const Eigen::VectorXd &new_x) override;
 		bool smooth_step(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 		void solve_pde();
-		
+
 	private:
 		std::shared_ptr<AdjointForm> form_;
 		const VariableToSimulationGroup variables_to_simulation_;
@@ -52,6 +52,7 @@ namespace polyfem::solver
 		std::ofstream solution_ostream;
 
 		const bool enable_slim;
+		const bool smooth_line_search;
 
 		const bool solve_in_parallel;
 		std::vector<int> solve_in_order;

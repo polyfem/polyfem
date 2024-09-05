@@ -167,4 +167,19 @@ namespace polyfem::solver
 		Eigen::SparseMatrix<double> tt_radius_adjacency;
 		Eigen::VectorXd tt_radius_adjacency_row_sum;
 	};
+
+	class ScalarVelocityParametrization : public Parametrization
+	{
+	public:
+		ScalarVelocityParametrization(const double start_val, const double dt) : start_val_(start_val), dt_(dt) {}
+
+		int size(const int x_size) const override { return x_size; }
+		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
+		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
+		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
+
+	private:
+		const double start_val_;
+		const double dt_;
+	};
 } // namespace polyfem::solver

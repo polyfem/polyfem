@@ -3,6 +3,7 @@
 
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/io/Evaluator.hpp>
+#include <polyfem/io/Evaluator.hpp>
 
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/MultiModel.hpp>
@@ -390,7 +391,7 @@ namespace polyfem
 		{
 			logger().error("specify some 'materials'");
 			assert(!args["materials"].is_null());
-			throw "invalid input";
+			throw std::runtime_error("invalid input");
 		}
 
 		if (args["materials"].is_array())
@@ -425,13 +426,13 @@ namespace polyfem
 						else
 						{
 							logger().error("Current material is {}, new material is {}, multimaterial supported only for LinearElasticity and NeoHookean", current, tmp);
-							throw "invalid input";
+							throw std::runtime_error("invalid input");
 						}
 					}
 					else
 					{
 						logger().error("Current material is {}, new material is {}, multimaterial supported only for LinearElasticity and NeoHookean", current, tmp);
-						throw "invalid input";
+						throw std::runtime_error("invalid input");
 					}
 				}
 			}
@@ -598,6 +599,7 @@ namespace polyfem
 		polys.clear();
 		poly_edge_to_data.clear();
 		rhs.resize(0, 0);
+		basis_nodes_to_gbasis_nodes.resize(0, 0);
 
 		if (assembler::MultiModel *mm = dynamic_cast<assembler::MultiModel *>(assembler.get()))
 		{
@@ -684,7 +686,7 @@ namespace polyfem
 		else
 		{
 			logger().error("space/discr_order must be either a number a path or an array");
-			throw "invalid json";
+			throw std::runtime_error("invalid json");
 		}
 		// TODO: same for pressure!
 
@@ -864,8 +866,8 @@ namespace polyfem
 				for (int d = 0; d < dim; d++)
 					coeffs.emplace_back(iter.first[0] * dim + d, iter.first[1] * dim + d, iter.second);
 
-			gbasis_nodes_to_basis_nodes.resize(n_geom_bases * mesh->dimension(), n_bases * mesh->dimension());
-			gbasis_nodes_to_basis_nodes.setFromTriplets(coeffs.begin(), coeffs.end());
+			basis_nodes_to_gbasis_nodes.resize(n_geom_bases * mesh->dimension(), n_bases * mesh->dimension());
+			basis_nodes_to_gbasis_nodes.setFromTriplets(coeffs.begin(), coeffs.end());
 		}
 
 		for (const auto &lb : local_boundary)
@@ -1207,7 +1209,7 @@ namespace polyfem
 				if (args["space"]["poly_basis_type"] == "MeanValue" || args["space"]["poly_basis_type"] == "Wachspress")
 				{
 					logger().error("Barycentric bases not supported in 3D");
-					throw "not implemented";
+					throw std::runtime_error("not implemented");
 				}
 				else
 				{

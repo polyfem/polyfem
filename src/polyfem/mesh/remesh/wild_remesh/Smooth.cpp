@@ -2,6 +2,7 @@
 #include <polyfem/mesh/remesh/L2Projection.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/assembler/MassMatrixAssembler.hpp>
+#include <polyfem/assembler/Mass.hpp>
 
 #include <wmtk/ExecutionScheduler.hpp>
 #include <wmtk/utils/TriQualityUtils.hpp>
@@ -60,12 +61,12 @@ namespace polyfem::mesh
 		Eigen::SparseMatrix<double> M, A;
 		{
 			assembler::MassMatrixAssembler assembler;
-			assembler::NoDensity no_density; // Density of one (i.e., no scaling of mass matrix)
+			assembler::Mass mass_matrix_assembler;
 			assembler::AssemblyValsCache cache;
 
-			assembler.assemble(
-				m.is_volume(), m.dim(), new_local_mesh.num_vertices(),
-				no_density, to_bases, to_bases, cache, M);
+			mass_matrix_assembler.assemble(
+				m.is_volume(), new_local_mesh.num_vertices(),
+				to_bases, to_bases, cache, 0, M, true);
 			assert(M.rows() == new_local_mesh.num_vertices() * m.dim());
 
 			assembler.assemble_cross(

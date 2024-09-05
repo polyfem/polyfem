@@ -4,6 +4,7 @@
 
 #include <igl/AABB.h>
 #include <polyfem/utils/ExpressionValue.hpp>
+#include <polyfem/utils/LazyCubicInterpolator.hpp>
 
 namespace polyfem::solver
 {
@@ -38,6 +39,69 @@ namespace polyfem::solver
 		bool have_target_func = false;
 		utils::ExpressionValue target_func;
 		std::array<utils::ExpressionValue, 3> target_func_grad;
+	};
+
+	class SDFTargetForm : public SpatialIntegralForm
+	{
+	public:
+		SDFTargetForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
+		{
+			set_integral_type(SpatialIntegralType::Surface);
+
+			auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
+			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+		}
+
+		virtual std::string name() const override { return "sdf-target"; }
+
+		void solution_changed_step(const int time_step, const Eigen::VectorXd &new_x) override;
+		void set_bspline_target(const Eigen::MatrixXd &control_points, const Eigen::VectorXd &knots, const double delta);
+		void set_bspline_target(const Eigen::MatrixXd &control_points, const Eigen::VectorXd &knots_u, const Eigen::VectorXd &knots_v, const double delta);
+
+	protected:
+		IntegrableFunctional get_integral_functional() const override;
+
+	private:
+		void compute_distance(const Eigen::MatrixXd &point, double &distance) const;
+
+		int dim;
+		double delta_;
+
+		Eigen::MatrixXd t_or_uv_sampling;
+		Eigen::MatrixXd point_sampling;
+		int samples;
+
+		std::unique_ptr<LazyCubicInterpolator> interpolation_fn;
+	};
+
+	class MeshTargetForm : public SpatialIntegralForm
+	{
+	public:
+		MeshTargetForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
+		{
+			set_integral_type(SpatialIntegralType::Surface);
+
+			auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
+			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+		}
+
+		virtual std::string name() const override { return "mesh-target"; }
+
+		void solution_changed_step(const int time_step, const Eigen::VectorXd &new_x) override;
+		void set_surface_mesh_target(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const double delta);
+
+	protected:
+		IntegrableFunctional get_integral_functional() const override;
+
+	private:
+		int dim;
+		double delta_;
+
+		Eigen::MatrixXd V_;
+		Eigen::MatrixXi F_;
+		igl::AABB<Eigen::MatrixXd, 3> tree_;
+
+		std::unique_ptr<LazyCubicInterpolator> interpolation_fn;
 	};
 
 	class NodeTargetForm : public StaticForm

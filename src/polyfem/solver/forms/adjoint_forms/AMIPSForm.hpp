@@ -52,14 +52,14 @@ namespace polyfem::solver
 	private:
 		Eigen::VectorXd get_updated_mesh_nodes(const Eigen::VectorXd &x) const
 		{
-			Eigen::VectorXd X = X_init;
+			Eigen::VectorXd X = X_rest;
 			variable_to_simulations_.compute_state_variable(ParameterType::Shape, &state_, x, X);
 			return X;
 		}
 
 		const State &state_;
 
-		Eigen::VectorXd X_init;
+		Eigen::VectorXd X_rest;
 		Eigen::MatrixXi F;
 		std::vector<polyfem::basis::ElementBases> init_geom_bases_;
 		assembler::AssemblyValsCache init_ass_vals_cache_;

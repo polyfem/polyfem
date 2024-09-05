@@ -72,8 +72,8 @@ AuthenticateResult authenticate_json(const std::string &json_file, const bool co
 	else
 		time_steps = args[tests_key]["time_steps"];
 
-	args["output"] = json({});
-	args["output"]["advanced"]["save_time_sequence"] = false;
+	// args["output"] = json({});
+	// args["output"]["advanced"]["save_time_sequence"] = false;
 
 	if (time_steps.is_number())
 	{
@@ -193,10 +193,11 @@ std::string tagsrun = "[run]";
 #else
 std::string tagsrun = "[.][run]";
 #endif
-TEST_CASE("runners", tagsrun)
+
+void run_data(const std::string &test_file, const std::string &dir)
 {
 	// Disabled on Windows CI, due to the requirement for Pardiso.
-	std::ifstream file(POLYFEM_TEST_DIR "/system_test_list.txt");
+	std::ifstream file(POLYFEM_TEST_DIR "/" + test_file + ".txt");
 	std::vector<std::string> failing_tests;
 	std::string line;
 	while (std::getline(file, line))
@@ -210,7 +211,7 @@ TEST_CASE("runners", tagsrun)
 			line = line.substr(1);
 		}
 		spdlog::info("Processing {}", line);
-		AuthenticateResult result = authenticate_json(POLYFEM_DATA_DIR "/" + line, compute_validation);
+		AuthenticateResult result = authenticate_json(dir + "/" + line, compute_validation);
 		CAPTURE(line);
 		CHECK(result == SUCCESS);
 		if (result != SUCCESS)
@@ -222,4 +223,39 @@ TEST_CASE("runners", tagsrun)
 		for (auto &t : failing_tests)
 			std::cout << t << std::endl;
 	}
+}
+
+TEST_CASE("contact_2d", tagsrun)
+{
+	run_data("contact_2d", POLYFEM_DATA_DIR);
+}
+
+TEST_CASE("contact_3d", tagsrun)
+{
+	run_data("contact_3d", POLYFEM_DATA_DIR);
+}
+
+TEST_CASE("selection", tagsrun)
+{
+	run_data("selection", POLYFEM_DATA_DIR);
+}
+
+TEST_CASE("standard", tagsrun)
+{
+	run_data("standard", POLYFEM_DATA_DIR);
+}
+
+TEST_CASE("time_int", tagsrun)
+{
+	run_data("time_int", POLYFEM_DATA_DIR);
+}
+
+TEST_CASE("runners-pref", tagsrun)
+{
+	run_data("pref_test_list", POLYFEM_PREF_DIR);
+}
+
+TEST_CASE("runners-polyspline", tagsrun)
+{
+	run_data("polyspline_test_list", POLYFEM_POLYSPLINE_DIR);
 }

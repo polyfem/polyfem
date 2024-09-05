@@ -565,7 +565,7 @@ namespace polyfem::solver
 			if (state.solve_data.pressure_form)
 			{
 				state.solve_data.pressure_form->force_shape_derivative(state.n_geom_bases, 0, sol, adjoint, pressure_term);
-				pressure_term = state.gbasis_nodes_to_basis_nodes * pressure_term;
+				pressure_term = state.basis_nodes_to_gbasis_nodes * pressure_term;
 			}
 			else
 				pressure_term.setZero(one_form.size());
@@ -573,7 +573,7 @@ namespace polyfem::solver
 			if (state.is_contact_enabled())
 			{
 				state.solve_data.contact_form->force_shape_derivative(state.diff_cached.collision_set(0), sol, adjoint, contact_term);
-				contact_term = state.gbasis_nodes_to_basis_nodes * contact_term;
+				contact_term = state.basis_nodes_to_gbasis_nodes * contact_term;
 			}
 			else
 				contact_term.setZero(elasticity_term.size());
@@ -616,7 +616,7 @@ namespace polyfem::solver
 				state.solve_data.elastic_form->force_shape_derivative(t, state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i), cur_p, elasticity_term);
 				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, t, state.diff_cached.u(i - 1), cur_p, rhs_term);
 				state.solve_data.pressure_form->force_shape_derivative(state.n_geom_bases, t, state.diff_cached.u(i), cur_p, pressure_term);
-				pressure_term = state.gbasis_nodes_to_basis_nodes * pressure_term;
+				pressure_term = state.basis_nodes_to_gbasis_nodes * pressure_term;
 
 				if (state.solve_data.damping_form)
 					state.solve_data.damping_form->force_shape_derivative(t, state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i - 1), cur_p, damping_term);
@@ -626,7 +626,7 @@ namespace polyfem::solver
 				if (state.is_contact_enabled())
 				{
 					state.solve_data.contact_form->force_shape_derivative(state.diff_cached.collision_set(i), state.diff_cached.u(i), cur_p, contact_term);
-					contact_term = state.gbasis_nodes_to_basis_nodes * contact_term;
+					contact_term = state.basis_nodes_to_gbasis_nodes * contact_term;
 					// contact_term /= beta_dt * beta_dt;
 				}
 				else
@@ -635,7 +635,7 @@ namespace polyfem::solver
 				if (state.solve_data.friction_form)
 				{
 					state.solve_data.friction_form->force_shape_derivative(state.diff_cached.u(i - 1), state.diff_cached.u(i), cur_p, state.diff_cached.friction_collision_set(i), friction_term);
-					friction_term = state.gbasis_nodes_to_basis_nodes * (friction_term / beta);
+					friction_term = state.basis_nodes_to_gbasis_nodes * (friction_term / beta);
 					// friction_term /= beta_dt * beta_dt;
 				}
 				else
@@ -832,6 +832,8 @@ namespace polyfem::solver
 		const int bdf_order = get_bdf_order(state);
 		const int n_dirichlet_dof = state.boundary_nodes.size();
 
+		// Map dirichlet gradient on each node to dirichlet gradient on boundary ids
+
 		one_form.setZero(time_steps * n_dirichlet_dof);
 		for (int i = 1; i <= time_steps; ++i)
 		{
@@ -839,6 +841,70 @@ namespace polyfem::solver
 			const double beta_dt = time_integrator::BDF::betas(real_order - 1) * dt;
 
 			one_form.segment((i - 1) * n_dirichlet_dof, n_dirichlet_dof) = -(1. / beta_dt) * adjoint_p(state.boundary_nodes, i);
+		}
+	}
+
+	void AdjointTools::dJ_pressure_static_adjoint_term(
+		const State &state,
+		const std::vector<int> &boundary_ids,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &adjoint,
+		Eigen::VectorXd &one_form)
+	{
+		const int n_pressure_dof = boundary_ids.size();
+
+		one_form.setZero(n_pressure_dof);
+
+		for (int i = 0; i < boundary_ids.size(); ++i)
+		{
+			double pressure_term = state.solve_data.pressure_form->force_pressure_derivative(
+				state.n_geom_bases,
+				0,
+				boundary_ids[i],
+				sol,
+				adjoint);
+			one_form(i) = pressure_term;
+		}
+	}
+
+	void AdjointTools::dJ_pressure_transient_adjoint_term(
+		const State &state,
+		const std::vector<int> &boundary_ids,
+		const Eigen::MatrixXd &adjoint_nu,
+		const Eigen::MatrixXd &adjoint_p,
+		Eigen::VectorXd &one_form)
+	{
+		const double t0 = state.args["time"]["t0"];
+		const double dt = state.args["time"]["dt"];
+		const int time_steps = state.args["time"]["time_steps"];
+		const int bdf_order = get_bdf_order(state);
+
+		const int n_pressure_dof = boundary_ids.size();
+
+		one_form.setZero(time_steps * n_pressure_dof);
+		Eigen::VectorXd cur_p, cur_nu;
+		for (int i = time_steps; i > 0; --i)
+		{
+			const int real_order = std::min(bdf_order, i);
+			double beta = time_integrator::BDF::betas(real_order - 1);
+			double beta_dt = beta * dt;
+			const double t = i * dt + t0;
+
+			cur_p = adjoint_p.col(i);
+			cur_nu = adjoint_nu.col(i);
+			cur_p(state.boundary_nodes).setZero();
+			cur_nu(state.boundary_nodes).setZero();
+
+			for (int b = 0; b < boundary_ids.size(); ++b)
+			{
+				double pressure_term = state.solve_data.pressure_form->force_pressure_derivative(
+					state.n_geom_bases,
+					t,
+					boundary_ids[b],
+					state.diff_cached.u(i),
+					cur_p);
+				one_form((i - 1) * n_pressure_dof + b) = -beta_dt * pressure_term;
+			}
 		}
 	}
 
@@ -1146,5 +1212,102 @@ namespace polyfem::solver
 	Eigen::MatrixXd AdjointTools::face_velocity_divergence(const Eigen::MatrixXd &V)
 	{
 		return triangle_area_grad(V) / triangle_area<double>(V);
+	}
+
+	double AdjointTools::triangle_jacobian(const Eigen::VectorXd &v1, const Eigen::VectorXd &v2, const Eigen::VectorXd &v3)
+	{
+		Eigen::VectorXd a = v2 - v1, b = v3 - v1;
+		return a(0) * b(1) - b(0) * a(1);
+	}
+
+	double AdjointTools::tet_determinant(const Eigen::VectorXd &v1, const Eigen::VectorXd &v2, const Eigen::VectorXd &v3, const Eigen::VectorXd &v4)
+	{
+		Eigen::Matrix3d mat;
+		mat.col(0) << v2 - v1;
+		mat.col(1) << v3 - v1;
+		mat.col(2) << v4 - v1;
+		return mat.determinant();
+	}
+
+	void AdjointTools::scaled_jacobian(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, Eigen::VectorXd &quality)
+	{
+		const int dim = F.cols() - 1;
+
+		quality.setZero(F.rows());
+		if (dim == 2)
+		{
+			for (int i = 0; i < F.rows(); i++)
+			{
+				Eigen::RowVector3d e0;
+				e0(2) = 0;
+				e0.head(2) = V.row(F(i, 2)) - V.row(F(i, 1));
+				Eigen::RowVector3d e1;
+				e1(2) = 0;
+				e1.head(2) = V.row(F(i, 0)) - V.row(F(i, 2));
+				Eigen::RowVector3d e2;
+				e2(2) = 0;
+				e2.head(2) = V.row(F(i, 1)) - V.row(F(i, 0));
+
+				double l0 = e0.norm();
+				double l1 = e1.norm();
+				double l2 = e2.norm();
+
+				double A = 0.5 * (e0.cross(e1)).norm();
+				double Lmax = std::max(l0 * l1, std::max(l1 * l2, l0 * l2));
+
+				quality(i) = 2 * A * (2 / sqrt(3)) / Lmax;
+			}
+		}
+		else
+		{
+			for (int i = 0; i < F.rows(); i++)
+			{
+				Eigen::RowVector3d e0 = V.row(F(i, 1)) - V.row(F(i, 0));
+				Eigen::RowVector3d e1 = V.row(F(i, 2)) - V.row(F(i, 1));
+				Eigen::RowVector3d e2 = V.row(F(i, 0)) - V.row(F(i, 2));
+				Eigen::RowVector3d e3 = V.row(F(i, 3)) - V.row(F(i, 0));
+				Eigen::RowVector3d e4 = V.row(F(i, 3)) - V.row(F(i, 1));
+				Eigen::RowVector3d e5 = V.row(F(i, 3)) - V.row(F(i, 2));
+
+				double l0 = e0.norm();
+				double l1 = e1.norm();
+				double l2 = e2.norm();
+				double l3 = e3.norm();
+				double l4 = e4.norm();
+				double l5 = e5.norm();
+
+				double J = std::abs((e0.cross(e3)).dot(e2));
+
+				double a1 = l0 * l2 * l3;
+				double a2 = l0 * l1 * l4;
+				double a3 = l1 * l2 * l5;
+				double a4 = l3 * l4 * l5;
+
+				double a = std::max({a1, a2, a3, a4, J});
+				quality(i) = J * sqrt(2) / a;
+			}
+		}
+	}
+
+	bool AdjointTools::is_flipped(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
+	{
+		if (F.cols() == 3)
+		{
+			for (int i = 0; i < F.rows(); i++)
+				if (triangle_jacobian(V.row(F(i, 0)), V.row(F(i, 1)), V.row(F(i, 2))) <= 0)
+					return true;
+		}
+		else if (F.cols() == 4)
+		{
+			for (int i = 0; i < F.rows(); i++)
+				if (tet_determinant(V.row(F(i, 0)), V.row(F(i, 1)), V.row(F(i, 2)), V.row(F(i, 3))) <= 0)
+					return true;
+		}
+		else
+		{
+			return true;
+		}
+
+		return false;
 	}
 } // namespace polyfem::solver

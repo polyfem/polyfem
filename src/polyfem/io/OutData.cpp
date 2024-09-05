@@ -159,6 +159,12 @@ namespace polyfem::io
 
 		if (mesh.is_volume())
 		{
+			if (mesh.has_poly())
+			{
+				logger().warn("Skipping as the mesh has polygons");
+				return;
+			}
+
 			const bool is_simplicial = mesh.is_simplicial();
 
 			node_positions.resize(n_bases + (is_simplicial ? 0 : mesh.n_faces()), 3);
@@ -1093,7 +1099,7 @@ namespace polyfem::io
 
 		scalar_values = args["output"]["paraview"]["options"]["scalar_values"];
 		tensor_values = args["output"]["paraview"]["options"]["tensor_values"] && !is_problem_scalar;
-		discretization_order = args["output"]["paraview"]["options"]["discretization_order"] && !is_problem_scalar;
+		discretization_order = args["output"]["paraview"]["options"]["discretization_order"];
 		nodes = args["output"]["paraview"]["options"]["nodes"] && !is_problem_scalar;
 
 		use_spline = args["space"]["basis_type"] == "Spline";

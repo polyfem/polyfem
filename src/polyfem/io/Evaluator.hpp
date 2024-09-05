@@ -14,24 +14,9 @@ namespace polyfem::io
 	class Evaluator
 	{
 	private:
-		Evaluator(){};
+		Evaluator() {};
 
 	public:
-		/// evaluates the function fun at the vertices on the mesh
-		/// @param[in] mesh mesh
-		/// @param[in] actual_dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
-		/// @param[in] basis basis function
-		/// @param[in] sampler sampler for the local element
-		/// @param[in] fun function to interpolate
-		/// @param[out] result output
-		static void compute_vertex_values(
-			const mesh::Mesh &mesh,
-			int actual_dim,
-			const std::vector<basis::ElementBases> &bases,
-			const utils::RefElementSampler &sampler,
-			const Eigen::MatrixXd &fun,
-			Eigen::MatrixXd &result);
-
 		/// compute von mises stress at quadrature points for the function fun, also compute the interpolated function
 		/// @param[in] mesh mesh
 		/// @param[in] is_problem_scalar if problem is scalar
@@ -311,101 +296,6 @@ namespace polyfem::io
 			const bool compute_avg,
 			Eigen::MatrixXd &result);
 
-		/// computes integrated solution (fun) per surface face vertex. pts and faces are the boundary are the boundary on the rest configuration
-		/// @param[in] mesh mesh
-		/// @param[in] is_problem_scalar if problem is scalar
-		/// @param[in] bases bases
-		/// @param[in] gbases geom bases
-		/// @param[in] pts boundary points
-		/// @param[in] faces boundary faces
-		/// @param[in] fun function to used
-		/// @param[out] result resulting value
-		static void interpolate_boundary_function_at_vertices(
-			const mesh::Mesh &mesh,
-			const bool is_problem_scalar,
-			const std::vector<basis::ElementBases> &bases,
-			const std::vector<basis::ElementBases> &gbases,
-			const Eigen::MatrixXd &pts,
-			const Eigen::MatrixXi &faces,
-			const Eigen::MatrixXd &fun,
-			Eigen::MatrixXd &result);
-
-		/// computes traction forces for fun (tensor * surface normal) result, stress tensor, and von mises, per surface face. pts and faces are the boundary on the rest configuration.
-		/// disp is the displacement of the surface vertices
-		/// @param[in] mesh mesh
-		/// @param[in] is_problem_scalar if problem is scalar
-		/// @param[in] bases bases
-		/// @param[in] gbases geom bases
-		/// @param[in] assembler assembler
-		/// @param[in] pts boundary points
-		/// @param[in] faces boundary faces
-		/// @param[in] fun function to used
-		/// @param[in] disp displacement to deform mesh
-		/// @param[in] t time
-		/// @param[in] compute_avg if compute the average across elements
-		/// @param[out] result resulting value
-		/// @param[out] stresses resulting stresses
-		/// @param[out] mises resulting mises
-		/// @param[in] skip_orientation skip reorientation of surface
-		static void interpolate_boundary_tensor_function(
-			const mesh::Mesh &mesh,
-			const bool is_problem_scalar,
-			const std::vector<basis::ElementBases> &bases,
-			const std::vector<basis::ElementBases> &gbases,
-			const assembler::Assembler &assembler,
-			const Eigen::MatrixXd &pts,
-			const Eigen::MatrixXi &faces,
-			const Eigen::MatrixXd &fun,
-			const Eigen::MatrixXd &disp,
-			const double t,
-			const bool compute_avg,
-			Eigen::MatrixXd &result,
-			Eigen::MatrixXd &stresses,
-			Eigen::MatrixXd &mises,
-			bool skip_orientation = false);
-
-		/// same as interpolate_boundary_tensor_function with disp=0
-		/// @param[in] mesh mesh
-		/// @param[in] is_problem_scalar if problem is scalar
-		/// @param[in] bases bases
-		/// @param[in] gbases geom bases
-		/// @param[in] assembler assembler
-		/// @param[in] pts boundary points
-		/// @param[in] faces boundary faces
-		/// @param[in] fun function to used
-		/// @param[in] t time
-		/// @param[in] compute_avg if compute the average across elements
-		/// @param[out] result resulting value
-		/// @param[out] stresses resulting stresses
-		/// @param[out] mises resulting mises
-		/// @param[in] skip_orientation skip reorientation of surface
-		static void interpolate_boundary_tensor_function(
-			const mesh::Mesh &mesh,
-			const bool is_problem_scalar,
-			const std::vector<basis::ElementBases> &bases,
-			const std::vector<basis::ElementBases> &gbases,
-			const assembler::Assembler &assembler,
-			const Eigen::MatrixXd &pts,
-			const Eigen::MatrixXi &faces,
-			const Eigen::MatrixXd &fun,
-			const double t,
-			const bool compute_avg,
-			Eigen::MatrixXd &result,
-			Eigen::MatrixXd &stresses,
-			Eigen::MatrixXd &mises,
-			const bool skip_orientation = false);
-
-		/// returns a triangulated representation of the sideset. sidesets contains integers mapping to faces
-		/// @param[in] mesh mesh
-		/// @param[out] pts boundary points
-		/// @param[out] faces boundary faces
-		/// @param[out] sidesets resulting sidesets
-		static void get_sidesets(
-			const mesh::Mesh &mesh,
-			Eigen::MatrixXd &pts,
-			Eigen::MatrixXi &faces,
-			Eigen::MatrixXd &sidesets);
-
 		static Eigen::MatrixXd generate_linear_field(
 			const int n_bases,
 			const std::shared_ptr<mesh::MeshNodes> mesh_nodes,
@@ -414,7 +304,7 @@ namespace polyfem::io
 		static Eigen::MatrixXd get_bases_position(
 			const int n_bases,
 			const std::shared_ptr<mesh::MeshNodes> mesh_nodes);
-		
+
 		static Eigen::VectorXd integrate_function(
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
