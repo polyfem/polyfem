@@ -143,56 +143,6 @@ namespace polyfem
 		assert(!problem->is_scalar());                           // tensor
 		assert(mixed_assembler == nullptr);
 
-		if (!problem->is_time_dependent() && args["solver"]["advanced"]["intersection_free_initial_displacement"] > 0)
-		{
-			const int dim = mesh->dimension();
-			const double step_size = args["solver"]["advanced"]["intersection_free_initial_displacement"];
-			sol.setZero(ndof(), 1);
-
-			Eigen::MatrixXd uv, samples;
-			Eigen::VectorXi global_primitive_ids;
-			Eigen::MatrixXd points, normals;
-			Eigen::VectorXd weights;
-			polyfem::assembler::ElementAssemblyValues vals;
-			Eigen::VectorXi cnts(n_bases);
-			cnts.setZero();
-			for (const auto &lb : total_local_boundary)
-			{
-				const int e = lb.element_id();
-
-				for (int i = 0; i < lb.size(); i++)
-				{
-					const int global_primitive_id = lb.global_primitive_id(i);
-					bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, n_boundary_samples(), *mesh, i, false, uv, points, normals, weights);
-
-					if (!has_samples)
-						continue;
-
-					const basis::ElementBases &gbs = geom_bases()[e];
-					const basis::ElementBases &bs = bases[e];
-
-					vals.compute(e, mesh->is_volume(), points, bs, gbs);
-
-					for (int n = 0; n < normals.rows(); ++n)
-					{
-						normals.row(n) = normals.row(n) * vals.jac_it[n];
-						normals.row(n).normalize();
-					}
-
-					for (const auto &b : vals.basis_values)
-					{
-						for (const auto &g : b.global)
-						{
-							sol.block(g.index * dim, 0, dim, 1) -= normals.row(0).transpose() * step_size;
-							cnts(g.index)++;
-						}
-					}
-				}
-			}
-			for (int i = 0; i < cnts.size(); i++)
-				sol.block(i * dim, 0, dim, 1) /= std::max(cnts(i), 1);
-		}
-
 		if (optimization_enabled != solver::CacheLevel::None)
 		{
 			if (initial_sol_update.size() == ndof())
@@ -321,7 +271,6 @@ namespace polyfem
 			*solve_data.rhs_assembler, periodic_bc, t, forms);
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
-		solve_data.nl_problem->state_ = this;
 		// --------------------------------------------------------------------
 
 		stats.solver_info = json::array();

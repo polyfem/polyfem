@@ -288,7 +288,6 @@ namespace polyfem::solver
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(data.x);
 
 		const double curr_distance = collision_set_.compute_minimum_distance(collision_mesh_, displaced_surface);
-		logger().debug("Current minimum distance {}", sqrt(curr_distance));
 
 		if (use_adaptive_barrier_stiffness_)
 		{
