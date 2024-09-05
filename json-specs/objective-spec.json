@@ -38,7 +38,6 @@
             "layer_thickness",
             "layer_thickness_log",
             "AMIPS",
-            "AMIPS-clean",
             "parametrized_product",
             "min_jacobian",
             "min-dist-target"
@@ -957,21 +956,6 @@
         "pointer": "/",
         "type": "object",
         "type_name": "AMIPS",
-        "required": [
-            "type",
-            "state"
-        ],
-        "optional": [
-            "volume_selection",
-            "weight",
-            "print_energy"
-        ],
-        "doc": "TODO"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "AMIPS-clean",
         "required": [
             "type",
             "state"
