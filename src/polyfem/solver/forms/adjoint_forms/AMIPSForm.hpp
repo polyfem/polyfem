@@ -65,21 +65,4 @@ namespace polyfem::solver
 		assembler::AssemblyValsCache init_ass_vals_cache_;
 		std::shared_ptr<assembler::Assembler> amips_energy_;
 	};
-
-	class AMIPSFormClean : public AdjointForm
-	{
-	public:
-		AMIPSFormClean(const VariableToSimulationGroup& variable_to_simulation, const State &state);
-
-		virtual std::string name() const override { return "AMIPS-new"; }
-
-		double value_unweighted(const Eigen::VectorXd &x) const override;
-		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
-		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
-
-	private:
-		Eigen::VectorXd X;
-		Eigen::MatrixXi F;
-		const State &state_;
-	};
 } // namespace polyfem::solver

@@ -107,8 +107,6 @@ namespace polyfem::solver
 			obj = std::make_shared<MinJacobianForm>(var2sim, *state);
 		else if (obj_type == "AMIPS")
 			obj = std::make_shared<AMIPSForm>(var2sim, *state);
-		else if (obj_type == "AMIPS-clean")
-			obj = std::make_shared<AMIPSFormClean>(var2sim, *state);
 		else if (obj_type == "function-target")
 		{
 			std::shared_ptr<TargetForm> tmp = std::make_shared<TargetForm>(var2sim, *state, args);
@@ -325,10 +323,6 @@ namespace polyfem::solver
 			else if (type == "AMIPS")
 			{
 				obj = std::make_shared<AMIPSForm>(var2sim, *(states[args["state"]]));
-			}
-			else if (type == "AMIPS-clean")
-			{
-				obj = std::make_shared<AMIPSFormClean>(var2sim, *(states[args["state"]]));
 			}
 			else if (type == "boundary_smoothing")
 			{

@@ -4,54 +4,15 @@
 #include <igl/boundary_facets.h>
 #include <polyfem/utils/Logger.hpp>
 #include <igl/slim.h>
+#include <polyfem/solver/AdjointTools.hpp>
 
 namespace polyfem::mesh
 {
-	namespace
-	{
-		double triangle_jacobian(const Eigen::VectorXd &v1, const Eigen::VectorXd &v2, const Eigen::VectorXd &v3)
-		{
-			Eigen::VectorXd a = v2 - v1, b = v3 - v1;
-			return a(0) * b(1) - b(0) * a(1);
-		}
-
-		double tet_determinant(const Eigen::Vector3d &v1, const Eigen::Vector3d &v2, const Eigen::Vector3d &v3, const Eigen::Vector3d &v4)
-		{
-			Eigen::Matrix3d mat;
-            mat <<
-                v2 - v1,
-                v3 - v1,
-                v4 - v1;
-			return mat.determinant();
-		}
-
-		bool is_flipped(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
-		{
-			if (F.cols() == 3)
-			{
-				for (int i = 0; i < F.rows(); i++)
-					if (triangle_jacobian(V.row(F(i, 0)), V.row(F(i, 1)), V.row(F(i, 2))) <= 0)
-						return true;
-			}
-			else if (F.cols() == 4)
-			{
-				for (int i = 0; i < F.rows(); i++)
-					if (tet_determinant(V.row(F(i, 0)), V.row(F(i, 1)), V.row(F(i, 2)), V.row(F(i, 3))) <= 0)
-						return true;
-			}
-            else
-			    log_and_throw_adjoint_error("Invalid element type for Jacobian determinant!");
-			
-            return false;
-		}
-
-	} // namespace
-
 	bool apply_slim(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, const Eigen::MatrixXd &V_new, Eigen::MatrixXd &V_smooth, const int max_iters)
 	{
 		const int dim = F.cols() - 1;
 
-        if (is_flipped(V_new, F))
+        if (solver::AdjointTools::is_flipped(V_new, F))
         {
             adjoint_logger().warn("Mesh is flipped before SLIM!");
             return false;
