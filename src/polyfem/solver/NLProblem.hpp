@@ -5,6 +5,8 @@
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/assembler/PeriodicBoundary.hpp>
 
+#include <polyfem/State.hpp>
+
 namespace polyfem::solver
 {
 	class NLProblem : public FullNLProblem
@@ -38,7 +40,7 @@ namespace polyfem::solver
 		virtual bool is_step_valid(const TVector &x0, const TVector &x1) override;
 		virtual bool is_step_collision_free(const TVector &x0, const TVector &x1) override;
 		virtual double max_step_size(const TVector &x0, const TVector &x1) override;
-
+		void before_line_search(const TVector &x0, const TVector &x1) override;
 		void line_search_begin(const TVector &x0, const TVector &x1) override;
 		virtual void post_step(const polysolve::nonlinear::PostStepData &data) override;
 
@@ -63,6 +65,8 @@ namespace polyfem::solver
 		virtual TVector reduced_to_full(const TVector &reduced) const;
 
 		void set_apply_DBC(const TVector &x, const bool val);
+
+		State* state = nullptr;
 
 	protected:
 		virtual Eigen::MatrixXd boundary_values() const;

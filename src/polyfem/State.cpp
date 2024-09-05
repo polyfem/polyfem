@@ -601,6 +601,9 @@ namespace polyfem
 		rhs.resize(0, 0);
 		basis_nodes_to_gbasis_nodes.resize(0, 0);
 
+		if (!mesh->is_simplicial())
+			args["solver"]["advanced"]["check_inversion"] = "Discrete";
+
 		if (assembler::MultiModel *mm = dynamic_cast<assembler::MultiModel *>(assembler.get()))
 		{
 			assert(args["materials"].is_array());
