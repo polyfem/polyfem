@@ -252,7 +252,7 @@ namespace polyfem::assembler
 	}
 	template class GenericElastic<MooneyRivlinElasticity>;
 	template class GenericElastic<MooneyRivlin3ParamElasticity>;
-	template class GenericElastic<AMIPSEnergy>;
+	template class GenericElastic<AMIPSEnergyAutodiff>;
 	template class GenericElastic<UnconstrainedOgdenElasticity>;
 	template class GenericElastic<IncompressibleOgdenElasticity>;
 	template class GenericElastic<NeoHookeanAutodiff>;

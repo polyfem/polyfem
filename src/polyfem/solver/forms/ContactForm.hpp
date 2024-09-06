@@ -24,9 +24,7 @@ namespace ipc
 		 {ipc::BroadPhaseMethod::BVH, "bvh"},
 		 {ipc::BroadPhaseMethod::BVH, "BVH"},
 		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "sweep_and_tiniest_queue_gpu"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU, "STQ_GPU"}})
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"}})
 } // namespace ipc
 
 namespace polyfem::solver
@@ -55,40 +53,41 @@ namespace polyfem::solver
 					const ipc::BroadPhaseMethod broad_phase_method,
 					const double ccd_tolerance,
 					const int ccd_max_iterations);
+		virtual ~ContactForm() = default;
 
 		virtual std::string name() const override { return "contact"; }
 
 		/// @brief Initialize the form
 		/// @param x Current solution
-		void init(const Eigen::VectorXd &x) override;
+		virtual void init(const Eigen::VectorXd &x) override;
 
 	public:
 		/// @brief Update time-dependent fields
 		/// @param t Current time
 		/// @param x Current solution at time t
-		void update_quantities(const double t, const Eigen::VectorXd &x) override;
+		virtual void update_quantities(const double t, const Eigen::VectorXd &x) override;
 
 		/// @brief Determine the maximum step size allowable between the current and next solution
 		/// @param x0 Current solution (step size = 0)
 		/// @param x1 Next solution (step size = 1)
 		/// @return Maximum allowable step size
-		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
+		virtual double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
 		/// @brief Initialize variables used during the line search
 		/// @param x0 Current solution
 		/// @param x1 Next solution
-		void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
+		virtual void line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 
 		/// @brief Clear variables used during the line search
 		void line_search_end() override;
 
 		/// @brief Update cached fields upon a change in the solution
 		/// @param new_x New solution
-		void solution_changed(const Eigen::VectorXd &new_x) override;
+		virtual void solution_changed(const Eigen::VectorXd &new_x) override;
 
 		/// @brief Checks if the step is collision free
 		/// @return True if the step is collision free else false
-		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
+		virtual bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
 
 		/// @brief Update the barrier stiffness based on the current elasticity energy
 		/// @param x Current solution

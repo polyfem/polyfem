@@ -26,6 +26,7 @@ namespace polyfem::solver
 			const double max_al_weight,
 			const double eta_tol,
 			const std::function<void(const Eigen::VectorXd &)> &update_barrier_stiffness);
+		virtual ~ALSolver() = default;
 
 		void solve_al(std::shared_ptr<NLSolver> nl_solver, NLProblem &nl_problem, Eigen::MatrixXd &sol);
 		void solve_reduced(std::shared_ptr<NLSolver> nl_solver, NLProblem &nl_problem, Eigen::MatrixXd &sol);

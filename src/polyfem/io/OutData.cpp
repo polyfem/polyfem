@@ -94,7 +94,28 @@ namespace polyfem::io
 
 				for (int n = 0; n < normals.rows(); ++n)
 				{
-					normals.row(n) = normals.row(n) * vals.jac_it[n];
+					trafo = vals.jac_it[n].inverse();
+
+					if (solution.size() > 0)
+					{
+						assert(actual_dim == 2 || actual_dim == 3);
+						deform_mat.resize(actual_dim, actual_dim);
+						deform_mat.setZero();
+						for (const auto &b : vals.basis_values)
+						{
+							for (const auto &g : b.global)
+							{
+								for (int d = 0; d < actual_dim; ++d)
+								{
+									deform_mat.row(d) += solution(g.index * actual_dim + d) * b.grad.row(n);
+								}
+							}
+						}
+
+						trafo += deform_mat;
+					}
+
+					normals.row(n) = normals.row(n) * trafo.inverse();
 					normals.row(n).normalize();
 				}
 
@@ -138,6 +159,12 @@ namespace polyfem::io
 
 		if (mesh.is_volume())
 		{
+			if (mesh.has_poly())
+			{
+				logger().warn("Skipping as the mesh has polygons");
+				return;
+			}
+
 			const bool is_simplicial = mesh.is_simplicial();
 
 			node_positions.resize(n_bases + (is_simplicial ? 0 : mesh.n_faces()), 3);
@@ -1073,7 +1100,7 @@ namespace polyfem::io
 
 		scalar_values = args["output"]["paraview"]["options"]["scalar_values"];
 		tensor_values = args["output"]["paraview"]["options"]["tensor_values"] && !is_problem_scalar;
-		discretization_order = args["output"]["paraview"]["options"]["discretization_order"] && !is_problem_scalar;
+		discretization_order = args["output"]["paraview"]["options"]["discretization_order"];
 		nodes = args["output"]["paraview"]["options"]["nodes"] && !is_problem_scalar;
 
 		use_spline = args["space"]["basis_type"] == "Spline";
@@ -1610,7 +1637,7 @@ namespace polyfem::io
 		// interpolate_function(pts_index, rhs, fun, opts.boundary_only);
 		// writer.add_field("rhs", fun);
 
-		if (fun.cols() != 1)
+		if (fun.cols() != 1 && state.mixed_assembler == nullptr)
 		{
 			Eigen::MatrixXd traction_forces, traction_forces_fun;
 			compute_traction_forces(state, sol, t, traction_forces, false);
@@ -1629,7 +1656,7 @@ namespace polyfem::io
 			writer.add_field("traction_force", traction_forces_fun);
 		}
 
-		if (fun.cols() != 1)
+		if (fun.cols() != 1 && state.mixed_assembler == nullptr)
 		{
 			try
 			{
@@ -2036,7 +2063,11 @@ namespace polyfem::io
 					normals.setZero(collision_mesh.num_faces(), 3);
 					for (int i = 0; i < collision_mesh.num_faces(); i++)
 					{
-						normals.row(i) = collision_mesh.face_normal(i);
+						Eigen::Vector3d a = collision_mesh.rest_positions().row(collision_mesh.faces()(i, 1))
+							- collision_mesh.rest_positions().row(collision_mesh.faces()(i, 0));
+						Eigen::Vector3d b = collision_mesh.rest_positions().row(collision_mesh.faces()(i, 2))
+							- collision_mesh.rest_positions().row(collision_mesh.faces()(i, 0));
+						normals.row(i) = a.cross(b);
 					}
 
 					writer.add_cell_field("normals", normals);
@@ -2076,7 +2107,7 @@ namespace polyfem::io
 				ipc::FrictionCollisions friction_collision_set;
 				friction_collision_set.build(
 					collision_mesh, displaced_surface, collision_set,
-					dhat, barrier_stiffness, friction_coefficient);
+					barrier_potential, barrier_stiffness, friction_coefficient);
 
 				ipc::FrictionPotential friction_potential(epsv);
 
@@ -3012,18 +3043,18 @@ namespace polyfem::io
 		total_remeshing_time += remeshing;
 		total_global_relaxation_time += global_relaxation;
 
-		logger().debug(
-			"Forward (cur, avg, total): {} s, {} s, {} s",
-			forward, total_forward_solve_time / t, total_forward_solve_time);
-		logger().debug(
-			"Remeshing (cur, avg, total): {} s, {} s, {} s",
-			remeshing, total_remeshing_time / t, total_remeshing_time);
-		logger().debug(
-			"Global relaxation (cur, avg, total): {} s, {} s, {} s",
-			global_relaxation, total_global_relaxation_time / t, total_global_relaxation_time);
+		// logger().debug(
+		// 	"Forward (cur, avg, total): {} s, {} s, {} s",
+		// 	forward, total_forward_solve_time / t, total_forward_solve_time);
+		// logger().debug(
+		// 	"Remeshing (cur, avg, total): {} s, {} s, {} s",
+		// 	remeshing, total_remeshing_time / t, total_remeshing_time);
+		// logger().debug(
+		// 	"Global relaxation (cur, avg, total): {} s, {} s, {} s",
+		// 	global_relaxation, total_global_relaxation_time / t, total_global_relaxation_time);
 
 		const double peak_mem = getPeakRSS() / double(1 << 30);
-		logger().debug("Peak mem: {} GiB", peak_mem);
+		// logger().debug("Peak mem: {} GiB", peak_mem);
 
 		file << fmt::format(
 			"{},{},{},{},{},{},{},{}\n",

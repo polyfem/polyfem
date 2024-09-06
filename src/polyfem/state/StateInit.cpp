@@ -21,10 +21,7 @@
 #include <spdlog/sinks/ostream_sink.h>
 
 #include <ipc/utils/logger.hpp>
-#include <ipc/utils/par_for.hpp>
-#ifdef POLYFEM_WITH_REMESHING
 #include <wmtk/utils/Logger.hpp>
-#endif
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
@@ -107,16 +104,12 @@ namespace polyfem
 
 		ipc::set_logger(std::make_shared<spdlog::logger>("ipctk", sinks.begin(), sinks.end()));
 
-#ifdef POLYFEM_WITH_REMESHING
 		wmtk::set_logger(std::make_shared<spdlog::logger>("wmtk", sinks.begin(), sinks.end()));
-#endif
 
 		// Set the logger at the lowest level, so all messages are passed to the sinks
 		logger().set_level(spdlog::level::trace);
 		ipc::logger().set_level(spdlog::level::trace);
-#ifdef POLYFEM_WITH_REMESHING
 		wmtk::logger().set_level(spdlog::level::trace);
-#endif
 
 		set_log_level(log_level);
 	}
@@ -173,10 +166,23 @@ namespace polyfem
 		else
 			polysolve::linear::Solver::select_valid_solver(args_in["solver"]["adjoint_linear"], logger());
 
+		// Use the /solver/nonlinear settings as the default for /solver/augmented_lagrangian/nonlinear
+		if (args_in.contains("/solver/nonlinear"_json_pointer))
 		{
-			json tmp_args = args_in["solver"]["nonlinear"];
-			tmp_args.merge_patch(args_in["solver"]["augmented_lagrangian"]["nonlinear"]);
-			args_in["solver"]["augmented_lagrangian"]["nonlinear"] = tmp_args;
+			if (args_in.contains("/solver/augmented_lagrangian/nonlinear"_json_pointer))
+			{
+				assert(args_in["solver"]["augmented_lagrangian"]["nonlinear"].is_object());
+				// Merge the augmented lagrangian settings into the nonlinear settings,
+				// and then replace the augmented lagrangian settings with the merged settings.
+				json nonlinear = args_in["solver"]["nonlinear"]; // copy
+				nonlinear.merge_patch(args_in["solver"]["augmented_lagrangian"]["nonlinear"]);
+				args_in["solver"]["augmented_lagrangian"]["nonlinear"] = nonlinear;
+			}
+			else
+			{
+				// Copy the nonlinear settings to the augmented_lagrangian settings
+				args_in["solver"]["augmented_lagrangian"]["nonlinear"] = args_in["solver"]["nonlinear"];
+			}
 		}
 
 		const bool valid_input = jse.verify_json(args_in, rules);
@@ -240,6 +246,7 @@ namespace polyfem
 		{
 			args["solver"]["contact"]["friction_iterations"] = 0;
 			args["contact"]["friction_coefficient"] = 0;
+			args["contact"]["periodic"] = false;
 		}
 
 		const std::string formulation = this->formulation();
@@ -321,7 +328,6 @@ namespace polyfem
 
 	void State::set_max_threads(const int max_threads)
 	{
-		ipc::utils::NThread::get().set_num_threads(max_threads);
 		NThread::get().set_num_threads(max_threads);
 	}
 

@@ -78,7 +78,7 @@ namespace polyfem::solver
 		}
 
 		double max_step;
-		if (use_cached_candidates_ && broad_phase_method_ != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE_GPU)
+		if (use_cached_candidates_ && broad_phase_method_ != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE)
 			max_step = candidates_.compute_collision_free_stepsize(
 				collision_mesh_, V0, V1, dmin_, ccd_tolerance_, ccd_max_iterations_);
 		else

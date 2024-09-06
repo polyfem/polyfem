@@ -10,6 +10,7 @@
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
+#include <polyfem/solver/forms/BCLagrangianForm.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/ALSolver.hpp>
@@ -20,6 +21,7 @@
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/utils/BoundarySampler.hpp>
 
 #include <ipc/ipc.hpp>
 
@@ -45,10 +47,6 @@ namespace polyfem
 		EnergyCSVWriter energy_csv(resolve_output_path("energy.csv"), solve_data);
 		RuntimeStatsCSVWriter stats_csv(resolve_output_path("stats.csv"), *this, t0, dt);
 		const bool remesh_enabled = args["space"]["remesh"]["enabled"];
-#ifndef POLYFEM_WITH_REMESHING
-		if (remesh_enabled)
-			log_and_throw_error("Remeshing is not enabled in this build! Set POLYFEM_WITH_REMESHING=ON in CMake to enable it.");
-#endif
 		// const double save_dt = remesh_enabled ? (dt / 3) : dt;
 
 		// Save the initial solution
@@ -68,7 +66,6 @@ namespace polyfem
 				solve_tensor_nonlinear(sol, t);
 			}
 
-#ifdef POLYFEM_WITH_REMESHING
 			if (remesh_enabled)
 			{
 				energy_csv.write(save_i, sol);
@@ -93,7 +90,7 @@ namespace polyfem
 					solve_tensor_nonlinear(sol, t, false); // solve the scene again after remeshing
 				}
 			}
-#endif
+
 			// Always save the solution for consistency
 			energy_csv.write(save_i, sol);
 			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
@@ -134,7 +131,8 @@ namespace polyfem
 
 			// save restart file
 			save_restart_json(t0, dt, t);
-			stats_csv.write(t, forward_solve_time, remeshing_time, global_relaxation_time, sol);
+			if (remesh_enabled)
+				stats_csv.write(t, forward_solve_time, remeshing_time, global_relaxation_time, sol);
 		}
 	}
 
@@ -213,6 +211,8 @@ namespace polyfem
 		damping_assembler = std::make_shared<assembler::ViscousDamping>();
 		set_materials(*damping_assembler);
 
+		elasticity_pressure_assembler = build_pressure_assembler();
+
 		// for backward solve
 		damping_prev_assembler = std::make_shared<assembler::ViscousDampingPrev>();
 		set_materials(*damping_prev_assembler);
@@ -224,8 +224,11 @@ namespace polyfem
 			// Elastic form
 			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache,
 			// Body form
-			n_pressure_bases, boundary_nodes, local_boundary, local_neumann_boundary,
+			n_pressure_bases, boundary_nodes, local_boundary,
+			local_neumann_boundary,
 			n_boundary_samples(), rhs, sol, mass_matrix_assembler->density(),
+			// Pressure form
+			local_pressure_boundary, local_pressure_cavity, elasticity_pressure_assembler,
 			// Inertia form
 			args.value("/time/quasistatic"_json_pointer, true), mass,
 			damping_assembler->is_valid() ? damping_assembler : nullptr,
@@ -235,7 +238,7 @@ namespace polyfem
 			// Augmented lagrangian form
 			obstacle.ndof(),
 			// Contact form
-			args["contact"]["enabled"], collision_mesh, args["contact"]["dhat"],
+			args["contact"]["enabled"], args["contact"]["periodic"].get<bool>() ? periodic_collision_mesh : collision_mesh, args["contact"]["dhat"],
 			avg_mass, args["contact"]["use_convergent_formulation"],
 			args["solver"]["contact"]["barrier_stiffness"],
 			args["solver"]["contact"]["CCD"]["broad_phase"],
@@ -243,6 +246,10 @@ namespace polyfem
 			args["solver"]["contact"]["CCD"]["max_iterations"],
 			optimization_enabled == solver::CacheLevel::Derivatives,
 			args["contact"],
+			// Homogenization
+			macro_strain_constraint,
+			// Periodic contact
+			args["contact"]["periodic"], periodic_collision_mesh_to_basis,
 			// Friction form
 			args["contact"]["friction_coefficient"],
 			args["contact"]["epsv"],
@@ -262,11 +269,9 @@ namespace polyfem
 		const int ndof = n_bases * mesh->dimension();
 		solve_data.nl_problem = std::make_shared<NLProblem>(
 			ndof, boundary_nodes, local_boundary, n_boundary_samples(),
-			*solve_data.rhs_assembler, t, forms);
+			*solve_data.rhs_assembler, periodic_bc, t, forms);
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
-		// solve_data.nl_problem->state = this;
-
 		// --------------------------------------------------------------------
 
 		stats.solver_info = json::array();
@@ -313,7 +318,7 @@ namespace polyfem
 			stats.solver_info.push_back(
 				{{"type", al_weight > 0 ? "al" : "rc"},
 				 {"t", t}, // TODO: null if static?
-				 {"info", nl_solver->get_info()}});
+				 {"info", nl_solver->info()}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
 			if (solve_data.contact_form)
@@ -389,7 +394,7 @@ namespace polyfem
 					{{"type", "rc"},
 					 {"t", t}, // TODO: null if static?
 					 {"lag_i", lag_i},
-					 {"info", nl_solver->get_info()}});
+					 {"info", nl_solver->info()}});
 				save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 			}
 		}

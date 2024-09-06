@@ -4,9 +4,14 @@
 #include <polyfem/solver/forms/Form.hpp>
 #include <polyfem/solver/forms/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/BCPenaltyForm.hpp>
+#include <polyfem/solver/forms/MacroStrainLagrangianForm.hpp>
+#include <polyfem/solver/forms/MacroStrainALForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/BarrierContactForm.hpp>
 #include <polyfem/solver/forms/SmoothContactForm.hpp>
+#include <polyfem/solver/forms/PressureForm.hpp>
+#include <polyfem/solver/forms/PeriodicContactForm.hpp>
+#include <polyfem/solver/forms/MacroStrainALForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
@@ -14,7 +19,9 @@
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/assembler/PressureAssembler.hpp>
 #include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/MacroStrain.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 namespace polyfem::solver
@@ -44,6 +51,11 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &rhs,
 		const Eigen::MatrixXd &sol,
 		const assembler::Density &density,
+
+		// Pressure form
+		const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
+		const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity,
+		const std::shared_ptr<assembler::PressureAssembler> pressure_assembler,
 
 		// Inertia form
 		const bool ignore_inertia,
@@ -76,6 +88,13 @@ namespace polyfem::solver
 
 		// Smooth contact form
 		const json &contact_params,
+		
+		// Homogenization
+		const assembler::MacroStrainValue &macro_strain_constraint,
+
+		// Periodic contact
+		const bool periodic_contact,
+		const Eigen::VectorXi &tiled_to_single,
 
 		// Friction form
 		const double friction_coefficient,
@@ -109,6 +128,19 @@ namespace polyfem::solver
 				is_time_dependent);
 			body_form->update_quantities(t, sol);
 			forms.push_back(body_form);
+		}
+
+		if (pressure_assembler != nullptr)
+		{
+			pressure_form = std::make_shared<PressureForm>(
+				ndof,
+				local_pressure_boundary,
+				local_pressure_cavity,
+				boundary_nodes,
+				n_boundary_samples, *pressure_assembler,
+				is_time_dependent);
+			pressure_form->update_quantities(t, sol);
+			forms.push_back(pressure_form);
 		}
 
 		inertia_form = nullptr;
@@ -157,13 +189,22 @@ namespace polyfem::solver
 			forms.push_back(al_pen_form);
 		}
 
+		if (macro_strain_constraint.is_active())
+		{
+			// don't push these two into forms because they take a different input x
+			strain_al_pen_form = std::make_shared<MacroStrainALForm>(macro_strain_constraint);
+			strain_al_lagr_form = std::make_shared<MacroStrainLagrangianForm>(macro_strain_constraint);
+		}
+
 		contact_form = nullptr;
+		periodic_contact_form = nullptr;
 		friction_form = nullptr;
 		if (contact_enabled)
 		{
 			const bool use_adaptive_barrier_stiffness = !barrier_stiffness.is_number();
 
 			if (contact_params["use_smooth_formulation"])
+			{
 				if (collision_mesh.dim() == 2)
 					contact_form = std::make_shared<SmoothContactForm<2>>(
 						collision_mesh, contact_params, avg_mass,
@@ -174,6 +215,7 @@ namespace polyfem::solver
 						collision_mesh, contact_params, avg_mass,
 						use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, 
 						ccd_tolerance * units.characteristic_length(), ccd_max_iterations);
+			}
 			else
 				contact_form = std::make_shared<BarrierContactForm>(
 					collision_mesh, dhat, avg_mass, use_convergent_contact_formulation,
@@ -185,21 +227,57 @@ namespace polyfem::solver
 				contact_form->set_barrier_stiffness(contact_params["initial_barrier_stiffness"]);
 				// logger().debug("Using adaptive barrier stiffness");
 			}
+
+			if (periodic_contact)
+			{
+				periodic_contact_form = std::make_shared<PeriodicContactForm>(
+					collision_mesh, tiled_to_single, dhat, avg_mass, use_convergent_contact_formulation,
+					use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance,
+					ccd_max_iterations);
+
+				if (use_adaptive_barrier_stiffness)
+				{
+					periodic_contact_form->set_barrier_stiffness(1);
+					// logger().debug("Using adaptive barrier stiffness");
+				}
+				else
+				{
+					assert(barrier_stiffness.is_number());
+					assert(barrier_stiffness.get<double>() > 0);
+					periodic_contact_form->set_barrier_stiffness(barrier_stiffness);
+					// logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
+				}
+			}
 			else
 			{
-				assert(barrier_stiffness.get<double>() > 0);
-				contact_form->set_barrier_stiffness(barrier_stiffness);
-				// logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
+				contact_form = std::make_shared<BarrierContactForm>(
+					collision_mesh, dhat, avg_mass, use_convergent_contact_formulation,
+					use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(),
+					ccd_max_iterations);
+
+				if (use_adaptive_barrier_stiffness)
+				{
+					contact_form->set_barrier_stiffness(1);
+					// logger().debug("Using adaptive barrier stiffness");
+				}
+				else
+				{
+					assert(barrier_stiffness.is_number());
+					assert(barrier_stiffness.get<double>() > 0);
+					contact_form->set_barrier_stiffness(barrier_stiffness);
+					// logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
+				}
+
+				if (contact_form)
+					forms.push_back(contact_form);
+
+				// ----------------------------------------------------------------
 			}
-
-			forms.push_back(contact_form);
-
-			// ----------------------------------------------------------------
 
 			if (friction_coefficient != 0)
 			{
 				friction_form = std::make_shared<FrictionForm>(
-					collision_mesh, time_integrator, epsv, friction_coefficient, dhat,
+					collision_mesh, time_integrator, epsv, friction_coefficient,
 					broad_phase, *contact_form, friction_iterations);
 				friction_form->init_lagging(sol);
 				forms.push_back(friction_form);
@@ -238,8 +316,8 @@ namespace polyfem::solver
 			return;
 
 		Eigen::VectorXd grad_energy = Eigen::VectorXd::Zero(x.size());
-		const std::array<std::shared_ptr<Form>, 3> energy_forms{
-			{elastic_form, inertia_form, body_form}};
+		const std::array<std::shared_ptr<Form>, 4> energy_forms{
+			{elastic_form, inertia_form, body_form, pressure_form}};
 		for (const std::shared_ptr<Form> &form : energy_forms)
 		{
 			if (form == nullptr || !form->enabled())
@@ -258,8 +336,8 @@ namespace polyfem::solver
 		if (time_integrator == nullptr) // if is not time dependent
 			return;
 
-		const std::array<std::shared_ptr<Form>, 5> energy_forms{
-			{elastic_form, body_form, damping_form, contact_form, friction_form}};
+		const std::array<std::shared_ptr<Form>, 6> energy_forms{
+			{elastic_form, body_form, pressure_form, damping_form, contact_form, friction_form}};
 		for (const std::shared_ptr<Form> &form : energy_forms)
 		{
 			if (form == nullptr)
@@ -277,8 +355,12 @@ namespace polyfem::solver
 			{"contact", contact_form},
 			{"friction", friction_form},
 			{"damping", damping_form},
+			{"pressure", pressure_form},
 			{"augmented_lagrangian_lagr", al_lagr_form},
 			{"augmented_lagrangian_penalty", al_pen_form},
+			{"strain_augmented_lagrangian_lagr", strain_al_lagr_form},
+			{"strain_augmented_lagrangian_penalty", strain_al_pen_form},
+			{"periodic_contact", periodic_contact_form},
 		};
 	}
 } // namespace polyfem::solver

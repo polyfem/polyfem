@@ -59,7 +59,7 @@ namespace polyfem::solver
 			f->line_search_end();
 	}
 
-	double FullNLProblem::max_step_size(const TVector &x0, const TVector &x1) const
+	double FullNLProblem::max_step_size(const TVector &x0, const TVector &x1)
 	{
 		double step = 1;
 		for (auto &f : forms_)
@@ -68,7 +68,7 @@ namespace polyfem::solver
 		return step;
 	}
 
-	bool FullNLProblem::is_step_valid(const TVector &x0, const TVector &x1) const
+	bool FullNLProblem::is_step_valid(const TVector &x0, const TVector &x1)
 	{
 		for (auto &f : forms_)
 			if (f->enabled() && !f->is_step_valid(x0, x1))
@@ -76,7 +76,7 @@ namespace polyfem::solver
 		return true;
 	}
 
-	bool FullNLProblem::is_step_collision_free(const TVector &x0, const TVector &x1) const
+	bool FullNLProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
 	{
 		for (auto &f : forms_)
 			if (f->enabled() && !f->is_step_collision_free(x0, x1))

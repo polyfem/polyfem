@@ -59,6 +59,8 @@ namespace polyfem::mesh
 		assembler::AssemblyValsCache mass_assembly_vals_cache;
 		Eigen::SparseMatrix<double> mass;
 
+		std::shared_ptr<assembler::PressureAssembler> pressure_assembler;
+
 		/// current problem, it contains rhs and bc
 		std::shared_ptr<assembler::Problem> problem;
 
@@ -68,12 +70,17 @@ namespace polyfem::mesh
 		std::vector<mesh::LocalBoundary> local_boundary;
 		/// mapping from elements to nodes for neumann boundary conditions
 		std::vector<mesh::LocalBoundary> local_neumann_boundary;
+		/// mapping from elements to nodes for pressure boundary conditions
+		std::vector<mesh::LocalBoundary> local_pressure_boundary;
 		/// per node dirichlet
 		std::vector<int> dirichlet_nodes;
 		std::vector<RowVectorNd> dirichlet_nodes_position;
 		/// per node neumann
 		std::vector<int> neumann_nodes;
 		std::vector<RowVectorNd> neumann_nodes_position;
+		// per node pressure
+		std::unordered_map<int, std::vector<LocalBoundary>> local_pressure_cavity;
+		std::vector<int> pressure_boundary_nodes;
 
 		Eigen::MatrixXd rhs;
 

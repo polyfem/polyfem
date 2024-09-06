@@ -62,6 +62,7 @@ namespace polyfem::mesh
 		}
 
 		const Eigen::MatrixXd H = M(free_nodes, free_nodes);
+
 		const Eigen::MatrixXd g = -((M * x - A * y)(free_nodes, Eigen::all));
 		const Eigen::MatrixXd sol = H.llt().solve(g);
 		x(free_nodes, Eigen::all) += sol;
@@ -110,7 +111,7 @@ namespace polyfem::mesh
 
 		if (collision_mesh.num_vertices() != 0)
 		{
-			forms.push_back(std::make_shared<ContactForm>(
+			forms.push_back(std::make_shared<BarrierContactForm>(
 				collision_mesh, dhat, /*avg_mass=*/1.0, use_convergent_formulation,
 				/*use_adaptive_barrier_stiffness=*/false, /*is_time_dependent=*/true,
 				/*enable_shape_derivatives=*/false, broad_phase_method, ccd_tolerance,
@@ -148,11 +149,11 @@ namespace polyfem::mesh
 
 		Eigen::MatrixXd sol = x0;
 
-		const size_t default_max_iterations = nl_solver->max_iterations();
-		nl_solver->max_iterations() = al_max_solver_iter;
+		const size_t default_max_iterations = nl_solver->stop_criteria().iterations;
+		nl_solver->stop_criteria().iterations = al_max_solver_iter;
 		al_solver.solve_al(nl_solver, problem, sol);
 
-		nl_solver->max_iterations() = default_max_iterations;
+		nl_solver->stop_criteria().iterations = default_max_iterations;
 		al_solver.solve_reduced(nl_solver, problem, sol);
 
 #ifndef NDEBUG

@@ -64,7 +64,6 @@ set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vector
 # Polyfem options for enabling/disabling optional libraries
 option(POLYFEM_WITH_TESTS     "Build tests"                                 ON)
 option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"  ON)
-option(POLYFEM_WITH_REMESHING "Uses WMTK for remeshing"                    OFF)
 option(POLYFEM_WITH_MMG       "Build MMG utils for remeshing"              OFF)
 option(POLYFEM_WITH_TRIANGLE  "Build target igl_restricted::triangle"      OFF)
 option(POLYFEM_BUILD_DOCS     "Build documentation using Doxygen"          OFF)
@@ -72,6 +71,8 @@ option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
 set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
 set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
 option(POLYFEM_CODE_COVERAGE "Enable coverage reporting" OFF)
+
+add_compile_definitions(JSON_DIAGNOSTICS=1)
 
 add_library(polyfem_coverage_config INTERFACE)
 if(POLYFEM_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
@@ -140,7 +141,7 @@ target_compile_definitions(polyfem PUBLIC -DEIGEN_STACK_ALLOCATION_LIMIT=0)
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_SMALL_N=${POLYFEM_SMALL_N})
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_BIG_N=${POLYFEM_BIG_N})
 
-set(POLYFEM_JSON_SPEC_DIR "${CMAKE_SOURCE_DIR}/json-specs")
+set(POLYFEM_JSON_SPEC_DIR "${PROJECT_SOURCE_DIR}/json-specs")
 target_compile_definitions(polyfem PUBLIC POLYFEM_JSON_SPEC_DIR="${POLYFEM_JSON_SPEC_DIR}")
 target_compile_definitions(polyfem PUBLIC POLYFEM_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/input-spec.json")
 target_compile_definitions(polyfem PUBLIC POLYFEM_OPT_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/opt-input-spec.json")
@@ -183,13 +184,25 @@ endif()
 # Required libraries
 ################################################################################
 
-# Eigen
-include(eigen)
-target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
+if(WIN32)
+    # Eigen
+    include(eigen)
+    target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
+endif()
 
 # polysolve
 include(polysolve)
 target_link_libraries(polyfem PUBLIC polysolve::polysolve)
+
+# libigl
+include(libigl)
+target_link_libraries(polyfem PUBLIC igl::core)
+
+if(NOT WIN32)
+    # Eigen
+    include(eigen)
+    target_link_libraries(polyfem PUBLIC Eigen3::Eigen)
+endif()
 
 # IPC Toolkit
 include(ipc_toolkit)
@@ -207,9 +220,6 @@ elseif(POLYFEM_THREADING STREQUAL "TBB")
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_TBB)
 endif()
 
-# libigl
-include(libigl)
-target_link_libraries(polyfem PUBLIC igl::core)
 
 if(POLYFEM_WITH_TRIANGLE)
     target_link_libraries(polyfem PUBLIC igl_restricted::triangle)
@@ -218,11 +228,15 @@ endif()
 
 # SimpleBVH
 include(simple_bvh)
-target_link_libraries(ipc_toolkit PUBLIC simple_bvh::simple_bvh)
+target_link_libraries(polyfem PUBLIC simple_bvh::simple_bvh)
 
 # MSHIO
 include(mshio)
 target_link_libraries(polyfem PUBLIC mshio)
+
+# Nanospline
+include(nanospline)
+target_link_libraries(polyfem PUBLIC nanospline)
 
 # Geogram
 include(geogram)
@@ -256,9 +270,9 @@ target_link_libraries(polyfem PUBLIC Glob::Glob)
 include(units)
 target_link_libraries(polyfem PUBLIC units::units)
 
-# FCPW
-# include(fcpw)
-# target_link_libraries(polyfem PUBLIC fcpw::fcpw)
+# YAML library
+include(yaml)
+target_link_libraries(polyfem PUBLIC yaml-cpp::yaml-cpp)
 
 ################################################################################
 # Optional libraries
@@ -271,12 +285,9 @@ if(POLYFEM_WITH_MMG)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_MMG)
 endif()
 
-if(POLYFEM_WITH_REMESHING)
-    # wmtk library
-    include(wmtk)
-    target_link_libraries(polyfem PUBLIC wmtk::toolkit)
-    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_REMESHING)
-endif()
+# wmtk library
+include(wmtk)
+target_link_libraries(polyfem PUBLIC wmtk::toolkit)
 
 if(POLYFEM_WITH_CLIPPER)
     include(clipper)
@@ -300,7 +311,6 @@ if(POLYFEM_TOPLEVEL_PROJECT)
     add_executable(${PROJECT_NAME}_bin src/polyfem/main.cpp)
 
     target_compile_features(${PROJECT_NAME}_bin PUBLIC cxx_std_14)
-
 
     target_link_libraries(${PROJECT_NAME}_bin PUBLIC polyfem::polyfem polyfem::warnings)
 

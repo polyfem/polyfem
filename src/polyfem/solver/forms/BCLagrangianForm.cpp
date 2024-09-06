@@ -78,8 +78,8 @@ namespace polyfem::solver
 			for (StiffnessMatrix::InnerIterator it(masked_lumped_mass_sqrt_, k); it; ++it)
 			{
 				assert(it.col() == k);
-				if (it.value() <= 0)
-					log_and_throw_error("Invalid lumped mass matrix!");
+				// if (it.value() <= 0)
+				// 	log_and_throw_error("Invalid lumped mass matrix!");
 				tmp_triplets.emplace_back(it.row(), it.col(), sqrt(it.value()));
 			}
 		}

@@ -7,8 +7,5 @@ endif()
 
 message(STATUS "Third-party: creating target 'polysolve'")
 
-# TODO: this requires a conflicting version of Eigen. Reenable when Eigen 3.4+ is available.
-set(POLYSOLVE_WITH_ACCELERATE OFF CACHE BOOL "Enable Apple Accelerate" FORCE)
-
 include(CPM)
-CPMAddPackage("gh:polyfem/polysolve#7c09742c552004dfa9877bbdec6a884b705fa42d")
+CPMAddPackage("gh:Huangzizhou/polysolve#c2921f1725ed63f904f58687d889454bf6f11a98")

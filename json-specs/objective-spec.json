@@ -8,8 +8,11 @@
             "divide",
             "plus-const",
             "target",
+            "sdf-target",
+            "mesh-target",
             "center-target",
             "function-target",
+            "displacement-target",
             "node-target",
             "position",
             "acceleration",
@@ -19,6 +22,8 @@
             "stress",
             "stress_norm",
             "elastic_energy",
+            "quadratic_contact_force_norm",
+            "log_contact_force_norm",
             "max_stress",
             "compliance",
             "weighted_solution",
@@ -30,10 +35,11 @@
             "material_smoothing",
             "volume",
             "soft_constraint",
-            "layer_thickness",
             "AMIPS",
             "parametrized_product",
-            "smooth_contact_force_norm"
+            "smooth_contact_force_norm",
+            "min_jacobian",
+            "min-dist-target"
         ],
         "doc": "TODO"
     },
@@ -102,18 +108,65 @@
     {
         "pointer": "/",
         "type": "object",
+        "type_name": "sdf-target",
+        "required": [
+            "state",
+            "type",
+            "delta"
+        ],
+        "optional": [
+            "control_points",
+            "control_points_grid",
+            "knots",
+            "knots_u",
+            "knots_v",
+            "weight",
+            "print_energy",
+            "surface_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "mesh-target",
+        "required": [
+            "state",
+            "type",
+            "delta",
+            "mesh_path"
+        ],
+        "optional": [
+            "weight",
+            "print_energy",
+            "surface_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
         "type_name": "node-target",
         "required": [
             "state",
             "type",
-            "targets",
-            "node_ids"
+            "target_data_path"
         ],
         "optional": [
             "weight",
-            "print_energy"
+            "print_energy",
+            "tolerance"
         ],
         "doc": "TODO"
+    },
+    {
+        "pointer": "/target_data_path",
+        "type": "file"
+    },
+    {
+        "pointer": "/tolerance",
+        "type": "float",
+        "default": 1e-7
     },
     {
         "pointer": "/",
@@ -152,6 +205,23 @@
     {
         "pointer": "/",
         "type": "object",
+        "type_name": "displacement-target",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "weight",
+            "print_energy",
+            "target_displacement",
+            "active_dimension",
+            "surface_selection"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
         "type_name": "center-target",
         "required": [
             "state",
@@ -162,6 +232,23 @@
             "print_energy",
             "volume_selection",
             "target_state"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "min-dist-target",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "weight",
+            "print_energy",
+            "volume_selection",
+            "target",
+            "steps"
         ],
         "doc": "TODO"
     },
@@ -183,6 +270,11 @@
     },
     {
         "pointer": "/volume_selection/*",
+        "type": "int",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/surface_selection",
         "type": "int",
         "doc": "TODO"
     },
@@ -263,6 +355,17 @@
     },
     {
         "pointer": "/target_displacement/*",
+        "type": "float",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/target",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/target/*",
         "type": "float",
         "doc": "TODO"
     },
@@ -568,6 +671,38 @@
         "doc": "Lp Norm of elastic stress over the volume selection"
     },
     {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "quadratic_contact_force_norm",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "surface_selection",
+            "dhat",
+            "weight",
+            "print_energy"
+        ],
+        "doc": "Lp Norm of elastic stress over the volume selection"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "log_contact_force_norm",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "surface_selection",
+            "dhat",
+            "weight",
+            "print_energy"
+        ],
+        "doc": "Lp Norm of elastic stress over the volume selection"
+    },
+    {
         "pointer": "/force_matching_function",
         "type": "list"
     },
@@ -723,34 +858,25 @@
         "doc": "TODO"
     },
     {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "layer_thickness",
-        "optional": [
-            "adjacent_boundary_id",
-            "dmin",
-            "dhat",
-            "weight",
-            "print_energy"
-        ],
-        "doc": "TODO"
-    },
-    {
         "pointer": "/dhat",
         "type": "float",
         "default": 1e-3,
         "doc": "The support size of barrier function"
     },
     {
-        "pointer": "/adjacent_boundary_id",
-        "type": "int",
-        "default": -1,
+        "pointer": "/dmin",
+        "type": "float",
+        "doc": "The min distance of barrier function"
+    },
+    {
+        "pointer": "/boundary_ids",
+        "type": "list",
+        "default": [],
         "doc": "TODO"
     },
     {
-        "pointer": "/dmin",
-        "type": "float",
-        "default": 0.0,
+        "pointer": "/boundary_ids/*",
+        "type": "int",
         "doc": "TODO"
     },
     {
@@ -820,5 +946,19 @@
             "weight",
             "print_energy"
         ]
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "min_jacobian",
+        "required": [
+            "type",
+            "state"
+        ],
+        "optional": [
+            "weight",
+            "print_energy"
+        ],
+        "doc": "TODO"
     }
 ]

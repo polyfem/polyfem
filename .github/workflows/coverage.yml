@@ -23,7 +23,7 @@ jobs:
             name: Linux
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4.1.6
         with:
           fetch-depth: 10
 
@@ -40,7 +40,7 @@ jobs:
 
       - name: Cache Build
         id: cache-build
-        uses: actions/cache@v3
+        uses: actions/cache@v4.0.2
         with:
           path: ${{ env.CACHE_PATH }}
           key: ${{ runner.os }}-Release-${{ matrix.threading }}-cache-${{ github.sha }}
@@ -59,7 +59,6 @@ jobs:
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
-            -DPOLYFEM_WITH_CLIPPER=OFF \
             -DPOLYFEM_CODE_COVERAGE=ON \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
@@ -71,10 +70,12 @@ jobs:
           cd build
           ctest --verbose --output-on-failure
           lcov --directory . --capture --output-file coverage.info
-          lcov --remove coverage.info '/usr/*' "${HOME}"'/.cache/*' '*tests/*.cpp' '*/polyfem/problem/*.cpp' '*/polyfem/problem/*.hpp' --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' "${HOME}"'/.cache/*' '*tests/*.cpp*' '*/polyfem/problem/*.cpp*' '*/polyfem/problem/*.hpp*' --output-file coverage.info
 
       - name: Upload Coverage
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
             flags: polyfem # optional
             files: coverage.info

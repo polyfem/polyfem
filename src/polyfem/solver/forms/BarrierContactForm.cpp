@@ -39,7 +39,7 @@ namespace polyfem::solver
 		// Eigen::MatrixXd X = collision_mesh_.vertices(boundary_nodes_pos_);
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(solution);
 
-		StiffnessMatrix dq_h = collision_mesh_.to_full_dof(get_barrier_potential().shape_derivative(*dynamic_cast<ipc::Collisions*>(collision_set), collision_mesh_, displaced_surface));
+		StiffnessMatrix dq_h = collision_mesh_.to_full_dof(barrier_potential().shape_derivative(*dynamic_cast<ipc::Collisions*>(collision_set), collision_mesh_, displaced_surface));
 		term = barrier_stiffness() * dq_h.transpose() * adjoint_sol;
 	}
 
@@ -62,7 +62,7 @@ namespace polyfem::solver
 		grad_barrier = collision_mesh_.to_full_dof(grad_barrier);
 
 		barrier_stiffness_ = ipc::initial_barrier_stiffness(
-			ipc::world_bbox_diagonal_length(displaced_surface), get_barrier_potential().barrier(), dhat_, avg_mass_,
+			ipc::world_bbox_diagonal_length(displaced_surface), barrier_potential().barrier(), dhat_, avg_mass_,
 			grad_energy, grad_barrier, max_barrier_stiffness_);
 
 		if (use_convergent_formulation())
@@ -91,7 +91,9 @@ namespace polyfem::solver
 		// Remove the acceleration scaling from the barrier stiffness because it will be applied later.
 		barrier_stiffness_ /= weight_;
 
-		logger().debug("adaptive barrier form stiffness {}", barrier_stiffness());
+		logger().debug(
+			"Setting adaptive barrier stiffness to {} (max barrier stiffness: {})",
+			barrier_stiffness(), max_barrier_stiffness_);
 	}
 
 	void BarrierContactForm::update_collision_set(const Eigen::MatrixXd &displaced_surface)
@@ -206,8 +208,8 @@ namespace polyfem::solver
 				if (barrier_stiffness() != prev_barrier_stiffness)
 				{
 					polyfem::logger().debug(
-						"updated barrier stiffness from {:g} to {:g}",
-						prev_barrier_stiffness, barrier_stiffness());
+						"updated barrier stiffness from {:g} to {:g} (max barrier stiffness: )",
+						prev_barrier_stiffness, barrier_stiffness(), max_barrier_stiffness_);
 				}
 			}
 			else

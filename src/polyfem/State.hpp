@@ -10,6 +10,8 @@
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
+#include <polyfem/assembler/PressureAssembler.hpp>
+#include <polyfem/assembler/MacroStrain.hpp>
 #include <polyfem/assembler/Problem.hpp>
 #include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
@@ -26,6 +28,7 @@
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/assembler/PeriodicBoundary.hpp>
 
 #include <polyfem/io/OutData.hpp>
 
@@ -63,6 +66,13 @@ namespace polyfem
 		class Mesh2D;
 		class Mesh3D;
 	} // namespace mesh
+
+	enum class CacheLevel
+	{
+		None,
+		Solution,
+		Derivatives
+	};
 
 	/// main class that contains the polyfem solver and all its state
 	class State
@@ -148,6 +158,8 @@ namespace polyfem
 
 		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
 		std::shared_ptr<assembler::Assembler> pressure_assembler = nullptr;
+
+		std::shared_ptr<assembler::PressureAssembler> elasticity_pressure_assembler = nullptr;
 
 		std::shared_ptr<assembler::ViscousDamping> damping_assembler = nullptr;
 		std::shared_ptr<assembler::ViscousDampingPrev> damping_prev_assembler = nullptr;
@@ -236,6 +248,14 @@ namespace polyfem
 		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler() const
 		{
 			return build_rhs_assembler(n_bases, bases, mass_ass_vals_cache);
+		}
+
+		std::shared_ptr<assembler::PressureAssembler> build_pressure_assembler(
+			const int n_bases_,
+			const std::vector<basis::ElementBases> &bases_) const;
+		std::shared_ptr<assembler::PressureAssembler> build_pressure_assembler() const
+		{
+			return build_pressure_assembler(n_bases, bases);
 		}
 
 		/// quadrature used for projecting boundary conditions
@@ -365,6 +385,13 @@ namespace polyfem
 		/// @return nonlinear solver (eg newton or LBFGS)
 		std::shared_ptr<polysolve::nonlinear::Solver> make_nl_solver(bool for_al) const;
 
+		/// periodic BC and periodic mesh utils
+		std::shared_ptr<utils::PeriodicBoundary> periodic_bc;
+		bool has_periodic_bc() const
+		{
+			return args["boundary_conditions"]["periodic_boundary"]["enabled"].get<bool>();
+		}
+
 		/// @brief Solve the linear problem with the given solver and system.
 		/// @param solver Linear solver.
 		/// @param A Linear system matrix.
@@ -378,6 +405,9 @@ namespace polyfem
 			Eigen::VectorXd &b,
 			const bool compute_spectrum,
 			Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
+
+		/// @brief Returns whether the system is linear. Collisions and pressure add nonlinearity to the problem.
+		bool is_problem_linear() const { return assembler->is_linear() && !is_contact_enabled() && !is_pressure_enabled(); }
 
 	public:
 		/// @brief utility that builds the stiffness matrix and collects stats, used only for linear problems
@@ -403,6 +433,10 @@ namespace polyfem
 		std::vector<mesh::LocalBoundary> local_boundary;
 		/// mapping from elements to nodes for neumann boundary conditions
 		std::vector<mesh::LocalBoundary> local_neumann_boundary;
+		/// mapping from elements to nodes for pressure boundary conditions
+		std::vector<mesh::LocalBoundary> local_pressure_boundary;
+		/// mapping from elements to nodes for pressure boundary conditions
+		std::unordered_map<int, std::vector<mesh::LocalBoundary>> local_pressure_cavity;
 		/// nodes on the boundary of polygonal elements, used for harmonic bases
 		std::map<int, basis::InterfaceData> poly_edge_to_data;
 		/// per node dirichlet
@@ -448,7 +482,7 @@ namespace polyfem
 		/// @param[in] boundary_marker the input of the lambda is the face barycenter, the output is the sideset id
 		/// @param[in] non_conforming creates a conforming/non conforming mesh
 		/// @param[in] skip_boundary_sideset skip_boundary_sideset = false it uses the lambda boundary_marker to assign the sideset
-		void load_mesh(GEO::Mesh &meshin, const std::function<int(const RowVectorNd &)> &boundary_marker, bool non_conforming = false, bool skip_boundary_sideset = false);
+		void load_mesh(GEO::Mesh &meshin, const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &boundary_marker, bool non_conforming = false, bool skip_boundary_sideset = false);
 
 		/// loads the mesh from V and F,
 		/// @param[in] V is #vertices x dim
@@ -460,41 +494,18 @@ namespace polyfem
 			load_mesh(non_conforming);
 		}
 
-		/// set the boundary sideset from a lambda that takes the face/edge barycenter
-		/// @param[in] boundary_marker function from face/edge barycenter that returns the sideset id
-		void set_boundary_side_set(const std::function<int(const RowVectorNd &)> &boundary_marker)
-		{
-			mesh->compute_boundary_ids(boundary_marker);
-		}
-
-		/// set the boundary sideset from a lambda that takes the face/edge barycenter and a flag if the face/edge is boundary or not (used to set internal boundaries)
-		/// @param[in] boundary_marker function from face/edge barycenter and a flag if the face/edge is boundary that returns the sideset id
-		void set_boundary_side_set(const std::function<int(const RowVectorNd &, bool)> &boundary_marker)
-		{
-			mesh->compute_boundary_ids(boundary_marker);
-		}
-
-		/// set the boundary sideset from a lambda that takes the face/edge vertices and a flag if the face/edge is boundary or not (used to set internal boundaries)
-		/// @param[in] boundary_marker function from face/edge vertices and a flag if the face/edge is boundary that returns the sideset id
-		void set_boundary_side_set(const std::function<int(const std::vector<int> &, bool)> &boundary_marker)
-		{
-			mesh->compute_boundary_ids(boundary_marker);
-		}
-
 		/// Resets the mesh
 		void reset_mesh();
 
 		/// Build the mesh matrices (vertices and elements) from the mesh using the bases node ordering
 		void build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F);
 
-#ifdef POLYFEM_WITH_REMESHING
 		/// @brief Remesh the FE space and update solution(s).
 		/// @param time Current time.
 		/// @param dt Time step size.
 		/// @param sol Current solution.
 		/// @return True if remeshing performed any changes to the mesh/solution.
 		bool remesh(const double time, const double dt, Eigen::MatrixXd &sol);
-#endif
 
 		//---------------------------------------------------
 		//-----------------IPC-------------------------------
@@ -502,6 +513,11 @@ namespace polyfem
 
 		/// @brief IPC collision mesh
 		ipc::CollisionMesh collision_mesh;
+
+		/// @brief IPC collision mesh under periodic BC
+		ipc::CollisionMesh periodic_collision_mesh;
+		/// index mapping from periodic 2x2 collision mesh to FE periodic mesh
+		Eigen::VectorXi periodic_collision_mesh_to_basis;
 
 		/// @brief extracts the boundary mesh for collision, called in build_basis
 		static void build_collision_mesh(
@@ -519,6 +535,7 @@ namespace polyfem
 
 		/// @brief extracts the boundary mesh for collision, called in build_basis
 		void build_collision_mesh();
+		void build_periodic_collision_mesh();
 
 		/// checks if vertex is obstacle
 		/// @param[in] vi vertex index
@@ -532,7 +549,19 @@ namespace polyfem
 		/// @brief does the simulation has contact
 		///
 		/// @return true/false
-		bool is_contact_enabled() const { return args["contact"]["enabled"]; }
+		bool is_contact_enabled() const
+		{
+			return args["contact"]["enabled"];
+		}
+
+		/// @brief does the simulation has pressure
+		///
+		/// @return true/false
+		bool is_pressure_enabled() const
+		{
+			return (args["boundary_conditions"]["pressure_boundary"].size() > 0)
+				   || (args["boundary_conditions"]["pressure_cavity"].size() > 0);
+		}
 
 		/// stores if input json contains dhat
 		bool has_dhat = false;
@@ -667,10 +696,25 @@ namespace polyfem
 
 		// to replace the initial condition in json during initial condition optimization
 		Eigen::MatrixXd initial_sol_update, initial_vel_update;
-		// mapping from positions of geometric nodes to positions of FE basis nodes
-		StiffnessMatrix gbasis_nodes_to_basis_nodes;
+		// mapping from positions of FE basis nodes to positions of geometry nodes
+		StiffnessMatrix basis_nodes_to_gbasis_nodes;
 
 		Eigen::VectorXi node_to_body_id;
+
+		//---------------------------------------------------
+		//-----------------homogenization--------------------
+		//---------------------------------------------------
+	public:
+		assembler::MacroStrainValue macro_strain_constraint;
+
+		/// In Elasticity PDE, solve for "min W(disp_grad + \grad u)" instead of "min W(\grad u)"
+		void solve_homogenization_step(Eigen::MatrixXd &sol, const int t = 0, bool adaptive_initial_weight = false); // sol is the extended solution, i.e. [periodic fluctuation, macro strain]
+		void init_homogenization_solve(const double t);
+		void solve_homogenization(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol);
+		bool is_homogenization() const
+		{
+			return args["boundary_conditions"]["periodic_boundary"]["linear_displacement_offset"].size() > 0;
+		}
 	};
 
 } // namespace polyfem

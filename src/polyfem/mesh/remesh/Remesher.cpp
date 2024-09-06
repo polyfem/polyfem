@@ -142,13 +142,13 @@ namespace polyfem::mesh
 		Eigen::SparseMatrix<double> M, A;
 		{
 			MassMatrixAssembler assembler;
-			Density no_density; // Density of one (i.e., no scaling of mass matrix)
+			assembler::Mass mass_matrix_assembler;
 			AssemblyValsCache cache;
 
-			assembler.assemble(
-				is_volume(), dim(),
-				n_to_basis, no_density, to_bases, to_bases,
-				cache, M);
+			mass_matrix_assembler.assemble(
+				is_volume(),
+				n_to_basis, to_bases, to_bases,
+				cache, 0, M, true);
 			assert(M.rows() == to_projection_quantities.rows());
 
 			// if (lump_mass_matrix)
@@ -218,6 +218,26 @@ namespace polyfem::mesh
 				boundary_nodes, obstacle().ndof(), to_projection_quantities.col(i),
 				// Initial guess
 				to_projection_quantities.col(i));
+		}
+
+		// Set entry for obstacle to identity
+		// ┌     ┐ ┌     ┐   ┌     ┐
+		// │M   0│ │x_fem│   |y_fem|
+		// │     │ │     │ = |     | ⟹ x_obs = y_obs
+		// │0   I│ │x_obs│   |y_obs|
+		// └     ┘ └     ┘   └     ┘
+
+		for (int i = 0; i < dim() * obstacle().n_vertices(); ++i)
+		{
+			const int row = M.rows() - i - 1; // fill from bottom
+			M.coeffRef(row, row) = 1.0;
+		}
+
+		for (int i = 0; i < dim() * obstacle().n_vertices(); ++i)
+		{
+			const int row = A.rows() - i - 1; // fill from bottom
+			const int col = A.cols() - i - 1; // fill from bottom
+			A.coeffRef(row, col) = 1.0;
 		}
 
 		// NOTE: no need for to_projection_quantities.rightCols(n_unconstrained_quantaties)

@@ -66,9 +66,9 @@ namespace polyfem::mesh
 
 		// Nonlinear solver
 		auto nl_solver = state.make_nl_solver(/*for_al=*/false); // TODO: Use Eigen::LLT
-		nl_solver->max_iterations() = args["local_relaxation"]["max_nl_iterations"];
+		nl_solver->stop_criteria().iterations = args["local_relaxation"]["max_nl_iterations"];
 		if (this->is_boundary_op())
-			nl_solver->max_iterations() = std::max(nl_solver->max_iterations(), 5ul);
+			nl_solver->stop_criteria().iterations = std::max(nl_solver->stop_criteria().iterations, size_t(5));
 		nl_solver->allow_out_of_iterations = true;
 
 		Eigen::VectorXd reduced_sol = solve_data.nl_problem->full_to_reduced(data.sol());
@@ -89,7 +89,7 @@ namespace polyfem::mesh
 		logger().set_level(level_before);
 
 		// Copy over timing data
-		add_solver_timings(this->timings, nl_solver->get_info());
+		add_solver_timings(this->timings, nl_solver->info());
 
 		Eigen::VectorXd sol = solve_data.nl_problem->reduced_to_full(reduced_sol);
 
@@ -120,9 +120,9 @@ namespace polyfem::mesh
 			// write_mesh(state.resolve_output_path(fmt::format("relaxation_{:04d}.vtu", save_i++)));
 
 			// Re-solve with more iterations
-			if (!nl_solver->converged())
+			if (!is_converged_status(nl_solver->status()))
 			{
-				nl_solver->max_iterations() = 100;
+				nl_solver->stop_criteria().iterations = 100;
 
 				const auto level_before = logger().level();
 				logger().set_level(spdlog::level::warn);
@@ -140,7 +140,7 @@ namespace polyfem::mesh
 				logger().set_level(level_before);
 
 				// Copy over timing data
-				add_solver_timings(this->timings, nl_solver->get_info());
+				add_solver_timings(this->timings, nl_solver->info());
 
 				sol = solve_data.nl_problem->reduced_to_full(reduced_sol);
 			}
@@ -161,10 +161,10 @@ namespace polyfem::mesh
 		static const std::string reject_str =
 			fmt::format(fmt::fg(fmt::terminal_color::yellow), "reject");
 		logger().debug(
-			"[{:s}] E0={:<10g} E1={:<10g} (E0-E1)={:<10g} tol={:g} local_ndof={:d} n_iters={:d}",
+			"[{:s}] E0={:<10g} E1={:<10g} (E0-E1)={:<11g} tol={:g} local_ndof={:d} n_iters={:d}",
 			accept ? accept_str : reject_str, local_energy_before(),
-			local_energy_after, abs_diff, acceptance_tolerance,
-			n_free_dof, nl_solver->criteria().iterations);
+			local_energy_after, abs_diff, dt_sqr * acceptance_tolerance,
+			n_free_dof, nl_solver->current_criteria().iterations);
 
 		return accept;
 	}

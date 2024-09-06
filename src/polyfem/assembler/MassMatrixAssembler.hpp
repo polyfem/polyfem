@@ -16,25 +16,6 @@ namespace polyfem::assembler
 	class MassMatrixAssembler
 	{
 	public:
-		/// @brief Assembles the mass matrix.
-		/// @param[in]  is_volume True if the mesh is volumetric.
-		/// @param[in]  size      Size of the problem (e.g., 1 for Laplace).
-		/// @param[in]  n_basis   Number of basis functions (bases and geometric bases).
-		/// @param[in]  density   Class that can evaluate per point density.
-		/// @param[in]  bases     Finite element bases.
-		/// @param[in]  gbases    Geometric bases.
-		/// @param[in]  cache     Assembly values cache.
-		/// @param[out] mass      Output constructed mass matrix.
-		void assemble(
-			const bool is_volume,
-			const int size,
-			const int n_basis,
-			const Density &density,
-			const std::vector<basis::ElementBases> &bases,
-			const std::vector<basis::ElementBases> &gbases,
-			const AssemblyValsCache &cache,
-			StiffnessMatrix &mass) const;
-
 		/// @brief Assembles the cross mass matrix between to function spaces.
 		/// @param[in]  is_volume    True if the mesh is volumetric.
 		/// @param[in]  size         Size of the problem (e.g., 1 for Laplace).

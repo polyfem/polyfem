@@ -10,6 +10,7 @@
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/MooneyRivlinElasticity.hpp>
 #include <polyfem/assembler/MooneyRivlin3ParamElasticity.hpp>
+#include <polyfem/assembler/MooneyRivlin3ParamSymbolic.hpp>
 #include <polyfem/assembler/AMIPSEnergy.hpp>
 #include <polyfem/assembler/MultiModel.hpp>
 #include <polyfem/assembler/NavierStokes.hpp>
@@ -18,6 +19,7 @@
 #include <polyfem/assembler/SaintVenantElasticity.hpp>
 #include <polyfem/assembler/Stokes.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/assembler/FixedCorotational.hpp>
 
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -72,6 +74,8 @@ namespace polyfem
 				return std::make_shared<MooneyRivlinElasticity>();
 			else if (formulation == "MooneyRivlin3Param")
 				return std::make_shared<MooneyRivlin3ParamElasticity>();
+			else if (formulation == "MooneyRivlin3ParamSymbolic")
+				return std::make_shared<MooneyRivlin3ParamSymbolic>();
 			else if (formulation == "MultiModels")
 				return std::make_shared<MultiModel>();
 			else if (formulation == "UnconstrainedOgden")
@@ -90,6 +94,10 @@ namespace polyfem
 
 			else if (formulation == "AMIPS")
 				return std::make_shared<AMIPSEnergy>();
+			else if (formulation == "AMIPSAutodiff")
+				return std::make_shared<AMIPSEnergyAutodiff>();
+			else if (formulation == "FixedCorotational")
+				return std::make_shared<FixedCorotational>();
 
 			log_and_throw_error("Inavalid assembler name {}", formulation);
 		}

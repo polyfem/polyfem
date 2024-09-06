@@ -2,7 +2,7 @@
 
 #include <polyfem/assembler/MassMatrixAssembler.hpp>
 #include <polyfem/solver/NLProblem.hpp>
-#include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/BarrierContactForm.hpp>
 
 #include <polysolve/nonlinear/Solver.hpp>
 

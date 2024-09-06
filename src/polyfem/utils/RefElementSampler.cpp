@@ -382,8 +382,8 @@ namespace polyfem
 			const Eigen::MatrixXi rt = Eigen::MatrixXi::Zero(poly.rows(), 1);
 			faces.resize(0, 0);
 			Eigen::VectorXi I;
-			Eigen::MatrixXd np, area;
-			igl::predicates::ear_clipping(poly, rt, I, faces, np);
+			Eigen::MatrixXd area;
+			igl::predicates::ear_clipping(poly, rt, faces, I);
 
 			igl::doublearea(poly, faces, area);
 
@@ -406,12 +406,11 @@ namespace polyfem
 				edges.row(i) << loop[i], loop[(i + 1) % loop.size()];
 		}
 
-		void RefElementSampler::sample_polyhedron(const Eigen::MatrixXd &vertices, const Eigen::MatrixXi &f, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXi &edges) const
+		void RefElementSampler::sample_polyhedron(const Eigen::MatrixXd &vertices, const Eigen::MatrixXi &f, Eigen::MatrixXd &pts, Eigen::MatrixXi &tets, Eigen::MatrixXi &faces) const
 		{
-			// TODO
-			pts = vertices;
-			faces = f;
-			throw "Not implemented";
+			const Eigen::MatrixXd kernel = vertices.colwise().mean();
+
+			polyfem::mesh::tertrahedralize_star_shaped_surface(vertices, f, kernel, pts, faces, tets);
 		}
 	} // namespace utils
 } // namespace polyfem

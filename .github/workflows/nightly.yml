@@ -29,7 +29,7 @@ jobs:
             name: Linux
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4.1.6
         with:
           fetch-depth: 10
 
@@ -45,7 +45,7 @@ jobs:
 
       - name: Cache Build
         id: cache-build
-        uses: actions/cache@v3
+        uses: actions/cache@v4.0.2
         if: matrix.config == 'Release' # debug cache is not working
         with:
           path: ${{ env.CACHE_PATH }}
@@ -65,7 +65,6 @@ jobs:
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
-            -DPOLYFEM_WITH_CLIPPER=OFF \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
       - name: Build
@@ -79,22 +78,18 @@ jobs:
   ####################
 
   MacOS:
-    name: ${{ matrix.name }}-${{ matrix.arc }} (${{ matrix.config }}, ${{ matrix.threading }})
+    name: ${{ matrix.os }} (${{ matrix.config }}, ${{ matrix.threading }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest]
-        arc: [x86]
+        os: [macos-latest, macos-14]
         config: [DebugNoSymbols, Release]
         threading: [CPP, TBB, NONE]
-        include:
-          - os: macos-latest
-            name: macOS
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4.1.6
         with:
           fetch-depth: 10
 
@@ -105,19 +100,18 @@ jobs:
 
       - name: Cache Build
         id: cache-build
-        uses: actions/cache@v3
+        uses: actions/cache@v4.0.2
         with:
           path: ${{ env.CACHE_PATH }}
-          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-${{ matrix.arc }}-cache-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-${{ matrix.arc }}-cache
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
 
       - name: Prepare ccache
         run: |
           ccache --max-size=1.0G
           ccache -V && ccache --show-stats && ccache --zero-stats
 
-      - name: Configure x86
-        if: matrix.arc == 'x86'
+      - name: Configure
         run: |
           mkdir -p build
           cd build
@@ -125,27 +119,12 @@ jobs:
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
-            -DPOLYFEM_WITH_CLIPPER=OFF \
-            -DPOLYFEM_THREADING=${{ matrix.threading }}
-
-      - name: Configure arm64
-        if: matrix.arc == 'arm64'
-        run: |
-          mkdir -p build
-          cd build
-          cmake .. \
-            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-            -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
-            -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
-            -DCMAKE_OSX_ARCHITECTURES=arm64 \
-            -DPOLYFEM_WITH_CLIPPER=OFF \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
       - name: Build
         run: cd build; make -j2; ccache --show-stats
 
       - name: Tests
-        if: matrix.arc == 'x86' # no ARM vm on actions yet
         run: cd build; ctest --verbose --output-on-failure
 
   ####################
@@ -163,7 +142,7 @@ jobs:
         threading: [NONE]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4.1.6
         with:
           fetch-depth: 10
 
@@ -177,7 +156,7 @@ jobs:
 
       - name: Cache build
         id: cache-build
-        uses: actions/cache@v3
+        uses: actions/cache@v4.0.2
         with:
           path: ${{ env.CACHE_PATH }}
           key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
