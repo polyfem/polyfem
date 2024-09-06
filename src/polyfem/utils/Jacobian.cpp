@@ -1,4 +1,4 @@
-#include <jacobian/element_validity.hpp>
+#include <element_validity.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Rational.hpp>
 #include "Jacobian.hpp"
@@ -68,16 +68,32 @@ namespace polyfem::utils
         const Eigen::MatrixXd &cp,
         const Eigen::MatrixXd &uv)
     {
-        if (cp.cols() == 2)
-        {
-            StaticChecker<2> check(cp, shapes::TRIANGLE, order);
-            return check.jacobian(0, uv);
+        #define JAC_EVAL(n,s,p) \
+            case p: { \
+                JacobianEvaluator<n,s,p> evaluator(cp); \
+                return evaluator.eval(uv, 0); \
+            }
+
+        if (cp.cols() == 2) {
+            switch (order) {
+                JAC_EVAL(2,2,1)
+                JAC_EVAL(2,2,2)
+                JAC_EVAL(2,2,3)
+                JAC_EVAL(2,2,4)
+                default: throw std::invalid_argument("Order not supported");
+            }
         }
-        else
-        {
-            StaticChecker<3> check(cp, shapes::TETRAHEDRON, order);
-            return check.jacobian(0, uv);
+        else {
+            switch (order) {
+                JAC_EVAL(3,3,1)
+                JAC_EVAL(3,3,2)
+                JAC_EVAL(3,3,3)
+                // JAC_EVAL(3,3,4)
+                default: throw std::invalid_argument("Order not supported");
+            }
         }
+
+        #undef JAC_EVAL
     }
 
     std::vector<uint> count_invalid(
@@ -90,18 +106,35 @@ namespace polyfem::utils
         const int n_basis_per_cell = std::max(bases[0].bases.size(), gbases[0].bases.size());
         const Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
 
-        std::tuple<uint, uint, uint> counters{0,0,0};
         std::vector<uint> invalidList;
-        if (dim == 2)
-        {
-            StaticChecker<2> check(cp, shapes::TRIANGLE, order);
-            check.isValid(0, nullptr, nullptr, &counters, &invalidList);
+
+        #define CHECK_STATIC(n,s,p) \
+            case p: { \
+                StaticValidator<n,s,p> check(16 /*no. of threads*/); \
+                check.isValid(cp, nullptr, nullptr, &invalidList); \
+                break; \
+            }
+
+        if (cp.cols() == 2) {
+            switch (order) {
+                CHECK_STATIC(2,2,1)
+                CHECK_STATIC(2,2,2)
+                CHECK_STATIC(2,2,3)
+                CHECK_STATIC(2,2,4)
+                default: throw std::invalid_argument("Order not supported");
+            }
         }
-        else
-        {
-            StaticChecker<3> check(cp, shapes::TETRAHEDRON, order);
-            check.isValid(0, nullptr, nullptr, &counters, &invalidList);
+        else {
+            switch (order) {
+                CHECK_STATIC(3,3,1)
+                CHECK_STATIC(3,3,2)
+                CHECK_STATIC(3,3,3)
+                // CHECK_STATIC(3,3,4)
+                default: throw std::invalid_argument("Order not supported");
+            }
         }
+
+        #undef CHECK_STATIC
         
         return invalidList;
     }
@@ -121,58 +154,43 @@ namespace polyfem::utils
         bool flag = false;
         unsigned invalid_id = 0;
         Tree tree;
-        if (dim == 2)
-        {
-            SubdivisionHierarchy<2> hierarchy(shapes::TRIANGLE);
-            StaticChecker<2> check(cp, shapes::TRIANGLE, order);
-            const auto flag_ = check.isValid(threshold, &invalid_id, &hierarchy);
-            flag = flag_ == Validity::Valid;
 
-            if (!flag)
-            {
-                std::function<void(const SubdivisionHierarchy<2>::Node &, Tree &)> copy_hierarchy = [&copy_hierarchy](const SubdivisionHierarchy<2>::Node &src, Tree &dst) {
-                    if (src.hasChildren())
-                    {
-                        dst.add_children(4);
-                        for (int i = 0; i < 4; i++)
-                            copy_hierarchy(*(src.children[i]), dst.child(i));
-                    }
-                };
-
-                copy_hierarchy(hierarchy.get_root(), tree);
-            }
-        }
-        else
-        {
-            SubdivisionHierarchy<3> hierarchy(shapes::TETRAHEDRON);
-            StaticChecker<3> check(cp, shapes::TETRAHEDRON, order);
-            const auto flag_ = check.isValid(threshold, &invalid_id, &hierarchy);
-            flag = flag_ == Validity::Valid;
-
-            if (!flag)
-            {
-                std::function<void(const SubdivisionHierarchy<3>::Node &, Tree &)> copy_hierarchy = [&copy_hierarchy](const SubdivisionHierarchy<3>::Node &src, Tree &dst) {
-                    if (src.hasChildren())
-                    {
-                        dst.add_children(8);
-                        for (int i = 0; i < 8; i++)
-                            copy_hierarchy(*(src.children[i]), dst.child(i));
-                    }
-                };
-
-                copy_hierarchy(hierarchy.get_root(), tree);
+        #define CHECK_STATIC(n,s,p) \
+            case p: { \
+                std::vector<unsigned> hierarchy; \
+                StaticValidator<n,s,p> check(16 /*no. of threads*/); \
+                const auto flag_ = check.isValid(cp, &hierarchy, &invalid_id); \
+                flag = flag_ == Validity::valid; \
+                if (!flag) { \
+                    Tree &dst = tree; \
+                    for (const auto i : hierarchy) { \
+                        dst.add_children(1<<n); \
+                        dst = dst.child(i); \
+                    } \
+                } \
+                break; \
             }
 
-            // if (tree.depth() > 25)
-            // {
-            //     std::cout << "hard element:" << threshold << " " << invalid_id << "\n";
-            //     std::cout << std::setprecision(20) << cp.middleRows(n_basis_per_cell * invalid_id, n_basis_per_cell) << "\n";
-            //     std::cout << hierarchy << "\n";
-            //     std::ofstream file("hard-elem.txt");
-            //     file << std::setprecision(20) << cp << "\n";
-            //     std::terminate();
-            // }
+        if (dim == 2) {
+            switch (order) {
+                CHECK_STATIC(2,2,1)
+                CHECK_STATIC(2,2,2)
+                CHECK_STATIC(2,2,3)
+                CHECK_STATIC(2,2,4)
+                default: throw std::invalid_argument("Order not supported");
+            }
         }
+        else {
+            switch (order) {
+                CHECK_STATIC(3,3,1)
+                CHECK_STATIC(3,3,2)
+                CHECK_STATIC(3,3,3)
+                // CHECK_STATIC(3,3,4)
+                default: throw std::invalid_argument("Order not supported");
+            }
+        }
+
+        #undef CHECK_STATIC
         
         return {flag, invalid_id, tree};
     }
@@ -193,18 +211,37 @@ namespace polyfem::utils
 
         bool flag = false;
         unsigned invalid_id = 0;
-        if (dim == 2)
-        {
-            DynamicChecker<2> check(cp1, cp2, shapes::TRIANGLE, order);
-            const auto flag_ = check.isValid(threshold, &invalid_id);
-            flag = flag_ == Validity::Valid;
+
+        #define CHECK_CONTINUOUS(n,s,p) \
+            case p: { \
+                std::vector<unsigned> hierarchy; \
+                ContinuousValidator<n,s,p> check(16 /*no. of threads*/); \
+                check.setPrecisionTarget(1); \
+                const auto flag_ = check.maxTimeStep(cp1, cp2, &hierarchy, &invalid_id); \
+                flag = flag_ == 1.; \
+                break; \
+            }
+
+        if (dim == 2) {
+            switch (order) {
+                CHECK_CONTINUOUS(2,2,1)
+                CHECK_CONTINUOUS(2,2,2)
+                CHECK_CONTINUOUS(2,2,3)
+                CHECK_CONTINUOUS(2,2,4)
+                default: throw std::invalid_argument("Order not supported");
+            }
         }
-        else
-        {
-            DynamicChecker<3> check(cp1, cp2, shapes::TETRAHEDRON, order);
-            const auto flag_ = check.isValid(threshold, &invalid_id);
-            flag = flag_ == Validity::Valid;
+        else {
+            switch (order) {
+                CHECK_CONTINUOUS(3,3,1)
+                CHECK_CONTINUOUS(3,3,2)
+                CHECK_CONTINUOUS(3,3,3)
+                // CHECK_CONTINUOUS(3,3,4)
+                default: throw std::invalid_argument("Order not supported");
+            }
         }
+
+        #undef CHECK_CONTINUOUS
         
         return flag;
     }
@@ -315,46 +352,46 @@ namespace polyfem::utils
         double step = 1;
         double invalid_step = 1.;
         Tree tree;
-        if (dim == 2)
-        {
-            SubdivisionHierarchy<2> hierarchy(shapes::TRIANGLE);
-            DynamicChecker<2> check(cp1, cp2, shapes::TRIANGLE, order);
-            step = check.maxTimeStep(0, precision, &invalid_id, &hierarchy, &gaveUp);
-            invalid_step = hierarchy.timeOfInversion;
-            if (step < 1)
-            {
-                std::function<void(const SubdivisionHierarchy<2>::Node &, Tree &)> copy_hierarchy = [&copy_hierarchy](const SubdivisionHierarchy<2>::Node &src, Tree &dst) {
-                    if (src.hasChildren())
-                    {
-                        dst.add_children(4);
-                        for (int i = 0; i < 4; i++)
-                            copy_hierarchy(*(src.children[i]), dst.child(i));
-                    }
-                };
 
-                copy_hierarchy(hierarchy.get_root(), tree);
+        #define MAX_TIME_STEP(n,s,p) \
+            case p: { \
+                std::vector<unsigned> hierarchy; \
+                ContinuousValidator<n,s,p> check(16 /*no. of threads*/); \
+                ContinuousValidator<n,s,p>::Info info; \
+                step = check.maxTimeStep( \
+                    cp1, cp2, &hierarchy, &invalid_id, &invalid_step, &info \
+                ); \
+                gaveUp = !info.success(); \
+                if (step < 1) { \
+                    Tree &dst = tree; \
+                    for (const auto i : hierarchy) { \
+                        dst.add_children(1<<n); \
+                        dst = dst.child(i); \
+                    } \
+                } \
+                break; \
+            }
+
+        if (dim == 2) {
+            switch (order) {
+                MAX_TIME_STEP(2,2,1)
+                MAX_TIME_STEP(2,2,2)
+                MAX_TIME_STEP(2,2,3)
+                MAX_TIME_STEP(2,2,4)
+                default: throw std::invalid_argument("Order not supported");
             }
         }
-        else
-        {
-            SubdivisionHierarchy<3> hierarchy(shapes::TETRAHEDRON);
-            DynamicChecker<3> check(cp1, cp2, shapes::TETRAHEDRON, order);
-            step = check.maxTimeStep(0, precision, &invalid_id, &hierarchy, &gaveUp);
-            invalid_step = hierarchy.timeOfInversion;
-            if (step < 1)
-            {
-                std::function<void(const SubdivisionHierarchy<3>::Node &, Tree &)> copy_hierarchy = [&copy_hierarchy](const SubdivisionHierarchy<3>::Node &src, Tree &dst) {
-                    if (src.hasChildren())
-                    {
-                        dst.add_children(8);
-                        for (int i = 0; i < 8; i++)
-                            copy_hierarchy(*(src.children[i]), dst.child(i));
-                    }
-                };
-
-                copy_hierarchy(hierarchy.get_root(), tree);
+        else {
+            switch (order) {
+                MAX_TIME_STEP(3,3,1)
+                MAX_TIME_STEP(3,3,2)
+                MAX_TIME_STEP(3,3,3)
+                // MAX_TIME_STEP(3,3,4)
+                default: throw std::invalid_argument("Order not supported");
             }
         }
+
+        #undef MAX_TIME_STEP
 
         if (gaveUp)
             logger().warn("Jacobian check gave up!");
