@@ -216,63 +216,37 @@ namespace polyfem::solver
 						use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, 
 						ccd_tolerance * units.characteristic_length(), ccd_max_iterations);
 			}
+			else if (periodic_contact)
+			{
+				periodic_contact_form = std::make_shared<PeriodicContactForm>(
+					collision_mesh, tiled_to_single, dhat, avg_mass, use_convergent_contact_formulation,
+					use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance,
+					ccd_max_iterations);
+				
+				contact_form = periodic_contact_form;
+			}
 			else
+			{
 				contact_form = std::make_shared<BarrierContactForm>(
 					collision_mesh, dhat, avg_mass, use_convergent_contact_formulation,
 					use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(),
 					ccd_max_iterations);
+			}
 
 			if (use_adaptive_barrier_stiffness)
 			{
 				contact_form->set_barrier_stiffness(contact_params["initial_barrier_stiffness"]);
 				// logger().debug("Using adaptive barrier stiffness");
 			}
-
-			if (periodic_contact)
-			{
-				periodic_contact_form = std::make_shared<PeriodicContactForm>(
-					collision_mesh, tiled_to_single, dhat, avg_mass, use_convergent_contact_formulation,
-					use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance,
-					ccd_max_iterations);
-
-				if (use_adaptive_barrier_stiffness)
-				{
-					periodic_contact_form->set_barrier_stiffness(1);
-					// logger().debug("Using adaptive barrier stiffness");
-				}
-				else
-				{
-					assert(barrier_stiffness.is_number());
-					assert(barrier_stiffness.get<double>() > 0);
-					periodic_contact_form->set_barrier_stiffness(barrier_stiffness);
-					// logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
-				}
-			}
 			else
 			{
-				contact_form = std::make_shared<BarrierContactForm>(
-					collision_mesh, dhat, avg_mass, use_convergent_contact_formulation,
-					use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(),
-					ccd_max_iterations);
-
-				if (use_adaptive_barrier_stiffness)
-				{
-					contact_form->set_barrier_stiffness(1);
-					// logger().debug("Using adaptive barrier stiffness");
-				}
-				else
-				{
-					assert(barrier_stiffness.is_number());
-					assert(barrier_stiffness.get<double>() > 0);
-					contact_form->set_barrier_stiffness(barrier_stiffness);
-					// logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
-				}
-
-				if (contact_form)
-					forms.push_back(contact_form);
-
-				// ----------------------------------------------------------------
+				assert(barrier_stiffness.is_number());
+				assert(barrier_stiffness.get<double>() > 0);
+				contact_form->set_barrier_stiffness(barrier_stiffness);
+				// logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
 			}
+
+			forms.push_back(contact_form);
 
 			if (friction_coefficient != 0)
 			{

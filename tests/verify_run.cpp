@@ -245,7 +245,6 @@ TEST_CASE("new-contact-3d", "[contact]")
     State state;
     state.init(args, true);
     state.set_max_threads(1);
-    spdlog::set_level(spdlog::level::info);
     state.load_mesh();
 
     if (state.mesh == nullptr)

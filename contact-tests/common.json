@@ -15,20 +15,20 @@
         "nonlinear": {
             "line_search": {
                 "method": "Backtracking",
-                "use_grad_norm_tol": 1e-12
+                "use_grad_norm_tol": 1e-6
             },
             "Newton": {
                 "use_psd_projection": false,
                 "use_psd_projection_in_regularized": false
             },
             "solver": "Newton",
-            "grad_norm": 1e-8,
+            "grad_norm": 1e-4,
             "advanced": {
-                "derivative_along_delta_x_tol": 1e-20
+                "derivative_along_delta_x_tol": 1e-18
             }
         },
         "contact": {
-            "barrier_stiffness": 1e7,
+            "barrier_stiffness": 1e6,
             "CCD": {
                 "broad_phase": "BVH"
             }
@@ -36,6 +36,9 @@
     },
     "output": {
         "json": "sim.json",
+        "log": {
+            "level": "info"
+        },
         "paraview": {
             "file_name": "sim.pvd",
             "options": {
