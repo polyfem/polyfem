@@ -228,9 +228,8 @@ namespace polyfem
 						const Eigen::MatrixXd surface_velocities = (surface_solution - surface_solution_prev) / dt;
 						const double dv_dut = -1 / dt;
 
-						if (solve_data.contact_form->name() == "barrier-contact")
+						if (const auto barrier_contact = dynamic_cast<const solver::BarrierContactForm*>(solve_data.contact_form.get()))
 						{
-							const auto barrier_contact = dynamic_cast<const solver::BarrierContactForm*>(solve_data.contact_form.get());
 							hessian_prev =
 								solve_data.friction_form->friction_potential().force_jacobian(
 									diff_cached.friction_collision_set(force_step),
