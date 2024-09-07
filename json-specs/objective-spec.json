@@ -35,6 +35,7 @@
             "material_smoothing",
             "volume",
             "soft_constraint",
+            "log",
             "AMIPS",
             "parametrized_product",
             "smooth_contact_force_norm",
@@ -516,6 +517,20 @@
             "weight",
             "print_energy",
             "power"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "log",
+        "required": [
+            "type",
+            "objective"
+        ],
+        "optional": [
+            "weight",
+            "print_energy"
         ],
         "doc": "TODO"
     },

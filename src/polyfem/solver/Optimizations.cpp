@@ -174,6 +174,10 @@ namespace polyfem::solver
 			{
 				obj = std::make_shared<PlusConstCompositeForm>(create_form(args["objective"], var2sim, states), args["value"]);
 			}
+			else if (type == "log")
+			{
+				obj = std::make_shared<LogCompositeForm>(create_form(args["objective"], var2sim, states));
+			}
 			else if (type == "compliance")
 			{
 				obj = std::make_shared<ComplianceForm>(var2sim, *(states[args["state"]]), args);
