@@ -4,6 +4,7 @@
 #include <polyfem/assembler/RhsAssembler.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/assembler/PeriodicBoundary.hpp>
+#include <polyfem/State.hpp>
 
 // namespace polyfem
 // {
@@ -69,7 +70,7 @@ namespace polyfem::solver
 
 		void set_apply_DBC(const TVector &x, const bool val);
 
-		// State* state = nullptr;
+		State* state = nullptr;
 
 	protected:
 		virtual Eigen::MatrixXd boundary_values() const;
