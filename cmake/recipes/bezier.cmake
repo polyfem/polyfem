@@ -19,4 +19,4 @@ if (EIGEN_INTERFACE)
 endif()
 
 include(CPM)
-CPMAddPackage("https://gitlab.com/fsichetti/robust-bezier-subdivision.git#5734c3dc01be3e05354ac92725cdf97e7593b663")
+CPMAddPackage("https://gitlab.com/fsichetti/robust-bezier-subdivision.git#435ae2baa91aa160b0f49730affaf13d325158d8")
