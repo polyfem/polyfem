@@ -119,12 +119,18 @@ namespace polyfem::solver
 			const int dim = state->mesh->dimension();
 
 			// If indices include one vertex entry, we assume it include all entries of this vertex.
-			for (int i = 0; i < indices.size(); i += dim)
-				for (int j = 0; j < dim; j++)
-					assert(indices(i + j) == indices(i) + j);
+			// for (int i = 0; i < indices.size(); i += dim)
+			// 	for (int j = 0; j < dim; j++)
+			// 		assert(indices(i + j) == indices(i) + j);
 
-			for (int i = 0; i < indices.size(); i += dim)
-				state->set_mesh_vertex(indices(i) / dim, state_variable(Eigen::seqN(i, dim)));
+			for (int i = 0; i < indices.size(); ++i)
+			{
+				const int vid = indices(i) / dim;
+				Eigen::VectorXd p = state->mesh->point(vid);
+				p(indices(i) - vid * dim) = state_variable(i);
+				state->mesh->set_point(vid, p);
+				// state->set_mesh_vertex(indices(i) / dim, state_variable(Eigen::seqN(i, dim)));
+			}
 		}
 	}
 	Eigen::VectorXd ShapeVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const

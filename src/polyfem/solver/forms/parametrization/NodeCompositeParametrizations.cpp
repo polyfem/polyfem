@@ -13,10 +13,10 @@ namespace polyfem::solver
 
     void VariableToNodes::set_output_indexing(const std::vector<int> &node_ids)
     {
-        output_indexing_.resize(node_ids.size() * dim);
+        output_indexing_.resize(node_ids.size() * 1);
         for (int i = 0; i < node_ids.size(); ++i)
-            for (int k = 0; k < dim; ++k)
-                output_indexing_(i * dim + k) = node_ids[i] * dim + k;
+            // for (int k = 0; k < dim; ++k)
+            output_indexing_(i) = node_ids[i] * dim + 1;
     }
 
     VariableToInteriorNodes::VariableToInteriorNodes(const State &state, const std::vector<int> &volume_selection) : VariableToNodes(state)

@@ -118,6 +118,8 @@ namespace polyfem::solver
 
 		auto get_collision_set() const { return collision_set_; }
 
+		auto get_broad_phase_method() const { return broad_phase_method_; }
+
 		virtual void force_shape_derivative(ipc::CollisionsBase *collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) = 0;
 
 	protected:

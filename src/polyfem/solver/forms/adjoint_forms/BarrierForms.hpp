@@ -3,7 +3,7 @@
 #include <polyfem/solver/forms/adjoint_forms/ParametrizationForm.hpp>
 #include "VariableToSimulation.hpp"
 
-#include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/SmoothContactForm.hpp>
 #include <ipc/potentials/barrier_potential.hpp>
 #include <ipc/smooth_contact/smooth_collisions.hpp>
 #include <ipc/smooth_contact/smooth_contact_potential.hpp>
@@ -93,37 +93,21 @@ namespace polyfem::solver
 		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
 		void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
-		void solution_changed_step(const int time_step, const Eigen::VectorXd &x) override
-		{
-			if (curr_x.size() > 0 && (curr_x - x).norm() < 1e-8)
-				return;
-
-			collision_set_indicator_.setZero();
-			build_collision_mesh();
-			curr_x = x;
-		}
+		void solution_changed_step(const int time_step, const Eigen::VectorXd &x) override;
 
 	protected:
 		void build_collision_mesh();
-		const ipc::SmoothCollisions<dim> &get_or_compute_collision_set(const int time_step, const Eigen::MatrixXd &displaced_surface) const;
+		ipc::SmoothCollisions<dim> get_smooth_collision_set(const Eigen::MatrixXd &displaced_surface);
 
 		const State &state_;
 		std::set<int> boundary_ids_;
 		std::map<int, std::set<int>> boundary_ids_to_dof_;
-		Eigen::MatrixXi can_collide_cache_;
-
-		mutable Eigen::VectorXi collision_set_indicator_;
-		// std::vector<std::shared_ptr<ipc::Collisions>> collision_sets_;
-		std::vector<std::shared_ptr<ipc::SmoothCollisions<dim>>> collision_sets_;
 
 		ipc::CollisionMesh collision_mesh_;
+		ipc::SmoothCollisions<dim> collisions_;
 		const ipc::ParameterType params_;
 		const double dmin_ = 0;
-		ipc::BroadPhaseMethod broad_phase_method_;
 
-		Eigen::VectorXd curr_x;
-
-		// ipc::BarrierPotential barrier_potential_;
 		ipc::SmoothContactPotential<ipc::SmoothCollisions<dim>> potential_;
 	};
 } // namespace polyfem::solver
