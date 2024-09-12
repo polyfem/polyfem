@@ -376,7 +376,7 @@ namespace polyfem::solver
 		curr_x = newX;
 	}
 
-	bool AdjointNLProblem::smooth_step(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
+	bool AdjointNLProblem::after_line_search_custom_operation(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1)
 	{
 		if (!enable_slim)
 			return false;
