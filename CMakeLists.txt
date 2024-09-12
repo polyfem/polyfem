@@ -284,6 +284,9 @@ if(POLYFEM_WITH_MMG)
 endif()
 
 # wmtk library
+# Include lagrange first to fetch a newer version than
+# what is used in the toolkit.
+include(lagrange)
 include(wmtk)
 target_link_libraries(polyfem PUBLIC wmtk::toolkit)
 
