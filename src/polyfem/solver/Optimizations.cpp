@@ -5,6 +5,7 @@
 
 #include "AdjointNLProblem.hpp"
 
+#include <polyfem/State.hpp>
 #include <polyfem/solver/forms/adjoint_forms/SpatialIntegralForms.hpp>
 #include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
 #include <polyfem/solver/forms/adjoint_forms/CompositeForms.hpp>
@@ -79,6 +80,52 @@ namespace polyfem::solver
 		log_and_throw_adjoint_error("Invalid nonlinear solver name!");
 	}
 
+	std::shared_ptr<AdjointForm> AdjointOptUtils::create_simple_form(const std::string &obj_type, const std::string &param_type, const std::shared_ptr<State> &state, const json &args)
+	{
+		std::shared_ptr<AdjointForm> obj;
+		VariableToSimulationGroup var2sim;
+		var2sim.push_back(VariableToSimulation::create(param_type, {state}, CompositeParametrization()));
+		if (obj_type == "compliance")
+			obj = std::make_shared<ComplianceForm>(var2sim, *state, args);
+		else if (obj_type == "acceleration")
+			obj = std::make_shared<AccelerationForm>(var2sim, *state, args);
+		else if (obj_type == "kinetic")
+			obj = std::make_shared<AccelerationForm>(var2sim, *state, args);
+		else if (obj_type == "position")
+			obj = std::make_shared<PositionForm>(var2sim, *state, args);
+		else if (obj_type == "stress")
+			obj = std::make_shared<StressForm>(var2sim, *state, args);
+		else if (obj_type == "stress_norm")
+			obj = std::make_shared<StressNormForm>(var2sim, *state, args);
+		else if (obj_type == "elastic_energy")
+			obj = std::make_shared<ElasticEnergyForm>(var2sim, *state, args);
+		else if (obj_type == "max_stress")
+			obj = std::make_shared<MaxStressForm>(var2sim, *state, args);
+		else if (obj_type == "volume")
+			obj = std::make_shared<VolumeForm>(var2sim, *state, args);
+		else if (obj_type == "min_jacobian")
+			obj = std::make_shared<MinJacobianForm>(var2sim, *state);
+		else if (obj_type == "AMIPS")
+			obj = std::make_shared<AMIPSForm>(var2sim, *state);
+		else if (obj_type == "function-target")
+		{
+			std::shared_ptr<TargetForm> tmp = std::make_shared<TargetForm>(var2sim, *state, args);
+			tmp->set_reference(args["target_function"], args["target_function_gradient"]);
+			obj = tmp;
+		}
+		else if (obj_type == "boundary_smoothing")
+		{
+			if (args["surface_selection"].is_array())
+				obj = std::make_shared<BoundarySmoothingForm>(var2sim, *state, args["scale_invariant"], args["power"], args["surface_selection"].get<std::vector<int>>());
+			else
+				obj = std::make_shared<BoundarySmoothingForm>(var2sim, *state, args["scale_invariant"], args["power"], std::vector<int>{args["surface_selection"].get<int>()});
+		}
+		else
+			log_and_throw_adjoint_error("Invalid simple form type {}!", obj_type);
+		
+		return obj;
+	}
+
 	std::shared_ptr<AdjointForm> AdjointOptUtils::create_form(const json &args, const VariableToSimulationGroup &var2sim, const std::vector<std::shared_ptr<State>> &states)
 	{
 		std::shared_ptr<AdjointForm> obj;
@@ -100,6 +147,16 @@ namespace polyfem::solver
 					log_and_throw_adjoint_error("Transient integral objective must have a static objective!");
 				const auto &state = states[args["state"]];
 				obj = std::make_shared<TransientForm>(var2sim, state->args["time"]["time_steps"], state->args["time"]["dt"], args["integral_type"], args["steps"].get<std::vector<int>>(), static_obj);
+			}
+			else if (type == "proxy_transient_integral")
+			{
+				std::shared_ptr<StaticForm> static_obj = std::dynamic_pointer_cast<StaticForm>(create_form(args["static_objective"], var2sim, states));
+				if (!static_obj)
+					log_and_throw_adjoint_error("Transient integral objective must have a static objective!");
+				if (args["steps"].size() == 0)
+					log_and_throw_adjoint_error("ProxyTransientForm requires non-empty \"steps\"!");
+				const auto &state = states[args["state"]];
+				obj = std::make_shared<ProxyTransientForm>(var2sim, state->args["time"]["time_steps"], state->args["time"]["dt"], args["integral_type"], args["steps"].get<std::vector<int>>(), static_obj);
 			}
 			else if (type == "power")
 			{
@@ -213,6 +270,14 @@ namespace polyfem::solver
 				tmp->set_reference(args["target_function"], args["target_function_gradient"]);
 				obj = tmp;
 			}
+			else if (type == "node-target")
+			{
+				obj = std::make_shared<NodeTargetForm>(*(states[args["state"]]), var2sim, args);
+			}
+			else if (type == "min-dist-target")
+			{
+				obj = std::make_shared<MinTargetDistForm>(var2sim, args["steps"], args["target"], args, states[args["state"]]);
+			}
 			else if (type == "position")
 			{
 				obj = std::make_shared<PositionForm>(var2sim, *(states[args["state"]]), args);
@@ -250,6 +315,10 @@ namespace polyfem::solver
 				std::vector<std::shared_ptr<AdjointForm>> forms({create_form(args["objective"], var2sim, states)});
 				Eigen::VectorXd bounds = args["soft_bound"];
 				obj = std::make_shared<InequalityConstraintForm>(forms, bounds, args["power"]);
+			}
+			else if (type == "min_jacobian")
+			{
+				obj = std::make_shared<MinJacobianForm>(var2sim, *(states[args["state"]]));
 			}
 			else if (type == "AMIPS")
 			{
@@ -351,7 +420,7 @@ namespace polyfem::solver
 		else if (type == "append-values")
 		{
 			Eigen::VectorXd vals = args["values"];
-			map = std::make_shared<InsertConstantMap>(vals);
+			map = std::make_shared<InsertConstantMap>(vals, args["start"]);
 		}
 		else if (type == "append-const")
 		{
@@ -394,13 +463,13 @@ namespace polyfem::solver
 		else if (composite_map_type == "interior")
 		{
 			assert(type == "shape");
-			VariableToInteriorNodes variable_to_node(*cur_states[0], args["volume_selection"][0]);
+			VariableToInteriorNodes variable_to_node(*cur_states[0], args["volume_selection"]);
 			output_indexing = variable_to_node.get_output_indexing();
 		}
 		else if (composite_map_type == "boundary")
 		{
 			assert(type == "shape");
-			VariableToBoundaryNodes variable_to_node(*cur_states[0], args["surface_selection"][0]);
+			VariableToBoundaryNodes variable_to_node(*cur_states[0], args["surface_selection"]);
 			output_indexing = variable_to_node.get_output_indexing();
 		}
 		else if (composite_map_type == "boundary_excluding_surface")

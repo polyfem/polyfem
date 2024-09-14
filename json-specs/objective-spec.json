@@ -38,7 +38,9 @@
             "layer_thickness",
             "layer_thickness_log",
             "AMIPS",
-            "parametrized_product"
+            "parametrized_product",
+            "min_jacobian",
+            "min-dist-target"
         ],
         "doc": "TODO"
     },
@@ -149,14 +151,23 @@
         "required": [
             "state",
             "type",
-            "targets",
-            "node_ids"
+            "target_data_path"
         ],
         "optional": [
             "weight",
-            "print_energy"
+            "print_energy",
+            "tolerance"
         ],
         "doc": "TODO"
+    },
+    {
+        "pointer": "/target_data_path",
+        "type": "file"
+    },
+    {
+        "pointer": "/tolerance",
+        "type": "float",
+        "default": 1e-7
     },
     {
         "pointer": "/",
@@ -222,6 +233,23 @@
             "print_energy",
             "volume_selection",
             "target_state"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "min-dist-target",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "weight",
+            "print_energy",
+            "volume_selection",
+            "target",
+            "steps"
         ],
         "doc": "TODO"
     },
@@ -328,6 +356,17 @@
     },
     {
         "pointer": "/target_displacement/*",
+        "type": "float",
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/target",
+        "type": "list",
+        "default": [],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/target/*",
         "type": "float",
         "doc": "TODO"
     },
@@ -923,6 +962,20 @@
         ],
         "optional": [
             "volume_selection",
+            "weight",
+            "print_energy"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "min_jacobian",
+        "required": [
+            "type",
+            "state"
+        ],
+        "optional": [
             "weight",
             "print_energy"
         ],

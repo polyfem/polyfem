@@ -83,7 +83,8 @@ namespace polyfem::solver
 
 		typedef std::vector<ValueType>::const_iterator const_iterator;
 
-		inline ValueType &operator[](size_t i) { return L[i]; }
+		inline ValueType& operator[](size_t i) { return L[i]; }
+		inline const ValueType& operator[](size_t i) const { return L[i]; }
 		inline const_iterator begin() const { return L.begin(); }
 		inline const_iterator end() const { return L.end(); }
 		inline void push_back(const ValueType &v2s) { L.push_back(v2s); }

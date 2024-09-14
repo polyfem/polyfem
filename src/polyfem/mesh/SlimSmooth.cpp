@@ -1,10 +1,10 @@
 #include "SlimSmooth.hpp"
 
+#include <ipc/utils/eigen_ext.hpp>
 #include <igl/boundary_facets.h>
 #include <polyfem/utils/Logger.hpp>
-#include <polyfem/utils/Types.hpp>
-#include <polyfem/solver/AdjointTools.hpp>
 #include <igl/slim.h>
+#include <polyfem/solver/AdjointTools.hpp>
 
 namespace polyfem::mesh
 {
@@ -12,66 +12,73 @@ namespace polyfem::mesh
 	{
 		const int dim = F.cols() - 1;
 
-		Eigen::MatrixXd V_extended;
-		V_extended.setZero(V.rows(), 3);
-		V_extended.leftCols(dim) = V;
+        if (solver::AdjointTools::is_flipped(V_new, F))
+        {
+            adjoint_logger().warn("Mesh is flipped before SLIM!");
+            return false;
+        }
 
-		Eigen::VectorXi boundary_indices;
-		{
-			Eigen::MatrixXi boundary;
-			igl::boundary_facets(F, boundary);
-			std::set<int> slim_constrained_nodes;
-			for (int i = 0; i < boundary.rows(); ++i)
-				for (int j = 0; j < boundary.cols(); ++j)
-					slim_constrained_nodes.insert(boundary(i, j));
+        Eigen::MatrixXd V_extended;
+        V_extended.setZero(V.rows(), 3);
+        V_extended.leftCols(dim) = V;
 
-			boundary_indices.setZero(slim_constrained_nodes.size());
-			int i = 0;
-			for (const auto &c : slim_constrained_nodes)
-				boundary_indices(i++) = c;
-		}
+        Eigen::VectorXi boundary_indices;
+        {
+            Eigen::MatrixXi boundary;
+            igl::boundary_facets(F, boundary);
+            std::set<int> slim_constrained_nodes;
+            for (int i = 0; i < boundary.rows(); ++i)
+                for (int j = 0; j < boundary.cols(); ++j)
+                    slim_constrained_nodes.insert(boundary(i, j));
 
-		const double soft_const_p = 1e5;
-		const int slim_iters = 2;
-		const double tol = 1e-8;
+            
+            boundary_indices.setZero(slim_constrained_nodes.size());
+            int i = 0;
+            for (const auto &c : slim_constrained_nodes)
+                boundary_indices(i++) = c;
+        }
 
-		const Eigen::MatrixXd boundary_constraints = V_new(boundary_indices, Eigen::all);
+        const double soft_const_p = 1e5;
+        const int slim_iters = 2;
+        const double tol = 1e-8;
 
-		igl::SLIMData slim_data;
-		slim_data.exp_factor = 5;
-		igl::slim_precompute(
-			V_extended,
-			F,
-			V,
-			slim_data,
-			igl::SYMMETRIC_DIRICHLET,
-			boundary_indices,
-			boundary_constraints,
-			soft_const_p);
+        const Eigen::MatrixXd boundary_constraints = V_new(boundary_indices, Eigen::all);
 
-		V_smooth.setZero(V.rows(), V.cols());
+        igl::SLIMData slim_data;
+        slim_data.exp_factor = 5;
+        igl::slim_precompute(
+            V_extended,
+            F,
+            V,
+            slim_data,
+            igl::SYMMETRIC_DIRICHLET,
+            boundary_indices,
+            boundary_constraints,
+            soft_const_p);
 
-		double error = 0;
-		int it = 0;
-		bool good_enough = false;
+        V_smooth.setZero(V.rows(), V.cols());
 
-		do
-		{
-			igl::slim_solve(slim_data, slim_iters);
-			error = (slim_data.V_o(boundary_indices, Eigen::all) - boundary_constraints).squaredNorm() / boundary_indices.size();
-			good_enough = error < 1e-7;
-			V_smooth = slim_data.V_o.leftCols(dim);
-			it += slim_iters;
-		} while (it < max_iters && !good_enough);
+        double error = 0;
+        int it = 0;
+        bool good_enough = false;
 
-		V_smooth(boundary_indices, Eigen::all) = boundary_constraints;
-		logger().debug("SLIM finished in {} iterations", it);
+        do
+        {
+            igl::slim_solve(slim_data, slim_iters);
+            error = (slim_data.V_o(boundary_indices, Eigen::all) - boundary_constraints).squaredNorm() / boundary_indices.size();
+            good_enough = error < 1e-7;
+            V_smooth = slim_data.V_o.leftCols(dim);
+            it += slim_iters;
+        } while (it < max_iters && !good_enough);
 
-		if (good_enough)
-			logger().debug("SLIM succeeded.");
-		else
-			logger().warn("SLIM cannot smooth correctly. Error: {}", error);
+        V_smooth(boundary_indices, Eigen::all) = boundary_constraints;
+        logger().debug("SLIM finished in {} iterations", it);
 
-		return good_enough;
+        if (good_enough)
+            logger().debug("SLIM succeeded.");
+        else
+            logger().warn("SLIM cannot smooth correctly. Error: {}", error);
+        
+        return good_enough;
 	}
 } // namespace polyfem::mesh

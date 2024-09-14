@@ -1892,7 +1892,21 @@
             "type"
         ],
         "optional": [
-            "id"
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "AMIPSAutodiff",
+        "required": [
+            "type"
+        ],
+        "optional": [
+            "id",
+            "rho"
         ],
         "doc": "Material Parameters including ID"
     },
@@ -1951,6 +1965,7 @@
             "Helmholtz",
             "Bilaplacian",
             "AMIPS",
+            "AMIPSAutodiff",
             "FixedCorotational"
         ],
         "doc": "Type of material"
