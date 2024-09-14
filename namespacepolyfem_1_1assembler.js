@@ -2,6 +2,7 @@ var namespacepolyfem_1_1assembler =
 [
     [ "AdiabaticProcess", "classpolyfem_1_1assembler_1_1_adiabatic_process.html", "classpolyfem_1_1assembler_1_1_adiabatic_process" ],
     [ "AMIPSEnergy", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy" ],
+    [ "AMIPSEnergyAutodiff", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy_autodiff.html", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy_autodiff" ],
     [ "Assembler", "classpolyfem_1_1assembler_1_1_assembler.html", "classpolyfem_1_1assembler_1_1_assembler" ],
     [ "AssemblerUtils", "classpolyfem_1_1assembler_1_1_assembler_utils.html", "classpolyfem_1_1assembler_1_1_assembler_utils" ],
     [ "AssemblyValsCache", "classpolyfem_1_1assembler_1_1_assembly_vals_cache.html", "classpolyfem_1_1assembler_1_1_assembly_vals_cache" ],

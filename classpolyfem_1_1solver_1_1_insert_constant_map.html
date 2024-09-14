@@ -143,8 +143,8 @@ Collaboration diagram for polyfem::solver::InsertConstantMap:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ae62999a2fe1dbae810ff0be50c7fbf82" id="r_ae62999a2fe1dbae810ff0be50c7fbf82"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_insert_constant_map.html#ae62999a2fe1dbae810ff0be50c7fbf82">InsertConstantMap</a> (const int <a class="el" href="classpolyfem_1_1solver_1_1_insert_constant_map.html#a824388011b819731e12b75231163528b">size</a>=-1, const double <a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>=0, const int start_index=-1)</td></tr>
 <tr class="separator:ae62999a2fe1dbae810ff0be50c7fbf82"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac76cffe0c1a0450105fa6c132dc3f3a5" id="r_ac76cffe0c1a0450105fa6c132dc3f3a5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_insert_constant_map.html#ac76cffe0c1a0450105fa6c132dc3f3a5">InsertConstantMap</a> (const Eigen::VectorXd &amp;values)</td></tr>
-<tr class="separator:ac76cffe0c1a0450105fa6c132dc3f3a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9191d5a8adbfae09ebfae97c6426661" id="r_aa9191d5a8adbfae09ebfae97c6426661"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_insert_constant_map.html#aa9191d5a8adbfae09ebfae97c6426661">InsertConstantMap</a> (const Eigen::VectorXd &amp;values, const int start_index=-1)</td></tr>
+<tr class="separator:aa9191d5a8adbfae09ebfae97c6426661"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a824388011b819731e12b75231163528b" id="r_a824388011b819731e12b75231163528b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_insert_constant_map.html#a824388011b819731e12b75231163528b">size</a> (const int x_size) const override</td></tr>
 <tr class="separator:a824388011b819731e12b75231163528b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af702ff9370042ad56e850ad1fe056b67" id="r_af702ff9370042ad56e850ad1fe056b67"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_insert_constant_map.html#af702ff9370042ad56e850ad1fe056b67">inverse_eval</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) override</td></tr>
@@ -213,8 +213,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="ac76cffe0c1a0450105fa6c132dc3f3a5" name="ac76cffe0c1a0450105fa6c132dc3f3a5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac76cffe0c1a0450105fa6c132dc3f3a5">&#9670;&#160;</a></span>InsertConstantMap() <span class="overload">[2/2]</span></h2>
+<a id="aa9191d5a8adbfae09ebfae97c6426661" name="aa9191d5a8adbfae09ebfae97c6426661"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9191d5a8adbfae09ebfae97c6426661">&#9670;&#160;</a></span>InsertConstantMap() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -223,8 +223,18 @@ Here is the call graph for this function:</div>
           <td class="memname">polyfem::solver::InsertConstantMap::InsertConstantMap </td>
           <td>(</td>
           <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>values</em></td><td>)</td>
+          <td class="paramname"><em>values</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>start_index</em> = <code>-1</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">

@@ -13,7 +13,7 @@ var searchData=
   ['cached_5fstiffness_5f_10',['cached_stiffness_',['../classpolyfem_1_1solver_1_1_elastic_form.html#a98255bf84889e814bff94426e230c547',1,'polyfem::solver::ElasticForm']]],
   ['can_5fcollide_5fcache_5f_11',['can_collide_cache_',['../classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#aab6c5d2bbfaf778a05d652718e1078dd',1,'polyfem::solver::ProxyContactForceForm::can_collide_cache_'],['../classpolyfem_1_1solver_1_1_layer_thickness_form.html#ab8c2af619b3c50ce208c71691bd7c2a6',1,'polyfem::solver::LayerThicknessForm::can_collide_cache_']]],
   ['candidates_5f_12',['candidates_',['../classpolyfem_1_1solver_1_1_contact_form.html#ab69af438592375b855eb3d9800a28a89',1,'polyfem::solver::ContactForm']]],
-  ['canonical_5ftransformation_5f_13',['canonical_transformation_',['../classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#a776a0db2e2cd1e4daeb8ab1b3d0af54f',1,'polyfem::assembler::AMIPSEnergy']]],
+  ['canonical_5ftransformation_5f_13',['canonical_transformation_',['../classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy_autodiff.html#a82bf7510d5e1b639583ae28682193e76',1,'polyfem::assembler::AMIPSEnergyAutodiff']]],
   ['cavity_5fpressures_5f_14',['cavity_pressures_',['../classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a21a4aaa48e44eff9000598ae54cf463f',1,'polyfem::assembler::GenericTensorProblem']]],
   ['cavity_5fthermodynamics_5f_15',['cavity_thermodynamics_',['../classpolyfem_1_1assembler_1_1_pressure_assembler.html#a28027b2e1621f7b7799d9f30ef547f43',1,'polyfem::assembler::PressureAssembler']]],
   ['ccd_5fmax_5fiterations_5f_16',['ccd_max_iterations_',['../classpolyfem_1_1solver_1_1_contact_form.html#ab7bdbce32f8352e653eddb3726d449a8',1,'polyfem::solver::ContactForm']]],

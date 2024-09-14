@@ -140,8 +140,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a97d2bc7b8b1d01f378b727eeb4dc0fc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8168d71a02f471991185019f0e770141" id="r_a8168d71a02f471991185019f0e770141"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_nodes.html#a8168d71a02f471991185019f0e770141">~VariableToNodes</a> ()</td></tr>
 <tr class="separator:a8168d71a02f471991185019f0e770141"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59f2b8e26c1f82ab7e53ad6361c4d4f4" id="r_a59f2b8e26c1f82ab7e53ad6361c4d4f4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_nodes.html#a59f2b8e26c1f82ab7e53ad6361c4d4f4">set_output_indexing</a> (const std::vector&lt; int &gt; node_ids) final</td></tr>
-<tr class="separator:a59f2b8e26c1f82ab7e53ad6361c4d4f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39ca460e7a381b3449e6ff6899d13ba5" id="r_a39ca460e7a381b3449e6ff6899d13ba5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_nodes.html#a39ca460e7a381b3449e6ff6899d13ba5">set_output_indexing</a> (const std::vector&lt; int &gt; &amp;node_ids) final</td></tr>
+<tr class="separator:a39ca460e7a381b3449e6ff6899d13ba5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae15bab3f37b1b8f893f4c2b49b1ef9e6" id="r_ae15bab3f37b1b8f893f4c2b49b1ef9e6"><td class="memItemLeft" align="right" valign="top">const Eigen::VectorXi &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_nodes.html#ae15bab3f37b1b8f893f4c2b49b1ef9e6">get_output_indexing</a> () const</td></tr>
 <tr class="separator:ae15bab3f37b1b8f893f4c2b49b1ef9e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -233,7 +233,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="reference">References <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00024">output_indexing_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_optimizations_8cpp_source.html#l00378">polyfem::solver::AdjointOptUtils::create_variable_to_simulation()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_optimizations_8cpp_source.html#l00447">polyfem::solver::AdjointOptUtils::create_variable_to_simulation()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -242,8 +242,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a59f2b8e26c1f82ab7e53ad6361c4d4f4" name="a59f2b8e26c1f82ab7e53ad6361c4d4f4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a59f2b8e26c1f82ab7e53ad6361c4d4f4">&#9670;&#160;</a></span>set_output_indexing()</h2>
+<a id="a39ca460e7a381b3449e6ff6899d13ba5" name="a39ca460e7a381b3449e6ff6899d13ba5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39ca460e7a381b3449e6ff6899d13ba5">&#9670;&#160;</a></span>set_output_indexing()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -254,7 +254,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="memname">void polyfem::solver::VariableToNodes::set_output_indexing </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; int &gt;&#160;</td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
           <td class="paramname"><em>node_ids</em></td><td>)</td>
           <td></td>
         </tr>
@@ -270,11 +270,11 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00022">dim</a>, and <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00024">output_indexing_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00046">polyfem::solver::VariableToBoundaryNodes::VariableToBoundaryNodes()</a>, <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00070">polyfem::solver::VariableToBoundaryNodesExclusive::VariableToBoundaryNodesExclusive()</a>, and <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00022">polyfem::solver::VariableToInteriorNodes::VariableToInteriorNodes()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00044">polyfem::solver::VariableToBoundaryNodes::VariableToBoundaryNodes()</a>, <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00068">polyfem::solver::VariableToBoundaryNodesExclusive::VariableToBoundaryNodesExclusive()</a>, and <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00022">polyfem::solver::VariableToInteriorNodes::VariableToInteriorNodes()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_variable_to_nodes_a59f2b8e26c1f82ab7e53ad6361c4d4f4_icgraph.svg" width="594" height="195"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_variable_to_nodes_a39ca460e7a381b3449e6ff6899d13ba5_icgraph.svg" width="594" height="195"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>

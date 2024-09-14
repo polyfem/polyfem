@@ -3,6 +3,7 @@ var classpolyfem_1_1solver_1_1_adjoint_n_l_problem =
     [ "AdjointNLProblem", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a871490ecbe9f82dafc2ea2affd680ec8", null ],
     [ "AdjointNLProblem", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a963e5a6fc7050d6e90cfb228f7a822ce", null ],
     [ "~AdjointNLProblem", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#afe950f67bec760262590e323e4fa15e8", null ],
+    [ "after_line_search_custom_operation", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a042858ef53f3f410cc827236c7d5ead4", null ],
     [ "gradient", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a2465b3b989f5f836202bb38a32346b58", null ],
     [ "hessian", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a703e9b37b69297bfec21eb0879fe65f5", null ],
     [ "is_step_collision_free", "classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#aa085cc16befc7837399eaeabb7cca712", null ],

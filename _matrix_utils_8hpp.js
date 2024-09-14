@@ -2,7 +2,7 @@ var _matrix_utils_8hpp =
 [
     [ "append_rows", "_matrix_utils_8hpp.html#abfd143acb03ac1513784509e3185b980", null ],
     [ "append_rows_of_zeros", "_matrix_utils_8hpp.html#ab6d6b194b77675457ea6803cfc9decd4", null ],
-    [ "determinant", "_matrix_utils_8hpp.html#abe6b8c4990a1c67602ca66d6d522d557", null ],
+    [ "determinant", "_matrix_utils_8hpp.html#af10d78c286c83d909e3cace312c4d1ac", null ],
     [ "flatten", "_matrix_utils_8hpp.html#adac090350174847f46edfd397abd4ab4", null ],
     [ "full_to_reduced_matrix", "_matrix_utils_8hpp.html#af03329969960f2decea3c0752c243b2a", null ],
     [ "inverse", "_matrix_utils_8hpp.html#a81d53daf4d77bf87d802589c5ec3c1c4", null ],

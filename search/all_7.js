@@ -23,7 +23,7 @@ var searchData=
   ['genericelastic_20',['genericelastic',['../classpolyfem_1_1assembler_1_1_generic_elastic.html#a4f3927f38ec516b71a2eb82f77f19354',1,'polyfem::assembler::GenericElastic::GenericElastic()'],['../classpolyfem_1_1assembler_1_1_generic_elastic.html',1,'polyfem::assembler::GenericElastic&lt; Derived &gt;']]],
   ['genericelastic_2ecpp_21',['GenericElastic.cpp',['../_generic_elastic_8cpp.html',1,'']]],
   ['genericelastic_2ehpp_22',['GenericElastic.hpp',['../_generic_elastic_8hpp.html',1,'']]],
-  ['genericelastic_3c_20amipsenergy_20_3e_23',['GenericElastic&lt; AMIPSEnergy &gt;',['../classpolyfem_1_1assembler_1_1_generic_elastic.html',1,'polyfem::assembler']]],
+  ['genericelastic_3c_20amipsenergyautodiff_20_3e_23',['GenericElastic&lt; AMIPSEnergyAutodiff &gt;',['../classpolyfem_1_1assembler_1_1_generic_elastic.html',1,'polyfem::assembler']]],
   ['genericelastic_3c_20incompressibleogdenelasticity_20_3e_24',['GenericElastic&lt; IncompressibleOgdenElasticity &gt;',['../classpolyfem_1_1assembler_1_1_generic_elastic.html',1,'polyfem::assembler']]],
   ['genericelastic_3c_20mooneyrivlin3paramelasticity_20_3e_25',['GenericElastic&lt; MooneyRivlin3ParamElasticity &gt;',['../classpolyfem_1_1assembler_1_1_generic_elastic.html',1,'polyfem::assembler']]],
   ['genericelastic_3c_20mooneyrivlinelasticity_20_3e_26',['GenericElastic&lt; MooneyRivlinElasticity &gt;',['../classpolyfem_1_1assembler_1_1_generic_elastic.html',1,'polyfem::assembler']]],

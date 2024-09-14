@@ -11,6 +11,7 @@ var classpolyfem_1_1solver_1_1_variable_to_simulation_group =
     [ "end", "classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a8dc2e0eb62702ef63c7f4eae34b8b2a6", null ],
     [ "init", "classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a92ff8d986371aac8de8e22e09b32aac7", null ],
     [ "operator[]", "classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#aed59b0624731869521acf56338740fd9", null ],
+    [ "operator[]", "classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a800fcd767e62840224de504ede2d617b", null ],
     [ "push_back", "classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a32fbc7b2ad07ddc21e8e683dc7dd53de", null ],
     [ "update", "classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a9e6f96ff30c1de1a1b483354dd74001d", null ],
     [ "L", "classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#af266275737562749d48c06de25c4afe0", null ]

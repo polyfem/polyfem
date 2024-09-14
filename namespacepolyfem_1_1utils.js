@@ -58,7 +58,7 @@ var namespacepolyfem_1_1utils =
     [ "barycentric_coordinates", "namespacepolyfem_1_1utils.html#ac7587aa934754541bace662011fd3064", null ],
     [ "create_thread_storage", "namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae", null ],
     [ "deg2rad", "namespacepolyfem_1_1utils.html#a9f16cddaaf4c88645ca864f4e99beb19", null ],
-    [ "determinant", "namespacepolyfem_1_1utils.html#abe6b8c4990a1c67602ca66d6d522d557", null ],
+    [ "determinant", "namespacepolyfem_1_1utils.html#af10d78c286c83d909e3cace312c4d1ac", null ],
     [ "flatten", "namespacepolyfem_1_1utils.html#adac090350174847f46edfd397abd4ab4", null ],
     [ "full_to_reduced_matrix", "namespacepolyfem_1_1utils.html#af03329969960f2decea3c0752c243b2a", null ],
     [ "get_local_thread_storage", "namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b", null ],

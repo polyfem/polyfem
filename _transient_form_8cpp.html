@@ -127,7 +127,6 @@ $(document).ready(function(){initNavTree('_transient_form_8cpp.html',''); initRe
 <div class="textblock"><code>#include &quot;<a class="el" href="_transient_form_8hpp_source.html">TransientForm.hpp</a>&quot;</code><br />
 <code>#include &lt;<a class="el" href="_state_8hpp_source.html">polyfem/State.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_matrix_i_o_8hpp_source.html">polyfem/io/MatrixIO.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_maybe_parallel_for_8hpp_source.html">polyfem/utils/MaybeParallelFor.hpp</a>&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for TransientForm.cpp:</div>
 <div class="dyncontent">
@@ -143,41 +142,6 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacepolyfem_1_1solver" id="r_namespacepolyfem_1_1solver"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver.html">polyfem::solver</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Variable Documentation</h2>
-<a id="aca46d143aa5c7474d00d969201e78fc5" name="aca46d143aa5c7474d00d969201e78fc5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aca46d143aa5c7474d00d969201e78fc5">&#9670;&#160;</a></span>mat</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">Eigen::MatrixXd mat</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00024">24</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_fixed_corotational_8cpp_source.html#l00444">polyfem::assembler::FixedCorotational::compute_stress_grad_multiply_mat()</a>, <a class="el" href="_generic_elastic_8cpp_source.html#l00130">polyfem::assembler::GenericElastic&lt; Derived &gt;::compute_stress_grad_multiply_mat()</a>, <a class="el" href="_laplacian_8cpp_source.html#l00050">polyfem::assembler::Laplacian::compute_stress_grad_multiply_mat()</a>, <a class="el" href="_linear_elasticity_8cpp_source.html#l00253">polyfem::assembler::LinearElasticity::compute_stress_grad_multiply_mat()</a>, <a class="el" href="_mooney_rivlin3_param_symbolic_8cpp_source.html#l00215">polyfem::assembler::MooneyRivlin3ParamSymbolic::compute_stress_grad_multiply_mat()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00573">polyfem::assembler::NeoHookeanElasticity::compute_stress_grad_multiply_mat()</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00016">polyfem::utils::determinant()</a>, <a class="el" href="_selection_8cpp_source.html#l00307">polyfem::utils::FileSelection::FileSelection()</a>, <a class="el" href="_matrix_i_o_8cpp_source.html#l00223">polyfem::io::import_matrix()</a>, <a class="el" href="_r_b_f_interpolation_8cpp_source.html#l00127">polyfem::utils::RBFInterpolation::interpolate()</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00032">polyfem::utils::inverse()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00235">polyfem::assembler::RhsAssembler::lsq_bc()</a>, <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html#l00023">polyfem::basis::MVPolygonalBasis2d::meanvalue()</a>, <a class="el" href="_m_v_polygonal_basis2d_8cpp_source.html#l00093">polyfem::basis::MVPolygonalBasis2d::meanvalue_derivative()</a>, <a class="el" href="_operator_splitting_solver_8cpp_source.html#l01028">polyfem::solver::OperatorSplittingSolver::projection()</a>, <a class="el" href="_matrix_i_o_8cpp_source.html#l00073">polyfem::io::read_matrix()</a>, <a class="el" href="_matrix_i_o_8cpp_source.html#l00018">polyfem::io::read_matrix()</a>, <a class="el" href="_matrix_i_o_8cpp_source.html#l00083">polyfem::io::read_matrix_ascii()</a>, <a class="el" href="_matrix_i_o_8cpp_source.html#l00144">polyfem::io::read_matrix_binary()</a>, <a class="el" href="raster_8cpp_source.html#l00155">polyfem::renderer::render()</a>, <a class="el" href="_expression_value_8hpp_source.html#l00055">polyfem::utils::ExpressionValue::set_mat()</a>, <a class="el" href="_assembler_8cpp_source.html#l00097">polyfem::assembler::Assembler::set_materials()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l01223">polyfem::solver::AdjointTools::tet_determinant()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00069">polyfem::utils::vector2matrix()</a>, <a class="el" href="_w_s_polygonal_basis2d_8cpp_source.html#l00023">polyfem::basis::WSPolygonalBasis2d::wachspress()</a>, <a class="el" href="_w_s_polygonal_basis2d_8cpp_source.html#l00094">polyfem::basis::WSPolygonalBasis2d::wachspress_derivative()</a>, <a class="el" href="_matrix_i_o_8cpp_source.html#l00042">polyfem::io::write_matrix()</a>, <a class="el" href="_matrix_i_o_8cpp_source.html#l00064">polyfem::io::write_matrix()</a>, <a class="el" href="_matrix_i_o_8cpp_source.html#l00125">polyfem::io::write_matrix_ascii()</a>, <a class="el" href="_matrix_i_o_8cpp_source.html#l00169">polyfem::io::write_matrix_binary()</a>, and <a class="el" href="_matrix_i_o_8cpp_source.html#l00192">polyfem::io::write_sparse_matrix_csv()</a>.</p>
-
-</div>
-</div>
-<a id="a3c8bc0bb4f045bfe78d1196cb786792c" name="a3c8bc0bb4f045bfe78d1196cb786792c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3c8bc0bb4f045bfe78d1196cb786792c">&#9670;&#160;</a></span>val</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">double val</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_transient_form_8cpp_source.html#l00013">13</a> of file <a class="el" href="_transient_form_8cpp_source.html">TransientForm.cpp</a>.</p>
-
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

@@ -8,8 +8,8 @@ var hierarchy =
     [ "polyfem::mesh::NCMesh3D::ArrayHasher3D", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1_array_hasher3_d.html", null ],
     [ "polyfem::assembler::Assembler", "classpolyfem_1_1assembler_1_1_assembler.html", [
       [ "polyfem::assembler::ElasticityAssembler", "classpolyfem_1_1assembler_1_1_elasticity_assembler.html", [
-        [ "polyfem::assembler::GenericElastic< AMIPSEnergy >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", [
-          [ "polyfem::assembler::AMIPSEnergy", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html", null ]
+        [ "polyfem::assembler::GenericElastic< AMIPSEnergyAutodiff >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", [
+          [ "polyfem::assembler::AMIPSEnergyAutodiff", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy_autodiff.html", null ]
         ] ],
         [ "polyfem::assembler::GenericElastic< IncompressibleOgdenElasticity >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", [
           [ "polyfem::assembler::IncompressibleOgdenElasticity", "classpolyfem_1_1assembler_1_1_incompressible_ogden_elasticity.html", null ]
@@ -26,6 +26,7 @@ var hierarchy =
         [ "polyfem::assembler::GenericElastic< UnconstrainedOgdenElasticity >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", [
           [ "polyfem::assembler::UnconstrainedOgdenElasticity", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html", null ]
         ] ],
+        [ "polyfem::assembler::AMIPSEnergy", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html", null ],
         [ "polyfem::assembler::FixedCorotational", "classpolyfem_1_1assembler_1_1_fixed_corotational.html", null ],
         [ "polyfem::assembler::GenericElastic< Derived >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
         [ "polyfem::assembler::HookeLinearElasticity", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html", null ],
@@ -52,12 +53,13 @@ var hierarchy =
         ] ]
       ] ],
       [ "polyfem::assembler::NLAssembler", "classpolyfem_1_1assembler_1_1_n_l_assembler.html", [
-        [ "polyfem::assembler::GenericElastic< AMIPSEnergy >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
+        [ "polyfem::assembler::GenericElastic< AMIPSEnergyAutodiff >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
         [ "polyfem::assembler::GenericElastic< IncompressibleOgdenElasticity >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
         [ "polyfem::assembler::GenericElastic< MooneyRivlin3ParamElasticity >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
         [ "polyfem::assembler::GenericElastic< MooneyRivlinElasticity >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
         [ "polyfem::assembler::GenericElastic< NeoHookeanAutodiff >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
         [ "polyfem::assembler::GenericElastic< UnconstrainedOgdenElasticity >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
+        [ "polyfem::assembler::AMIPSEnergy", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html", null ],
         [ "polyfem::assembler::FixedCorotational", "classpolyfem_1_1assembler_1_1_fixed_corotational.html", null ],
         [ "polyfem::assembler::GenericElastic< Derived >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
         [ "polyfem::assembler::HookeLinearElasticity", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html", null ],
@@ -134,6 +136,8 @@ var hierarchy =
           [ "polyfem::solver::SumCompositeForm", "classpolyfem_1_1solver_1_1_sum_composite_form.html", null ]
         ] ],
         [ "polyfem::solver::DeformedCollisionBarrierForm", "classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html", null ],
+        [ "polyfem::solver::MinJacobianForm", "classpolyfem_1_1solver_1_1_min_jacobian_form.html", null ],
+        [ "polyfem::solver::MinTargetDistForm", "classpolyfem_1_1solver_1_1_min_target_dist_form.html", null ],
         [ "polyfem::solver::ParametrizationForm", "classpolyfem_1_1solver_1_1_parametrization_form.html", [
           [ "polyfem::solver::ParametrizedProductForm", "classpolyfem_1_1solver_1_1_parametrized_product_form.html", null ],
           [ "polyfem::solver::WeightedVolumeForm", "classpolyfem_1_1solver_1_1_weighted_volume_form.html", null ]
@@ -157,7 +161,9 @@ var hierarchy =
             [ "polyfem::solver::VolumeForm", "classpolyfem_1_1solver_1_1_volume_form.html", null ]
           ] ]
         ] ],
-        [ "polyfem::solver::TransientForm", "classpolyfem_1_1solver_1_1_transient_form.html", null ]
+        [ "polyfem::solver::TransientForm", "classpolyfem_1_1solver_1_1_transient_form.html", [
+          [ "polyfem::solver::ProxyTransientForm", "classpolyfem_1_1solver_1_1_proxy_transient_form.html", null ]
+        ] ]
       ] ],
       [ "polyfem::solver::BCLagrangianForm", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html", null ],
       [ "polyfem::solver::BCPenaltyForm", "classpolyfem_1_1solver_1_1_b_c_penalty_form.html", null ],
