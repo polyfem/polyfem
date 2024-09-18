@@ -396,7 +396,7 @@ namespace polyfem::utils
         if (gaveUp)
             logger().warn("Jacobian check gave up!");
 
-        if (gaveUp) {
+        if (step < 1e-10) {
             static int idx = 0;
             std::string path = "transient_" + std::to_string(idx++) + ".hdf5";
             export_transient_hdf5(path, dim, bases, gbases, u1, u2);
