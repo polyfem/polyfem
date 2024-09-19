@@ -52,7 +52,13 @@
         "pointer": "/states/*/initial_guess",
         "default": -1,
         "type": "int",
-        "doc": "Specify the state ID, whose solution is used to initialize the solve in this state."
+        "doc": "Specify the state ID, whose solution is used to initialize the solve in this state. Only relevant for nonlinear problems."
+    },
+    {
+        "pointer": "/states/*/reuse_stiffness_factorization",
+        "default": -1,
+        "type": "int",
+        "doc": "Specify the state ID, whose stiffness matrix factorization is used to solve this state. Only relevant for linear problems."
     },
     {
         "pointer": "/output",
