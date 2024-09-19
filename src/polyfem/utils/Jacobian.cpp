@@ -162,7 +162,7 @@ namespace polyfem::utils
                 const auto flag_ = check.isValid(cp, &hierarchy, &invalid_id); \
                 flag = flag_ == Validity::valid; \
                 if (!flag) { \
-                    Tree *dst = tree; \
+                    Tree *dst = &tree; \
                     for (const auto i : hierarchy) { \
                         dst->add_children(1<<n); \
                         dst = &(dst->child(i)); \
@@ -363,7 +363,7 @@ namespace polyfem::utils
                 ); \
                 gaveUp = !info.success(); \
                 if (step < 1) { \
-                    Tree *dst = tree; \
+                    Tree *dst = &tree; \
                     for (const auto i : hierarchy) { \
                         dst->add_children(1<<n); \
                         dst = &(dst->child(i)); \
