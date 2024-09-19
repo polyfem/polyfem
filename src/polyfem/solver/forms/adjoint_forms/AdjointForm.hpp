@@ -22,6 +22,7 @@ namespace polyfem::solver
 		virtual Eigen::MatrixXd compute_reduced_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const;
 		virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const;
 		virtual void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final override;
+		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const;
 
 		// not used functions from base class
 		virtual void update_quantities(const double t, const Eigen::VectorXd &x) final override;
@@ -32,7 +33,6 @@ namespace polyfem::solver
 	protected:
 		virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final override;
 		virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const final override;
-		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const;
 
 		const VariableToSimulationGroup variable_to_simulations_;
 

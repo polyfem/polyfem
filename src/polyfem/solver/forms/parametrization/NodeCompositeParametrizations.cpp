@@ -11,7 +11,7 @@ namespace polyfem::solver
         dim = state.mesh->dimension();
     }
 
-    void VariableToNodes::set_output_indexing(const std::vector<int> node_ids)
+    void VariableToNodes::set_output_indexing(const std::vector<int> &node_ids)
     {
         output_indexing_.resize(node_ids.size() * dim);
         for (int i = 0; i < node_ids.size(); ++i)
@@ -19,17 +19,15 @@ namespace polyfem::solver
                 output_indexing_(i * dim + k) = node_ids[i] * dim + k;
     }
 
-    VariableToInteriorNodes::VariableToInteriorNodes(const State &state, const int volume_selection) : VariableToNodes(state)
+    VariableToInteriorNodes::VariableToInteriorNodes(const State &state, const std::vector<int> &volume_selection) : VariableToNodes(state)
     {
         const auto &mesh = state.mesh;
-        const auto &bases = state.bases;
-        const auto &gbases = state.geom_bases();
 
         std::set<int> node_ids;
         for (int e = 0; e < mesh->n_elements(); e++)
         {
             const int body_id = mesh->get_body_id(e);
-            if (volume_selection == body_id)
+            if (volume_selection.size() == 0 || std::find(volume_selection.begin(), volume_selection.end(), body_id) != volume_selection.end())
             {
                 for (int i = 0; i < mesh->dimension() + 1; i++)
                 {
@@ -43,7 +41,7 @@ namespace polyfem::solver
         set_output_indexing(std::vector(node_ids.begin(), node_ids.end()));
     }
 
-    VariableToBoundaryNodes::VariableToBoundaryNodes(const State &state, const int surface_selection) : VariableToNodes(state)
+    VariableToBoundaryNodes::VariableToBoundaryNodes(const State &state, const std::vector<int> &surface_selection) : VariableToNodes(state)
     {
         const auto &mesh = state.mesh;
         const auto &bases = state.bases;
@@ -58,7 +56,7 @@ namespace polyfem::solver
                 const int primitive_global_id = lb.global_primitive_id(i);
                 const int boundary_id = mesh->get_boundary_id(primitive_global_id);
 
-                if (surface_selection == boundary_id)
+                if (surface_selection.size() == 0 || std::find(surface_selection.begin(), surface_selection.end(), boundary_id) != surface_selection.end())
                     for (long n = 0; n < mesh->dimension(); ++n)
                         node_ids.insert(mesh->boundary_element_vertex(primitive_global_id, n));
             }
@@ -72,6 +70,9 @@ namespace polyfem::solver
         const auto &mesh = state.mesh;
         const auto &bases = state.bases;
         const auto &gbases = state.geom_bases();
+
+        if (!mesh->is_simplicial())
+            log_and_throw_adjoint_error("VariableToBoundaryNodesExclusive only supports simplices!");
 
         std::set<int> excluded_node_ids;
         std::set<int> all_node_ids;

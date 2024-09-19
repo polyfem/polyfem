@@ -472,28 +472,44 @@ namespace polyfem::solver
 
 	NodeTargetForm::NodeTargetForm(const State &state, const VariableToSimulationGroup &variable_to_simulations, const json &args) : StaticForm(variable_to_simulations), state_(state)
 	{
-		std::string target_data_path = args["target_data_path"];
+		const int dim = state.mesh->dimension();
+		const std::string target_data_path = args["target_data_path"];
 		if (!std::filesystem::is_regular_file(target_data_path))
 		{
 			throw std::runtime_error("Marker path invalid!");
 		}
-		Eigen::MatrixXd tmp;
-		io::read_matrix(target_data_path, tmp);
+		// N x (dim * 2), each row is [rest_x, rest_y, rest_z, deform_x, deform_y, deform_z]
+		Eigen::MatrixXd data;
+		io::read_matrix(target_data_path, data);
 
 		// markers to nodes
-		Eigen::VectorXi nodes = tmp.col(0).cast<int>();
-		target_vertex_positions.setZero(nodes.size(), state_.mesh->dimension());
-		active_nodes.reserve(nodes.size());
-		for (int s = 0; s < nodes.size(); s++)
+		target_vertex_positions.setZero(data.rows(), dim);
+		active_nodes.reserve(data.rows());
+		for (int s = 0; s < data.rows(); s++)
 		{
-			const int node_id = state_.in_node_to_node(nodes(s));
-			target_vertex_positions.row(s) = tmp.block(s, 1, 1, tmp.cols() - 1);
-			active_nodes.push_back(node_id);
+			target_vertex_positions.row(s) = data.block(s, dim, 1, dim);
+
+			const RowVectorNd node = data.block(s, 0, 1, dim);
+			bool not_found = true;
+			double min_dist = std::numeric_limits<double>::max();
+			for (int v = 0; v < state_.mesh_nodes->n_nodes(); v++)
+			{
+				min_dist = std::min(min_dist, (state_.mesh_nodes->node_position(v) - node).norm());
+				if ((state_.mesh_nodes->node_position(v) - node).norm() < args["tolerance"])
+				{
+					active_nodes.push_back(v);
+					not_found = false;
+					break;
+				}
+			}
+			if (not_found)
+				log_and_throw_adjoint_error("Failed to find corresponding node for {}! Minimum distance {}", node, min_dist);
 		}
 	}
 
 	NodeTargetForm::NodeTargetForm(const State &state, const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_) : StaticForm(variable_to_simulations), state_(state), target_vertex_positions(target_vertex_positions_), active_nodes(active_nodes_)
 	{
+		// log_and_throw_adjoint_error("[{}] Constructor not implemented!", name());
 	}
 
 	Eigen::VectorXd NodeTargetForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
@@ -506,10 +522,10 @@ namespace polyfem::solver
 		if (&state == &state_)
 		{
 			int i = 0;
-			Eigen::VectorXd disp = state_.diff_cached.u(time_step);
+			const Eigen::VectorXd disp = state_.diff_cached.u(time_step);
 			for (int v : active_nodes)
 			{
-				RowVectorNd cur_pos = state_.mesh_nodes->node_position(v) + disp.segment(v * dim, dim).transpose();
+				const RowVectorNd cur_pos = state_.mesh_nodes->node_position(v) + disp.segment(v * dim, dim).transpose();
 
 				rhs.segment(v * dim, dim) = 2 * (cur_pos - target_vertex_positions.row(i++));
 			}
@@ -523,10 +539,10 @@ namespace polyfem::solver
 		const int dim = state_.mesh->dimension();
 		double val = 0;
 		int i = 0;
-		Eigen::VectorXd disp = state_.diff_cached.u(time_step);
+		const Eigen::VectorXd disp = state_.diff_cached.u(time_step);
 		for (int v : active_nodes)
 		{
-			RowVectorNd cur_pos = state_.mesh_nodes->node_position(v) + disp.segment(v * dim, dim).transpose();
+			const RowVectorNd cur_pos = state_.mesh_nodes->node_position(v) + disp.segment(v * dim, dim).transpose();
 			val += (cur_pos - target_vertex_positions.row(i++)).squaredNorm();
 		}
 		return val;
@@ -584,5 +600,92 @@ namespace polyfem::solver
 			dist += std::pow(center1[d]->value_unweighted_step(time_step, x) - center2[d]->value_unweighted_step(time_step, x), 2);
 
 		return dist;
+	}
+
+	MinTargetDistForm::MinTargetDistForm(const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &steps, const Eigen::VectorXd &target, const json &args, const std::shared_ptr<State> &state)
+	 : AdjointForm(variable_to_simulations), steps_(steps), target_(target) 
+	{
+		dim = state->mesh->dimension();
+		json tmp_args = args;
+		for (int d = 0; d < dim; d++)
+		{
+			tmp_args["dim"] = d;
+			objs.push_back(std::make_unique<PositionForm>(variable_to_simulations, *state, tmp_args));
+		}
+		objs.push_back(std::make_unique<VolumeForm>(variable_to_simulations, *state, args));
+	}
+	Eigen::MatrixXd MinTargetDistForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const
+	{
+		Eigen::VectorXd values(steps_.size());
+		std::vector<Eigen::MatrixXd> grads(steps_.size(), Eigen::MatrixXd::Zero(state.ndof(), objs.size()));
+		Eigen::MatrixXd g2(steps_.size(), objs.size());
+		int i = 0;
+		for (int s : steps_)
+		{
+			Eigen::VectorXd input(objs.size());
+			Eigen::VectorXd tmp;
+			for (int d = 0; d < objs.size(); d++)
+			{
+				input(d) = objs[d]->value_unweighted_step(s, x);
+				grads[i].col(d) = objs[d]->compute_adjoint_rhs_step(s, x, state);
+			}
+			values[i] = eval2(input);
+			g2.row(i++) = eval2_grad(input);
+		}
+
+		Eigen::VectorXd g1 = eval1_grad(values);
+		Eigen::MatrixXd terms = Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
+		i = 0;
+		for (int s : steps_)
+		{
+			terms.col(s) += g1(i) * grads[i] * g2.row(i).transpose();
+			i++;
+		}
+		
+		return terms * weight();
+	}
+	void MinTargetDistForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	{
+		Eigen::VectorXd values(steps_.size());
+		std::vector<Eigen::MatrixXd> grads(steps_.size(), Eigen::MatrixXd::Zero(x.size(), objs.size()));
+		Eigen::MatrixXd g2(steps_.size(), objs.size());
+		int i = 0;
+		for (int s : steps_)
+		{
+			Eigen::VectorXd input(objs.size());
+			Eigen::VectorXd tmp;
+			for (int d = 0; d < objs.size(); d++)
+			{
+				input(d) = objs[d]->value_unweighted_step(s, x);
+				objs[d]->compute_partial_gradient_step(s, x, tmp);
+				grads[i].col(d) = tmp;
+			}
+			values[i] = eval2(input);
+			g2.row(i++) = eval2_grad(input);
+		}
+
+		Eigen::VectorXd g1 = eval1_grad(values);
+		gradv.setZero(x.size());
+		i = 0;
+		for (int s : steps_)
+		{
+			gradv += g1(i) * grads[i] * g2.row(i).transpose();
+			i++;
+		}
+		gradv *= weight();
+	}
+	double MinTargetDistForm::value_unweighted(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd values(steps_.size());
+		int i = 0;
+		for (int s : steps_)
+		{
+			Eigen::VectorXd input(objs.size());
+			for (int d = 0; d < objs.size(); d++)
+				input(d) = objs[d]->value_unweighted_step(s, x);
+			values[i++] = eval2(input);
+		}
+
+		return eval1(values);
 	}
 } // namespace polyfem::solver

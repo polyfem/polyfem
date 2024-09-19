@@ -32,7 +32,7 @@ namespace polyfem::solver
 	Eigen::VectorXi VariableToSimulation::get_output_indexing(const Eigen::VectorXd &x) const
 	{
 		const int out_size = parametrization_.size(x.size());
-		if (output_indexing_.size() == out_size)
+		if (output_indexing_.size() == out_size || out_size == 0)
 			return output_indexing_;
 		else if (output_indexing_.size() == 0)
 		{
@@ -155,13 +155,11 @@ namespace polyfem::solver
 		if (indices.size() == 0)
 			indices.setLinSpaced(npts * dim, 0, npts * dim - 1);
 
-		Eigen::MatrixXd V, V_flat;
+		Eigen::MatrixXd V;
 		states_[0]->get_vertices(V);
-		V_flat = utils::flatten(V);
-
-		x.setZero(indices.size());
-		for (int i = 0; i < indices.size(); i++)
-			x(i) = V_flat(indices(i));
+		if (indices.maxCoeff() >= V.size())
+			log_and_throw_adjoint_error("Output indices larger than DoFs of vertices!");
+		x = utils::flatten(V)(indices);
 
 		return parametrization_.inverse_eval(x);
 	}

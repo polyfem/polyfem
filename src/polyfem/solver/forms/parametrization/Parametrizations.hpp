@@ -140,7 +140,7 @@ namespace polyfem::solver
 	{
 	public:
 		InsertConstantMap(const int size = -1, const double val = 0, const int start_index = -1);
-		InsertConstantMap(const Eigen::VectorXd &values);
+		InsertConstantMap(const Eigen::VectorXd &values, const int start_index = -1);
 
 		int size(const int x_size) const override;
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
