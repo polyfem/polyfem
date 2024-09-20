@@ -433,7 +433,7 @@ namespace polyfem::solver
 					const Eigen::MatrixXd jacs1 = evaluate_jacobian(bs, gbs, quad.points, x0 + (x1 - x0) * step);
 					const Eigen::VectorXd min_jac0 = jacs0.colwise().minCoeff();
 					const Eigen::VectorXd min_jac1 = jacs1.colwise().minCoeff();
-					logger().debug("Min jacobian on quadrature points: before step {}, {}; after step {}, {}", min_jac0.transpose(), min_jac1.transpose());
+					logger().debug("Min jacobian on quadrature points: before step {}, {}; after step {}, {}", min_jac0(0), min_jac0(1), min_jac1(0), min_jac1(1));
 
 					// if (jacs0.minCoeff() < 1e-14)
 					// {
