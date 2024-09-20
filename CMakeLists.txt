@@ -206,10 +206,6 @@ endif()
 include(ipc_toolkit)
 target_link_libraries(polyfem PUBLIC ipc::toolkit)
 
-# Jacobian
-include(bezier)
-target_link_libraries(polyfem PRIVATE bezier)
-
 # Threading
 if(POLYFEM_THREADING STREQUAL "CPP")
     target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_CPP_THREADS)
@@ -247,6 +243,10 @@ target_link_libraries(polyfem PUBLIC geogram)
 # paraviewo (includes HDF5 and h5pp)
 include(paraviewo)
 target_link_libraries(polyfem PUBLIC paraviewo::paraviewo)
+
+# Jacobian
+include(bezier)
+target_link_libraries(polyfem PRIVATE bezier)
 
 # spdlog
 include(spdlog)
