@@ -185,7 +185,7 @@ namespace polyfem::utils
                 CHECK_STATIC(3,3,1)
                 CHECK_STATIC(3,3,2)
                 CHECK_STATIC(3,3,3)
-                // CHECK_STATIC(3,3,4)
+                CHECK_STATIC(3,3,4)
                 default: throw std::invalid_argument("Order not supported");
             }
         }
@@ -236,7 +236,7 @@ namespace polyfem::utils
                 CHECK_CONTINUOUS(3,3,1)
                 CHECK_CONTINUOUS(3,3,2)
                 CHECK_CONTINUOUS(3,3,3)
-                // CHECK_CONTINUOUS(3,3,4)
+                CHECK_CONTINUOUS(3,3,4)
                 default: throw std::invalid_argument("Order not supported");
             }
         }
@@ -386,7 +386,7 @@ namespace polyfem::utils
                 MAX_TIME_STEP(3,3,1)
                 MAX_TIME_STEP(3,3,2)
                 MAX_TIME_STEP(3,3,3)
-                // MAX_TIME_STEP(3,3,4)
+                MAX_TIME_STEP(3,3,4)
                 default: throw std::invalid_argument("Order not supported");
             }
         }
@@ -395,14 +395,6 @@ namespace polyfem::utils
 
         if (gaveUp)
             logger().warn("Jacobian check gave up!");
-
-        if (step < 1e-10) {
-            static int idx = 0;
-            std::string path = "transient_" + std::to_string(idx++) + ".hdf5";
-            export_transient_hdf5(path, dim, bases, gbases, u1, u2);
-            logger().info("Save to {}", path);
-            // std::terminate();
-        }
 
         return {step, invalid_id, invalid_step, tree};
     }
