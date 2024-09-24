@@ -88,7 +88,7 @@ namespace polyfem::utils
                 JAC_EVAL(3,3,1)
                 JAC_EVAL(3,3,2)
                 JAC_EVAL(3,3,3)
-                // JAC_EVAL(3,3,4)
+                JAC_EVAL(3,3,4)
                 default: throw std::invalid_argument("Order not supported");
             }
         }
@@ -129,7 +129,7 @@ namespace polyfem::utils
                 CHECK_STATIC(3,3,1)
                 CHECK_STATIC(3,3,2)
                 CHECK_STATIC(3,3,3)
-                // CHECK_STATIC(3,3,4)
+                CHECK_STATIC(3,3,4)
                 default: throw std::invalid_argument("Order not supported");
             }
         }
