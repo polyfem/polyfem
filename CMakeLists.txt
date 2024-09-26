@@ -245,8 +245,8 @@ include(paraviewo)
 target_link_libraries(polyfem PUBLIC paraviewo::paraviewo)
 
 # Jacobian
-include(bezier)
-target_link_libraries(polyfem PRIVATE bezier)
+# include(bezier)
+# target_link_libraries(polyfem PRIVATE bezier)
 
 # spdlog
 include(spdlog)

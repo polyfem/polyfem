@@ -1,4 +1,4 @@
-#include <element_validity.hpp>
+// #include <element_validity.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Rational.hpp>
 #include "Jacobian.hpp"
@@ -11,7 +11,7 @@
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/io/Evaluator.hpp>
 
-using namespace element_validity;
+// using namespace element_validity;
 using namespace polyfem::assembler;
 
 namespace polyfem::utils
@@ -68,33 +68,36 @@ namespace polyfem::utils
         const Eigen::MatrixXd &cp,
         const Eigen::MatrixXd &uv)
     {
-        #define JAC_EVAL(n,s,p) \
-            case p: { \
-                JacobianEvaluator<n,s,p> evaluator(cp); \
-                return evaluator.eval(uv, 0); \
-            }
-
-        if (cp.cols() == 2) {
-            switch (order) {
-                JAC_EVAL(2,2,1)
-                JAC_EVAL(2,2,2)
-                JAC_EVAL(2,2,3)
-                JAC_EVAL(2,2,4)
-                default: throw std::invalid_argument("Order not supported");
-            }
-        }
-        else {
-            switch (order) {
-                JAC_EVAL(3,3,1)
-                JAC_EVAL(3,3,2)
-                JAC_EVAL(3,3,3)
-                JAC_EVAL(3,3,4)
-                default: throw std::invalid_argument("Order not supported");
-            }
-        }
-
-        #undef JAC_EVAL
+        return Eigen::VectorXd();
     }
+    // {
+    //     #define JAC_EVAL(n,s,p) \
+    //         case p: { \
+    //             JacobianEvaluator<n,s,p> evaluator(cp); \
+    //             return evaluator.eval(uv, 0); \
+    //         }
+
+    //     if (cp.cols() == 2) {
+    //         switch (order) {
+    //             JAC_EVAL(2,2,1)
+    //             JAC_EVAL(2,2,2)
+    //             JAC_EVAL(2,2,3)
+    //             JAC_EVAL(2,2,4)
+    //             default: throw std::invalid_argument("Order not supported");
+    //         }
+    //     }
+    //     else {
+    //         switch (order) {
+    //             JAC_EVAL(3,3,1)
+    //             JAC_EVAL(3,3,2)
+    //             JAC_EVAL(3,3,3)
+    //             JAC_EVAL(3,3,4)
+    //             default: throw std::invalid_argument("Order not supported");
+    //         }
+    //     }
+
+    //     #undef JAC_EVAL
+    // }
 
     std::vector<uint> count_invalid(
         const int dim,
@@ -102,42 +105,45 @@ namespace polyfem::utils
         const std::vector<basis::ElementBases> &gbases, 
         const Eigen::VectorXd &u)
     {
-        const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
-        const int n_basis_per_cell = std::max(bases[0].bases.size(), gbases[0].bases.size());
-        const Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
-
-        std::vector<uint> invalidList;
-
-        #define CHECK_STATIC(n,s,p) \
-            case p: { \
-                StaticValidator<n,s,p> check(16 /*no. of threads*/); \
-                check.isValid(cp, nullptr, nullptr, &invalidList); \
-                break; \
-            }
-
-        if (cp.cols() == 2) {
-            switch (order) {
-                CHECK_STATIC(2,2,1)
-                CHECK_STATIC(2,2,2)
-                CHECK_STATIC(2,2,3)
-                CHECK_STATIC(2,2,4)
-                default: throw std::invalid_argument("Order not supported");
-            }
-        }
-        else {
-            switch (order) {
-                CHECK_STATIC(3,3,1)
-                CHECK_STATIC(3,3,2)
-                CHECK_STATIC(3,3,3)
-                CHECK_STATIC(3,3,4)
-                default: throw std::invalid_argument("Order not supported");
-            }
-        }
-
-        #undef CHECK_STATIC
-        
-        return invalidList;
+        return {};
     }
+    // {
+    //     const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
+    //     const int n_basis_per_cell = std::max(bases[0].bases.size(), gbases[0].bases.size());
+    //     const Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
+
+    //     std::vector<uint> invalidList;
+
+    //     #define CHECK_STATIC(n,s,p) \
+    //         case p: { \
+    //             StaticValidator<n,s,p> check(16 /*no. of threads*/); \
+    //             check.isValid(cp, nullptr, nullptr, &invalidList); \
+    //             break; \
+    //         }
+
+    //     if (cp.cols() == 2) {
+    //         switch (order) {
+    //             CHECK_STATIC(2,2,1)
+    //             CHECK_STATIC(2,2,2)
+    //             CHECK_STATIC(2,2,3)
+    //             CHECK_STATIC(2,2,4)
+    //             default: throw std::invalid_argument("Order not supported");
+    //         }
+    //     }
+    //     else {
+    //         switch (order) {
+    //             CHECK_STATIC(3,3,1)
+    //             CHECK_STATIC(3,3,2)
+    //             CHECK_STATIC(3,3,3)
+    //             CHECK_STATIC(3,3,4)
+    //             default: throw std::invalid_argument("Order not supported");
+    //         }
+    //     }
+
+    //     #undef CHECK_STATIC
+        
+    //     return invalidList;
+    // }
 
     std::tuple<bool, int, Tree>
     isValid(
@@ -147,53 +153,56 @@ namespace polyfem::utils
         const Eigen::VectorXd &u,
         const double threshold)
     {
-        const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
-        const int n_basis_per_cell = std::max(bases[0].bases.size(), gbases[0].bases.size());
-        Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
-
-        bool flag = false;
-        unsigned invalid_id = 0;
-        Tree tree;
-
-        #define CHECK_STATIC(n,s,p) \
-            case p: { \
-                std::vector<unsigned> hierarchy; \
-                StaticValidator<n,s,p> check(16 /*no. of threads*/); \
-                const auto flag_ = check.isValid(cp, &hierarchy, &invalid_id); \
-                flag = flag_ == Validity::valid; \
-                if (!flag) { \
-                    Tree *dst = &tree; \
-                    for (const auto i : hierarchy) { \
-                        dst->add_children(1<<n); \
-                        dst = &(dst->child(i)); \
-                    } \
-                } \
-                break; \
-            }
-
-        if (dim == 2) {
-            switch (order) {
-                CHECK_STATIC(2,2,1)
-                CHECK_STATIC(2,2,2)
-                CHECK_STATIC(2,2,3)
-                CHECK_STATIC(2,2,4)
-                default: throw std::invalid_argument("Order not supported");
-            }
-        }
-        else {
-            switch (order) {
-                CHECK_STATIC(3,3,1)
-                CHECK_STATIC(3,3,2)
-                CHECK_STATIC(3,3,3)
-                CHECK_STATIC(3,3,4)
-                default: throw std::invalid_argument("Order not supported");
-            }
-        }
-
-        #undef CHECK_STATIC
-        
-        return {flag, invalid_id, tree};
+        return {false, 0, Tree()};
     }
+    // {
+    //     const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
+    //     const int n_basis_per_cell = std::max(bases[0].bases.size(), gbases[0].bases.size());
+    //     Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
+
+    //     bool flag = false;
+    //     unsigned invalid_id = 0;
+    //     Tree tree;
+
+    //     #define CHECK_STATIC(n,s,p) \
+    //         case p: { \
+    //             std::vector<unsigned> hierarchy; \
+    //             StaticValidator<n,s,p> check(16 /*no. of threads*/); \
+    //             const auto flag_ = check.isValid(cp, &hierarchy, &invalid_id); \
+    //             flag = flag_ == Validity::valid; \
+    //             if (!flag) { \
+    //                 Tree *dst = &tree; \
+    //                 for (const auto i : hierarchy) { \
+    //                     dst->add_children(1<<n); \
+    //                     dst = &(dst->child(i)); \
+    //                 } \
+    //             } \
+    //             break; \
+    //         }
+
+    //     if (dim == 2) {
+    //         switch (order) {
+    //             CHECK_STATIC(2,2,1)
+    //             CHECK_STATIC(2,2,2)
+    //             CHECK_STATIC(2,2,3)
+    //             CHECK_STATIC(2,2,4)
+    //             default: throw std::invalid_argument("Order not supported");
+    //         }
+    //     }
+    //     else {
+    //         switch (order) {
+    //             CHECK_STATIC(3,3,1)
+    //             CHECK_STATIC(3,3,2)
+    //             CHECK_STATIC(3,3,3)
+    //             CHECK_STATIC(3,3,4)
+    //             default: throw std::invalid_argument("Order not supported");
+    //         }
+    //     }
+
+    //     #undef CHECK_STATIC
+        
+    //     return {flag, invalid_id, tree};
+    // }
 
     bool isValid(
         const int dim,
@@ -203,48 +212,51 @@ namespace polyfem::utils
         const Eigen::VectorXd &u2,
         const double threshold)
     {
-        const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
-        const int n_basis_per_cell = std::max(bases[0].bases.size(), gbases[0].bases.size());
-
-        const Eigen::MatrixXd cp1 = extract_nodes(dim, bases, gbases, u1, order);
-        const Eigen::MatrixXd cp2 = extract_nodes(dim, bases, gbases, u2, order);
-
-        bool flag = false;
-        unsigned invalid_id = 0;
-
-        #define CHECK_CONTINUOUS(n,s,p) \
-            case p: { \
-                std::vector<unsigned> hierarchy; \
-                ContinuousValidator<n,s,p> check(16 /*no. of threads*/); \
-                check.setPrecisionTarget(1); \
-                const auto flag_ = check.maxTimeStep(cp1, cp2, &hierarchy, &invalid_id); \
-                flag = flag_ == 1.; \
-                break; \
-            }
-
-        if (dim == 2) {
-            switch (order) {
-                CHECK_CONTINUOUS(2,2,1)
-                CHECK_CONTINUOUS(2,2,2)
-                CHECK_CONTINUOUS(2,2,3)
-                CHECK_CONTINUOUS(2,2,4)
-                default: throw std::invalid_argument("Order not supported");
-            }
-        }
-        else {
-            switch (order) {
-                CHECK_CONTINUOUS(3,3,1)
-                CHECK_CONTINUOUS(3,3,2)
-                CHECK_CONTINUOUS(3,3,3)
-                CHECK_CONTINUOUS(3,3,4)
-                default: throw std::invalid_argument("Order not supported");
-            }
-        }
-
-        #undef CHECK_CONTINUOUS
-        
-        return flag;
+        return false;
     }
+    // {
+    //     const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
+    //     const int n_basis_per_cell = std::max(bases[0].bases.size(), gbases[0].bases.size());
+
+    //     const Eigen::MatrixXd cp1 = extract_nodes(dim, bases, gbases, u1, order);
+    //     const Eigen::MatrixXd cp2 = extract_nodes(dim, bases, gbases, u2, order);
+
+    //     bool flag = false;
+    //     unsigned invalid_id = 0;
+
+    //     #define CHECK_CONTINUOUS(n,s,p) \
+    //         case p: { \
+    //             std::vector<unsigned> hierarchy; \
+    //             ContinuousValidator<n,s,p> check(16 /*no. of threads*/); \
+    //             check.setPrecisionTarget(1); \
+    //             const auto flag_ = check.maxTimeStep(cp1, cp2, &hierarchy, &invalid_id); \
+    //             flag = flag_ == 1.; \
+    //             break; \
+    //         }
+
+    //     if (dim == 2) {
+    //         switch (order) {
+    //             CHECK_CONTINUOUS(2,2,1)
+    //             CHECK_CONTINUOUS(2,2,2)
+    //             CHECK_CONTINUOUS(2,2,3)
+    //             CHECK_CONTINUOUS(2,2,4)
+    //             default: throw std::invalid_argument("Order not supported");
+    //         }
+    //     }
+    //     else {
+    //         switch (order) {
+    //             CHECK_CONTINUOUS(3,3,1)
+    //             CHECK_CONTINUOUS(3,3,2)
+    //             CHECK_CONTINUOUS(3,3,3)
+    //             CHECK_CONTINUOUS(3,3,4)
+    //             default: throw std::invalid_argument("Order not supported");
+    //         }
+    //     }
+
+    //     #undef CHECK_CONTINUOUS
+        
+    //     return flag;
+    // }
 
     void print_eigen(const Eigen::MatrixXd &mat)
     {
@@ -340,62 +352,65 @@ namespace polyfem::utils
         const Eigen::VectorXd &u2,
         double precision)
     {
-        const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
-        const int n_basis_per_cell = std::max(bases[0].bases.size(), gbases[0].bases.size());
-        Eigen::MatrixXd cp1 = extract_nodes(dim, bases, gbases, u1, order);
-        Eigen::MatrixXd cp2 = extract_nodes(dim, bases, gbases, u2, order);
-
-        // logger().debug("Jacobian check order {}, number of nodes per cell {}, number of total nodes {}", order, n_basis_per_cell, cp2.rows());
-
-        unsigned invalid_id = -1;
-        bool gaveUp = false;
-        double step = 1;
-        double invalid_step = 1.;
-        Tree tree;
-
-        #define MAX_TIME_STEP(n,s,p) \
-            case p: { \
-                std::vector<unsigned> hierarchy; \
-                ContinuousValidator<n,s,p> check(16 /*no. of threads*/); \
-                ContinuousValidator<n,s,p>::Info info; \
-                step = check.maxTimeStep( \
-                    cp1, cp2, &hierarchy, &invalid_id, &invalid_step, &info \
-                ); \
-                gaveUp = !info.success(); \
-                if (step < 1) { \
-                    Tree *dst = &tree; \
-                    for (const auto i : hierarchy) { \
-                        dst->add_children(1<<n); \
-                        dst = &(dst->child(i)); \
-                    } \
-                } \
-                break; \
-            }
-
-        if (dim == 2) {
-            switch (order) {
-                MAX_TIME_STEP(2,2,1)
-                MAX_TIME_STEP(2,2,2)
-                MAX_TIME_STEP(2,2,3)
-                MAX_TIME_STEP(2,2,4)
-                default: throw std::invalid_argument("Order not supported");
-            }
-        }
-        else {
-            switch (order) {
-                MAX_TIME_STEP(3,3,1)
-                MAX_TIME_STEP(3,3,2)
-                MAX_TIME_STEP(3,3,3)
-                MAX_TIME_STEP(3,3,4)
-                default: throw std::invalid_argument("Order not supported");
-            }
-        }
-
-        #undef MAX_TIME_STEP
-
-        if (gaveUp)
-            logger().warn("Jacobian check gave up!");
-
-        return {step, invalid_id, invalid_step, tree};
+        return {0., 0, 0., Tree()};
     }
+    // {
+    //     const int order = std::max(bases[0].bases.front().order(), gbases[0].bases.front().order());
+    //     const int n_basis_per_cell = std::max(bases[0].bases.size(), gbases[0].bases.size());
+    //     Eigen::MatrixXd cp1 = extract_nodes(dim, bases, gbases, u1, order);
+    //     Eigen::MatrixXd cp2 = extract_nodes(dim, bases, gbases, u2, order);
+
+    //     // logger().debug("Jacobian check order {}, number of nodes per cell {}, number of total nodes {}", order, n_basis_per_cell, cp2.rows());
+
+    //     unsigned invalid_id = -1;
+    //     bool gaveUp = false;
+    //     double step = 1;
+    //     double invalid_step = 1.;
+    //     Tree tree;
+
+    //     #define MAX_TIME_STEP(n,s,p) \
+    //         case p: { \
+    //             std::vector<unsigned> hierarchy; \
+    //             ContinuousValidator<n,s,p> check(16 /*no. of threads*/); \
+    //             ContinuousValidator<n,s,p>::Info info; \
+    //             step = check.maxTimeStep( \
+    //                 cp1, cp2, &hierarchy, &invalid_id, &invalid_step, &info \
+    //             ); \
+    //             gaveUp = !info.success(); \
+    //             if (step < 1) { \
+    //                 Tree *dst = &tree; \
+    //                 for (const auto i : hierarchy) { \
+    //                     dst->add_children(1<<n); \
+    //                     dst = &(dst->child(i)); \
+    //                 } \
+    //             } \
+    //             break; \
+    //         }
+
+    //     if (dim == 2) {
+    //         switch (order) {
+    //             MAX_TIME_STEP(2,2,1)
+    //             MAX_TIME_STEP(2,2,2)
+    //             MAX_TIME_STEP(2,2,3)
+    //             MAX_TIME_STEP(2,2,4)
+    //             default: throw std::invalid_argument("Order not supported");
+    //         }
+    //     }
+    //     else {
+    //         switch (order) {
+    //             MAX_TIME_STEP(3,3,1)
+    //             MAX_TIME_STEP(3,3,2)
+    //             MAX_TIME_STEP(3,3,3)
+    //             MAX_TIME_STEP(3,3,4)
+    //             default: throw std::invalid_argument("Order not supported");
+    //         }
+    //     }
+
+    //     #undef MAX_TIME_STEP
+
+    //     if (gaveUp)
+    //         logger().warn("Jacobian check gave up!");
+
+    //     return {step, invalid_id, invalid_step, tree};
+    // }
 }

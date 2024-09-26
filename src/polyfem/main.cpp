@@ -1,74 +1,68 @@
 #include <filesystem>
+#include <chrono>
 
 #include <CLI/CLI.hpp>
 
 #include <h5pp/h5pp.h>
 
-#include <polyfem/State.hpp>
-#include <polyfem/OptState.hpp>
-
+#include <polyfem/basis/ElementBases.hpp>
+#include <polyfem/quadrature/TriQuadrature.hpp>
+#include <polyfem/quadrature/QuadQuadrature.hpp>
+#include <polyfem/quadrature/TetQuadrature.hpp>
+#include <polyfem/quadrature/HexQuadrature.hpp>
+#include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_q_bases.hpp>
+#include <polyfem/assembler/Assembler.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
-#include <polyfem/io/YamlToJson.hpp>
+#include <polyfem/utils/par_for.hpp>
+#include <polyfem/utils/Rational.hpp>
+
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/basic_file_sink.h>
+#include <spdlog/sinks/ostream_sink.h>
 
 using namespace polyfem;
-using namespace solver;
+using namespace basis;
+using namespace utils;
+using namespace quadrature;
+using namespace assembler;
 
-bool has_arg(const CLI::App &command_line, const std::string &value)
+enum class CellType
 {
-	const auto *opt = command_line.get_option_no_throw(value.size() == 1 ? ("-" + value) : ("--" + value));
-	if (!opt)
-		return false;
+	Tri, Quad, Tet, Hex
+};
 
-	return opt->count() > 0;
-}
+class Timer {
+	private:
+	using myClock = std::chrono::steady_clock;
+	myClock::time_point startTime;
+	myClock::duration duration = myClock::duration::zero();
+	bool running = false;
 
-bool load_json(const std::string &json_file, json &out)
-{
-	std::ifstream file(json_file);
-
-	if (!file.is_open())
-		return false;
-
-	file >> out;
-
-	if (!out.contains("root_path"))
-		out["root_path"] = json_file;
-
-	return true;
-}
-
-std::string hdf5_out = "";
-
-bool load_yaml(const std::string &yaml_file, json &out)
-{
-	try
-	{
-		out = io::yaml_file_to_json(yaml_file);
-		if (!out.contains("root_path"))
-			out["root_path"] = yaml_file;
+	public:
+	void start() {
+		if (!running) {
+			startTime = myClock::now();
+			running = true;
+		}
 	}
-	catch (...)
-	{
-		return false;
+	void stop() {
+		if (running) {
+			duration = myClock::now() - startTime;
+			running = false;
+		}
 	}
-	return true;
-}
+	void reset() { duration = myClock::duration::zero(); running = false; }
 
-int forward_simulation(const CLI::App &command_line,
-					   const std::string &hdf5_file,
-					   const std::string output_dir,
-					   const unsigned max_threads,
-					   const bool is_strict,
-					   const bool fallback_solver,
-					   const spdlog::level::level_enum &log_level,
-					   json &in_args);
 
-int optimization_simulation(const CLI::App &command_line,
-							const unsigned max_threads,
-							const bool is_strict,
-							const spdlog::level::level_enum &log_level,
-							json &opt_args);
+	template <typename U>
+	typename U::rep read() const {
+		return std::chrono::duration_cast<U>(duration).count();
+	}
+};
 
 int main(int argc, char **argv)
 {
@@ -83,29 +77,26 @@ int main(int argc, char **argv)
 	unsigned max_threads = std::numeric_limits<unsigned>::max();
 	command_line.add_option("--max_threads", max_threads, "Maximum number of threads");
 
+	int discr_order = 0;
+	command_line.add_option("--order", discr_order, "Polynomial order of FE basis");
+
+	const std::vector<std::pair<std::string, CellType>>
+		CELL_TYPES_TO_LEVELS = {
+			{"tri", CellType::Tri},
+			{"tet", CellType::Tet},
+			{"hex", CellType::Hex},
+			{"quad", CellType::Quad}};
+	
+	CellType cell_type = CellType::Tri;
+	command_line.add_option("--cell", cell_type, "Cell type: tri, tet, hex, quad")
+		->transform(CLI::CheckedTransformer(CELL_TYPES_TO_LEVELS, CLI::ignore_case));
+
 	auto input = command_line.add_option_group("input");
-
-	std::string json_file = "";
-	input->add_option("-j,--json", json_file, "Simulation JSON file")->check(CLI::ExistingFile);
-
-	std::string yaml_file = "";
-	input->add_option("-y,--yaml", yaml_file, "Simulation YAML file")->check(CLI::ExistingFile);
-
-	command_line.add_option("--out", hdf5_out, "Out hdf5 file");
 
 	std::string hdf5_file = "";
 	input->add_option("--hdf5", hdf5_file, "Simulation HDF5 file")->check(CLI::ExistingFile);
 
 	input->require_option(1);
-
-	std::string output_dir = "";
-	command_line.add_option("-o,--output_dir", output_dir, "Directory for output files")->check(CLI::ExistingDirectory | CLI::NonexistentPath);
-
-	bool is_strict = true;
-	command_line.add_flag("-s,--strict_validation,!--ns,!--no_strict_validation", is_strict, "Disables strict validation of input JSON");
-
-	bool fallback_solver = false;
-	command_line.add_flag("--enable_overwrite_solver", fallback_solver, "If solver in input is not present, falls back to default.");
 
 	const std::vector<std::pair<std::string, spdlog::level::level_enum>>
 		SPDLOG_LEVEL_NAMES_TO_LEVELS = {
@@ -122,150 +113,184 @@ int main(int argc, char **argv)
 
 	CLI11_PARSE(command_line, argc, argv);
 
-	json in_args = json({});
+	std::vector<spdlog::sink_ptr> sinks = {std::make_shared<spdlog::sinks::stdout_color_sink_mt>()};
+	set_logger(std::make_shared<spdlog::logger>("polyfem", sinks.begin(), sinks.end()));
+	logger().set_level(log_level);
 
-	if (!json_file.empty() || !yaml_file.empty())
+	NThread::get().set_num_threads(max_threads);
+
+	if (!hdf5_file.empty())
 	{
-		const bool ok = !json_file.empty() ? load_json(json_file, in_args) : load_yaml(yaml_file, in_args);
+		h5pp::File file(hdf5_file, h5pp::FileAccess::READONLY);
 
-		if (!ok)
-			log_and_throw_error(fmt::format("unable to open {} file", json_file));
+		// auto dsetInfo = file.getDatasetInfo("NumberOfSimplices");
+		// logger().info("hdf5 info: {}", dsetInfo.string());
 
-		if (in_args.contains("states"))
-			return optimization_simulation(command_line, max_threads, is_strict, log_level, in_args);
-		else
-			return forward_simulation(command_line, "", output_dir, max_threads,
-									  is_strict, fallback_solver, log_level, in_args);
+		const int n_elem = file.readDataset<Eigen::Vector<long int, -1>>("NumberOfSimplices")(0);
+		const int dim = file.readDataset<Eigen::Vector<long int, -1>>("Dimension")(0);
+		const int n_loc_nodes = file.readDataset<Eigen::Vector<long int, -1>>("NumberOfHighOrderNodes")(0);
+
+		logger().info("Load rational nodes ...");
+		const std::vector<std::string> nodes_vec = file.readDataset<std::vector<std::string>>("Nodes");
+		if (nodes_vec.size() != 4 * dim * n_loc_nodes * n_elem)
+			log_and_throw_error("Invalid node array size! Expect {}, Actual {}", 4 * dim * n_loc_nodes * n_elem, nodes_vec.size());
+		
+		logger().info("Convert rational nodes to floating point ...");
+		std::vector<Eigen::MatrixXd> nodesA, nodesB;
+		nodesA.assign(n_elem, Eigen::MatrixXd::Zero(n_loc_nodes, dim));
+		nodesB.assign(n_elem, Eigen::MatrixXd::Zero(n_loc_nodes, dim));
+		for (int e = 0, id = 0; e < n_elem; e++)
+		{
+			for (int l = 0; l < n_loc_nodes; l++)
+			{
+				for (int d = 0; d < dim; d++)
+				{
+					Rational rat;
+					nodesA[e](l, d) = rat.get_double(nodes_vec[id + 0], nodes_vec[id + 1]);
+					nodesB[e](l, d) = rat.get_double(nodes_vec[id + 2], nodes_vec[id + 3]);
+					id += 4;
+				}
+			}
+		}
+
+		logger().info("Perform Jacobian check on quadrature points ...");
+		const std::vector<int> triangle_elem_nodes = {3, 6, 10, 15, 21, 28};
+		const std::vector<int> tet_elem_nodes = {4, 10, 20, 35, 56};
+		const std::vector<int> quad_elem_nodes = {4, 9, 16, 25};
+		const std::vector<int> hex_elem_nodes = {8, 27, 64};
+
+		switch (cell_type)
+		{
+		case CellType::Tri:
+			if (n_loc_nodes != triangle_elem_nodes[discr_order])
+				log_and_throw_error("Invalid number of local nodes {}! Expect {}", n_loc_nodes, triangle_elem_nodes[discr_order]);
+		break;
+		case CellType::Tet:
+			if (n_loc_nodes != tet_elem_nodes[discr_order])
+				log_and_throw_error("Invalid number of local nodes {}! Expect {}", n_loc_nodes, tet_elem_nodes[discr_order]);
+		break;
+		case CellType::Quad:
+			if (n_loc_nodes != quad_elem_nodes[discr_order])
+				log_and_throw_error("Invalid number of local nodes {}! Expect {}", n_loc_nodes, quad_elem_nodes[discr_order]);
+		break;
+		case CellType::Hex:
+			if (n_loc_nodes != hex_elem_nodes[discr_order])
+				log_and_throw_error("Invalid number of local nodes {}! Expect {}", n_loc_nodes, hex_elem_nodes[discr_order]);
+		break;
+		}
+
+		std::vector<basis::ElementBases> bases(nodesB.size());
+		int real_order = 1;
+		const std::string assembler = "NeoHookean";
+		switch (cell_type)
+		{
+		case CellType::Tri:
+			real_order = AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, dim);
+
+			for (int e = 0; e < nodesB.size(); e++)
+			{
+				ElementBases &b = bases[e];
+				b.bases.resize(n_loc_nodes);
+				b.set_quadrature([real_order](Quadrature &quad) {
+					TriQuadrature tri_quadrature;
+					tri_quadrature.get_quadrature(real_order, quad);
+				});
+
+				for (int j = 0; j < n_loc_nodes; ++j)
+				{
+					b.bases[j].init(discr_order, j, j, nodesB[e].row(j));
+
+					b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::p_basis_value_2d(discr_order, j, uv, val); });
+					b.bases[j].set_grad([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::p_grad_basis_value_2d(discr_order, j, uv, val); });
+				}
+			}
+		break;
+		case CellType::Tet:
+			real_order = AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, dim);
+
+			for (int e = 0; e < nodesB.size(); e++)
+			{
+				ElementBases &b = bases[e];
+				b.bases.resize(n_loc_nodes);
+				b.set_quadrature([real_order](Quadrature &quad) {
+					TetQuadrature tet_quadrature;
+					tet_quadrature.get_quadrature(real_order, quad);
+				});
+
+				for (int j = 0; j < n_loc_nodes; ++j)
+				{
+					b.bases[j].init(discr_order, j, j, nodesB[e].row(j));
+
+					b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::p_basis_value_3d(discr_order, j, uv, val); });
+					b.bases[j].set_grad([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::p_grad_basis_value_3d(discr_order, j, uv, val); });
+				}
+			}
+		break;
+		case CellType::Quad:
+			real_order = AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::CUBE_LAGRANGE, dim);
+
+			for (int e = 0; e < nodesB.size(); e++)
+			{
+				ElementBases &b = bases[e];
+				b.bases.resize(n_loc_nodes);
+				b.set_quadrature([real_order](Quadrature &quad) {
+					QuadQuadrature quad_quadrature;
+					quad_quadrature.get_quadrature(real_order, quad);
+				});
+
+				for (int j = 0; j < n_loc_nodes; ++j)
+				{
+					b.bases[j].init(discr_order, j, j, nodesB[e].row(j));
+
+					b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::q_basis_value_2d(discr_order, j, uv, val); });
+					b.bases[j].set_grad([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::q_grad_basis_value_2d(discr_order, j, uv, val); });
+				}
+			}
+		break;
+		case CellType::Hex:
+			real_order = AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::CUBE_LAGRANGE, dim);
+
+			for (int e = 0; e < nodesB.size(); e++)
+			{
+				ElementBases &b = bases[e];
+				b.bases.resize(n_loc_nodes);
+				b.set_quadrature([real_order](Quadrature &quad) {
+					HexQuadrature hex_quadrature;
+					hex_quadrature.get_quadrature(real_order, quad);
+				});
+
+				for (int j = 0; j < n_loc_nodes; ++j)
+				{
+					b.bases[j].init(discr_order, j, j, nodesB[e].row(j));
+
+					b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::q_basis_value_3d(discr_order, j, uv, val); });
+					b.bases[j].set_grad([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::q_grad_basis_value_3d(discr_order, j, uv, val); });
+				}
+			}
+		break;
+		}
+
+		Timer timer;
+		timer.start();
+
+		std::vector<bool> result(bases.size());
+		for (int e = 0; e < bases.size(); e++)
+		{
+			assembler::ElementAssemblyValues vals;
+			result[e] = vals.is_geom_mapping_positive(dim == 3, bases[e]);
+		}
+
+		timer.stop();
+		const double microseconds = static_cast<double>(timer.read<std::chrono::nanoseconds>()) / 1000;
+
+		for (bool i : result)
+			std::cout << i << ' ';
+
+		std::cout << std::endl;
+		logger().info("Checked {} elements in {} ms", n_elem, microseconds);
 	}
 	else
-		return forward_simulation(command_line, hdf5_file, output_dir, max_threads,
-								  is_strict, fallback_solver, log_level, in_args);
-}
+		log_and_throw_error("No HDF5 input specified!");
 
-int forward_simulation(const CLI::App &command_line,
-					   const std::string &hdf5_file,
-					   const std::string output_dir,
-					   const unsigned max_threads,
-					   const bool is_strict,
-					   const bool fallback_solver,
-					   const spdlog::level::level_enum &log_level,
-					   json &in_args)
-{
-	std::vector<std::string> names;
-	std::vector<Eigen::MatrixXi> cells;
-	std::vector<Eigen::MatrixXd> vertices;
-
-	if (in_args.empty() && hdf5_file.empty())
-	{
-		logger().error("No input file specified!");
-		return command_line.exit(CLI::RequiredError("--json or --hdf5"));
-	}
-
-	if (in_args.empty() && !hdf5_file.empty())
-	{
-		using MatrixXl = Eigen::Matrix<int64_t, Eigen::Dynamic, Eigen::Dynamic>;
-
-		h5pp::File file(hdf5_file, h5pp::FileAccess::READONLY);
-		std::string json_string = file.readDataset<std::string>("json");
-
-		in_args = json::parse(json_string);
-		in_args["root_path"] = hdf5_file;
-
-		names = file.findGroups("", "/meshes");
-		cells.resize(names.size());
-		vertices.resize(names.size());
-
-		for (int i = 0; i < names.size(); ++i)
-		{
-			const std::string &name = names[i];
-			cells[i] = file.readDataset<MatrixXl>("/meshes/" + name + "/c").cast<int>();
-			vertices[i] = file.readDataset<Eigen::MatrixXd>("/meshes/" + name + "/v");
-		}
-	}
-
-	json tmp = json::object();
-	if (has_arg(command_line, "log_level"))
-		tmp["/output/log/level"_json_pointer] = int(log_level);
-	if (has_arg(command_line, "max_threads"))
-		tmp["/solver/max_threads"_json_pointer] = max_threads;
-	if (has_arg(command_line, "output_dir"))
-		tmp["/output/directory"_json_pointer] = std::filesystem::absolute(output_dir);
-	if (has_arg(command_line, "enable_overwrite_solver"))
-		tmp["/solver/linear/enable_overwrite_solver"_json_pointer] = fallback_solver;
-	assert(tmp.is_object());
-	in_args.merge_patch(tmp);
-
-	State state;
-	state.init(in_args, is_strict);
-	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
-
-	// Mesh was not loaded successfully; load_mesh() logged the error.
-	if (state.mesh == nullptr)
-	{
-		// Cannot proceed without a mesh.
-		return EXIT_FAILURE;
-	}
-
-	state.stats.compute_mesh_stats(*state.mesh);
-
-	state.build_basis();
-
-	state.assemble_rhs();
-	state.assemble_mass_mat();
-
-	Eigen::MatrixXd sol;
-	Eigen::MatrixXd pressure;
-
-	if (hdf5_out != "")
-		state.hdf5_outpath = hdf5_out;
-
-	state.solve_problem(sol, pressure);
-
-	state.compute_errors(sol);
-
-	logger().info("total time: {}s", state.timings.total_time());
-
-	state.save_json(sol);
-	state.export_data(sol, pressure);
-
-	// if (hdf5_out != "")
-	// 	if (state.problem->is_time_dependent())
-	// 		state.dump_basis_nodes_transient(hdf5_out);
-	// 	else
-	// 		state.dump_basis_nodes(hdf5_out, sol);
-
-	return EXIT_SUCCESS;
-}
-
-int optimization_simulation(const CLI::App &command_line,
-							const unsigned max_threads,
-							const bool is_strict,
-							const spdlog::level::level_enum &log_level,
-							json &opt_args)
-{
-	json tmp = json::object();
-	if (has_arg(command_line, "log_level"))
-		tmp["/output/log/level"_json_pointer] = int(log_level);
-	if (has_arg(command_line, "max_threads"))
-		tmp["/solver/max_threads"_json_pointer] = max_threads;
-	opt_args.merge_patch(tmp);
-
-	OptState opt_state;
-	opt_state.init(opt_args, is_strict);
-
-	opt_state.create_states(opt_state.args["compute_objective"].get<bool>() ? polyfem::solver::CacheLevel::Solution : polyfem::solver::CacheLevel::Derivatives, opt_state.args["solver"]["max_threads"].get<int>());
-	opt_state.init_variables();
-	opt_state.create_problem();
-
-	Eigen::VectorXd x;
-	opt_state.initial_guess(x);
-
-	if (opt_state.args["compute_objective"].get<bool>())
-	{
-		logger().info("Objective is {}", opt_state.eval(x));
-		return EXIT_SUCCESS;
-	}
-
-	opt_state.solve(x);
 	return EXIT_SUCCESS;
 }
