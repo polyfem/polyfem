@@ -162,20 +162,20 @@ int main(int argc, char **argv)
 		switch (cell_type)
 		{
 		case CellType::Tri:
-			if (n_loc_nodes != triangle_elem_nodes[discr_order])
-				log_and_throw_error("Invalid number of local nodes {}! Expect {}", n_loc_nodes, triangle_elem_nodes[discr_order]);
+			if (n_loc_nodes != triangle_elem_nodes[discr_order-1])
+				log_and_throw_error("Invalid number of local nodes {}! Expect {}", n_loc_nodes, triangle_elem_nodes[discr_order-1]);
 		break;
 		case CellType::Tet:
-			if (n_loc_nodes != tet_elem_nodes[discr_order])
-				log_and_throw_error("Invalid number of local nodes {}! Expect {}", n_loc_nodes, tet_elem_nodes[discr_order]);
+			if (n_loc_nodes != tet_elem_nodes[discr_order-1])
+				log_and_throw_error("Invalid number of local nodes {}! Expect {}", n_loc_nodes, tet_elem_nodes[discr_order-1]);
 		break;
 		case CellType::Quad:
-			if (n_loc_nodes != quad_elem_nodes[discr_order])
-				log_and_throw_error("Invalid number of local nodes {}! Expect {}", n_loc_nodes, quad_elem_nodes[discr_order]);
+			if (n_loc_nodes != quad_elem_nodes[discr_order-1])
+				log_and_throw_error("Invalid number of local nodes {}! Expect {}", n_loc_nodes, quad_elem_nodes[discr_order-1]);
 		break;
 		case CellType::Hex:
-			if (n_loc_nodes != hex_elem_nodes[discr_order])
-				log_and_throw_error("Invalid number of local nodes {}! Expect {}", n_loc_nodes, hex_elem_nodes[discr_order]);
+			if (n_loc_nodes != hex_elem_nodes[discr_order-1])
+				log_and_throw_error("Invalid number of local nodes {}! Expect {}", n_loc_nodes, hex_elem_nodes[discr_order-1]);
 		break;
 		}
 
