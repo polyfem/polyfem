@@ -219,6 +219,19 @@ namespace polyfem
 				return (is_volume() ? cell_vertex(el_id, lv_id) : face_vertex(el_id, lv_id));
 			}
 
+			/// @brief list of vids of an element
+			///
+			/// @param[in] el_id *global* element id
+			/// @return list of vertex id
+			std::vector<int> element_vertices(const int el_id) const
+			{
+				std::vector<int> res;
+				for (int i = 0; i < n_cell_vertices(el_id); ++i)
+					res.push_back(element_vertex(el_id, i));
+				std::sort(res.begin(), res.end());
+				return res;
+			}
+
 			int boundary_element_vertex(const int primitive_id, const int lv_id) const
 			{
 				return (is_volume() ? face_vertex(primitive_id, lv_id) : edge_vertex(primitive_id, lv_id));
@@ -421,7 +434,7 @@ namespace polyfem
 			/// @brief computes boundary selections based on a function
 			///
 			/// @param[in] marker lambda function that takes the id and barycenter and returns an integer
-			virtual void compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker) = 0;
+			virtual void compute_body_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &)> &marker) = 0;
 
 			/// @brief Set the boundary selection from a vector
 			///
