@@ -210,7 +210,7 @@ namespace polyfem
 		damping_assembler = std::make_shared<assembler::ViscousDamping>();
 		set_materials(*damping_assembler);
 
-		elasticity_pressure_assembler = build_pressure_assembler();
+		// elasticity_pressure_assembler = build_pressure_assembler();
 
 		// for backward solve
 		damping_prev_assembler = std::make_shared<assembler::ViscousDampingPrev>();
