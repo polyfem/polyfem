@@ -296,7 +296,7 @@ int main(int argc, char **argv)
 			std::cout << i << ' ';
 
 		std::cout << std::endl;
-		logger().info("Checked {} elements in {} ms", n_elem, microseconds);
+		logger().info("Checked {} elements in {} microseconds", n_elem, microseconds);
 	}
 	else
 		log_and_throw_error("No HDF5 input specified!");
