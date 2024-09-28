@@ -3,7 +3,7 @@
 
 #include <CLI/CLI.hpp>
 
-#include <h5pp/h5pp.h>
+#include <H5Cpp.h>
 
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/quadrature/TriQuadrature.hpp>
@@ -130,29 +130,38 @@ int main(int argc, char **argv)
 		const int dim = file.readDataset<Eigen::Vector<long int, -1>>("Dimension")(0);
 		const int n_loc_nodes = file.readDataset<Eigen::Vector<long int, -1>>("NumberOfHighOrderNodes")(0);
 
-		logger().info("Load rational nodes ...");
-		const std::vector<std::string> nodes_vec = file.readDataset<std::vector<std::string>>("Nodes");
-		if (nodes_vec.size() != 4 * dim * n_loc_nodes * n_elem)
-			log_and_throw_error("Invalid node array size! Expect {}, Actual {}", 4 * dim * n_loc_nodes * n_elem, nodes_vec.size());
-		
-		logger().info("Convert rational nodes to floating point ...");
 		std::vector<Eigen::MatrixXd> nodesA, nodesB;
 		nodesA.assign(n_elem, Eigen::MatrixXd::Zero(n_loc_nodes, dim));
 		nodesB.assign(n_elem, Eigen::MatrixXd::Zero(n_loc_nodes, dim));
-		for (int e = 0, id = 0; e < n_elem; e++)
+		logger().info("Load rational nodes ...");
 		{
-			for (int l = 0; l < n_loc_nodes; l++)
+			H5::H5File file(hdf5_file, H5F_ACC_RDONLY);
+			H5::DataSet dataset = file.openDataSet("Nodes");
+			H5::DataSpace dataspace = dataset.getSpace();
+			hsize_t nDataEntries = dataspace.getSimpleExtentNpoints();
+			if (nDataEntries != 4 * dim * n_loc_nodes * n_elem)
+				log_and_throw_error("Invalid node array size! Expect {}, Actual {}", 4 * dim * n_loc_nodes * n_elem, nDataEntries);
+				
+			H5::StrType datatype(H5::PredType::C_S1, H5T_VARIABLE);
+			std::vector<char*> buffer(nDataEntries);
+			dataset.read(buffer.data(), datatype, dataspace);
+
+			logger().info("Convert rational nodes to floating point ...");
+			for (int e = 0, id = 0; e < n_elem; e++)
 			{
-				for (int d = 0; d < dim; d++)
+				for (int l = 0; l < n_loc_nodes; l++)
 				{
-					Rational rat;
-					nodesA[e](l, d) = rat.get_double(nodes_vec[id + 0], nodes_vec[id + 1]);
-					nodesB[e](l, d) = rat.get_double(nodes_vec[id + 2], nodes_vec[id + 3]);
-					id += 4;
+					for (int d = 0; d < dim; d++)
+					{
+						Rational rat;
+						nodesA[e](l, d) = rat.get_double(buffer[id + 0], buffer[id + 1]);
+						nodesB[e](l, d) = rat.get_double(buffer[id + 2], buffer[id + 3]);
+						id += 4;
+					}
 				}
 			}
 		}
-
+		
 		logger().info("Perform Jacobian check on quadrature points ...");
 		const std::vector<int> triangle_elem_nodes = {3, 6, 10, 15, 21, 28};
 		const std::vector<int> tet_elem_nodes = {4, 10, 20, 35, 56};

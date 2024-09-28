@@ -62,7 +62,7 @@ set(POLYFEM_SMALL_N  80 CACHE STRING "Maximum length for stack-allocated vectors
 set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vectors (gradient only).")
 
 # Polyfem options for enabling/disabling optional libraries
-option(POLYFEM_WITH_TESTS     "Build tests"                                 ON)
+option(POLYFEM_WITH_TESTS     "Build tests"                                OFF)
 option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"  ON)
 option(POLYFEM_WITH_MMG       "Build MMG utils for remeshing"              OFF)
 option(POLYFEM_WITH_TRIANGLE  "Build target igl_restricted::triangle"       ON)
@@ -217,6 +217,12 @@ elseif(POLYFEM_THREADING STREQUAL "TBB")
     target_link_libraries(polyfem PUBLIC TBB::tbb)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_TBB)
 endif()
+
+
+target_compile_definitions(polyfem INTERFACE HDF5_INTERFACE)
+find_package(HDF5 REQUIRED COMPONENTS C CXX)
+target_include_directories(polyfem INTERFACE ${HDF5_INCLUDE_DIRS})
+target_link_libraries(polyfem INTERFACE ${HDF5_LIBRARIES} ${HDF5_CXX_LIBRARIES})
 
 
 if(POLYFEM_WITH_TRIANGLE)
