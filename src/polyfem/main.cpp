@@ -3,6 +3,7 @@
 
 #include <CLI/CLI.hpp>
 
+#include <h5pp/h5pp.h>
 #include <H5Cpp.h>
 
 #include <polyfem/basis/ElementBases.hpp>
