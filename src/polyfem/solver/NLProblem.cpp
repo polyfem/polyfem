@@ -85,6 +85,8 @@ namespace polyfem::solver
  		static int save_idx = 0;
  		if (state->hdf5_outpath.empty())
  			return;
+			
+		const double threshold_ = state->args["threshold"];
 
  		std::vector<int> mask(n_elem, 0);
  		utils::maybe_parallel_for(n_elem, [&](int start, int end, int thread_id) {
@@ -126,7 +128,7 @@ namespace polyfem::solver
  				}
 
  				// std::cout << "det min " << m << " max " << M << ", ";
- 				if (m < 0 || m < 0.2 * M)
+ 				if (m < 0 || m < threshold_ * M)
  					mask[e] = 1;
  			}
  		});
