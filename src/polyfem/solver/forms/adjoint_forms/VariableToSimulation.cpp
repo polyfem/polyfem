@@ -135,7 +135,12 @@ namespace polyfem::solver
 			if (state->problem->is_time_dependent())
 				AdjointTools::dJ_shape_transient_adjoint_term(*state, state->get_adjoint_mat(1), state->get_adjoint_mat(0), cur_term);
 			else
-				AdjointTools::dJ_shape_static_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
+			{
+				if (!state->is_homogenization())
+					AdjointTools::dJ_shape_static_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
+				else
+					AdjointTools::dJ_shape_homogenization_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
+			}
 
 			if (term.size() != cur_term.size())
 				term = cur_term;
