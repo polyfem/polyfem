@@ -18,6 +18,7 @@
 #include <polyfem/solver/forms/InertiaForm.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/NLHomoProblem.hpp>
 
 #include <polyfem/time_integrator/BDF.hpp>
 
@@ -580,6 +581,42 @@ namespace polyfem::solver
 			one_form -= elasticity_term + rhs_term + pressure_term + contact_term;
 		}
 		one_form = utils::flatten(utils::unflatten(one_form, state.mesh->dimension())(state.primitive_to_node(), Eigen::all));
+	}
+
+	void AdjointTools::dJ_shape_homogenization_adjoint_term(
+			const State &state,
+			const Eigen::MatrixXd &sol,
+			const Eigen::MatrixXd &adjoint,
+			Eigen::VectorXd &one_form)
+	{
+		Eigen::VectorXd elasticity_term, contact_term;
+
+		std::shared_ptr<NLHomoProblem> homo_problem = std::dynamic_pointer_cast<NLHomoProblem>(state.solve_data.nl_problem);
+		assert(homo_problem);
+
+		const int dim = state.mesh->dimension();
+		one_form.setZero(state.n_geom_bases * dim);
+
+		const Eigen::MatrixXd affine_adjoint = homo_problem->reduced_to_disp_grad(adjoint, true);
+		const Eigen::VectorXd full_adjoint = homo_problem->NLProblem::reduced_to_full(adjoint.topRows(homo_problem->reduced_size())) + io::Evaluator::generate_linear_field(state.n_bases, state.mesh_nodes, affine_adjoint);
+
+		state.solve_data.elastic_form->force_shape_derivative(0, state.n_geom_bases, sol, sol, full_adjoint, elasticity_term);
+
+		if (state.solve_data.contact_form)
+		{
+			state.solve_data.contact_form->force_shape_derivative(state.diff_cached.collision_set(0), sol, full_adjoint, contact_term);
+			contact_term = state.basis_nodes_to_gbasis_nodes * contact_term;
+		}
+		else
+			contact_term.setZero(elasticity_term.size());
+
+		one_form = -(elasticity_term + contact_term);
+
+		Eigen::VectorXd force;
+		homo_problem->FullNLProblem::gradient(sol, force);
+		one_form -= state.basis_nodes_to_gbasis_nodes * utils::flatten(utils::unflatten(force, dim) * affine_adjoint);
+
+		one_form = utils::flatten(utils::unflatten(one_form, dim)(state.primitive_to_node(), Eigen::all));
 	}
 
 	void AdjointTools::dJ_shape_transient_adjoint_term(

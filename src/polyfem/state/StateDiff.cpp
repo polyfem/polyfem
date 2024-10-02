@@ -334,7 +334,7 @@ namespace polyfem
 	{
 		Eigen::MatrixXd b = adjoint_rhs;
 
-		Eigen::MatrixXd adjoint = Eigen::MatrixXd::Zero(ndof(), adjoint_rhs.cols());
+		Eigen::MatrixXd adjoint;
 		if (lin_solver_cached)
 		{
 			b(boundary_nodes, Eigen::all).setZero();
@@ -356,6 +356,7 @@ namespace polyfem
 			else
 				boundary_nodes_tmp = boundary_nodes;
 
+			adjoint.setZero(ndof(), adjoint_rhs.cols());
 			for (int i = 0; i < b.cols(); i++)
 			{
 				Eigen::VectorXd x, tmp;
@@ -382,6 +383,7 @@ namespace polyfem
 			*/
 			if (!is_homogenization())
 			{
+				adjoint.setZero(ndof(), adjoint_rhs.cols());
 				for (int i = 0; i < b.cols(); i++)
 				{
 					Eigen::MatrixXd tmp = b.col(i);
@@ -392,9 +394,24 @@ namespace polyfem
 
 					adjoint.col(i) = solve_data.nl_problem->reduced_to_full(x);
 				}
+				// NLProblem sets dirichlet values to forward BC values, but we want zero in adjoint
+				adjoint(boundary_nodes, Eigen::all).setZero();
 			}
-			// NLProblem sets dirichlet values to forward BC values, but we want zero in adjoint
-			adjoint(boundary_nodes, Eigen::all).setZero();
+			else
+			{
+				adjoint.setZero(adjoint_rhs.rows(), adjoint_rhs.cols());
+				for (int i = 0; i < b.cols(); i++)
+				{
+					Eigen::MatrixXd tmp = b.col(i);
+
+					Eigen::VectorXd x;
+					x.setZero(tmp.size());
+					solver->solve(tmp, x);
+					x.conservativeResize(adjoint.rows());
+
+					adjoint.col(i) = x;
+				}
+			}
 		}
 
 		return adjoint;

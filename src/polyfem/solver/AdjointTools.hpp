@@ -60,6 +60,11 @@ namespace polyfem::solver
 			const Eigen::MatrixXd &sol,
 			const Eigen::MatrixXd &adjoint,
 			Eigen::VectorXd &one_form);
+		void dJ_shape_homogenization_adjoint_term(
+			const State &state,
+			const Eigen::MatrixXd &sol,
+			const Eigen::MatrixXd &adjoint,
+			Eigen::VectorXd &one_form);
 		void dJ_shape_transient_adjoint_term(
 			const State &state,
 			const Eigen::MatrixXd &adjoint_nu,
