@@ -298,7 +298,7 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 	VariableToSimulationGroup variable_to_simulations;
 	variable_to_simulations.push_back(std::make_unique<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
 	{
-		VariableToBoundaryNodes variable_to_node(*state_ptr, {2});
+		VariableToBoundaryNodes variable_to_node(*state_ptr, {}, {2});
 		variable_to_simulations[0]->set_output_indexing(variable_to_node.get_output_indexing());
 	}
 
@@ -764,7 +764,7 @@ TEST_CASE("shape-contact-force-norm", "[test_adjoint]")
 	VariableToSimulationGroup variable_to_simulations;
 	variable_to_simulations.push_back(std::make_unique<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
 	{
-		VariableToBoundaryNodesExclusive variable_to_node(*state_ptr, {1, 2});
+		VariableToBoundaryNodesExclusive variable_to_node(*state_ptr, {}, {1, 2});
 		variable_to_simulations[0]->set_output_indexing(variable_to_node.get_output_indexing());
 	}
 

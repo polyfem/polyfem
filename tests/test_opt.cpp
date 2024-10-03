@@ -296,7 +296,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 	{
 		variable_to_simulations.push_back(std::make_unique<ShapeVariableToSimulation>(states[0], CompositeParametrization()));
 
-		VariableToBoundaryNodesExclusive variable_to_node(*states[0], {1});
+		VariableToBoundaryNodesExclusive variable_to_node(*states[0], {}, {1});
 		variable_to_simulations[0]->set_output_indexing(variable_to_node.get_output_indexing());
 	}
 

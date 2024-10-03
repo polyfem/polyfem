@@ -6,20 +6,20 @@
 
 namespace polyfem::solver
 {
-    VariableToNodes::VariableToNodes(const State &state)
+    VariableToNodes::VariableToNodes(const State &state, const std::vector<int> &active_dimensions) : active_dimensions_(active_dimensions)
     {
         dim = state.mesh->dimension();
     }
 
     void VariableToNodes::set_output_indexing(const std::vector<int> &node_ids)
     {
-        output_indexing_.resize(node_ids.size() * 1);
+        output_indexing_.resize(node_ids.size() * active_dimensions_.size());
         for (int i = 0; i < node_ids.size(); ++i)
-            // for (int k = 0; k < dim; ++k)
-            output_indexing_(i) = node_ids[i] * dim + 1;
+            for (int k = 0; k < active_dimensions_.size(); k++)
+                output_indexing_(i * active_dimensions_.size() + k) = node_ids[i] * dim + active_dimensions_[k];
     }
 
-    VariableToInteriorNodes::VariableToInteriorNodes(const State &state, const std::vector<int> &volume_selection) : VariableToNodes(state)
+    VariableToInteriorNodes::VariableToInteriorNodes(const State &state, const std::vector<int> &active_dimensions, const std::vector<int> &volume_selection) : VariableToNodes(state, active_dimensions)
     {
         const auto &mesh = state.mesh;
 
@@ -41,7 +41,7 @@ namespace polyfem::solver
         set_output_indexing(std::vector(node_ids.begin(), node_ids.end()));
     }
 
-    VariableToBoundaryNodes::VariableToBoundaryNodes(const State &state, const std::vector<int> &surface_selection) : VariableToNodes(state)
+    VariableToBoundaryNodes::VariableToBoundaryNodes(const State &state, const std::vector<int> &active_dimensions, const std::vector<int> &surface_selection) : VariableToNodes(state, active_dimensions)
     {
         const auto &mesh = state.mesh;
         const auto &bases = state.bases;
@@ -65,7 +65,7 @@ namespace polyfem::solver
         set_output_indexing(std::vector(node_ids.begin(), node_ids.end()));
     }
 
-    VariableToBoundaryNodesExclusive::VariableToBoundaryNodesExclusive(const State &state, const std::vector<int> &exclude_surface_selections) : VariableToNodes(state)
+    VariableToBoundaryNodesExclusive::VariableToBoundaryNodesExclusive(const State &state, const std::vector<int> &active_dimensions, const std::vector<int> &exclude_surface_selections) : VariableToNodes(state, active_dimensions)
     {
         const auto &mesh = state.mesh;
         const auto &bases = state.bases;
