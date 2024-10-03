@@ -72,9 +72,6 @@ set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options
 set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
 option(POLYFEM_CODE_COVERAGE "Enable coverage reporting" OFF)
 
-set(CPM_smooth-ipc_SOURCE "/home/zizhou/smooth-ipc/")
-set(CPM_polysolve_SOURCE "/home/zizhou/polysolve/")
-
 add_library(polyfem_coverage_config INTERFACE)
 if(POLYFEM_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   # Add required flags (GCC & LLVM/Clang)
