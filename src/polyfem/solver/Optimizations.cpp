@@ -116,9 +116,9 @@ namespace polyfem::solver
 		else if (obj_type == "boundary_smoothing")
 		{
 			if (args["surface_selection"].is_array())
-				obj = std::make_shared<BoundarySmoothingForm>(var2sim, *state, args["scale_invariant"], args["power"], args["surface_selection"].get<std::vector<int>>());
+				obj = std::make_shared<BoundarySmoothingForm>(var2sim, *state, args["scale_invariant"], args["power"], args["surface_selection"].get<std::vector<int>>(), args["dimensions"].get<std::vector<int>>());
 			else
-				obj = std::make_shared<BoundarySmoothingForm>(var2sim, *state, args["scale_invariant"], args["power"], std::vector<int>{args["surface_selection"].get<int>()});
+				obj = std::make_shared<BoundarySmoothingForm>(var2sim, *state, args["scale_invariant"], args["power"], std::vector<int>{args["surface_selection"].get<int>()}, args["dimensions"].get<std::vector<int>>());
 		}
 		else
 			log_and_throw_adjoint_error("Invalid simple form type {}!", obj_type);
@@ -339,9 +339,9 @@ namespace polyfem::solver
 			else if (type == "boundary_smoothing")
 			{
 				if (args["surface_selection"].is_array())
-					obj = std::make_shared<BoundarySmoothingForm>(var2sim, *(states[args["state"]]), args["scale_invariant"], args["power"], args["surface_selection"].get<std::vector<int>>());
+					obj = std::make_shared<BoundarySmoothingForm>(var2sim, *(states[args["state"]]), args["scale_invariant"], args["power"], args["surface_selection"].get<std::vector<int>>(), args["dimensions"].get<std::vector<int>>());
 				else
-					obj = std::make_shared<BoundarySmoothingForm>(var2sim, *(states[args["state"]]), args["scale_invariant"], args["power"], std::vector<int>{args["surface_selection"].get<int>()});
+					obj = std::make_shared<BoundarySmoothingForm>(var2sim, *(states[args["state"]]), args["scale_invariant"], args["power"], std::vector<int>{args["surface_selection"].get<int>()}, args["dimensions"].get<std::vector<int>>());
 			}
 			else if (type == "collision_barrier")
 			{
@@ -464,24 +464,32 @@ namespace polyfem::solver
 		if (composite_map_type == "none")
 		{
 		}
-		else if (composite_map_type == "interior")
+		else if (composite_map_type == "interior" || composite_map_type == "boundary" || composite_map_type == "boundary_excluding_surface")
 		{
-			assert(type == "shape");
-			VariableToInteriorNodes variable_to_node(*cur_states[0], args["volume_selection"]);
-			output_indexing = variable_to_node.get_output_indexing();
-		}
-		else if (composite_map_type == "boundary")
-		{
-			assert(type == "shape");
-			VariableToBoundaryNodes variable_to_node(*cur_states[0], args["surface_selection"]);
-			output_indexing = variable_to_node.get_output_indexing();
-		}
-		else if (composite_map_type == "boundary_excluding_surface")
-		{
-			assert(type == "shape");
-			const std::vector<int> excluded_surfaces = args["surface_selection"];
-			VariableToBoundaryNodesExclusive variable_to_node(*cur_states[0], excluded_surfaces);
-			output_indexing = variable_to_node.get_output_indexing();
+			std::vector<int> active_dimensions = args["active_dimensions"];
+			if (active_dimensions.size() == 0)
+				for (int d = 0; d < cur_states[0]->mesh->dimension(); d++)
+					active_dimensions.push_back(d);
+			
+			if (composite_map_type == "interior")
+			{
+				assert(type == "shape");
+				VariableToInteriorNodes variable_to_node(*cur_states[0], active_dimensions, args["volume_selection"]);
+				output_indexing = variable_to_node.get_output_indexing();
+			}
+			else if (composite_map_type == "boundary")
+			{
+				assert(type == "shape");
+				VariableToBoundaryNodes variable_to_node(*cur_states[0], active_dimensions, args["surface_selection"]);
+				output_indexing = variable_to_node.get_output_indexing();
+			}
+			else if (composite_map_type == "boundary_excluding_surface")
+			{
+				assert(type == "shape");
+				const std::vector<int> excluded_surfaces = args["surface_selection"];
+				VariableToBoundaryNodesExclusive variable_to_node(*cur_states[0], active_dimensions, excluded_surfaces);
+				output_indexing = variable_to_node.get_output_indexing();
+			}
 		}
 		else if (composite_map_type == "indices")
 		{

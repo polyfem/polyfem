@@ -165,6 +165,14 @@ namespace polyfem
 				OBJWriter::write(
 					resolve_output_path("intersection.obj"), displaced,
 					collision_mesh.edges(), collision_mesh.faces());
+				auto indices = ipc::my_has_intersections(collision_mesh, displaced, args["solver"]["contact"]["CCD"]["broad_phase"]);
+				Eigen::MatrixXi edges(1, 2);
+				edges << indices[0], indices[1];
+				Eigen::MatrixXi faces(1, 3);
+				faces << indices[2], indices[3], indices[4];
+				OBJWriter::write(
+					resolve_output_path("intersection_local.obj"), displaced,
+					edges, faces);
 				log_and_throw_error("Unable to solve, initial solution has intersections!");
 			}
 		}

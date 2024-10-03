@@ -144,6 +144,7 @@
         ],
         "optional": [
             "composite_map_type",
+            "active_dimensions",
             "composite_map_indices"
         ]
     },
@@ -226,6 +227,11 @@
     {
         "pointer": "/variable_to_simulation/*/mesh_id",
         "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/active_dimensions",
+        "type": "list",
+        "default": []
     },
     {
         "pointer": "/variable_to_simulation/*/state",

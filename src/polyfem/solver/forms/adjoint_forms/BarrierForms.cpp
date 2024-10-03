@@ -247,69 +247,31 @@ namespace polyfem::solver
 	template <int dim>
 	void SmoothContactForceForm<dim>::build_collision_mesh()
 	{
-		boundary_ids_to_dof_.clear();
-
-		assembler::ElementAssemblyValues vals;
-		Eigen::MatrixXd points, uv, normals;
-		Eigen::VectorXd weights;
-		Eigen::VectorXi global_primitive_ids;
-		for (const auto &lb : state_.total_local_boundary)
-		{
-			const int e = lb.element_id();
-			bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, state_.n_boundary_samples(), *state_.mesh, false, uv, points, normals, weights, global_primitive_ids);
-
-			if (!has_samples)
-				continue;
-
-			const basis::ElementBases &bs = state_.bases[e];
-			const basis::ElementBases &gbs = state_.geom_bases()[e];
-
-			vals.compute(e, state_.mesh->is_volume(), points, bs, gbs);
-
-			for (int i = 0; i < lb.size(); ++i)
-			{
-				const int primitive_global_id = lb.global_primitive_id(i);
-				const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, *state_.mesh);
-				const int boundary_id = state_.mesh->get_boundary_id(primitive_global_id);
-
-				if (!std::count(boundary_ids_.begin(), boundary_ids_.end(), boundary_id))
-					continue;
-
-				for (long n = 0; n < nodes.size(); ++n)
-				{
-					const assembler::AssemblyValues &v = vals.basis_values[nodes(n)];
-					boundary_ids_to_dof_[boundary_id].insert(v.global[0].index);
-				}
-			}
-		}
-
+		// Deep copy and change the can_collide() function
 		collision_mesh_ = state_.collision_mesh;
 
-		Eigen::MatrixXi can_collide_cache_;
-		can_collide_cache_.resize(collision_mesh_.num_vertices(), collision_mesh_.num_vertices());
-		for (int i = 0; i < can_collide_cache_.rows(); ++i)
-		{
-			int dof_idx_i = collision_mesh_.to_full_vertex_id(i);
+		// const int num_fe_nodes = state_.n_bases - state_.obstacle.n_vertices();
 
-			for (int j = 0; j < can_collide_cache_.cols(); ++j)
-			{
-				int dof_idx_j = collision_mesh_.to_full_vertex_id(j);
-				
-				bool collision_allowed = false;
-				for (const auto &id : boundary_ids_)
+		// collision_mesh_.can_collide = [this, num_fe_nodes](size_t vi, size_t vj) {
+		// 	return this->collision_mesh_.to_full_vertex_id(vi) >= num_fe_nodes || this->collision_mesh_.to_full_vertex_id(vj) >= num_fe_nodes;
+		// };
+
+		std::vector<int> is_obstacle(state_.n_bases);
+		for (int e = 0; e < state_.bases.size(); e++)
+		{
+			const auto &b = state_.bases[e];
+			if (state_.mesh->get_body_id(e) == 1)
+				for (const auto &bs : b.bases)
 				{
-					if (boundary_ids_to_dof_[id].count(dof_idx_i) || boundary_ids_to_dof_[id].count(dof_idx_j))
+					for (const auto &g : bs.global())
 					{
-						collision_allowed = true;
-						break;
+						is_obstacle[g.index] = true;
 					}
 				}
-				can_collide_cache_(i, j) = collision_allowed;
-			}
 		}
 
-		collision_mesh_.can_collide = [can_collide_cache_](size_t vi, size_t vj) {
-			return (bool)can_collide_cache_(vi, vj);
+		collision_mesh_.can_collide = [this, is_obstacle](size_t vi, size_t vj) {
+			return is_obstacle[this->collision_mesh_.to_full_vertex_id(vi)] || is_obstacle[this->collision_mesh_.to_full_vertex_id(vj)];
 		};
 	}
 
@@ -325,20 +287,23 @@ namespace polyfem::solver
 	template <int dim>
 	double SmoothContactForceForm<dim>::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
 	{
-		assert(state_.solve_data.time_integrator != nullptr);
 		assert(state_.solve_data.contact_form != nullptr);
 
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh_.dim()));
 
-		Eigen::VectorXd forces = potential_.gradient(collisions_, collision_mesh_, displaced_surface);
+		Eigen::VectorXd forces = collision_mesh_.to_full_dof(potential_.gradient(collisions_, collision_mesh_, displaced_surface));
 		
-		return collision_mesh_.to_full_dof(forces).squaredNorm();
+		// return forces.squaredNorm();
+
+		Eigen::VectorXd coeff(forces.size());
+		coeff.setZero();
+		coeff(Eigen::seq(1, coeff.size(), collision_mesh_.dim())).array() = 1;
+		return (coeff.array() * forces.array()).matrix().squaredNorm() / 2;
 	}
 
 	template <int dim>
 	Eigen::VectorXd SmoothContactForceForm<dim>::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
 	{
-		assert(state_.solve_data.time_integrator != nullptr);
 		assert(state_.solve_data.contact_form != nullptr);
 
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh_.dim()));
@@ -349,15 +314,15 @@ namespace polyfem::solver
 		StiffnessMatrix hessian = potential_.hessian(collisions_, collision_mesh_, displaced_surface, false);
 		hessian = collision_mesh_.to_full_dof(hessian);
 
-		Eigen::VectorXd gradu = 2 * hessian.transpose() * forces;
-
-		return gradu * weight();
+		Eigen::VectorXd coeff(forces.size());
+		coeff.setZero();
+		coeff(Eigen::seq(1, coeff.size(), collision_mesh_.dim())).array() = 1;
+		return weight() * (hessian * (coeff.array() * forces.array()).matrix());
 	}
 
 	template <int dim>
 	void SmoothContactForceForm<dim>::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		assert(state_.solve_data.time_integrator != nullptr);
 		assert(state_.solve_data.contact_form != nullptr);
 
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh_.dim()));
@@ -369,7 +334,13 @@ namespace polyfem::solver
 		hessian = collision_mesh_.to_full_dof(hessian);
 
 		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, &state_, x, [this, &x, &forces, &hessian]() {
-			Eigen::VectorXd grads = 2 * hessian.transpose() * forces;
+			// Eigen::VectorXd grads = 2 * hessian.transpose() * forces;
+
+			Eigen::VectorXd coeff(forces.size());
+			coeff.setZero();
+			coeff(Eigen::seq(1, coeff.size(), collision_mesh_.dim())).array() = 1;
+			Eigen::VectorXd grads = (hessian * (coeff.array() * forces.array()).matrix());
+
 			grads = state_.basis_nodes_to_gbasis_nodes * grads;
 			return AdjointTools::map_node_to_primitive_order(state_, grads);
 		});
