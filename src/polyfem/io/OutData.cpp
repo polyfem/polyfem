@@ -2098,7 +2098,13 @@ namespace polyfem::io
 					for (int e = 0; e < dhats.size(); e++)
 						dhats(e) = set.get_face_dhat(e);
 					
-					writer.add_cell_field("dhat", dhats);
+					writer.add_cell_field("dhat_face", dhats);
+					
+					dhats.setConstant(dhat, collision_mesh.num_vertices());
+					for (int i = 0; i < dhats.size(); i++)
+						dhats(i) = set.get_vert_dhat(i);
+					
+					writer.add_field("dhat_vert", dhats);
 				}
 			}
 
