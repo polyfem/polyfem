@@ -491,6 +491,8 @@ namespace polyfem::solver
 		}
 		else
 			VariableToSimulation::set_output_indexing(args);
+		
+		set_dirichlet_boundaries(args["surface_selection"]);
 	}
 
 	void PressureVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
@@ -578,5 +580,7 @@ namespace polyfem::solver
 		}
 		else
 			VariableToSimulation::set_output_indexing(args);
+
+		set_pressure_boundaries(args["surface_selection"]);
 	}
 } // namespace polyfem::solver

@@ -460,17 +460,6 @@ namespace polyfem::solver
 
 		std::unique_ptr<VariableToSimulation> var2sim = VariableToSimulation::create(type, cur_states, CompositeParametrization(std::move(map_list)));
 		var2sim->set_output_indexing(args);
-		
-		if (type == "dirichlet")
-		{
-			auto dirichlet_var2sim = static_cast<DirichletVariableToSimulation *>(var2sim.get());
-			dirichlet_var2sim->set_dirichlet_boundaries(args["surface_selection"]);
-		}
-		else if (type == "pressure")
-		{
-			auto pressure_var2sim = static_cast<PressureVariableToSimulation *>(var2sim.get());
-			pressure_var2sim->set_pressure_boundaries(args["surface_selection"]);
-		}
 
 		return var2sim;
 	}
