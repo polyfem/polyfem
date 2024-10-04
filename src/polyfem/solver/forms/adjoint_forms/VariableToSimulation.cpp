@@ -1,7 +1,10 @@
 #include "VariableToSimulation.hpp"
 #include <polyfem/State.hpp>
+#include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/solver/Optimizations.hpp>
+
+#include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
@@ -27,6 +30,31 @@ namespace polyfem::solver
 
 		log_and_throw_adjoint_error("Invalid type of VariableToSimulation!");
 		return std::unique_ptr<VariableToSimulation>();
+	}
+
+	void VariableToSimulation::set_output_indexing(const json &args)
+	{
+		const std::string composite_map_type = args["composite_map_type"];
+		const State &state = *(states_[0]);
+		if (composite_map_type == "none")
+		{
+			output_indexing_.resize(0);
+		}
+		else if (composite_map_type == "indices")
+		{
+			if (args["composite_map_indices"].is_string())
+			{
+				Eigen::MatrixXi tmp_mat;
+				polyfem::io::read_matrix(state.resolve_input_path(args["composite_map_indices"].get<std::string>()), tmp_mat);
+				output_indexing_ = tmp_mat;
+			}
+			else if (args["composite_map_indices"].is_array())
+				output_indexing_ = args["composite_map_indices"];
+			else
+				log_and_throw_adjoint_error("Invalid composite map indices type!");
+		}
+		else
+			log_and_throw_adjoint_error("Unknown composite_map_type!");
 	}
 
 	Eigen::VectorXi VariableToSimulation::get_output_indexing(const Eigen::VectorXd &x) const
@@ -167,6 +195,29 @@ namespace polyfem::solver
 		x = utils::flatten(V)(indices);
 
 		return parametrization_.inverse_eval(x);
+	}
+	void ShapeVariableToSimulation::set_output_indexing(const json &args)
+	{
+		const std::string composite_map_type = args["composite_map_type"];
+		const State &state = *(states_[0]);
+		if (composite_map_type == "interior")
+		{
+			VariableToInteriorNodes variable_to_node(state, args["volume_selection"]);
+			output_indexing_ = variable_to_node.get_output_indexing();
+		}
+		else if (composite_map_type == "boundary")
+		{
+			VariableToBoundaryNodes variable_to_node(state, args["surface_selection"]);
+			output_indexing_ = variable_to_node.get_output_indexing();
+		}
+		else if (composite_map_type == "boundary_excluding_surface")
+		{
+			const std::vector<int> excluded_surfaces = args["surface_selection"];
+			VariableToBoundaryNodesExclusive variable_to_node(state, excluded_surfaces);
+			output_indexing_ = variable_to_node.get_output_indexing();
+		}
+		else
+			VariableToSimulation::set_output_indexing(args);
 	}
 
 	void ElasticVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
@@ -424,6 +475,23 @@ namespace polyfem::solver
 
 		return parametrization_.inverse_eval(x);
 	}
+	void DirichletVariableToSimulation::set_output_indexing(const json &args)
+	{
+		const std::string composite_map_type = args["composite_map_type"];
+		const State &state = *(states_[0]);
+		if (composite_map_type == "time_step_indexing")
+		{
+			const int time_steps = state.args["time"]["time_steps"];
+			const int dim = state.mesh->dimension();
+
+			output_indexing_.setZero(time_steps * dim);
+			for (int i = 0; i < time_steps; ++i)
+				for (int k = 0; k < dim; ++k)
+					output_indexing_(i * dim + k) = i;
+		}
+		else
+			VariableToSimulation::set_output_indexing(args);
+	}
 
 	void PressureVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
@@ -495,5 +563,20 @@ namespace polyfem::solver
 			}
 
 		return parametrization_.inverse_eval(x);
+	}
+
+	void PressureVariableToSimulation::set_output_indexing(const json &args)
+	{
+		const std::string composite_map_type = args["composite_map_type"];
+		const State &state = *(states_[0]);
+		if (composite_map_type == "time_step_indexing")
+		{
+			const int time_steps = state.args["time"]["time_steps"];
+			output_indexing_.setZero(time_steps);
+			for (int i = 0; i < time_steps; ++i)
+				output_indexing_(i) = i;
+		}
+		else
+			VariableToSimulation::set_output_indexing(args);
 	}
 } // namespace polyfem::solver

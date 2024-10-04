@@ -32,7 +32,7 @@ namespace polyfem::solver
 		virtual Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const = 0;
 		virtual Eigen::VectorXd inverse_eval();
 
-		void set_output_indexing(const Eigen::VectorXi &output_indexing) { output_indexing_ = output_indexing; }
+		virtual void set_output_indexing(const json &args);
 		Eigen::VectorXi get_output_indexing(const Eigen::VectorXd &x) const;
 
 		virtual Eigen::VectorXd apply_parametrization_jacobian(const Eigen::VectorXd &term, const Eigen::VectorXd &x) const;
@@ -106,7 +106,9 @@ namespace polyfem::solver
 		ParameterType get_parameter_type() const override { return ParameterType::Shape; }
 
 		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;
-		virtual Eigen::VectorXd inverse_eval() override;
+		Eigen::VectorXd inverse_eval() override;
+
+		void set_output_indexing(const json &args) override;
 
 	protected:
 		virtual void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) override;
@@ -125,7 +127,7 @@ namespace polyfem::solver
 		ParameterType get_parameter_type() const override { return ParameterType::LameParameter; }
 
 		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;
-		virtual Eigen::VectorXd inverse_eval() override;
+		Eigen::VectorXd inverse_eval() override;
 
 	protected:
 		void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) override;
@@ -144,7 +146,7 @@ namespace polyfem::solver
 		ParameterType get_parameter_type() const override { return ParameterType::FrictionCoefficient; }
 
 		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;
-		virtual Eigen::VectorXd inverse_eval() override;
+		Eigen::VectorXd inverse_eval() override;
 
 	protected:
 		void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) override;
@@ -163,7 +165,7 @@ namespace polyfem::solver
 		ParameterType get_parameter_type() const override { return ParameterType::DampingCoefficient; }
 
 		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;
-		virtual Eigen::VectorXd inverse_eval() override;
+		Eigen::VectorXd inverse_eval() override;
 
 	protected:
 		void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) override;
@@ -182,7 +184,7 @@ namespace polyfem::solver
 		ParameterType get_parameter_type() const override { return ParameterType::InitialCondition; }
 
 		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;
-		virtual Eigen::VectorXd inverse_eval() override;
+		Eigen::VectorXd inverse_eval() override;
 
 	protected:
 		void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) override;
@@ -206,7 +208,9 @@ namespace polyfem::solver
 		ParameterType get_parameter_type() const override { return ParameterType::DirichletBC; }
 
 		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;
-		virtual Eigen::VectorXd inverse_eval() override;
+		Eigen::VectorXd inverse_eval() override;
+
+		void set_output_indexing(const json &args) override;
 
 	protected:
 		void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) override;
@@ -236,7 +240,9 @@ namespace polyfem::solver
 		ParameterType get_parameter_type() const override { return ParameterType::PressureBC; }
 
 		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;
-		virtual Eigen::VectorXd inverse_eval() override;
+		Eigen::VectorXd inverse_eval() override;
+
+		void set_output_indexing(const json &args) override;
 
 	protected:
 		void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) override;
