@@ -534,7 +534,15 @@
     {
         "pointer": "/variable_to_simulation/*/composite_map_type",
         "type": "string",
-        "default": "none"
+        "default": "none",
+        "options": [
+            "none",
+            "interior",
+            "boundary",
+            "boundary_excluding_surface",
+            "indices",
+            "time_step_indexing"
+        ]
     },
     {
         "pointer": "/variable_to_simulation/*/composite_map_indices",
