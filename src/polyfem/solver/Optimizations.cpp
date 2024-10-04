@@ -122,7 +122,7 @@ namespace polyfem::solver
 		}
 		else
 			log_and_throw_adjoint_error("Invalid simple form type {}!", obj_type);
-		
+
 		return obj;
 	}
 
@@ -289,6 +289,10 @@ namespace polyfem::solver
 			else if (type == "stress_norm")
 			{
 				obj = std::make_shared<StressNormForm>(var2sim, *(states[args["state"]]), args);
+			}
+			else if (type == "dirichlet_energy")
+			{
+				obj = std::make_shared<DirichletEnergyForm>(var2sim, *(states[args["state"]]), args);
 			}
 			else if (type == "elastic_energy")
 			{
