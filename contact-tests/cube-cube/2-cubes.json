@@ -22,7 +22,7 @@
     }],
     "solver": {
         "linear": {
-            "solver": ["Eigen::PardisoLDLT", "Eigen::CholmodSupernodalLLT", "Eigen::SimplicialLDLT"]
+            "solver": ["Eigen::PardisoLDLT", "Eigen::SimplicialLDLT"]
         },
         "nonlinear": {
             "advanced": {

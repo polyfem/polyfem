@@ -98,7 +98,7 @@
     },
     "solver": {
         "linear": {
-            "solver": "Eigen::PardisoLDLT"
+            "solver": ["Eigen::PardisoLLT", "Eigen::SimplicialLDLT"]
         },
         "nonlinear": {
             "line_search": {
