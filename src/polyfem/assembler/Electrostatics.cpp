@@ -12,7 +12,7 @@ namespace polyfem::assembler
 
 	void Electrostatics::add_multimaterial(const int index, const json &params, const Units &units)
 	{
-		assert(size() == 2 || size() == 3);
+		assert(size() == 1);
 
 		epsilon_.add_multimaterial(index, params, units.permittivity());
 	}

@@ -21,6 +21,7 @@
             "homo_disp_grad",
             "stress",
             "stress_norm",
+            "dirichlet_energy",
             "elastic_energy",
             "quadratic_contact_force_norm",
             "log_contact_force_norm",
@@ -670,6 +671,22 @@
             "print_energy"
         ],
         "doc": "Lp Norm of elastic stress over the volume selection"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "dirichlet_energy",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "volume_selection",
+            "power",
+            "weight",
+            "print_energy"
+        ],
+        "doc": "Dirichlet energy for Poisson problem"
     },
     {
         "pointer": "/",
