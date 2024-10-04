@@ -756,9 +756,9 @@ namespace polyfem::solver
 							state.collision_mesh.rest_positions(),
 							/*lagged_displacements=*/surface_solution_prev,
 							surface_velocities,
-							barrier_contact->dhat(),
+							barrier_contact->barrier_potential(),
 							barrier_contact->barrier_stiffness(),
-							state.solve_data.friction_form->epsv()));
+							0., true));
 
 					Eigen::VectorXd cur_p = adjoint_p.col(t);
 					cur_p(state.boundary_nodes).setZero();

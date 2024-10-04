@@ -222,8 +222,6 @@ namespace polyfem::solver
 					collision_mesh, tiled_to_single, dhat, avg_mass, use_convergent_contact_formulation,
 					use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance,
 					ccd_max_iterations);
-				
-				contact_form = periodic_contact_form;
 			}
 			else
 			{
@@ -233,28 +231,32 @@ namespace polyfem::solver
 					ccd_max_iterations);
 			}
 
-			if (use_adaptive_barrier_stiffness)
-			{
-				contact_form->set_barrier_stiffness(contact_params["initial_barrier_stiffness"]);
-				// logger().debug("Using adaptive barrier stiffness");
-			}
-			else
-			{
-				assert(barrier_stiffness.is_number());
-				assert(barrier_stiffness.get<double>() > 0);
-				contact_form->set_barrier_stiffness(barrier_stiffness);
-				// logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
-			}
 
-			forms.push_back(contact_form);
-
-			if (friction_coefficient != 0)
+			if (contact_form)
 			{
-				friction_form = std::make_shared<FrictionForm>(
-					collision_mesh, time_integrator, epsv, friction_coefficient,
-					broad_phase, *contact_form, friction_iterations);
-				friction_form->init_lagging(sol);
-				forms.push_back(friction_form);
+				if (use_adaptive_barrier_stiffness)
+				{
+					contact_form->set_barrier_stiffness(contact_params["initial_barrier_stiffness"]);
+					// logger().debug("Using adaptive barrier stiffness");
+				}
+				else
+				{
+					assert(barrier_stiffness.is_number());
+					assert(barrier_stiffness.get<double>() > 0);
+					contact_form->set_barrier_stiffness(barrier_stiffness);
+					// logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
+				}
+
+				forms.push_back(contact_form);
+
+				if (friction_coefficient != 0)
+				{
+					friction_form = std::make_shared<FrictionForm>(
+						collision_mesh, time_integrator, epsv, friction_coefficient,
+						broad_phase, *contact_form, friction_iterations);
+					friction_form->init_lagging(sol);
+					forms.push_back(friction_form);
+				}
 			}
 		}
 
