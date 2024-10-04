@@ -46,6 +46,28 @@ namespace polyfem::solver
 		ipc::BarrierPotential barrier_potential_;
 	};
 
+	class LayerThicknessForm : public CollisionBarrierForm
+	{
+	public:
+		LayerThicknessForm(const VariableToSimulationGroup &variable_to_simulations,
+						   const State &state,
+						   const std::vector<int> &boundary_ids,
+						   const double dhat,
+						   const bool use_log_barrier = false,
+						   const double dmin = 0);
+
+		std::string name() const override { return "layer thickness"; }
+
+		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override { return 1.; }
+
+	protected:
+		void build_collision_mesh();
+
+		std::vector<int> boundary_ids_;
+		std::map<int, std::set<int>> boundary_ids_to_dof_;
+		Eigen::MatrixXi can_collide_cache_;
+	};
+
 	class DeformedCollisionBarrierForm : public AdjointForm
 	{
 	public:

@@ -35,6 +35,8 @@
             "material_smoothing",
             "volume",
             "soft_constraint",
+            "layer_thickness",
+            "layer_thickness_log",
             "log",
             "AMIPS",
             "parametrized_product",
@@ -870,6 +872,39 @@
             "weight",
             "print_energy",
             "dhat"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "layer_thickness",
+        "required": [
+            "type",
+            "state"
+        ],
+        "optional": [
+            "boundary_ids",
+            "dhat",
+            "weight",
+            "print_energy"
+        ],
+        "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "layer_thickness_log",
+        "required": [
+            "type",
+            "state",
+            "dmin"
+        ],
+        "optional": [
+            "boundary_ids",
+            "dhat",
+            "weight",
+            "print_energy"
         ],
         "doc": "TODO"
     },
