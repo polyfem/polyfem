@@ -1262,13 +1262,12 @@ TEST_CASE("control-pressure-nodes-3d", "[.][test_adjoint]")
 
 	VariableToSimulationGroup variable_to_simulations;
 	{
-		std::vector<int> pressure_boundaries = {2};
 		auto v2s = std::make_shared<PressureVariableToSimulation>(state_ptr, CompositeParametrization());
-		v2s->set_pressure_boundaries(pressure_boundaries);
 
 		json composite_map_args = R"({
 			"composite_map_type": "indices",
-			"composite_map_indices": [0,1,2,3,4]
+			"composite_map_indices": [0,1,2,3,4],
+			"surface_selection": [2]
 		})"_json;
 
 		v2s->set_output_indexing(composite_map_args);
