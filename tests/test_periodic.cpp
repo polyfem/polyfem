@@ -142,72 +142,36 @@ namespace
 } // namespace
 
 
-// TEST_CASE("homogenize-stress-periodic", "[test_adjoint]")
-// {
-// 	const std::string path = POLYFEM_DATA_DIR + std::string("/../differentiable/");
-// 	json in_args;
-// 	load_json(path + "homogenize-stress-periodic.json", in_args);
-// 	auto state_ptr = AdjointOptUtils::create_state(in_args);
-// 	State &state = *state_ptr;
+TEST_CASE("homogenize-stress-periodic", "[test_adjoint]")
+{
+	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	json in_args;
+	load_json(path + "homogenize-stress-periodic.json", in_args);
+	auto state_ptr = AdjointOptUtils::create_state(in_args, solver::CacheLevel::Derivatives, -1);
+	State &state = *state_ptr;
 
-// 	json opt_args;
-// 	load_json(path + "homogenize-stress-periodic-opt.json", opt_args);
-// 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
+	json opt_args;
+	load_json(path + "homogenize-stress-periodic-opt.json", opt_args);
+	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
-// 	std::vector<std::shared_ptr<State>> states({state_ptr});
+	std::vector<std::shared_ptr<State>> states({state_ptr});
 
-// 	std::vector<std::shared_ptr<VariableToSimulation>> variable_to_simulations;
-// 	variable_to_simulations.push_back(AdjointOptUtils::create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
+	VariableToSimulationGroup var2sim;
+	var2sim.push_back(AdjointOptUtils::create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
 
-// 	auto obj = std::dynamic_pointer_cast<SumCompositeForm>(AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states));
+	auto obj = std::dynamic_pointer_cast<SumCompositeForm>(AdjointOptUtils::create_form(opt_args["functionals"], var2sim, states));
 
-// 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
 
-// 	Eigen::VectorXd x = variable_to_simulations[0]->inverse_eval();
+	Eigen::VectorXd x = var2sim[0]->inverse_eval();
 
-// 	// nl_problem->solution_changed(x);
-// 	// Eigen::VectorXd grad;
-// 	// nl_problem->gradient(x, grad);
+	Eigen::VectorXd theta;
+	theta.setRandom(x.size());
 
-// 	// Eigen::VectorXd fgrad;
-// 	// fgrad.setZero(x.size());
-// 	// const double eps = opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>();
-// 	// for (int i = x.size() - 2; i < x.size(); i++)
-// 	// {
-// 	// 	Eigen::VectorXd y = x;
-
-// 	// 	y(i) = x(i) + eps;
-// 	// 	nl_problem->solution_changed(y);
-// 	// 	const double a = obj->value(y);
-
-// 	// 	y(i) = x(i) - eps;
-// 	// 	nl_problem->solution_changed(y);
-// 	// 	const double b = obj->value(y);
-
-// 	// 	fgrad(i) = (a - b) / (2 * eps);
-// 	// }
-
-// 	// std::cout << "fgrad " << fgrad.tail(2).transpose() << "\n";
-// 	// std::cout << "grad " << grad.tail(2).transpose() << "\n";
-
-// 	// paraviewo::VTUWriter writer;
-// 	// writer.add_field("grad", utils::unflatten(periodic_grad_to_full(one_form), 2));
-// 	// writer.add_field("fgrad", utils::unflatten(periodic_grad_to_full(fgrad), 2));
+	nl_problem->solution_changed(x);
 	
-// 	// auto ids = state.primitive_to_node();
-// 	// Eigen::VectorXd ids_ = Eigen::Map<Eigen::VectorXi>(ids.data(), ids.size()).cast<double>();
-// 	// writer.add_field("ids", ids_);
-
-// 	// Eigen::MatrixXi F;
-// 	// state.get_elements(F);
-// 	// writer.write_mesh("debug.vtu", V, F);
-
-// 	Eigen::VectorXd theta;
-// 	theta.setRandom(x.size());
-// 	nl_problem->solution_changed(x);
-	
-// 	verify_adjoint(*nl_problem, x, theta, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 1e-3);
-// }
+	verify_adjoint(*nl_problem, x, theta, opt_args["solver"]["nonlinear"]["debug_fd_eps"].get<double>(), 1e-5);
+}
 
 TEST_CASE("homogenize-stress", "[test_adjoint]")
 {
