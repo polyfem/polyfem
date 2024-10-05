@@ -3,6 +3,8 @@ set(SOURCES
 	Parametrization.cpp
 	Parametrizations.hpp
 	Parametrizations.cpp
+	PeriodicMeshToMesh.hpp
+	PeriodicMeshToMesh.cpp
 	SplineParametrizations.hpp
 	SplineParametrizations.cpp
 	NodeCompositeParametrizations.hpp

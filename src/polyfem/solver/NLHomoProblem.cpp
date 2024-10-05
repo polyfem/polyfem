@@ -91,6 +91,18 @@ namespace polyfem::solver
         return grad;
     }
 
+    NLHomoProblem::TVector NLHomoProblem::reduced_to_full_shape_derivative(const Eigen::MatrixXd &disp_grad, const TVector &adjoint_full) const
+    {
+        const int dim = state_.mesh->dimension();
+
+        Eigen::VectorXd term;
+        term.setZero(state_.n_bases * dim);
+        for (int i = 0; i < state_.n_bases; i++)
+            term.segment(i * dim, dim) += disp_grad.transpose() * adjoint_full.segment(i * dim, dim);
+        
+        return state_.basis_nodes_to_gbasis_nodes * term;
+    }
+
     double NLHomoProblem::value(const TVector &x)
     {
         double val = NLProblem::value(x);

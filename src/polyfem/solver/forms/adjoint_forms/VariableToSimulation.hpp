@@ -2,6 +2,7 @@
 
 #include <polyfem/solver/forms/parametrization/Parametrization.hpp>
 #include <polyfem/solver/AdjointTools.hpp>
+#include <polyfem/solver/forms/parametrization/PeriodicMeshToMesh.hpp>
 
 #include <iostream>
 
@@ -38,7 +39,7 @@ namespace polyfem::solver
 		virtual Eigen::VectorXd apply_parametrization_jacobian(const Eigen::VectorXd &term, const Eigen::VectorXd &x) const;
 
 	protected:
-		virtual void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) = 0;
+		virtual void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices);
 		const std::vector<std::shared_ptr<State>> states_;
 		CompositeParametrization parametrization_;
 
@@ -52,6 +53,7 @@ namespace polyfem::solver
 		using ValueType = std::shared_ptr<VariableToSimulation>;
 
 		VariableToSimulationGroup() = default;
+		virtual ~VariableToSimulationGroup() = default;
 
 		void init(const json &args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes);
 
@@ -79,7 +81,7 @@ namespace polyfem::solver
 		/// @param x Optimization variable
 		/// @param grad Partial gradient wrt. the state variable, lambda function to allow lazy evaluation of the gradient
 		/// @return Partial gradient wrt. the optimization variable
-		Eigen::VectorXd apply_parametrization_jacobian(const ParameterType type, const State *state_ptr, const Eigen::VectorXd &x, const std::function<Eigen::VectorXd()> &grad) const;
+		virtual Eigen::VectorXd apply_parametrization_jacobian(const ParameterType type, const State *state_ptr, const Eigen::VectorXd &x, const std::function<Eigen::VectorXd()> &grad) const;
 
 		typedef std::vector<ValueType>::const_iterator const_iterator;
 
@@ -251,5 +253,28 @@ namespace polyfem::solver
 		std::string variable_to_string(const Eigen::VectorXd &variable);
 
 		std::vector<int> pressure_boundaries_;
+	};
+
+	// state variable dof = dim * n_vertices - periodic dof
+	class PeriodicShapeVariableToSimulation : public VariableToSimulation
+	{
+	public:
+		using VariableToSimulation::VariableToSimulation;
+		virtual ~PeriodicShapeVariableToSimulation() {}
+
+		std::string name() const override { return "periodic-shape"; }
+
+		ParameterType get_parameter_type() const override { return ParameterType::PeriodicShape; }
+
+		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;
+		Eigen::VectorXd inverse_eval() override;
+
+		void update(const Eigen::VectorXd &x) override;
+
+		Eigen::VectorXd apply_parametrization_jacobian(const Eigen::VectorXd &term, const Eigen::VectorXd &x) const override;
+
+	protected:
+		std::unique_ptr<PeriodicMeshToMesh> periodic_mesh_map;
+		Eigen::VectorXd periodic_mesh_representation;
 	};
 } // namespace polyfem::solver

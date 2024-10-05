@@ -27,6 +27,8 @@ namespace polyfem::solver
 			return std::make_unique<DirichletVariableToSimulation>(states, parametrization);
 		else if (type == "pressure")
 			return std::make_unique<PressureVariableToSimulation>(states, parametrization);
+		else if (type == "periodic-shape")
+			return std::make_unique<PeriodicShapeVariableToSimulation>(states, parametrization);
 
 		log_and_throw_adjoint_error("Invalid type of VariableToSimulation!");
 		return std::unique_ptr<VariableToSimulation>();
@@ -82,6 +84,11 @@ namespace polyfem::solver
 	{
 		log_and_throw_adjoint_error("[{}] inverse_eval not implemented!", name());
 		return Eigen::VectorXd();
+	}
+
+	void VariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
+	{
+		log_and_throw_adjoint_error("[{}] update_state not implemented!", name());
 	}
 
 	void VariableToSimulationGroup::init(const json &args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes)
@@ -582,5 +589,60 @@ namespace polyfem::solver
 			VariableToSimulation::set_output_indexing(args);
 
 		set_pressure_boundaries(args["surface_selection"]);
+	}
+
+	Eigen::VectorXd PeriodicShapeVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd term, cur_term;
+		for (auto state : states_)
+		{
+			if (state->problem->is_time_dependent())
+			{
+				log_and_throw_error("Not implemented!");
+			}
+			else
+			{
+				AdjointTools::dJ_periodic_shape_adjoint_term(*state, *periodic_mesh_map, periodic_mesh_representation, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
+			}
+			if (term.size() != cur_term.size())
+				term = cur_term;
+			else
+				term += cur_term;
+		}
+		return VariableToSimulation::apply_parametrization_jacobian(term, x);
+	}
+	void PeriodicShapeVariableToSimulation::update(const Eigen::VectorXd &x)
+	{
+		const int dim = states_[0]->mesh->dimension();
+		periodic_mesh_representation = parametrization_.eval(x);
+		const Eigen::MatrixXd V = utils::unflatten(periodic_mesh_map->eval(periodic_mesh_representation), dim);
+
+		for (auto state : states_)
+		{
+			const int n_verts = state->mesh->n_vertices();
+
+			for (int i = 0; i < n_verts; i++)
+				state->set_mesh_vertex(i, V.row(i));
+		}
+	}
+	Eigen::VectorXd PeriodicShapeVariableToSimulation::inverse_eval()
+	{
+		const auto &state = *(states_[0]);
+
+		Eigen::MatrixXd V;
+		state.get_vertices(V);
+
+		if (!state.periodic_bc->all_direction_periodic())
+			log_and_throw_error("Cannot inverse evaluate periodic shape!");
+
+		periodic_mesh_map = std::make_unique<PeriodicMeshToMesh>(V);
+		periodic_mesh_representation = periodic_mesh_map->inverse_eval(utils::flatten(V));
+		
+		return parametrization_.inverse_eval(periodic_mesh_representation);
+	}
+	Eigen::VectorXd PeriodicShapeVariableToSimulation::apply_parametrization_jacobian(const Eigen::VectorXd &term, const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd mid = periodic_mesh_map->apply_jacobian(term, periodic_mesh_representation);
+		return parametrization_.apply_jacobian(mid, periodic_mesh_representation);
 	}
 } // namespace polyfem::solver
