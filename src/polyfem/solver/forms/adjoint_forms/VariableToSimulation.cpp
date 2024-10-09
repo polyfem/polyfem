@@ -127,7 +127,6 @@ namespace polyfem::solver
 	Eigen::VectorXd VariableToSimulationGroup::apply_parametrization_jacobian(const ParameterType type, const State *state_ptr, const Eigen::VectorXd &x, const std::function<Eigen::VectorXd()> &grad) const
 	{
 		Eigen::VectorXd gradv = Eigen::VectorXd::Zero(x.size());
-		Eigen::VectorXd raw_grad;
 		for (const auto &v2s : L)
 		{
 			if (v2s->get_parameter_type() != type)
@@ -138,10 +137,7 @@ namespace polyfem::solver
 				if (state.get() != state_ptr)
 					continue;
 
-				if (raw_grad.size() == 0)
-					raw_grad = v2s->apply_parametrization_jacobian(grad(), x);
-
-				gradv += raw_grad;
+				gradv += v2s->apply_parametrization_jacobian(grad(), x);
 			}
 		}
 		return gradv;
@@ -642,7 +638,7 @@ namespace polyfem::solver
 	}
 	Eigen::VectorXd PeriodicShapeVariableToSimulation::apply_parametrization_jacobian(const Eigen::VectorXd &term, const Eigen::VectorXd &x) const
 	{
-		Eigen::VectorXd mid = periodic_mesh_map->apply_jacobian(term, periodic_mesh_representation);
-		return parametrization_.apply_jacobian(mid, periodic_mesh_representation);
+		const Eigen::VectorXd mid = periodic_mesh_map->apply_jacobian(term, periodic_mesh_representation);
+		return parametrization_.apply_jacobian(mid, x);
 	}
 } // namespace polyfem::solver
