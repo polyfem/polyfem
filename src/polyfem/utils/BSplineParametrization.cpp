@@ -3,11 +3,11 @@
 
 namespace polyfem
 {
-	void BSplineParametrization::get_parameters(const Eigen::MatrixXd &V, Eigen::MatrixXd &control_points)
-	{
-		bool mesh_changed = V.rows() != num_vertices;
-		get_parameters(V, control_points, mesh_changed);
-	}
+	// void BSplineParametrization::get_parameters(const Eigen::MatrixXd &V, Eigen::MatrixXd &control_points)
+	// {
+	// 	bool mesh_changed = V.rows() != num_vertices;
+	// 	get_parameters(V, control_points, mesh_changed);
+	// }
 
 	BSplineParametrization2D::BSplineParametrization2D(const Eigen::MatrixXd &control_points, const Eigen::MatrixXd &knots, const Eigen::MatrixXd &V) : BSplineParametrization(V), dim(control_points.cols())
 	{
