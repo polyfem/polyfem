@@ -85,7 +85,7 @@ namespace polyfem::solver
 	protected:
 		void build_collision_mesh();
 		void build_forward_collision_mesh();
-		const ipc::Collisions &get_or_compute_collision_set(const int time_step, const Eigen::MatrixXd &displaced_surface) const;
+		const ipc::NormalCollisions &get_or_compute_collision_set(const int time_step, const Eigen::MatrixXd &displaced_surface) const;
 
 		const State &state_;
 		std::set<int> boundary_ids_;
@@ -95,7 +95,7 @@ namespace polyfem::solver
 		Eigen::MatrixXd node_positions_;
 
 		mutable Eigen::VectorXi collision_set_indicator_;
-		std::vector<std::shared_ptr<ipc::Collisions>> collision_sets_;
+		std::vector<std::shared_ptr<ipc::NormalCollisions>> collision_sets_;
 
 		ipc::CollisionMesh collision_mesh_;
 		const double dhat_;
