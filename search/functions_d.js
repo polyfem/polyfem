@@ -3,7 +3,7 @@ var searchData=
   ['macro_5ffull_5fto_5freduced_0',['macro_full_to_reduced',['../classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a33146dbf89011be632035f346874d643',1,'polyfem::solver::NLHomoProblem']]],
   ['macro_5ffull_5fto_5freduced_5fgrad_1',['macro_full_to_reduced_grad',['../classpolyfem_1_1solver_1_1_n_l_homo_problem.html#ab1e31a6e91df936af3b4cd19a08ce6cc',1,'polyfem::solver::NLHomoProblem']]],
   ['macro_5freduced_5fsize_2',['macro_reduced_size',['../classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a1f527a0e82a799800a62ad499a23d872',1,'polyfem::solver::NLHomoProblem']]],
-  ['macro_5freduced_5fto_5ffull_3',['macro_reduced_to_full',['../classpolyfem_1_1solver_1_1_n_l_homo_problem.html#acda64b160bde286f320650a443031df2',1,'polyfem::solver::NLHomoProblem']]],
+  ['macro_5freduced_5fto_5ffull_3',['macro_reduced_to_full',['../classpolyfem_1_1solver_1_1_n_l_homo_problem.html#afd624813d852d151e0adf96a337cd349',1,'polyfem::solver::NLHomoProblem']]],
   ['macrostrainalform_4',['MacroStrainALForm',['../classpolyfem_1_1solver_1_1_macro_strain_a_l_form.html#a6f8266a3e7c3f17fe202ddc42969ecd6',1,'polyfem::solver::MacroStrainALForm']]],
   ['macrostrainlagrangianform_5',['MacroStrainLagrangianForm',['../classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html#af973727df4a1144f90c917498cf3b357',1,'polyfem::solver::MacroStrainLagrangianForm']]],
   ['macrostrainvalue_6',['MacroStrainValue',['../classpolyfem_1_1assembler_1_1_macro_strain_value.html#a0ad383f5e198673f3717e044c54deeab',1,'polyfem::assembler::MacroStrainValue']]],

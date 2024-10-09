@@ -290,6 +290,7 @@ var hierarchy =
       [ "polyfem::solver::LinearFilter", "classpolyfem_1_1solver_1_1_linear_filter.html", null ],
       [ "polyfem::solver::PerBody2PerElem", "classpolyfem_1_1solver_1_1_per_body2_per_elem.html", null ],
       [ "polyfem::solver::PerBody2PerNode", "classpolyfem_1_1solver_1_1_per_body2_per_node.html", null ],
+      [ "polyfem::solver::PeriodicMeshToMesh", "classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html", null ],
       [ "polyfem::solver::PowerMap", "classpolyfem_1_1solver_1_1_power_map.html", null ],
       [ "polyfem::solver::ScalarVelocityParametrization", "classpolyfem_1_1solver_1_1_scalar_velocity_parametrization.html", null ],
       [ "polyfem::solver::Scaling", "classpolyfem_1_1solver_1_1_scaling.html", null ],
@@ -447,6 +448,7 @@ var hierarchy =
       [ "polyfem::solver::ElasticVariableToSimulation", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html", null ],
       [ "polyfem::solver::FrictionCoeffientVariableToSimulation", "classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html", null ],
       [ "polyfem::solver::InitialConditionVariableToSimulation", "classpolyfem_1_1solver_1_1_initial_condition_variable_to_simulation.html", null ],
+      [ "polyfem::solver::PeriodicShapeVariableToSimulation", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html", null ],
       [ "polyfem::solver::PressureVariableToSimulation", "classpolyfem_1_1solver_1_1_pressure_variable_to_simulation.html", null ],
       [ "polyfem::solver::ShapeVariableToSimulation", "classpolyfem_1_1solver_1_1_shape_variable_to_simulation.html", null ]
     ] ],

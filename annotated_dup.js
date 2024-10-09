@@ -279,6 +279,8 @@ var annotated_dup =
         [ "PerBody2PerElem", "classpolyfem_1_1solver_1_1_per_body2_per_elem.html", "classpolyfem_1_1solver_1_1_per_body2_per_elem" ],
         [ "PerBody2PerNode", "classpolyfem_1_1solver_1_1_per_body2_per_node.html", "classpolyfem_1_1solver_1_1_per_body2_per_node" ],
         [ "PeriodicContactForm", "classpolyfem_1_1solver_1_1_periodic_contact_form.html", "classpolyfem_1_1solver_1_1_periodic_contact_form" ],
+        [ "PeriodicMeshToMesh", "classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html", "classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh" ],
+        [ "PeriodicShapeVariableToSimulation", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation" ],
         [ "PlusConstCompositeForm", "classpolyfem_1_1solver_1_1_plus_const_composite_form.html", "classpolyfem_1_1solver_1_1_plus_const_composite_form" ],
         [ "PositionForm", "classpolyfem_1_1solver_1_1_position_form.html", "classpolyfem_1_1solver_1_1_position_form" ],
         [ "PowerForm", "classpolyfem_1_1solver_1_1_power_form.html", "classpolyfem_1_1solver_1_1_power_form" ],

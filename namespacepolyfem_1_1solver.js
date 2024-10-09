@@ -9,8 +9,10 @@ var namespacepolyfem_1_1solver =
       [ "dJ_initial_condition_adjoint_term", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a83a0a0adacafbe7876a0a8de0d0ba417", null ],
       [ "dJ_material_static_adjoint_term", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#ac2d6e588ea62390fae16da18ec65c996", null ],
       [ "dJ_material_transient_adjoint_term", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a8c5bd48aac94f33974b81900015f979b", null ],
+      [ "dJ_periodic_shape_adjoint_term", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a081d2c0a4ab511232e3cd662e5d07233", null ],
       [ "dJ_pressure_static_adjoint_term", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a05b06d15b00427c97602f6b7e878b54e", null ],
       [ "dJ_pressure_transient_adjoint_term", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a6f41a3fc55f3273044cf7b94068e95f1", null ],
+      [ "dJ_shape_homogenization_adjoint_term", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#ab569cec773f93ba964899bd4f67e2e21", null ],
       [ "dJ_shape_static_adjoint_term", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#addcc05e296f84fac4d2feef6b6efe330", null ],
       [ "dJ_shape_transient_adjoint_term", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#abeb523ee2bef0856b888bb49c5cdca8f", null ],
       [ "edge_normal_gradient", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a99096782a44628ed8754d46c9d55801b", null ],
@@ -88,6 +90,8 @@ var namespacepolyfem_1_1solver =
     [ "PerBody2PerElem", "classpolyfem_1_1solver_1_1_per_body2_per_elem.html", "classpolyfem_1_1solver_1_1_per_body2_per_elem" ],
     [ "PerBody2PerNode", "classpolyfem_1_1solver_1_1_per_body2_per_node.html", "classpolyfem_1_1solver_1_1_per_body2_per_node" ],
     [ "PeriodicContactForm", "classpolyfem_1_1solver_1_1_periodic_contact_form.html", "classpolyfem_1_1solver_1_1_periodic_contact_form" ],
+    [ "PeriodicMeshToMesh", "classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html", "classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh" ],
+    [ "PeriodicShapeVariableToSimulation", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation" ],
     [ "PlusConstCompositeForm", "classpolyfem_1_1solver_1_1_plus_const_composite_form.html", "classpolyfem_1_1solver_1_1_plus_const_composite_form" ],
     [ "PositionForm", "classpolyfem_1_1solver_1_1_position_form.html", "classpolyfem_1_1solver_1_1_position_form" ],
     [ "PowerForm", "classpolyfem_1_1solver_1_1_power_form.html", "classpolyfem_1_1solver_1_1_power_form" ],
@@ -134,7 +138,8 @@ var namespacepolyfem_1_1solver =
       [ "InitialCondition", "namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a01ba7e77dad0a0033b291edfcfd27898", null ],
       [ "DirichletBC", "namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59abf475759a5b12fab0ca2c50e7c712112", null ],
       [ "PressureBC", "namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a9f7433a078e50b71061edcf112bc9cb5", null ],
-      [ "MacroStrain", "namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a9dd66ef403d0478b7300b75f64b62370", null ]
+      [ "MacroStrain", "namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a9dd66ef403d0478b7300b75f64b62370", null ],
+      [ "PeriodicShape", "namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a09aba3008cae6307aa607fe2fec31c48", null ]
     ] ],
     [ "SpatialIntegralType", "namespacepolyfem_1_1solver.html#ad27032b2014cdcea2f5718580272f48f", [
       [ "Volume", "namespacepolyfem_1_1solver.html#ad27032b2014cdcea2f5718580272f48fabd7a9717d29c5ddcab1bc175eda1e298", null ],

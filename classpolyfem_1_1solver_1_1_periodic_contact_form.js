@@ -2,7 +2,7 @@ var classpolyfem_1_1solver_1_1_periodic_contact_form =
 [
     [ "PeriodicContactForm", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#a7913983d9027541f732e4f7485d14c32", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#ab6cf8377941c01db7e0e0b4a4c7f4198", null ],
-    [ "force_periodic_shape_derivative", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#a80e75a7d39f862ebe69c18b4949d6735", null ],
+    [ "force_periodic_shape_derivative", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#a15b0d091751118a5e4e061dc900af915", null ],
     [ "init", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#ab837609140f985bf4875b12679d17d7f", null ],
     [ "is_step_collision_free", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#a689d6b0539ce769e1711530f2c1205e4", null ],
     [ "line_search_begin", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#a8bd3eb02a37ff7f0366b35dd125c5de8", null ],

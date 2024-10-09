@@ -3,6 +3,7 @@ var classpolyfem_1_1solver_1_1_variable_to_simulation_group =
     [ "const_iterator", "classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#ad9c33fc937cb4a3130fdb1735f943377", null ],
     [ "ValueType", "classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a16c4d838c8f4149b787b515fca0a7afe", null ],
     [ "VariableToSimulationGroup", "classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a61a6b1086f34ba40413abab1a66f4439", null ],
+    [ "~VariableToSimulationGroup", "classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a3b8f7f8f4669153d07c953990a133375", null ],
     [ "apply_parametrization_jacobian", "classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a71f9cd6e77341a258d6a22b93b195dd1", null ],
     [ "begin", "classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a67525619b8ef96e21274fd80795c4ee5", null ],
     [ "clear", "classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#ad15717c1bf42ecb186446752ddb667ca", null ],

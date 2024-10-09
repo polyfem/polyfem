@@ -12,9 +12,9 @@ var classpolyfem_1_1solver_1_1_variable_to_simulation =
     [ "inverse_eval", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#a61980fa8af530a04b79862d1066285e0", null ],
     [ "n_states", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#a8f01e87c3500c045dcd883145c2a635b", null ],
     [ "name", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#adb558dcc6027a3fda5f8cb0ca8c43df8", null ],
-    [ "set_output_indexing", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#a03279a18a921423f93783632da2d8708", null ],
+    [ "set_output_indexing", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#aa69c1f62782af807c7b3f32b4e299527", null ],
     [ "update", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#ad2e28ad1b291e82a76fb7190563dd8d0", null ],
-    [ "update_state", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#ab49e0bfeeafbe03d97adc77a0c19ebb4", null ],
+    [ "update_state", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#aa515864c242bd6cf8baee829628a6a95", null ],
     [ "output_indexing_", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#af74d41eb67ade0340134309e0f7b08de", null ],
     [ "parametrization_", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#a4972ccc53468b53a3910747bb45ef514", null ],
     [ "states_", "classpolyfem_1_1solver_1_1_variable_to_simulation.html#a981c71ce59774f5485eff2ceaef0611c", null ]
