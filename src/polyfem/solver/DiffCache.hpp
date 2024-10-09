@@ -3,8 +3,8 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/Types.hpp>
 #include <ipc/ipc.hpp>
-#include <ipc/collisions/collisions.hpp>
-#include <ipc/friction/friction_collisions.hpp>
+#include <ipc/collisions/normal/normal_collisions.hpp>
+#include <ipc/collisions/tangential/tangential_collisions.hpp>
 
 namespace polyfem::solver
 {
@@ -40,8 +40,8 @@ namespace polyfem::solver
         void cache_quantities_static(
             const Eigen::MatrixXd &u,
             const StiffnessMatrix &gradu_h,
-            const ipc::Collisions &contact_set,
-            const ipc::FrictionCollisions &friction_constraint_set,
+            const ipc::NormalCollisions &contact_set,
+            const ipc::TangentialCollisions &friction_constraint_set,
             const Eigen::MatrixXd &disp_grad)
         {
             u_ = u;
@@ -62,8 +62,8 @@ namespace polyfem::solver
 			const Eigen::MatrixXd &acc,
 			const StiffnessMatrix &gradu_h,
 			// const StiffnessMatrix &gradu_h_prev,
-			const ipc::Collisions &collision_set,
-			const ipc::FrictionCollisions &friction_collision_set)
+			const ipc::NormalCollisions &collision_set,
+			const ipc::TangentialCollisions &friction_collision_set)
 		{
 			bdf_order_(cur_step) = cur_bdf_order;
 
@@ -84,7 +84,7 @@ namespace polyfem::solver
             const int cur_step,
             const Eigen::MatrixXd &u,
             const StiffnessMatrix &gradu_h,
-            const ipc::Collisions &contact_set,
+            const ipc::NormalCollisions &contact_set,
             const Eigen::MatrixXd &disp_grad)
         {
             u_.col(cur_step) = u;
@@ -140,14 +140,14 @@ namespace polyfem::solver
 		}
 		// const StiffnessMatrix &gradu_h_prev(const int step) const { assert(step < size()); return gradu_h_prev_[step]; }
 
-		const ipc::Collisions &collision_set(int step) const
+		const ipc::NormalCollisions &collision_set(int step) const
 		{
 			assert(step < size());
 			if (step < 0)
 				step += collision_set_.size();
 			return collision_set_[step];
 		}
-		const ipc::FrictionCollisions &friction_collision_set(int step) const
+		const ipc::TangentialCollisions &friction_collision_set(int step) const
 		{
 			assert(step < size());
 			if (step < 0)
@@ -169,8 +169,8 @@ namespace polyfem::solver
 		std::vector<StiffnessMatrix> gradu_h_; // gradient of force at time T wrt. u  at time T
 		// std::vector<StiffnessMatrix> gradu_h_prev_; // gradient of force at time T wrt. u at time (T-1) in transient simulations
 
-		std::vector<ipc::Collisions> collision_set_;
-		std::vector<ipc::FrictionCollisions> friction_collision_set_;
+		std::vector<ipc::NormalCollisions> collision_set_;
+		std::vector<ipc::TangentialCollisions> friction_collision_set_;
 
 		Eigen::MatrixXd adjoint_mat_;
 	};

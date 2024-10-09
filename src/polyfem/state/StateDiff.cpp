@@ -103,21 +103,21 @@ namespace polyfem
 		if (current_step == 0)
 			diff_cached.init(mesh->dimension(), ndof(), problem->is_time_dependent() ? args["time"]["time_steps"].get<int>() : 0);
 
-		ipc::Collisions cur_collision_set;
-		ipc::FrictionCollisions cur_friction_set;
+		ipc::NormalCollisions cur_collision_set;
+		ipc::TangentialCollisions cur_friction_set;
 
 		if (optimization_enabled == solver::CacheLevel::Derivatives)
 		{
 			if (!problem->is_time_dependent() || current_step > 0)
 				compute_force_jacobian(sol, disp_grad, gradu_h);
 
-			cur_collision_set = solve_data.contact_form ? solve_data.contact_form->collision_set() : ipc::Collisions();
-			cur_friction_set = solve_data.friction_form ? solve_data.friction_form->friction_collision_set() : ipc::FrictionCollisions();
+			cur_collision_set = solve_data.contact_form ? solve_data.contact_form->collision_set() : ipc::NormalCollisions();
+			cur_friction_set = solve_data.friction_form ? solve_data.friction_form->friction_collision_set() : ipc::TangentialCollisions();
 		}
 		else
 		{
-			cur_collision_set = ipc::Collisions();
-			cur_friction_set = ipc::FrictionCollisions();
+			cur_collision_set = ipc::NormalCollisions();
+			cur_friction_set = ipc::TangentialCollisions();
 		}
 
 		if (problem->is_time_dependent())
@@ -273,8 +273,8 @@ namespace polyfem
 						// 		{
 						// 			Eigen::MatrixXd fd_Ut = utils::unflatten(y, surface_solution_prev.cols());
 
-						// 			ipc::FrictionCollisions fd_friction_constraints;
-						// 			ipc::Collisions fd_constraints;
+						// 			ipc::TangentialCollisions fd_friction_constraints;
+						// 			ipc::NormalCollisions fd_constraints;
 						// 			fd_constraints.set_use_convergent_formulation(solve_data.contact_form->use_convergent_formulation());
 						// 			fd_constraints.set_are_shape_derivatives_enabled(true);
 						// 			fd_constraints.build(collision_mesh, X + fd_Ut, dhat);

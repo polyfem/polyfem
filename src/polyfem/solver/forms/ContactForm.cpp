@@ -42,8 +42,10 @@ namespace polyfem::solver
 		assert(ccd_tolerance > 0);
 
 		prev_distance_ = -1;
-		collision_set_.set_use_convergent_formulation(use_convergent_formulation);
-		collision_set_.set_are_shape_derivatives_enabled(enable_shape_derivatives);
+		//collision_set_.set_use_convergent_formulation(use_convergent_formulation);
+		collision_set_.set_use_improved_max_approximator(use_convergent_formulation);
+		collision_set_.set_use_area_weighting(use_convergent_formulation);
+		collision_set_.set_enable_shape_derivatives(enable_shape_derivatives);
 	}
 
 	void ContactForm::init(const Eigen::VectorXd &x)
@@ -51,7 +53,7 @@ namespace polyfem::solver
 		update_collision_set(compute_displaced_surface(x));
 	}
 
-	void ContactForm::force_shape_derivative(const ipc::Collisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
+	void ContactForm::force_shape_derivative(const ipc::NormalCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
 	{
 		// Eigen::MatrixXd U = collision_mesh_.vertices(utils::unflatten(solution, collision_mesh_.dim()));
 		// Eigen::MatrixXd X = collision_mesh_.vertices(boundary_nodes_pos_);
@@ -81,8 +83,10 @@ namespace polyfem::solver
 		// The adative stiffness is designed for the non-convergent formulation,
 		// so we need to compute the gradient of the non-convergent barrier.
 		// After we can map it to a good value for the convergent formulation.
-		ipc::Collisions nonconvergent_constraints;
-		nonconvergent_constraints.set_use_convergent_formulation(false);
+		ipc::NormalCollisions nonconvergent_constraints;
+		//nonconvergent_constraints.set_use_convergent_formulation(false);
+		nonconvergent_constraints.set_use_area_weighting(false);
+		nonconvergent_constraints.set_use_improved_max_approximator(false);
 		nonconvergent_constraints.build(
 			collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_method_);
 		Eigen::VectorXd grad_barrier = barrier_potential_.gradient(
@@ -206,7 +210,16 @@ namespace polyfem::solver
 	void ContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		POLYFEM_SCOPED_TIMER("barrier hessian");
-		hessian = barrier_potential_.hessian(collision_set_, collision_mesh_, compute_displaced_surface(x), project_to_psd_);
+
+		ipc::PSDProjectionMethod psd_projection_method;
+
+		if (project_to_psd_) {
+			psd_projection_method = ipc::PSDProjectionMethod::CLAMP;
+		} else {
+			psd_projection_method = ipc::PSDProjectionMethod::NONE;
+		}
+
+		hessian = barrier_potential_.hessian(collision_set_, collision_mesh_, compute_displaced_surface(x), psd_projection_method);
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
 
@@ -230,12 +243,13 @@ namespace polyfem::solver
 		}
 
 		double max_step;
+		const ipc::TightInclusionCCD tight_inclusion_ccd(ccd_tolerance_, ccd_max_iterations_);
 		if (use_cached_candidates_ && broad_phase_method_ != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE)
 			max_step = candidates_.compute_collision_free_stepsize(
-				collision_mesh_, V0, V1, dmin_, ccd_tolerance_, ccd_max_iterations_);
+				collision_mesh_, V0, V1, dmin_, tight_inclusion_ccd);
 		else
 			max_step = ipc::compute_collision_free_stepsize(
-				collision_mesh_, V0, V1, broad_phase_method_, ccd_tolerance_, ccd_max_iterations_);
+				collision_mesh_, V0, V1, dmin_, broad_phase_method_, tight_inclusion_ccd);
 
 		if (save_ccd_debug_meshes && ipc::has_intersections(collision_mesh_, (V1 - V0) * max_step + V0, broad_phase_method_))
 		{
@@ -329,14 +343,15 @@ namespace polyfem::solver
 		}
 
 		bool is_valid;
+		const ipc::TightInclusionCCD tight_inclusion_ccd(ccd_tolerance_, ccd_max_iterations_);
 		if (use_cached_candidates_)
 			is_valid = candidates_.is_step_collision_free(
 				collision_mesh_, displaced0, displaced1, dmin_,
-				ccd_tolerance_, ccd_max_iterations_);
+				tight_inclusion_ccd);
 		else
 			is_valid = ipc::is_step_collision_free(
-				collision_mesh_, displaced0, displaced1, broad_phase_method_,
-				dmin_, ccd_tolerance_, ccd_max_iterations_);
+				collision_mesh_, displaced0, displaced1, dmin_, broad_phase_method_,
+				tight_inclusion_ccd);
 
 		return is_valid;
 	}

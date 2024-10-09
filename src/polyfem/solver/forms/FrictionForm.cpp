@@ -30,7 +30,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &prev_solution,
 		const Eigen::MatrixXd &solution,
 		const Eigen::MatrixXd &adjoint,
-		const ipc::FrictionCollisions &friction_constraints_set,
+		const ipc::TangentialCollisions &friction_constraints_set,
 		Eigen::VectorXd &term)
 	{
 		Eigen::MatrixXd U = collision_mesh_.vertices(utils::unflatten(solution, collision_mesh_.dim()));
@@ -65,8 +65,8 @@ namespace polyfem::solver
 		// 			ipc::CollisionMesh fd_mesh(fd_X, collision_mesh_.edges(), collision_mesh_.faces());
 		// 			fd_mesh.init_area_jacobians();
 
-		// 			ipc::FrictionCollisions fd_friction_constraints;
-		// 			ipc::Collisions fd_constraints;
+		// 			ipc::TangentialCollisions fd_friction_constraints;
+		// 			ipc::NormalCollisions fd_constraints;
 		// 			fd_constraints.set_use_convergent_formulation(contact_form_.use_convergent_formulation());
 		// 			fd_constraints.set_are_shape_derivatives_enabled(true);
 		// 			fd_constraints.build(fd_mesh, fd_X + U_prev, dhat);
@@ -118,8 +118,16 @@ namespace polyfem::solver
 	{
 		POLYFEM_SCOPED_TIMER("friction hessian");
 
+		ipc::PSDProjectionMethod psd_projection_method; 
+
+		if (project_to_psd_) {
+			psd_projection_method = ipc::PSDProjectionMethod::CLAMP;
+		} else {
+			psd_projection_method = ipc::PSDProjectionMethod::NONE;
+		}
+
 		hessian = dv_dx() * friction_potential_.hessian( //
-					  friction_collision_set_, collision_mesh_, compute_surface_velocities(x), project_to_psd_);
+					  friction_collision_set_, collision_mesh_, compute_surface_velocities(x), psd_projection_method);
 
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
@@ -128,9 +136,12 @@ namespace polyfem::solver
 	{
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
-		ipc::Collisions collision_set;
-		collision_set.set_use_convergent_formulation(contact_form_.use_convergent_formulation());
-		collision_set.set_are_shape_derivatives_enabled(contact_form_.enable_shape_derivatives());
+		ipc::NormalCollisions collision_set;
+		//collision_set.set_use_convergent_formulation(contact_form_.use_convergent_formulation());
+		collision_set.set_use_improved_max_approximator(contact_form_.use_convergent_formulation());
+		collision_set.set_use_area_weighting(contact_form_.use_convergent_formulation());
+		
+		collision_set.set_enable_shape_derivatives(contact_form_.enable_shape_derivatives());
 		collision_set.build(
 			collision_mesh_, displaced_surface, contact_form_.dhat(), /*dmin=*/0, broad_phase_method_);
 
