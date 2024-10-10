@@ -356,7 +356,7 @@ namespace polyfem::solver
 		values_.setConstant(size, val);
 	}
 
-	InsertConstantMap::InsertConstantMap(const Eigen::VectorXd &values, const int start_index) : values_(values), start_index_(start_index)
+	InsertConstantMap::InsertConstantMap(const Eigen::VectorXd &values, const int start_index) : start_index_(start_index), values_(values)
 	{
 	}
 

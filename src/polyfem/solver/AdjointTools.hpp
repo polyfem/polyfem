@@ -7,6 +7,10 @@ namespace polyfem
 {
 	class State;
 	class IntegrableFunctional;
+
+	namespace solver {
+		class PeriodicMeshToMesh;	
+	}
 } // namespace polyfem
 
 namespace polyfem::solver
@@ -20,7 +24,8 @@ namespace polyfem::solver
 		InitialCondition,
 		DirichletBC,
 		PressureBC,
-		MacroStrain
+		MacroStrain,
+		PeriodicShape
 	};
 
 	enum class SpatialIntegralType
@@ -60,6 +65,27 @@ namespace polyfem::solver
 			const Eigen::MatrixXd &sol,
 			const Eigen::MatrixXd &adjoint,
 			Eigen::VectorXd &one_form);
+
+		// The periodic simulation result may not be differentiable wrt. 
+		// every vertex of the periodic mesh, since a pair of periodic 
+		// vertices cannot move freely, in which case
+		// dJ_periodic_shape_adjoint_term() instead of 
+		// dJ_shape_homogenization_adjoint_term() should be used: When it 
+		// computes shape derivatives, it considers the pair of periodic 
+		// vertices as only one degree of freedom.
+		void dJ_shape_homogenization_adjoint_term(
+			const State &state,
+			const Eigen::MatrixXd &sol,
+			const Eigen::MatrixXd &adjoint,
+			Eigen::VectorXd &one_form);
+		void dJ_periodic_shape_adjoint_term(
+			const State &state,
+			const PeriodicMeshToMesh &periodic_mesh_map,
+			const Eigen::VectorXd &periodic_mesh_representation,
+			const Eigen::MatrixXd &sol,
+			const Eigen::MatrixXd &adjoint,
+			Eigen::VectorXd &one_form);
+
 		void dJ_shape_transient_adjoint_term(
 			const State &state,
 			const Eigen::MatrixXd &adjoint_nu,
