@@ -96,6 +96,8 @@ namespace polyfem::solver
 			obj = std::make_shared<StressForm>(var2sim, *state, args);
 		else if (obj_type == "stress_norm")
 			obj = std::make_shared<StressNormForm>(var2sim, *state, args);
+		else if (obj_type == "dirichlet_energy")
+			obj = std::make_shared<DirichletEnergyForm>(var2sim, *state, args);
 		else if (obj_type == "elastic_energy")
 			obj = std::make_shared<ElasticEnergyForm>(var2sim, *state, args);
 		else if (obj_type == "max_stress")
@@ -106,6 +108,8 @@ namespace polyfem::solver
 			obj = std::make_shared<MinJacobianForm>(var2sim, *state);
 		else if (obj_type == "AMIPS")
 			obj = std::make_shared<AMIPSForm>(var2sim, *state);
+		else if (obj_type == "layer_thickness")
+			obj = std::make_shared<LayerThicknessForm>(var2sim, *state, args["boundary_ids"].get<std::vector<int>>(), args["dhat"]);
 		else if (obj_type == "function-target")
 		{
 			std::shared_ptr<TargetForm> tmp = std::make_shared<TargetForm>(var2sim, *state, args);
