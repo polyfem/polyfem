@@ -124,6 +124,7 @@
         "type": "string",
         "options": [
             "shape",
+            "periodic-shape",
             "elastic",
             "friction",
             "damping",
@@ -136,6 +137,20 @@
     {
         "pointer": "/variable_to_simulation/*",
         "type_name": "shape",
+        "type": "object",
+        "required": [
+            "state",
+            "type",
+            "composition"
+        ],
+        "optional": [
+            "composite_map_type",
+            "composite_map_indices"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*",
+        "type_name": "periodic-shape",
         "type": "object",
         "required": [
             "state",
@@ -534,7 +549,15 @@
     {
         "pointer": "/variable_to_simulation/*/composite_map_type",
         "type": "string",
-        "default": "none"
+        "default": "none",
+        "options": [
+            "none",
+            "interior",
+            "boundary",
+            "boundary_excluding_surface",
+            "indices",
+            "time_step_indexing"
+        ]
     },
     {
         "pointer": "/variable_to_simulation/*/composite_map_indices",

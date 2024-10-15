@@ -220,7 +220,7 @@ namespace polyfem::solver
 
 		// update to new parameter and check if the new parameter is valid to solve
 		for (const auto &v : variables_to_simulation_)
-			if (v->get_parameter_type() == ParameterType::Shape)
+			if (v->get_parameter_type() == ParameterType::Shape || v->get_parameter_type() == ParameterType::PeriodicShape)
 				need_rebuild_basis = true;
 
 		if (need_rebuild_basis && smooth_line_search)
@@ -358,7 +358,7 @@ namespace polyfem::solver
 		for (const auto &v : variables_to_simulation_)
 		{
 			v->update(newX);
-			if (v->get_parameter_type() == ParameterType::Shape)
+			if (v->get_parameter_type() == ParameterType::Shape || v->get_parameter_type() == ParameterType::PeriodicShape)
 				need_rebuild_basis = true;
 		}
 

@@ -264,10 +264,12 @@ namespace polyfem
 			double area = io::Evaluator::integrate_function(bases, geom_bases(), Eigen::VectorXd::Ones(n_bases), dim, 1)(0);
 			for (int d = 0; d < dim; d++)
 				sol(Eigen::seqN(d, n_bases, dim), 0).array() -= integral(d) / area;
+
+			reduced_sol = homo_problem->extended_to_reduced(sol);
 		}
 
 		if (optimization_enabled != solver::CacheLevel::None)
-			cache_transient_adjoint_quantities(t, sol, utils::unflatten(extended_sol.tail(dim * dim), dim));
+			cache_transient_adjoint_quantities(t, homo_problem->reduced_to_full(reduced_sol), utils::unflatten(sol.bottomRows(dim * dim), dim));
 	}
 
 	void State::solve_homogenization(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol)

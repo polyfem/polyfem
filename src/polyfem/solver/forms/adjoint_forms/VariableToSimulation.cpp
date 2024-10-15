@@ -1,7 +1,10 @@
 #include "VariableToSimulation.hpp"
 #include <polyfem/State.hpp>
+#include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/solver/Optimizations.hpp>
+
+#include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
@@ -24,9 +27,36 @@ namespace polyfem::solver
 			return std::make_unique<DirichletVariableToSimulation>(states, parametrization);
 		else if (type == "pressure")
 			return std::make_unique<PressureVariableToSimulation>(states, parametrization);
+		else if (type == "periodic-shape")
+			return std::make_unique<PeriodicShapeVariableToSimulation>(states, parametrization);
 
 		log_and_throw_adjoint_error("Invalid type of VariableToSimulation!");
 		return std::unique_ptr<VariableToSimulation>();
+	}
+
+	void VariableToSimulation::set_output_indexing(const json &args)
+	{
+		const std::string composite_map_type = args["composite_map_type"];
+		const State &state = *(states_[0]);
+		if (composite_map_type == "none")
+		{
+			output_indexing_.resize(0);
+		}
+		else if (composite_map_type == "indices")
+		{
+			if (args["composite_map_indices"].is_string())
+			{
+				Eigen::MatrixXi tmp_mat;
+				polyfem::io::read_matrix(state.resolve_input_path(args["composite_map_indices"].get<std::string>()), tmp_mat);
+				output_indexing_ = tmp_mat;
+			}
+			else if (args["composite_map_indices"].is_array())
+				output_indexing_ = args["composite_map_indices"];
+			else
+				log_and_throw_adjoint_error("Invalid composite map indices type!");
+		}
+		else
+			log_and_throw_adjoint_error("Unknown composite_map_type!");
 	}
 
 	Eigen::VectorXi VariableToSimulation::get_output_indexing(const Eigen::VectorXd &x) const
@@ -54,6 +84,11 @@ namespace polyfem::solver
 	{
 		log_and_throw_adjoint_error("[{}] inverse_eval not implemented!", name());
 		return Eigen::VectorXd();
+	}
+
+	void VariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
+	{
+		log_and_throw_adjoint_error("[{}] update_state not implemented!", name());
 	}
 
 	void VariableToSimulationGroup::init(const json &args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes)
@@ -92,7 +127,6 @@ namespace polyfem::solver
 	Eigen::VectorXd VariableToSimulationGroup::apply_parametrization_jacobian(const ParameterType type, const State *state_ptr, const Eigen::VectorXd &x, const std::function<Eigen::VectorXd()> &grad) const
 	{
 		Eigen::VectorXd gradv = Eigen::VectorXd::Zero(x.size());
-		Eigen::VectorXd raw_grad;
 		for (const auto &v2s : L)
 		{
 			if (v2s->get_parameter_type() != type)
@@ -103,10 +137,7 @@ namespace polyfem::solver
 				if (state.get() != state_ptr)
 					continue;
 
-				if (raw_grad.size() == 0)
-					raw_grad = v2s->apply_parametrization_jacobian(grad(), x);
-
-				gradv += raw_grad;
+				gradv += v2s->apply_parametrization_jacobian(grad(), x);
 			}
 		}
 		return gradv;
@@ -135,7 +166,12 @@ namespace polyfem::solver
 			if (state->problem->is_time_dependent())
 				AdjointTools::dJ_shape_transient_adjoint_term(*state, state->get_adjoint_mat(1), state->get_adjoint_mat(0), cur_term);
 			else
-				AdjointTools::dJ_shape_static_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
+			{
+				if (!state->is_homogenization())
+					AdjointTools::dJ_shape_static_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
+				else
+					AdjointTools::dJ_shape_homogenization_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
+			}
 
 			if (term.size() != cur_term.size())
 				term = cur_term;
@@ -162,6 +198,29 @@ namespace polyfem::solver
 		x = utils::flatten(V)(indices);
 
 		return parametrization_.inverse_eval(x);
+	}
+	void ShapeVariableToSimulation::set_output_indexing(const json &args)
+	{
+		const std::string composite_map_type = args["composite_map_type"];
+		const State &state = *(states_[0]);
+		if (composite_map_type == "interior")
+		{
+			VariableToInteriorNodes variable_to_node(state, args["volume_selection"]);
+			output_indexing_ = variable_to_node.get_output_indexing();
+		}
+		else if (composite_map_type == "boundary")
+		{
+			VariableToBoundaryNodes variable_to_node(state, args["surface_selection"]);
+			output_indexing_ = variable_to_node.get_output_indexing();
+		}
+		else if (composite_map_type == "boundary_excluding_surface")
+		{
+			const std::vector<int> excluded_surfaces = args["surface_selection"];
+			VariableToBoundaryNodesExclusive variable_to_node(state, excluded_surfaces);
+			output_indexing_ = variable_to_node.get_output_indexing();
+		}
+		else
+			VariableToSimulation::set_output_indexing(args);
 	}
 
 	void ElasticVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
@@ -419,6 +478,25 @@ namespace polyfem::solver
 
 		return parametrization_.inverse_eval(x);
 	}
+	void DirichletVariableToSimulation::set_output_indexing(const json &args)
+	{
+		const std::string composite_map_type = args["composite_map_type"];
+		const State &state = *(states_[0]);
+		if (composite_map_type == "time_step_indexing")
+		{
+			const int time_steps = state.args["time"]["time_steps"];
+			const int dim = state.mesh->dimension();
+
+			output_indexing_.setZero(time_steps * dim);
+			for (int i = 0; i < time_steps; ++i)
+				for (int k = 0; k < dim; ++k)
+					output_indexing_(i * dim + k) = i;
+		}
+		else
+			VariableToSimulation::set_output_indexing(args);
+		
+		set_dirichlet_boundaries(args["surface_selection"]);
+	}
 
 	void PressureVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
@@ -490,5 +568,77 @@ namespace polyfem::solver
 			}
 
 		return parametrization_.inverse_eval(x);
+	}
+
+	void PressureVariableToSimulation::set_output_indexing(const json &args)
+	{
+		const std::string composite_map_type = args["composite_map_type"];
+		const State &state = *(states_[0]);
+		if (composite_map_type == "time_step_indexing")
+		{
+			const int time_steps = state.args["time"]["time_steps"];
+			output_indexing_.setZero(time_steps);
+			for (int i = 0; i < time_steps; ++i)
+				output_indexing_(i) = i;
+		}
+		else
+			VariableToSimulation::set_output_indexing(args);
+
+		set_pressure_boundaries(args["surface_selection"]);
+	}
+
+	Eigen::VectorXd PeriodicShapeVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd term, cur_term;
+		for (auto state : states_)
+		{
+			if (state->problem->is_time_dependent())
+			{
+				log_and_throw_error("Not implemented!");
+			}
+			else
+			{
+				AdjointTools::dJ_periodic_shape_adjoint_term(*state, *periodic_mesh_map, periodic_mesh_representation, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
+			}
+			if (term.size() != cur_term.size())
+				term = cur_term;
+			else
+				term += cur_term;
+		}
+		return VariableToSimulation::apply_parametrization_jacobian(term, x);
+	}
+	void PeriodicShapeVariableToSimulation::update(const Eigen::VectorXd &x)
+	{
+		const int dim = states_[0]->mesh->dimension();
+		periodic_mesh_representation = parametrization_.eval(x);
+		const Eigen::MatrixXd V = utils::unflatten(periodic_mesh_map->eval(periodic_mesh_representation), dim);
+
+		for (auto state : states_)
+		{
+			const int n_verts = state->mesh->n_vertices();
+
+			for (int i = 0; i < n_verts; i++)
+				state->set_mesh_vertex(i, V.row(i));
+		}
+	}
+	Eigen::VectorXd PeriodicShapeVariableToSimulation::inverse_eval()
+	{
+		const auto &state = *(states_[0]);
+
+		Eigen::MatrixXd V;
+		state.get_vertices(V);
+
+		if (!state.periodic_bc->all_direction_periodic())
+			log_and_throw_error("Cannot inverse evaluate periodic shape!");
+
+		periodic_mesh_map = std::make_unique<PeriodicMeshToMesh>(V);
+		periodic_mesh_representation = periodic_mesh_map->inverse_eval(utils::flatten(V));
+		
+		return parametrization_.inverse_eval(periodic_mesh_representation);
+	}
+	Eigen::VectorXd PeriodicShapeVariableToSimulation::apply_parametrization_jacobian(const Eigen::VectorXd &term, const Eigen::VectorXd &x) const
+	{
+		const Eigen::VectorXd mid = periodic_mesh_map->apply_jacobian(term, periodic_mesh_representation);
+		return parametrization_.apply_jacobian(mid, x);
 	}
 } // namespace polyfem::solver

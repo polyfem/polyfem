@@ -296,8 +296,12 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 	{
 		variable_to_simulations.push_back(std::make_unique<ShapeVariableToSimulation>(states[0], CompositeParametrization()));
 
-		VariableToBoundaryNodesExclusive variable_to_node(*states[0], {1});
-		variable_to_simulations[0]->set_output_indexing(variable_to_node.get_output_indexing());
+		json composite_map_args = R"({
+			"composite_map_type": "boundary_excluding_surface",
+			"surface_selection": [1]
+		})"_json;
+
+		variable_to_simulations[0]->set_output_indexing(composite_map_args);
 	}
 
 	auto obj1 = std::make_shared<AMIPSForm>(variable_to_simulations, *states[0]);

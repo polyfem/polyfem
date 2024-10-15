@@ -31,7 +31,7 @@ namespace polyfem::solver
 	void MacroStrainLagrangianForm::update_quantities(const double t, const Eigen::VectorXd &)
 	{
 		values = utils::flatten(macro_strain_constraint_.eval(t));
-        values = values(macro_strain_constraint_.get_fixed_entry().array());
+        values = values(macro_strain_constraint_.get_fixed_entry().array()).eval();
 	}
 
     void MacroStrainLagrangianForm::update_lagrangian(const Eigen::VectorXd &x, const double k_al)

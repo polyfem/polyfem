@@ -17,7 +17,6 @@
 #include <polyfem/solver/forms/adjoint_forms/TargetForms.hpp>
 
 #include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
-#include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
 #include <polyfem/solver/forms/parametrization/SplineParametrizations.hpp>
 
 #include <polyfem/solver/forms/adjoint_forms/ParametrizedProductForm.hpp>
@@ -455,83 +454,12 @@ namespace polyfem::solver
 		else
 			cur_states.push_back(states[args["state"]]);
 
-		const std::string composite_map_type = args["composite_map_type"];
-		Eigen::VectorXi output_indexing;
-		if (composite_map_type == "none")
-		{
-		}
-		else if (composite_map_type == "interior")
-		{
-			assert(type == "shape");
-			VariableToInteriorNodes variable_to_node(*cur_states[0], args["volume_selection"]);
-			output_indexing = variable_to_node.get_output_indexing();
-		}
-		else if (composite_map_type == "boundary")
-		{
-			assert(type == "shape");
-			VariableToBoundaryNodes variable_to_node(*cur_states[0], args["surface_selection"]);
-			output_indexing = variable_to_node.get_output_indexing();
-		}
-		else if (composite_map_type == "boundary_excluding_surface")
-		{
-			assert(type == "shape");
-			const std::vector<int> excluded_surfaces = args["surface_selection"];
-			VariableToBoundaryNodesExclusive variable_to_node(*cur_states[0], excluded_surfaces);
-			output_indexing = variable_to_node.get_output_indexing();
-		}
-		else if (composite_map_type == "indices")
-		{
-			if (args["composite_map_indices"].is_string())
-			{
-				Eigen::MatrixXi tmp_mat;
-				polyfem::io::read_matrix(states[0]->resolve_input_path(args["composite_map_indices"].get<std::string>()), tmp_mat);
-				output_indexing = tmp_mat;
-			}
-			else if (args["composite_map_indices"].is_array())
-				output_indexing = args["composite_map_indices"];
-			else
-				log_and_throw_adjoint_error("Invalid composite map indices type!");
-		}
-		else if (composite_map_type == "time_step_indexing")
-		{
-			const int time_steps = cur_states[0]->args["time"]["time_steps"].get<int>();
-			const int dim = cur_states[0]->mesh->dimension();
-			if (type == "dirichlet")
-			{
-				output_indexing.setZero(time_steps * dim);
-				for (int i = 0; i < time_steps; ++i)
-					for (int k = 0; k < dim; ++k)
-						output_indexing(i * dim + k) = i;
-			}
-			else if (type == "pressure")
-			{
-				output_indexing.setZero(time_steps);
-				for (int i = 0; i < time_steps; ++i)
-					output_indexing(i) = i;
-			}
-			else
-				log_and_throw_adjoint_error("time_step_indexing only works with dirichlet and pressure type variables!");
-		}
-
 		std::vector<std::shared_ptr<Parametrization>> map_list;
 		for (const auto &arg : args["composition"])
 			map_list.push_back(create_parametrization(arg, states, variable_sizes));
 
 		std::unique_ptr<VariableToSimulation> var2sim = VariableToSimulation::create(type, cur_states, CompositeParametrization(std::move(map_list)));
-		if (type == "shape")
-			var2sim->set_output_indexing(output_indexing);
-		else if (type == "dirichlet")
-		{
-			var2sim->set_output_indexing(output_indexing);
-			auto dirichlet_var2sim = static_cast<DirichletVariableToSimulation *>(var2sim.get());
-			dirichlet_var2sim->set_dirichlet_boundaries(args["surface_selection"]);
-		}
-		else if (type == "pressure")
-		{
-			var2sim->set_output_indexing(output_indexing);
-			auto pressure_var2sim = static_cast<PressureVariableToSimulation *>(var2sim.get());
-			pressure_var2sim->set_pressure_boundaries(args["surface_selection"]);
-		}
+		var2sim->set_output_indexing(args);
 
 		return var2sim;
 	}
