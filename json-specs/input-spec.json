@@ -1205,8 +1205,15 @@
             "epsv",
             "friction_coefficient",
             "use_convergent_formulation",
+            "use_area_weighting",
+            "use_improved_max_operator",
             "collision_mesh",
-            "periodic"
+            "periodic",
+            "adhesion_enabled",
+            "dhat_p",
+            "dhat_a",
+            "adhesion_strength",
+            "tangential_adhesion_coefficient"
         ],
         "doc": "Contact handling parameters."
     },
@@ -1247,6 +1254,18 @@
         "default": false,
         "type": "bool",
         "doc": "Whether to use the convergent (area weighted) formulation of IPC."
+    },
+    {
+        "pointer": "/contact/use_area_weighting",
+        "default": true,
+        "type": "bool",
+        "doc": "If using the convergent formulation, whether or not to use area weighting."
+    },
+    {
+        "pointer": "/contact/use_improved_max_operator",
+        "default": true,
+        "type": "bool",
+        "doc": "If using the convergent formulation, whether or not to use improved max operator."
     },
     {
         "pointer": "/contact/collision_mesh",
@@ -1309,6 +1328,36 @@
         "default": false,
         "type": "bool",
         "doc": "Set to true to check collision between adjacent periodic cells."
+    },
+    {
+        "pointer": "/contact/adhesion_enabled",
+        "default": false,
+        "type": "bool",
+        "doc": "Set to true to enable normal adhesion forces."
+    },
+    {
+        "pointer": "/contact/dhat_p",
+        "default": 0.001,
+        "type": "float",
+        "doc": "Distance at which normal adhesion force reaches its maximum."
+    },
+    {
+        "pointer": "/contact/dhat_a",
+        "default": 0.01,
+        "type": "float",
+        "doc": "Distance at which normal adhesion force is activated."
+    },
+    {
+        "pointer": "/contact/adhesion_strength",
+        "default": 1,
+        "type": "float",
+        "doc": "Parameter that sets the strength of the normal adhesion force."
+    },
+    {
+        "pointer": "/contact/tangential_adhesion_coefficient",
+        "default": 0.1,
+        "type": "float",
+        "doc": "Coefficient of tangential adhesion (global)"
     },
     {
         "pointer": "/solver",
