@@ -172,7 +172,7 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 	vals.compute(el_id, false, bs, bs);
 
 	const auto &quadrature = vals.quadrature;
-	const Eigen::MatrixXd da = vals.det.array() * quadrature.weights.array();
+	const QuadratureVector da = vals.det.array() * quadrature.weights.array();
 
 	for (int rand = 0; rand < 10; ++rand)
 	{
