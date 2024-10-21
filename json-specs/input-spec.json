@@ -1207,6 +1207,7 @@
             "use_convergent_formulation",
             "use_area_weighting",
             "use_improved_max_operator",
+            "use_physical_barrier",
             "collision_mesh",
             "periodic",
             "adhesion_enabled",
@@ -1259,13 +1260,19 @@
         "pointer": "/contact/use_area_weighting",
         "default": true,
         "type": "bool",
-        "doc": "If using the convergent formulation, whether or not to use area weighting."
+        "doc": "If using the convergent formulation, whether or not to use area weighting. Currently not implemented."
     },
     {
         "pointer": "/contact/use_improved_max_operator",
         "default": true,
         "type": "bool",
-        "doc": "If using the convergent formulation, whether or not to use improved max operator."
+        "doc": "If using the convergent formulation, whether or not to use improved max operator. Currently not implemented."
+    },
+    {
+        "pointer": "/contact/use_physical_barrier",
+        "default": true,
+        "type": "bool",
+        "doc": "If using the convergent formulation, whether or not to use physical barrier stiffness. Currently not implemented."
     },
     {
         "pointer": "/contact/collision_mesh",

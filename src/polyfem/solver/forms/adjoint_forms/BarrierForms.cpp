@@ -90,9 +90,6 @@ namespace polyfem::solver
 		if ((V1 - V0).lpNorm<Eigen::Infinity>() == 0.0)
 			return true;
 
-		// max question: what are the numbers here supposed to be, based on their size 
-		// I would assume tolerance and max iterations for ccd, but it actually seems 
-		// to be min distance and tolerance
 		const ipc::TightInclusionCCD tight_inclusion_ccd(1e-6, 1e6);
 		bool is_valid = ipc::is_step_collision_free(
 			collision_mesh_,

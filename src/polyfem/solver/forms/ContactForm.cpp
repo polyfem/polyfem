@@ -34,8 +34,7 @@ namespace polyfem::solver
 		  is_time_dependent_(is_time_dependent),
 		  enable_shape_derivatives_(enable_shape_derivatives),
 		  broad_phase_method_(broad_phase_method),
-		  ccd_tolerance_(ccd_tolerance),
-		  ccd_max_iterations_(ccd_max_iterations),
+		  tight_inclusion_ccd_(ccd_tolerance, ccd_max_iterations),
 		  barrier_potential_(dhat, use_convergent_formulation)
 	{
 		assert(dhat_ > 0);
@@ -243,13 +242,12 @@ namespace polyfem::solver
 		}
 
 		double max_step;
-		const ipc::TightInclusionCCD tight_inclusion_ccd(ccd_tolerance_, ccd_max_iterations_);
 		if (use_cached_candidates_ && broad_phase_method_ != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE)
 			max_step = candidates_.compute_collision_free_stepsize(
-				collision_mesh_, V0, V1, dmin_, tight_inclusion_ccd);
+				collision_mesh_, V0, V1, dmin_, tight_inclusion_ccd_);
 		else
 			max_step = ipc::compute_collision_free_stepsize(
-				collision_mesh_, V0, V1, dmin_, broad_phase_method_, tight_inclusion_ccd);
+				collision_mesh_, V0, V1, dmin_, broad_phase_method_, tight_inclusion_ccd_);
 
 		if (save_ccd_debug_meshes && ipc::has_intersections(collision_mesh_, (V1 - V0) * max_step + V0, broad_phase_method_))
 		{
@@ -343,15 +341,14 @@ namespace polyfem::solver
 		}
 
 		bool is_valid;
-		const ipc::TightInclusionCCD tight_inclusion_ccd(ccd_tolerance_, ccd_max_iterations_);
 		if (use_cached_candidates_)
 			is_valid = candidates_.is_step_collision_free(
 				collision_mesh_, displaced0, displaced1, dmin_,
-				tight_inclusion_ccd);
+				tight_inclusion_ccd_);
 		else
 			is_valid = ipc::is_step_collision_free(
 				collision_mesh_, displaced0, displaced1, dmin_, broad_phase_method_,
-				tight_inclusion_ccd);
+				tight_inclusion_ccd_);
 
 		return is_valid;
 	}

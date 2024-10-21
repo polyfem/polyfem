@@ -797,7 +797,7 @@ namespace polyfem::solver
 		  state_(state),
 		  dhat_(dhat),
 		  dmin_(0),
-		  barrier_potential_(dhat)
+		  barrier_potential_(dhat, true)
 	{
 		auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
 		boundary_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -817,7 +817,6 @@ namespace polyfem::solver
 				collision_sets_.back()->set_use_improved_max_approximator(true);
 				collision_sets_.back()->set_use_area_weighting(true);
 				collision_sets_.back()->set_enable_shape_derivatives(true);
-				barrier_potential_.set_use_physical_barrier(true);
 			}
 		}
 		else
