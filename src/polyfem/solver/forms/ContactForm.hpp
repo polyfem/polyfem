@@ -177,10 +177,8 @@ namespace polyfem::solver
 
 		/// @brief Broad phase method to use for distance and CCD evaluations
 		const ipc::BroadPhaseMethod broad_phase_method_;
-		/// @brief Continuous collision detection tolerance
-		const double ccd_tolerance_;
-		/// @brief Continuous collision detection maximum iterations
-		const int ccd_max_iterations_;
+		/// @brief Continuous collision detection specification object
+		const ipc::TightInclusionCCD tight_inclusion_ccd_;
 
 		/// @brief Previous minimum distance between all elements
 		double prev_distance_;
