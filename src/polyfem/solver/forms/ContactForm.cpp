@@ -36,7 +36,7 @@ namespace polyfem::solver
 		  broad_phase_method_(broad_phase_method),
 		  ccd_tolerance_(ccd_tolerance),
 		  ccd_max_iterations_(ccd_max_iterations),
-		  barrier_potential_(dhat)
+		  barrier_potential_(dhat, use_convergent_formulation)
 	{
 		assert(dhat_ > 0);
 		assert(ccd_tolerance > 0);
