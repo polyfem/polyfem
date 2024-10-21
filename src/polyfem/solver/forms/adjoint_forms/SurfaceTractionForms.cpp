@@ -817,6 +817,7 @@ namespace polyfem::solver
 				collision_sets_.back()->set_use_improved_max_approximator(true);
 				collision_sets_.back()->set_use_area_weighting(true);
 				collision_sets_.back()->set_enable_shape_derivatives(true);
+				barrier_potential_.set_use_physical_barrier(true);
 			}
 		}
 		else

@@ -2019,6 +2019,7 @@ namespace polyfem::io
 				/*dmin=*/0, state.args["solver"]["contact"]["CCD"]["broad_phase"]);
 
 			ipc::BarrierPotential barrier_potential(dhat);
+			barrier_potential.set_use_physical_barrier(state.args["contact"]["use_convergent_formulation"]);
 
 			const double barrier_stiffness = contact_form != nullptr ? contact_form->barrier_stiffness() : 1;
 
