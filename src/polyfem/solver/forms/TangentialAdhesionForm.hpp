@@ -21,22 +21,22 @@ namespace polyfem::solver
 		/// @brief Construct a new Friction Form object
 		/// @param collision_mesh Reference to the collision mesh
 		/// @param time_integrator Pointer to the time integrator
-		/// @param epsv Smoothing factor between static and dynamic friction
-		/// @param mu Global coefficient of friction
+		/// @param epsa Smoothing factor between static and dynamic tangential adhesion
+		/// @param mu Global coefficient of tangential adhesion
 		/// @param dhat Barrier activation distance
 		/// @param broad_phase_method Broad-phase method used for distance computation and collision detection
 		/// @param contact_form Pointer to contact form; necessary to have the barrier stiffnes, maybe clean me
 		/// @param n_lagging_iters Number of lagging iterations
-		FrictionForm(
+		TangentialAdhesionForm(
 			const ipc::CollisionMesh &collision_mesh,
 			const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator,
-			const double epsv,
+			const double epsa,
 			const double mu,
 			const ipc::BroadPhaseMethod broad_phase_method,
 			const ContactForm &contact_form,
 			const int n_lagging_iters);
 
-		std::string name() const override { return "friction"; }
+		std::string name() const override { return "tangential adhesion"; }
 
 		void force_shape_derivative(const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint, const ipc::TangentialCollisions &friction_constraints_set, Eigen::VectorXd &term);
 
@@ -85,8 +85,8 @@ namespace polyfem::solver
 
 		double mu() const { return mu_; }
 		double epsv() const { return epsv_; }
-		const ipc::TangentialCollisions &friction_collision_set() const { return friction_collision_set_; }
-		const ipc::FrictionPotential &friction_potential() const { return friction_potential_; }
+		const ipc::TangentialCollisions &friction_collision_set() const { return tangential_collision_set_; }
+		const ipc::TangentialAdhesionPotential &tangential_adhesion_potential() const { return tangential_adhesion_potential_; }
 
 	private:
 		/// Reference to the collision mesh
@@ -95,15 +95,15 @@ namespace polyfem::solver
 		/// Pointer to the time integrator
 		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator_;
 
-		const double epsv_;                              ///< Smoothing factor between static and dynamic friction
+		const double epsa_;                              ///< Smoothing factor between static and dynamic friction
 		const double mu_;                                ///< Global coefficient of friction
 		const ipc::BroadPhaseMethod broad_phase_method_; ///< Broad-phase method used for distance computation and collision detection
 		const int n_lagging_iters_;                      ///< Number of lagging iterations
 
-		ipc::TangentialCollisions friction_collision_set_; ///< Lagged friction constraint set
+		ipc::TangentialCollisions tangential_collision_set_; ///< Lagged friction constraint set
 
 		const ContactForm &contact_form_; ///< necessary to have the barrier stiffnes, maybe clean me
 
-		const ipc::FrictionPotential friction_potential_;
+		const ipc::TangentialAdhesionPotential tangential_adhesion_potential_;
 	};
 } // namespace polyfem::solver
