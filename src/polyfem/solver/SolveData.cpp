@@ -9,6 +9,7 @@
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
+#include <polyfem/solver/forms/NormalAdhesionForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
@@ -83,6 +84,12 @@ namespace polyfem::solver
 		const double ccd_tolerance,
 		const long ccd_max_iterations,
 		const bool enable_shape_derivatives,
+
+		// Normal Adhesion Form
+		const bool adhesion_enabled,
+		const double dhat_p,
+		const double dhat_a,
+		const double Y,
 
 		// Homogenization
 		const assembler::MacroStrainValue &macro_strain_constraint,
@@ -247,6 +254,15 @@ namespace polyfem::solver
 					broad_phase, *contact_form, friction_iterations);
 				friction_form->init_lagging(sol);
 				forms.push_back(friction_form);
+			}
+
+			if (adhesion_enabled)
+			{
+				normal_adhesion_form = std::make_shared<NormalAdhesionForm>(
+					collision_mesh, dhat_p, dhat_a, Y, is_time_dependent, enable_shape_derivatives,
+					broad_phase, ccd_tolerance * units.characteristic_length(), ccd_max_iterations
+				);
+				forms.push_back(normal_adhesion_form);
 			}
 		}
 

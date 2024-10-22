@@ -51,6 +51,7 @@ namespace polyfem::solver
 	class InertiaForm;
 	class ElasticForm;
 	class PressureForm;
+	class NormalAdhesionForm;
 
 	/// class to store time stepping data
 	class SolveData
@@ -118,6 +119,12 @@ namespace polyfem::solver
 			const long ccd_max_iterations,
 			const bool enable_shape_derivatives,
 
+			// Normal Adhesion Form
+			const bool adhesion_enabled,
+			const double dhat_p,
+			const double dhat_a,
+			const double Y,
+
 			// Homogenization
 			const assembler::MacroStrainValue &macro_strain_constraint,
 
@@ -157,6 +164,7 @@ namespace polyfem::solver
 		std::shared_ptr<solver::FrictionForm> friction_form;
 		std::shared_ptr<solver::InertiaForm> inertia_form;
 		std::shared_ptr<solver::PressureForm> pressure_form;
+		std::shared_ptr<solver::NormalAdhesionForm> normal_adhesion_form;
 
 		std::shared_ptr<solver::PeriodicContactForm> periodic_contact_form;
 
