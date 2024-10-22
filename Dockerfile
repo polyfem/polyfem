@@ -22,7 +22,8 @@ WORKDIR /app
 RUN git clone https://github.com/polyfem/polyfem --recursive
 
 WORKDIR /app/polyfem/build
-RUN cmake .. && make -j 4
+RUN cmake .. 
+RUN make -j 4
 
 # ---- Release Stage ----
 FROM ubuntu:20.04 AS release
