@@ -18,6 +18,11 @@ RUN apt-get update && apt-get install -y \
 
 RUN pip3 install numpy sympy quadpy
 
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.27.5/cmake-3.27.5-linux-x86_64.sh -O /tmp/cmake.sh && \
+    chmod +x /tmp/cmake.sh && \
+    /tmp/cmake.sh --skip-license --prefix=/usr/local && \
+    rm /tmp/cmake.sh
+
 WORKDIR /app
 RUN git clone https://github.com/polyfem/polyfem --recursive
 
