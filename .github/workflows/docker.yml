@@ -25,6 +25,11 @@ jobs:
         with:
           cmake-version: '3.27.x'
 
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+
       - name: Log in to DockerHub
         uses: docker/login-action@v2
         with:
