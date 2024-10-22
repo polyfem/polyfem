@@ -1,4 +1,4 @@
-#include <filesystem>
+include <filesystem>
 
 #include <CLI/CLI.hpp>
 
@@ -72,51 +72,56 @@ int main(int argc, char **argv)
 {
 	using namespace polyfem;
 
-	CLI::App command_line{"polyfem"};
+	CLI::App command_line{"PolyFEM - A simulation tool for FEM."};
 
 	command_line.ignore_case();
 	command_line.ignore_underscore();
 
 	// Eigen::setNbThreads(1);
 	unsigned max_threads = std::numeric_limits<unsigned>::max();
-	command_line.add_option("--max_threads", max_threads, "Maximum number of threads");
+	command_line.add_option("--max_threads", max_threads, "Maximum number of threads to use for computation.");
 
-	auto input = command_line.add_option_group("input");
+	auto input = command_line.add_option_group("Input Files", "Specify the input files for the simulation.");
 
 	std::string json_file = "";
-	input->add_option("-j,--json", json_file, "Simulation JSON file")->check(CLI::ExistingFile);
+	input->add_option("-j,--json", json_file, "Path to the JSON input file.")->check(CLI::ExistingFile)->description("This file contains simulation parameters in JSON format.");
 
 	std::string yaml_file = "";
-	input->add_option("-y,--yaml", yaml_file, "Simulation YAML file")->check(CLI::ExistingFile);
+	input->add_option("-y,--yaml", yaml_file, "Path to the YAML input file.")->check(CLI::ExistingFile)->description("This file contains simulation parameters in YAML format.");
 
 	std::string hdf5_file = "";
-	input->add_option("--hdf5", hdf5_file, "Simulation HDF5 file")->check(CLI::ExistingFile);
+	input->add_option("--hdf5", hdf5_file, "Path to the HDF5 input file.")->check(CLI::ExistingFile)->description("This file contains mesh and simulation parameters.");
 
 	input->require_option(1);
 
 	std::string output_dir = "";
-	command_line.add_option("-o,--output_dir", output_dir, "Directory for output files")->check(CLI::ExistingDirectory | CLI::NonexistentPath);
+	command_line.add_option("-o,--output_dir", output_dir, "Directory where the output files will be stored.")->check(CLI::ExistingDirectory | CLI::NonexistentPath);
 
 	bool is_strict = true;
-	command_line.add_flag("-s,--strict_validation,!--ns,!--no_strict_validation", is_strict, "Disables strict validation of input JSON");
+	command_line.add_flag("-s,--strict_validation,!--ns,!--no_strict_validation", is_strict, "Enable strict validation of input files.");
 
 	bool fallback_solver = false;
-	command_line.add_flag("--enable_overwrite_solver", fallback_solver, "If solver in input is not present, falls back to default.");
+	command_line.add_flag("--enable_overwrite_solver", fallback_solver, "Enable solver fallback if specified solver is not available.");
 
-	const std::vector<std::pair<std::string, spdlog::level::level_enum>>
-		SPDLOG_LEVEL_NAMES_TO_LEVELS = {
-			{"trace", spdlog::level::trace},
-			{"debug", spdlog::level::debug},
-			{"info", spdlog::level::info},
-			{"warning", spdlog::level::warn},
-			{"error", spdlog::level::err},
-			{"critical", spdlog::level::critical},
-			{"off", spdlog::level::off}};
-	spdlog::level::level_enum log_level = spdlog::level::debug;
-	command_line.add_option("--log_level", log_level, "Log level")
+	const std::vector<std::pair<std::string, spdlog::level::level_enum>> SPDLOG_LEVEL_NAMES_TO_LEVELS = {
+		{"trace", spdlog::level::trace},
+		{"debug", spdlog::level::debug},
+		{"info", spdlog::level::info},
+		{"warning", spdlog::level::warn},
+		{"error", spdlog::level::err},
+		{"critical", spdlog::level::critical},
+		{"off", spdlog::level::off}};
+	spdlog::level::level_enum log_level = spdlog::level::info;
+	command_line.add_option("--log_level", log_level, "Set the logging level for the simulation output.")
 		->transform(CLI::CheckedTransformer(SPDLOG_LEVEL_NAMES_TO_LEVELS, CLI::ignore_case));
 
 	CLI11_PARSE(command_line, argc, argv);
+
+	// If the user only wants to see help, they can call --help
+	if (command_line.get_subcommands().size() == 0) {
+		std::cout << command_line.help() << std::endl;
+		return EXIT_SUCCESS;
+	}
 
 	json in_args = json({});
 
@@ -125,17 +130,15 @@ int main(int argc, char **argv)
 		const bool ok = !json_file.empty() ? load_json(json_file, in_args) : load_yaml(yaml_file, in_args);
 
 		if (!ok)
-			log_and_throw_error(fmt::format("unable to open {} file", json_file));
+			log_and_throw_error(fmt::format("Unable to open input file: {}", json_file));
 
 		if (in_args.contains("states"))
 			return optimization_simulation(command_line, max_threads, is_strict, log_level, in_args);
 		else
-			return forward_simulation(command_line, "", output_dir, max_threads,
-									  is_strict, fallback_solver, log_level, in_args);
+			return forward_simulation(command_line, "", output_dir, max_threads, is_strict, fallback_solver, log_level, in_args);
 	}
 	else
-		return forward_simulation(command_line, hdf5_file, output_dir, max_threads,
-								  is_strict, fallback_solver, log_level, in_args);
+		return forward_simulation(command_line, hdf5_file, output_dir, max_threads, is_strict, fallback_solver, log_level, in_args);
 }
 
 int forward_simulation(const CLI::App &command_line,
