@@ -1,4 +1,4 @@
-name: Docker Build and Push
+name: Build and Push Docker Image
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,18 +17,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-
-      - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v2
-        with:
-          cmake-version: '3.27.x'
-
-      - name: Free Disk Space (Ubuntu)
-        uses: jlumbroso/free-disk-space@main
-        with:
-          tool-cache: false
+        uses: docker/setup-buildx-action@v3
 
       - name: Log in to DockerHub
         uses: docker/login-action@v2
@@ -36,13 +25,24 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '**/*.cpp', '**/*.h') }}
+          restore-keys: |
+            docker-${{ runner.os }}-
+
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/polyfem:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
+          platforms: linux/amd64
 
-      - name: Test PolyFEM Image
+      - name: Test Docker Image
         run: |
           docker run --rm ${{ secrets.DOCKER_USERNAME }}/polyfem:latest --help

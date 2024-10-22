@@ -16,8 +16,6 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install numpy sympy quadpy
-
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.27.5/cmake-3.27.5-linux-x86_64.sh -O /tmp/cmake.sh && \
     chmod +x /tmp/cmake.sh && \
     /tmp/cmake.sh --skip-license --prefix=/usr/local && \
@@ -27,7 +25,8 @@ WORKDIR /app
 RUN git clone https://github.com/polyfem/polyfem --recursive
 
 WORKDIR /app/polyfem/build
-RUN cmake .. 
+# Disable building tests and ensure data dir is not used
+RUN cmake .. -DPOLYFEM_WITH_TESTS=OFF -DPOLYFEM_USE_EXISTING_DATA_DIR=OFF
 RUN make -j 4
 
 # ---- Release Stage ----
@@ -41,6 +40,10 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app/polyfem
+
+COPY --from=builder /app/polyfem/json-specs/ ./json-specs/
+COPY --from=builder /app/polyfem/build/json-specs/ ./build/json-specs/
+
 COPY --from=builder /app/polyfem/build/PolyFEM_bin ./build/PolyFEM_bin
 
 WORKDIR /data
