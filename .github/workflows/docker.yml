@@ -32,6 +32,12 @@ jobs:
           key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '**/*.cpp', '**/*.h') }}
           restore-keys: |
             docker-${{ runner.os }}-
+            
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          docker-images: false
 
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
