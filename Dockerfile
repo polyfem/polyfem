@@ -2,6 +2,7 @@
 FROM ubuntu:20.04 AS builder
 ENV DEBIAN_FRONTEND=noninteractive
 
+# Install dependencies
 RUN apt-get update && apt-get install -y \
     git \
     g++ \
@@ -14,20 +15,36 @@ RUN apt-get update && apt-get install -y \
     libx11-dev \
     wget \
     libssl-dev \
+    ccache \
     && rm -rf /var/lib/apt/lists/*
 
+# Install CMake
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.27.5/cmake-3.27.5-linux-x86_64.sh -O /tmp/cmake.sh && \
     chmod +x /tmp/cmake.sh && \
     /tmp/cmake.sh --skip-license --prefix=/usr/local && \
     rm /tmp/cmake.sh
 
-WORKDIR /app
-RUN git clone https://github.com/polyfem/polyfem --recursive
+# Set workdir
+WORKDIR /app/polyfem
 
+# Copy source code into the container
+COPY . .
+
+# Update submodules
+RUN git submodule update --init --recursive
+
+# Build PolyFEM
 WORKDIR /app/polyfem/build
-# Disable building tests and ensure data dir is not used
-RUN cmake .. -DPOLYFEM_WITH_TESTS=OFF -DPOLYFEM_USE_EXISTING_DATA_DIR=OFF
-RUN make -j 4
+
+# Configure PolyFEM with ccache enabled
+RUN --mount=type=cache,target=/root/.ccache \
+    cmake .. \
+    -DPOLYFEM_WITH_TESTS=OFF \
+    -DPOLYFEM_WITH_CCACHE=ON
+
+# Build PolyFEM using ccache
+RUN --mount=type=cache,target=/root/.ccache \
+    make -j $(nproc)
 
 # ---- Release Stage ----
 FROM ubuntu:20.04 AS release
@@ -41,9 +58,9 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app/polyfem
 
+# Copy necessary files from the builder stage
 COPY --from=builder /app/polyfem/json-specs/ ./json-specs/
 COPY --from=builder /app/polyfem/build/json-specs/ ./build/json-specs/
-
 COPY --from=builder /app/polyfem/build/PolyFEM_bin ./build/PolyFEM_bin
 
 WORKDIR /data
