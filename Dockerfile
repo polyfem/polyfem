@@ -1,5 +1,4 @@
-# ---- Build Stage ----
-FROM ubuntu:20.04 AS builder
+FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install dependencies
@@ -46,23 +45,5 @@ RUN --mount=type=cache,target=/root/.ccache \
 RUN --mount=type=cache,target=/root/.ccache \
     make -j $(nproc)
 
-# ---- Release Stage ----
-FROM ubuntu:20.04 AS release
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN apt-get update && apt-get install -y \
-    libgl1-mesa-dev \
-    libx11-dev \
-    zenity \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app/polyfem
-
-# Copy necessary files from the builder stage
-COPY --from=builder /app/polyfem/json-specs/ ./json-specs/
-COPY --from=builder /app/polyfem/build/json-specs/ ./build/json-specs/
-COPY --from=builder /app/polyfem/build/PolyFEM_bin ./build/PolyFEM_bin
-
 WORKDIR /data
-
 ENTRYPOINT ["/app/polyfem/build/PolyFEM_bin"]
