@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build and Push Docker Images
 
 on:
   push:
@@ -29,26 +29,42 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
-          key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', '**/*.cpp', '**/*.h') }}
+          key: docker-${{ runner.os }}-${{ hashFiles('Dockerfile', 'Dockerfile.cuda', '**/*.cpp', '**/*.h') }}
           restore-keys: |
             docker-${{ runner.os }}-
-            
+
       - name: Free Disk Space (Ubuntu)
         uses: jlumbroso/free-disk-space@main
         with:
           tool-cache: false
           docker-images: false
 
-      - name: Build and Push Docker Image
+      - name: Build and Push Standard Docker Image
         uses: docker/build-push-action@v5
         with:
           context: .
+          file: Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/polyfem:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
           platforms: linux/amd64
 
-      - name: Test Docker Image
+      - name: Build and Push CUDA-Enabled Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.cuda
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/polyfem:cuda
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
+          platforms: linux/amd64
+
+      - name: Test Standard Docker Image
         run: |
           docker run --rm ${{ secrets.DOCKER_USERNAME }}/polyfem:latest --help
+
+      - name: Test CUDA-Enabled Docker Image
+        run: |
+          docker run --rm ${{ secrets.DOCKER_USERNAME }}/polyfem:cuda --help
