@@ -1,0 +1,54 @@
+# Use the official NVIDIA CUDA base image with Ubuntu 20.04 and CUDA 11.8
+FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu20.04
+
+# Set environment variable to suppress interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install essential dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    g++ \
+    cmake \
+    python3 \
+    python3-pip \
+    zenity \
+    libcgal-dev \
+    libgl1-mesa-dev \
+    libx11-dev \
+    wget \
+    libssl-dev \
+    ccache \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install a newer version of CMake if needed
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.27.5/cmake-3.27.5-linux-x86_64.sh -O /tmp/cmake.sh && \
+    chmod +x /tmp/cmake.sh && \
+    /tmp/cmake.sh --skip-license --prefix=/usr/local && \
+    rm /tmp/cmake.sh
+
+# Set the working directory
+WORKDIR /app/polyfem
+
+# Copy the source code into the container
+COPY . .
+
+# Initialize and update git submodules
+RUN git submodule update --init --recursive
+
+# Create and navigate to the build directory
+RUN mkdir -p build
+WORKDIR /app/polyfem/build
+
+# Configure the build with CUDA enabled
+RUN cmake .. \
+    -DPOLYFEM_WITH_TESTS=OFF \
+    -DPOLYFEM_WITH_CCACHE=ON \
+
+# Compile PolyFEM using all available CPU cores
+RUN make -j$(nproc)
+
+# Set the default working directory for runtime
+WORKDIR /data
+
+# Define the entrypoint to the PolyFEM binary
+ENTRYPOINT ["/app/polyfem/build/PolyFEM_bin"]
