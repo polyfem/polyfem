@@ -20,7 +20,7 @@ namespace polyfem::solver
 		  mu_(mu),
 		  global_static_mu_(global_static_mu),
       	  global_kinetic_mu_(global_kinetic_mu),
-      	  pairwise_friction_map_(pairwise_friction_map),
+      	  pairwise_friction_(pairwise_friction_),
 		  broad_phase_method_(broad_phase_method),
 		  n_lagging_iters_(n_lagging_iters < 0 ? std::numeric_limits<int>::max() : n_lagging_iters),
 		  contact_form_(contact_form),
@@ -139,6 +139,6 @@ namespace polyfem::solver
 
 		friction_collision_set_.build(
 			collision_mesh_, displaced_surface, collision_set,
-			contact_form_.barrier_potential(), contact_form_.barrier_stiffness(), mu_, global_static_mu_, global_kinetic_mu_, pairwise_friction_map_);
+			contact_form_.barrier_potential(), contact_form_.barrier_stiffness(), mu_, global_static_mu_, global_kinetic_mu_, pairwise_friction_);
 	}
 } // namespace polyfem::solver

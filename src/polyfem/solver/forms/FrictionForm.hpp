@@ -25,7 +25,7 @@ namespace polyfem::solver
 		/// @param mu Global coefficient of friction
 		/// @param global_static_mu Global static friction coefficient
 		/// @param global_kinetic_mu Global kinetic friction coefficient
-		/// @param pairwise_friction_map Map of pairwise friction coefficients (static and kinetic)
+		/// @param pairwise_friction_ Map of pairwise friction coefficients (static and kinetic)
 		/// @param dhat Barrier activation distance
 		/// @param broad_phase_method Broad-phase method used for distance computation and collision detection
 		/// @param contact_form Pointer to contact form; necessary to have the barrier stiffnes, maybe clean me
@@ -37,7 +37,7 @@ namespace polyfem::solver
 			const double mu,
 			const double global_static_mu,
 			const double global_kinetic_mu,
-			const std::map<std::tuple<int, int>, std::pair<double, double>> &pairwise_friction_map,
+			const std::map<std::tuple<int, int>, std::pair<double, double>> &pairwise_friction_,
 			const ipc::BroadPhaseMethod broad_phase_method,
 			const ContactForm &contact_form,
 			const int n_lagging_iters);
@@ -107,7 +107,7 @@ namespace polyfem::solver
 		const double mu_;                                ///< Global coefficient of friction
 		const double global_static_mu_;                  ///< Global static friction coefficient
 		const double global_kinetic_mu_;                 ///< Global kinetic friction coefficient
-		const std::map<std::tuple<int, int>, std::pair<double, double>> pairwise_friction_map_; ///< Pairwise friction coefficients (static and kinetic)
+		const std::map<std::tuple<int, int>, std::pair<double, double>> pairwise_friction_; ///< Pairwise friction coefficients (static and kinetic)
 
 		const ipc::BroadPhaseMethod broad_phase_method_; ///< Broad-phase method used for distance computation and collision detection
 		const int n_lagging_iters_;                      ///< Number of lagging iterations

@@ -95,7 +95,7 @@ namespace polyfem::solver
 		const double friction_coefficient,
 		const double static_friction_coefficient,
 		const double kinetic_friction_coefficient,
-		const std::map<std::tuple<int, int>, std::pair<double, double>> pairwise_friction_map;
+		const std::map<std::tuple<int, int>, std::pair<double, double>> pairwise_friction_;
 		const double epsv,
 		const int friction_iterations,
 
@@ -250,8 +250,7 @@ namespace polyfem::solver
 			if (friction_coefficient != 0 || static_friction_coefficient != 0 || kinetic_friction_coefficient != 0)
 			{
 				friction_form = std::make_shared<FrictionForm>(
-					collision_mesh, time_integrator, epsv, friction_coefficient,
-					broad_phase, *contact_form, friction_iterations);
+					collision_mesh, time_integrator, epsv, friction_coefficient, static_friction_coefficient, kinetic_friction_coefficient, pairwise_friction_, broad_phase, *contact_form, friction_iterations);
 				friction_form->init_lagging(sol);
 				forms.push_back(friction_form);
 			}
