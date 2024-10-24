@@ -39,7 +39,9 @@ WORKDIR /app/polyfem/build
 RUN --mount=type=cache,target=/root/.ccache \
     cmake .. \
     -DPOLYFEM_WITH_TESTS=OFF \
-    -DPOLYFEM_WITH_CCACHE=ON
+    -DPOLYFEM_WITH_CCACHE=ON \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS=""
 
 # Build PolyFEM using ccache
 RUN --mount=type=cache,target=/root/.ccache \
