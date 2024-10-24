@@ -50,17 +50,6 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
           platforms: linux/amd64
 
-      - name: Build and Push CUDA-Enabled Docker Image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: Dockerfile.cuda
-          push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/polyfem:cuda
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
-          platforms: linux/amd64
-
       - name: Test Standard Docker Image
         run: |
           docker run --rm ${{ secrets.DOCKER_USERNAME }}/polyfem:latest --help
