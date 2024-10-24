@@ -1981,6 +1981,8 @@ namespace polyfem::io
 		const ipc::CollisionMesh &collision_mesh = state.collision_mesh;
 		const double dhat = state.args["contact"]["dhat"];
 		const double friction_coefficient = state.args["contact"]["friction_coefficient"];
+		double static_friction_coefficient = state.args["contact"].contains("static_friction_coefficient") ? state.args["contact"]["static_friction_coefficient"]: friction_coefficient;
+		double kinetic_friction_coefficient = state.args["contact"].contains("kinetic_friction_coefficient") ? state.args["contact"]["kinetic_friction_coefficient"] : friction_coefficient;
 		const double epsv = state.args["contact"]["epsv"];
 		const std::shared_ptr<solver::ContactForm> &contact_form = state.solve_data.contact_form;
 		const std::shared_ptr<solver::FrictionForm> &friction_form = state.solve_data.friction_form;
@@ -2023,10 +2025,11 @@ namespace polyfem::io
 
 			if (opts.friction_forces)
 			{
+
 				ipc::FrictionCollisions friction_collision_set;
 				friction_collision_set.build(
 					collision_mesh, displaced_surface, collision_set,
-					barrier_potential, barrier_stiffness, friction_coefficient);
+					barrier_potential, barrier_stiffness, friction_coefficient, static_friction_coefficient, kinetic_friction_coefficient);
 
 				ipc::FrictionPotential friction_potential(epsv);
 

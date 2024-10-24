@@ -93,6 +93,8 @@ namespace polyfem::solver
 
 		// Friction form
 		const double friction_coefficient,
+		const double static_friction_coefficient,
+		const double kinetic_friction_coefficient,
 		const double epsv,
 		const int friction_iterations,
 
@@ -244,7 +246,7 @@ namespace polyfem::solver
 				// ----------------------------------------------------------------
 			}
 
-			if (friction_coefficient != 0)
+			if (friction_coefficient != 0 || static_friction_coefficient != 0 || kinetic_friction_coefficient != 0)
 			{
 				friction_form = std::make_shared<FrictionForm>(
 					collision_mesh, time_integrator, epsv, friction_coefficient,

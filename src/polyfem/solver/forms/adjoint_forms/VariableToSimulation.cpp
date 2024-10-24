@@ -294,6 +294,8 @@ namespace polyfem::solver
 		assert(state_variable(0) >= 0);
 		for (auto state : states_)
 			state->args["contact"]["friction_coefficient"] = state_variable(0);
+			state->args["contact"]["static_friction_coefficient"] = state_variable(0);
+			state->args["contact"]["kinetic_friction_coefficient"] = state_variable(0);
 	}
 	Eigen::VectorXd FrictionCoeffientVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
 	{

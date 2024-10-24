@@ -55,7 +55,7 @@ namespace polyfem::solver
 	// 	StiffnessMatrix active_nodes_mat_;
 	// 	int dim_;
 
-	// 	double dhat_, epsv_, friction_coefficient_;
+	// 	double dhat_, epsv_, friction_coefficient_, static_friction_coefficient_, kinetic_friction_coefficient_;
 	// };
 
 	class ProxyContactForceForm : public StaticForm

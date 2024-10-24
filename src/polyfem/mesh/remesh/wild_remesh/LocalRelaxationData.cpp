@@ -286,6 +286,8 @@ namespace polyfem::mesh
 				/*periodic_contact=*/false, /*tiled_to_single=*/Eigen::VectorXi(),
 				// Friction form
 				state.args["contact"]["friction_coefficient"],
+				state.args["contact"].contains("static_friction_coefficient") ? state.args["contact"]["static_friction_coefficient"]: friction_coefficient;
+				state.args["contact"].contains("kinetic_friction_coefficient") ? state.args["contact"]["kinetic_friction_coefficient"] : friction_coefficient;
 				state.args["contact"]["epsv"],
 				state.args["solver"]["contact"]["friction_iterations"],
 				// Rayleigh damping form
