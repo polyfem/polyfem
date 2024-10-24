@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu20.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install dependencies
@@ -35,15 +35,16 @@ RUN git submodule update --init --recursive
 # Build PolyFEM
 WORKDIR /app/polyfem/build
 
-# Configure PolyFEM with ccache enabled
+# Configure PolyFEM with ccache and CUDA enabled
 RUN --mount=type=cache,target=/root/.ccache \
     cmake .. \
     -DPOLYFEM_WITH_TESTS=OFF \
     -DPOLYFEM_WITH_CCACHE=ON \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS=""
+    -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
+    -DPOLYFEM_WITH_CUDA=ON  # Enable CUDA
 
-# Build PolyFEM using ccache
+# Build PolyFEM using ccache with CUDA support
 RUN --mount=type=cache,target=/root/.ccache \
     make -j $(nproc)
 

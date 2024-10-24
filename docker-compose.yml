@@ -1,15 +1,21 @@
+version: '3.8'
+
 services:
   polyfem:
     build:
       context: .
-      dockerfile: Dockerfile
-    container_name: polyfem_container
+      dockerfile: Dockerfile-cuda
+    container_name: polyfem
     volumes:
-      - ./data:/data
+      - .:/data
     working_dir: /data
     entrypoint: ["/app/polyfem/build/PolyFEM_bin"]
-    stdin_open: true
-    tty: true
+    command: ["--json", "2-cubes-falling.json"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
     environment:
-      - DEBIAN_FRONTEND=noninteractive
-    command: ["--help"]
+      - MAX_THREADS=4
+    restart: unless-stopped
