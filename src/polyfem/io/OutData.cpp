@@ -1981,8 +1981,37 @@ namespace polyfem::io
 		const ipc::CollisionMesh &collision_mesh = state.collision_mesh;
 		const double dhat = state.args["contact"]["dhat"];
 		const double friction_coefficient = state.args["contact"]["friction_coefficient"];
-		double static_friction_coefficient = state.args["contact"].contains("static_friction_coefficient") ? state.args["contact"]["static_friction_coefficient"]: friction_coefficient;
-		double kinetic_friction_coefficient = state.args["contact"].contains("kinetic_friction_coefficient") ? state.args["contact"]["kinetic_friction_coefficient"] : friction_coefficient;
+
+		double global_static_friction_coefficient = state.args["contact"].contains("static_friction_coefficient") ? state.args["contact"]["static_friction_coefficient"] : friction_coefficient;
+		double global_kinetic_friction_coefficient = state.args["contact"].contains("kinetic_friction_coefficient") ? state.args["contact"]["kinetic_friction_coefficient"] : friction_coefficient;
+		double static_friction_coefficient = global_static_friction_coefficient;
+		double kinetic_friction_coefficient = global_kinetic_friction_coefficient;
+
+		std::map<std::tuple<int, int>, std::pair<double, double>> pairwise_friction_map;
+
+		if (state.args["contact"].contains("pairwise")) {
+			for (size_t i = 0; i < state.args["materials"].size(); i++) {
+				for (size_t j = i + 1; j < state.args["materials"].size(); j++) {
+					int material_id_1 = state.args["materials"][i]["id"];
+					int material_id_2 = state.args["materials"][j]["id"];
+
+					const auto &pairwise = state.args["contact"]["pairwise"];
+					for (const auto &pair : pairwise) {
+						const auto &ids = pair["ids"];
+						if ((ids[0] == material_id_1 && ids[1] == material_id_2) ||
+							(ids[0] == material_id_2 && ids[1] == material_id_1)) {
+
+							double pair_static_friction_coefficient = pair.contains("static_friction_coefficient") ? pair["static_friction_coefficient"] : global_static_friction_coefficient;
+							double pair_kinetic_friction_coefficient = pair.contains("kinetic_friction_coefficient") ? pair["kinetic_friction_coefficient"] : global_kinetic_friction_coefficient;
+
+							pairwise_friction_map[std::make_tuple(material_id_1, material_id_2)] = std::make_pair(pair_static_friction_coefficient, pair_kinetic_friction_coefficient);
+						}
+					}
+				}
+			}
+		}
+
+
 		const double epsv = state.args["contact"]["epsv"];
 		const std::shared_ptr<solver::ContactForm> &contact_form = state.solve_data.contact_form;
 		const std::shared_ptr<solver::FrictionForm> &friction_form = state.solve_data.friction_form;
@@ -2029,7 +2058,9 @@ namespace polyfem::io
 				ipc::FrictionCollisions friction_collision_set;
 				friction_collision_set.build(
 					collision_mesh, displaced_surface, collision_set,
-					barrier_potential, barrier_stiffness, friction_coefficient, static_friction_coefficient, kinetic_friction_coefficient);
+					barrier_potential, barrier_stiffness, friction_coefficient,
+					static_friction_coefficient, kinetic_friction_coefficient,
+					pairwise_friction_map);
 
 				ipc::FrictionPotential friction_potential(epsv);
 
