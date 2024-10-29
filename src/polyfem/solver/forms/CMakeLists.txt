@@ -24,6 +24,8 @@ set(SOURCES
 	ContactForm.hpp
 	NormalAdhesionForm.cpp
 	NormalAdhesionForm.hpp
+	TangentialAdhesionForm.cpp
+	TangentialAdhesionForm.hpp
 	PeriodicContactForm.cpp
 	PeriodicContactForm.hpp
 	MacroStrainLagrangianForm.cpp
