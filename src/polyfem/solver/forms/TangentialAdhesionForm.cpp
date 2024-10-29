@@ -1,5 +1,5 @@
 #include "TangentialAdhesionForm.hpp"
-#include "ContactForm.hpp"
+#include "NormalAdhesionForm.hpp"
 
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
@@ -9,19 +9,19 @@ namespace polyfem::solver
 	TangentialAdhesionForm::TangentialAdhesionForm(
 		const ipc::CollisionMesh &collision_mesh,
 		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator,
-		const double epsv,
+		const double epsa,
 		const double mu,
 		const ipc::BroadPhaseMethod broad_phase_method,
-		const ContactForm &contact_form,
+		const NormalAdhesionForm &normal_adhesion_form,
 		const int n_lagging_iters)
 		: collision_mesh_(collision_mesh),
 		  time_integrator_(time_integrator),
-		  epsv_(epsv),
+		  epsa_(epsa),
 		  mu_(mu),
 		  broad_phase_method_(broad_phase_method),
 		  n_lagging_iters_(n_lagging_iters < 0 ? std::numeric_limits<int>::max() : n_lagging_iters),
-		  contact_form_(contact_form),
-		  tangential_adhesion_potential_(epsv)
+		  normal_adhesion_form_(normal_adhesion_form),
+		  tangential_adhesion_potential_(epsa)
 	{
 		assert(epsv_ > 0);
 	}
@@ -30,7 +30,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &prev_solution,
 		const Eigen::MatrixXd &solution,
 		const Eigen::MatrixXd &adjoint,
-		const ipc::TangentialCollisions &friction_constraints_set,
+		const ipc::TangentialCollisions &tangential_constraints_set,
 		Eigen::VectorXd &term)
 	{
 		Eigen::MatrixXd U = collision_mesh_.vertices(utils::unflatten(solution, collision_mesh_.dim()));
@@ -39,20 +39,20 @@ namespace polyfem::solver
 		// TODO: use the time integration to compute the velocity
 		const Eigen::MatrixXd velocities = (U - U_prev) / time_integrator_->dt();
 
-		StiffnessMatrix hess = -friction_potential_.force_jacobian(
-			friction_constraints_set,
+		StiffnessMatrix hess = -tangential_adhesion_potential_.force_jacobian(
+			tangential_constraints_set,
 			collision_mesh_, collision_mesh_.rest_positions(),
 			/*lagged_displacements=*/U_prev, velocities,
-			contact_form_.barrier_potential(),
-			contact_form_.barrier_stiffness(),
-			ipc::FrictionPotential::DiffWRT::REST_POSITIONS);
+			normal_adhesion_form_.normal_adhesion_potential(),
+			1,
+			ipc::TangentialPotential::DiffWRT::REST_POSITIONS);
 
 		term = collision_mesh_.to_full_dof(hess).transpose() * adjoint;
 	}
 
 	Eigen::MatrixXd TangentialAdhesionForm::compute_displaced_surface(const Eigen::VectorXd &x) const
 	{
-		return contact_form_.compute_displaced_surface(x);
+		return normal_adhesion_form_.compute_displaced_surface(x);
 	}
 
 	Eigen::MatrixXd TangentialAdhesionForm::compute_surface_velocities(const Eigen::VectorXd &x) const
@@ -69,14 +69,14 @@ namespace polyfem::solver
 
 	double TangentialAdhesionForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		return friction_potential_(friction_collision_set_, collision_mesh_, compute_surface_velocities(x)) / dv_dx();
+		return tangential_adhesion_potential_(tangential_collision_set_, collision_mesh_, compute_surface_velocities(x)) / dv_dx();
 	}
 
 	void TangentialAdhesionForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		const Eigen::VectorXd grad_friction = friction_potential_.gradient(
-			friction_collision_set_, collision_mesh_, compute_surface_velocities(x));
-		gradv = collision_mesh_.to_full_dof(grad_friction);
+		const Eigen::VectorXd grad_tangential_adhesion = tangential_adhesion_potential_.gradient(
+			tangential_collision_set_, collision_mesh_, compute_surface_velocities(x));
+		gradv = collision_mesh_.to_full_dof(grad_tangential_adhesion);
 	}
 
 	void TangentialAdhesionForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
@@ -91,8 +91,8 @@ namespace polyfem::solver
 			psd_projection_method = ipc::PSDProjectionMethod::NONE;
 		}
 
-		hessian = dv_dx() * friction_potential_.hessian( //
-					  friction_collision_set_, collision_mesh_, compute_surface_velocities(x), psd_projection_method);
+		hessian = dv_dx() * tangential_adhesion_potential_.hessian( //
+					  tangential_collision_set_, collision_mesh_, compute_surface_velocities(x), psd_projection_method);
 
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
@@ -102,16 +102,13 @@ namespace polyfem::solver
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
 		ipc::NormalCollisions collision_set;
-		//collision_set.set_use_convergent_formulation(contact_form_.use_convergent_formulation());
-		collision_set.set_use_improved_max_approximator(contact_form_.use_convergent_formulation());
-		collision_set.set_use_area_weighting(contact_form_.use_convergent_formulation());
-		
-		collision_set.set_enable_shape_derivatives(contact_form_.enable_shape_derivatives());
+
 		collision_set.build(
-			collision_mesh_, displaced_surface, contact_form_.dhat(), /*dmin=*/0, broad_phase_method_);
+			collision_mesh_, displaced_surface, normal_adhesion_form_.dhat_a(), /*dmin=*/0, broad_phase_method_);
 
 		tangential_collision_set_.build(
 			collision_mesh_, displaced_surface, collision_set,
-			contact_form_.barrier_potential(), contact_form_.barrier_stiffness(), mu_);
+			normal_adhesion_form_.normal_adhesion_potential(),
+			1., mu_);
 	}
 } // namespace polyfem::solver
