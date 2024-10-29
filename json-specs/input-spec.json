@@ -1214,7 +1214,8 @@
             "dhat_p",
             "dhat_a",
             "adhesion_strength",
-            "tangential_adhesion_coefficient"
+            "tangential_adhesion_coefficient",
+            "epsa"
         ],
         "doc": "Contact handling parameters."
     },
@@ -1362,9 +1363,16 @@
     },
     {
         "pointer": "/contact/tangential_adhesion_coefficient",
-        "default": 0.1,
+        "default": 0.0,
         "type": "float",
         "doc": "Coefficient of tangential adhesion (global)"
+    },
+    {
+        "pointer": "/contact/epsa",
+        "default": 0.001,
+        "min": 0,
+        "type": "float",
+        "doc": "Tangential adhesion smoothing parameter."
     },
     {
         "pointer": "/solver",
@@ -1460,6 +1468,7 @@
         "optional": [
             "CCD",
             "friction_iterations",
+            "tangential_adhesion_iterations",
             "friction_convergence_tol",
             "barrier_stiffness"
         ],
@@ -1513,6 +1522,12 @@
         "default": 1,
         "type": "int",
         "doc": "Maximum number of update iterations for lagged friction formulation (see IPC paper)."
+    },
+    {
+        "pointer": "/solver/contact/tangential_adhesion_iterations",
+        "default": 1,
+        "type": "int",
+        "doc": "Maximum number of update iterations for lagged tangential adhesion formulation (see IPC paper)."
     },
     {
         "pointer": "/solver/contact/friction_convergence_tol",

@@ -285,6 +285,10 @@ namespace polyfem::mesh
 				state.args["contact"]["dhat_p"],
 				state.args["contact"]["dhat_a"],
 				state.args["contact"]["adhesion_strength"],
+				// Tangential Adhesion Form
+				state.args["contact"]["tangential_adhesion_coefficient"],
+				state.args["contact"]["epsa"],
+				state.args["solver"]["contact"]["tangential_adhesion_iterations"],
 				// Homogenization
 				assembler::MacroStrainValue(),
 				// Periodic contact

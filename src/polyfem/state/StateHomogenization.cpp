@@ -65,6 +65,10 @@ namespace polyfem
 			args["contact"]["dhat_p"],
 			args["contact"]["dhat_a"],
 			args["contact"]["adhesion_strength"],
+			// Tangential Adhesion Form
+			args["contact"]["tangential_adhesion_coefficient"],
+			args["contact"]["epsa"],
+			args["solver"]["contact"]["tangential_adhesion_iterations"],
 			// Homogenization
 			macro_strain_constraint,
 			// Periodic contact
