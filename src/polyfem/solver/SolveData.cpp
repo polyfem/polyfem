@@ -10,6 +10,7 @@
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/NormalAdhesionForm.hpp>
+#include <polyfem/solver/forms/TangentialAdhesionForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
@@ -90,6 +91,11 @@ namespace polyfem::solver
 		const double dhat_p,
 		const double dhat_a,
 		const double Y,
+
+		// Tangential Adhesion Form
+		const double tangential_adhesion_coefficient,
+		const double epsa,
+		const int tangential_adhesion_iterations,
 
 		// Homogenization
 		const assembler::MacroStrainValue &macro_strain_constraint,
@@ -263,7 +269,18 @@ namespace polyfem::solver
 					broad_phase, ccd_tolerance * units.characteristic_length(), ccd_max_iterations
 				);
 				forms.push_back(normal_adhesion_form);
+
+				if (tangential_adhesion_coefficient != 0)
+				{
+					tangential_adhesion_form = std::make_shared<TangentialAdhesionForm>(
+						collision_mesh, time_integrator, epsa, tangential_adhesion_coefficient,
+						broad_phase, *normal_adhesion_form, tangential_adhesion_iterations
+					);
+					forms.push_back(tangential_adhesion_form);
+				}
 			}
+
+			
 		}
 
 		const std::vector<json> rayleigh_damping_jsons = utils::json_as_array(rayleigh_damping);
