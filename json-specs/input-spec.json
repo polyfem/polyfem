@@ -2834,6 +2834,8 @@
             "body_ids",
             "contact_forces",
             "friction_forces",
+            "normal_adhesion_forces",
+            "tangential_adhesion_forces",
             "velocity",
             "acceleration",
             "scalar_values",
@@ -2874,6 +2876,18 @@
         "default": false,
         "type": "bool",
         "doc": "If true, write out friction forces for surface"
+    },
+    {
+        "pointer": "/output/paraview/options/normal_adhesion_forces",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out normal adhesion forces for surface"
+    },
+    {
+        "pointer": "/output/paraview/options/tangential_adhesion_forces",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out tangential adhesion forces for surface"
     },
     {
         "pointer": "/output/paraview/options/velocity",
