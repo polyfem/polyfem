@@ -19,6 +19,7 @@ set(test_sources
   test_normal.cpp
   test_output.cpp
   test_parametrizations.cpp
+  test_periodic.cpp
   test_problem.cpp
   test_quadrature.cpp
   test_rbf.cpp
