@@ -345,6 +345,8 @@ TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]"
 	const bool use_convergent_formulation = GENERATE(true, false);
 	const double epsv = 1e-3;
 	const double mu = GENERATE(0.0, 0.01, 0.1, 1.0);
+	const double static_mu = GENERATE(0.0, 0.01, 0.1, 1.0);
+	const double kinetic_mu = GENERATE(0.0, 0.01, 0.1, 1.0);
 	const double dhat = 1e-3;
 	const double barrier_stiffness = 1e7;
 	const bool is_time_dependent = GENERATE(true, false);

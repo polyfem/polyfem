@@ -119,6 +119,8 @@ namespace polyfem::solver
 
 			// Friction form
 			const double friction_coefficient,
+			const double static_friction_coefficient,
+			const double kinetic_friction_coefficient,
 			const double epsv,
 			const int friction_iterations,
 

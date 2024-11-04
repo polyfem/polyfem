@@ -1189,6 +1189,8 @@
             "dhat_percentage",
             "epsv",
             "friction_coefficient",
+            "static_friction_coefficient",
+            "kinetic_friction_coefficient",
             "use_convergent_formulation",
             "collision_mesh",
             "periodic"
@@ -1212,7 +1214,7 @@
         "pointer": "/contact/dhat_percentage",
         "default": 0.8,
         "type": "float",
-        "doc": "$\\hat{d}$ as percentage of the diagonal of the bounding box"
+        "doc": "$\\hat{d}$ as percentage of the diagonal of the bounding box."
     },
     {
         "pointer": "/contact/epsv",
@@ -1223,9 +1225,109 @@
     },
     {
         "pointer": "/contact/friction_coefficient",
-        "default": 0,
         "type": "float",
-        "doc": "Coefficient of friction (global)"
+        "default": 0.0,
+        "doc": "Global coefficient of friction (applies to static friction if static_friction is not specified)."
+    },
+    {
+        "pointer": "/contact/static_friction_coefficient",
+        "type": "object",
+        "default": {
+            "global": 0.0,
+            "pairwise": []
+        },
+        "optional": [
+            "global",
+            "pairwise"
+        ],
+        "doc": "Static friction coefficients."
+    },
+    {
+        "pointer": "/contact/static_friction_coefficient/global",
+        "type": "float",
+        "default": 0.0,
+        "doc": "Global coefficient of static friction."
+    },
+    {
+        "pointer": "/contact/static_friction_coefficient/pairwise",
+        "type": "list",
+        "doc": "List of pairwise static friction coefficients."
+    },
+    {
+        "pointer": "/contact/static_friction_coefficient/pairwise/*",
+        "type": "object",
+        "required": [
+            "ids",
+            "value"
+        ],
+        "doc": "Coefficient of static friction for a specific pair of surfaces."
+    },
+    {
+        "pointer": "/contact/static_friction_coefficient/pairwise/*/ids",
+        "type": "list",
+        "max": 2,
+        "doc": "Surface IDs defining the pair for static friction."
+    },
+    {
+        "pointer": "/contact/static_friction_coefficient/pairwise/*/value",
+        "type": "float",
+        "doc": "Coefficient of static friction for the specified pair."
+    },
+    {
+        "pointer": "/contact/static_friction_coefficient/pairwise/*/ids/*",
+        "type": ["int", "string"],
+        "options": ["all"],
+        "doc": "Surface ID for static friction. Use 'all' to apply to a specific surface and all others."
+    },
+    {
+        "pointer": "/contact/kinetic_friction_coefficient",
+        "type": "object",
+        "default": {
+            "global": 0.0,
+            "pairwise": []
+        },
+        "optional": [
+            "global",
+            "pairwise"
+        ],
+        "doc": "Kinetic friction coefficients."
+    },
+    {
+        "pointer": "/contact/kinetic_friction_coefficient/global",
+        "type": "float",
+        "default": 0.0,
+        "doc": "Global coefficient of kinetic friction."
+    },
+    {
+        "pointer": "/contact/kinetic_friction_coefficient/pairwise",
+        "type": "list",
+        "doc": "List of pairwise kinetic friction coefficients."
+    },
+    {
+        "pointer": "/contact/kinetic_friction_coefficient/pairwise/*",
+        "type": "object",
+        "required": [
+            "ids",
+            "value"
+        ],
+        "doc": "Coefficient of kinetic friction for a specific pair of surfaces."
+    },
+    {
+        "pointer": "/contact/kinetic_friction_coefficient/pairwise/*/ids",
+        "type": "list",
+        "max": 2,
+        "doc": "Surface IDs defining the pair for kinetic friction."
+    },
+    {
+        "pointer": "/contact/kinetic_friction_coefficient/pairwise/*/value",
+        "type": "float",
+        "doc": "Coefficient of kinetic friction for the specified pair."
+    },
+    {
+        "pointer": "/contact/kinetic_friction_coefficient/pairwise/*/ids/*",
+        "type": ["int", "string"],
+        "options": ["all"],
+        "doc": "Surface ID for kinetic friction. Use 'all' to apply to a specific surface and all others."
     },
     {
         "pointer": "/contact/use_convergent_formulation",
@@ -1236,27 +1338,15 @@
     {
         "pointer": "/contact/collision_mesh",
         "type": "object",
-        "required": [
-            "mesh",
-            "linear_map"
-        ],
-        "optional": [
-            "enabled"
-        ],
         "default": "skip",
-        "doc": "Load a preconstructed collision mesh."
-    },
-    {
-        "pointer": "/contact/collision_mesh",
-        "type": "object",
-        "required": [
-            "max_edge_length"
-        ],
         "optional": [
+            "mesh",
+            "linear_map",
+            "max_edge_length",
             "tessellation_type",
             "enabled"
         ],
-        "doc": "Construct a collision mesh with a maximum edge length."
+        "doc": "Load or construct a collision mesh."
     },
     {
         "pointer": "/contact/collision_mesh/mesh",
@@ -1287,7 +1377,7 @@
         "pointer": "/contact/collision_mesh/enabled",
         "type": "bool",
         "default": true,
-        "doc": ""
+        "doc": "Enable or disable collision mesh loading/construction."
     },
     {
         "pointer": "/contact/periodic",

@@ -168,6 +168,10 @@ def PolyFEM_convert(old):
     copy_entry("epsv", old, j["contact"])
     rename_entry("mu", old, "friction_coefficient", j["contact"])
     rename_entry("coeff_friction", old, "friction_coefficient", j["contact"])
+    rename_entry("coeff_static_friction", old, "static_friction_coefficient",j["contact"])
+    rename_entry("coeff_dynamic_friction", old, "dynamic_friction_coefficient",j["contact"])
+    rename_entry("mu_static", old, "static_friction_coefficient", j["contact"])
+    rename_entry("mu_dynamic", old, "dynamic_friction_coefficient", j["contact"])
     copy_entry("collision_mesh", old, j["contact"])
 
     # Solver

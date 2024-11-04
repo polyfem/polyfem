@@ -252,6 +252,66 @@ namespace polyfem::mesh
 		std::vector<std::shared_ptr<solver::Form>> forms;
 		{
 			POLYFEM_REMESHER_SCOPED_TIMER("LocalRelaxationData::init_solve_data -> init forms");
+
+			double global_static_friction_coefficient = state.args["contact"].contains("static_friction_coefficient")
+				? state.args["contact"]["static_friction_coefficient"]["global"]
+				: friction_coefficient;
+
+			double global_kinetic_friction_coefficient = state.args["contact"].contains("kinetic_friction_coefficient")
+				? state.args["contact"]["kinetic_friction_coefficient"]["global"]
+				: friction_coefficient;
+
+			double static_friction_coefficient = global_static_friction_coefficient;
+			double kinetic_friction_coefficient = global_kinetic_friction_coefficient;
+
+			bool has_static_pairwise = state.args["contact"].contains("static_friction_coefficient") && state.args["contact"]["static_friction_coefficient"].contains("pairwise");
+
+			bool has_kinetic_pairwise = state.args["contact"].contains("kinetic_friction_coefficient") && state.args["contact"]["kinetic_friction_coefficient"].contains("pairwise");
+
+			std::map<std::tuple<int, int>, std::pair<double, double>> pairwise_friction_;
+
+			if (has_static_pairwise || has_kinetic_pairwise)
+			{
+				const auto &materials = state.args["materials"];
+				for (size_t i = 0; i < materials.size(); i++)
+				{
+					for (size_t j = i + 1; j < materials.size(); j++)
+					{
+						int material_id_1 = materials[i]["id"];
+						int material_id_2 = materials[j]["id"];
+
+						if (has_static_pairwise)
+						{
+							const auto &static_pairwise = state.args["contact"]["static_friction_coefficient"]["pairwise"];
+							for (const auto &pair : static_pairwise)
+							{
+								const auto &ids = pair["ids"];
+								if ((ids[0] == material_id_1 && ids[1] == material_id_2) ||
+									(ids[0] == material_id_2 && ids[1] == material_id_1))
+								{
+									double pair_static_friction_coefficient = pair["value"];
+									pairwise_friction_[std::make_tuple(material_id_1, material_id_2)].first = pair_static_friction_coefficient;
+								}
+							}
+						}
+
+						if (has_kinetic_pairwise)
+						{
+							const auto &kinetic_pairwise = state.args["contact"]["kinetic_friction_coefficient"]["pairwise"];
+							for (const auto &pair : kinetic_pairwise)
+							{
+								const auto &ids = pair["ids"];
+								if ((ids[0] == material_id_1 && ids[1] == material_id_2) ||
+									(ids[0] == material_id_2 && ids[1] == material_id_1))
+								{
+									double pair_kinetic_friction_coefficient = pair["value"];
+									pairwise_friction_[std::make_tuple(material_id_1, material_id_2)].second = pair_kinetic_friction_coefficient;
+								}
+							}
+						}
+					}
+				}
+			}
 			forms = solve_data.init_forms(
 				// General
 				state.units, dim(), current_time,
@@ -286,6 +346,9 @@ namespace polyfem::mesh
 				/*periodic_contact=*/false, /*tiled_to_single=*/Eigen::VectorXi(),
 				// Friction form
 				state.args["contact"]["friction_coefficient"],
+				global_static_friction_coefficient,              // Global static friction coefficient
+				global_kinetic_friction_coefficient,             // Global kinetic friction coefficient
+				pairwise_friction_,						  		 // Pairwise friction coefficients
 				state.args["contact"]["epsv"],
 				state.args["solver"]["contact"]["friction_iterations"],
 				// Rayleigh damping form

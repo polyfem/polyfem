@@ -228,25 +228,92 @@ namespace polyfem
 
 		if (is_contact_enabled())
 		{
+			double static_friction_coefficient = args["contact"].contains("static_friction_coefficient") ? args["contact"]["static_friction_coefficient"] : args["contact"]["friction_coefficient"];
+			double kinetic_friction_coefficient = args["contact"].contains("kinetic_friction_coefficient") ? args["contact"]["kinetic_friction_coefficient"] : args["contact"]["friction_coefficient"];
+
+			bool has_static_pairwise = state.args["contact"].contains("static_friction_coefficient") && state.args["contact"]["static_friction_coefficient"].contains("pairwise");
+			bool has_kinetic_pairwise = state.args["contact"].contains("kinetic_friction_coefficient") && state.args["contact"]["kinetic_friction_coefficient"].contains("pairwise");
+
+			std::map<std::tuple<int, int>, std::pair<double, double>> pairwise_friction_;
+
+			auto process_friction_pairs = [&](const auto &pairwise, bool is_static) {
+				for (const auto &pair : pairwise)
+				{
+					const auto &ids = pair["ids"];
+					const int material_id0 = (ids[0] == "all") ? -1 : ids[0];
+					const int material_id1 = (ids[1] == "all") ? -1 : ids[1];
+					const double friction_value = pair["value"];
+
+					auto key = std::make_tuple(material_id0, material_id1);
+					auto friction_entry = pairwise_friction_.find(key);
+
+					if (friction_entry != pairwise_friction_.end())
+					{
+						if (is_static)
+							friction_entry->second.first = friction_value;
+						else
+							friction_entry->second.second = friction_value;
+					}
+					else
+					{
+						if (is_static)
+							pairwise_friction_[key] = std::make_pair(friction_value, kinetic_friction_coefficient);
+						else
+							pairwise_friction_[key] = std::make_pair(static_friction_coefficient, friction_value);
+					}
+				}
+			};
+
+			if (has_static_pairwise)
+			{
+				const auto &static_pairwise = state.args["contact"]["static_friction_coefficient"]["pairwise"];
+				process_friction_pairs(static_pairwise, true);
+			}
+
+			if (has_kinetic_pairwise)
+			{
+				const auto &kinetic_pairwise = state.args["contact"]["kinetic_friction_coefficient"]["pairwise"];
+				process_friction_pairs(kinetic_pairwise, false);
+			}
+
+
 			if (args["solver"]["contact"]["friction_iterations"] == 0)
 			{
 				logger().info("specified friction_iterations is 0; disabling friction");
 				args["contact"]["friction_coefficient"] = 0.0;
+				args["contact"]["static_friction_coefficient"]["global"] = 0.0;
+				args["contact"]["kinetic_friction_coefficient"]["global"] = 0.0;
+
+				for (auto &pair : pairwise_friction_)
+				{
+					pair.second = std::make_pair(0.0, 0.0);
+				}
 			}
 			else if (args["solver"]["contact"]["friction_iterations"] < 0)
 			{
 				args["solver"]["contact"]["friction_iterations"] = std::numeric_limits<int>::max();
 			}
-			if (args["contact"]["friction_coefficient"] == 0.0)
+			if (args["contact"]["friction_coefficient"] == 0.0 || static_friction_coefficient == 0.0 || kinetic_friction_coefficient == 0.0)
 			{
 				args["solver"]["contact"]["friction_iterations"] = 0;
+				for (auto &pair : pairwise_friction_)
+				{
+					pair.second = std::make_pair(0.0, 0.0);
+				}
 			}
 		}
 		else
 		{
 			args["solver"]["contact"]["friction_iterations"] = 0;
 			args["contact"]["friction_coefficient"] = 0;
+			args["contact"]["static_friction_coefficient"]["global"] = 0;
+			args["contact"]["kinetic_friction_coefficient"]["global"] = 0;
 			args["contact"]["periodic"] = false;
+
+			for (auto &pair : pairwise_friction_)
+			{
+				pair.second = std::make_pair(0.0, 0.0);
+			}
 		}
 
 		const std::string formulation = this->formulation();

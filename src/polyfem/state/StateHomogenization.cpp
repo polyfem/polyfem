@@ -66,6 +66,8 @@ namespace polyfem
 			args["contact"]["periodic"], periodic_collision_mesh_to_basis,
 			// Friction form
 			args["contact"]["friction_coefficient"],
+			args["contact"]["static_friction_coefficient"],
+			args["contact"]["kinetic_friction_coefficient"],
 			args["contact"]["epsv"],
 			args["solver"]["contact"]["friction_iterations"],
 			// Rayleigh damping form

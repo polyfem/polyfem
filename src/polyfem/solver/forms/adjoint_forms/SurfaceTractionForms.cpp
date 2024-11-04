@@ -543,6 +543,8 @@ namespace polyfem::solver
 	// 	epsv_ = state_.args["contact"]["epsv"];
 	// 	dhat_ = state_.args["contact"]["dhat"];
 	// 	friction_coefficient_ = state_.args["contact"]["friction_coefficient"];
+	//  static_friction_coefficient_ = state.args["contact"].contains("static_friction_coefficient") ? state.args["contact"]["static_friction_coefficient"]: friction_coefficient_;
+	//  static_friction_coefficient_ = state.args["contact"].contains("kinetic_friction_coefficient") ? state.args["contact"]["kinetic_friction_coefficient"] : friction_coefficient_;
 	// 	depends_on_step_prev_ = (friction_coefficient_ > 0);
 	// }
 
