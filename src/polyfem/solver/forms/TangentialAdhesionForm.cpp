@@ -23,7 +23,7 @@ namespace polyfem::solver
 		  normal_adhesion_form_(normal_adhesion_form),
 		  tangential_adhesion_potential_(epsa)
 	{
-		assert(epsv_ > 0);
+		assert(epsa_ > 0);
 	}
 
 	void TangentialAdhesionForm::force_shape_derivative(
