@@ -2060,7 +2060,7 @@ namespace polyfem::io
 			}
 
 			ipc::NormalCollisions adhesion_collision_set;
-			collision_set.build(
+			adhesion_collision_set.build(
 				collision_mesh, displaced_surface, dhat_a,
 				/*dmin=*/0, state.args["solver"]["contact"]["CCD"]["broad_phase"]);
 
@@ -2069,7 +2069,7 @@ namespace polyfem::io
 			if (opts.normal_adhesion_forces)
 			{
 				Eigen::MatrixXd forces = -1 * normal_adhesion_potential.gradient(adhesion_collision_set, collision_mesh, displaced_surface);
-
+				
 				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
 
 				assert(forces_reshaped.rows() == surface_displacements.rows());
@@ -2081,7 +2081,7 @@ namespace polyfem::io
 			{
 				ipc::TangentialCollisions tangential_collision_set;
 				tangential_collision_set.build(
-					collision_mesh, displaced_surface, collision_set,
+					collision_mesh, displaced_surface, adhesion_collision_set,
 					normal_adhesion_potential, 1, tangential_adhesion_coefficient);
 
 				ipc::TangentialAdhesionPotential tangential_adhesion_potential(epsa);
