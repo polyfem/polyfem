@@ -1982,8 +1982,8 @@ namespace polyfem::io
 		const double dhat = state.args["contact"]["dhat"];
 		const double friction_coefficient = state.args["contact"]["friction_coefficient"];
 
-		double global_static_friction_coefficient = state.args["contact"].contains("static_friction_coefficient") ? state.args["contact"]["static_friction_coefficient"]["global"] : friction_coefficient;
-		double global_kinetic_friction_coefficient = state.args["contact"].contains("kinetic_friction_coefficient") ? state.args["contact"]["kinetic_friction_coefficient"]["global"] : friction_coefficient;
+		double global_static_friction_coefficient = state.args["contact"].contains("static_friction_coefficient") ? state.args["contact"]["static_friction_coefficient"]["global"].get<double>()  : friction_coefficient;
+		double global_kinetic_friction_coefficient = state.args["contact"].contains("kinetic_friction_coefficient") ? state.args["contact"]["kinetic_friction_coefficient"]["global"].get<double>()  : friction_coefficient;
 		double static_friction_coefficient = global_static_friction_coefficient;
 		double kinetic_friction_coefficient = global_kinetic_friction_coefficient;
 
@@ -1997,8 +1997,8 @@ namespace polyfem::io
 			for (const auto &pair : pairwise_static)
 			{
 				const auto &ids = pair["ids"];
-				int id0 = (ids[0] == "all") ? -1 : ids[0];
-				int id1 = (ids[1] == "all") ? -1 : ids[1];
+				int id0 = (ids[0] == "all") ? -1 : ids[0].get<int>();
+				int id1 = (ids[1] == "all") ? -1 : ids[1].get<int>();
 				double static_friction_value = pair["value"];
 
 				pairwise_friction_[std::make_tuple(id0, id1)].first = static_friction_value;
@@ -2013,8 +2013,8 @@ namespace polyfem::io
 			for (const auto &pair : pairwise_kinetic)
 			{
 				const auto &ids = pair["ids"];
-				int id0 = (ids[0] == "all") ? -1 : ids[0];
-				int id1 = (ids[1] == "all") ? -1 : ids[1];
+				int id0 = (ids[0] == "all") ? -1 : ids[0].get<int>();
+				int id1 = (ids[1] == "all") ? -1 : ids[1].get<int>();
 				double kinetic_friction_value = pair["value"];
 
 				// Update or insert the kinetic friction value

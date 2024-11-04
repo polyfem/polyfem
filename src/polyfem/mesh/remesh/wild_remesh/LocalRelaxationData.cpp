@@ -253,12 +253,14 @@ namespace polyfem::mesh
 		{
 			POLYFEM_REMESHER_SCOPED_TIMER("LocalRelaxationData::init_solve_data -> init forms");
 
+			friction_coefficient = state.args["contact"]["friction_coefficient"].get<double>();
+
 			double global_static_friction_coefficient = state.args["contact"].contains("static_friction_coefficient")
-				? state.args["contact"]["static_friction_coefficient"]["global"]
+				? state.args["contact"]["static_friction_coefficient"]["global"].get<double>()
 				: friction_coefficient;
 
 			double global_kinetic_friction_coefficient = state.args["contact"].contains("kinetic_friction_coefficient")
-				? state.args["contact"]["kinetic_friction_coefficient"]["global"]
+				? state.args["contact"]["kinetic_friction_coefficient"]["global"].get<double>()
 				: friction_coefficient;
 
 			double static_friction_coefficient = global_static_friction_coefficient;

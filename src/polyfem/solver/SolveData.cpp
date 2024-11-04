@@ -95,7 +95,7 @@ namespace polyfem::solver
 		const double friction_coefficient,
 		const double static_friction_coefficient,
 		const double kinetic_friction_coefficient,
-		const std::map<std::tuple<int, int>, std::pair<double, double>> pairwise_friction_;
+		const std::map<std::tuple<int, int>, std::pair<double, double>> pairwise_friction_,
 		const double epsv,
 		const int friction_iterations,
 

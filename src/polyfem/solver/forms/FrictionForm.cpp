@@ -6,11 +6,38 @@
 
 namespace polyfem::solver
 {
+
 	FrictionForm::FrictionForm(
 		const ipc::CollisionMesh &collision_mesh,
 		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator,
 		const double epsv,
 		const double mu,
+		const ipc::BroadPhaseMethod broad_phase_method,
+		const ContactForm &contact_form,
+		const int n_lagging_iters)
+		: collision_mesh_(collision_mesh),
+		  time_integrator_(time_integrator),
+		  epsv_(epsv),
+		  mu_(mu),
+		  global_static_mu_(mu),
+      	  global_kinetic_mu_(mu),
+      	  pairwise_friction_(std::map<std::tuple<int, int>, std::pair<double, double>>()),
+		  broad_phase_method_(broad_phase_method),
+		  n_lagging_iters_(n_lagging_iters < 0 ? std::numeric_limits<int>::max() : n_lagging_iters),
+		  contact_form_(contact_form),
+		  friction_potential_(epsv)
+	{
+		assert(epsv_ > 0);
+	}
+
+	FrictionForm::FrictionForm(
+		const ipc::CollisionMesh &collision_mesh,
+		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator,
+		const double epsv,
+		const double mu,
+		const double global_static_mu,
+		const double global_kinetic_mu,
+		const std::map<std::tuple<int, int>, std::pair<double, double>> &pairwise_friction_,
 		const ipc::BroadPhaseMethod broad_phase_method,
 		const ContactForm &contact_form,
 		const int n_lagging_iters)
@@ -137,8 +164,14 @@ namespace polyfem::solver
 		collision_set.build(
 			collision_mesh_, displaced_surface, contact_form_.dhat(), /*dmin=*/0, broad_phase_method_);
 
-		friction_collision_set_.build(
-			collision_mesh_, displaced_surface, collision_set,
-			contact_form_.barrier_potential(), contact_form_.barrier_stiffness(), mu_, global_static_mu_, global_kinetic_mu_, pairwise_friction_);
+		try {
+			friction_collision_set_.build(
+				collision_mesh_, displaced_surface, collision_set,
+				contact_form_.barrier_potential(), contact_form_.barrier_stiffness(), mu_, global_static_mu_, global_kinetic_mu_, pairwise_friction_);
+		} catch (const std::exception &e) {
+			friction_collision_set_.build(
+					collision_mesh_, displaced_surface, collision_set,
+					contact_form_.barrier_potential(), contact_form_.barrier_stiffness(), mu_);
+		}
 	}
 } // namespace polyfem::solver

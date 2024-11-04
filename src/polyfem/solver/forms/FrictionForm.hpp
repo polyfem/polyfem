@@ -23,6 +23,24 @@ namespace polyfem::solver
 		/// @param time_integrator Pointer to the time integrator
 		/// @param epsv Smoothing factor between static and dynamic friction
 		/// @param mu Global coefficient of friction
+		/// @param dhat Barrier activation distance
+		/// @param broad_phase_method Broad-phase method used for distance computation and collision detection
+		/// @param contact_form Pointer to contact form; necessary to have the barrier stiffnes, maybe clean me
+		/// @param n_lagging_iters Number of lagging iterations
+		FrictionForm(
+			const ipc::CollisionMesh &collision_mesh,
+			const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator,
+			const double epsv,
+			const double mu,
+			const ipc::BroadPhaseMethod broad_phase_method,
+			const ContactForm &contact_form,
+			const int n_lagging_iters);
+	
+		/// @brief Construct a new Friction Form object
+		/// @param collision_mesh Reference to the collision mesh
+		/// @param time_integrator Pointer to the time integrator
+		/// @param epsv Smoothing factor between static and dynamic friction
+		/// @param mu Global coefficient of friction
 		/// @param global_static_mu Global static friction coefficient
 		/// @param global_kinetic_mu Global kinetic friction coefficient
 		/// @param pairwise_friction_ Map of pairwise friction coefficients (static and kinetic)
