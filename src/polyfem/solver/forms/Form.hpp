@@ -3,6 +3,8 @@
 #include <polyfem/utils/Types.hpp>
 #include <polysolve/nonlinear/PostStepData.hpp>
 
+#include <ipc/utils/eigen_ext.hpp>
+
 #include <filesystem>
 
 namespace polyfem::solver
@@ -106,10 +108,10 @@ namespace polyfem::solver
 
 		/// @brief Set project to psd
 		/// @param val If true, the form's second derivative is projected to be positive semidefinite
-		void set_project_to_psd(bool val) { project_to_psd_ = val; }
+		void set_project_to_psd(ipc::PSDProjectionMethod val) { project_to_psd_ = val; }
 
 		/// @brief Get if the form's second derivative is projected to psd
-		bool is_project_to_psd() const { return project_to_psd_; }
+		ipc::PSDProjectionMethod is_project_to_psd() const { return project_to_psd_; }
 
 		/// @brief Enable the form
 		void enable() { enabled_ = true; }
@@ -143,7 +145,7 @@ namespace polyfem::solver
 		void set_output_dir(const std::string &output_dir) { output_dir_ = output_dir; }
 
 	protected:
-		bool project_to_psd_ = false; ///< If true, the form's second derivative is projected to be positive semidefinite
+		ipc::PSDProjectionMethod project_to_psd_ = ipc::PSDProjectionMethod::NONE; ///< If true, the form's second derivative is projected to be positive semidefinite
 
 		double weight_ = 1; ///< weight of the form (e.g., AL penalty weight or Δt²)
 

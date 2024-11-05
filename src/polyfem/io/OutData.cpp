@@ -2042,7 +2042,7 @@ namespace polyfem::io
 			const Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(full_displacements);
 
 			ipc::Collisions collision_set;
-			collision_set.set_use_convergent_formulation(state.args["contact"]["use_convergent_formulation"]);
+			collision_set.set_use_area_weighting(state.args["contact"]["use_convergent_formulation"]);
 			collision_set.build(
 				collision_mesh, displaced_surface, dhat,
 				/*dmin=*/0, state.args["solver"]["contact"]["CCD"]["broad_phase"]);
@@ -2068,7 +2068,7 @@ namespace polyfem::io
 				ipc::FrictionCollisions friction_collision_set;
 				friction_collision_set.build(
 					collision_mesh, displaced_surface, collision_set,
-					barrier_potential, barrier_stiffness,
+					barrier_potential, barrier_stiffness, friction_coefficient,
 					static_friction_coefficient, kinetic_friction_coefficient, pairwise_friction_);
 
 				ipc::FrictionPotential friction_potential(epsv);

@@ -1,4 +1,6 @@
 #include "FullNLProblem.hpp"
+#include <ipc/utils/eigen_ext.hpp>
+
 
 namespace polyfem::solver
 {
@@ -13,7 +15,7 @@ namespace polyfem::solver
 			f->init(x);
 	}
 
-	void FullNLProblem::set_project_to_psd(bool project_to_psd)
+	void FullNLProblem::set_project_to_psd(ipc::PSDProjectionMethod project_to_psd)
 	{
 		for (auto &f : forms_)
 			f->set_project_to_psd(project_to_psd);

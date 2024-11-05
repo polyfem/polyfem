@@ -132,7 +132,7 @@ namespace polyfem::solver
 		/// @brief Get use_adaptive_barrier_stiffness
 		bool use_adaptive_barrier_stiffness() const { return use_adaptive_barrier_stiffness_; }
 		/// @brief Get use_convergent_formulation
-		bool use_convergent_formulation() const { return collision_set_.use_convergent_formulation(); }
+		bool use_convergent_formulation() const { return collision_set_.use_area_weighting(); }
 
 		bool enable_shape_derivatives() const { return enable_shape_derivatives_; }
 

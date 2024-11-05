@@ -3,6 +3,8 @@
 #include <polyfem/solver/forms/Form.hpp>
 #include <polysolve/nonlinear/Problem.hpp>
 
+#include <ipc/utils/eigen_ext.hpp>
+
 #include <memory>
 #include <vector>
 
@@ -27,7 +29,7 @@ namespace polyfem::solver
 		virtual void line_search_end() override;
 		virtual void post_step(const polysolve::nonlinear::PostStepData &data) override;
 
-		virtual void set_project_to_psd(bool val) override;
+		virtual void set_project_to_psd(ipc::PSDProjectionMethod project_to_psd) override;
 
 		virtual void solution_changed(const TVector &new_x) override;
 
