@@ -9,23 +9,9 @@
 #include <polyfem/utils/Jacobian.hpp>
 #include <polyfem/utils/Types.hpp>
 
-namespace polyfem
-{
-	class State;
-}
-
 namespace polyfem::solver
 {
 	using ElementInversionCheck = std::string;
-	// enum class ElementInversionCheck { Discrete, Conservative, Transient };
-	// NLOHMANN_JSON_SERIALIZE_ENUM(
-	// 	polyfem::solver::ElementInversionCheck,
-	// 	{{polyfem::solver::"Discrete", "discrete"},
-	// 	{polyfem::solver::ElementInversionCheck::Conservative, "conservative"},
-	// 	{polyfem::solver::ElementInversionCheck::Transient, "transient"},
-	// 	{polyfem::solver::"Discrete", 0},
-	// 	{polyfem::solver::ElementInversionCheck::Conservative, 1},
-	// 	{polyfem::solver::ElementInversionCheck::Transient, 2}})
 
 	/// @brief Form of the elasticity potential and forces
 	class ElasticForm : public Form
@@ -113,8 +99,6 @@ namespace polyfem::solver
 
 		/// @brief Reset adaptive quadrature refinement after each complete nonlinear solve.
 		void finish() override;
-
-		State* state;
 
 	private:
 		const int n_bases_;

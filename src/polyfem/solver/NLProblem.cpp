@@ -2,17 +2,6 @@
 
 #include <polyfem/io/OBJWriter.hpp>
 
-#include <polyfem/assembler/ElementAssemblyValues.hpp>
-#include <paraviewo/ParaviewWriter.hpp>
-#include <paraviewo/VTUWriter.hpp>
-#include <paraviewo/HDF5VTUWriter.hpp>
-
-#include <polyfem/utils/Rational.hpp>
-#include <polyfem/io/Evaluator.hpp>
-
-#include <polyfem/utils/MaybeParallelFor.hpp>
-#include <polyfem/utils/MatrixUtils.hpp>
-
 /*
 m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\newline
 u^{t+1} = u(t+\Delta t)\approx u(t) + \Delta t \dot u + \frac{\Delta t^2} 2 \ddot u \newline

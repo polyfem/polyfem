@@ -935,6 +935,7 @@
             "B",
             "h1_formula",
             "count_flipped_els",
+            "count_flipped_els_continuous",
             "use_particle_advection"
         ],
         "doc": "Advanced settings for the FE space."
@@ -1014,6 +1015,12 @@
         "default": true,
         "type": "bool",
         "doc": "Count the number of elements with Jacobian of the geometric map not positive at quadrature points."
+    },
+    {
+        "pointer": "/space/advanced/count_flipped_els_continuous",
+        "default": true,
+        "type": "bool",
+        "doc": "Count the number of elements with Jacobian of the geometric map not positive at any point."
     },
     {
         "pointer": "/space/advanced/use_particle_advection",
@@ -1532,12 +1539,6 @@
         "doc": "The method for checking if any element is flipped."
     },
     {
-        "pointer": "/solver/advanced/count_flipped_els",
-        "type": "bool",
-        "default": false,
-        "doc": "Use a robust method to count the number of flipped elements."
-    },
-    {
         "pointer": "/solver/advanced/jacobian_threshold",
         "type": "float",
         "default": 0,
@@ -1553,7 +1554,6 @@
             "lagged_regularization_weight",
             "lagged_regularization_iterations",
             "check_inversion",
-            "count_flipped_els",
             "jacobian_threshold"
         ],
         "doc": "Advanced settings for the solver"

@@ -210,7 +210,7 @@ namespace polyfem
 		damping_assembler = std::make_shared<assembler::ViscousDamping>();
 		set_materials(*damping_assembler);
 
-		// elasticity_pressure_assembler = build_pressure_assembler();
+		elasticity_pressure_assembler = build_pressure_assembler();
 
 		// for backward solve
 		damping_prev_assembler = std::make_shared<assembler::ViscousDampingPrev>();
@@ -269,7 +269,6 @@ namespace polyfem
 		solve_data.nl_problem = std::make_shared<NLProblem>(
 			ndof, boundary_nodes, local_boundary, n_boundary_samples(),
 			*solve_data.rhs_assembler, periodic_bc, t, forms);
-		solve_data.nl_problem->state = this;
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
 		// --------------------------------------------------------------------
@@ -330,7 +329,7 @@ namespace polyfem
 		nl_solver = make_nl_solver(false);
 		al_solver.solve_reduced(nl_solver, nl_problem, sol);
 
-		if (args["solver"]["advanced"]["count_flipped_els"])
+		if (args["space"]["advanced"]["count_flipped_els_continuous"])
 		{
 			const auto invalidList = count_invalid(mesh->dimension(), bases, geom_bases(), sol);
 			logger().debug("Flipped elements (cnt {}) : {}", invalidList.size(), invalidList);

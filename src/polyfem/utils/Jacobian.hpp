@@ -96,14 +96,14 @@ namespace polyfem::utils
         const std::vector<basis::ElementBases> &gbases,
         const Eigen::VectorXd &u);
 
-    std::tuple<bool, int, Tree> isValid(
+    std::tuple<bool, int, Tree> is_valid(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
         const std::vector<basis::ElementBases> &gbases,
         const Eigen::VectorXd &u,
         const double threshold = 0);
 
-    bool isValid(
+    bool is_valid(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
         const std::vector<basis::ElementBases> &gbases,

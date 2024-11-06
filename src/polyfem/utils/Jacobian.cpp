@@ -111,7 +111,7 @@ namespace polyfem::utils
         #define CHECK_STATIC(n,s,p) \
             case p: { \
                 StaticValidator<n,s,p> check(16 /*no. of threads*/); \
-                check.isValid(cp, nullptr, nullptr, &invalidList); \
+                check.is_valid(cp, nullptr, nullptr, &invalidList); \
                 break; \
             }
 
@@ -140,7 +140,7 @@ namespace polyfem::utils
     }
 
     std::tuple<bool, int, Tree>
-    isValid(
+    is_valid(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
         const std::vector<basis::ElementBases> &gbases, 
@@ -159,7 +159,7 @@ namespace polyfem::utils
             case p: { \
                 std::vector<unsigned> hierarchy; \
                 StaticValidator<n,s,p> check(16 /*no. of threads*/); \
-                const auto flag_ = check.isValid(cp, &hierarchy, &invalid_id); \
+                const auto flag_ = check.is_valid(cp, &hierarchy, &invalid_id); \
                 flag = flag_ == Validity::valid; \
                 if (!flag) { \
                     Tree *dst = &tree; \
@@ -195,7 +195,7 @@ namespace polyfem::utils
         return {flag, invalid_id, tree};
     }
 
-    bool isValid(
+    bool is_valid(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
         const std::vector<basis::ElementBases> &gbases, 

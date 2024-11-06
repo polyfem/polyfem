@@ -384,7 +384,7 @@ namespace polyfem::solver
 
 				// if (step > 0) {
 				// 	const Eigen::VectorXd xmid = x0 + (x1 - x0) * step;
-				// 	const auto [isvalid, id, tree] = isValid(dim, bases_, geom_bases_, xmid);
+				// 	const auto [isvalid, id, tree] = is_valid(dim, bases_, geom_bases_, xmid);
 				// 	if (!isvalid)
 				// 	{
 				// 		logger().error("Element {} is invalid!", id);
@@ -450,10 +450,10 @@ namespace polyfem::solver
 		if (check_inversion_ == "Discrete")
 			return true;
 
-		const auto [isvalid, id, tree] = isValid(is_volume_ ? 3 : 2, bases_, geom_bases_, x1);
+		const auto [isvalid, id, tree] = is_valid(is_volume_ ? 3 : 2, bases_, geom_bases_, x1);
 		return isvalid;
 
-		// const auto [isvalid, id, tree] = isValid(is_volume_ ? 3 : 2, bases_, geom_bases_, x1);
+		// const auto [isvalid, id, tree] = is_valid(is_volume_ ? 3 : 2, bases_, geom_bases_, x1);
 
 		// return isvalid;
 	}
