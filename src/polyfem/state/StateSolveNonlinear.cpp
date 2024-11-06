@@ -21,6 +21,7 @@
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/utils/BoundarySampler.hpp>
 
 #include <ipc/ipc.hpp>
 

@@ -111,6 +111,8 @@ namespace polyfem::solver
 		NodeTargetForm(const State &state, const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_);
 		~NodeTargetForm() = default;
 
+		std::string name() const override { return "node-target"; }
+
 		Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
 		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
 		void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
@@ -134,5 +136,54 @@ namespace polyfem::solver
 	private:
 		std::vector<std::unique_ptr<PositionForm>> center1, center2;
 		int dim;
+	};
+
+	class MinTargetDistForm : public AdjointForm
+	{
+	public:
+		MinTargetDistForm(const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &steps, const Eigen::VectorXd &target, const json &args, const std::shared_ptr<State> &state);
+		virtual ~MinTargetDistForm() = default;
+
+		Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const override;
+		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+
+	protected:
+		double value_unweighted(const Eigen::VectorXd &x) const override;
+
+	private:
+		static double eval1(Eigen::VectorXd &x)
+		{
+			return 1. / x.array().inverse().sum();
+		}
+		static Eigen::VectorXd eval1_grad(Eigen::VectorXd &x)
+		{
+			return x.array().pow(-2.0) * pow(eval1(x), 2);
+		}
+
+		double eval2(Eigen::VectorXd &x) const
+		{
+			assert(x.size() == dim+1);
+			double out = 0;
+			for (int d = 0; d < dim; d++)
+				out += pow(x(d) / x(dim) - target_(d), 2);
+			return out;
+		}
+		Eigen::VectorXd eval2_grad(Eigen::VectorXd &x) const
+		{
+			Eigen::VectorXd g = Eigen::VectorXd::Zero(dim + 1);
+			for (int d = 0; d < dim; d++)
+			{
+				const double tmp = 2 * (x(d) / x(dim) - target_(d));
+				g(d) += tmp / x(dim);
+				g(dim) += tmp * (-x(d) / x(dim) / x(dim));
+			}
+			return g;
+		}
+
+		const std::vector<int> steps_;
+		const Eigen::VectorXd target_;
+
+		int dim;
+		std::vector<std::unique_ptr<StaticForm>> objs;
 	};
 } // namespace polyfem::solver

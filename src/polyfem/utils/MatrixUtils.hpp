@@ -18,8 +18,8 @@ namespace polyfem
 			return (A.array() * B.array()).sum(); 
 		}
 
-		template <typename T>
-		T determinant(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> &mat)
+		template <typename T, int rows, int cols, int option, int maxRow, int maxCol>
+		T determinant(const Eigen::Matrix<T, rows, cols, option, maxRow, maxCol> &mat)
 		{
 			assert(mat.rows() == mat.cols());
 

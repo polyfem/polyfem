@@ -15,7 +15,7 @@ namespace polyfem::solver
 	public:
 		VariableToNodes(const State &state);
 		virtual ~VariableToNodes() {}
-		virtual void set_output_indexing(const std::vector<int> node_ids) final;
+		virtual void set_output_indexing(const std::vector<int> &node_ids) final;
 		const Eigen::VectorXi &get_output_indexing() const { return output_indexing_; }
 
 	protected:
@@ -27,13 +27,13 @@ namespace polyfem::solver
 	class VariableToInteriorNodes : public VariableToNodes
 	{
 	public:
-		VariableToInteriorNodes(const State &state, const int volume_selection);
+		VariableToInteriorNodes(const State &state, const std::vector<int> &volume_selection);
 	};
 
 	class VariableToBoundaryNodes : public VariableToNodes
 	{
 	public:
-		VariableToBoundaryNodes(const State &state, const int surface_selection);
+		VariableToBoundaryNodes(const State &state, const std::vector<int> &surface_selection);
 	};
 
 	class VariableToBoundaryNodesExclusive : public VariableToNodes

@@ -94,6 +94,8 @@ namespace polyfem
 
 			else if (formulation == "AMIPS")
 				return std::make_shared<AMIPSEnergy>();
+			else if (formulation == "AMIPSAutodiff")
+				return std::make_shared<AMIPSEnergyAutodiff>();
 			else if (formulation == "FixedCorotational")
 				return std::make_shared<FixedCorotational>();
 
