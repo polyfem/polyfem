@@ -33,8 +33,8 @@ namespace polyfem
 				return false;
 			}
 
-			virtual RowVectorNd edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const = 0;
-			virtual RowVectorNd face_node(const Navigation::Index &index, const int n_new_nodes, const int i, const int j) const = 0;
+			virtual std::pair<RowVectorNd, int> edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const = 0;
+			virtual std::pair<RowVectorNd, int> face_node(const Navigation::Index &index, const int n_new_nodes, const int i, const int j) const = 0;
 
 			RowVectorNd cell_barycenter(const int index) const override
 			{
