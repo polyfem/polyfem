@@ -69,7 +69,6 @@ namespace polyfem::solver
 			const assembler::AssemblyValsCache &mass_ass_vals_cache,
 			const double jacobian_threshold,
 			const solver::ElementInversionCheck check_inversion,
-			const solver::QuadratureRefinementScheme refine_scheme,
 
 			// Body form
 			const int n_pressure_bases,

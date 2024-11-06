@@ -1532,12 +1532,6 @@
         "doc": "The method for checking if any element is flipped."
     },
     {
-        "pointer": "/solver/advanced/conservative_jacobian",
-        "type": "bool",
-        "default": false,
-        "doc": "Use the conservative jacobian evaluation in elastic assemblers."
-    },
-    {
         "pointer": "/solver/advanced/count_flipped_els",
         "type": "bool",
         "default": false,
@@ -1550,15 +1544,6 @@
         "doc": "."
     },
     {
-        "pointer": "/solver/advanced/quadrature_refinement",
-        "type": "string",
-        "default": "H",
-        "options": [
-            "H"
-        ],
-        "doc": "The scheme for refining quadrature rules."
-    },
-    {
         "pointer": "/solver/advanced",
         "default": null,
         "type": "object",
@@ -1568,9 +1553,7 @@
             "lagged_regularization_weight",
             "lagged_regularization_iterations",
             "check_inversion",
-            "conservative_jacobian",
             "count_flipped_els",
-            "quadrature_refinement",
             "jacobian_threshold"
         ],
         "doc": "Advanced settings for the solver"

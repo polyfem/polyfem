@@ -2793,21 +2793,21 @@ namespace polyfem
 		{
 			switch (p)
 			{
-			// case 0:
-			// 	p_0_nodes_3d(val);
-			// 	break;
-			// case 1:
-			// 	p_1_nodes_3d(val);
-			// 	break;
-			// case 2:
-			// 	p_2_nodes_3d(val);
-			// 	break;
-			// case 3:
-			// 	p_3_nodes_3d(val);
-			// 	break;
-			// case 4:
-			// 	p_4_nodes_3d(val);
-			// 	break;
+			case 0:
+				p_0_nodes_3d(val);
+				break;
+			case 1:
+				p_1_nodes_3d(val);
+				break;
+			case 2:
+				p_2_nodes_3d(val);
+				break;
+			case 3:
+				p_3_nodes_3d(val);
+				break;
+			case 4:
+				p_4_nodes_3d(val);
+				break;
 			default:
 				p_n_nodes_3d(p, val);
 			}
@@ -2816,21 +2816,21 @@ namespace polyfem
 		{
 			switch (p)
 			{
-			// case 0:
-			// 	p_0_basis_value_3d(local_index, uv, val);
-			// 	break;
-			// case 1:
-			// 	p_1_basis_value_3d(local_index, uv, val);
-			// 	break;
-			// case 2:
-			// 	p_2_basis_value_3d(local_index, uv, val);
-			// 	break;
-			// case 3:
-			// 	p_3_basis_value_3d(local_index, uv, val);
-			// 	break;
-			// case 4:
-			// 	p_4_basis_value_3d(local_index, uv, val);
-			// 	break;
+			case 0:
+				p_0_basis_value_3d(local_index, uv, val);
+				break;
+			case 1:
+				p_1_basis_value_3d(local_index, uv, val);
+				break;
+			case 2:
+				p_2_basis_value_3d(local_index, uv, val);
+				break;
+			case 3:
+				p_3_basis_value_3d(local_index, uv, val);
+				break;
+			case 4:
+				p_4_basis_value_3d(local_index, uv, val);
+				break;
 			default:
 				p_n_basis_value_3d(p, local_index, uv, val);
 			}
@@ -2840,21 +2840,21 @@ namespace polyfem
 		{
 			switch (p)
 			{
-			// case 0:
-			// 	p_0_basis_grad_value_3d(local_index, uv, val);
-			// 	break;
-			// case 1:
-			// 	p_1_basis_grad_value_3d(local_index, uv, val);
-			// 	break;
-			// case 2:
-			// 	p_2_basis_grad_value_3d(local_index, uv, val);
-			// 	break;
-			// case 3:
-			// 	p_3_basis_grad_value_3d(local_index, uv, val);
-			// 	break;
-			// case 4:
-			// 	p_4_basis_grad_value_3d(local_index, uv, val);
-			// 	break;
+			case 0:
+				p_0_basis_grad_value_3d(local_index, uv, val);
+				break;
+			case 1:
+				p_1_basis_grad_value_3d(local_index, uv, val);
+				break;
+			case 2:
+				p_2_basis_grad_value_3d(local_index, uv, val);
+				break;
+			case 3:
+				p_3_basis_grad_value_3d(local_index, uv, val);
+				break;
+			case 4:
+				p_4_basis_grad_value_3d(local_index, uv, val);
+				break;
 			default:
 				p_n_basis_grad_value_3d(p, local_index, uv, val);
 			}

@@ -17,7 +17,6 @@ namespace polyfem
 namespace polyfem::solver
 {
 	using ElementInversionCheck = std::string;
-	using QuadratureRefinementScheme = std::string;
 	// enum class ElementInversionCheck { Discrete, Conservative, Transient };
 	// NLOHMANN_JSON_SERIALIZE_ENUM(
 	// 	polyfem::solver::ElementInversionCheck,
@@ -27,14 +26,6 @@ namespace polyfem::solver
 	// 	{polyfem::solver::"Discrete", 0},
 	// 	{polyfem::solver::ElementInversionCheck::Conservative, 1},
 	// 	{polyfem::solver::ElementInversionCheck::Transient, 2}})
-
-	// enum class QuadratureRefinementScheme { H, P };
-	// NLOHMANN_JSON_SERIALIZE_ENUM(
-	// 	polyfem::solver::QuadratureRefinementScheme,
-	// 	{{polyfem::solver::QuadratureRefinementScheme::H, "H"},
-	// 	{polyfem::solver::"P", "P"},
-	// 	{polyfem::solver::QuadratureRefinementScheme::H, 0},
-	// 	{polyfem::solver::"P", 1}})
 
 	/// @brief Form of the elasticity potential and forces
 	class ElasticForm : public Form
@@ -50,8 +41,7 @@ namespace polyfem::solver
 					const double t, const double dt,
 					const bool is_volume,
 					const double jacobian_threshold,
-					const ElementInversionCheck check_inversion,
-					const QuadratureRefinementScheme quad_scheme);
+					const ElementInversionCheck check_inversion);
 
 		std::string name() const override { return "elastic"; }
 
@@ -136,7 +126,6 @@ namespace polyfem::solver
 		double t_;
 		const double jacobian_threshold_;
 		const ElementInversionCheck check_inversion_;
-		const QuadratureRefinementScheme quad_scheme_;
 		const double dt_;
 		const bool is_volume_;
 

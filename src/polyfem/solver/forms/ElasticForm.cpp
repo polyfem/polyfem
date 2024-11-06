@@ -8,18 +8,7 @@
 #include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
-#include <polyfem/utils/getRSS.h>
 #include <polyfem/assembler/ViscousDamping.hpp>
-
-#include <paraviewo/ParaviewWriter.hpp>
-#include <paraviewo/VTUWriter.hpp>
-#include <paraviewo/HDF5VTUWriter.hpp>
-#include <polyfem/utils/Rational.hpp>
-
-#include <igl/writeMSH.h>
-#include <igl/writeOBJ.h>
-
-#include <polyfem/State.hpp>
 
 using namespace polyfem::assembler;
 using namespace polyfem::utils;
@@ -279,8 +268,7 @@ namespace polyfem::solver
 							 const double t, const double dt,
 							 const bool is_volume,
 							 const double jacobian_threshold,
-							 const ElementInversionCheck check_inversion,
-							 const QuadratureRefinementScheme quad_scheme)
+							 const ElementInversionCheck check_inversion)
 		: n_bases_(n_bases),
 		  bases_(bases),
 		  geom_bases_(geom_bases),
@@ -289,7 +277,6 @@ namespace polyfem::solver
 		  t_(t),
 		  jacobian_threshold_(jacobian_threshold),
 		  check_inversion_(check_inversion),
-		  quad_scheme_(quad_scheme),
 		  dt_(dt),
 		  is_volume_(is_volume)
 	{
@@ -301,7 +288,7 @@ namespace polyfem::solver
 
 		quadrature_order_ = AssemblerUtils::quadrature_order(assembler_.name(), bases_[0].bases[0].order(), AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, is_volume_ ? 3 : 2);
 
-		logger().debug("Check inversion: {}, Quadrature refinement: {}", check_inversion_, quad_scheme_);
+		logger().debug("Check inversion: {}", check_inversion_);
 	
 		if (check_inversion_ != "Discrete")
 		{
@@ -451,8 +438,6 @@ namespace polyfem::solver
 					// 		std::terminate();
 					// }
 				}
-
-				logger().debug("Peak memory: {} GB", getPeakRSS() / (1024. * 1024 * 1024));
 			}
 
 			return step;

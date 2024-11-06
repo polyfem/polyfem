@@ -38,8 +38,6 @@ bool load_json(const std::string &json_file, json &out)
 	return true;
 }
 
-std::string hdf5_out = "";
-
 bool load_yaml(const std::string &yaml_file, json &out)
 {
 	try
@@ -90,8 +88,6 @@ int main(int argc, char **argv)
 
 	std::string yaml_file = "";
 	input->add_option("-y,--yaml", yaml_file, "Simulation YAML file")->check(CLI::ExistingFile);
-
-	command_line.add_option("--out", hdf5_out, "Out hdf5 file");
 
 	std::string hdf5_file = "";
 	input->add_option("--hdf5", hdf5_file, "Simulation HDF5 file")->check(CLI::ExistingFile);
@@ -216,9 +212,6 @@ int forward_simulation(const CLI::App &command_line,
 	Eigen::MatrixXd sol;
 	Eigen::MatrixXd pressure;
 
-	if (hdf5_out != "")
-		state.hdf5_outpath = hdf5_out;
-
 	state.solve_problem(sol, pressure);
 
 	state.compute_errors(sol);
@@ -227,12 +220,6 @@ int forward_simulation(const CLI::App &command_line,
 
 	state.save_json(sol);
 	state.export_data(sol, pressure);
-
-	// if (hdf5_out != "")
-	// 	if (state.problem->is_time_dependent())
-	// 		state.dump_basis_nodes_transient(hdf5_out);
-	// 	else
-	// 		state.dump_basis_nodes(hdf5_out, sol);
 
 	return EXIT_SUCCESS;
 }

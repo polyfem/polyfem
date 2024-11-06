@@ -1,4 +1,4 @@
-# Robust Bezier subdivision (https://gitlab.com/fsichetti/robust-bezier-subdivision)
+# Robust Bezier subdivision (git@github.com:fsichetti/bezier)
 # License: MIT
 
 if(TARGET bezier)
@@ -19,4 +19,4 @@ if (EIGEN_INTERFACE)
 endif()
 
 include(CPM)
-CPMAddPackage("https://gitlab.com/fsichetti/robust-bezier-subdivision.git#dd446f5da143591c8ddf7e3d9f0e6dd88bf13983")
+CPMAddPackage("gh:fsichetti/bezier#b228826148fd2a68b7adc080db447a117e2345d9")

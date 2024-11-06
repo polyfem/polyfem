@@ -40,7 +40,6 @@ namespace polyfem::solver
 		virtual bool is_step_valid(const TVector &x0, const TVector &x1) override;
 		virtual bool is_step_collision_free(const TVector &x0, const TVector &x1) override;
 		virtual double max_step_size(const TVector &x0, const TVector &x1) override;
-		void before_line_search(const TVector &x0, const TVector &x1) override;
 		void line_search_begin(const TVector &x0, const TVector &x1) override;
 		virtual void post_step(const polysolve::nonlinear::PostStepData &data) override;
 

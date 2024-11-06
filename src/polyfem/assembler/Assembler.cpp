@@ -6,7 +6,6 @@
 #include <igl/Timer.h>
 
 #include <ipc/utils/eigen_ext.hpp>
-// #include <jacobian/element_validity.hpp>
 
 namespace polyfem::assembler
 {
@@ -610,23 +609,6 @@ namespace polyfem::assembler
 
 				const auto val = assemble_gradient(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, local_storage.da));
 				assert(val.size() == n_loc_bases * size());
-
-				// if (val.array().isNaN().any())
-				// {
-				// 	const int order = bases[e].bases[0].order();
-				// 	const int dim = is_volume ? 3 : 2;
-				// 	Eigen::MatrixXd cp = Eigen::MatrixXd::Zero(bases[e].bases.size(), dim);
-				// 	for (int i = 0; i < bases[e].bases.size(); ++i)
-				// 	{
-				// 		const auto &g = bases[e].bases[i].global()[0];
-				// 		cp.row(i) = g.node + displacement.block(g.index * dim, 0, dim, 1).transpose();
-				// 	}
-				// 	if ((is_volume && element_validity::isValid<3>(cp, element_validity::shapes::TETRAHEDRON, order)) || 
-				// 		(!is_volume && element_validity::isValid<2>(cp, element_validity::shapes::TRIANGLE, order)))
-				// 	{
-				// 		logger().warn("Wrong jacobian check! Dim {} order {} \n{}", is_volume ? 3 : 2, order, cp);
-				// 	}
-				// }
 
 				for (int j = 0; j < n_loc_bases; ++j)
 				{

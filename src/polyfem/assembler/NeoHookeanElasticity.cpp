@@ -1,9 +1,6 @@
 #include "NeoHookeanElasticity.hpp"
 
-#include <polyfem/utils/Jacobian.hpp>
 #include <polyfem/autogen/auto_elasticity_rhs.hpp>
-
-#include <type_traits>
 
 namespace polyfem::assembler
 {
@@ -13,39 +10,6 @@ namespace polyfem::assembler
 		{
 			return (i == j) ? true : false;
 		}
-
-		template <class T, int p = 3>
-		class barrier {
-			constexpr static double C = 1e2;
-		public:
-			static_assert(p % 2 == 1);
-			static T value(T J)
-			{
-				if (J >= 0.5)
-					return T(0.);
-				const T tmp1 = 2 * J - 1;
-				const T tmp2 = pow(tmp1, p);
-				return C * (1 / (tmp2 + 1) - 1);
-			}
-
-			static T first_derivatives(T J)
-			{
-				if (J >= 0.5)
-					return T(0);
-				const T tmp1 = 2 * J - 1;
-				const T tmp2 = pow(tmp1, p);
-				return C * -2 * p * tmp2 / tmp1 / pow(1 + tmp2, 2);
-			}
-
-			static T second_derivatives(T J)
-			{
-				if (J >= 0.5)
-					return T(0);
-				const T tmp1 = 2 * J - 1;
-				const T tmp2 = pow(tmp1, p);
-				return C * 4 * p * tmp2 / pow(tmp1, 2) * ((1 - p) + (1 + p) * tmp2) / pow(1 + tmp2, 3);
-			}
-		};
 	} // namespace
 
 	NeoHookeanElasticity::NeoHookeanElasticity()
@@ -342,92 +306,34 @@ namespace polyfem::assembler
 	template <typename T>
 	T NeoHookeanElasticity::compute_energy_aux(const NonLinearAssemblerData &data) const
 	{
-		if constexpr (std::is_same_v<T, double>)
+		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> AutoDiffVect;
+		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
+
+		AutoDiffVect local_disp;
+		get_local_disp(data, size(), local_disp);
+
+		AutoDiffGradMat def_grad(size(), size());
+
+		T energy = T(0.0);
+
+		const int n_pts = data.da.size();
+		for (long p = 0; p < n_pts; ++p)
 		{
-			Eigen::MatrixXd local_disp(data.vals.basis_values.size(), size());
-			local_disp.setZero();
-			for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
-			{
-				const auto &bs = data.vals.basis_values[i];
-				for (size_t ii = 0; ii < bs.global.size(); ++ii)
-				{
-					for (int d = 0; d < size(); ++d)
-					{
-						local_disp(i, d) += bs.global[ii].val * data.x(bs.global[ii].index * size() + d);
-					}
-				}
-			}
+			compute_disp_grad_at_quad(data, local_disp, p, size(), def_grad);
 
-			Eigen::VectorXd jacs;
-			if (use_robust_jacobian)
-				jacs = data.vals.eval_deformed_jacobian_determinant(data.x);
+			// Id + grad d
+			for (int d = 0; d < size(); ++d)
+				def_grad(d, d) += T(1);
 
-			Eigen::MatrixXd def_grad(size(), size());
+			double lambda, mu;
+			params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id, lambda, mu);
 
-			T energy = T(0.0);
+			const T log_det_j = log(polyfem::utils::determinant(def_grad));
+			const T val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) + lambda / 2 * log_det_j * log_det_j;
 
-			const int n_pts = data.da.size();
-			for (long p = 0; p < n_pts; ++p)
-			{
-				Eigen::MatrixXd grad(data.vals.basis_values.size(), size());
-
-				for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
-				{
-					grad.row(i) = data.vals.basis_values[i].grad.row(p);
-				}
-
-				const Eigen::MatrixXd jac_it = data.vals.jac_it[p];
-
-				// Id + grad d
-				def_grad = local_disp.transpose() * grad * jac_it + Eigen::MatrixXd::Identity(size(), size());
-
-				double lambda, mu;
-				params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id, lambda, mu);
-
-				const T J = use_robust_jacobian ? jacs(p) * jac_it.determinant() : def_grad.determinant();
-				const T log_det_j = log(J);
-				const T val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) + 
-								lambda / 2 * log_det_j * log_det_j + 
-								mu * barrier<double>::value(J);
-
-
-				energy += val * data.da(p);
-			}
-			return energy;
+			energy += val * data.da(p);
 		}
-		else
-		{
-			typedef Eigen::Matrix<T, Eigen::Dynamic, 1> AutoDiffVect;
-			typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
-
-			AutoDiffVect local_disp;
-			get_local_disp(data, size(), local_disp);
-
-			AutoDiffGradMat def_grad(size(), size());
-
-			T energy = T(0.0);
-
-			const int n_pts = data.da.size();
-			for (long p = 0; p < n_pts; ++p)
-			{
-				compute_disp_grad_at_quad(data, local_disp, p, size(), def_grad);
-
-				// Id + grad d
-				for (int d = 0; d < size(); ++d)
-					def_grad(d, d) += T(1);
-
-				double lambda, mu;
-				params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id, lambda, mu);
-
-				const T J = polyfem::utils::determinant(def_grad);
-				const T log_det_j = log(J);
-				// const T val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) + lambda / 2 * log_det_j * log_det_j;
-				const T val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * (1 - 1. / J)) + lambda / 2 * log_det_j * log_det_j;
-
-				energy += val * data.da(p);
-			}
-			return energy;
-		}
+		return energy;
 	}
 
 	template <int dim>
@@ -482,10 +388,6 @@ namespace polyfem::assembler
 			}
 		}
 
-		Eigen::VectorXd jacs;
-		if (use_robust_jacobian)
-			jacs = data.vals.eval_deformed_jacobian_determinant(data.x);
-		
 		Eigen::Matrix<double, dim, dim> def_grad(size(), size());
 
 		Eigen::Matrix<double, n_basis, dim> G(data.vals.basis_values.size(), size());
@@ -505,7 +407,7 @@ namespace polyfem::assembler
 			// Id + grad d
 			def_grad = local_disp.transpose() * grad * jac_it + Eigen::Matrix<double, dim, dim>::Identity(size(), size());
 
-			const double J = use_robust_jacobian ? jacs(p) * jac_it.determinant() : def_grad.determinant();
+			const double J = def_grad.determinant();
 			const double log_det_j = log(J);
 
 			Eigen::Matrix<double, dim, dim> delJ_delF(size(), size());
@@ -541,14 +443,10 @@ namespace polyfem::assembler
 
 			Eigen::Matrix<double, n_basis, dim> delF_delU = grad * jac_it;
 
-			Eigen::Matrix<double, dim, dim> gradient_temp = mu * def_grad - mu * (1 / J) * delJ_delF + 
-																lambda * log_det_j * (1 / J) * delJ_delF + 
-																mu * barrier<double>::first_derivatives(J) * delJ_delF;
+			Eigen::Matrix<double, dim, dim> gradient_temp = mu * def_grad - mu * (1 / J) * delJ_delF + lambda * log_det_j * (1 / J) * delJ_delF;
 			Eigen::Matrix<double, n_basis, dim> gradient = delF_delU * gradient_temp.transpose();
 
-			double val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) +
-							lambda / 2 * log_det_j * log_det_j +
-							mu * barrier<double>::value(J);
+			double val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) + lambda / 2 * log_det_j * log_det_j;
 
 			G.noalias() += gradient * data.da(p);
 		}
@@ -582,10 +480,6 @@ namespace polyfem::assembler
 			}
 		}
 
-		Eigen::VectorXd jacs;
-		if (use_robust_jacobian)
-			jacs = data.vals.eval_deformed_jacobian_determinant(data.x);
-
 		Eigen::Matrix<double, dim, dim> def_grad(size(), size());
 
 		for (long p = 0; p < n_pts; ++p)
@@ -602,7 +496,7 @@ namespace polyfem::assembler
 			// Id + grad d
 			def_grad = local_disp.transpose() * grad * jac_it + Eigen::Matrix<double, dim, dim>::Identity(size(), size());
 
-			const double J = use_robust_jacobian ? jacs(p) * jac_it.determinant() : def_grad.determinant();
+			const double J = def_grad.determinant();
 			double log_det_j = log(J);
 
 			Eigen::Matrix<double, dim, dim> delJ_delF(size(), size());
@@ -647,15 +541,11 @@ namespace polyfem::assembler
 			double lambda, mu;
 			params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id, lambda, mu);
 
-			Eigen::Matrix<double, dim * dim, dim *dim> id = Eigen::Matrix<double, dim * dim, dim * dim>::Identity(size() * size(), size() * size());
+			Eigen::Matrix<double, dim * dim, dim * dim> id = Eigen::Matrix<double, dim * dim, dim * dim>::Identity(size() * size(), size() * size());
 
 			Eigen::Matrix<double, dim * dim, 1> g_j = Eigen::Map<const Eigen::Matrix<double, dim * dim, 1>>(delJ_delF.data(), delJ_delF.size());
 
-			Eigen::Matrix<double, dim * dim, dim * dim> hessian_temp = (mu * id) + (((mu + lambda * (1 - log_det_j)) / (J * J)) * (g_j * g_j.transpose())) + 
-																			(((lambda * log_det_j - mu) / (J)) * del2J_delF2) +
-																			mu * barrier<double>::first_derivatives(J) * del2J_delF2 +
-																			mu * barrier<double>::second_derivatives(J) * (g_j * g_j.transpose());
-																		
+			Eigen::Matrix<double, dim * dim, dim * dim> hessian_temp = (mu * id) + (((mu + lambda * (1 - log_det_j)) / (J * J)) * (g_j * g_j.transpose())) + (((lambda * log_det_j - mu) / (J)) * del2J_delF2);
 
 			Eigen::Matrix<double, dim * dim, N> delF_delU_tensor(jac_it.size(), grad.size());
 
@@ -674,9 +564,7 @@ namespace polyfem::assembler
 
 			Eigen::Matrix<double, N, N> hessian = delF_delU_tensor.transpose() * hessian_temp * delF_delU_tensor;
 
-			double val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) + 
-							lambda / 2 * log_det_j * log_det_j +
-							mu * barrier<double>::value(J);
+			double val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) + lambda / 2 * log_det_j * log_det_j;
 
 			H += hessian * data.da(p);
 		}

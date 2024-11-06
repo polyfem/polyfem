@@ -25,7 +25,7 @@ namespace polyfem::solver
 				  const int n_boundary_samples,
 				  const assembler::RhsAssembler &rhs_assembler,
 				  const assembler::MacroStrainValue &macro_strain_constraint,
-				  State &state,
+				  const State &state,
 				  const double t, const std::vector<std::shared_ptr<Form>> &forms, 
 				  const bool solve_symmetric_macro_strain);
 		virtual ~NLHomoProblem() = default;
