@@ -32,8 +32,6 @@ namespace polyfem::solver
 			}
 		};
 
-		double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
-
 		Eigen::MatrixXd refined_nodes(const int dim, const int i)
 		{
 			Eigen::MatrixXd A(dim + 1, dim);
@@ -381,28 +379,6 @@ namespace polyfem::solver
 
 				logger().log(step == 0 ? spdlog::level::warn : spdlog::level::debug, 
 					"Jacobian max step size: {} at element {}, invalid step size: {}, tree depth {}, runtime {} sec", step, invalidID, invalidStep, subdivision_tree.depth(), transient_check_time);
-
-				// if (step > 0) {
-				// 	const Eigen::VectorXd xmid = x0 + (x1 - x0) * step;
-				// 	const auto [isvalid, id, tree] = is_valid(dim, bases_, geom_bases_, xmid);
-				// 	if (!isvalid)
-				// 	{
-				// 		logger().error("Element {} is invalid!", id);
-
-				// 		{
-				// 			std::string path = "transient_fail.hdf5";
-				// 			export_transient_hdf5(path, dim, bases_, geom_bases_, x0, x1);
-				// 			logger().info("Save to {}", path);
-				// 		}
-
-				// 		{
-				// 			std::string path = "static_fail.hdf5";
-				// 			export_transient_hdf5(path, dim, bases_, geom_bases_, xmid);
-				// 			logger().info("Save to {}", path);
-				// 		}
-				// 		std::terminate();
-				// 	}
-				// }
 			}
 
 			if (invalidID >= 0 && step <= 0.25)
@@ -421,22 +397,6 @@ namespace polyfem::solver
 					const Eigen::VectorXd min_jac0 = jacs0.colwise().minCoeff();
 					const Eigen::VectorXd min_jac1 = jacs1.colwise().minCoeff();
 					logger().debug("Min jacobian on quadrature points: before step {}, {}; after step {}, {}", min_jac0(0), min_jac0(1), min_jac1(0), min_jac1(1));
-
-					// if (jacs0.minCoeff() < 1e-14)
-					// {
-					// 	static int id = 0;
-					// 	const int order = std::max(bs.bases.front().order(), gbs.bases.front().order());
-					// 	const Eigen::MatrixXd cp = extract_nodes(dim, bs, gbs, x0, order);
-					// 	std::cout << std::setprecision(20) << "control points\n" << cp.transpose() << "\nquadrature points\n" << quad.points.transpose() << "\nquadrature weights\n" << quad.weights.transpose() << "\njacobian determinant\n" << jacs0.transpose() << std::endl;
-					
-					// 	state->out_geom.save_volume(
-					// 		state->resolve_output_path(fmt::format("jacobian_{:d}.vtu", id++)),
-					// 		*state, x0, Eigen::VectorXd(), 0, 0,
-					// 		io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar(), state->solve_export_to_file),
-					// 		state->solution_frames);
-					// 	if (id > 100)
-					// 		std::terminate();
-					// }
 				}
 			}
 
@@ -529,8 +489,8 @@ namespace polyfem::solver
 						assembler::ViscousDamping::compute_dstress_dpsi_dphi(OptAssemblerData(t, dt_, e, quadrature.points.row(q), vals.val.row(q), grad_u_i), prev_grad_u_i, f_prime_dpsi, f_prime_dphi);
 
 						// This needs to be a sum over material parameter basis.
-						local_storage.vec(0) += -dot(f_prime_dpsi, grad_p_i) * local_storage.da(q);
-						local_storage.vec(1) += -dot(f_prime_dphi, grad_p_i) * local_storage.da(q);
+						local_storage.vec(0) += -matrix_inner_product<double>(f_prime_dpsi, grad_p_i) * local_storage.da(q);
+						local_storage.vec(1) += -matrix_inner_product<double>(f_prime_dphi, grad_p_i) * local_storage.da(q);
 					}
 				}
 			});
@@ -569,8 +529,8 @@ namespace polyfem::solver
 						assembler_.compute_dstress_dmu_dlambda(OptAssemblerData(t, dt_, e, quadrature.points.row(q), vals.val.row(q), grad_u_i), f_prime_dmu, f_prime_dlambda);
 
 						// This needs to be a sum over material parameter basis.
-						local_storage.vec(e + n_elements) += -dot(f_prime_dmu, grad_p_i) * local_storage.da(q);
-						local_storage.vec(e) += -dot(f_prime_dlambda, grad_p_i) * local_storage.da(q);
+						local_storage.vec(e + n_elements) += -matrix_inner_product<double>(f_prime_dmu, grad_p_i) * local_storage.da(q);
+						local_storage.vec(e) += -matrix_inner_product<double>(f_prime_dlambda, grad_p_i) * local_storage.da(q);
 					}
 				}
 			});
@@ -648,7 +608,7 @@ namespace polyfem::solver
 												f_prev_prime_prev_gradu_gradv(i, j) += stress_prev_grad(i * dim + j, k * dim + l) * tmp(k, l);
 
 								tmp = grad_v_i - grad_v_i.trace() * Eigen::MatrixXd::Identity(dim, dim);
-								local_storage.vec(v.global[0].index * dim + d) -= dot(f_prime_gradu_gradv + f_prev_prime_prev_gradu_gradv + stress_tensor * tmp.transpose(), grad_p_i) * local_storage.da(q);
+								local_storage.vec(v.global[0].index * dim + d) -= matrix_inner_product<double>(f_prime_gradu_gradv + f_prev_prime_prev_gradu_gradv + stress_tensor * tmp.transpose(), grad_p_i) * local_storage.da(q);
 							}
 						}
 					}
@@ -704,7 +664,7 @@ namespace polyfem::solver
 								// f_prime_gradu_gradv = utils::unflatten(stiffness_i * utils::flatten(grad_u_i * grad_v_i), dim);
 
 								Eigen::MatrixXd tmp = grad_v_i - grad_v_i.trace() * Eigen::MatrixXd::Identity(dim, dim);
-								local_storage.vec(v.global[0].index * dim + d) -= dot(f_prime_gradu_gradv + stress_tensor * tmp.transpose(), grad_p_i) * local_storage.da(q);
+								local_storage.vec(v.global[0].index * dim + d) -= matrix_inner_product<double>(f_prime_gradu_gradv + stress_tensor * tmp.transpose(), grad_p_i) * local_storage.da(q);
 							}
 						}
 					}

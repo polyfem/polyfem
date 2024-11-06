@@ -2725,7 +2725,8 @@
             "tensor_values",
             "discretization_order",
             "nodes",
-            "forces"
+            "forces",
+            "jacobian_validity"
         ],
         "doc": "Optional fields in the output"
     },
@@ -2800,6 +2801,12 @@
         "default": false,
         "type": "bool",
         "doc": "If true, write out all variational forces on the FE mesh "
+    },
+    {
+        "pointer": "/output/paraview/options/jacobian_validity",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, perform robust Jacobian check on the deformed elements and mark elements with non-positive Jacobian."
     },
     {
         "pointer": "/output/data",

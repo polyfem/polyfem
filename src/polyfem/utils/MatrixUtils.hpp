@@ -13,6 +13,12 @@ namespace polyfem
 		void show_matrix_stats(const Eigen::MatrixXd &M);
 
 		template <typename T>
+		T matrix_inner_product(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &A, const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &B)
+		{ 
+			return (A.array() * B.array()).sum(); 
+		}
+
+		template <typename T>
 		T determinant(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> &mat)
 		{
 			assert(mat.rows() == mat.cols());
