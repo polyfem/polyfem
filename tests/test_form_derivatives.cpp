@@ -672,7 +672,9 @@ TEST_CASE("AMIPS form derivatives", "[form][form_derivatives][amips_form]")
  		state->ass_vals_cache,
  		0,
  		state->args["time"]["dt"],
- 		state->mesh->is_volume());
+ 		state->mesh->is_volume(),
+		0.,
+		"Discrete");
  	test_form(form, *state);
  }
 

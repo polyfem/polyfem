@@ -412,10 +412,6 @@ namespace polyfem::solver
 
 		const auto [isvalid, id, tree] = is_valid(is_volume_ ? 3 : 2, bases_, geom_bases_, x1);
 		return isvalid;
-
-		// const auto [isvalid, id, tree] = is_valid(is_volume_ ? 3 : 2, bases_, geom_bases_, x1);
-
-		// return isvalid;
 	}
 
 	bool ElasticForm::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
