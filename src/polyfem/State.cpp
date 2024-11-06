@@ -313,9 +313,16 @@ namespace polyfem
 			return;
 		}
 		const auto &tmp = mesh_nodes->in_ordered_vertices();
-		in_node_to_node.resize(tmp.size());
+		int max_tmp = -1;
+		for (auto v : tmp)
+			max_tmp = std::max(max_tmp, v);
+
+		in_node_to_node.resize(max_tmp + 1);
 		for (int i = 0; i < tmp.size(); ++i)
-			in_node_to_node[tmp[i]] = i;
+		{
+			if (tmp[i] >= 0)
+				in_node_to_node[tmp[i]] = i;
+		}
 	}
 
 	std::string State::formulation() const
