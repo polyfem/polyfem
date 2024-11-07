@@ -317,9 +317,7 @@ TEST_CASE("elastic form derivatives", "[form][form_derivatives][elastic_form]")
 		state_ptr->ass_vals_cache,
 		0,
 		state_ptr->args["time"]["dt"],
-		state_ptr->mesh->is_volume(),
-		0.,
-		"Discrete");
+		state_ptr->mesh->is_volume());
 	test_form(form, *state_ptr, 1e-7);
 }
 
@@ -385,9 +383,7 @@ TEST_CASE("damping form derivatives", "[form][form_derivatives][damping_form]")
 		state_ptr->ass_vals_cache,
 		0,
 		dt,
-		state_ptr->mesh->is_volume(),
-		0.,
-		"Discrete");
+		state_ptr->mesh->is_volume());
 	form.update_quantities(0, Eigen::VectorXd::Ones(state_ptr->n_bases * dim));
 	test_form(form, *state_ptr);
 }
@@ -434,9 +430,7 @@ TEST_CASE("Rayleigh damping form derivatives", "[form][form_derivatives][rayleig
 		state_ptr->ass_vals_cache,
 		0,
 		state_ptr->args["time"]["dt"],
-		state_ptr->mesh->is_volume(),
-		0.,
-		"Discrete");
+		state_ptr->mesh->is_volume());
 
 	const double dt = 1e-3;
 	ImplicitEuler time_integrator;
@@ -672,9 +666,7 @@ TEST_CASE("AMIPS form derivatives", "[form][form_derivatives][amips_form]")
  		state->ass_vals_cache,
  		0,
  		state->args["time"]["dt"],
- 		state->mesh->is_volume(),
-		0.,
-		"Discrete");
+ 		state->mesh->is_volume());
  	test_form(form, *state);
  }
 
@@ -693,9 +685,7 @@ TEST_CASE("Fixed corotational form derivatives", "[form][form_derivatives][elast
 		state_ptr->ass_vals_cache,
 		0,
 		1,
-		state_ptr->mesh->is_volume(),
-		0.,
-		"Discrete");
+		state_ptr->mesh->is_volume());
 	form.update_quantities(0, Eigen::VectorXd::Ones(state_ptr->n_bases * dim));
 	test_form(form, *state_ptr, 1e-7, 1e-4);
 }

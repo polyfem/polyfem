@@ -119,21 +119,6 @@ namespace polyfem::utils
         const Eigen::VectorXd &u2,
         double precision = .25);
 
-    // void export_static_hdf5(
-    //     const std::string &path,
-    //     const int dim,
-    //     const std::vector<basis::ElementBases> &bases, 
-    //     const std::vector<basis::ElementBases> &gbases,
-    //     const Eigen::VectorXd &u);
-
-    // void export_transient_hdf5(
-    //     const std::string &path,
-    //     const int dim,
-    //     const std::vector<basis::ElementBases> &bases, 
-    //     const std::vector<basis::ElementBases> &gbases,
-    //     const Eigen::VectorXd &u1,
-    //     const Eigen::VectorXd &u2);
-
     Eigen::MatrixXd extract_nodes(const int dim, const basis::ElementBases &basis, const basis::ElementBases &gbasis, const Eigen::VectorXd &u, int order);
     Eigen::MatrixXd extract_nodes(const int dim, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const Eigen::VectorXd &u, int order, int n_elem = -1);
 }
