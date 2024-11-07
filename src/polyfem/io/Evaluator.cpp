@@ -426,7 +426,7 @@ namespace polyfem::io
 
 		Eigen::MatrixXi vis_faces_poly, vis_edges_poly;
 
-		const auto invalidList = mesh.is_simplicial() ? utils::count_invalid(mesh.dimension(), basis, gbasis, fun) : std::vector<uint>();
+		const auto invalidList = utils::count_invalid(mesh.dimension(), basis, gbasis, fun);
 
 		for (int i = 0; i < int(basis.size()); ++i)
 		{

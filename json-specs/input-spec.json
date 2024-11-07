@@ -929,6 +929,7 @@
             "n_boundary_samples",
             "quadrature_order",
             "mass_quadrature_order",
+            "use_corner_quadrature",
             "integral_constraints",
             "n_harmonic_samples",
             "force_no_ref_for_harmonic",
@@ -975,6 +976,12 @@
         "doc": "Minimal quadrature order to use in matrix and rhs assembly; the actual order is determined as min(2*(p-1)+1,quadrature_order)."
     },
     {
+        "pointer": "/space/advanced/use_corner_quadrature",
+        "default": false,
+        "type": "bool",
+        "doc": "Use quadrature rules that always include all the vertices of the element."
+    },
+    {
         "pointer": "/space/advanced/mass_quadrature_order",
         "default": -1,
         "type": "int",
@@ -1018,7 +1025,7 @@
     },
     {
         "pointer": "/space/advanced/count_flipped_els_continuous",
-        "default": true,
+        "default": false,
         "type": "bool",
         "doc": "Count the number of elements with Jacobian of the geometric map not positive at any point."
     },

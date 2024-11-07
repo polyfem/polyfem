@@ -195,52 +195,35 @@ namespace polyfem::solver
 			return quad;
 		}
 
-		Eigen::MatrixXd dense_uv_samples(const int dim, const int o)
-		{
-			assert(dim == 2);
-			Eigen::MatrixXd uv((o+2)*(o+1)/2, dim);
-			int id = 0;
-			for (int i = 0; i <= o; i++)
-			{
-				for (int j = 0; i + j <= o; j++)
-				{
-					uv(id, 0) = i / double(o);
-					uv(id, 1) = j / double(o);
-					id++;
-				}
-			}
-			return uv;
-		}
+		// Eigen::MatrixXd evaluate_jacobian(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &uv, const Eigen::VectorXd &disp)
+		// {
+		// 	assembler::ElementAssemblyValues vals;
+		// 	vals.compute(0, uv.cols() == 3, uv, bs, gbs);
 
-		Eigen::MatrixXd evaluate_jacobian(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &uv, const Eigen::VectorXd &disp)
-		{
-			assembler::ElementAssemblyValues vals;
-			vals.compute(0, uv.cols() == 3, uv, bs, gbs);
+		// 	Eigen::MatrixXd out(uv.rows(), 2);
+		// 	for (long p = 0; p < uv.rows(); ++p)
+		// 	{
+		// 		Eigen::MatrixXd disp_grad;
+		// 		disp_grad.setZero(uv.cols(), uv.cols());
 
-			Eigen::MatrixXd out(uv.rows(), 2);
-			for (long p = 0; p < uv.rows(); ++p)
-			{
-				Eigen::MatrixXd disp_grad;
-				disp_grad.setZero(uv.cols(), uv.cols());
+		// 		for (std::size_t j = 0; j < vals.basis_values.size(); ++j)
+		// 		{
+		// 			const auto &loc_val = vals.basis_values[j];
 
-				for (std::size_t j = 0; j < vals.basis_values.size(); ++j)
-				{
-					const auto &loc_val = vals.basis_values[j];
+		// 			for (int d = 0; d < uv.cols(); ++d)
+		// 			{
+		// 				for (std::size_t ii = 0; ii < loc_val.global.size(); ++ii)
+		// 				{
+		// 					disp_grad.row(d) += loc_val.global[ii].val * loc_val.grad.row(p) * disp(loc_val.global[ii].index * uv.cols() + d);
+		// 				}
+		// 			}
+		// 		}
 
-					for (int d = 0; d < uv.cols(); ++d)
-					{
-						for (std::size_t ii = 0; ii < loc_val.global.size(); ++ii)
-						{
-							disp_grad.row(d) += loc_val.global[ii].val * loc_val.grad.row(p) * disp(loc_val.global[ii].index * uv.cols() + d);
-						}
-					}
-				}
-
-				disp_grad = disp_grad * vals.jac_it[p] + Eigen::MatrixXd::Identity(uv.cols(), uv.cols());
-				out.row(p) << disp_grad.determinant(), disp_grad.determinant() / vals.jac_it[p].determinant();
-			}
-			return out;
-		}
+		// 		disp_grad = disp_grad * vals.jac_it[p] + Eigen::MatrixXd::Identity(uv.cols(), uv.cols());
+		// 		out.row(p) << disp_grad.determinant(), disp_grad.determinant() / vals.jac_it[p].determinant();
+		// 	}
+		// 	return out;
+		// }
 
 		void update_quadrature(const int invalidID, const int dim, Tree &tree, const int quad_order, basis::ElementBases &bs, const basis::ElementBases &gbs, assembler::AssemblyValsCache &ass_vals_cache)
 		{
@@ -362,47 +345,45 @@ namespace polyfem::solver
 
 	double ElasticForm::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		// TODO: handle polygon and quad
-		if (check_inversion_ != "Discrete")
+		if (check_inversion_ == "Discrete")
+			return 1.;
+
+		const int dim = is_volume_ ? 3 : 2;
+		double step, invalidStep;
+		int invalidID;
+
+		Tree subdivision_tree;
 		{
-			const int dim = is_volume_ ? 3 : 2;
-			double step, invalidStep;
-			int invalidID;
-
-			Tree subdivision_tree;
+			double transient_check_time = 0;
 			{
-				double transient_check_time = 0;
-				{
-					POLYFEM_SCOPED_TIMER("Transient Jacobian Check", transient_check_time);
-					std::tie(step, invalidID, invalidStep, subdivision_tree) = maxTimeStep(dim, bases_, geom_bases_, x0, x1);
-				}
-
-				logger().log(step == 0 ? spdlog::level::warn : spdlog::level::debug, 
-					"Jacobian max step size: {} at element {}, invalid step size: {}, tree depth {}, runtime {} sec", step, invalidID, invalidStep, subdivision_tree.depth(), transient_check_time);
+				POLYFEM_SCOPED_TIMER("Transient Jacobian Check", transient_check_time);
+				std::tie(step, invalidID, invalidStep, subdivision_tree) = maxTimeStep(dim, bases_, geom_bases_, x0, x1);
 			}
 
-			if (invalidID >= 0 && step <= 0.25)
-			{
-				auto& bs = bases_[invalidID];
-				auto& gbs = geom_bases_[invalidID];
-				if (quadrature_hierarchy_[invalidID].merge(subdivision_tree))
-					update_quadrature(invalidID, dim, quadrature_hierarchy_[invalidID], quadrature_order_, bs, gbs, ass_vals_cache_);
-
-				// verify that new quadrature points don't make x0 invalid
-				{
-					Quadrature quad;
-					bs.compute_quadrature(quad);
-					const Eigen::MatrixXd jacs0 = evaluate_jacobian(bs, gbs, quad.points, x0);
-					const Eigen::MatrixXd jacs1 = evaluate_jacobian(bs, gbs, quad.points, x0 + (x1 - x0) * step);
-					const Eigen::VectorXd min_jac0 = jacs0.colwise().minCoeff();
-					const Eigen::VectorXd min_jac1 = jacs1.colwise().minCoeff();
-					logger().debug("Min jacobian on quadrature points: before step {}, {}; after step {}, {}", min_jac0(0), min_jac0(1), min_jac1(0), min_jac1(1));
-				}
-			}
-
-			return step;
+			logger().log(step == 0 ? spdlog::level::warn : spdlog::level::debug, 
+				"Jacobian max step size: {} at element {}, invalid step size: {}, tree depth {}, runtime {} sec", step, invalidID, invalidStep, subdivision_tree.depth(), transient_check_time);
 		}
-		return 1.;
+
+		if (invalidID >= 0 && step <= 0.25)
+		{
+			auto& bs = bases_[invalidID];
+			auto& gbs = geom_bases_[invalidID];
+			if (quadrature_hierarchy_[invalidID].merge(subdivision_tree)) // if the tree is refined
+				update_quadrature(invalidID, dim, quadrature_hierarchy_[invalidID], quadrature_order_, bs, gbs, ass_vals_cache_);
+
+			// verify that new quadrature points don't make x0 invalid
+			// {
+			// 	Quadrature quad;
+			// 	bs.compute_quadrature(quad);
+			// 	const Eigen::MatrixXd jacs0 = evaluate_jacobian(bs, gbs, quad.points, x0);
+			// 	const Eigen::MatrixXd jacs1 = evaluate_jacobian(bs, gbs, quad.points, x0 + (x1 - x0) * step);
+			// 	const Eigen::VectorXd min_jac0 = jacs0.colwise().minCoeff();
+			// 	const Eigen::VectorXd min_jac1 = jacs1.colwise().minCoeff();
+			// 	logger().debug("Min jacobian on quadrature points: before step {}, {}; after step {}, {}", min_jac0(0), min_jac0(1), min_jac1(0), min_jac1(1));
+			// }
+		}
+
+		return step;
 	}
 
 	bool ElasticForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
@@ -412,10 +393,6 @@ namespace polyfem::solver
 
 		const auto [isvalid, id, tree] = is_valid(is_volume_ ? 3 : 2, bases_, geom_bases_, x1);
 		return isvalid;
-
-		// const auto [isvalid, id, tree] = is_valid(is_volume_ ? 3 : 2, bases_, geom_bases_, x1);
-
-		// return isvalid;
 	}
 
 	bool ElasticForm::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
@@ -674,41 +651,5 @@ namespace polyfem::solver
 
 		for (const LocalThreadVecStorage &local_storage : storage)
 			term += local_storage.vec;
-	}
-
-	void ElasticForm::get_refined_mesh(const Eigen::VectorXd &x, Eigen::MatrixXd &points, Eigen::MatrixXi &elements, const int elem) const
-	{
-		const int dim = is_volume_ ? 3 : 2;
-		int n_elem = 0;
-		for (int e = 0; e < bases_.size(); e++)
-		{
-			if (elem >= 0 && e != elem)
-				continue;
-			n_elem += quadrature_hierarchy_[e].n_leaves();
-		}
-
-		points.setZero(n_elem * (dim + 1), dim);
-		int idx = 0;
-		for (int e = 0; e < bases_.size(); e++)
-		{
-			if (elem >= 0 && e != elem)
-				continue;
-			
-			const auto &tree = quadrature_hierarchy_[e];
-			const auto &bs = bases_[e];
-
-			Eigen::MatrixXd pts(dim + 1, dim);
-			for (int i = 0; i < dim + 1; i++)
-				pts.row(i) = bs.bases[i].global()[0].node + x.segment(bs.bases[i].global()[0].index * dim, dim).transpose();
-
-			const auto [tmp, levels] = extract_subelement(pts, tree);
-			points.middleRows(idx, tmp.rows()) = tmp;
-			idx += tmp.rows();
-		}
-
-		elements.setZero(n_elem, dim + 1);
-		for (int i = 0; i < elements.rows(); i++)
-			for (int j = 0; j < elements.cols(); j++)
-				elements(i, j) = i * (dim + 1) + j;
 	}
 } // namespace polyfem::solver

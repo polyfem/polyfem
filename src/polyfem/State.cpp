@@ -690,6 +690,17 @@ namespace polyfem
 		}
 		// TODO: same for pressure!
 
+		if (!mesh->is_simplicial())
+		{
+			args["space"]["advanced"]["count_flipped_els_continuous"] = false;
+			args["output"]["paraview"]["options"]["jacobian_validity"] = false;
+			args["solver"]["advanced"]["check_inversion"] = "Discrete";
+		}
+		else if (args["solver"]["advanced"]["check_inversion"] != "Discrete")
+		{
+			args["space"]["advanced"]["use_corner_quadrature"] = true;
+		}
+
 		Eigen::MatrixXi geom_disc_orders;
 		if (!iso_parametric())
 		{
