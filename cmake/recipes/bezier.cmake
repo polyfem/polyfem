@@ -7,10 +7,11 @@ endif()
 
 message(STATUS "Third-party: creating target 'bezier'")
 
-option(PARAVIEW_OUTPUT "Export elements to Paraview" OFF)
-option(HDF5_INTERFACE "Process HDF5 datasets" ON)
+option(HDF5_INTERFACE "Process HDF5 datasets" OFF)
 option(EIGEN_INTERFACE "Read data from Eigen classes" ON)
 option(IPRED_ARITHMETIC "Use the efficient Indirect Predicates library" ON)
+option(GMP_INTERFACE "Rational numbers" OFF)
+
 if (IPRED_ARITHMETIC)
     add_compile_definitions(IPRED_ARITHMETIC)
 endif()
@@ -19,4 +20,4 @@ if (EIGEN_INTERFACE)
 endif()
 
 include(CPM)
-CPMAddPackage("gh:fsichetti/bezier#b228826148fd2a68b7adc080db447a117e2345d9")
+CPMAddPackage("gh:Huangzizhou/bezier#f02d78beb81ecb6d691bedfc50d0c149aedf3fc7")

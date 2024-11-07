@@ -53,7 +53,6 @@ set(SOURCES
 	StringUtils.hpp
 	Timer.hpp
 	Types.hpp
-	Rational.hpp
 	Jacobian.hpp
 	Jacobian.cpp
 	LazyCubicInterpolator.cpp

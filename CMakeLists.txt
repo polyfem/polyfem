@@ -272,10 +272,6 @@ target_link_libraries(polyfem PUBLIC Glob::Glob)
 include(units)
 target_link_libraries(polyfem PUBLIC units::units)
 
-# GMP
-find_package(GMP REQUIRED)
-target_link_libraries(tight_inclusion PUBLIC gmp::gmp)
-
 # YAML library
 include(yaml)
 target_link_libraries(polyfem PUBLIC yaml-cpp::yaml-cpp)
