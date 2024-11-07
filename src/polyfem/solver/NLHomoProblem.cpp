@@ -63,7 +63,7 @@ namespace polyfem::solver
         return reduced;
     }
 
-    Eigen::VectorXd NLHomoProblem::reduced_to_extended(const Eigen::VectorXd &reduced) const
+    Eigen::VectorXd NLHomoProblem::reduced_to_extended(const Eigen::VectorXd &reduced, bool homogeneous) const
     {
         const int dim = state_.mesh->dimension();
         const int dof2 = macro_reduced_size();
@@ -71,7 +71,7 @@ namespace polyfem::solver
         assert(reduced.size() == dof1 + dof2);
         
         Eigen::VectorXd fluctuation = NLProblem::reduced_to_full(reduced.head(dof1));
-        Eigen::VectorXd disp_grad = macro_reduced_to_full(reduced.tail(dof2));
+        Eigen::VectorXd disp_grad = macro_reduced_to_full(reduced.tail(dof2), homogeneous);
         Eigen::VectorXd extended(fluctuation.size() + disp_grad.size());
         extended << fluctuation, disp_grad;
 
@@ -89,6 +89,18 @@ namespace polyfem::solver
         grad.tail(dof2) = macro_full_to_reduced_grad(extended.tail(dim * dim));
 
         return grad;
+    }
+
+    NLHomoProblem::TVector NLHomoProblem::reduced_to_full_shape_derivative(const Eigen::MatrixXd &disp_grad, const TVector &adjoint_full) const
+    {
+        const int dim = state_.mesh->dimension();
+
+        Eigen::VectorXd term;
+        term.setZero(state_.n_bases * dim);
+        for (int i = 0; i < state_.n_bases; i++)
+            term.segment(i * dim, dim) += disp_grad.transpose() * adjoint_full.segment(i * dim, dim);
+        
+        return state_.basis_nodes_to_gbasis_nodes * term;
     }
 
     double NLHomoProblem::value(const TVector &x)
@@ -154,6 +166,14 @@ namespace polyfem::solver
         mid.setFromTriplets(entries.begin(), entries.end());
 
         NLProblem::full_hessian_to_reduced_hessian(mid, reduced);
+    }
+    Eigen::MatrixXd NLHomoProblem::reduced_to_disp_grad(const TVector &reduced, bool homogeneous) const
+    {
+        const int dim = state_.mesh->dimension();
+        const int dof2 = macro_reduced_size();
+        const int dof1 = reduced_size();
+
+        return utils::unflatten(macro_reduced_to_full(reduced.tail(dof2), homogeneous), dim);
     }
     void NLHomoProblem::hessian(const TVector &x, THessian &hessian)
     {
@@ -282,10 +302,10 @@ namespace polyfem::solver
     {
         return macro_mid_to_reduced_ * macro_mid_to_full_.transpose() * full;
     }
-    NLHomoProblem::TVector NLHomoProblem::macro_reduced_to_full(const TVector &reduced) const
+    NLHomoProblem::TVector NLHomoProblem::macro_reduced_to_full(const TVector &reduced, bool homogeneous) const
     {
         TVector mid = macro_mid_to_reduced_.transpose() * reduced;
-        const TVector fixed_values = macro_full_to_mid_ * utils::flatten(macro_strain_constraint_.eval(t_));
+        const TVector fixed_values = homogeneous ? TVector::Zero(macro_full_to_mid_.rows()) : TVector(macro_full_to_mid_ * utils::flatten(macro_strain_constraint_.eval(t_)));
         for (int i = 0; i < fixed_mask_.size(); i++)
             if (fixed_mask_(i))
                 mid(i) = fixed_values(i);

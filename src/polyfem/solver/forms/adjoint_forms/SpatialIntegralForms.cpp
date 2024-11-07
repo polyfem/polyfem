@@ -65,6 +65,18 @@ namespace polyfem::solver
 			AdjointTools::compute_shape_derivative_functional_term(this->state_, this->state_.diff_cached.u(time_step), this->get_integral_functional(), this->ids_, this->spatial_integral_type_, term, time_step);
 			return term;
 		});
+		gradv += variable_to_simulations_.apply_parametrization_jacobian(ParameterType::PeriodicShape, &state_, x, [this, time_step, &x]() {
+			Eigen::VectorXd term;
+			AdjointTools::compute_shape_derivative_functional_term(this->state_, this->state_.diff_cached.u(time_step), this->get_integral_functional(), this->ids_, this->spatial_integral_type_, term, time_step);
+			term *= this->weight();
+
+			const Eigen::VectorXd adjoint_rhs = this->compute_adjoint_rhs_step(time_step, x, state_);
+			const NLHomoProblem &homo_problem = *std::dynamic_pointer_cast<NLHomoProblem>(state_.solve_data.nl_problem);
+			const Eigen::VectorXd full_shape_deriv = homo_problem.reduced_to_full_shape_derivative(state_.diff_cached.disp_grad(), adjoint_rhs);
+			term += utils::flatten(utils::unflatten(full_shape_deriv, state_.mesh->dimension())(state_.primitive_to_node(), Eigen::all));
+
+			return term;
+		});
 	}
 
 	Eigen::VectorXd SpatialIntegralForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const

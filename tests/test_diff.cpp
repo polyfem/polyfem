@@ -297,10 +297,12 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 
 	VariableToSimulationGroup variable_to_simulations;
 	variable_to_simulations.push_back(std::make_unique<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
-	{
-		VariableToBoundaryNodes variable_to_node(*state_ptr, 2);
-		variable_to_simulations[0]->set_output_indexing(variable_to_node.get_output_indexing());
-	}
+
+	json composite_map_args = R"({
+		"composite_map_type": "boundary",
+		"surface_selection": [2]
+	})"_json;
+	variable_to_simulations[0]->set_output_indexing(composite_map_args);
 
 	auto obj = AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states);
 
@@ -763,10 +765,12 @@ TEST_CASE("shape-contact-force-norm", "[test_adjoint]")
 
 	VariableToSimulationGroup variable_to_simulations;
 	variable_to_simulations.push_back(std::make_unique<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
-	{
-		VariableToBoundaryNodesExclusive variable_to_node(*state_ptr, {1, 2});
-		variable_to_simulations[0]->set_output_indexing(variable_to_node.get_output_indexing());
-	}
+
+	json composite_map_args = R"({
+		"composite_map_type": "boundary_excluding_surface",
+		"surface_selection": [1, 2]
+	})"_json;
+	variable_to_simulations[0]->set_output_indexing(composite_map_args);
 
 	auto obj = AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states);
 
@@ -1053,6 +1057,14 @@ TEST_CASE("initial-contact", "[test_adjoint]")
 {
 	json opt_args;
 	load_json(append_root_path("initial-contact-opt.json"), opt_args);
+	json new_obj = R"({
+            "type": "min-dist-target",
+            "state": 0,
+            "target": [0.05, 0.2],
+            "volume_selection": [1],
+            "steps": [2, 4]
+        })"_json;
+	opt_args["functionals"].push_back(new_obj);
 	auto [obj, var2sim, states] = prepare_test(opt_args);
 
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
@@ -1250,12 +1262,15 @@ TEST_CASE("control-pressure-nodes-3d", "[.][test_adjoint]")
 
 	VariableToSimulationGroup variable_to_simulations;
 	{
-		std::vector<int> pressure_boundaries = {2};
 		auto v2s = std::make_shared<PressureVariableToSimulation>(state_ptr, CompositeParametrization());
-		v2s->set_pressure_boundaries(pressure_boundaries);
-		Eigen::VectorXi indexing(5);
-		indexing << 0, 1, 2, 3, 4;
-		v2s->set_output_indexing(indexing);
+
+		json composite_map_args = R"({
+			"composite_map_type": "indices",
+			"composite_map_indices": [0,1,2,3,4],
+			"surface_selection": [2]
+		})"_json;
+
+		v2s->set_output_indexing(composite_map_args);
 		variable_to_simulations.push_back(v2s);
 	}
 
