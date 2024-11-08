@@ -24,10 +24,6 @@ set(SOURCES
 	TangentialAdhesionForm.hpp
 	PeriodicContactForm.cpp
 	PeriodicContactForm.hpp
-	MacroStrainLagrangianForm.cpp
-	MacroStrainLagrangianForm.hpp
-	MacroStrainALForm.cpp
-	MacroStrainALForm.hpp
 	RayleighDampingForm.cpp
 	RayleighDampingForm.hpp
 	PressureForm.cpp

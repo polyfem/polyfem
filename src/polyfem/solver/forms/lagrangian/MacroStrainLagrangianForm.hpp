@@ -1,25 +1,27 @@
 #pragma once
 
-#include "Form.hpp"
+#include "LagrangianForm.hpp"
 
-namespace polyfem::assembler {
+namespace polyfem::assembler
+{
 	class MacroStrainValue;
 }
 
 namespace polyfem::solver
 {
 	/// @brief Form of the lagrangian in augmented lagrangian for homogenization
-    class MacroStrainLagrangianForm : public Form
-    {
-    public:
+	class MacroStrainLagrangianForm : public LagrangianForm
+	{
+	public:
 		/// @brief Construct a new MacroStrainLagrangianForm object
-        MacroStrainLagrangianForm(const assembler::MacroStrainValue &macro_strain_constraint);
+		MacroStrainLagrangianForm(const assembler::MacroStrainValue &macro_strain_constraint);
 
 		std::string name() const override { return "strain-Lagrangian"; }
 
 		void update_quantities(const double t, const Eigen::VectorXd &x) override;
-		void update_lagrangian(const Eigen::VectorXd &x, const double k_al);
-    protected:
+		void update_lagrangian(const Eigen::VectorXd &x, const double k_al) override;
+
+	protected:
 		/// @brief Compute the contact barrier potential value
 		/// @param x Current solution
 		/// @return Value of the contact barrier potential
@@ -35,10 +37,10 @@ namespace polyfem::solver
 		/// @param hessian Output Hessian of the value wrt x
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
-    private:
-        Eigen::VectorXd values;
-    
-		Eigen::VectorXd lagr_mults_;              ///< vector of lagrange multipliers
+	private:
+		Eigen::VectorXd values;
+
+		Eigen::VectorXd lagr_mults_; ///< vector of lagrange multipliers
 		const assembler::MacroStrainValue &macro_strain_constraint_;
 	};
-}
+} // namespace polyfem::solver
