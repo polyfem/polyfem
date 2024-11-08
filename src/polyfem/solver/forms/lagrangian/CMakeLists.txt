@@ -3,9 +3,12 @@ set(SOURCES
 	BCLagrangianForm.hpp
 	BCPenaltyForm.cpp
 	BCPenaltyForm.hpp
-	CMakeLists.txt
 	LagrangianForm.hpp
 	LagrangianPenaltyForm.hpp
+	GenericLagrangianForm.hpp
+	GenericLagrangianForm.cpp
+	GenericPenaltyForm.hpp
+	GenericPenaltyForm.cpp
 	MacroStrainLagrangianForm.cpp
 	MacroStrainLagrangianForm.hpp
 	MacroStrainALForm.cpp
