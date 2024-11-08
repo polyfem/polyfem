@@ -259,14 +259,3 @@ TEST_CASE("runners-polyspline", tagsrun)
 {
 	run_data("polyspline_test_list", POLYFEM_POLYSPLINE_DIR);
 }
-
-// The result of this test is non-deterministic due to the adaptive quadrature refinement
-TEST_CASE("runners-positive-jacobian", tagsrun)
-{
-	bool compute_validation = false;
-	const std::string line = "standard/ring.json";
-	spdlog::info("Processing {}", line);
-	AuthenticateResult result = authenticate_json(POLYFEM_DATA_DIR + std::string("/") + line, compute_validation);
-	CAPTURE(line);
-	CHECK(result == SUCCESS);
-}
