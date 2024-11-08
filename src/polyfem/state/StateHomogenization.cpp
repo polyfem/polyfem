@@ -9,6 +9,7 @@
 
 #include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
+#include <polyfem/solver/forms/lagrangian/MacroStrainALForm.hpp>
 #include <polyfem/solver/forms/lagrangian/MacroStrainLagrangianForm.hpp>
 
 #include <unsupported/Eigen/SparseExtra>
