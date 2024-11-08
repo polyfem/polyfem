@@ -1,24 +1,25 @@
 #pragma once
 
-#include "Form.hpp"
+#include "LagrangianPenaltyForm.hpp"
 
-namespace polyfem::assembler {
+namespace polyfem::assembler
+{
 	class MacroStrainValue;
 }
 
 namespace polyfem::solver
 {
-    class MacroStrainALForm : public Form
-    {
-    public:
-        MacroStrainALForm(const assembler::MacroStrainValue &macro_strain_constraint);
+	class MacroStrainALForm : public LagrangianPenaltyForm
+	{
+	public:
+		MacroStrainALForm(const assembler::MacroStrainValue &macro_strain_constraint);
 
 		std::string name() const override { return "strain-penalty"; }
 
 		void update_quantities(const double t, const Eigen::VectorXd &x) override;
-		double compute_error(const Eigen::VectorXd &x) const;
+		double compute_error(const Eigen::VectorXd &x) const override;
 
-    protected:
+	protected:
 		/// @brief Compute the contact barrier potential value
 		/// @param x Current solution
 		/// @return Value of the contact barrier potential
@@ -34,8 +35,8 @@ namespace polyfem::solver
 		/// @param hessian Output Hessian of the value wrt x
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
-    private:
+	private:
 		Eigen::VectorXd values;
-        const assembler::MacroStrainValue &macro_strain_constraint_;
-    };
-}
+		const assembler::MacroStrainValue &macro_strain_constraint_;
+	};
+} // namespace polyfem::solver

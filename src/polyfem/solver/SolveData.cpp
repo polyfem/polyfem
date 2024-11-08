@@ -4,12 +4,11 @@
 #include <polyfem/solver/forms/Form.hpp>
 #include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/lagrangian/BCPenaltyForm.hpp>
-#include <polyfem/solver/forms/MacroStrainLagrangianForm.hpp>
-#include <polyfem/solver/forms/MacroStrainALForm.hpp>
+#include <polyfem/solver/forms/lagrangian/MacroStrainLagrangianForm.hpp>
+#include <polyfem/solver/forms/lagrangian/MacroStrainALForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/PressureForm.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
-#include <polyfem/solver/forms/MacroStrainALForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
