@@ -173,15 +173,15 @@ namespace polyfem::solver
 			// mass_mat_assembler.assemble(dim == 3, n_bases, bases, geom_bases, mass_ass_vals_cache, mass_tmp, true);
 			// assert(mass_tmp.rows() == mass.rows() && mass_tmp.cols() == mass.cols());
 
-			al_lagr_form = std::make_shared<BCLagrangianForm>(
+			al_lagr_form.push_back(std::make_shared<BCLagrangianForm>(
 				ndof, boundary_nodes, local_boundary, local_neumann_boundary,
-				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t);
-			forms.push_back(al_lagr_form);
+				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t));
+			forms.push_back(al_lagr_form.back());
 
-			al_pen_form = std::make_shared<BCPenaltyForm>(
+			al_pen_form.push_back(std::make_shared<BCPenaltyForm>(
 				ndof, boundary_nodes, local_boundary, local_neumann_boundary,
-				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t);
-			forms.push_back(al_pen_form);
+				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t));
+			forms.push_back(al_pen_form.back());
 		}
 
 		if (macro_strain_constraint.is_active())
@@ -318,7 +318,7 @@ namespace polyfem::solver
 
 	std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> SolveData::named_forms() const
 	{
-		return {
+		std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> res{
 			{"elastic", elastic_form},
 			{"inertia", inertia_form},
 			{"body", body_form},
@@ -326,11 +326,16 @@ namespace polyfem::solver
 			{"friction", friction_form},
 			{"damping", damping_form},
 			{"pressure", pressure_form},
-			{"augmented_lagrangian_lagr", al_lagr_form},
-			{"augmented_lagrangian_penalty", al_pen_form},
 			{"strain_augmented_lagrangian_lagr", strain_al_lagr_form},
 			{"strain_augmented_lagrangian_penalty", strain_al_pen_form},
 			{"periodic_contact", periodic_contact_form},
 		};
+
+		for (const auto &form : al_lagr_form)
+			res.push_back({"augmented_lagrangian_lagr", form});
+		for (const auto &form : al_pen_form)
+			res.push_back({"augmented_lagrangian_penalty", form});
+
+		return res;
 	}
 } // namespace polyfem::solver
