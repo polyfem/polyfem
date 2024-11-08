@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Form.hpp"
+#include "LagrangianForm.hpp"
 #include <polyfem/assembler/RhsAssembler.hpp>
 
 #include <polyfem/mesh/Obstacle.hpp>
@@ -9,7 +9,7 @@
 namespace polyfem::solver
 {
 	/// @brief Form of the lagrangian in augmented lagrangian
-	class BCLagrangianForm : public Form
+	class BCLagrangianForm : public LagrangianForm
 	{
 	public:
 		/// @brief Construct a new BCLagrangianForm object with a time dependent Dirichlet boundary
@@ -69,7 +69,7 @@ namespace polyfem::solver
 		/// @param x Solution at time t
 		void update_quantities(const double t, const Eigen::VectorXd &x) override;
 
-		void update_lagrangian(const Eigen::VectorXd &x, const double k_al);
+		void update_lagrangian(const Eigen::VectorXd &x, const double k_al) override;
 
 	private:
 		const std::vector<int> &boundary_nodes_;
@@ -82,7 +82,6 @@ namespace polyfem::solver
 
 		StiffnessMatrix masked_lumped_mass_sqrt_; ///< sqrt mass matrix masked by the AL dofs
 		Eigen::MatrixXd target_x_;                ///< actually a vector with the same size as x with target nodal positions
-		Eigen::VectorXd lagr_mults_;              ///< vector of lagrange multipliers
 
 		/// @brief Initialize the masked lumped mass matrix
 		/// @param ndof Number of degrees of freedom

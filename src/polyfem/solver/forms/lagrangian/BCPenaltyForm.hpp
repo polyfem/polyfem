@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Form.hpp"
+#include "LagrangianPenaltyForm.hpp"
 
 #include <polyfem/assembler/RhsAssembler.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
@@ -9,7 +9,7 @@
 namespace polyfem::solver
 {
 	/// @brief Form of the penalty in augmented lagrangian
-	class BCPenaltyForm : public Form
+	class BCPenaltyForm : public LagrangianPenaltyForm
 	{
 	public:
 		/// @brief Construct a new BCPenaltyForm object with a time dependent Dirichlet boundary
@@ -73,7 +73,7 @@ namespace polyfem::solver
 		const StiffnessMatrix &mask() const { return mask_; }
 		Eigen::VectorXd target() const { return target_x_; }
 
-		double compute_error(const Eigen::VectorXd &x) const;
+		double compute_error(const Eigen::VectorXd &x) const override;
 
 	private:
 		const std::vector<int> &boundary_nodes_;
