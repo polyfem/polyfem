@@ -304,11 +304,14 @@ namespace polyfem::mesh
 				state.args["solver"]["rayleigh_damping"]);
 
 			// Remove all AL forms because we do not need them in the remeshing process.
-			for (auto &lf : solve_data.al_form)
+			for (auto &lf : solve_data.al_lagr_form)
 				forms.erase(std::remove(forms.begin(), forms.end(), lf), forms.end());
-			solve_data.al_form.clear();
+			for (auto &lf : solve_data.al_pen_form)
+				forms.erase(std::remove(forms.begin(), forms.end(), lf), forms.end());
+			solve_data.al_lagr_form.clear();
+			solve_data.al_pen_form.clear();
 		}
-		const std::vector<std::shared_ptr<polyfem::solver::AugmentedLagrangianForm>> penalty_forms;
+
 		solve_data.nl_problem = std::make_shared<polyfem::solver::StaticBoundaryNLProblem>(
 			ndof(), target_x, forms, penalty_forms);
 
