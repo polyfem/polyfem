@@ -1,0 +1,41 @@
+#pragma once
+
+#include "LagrangianForm.hpp"
+
+namespace polyfem::solver
+{
+	/// @brief Form of the lagrangian in augmented lagrangian
+	class GenericLagrangianForm : public LagrangianForm
+	{
+	public:
+		/// @brief Construct a new GenericLagrangianForm object for the constraints Ax = b
+		/// @param A Constraints matrix
+		/// @param b Constraints value
+		GenericLagrangianForm(const StiffnessMatrix &A,
+							  const Eigen::VectorXd &b);
+
+		std::string name() const override { return "generic-lagrangian"; }
+
+		/// @brief Compute the value of the form
+		/// @param x Current solution
+		/// @return Computed value
+		double value_unweighted(const Eigen::VectorXd &x) const override;
+
+		/// @brief Compute the first derivative of the value wrt x
+		/// @param[in] x Current solution
+		/// @param[out] gradv Output gradient of the value wrt x
+		void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+
+		/// @brief Compute the second derivative of the value wrt x
+		/// @param[in] x Current solution
+		/// @param[out] hessian Output Hessian of the value wrt x
+		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
+
+	public:
+		void update_lagrangian(const Eigen::VectorXd &x, const double k_al) override;
+
+	private:
+		const StiffnessMatrix A;
+		const Eigen::VectorXd b;
+	};
+} // namespace polyfem::solver
