@@ -1,9 +1,5 @@
 set(SOURCES
 	Form.hpp
-	BCLagrangianForm.hpp
-	BCLagrangianForm.cpp
-	BCPenaltyForm.hpp
-	BCPenaltyForm.cpp
 	BodyForm.hpp
 	BodyForm.cpp
 	ElasticForm.hpp
@@ -39,3 +35,4 @@ target_sources(polyfem PRIVATE ${SOURCES})
 
 add_subdirectory(parametrization)
 add_subdirectory(adjoint_forms)
+add_subdirectory(lagrangian)

@@ -2,8 +2,8 @@
 
 #include <polyfem/solver/NLProblem.hpp>
 #include <polysolve/nonlinear/Solver.hpp>
-#include <polyfem/solver/forms/BCLagrangianForm.hpp>
-#include <polyfem/solver/forms/BCPenaltyForm.hpp>
+#include <polyfem/solver/forms/lagrangian/LagrangianForm.hpp>
+#include <polyfem/solver/forms/lagrangian/LagrangianPenaltyForm.hpp>
 #include <polyfem/Common.hpp>
 
 #include <Eigen/Core>
@@ -19,8 +19,8 @@ namespace polyfem::solver
 
 	public:
 		ALSolver(
-			std::shared_ptr<BCLagrangianForm> lagr_form,
-			std::shared_ptr<BCPenaltyForm> pen_form,
+			std::shared_ptr<LagrangianForm> lagr_form,
+			std::shared_ptr<LagrangianPenaltyForm> pen_form,
 			const double initial_al_weight,
 			const double scaling,
 			const double max_al_weight,
@@ -36,8 +36,10 @@ namespace polyfem::solver
 	protected:
 		void set_al_weight(NLProblem &nl_problem, const Eigen::VectorXd &x, const double weight);
 
-		std::shared_ptr<BCLagrangianForm> lagr_form;
-		std::shared_ptr<BCPenaltyForm> pen_form;
+		// std::vector<std::shared_ptr<LagrangianForm>> lagr_form;
+		// std::vector<std::shared_ptr<LagrangianPenaltyForm>> pen_form;
+		std::shared_ptr<LagrangianForm> lagr_form;
+		std::shared_ptr<LagrangianPenaltyForm> pen_form;
 		const double initial_al_weight;
 		const double scaling;
 		const double max_al_weight;

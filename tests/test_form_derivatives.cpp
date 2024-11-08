@@ -4,8 +4,8 @@
 #include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/assembler/FixedCorotational.hpp>
 
-#include <polyfem/solver/forms/BCLagrangianForm.hpp>
-#include <polyfem/solver/forms/BCPenaltyForm.hpp>
+#include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
+#include <polyfem/solver/forms/lagrangian/BCPenaltyForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
@@ -563,12 +563,12 @@ TEST_CASE("L2 projection form derivatives", "[form][form_derivatives][L2]")
 }
 
 TEST_CASE("AMIPS form derivatives", "[form][form_derivatives][amips_form]")
- {
- 	const int dim = GENERATE(2, 3);
- 	std::shared_ptr<State> state;
- 	{
- 		const std::string path = POLYFEM_DATA_DIR;
- 		json in_args = R"(
+{
+	const int dim = GENERATE(2, 3);
+	std::shared_ptr<State> state;
+	{
+		const std::string path = POLYFEM_DATA_DIR;
+		json in_args = R"(
  		{
  			"materials": {
  				"type": "AMIPS",
@@ -584,24 +584,24 @@ TEST_CASE("AMIPS form derivatives", "[form][form_derivatives][amips_form]")
  				}
  			}
  		})"_json;
- 		if (dim == 2)
- 		{
- 			in_args["geometry"] = R"([{
+		if (dim == 2)
+		{
+			in_args["geometry"] = R"([{
  				"enabled": true,
  				"surface_selection": 7
  			}])"_json;
- 			in_args["geometry"][0]["mesh"] = path + "/contact/meshes/2D/simple/circle/circle36.obj";
- 			in_args["boundary_conditions"] = R"({
+			in_args["geometry"][0]["mesh"] = path + "/contact/meshes/2D/simple/circle/circle36.obj";
+			in_args["boundary_conditions"] = R"({
  				"dirichlet_boundary": [{
  					"id": "all",
  					"value": [0, 0]
  				}],
  				"rhs": [10, 10]
  			})"_json;
- 		}
- 		else
- 		{
- 			in_args["geometry"] = R"([{
+		}
+		else
+		{
+			in_args["geometry"] = R"([{
  				"transformation": {
  					"scale": [0.1, 1, 1]
  				},
@@ -626,8 +626,8 @@ TEST_CASE("AMIPS form derivatives", "[form][form_derivatives][amips_form]")
  				],
  				"n_refs": 1
  			}])"_json;
- 			in_args["geometry"][0]["mesh"] = path + "/contact/meshes/3D/simple/bar/bar-6.msh";
- 			in_args["boundary_conditions"] = R"({
+			in_args["geometry"][0]["mesh"] = path + "/contact/meshes/3D/simple/bar/bar-6.msh";
+			in_args["boundary_conditions"] = R"({
  				"neumann_boundary": [{
  					"id": 1,
  					"value": [1000, 1000, 1000]
@@ -646,29 +646,29 @@ TEST_CASE("AMIPS form derivatives", "[form][form_derivatives][amips_form]")
  				}],
  				"rhs": [0, 0, 0]
  			})"_json;
- 		}
+		}
 
- 		state = std::make_shared<State>();
- 		state->init(in_args, true);
- 		state->set_max_threads(1);
+		state = std::make_shared<State>();
+		state->init(in_args, true);
+		state->set_max_threads(1);
 
- 		state->load_mesh();
+		state->load_mesh();
 
- 		state->build_basis();
- 		state->assemble_rhs();
- 		state->assemble_mass_mat();
- 	}
- 	ElasticForm form(
- 		state->n_bases,
- 		state->bases,
- 		state->geom_bases(),
- 		*state->assembler,
- 		state->ass_vals_cache,
- 		0,
- 		state->args["time"]["dt"],
- 		state->mesh->is_volume());
- 	test_form(form, *state);
- }
+		state->build_basis();
+		state->assemble_rhs();
+		state->assemble_mass_mat();
+	}
+	ElasticForm form(
+		state->n_bases,
+		state->bases,
+		state->geom_bases(),
+		*state->assembler,
+		state->ass_vals_cache,
+		0,
+		state->args["time"]["dt"],
+		state->mesh->is_volume());
+	test_form(form, *state);
+}
 
 TEST_CASE("Fixed corotational form derivatives", "[form][form_derivatives][elastic_form]")
 {
