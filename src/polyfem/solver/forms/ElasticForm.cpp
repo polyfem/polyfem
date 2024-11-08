@@ -357,7 +357,7 @@ namespace polyfem::solver
 			double transient_check_time = 0;
 			{
 				POLYFEM_SCOPED_TIMER("Transient Jacobian Check", transient_check_time);
-				std::tie(step, invalidID, invalidStep, subdivision_tree) = maxTimeStep(dim, bases_, geom_bases_, x0, x1);
+				std::tie(step, invalidID, invalidStep, subdivision_tree) = max_time_step(dim, bases_, geom_bases_, x0, x1);
 			}
 
 			logger().log(step == 0 ? spdlog::level::warn : (step == 1. ? spdlog::level::trace : spdlog::level::debug), 

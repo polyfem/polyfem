@@ -111,7 +111,7 @@ namespace polyfem::utils
         const Eigen::VectorXd &u2,
         const double threshold = 0);
 
-    std::tuple<double, int, double, Tree> maxTimeStep(
+    std::tuple<double, int, double, Tree> max_time_step(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
         const std::vector<basis::ElementBases> &gbases,

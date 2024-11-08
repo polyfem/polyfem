@@ -12,6 +12,41 @@ namespace polyfem::utils
 {
     namespace {
         template <int n, int s, int p>
+        bool check_static(
+            const int n_threads, 
+            const Eigen::MatrixXd &cp,
+            int &invalid_id,
+            Tree &tree)
+        {
+            std::vector<int> hierarchy;
+            StaticValidator<n,s,p> check(n_threads);
+            const auto flag_ = check.isValid(cp, &hierarchy, &invalid_id);
+            const bool flag = flag_ == Validity::valid;
+            if (!flag) {
+                Tree *dst = &tree;
+                for (const auto i : hierarchy) {
+                    dst->add_children(1<<n);
+                    dst = &(dst->child(i));
+                }
+            }
+            return flag;
+        }
+
+        template <int n, int s, int p>
+        bool check_transient(
+            const int n_threads, 
+            const Eigen::MatrixXd &cp1,
+            const Eigen::MatrixXd &cp2,
+            int &invalid_id)
+        {
+            std::vector<int> hierarchy;
+            ContinuousValidator<n,s,p> check(n_threads);
+            check.setPrecisionTarget(1);
+            const auto flag_ = check.maxTimeStep(cp1, cp2, &hierarchy, &invalid_id);
+            return flag_ == 1.;
+        }
+
+        template <int n, int s, int p>
         void check_transient(
             const int n_threads, 
             const Eigen::MatrixXd &cp1,
@@ -90,32 +125,48 @@ namespace polyfem::utils
         const Eigen::MatrixXd &cp,
         const Eigen::MatrixXd &uv)
     {
-        #define JAC_EVAL(n,s,p) \
-            case p: { \
-                JacobianEvaluator<n,s,p> evaluator(cp); \
-                return evaluator.eval(uv, 0); \
-            }
-
         if (cp.cols() == 2) {
             switch (order) {
-                JAC_EVAL(2,2,1)
-                JAC_EVAL(2,2,2)
-                JAC_EVAL(2,2,3)
-                JAC_EVAL(2,2,4)
+                case 1: {
+                    JacobianEvaluator<2, 2, 1> evaluator(cp);
+                    return evaluator.eval(uv, 0);
+                }
+                case 2: {
+                    JacobianEvaluator<2, 2, 2> evaluator(cp);
+                    return evaluator.eval(uv, 0);
+                }
+                case 3: {
+                    JacobianEvaluator<2, 2, 3> evaluator(cp);
+                    return evaluator.eval(uv, 0);
+                }
+                case 4: {
+                    JacobianEvaluator<2, 2, 4> evaluator(cp);
+                    return evaluator.eval(uv, 0);
+                }
                 default: throw std::invalid_argument("Order not supported");
             }
         }
         else {
             switch (order) {
-                JAC_EVAL(3,3,1)
-                JAC_EVAL(3,3,2)
-                JAC_EVAL(3,3,3)
-                JAC_EVAL(3,3,4)
+                case 1: {
+                    JacobianEvaluator<3, 3, 1> evaluator(cp);
+                    return evaluator.eval(uv, 0);
+                }
+                case 2: {
+                    JacobianEvaluator<3, 3, 2> evaluator(cp);
+                    return evaluator.eval(uv, 0);
+                }
+                case 3: {
+                    JacobianEvaluator<3, 3, 3> evaluator(cp);
+                    return evaluator.eval(uv, 0);
+                }
+                case 4: {
+                    JacobianEvaluator<3, 3, 4> evaluator(cp);
+                    return evaluator.eval(uv, 0);
+                }
                 default: throw std::invalid_argument("Order not supported");
             }
         }
-
-        #undef JAC_EVAL
     }
 
     std::vector<int> count_invalid(
@@ -129,34 +180,58 @@ namespace polyfem::utils
         const Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
 
         std::vector<int> invalidList;
-
-        #define CHECK_STATIC(n,s,p) \
-            case p: { \
-                StaticValidator<n,s,p> check(16 /*no. of threads*/); \
-                check.isValid(cp, nullptr, nullptr, &invalidList); \
-                break; \
-            }
+        const int n_threads = utils::NThread::get().num_threads();
 
         if (cp.cols() == 2) {
             switch (order) {
-                CHECK_STATIC(2,2,1)
-                CHECK_STATIC(2,2,2)
-                CHECK_STATIC(2,2,3)
-                CHECK_STATIC(2,2,4)
+                case 1: {
+                    StaticValidator<2, 2, 1> check(n_threads);
+                    check.isValid(cp, nullptr, nullptr, &invalidList);
+                    break;
+                }
+                case 2: {
+                    StaticValidator<2, 2, 2> check(n_threads);
+                    check.isValid(cp, nullptr, nullptr, &invalidList);
+                    break;
+                }
+                case 3: {
+                    StaticValidator<2, 2, 3> check(n_threads);
+                    check.isValid(cp, nullptr, nullptr, &invalidList);
+                    break;
+                }
+                case 4: {
+                    StaticValidator<2, 2, 4> check(n_threads);
+                    check.isValid(cp, nullptr, nullptr, &invalidList);
+                    break;
+                }
                 default: throw std::invalid_argument("Order not supported");
             }
         }
         else {
             switch (order) {
-                CHECK_STATIC(3,3,1)
-                CHECK_STATIC(3,3,2)
-                CHECK_STATIC(3,3,3)
-                CHECK_STATIC(3,3,4)
+                case 1: {
+                    StaticValidator<3, 3, 1> check(n_threads);
+                    check.isValid(cp, nullptr, nullptr, &invalidList);
+                    break;
+                }
+                case 2: {
+                    StaticValidator<3, 3, 2> check(n_threads);
+                    check.isValid(cp, nullptr, nullptr, &invalidList);
+                    break;
+                }
+                case 3: {
+                    StaticValidator<3, 3, 3> check(n_threads);
+                    check.isValid(cp, nullptr, nullptr, &invalidList);
+                    break;
+                }
+                case 4: {
+                    StaticValidator<3, 3, 4> check(n_threads);
+                    check.isValid(cp, nullptr, nullptr, &invalidList);
+                    break;
+                }
                 default: throw std::invalid_argument("Order not supported");
             }
         }
-
-        #undef CHECK_STATIC
         
         return invalidList;
     }
@@ -177,42 +252,44 @@ namespace polyfem::utils
         int invalid_id = 0;
         Tree tree;
 
-        #define CHECK_STATIC(n,s,p) \
-            case p: { \
-                std::vector<int> hierarchy; \
-                StaticValidator<n,s,p> check(16 /*no. of threads*/); \
-                const auto flag_ = check.isValid(cp, &hierarchy, &invalid_id); \
-                flag = flag_ == Validity::valid; \
-                if (!flag) { \
-                    Tree *dst = &tree; \
-                    for (const auto i : hierarchy) { \
-                        dst->add_children(1<<n); \
-                        dst = &(dst->child(i)); \
-                    } \
-                } \
-                break; \
-            }
+        const int n_threads = utils::NThread::get().num_threads();
 
         if (dim == 2) {
             switch (order) {
-                CHECK_STATIC(2,2,1)
-                CHECK_STATIC(2,2,2)
-                CHECK_STATIC(2,2,3)
-                CHECK_STATIC(2,2,4)
-                default: throw std::invalid_argument("Order not supported");
+                case 1:
+                    flag = check_static<2, 2, 1>(n_threads, cp, invalid_id, tree);
+                    break;
+                case 2:
+                    flag = check_static<2, 2, 2>(n_threads, cp, invalid_id, tree);
+                    break;
+                case 3:
+                    flag = check_static<2, 2, 3>(n_threads, cp, invalid_id, tree);
+                    break;
+                case 4:
+                    flag = check_static<2, 2, 4>(n_threads, cp, invalid_id, tree);
+                    break;
+                default:
+                    throw std::invalid_argument("Order not supported");
             }
         }
         else {
             switch (order) {
-                CHECK_STATIC(3,3,1)
-                CHECK_STATIC(3,3,2)
-                CHECK_STATIC(3,3,3)
-                CHECK_STATIC(3,3,4)
-                default: throw std::invalid_argument("Order not supported");
+                case 1:
+                    flag = check_static<3, 3, 1>(n_threads, cp, invalid_id, tree);
+                    break;
+                case 2:
+                    flag = check_static<3, 3, 2>(n_threads, cp, invalid_id, tree);
+                    break;
+                case 3:
+                    flag = check_static<3, 3, 3>(n_threads, cp, invalid_id, tree);
+                    break;
+                case 4:
+                    flag = check_static<3, 3, 4>(n_threads, cp, invalid_id, tree);
+                    break;
+                default:
+                    throw std::invalid_argument("Order not supported");
             }
         }
-
-        #undef CHECK_STATIC
         
         return {flag, invalid_id, tree};
     }
@@ -231,44 +308,40 @@ namespace polyfem::utils
         const Eigen::MatrixXd cp1 = extract_nodes(dim, bases, gbases, u1, order);
         const Eigen::MatrixXd cp2 = extract_nodes(dim, bases, gbases, u2, order);
 
-        bool flag = false;
         int invalid_id = 0;
-
-        #define CHECK_CONTINUOUS(n,s,p) \
-            case p: { \
-                std::vector<int> hierarchy; \
-                ContinuousValidator<n,s,p> check(16 /*no. of threads*/); \
-                check.setPrecisionTarget(1); \
-                const auto flag_ = check.maxTimeStep(cp1, cp2, &hierarchy, &invalid_id); \
-                flag = flag_ == 1.; \
-                break; \
-            }
+        const int n_threads = utils::NThread::get().num_threads();
 
         if (dim == 2) {
             switch (order) {
-                CHECK_CONTINUOUS(2,2,1)
-                CHECK_CONTINUOUS(2,2,2)
-                CHECK_CONTINUOUS(2,2,3)
-                CHECK_CONTINUOUS(2,2,4)
-                default: throw std::invalid_argument("Order not supported");
+                case 1:
+                    return check_transient<2, 2, 1>(n_threads, cp1, cp2, invalid_id);
+                case 2:
+                    return check_transient<2, 2, 2>(n_threads, cp1, cp2, invalid_id);
+                case 3:
+                    return check_transient<2, 2, 3>(n_threads, cp1, cp2, invalid_id);
+                case 4:
+                    return check_transient<2, 2, 4>(n_threads, cp1, cp2, invalid_id);
+                default:
+                    throw std::invalid_argument("Order not supported");
             }
         }
         else {
             switch (order) {
-                CHECK_CONTINUOUS(3,3,1)
-                CHECK_CONTINUOUS(3,3,2)
-                CHECK_CONTINUOUS(3,3,3)
-                CHECK_CONTINUOUS(3,3,4)
-                default: throw std::invalid_argument("Order not supported");
+                case 1:
+                    return check_transient<3, 3, 1>(n_threads, cp1, cp2, invalid_id);
+                case 2:
+                    return check_transient<3, 3, 2>(n_threads, cp1, cp2, invalid_id);
+                case 3:
+                    return check_transient<3, 3, 3>(n_threads, cp1, cp2, invalid_id);
+                case 4:
+                    return check_transient<3, 3, 4>(n_threads, cp1, cp2, invalid_id);
+                default:
+                    throw std::invalid_argument("Order not supported");
             }
         }
-
-        #undef CHECK_CONTINUOUS
-        
-        return flag;
     }
 
-    std::tuple<double, int, double, Tree> maxTimeStep(
+    std::tuple<double, int, double, Tree> max_time_step(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
         const std::vector<basis::ElementBases> &gbases, 
@@ -327,8 +400,6 @@ namespace polyfem::utils
                     throw std::invalid_argument("Order not supported");
             }
         }
-
-        #undef MAX_TIME_STEP
 
         // if (gaveUp)
         //     logger().warn("Jacobian check gave up!");
