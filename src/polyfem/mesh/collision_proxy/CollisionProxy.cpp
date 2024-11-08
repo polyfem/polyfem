@@ -348,6 +348,13 @@ namespace polyfem::mesh
 		bbox[0] = vertices.colwise().minCoeff();
 		bbox[1] = vertices.colwise().maxCoeff();
 
+		if (vertices.cols() > 2 && bbox[0][2] == bbox[1][2] && bbox[0][2] == 0)
+		{
+			vertices = vertices.leftCols(2).eval();
+			bbox[0] = vertices.colwise().minCoeff();
+			bbox[1] = vertices.colwise().maxCoeff();
+		}
+
 		MatrixNd A;
 		VectorNd b;
 		// TODO: pass correct unit scale
