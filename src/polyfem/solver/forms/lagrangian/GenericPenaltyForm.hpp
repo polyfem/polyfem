@@ -1,20 +1,20 @@
 #pragma once
 
-#include "LagrangianForm.hpp"
+#include "LagrangianPenaltyForm.hpp"
 
 namespace polyfem::solver
 {
-	/// @brief Form of the lagrangian in augmented lagrangian
-	class GenericLagrangianForm : public LagrangianForm
+	/// @brief Form of the penalty in augmented lagrangian
+	class GenericPenaltyForm : public LagrangianPenaltyForm
 	{
 	public:
-		/// @brief Construct a new GenericLagrangianForm object for the constraints Ax = b
+		/// @brief Construct a new GenericPenaltyForm object for the constraints Ax = b
 		/// @param A Constraints matrix
 		/// @param b Constraints value
-		GenericLagrangianForm(const StiffnessMatrix &A,
-							  const Eigen::VectorXd &b);
+		GenericPenaltyForm(const StiffnessMatrix &A,
+						   const Eigen::VectorXd &b);
 
-		std::string name() const override { return "generic-lagrangian"; }
+		std::string name() const override { return "generic-penalty"; }
 
 		/// @brief Compute the value of the form
 		/// @param x Current solution
@@ -32,7 +32,7 @@ namespace polyfem::solver
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
 	public:
-		void update_lagrangian(const Eigen::VectorXd &x, const double k_al) override;
+		double compute_error(const Eigen::VectorXd &x) const override;
 
 	private:
 		const StiffnessMatrix A;
