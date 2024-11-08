@@ -268,10 +268,8 @@ namespace polyfem::solver
 		quadrature_hierarchy_.resize(bases_.size());
 
 		quadrature_order_ = AssemblerUtils::quadrature_order(assembler_.name(), bases_[0].bases[0].order(), AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, is_volume_ ? 3 : 2);
-
-		logger().debug("Check inversion: {}", check_inversion_);
 	
-		if (check_inversion_ != "Discrete")
+		if (check_inversion_ != ElementInversionCheck::Discrete)
 		{
 			Eigen::VectorXd x0;
 			x0.setZero(n_bases_ * (is_volume_ ? 3 : 2));
@@ -345,7 +343,7 @@ namespace polyfem::solver
 
 	double ElasticForm::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
-		if (check_inversion_ == "Discrete")
+		if (check_inversion_ == ElementInversionCheck::Discrete)
 			return 1.;
 
 		const int dim = is_volume_ ? 3 : 2;
@@ -388,7 +386,7 @@ namespace polyfem::solver
 
 	bool ElasticForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{		
-		if (check_inversion_ == "Discrete")
+		if (check_inversion_ == ElementInversionCheck::Discrete)
 			return true;
 
 		const auto [isvalid, id, tree] = is_valid(is_volume_ ? 3 : 2, bases_, geom_bases_, x1);

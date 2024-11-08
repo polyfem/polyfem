@@ -11,7 +11,11 @@
 
 namespace polyfem::solver
 {
-	using ElementInversionCheck = std::string;
+	enum class ElementInversionCheck { Discrete, Conservative };
+	NLOHMANN_JSON_SERIALIZE_ENUM(
+		polyfem::solver::ElementInversionCheck,
+		{{ElementInversionCheck::Discrete, "Discrete"},
+		{ElementInversionCheck::Conservative, "Conservative"}})
 
 	/// @brief Form of the elasticity potential and forces
 	class ElasticForm : public Form
@@ -27,7 +31,7 @@ namespace polyfem::solver
 					const double t, const double dt,
 					const bool is_volume,
 					const double jacobian_threshold = 0.,
-					const ElementInversionCheck check_inversion = "Discrete");
+					const ElementInversionCheck check_inversion = ElementInversionCheck::Discrete);
 
 		std::string name() const override { return "elastic"; }
 
