@@ -45,7 +45,8 @@ namespace polyfem::solver
 	class MacroStrainALForm;
 	class FrictionForm;
 	class BodyForm;
-	class AugmentedLagrangianForm;
+	class LagrangianForm;
+	class LagrangianPenaltyForm;
 	class MacroStrainLagrangianForm;
 	class MacroStrainALForm;
 	class InertiaForm;
@@ -163,7 +164,8 @@ namespace polyfem::solver
 		std::shared_ptr<assembler::PressureAssembler> pressure_assembler;
 		std::shared_ptr<solver::NLProblem> nl_problem;
 
-		std::vector<std::shared_ptr<solver::AugmentedLagrangianForm>> al_form;
+		std::shared_ptr<solver::LagrangianForm> al_lagr_form;
+		std::shared_ptr<solver::LagrangianPenaltyForm> al_pen_form;
 		std::shared_ptr<solver::MacroStrainLagrangianForm> strain_al_lagr_form;
 		std::shared_ptr<solver::BodyForm> body_form;
 		std::shared_ptr<solver::ContactForm> contact_form;

@@ -5,7 +5,8 @@
 namespace polyfem::solver
 {
 	ALSolver::ALSolver(
-		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &alagr_form,
+		std::shared_ptr<LagrangianForm> lagr_form,
+		std::shared_ptr<LagrangianPenaltyForm> pen_form,
 		const double initial_al_weight,
 		const double scaling,
 		const double max_al_weight,
