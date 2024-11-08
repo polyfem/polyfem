@@ -3,7 +3,9 @@
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/Form.hpp>
 #include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
-#include <polyfem/solver/forms/lagrangian/MacroStrainLagrangianForm.hpp>
+#include <polyfem/solver/forms/lagrangian/BCPenaltyForm.hpp>
+#include <polyfem/solver/forms/MacroStrainLagrangianForm.hpp>
+#include <polyfem/solver/forms/MacroStrainALForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/PressureForm.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>

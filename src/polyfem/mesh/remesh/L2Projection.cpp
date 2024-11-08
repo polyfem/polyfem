@@ -2,6 +2,7 @@
 
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/problems/StaticBoundaryNLProblem.hpp>
+#include <polyfem/solver/forms/lagrangian/BCPenaltyForm.hpp>
 #include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/InversionBarrierForm.hpp>
 #include <polyfem/solver/forms/L2ProjectionForm.hpp>
