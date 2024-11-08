@@ -1,12 +1,7 @@
 #include <element_validity.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/par_for.hpp>
 #include "Jacobian.hpp"
-#include <iostream>
-#include <fstream>
-#include <filesystem>
-#include <paraviewo/ParaviewWriter.hpp>
-#include <paraviewo/VTUWriter.hpp>
-#include <paraviewo/HDF5VTUWriter.hpp>
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/io/Evaluator.hpp>
 
@@ -15,6 +10,34 @@ using namespace polyfem::assembler;
 
 namespace polyfem::utils
 {
+    namespace {
+        template <int n, int s, int p>
+        void check_transient(
+            const int n_threads, 
+            const Eigen::MatrixXd &cp1,
+            const Eigen::MatrixXd &cp2,
+            double &step, 
+            int &invalid_id, 
+            double &invalid_step, 
+            bool &gaveUp, 
+            Tree &tree)
+        { 
+            std::vector<int> hierarchy;
+            ContinuousValidator<n,s,p> check(n_threads);
+            typename ContinuousValidator<n,s,p>::Info info;
+            step = check.maxTimeStep( 
+                cp1, cp2, &hierarchy, &invalid_id, &invalid_step, &info 
+            );
+            gaveUp = !info.success();
+            if (step < 1) { 
+                Tree *dst = &tree;
+                for (const auto i : hierarchy) { 
+                    dst->add_children(1<<n);
+                    dst = &(dst->child(i));
+                } 
+            }
+        }
+    }
     Eigen::MatrixXd extract_nodes(const int dim, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const Eigen::VectorXd &u, int order, int n_elem)
     {
         if (n_elem < 0)
@@ -95,7 +118,7 @@ namespace polyfem::utils
         #undef JAC_EVAL
     }
 
-    std::vector<uint> count_invalid(
+    std::vector<int> count_invalid(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
         const std::vector<basis::ElementBases> &gbases, 
@@ -105,7 +128,7 @@ namespace polyfem::utils
         const int n_basis_per_cell = std::max(bases[0].bases.size(), gbases[0].bases.size());
         const Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
 
-        std::vector<uint> invalidList;
+        std::vector<int> invalidList;
 
         #define CHECK_STATIC(n,s,p) \
             case p: { \
@@ -151,12 +174,12 @@ namespace polyfem::utils
         Eigen::MatrixXd cp = extract_nodes(dim, bases, gbases, u, order);
 
         bool flag = false;
-        unsigned invalid_id = 0;
+        int invalid_id = 0;
         Tree tree;
 
         #define CHECK_STATIC(n,s,p) \
             case p: { \
-                std::vector<unsigned> hierarchy; \
+                std::vector<int> hierarchy; \
                 StaticValidator<n,s,p> check(16 /*no. of threads*/); \
                 const auto flag_ = check.isValid(cp, &hierarchy, &invalid_id); \
                 flag = flag_ == Validity::valid; \
@@ -209,11 +232,11 @@ namespace polyfem::utils
         const Eigen::MatrixXd cp2 = extract_nodes(dim, bases, gbases, u2, order);
 
         bool flag = false;
-        unsigned invalid_id = 0;
+        int invalid_id = 0;
 
         #define CHECK_CONTINUOUS(n,s,p) \
             case p: { \
-                std::vector<unsigned> hierarchy; \
+                std::vector<int> hierarchy; \
                 ContinuousValidator<n,s,p> check(16 /*no. of threads*/); \
                 check.setPrecisionTarget(1); \
                 const auto flag_ = check.maxTimeStep(cp1, cp2, &hierarchy, &invalid_id); \
@@ -245,19 +268,6 @@ namespace polyfem::utils
         return flag;
     }
 
-    void print_eigen(const Eigen::MatrixXd &mat)
-    {
-        for (int i = 0; i < mat.rows(); i++)
-        {
-            for (int j = 0; j < mat.cols(); j++)
-            {
-                std::cout << mat(i, j);
-                if (i < mat.rows() - 1 || j < mat.cols() - 1)
-                    std::cout << ", ";
-            }
-        }
-    }
-
     std::tuple<double, int, double, Tree> maxTimeStep(
         const int dim,
         const std::vector<basis::ElementBases> &bases, 
@@ -273,54 +283,55 @@ namespace polyfem::utils
 
         // logger().debug("Jacobian check order {}, number of nodes per cell {}, number of total nodes {}", order, n_basis_per_cell, cp2.rows());
 
-        unsigned invalid_id = -1;
+        int invalid_id = -1;
         bool gaveUp = false;
         double step = 1;
         double invalid_step = 1.;
         Tree tree;
 
-        #define MAX_TIME_STEP(n,s,p) \
-            case p: { \
-                std::vector<unsigned> hierarchy; \
-                ContinuousValidator<n,s,p> check(16 /*no. of threads*/); \
-                ContinuousValidator<n,s,p>::Info info; \
-                step = check.maxTimeStep( \
-                    cp1, cp2, &hierarchy, &invalid_id, &invalid_step, &info \
-                ); \
-                gaveUp = !info.success(); \
-                if (step < 1) { \
-                    Tree *dst = &tree; \
-                    for (const auto i : hierarchy) { \
-                        dst->add_children(1<<n); \
-                        dst = &(dst->child(i)); \
-                    } \
-                } \
-                break; \
-            }
+        const int n_threads = utils::NThread::get().num_threads();
 
         if (dim == 2) {
             switch (order) {
-                MAX_TIME_STEP(2,2,1)
-                MAX_TIME_STEP(2,2,2)
-                MAX_TIME_STEP(2,2,3)
-                MAX_TIME_STEP(2,2,4)
-                default: throw std::invalid_argument("Order not supported");
+                case 1:
+                    check_transient<2, 2, 1>(n_threads, cp1, cp2, step, invalid_id, invalid_step, gaveUp, tree);
+                    break;
+                case 2:
+                    check_transient<2, 2, 2>(n_threads, cp1, cp2, step, invalid_id, invalid_step, gaveUp, tree);
+                    break;
+                case 3:
+                    check_transient<2, 2, 3>(n_threads, cp1, cp2, step, invalid_id, invalid_step, gaveUp, tree);
+                    break;
+                case 4:
+                    check_transient<2, 2, 4>(n_threads, cp1, cp2, step, invalid_id, invalid_step, gaveUp, tree);
+                    break;
+                default:
+                    throw std::invalid_argument("Order not supported");
             }
         }
         else {
             switch (order) {
-                MAX_TIME_STEP(3,3,1)
-                MAX_TIME_STEP(3,3,2)
-                MAX_TIME_STEP(3,3,3)
-                MAX_TIME_STEP(3,3,4)
-                default: throw std::invalid_argument("Order not supported");
+                case 1:
+                    check_transient<3, 3, 1>(n_threads, cp1, cp2, step, invalid_id, invalid_step, gaveUp, tree);
+                    break;
+                case 2:
+                    check_transient<3, 3, 2>(n_threads, cp1, cp2, step, invalid_id, invalid_step, gaveUp, tree);
+                    break;
+                case 3:
+                    check_transient<3, 3, 3>(n_threads, cp1, cp2, step, invalid_id, invalid_step, gaveUp, tree);
+                    break;
+                case 4:
+                    check_transient<3, 3, 4>(n_threads, cp1, cp2, step, invalid_id, invalid_step, gaveUp, tree);
+                    break;
+                default:
+                    throw std::invalid_argument("Order not supported");
             }
         }
 
         #undef MAX_TIME_STEP
 
-        if (gaveUp)
-            logger().warn("Jacobian check gave up!");
+        // if (gaveUp)
+        //     logger().warn("Jacobian check gave up!");
 
         return {step, invalid_id, invalid_step, tree};
     }

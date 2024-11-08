@@ -169,14 +169,14 @@ namespace polyfem::solver
 			Quadrature tmp, quad;
 			if (dim == 2)
 			{
-				TriQuadrature tri_quadrature;
+				TriQuadrature tri_quadrature(true);
 				tri_quadrature.get_quadrature(order, tmp);
 				tmp.points.conservativeResize(tmp.points.rows(), dim + 1);
 				tmp.points.col(dim) = 1. - tmp.points.col(0).array() - tmp.points.col(1).array();
 			}
 			else
 			{
-				TetQuadrature tet_quadrature;
+				TetQuadrature tet_quadrature(true);
 				tet_quadrature.get_quadrature(order, tmp);
 				tmp.points.conservativeResize(tmp.points.rows(), dim + 1);
 				tmp.points.col(dim) = 1. - tmp.points.col(0).array() - tmp.points.col(1).array() - tmp.points.col(2).array();
@@ -360,7 +360,7 @@ namespace polyfem::solver
 				std::tie(step, invalidID, invalidStep, subdivision_tree) = maxTimeStep(dim, bases_, geom_bases_, x0, x1);
 			}
 
-			logger().log(step == 0 ? spdlog::level::warn : spdlog::level::debug, 
+			logger().log(step == 0 ? spdlog::level::warn : (step == 1. ? spdlog::level::trace : spdlog::level::debug), 
 				"Jacobian max step size: {} at element {}, invalid step size: {}, tree depth {}, runtime {} sec", step, invalidID, invalidStep, subdivision_tree.depth(), transient_check_time);
 		}
 

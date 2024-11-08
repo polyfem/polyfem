@@ -1512,12 +1512,12 @@ int LagrangeBasis3d::build_bases(
 			const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 3);
 			const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 3);
 
-			b.set_quadrature([real_order](Quadrature &quad) {
-				TetQuadrature tet_quadrature;
+			b.set_quadrature([real_order, use_corner_quadrature](Quadrature &quad) {
+				TetQuadrature tet_quadrature(use_corner_quadrature);
 				tet_quadrature.get_quadrature(real_order, quad);
 			});
-			b.set_mass_quadrature([real_mass_order](Quadrature &quad) {
-				TetQuadrature tet_quadrature;
+			b.set_mass_quadrature([real_mass_order, use_corner_quadrature](Quadrature &quad) {
+				TetQuadrature tet_quadrature(use_corner_quadrature);
 				tet_quadrature.get_quadrature(real_mass_order, quad);
 			});
 
