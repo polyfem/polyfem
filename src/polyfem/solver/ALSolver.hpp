@@ -36,10 +36,8 @@ namespace polyfem::solver
 	protected:
 		void set_al_weight(NLProblem &nl_problem, const Eigen::VectorXd &x, const double weight);
 
-		// std::vector<std::shared_ptr<LagrangianForm>> lagr_form;
-		// std::vector<std::shared_ptr<LagrangianPenaltyForm>> pen_form;
-		std::shared_ptr<LagrangianForm> lagr_form;
-		std::shared_ptr<LagrangianPenaltyForm> pen_form;
+		std::vector<std::shared_ptr<LagrangianForm>> lagr_forms;
+		std::vector<std::shared_ptr<LagrangianPenaltyForm>> pen_forms;
 		const double initial_al_weight;
 		const double scaling;
 		const double max_al_weight;
