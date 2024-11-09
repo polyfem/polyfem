@@ -238,6 +238,28 @@ TEST_CASE("weights", "[quadrature]")
 		REQUIRE(quadr.points.minCoeff() >= 0.0);
 		REQUIRE(quadr.points.maxCoeff() <= 1.0);
 	}
+
+	// Triangle Corner
+	for (int order = 1; order < 15; ++order)
+	{
+		TriQuadrature tri(true);
+		Quadrature quadr;
+		tri.get_quadrature(order, quadr);
+		REQUIRE(quadr.weights.sum() == Catch::Approx(0.5).margin(1e-12));
+		REQUIRE(quadr.points.minCoeff() >= 0.0);
+		REQUIRE(quadr.points.maxCoeff() <= 1.0);
+	}
+
+	// Tetrahedron Corner
+	for (int order = 1; order < 10; ++order)
+	{
+		TetQuadrature tri(true);
+		Quadrature quadr;
+		tri.get_quadrature(order, quadr);
+		REQUIRE(quadr.weights.sum() == Catch::Approx(1.0 / 6.0).margin(1e-12));
+		REQUIRE(quadr.points.minCoeff() >= 0.0);
+		REQUIRE(quadr.points.maxCoeff() <= 1.0);
+	}
 }
 
 // TEST_CASE("triangle", "[quadrature]") {
