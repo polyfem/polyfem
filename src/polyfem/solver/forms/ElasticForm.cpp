@@ -362,7 +362,7 @@ namespace polyfem::solver
 				"Jacobian max step size: {} at element {}, invalid step size: {}, tree depth {}, runtime {} sec", step, invalidID, invalidStep, subdivision_tree.depth(), transient_check_time);
 		}
 
-		if (invalidID >= 0 && step <= 0.25)
+		if (invalidID >= 0 && step <= 0.5)
 		{
 			auto& bs = bases_[invalidID];
 			auto& gbs = geom_bases_[invalidID];
