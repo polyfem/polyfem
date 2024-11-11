@@ -136,7 +136,7 @@ namespace
         for (int i = 0, k = 0; i <= N; i++)
             for (int j = 0; i + j <= N; j++, k++)
             {
-                std::array<int, 3> arr = {i, j, N - i - j};
+                std::array<int, 3> arr = {{i, j, N - i - j}};
                 std::sort(arr.begin(), arr.end());
 
                 out.row(k) << i, j, N - i - j;
@@ -156,7 +156,7 @@ namespace
             for (int j = 0; j <= N; j++)
                 for (int l = 0; i + j + l <= N; l++, k++)
                 {
-                    std::array<int, 4> arr = {i, j, l, N - i - j - l};
+                    std::array<int, 4> arr = {{i, j, l, N - i - j - l}};
                     std::sort(arr.begin(), arr.end());
 
                     out.row(k) << i, j, l, N - i - j - l;
