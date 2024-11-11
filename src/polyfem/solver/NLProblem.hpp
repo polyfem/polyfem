@@ -2,7 +2,7 @@
 
 #include <polyfem/solver/FullNLProblem.hpp>
 #include <polyfem/assembler/PeriodicBoundary.hpp>
-#include <polyfem/solver/forms/lagrangian/AugmentedLagrangianForm.hpp>
+#include <polyfem/solver/forms/lagrangian/LagrangianPenaltyForm.hpp>
 
 namespace polyfem::solver
 {
@@ -16,15 +16,17 @@ namespace polyfem::solver
 	protected:
 		NLProblem(
 			const int full_size,
+			const std::vector<int> &constraint_nodes,
 			const std::vector<std::shared_ptr<Form>> &forms,
-			const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms);
+			const std::vector<std::shared_ptr<LagrangianPenaltyForm>> &penalty_forms);
 
 	public:
 		NLProblem(const int full_size,
+				  const std::vector<int> &constraint_nodes,
 				  const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
 				  const double t,
 				  const std::vector<std::shared_ptr<Form>> &forms,
-				  const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms);
+				  const std::vector<std::shared_ptr<LagrangianPenaltyForm>> &penalty_forms);
 		virtual ~NLProblem() = default;
 
 		virtual double value(const TVector &x) override;
@@ -59,8 +61,10 @@ namespace polyfem::solver
 
 	protected:
 		virtual Eigen::MatrixXd constraint_values(const TVector &reduced) const;
+		virtual Eigen::MatrixXd constraint_values(const TVector &reduced) const;
 
-		std::vector<int> constraint_nodes_;
+		const std::vector<int> full_constraint_nodes_;
+		const std::vector<int> constraint_nodes_;
 
 		const int full_size_; ///< Size of the full problem
 		int reduced_size_;    ///< Size of the reduced problem
@@ -81,17 +85,18 @@ namespace polyfem::solver
 		double t_;
 
 	private:
-		std::vector<std::shared_ptr<AugmentedLagrangianForm>> penalty_forms_;
-
-		void setup_constrain_nodes();
+		std::vector<std::shared_ptr<LagrangianPenaltyForm>> penalty_forms_;
 
 		template <class FullMat, class ReducedMat>
+		void full_to_reduced_aux(const std::vector<int> &constraint_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const;
 		void full_to_reduced_aux(const std::vector<int> &constraint_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const;
 
 		template <class ReducedMat, class FullMat>
 		void reduced_to_full_aux(const std::vector<int> &constraint_nodes, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full) const;
+		void reduced_to_full_aux(const std::vector<int> &constraint_nodes, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full) const;
 
 		template <class FullMat, class ReducedMat>
+		void full_to_reduced_aux_grad(const std::vector<int> &constraint_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const;
 		void full_to_reduced_aux_grad(const std::vector<int> &constraint_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const;
 	};
 } // namespace polyfem::solver

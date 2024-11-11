@@ -9,7 +9,7 @@
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/problems/StaticBoundaryNLProblem.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
-#include <polyfem/solver/forms/lagrangian/AugmentedLagrangianForm.hpp>
+#include <polyfem/solver/forms/lagrangian/LagrangianPenaltyForm.hpp>
 
 namespace polyfem::mesh
 {
@@ -311,9 +311,9 @@ namespace polyfem::mesh
 			solve_data.al_lagr_form.clear();
 			solve_data.al_pen_form.clear();
 		}
-
+		const std::vector<std::shared_ptr<polyfem::solver::LagrangianPenaltyForm>> penalty_forms;
 		solve_data.nl_problem = std::make_shared<polyfem::solver::StaticBoundaryNLProblem>(
-			ndof(), target_x, forms, penalty_forms);
+			ndof(), boundary_nodes, target_x, forms, penalty_forms);
 
 		assert(solve_data.time_integrator != nullptr);
 		solve_data.nl_problem->update_quantities(current_time, solve_data.time_integrator->x_prev());
