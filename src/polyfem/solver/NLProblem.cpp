@@ -2,6 +2,7 @@
 
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 /*
 m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\newline
@@ -21,11 +22,15 @@ namespace polyfem::solver
 {
 	NLProblem::NLProblem(
 		const int full_size,
+		const std::vector<int> &constraint_nodes,
 		const std::vector<std::shared_ptr<Form>> &forms,
-		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms)
+		const std::vector<std::shared_ptr<LagrangianPenaltyForm>> &penalty_forms)
 		: FullNLProblem(forms),
+		  constraint_nodes_(constraint_nodes),
 		  full_size_(full_size),
+		  reduced_size_(full_size_ - constraint_nodes.size()),
 		  t_(0),
+		  penalty_forms_(penalty_forms)
 		  penalty_forms_(penalty_forms)
 	{
 		setup_constrain_nodes();
@@ -36,21 +41,22 @@ namespace polyfem::solver
 
 	NLProblem::NLProblem(
 		const int full_size,
+		const std::vector<int> &constraint_nodes,
 		const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
 		const double t,
 		const std::vector<std::shared_ptr<Form>> &forms,
-		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms)
+		const std::vector<std::shared_ptr<LagrangianPenaltyForm>> &penalty_forms)
 		: FullNLProblem(forms),
+		  full_constraint_nodes_(constraint_nodes),
+		  constraint_nodes_(periodic_bc ? periodic_bc->full_to_periodic(constraint_nodes) : constraint_nodes),
 		  full_size_(full_size),
+		  reduced_size_((periodic_bc ? periodic_bc->n_periodic_dof() : full_size) - constraint_nodes_.size()),
 		  periodic_bc_(periodic_bc),
 		  t_(t),
 		  penalty_forms_(penalty_forms)
 	{
-		setup_constrain_nodes();
-		reduced_size_ = (periodic_bc ? periodic_bc->n_periodic_dof() : full_size) - constraint_nodes_.size();
-
-		assert(std::is_sorted(constraint_nodes_.begin(), constraint_nodes_.end()));
-		assert(constraint_nodes_.size() == 0 || (constraint_nodes_.front() >= 0 && constraint_nodes_.back() < full_size_));
+		assert(std::is_sorted(constraint_nodes.begin(), constraint_nodes.end()));
+		assert(constraint_nodes.size() == 0 || (constraint_nodes.front() >= 0 && constraint_nodes.back() < full_size_));
 		use_reduced_size();
 	}
 
@@ -170,7 +176,7 @@ namespace polyfem::solver
 	Eigen::MatrixXd NLProblem::constraint_values(const TVector &reduced) const
 	{
 		Eigen::MatrixXd result = Eigen::MatrixXd::Zero(full_size(), 1);
-
+		// rhs_assembler_->set_bc(*local_boundary_, full_constraint_nodes_, n_boundary_samples_, std::vector<mesh::LocalBoundary>(), result, Eigen::MatrixXd(), t_);
 		for (const auto &form : penalty_forms_)
 		{
 			const auto tmp = form->target(reduced);
