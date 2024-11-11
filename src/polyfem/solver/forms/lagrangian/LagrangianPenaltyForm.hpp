@@ -16,6 +16,7 @@ namespace polyfem::solver
 		// Eigen::VectorXd target() const { return target_x_; }
 
 		virtual double compute_error(const Eigen::VectorXd &x) const = 0;
+		virtual Eigen::VectorXd target(const Eigen::VectorXd &x) const { return Eigen::VectorXd{}; };
 
 	protected:
 		// StiffnessMatrix mask_; ///< identity matrix masked by the AL dofs

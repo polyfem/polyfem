@@ -71,7 +71,7 @@ namespace polyfem::solver
 
 		StiffnessMatrix &mask() { return mask_; }
 		const StiffnessMatrix &mask() const { return mask_; }
-		Eigen::VectorXd target() const { return target_x_; }
+		Eigen::VectorXd target(const Eigen::VectorXd &) const override { return target_x_; }
 
 		double compute_error(const Eigen::VectorXd &x) const override;
 

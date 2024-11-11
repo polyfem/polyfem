@@ -103,7 +103,7 @@ namespace polyfem::solver
 
 	double BCPenaltyForm::compute_error(const Eigen::VectorXd &x) const
 	{
-		return (this->target() - x).transpose() * this->mask() * (this->target() - x);
+		return (this->target(x) - x).transpose() * this->mask() * (this->target(x) - x);
 	}
 
 	void BCPenaltyForm::update_target(const double t)

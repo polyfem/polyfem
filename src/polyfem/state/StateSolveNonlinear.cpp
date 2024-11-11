@@ -267,8 +267,7 @@ namespace polyfem
 
 		const int ndof = n_bases * mesh->dimension();
 		solve_data.nl_problem = std::make_shared<NLProblem>(
-			ndof, boundary_nodes, local_boundary, n_boundary_samples(),
-			*solve_data.rhs_assembler, periodic_bc, t, forms);
+			ndof, boundary_nodes, periodic_bc, t, forms, solve_data.al_pen_form);
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
 		// --------------------------------------------------------------------

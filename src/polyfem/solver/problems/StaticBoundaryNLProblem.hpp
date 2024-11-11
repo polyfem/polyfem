@@ -11,14 +11,15 @@ namespace polyfem::solver
 			const int full_size,
 			const std::vector<int> &boundary_nodes,
 			const Eigen::VectorXd &boundary_values,
-			const std::vector<std::shared_ptr<polyfem::solver::Form>> &forms)
-			: polyfem::solver::NLProblem(full_size, boundary_nodes, forms),
+			const std::vector<std::shared_ptr<polyfem::solver::Form>> &forms,
+			const std::vector<std::shared_ptr<LagrangianPenaltyForm>> &penalty_forms)
+			: polyfem::solver::NLProblem(full_size, boundary_nodes, forms, penalty_forms),
 			  boundary_values_(boundary_values)
 		{
 		}
 
 	protected:
-		Eigen::MatrixXd boundary_values() const override { return boundary_values_; }
+		Eigen::MatrixXd constraint_values(const TVector &) const override { return boundary_values_; }
 
 	private:
 		const Eigen::MatrixXd boundary_values_;

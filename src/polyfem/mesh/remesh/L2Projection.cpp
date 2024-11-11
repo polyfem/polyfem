@@ -131,7 +131,10 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 
-		StaticBoundaryNLProblem problem(ndof, boundary_nodes, target_x, forms);
+		std::vector<std::shared_ptr<LagrangianPenaltyForm>> bc_forms;
+		bc_forms.push_back(bc_penalty_form);
+
+		StaticBoundaryNLProblem problem(ndof, boundary_nodes, target_x, forms, bc_forms);
 
 		// --------------------------------------------------------------------
 
