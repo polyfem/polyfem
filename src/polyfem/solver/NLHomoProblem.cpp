@@ -10,14 +10,16 @@ namespace polyfem::solver
 {
 	NLHomoProblem::NLHomoProblem(const int full_size,
 								 const std::vector<int> &boundary_nodes,
-								 const std::vector<mesh::LocalBoundary> &local_boundary,
-								 const int n_boundary_samples,
-								 const assembler::RhsAssembler &rhs_assembler,
 								 const assembler::MacroStrainValue &macro_strain_constraint,
 								 const State &state,
-								 const double t, const std::vector<std::shared_ptr<Form>> &forms,
+								 const double t,
+								 const std::vector<std::shared_ptr<Form>> &forms,
+								 const std::vector<std::shared_ptr<LagrangianPenaltyForm>> &penalty_forms,
 								 const bool solve_symmetric_macro_strain)
-		: NLProblem(full_size, boundary_nodes, local_boundary, n_boundary_samples, rhs_assembler, state.periodic_bc, t, forms), state_(state), only_symmetric(solve_symmetric_macro_strain), macro_strain_constraint_(macro_strain_constraint)
+		: NLProblem(full_size, boundary_nodes, state.periodic_bc, t, forms, penalty_forms),
+		  state_(state),
+		  only_symmetric(solve_symmetric_macro_strain),
+		  macro_strain_constraint_(macro_strain_constraint)
 	{
 		init_projection();
 	}
@@ -404,7 +406,7 @@ namespace polyfem::solver
 		return macro_full_to_reduced_grad(jac);
 	}
 
-	Eigen::MatrixXd NLHomoProblem::boundary_values() const
+	Eigen::MatrixXd NLHomoProblem::constraint_values(const TVector &) const
 	{
 		Eigen::MatrixXd result = Eigen::MatrixXd::Zero(full_size(), 1);
 		return result;
