@@ -9,7 +9,7 @@ var classpolyfem_1_1mesh_1_1_c_mesh2_d =
     [ "bounding_box", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ad6d60d8241b9e0b60532f273e7a67614", null ],
     [ "build_from_matrices", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ae0b6f2f9c4c0135c616107504a22e9cf", null ],
     [ "cell_vertex", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ade08904b00f5c993fd67c187fa5c8a9f", null ],
-    [ "compute_body_ids", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#ac60b1aaa66f661887a9db06df808edf4", null ],
+    [ "compute_body_ids", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#af52617a9e51411d424e09e9d4322aa5b", null ],
     [ "compute_boundary_ids", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a954bc39bce575feca53765501588f21e", null ],
     [ "compute_elements_tag", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a228062891c977999512c9ce3244c7c5e", null ],
     [ "copy", "classpolyfem_1_1mesh_1_1_c_mesh2_d.html#a8980d507ab5aa0faaec57e4e4fa36091", null ],

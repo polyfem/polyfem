@@ -18,7 +18,7 @@ var searchData=
   ['n_5fsingle_5fdof_5f_15',['n_single_dof_',['../classpolyfem_1_1solver_1_1_periodic_contact_form.html#ab246ae160c4b9549fc9721ddfdaa4fc9',1,'polyfem::solver::PeriodicContactForm']]],
   ['n_5ftime_5fsteps_5f_16',['n_time_steps_',['../classpolyfem_1_1solver_1_1_diff_cache.html#a0e3b84952a4c01bc827b53c2463de5ef',1,'polyfem::solver::DiffCache']]],
   ['n_5fturns_5f_17',['n_turns_',['../classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#af34966b24de440219471dbf1dc99023e',1,'polyfem::problem::TorsionElasticProblem']]],
-  ['name_18',['name',['../classpolyfem_1_1io_1_1_solution_frame.html#a3fad6b43ce07ac2bd5ab8641f200bfd0',1,'polyfem::io::SolutionFrame::name'],['../structpolyfem_1_1mesh_1_1_mesh___quality.html#a344e0c037fe415e07689e9501582762d',1,'polyfem::mesh::Mesh_Quality::Name']]],
+  ['name_18',['name',['../structpolyfem_1_1mesh_1_1_mesh___quality.html#a344e0c037fe415e07689e9501582762d',1,'polyfem::mesh::Mesh_Quality::Name'],['../classpolyfem_1_1io_1_1_solution_frame.html#a3fad6b43ce07ac2bd5ab8641f200bfd0',1,'polyfem::io::SolutionFrame::name']]],
   ['name_5f_19',['name_',['../classpolyfem_1_1assembler_1_1_problem.html#a8c5f8ee21d844b1f2a99432a96168e1b',1,'polyfem::assembler::Problem']]],
   ['nameg_20',['nameg',['../namespaceq__bases.html#aec37402488593c7d7538128ef186ee18',1,'q_bases']]],
   ['namen_21',['namen',['../namespaceq__bases.html#aa43bda70cf30b4526b9c37182f7a881d',1,'q_bases']]],

@@ -30,7 +30,7 @@ var classpolyfem_1_1mesh_1_1_n_c_mesh3_d =
     [ "cell_ref_level", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a17fbbd159d8c4e9d3da70d50cf98a8c1", null ],
     [ "cell_vertex", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a980a948f5e009c16acd0c6e6eacd13e1", null ],
     [ "coarsen_element", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a99b7047d27ef694824339ca9d7c95c44", null ],
-    [ "compute_body_ids", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a8ff0a614cc9951df4cd12be4f68c815f", null ],
+    [ "compute_body_ids", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a140a3b873c2e4e275c298ae84e7b673b", null ],
     [ "compute_boundary_ids", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a55a4fdd6f19339710f445dcb17364c1b", null ],
     [ "compute_elements_tag", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a89ee5afccb067cb71680df636929e885", null ],
     [ "copy", "classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#a75042fb3d410b2200608d09736e83988", null ],

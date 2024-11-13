@@ -1,5 +1,7 @@
 var NAVTREEINDEX46 =
 {
+"namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a880c1273b27d27cfc82004c3a4b205c9":[5,0,7,9,100,0],
+"namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a9dd66ef403d0478b7300b75f64b62370":[5,0,7,9,100,7],
 "namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a9f7433a078e50b71061edcf112bc9cb5":[5,0,7,9,100,6],
 "namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59abf475759a5b12fab0ca2c50e7c712112":[5,0,7,9,100,5],
 "namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59ac52c4cf716836bae440d812a9a7ad553":[5,0,7,9,100,2],
@@ -247,7 +249,5 @@ var NAVTREEINDEX46 =
 "q__bases_8py.html":[7,0,1,0,1,37],
 "q__bases_8py.html#a0a98d3094ec04b7aa5cda1942549beb1":[7,0,1,0,1,37,28],
 "q__bases_8py.html#a0ceee4d67a7535662c1061e87b0a46c3":[7,0,1,0,1,37,10],
-"q__bases_8py.html#a0dfcfbb7900699d02ddf9cb4bbbcb8a7":[7,0,1,0,1,37,41],
-"q__bases_8py.html#a0e6648928f13a0155f1f024ffae81642":[7,0,1,0,1,37,14],
-"q__bases_8py.html#a1bff7004fe9c07031e9cf368e2e53b30":[7,0,1,0,1,37,37]
+"q__bases_8py.html#a0dfcfbb7900699d02ddf9cb4bbbcb8a7":[7,0,1,0,1,37,41]
 };
