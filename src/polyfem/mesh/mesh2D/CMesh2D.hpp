@@ -77,7 +77,7 @@ namespace polyfem
 
 			void compute_boundary_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &marker) override;
 
-			void compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker) override;
+			void compute_body_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &)> &marker) override;
 
 			// Navigation wrapper
 			inline Navigation::Index get_index_from_face(int f, int lv = 0) const override { return Navigation::get_index_from_face(mesh_, *c2e_, f, lv); }
