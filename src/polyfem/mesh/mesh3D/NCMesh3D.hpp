@@ -258,7 +258,7 @@ namespace polyfem
 
 			void compute_boundary_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &marker) override;
 
-			void compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker) override;
+			void compute_body_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &)> &marker) override;
 			void set_boundary_ids(const std::vector<int> &boundary_ids) override;
 			void set_body_ids(const std::vector<int> &body_ids) override;
 
