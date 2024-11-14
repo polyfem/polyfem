@@ -545,12 +545,20 @@ namespace polyfem
 			return vi >= collision_mesh.full_num_vertices() - obstacle.n_vertices();
 		}
 
-		/// @brief does the simulation has contact
+		/// @brief does the simulation have contact
 		///
 		/// @return true/false
 		bool is_contact_enabled() const
 		{
 			return args["contact"]["enabled"];
+		}
+
+		/// @brief does the simulation have adhesion
+		///
+		/// @return true/false
+		bool is_adhesion_enabled() const
+		{
+			return args["contact"]["adhesion_enabled"];
 		}
 
 		/// @brief does the simulation has pressure
