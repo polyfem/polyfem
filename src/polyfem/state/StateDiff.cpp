@@ -17,6 +17,8 @@
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
+#include <polyfem/solver/forms/NormalAdhesionForm.hpp>
+#include <polyfem/solver/forms/TangentialAdhesionForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
@@ -105,6 +107,8 @@ namespace polyfem
 
 		ipc::NormalCollisions cur_collision_set;
 		ipc::TangentialCollisions cur_friction_set;
+		ipc::NormalCollisions cur_normal_adhesion_set;
+		ipc::TangentialCollisions cur_tangential_adhesion_set;
 
 		if (optimization_enabled == solver::CacheLevel::Derivatives)
 		{
@@ -113,18 +117,22 @@ namespace polyfem
 
 			cur_collision_set = solve_data.contact_form ? solve_data.contact_form->collision_set() : ipc::NormalCollisions();
 			cur_friction_set = solve_data.friction_form ? solve_data.friction_form->friction_collision_set() : ipc::TangentialCollisions();
+			cur_normal_adhesion_set = solve_data.normal_adhesion_form ? solve_data.normal_adhesion_form->collision_set() : ipc::NormalCollisions();
+			cur_tangential_adhesion_set = solve_data.tangential_adhesion_form ? solve_data.tangential_adhesion_form->tangential_collision_set() : ipc::TangentialCollisions();
 		}
 		else
 		{
 			cur_collision_set = ipc::NormalCollisions();
 			cur_friction_set = ipc::TangentialCollisions();
+			cur_normal_adhesion_set = ipc::NormalCollisions();
+			cur_tangential_adhesion_set = ipc::TangentialCollisions();
 		}
 
 		if (problem->is_time_dependent())
 		{
 			if (args["time"]["quasistatic"].get<bool>())
 			{
-				diff_cached.cache_quantities_quasistatic(current_step, sol, gradu_h, cur_collision_set, disp_grad);
+				diff_cached.cache_quantities_quasistatic(current_step, sol, gradu_h, cur_collision_set, cur_normal_adhesion_set, disp_grad);
 			}
 			else
 			{
@@ -157,7 +165,7 @@ namespace polyfem
 		}
 		else
 		{
-			diff_cached.cache_quantities_static(sol, gradu_h, cur_collision_set, cur_friction_set, disp_grad);
+			diff_cached.cache_quantities_static(sol, gradu_h, cur_collision_set, cur_friction_set, cur_normal_adhesion_set, cur_tangential_adhesion_set, disp_grad);
 		}
 	}
 
@@ -300,6 +308,46 @@ namespace polyfem
 						// 			collision_mesh, velocity, solve_data.friction_form->epsv(), false) * (-alpha / beta / dt);
 
 						// hessian_prev = collision_mesh.to_full_dof(hessian_prev);
+					}
+				}
+
+				if (solve_data.tangential_adhesion_form) 
+				{
+					//TODO
+					assert(false);
+					if (sol_step == force_step - 1)
+					{
+						Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(utils::unflatten(u_prev, mesh->dimension()));
+						Eigen::MatrixXd surface_solution = collision_mesh.vertices(utils::unflatten(u, mesh->dimension()));
+
+						// TODO: use the time integration to compute the velocity
+						const Eigen::MatrixXd surface_velocities = (surface_solution - surface_solution_prev) / dt;
+						const double dv_dut = -1 / dt;
+
+						hessian_prev =
+							solve_data.friction_form->friction_potential().force_jacobian(
+								diff_cached.friction_collision_set(force_step),
+								collision_mesh,
+								collision_mesh.rest_positions(),
+								/*lagged_displacements=*/surface_solution_prev,
+								surface_velocities,
+								solve_data.contact_form->barrier_potential(),
+								solve_data.contact_form->barrier_stiffness(),
+								ipc::FrictionPotential::DiffWRT::LAGGED_DISPLACEMENTS)
+							+ solve_data.friction_form->friction_potential().force_jacobian(
+								  diff_cached.friction_collision_set(force_step),
+								  collision_mesh,
+								  collision_mesh.rest_positions(),
+								  /*lagged_displacements=*/surface_solution_prev,
+								  surface_velocities,
+								  solve_data.contact_form->barrier_potential(),
+								  solve_data.contact_form->barrier_stiffness(),
+								  ipc::FrictionPotential::DiffWRT::VELOCITIES)
+								  * dv_dut;
+
+						hessian_prev *= -1;
+
+						hessian_prev = collision_mesh.to_full_dof(hessian_prev); // / (beta * dt) / (beta * dt);
 					}
 				}
 

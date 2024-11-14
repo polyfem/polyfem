@@ -937,6 +937,25 @@ TEST_CASE("shape-contact", "[test_adjoint]")
 	verify_adjoint(*nl_problem, x, one_form.normalized(), 1e-7, 1e-5);
 }
 
+TEST_CASE("shape-contact-adhesion", "[test_adjoint]")
+{
+	json opt_args;
+	load_json(append_root_path("shape-contact-adhesion-opt.json"), opt_args);
+	auto [obj, var2sim, states] = prepare_test(opt_args);
+
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
+
+	Eigen::MatrixXd V;
+	states[0]->get_vertices(V);
+	Eigen::VectorXd x = utils::flatten(V);
+
+	nl_problem->solution_changed(x);
+	Eigen::VectorXd one_form;
+	nl_problem->gradient(x, one_form);
+
+	verify_adjoint(*nl_problem, x, one_form.normalized(), 1e-7, 1e-5);
+}
+
 TEST_CASE("node-trajectory", "[test_adjoint]")
 {
 	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
