@@ -1,5 +1,15 @@
 var NAVTREEINDEX46 =
 {
+"namespacepolyfem_1_1quadrature.html":[5,0,7,6],
+"namespacepolyfem_1_1refinement.html":[5,0,7,7],
+"namespacepolyfem_1_1refinement.html#a195e7a176e3337f130065846b62aca8f":[5,0,7,7,1],
+"namespacepolyfem_1_1renderer.html":[5,0,7,8],
+"namespacepolyfem_1_1renderer.html#a30b9d8b7f7d2f4cd16cc4bb5a3926499":[5,0,7,8,6],
+"namespacepolyfem_1_1solver.html":[5,0,7,9],
+"namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59":[5,0,7,9,100],
+"namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a01ba7e77dad0a0033b291edfcfd27898":[5,0,7,9,100,4],
+"namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a09aba3008cae6307aa607fe2fec31c48":[5,0,7,9,100,8],
+"namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a633e1ddfaf226af9371bec1bdb01ba03":[5,0,7,9,100,3],
 "namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a880c1273b27d27cfc82004c3a4b205c9":[5,0,7,9,100,0],
 "namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a9dd66ef403d0478b7300b75f64b62370":[5,0,7,9,100,7],
 "namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a9f7433a078e50b71061edcf112bc9cb5":[5,0,7,9,100,6],
@@ -239,15 +249,5 @@ var NAVTREEINDEX46 =
 "par__for_8cpp.html#a38b2b0564e236864bbac36467f5502bf":[7,0,1,0,11,44,0],
 "par__for_8cpp_source.html":[7,0,1,0,11,44],
 "par__for_8hpp.html":[7,0,1,0,11,45],
-"par__for_8hpp.html#a38b2b0564e236864bbac36467f5502bf":[7,0,1,0,11,45,2],
-"par__for_8hpp.html#a3b3a8934d13e48dc3a51ed8efe25e11e":[7,0,1,0,11,45,1],
-"par__for_8hpp_source.html":[7,0,1,0,11,45],
-"pretty__print_8py.html":[7,0,1,0,1,36],
-"pretty__print_8py.html#a73786f15be021f8233264d6227553414":[7,0,1,0,1,36,0],
-"pretty__print_8py.html#ac11a97cfd2c874ce1ad19aaadca6f738":[7,0,1,0,1,36,1],
-"pretty__print_8py_source.html":[7,0,1,0,1,36],
-"q__bases_8py.html":[7,0,1,0,1,37],
-"q__bases_8py.html#a0a98d3094ec04b7aa5cda1942549beb1":[7,0,1,0,1,37,28],
-"q__bases_8py.html#a0ceee4d67a7535662c1061e87b0a46c3":[7,0,1,0,1,37,10],
-"q__bases_8py.html#a0dfcfbb7900699d02ddf9cb4bbbcb8a7":[7,0,1,0,1,37,41]
+"par__for_8hpp.html#a38b2b0564e236864bbac36467f5502bf":[7,0,1,0,11,45,2]
 };
