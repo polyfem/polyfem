@@ -20,7 +20,9 @@ namespace polyfem::solver
 	ContactForm::ContactForm(const ipc::CollisionMesh &collision_mesh,
 							 const double dhat,
 							 const double avg_mass,
-							 const bool use_convergent_formulation,
+							 const bool use_area_weighting,
+							 const bool use_improved_max_operator,
+							 const bool use_physical_barrier,
 							 const bool use_adaptive_barrier_stiffness,
 							 const bool is_time_dependent,
 							 const bool enable_shape_derivatives,
@@ -35,15 +37,15 @@ namespace polyfem::solver
 		  enable_shape_derivatives_(enable_shape_derivatives),
 		  broad_phase_method_(broad_phase_method),
 		  tight_inclusion_ccd_(ccd_tolerance, ccd_max_iterations),
-		  barrier_potential_(dhat, use_convergent_formulation)
+		  barrier_potential_(dhat, use_physical_barrier)
 	{
 		assert(dhat_ > 0);
 		assert(ccd_tolerance > 0);
 
 		prev_distance_ = -1;
 		//collision_set_.set_use_convergent_formulation(use_convergent_formulation);
-		collision_set_.set_use_improved_max_approximator(use_convergent_formulation);
-		collision_set_.set_use_area_weighting(use_convergent_formulation);
+		collision_set_.set_use_improved_max_approximator(use_improved_max_operator);
+		collision_set_.set_use_area_weighting(use_area_weighting);
 		collision_set_.set_enable_shape_derivatives(enable_shape_derivatives);
 	}
 

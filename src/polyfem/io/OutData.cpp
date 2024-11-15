@@ -2021,14 +2021,19 @@ namespace polyfem::io
 
 			ipc::NormalCollisions collision_set;
 			//collision_set.set_use_convergent_formulation(state.args["contact"]["use_convergent_formulation"]);
-			collision_set.set_use_improved_max_approximator(state.args["contact"]["use_convergent_formulation"]);
-			collision_set.set_use_area_weighting(state.args["contact"]["use_convergent_formulation"]);
+			if (state.args["contact"]["use_convergent_formulation"]) {
+				collision_set.set_use_improved_max_approximator(state.args["contact"]["use_improved_max_operator"]);
+				collision_set.set_use_area_weighting(state.args["contact"]["use_area_weighting"]);
+			}
+			
 			collision_set.build(
 				collision_mesh, displaced_surface, dhat,
 				/*dmin=*/0, state.args["solver"]["contact"]["CCD"]["broad_phase"]);
 
 			ipc::BarrierPotential barrier_potential(dhat);
-			barrier_potential.set_use_physical_barrier(state.args["contact"]["use_convergent_formulation"]);
+			if (state.args["contact"]["use_convergent_formulation"]) {
+				barrier_potential.set_use_physical_barrier(state.args["contact"]["use_physical_barrier"]);
+			}
 
 			const double barrier_stiffness = contact_form != nullptr ? contact_form->barrier_stiffness() : 1;
 
