@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LagrangianForm.hpp"
+#include "AugmentedLagrangianForm.hpp"
 #include <polyfem/assembler/RhsAssembler.hpp>
 
 #include <polyfem/mesh/Obstacle.hpp>
@@ -13,8 +13,8 @@ namespace polyfem::utils
 
 namespace polyfem::solver
 {
-	/// @brief Form of the lagrangian in augmented lagrangian
-	class BCLagrangianForm : public LagrangianForm
+	/// @brief Form of the augmented lagrangian for bc constraints
+	class BCLagrangianForm : public AugmentedLagrangianForm
 	{
 	public:
 		/// @brief Construct a new BCLagrangianForm object with a time dependent Dirichlet boundary
@@ -41,10 +41,7 @@ namespace polyfem::solver
 						 const double t,
 						 const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc = nullptr);
 
-		std::string name() const override
-		{
-			return "bc-alagrangian";
-		}
+		std::string name() const override { return "bc-alagrangian"; }
 
 		/// @brief Construct a new BCLagrangianForm object with a fixed Dirichlet boundary
 		/// @param ndof Number of degrees of freedom
@@ -81,7 +78,11 @@ namespace polyfem::solver
 
 		void update_lagrangian(const Eigen::VectorXd &x, const double k_al) override;
 
+		StiffnessMatrix &mask() { return mask_; }
+		const StiffnessMatrix &mask() const { return mask_; }
+		Eigen::VectorXd target(const Eigen::VectorXd &) const override { return target_x_; }
 
+		double compute_error(const Eigen::VectorXd &x) const override;
 	private:
 		const std::vector<int> &boundary_nodes_;
 		const std::vector<mesh::LocalBoundary> *local_boundary_;
@@ -92,7 +93,10 @@ namespace polyfem::solver
 		const bool is_time_dependent_;
 
 		StiffnessMatrix masked_lumped_mass_sqrt_; ///< sqrt mass matrix masked by the AL dofs
-		Eigen::MatrixXd target_x_;                ///< actually a vector with the same size as x with target nodal positions
+		StiffnessMatrix masked_lumped_mass_;      ///< mass matrix masked by the AL dofs
+		StiffnessMatrix mask_;                    ///< identity matrix masked by the AL dofs
+
+		Eigen::MatrixXd target_x_; ///< actually a vector with the same size as x with target nodal positions
 
 		/// @brief Initialize the masked lumped mass matrix
 		/// @param ndof Number of degrees of freedom

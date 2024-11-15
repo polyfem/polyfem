@@ -2,7 +2,6 @@
 
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/problems/StaticBoundaryNLProblem.hpp>
-#include <polyfem/solver/forms/lagrangian/BCPenaltyForm.hpp>
 #include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/InversionBarrierForm.hpp>
 #include <polyfem/solver/forms/L2ProjectionForm.hpp>
@@ -130,8 +129,8 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 
-		std::vector<std::shared_ptr<LagrangianPenaltyForm>> bc_forms;
-		bc_forms.push_back(bc_penalty_form);
+		std::vector<std::shared_ptr<AugmentedLagrangianForm>> bc_forms;
+		bc_forms.push_back(bc_lagrangian_form);
 
 		StaticBoundaryNLProblem problem(ndof, boundary_nodes, target_x, forms, bc_forms);
 
@@ -145,7 +144,7 @@ namespace polyfem::mesh
 		constexpr double al_eta_tol = 0.99;
 		constexpr size_t al_max_solver_iter = 1000;
 		ALSolver al_solver(
-			{bc_lagrangian_form}, {bc_penalty_form}, al_initial_weight,
+			bc_forms, al_initial_weight,
 			al_scaling, al_max_weight, al_eta_tol,
 			/*update_barrier_stiffness=*/[&](const Eigen::MatrixXd &x) {});
 

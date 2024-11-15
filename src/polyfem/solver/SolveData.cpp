@@ -3,9 +3,7 @@
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/Form.hpp>
 #include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
-#include <polyfem/solver/forms/lagrangian/BCPenaltyForm.hpp>
 #include <polyfem/solver/forms/lagrangian/MacroStrainLagrangianForm.hpp>
-#include <polyfem/solver/forms/lagrangian/MacroStrainALForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/PressureForm.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
@@ -192,15 +190,10 @@ namespace polyfem::solver
 			// mass_mat_assembler.assemble(dim == 3, n_bases, bases, geom_bases, mass_ass_vals_cache, mass_tmp, true);
 			// assert(mass_tmp.rows() == mass.rows() && mass_tmp.cols() == mass.cols());
 
-			al_lagr_form.push_back(std::make_shared<BCLagrangianForm>(
+			al_form.push_back(std::make_shared<BCLagrangianForm>(
 				ndof, boundary_nodes, local_boundary, local_neumann_boundary,
 				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t));
-			forms.push_back(al_lagr_form.back());
-
-			al_pen_form.push_back(std::make_shared<BCPenaltyForm>(
-				ndof, boundary_nodes, local_boundary, local_neumann_boundary,
-				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t));
-			forms.push_back(al_pen_form.back());
+			forms.push_back(al_form.back());
 		}
 
 		if (macro_strain_constraint.is_active())
@@ -368,10 +361,8 @@ namespace polyfem::solver
 			{"periodic_contact", periodic_contact_form},
 		};
 
-		for (const auto &form : al_lagr_form)
-			res.push_back({"augmented_lagrangian_lagr", form});
-		for (const auto &form : al_pen_form)
-			res.push_back({"augmented_lagrangian_penalty", form});
+		for (const auto &form : al_form)
+			res.push_back({"augmented_lagrangian", form});
 
 		return res;
 	}
