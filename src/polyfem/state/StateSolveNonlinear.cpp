@@ -267,7 +267,7 @@ namespace polyfem
 
 		const int ndof = n_bases * mesh->dimension();
 		solve_data.nl_problem = std::make_shared<NLProblem>(
-			ndof, boundary_nodes, periodic_bc, t, forms, solve_data.al_pen_form);
+			ndof, boundary_nodes, periodic_bc, t, forms, solve_data.al_form);
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
 		// --------------------------------------------------------------------
@@ -303,7 +303,7 @@ namespace polyfem
 		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(true);
 
 		ALSolver al_solver(
-			solve_data.al_lagr_form, solve_data.al_pen_form,
+			solve_data.al_form,
 			args["solver"]["augmented_lagrangian"]["initial_weight"],
 			args["solver"]["augmented_lagrangian"]["scaling"],
 			args["solver"]["augmented_lagrangian"]["max_weight"],

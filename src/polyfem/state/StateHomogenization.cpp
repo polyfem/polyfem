@@ -9,7 +9,6 @@
 
 #include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
-#include <polyfem/solver/forms/lagrangian/MacroStrainALForm.hpp>
 #include <polyfem/solver/forms/lagrangian/MacroStrainLagrangianForm.hpp>
 
 #include <unsupported/Eigen/SparseExtra>
@@ -103,13 +102,11 @@ namespace polyfem
 			ndof,
 			boundary_nodes,
 			macro_strain_constraint,
-			*this, t, forms, solve_data.al_pen_form, solve_symmetric_flag);
+			*this, t, forms, solve_data.al_form, solve_symmetric_flag);
 		if (solve_data.periodic_contact_form)
 			homo_problem->add_form(solve_data.periodic_contact_form);
 		if (solve_data.strain_al_lagr_form)
 			homo_problem->add_form(solve_data.strain_al_lagr_form);
-		if (solve_data.strain_al_pen_form)
-			homo_problem->add_form(solve_data.strain_al_pen_form);
 
 		solve_data.nl_problem = homo_problem;
 		solve_data.nl_problem->init(Eigen::VectorXd::Zero(homo_problem->reduced_size() + homo_problem->macro_reduced_size()));
@@ -137,9 +134,7 @@ namespace polyfem
 			Eigen::VectorXi al_indices = fixed_entry.array() + homo_problem->full_size();
 			Eigen::VectorXd al_values = utils::flatten(macro_strain_constraint.eval(t))(fixed_entry);
 
-			std::shared_ptr<MacroStrainALForm> al_form = solve_data.strain_al_pen_form;
 			std::shared_ptr<MacroStrainLagrangianForm> lagr_form = solve_data.strain_al_lagr_form;
-			al_form->enable();
 			lagr_form->enable();
 
 			const double initial_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
@@ -150,7 +145,7 @@ namespace polyfem
 
 			Eigen::VectorXd tmp_sol = homo_problem->extended_to_reduced(extended_sol);
 			const Eigen::VectorXd initial_sol = tmp_sol;
-			const double initial_error = al_form->compute_error(extended_sol);
+			const double initial_error = lagr_form->compute_error(extended_sol);
 			double current_error = initial_error;
 
 			// try to enforce fixed values on macro strain
@@ -160,6 +155,9 @@ namespace polyfem
 			homo_problem->line_search_begin(tmp_sol, reduced_sol);
 			int al_steps = 0;
 			bool force_al = true;
+
+			lagr_form->set_initial_weight(al_weight);
+
 			while (force_al
 				   || !std::isfinite(homo_problem->value(reduced_sol))
 				   || !homo_problem->is_step_valid(tmp_sol, reduced_sol)
@@ -168,7 +166,6 @@ namespace polyfem
 				force_al = false;
 				homo_problem->line_search_end();
 
-				al_form->set_weight(al_weight);
 				logger().info("Solving AL Problem with weight {}", al_weight);
 
 				homo_problem->init(tmp_sol);
@@ -185,7 +182,7 @@ namespace polyfem
 				extended_sol = homo_problem->reduced_to_extended(tmp_sol);
 				logger().debug("Current macro strain: {}", extended_sol.tail(dim * dim));
 
-				current_error = al_form->compute_error(extended_sol);
+				current_error = lagr_form->compute_error(extended_sol);
 				const double eta = 1 - sqrt(current_error / initial_error);
 
 				logger().info("Current eta = {}, current error = {}, initial error = {}", eta, current_error, initial_error);
@@ -216,7 +213,6 @@ namespace polyfem
 				homo_problem->line_search_begin(tmp_sol, reduced_sol);
 			}
 			homo_problem->line_search_end();
-			al_form->disable();
 			lagr_form->disable();
 		}
 

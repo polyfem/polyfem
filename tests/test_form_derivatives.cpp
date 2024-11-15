@@ -5,7 +5,6 @@
 #include <polyfem/assembler/FixedCorotational.hpp>
 
 #include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
-#include <polyfem/solver/forms/lagrangian/BCPenaltyForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
@@ -519,7 +518,7 @@ TEST_CASE("BC penalty form derivatives", "[form][form_derivatives][bc_penalty_fo
 											   mass_tmp,
 											   true);
 
-	BCPenaltyForm form(
+	BCLagrangianForm form(
 		ndof,
 		state_ptr->boundary_nodes,
 		state_ptr->local_boundary,
