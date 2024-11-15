@@ -54,7 +54,9 @@ namespace polyfem
 			obstacle.ndof(),
 			// Contact form
 			args["contact"]["enabled"], args["contact"]["periodic"].get<bool>() ? periodic_collision_mesh : collision_mesh, args["contact"]["dhat"],
-			avg_mass, args["contact"]["use_convergent_formulation"],
+			avg_mass, args["contact"]["use_convergent_formulation"] ? args["contact"]["use_area_weighting"] : false,
+			args["contact"]["use_convergent_formulation"] ? args["contact"]["use_improved_max_operator"] : false,
+			args["contact"]["use_convergent_formulation"] ? args["contact"]["use_physical_barrier"] : false,
 			args["solver"]["contact"]["barrier_stiffness"],
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],

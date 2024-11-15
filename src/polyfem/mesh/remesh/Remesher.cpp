@@ -210,7 +210,9 @@ namespace polyfem::mesh
 				state.solve_data.contact_form
 					? state.solve_data.contact_form->barrier_stiffness()
 					: 1.0,
-				state.args["contact"]["use_convergent_formulation"],
+				state.args["contact"]["use_convergent_formulation"] ? state.args["contact"]["use_area_weighting"] : false,
+				state.args["contact"]["use_convergent_formulation"] ? state.args["contact"]["use_improved_max_operator"] : false,
+				state.args["contact"]["use_convergent_formulation"] ? state.args["contact"]["use_physical_barrier"] : false,
 				state.args["solver"]["contact"]["CCD"]["broad_phase"],
 				state.args["solver"]["contact"]["CCD"]["tolerance"],
 				state.args["solver"]["contact"]["CCD"]["max_iterations"],
