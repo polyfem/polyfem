@@ -1,11 +1,11 @@
 #pragma once
 
-#include "LagrangianForm.hpp"
+#include "AugmentedLagrangianForm.hpp"
 
 namespace polyfem::solver
 {
 	/// @brief Form of the lagrangian in augmented lagrangian
-	class GenericLagrangianForm : public LagrangianForm
+	class GenericLagrangianForm : public AugmentedLagrangianForm
 	{
 	public:
 		/// @brief Construct a new GenericLagrangianForm object for the constraints Ax = b
@@ -33,6 +33,7 @@ namespace polyfem::solver
 
 	public:
 		void update_lagrangian(const Eigen::VectorXd &x, const double k_al) override;
+		double compute_error(const Eigen::VectorXd &x) const override;
 
 	private:
 		const StiffnessMatrix A;

@@ -13,23 +13,29 @@ namespace polyfem::solver
 	double GenericLagrangianForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		const Eigen::VectorXd res = A * x - b;
-		const double AL_penalty = lagr_mults_.transpose() * res;
-		return AL_penalty;
+		const double L_penalty = lagr_mults_.transpose() * res;
+		const double A_penalty = res.squaredNorm() / 2;
+		return L_penalty + k_al_ * A_penalty;
 	}
 
 	void GenericLagrangianForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = A * lagr_mults_;
+		gradv = A * lagr_mults_ + k_al_ * (A * x - b);
 	}
 
 	void GenericLagrangianForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
-		hessian.resize(A.rows(), A.cols());
-		hessian.setZero();
+		hessian = A;
 	}
 
 	void GenericLagrangianForm::update_lagrangian(const Eigen::VectorXd &x, const double k_al)
 	{
 		lagr_mults_ += k_al * (A * x - b);
+	}
+
+	double GenericLagrangianForm::compute_error(const Eigen::VectorXd &x) const
+	{
+		const Eigen::VectorXd res = A * x - b;
+		return res.norm();
 	}
 } // namespace polyfem::solver

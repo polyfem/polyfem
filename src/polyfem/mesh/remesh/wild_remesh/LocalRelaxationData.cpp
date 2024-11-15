@@ -5,11 +5,10 @@
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
-#include <polyfem/solver/forms/lagrangian/BCPenaltyForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/problems/StaticBoundaryNLProblem.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
-#include <polyfem/solver/forms/lagrangian/LagrangianPenaltyForm.hpp>
+#include <polyfem/solver/forms/lagrangian/AugmentedLagrangianForm.hpp>
 
 namespace polyfem::mesh
 {
@@ -304,14 +303,11 @@ namespace polyfem::mesh
 				state.args["solver"]["rayleigh_damping"]);
 
 			// Remove all AL forms because we do not need them in the remeshing process.
-			for (auto &lf : solve_data.al_lagr_form)
+			for (auto &lf : solve_data.al_form)
 				forms.erase(std::remove(forms.begin(), forms.end(), lf), forms.end());
-			for (auto &lf : solve_data.al_pen_form)
-				forms.erase(std::remove(forms.begin(), forms.end(), lf), forms.end());
-			solve_data.al_lagr_form.clear();
-			solve_data.al_pen_form.clear();
+			solve_data.al_form.clear();
 		}
-		const std::vector<std::shared_ptr<polyfem::solver::LagrangianPenaltyForm>> penalty_forms;
+		const std::vector<std::shared_ptr<polyfem::solver::AugmentedLagrangianForm>> penalty_forms;
 		solve_data.nl_problem = std::make_shared<polyfem::solver::StaticBoundaryNLProblem>(
 			ndof(), boundary_nodes, target_x, forms, penalty_forms);
 

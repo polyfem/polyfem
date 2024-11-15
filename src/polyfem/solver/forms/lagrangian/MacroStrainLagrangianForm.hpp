@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LagrangianForm.hpp"
+#include "AugmentedLagrangianForm.hpp"
 
 namespace polyfem::assembler
 {
@@ -10,7 +10,7 @@ namespace polyfem::assembler
 namespace polyfem::solver
 {
 	/// @brief Form of the lagrangian in augmented lagrangian for homogenization
-	class MacroStrainLagrangianForm : public LagrangianForm
+	class MacroStrainLagrangianForm : public AugmentedLagrangianForm
 	{
 	public:
 		/// @brief Construct a new MacroStrainLagrangianForm object
@@ -20,6 +20,7 @@ namespace polyfem::solver
 
 		void update_quantities(const double t, const Eigen::VectorXd &x) override;
 		void update_lagrangian(const Eigen::VectorXd &x, const double k_al) override;
+		double compute_error(const Eigen::VectorXd &x) const override;
 
 	protected:
 		/// @brief Compute the contact barrier potential value
