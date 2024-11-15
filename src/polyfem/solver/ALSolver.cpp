@@ -5,15 +5,13 @@
 namespace polyfem::solver
 {
 	ALSolver::ALSolver(
-		const std::vector<std::shared_ptr<LagrangianForm>> &lagr_form,
-		const std::vector<std::shared_ptr<LagrangianPenaltyForm>> &pen_form,
+		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &alagr_form,
 		const double initial_al_weight,
 		const double scaling,
 		const double max_al_weight,
 		const double eta_tol,
 		const std::function<void(const Eigen::VectorXd &)> &update_barrier_stiffness)
-		: lagr_forms{lagr_form},
-		  pen_forms{pen_form},
+		: alagr_forms{alagr_form},
 		  initial_al_weight(initial_al_weight),
 		  scaling(scaling),
 		  max_al_weight(max_al_weight),
@@ -37,8 +35,8 @@ namespace polyfem::solver
 		const int iters = nl_solver->stop_criteria().iterations;
 
 		double initial_error = 0;
-		for (const auto &pen_form : pen_forms)
-			initial_error += pen_form->compute_error(sol);
+		for (const auto &f : alagr_forms)
+			initial_error += f->compute_error(sol);
 
 		nl_problem.line_search_begin(sol, tmp_sol);
 
@@ -77,8 +75,8 @@ namespace polyfem::solver
 			set_al_weight(nl_problem, sol, -1);
 
 			double current_error = 0;
-			for (const auto &pen_form : pen_forms)
-				pen_form->compute_error(sol);
+			for (const auto &f : alagr_forms)
+				f->compute_error(sol);
 			const double eta = 1 - sqrt(current_error / initial_error);
 
 			logger().debug("Current eta = {}", eta);
@@ -96,8 +94,8 @@ namespace polyfem::solver
 				al_weight *= scaling;
 			else
 			{
-				for (auto &lagr_form : lagr_forms)
-					lagr_form->update_lagrangian(sol, al_weight);
+				for (auto &f : alagr_forms)
+					f->update_lagrangian(sol, al_weight);
 			}
 
 			post_subsolve(al_weight);
@@ -143,26 +141,20 @@ namespace polyfem::solver
 
 	void ALSolver::set_al_weight(NLProblem &nl_problem, const Eigen::VectorXd &x, const double weight)
 	{
-		if (pen_forms.empty() || lagr_forms.empty())
+		if (alagr_forms.empty())
 			return;
 		if (weight > 0)
 		{
-			for (auto &pen_form : pen_forms)
-			{
-				pen_form->enable();
-				pen_form->set_weight(weight);
-			}
-			for (auto &lagr_form : lagr_forms)
-				lagr_form->enable();
+			for (auto &f : alagr_forms)
+				f->enable();
 
 			nl_problem.use_full_size();
 		}
 		else
 		{
-			for (auto &pen_form : pen_forms)
-				pen_form->disable();
-			for (auto &lagr_form : lagr_forms)
-				lagr_form->disable();
+			for (auto &f : alagr_forms)
+				f->disable();
+
 			nl_problem.use_reduced_size();
 		}
 	}

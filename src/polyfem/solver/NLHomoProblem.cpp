@@ -1,7 +1,6 @@
 #include "NLHomoProblem.hpp"
 #include <polyfem/State.hpp>
 #include "forms/PeriodicContactForm.hpp"
-#include "forms/lagrangian/MacroStrainALForm.hpp"
 #include "forms/lagrangian/MacroStrainLagrangianForm.hpp"
 #include <polyfem/assembler/MacroStrain.hpp>
 #include <polyfem/io/Evaluator.hpp>
@@ -14,7 +13,7 @@ namespace polyfem::solver
 								 const State &state,
 								 const double t,
 								 const std::vector<std::shared_ptr<Form>> &forms,
-								 const std::vector<std::shared_ptr<LagrangianPenaltyForm>> &penalty_forms,
+								 const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
 								 const bool solve_symmetric_macro_strain)
 		: NLProblem(full_size, boundary_nodes, state.periodic_bc, t, forms, penalty_forms),
 		  state_(state),

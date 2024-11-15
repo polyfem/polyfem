@@ -2,7 +2,7 @@
 
 #include <polyfem/solver/FullNLProblem.hpp>
 #include <polyfem/assembler/PeriodicBoundary.hpp>
-#include <polyfem/solver/forms/lagrangian/LagrangianPenaltyForm.hpp>
+#include <polyfem/solver/forms/lagrangian/AugmentedLagrangianForm.hpp>
 
 namespace polyfem::solver
 {
@@ -18,7 +18,7 @@ namespace polyfem::solver
 			const int full_size,
 			const std::vector<int> &constraint_nodes,
 			const std::vector<std::shared_ptr<Form>> &forms,
-			const std::vector<std::shared_ptr<LagrangianPenaltyForm>> &penalty_forms);
+			const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms);
 
 	public:
 		NLProblem(const int full_size,
@@ -26,7 +26,7 @@ namespace polyfem::solver
 				  const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
 				  const double t,
 				  const std::vector<std::shared_ptr<Form>> &forms,
-				  const std::vector<std::shared_ptr<LagrangianPenaltyForm>> &penalty_forms);
+				  const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms);
 		virtual ~NLProblem() = default;
 
 		virtual double value(const TVector &x) override;
@@ -85,7 +85,7 @@ namespace polyfem::solver
 		double t_;
 
 	private:
-		std::vector<std::shared_ptr<LagrangianPenaltyForm>> penalty_forms_;
+		std::vector<std::shared_ptr<AugmentedLagrangianForm>> penalty_forms_;
 
 		template <class FullMat, class ReducedMat>
 		void full_to_reduced_aux(const std::vector<int> &constraint_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const;

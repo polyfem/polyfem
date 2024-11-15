@@ -24,7 +24,7 @@ namespace polyfem::solver
 		const int full_size,
 		const std::vector<int> &constraint_nodes,
 		const std::vector<std::shared_ptr<Form>> &forms,
-		const std::vector<std::shared_ptr<LagrangianPenaltyForm>> &penalty_forms)
+		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms)
 		: FullNLProblem(forms),
 		  constraint_nodes_(constraint_nodes),
 		  full_size_(full_size),
@@ -45,7 +45,7 @@ namespace polyfem::solver
 		const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
 		const double t,
 		const std::vector<std::shared_ptr<Form>> &forms,
-		const std::vector<std::shared_ptr<LagrangianPenaltyForm>> &penalty_forms)
+		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms)
 		: FullNLProblem(forms),
 		  full_constraint_nodes_(constraint_nodes),
 		  constraint_nodes_(periodic_bc ? periodic_bc->full_to_periodic(constraint_nodes) : constraint_nodes),

@@ -9,7 +9,6 @@
 
 #include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
-#include <polyfem/solver/forms/lagrangian/MacroStrainALForm.hpp>
 #include <polyfem/solver/forms/lagrangian/MacroStrainLagrangianForm.hpp>
 
 #include <unsupported/Eigen/SparseExtra>
@@ -115,7 +114,7 @@ namespace polyfem
 			ndof,
 			boundary_nodes,
 			macro_strain_constraint,
-			*this, t, forms, solve_data.al_pen_form, solve_symmetric_flag);
+			*this, t, forms, solve_data.al_form, solve_symmetric_flag);
 		if (solve_data.periodic_contact_form)
 			homo_problem->add_form(solve_data.periodic_contact_form);
 		if (solve_data.strain_al_lagr_form)

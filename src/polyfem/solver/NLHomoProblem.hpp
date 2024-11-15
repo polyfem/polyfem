@@ -32,7 +32,7 @@ namespace polyfem::solver
 					  const State &state,
 					  const double t,
 					  const std::vector<std::shared_ptr<Form>> &forms,
-					  const std::vector<std::shared_ptr<LagrangianPenaltyForm>> &penalty_forms,
+					  const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
 					  const bool solve_symmetric_macro_strain);
 		virtual ~NLHomoProblem() = default;
 
