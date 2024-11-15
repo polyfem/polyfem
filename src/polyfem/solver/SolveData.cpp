@@ -212,7 +212,7 @@ namespace polyfem::solver
 			if (periodic_contact)
 			{
 				periodic_contact_form = std::make_shared<PeriodicContactForm>(
-					collision_mesh, tiled_to_single, dhat, avg_mass, use_convergent_contact_formulation,
+					collision_mesh, tiled_to_single, dhat, avg_mass, use_area_weighting, use_improved_max_operator, use_physical_barrier,
 					use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance,
 					ccd_max_iterations);
 
@@ -232,7 +232,7 @@ namespace polyfem::solver
 			else
 			{
 				contact_form = std::make_shared<ContactForm>(
-					collision_mesh, dhat, avg_mass, use_convergent_contact_formulation,
+					collision_mesh, dhat, avg_mass, use_area_weighting, use_improved_max_operator, use_physical_barrier,
 					use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(),
 					ccd_max_iterations);
 
