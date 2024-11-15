@@ -351,8 +351,8 @@ TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]"
 	const int ccd_max_iterations = static_cast<int>(1e6);
 
 	const ContactForm contact_form(
-		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, use_convergent_formulation,
-		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
+		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, use_convergent_formulation, use_convergent_formulation,
+		use_convergent_formulation, use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
 		ccd_tolerance, ccd_max_iterations);
 
 	FrictionForm form(

@@ -138,8 +138,8 @@ namespace polyfem::solver
 
 		ipc::NormalCollisions collision_set;
 		//collision_set.set_use_convergent_formulation(contact_form_.use_convergent_formulation());
-		collision_set.set_use_improved_max_approximator(contact_form_.use_convergent_formulation());
-		collision_set.set_use_area_weighting(contact_form_.use_convergent_formulation());
+		collision_set.set_use_improved_max_approximator(contact_form_.use_improved_max_operator());
+		collision_set.set_use_area_weighting(contact_form_.use_area_weighting());
 		
 		collision_set.set_enable_shape_derivatives(contact_form_.enable_shape_derivatives());
 		collision_set.build(

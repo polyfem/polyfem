@@ -47,7 +47,9 @@ namespace polyfem::solver
 		ContactForm(const ipc::CollisionMesh &collision_mesh,
 					const double dhat,
 					const double avg_mass,
-					const bool use_convergent_formulation,
+					const bool use_area_weighting,
+					const bool use_improved_max_operator,
+					const bool use_physical_barrier,
 					const bool use_adaptive_barrier_stiffness,
 					const bool is_time_dependent,
 					const bool enable_shape_derivatives,
@@ -132,8 +134,17 @@ namespace polyfem::solver
 		/// @brief Get use_adaptive_barrier_stiffness
 		bool use_adaptive_barrier_stiffness() const { return use_adaptive_barrier_stiffness_; }
 		/// @brief Get use_convergent_formulation
-		bool use_convergent_formulation() const { return collision_set_.use_area_weighting() && collision_set_.use_improved_max_approximator() && barrier_potential_.use_physical_barrier(); }
+		bool use_convergent_formulation() const { return use_area_weighting() && use_improved_max_approximator() && use_physical_barrier(); }
 
+		/// @brief Get use_area_weighting
+		bool use_area_weighting() const {return return collision_set_.use_area_weighting();}
+
+		/// @brief Get use_improved_max_operator
+		bool use_improved_max_operator() const {return return collision_set_.use_improved_max_operator();}
+
+		/// @brief Get use_physical_barrier
+		bool use_physical_barrier() const {return return barrier_potential_.use_physical_parrier();}
+		
 		bool enable_shape_derivatives() const { return enable_shape_derivatives_; }
 
 		double weight() const override { return weight_ * barrier_stiffness_; }
