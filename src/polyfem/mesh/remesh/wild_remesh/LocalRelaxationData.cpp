@@ -274,9 +274,9 @@ namespace polyfem::mesh
 				/*obstacle_ndof=*/0,
 				// Contact form
 				contact_enabled, collision_mesh, state.args["contact"]["dhat"],
-				state.avg_mass, state.args["contact"]["use_convergent_formulation"] ? state.args["contact"]["use_area_weighting"] : false,
-				state.args["contact"]["use_convergent_formulation"] ? state.args["contact"]["use_improved_max_operator"] : false,
-				state.args["contact"]["use_convergent_formulation"] ? state.args["contact"]["use_physical_barrier"] : false,
+				state.avg_mass, state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_area_weighting"]) : false,
+				state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_improved_max_operator"]) : false,
+				state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_physical_barrier"]) : false,
 				contact_enabled ? state.solve_data.contact_form->barrier_stiffness() : 0,
 				state.args["solver"]["contact"]["CCD"]["broad_phase"],
 				state.args["solver"]["contact"]["CCD"]["tolerance"],
