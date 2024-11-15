@@ -159,8 +159,11 @@ namespace polyfem::mesh
 		if (primitive_to_node_[primitive_id] < 0 || !connect_nodes_)
 		{
 			primitive_to_node_[primitive_id] = n_nodes();
+
+			in_ordered_vertices_.push_back(primitive_id);
 			node_to_primitive_.push_back(primitive_id);
 			node_to_primitive_gid_.push_back(primitive_id);
+			assert(in_ordered_vertices_.size() == n_nodes());
 
 			if (primitive_id < edge_offset_)
 				nodes_.row(primitive_id) = mesh_.point(primitive_id);
@@ -211,22 +214,25 @@ namespace polyfem::mesh
 
 				const int primitive_id = start + i - 1;
 				assert(primitive_id < primitive_to_node_.size());
+
+				const auto [node, node_id] = mesh2d->edge_node(index, n_new_nodes, i);
+
 				primitive_to_node_[primitive_id] = n_nodes();
 
+				in_ordered_vertices_.push_back(node_id);
 				node_to_primitive_.push_back(primitive_id);
 				node_to_primitive_gid_.push_back(index.edge);
 
-				// nodes_.row(primitive_id) = (1 - t) * v1 + t * v2;
-				nodes_.row(primitive_id) = mesh2d->edge_node(index, n_new_nodes, i);
+				nodes_.row(primitive_id) = node;
 
 				res.push_back(primitive_to_node_[primitive_id]);
+				assert(in_ordered_vertices_.size() == n_nodes());
 			}
 		}
 		else
 		{
-			// const double t = 1/(n_new_nodes + 1.0);
-			// const RowVectorNd v = (1 - t) * v1 + t * v2;
-			const RowVectorNd v = mesh2d->edge_node(index, n_new_nodes, 1);
+			const auto [v, _] = mesh2d->edge_node(index, n_new_nodes, 1);
+
 			if ((node_position(start_node_id) - v).norm() < 1e-10)
 			{
 				for (int i = 0; i < n_new_nodes; ++i)
@@ -259,32 +265,29 @@ namespace polyfem::mesh
 
 		const Mesh3D *mesh3d = dynamic_cast<const Mesh3D *>(&mesh_);
 
-		// const auto v1 = mesh3d->point(index.vertex);
-		// const auto v2 = mesh3d->point(mesh3d->switch_vertex(index).vertex);
-
 		const int start_node_id = primitive_to_node_[start];
 		if (start_node_id < 0)
 		{
 			for (int i = 1; i <= n_new_nodes; ++i)
 			{
-				// const double t = i/(n_new_nodes + 1.0);
+				const auto [node, node_id] = mesh3d->edge_node(index, n_new_nodes, i);
 
 				const int primitive_id = start + i - 1;
 				primitive_to_node_[primitive_id] = n_nodes();
+
+				in_ordered_vertices_.push_back(node_id);
 				node_to_primitive_.push_back(primitive_id);
 				node_to_primitive_gid_.push_back(index.edge);
 
-				// nodes_.row(primitive_id) = (1 - t) * v1 + t * v2;
-				nodes_.row(primitive_id) = mesh3d->edge_node(index, n_new_nodes, i);
+				nodes_.row(primitive_id) = node;
 
 				res.push_back(primitive_to_node_[primitive_id]);
+				assert(in_ordered_vertices_.size() == n_nodes());
 			}
 		}
 		else
 		{
-			// const double t = 1/(n_new_nodes + 1.0);
-			// const RowVectorNd v = (1 - t) * v1 + t * v2;
-			const RowVectorNd v = mesh3d->edge_node(index, n_new_nodes, 1);
+			const auto [v, _] = mesh3d->edge_node(index, n_new_nodes, 1);
 			if ((node_position(start_node_id) - v).norm() < 1e-10)
 			{
 				for (int i = 0; i < n_new_nodes; ++i)
@@ -319,33 +322,28 @@ namespace polyfem::mesh
 
 		const Mesh2D *mesh2d = dynamic_cast<const Mesh2D *>(&mesh_);
 
-		// const auto v1 = mesh2d->point(index.vertex);
-		// const auto v2 = mesh2d->point(mesh2d->switch_vertex(index).vertex);
-		// const auto v3 = mesh2d->point(mesh2d->switch_vertex(mesh2d->switch_edge(index)).vertex);
-
 		if (start_node_id < 0 || !connect_nodes_)
 		{
 			int loc_index = 0;
 			for (int i = 1; i <= n_new_nodes; ++i)
 			{
-				// const double b2 = i/(n_new_nodes + 2.0);
 				const int end = mesh2d->is_simplex(index.face) ? (n_new_nodes - i + 1) : n_new_nodes;
 				for (int j = 1; j <= end; ++j)
 				{
-					// const double b3 = j/(n_new_nodes + 2.0);
-					// const double b1 = 1 - b3 - b2;
-					// assert(b3 < 1);
-					// assert(b3 > 0);
+					const auto [node, node_id] = mesh2d->face_node(index, n_new_nodes, i, j);
 
 					const int primitive_id = start + loc_index;
 					primitive_to_node_[primitive_id] = n_nodes();
+
+					in_ordered_vertices_.push_back(node_id);
 					node_to_primitive_.push_back(primitive_id);
 					node_to_primitive_gid_.push_back(index.face);
 
-					// nodes_.row(primitive_id) = b1 * v1 + b2 * v2 + b3 * v3;
-					nodes_.row(primitive_id) = mesh2d->face_node(index, n_new_nodes, i, j);
+					nodes_.row(primitive_id) = node;
 
 					res.push_back(primitive_to_node_[primitive_id]);
+
+					assert(in_ordered_vertices_.size() == n_nodes());
 
 					++loc_index;
 				}
@@ -399,18 +397,22 @@ namespace polyfem::mesh
 			int loc_index = 0;
 			for (int i = 1; i <= n_new_nodes; ++i)
 			{
-				// const double b2 = i/(n_new_nodes + 2.0);
 				const int end = mesh3d->is_simplex(index.element) ? (n_new_nodes - i + 1) : n_new_nodes;
 				for (int j = 1; j <= end; ++j)
 				{
 					const int primitive_id = start + loc_index;
+					const auto [node, node_id] = mesh3d->face_node(index, n_new_nodes, i, j);
+
 					primitive_to_node_[primitive_id] = n_nodes();
+
+					in_ordered_vertices_.push_back(node_id);
 					node_to_primitive_.push_back(primitive_id);
 					node_to_primitive_gid_.push_back(index.face);
 
-					nodes_.row(primitive_id) = mesh3d->face_node(index, n_new_nodes, i, j);
+					nodes_.row(primitive_id) = node;
 
 					res.push_back(primitive_to_node_[primitive_id]);
+					assert(in_ordered_vertices_.size() == n_nodes());
 
 					++loc_index;
 				}
@@ -430,7 +432,7 @@ namespace polyfem::mesh
 					const int end = mesh3d->is_simplex(index.element) ? (n_new_nodes - i + 1) : n_new_nodes;
 					for (int j = 1; j <= end; ++j)
 					{
-						const RowVectorNd p = mesh3d->face_node(index, n_new_nodes, i, j);
+						const auto [p, _] = mesh3d->face_node(index, n_new_nodes, i, j);
 
 						bool found = false;
 						for (int k = start; k < start + total_nodes; ++k)
@@ -478,12 +480,17 @@ namespace polyfem::mesh
 					{
 						const int primitive_id = start + loc_index;
 
+						auto [node, node_id] = mesh3d->cell_node(index, n_new_nodes, i, j, k);
+
 						primitive_to_node_[primitive_id] = n_nodes();
+
+						in_ordered_vertices_.push_back(node_id);
 						node_to_primitive_.push_back(primitive_id);
 						node_to_primitive_gid_.push_back(index.element);
 
-						nodes_.row(primitive_id) = mesh3d->cell_node(index, n_new_nodes, i, j, k);
+						nodes_.row(primitive_id) = node;
 						res.push_back(primitive_to_node_[primitive_id]);
+						assert(in_ordered_vertices_.size() == n_nodes());
 
 						++loc_index;
 					}
@@ -501,12 +508,16 @@ namespace polyfem::mesh
 					{
 						const int primitive_id = start + loc_index;
 
+						const auto [node, node_id] = mesh3d->cell_node(index, n_new_nodes, i, j, k);
 						primitive_to_node_[primitive_id] = n_nodes();
+
+						in_ordered_vertices_.push_back(node_id);
 						node_to_primitive_.push_back(primitive_id);
 						node_to_primitive_gid_.push_back(index.element);
 
-						nodes_.row(primitive_id) = mesh3d->cell_node(index, n_new_nodes, i, j, k);
+						nodes_.row(primitive_id) = node;
 						res.push_back(primitive_to_node_[primitive_id]);
+						assert(in_ordered_vertices_.size() == n_nodes());
 
 						++loc_index;
 					}

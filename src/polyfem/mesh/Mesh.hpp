@@ -43,6 +43,7 @@ namespace polyfem
 			{
 			public:
 				int v1, v2;
+				std::vector<int> nodes_ids;
 				Eigen::MatrixXd nodes;
 			};
 
@@ -51,6 +52,7 @@ namespace polyfem
 			{
 			public:
 				int v1, v2, v3;
+				std::vector<int> nodes_ids;
 				Eigen::MatrixXd nodes;
 			};
 
@@ -59,6 +61,7 @@ namespace polyfem
 			{
 			public:
 				int v1, v2, v3, v4;
+				std::vector<int> nodes_ids;
 				Eigen::MatrixXd nodes;
 			};
 
