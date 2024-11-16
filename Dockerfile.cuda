@@ -42,7 +42,7 @@ RUN --mount=type=cache,target=/root/.ccache \
     -DPOLYFEM_WITH_CCACHE=ON \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
-    -DPOLYFEM_WITH_CUDA=ON  # Enable CUDA
+    -DIPC_TOOLKIT_WITH_CUDA=ON
 
 # Build PolyFEM using ccache with CUDA support
 RUN --mount=type=cache,target=/root/.ccache \
