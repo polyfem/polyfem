@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install dependencies
@@ -13,15 +13,19 @@ RUN apt-get update && apt-get install -y \
     libgl1-mesa-dev \
     libx11-dev \
     wget \
+    gnupg \
+    software-properties-common \
     libssl-dev \
     ccache \
     && rm -rf /var/lib/apt/lists/*
 
 # Install CMake
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.27.5/cmake-3.27.5-linux-x86_64.sh -O /tmp/cmake.sh && \
-    chmod +x /tmp/cmake.sh && \
-    /tmp/cmake.sh --skip-license --prefix=/usr/local && \
-    rm /tmp/cmake.sh
+RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc | \
+    gpg --dearmor - | \
+    tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null && \
+    apt-add-repository 'deb https://apt.kitware.com/ubuntu/ focal main' && \
+    apt-get update && \
+    apt-get install -y cmake
 
 # Set workdir
 WORKDIR /app/polyfem
