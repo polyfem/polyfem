@@ -1,3 +1,4 @@
+#include <numeric>
 #include <element_validity.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/par_for.hpp>
