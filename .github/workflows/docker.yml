@@ -45,6 +45,12 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Install CUDA Toolkit (Only for CUDA Variant)
+        if: matrix.variant == 'cuda'
+        uses: Jimver/cuda-toolkit@v0.2.19
+        with:
+          cuda: '12.2.0'
+
       - name: Cache Docker layers
         uses: actions/cache@v3
         with:
