@@ -34,12 +34,18 @@ Build the Docker Image:
 
 ```bash
 docker build -t polyfem .
+or
+# CUDA
+docker build -f Dockerfile.cuda -t polyfem-cuda .
 ```
 
 Run PolyFEM: To run PolyFEM and mount your current directory to /data in the container for input/output:
 
 ```bash
 docker run --rm -v "$(pwd)":/data polyfem [PolyFEM arguments]
+or
+#CUDA
+docker run --rm --gpus all -v "$(pwd)":/data polyfem-cuda [PolyFEM arguments]
 ```
 Replace [PolyFEM arguments] with the appropriate arguments to run your simulations (e.g., input/output file paths).
 
