@@ -105,6 +105,7 @@ namespace polyfem::solver
 		const bool is_volume = dim == 3;
 
 		std::vector<std::shared_ptr<Form>> forms;
+		al_form.clear();
 
 		elastic_form = std::make_shared<ElasticForm>(
 			n_bases, bases, geom_bases, assembler, ass_vals_cache,
