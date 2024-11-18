@@ -1,4 +1,3 @@
-#include <numeric>
 #include <element_validity.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/par_for.hpp>
@@ -161,10 +160,10 @@ namespace polyfem::utils
                     JacobianEvaluator<3, 3, 3> evaluator(cp);
                     return evaluator.eval(uv, 0);
                 }
-                case 4: {
-                    JacobianEvaluator<3, 3, 4> evaluator(cp);
-                    return evaluator.eval(uv, 0);
-                }
+                // case 4: {
+                //     JacobianEvaluator<3, 3, 4> evaluator(cp);
+                //     return evaluator.eval(uv, 0);
+                // }
                 default: throw std::invalid_argument("Order not supported");
             }
         }
@@ -225,11 +224,11 @@ namespace polyfem::utils
                     check.isValid(cp, nullptr, nullptr, &invalidList);
                     break;
                 }
-                case 4: {
-                    StaticValidator<3, 3, 4> check(n_threads);
-                    check.isValid(cp, nullptr, nullptr, &invalidList);
-                    break;
-                }
+                // case 4: {
+                //     StaticValidator<3, 3, 4> check(n_threads);
+                //     check.isValid(cp, nullptr, nullptr, &invalidList);
+                //     break;
+                // }
                 default: throw std::invalid_argument("Order not supported");
             }
         }
@@ -284,9 +283,9 @@ namespace polyfem::utils
                 case 3:
                     flag = check_static<3, 3, 3>(n_threads, cp, invalid_id, tree);
                     break;
-                case 4:
-                    flag = check_static<3, 3, 4>(n_threads, cp, invalid_id, tree);
-                    break;
+                // case 4:
+                //     flag = check_static<3, 3, 4>(n_threads, cp, invalid_id, tree);
+                //     break;
                 default:
                     throw std::invalid_argument("Order not supported");
             }
@@ -334,8 +333,8 @@ namespace polyfem::utils
                     return check_transient<3, 3, 2>(n_threads, cp1, cp2, invalid_id);
                 case 3:
                     return check_transient<3, 3, 3>(n_threads, cp1, cp2, invalid_id);
-                case 4:
-                    return check_transient<3, 3, 4>(n_threads, cp1, cp2, invalid_id);
+                // case 4:
+                //     return check_transient<3, 3, 4>(n_threads, cp1, cp2, invalid_id);
                 default:
                     throw std::invalid_argument("Order not supported");
             }
@@ -394,9 +393,9 @@ namespace polyfem::utils
                 case 3:
                     check_transient<3, 3, 3>(n_threads, cp1, cp2, step, invalid_id, invalid_step, gaveUp, tree);
                     break;
-                case 4:
-                    check_transient<3, 3, 4>(n_threads, cp1, cp2, step, invalid_id, invalid_step, gaveUp, tree);
-                    break;
+                // case 4:
+                //     check_transient<3, 3, 4>(n_threads, cp1, cp2, step, invalid_id, invalid_step, gaveUp, tree);
+                //     break;
                 default:
                     throw std::invalid_argument("Order not supported");
             }
