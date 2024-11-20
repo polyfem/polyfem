@@ -176,7 +176,6 @@ namespace polyfem
 				catch (const std::runtime_error &e)
 				{
 					logger().error("AL solve failed!");
-					export_data(homo_problem->reduced_to_full(tmp_sol), Eigen::MatrixXd());
 				}
 
 				extended_sol = homo_problem->reduced_to_extended(tmp_sol);
