@@ -55,16 +55,6 @@ namespace polyfem::solver
 		/// @param x Solution at time t
 		void update_quantities(const double t, const Eigen::VectorXd &x) override;
 
-		bool get_apply_DBC() { return apply_DBC_; }
-		void set_apply_DBC(const Eigen::VectorXd &x, const bool val) override
-		{
-			if (val != apply_DBC_)
-			{
-				apply_DBC_ = val;
-				update_current_rhs(x);
-			}
-		}
-
 		/// @brief Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adjoint_sol.
 		/// @param[in] n_verts Number of vertices
 		/// @param[in] x Current solution
@@ -98,7 +88,6 @@ namespace polyfem::solver
 		const assembler::RhsAssembler &rhs_assembler_; ///< Reference to the RHS assembler
 		const assembler::Density &density_;
 
-		bool apply_DBC_;            ///< If true, set the Dirichlet boundary conditions in the RHS
 		bool is_formulation_mixed_; ///< True if the formulation is mixed
 
 		Eigen::MatrixXd current_rhs_; ///< Cached RHS for the current time

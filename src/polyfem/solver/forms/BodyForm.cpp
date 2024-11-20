@@ -53,7 +53,6 @@ namespace polyfem::solver
 		  rhs_(rhs),
 		  rhs_assembler_(rhs_assembler),
 		  density_(density),
-		  apply_DBC_(apply_DBC),
 		  is_formulation_mixed_(is_formulation_mixed)
 	{
 		t_ = 0;
@@ -103,13 +102,6 @@ namespace polyfem::solver
 			std::vector<mesh::LocalBoundary>(), std::vector<int>(),
 			n_boundary_samples_, local_neumann_boundary_,
 			current_rhs_, x, t_);
-
-		// Apply Dirichlet boundary conditions
-		if (apply_DBC_)
-			rhs_assembler_.set_bc(
-				local_boundary_, boundary_nodes_,
-				n_boundary_samples_, std::vector<mesh::LocalBoundary>(),
-				current_rhs_, x, t_);
 	}
 
 	void BodyForm::force_shape_derivative(const int n_verts, const double t, const Eigen::MatrixXd &x, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
