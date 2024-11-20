@@ -31,7 +31,7 @@ namespace polyfem::solver
 		hessian.resize(x.size(), x.size());
 		hessian.setZero();
 		for (int i = 0; i < indices.size(); i++)
-			hessian.coeffRef(indices(i), indices(i)) += 1;
+			hessian.coeffRef(indices(i), indices(i)) += k_al_;
 	}
 
 	void MacroStrainLagrangianForm::update_quantities(const double t, const Eigen::VectorXd &)
