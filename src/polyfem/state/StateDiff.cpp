@@ -313,10 +313,11 @@ namespace polyfem
 
 				if (solve_data.tangential_adhesion_form) 
 				{
-					//TODO
-					assert(false);
+					
 					if (sol_step == force_step - 1)
 					{
+						StiffnessMatrix adhesion_hessian_prev(u.size(), u.size());
+
 						Eigen::MatrixXd surface_solution_prev = collision_mesh.vertices(utils::unflatten(u_prev, mesh->dimension()));
 						Eigen::MatrixXd surface_solution = collision_mesh.vertices(utils::unflatten(u, mesh->dimension()));
 
@@ -324,30 +325,32 @@ namespace polyfem
 						const Eigen::MatrixXd surface_velocities = (surface_solution - surface_solution_prev) / dt;
 						const double dv_dut = -1 / dt;
 
-						hessian_prev =
-							solve_data.friction_form->friction_potential().force_jacobian(
-								diff_cached.friction_collision_set(force_step),
+						adhesion_hessian_prev =
+							solve_data.tangential_adhesion_form->tangential_adhesion_potential().force_jacobian(
+								diff_cached.tangential_adhesion_collision_set(force_step),
 								collision_mesh,
 								collision_mesh.rest_positions(),
 								/*lagged_displacements=*/surface_solution_prev,
 								surface_velocities,
-								solve_data.contact_form->barrier_potential(),
-								solve_data.contact_form->barrier_stiffness(),
-								ipc::FrictionPotential::DiffWRT::LAGGED_DISPLACEMENTS)
-							+ solve_data.friction_form->friction_potential().force_jacobian(
-								  diff_cached.friction_collision_set(force_step),
+								solve_data.normal_adhesion_form->normal_adhesion_potential(),
+								1,
+								ipc::TangentialPotential::DiffWRT::LAGGED_DISPLACEMENTS)
+							+ solve_data.tangential_adhesion_form->tangential_adhesion_potential().force_jacobian(
+								  diff_cached.tangential_adhesion_collision_set(force_step),
 								  collision_mesh,
 								  collision_mesh.rest_positions(),
 								  /*lagged_displacements=*/surface_solution_prev,
 								  surface_velocities,
-								  solve_data.contact_form->barrier_potential(),
-								  solve_data.contact_form->barrier_stiffness(),
-								  ipc::FrictionPotential::DiffWRT::VELOCITIES)
+								  solve_data.normal_adhesion_form->normal_adhesion_potential(),
+								  1,
+								  ipc::TangentialPotential::DiffWRT::VELOCITIES)
 								  * dv_dut;
 
-						hessian_prev *= -1;
+						adhesion_hessian_prev *= -1;
 
-						hessian_prev = collision_mesh.to_full_dof(hessian_prev); // / (beta * dt) / (beta * dt);
+						adhesion_hessian_prev = collision_mesh.to_full_dof(adhesion_hessian_prev); // / (beta * dt) / (beta * dt);
+					
+						hessian_prev += adhesion_hessian_prev;
 					}
 				}
 
