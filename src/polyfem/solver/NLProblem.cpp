@@ -51,8 +51,8 @@ namespace polyfem::solver
 		setup_constrain_nodes();
 		reduced_size_ = (periodic_bc ? periodic_bc->n_periodic_dof() : full_size) - constraint_nodes_.size();
 
-		assert(std::is_sorted(constraint_nodes.begin(), constraint_nodes.end()));
-		assert(constraint_nodes.size() == 0 || (constraint_nodes.front() >= 0 && constraint_nodes.back() < full_size_));
+		assert(std::is_sorted(constraint_nodes_.begin(), constraint_nodes_.end()));
+		assert(constraint_nodes_.size() == 0 || (constraint_nodes_.front() >= 0 && constraint_nodes_.back() < full_size_));
 		use_reduced_size();
 	}
 
