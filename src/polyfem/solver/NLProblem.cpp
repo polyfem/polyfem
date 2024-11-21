@@ -134,13 +134,6 @@ namespace polyfem::solver
 		// }
 	}
 
-	void NLProblem::set_apply_DBC(const TVector &x, const bool val)
-	{
-		TVector full = reduced_to_full(x);
-		for (auto &form : forms_)
-			form->set_apply_DBC(full, val);
-	}
-
 	NLProblem::TVector NLProblem::full_to_reduced(const TVector &full) const
 	{
 		TVector reduced;

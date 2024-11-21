@@ -466,7 +466,7 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 // 				state.assemble_stiffness_mat();
 // 				auto form = std::make_shared<BodyForm>(state.n_bases * dim, state.n_pressure_bases, state.boundary_nodes, state.local_boundary,
 // 													   state.local_neumann_boundary, state.n_boundary_samples(), state.rhs, *state.solve_data.rhs_assembler,
-// 													   state.assembler.density(), /*apply_DBC=*/true, /*is_formulation_mixed=*/false,
+// 													   state.assembler.density(), /*is_formulation_mixed=*/false,
 // 													   state.problem->is_time_dependent());
 // 				form->update_quantities(t0 + i * dt, u[i - 1]);
 
@@ -483,7 +483,7 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 // 				state.assemble_stiffness_mat();
 // 				auto form = std::make_shared<BodyForm>(state.n_bases * dim, state.n_pressure_bases, state.boundary_nodes, state.local_boundary,
 // 													   state.local_neumann_boundary, state.n_boundary_samples(), state.rhs, *state.solve_data.rhs_assembler,
-// 													   state.assembler.density(), /*apply_DBC=*/true, /*is_formulation_mixed=*/false,
+// 													   state.assembler.density(), /*is_formulation_mixed=*/false,
 // 													   state.problem->is_time_dependent());
 // 				form->update_quantities(t0 + i * dt, u[i - 1]);
 

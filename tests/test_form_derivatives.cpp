@@ -232,7 +232,6 @@ TEST_CASE("body form derivatives 3d", "[form][form_derivatives][body_form]")
 	const int dim = GENERATE(2, 3);
 	const auto state_ptr = get_state(dim);
 	const auto rhs_assembler_ptr = state_ptr->build_rhs_assembler();
-	const bool apply_DBC = false; // GENERATE(true, false);
 	const int ndof = state_ptr->n_bases * state_ptr->mesh->dimension();
 
 	BodyForm form(ndof, state_ptr->n_pressure_bases,
@@ -243,13 +242,12 @@ TEST_CASE("body form derivatives 3d", "[form][form_derivatives][body_form]")
 				  state_ptr->rhs,
 				  *rhs_assembler_ptr,
 				  state_ptr->mass_matrix_assembler->density(),
-				  apply_DBC, false, state_ptr->problem->is_time_dependent());
+				  false, state_ptr->problem->is_time_dependent());
 	Eigen::VectorXd x_prev;
 	x_prev.setRandom(state_ptr->n_bases * 3);
 	x_prev /= 100.;
 	form.update_quantities(state_ptr->args["time"]["t0"].get<double>() + 5 * state_ptr->args["time"]["dt"].get<double>(), x_prev);
 
-	CAPTURE(apply_DBC);
 	test_form(form, *state_ptr);
 }
 
@@ -258,7 +256,6 @@ TEST_CASE("body form derivatives", "[form][form_derivatives][body_form]")
 	const int dim = GENERATE(2, 3);
 	const auto state_ptr = get_state(dim);
 	const auto rhs_assembler_ptr = state_ptr->build_rhs_assembler();
-	const bool apply_DBC = false; // GENERATE(true, false);
 	const int ndof = state_ptr->n_bases * state_ptr->mesh->dimension();
 
 	BodyForm form(ndof, state_ptr->n_pressure_bases,
@@ -269,14 +266,13 @@ TEST_CASE("body form derivatives", "[form][form_derivatives][body_form]")
 				  state_ptr->rhs,
 				  *rhs_assembler_ptr,
 				  state_ptr->mass_matrix_assembler->density(),
-				  apply_DBC, false, state_ptr->problem->is_time_dependent());
+				  false, state_ptr->problem->is_time_dependent());
 
 	Eigen::VectorXd x_prev;
 	x_prev.setRandom(state_ptr->n_bases * dim);
 	x_prev /= 100.;
 	form.update_quantities(state_ptr->args["time"]["t0"].get<double>() + 5 * state_ptr->args["time"]["dt"].get<double>(), x_prev);
 
-	CAPTURE(apply_DBC);
 	test_form(form, *state_ptr);
 }
 
