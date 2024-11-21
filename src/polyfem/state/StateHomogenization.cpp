@@ -62,7 +62,7 @@ namespace polyfem
 			// Homogenization
 			macro_strain_constraint,
 			// Periodic contact
-			args["contact"]["periodic"], periodic_collision_mesh_to_basis,
+			args["contact"]["periodic"], periodic_collision_mesh_to_basis, periodic_bc,
 			// Friction form
 			args["contact"]["friction_coefficient"],
 			args["contact"]["epsv"],
@@ -100,7 +100,6 @@ namespace polyfem
 
 		std::shared_ptr<NLHomoProblem> homo_problem = std::make_shared<NLHomoProblem>(
 			ndof,
-			boundary_nodes,
 			macro_strain_constraint,
 			*this, t, forms, solve_data.al_form, solve_symmetric_flag);
 		if (solve_data.periodic_contact_form)

@@ -6,6 +6,11 @@
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 
+namespace polyfem::utils
+{
+	class PeriodicBoundary;
+} // namespace polyfem::utils
+
 namespace polyfem::solver
 {
 	/// @brief Form of the augmented lagrangian for bc constraints
@@ -23,6 +28,7 @@ namespace polyfem::solver
 		/// @param obstacle_ndof Obstacle's number of DOF
 		/// @param is_time_dependent Whether the problem is time dependent
 		/// @param t Current time
+		/// @param periodic_bc Periodic boundary conditions
 		BCLagrangianForm(const int ndof,
 						 const std::vector<int> &boundary_nodes,
 						 const std::vector<mesh::LocalBoundary> &local_boundary,
@@ -32,9 +38,13 @@ namespace polyfem::solver
 						 const assembler::RhsAssembler &rhs_assembler,
 						 const size_t obstacle_ndof,
 						 const bool is_time_dependent,
-						 const double t);
+						 const double t,
+						 const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc = nullptr);
 
-		std::string name() const override { return "bc-alagrangian"; }
+		std::string name() const override
+		{
+			return "bc-alagrangian";
+		}
 
 		/// @brief Construct a new BCLagrangianForm object with a fixed Dirichlet boundary
 		/// @param ndof Number of degrees of freedom
@@ -71,7 +81,10 @@ namespace polyfem::solver
 
 		void update_lagrangian(const Eigen::VectorXd &x, const double k_al) override;
 
-		StiffnessMatrix &mask() { return mask_; }
+		StiffnessMatrix &mask()
+		{
+			return mask_;
+		}
 		const StiffnessMatrix &mask() const { return mask_; }
 		Eigen::VectorXd target(const Eigen::VectorXd &) const override { return target_x_; }
 
