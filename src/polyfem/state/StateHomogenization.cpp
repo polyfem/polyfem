@@ -72,7 +72,7 @@ namespace polyfem
 
 		for (const auto &[name, form] : solve_data.named_forms())
 		{
-			if (name == "augmented_lagrangian_lagr" || name == "augmented_lagrangian_penalty")
+			if (name == "augmented_lagrangian")
 			{
 				form->set_weight(0);
 				form->disable();
