@@ -20,4 +20,4 @@ if (EIGEN_INTERFACE)
 endif()
 
 include(CPM)
-CPMAddPackage("gh:Huangzizhou/bezier#83873eaaa431e0f35a083dc6c2cb554adab89b1b")
+CPMAddPackage("gh:Huangzizhou/bezier#ae7b77a9a2f802666283dbfa61dd03b16984a58f")
