@@ -1,6 +1,7 @@
 #include "BCLagrangianForm.hpp"
 
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/assembler/PeriodicBoundary.hpp>
 
 namespace polyfem::solver
 {
@@ -13,8 +14,10 @@ namespace polyfem::solver
 									   const assembler::RhsAssembler &rhs_assembler,
 									   const size_t obstacle_ndof,
 									   const bool is_time_dependent,
-									   const double t)
-		: boundary_nodes_(boundary_nodes),
+									   const double t,
+									   const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc)
+		: AugmentedLagrangianForm(periodic_bc ? periodic_bc->full_to_periodic(boundary_nodes) : boundary_nodes),
+		  boundary_nodes_(boundary_nodes),
 		  local_boundary_(&local_boundary),
 		  local_neumann_boundary_(&local_neumann_boundary),
 		  n_boundary_samples_(n_boundary_samples),
@@ -30,7 +33,8 @@ namespace polyfem::solver
 									   const StiffnessMatrix &mass,
 									   const size_t obstacle_ndof,
 									   const Eigen::MatrixXd &target_x)
-		: boundary_nodes_(boundary_nodes),
+		: AugmentedLagrangianForm(boundary_nodes),
+		  boundary_nodes_(boundary_nodes),
 		  local_boundary_(nullptr),
 		  local_neumann_boundary_(nullptr),
 		  n_boundary_samples_(0),

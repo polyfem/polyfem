@@ -9,11 +9,10 @@ namespace polyfem::solver
 	public:
 		StaticBoundaryNLProblem(
 			const int full_size,
-			const std::vector<int> &boundary_nodes,
 			const Eigen::VectorXd &boundary_values,
 			const std::vector<std::shared_ptr<polyfem::solver::Form>> &forms,
 			const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms)
-			: polyfem::solver::NLProblem(full_size, boundary_nodes, forms, penalty_forms),
+			: polyfem::solver::NLProblem(full_size, forms, penalty_forms),
 			  boundary_values_(boundary_values)
 		{
 		}
