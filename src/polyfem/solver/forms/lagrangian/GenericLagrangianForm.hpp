@@ -9,9 +9,11 @@ namespace polyfem::solver
 	{
 	public:
 		/// @brief Construct a new GenericLagrangianForm object for the constraints Ax = b
+		/// @param constraint_nodes constraint nodes
 		/// @param A Constraints matrix
 		/// @param b Constraints value
-		GenericLagrangianForm(const StiffnessMatrix &A,
+		GenericLagrangianForm(const std::vector<int> &constraint_nodes,
+							  const StiffnessMatrix &A,
 							  const Eigen::VectorXd &b);
 
 		std::string name() const override { return "generic-lagrangian"; }

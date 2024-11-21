@@ -41,7 +41,10 @@ namespace polyfem::solver
 						 const double t,
 						 const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc = nullptr);
 
-		std::string name() const override { return "bc-alagrangian"; }
+		std::string name() const override
+		{
+			return "bc-alagrangian";
+		}
 
 		/// @brief Construct a new BCLagrangianForm object with a fixed Dirichlet boundary
 		/// @param ndof Number of degrees of freedom
@@ -78,7 +81,10 @@ namespace polyfem::solver
 
 		void update_lagrangian(const Eigen::VectorXd &x, const double k_al) override;
 
-		StiffnessMatrix &mask() { return mask_; }
+		StiffnessMatrix &mask()
+		{
+			return mask_;
+		}
 		const StiffnessMatrix &mask() const { return mask_; }
 		Eigen::VectorXd target(const Eigen::VectorXd &) const override { return target_x_; }
 

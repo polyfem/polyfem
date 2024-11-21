@@ -4,9 +4,10 @@
 
 namespace polyfem::solver
 {
-	GenericLagrangianForm::GenericLagrangianForm(const StiffnessMatrix &A,
+	GenericLagrangianForm::GenericLagrangianForm(const std::vector<int> &constraint_nodes,
+												 const StiffnessMatrix &A,
 												 const Eigen::VectorXd &b)
-		: A(A), b(b)
+		: AugmentedLagrangianForm(constraint_nodes), A(A), b(b)
 	{
 	}
 

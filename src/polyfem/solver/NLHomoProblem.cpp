@@ -8,14 +8,13 @@
 namespace polyfem::solver
 {
 	NLHomoProblem::NLHomoProblem(const int full_size,
-								 const std::vector<int> &boundary_nodes,
 								 const assembler::MacroStrainValue &macro_strain_constraint,
 								 const State &state,
 								 const double t,
 								 const std::vector<std::shared_ptr<Form>> &forms,
 								 const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
 								 const bool solve_symmetric_macro_strain)
-		: NLProblem(full_size, boundary_nodes, state.periodic_bc, t, forms, penalty_forms),
+		: NLProblem(full_size, state.periodic_bc, t, forms, penalty_forms),
 		  state_(state),
 		  only_symmetric(solve_symmetric_macro_strain),
 		  macro_strain_constraint_(macro_strain_constraint)
