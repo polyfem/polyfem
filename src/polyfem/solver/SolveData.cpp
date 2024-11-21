@@ -192,7 +192,7 @@ namespace polyfem::solver
 
 			al_form.push_back(std::make_shared<BCLagrangianForm>(
 				ndof, boundary_nodes, local_boundary, local_neumann_boundary,
-				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t));
+				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t, periodic_bc));
 			forms.push_back(al_form.back());
 		}
 

@@ -132,7 +132,7 @@ namespace polyfem::mesh
 		std::vector<std::shared_ptr<AugmentedLagrangianForm>> bc_forms;
 		bc_forms.push_back(bc_lagrangian_form);
 
-		StaticBoundaryNLProblem problem(ndof, boundary_nodes, target_x, forms, bc_forms);
+		StaticBoundaryNLProblem problem(ndof, target_x, forms, bc_forms);
 
 		// --------------------------------------------------------------------
 

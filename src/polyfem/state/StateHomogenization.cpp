@@ -112,7 +112,6 @@ namespace polyfem
 
 		std::shared_ptr<NLHomoProblem> homo_problem = std::make_shared<NLHomoProblem>(
 			ndof,
-			boundary_nodes,
 			macro_strain_constraint,
 			*this, t, forms, solve_data.al_form, solve_symmetric_flag);
 		if (solve_data.periodic_contact_form)

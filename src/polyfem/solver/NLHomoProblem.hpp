@@ -27,7 +27,6 @@ namespace polyfem::solver
 		using typename FullNLProblem::TVector;
 
 		NLHomoProblem(const int full_size,
-					  const std::vector<int> &boundary_nodes,
 					  const assembler::MacroStrainValue &macro_strain_constraint,
 					  const State &state,
 					  const double t,

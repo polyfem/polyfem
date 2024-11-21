@@ -309,7 +309,7 @@ namespace polyfem::mesh
 		}
 		const std::vector<std::shared_ptr<polyfem::solver::AugmentedLagrangianForm>> penalty_forms;
 		solve_data.nl_problem = std::make_shared<polyfem::solver::StaticBoundaryNLProblem>(
-			ndof(), boundary_nodes, target_x, forms, penalty_forms);
+			ndof(), target_x, forms, penalty_forms);
 
 		assert(solve_data.time_integrator != nullptr);
 		solve_data.nl_problem->update_quantities(current_time, solve_data.time_integrator->x_prev());
