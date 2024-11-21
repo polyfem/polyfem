@@ -61,6 +61,7 @@ namespace polyfem
 			const std::vector<int> &primitive_to_node() const { return primitive_to_node_; }
 			const std::vector<int> &node_to_primitive_gid() const { return node_to_primitive_gid_; }
 			const std::vector<int> &node_to_primitive() const { return node_to_primitive_; }
+			const std::vector<int> &in_ordered_vertices() const { return in_ordered_vertices_; }
 
 			// Node position from node id
 			RowVectorNd node_position(int node_id) const { return nodes_.row(node_to_primitive_[node_id]); }
@@ -102,6 +103,9 @@ namespace polyfem
 			Eigen::MatrixXd nodes_;
 			std::vector<bool> is_boundary_;
 			std::vector<bool> is_interface_;
+
+			// Store the input nodes ids
+			std::vector<int> in_ordered_vertices_;
 		};
 	} // namespace mesh
 } // namespace polyfem

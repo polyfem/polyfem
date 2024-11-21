@@ -77,7 +77,7 @@ namespace polyfem
 			}
 		}
 
-		RowVectorNd Mesh3D::edge_node(const Navigation3D::Index &index, const int n_new_nodes, const int i) const
+		std::pair<RowVectorNd, int> Mesh3D::edge_node(const Navigation3D::Index &index, const int n_new_nodes, const int i) const
 		{
 			if (orders_.size() <= 0 || orders_(index.element) == 1 || edge_nodes_.empty() || edge_nodes_[index.edge].nodes.rows() != n_new_nodes)
 			{
@@ -86,17 +86,17 @@ namespace polyfem
 
 				const double t = i / (n_new_nodes + 1.0);
 
-				return (1 - t) * v1 + t * v2;
+				return std::make_pair((1 - t) * v1 + t * v2, -1);
 			}
 
 			const auto &n = edge_nodes_[index.edge];
 			if (n.v1 == index.vertex)
-				return n.nodes.row(i - 1);
+				return std::make_pair(n.nodes.row(i - 1), n.nodes_ids[i - 1]);
 			else
-				return n.nodes.row(n.nodes.rows() - i);
+				return std::make_pair(n.nodes.row(n.nodes.rows() - i), n.nodes_ids[n.nodes_ids.size() - i]);
 		}
 
-		RowVectorNd Mesh3D::face_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j) const
+		std::pair<RowVectorNd, int> Mesh3D::face_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j) const
 		{
 			const int tmp = n_new_nodes == 2 ? 3 : n_new_nodes;
 			if (is_simplex(index.element))
@@ -113,7 +113,7 @@ namespace polyfem
 					assert(b3 < 1);
 					assert(b3 > 0);
 
-					return b1 * v1 + b2 * v2 + b3 * v3;
+					return std::make_pair(b1 * v1 + b2 * v2 + b3 * v3, -1);
 				}
 
 				const int ii = i - 1;
@@ -174,7 +174,7 @@ namespace polyfem
 					}
 				}
 
-				return n.nodes.row(lindex);
+				return std::make_pair(n.nodes.row(lindex), n.nodes_ids[lindex]);
 			}
 			else if (is_cube(index.element))
 			{
@@ -189,30 +189,30 @@ namespace polyfem
 				const double b1 = i / (n_new_nodes + 1.0);
 				const double b2 = j / (n_new_nodes + 1.0);
 
-				return v1 * (1 - b1) * (1 - b2) + v2 * b1 * (1 - b2) + v3 * b1 * b2 + v4 * (1 - b1) * b2;
+				return std::make_pair(v1 * (1 - b1) * (1 - b2) + v2 * b1 * (1 - b2) + v3 * b1 * b2 + v4 * (1 - b1) * b2, -1);
 			}
 
 			assert(false);
-			return RowVectorNd(3, 1);
+			return std::make_pair(RowVectorNd(3, 1), -1);
 		}
 
-		RowVectorNd Mesh3D::cell_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j, const int k) const
+		std::pair<RowVectorNd, int> Mesh3D::cell_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j, const int k) const
 		{
 			if (is_simplex(index.element) && orders_.size() > 0 && orders_(index.element) == n_new_nodes + 3)
 			{
 				assert(n_new_nodes == 1); // test higher than 4 order meshes
 				const auto &n = cell_nodes_[index.element];
 				assert(n.nodes.rows() == 1);
-				return n.nodes;
+				return std::make_pair(n.nodes, n.nodes_ids[0]);
 			}
 
 			if (n_new_nodes == 1)
-				return cell_barycenter(index.element);
+				return std::make_pair(cell_barycenter(index.element), -1);
 
 			if (is_simplex(index.element))
 			{
 				if (n_new_nodes == 1)
-					return cell_barycenter(index.element);
+					return std::make_pair(cell_barycenter(index.element), -1);
 				else
 				{
 					const auto v1 = point(index.vertex);
@@ -230,7 +230,7 @@ namespace polyfem
 					// 	   + v3 * w1
 					// 	   + v4 * w2;
 
-					return w4 * v1 + w1 * v2 + w2 * v3 + w3 * v4;
+					return std::make_pair(w4 * v1 + w1 * v2 + w2 * v3 + w3 * v4, -1);
 				}
 			}
 			else if (is_cube(index.element))
@@ -257,11 +257,11 @@ namespace polyfem
 				RowVectorNd blin1 = v1 * (1 - b1) * (1 - b2) + v2 * b1 * (1 - b2) + v3 * b1 * b2 + v4 * (1 - b1) * b2;
 				RowVectorNd blin2 = v5 * (1 - b1) * (1 - b2) + v6 * b1 * (1 - b2) + v7 * b1 * b2 + v8 * (1 - b1) * b2;
 
-				return (1 - b3) * blin1 + b3 * blin2;
+				return std::make_pair((1 - b3) * blin1 + b3 * blin2, -1);
 			}
 
 			assert(false);
-			return RowVectorNd(3, 1);
+			return std::make_pair(RowVectorNd(3, 1), -1);
 		}
 
 		void Mesh3D::to_face_functions(std::array<std::function<Navigation3D::Index(Navigation3D::Index)>, 6> &to_face) const

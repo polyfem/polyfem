@@ -230,8 +230,8 @@ namespace polyfem
 			bool build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F) override;
 
 			void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) override;
-			RowVectorNd edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const override;
-			RowVectorNd face_node(const Navigation::Index &index, const int n_new_nodes, const int i, const int j) const override;
+			std::pair<RowVectorNd, int> edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const override;
+			std::pair<RowVectorNd, int> face_node(const Navigation::Index &index, const int n_new_nodes, const int i, const int j) const override;
 
 			void normalize() override;
 
@@ -253,7 +253,7 @@ namespace polyfem
 
 			void compute_boundary_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &marker) override;
 
-			void compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker) override;
+			void compute_body_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &)> &marker) override;
 
 			void set_boundary_ids(const std::vector<int> &boundary_ids) override;
 			void set_body_ids(const std::vector<int> &body_ids) override;

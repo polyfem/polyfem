@@ -209,12 +209,12 @@ namespace polyfem::mesh
 			if (mesh->has_body_ids())
 				volume_selections.push_back(std::make_shared<SpecifiedSelection>(mesh->get_body_ids()));
 
-			mesh->compute_body_ids([&](const size_t cell_id, const RowVectorNd &p) -> int {
+			mesh->compute_body_ids([&](const size_t cell_id, const std::vector<int> &vs, const RowVectorNd &p) -> int {
 				for (const auto &selection : volume_selections)
 				{
 					// TODO: add vs to compute_body_ids
-					if (selection->inside(cell_id, {}, p))
-						return selection->id(cell_id, {}, p);
+					if (selection->inside(cell_id, vs, p))
+						return selection->id(cell_id, vs, p);
 				}
 				return 0;
 			});

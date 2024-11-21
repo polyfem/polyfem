@@ -243,6 +243,7 @@ namespace polyfem
 
 							n.nodes.resize(1, 2);
 							n.nodes << V(nodes_ids[node_index], 0), V(nodes_ids[node_index], 1);
+							n.nodes_ids.push_back(nodes_ids[node_index]);
 						}
 						index = next_around_face(index);
 					}
@@ -299,6 +300,9 @@ namespace polyfem
 							n.nodes.resize(2, 2);
 							n.nodes.row(0) << V(nodes_ids[node_index1], 0), V(nodes_ids[node_index1], 1);
 							n.nodes.row(1) << V(nodes_ids[node_index2], 0), V(nodes_ids[node_index2], 1);
+
+							n.nodes_ids.push_back(nodes_ids[node_index1]);
+							n.nodes_ids.push_back(nodes_ids[node_index2]);
 						}
 						index = next_around_face(index);
 					}
@@ -310,6 +314,7 @@ namespace polyfem
 						n.v3 = mesh_.facets.vertex(f, 2);
 						n.nodes.resize(1, 2);
 						n.nodes << V(nodes_ids[9], 0), V(nodes_ids[9], 1);
+						n.nodes_ids.push_back(nodes_ids[9]);
 					}
 				}
 				// P4
@@ -330,7 +335,7 @@ namespace polyfem
 				orders_.resize(0, 0);
 		}
 
-		RowVectorNd CMesh2D::edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const
+		std::pair<RowVectorNd, int> CMesh2D::edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const
 		{
 			if (orders_.size() <= 0 || orders_(index.face) == 1 || edge_nodes_.empty() || edge_nodes_[index.edge].nodes.rows() != n_new_nodes)
 			{
@@ -339,20 +344,20 @@ namespace polyfem
 
 				const double t = i / (n_new_nodes + 1.0);
 
-				return (1 - t) * v1 + t * v2;
+				return std::make_pair((1 - t) * v1 + t * v2, -1);
 			}
 
 			const auto &n = edge_nodes_[index.edge];
 			if (n.v1 == index.vertex)
-				return n.nodes.row(i - 1);
+				return std::make_pair(n.nodes.row(i - 1), n.nodes_ids[i - 1]);
 			else
 			{
 				assert(n.v2 == index.vertex);
-				return n.nodes.row(n.nodes.rows() - i);
+				return std::make_pair(n.nodes.row(n.nodes.rows() - i), n.nodes_ids[n.nodes_ids.size() - i]);
 			}
 		}
 
-		RowVectorNd CMesh2D::face_node(const Navigation::Index &index, const int n_new_nodes, const int i, const int j) const
+		std::pair<RowVectorNd, int> CMesh2D::face_node(const Navigation::Index &index, const int n_new_nodes, const int i, const int j) const
 		{
 			if (is_simplex(index.face))
 			{
@@ -368,13 +373,13 @@ namespace polyfem
 					assert(b3 < 1);
 					assert(b3 > 0);
 
-					return b1 * v1 + b2 * v2 + b3 * v3;
+					return std::make_pair(b1 * v1 + b2 * v2 + b3 * v3, -1);
 				}
 
 				assert(orders_(index.face) == 3);
 				// unsupported P4 for geometry
 				const auto &n = face_nodes_[index.face];
-				return n.nodes.row(0);
+				return std::make_pair(n.nodes.row(0), n.nodes_ids[0]);
 			}
 			else if (is_cube(index.face))
 			{
@@ -389,11 +394,11 @@ namespace polyfem
 				const double b1 = i / (n_new_nodes + 1.0);
 				const double b2 = j / (n_new_nodes + 1.0);
 
-				return v1 * (1 - b1) * (1 - b2) + v2 * b1 * (1 - b2) + v3 * b1 * b2 + v4 * (1 - b1) * b2;
+				return std::make_pair(v1 * (1 - b1) * (1 - b2) + v2 * b1 * (1 - b2) + v3 * b1 * b2 + v4 * (1 - b1) * b2, -1);
 			}
 
 			assert(false);
-			return RowVectorNd(2, 1);
+			return std::make_pair(RowVectorNd(2, 1), -1);
 		}
 
 		void CMesh2D::bounding_box(RowVectorNd &min, RowVectorNd &max) const
@@ -573,7 +578,7 @@ namespace polyfem
 			return 0.5 * (point(v0) + point(v1));
 		}
 
-		void CMesh2D::compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker)
+		void CMesh2D::compute_body_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &)> &marker)
 		{
 			body_ids_.resize(n_elements());
 			std::fill(body_ids_.begin(), body_ids_.end(), -1);
@@ -581,7 +586,7 @@ namespace polyfem
 			for (int e = 0; e < n_elements(); ++e)
 			{
 				const auto bary = face_barycenter(e);
-				body_ids_[e] = marker(e, bary);
+				body_ids_[e] = marker(e, element_vertices(e), bary);
 			}
 		}
 

@@ -184,7 +184,7 @@ namespace polyfem
 			}
 		}
 
-		void NCMesh3D::compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker)
+		void NCMesh3D::compute_body_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &)> &marker)
 		{
 			body_ids_.resize(n_cells());
 			std::fill(body_ids_.begin(), body_ids_.end(), -1);
@@ -192,7 +192,7 @@ namespace polyfem
 			for (int e = 0; e < n_cells(); ++e)
 			{
 				const auto bary = cell_barycenter(e);
-				body_ids_[e] = marker(e, bary);
+				body_ids_[e] = marker(e, element_vertices(e), bary);
 				elements[valid_to_all_elem(e)].body_id = body_ids_[e];
 			}
 		}

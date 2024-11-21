@@ -551,6 +551,7 @@ namespace polyfem
 
 				n.nodes.resize(1, 3);
 				n.nodes << V(nodes_ids[node_index], 0), V(nodes_ids[node_index], 1), V(nodes_ids[node_index], 2);
+				n.nodes_ids.push_back(nodes_ids[node_index]);
 			};
 
 			const auto attach_p3 = [&](const Navigation3D::Index &index, const std::vector<int> &nodes_ids) {
@@ -633,6 +634,8 @@ namespace polyfem
 				n.nodes.resize(2, 3);
 				n.nodes.row(0) << V(nodes_ids[node_index1], 0), V(nodes_ids[node_index1], 1), V(nodes_ids[node_index1], 2);
 				n.nodes.row(1) << V(nodes_ids[node_index2], 0), V(nodes_ids[node_index2], 1), V(nodes_ids[node_index2], 2);
+				n.nodes_ids.push_back(nodes_ids[node_index1]);
+				n.nodes_ids.push_back(nodes_ids[node_index2]);
 			};
 
 			const auto attach_p3_face = [&](const Navigation3D::Index &index, const std::vector<int> &nodes_ids, int id) {
@@ -644,6 +647,7 @@ namespace polyfem
 					n.v3 = face_vertex(index.face, 2);
 					n.nodes.resize(1, 3);
 					n.nodes << V(nodes_ids[id], 0), V(nodes_ids[id], 1), V(nodes_ids[id], 2);
+					n.nodes_ids.push_back(nodes_ids[id]);
 				}
 			};
 
@@ -748,6 +752,9 @@ namespace polyfem
 				n.nodes.row(0) << V(nodes_ids[node_index1], 0), V(nodes_ids[node_index1], 1), V(nodes_ids[node_index1], 2);
 				n.nodes.row(1) << V(nodes_ids[node_index2], 0), V(nodes_ids[node_index2], 1), V(nodes_ids[node_index2], 2);
 				n.nodes.row(2) << V(nodes_ids[node_index3], 0), V(nodes_ids[node_index3], 1), V(nodes_ids[node_index3], 2);
+				n.nodes_ids.push_back(nodes_ids[node_index1]);
+				n.nodes_ids.push_back(nodes_ids[node_index2]);
+				n.nodes_ids.push_back(nodes_ids[node_index3]);
 			};
 
 			const auto attach_p4_face = [&](const Navigation3D::Index &index, const std::vector<int> &nodes_ids) {
@@ -832,6 +839,9 @@ namespace polyfem
 					n.nodes.row(0) << V(nodes_ids[id + index0], 0), V(nodes_ids[id + index0], 1), V(nodes_ids[id + index0], 2);
 					n.nodes.row(1) << V(nodes_ids[id + index1], 0), V(nodes_ids[id + index1], 1), V(nodes_ids[id + index1], 2);
 					n.nodes.row(2) << V(nodes_ids[id + index2], 0), V(nodes_ids[id + index2], 1), V(nodes_ids[id + index2], 2);
+					n.nodes_ids.push_back(nodes_ids[id + index0]);
+					n.nodes_ids.push_back(nodes_ids[id + index1]);
+					n.nodes_ids.push_back(nodes_ids[id + index2]);
 				}
 			};
 
@@ -849,6 +859,7 @@ namespace polyfem
 					n.nodes.resize(1, 3);
 
 					n.nodes << V(nodes_ids[34], 0), V(nodes_ids[34], 1), V(nodes_ids[34], 2);
+					n.nodes_ids.push_back(nodes_ids[34]);
 				}
 			};
 
@@ -1214,7 +1225,7 @@ namespace polyfem
 			}
 		}
 
-		void CMesh3D::compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker)
+		void CMesh3D::compute_body_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &)> &marker)
 		{
 			body_ids_.resize(n_elements());
 			std::fill(body_ids_.begin(), body_ids_.end(), -1);
@@ -1222,7 +1233,7 @@ namespace polyfem
 			for (int e = 0; e < n_elements(); ++e)
 			{
 				const auto bary = cell_barycenter(e);
-				body_ids_[e] = marker(e, bary);
+				body_ids_[e] = marker(e, element_vertices(e), bary);
 			}
 		}
 

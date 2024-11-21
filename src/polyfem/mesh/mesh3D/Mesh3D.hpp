@@ -41,9 +41,9 @@ namespace polyfem
 
 			double tri_area(const int gid) const override;
 
-			RowVectorNd edge_node(const Navigation3D::Index &index, const int n_new_nodes, const int i) const;
-			RowVectorNd face_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j) const;
-			RowVectorNd cell_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j, const int k) const;
+			std::pair<RowVectorNd, int> edge_node(const Navigation3D::Index &index, const int n_new_nodes, const int i) const;
+			std::pair<RowVectorNd, int> face_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j) const;
+			std::pair<RowVectorNd, int> cell_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j, const int k) const;
 
 			void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1) const override;
 			void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const override;
