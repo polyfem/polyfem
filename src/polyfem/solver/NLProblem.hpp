@@ -60,8 +60,6 @@ namespace polyfem::solver
 		virtual void full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const;
 		virtual TVector reduced_to_full(const TVector &reduced) const;
 
-		void set_apply_DBC(const TVector &x, const bool val);
-
 	protected:
 		virtual Eigen::MatrixXd constraint_values(const TVector &reduced) const;
 

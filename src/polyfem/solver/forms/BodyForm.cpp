@@ -41,7 +41,6 @@ namespace polyfem::solver
 					   const Eigen::MatrixXd &rhs,
 					   const assembler::RhsAssembler &rhs_assembler,
 					   const assembler::Density &density,
-					   const bool apply_DBC,
 					   const bool is_formulation_mixed,
 					   const bool is_time_dependent)
 		: ndof_(ndof),

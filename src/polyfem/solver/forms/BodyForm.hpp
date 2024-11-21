@@ -17,7 +17,6 @@ namespace polyfem::solver
 		/// @brief Construct a new Body Form object
 		/// @param state Reference to the simulation state
 		/// @param rhs_assembler Reference to the right hand side assembler
-		/// @param apply_DBC If true, set the Dirichlet boundary conditions in the RHS
 		BodyForm(const int ndof,
 				 const int n_pressure_bases,
 				 const std::vector<int> &boundary_nodes,
@@ -27,7 +26,6 @@ namespace polyfem::solver
 				 const Eigen::MatrixXd &rhs,
 				 const assembler::RhsAssembler &rhs_assembler,
 				 const assembler::Density &density,
-				 const bool apply_DBC,
 				 const bool is_formulation_mixed,
 				 const bool is_time_dependent);
 

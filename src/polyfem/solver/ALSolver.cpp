@@ -141,7 +141,6 @@ namespace polyfem::solver
 				f->enable();
 
 			nl_problem.use_full_size();
-			nl_problem.set_apply_DBC(x, false);
 		}
 		else
 		{
@@ -149,7 +148,6 @@ namespace polyfem::solver
 				f->disable();
 
 			nl_problem.use_reduced_size();
-			nl_problem.set_apply_DBC(x, true);
 		}
 	}
 

@@ -117,7 +117,7 @@ namespace polyfem::solver
 			body_form = std::make_shared<BodyForm>(
 				ndof, n_pressure_bases, boundary_nodes, local_boundary,
 				local_neumann_boundary, n_boundary_samples, rhs, *rhs_assembler,
-				density, /*apply_DBC=*/true, /*is_formulation_mixed=*/false,
+				density, /*is_formulation_mixed=*/false,
 				is_time_dependent);
 			body_form->update_quantities(t, sol);
 			forms.push_back(body_form);
