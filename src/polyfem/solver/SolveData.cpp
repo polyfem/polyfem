@@ -21,6 +21,8 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/assembler/PeriodicBoundary.hpp>
 
+#include <h5pp/h5pp.h>
+
 namespace polyfem::solver
 {
 	using namespace polyfem::time_integrator;
@@ -65,12 +67,8 @@ namespace polyfem::solver
 		const int lagged_regularization_iterations,
 
 		// Augemented lagrangian form
-		// const std::vector<int> &boundary_nodes,
-		// const std::vector<mesh::LocalBoundary> &local_boundary,
-		// const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
-		// const int n_boundary_samples,
-		// const StiffnessMatrix &mass,
 		const size_t obstacle_ndof,
+		const std::vector<std::string> &constraint_files,
 
 		// Contact form
 		const bool contact_enabled,
@@ -178,6 +176,22 @@ namespace polyfem::solver
 			al_form.push_back(std::make_shared<BCLagrangianForm>(
 				ndof, boundary_nodes, local_boundary, local_neumann_boundary,
 				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t, periodic_bc));
+			forms.push_back(al_form.back());
+		}
+
+		for (const auto &path : constraint_files)
+		{
+			logger().debug("Setting up constraints for {}", path);
+			h5pp::File file(path, h5pp::FileAccess::READONLY);
+			std::vector<int> local2global = file.readDataset<std::vector<int>>("local2global");
+			Eigen::MatrixXd A = file.readDataset<Eigen::MatrixXd>("A");
+			Eigen::MatrixXd Ai = file.readDataset<Eigen::MatrixXd>("A_inverse");
+			Eigen::MatrixXd b = file.readDataset<Eigen::MatrixXd>("b");
+			for (auto &v : local2global)
+				v = in_node_to_node[v];
+
+			al_form.push_back(std::make_shared<GenericLagrangianForm>(
+				ndof, dim, local2global, A, Ai, b));
 			forms.push_back(al_form.back());
 		}
 

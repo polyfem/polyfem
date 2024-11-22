@@ -17,6 +17,7 @@
             "solver",
             "boundary_conditions",
             "initial_conditions",
+            "constraints",
             "output",
             "input",
             "tests"
@@ -2593,6 +2594,18 @@
         "type": "include",
         "spec_file": "value-no.json",
         "doc": "value"
+    },
+    {
+        "pointer": "/constraints",
+        "default": [],
+        "type": "list",
+        "doc": "list of file containing constraints"
+    },
+    {
+        "pointer": "/constraints/*",
+        "default": "",
+        "type": "string",
+        "doc": "constraint hdf5 file for constraint Ax=b. The file must contain these datasets: local2global, dense matrix A, dense matrix A_inverse, and vector b. The colums of b nees to be the same as the dimentionality of the problem"
     },
     {
         "pointer": "/output",
