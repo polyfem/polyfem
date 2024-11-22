@@ -10,7 +10,7 @@ namespace polyfem::solver
 												 const Eigen::MatrixXd &A,
 												 const Eigen::MatrixXd &Ai,
 												 const Eigen::MatrixXd &b)
-		: AugmentedLagrangianForm(constraint_nodes)
+		: AugmentedLagrangianForm(n_dofs, constraint_nodes)
 	{
 		assert(A.rows() == Ai.cols());
 		assert(A.rows() == b.rows());
@@ -77,9 +77,6 @@ namespace polyfem::solver
 				constraint_nodes_.push_back(dim * v + d);
 			}
 		}
-
-		lagr_mults_.resize(n_dofs);
-		lagr_mults_.setZero();
 	}
 
 	double GenericLagrangianForm::value_unweighted(const Eigen::VectorXd &x) const

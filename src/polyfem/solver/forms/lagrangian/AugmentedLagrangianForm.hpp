@@ -9,7 +9,13 @@ namespace polyfem::solver
 	{
 
 	public:
-		AugmentedLagrangianForm(const std::vector<int> &constraint_nodes) : constraint_nodes_(constraint_nodes) {}
+		AugmentedLagrangianForm(const int n_dofs,
+								const std::vector<int> &constraint_nodes)
+			: constraint_nodes_(constraint_nodes)
+		{
+			lagr_mults_.resize(n_dofs);
+			lagr_mults_.setZero();
+		}
 		virtual ~AugmentedLagrangianForm() {}
 
 		virtual void update_lagrangian(const Eigen::VectorXd &x, const double k_al) = 0;

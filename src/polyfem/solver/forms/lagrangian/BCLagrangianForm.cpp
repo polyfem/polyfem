@@ -16,7 +16,7 @@ namespace polyfem::solver
 									   const bool is_time_dependent,
 									   const double t,
 									   const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc)
-		: AugmentedLagrangianForm(periodic_bc ? periodic_bc->full_to_periodic(boundary_nodes) : boundary_nodes),
+		: AugmentedLagrangianForm(ndof, periodic_bc ? periodic_bc->full_to_periodic(boundary_nodes) : boundary_nodes),
 		  boundary_nodes_(boundary_nodes),
 		  local_boundary_(&local_boundary),
 		  local_neumann_boundary_(&local_neumann_boundary),
@@ -33,7 +33,7 @@ namespace polyfem::solver
 									   const StiffnessMatrix &mass,
 									   const size_t obstacle_ndof,
 									   const Eigen::MatrixXd &target_x)
-		: AugmentedLagrangianForm(boundary_nodes),
+		: AugmentedLagrangianForm(ndof, boundary_nodes),
 		  boundary_nodes_(boundary_nodes),
 		  local_boundary_(nullptr),
 		  local_neumann_boundary_(nullptr),
@@ -94,9 +94,6 @@ namespace polyfem::solver
 
 		masked_lumped_mass_sqrt_.setFromTriplets(tmp_triplets.begin(), tmp_triplets.end());
 		masked_lumped_mass_sqrt_.makeCompressed();
-
-		lagr_mults_.resize(ndof);
-		lagr_mults_.setZero();
 	}
 
 	double BCLagrangianForm::value_unweighted(const Eigen::VectorXd &x) const
