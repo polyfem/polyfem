@@ -76,6 +76,7 @@ namespace polyfem::solver
 		const double dhat,
 		const double avg_mass,
 		const bool use_convergent_contact_formulation,
+		const json &adaptive_barrier_stiffness,
 		const json &barrier_stiffness,
 		const ipc::BroadPhaseMethod broad_phase,
 		const double ccd_tolerance,
@@ -190,7 +191,7 @@ namespace polyfem::solver
 		friction_form = nullptr;
 		if (contact_enabled)
 		{
-			const bool use_adaptive_barrier_stiffness = !barrier_stiffness.is_number();
+			const bool use_adaptive_barrier_stiffness = adaptive_barrier_stiffness;
 
 			if (periodic_contact)
 			{
@@ -221,7 +222,7 @@ namespace polyfem::solver
 
 				if (use_adaptive_barrier_stiffness)
 				{
-					contact_form->set_barrier_stiffness(1);
+					contact_form->set_barrier_stiffness(barrier_stiffness);
 					// logger().debug("Using adaptive barrier stiffness");
 				}
 				else

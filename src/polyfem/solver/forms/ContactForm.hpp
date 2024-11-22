@@ -9,6 +9,7 @@
 #include <ipc/collision_mesh.hpp>
 #include <ipc/broad_phase/broad_phase.hpp>
 #include <ipc/potentials/barrier_potential.hpp>
+#include <limits>
 
 // map BroadPhaseMethod values to JSON as strings
 namespace ipc
@@ -145,6 +146,9 @@ namespace polyfem::solver
 		const ipc::Collisions &collision_set() const { return collision_set_; }
 		const ipc::BarrierPotential &barrier_potential() const { return barrier_potential_; }
 
+		double posInfinity = std::numeric_limits<double>::infinity();
+		double negInfinity = -std::numeric_limits<double>::infinity();
+
 	protected:
 		/// @brief Update the cached candidate set for the current solution
 		/// @param displaced_surface Vertex positions displaced by the current solution
@@ -193,5 +197,9 @@ namespace polyfem::solver
 		ipc::Candidates candidates_;
 
 		const ipc::BarrierPotential barrier_potential_;
+
+		// Probably should declare as a global constant in ICP toolkit or transfer  changes to the update update_barrier_stiffness in ICP Toolkit
+		// Duplicating based on ipc/barrier/adaptive_stiffness.hpp for now
+		const double dhat_epsilon_scale = 1e-9;
 	};
 } // namespace polyfem::solver

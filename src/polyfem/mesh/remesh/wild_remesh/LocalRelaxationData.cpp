@@ -275,6 +275,7 @@ namespace polyfem::mesh
 				// Contact form
 				contact_enabled, collision_mesh, state.args["contact"]["dhat"],
 				state.avg_mass, state.args["contact"]["use_convergent_formulation"],
+				state.args["solver"]["contact"]["adaptive_barrier_stiffness"],
 				contact_enabled ? state.solve_data.contact_form->barrier_stiffness() : 0,
 				state.args["solver"]["contact"]["CCD"]["broad_phase"],
 				state.args["solver"]["contact"]["CCD"]["tolerance"],

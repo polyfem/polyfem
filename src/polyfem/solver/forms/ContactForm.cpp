@@ -14,6 +14,7 @@
 #include <ipc/utils/world_bbox_diagonal_length.hpp>
 
 #include <igl/writePLY.h>
+#include <cmath>
 
 namespace polyfem::solver
 {
@@ -89,11 +90,20 @@ namespace polyfem::solver
 			nonconvergent_constraints, collision_mesh_, displaced_surface);
 		grad_barrier = collision_mesh_.to_full_dof(grad_barrier);
 
-		barrier_stiffness_ = ipc::initial_barrier_stiffness(
-			ipc::world_bbox_diagonal_length(displaced_surface), barrier_potential_.barrier(), dhat_, avg_mass_,
-			grad_energy, grad_barrier, max_barrier_stiffness_);
+		//barrier_stiffness_ = ipc::initial_barrier_stiffness(
+		//	ipc::world_bbox_diagonal_length(displaced_surface), barrier_potential_.barrier(), dhat_, avg_mass_,
+		//	grad_energy, grad_barrier, max_barrier_stiffness_);
 
-		if (use_convergent_formulation())
+		if(barrier_stiffness_ == 1.0 && prev_distance_ == -1 && prev_distance_ == INFINITY && prev_distance_ == -INFINITY)
+			barrier_stiffness_ = ipc::initial_barrier_stiffness(
+				ipc::world_bbox_diagonal_length(displaced_surface), barrier_potential_.barrier(), dhat_, avg_mass_,
+				grad_energy, grad_barrier, max_barrier_stiffness_);
+
+		//max_barrier_stiffness not used in this scheme, so set to a very high number for now
+		max_barrier_stiffness_ = 1e30;
+
+
+		if (use_convergent_formulation() && (prev_distance_ == -1 || prev_distance_ == posInfinity ||  prev_distance_ == posInfinity))
 		{
 			double scaling_factor = 0;
 			if (!nonconvergent_constraints.empty())
@@ -113,17 +123,22 @@ namespace polyfem::solver
 				scaling_factor = dhat_ * std::pow(dhat_ + 2 * dmin_, 2);
 			}
 			barrier_stiffness_ *= scaling_factor;
-			max_barrier_stiffness_ *= scaling_factor;
+			//max_barrier_stiffness_ *= scaling_factor;
+
 		}
 
 		// The barrier stiffness is choosen based on including the acceleration scaling,
 		// but the acceleration scaling will be applied later. Therefore, we need to remove it.
-		barrier_stiffness_ /= weight_;
-		max_barrier_stiffness_ /= weight_;
+		//barrier_stiffness_ /= weight_;
+		//max_barrier_stiffness_ /= weight_;
+		if(prev_distance_ == -1 && prev_distance_ == INFINITY &&  prev_distance_ == -INFINITY)
+			barrier_stiffness_ /= weight_;
 
 		logger().debug(
-			"Setting adaptive barrier stiffness to {} (max barrier stiffness: {})",
-			barrier_stiffness(), max_barrier_stiffness_);
+			//"Setting adaptive barrier stiffness to {} (max barrier stiffness: {})",
+			//barrier_stiffness(), max_barrier_stiffness_);
+			"with adaptive barrier stiffness set to {}",
+			barrier_stiffness());
 	}
 
 	void ContactForm::update_collision_set(const Eigen::MatrixXd &displaced_surface)
@@ -294,16 +309,41 @@ namespace polyfem::solver
 			if (is_time_dependent_)
 			{
 				const double prev_barrier_stiffness = barrier_stiffness();
+				const double dhat_epsilon = dhat_epsilon_scale * (ipc::world_bbox_diagonal_length(displaced_surface) + dmin_);
 
-				barrier_stiffness_ = ipc::update_barrier_stiffness(
-					prev_distance_, curr_distance, max_barrier_stiffness_,
-					barrier_stiffness(), ipc::world_bbox_diagonal_length(displaced_surface));
+				const double upper_log = log10(dhat_ * dhat_)+ 0.25 * (log10(dhat_epsilon * dhat_epsilon)-log10(dhat_ * dhat_));
+				const double upper = pow(10, upper_log);
+
+				const double lower_log = log10(dhat_ * dhat_)+ 0.5 * (log10(dhat_epsilon * dhat_epsilon)-log10(dhat_ * dhat_));
+				const double lower = pow(10, lower_log);
+
+				//These if statements adjusts barrier_stiffness_ to keep the minimum distance around the geometric mean between dhat_epsilon and dhat
+				if(curr_distance != -1 && curr_distance != INFINITY && curr_distance != -INFINITY)
+				{
+					if (curr_distance <= lower)
+					{
+						// Then increase the barrier stiffness.
+						barrier_stiffness_ *= 2.0;
+					}
+
+					if (curr_distance > lower && curr_distance <= upper && curr_distance <= prev_distance_) {
+						// Then increase the barrier stiffness.
+						barrier_stiffness_ *= 2.0;
+					}
+				}
+
+
+				//barrier_stiffness_ = ipc::update_barrier_stiffness(
+				//	prev_distance_, curr_distance, max_barrier_stiffness_,
+				//	barrier_stiffness(), ipc::world_bbox_diagonal_length(displaced_surface));
 
 				if (barrier_stiffness() != prev_barrier_stiffness)
 				{
 					polyfem::logger().debug(
-						"updated barrier stiffness from {:g} to {:g} (max barrier stiffness: )",
-						prev_barrier_stiffness, barrier_stiffness(), max_barrier_stiffness_);
+						//"updated barrier stiffness from {:g} to {:g} (max barrier stiffness: )",
+						//prev_barrier_stiffness, barrier_stiffness(), max_barrier_stiffness_);
+						"updated barrier stiffness from {:g} to {:g}",
+						prev_barrier_stiffness, barrier_stiffness());
 				}
 			}
 			else
