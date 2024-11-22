@@ -254,7 +254,7 @@ namespace polyfem::mesh
 			POLYFEM_REMESHER_SCOPED_TIMER("LocalRelaxationData::init_solve_data -> init forms");
 			forms = solve_data.init_forms(
 				// General
-				state.units, dim(), current_time,
+				state.units, dim(), current_time, state.in_node_to_node,
 				// Elastic form
 				n_bases(), bases, /*geom_bases=*/bases, *assembler,
 				assembly_vals_cache, assembly_vals_cache,

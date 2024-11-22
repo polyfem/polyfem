@@ -3,6 +3,7 @@
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/Form.hpp>
 #include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
+#include <polyfem/solver/forms/lagrangian/GenericLagrangianForm.hpp>
 #include <polyfem/solver/forms/lagrangian/MacroStrainLagrangianForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/PressureForm.hpp>
@@ -29,6 +30,7 @@ namespace polyfem::solver
 		const Units &units,
 		const int dim,
 		const double t,
+		const Eigen::VectorXi &in_node_to_node,
 
 		// Elastic form
 		const int n_bases,

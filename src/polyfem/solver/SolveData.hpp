@@ -61,6 +61,7 @@ namespace polyfem::solver
 			const Units &units,
 			const int dim,
 			const double t,
+			const Eigen::VectorXi &in_node_to_node,
 
 			// Elastic form
 			const int n_bases,

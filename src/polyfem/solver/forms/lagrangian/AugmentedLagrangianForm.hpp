@@ -22,8 +22,8 @@ namespace polyfem::solver
 		inline const std::vector<int> &constraint_nodes() const { return constraint_nodes_; }
 
 	protected:
-		Eigen::VectorXd lagr_mults_;              ///< vector of lagrange multipliers
-		double k_al_;                             ///< penalty parameter
-		const std::vector<int> constraint_nodes_; ///< constraint nodes
+		Eigen::VectorXd lagr_mults_;        ///< vector of lagrange multipliers
+		double k_al_;                       ///< penalty parameter
+		std::vector<int> constraint_nodes_; ///< constraint nodes
 	};
 } // namespace polyfem::solver

@@ -9,12 +9,18 @@ namespace polyfem::solver
 	{
 	public:
 		/// @brief Construct a new GenericLagrangianForm object for the constraints Ax = b
+		/// @param n_dofs Number of degrees of freedom
+		/// @param dim Dimension of the problem
 		/// @param constraint_nodes constraint nodes
-		/// @param A Constraints matrix
+		/// @param A Constraints matrix, local only
+		/// @param Ai Inverse Constraints matrix, local only
 		/// @param b Constraints value
-		GenericLagrangianForm(const std::vector<int> &constraint_nodes,
-							  const StiffnessMatrix &A,
-							  const Eigen::VectorXd &b);
+		GenericLagrangianForm(const int n_dofs,
+							  const int dim,
+							  const std::vector<int> &constraint_nodes,
+							  const Eigen::MatrixXd &A,
+							  const Eigen::MatrixXd &Ai,
+							  const Eigen::MatrixXd &b);
 
 		std::string name() const override { return "generic-lagrangian"; }
 
@@ -36,9 +42,11 @@ namespace polyfem::solver
 	public:
 		void update_lagrangian(const Eigen::VectorXd &x, const double k_al) override;
 		double compute_error(const Eigen::VectorXd &x) const override;
+		Eigen::VectorXd target(const Eigen::VectorXd &) const override;
 
 	private:
-		const StiffnessMatrix A;
-		const Eigen::VectorXd b;
+		StiffnessMatrix A;
+		StiffnessMatrix Ai;
+		Eigen::VectorXd b;
 	};
 } // namespace polyfem::solver

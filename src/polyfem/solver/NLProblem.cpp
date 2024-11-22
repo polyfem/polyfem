@@ -170,10 +170,12 @@ namespace polyfem::solver
 	Eigen::MatrixXd NLProblem::constraint_values(const TVector &reduced) const
 	{
 		Eigen::MatrixXd result = Eigen::MatrixXd::Zero(full_size(), 1);
+		TVector full_w_zero;
+		reduced_to_full_aux(constraint_nodes_, full_size(), current_size(), reduced, result, full_w_zero); // pad zeros
 
 		for (const auto &form : penalty_forms_)
 		{
-			const auto tmp = form->target(reduced);
+			const auto tmp = form->target(full_w_zero);
 			if (tmp.size() > 0)
 				result += tmp;
 		}
