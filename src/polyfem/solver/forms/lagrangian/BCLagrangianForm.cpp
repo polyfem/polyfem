@@ -1,6 +1,7 @@
 #include "BCLagrangianForm.hpp"
 
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/assembler/PeriodicBoundary.hpp>
 
 namespace polyfem::solver
 {
@@ -13,8 +14,10 @@ namespace polyfem::solver
 									   const assembler::RhsAssembler &rhs_assembler,
 									   const size_t obstacle_ndof,
 									   const bool is_time_dependent,
-									   const double t)
-		: boundary_nodes_(boundary_nodes),
+									   const double t,
+									   const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc)
+		: AugmentedLagrangianForm(periodic_bc ? periodic_bc->full_to_periodic(boundary_nodes) : boundary_nodes),
+		  boundary_nodes_(boundary_nodes),
 		  local_boundary_(&local_boundary),
 		  local_neumann_boundary_(&local_neumann_boundary),
 		  n_boundary_samples_(n_boundary_samples),
@@ -30,7 +33,8 @@ namespace polyfem::solver
 									   const StiffnessMatrix &mass,
 									   const size_t obstacle_ndof,
 									   const Eigen::MatrixXd &target_x)
-		: boundary_nodes_(boundary_nodes),
+		: AugmentedLagrangianForm(boundary_nodes),
+		  boundary_nodes_(boundary_nodes),
 		  local_boundary_(nullptr),
 		  local_neumann_boundary_(nullptr),
 		  n_boundary_samples_(0),
@@ -90,6 +94,13 @@ namespace polyfem::solver
 			assert(row == col); // matrix should be diagonal
 			return !is_boundary_dof[row];
 		});
+		masked_lumped_mass_ = masked_lumped_mass_sqrt_;
+		mask_.resize(masked_lumped_mass_.rows(), masked_lumped_mass_.cols());
+		mask_.setIdentity();
+		mask_.prune([&](const int &row, const int &col, const double &value) -> bool {
+			assert(row == col); // matrix should be diagonal
+			return !is_boundary_dof[row];
+		});
 
 		std::vector<Eigen::Triplet<double>> tmp_triplets;
 		tmp_triplets.reserve(masked_lumped_mass_sqrt_.nonZeros());
@@ -112,25 +123,31 @@ namespace polyfem::solver
 	double BCLagrangianForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		const Eigen::VectorXd dist = x - target_x_;
-		const double AL_penalty = -lagr_mults_.transpose() * masked_lumped_mass_sqrt_ * dist;
-		return AL_penalty;
+		const double L_penalty = -lagr_mults_.transpose() * masked_lumped_mass_sqrt_ * dist;
+		const double A_penalty = 0.5 * dist.transpose() * masked_lumped_mass_ * dist;
+
+		return L_penalty + k_al_ * A_penalty;
 	}
 
 	void BCLagrangianForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = -(masked_lumped_mass_sqrt_ * lagr_mults_);
+		gradv = -(masked_lumped_mass_sqrt_ * lagr_mults_) + k_al_ * (masked_lumped_mass_ * (x - target_x_));
 	}
 
 	void BCLagrangianForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
-		hessian.resize(masked_lumped_mass_sqrt_.rows(), masked_lumped_mass_sqrt_.cols());
-		hessian.setZero();
+		hessian = k_al_ * masked_lumped_mass_;
 	}
 
 	void BCLagrangianForm::update_quantities(const double t, const Eigen::VectorXd &)
 	{
 		if (is_time_dependent_)
 			update_target(t);
+	}
+
+	double BCLagrangianForm::compute_error(const Eigen::VectorXd &x) const
+	{
+		return (this->target(x) - x).transpose() * this->mask() * (this->target(x) - x);
 	}
 
 	void BCLagrangianForm::update_target(const double t)
@@ -146,6 +163,7 @@ namespace polyfem::solver
 
 	void BCLagrangianForm::update_lagrangian(const Eigen::VectorXd &x, const double k_al)
 	{
-		lagr_mults_ -= k_al * masked_lumped_mass_sqrt_ * (x - target_x_);
+		k_al_ = k_al;
+		lagr_mults_ -= k_al_ * masked_lumped_mass_sqrt_ * (x - target_x_);
 	}
 } // namespace polyfem::solver
