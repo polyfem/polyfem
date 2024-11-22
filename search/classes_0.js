@@ -17,8 +17,9 @@ var searchData=
   ['assemblerutils_14',['AssemblerUtils',['../classpolyfem_1_1assembler_1_1_assembler_utils.html',1,'polyfem::assembler']]],
   ['assemblyvalscache_15',['AssemblyValsCache',['../classpolyfem_1_1assembler_1_1_assembly_vals_cache.html',1,'polyfem::assembler']]],
   ['assemblyvalues_16',['AssemblyValues',['../classpolyfem_1_1assembler_1_1_assembly_values.html',1,'polyfem::assembler']]],
-  ['autodiffallocator_17',['AutoDiffAllocator',['../classpolyfem_1_1_auto_diff_allocator.html',1,'polyfem']]],
-  ['autodiffallocator_3c_20double_20_3e_18',['AutoDiffAllocator&lt; double &gt;',['../classpolyfem_1_1_auto_diff_allocator_3_01double_01_4.html',1,'polyfem']]],
-  ['autoflipsvd_19',['AutoFlipSVD',['../classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html',1,'polyfem::utils']]],
-  ['axisplaneselection_20',['AxisPlaneSelection',['../classpolyfem_1_1utils_1_1_axis_plane_selection.html',1,'polyfem::utils']]]
+  ['augmentedlagrangianform_17',['AugmentedLagrangianForm',['../classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html',1,'polyfem::solver']]],
+  ['autodiffallocator_18',['AutoDiffAllocator',['../classpolyfem_1_1_auto_diff_allocator.html',1,'polyfem']]],
+  ['autodiffallocator_3c_20double_20_3e_19',['AutoDiffAllocator&lt; double &gt;',['../classpolyfem_1_1_auto_diff_allocator_3_01double_01_4.html',1,'polyfem']]],
+  ['autoflipsvd_20',['AutoFlipSVD',['../classpolyfem_1_1utils_1_1_auto_flip_s_v_d.html',1,'polyfem::utils']]],
+  ['axisplaneselection_21',['AxisPlaneSelection',['../classpolyfem_1_1utils_1_1_axis_plane_selection.html',1,'polyfem::utils']]]
 ];

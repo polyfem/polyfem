@@ -1,11 +1,10 @@
 var classpolyfem_1_1solver_1_1_solve_data =
 [
-    [ "init_forms", "classpolyfem_1_1solver_1_1_solve_data.html#ace685a54a5128b173b7be559e5580b75", null ],
+    [ "init_forms", "classpolyfem_1_1solver_1_1_solve_data.html#af5a13d255a0f4074e2e16de53a5d9132", null ],
     [ "named_forms", "classpolyfem_1_1solver_1_1_solve_data.html#ac3a862c981072181d2586f8ca1c9d7a2", null ],
     [ "update_barrier_stiffness", "classpolyfem_1_1solver_1_1_solve_data.html#ad39f2c7c0910bdfd93752f019a885e21", null ],
     [ "update_dt", "classpolyfem_1_1solver_1_1_solve_data.html#a69b7781799faff50e2ecfd57af833442", null ],
-    [ "al_lagr_form", "classpolyfem_1_1solver_1_1_solve_data.html#ae1f17dad71412ab14a9a2b575047ba75", null ],
-    [ "al_pen_form", "classpolyfem_1_1solver_1_1_solve_data.html#a9d3e3078ffa349638a767968eef92a1c", null ],
+    [ "al_form", "classpolyfem_1_1solver_1_1_solve_data.html#acabeb88a477dfaded121f663ac6cc9f9", null ],
     [ "body_form", "classpolyfem_1_1solver_1_1_solve_data.html#a73c46a7f80fa74bbcbed6d161e74db7b", null ],
     [ "contact_form", "classpolyfem_1_1solver_1_1_solve_data.html#ab3d9f54bfa1c173fd1569a852bcd1a11", null ],
     [ "damping_form", "classpolyfem_1_1solver_1_1_solve_data.html#ac4ee00aa6b7c88f98549248bd76e64d2", null ],
@@ -18,6 +17,5 @@ var classpolyfem_1_1solver_1_1_solve_data =
     [ "pressure_form", "classpolyfem_1_1solver_1_1_solve_data.html#a6a8ad8da5a06714004922212d78ba896", null ],
     [ "rhs_assembler", "classpolyfem_1_1solver_1_1_solve_data.html#affb68992a44431272d3d8bfdcf2e9c51", null ],
     [ "strain_al_lagr_form", "classpolyfem_1_1solver_1_1_solve_data.html#aaab1ffd791e8bf7d4ab46c4c7f4c9405", null ],
-    [ "strain_al_pen_form", "classpolyfem_1_1solver_1_1_solve_data.html#ac0d53f5825d6221f37dabac57c356f30", null ],
     [ "time_integrator", "classpolyfem_1_1solver_1_1_solve_data.html#acf11b23233cb27e88cb996b540418d0c", null ]
 ];

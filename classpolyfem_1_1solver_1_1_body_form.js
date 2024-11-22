@@ -1,17 +1,14 @@
 var classpolyfem_1_1solver_1_1_body_form =
 [
-    [ "BodyForm", "classpolyfem_1_1solver_1_1_body_form.html#ae79c6932d834cbe1dba199ba0cbfec12", null ],
+    [ "BodyForm", "classpolyfem_1_1solver_1_1_body_form.html#a6ede04e8a86c665e65035ec1a447fa39", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_body_form.html#a65c2eb2d991ce8c46a32b25656a14db1", null ],
     [ "force_shape_derivative", "classpolyfem_1_1solver_1_1_body_form.html#a5dd3812e581ac1ca48508abd65fe6c07", null ],
-    [ "get_apply_DBC", "classpolyfem_1_1solver_1_1_body_form.html#a479616172545ad47d9f20ffe0205287e", null ],
     [ "hessian_wrt_u_prev", "classpolyfem_1_1solver_1_1_body_form.html#ae0566a90f9083afa1ed76557c05151a9", null ],
     [ "name", "classpolyfem_1_1solver_1_1_body_form.html#a08039c85d9be9e6b0e54ccaa472bf7c8", null ],
     [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_body_form.html#a1d7d1ae62b781e56482589599116142e", null ],
-    [ "set_apply_DBC", "classpolyfem_1_1solver_1_1_body_form.html#a638bd0d14aeb801284b8ffc8b0cbf261", null ],
     [ "update_current_rhs", "classpolyfem_1_1solver_1_1_body_form.html#ac565e4b704690c5a47c2862ca09ce0a1", null ],
     [ "update_quantities", "classpolyfem_1_1solver_1_1_body_form.html#a59038ae41bd1beec9805dacdf2194d85", null ],
     [ "value_unweighted", "classpolyfem_1_1solver_1_1_body_form.html#ae8e6ef01b568dc58996b461788a420d0", null ],
-    [ "apply_DBC_", "classpolyfem_1_1solver_1_1_body_form.html#ac977a5b42c7d8b11f9e75b6c7be45655", null ],
     [ "boundary_nodes_", "classpolyfem_1_1solver_1_1_body_form.html#a2f48eab3d14c4e2f999915cd4bf23028", null ],
     [ "current_rhs_", "classpolyfem_1_1solver_1_1_body_form.html#a97738990f0283d2565eb34b9ee5160b3", null ],
     [ "density_", "classpolyfem_1_1solver_1_1_body_form.html#a68df578bd1cb02193f22880fb21eb777", null ],

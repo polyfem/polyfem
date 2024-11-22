@@ -1,11 +1,8 @@
 var dir_d0a37fccf9a2cf369fc4713384d4cf61 =
 [
     [ "adjoint_forms", "dir_2823641f5a686d1462a98610dd766f27.html", "dir_2823641f5a686d1462a98610dd766f27" ],
+    [ "lagrangian", "dir_a4ee3e9e9f25deb5d1fe73a50fe1ae49.html", "dir_a4ee3e9e9f25deb5d1fe73a50fe1ae49" ],
     [ "parametrization", "dir_c9364a8a235a279497fa6d7685566b5c.html", "dir_c9364a8a235a279497fa6d7685566b5c" ],
-    [ "BCLagrangianForm.cpp", "_b_c_lagrangian_form_8cpp.html", null ],
-    [ "BCLagrangianForm.hpp", "_b_c_lagrangian_form_8hpp.html", "_b_c_lagrangian_form_8hpp" ],
-    [ "BCPenaltyForm.cpp", "_b_c_penalty_form_8cpp.html", null ],
-    [ "BCPenaltyForm.hpp", "_b_c_penalty_form_8hpp.html", "_b_c_penalty_form_8hpp" ],
     [ "BodyForm.cpp", "_body_form_8cpp.html", "_body_form_8cpp" ],
     [ "BodyForm.hpp", "_body_form_8hpp.html", "_body_form_8hpp" ],
     [ "ContactForm.cpp", "_contact_form_8cpp.html", null ],
@@ -23,10 +20,6 @@ var dir_d0a37fccf9a2cf369fc4713384d4cf61 =
     [ "L2ProjectionForm.hpp", "_l2_projection_form_8hpp.html", "_l2_projection_form_8hpp" ],
     [ "LaggedRegForm.cpp", "_lagged_reg_form_8cpp.html", null ],
     [ "LaggedRegForm.hpp", "_lagged_reg_form_8hpp.html", "_lagged_reg_form_8hpp" ],
-    [ "MacroStrainALForm.cpp", "_macro_strain_a_l_form_8cpp.html", null ],
-    [ "MacroStrainALForm.hpp", "_macro_strain_a_l_form_8hpp.html", "_macro_strain_a_l_form_8hpp" ],
-    [ "MacroStrainLagrangianForm.cpp", "_macro_strain_lagrangian_form_8cpp.html", null ],
-    [ "MacroStrainLagrangianForm.hpp", "_macro_strain_lagrangian_form_8hpp.html", "_macro_strain_lagrangian_form_8hpp" ],
     [ "PeriodicContactForm.cpp", "_periodic_contact_form_8cpp.html", null ],
     [ "PeriodicContactForm.hpp", "_periodic_contact_form_8hpp.html", "_periodic_contact_form_8hpp" ],
     [ "PressureForm.cpp", "_pressure_form_8cpp.html", null ],

@@ -58,9 +58,9 @@ var sectionId = 'dynsection-2';
 <g id="Node000001" class="node">
 <title>Node1</title>
 <g id="a_Node000001"><a xlink:title=" ">
-<polygon fill="#999999" stroke="#666666" points="1043,-265 908,-265 908,-235 1043,-235 1043,-265"/>
-<text text-anchor="start" x="916" y="-253" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
-<text text-anchor="middle" x="975.5" y="-242" font-family="Helvetica,sans-Serif" font-size="10.00">::MacroStrainValue::eval</text>
+<polygon fill="#999999" stroke="#666666" points="1043,-289 908,-289 908,-259 1043,-259 1043,-289"/>
+<text text-anchor="start" x="916" y="-277" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
+<text text-anchor="middle" x="975.5" y="-266" font-family="Helvetica,sans-Serif" font-size="10.00">::MacroStrainValue::eval</text>
 </a>
 </g>
 </g>
@@ -68,8 +68,8 @@ var sectionId = 'dynsection-2';
 <g id="edge1_Node000001_Node000001" class="edge">
 <title>Node1&#45;&gt;Node1</title>
 <g id="a_edge1_Node000001_Node000001"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1010.16,-275.6C1005.42,-279.97 993.87,-283 975.5,-283 944.56,-283 932.96,-274.41 940.7,-265.28"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1013.66,-275.32 1010.3,-265.28 1006.66,-275.22 1013.66,-275.32"/>
+<path fill="none" stroke="#63b8ff" d="M1010.16,-299.6C1005.42,-303.97 993.87,-307 975.5,-307 944.56,-307 932.96,-298.41 940.7,-289.28"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1013.66,-299.32 1010.3,-289.28 1006.66,-299.22 1013.66,-299.32"/>
 </a>
 </g>
 </g>
@@ -87,8 +87,8 @@ var sectionId = 'dynsection-2';
 <g id="edge2_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
 <g id="a_edge2_Node000001_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M948.96,-271.89C908.53,-306.54 830.82,-373.15 796.06,-402.95"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="951.45,-274.37 956.76,-265.21 946.89,-269.06 951.45,-274.37"/>
+<path fill="none" stroke="#63b8ff" d="M945.62,-295.22C905.58,-324.63 834.21,-377.07 799.12,-402.85"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="947.91,-297.88 953.9,-289.14 943.76,-292.24 947.91,-297.88"/>
 </a>
 </g>
 </g>
@@ -106,18 +106,18 @@ var sectionId = 'dynsection-2';
 <g id="edge21_Node000001_Node000019" class="edge">
 <title>Node1&#45;&gt;Node19</title>
 <g id="a_edge21_Node000001_Node000019"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M897.89,-259.38C879.15,-261.68 859.32,-264.1 841.31,-266.31"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="898.37,-262.85 907.87,-258.16 897.52,-255.9 898.37,-262.85"/>
+<path fill="none" stroke="#63b8ff" d="M897.63,-274C878.97,-274 859.23,-274 841.31,-274"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="897.87,-277.5 907.87,-274 897.87,-270.5 897.87,-277.5"/>
 </a>
 </g>
 </g>
 <!-- Node26 -->
 <g id="Node000026" class="node">
 <title>Node26</title>
-<g id="a_Node000026"><a xlink:href="classpolyfem_1_1solver_1_1_macro_strain_a_l_form.html#af212509d27cf23e45341c0ea05ea1c07" target="_top" xlink:title="Update time&#45;dependent fields.">
-<polygon fill="white" stroke="#666666" points="856.5,-241 698.5,-241 698.5,-211 856.5,-211 856.5,-241"/>
-<text text-anchor="start" x="706.5" y="-229" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::MacroStrain</text>
-<text text-anchor="middle" x="777.5" y="-218" font-family="Helvetica,sans-Serif" font-size="10.00">ALForm::update_quantities</text>
+<g id="a_Node000026"><a xlink:href="classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html#aeaf949d6bd520a977244c1d5c623b934" target="_top" xlink:title="Update time&#45;dependent fields.">
+<polygon fill="white" stroke="#666666" points="872,-241 683,-241 683,-211 872,-211 872,-241"/>
+<text text-anchor="start" x="691" y="-229" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::MacroStrain</text>
+<text text-anchor="middle" x="777.5" y="-218" font-family="Helvetica,sans-Serif" font-size="10.00">LagrangianForm::update_quantities</text>
 </a>
 </g>
 </g>
@@ -125,27 +125,8 @@ var sectionId = 'dynsection-2';
 <g id="edge28_Node000001_Node000026" class="edge">
 <title>Node1&#45;&gt;Node26</title>
 <g id="a_edge28_Node000001_Node000026"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M897.72,-240.6C884.27,-238.95 870.27,-237.24 856.79,-235.59"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="897.52,-244.1 907.87,-241.84 898.37,-237.15 897.52,-244.1"/>
-</a>
-</g>
-</g>
-<!-- Node27 -->
-<g id="Node000027" class="node">
-<title>Node27</title>
-<g id="a_Node000027"><a xlink:href="classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html#aeaf949d6bd520a977244c1d5c623b934" target="_top" xlink:title="Update time&#45;dependent fields.">
-<polygon fill="white" stroke="#666666" points="872,-193 683,-193 683,-163 872,-163 872,-193"/>
-<text text-anchor="start" x="691" y="-181" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::MacroStrain</text>
-<text text-anchor="middle" x="777.5" y="-170" font-family="Helvetica,sans-Serif" font-size="10.00">LagrangianForm::update_quantities</text>
-</a>
-</g>
-</g>
-<!-- Node1&#45;&gt;Node27 -->
-<g id="edge29_Node000001_Node000027" class="edge">
-<title>Node1&#45;&gt;Node27</title>
-<g id="a_edge29_Node000001_Node000027"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M936.98,-230.37C917.88,-220.91 894.09,-209.93 872,-202 862.93,-198.74 853.22,-195.74 843.61,-193.04"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="935.44,-233.51 945.95,-234.87 938.58,-227.25 935.44,-233.51"/>
+<path fill="none" stroke="#63b8ff" d="M903.28,-256.56C882.46,-251.46 859.9,-245.93 839.76,-241"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="902.48,-259.96 913.02,-258.94 904.14,-253.17 902.48,-259.96"/>
 </a>
 </g>
 </g>

@@ -12,7 +12,7 @@ var searchData=
   ['partition_5fid_9',['partition_id',['../structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#af855ea6ae45a8209d6f1e266c93f9936',1,'polyfem::mesh::WildRemesher::VertexAttributes']]],
   ['patch_10',['patch',['../classpolyfem_1_1_b_spline_parametrization3_d.html#ac555bfc2457eb5f7cc6a7ff364262f79',1,'polyfem::BSplineParametrization3D']]],
   ['path_11',['path',['../namespaceeigs.html#a9fe38deb6414bc39f39d8ed436b42d3e',1,'eigs.path'],['../namespaceelasticity__rhs.html#a3b3d73643e8a6f8ee92ff7e8b42257e2',1,'elasticity_rhs.path'],['../namespacep__bases.html#aefce99d39dd7f99318ac75d574b8b4de',1,'p_bases.path'],['../namespaceq__bases.html#aaacd5e190b3a6acc6d7d2cd743b49524',1,'q_bases.path']]],
-  ['pen_5fform_12',['pen_form',['../classpolyfem_1_1solver_1_1_a_l_solver.html#a68b7715b548265b40dabb227866504ad',1,'polyfem::solver::ALSolver']]],
+  ['penalty_5fforms_5f_12',['penalty_forms_',['../classpolyfem_1_1solver_1_1_n_l_problem.html#aaa90b3569cb1b4e0ba458c0246b9a2da',1,'polyfem::solver::NLProblem']]],
   ['periodic_5fbc_13',['periodic_bc',['../classpolyfem_1_1_state.html#a0906e072030bd0401a71abe1eec3f8f2',1,'polyfem::State']]],
   ['periodic_5fbc_5f_14',['periodic_bc_',['../classpolyfem_1_1solver_1_1_n_l_problem.html#ac3997098fd4afadf0f2784c1a79b74fc',1,'polyfem::solver::NLProblem']]],
   ['periodic_5fcollision_5fmesh_15',['periodic_collision_mesh',['../classpolyfem_1_1_state.html#a252ba2df156c0698c0fea4d68822c410',1,'polyfem::State']]],

@@ -1,10 +1,10 @@
 var classpolyfem_1_1solver_1_1_n_l_homo_problem =
 [
-    [ "NLHomoProblem", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#ace5a7f3136c99276c61629e593237063", null ],
+    [ "NLHomoProblem", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a82df405fc97c6913ef89159b65017c31", null ],
     [ "~NLHomoProblem", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a8b8e79453cb452aa0334e6ed3e40578b", null ],
     [ "add_form", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#ae628c757aa4d6ca51dd76ba650a6038c", null ],
-    [ "boundary_values", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#acafa6f3c89dae4e29d31c6713c604e25", null ],
     [ "constraint_grad", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a98a632068fd8dd697cd99730c2deb5dc", null ],
+    [ "constraint_values", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a3df52fc93d5ecfbe31d3fdcaae101c87", null ],
     [ "extended_hessian_to_reduced_hessian", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#addaf8623e3f1636e3ffa0fb82f93198c", null ],
     [ "extended_to_reduced", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a73562e3b3e33fbe58a0adc12ab502ba5", null ],
     [ "extended_to_reduced_grad", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a501bf7f34cf1ade117d2fa27c5acd5e1", null ],

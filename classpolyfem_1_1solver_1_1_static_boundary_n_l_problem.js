@@ -1,6 +1,6 @@
 var classpolyfem_1_1solver_1_1_static_boundary_n_l_problem =
 [
-    [ "StaticBoundaryNLProblem", "classpolyfem_1_1solver_1_1_static_boundary_n_l_problem.html#ae7d8fde37c915f1d93a44c19c1c7eae1", null ],
-    [ "boundary_values", "classpolyfem_1_1solver_1_1_static_boundary_n_l_problem.html#aa707c257ae626f6eeb88175527dc2dbf", null ],
+    [ "StaticBoundaryNLProblem", "classpolyfem_1_1solver_1_1_static_boundary_n_l_problem.html#ab9285d85857e2f884476687e73f2eb0f", null ],
+    [ "constraint_values", "classpolyfem_1_1solver_1_1_static_boundary_n_l_problem.html#a5e852213376269eece17afd72bce8f9c", null ],
     [ "boundary_values_", "classpolyfem_1_1solver_1_1_static_boundary_n_l_problem.html#a5de3d132b8f2958cfa7a6197356011fd", null ]
 ];

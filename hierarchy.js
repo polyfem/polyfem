@@ -165,8 +165,11 @@ var hierarchy =
           [ "polyfem::solver::ProxyTransientForm", "classpolyfem_1_1solver_1_1_proxy_transient_form.html", null ]
         ] ]
       ] ],
-      [ "polyfem::solver::BCLagrangianForm", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html", null ],
-      [ "polyfem::solver::BCPenaltyForm", "classpolyfem_1_1solver_1_1_b_c_penalty_form.html", null ],
+      [ "polyfem::solver::AugmentedLagrangianForm", "classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html", [
+        [ "polyfem::solver::BCLagrangianForm", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html", null ],
+        [ "polyfem::solver::GenericLagrangianForm", "classpolyfem_1_1solver_1_1_generic_lagrangian_form.html", null ],
+        [ "polyfem::solver::MacroStrainLagrangianForm", "classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html", null ]
+      ] ],
       [ "polyfem::solver::BodyForm", "classpolyfem_1_1solver_1_1_body_form.html", null ],
       [ "polyfem::solver::ContactForm", "classpolyfem_1_1solver_1_1_contact_form.html", [
         [ "polyfem::solver::PeriodicContactForm", "classpolyfem_1_1solver_1_1_periodic_contact_form.html", null ]
@@ -177,8 +180,6 @@ var hierarchy =
       [ "polyfem::solver::InversionBarrierForm", "classpolyfem_1_1solver_1_1_inversion_barrier_form.html", null ],
       [ "polyfem::solver::L2ProjectionForm", "classpolyfem_1_1solver_1_1_l2_projection_form.html", null ],
       [ "polyfem::solver::LaggedRegForm", "classpolyfem_1_1solver_1_1_lagged_reg_form.html", null ],
-      [ "polyfem::solver::MacroStrainALForm", "classpolyfem_1_1solver_1_1_macro_strain_a_l_form.html", null ],
-      [ "polyfem::solver::MacroStrainLagrangianForm", "classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html", null ],
       [ "polyfem::solver::PressureForm", "classpolyfem_1_1solver_1_1_pressure_form.html", null ],
       [ "polyfem::solver::RayleighDampingForm", "classpolyfem_1_1solver_1_1_rayleigh_damping_form.html", null ]
     ] ],
