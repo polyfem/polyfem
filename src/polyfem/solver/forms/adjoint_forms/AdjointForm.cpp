@@ -78,19 +78,12 @@ namespace polyfem::solver
 
 	void AdjointForm::update_quantities(const double t, const Eigen::VectorXd &x)
 	{
-
 	}
 	void AdjointForm::init_lagging(const Eigen::VectorXd &x)
 	{
-
 	}
 	void AdjointForm::update_lagging(const Eigen::VectorXd &x, const int iter_num)
 	{
-
-	}
-	void AdjointForm::set_apply_DBC(const Eigen::VectorXd &x, bool apply_DBC)
-	{
-
 	}
 
 	double StaticForm::value_unweighted(const Eigen::VectorXd &x) const

@@ -2,14 +2,11 @@
 
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/Form.hpp>
-#include <polyfem/solver/forms/BCLagrangianForm.hpp>
-#include <polyfem/solver/forms/BCPenaltyForm.hpp>
-#include <polyfem/solver/forms/MacroStrainLagrangianForm.hpp>
-#include <polyfem/solver/forms/MacroStrainALForm.hpp>
+#include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
+#include <polyfem/solver/forms/lagrangian/MacroStrainLagrangianForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/PressureForm.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
-#include <polyfem/solver/forms/MacroStrainALForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
@@ -21,6 +18,7 @@
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/MacroStrain.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/assembler/PeriodicBoundary.hpp>
 
 namespace polyfem::solver
 {
@@ -90,6 +88,7 @@ namespace polyfem::solver
 		// Periodic contact
 		const bool periodic_contact,
 		const Eigen::VectorXi &tiled_to_single,
+		const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
 
 		// Friction form
 		const double friction_coefficient,
@@ -108,6 +107,7 @@ namespace polyfem::solver
 		const bool is_volume = dim == 3;
 
 		std::vector<std::shared_ptr<Form>> forms;
+		al_form.clear();
 
 		elastic_form = std::make_shared<ElasticForm>(
 			n_bases, bases, geom_bases, assembler, ass_vals_cache,
@@ -119,7 +119,7 @@ namespace polyfem::solver
 			body_form = std::make_shared<BodyForm>(
 				ndof, n_pressure_bases, boundary_nodes, local_boundary,
 				local_neumann_boundary, n_boundary_samples, rhs, *rhs_assembler,
-				density, /*apply_DBC=*/true, /*is_formulation_mixed=*/false,
+				density, /*is_formulation_mixed=*/false,
 				is_time_dependent);
 			body_form->update_quantities(t, sol);
 			forms.push_back(body_form);
@@ -173,21 +173,15 @@ namespace polyfem::solver
 			// mass_mat_assembler.assemble(dim == 3, n_bases, bases, geom_bases, mass_ass_vals_cache, mass_tmp, true);
 			// assert(mass_tmp.rows() == mass.rows() && mass_tmp.cols() == mass.cols());
 
-			al_lagr_form = std::make_shared<BCLagrangianForm>(
+			al_form.push_back(std::make_shared<BCLagrangianForm>(
 				ndof, boundary_nodes, local_boundary, local_neumann_boundary,
-				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t);
-			forms.push_back(al_lagr_form);
-
-			al_pen_form = std::make_shared<BCPenaltyForm>(
-				ndof, boundary_nodes, local_boundary, local_neumann_boundary,
-				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t);
-			forms.push_back(al_pen_form);
+				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t, periodic_bc));
+			forms.push_back(al_form.back());
 		}
 
 		if (macro_strain_constraint.is_active())
 		{
 			// don't push these two into forms because they take a different input x
-			strain_al_pen_form = std::make_shared<MacroStrainALForm>(macro_strain_constraint);
 			strain_al_lagr_form = std::make_shared<MacroStrainLagrangianForm>(macro_strain_constraint);
 		}
 
@@ -318,7 +312,7 @@ namespace polyfem::solver
 
 	std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> SolveData::named_forms() const
 	{
-		return {
+		std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> res{
 			{"elastic", elastic_form},
 			{"inertia", inertia_form},
 			{"body", body_form},
@@ -326,11 +320,13 @@ namespace polyfem::solver
 			{"friction", friction_form},
 			{"damping", damping_form},
 			{"pressure", pressure_form},
-			{"augmented_lagrangian_lagr", al_lagr_form},
-			{"augmented_lagrangian_penalty", al_pen_form},
 			{"strain_augmented_lagrangian_lagr", strain_al_lagr_form},
-			{"strain_augmented_lagrangian_penalty", strain_al_pen_form},
 			{"periodic_contact", periodic_contact_form},
 		};
+
+		for (const auto &form : al_form)
+			res.push_back({"augmented_lagrangian", form});
+
+		return res;
 	}
 } // namespace polyfem::solver
