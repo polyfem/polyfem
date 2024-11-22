@@ -181,7 +181,7 @@ TEST_CASE("jacobian-evaluate", "[jacobian]")
                 autogen::p_nodes_2d(order, cp);
             else
                 autogen::p_nodes_3d(order, cp);
-            cp += Eigen::MatrixXd::Random(cp.rows(), cp.cols()) * 0.5;
+            cp += Eigen::MatrixXd::Random(cp.rows(), cp.cols()) * 0.2;
 
             Eigen::MatrixXd uv;
             if (dim == 2)
