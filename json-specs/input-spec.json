@@ -2796,7 +2796,7 @@
         "pointer": "/output/paraview/options/force_high_order",
         "default": false,
         "type": "bool",
-        "doc": "If true, force write out high-order mesh"
+        "doc": "If true, force write out high-order mesh, might break the output"
     },
     {
         "pointer": "/output/data",
