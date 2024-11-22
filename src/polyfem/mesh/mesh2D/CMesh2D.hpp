@@ -58,8 +58,8 @@ namespace polyfem
 			bool build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F) override;
 
 			void attach_higher_order_nodes(const Eigen::MatrixXd &V, const std::vector<std::vector<int>> &nodes) override;
-			RowVectorNd edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const override;
-			RowVectorNd face_node(const Navigation::Index &index, const int n_new_nodes, const int i, const int j) const override;
+			std::pair<RowVectorNd, int> edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const override;
+			std::pair<RowVectorNd, int> face_node(const Navigation::Index &index, const int n_new_nodes, const int i, const int j) const override;
 
 			void normalize() override;
 
@@ -77,7 +77,7 @@ namespace polyfem
 
 			void compute_boundary_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &marker) override;
 
-			void compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker) override;
+			void compute_body_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &)> &marker) override;
 
 			// Navigation wrapper
 			inline Navigation::Index get_index_from_face(int f, int lv = 0) const override { return Navigation::get_index_from_face(mesh_, *c2e_, f, lv); }

@@ -5,29 +5,28 @@
 namespace polyfem
 {
 	class State;
-	namespace assembler {
+	namespace assembler
+	{
 		class MacroStrainValue;
 	}
-}
+} // namespace polyfem
 
 namespace polyfem::solver
 {
-    class NLHomoProblem : public NLProblem
-    {
-    public:
+	class NLHomoProblem : public NLProblem
+	{
+	public:
 		using typename FullNLProblem::Scalar;
 		using typename FullNLProblem::THessian;
 		using typename FullNLProblem::TVector;
 
-        NLHomoProblem(const int full_size,
-				  const std::vector<int> &boundary_nodes,
-				  const std::vector<mesh::LocalBoundary> &local_boundary,
-				  const int n_boundary_samples,
-				  const assembler::RhsAssembler &rhs_assembler,
-				  const assembler::MacroStrainValue &macro_strain_constraint,
-				  const State &state,
-				  const double t, const std::vector<std::shared_ptr<Form>> &forms, 
-				  const bool solve_symmetric_macro_strain);
+		NLHomoProblem(const int full_size,
+					  const assembler::MacroStrainValue &macro_strain_constraint,
+					  const State &state,
+					  const double t,
+					  const std::vector<std::shared_ptr<Form>> &forms,
+					  const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
+					  const bool solve_symmetric_macro_strain);
 		virtual ~NLHomoProblem() = default;
 
 		double value(const TVector &x) override;
@@ -72,7 +71,7 @@ namespace polyfem::solver
 		bool has_symmetry_constraint() const { return only_symmetric; }
 
 	protected:
-		Eigen::MatrixXd boundary_values() const override;
+		Eigen::MatrixXd constraint_values(const TVector &) const override;
 
 	private:
 		void init_projection();
@@ -91,5 +90,5 @@ namespace polyfem::solver
 		Eigen::MatrixXd macro_full_to_mid_, macro_mid_to_full_;
 
 		std::vector<std::shared_ptr<Form>> homo_forms;
-    };
-}
+	};
+} // namespace polyfem::solver

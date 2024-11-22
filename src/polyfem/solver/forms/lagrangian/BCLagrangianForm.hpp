@@ -1,15 +1,20 @@
 #pragma once
 
-#include "Form.hpp"
+#include "AugmentedLagrangianForm.hpp"
 #include <polyfem/assembler/RhsAssembler.hpp>
 
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 
+namespace polyfem::utils
+{
+	class PeriodicBoundary;
+} // namespace polyfem::utils
+
 namespace polyfem::solver
 {
-	/// @brief Form of the lagrangian in augmented lagrangian
-	class BCLagrangianForm : public Form
+	/// @brief Form of the augmented lagrangian for bc constraints
+	class BCLagrangianForm : public AugmentedLagrangianForm
 	{
 	public:
 		/// @brief Construct a new BCLagrangianForm object with a time dependent Dirichlet boundary
@@ -23,6 +28,7 @@ namespace polyfem::solver
 		/// @param obstacle_ndof Obstacle's number of DOF
 		/// @param is_time_dependent Whether the problem is time dependent
 		/// @param t Current time
+		/// @param periodic_bc Periodic boundary conditions
 		BCLagrangianForm(const int ndof,
 						 const std::vector<int> &boundary_nodes,
 						 const std::vector<mesh::LocalBoundary> &local_boundary,
@@ -32,9 +38,13 @@ namespace polyfem::solver
 						 const assembler::RhsAssembler &rhs_assembler,
 						 const size_t obstacle_ndof,
 						 const bool is_time_dependent,
-						 const double t);
+						 const double t,
+						 const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc = nullptr);
 
-		std::string name() const override { return "bc-lagrangian"; }
+		std::string name() const override
+		{
+			return "bc-alagrangian";
+		}
 
 		/// @brief Construct a new BCLagrangianForm object with a fixed Dirichlet boundary
 		/// @param ndof Number of degrees of freedom
@@ -69,7 +79,16 @@ namespace polyfem::solver
 		/// @param x Solution at time t
 		void update_quantities(const double t, const Eigen::VectorXd &x) override;
 
-		void update_lagrangian(const Eigen::VectorXd &x, const double k_al);
+		void update_lagrangian(const Eigen::VectorXd &x, const double k_al) override;
+
+		StiffnessMatrix &mask()
+		{
+			return mask_;
+		}
+		const StiffnessMatrix &mask() const { return mask_; }
+		Eigen::VectorXd target(const Eigen::VectorXd &) const override { return target_x_; }
+
+		double compute_error(const Eigen::VectorXd &x) const override;
 
 	private:
 		const std::vector<int> &boundary_nodes_;
@@ -81,8 +100,10 @@ namespace polyfem::solver
 		const bool is_time_dependent_;
 
 		StiffnessMatrix masked_lumped_mass_sqrt_; ///< sqrt mass matrix masked by the AL dofs
-		Eigen::MatrixXd target_x_;                ///< actually a vector with the same size as x with target nodal positions
-		Eigen::VectorXd lagr_mults_;              ///< vector of lagrange multipliers
+		StiffnessMatrix masked_lumped_mass_;      ///< mass matrix masked by the AL dofs
+		StiffnessMatrix mask_;                    ///< identity matrix masked by the AL dofs
+
+		Eigen::MatrixXd target_x_; ///< actually a vector with the same size as x with target nodal positions
 
 		/// @brief Initialize the masked lumped mass matrix
 		/// @param ndof Number of degrees of freedom
