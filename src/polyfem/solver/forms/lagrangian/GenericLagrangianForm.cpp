@@ -77,6 +77,9 @@ namespace polyfem::solver
 				constraint_nodes_.push_back(dim * v + d);
 			}
 		}
+
+		AtA = this->A.transpose() * this->A;
+		Atb = this->A.transpose() * this->b;
 	}
 
 	double GenericLagrangianForm::value_unweighted(const Eigen::VectorXd &x) const
@@ -89,12 +92,12 @@ namespace polyfem::solver
 
 	void GenericLagrangianForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = A * lagr_mults_ + k_al_ * (A * x - b);
+		gradv = A * lagr_mults_ + k_al_ * (AtA * x - Atb);
 	}
 
 	void GenericLagrangianForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
-		hessian = A;
+		hessian = k_al_ * AtA;
 	}
 
 	void GenericLagrangianForm::update_lagrangian(const Eigen::VectorXd &x, const double k_al)
@@ -105,12 +108,13 @@ namespace polyfem::solver
 	double GenericLagrangianForm::compute_error(const Eigen::VectorXd &x) const
 	{
 		const Eigen::VectorXd res = A * x - b;
-		return res.norm();
+		return res.squaredNorm();
 	}
 
 	Eigen::VectorXd GenericLagrangianForm::target(const Eigen::VectorXd &x) const
 	{
-		return Ai * (b - A * x);
+		Eigen::VectorXd delta = Ai * (b - A * x);
+		return x + delta;
 	}
 
 } // namespace polyfem::solver

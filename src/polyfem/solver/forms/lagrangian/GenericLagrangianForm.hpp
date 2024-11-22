@@ -47,6 +47,8 @@ namespace polyfem::solver
 	private:
 		StiffnessMatrix A;
 		StiffnessMatrix Ai;
+		StiffnessMatrix AtA;
+		Eigen::VectorXd Atb;
 		Eigen::VectorXd b;
 	};
 } // namespace polyfem::solver
