@@ -2715,7 +2715,8 @@
             "tensor_values",
             "discretization_order",
             "nodes",
-            "forces"
+            "forces",
+            "force_high_order"
         ],
         "doc": "Optional fields in the output"
     },
@@ -2789,7 +2790,13 @@
         "pointer": "/output/paraview/options/forces",
         "default": false,
         "type": "bool",
-        "doc": "If true, write out all variational forces on the FE mesh "
+        "doc": "If true, write out all variational forces on the FE mesh"
+    },
+    {
+        "pointer": "/output/paraview/options/force_high_order",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, force write out high-order mesh"
     },
     {
         "pointer": "/output/data",
