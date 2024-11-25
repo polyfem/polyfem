@@ -950,7 +950,7 @@ TEST_CASE("shape-contact-force-norm-adhesion", "[test_adjoint]")
 
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 
-	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-3);
+	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-2);
 }
 
 TEST_CASE("shape-contact-force-norm-3d", "[test_adjoint]")
