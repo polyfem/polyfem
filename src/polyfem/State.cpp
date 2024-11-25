@@ -312,77 +312,17 @@ namespace polyfem
 			in_primitive_to_primitive.resize(0);
 			return;
 		}
+		const auto &tmp = mesh_nodes->in_ordered_vertices();
+		int max_tmp = -1;
+		for (auto v : tmp)
+			max_tmp = std::max(max_tmp, v);
 
-		const auto primitive_offset = [&](int node) {
-			if (mesh_nodes->is_vertex_node(node))
-				return 0;
-			else if (mesh_nodes->is_edge_node(node))
-				return mesh->n_vertices();
-			else if (mesh_nodes->is_face_node(node))
-				return mesh->n_vertices() + mesh->n_edges();
-			else if (mesh_nodes->is_cell_node(node))
-				return mesh->n_vertices() + mesh->n_edges() + mesh->n_faces();
-			throw std::runtime_error("Invalid node ID!");
-		};
-
-		logger().trace("Building primitive to node mapping...");
-		timer.start();
-		std::vector<std::vector<int>> primitive_to_nodes(num_primitives);
-		const std::vector<int> &grouped_nodes = mesh_nodes->primitive_to_node();
-		int node_count = 0;
-		for (int i = 0; i < grouped_nodes.size(); i++)
+		in_node_to_node.resize(max_tmp + 1);
+		for (int i = 0; i < tmp.size(); ++i)
 		{
-			int node = grouped_nodes[i];
-			assert(node < num_nodes);
-			if (node >= 0)
-			{
-				int primitive = mesh_nodes->node_to_primitive_gid().at(node) + primitive_offset(i);
-				assert(primitive < num_primitives);
-				primitive_to_nodes[primitive].push_back(node);
-				node_count++;
-			}
+			if (tmp[i] >= 0)
+				in_node_to_node[tmp[i]] = i;
 		}
-		assert(node_count == num_nodes);
-		timer.stop();
-		logger().trace("Done (took {}s)", timer.getElapsedTime());
-
-		logger().trace("Combining mappings...");
-		timer.start();
-		in_node_to_node.setConstant(num_nodes, -1);
-		for (int i = 0; i < num_nodes; i++)
-		{
-			// input node id -> input primitive -> primitive -> node(s)
-			const std::vector<int> &possible_nodes =
-				primitive_to_nodes[in_primitive_to_primitive[in_node_to_in_primitive[i]]];
-
-			if (possible_nodes.size() == 1)
-				in_node_to_node[i] = possible_nodes[0];
-			else
-			{
-				assert(possible_nodes.size() > 1);
-
-				// TODO: The following code assumes multiple nodes must come from an edge.
-				//       This only true for P3. P4+ has multiple face nodes and P5+ have multiple cell nodes.
-
-				int e_id = in_primitive_to_primitive[in_node_to_in_primitive[i]] - mesh->n_vertices();
-				assert(e_id < mesh->n_edges());
-				assert(in_node_to_node[mesh->edge_vertex(e_id, 0)] >= 0); // Vertex nodes should be computed first
-				RowVectorNd v0 = mesh_nodes->node_position(in_node_to_node[mesh->edge_vertex(e_id, 0)]);
-				RowVectorNd a = mesh_nodes->node_position(possible_nodes[0]);
-				RowVectorNd b = mesh_nodes->node_position(possible_nodes[1]);
-				// Assume possible nodes are ordered, so only need to check order of two nodes
-
-				// Input edges are sorted, so if a is closer to v0 then the order is correct
-				// otherwise the nodes are flipped.
-				assert(mesh->edge_vertex(e_id, 0) < mesh->edge_vertex(e_id, 1));
-				int offset = (a - v0).squaredNorm() < (b - v0).squaredNorm()
-								 ? in_node_offset[i]
-								 : (possible_nodes.size() - in_node_offset[i] - 1);
-				in_node_to_node[i] = possible_nodes[offset];
-			}
-		}
-		timer.stop();
-		logger().trace("Done (took {}s)", timer.getElapsedTime());
 	}
 
 	std::string State::formulation() const

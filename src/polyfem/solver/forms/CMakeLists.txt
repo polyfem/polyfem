@@ -1,9 +1,5 @@
 set(SOURCES
 	Form.hpp
-	BCLagrangianForm.hpp
-	BCLagrangianForm.cpp
-	BCPenaltyForm.hpp
-	BCPenaltyForm.cpp
 	BodyForm.hpp
 	BodyForm.cpp
 	ElasticForm.hpp
@@ -24,10 +20,6 @@ set(SOURCES
 	ContactForm.hpp
 	PeriodicContactForm.cpp
 	PeriodicContactForm.hpp
-	MacroStrainLagrangianForm.cpp
-	MacroStrainLagrangianForm.hpp
-	MacroStrainALForm.cpp
-	MacroStrainALForm.hpp
 	RayleighDampingForm.cpp
 	RayleighDampingForm.hpp
 	PressureForm.cpp
@@ -39,3 +31,4 @@ target_sources(polyfem PRIVATE ${SOURCES})
 
 add_subdirectory(parametrization)
 add_subdirectory(adjoint_forms)
+add_subdirectory(lagrangian)

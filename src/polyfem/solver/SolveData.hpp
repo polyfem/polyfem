@@ -22,6 +22,11 @@ namespace polyfem::time_integrator
 	class ImplicitTimeIntegrator;
 } // namespace polyfem::time_integrator
 
+namespace polyfem::utils
+{
+	class PeriodicBoundary;
+}
+
 namespace polyfem::assembler
 {
 	class ViscousDamping;
@@ -38,8 +43,7 @@ namespace polyfem::solver
 	class MacroStrainALForm;
 	class FrictionForm;
 	class BodyForm;
-	class BCLagrangianForm;
-	class BCPenaltyForm;
+	class AugmentedLagrangianForm;
 	class MacroStrainLagrangianForm;
 	class MacroStrainALForm;
 	class InertiaForm;
@@ -116,6 +120,7 @@ namespace polyfem::solver
 			// Periodic contact
 			const bool periodic_contact,
 			const Eigen::VectorXi &tiled_to_single,
+			const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
 
 			// Friction form
 			const double friction_coefficient,
@@ -139,10 +144,8 @@ namespace polyfem::solver
 		std::shared_ptr<assembler::PressureAssembler> pressure_assembler;
 		std::shared_ptr<solver::NLProblem> nl_problem;
 
-		std::shared_ptr<solver::BCLagrangianForm> al_lagr_form;
-		std::shared_ptr<solver::BCPenaltyForm> al_pen_form;
+		std::vector<std::shared_ptr<solver::AugmentedLagrangianForm>> al_form;
 		std::shared_ptr<solver::MacroStrainLagrangianForm> strain_al_lagr_form;
-		std::shared_ptr<solver::MacroStrainALForm> strain_al_pen_form;
 		std::shared_ptr<solver::BodyForm> body_form;
 		std::shared_ptr<solver::ContactForm> contact_form;
 		std::shared_ptr<solver::ElasticForm> damping_form;
