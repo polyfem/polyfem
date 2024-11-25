@@ -28,14 +28,14 @@ else()
         PREFIX ${FETCHCONTENT_BASE_DIR}/polyfem-test-data
         SOURCE_DIR ${POLYFEM_DATA_DIR}
         GIT_REPOSITORY https://github.com/maxpaik16/polyfem-data
-        GIT_TAG 394938de4295af862d20f35182f8b6f7596c528e
+        GIT_TAG 394938de4295af862d20f35182f8b6f7596c528e 
         CONFIGURE_COMMAND ""
         BUILD_COMMAND ""
         INSTALL_COMMAND ""
         LOG_DOWNLOAD ON
     )
 endif()
-
+ 
 # Create a dummy target for convenience
 add_library(polyfem_data INTERFACE)
 add_library(polyfem::data ALIAS polyfem_data)
