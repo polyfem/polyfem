@@ -94,14 +94,11 @@ namespace polyfem::solver
 		const double dhat_a,
 		const double Y,
 
-<<<<<<< HEAD
 		// Tangential Adhesion Form
 		const double tangential_adhesion_coefficient,
 		const double epsa,
 		const int tangential_adhesion_iterations,
 
-=======
->>>>>>> 5143f1fd6 (add normal adhesion form (untested))
 		// Homogenization
 		const assembler::MacroStrainValue &macro_strain_constraint,
 
