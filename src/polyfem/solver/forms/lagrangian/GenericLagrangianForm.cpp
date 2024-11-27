@@ -8,17 +8,13 @@ namespace polyfem::solver
 												 const int dim,
 												 const std::vector<int> &constraint_nodes,
 												 const Eigen::MatrixXd &A,
-												 const Eigen::MatrixXd &Ai,
 												 const Eigen::MatrixXd &b)
 		: AugmentedLagrangianForm(n_dofs, constraint_nodes)
 	{
-		assert(A.rows() == Ai.cols());
 		assert(A.rows() == b.rows());
 		assert(b.cols() == dim);
-		assert(A.cols() == Ai.rows());
 
 		std::vector<Eigen::Triplet<double>> Ae;
-		std::vector<Eigen::Triplet<double>> Aie;
 
 		for (int i = 0; i < A.rows(); ++i)
 		{
@@ -37,36 +33,21 @@ namespace polyfem::solver
 							A(i, j)));
 					}
 				}
-
-				if (Ai(j, i) != 0)
-				{
-					for (int d = 0; d < dim; ++d)
-					{
-						Aie.push_back(Eigen::Triplet<double>(
-							global_j + d,
-							global_i + d,
-							Ai(j, i)));
-					}
-				}
 			}
 		}
 
-		this->b.resize(n_dofs);
+		b_.resize(n_dofs, 1);
 		for (int i = 0; i < b.rows(); ++i)
 		{
 			for (int d = 0; d < dim; ++d)
 			{
-				this->b[dim * constraint_nodes[i] + d] = b(i, d);
+				b_(dim * constraint_nodes[i] + d) = b(i, d);
 			}
 		}
 
-		this->A.resize(n_dofs, n_dofs);
-		this->A.setFromTriplets(Ae.begin(), Ae.end());
-		this->A.makeCompressed();
-
-		this->Ai.resize(n_dofs, n_dofs);
-		this->Ai.setFromTriplets(Aie.begin(), Aie.end());
-		this->Ai.makeCompressed();
+		A_.resize(n_dofs, n_dofs);
+		A_.setFromTriplets(Ae.begin(), Ae.end());
+		A_.makeCompressed();
 
 		constraint_nodes_.clear();
 
@@ -78,13 +59,13 @@ namespace polyfem::solver
 			}
 		}
 
-		AtA = this->A.transpose() * this->A;
-		Atb = this->A.transpose() * this->b;
+		AtA = A_.transpose() * A_;
+		Atb = A_.transpose() * b_;
 	}
 
 	double GenericLagrangianForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		const Eigen::VectorXd res = A * x - b;
+		const Eigen::VectorXd res = A_ * x - b_;
 		const double L_penalty = lagr_mults_.transpose() * res;
 		const double A_penalty = res.squaredNorm() / 2;
 		return L_penalty + k_al_ * A_penalty;
@@ -92,7 +73,7 @@ namespace polyfem::solver
 
 	void GenericLagrangianForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = A * lagr_mults_ + k_al_ * (AtA * x - Atb);
+		gradv = A_ * lagr_mults_ + k_al_ * (AtA * x - Atb);
 	}
 
 	void GenericLagrangianForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
@@ -102,19 +83,13 @@ namespace polyfem::solver
 
 	void GenericLagrangianForm::update_lagrangian(const Eigen::VectorXd &x, const double k_al)
 	{
-		lagr_mults_ += k_al * (A * x - b);
+		lagr_mults_ += k_al * (A_ * x - b_);
 	}
 
 	double GenericLagrangianForm::compute_error(const Eigen::VectorXd &x) const
 	{
-		const Eigen::VectorXd res = A * x - b;
+		const Eigen::VectorXd res = A_ * x - b_;
 		return res.squaredNorm();
-	}
-
-	Eigen::VectorXd GenericLagrangianForm::target(const Eigen::VectorXd &x) const
-	{
-		Eigen::VectorXd delta = Ai * (b - A * x);
-		return x + delta;
 	}
 
 } // namespace polyfem::solver

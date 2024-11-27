@@ -43,7 +43,9 @@ namespace polyfem::solver
 			Eigen::MatrixXd reduced;
 			for (int i = 0; i < rhs.cols(); i++)
 			{
-				Eigen::VectorXd reduced_vec = state.solve_data.nl_problem->full_to_reduced_grad(rhs.col(i));
+				Eigen::VectorXd reduced_vec;
+				// TODO fix me AL
+				//  = state.solve_data.nl_problem->full_to_reduced_grad(rhs.col(i));
 				if (i == 0)
 					reduced.setZero(reduced_vec.rows(), rhs.cols());
 				reduced.col(i) = reduced_vec;

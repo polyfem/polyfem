@@ -14,12 +14,13 @@ namespace polyfem::solver
 								 const std::vector<std::shared_ptr<Form>> &forms,
 								 const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
 								 const bool solve_symmetric_macro_strain)
-		: NLProblem(full_size, state.periodic_bc, t, forms, penalty_forms),
+		: NLProblem(full_size, state.periodic_bc, t, forms, penalty_forms, nullptr),
 		  state_(state),
 		  only_symmetric(solve_symmetric_macro_strain),
 		  macro_strain_constraint_(macro_strain_constraint)
 	{
 		init_projection();
+		// TODO fix me AL
 	}
 
 	void NLHomoProblem::init_projection()
@@ -85,7 +86,8 @@ namespace polyfem::solver
 		const int dof1 = reduced_size();
 
 		Eigen::VectorXd grad(dof1 + dof2);
-		grad.head(dof1) = NLProblem::full_to_reduced_grad(extended.head(extended.size() - dim * dim));
+		// TODO fix me AL
+		//  grad.head(dof1) = NLProblem::full_to_reduced_grad(extended.head(extended.size() - dim * dim));
 		grad.tail(dof2) = macro_full_to_reduced_grad(extended.tail(dim * dim));
 
 		return grad;
@@ -164,8 +166,8 @@ namespace polyfem::solver
 
 		THessian mid(full_size_ + dof2, full_size_ + dof2);
 		mid.setFromTriplets(entries.begin(), entries.end());
-
-		NLProblem::full_hessian_to_reduced_hessian(mid, reduced);
+		// TODO fix me AL
+		// NLProblem::full_hessian_to_reduced_hessian(mid, reduced);
 	}
 	Eigen::MatrixXd NLHomoProblem::reduced_to_disp_grad(const TVector &reduced, bool homogeneous) const
 	{
@@ -242,8 +244,8 @@ namespace polyfem::solver
 
 		THessian mid(full.rows() + dof2, full.cols() + dof2);
 		mid.setFromTriplets(entries.begin(), entries.end());
-
-		NLProblem::full_hessian_to_reduced_hessian(mid, reduced);
+		// TODO fix me AL
+		// NLProblem::full_hessian_to_reduced_hessian(mid, reduced);
 	}
 
 	NLHomoProblem::TVector NLHomoProblem::full_to_reduced(const TVector &full) const
@@ -274,8 +276,8 @@ namespace polyfem::solver
 
 		TVector reduced;
 		reduced.setZero(dof1 + dof2);
-
-		reduced.head(dof1) = NLProblem::full_to_reduced_grad(full);
+		// TODO fix me AL
+		//  reduced.head(dof1) = NLProblem::full_to_reduced_grad(full);
 		reduced.tail(dof2) = constraint_grad() * full;
 
 		return reduced;
@@ -402,11 +404,5 @@ namespace polyfem::solver
 					jac(j * dim + k, i * dim + j) = X(i, k);
 
 		return macro_full_to_reduced_grad(jac);
-	}
-
-	Eigen::MatrixXd NLHomoProblem::constraint_values(const TVector &) const
-	{
-		Eigen::MatrixXd result = Eigen::MatrixXd::Zero(full_size(), 1);
-		return result;
 	}
 } // namespace polyfem::solver

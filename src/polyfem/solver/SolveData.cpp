@@ -185,13 +185,12 @@ namespace polyfem::solver
 			h5pp::File file(path, h5pp::FileAccess::READONLY);
 			std::vector<int> local2global = file.readDataset<std::vector<int>>("local2global");
 			Eigen::MatrixXd A = file.readDataset<Eigen::MatrixXd>("A");
-			Eigen::MatrixXd Ai = file.readDataset<Eigen::MatrixXd>("A_inverse");
 			Eigen::MatrixXd b = file.readDataset<Eigen::MatrixXd>("b");
 			for (auto &v : local2global)
 				v = in_node_to_node[v];
 
 			al_form.push_back(std::make_shared<GenericLagrangianForm>(
-				ndof, dim, local2global, A, Ai, b));
+				ndof, dim, local2global, A, b));
 			forms.push_back(al_form.back());
 		}
 

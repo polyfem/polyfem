@@ -81,13 +81,6 @@ namespace polyfem::solver
 
 		void update_lagrangian(const Eigen::VectorXd &x, const double k_al) override;
 
-		StiffnessMatrix &mask()
-		{
-			return mask_;
-		}
-		const StiffnessMatrix &mask() const { return mask_; }
-		Eigen::VectorXd target(const Eigen::VectorXd &) const override { return target_x_; }
-
 		double compute_error(const Eigen::VectorXd &x) const override;
 
 	private:
@@ -101,9 +94,6 @@ namespace polyfem::solver
 
 		StiffnessMatrix masked_lumped_mass_sqrt_; ///< sqrt mass matrix masked by the AL dofs
 		StiffnessMatrix masked_lumped_mass_;      ///< mass matrix masked by the AL dofs
-		StiffnessMatrix mask_;                    ///< identity matrix masked by the AL dofs
-
-		Eigen::MatrixXd target_x_; ///< actually a vector with the same size as x with target nodal positions
 
 		/// @brief Initialize the masked lumped mass matrix
 		/// @param ndof Number of degrees of freedom

@@ -33,14 +33,14 @@ namespace polyfem::solver
 		void gradient(const TVector &x, TVector &gradv) override;
 		void hessian(const TVector &x, THessian &hessian) override;
 
-		void full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const override;
+		void full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const;
 
 		int macro_reduced_size() const;
 
 		TVector full_to_reduced(const TVector &full, const Eigen::MatrixXd &disp_grad) const;
-		TVector full_to_reduced(const TVector &full) const override;
-		TVector full_to_reduced_grad(const TVector &full) const override;
-		TVector reduced_to_full(const TVector &reduced) const override;
+		TVector full_to_reduced(const TVector &full) const;
+		TVector full_to_reduced_grad(const TVector &full) const;
+		TVector reduced_to_full(const TVector &reduced) const;
 		TVector reduced_to_full_shape_derivative(const Eigen::MatrixXd &disp_grad, const TVector &adjoint_full) const;
 
 		TVector reduced_to_extended(const TVector &reduced, bool homogeneous = false) const;
@@ -69,9 +69,6 @@ namespace polyfem::solver
 
 		void add_form(const std::shared_ptr<Form> &form) { homo_forms.push_back(form); }
 		bool has_symmetry_constraint() const { return only_symmetric; }
-
-	protected:
-		Eigen::MatrixXd constraint_values(const TVector &) const override;
 
 	private:
 		void init_projection();
