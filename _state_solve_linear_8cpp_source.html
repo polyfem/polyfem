@@ -478,13 +478,16 @@ $(document).ready(function(){initNavTree('_state_solve_linear_8cpp_source.html',
 <div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>            time_integrator-&gt;update_quantities(sol);</div>
 <div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span> </div>
 <div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>            <a class="code hl_function" href="classpolyfem_1_1_state.html#a442fa686e1d08a0a104f3869a6fa2948">save_timestep</a>(time, t, t0, dt, sol, pressure);</div>
-<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>            <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().info(<span class="stringliteral">&quot;{}/{}  t={}&quot;</span>, t, time_steps, time);</div>
-<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>        }</div>
-<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span> </div>
-<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>        time_integrator-&gt;save_state(<a class="code hl_function" href="classpolyfem_1_1_state.html#a2d27977bcc27d9827913ea573e6fef3a">resolve_output_path</a>(<a class="code hl_variable" href="classpolyfem_1_1_state.html#a813d80fa2f8ebcf6fa4a09ffb9b5da99">args</a>[<span class="stringliteral">&quot;output&quot;</span>][<span class="stringliteral">&quot;data&quot;</span>][<span class="stringliteral">&quot;state&quot;</span>]));</div>
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>    }</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span> </div>
+<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>            <span class="keyword">const</span> std::string &amp;state_path = <a class="code hl_function" href="classpolyfem_1_1_state.html#a2d27977bcc27d9827913ea573e6fef3a">resolve_output_path</a>(fmt::format(<a class="code hl_variable" href="classpolyfem_1_1_state.html#a813d80fa2f8ebcf6fa4a09ffb9b5da99">args</a>[<span class="stringliteral">&quot;output&quot;</span>][<span class="stringliteral">&quot;data&quot;</span>][<span class="stringliteral">&quot;state&quot;</span>], t));</div>
+<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>            <span class="keywordflow">if</span> (!state_path.empty())</div>
+<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>                time_integrator-&gt;save_state(state_path);</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span> </div>
+<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>            <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().info(<span class="stringliteral">&quot;{}/{}  t={}&quot;</span>, t, time_steps, time);</div>
+<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>        }</div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>    }</div>
 </div>
-<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>} <span class="comment">// namespace polyfem</span></div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>} <span class="comment">// namespace polyfem</span></div>
 <div class="ttc" id="a_assembler_utils_8hpp_html"><div class="ttname"><a href="_assembler_utils_8hpp.html">AssemblerUtils.hpp</a></div></div>
 <div class="ttc" id="a_b_d_f_8hpp_html"><div class="ttname"><a href="_b_d_f_8hpp.html">BDF.hpp</a></div></div>
 <div class="ttc" id="a_body_form_8hpp_html"><div class="ttname"><a href="_body_form_8hpp.html">BodyForm.hpp</a></div></div>
