@@ -341,9 +341,12 @@ namespace polyfem
 			time_integrator->update_quantities(sol);
 
 			save_timestep(time, t, t0, dt, sol, pressure);
+
+			const std::string &state_path = resolve_output_path(fmt::format(args["output"]["data"]["state"], t));
+			if (!state_path.empty())
+				time_integrator->save_state(state_path);
+
 			logger().info("{}/{}  t={}", t, time_steps, time);
 		}
-
-		time_integrator->save_state(resolve_output_path(args["output"]["data"]["state"]));
 	}
 } // namespace polyfem
