@@ -1994,11 +1994,11 @@ namespace polyfem::io
 		const double dhat = state.args["contact"]["dhat"];
 		const double friction_coefficient = state.args["contact"]["friction_coefficient"];
 		const double epsv = state.args["contact"]["epsv"];
-		const double dhat_a = state.args["contact"]["dhat_a"];
-		const double dhat_p = state.args["contact"]["dhat_p"];
-		const double Y = state.args["contact"]["adhesion_strength"];
-		const double epsa = state.args["contact"]["epsa"];
-		const double tangential_adhesion_coefficient = state.args["contact"]["tangential_adhesion_coefficient"];
+		const double dhat_a = state.args["contact"]["adhesion"]["dhat_a"];
+		const double dhat_p = state.args["contact"]["adhesion"]["dhat_p"];
+		const double Y = state.args["contact"]["adhesion"]["adhesion_strength"];
+		const double epsa = state.args["contact"]["adhesion"]["epsa"];
+		const double tangential_adhesion_coefficient = state.args["contact"]["adhesion"]["tangential_adhesion_coefficient"];
 		const std::shared_ptr<solver::ContactForm> &contact_form = state.solve_data.contact_form;
 		const std::shared_ptr<solver::FrictionForm> &friction_form = state.solve_data.friction_form;
 		const std::shared_ptr<solver::NormalAdhesionForm> &normal_adhesion_form = state.solve_data.normal_adhesion_form;
