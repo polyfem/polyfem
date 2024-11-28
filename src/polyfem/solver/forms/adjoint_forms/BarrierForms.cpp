@@ -31,6 +31,10 @@ namespace polyfem::solver
 				else
 					return 2 * weight_;
 			}
+			double units(const double dhat) const override
+			{
+				return dhat * dhat;
+			}
 
 		private:
 			const double weight_;
@@ -86,12 +90,14 @@ namespace polyfem::solver
 		if ((V1 - V0).lpNorm<Eigen::Infinity>() == 0.0)
 			return true;
 
+		const ipc::TightInclusionCCD tight_inclusion_ccd(1e-6, 1e6);
 		bool is_valid = ipc::is_step_collision_free(
 			collision_mesh_,
 			collision_mesh_.vertices(V0),
 			collision_mesh_.vertices(V1),
+			dmin_,
 			broad_phase_method_,
-			1e-6, 1e6);
+			tight_inclusion_ccd);
 
 		return is_valid;
 	}
@@ -101,11 +107,14 @@ namespace polyfem::solver
 		const Eigen::MatrixXd V0 = utils::unflatten(get_updated_mesh_nodes(x0), state_.mesh->dimension());
 		const Eigen::MatrixXd V1 = utils::unflatten(get_updated_mesh_nodes(x1), state_.mesh->dimension());
 
+		const ipc::TightInclusionCCD tight_inclusion_ccd(1e-6, 1e6);
 		double max_step = ipc::compute_collision_free_stepsize(
 			collision_mesh_,
 			collision_mesh_.vertices(V0),
 			collision_mesh_.vertices(V1),
-			broad_phase_method_, dmin_, 1e-6, 1e6);
+			dmin_,
+			broad_phase_method_, 
+			tight_inclusion_ccd);
 
 		adjoint_logger().info("Objective {}: max step size is {}.", name(), max_step);
 

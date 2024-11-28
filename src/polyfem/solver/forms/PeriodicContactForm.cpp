@@ -13,13 +13,15 @@ namespace polyfem::solver
                         const Eigen::VectorXi &tiled_to_single,
                         const double dhat,
                         const double avg_mass,
-                        const bool use_convergent_formulation,
+                        const bool use_area_weighting,
+					    const bool use_improved_max_operator,
+					    const bool use_physical_barrier,
                         const bool use_adaptive_barrier_stiffness,
                         const bool is_time_dependent,
                         const bool enable_shape_derivatives,
                         const ipc::BroadPhaseMethod broad_phase_method,
                         const double ccd_tolerance,
-                        const int ccd_max_iterations) : ContactForm(periodic_collision_mesh, dhat, avg_mass, use_convergent_formulation, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), tiled_to_single_(tiled_to_single), n_single_dof_(tiled_to_single_.maxCoeff() + 1)
+                        const int ccd_max_iterations) : ContactForm(periodic_collision_mesh, dhat, avg_mass, use_area_weighting, use_improved_max_operator, use_physical_barrier, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), tiled_to_single_(tiled_to_single), n_single_dof_(tiled_to_single_.maxCoeff() + 1)
     {
         assert(tiled_to_single_.size() == collision_mesh_.full_num_vertices());
 
@@ -166,7 +168,7 @@ namespace polyfem::solver
         ContactForm::update_barrier_stiffness(single_to_tiled(x), single_to_tiled(grad_energy));
     }
 
-    void PeriodicContactForm::force_periodic_shape_derivative(const State& state, const PeriodicMeshToMesh &periodic_mesh_map, const Eigen::VectorXd &periodic_mesh_representation, const ipc::Collisions &contact_set, const Eigen::VectorXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
+    void PeriodicContactForm::force_periodic_shape_derivative(const State& state, const PeriodicMeshToMesh &periodic_mesh_map, const Eigen::VectorXd &periodic_mesh_representation, const ipc::NormalCollisions &contact_set, const Eigen::VectorXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
     {
         const int dim = collision_mesh_.dim();
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(single_to_tiled(solution));
