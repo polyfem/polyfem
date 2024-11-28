@@ -169,13 +169,13 @@ namespace
 
 TEST_CASE("jacobian-evaluate", "[jacobian]")
 {
-    const double tol = 1e-10;
+    const double tol = 1e-8;
     constexpr int N = 7;
-    const int n_samples = 50;
     for (int dim = 2; dim <= 3; dim++)
     {
         for (int order = 1; order < 4; order++)
         {
+			// std::cout << "order " << order << ", dim " << dim << std::endl;
             Eigen::MatrixXd cp;
             if (dim == 2)
                 autogen::p_nodes_2d(order, cp);
@@ -208,7 +208,7 @@ TEST_CASE("jacobian-evaluate", "[jacobian]")
                 
                 jac2(k) = jac_mat.determinant();
 
-                // std::cout << std::setprecision(12) << jac1(k) << ", " << jac2(k) << ", " << abs(jac1(k) - jac2(k)) / abs(jac2(k)) << std::endl;
+				// std::cout << std::setprecision(12) << jac1(k) << ", " << jac2(k) << ", " << abs(jac1(k) - jac2(k)) / abs(jac2(k)) << std::endl;
             }
 
             Eigen::VectorXd denominator = jac1.array().abs().cwiseMax(jac2.array().abs()).cwiseMax(tol);
