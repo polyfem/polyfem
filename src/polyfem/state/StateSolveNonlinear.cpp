@@ -249,13 +249,13 @@ namespace polyfem
 			args["solver"]["contact"]["CCD"]["max_iterations"],
 			optimization_enabled == solver::CacheLevel::Derivatives,
 			// Normal Adhesion Form
-			args["contact"]["adhesion_enabled"],
-			args["contact"]["dhat_p"],
-			args["contact"]["dhat_a"],
-			args["contact"]["adhesion_strength"],
+			args["contact"]["adhesion"]["adhesion_enabled"],
+			args["contact"]["adhesion"]["dhat_p"],
+			args["contact"]["adhesion"]["dhat_a"],
+			args["contact"]["adhesion"]["adhesion_strength"],
 			// Tangential Adhesion Form
-			args["contact"]["tangential_adhesion_coefficient"],
-			args["contact"]["epsa"],
+			args["contact"]["adhesion"]["tangential_adhesion_coefficient"],
+			args["contact"]["adhesion"]["epsa"],
 			args["solver"]["contact"]["tangential_adhesion_iterations"],
 			// Homogenization
 			macro_strain_constraint,
