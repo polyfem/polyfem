@@ -1210,12 +1210,7 @@
             "use_physical_barrier",
             "collision_mesh",
             "periodic",
-            "adhesion_enabled",
-            "dhat_p",
-            "dhat_a",
-            "adhesion_strength",
-            "tangential_adhesion_coefficient",
-            "epsa"
+            "adhesion"
         ],
         "doc": "Contact handling parameters."
     },
@@ -1338,37 +1333,51 @@
         "doc": "Set to true to check collision between adjacent periodic cells."
     },
     {
-        "pointer": "/contact/adhesion_enabled",
+        "pointer": "/contact/adhesion",
+        "default": null,
+        "type": "object",
+        "doc": "Adhesion settings.",
+        "optional": [
+            "adhesion_enabled",
+            "dhat_p",
+            "dhat_a",
+            "adhesion_strength",
+            "tangential_adhesion_coefficient",
+            "epsa"
+        ]
+    },
+    {
+        "pointer": "/contact/adhesion/adhesion_enabled",
         "default": false,
         "type": "bool",
         "doc": "Set to true to enable normal adhesion forces."
     },
     {
-        "pointer": "/contact/dhat_p",
+        "pointer": "/contact/adhesion/dhat_p",
         "default": 0.001,
         "type": "float",
         "doc": "Distance at which normal adhesion force reaches its maximum."
     },
     {
-        "pointer": "/contact/dhat_a",
+        "pointer": "/contact/adhesion/dhat_a",
         "default": 0.01,
         "type": "float",
         "doc": "Distance at which normal adhesion force is activated."
     },
     {
-        "pointer": "/contact/adhesion_strength",
+        "pointer": "/contact/adhesion/adhesion_strength",
         "default": 0.001,
         "type": "float",
         "doc": "Parameter that sets the strength of the normal adhesion force."
     },
     {
-        "pointer": "/contact/tangential_adhesion_coefficient",
+        "pointer": "/contact/adhesion/tangential_adhesion_coefficient",
         "default": 0.0,
         "type": "float",
         "doc": "Coefficient of tangential adhesion (global)"
     },
     {
-        "pointer": "/contact/epsa",
+        "pointer": "/contact/adhesion/epsa",
         "default": 0.001,
         "min": 0,
         "type": "float",

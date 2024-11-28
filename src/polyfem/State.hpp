@@ -558,7 +558,7 @@ namespace polyfem
 		/// @return true/false
 		bool is_adhesion_enabled() const
 		{
-			return args["contact"]["adhesion_enabled"];
+			return args["contact"]["adhesion"]["adhesion_enabled"];
 		}
 
 		/// @brief does the simulation has pressure
