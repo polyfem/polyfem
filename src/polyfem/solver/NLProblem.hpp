@@ -91,7 +91,10 @@ namespace polyfem::solver
 		StiffnessMatrix Q2_;        ///< Q2 block of the QR decomposition of the constraints matrix
 		StiffnessMatrix R1_;        ///< R1 block of the QR decomposition of the constraints matrix
 		TVector constraint_values_; ///< Values of the constraints
+		TVector Q1R1iTb_;			///< Q1_ * (R1_.transpose().triangularView<Eigen::Upper>().solve(constraint_values_))
 		std::shared_ptr<polysolve::linear::Solver> solver_;
+
 		void setup_constraints();
+		void update_constraint_values();
 	};
 } // namespace polyfem::solver

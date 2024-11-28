@@ -73,19 +73,6 @@ namespace polyfem::solver
 			auto it = std::unique(constraint_nodes_.begin(), constraint_nodes_.end());
 			constraint_nodes_.resize(std::distance(constraint_nodes_.begin(), it));
 		}
-		// TODO fix this AL
-		{
-			TVector bfull(full_size_, 1);
-			for (const auto &f : penalty_forms_)
-				bfull += f->constraint_value();
-
-			Eigen::MatrixXi tmp = Eigen::Map<Eigen::MatrixXi>(
-				&constraint_nodes_[0],
-				constraint_nodes_.size(),
-				1);
-
-			igl::slice(bfull, tmp, 1, constraint_values_);
-		}
 
 		const auto constraint_size = constraint_nodes_.size();
 		reduced_size_ = full_size_ - constraint_size;
@@ -138,6 +125,27 @@ namespace polyfem::solver
 		StiffnessMatrix test = R.bottomRows(reduced_size_);
 		assert(test.nonZeros() == 0);
 #endif
+
+		update_constraint_values();
+	}
+
+	void NLProblem::update_constraint_values()
+	{
+		// TODO concatenate
+		{
+			TVector bfull(full_size_, 1);
+			for (const auto &f : penalty_forms_)
+				bfull += f->constraint_value();
+
+			Eigen::MatrixXi tmp = Eigen::Map<Eigen::MatrixXi>(
+				&constraint_nodes_[0],
+				constraint_nodes_.size(),
+				1);
+
+			igl::slice(bfull, tmp, 1, constraint_values_);
+		}
+
+		Q1R1iTb_ = Q1_ * R1_.transpose().triangularView<Eigen::Upper>().solve(constraint_values_);
 	}
 
 	void NLProblem::init_lagging(const TVector &x)
@@ -157,19 +165,7 @@ namespace polyfem::solver
 		for (auto &f : forms_)
 			f->update_quantities(t, full);
 
-		// TODO concatenate
-		{
-			TVector bfull(full_size_, 1);
-			for (const auto &f : penalty_forms_)
-				bfull += f->constraint_value();
-
-			Eigen::MatrixXi tmp = Eigen::Map<Eigen::MatrixXi>(
-				&constraint_nodes_[0],
-				constraint_nodes_.size(),
-				1);
-
-			igl::slice(bfull, tmp, 1, constraint_values_);
-		}
+		update_constraint_values();
 	}
 
 	void NLProblem::line_search_begin(const TVector &x0, const TVector &x1)
@@ -243,7 +239,7 @@ namespace polyfem::solver
 		}
 
 		TVector reduced(reduced_size());
-		const TVector k = full - Q1_ * (R1_.transpose().triangularView<Eigen::Upper>() * constraint_values_);
+		const TVector k = full - Q1R1iTb_;
 		const TVector rhs = Q2_.transpose() * k;
 		solver_->solve(rhs, reduced);
 		return reduced;
@@ -257,7 +253,7 @@ namespace polyfem::solver
 			return reduced;
 		}
 
-		return Q1_ * (R1_.transpose().triangularView<Eigen::Upper>() * constraint_values_) + Q2_ * reduced;
+		return Q1R1iTb_ + Q2_ * reduced;
 	}
 
 } // namespace polyfem::solver
