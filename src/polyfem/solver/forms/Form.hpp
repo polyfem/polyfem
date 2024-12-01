@@ -18,6 +18,8 @@ namespace polyfem::solver
 		/// @param x Current solution
 		virtual void init(const Eigen::VectorXd &x) {}
 
+		virtual void finish() {}
+
 		/// @brief Compute the value of the form multiplied with the weigth
 		/// @param x Current solution
 		/// @return Computed value

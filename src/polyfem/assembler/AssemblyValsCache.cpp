@@ -30,6 +30,18 @@ namespace polyfem
 			});
 		}
 
+		void AssemblyValsCache::update(const int e, const bool is_volume, const basis::ElementBases &basis, const basis::ElementBases &gbasis)
+		{
+			if (is_mass_)
+			{
+				auto &quadrature = cache[e].quadrature;
+				basis.compute_mass_quadrature(quadrature);
+				cache[e].compute(e, is_volume, quadrature.points, basis, gbasis);
+			}
+			else
+				cache[e].compute(e, is_volume, basis, gbasis);
+		}
+
 		void AssemblyValsCache::compute(const int el_index, const bool is_volume, const ElementBases &basis, const ElementBases &gbasis, ElementAssemblyValues &vals) const
 		{
 			if (cache.empty())

@@ -12,6 +12,12 @@ namespace polyfem
 		// Show some stats about the matrix M: det, singular values, condition number, etc
 		void show_matrix_stats(const Eigen::MatrixXd &M);
 
+		template <typename T>
+		T matrix_inner_product(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &A, const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &B)
+		{ 
+			return (A.array() * B.array()).sum(); 
+		}
+
 		template <typename T, int rows, int cols, int option, int maxRow, int maxCol>
 		T determinant(const Eigen::Matrix<T, rows, cols, option, maxRow, maxCol> &mat)
 		{

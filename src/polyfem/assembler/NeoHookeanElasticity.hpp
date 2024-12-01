@@ -62,6 +62,7 @@ namespace polyfem::assembler
 		}
 
 		std::string name() const override { return "NeoHookean"; }
+		bool allow_inversion() const override { return false; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
 		void assign_stress_tensor(const OutputData &data,
