@@ -39,6 +39,7 @@ namespace polyfem::assembler
 		inline void init_multimodels(const std::vector<std::string> &mats) { multi_material_models_ = mats; }
 
 		std::string name() const override { return "MultiModels"; }
+		bool allow_inversion() const override { return true; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
 	protected:

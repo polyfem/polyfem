@@ -17,7 +17,6 @@ namespace polyfem::solver
 		/// @brief Construct a new Body Form object
 		/// @param state Reference to the simulation state
 		/// @param rhs_assembler Reference to the right hand side assembler
-		/// @param apply_DBC If true, set the Dirichlet boundary conditions in the RHS
 		BodyForm(const int ndof,
 				 const int n_pressure_bases,
 				 const std::vector<int> &boundary_nodes,
@@ -27,7 +26,6 @@ namespace polyfem::solver
 				 const Eigen::MatrixXd &rhs,
 				 const assembler::RhsAssembler &rhs_assembler,
 				 const assembler::Density &density,
-				 const bool apply_DBC,
 				 const bool is_formulation_mixed,
 				 const bool is_time_dependent);
 
@@ -54,16 +52,6 @@ namespace polyfem::solver
 		/// @param t New time
 		/// @param x Solution at time t
 		void update_quantities(const double t, const Eigen::VectorXd &x) override;
-
-		bool get_apply_DBC() { return apply_DBC_; }
-		void set_apply_DBC(const Eigen::VectorXd &x, const bool val) override
-		{
-			if (val != apply_DBC_)
-			{
-				apply_DBC_ = val;
-				update_current_rhs(x);
-			}
-		}
 
 		/// @brief Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adjoint_sol.
 		/// @param[in] n_verts Number of vertices
@@ -98,7 +86,6 @@ namespace polyfem::solver
 		const assembler::RhsAssembler &rhs_assembler_; ///< Reference to the RHS assembler
 		const assembler::Density &density_;
 
-		bool apply_DBC_;            ///< If true, set the Dirichlet boundary conditions in the RHS
 		bool is_formulation_mixed_; ///< True if the formulation is mixed
 
 		Eigen::MatrixXd current_rhs_; ///< Cached RHS for the current time
