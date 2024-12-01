@@ -67,9 +67,23 @@ namespace polyfem::solver
 			return;
 		}
 
-		StiffnessMatrix A;
+		std::vector<Eigen::Triplet<double>> Ae;
+		int index = 0;
 		for (const auto &f : penalty_forms_)
-			igl::cat(1, A, f->constraint_matrix(), A);
+		{
+			const auto &tmp = f->constraint_matrix();
+			for (int i = 0; i < tmp.outerSize(); i++)
+			{
+				for (typename StiffnessMatrix::InnerIterator it(tmp, i); it; ++it)
+				{
+					Ae.emplace_back(index + it.row(), it.col(), it.value());
+				}
+			}
+			index += tmp.rows();
+		}
+		StiffnessMatrix A(index, full_size_);
+		A.setFromTriplets(Ae.begin(), Ae.end());
+		A.makeCompressed();
 
 		const int constraint_size = A.rows();
 		reduced_size_ = full_size_ - constraint_size;
@@ -84,8 +98,6 @@ namespace polyfem::solver
 		Q = QR.matrixQ();
 
 		const Eigen::SparseMatrix<double, Eigen::RowMajor> R = QR.matrixR();
-
-		std::vector<Eigen::Triplet<double>> Q1e, Q2e, R1e;
 
 		Q1_ = Q.leftCols(constraint_size);
 		assert(Q1_.rows() == full_size_);
@@ -120,8 +132,6 @@ namespace polyfem::solver
 			constraint_values_.segment(index, f->constraint_value().rows()) = f->constraint_value();
 			index += f->constraint_value().rows();
 		}
-
-		std::cout << R1_.transpose() << std::endl;
 
 		Q1R1iTb_ = Q1_ * R1_.transpose().triangularView<Eigen::Upper>().solve(constraint_values_);
 	}

@@ -49,7 +49,7 @@ namespace polyfem::solver
 		AtA = A_.transpose() * A_;
 		Atb = A_.transpose() * b_;
 
-		lagr_mults_.resize(A.rows());
+		lagr_mults_.resize(A_.rows());
 		lagr_mults_.setZero();
 	}
 
@@ -63,7 +63,7 @@ namespace polyfem::solver
 
 	void GenericLagrangianForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = A_ * lagr_mults_ + k_al_ * (AtA * x - Atb);
+		gradv = A_.transpose() * lagr_mults_ + k_al_ * (AtA * x - Atb);
 	}
 
 	void GenericLagrangianForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const

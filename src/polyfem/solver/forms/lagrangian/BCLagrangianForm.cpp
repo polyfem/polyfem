@@ -117,7 +117,7 @@ namespace polyfem::solver
 
 	void BCLagrangianForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
-		hessian = k_al_ * A_.transpose() * masked_lumped_mass_;
+		hessian = k_al_ * A_.transpose() * masked_lumped_mass_ * A_;
 	}
 
 	void BCLagrangianForm::update_quantities(const double t, const Eigen::VectorXd &)
