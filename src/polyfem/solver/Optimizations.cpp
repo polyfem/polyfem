@@ -110,6 +110,8 @@ namespace polyfem::solver
 			obj = std::make_shared<AMIPSForm>(var2sim, *state);
 		else if (obj_type == "layer_thickness")
 			obj = std::make_shared<LayerThicknessForm>(var2sim, *state, args["boundary_ids"].get<std::vector<int>>(), args["dhat"]);
+		else if (obj_type == "layer_thickness_log")
+			obj = std::make_shared<LayerThicknessForm>(var2sim, *state, args["boundary_ids"].get<std::vector<int>>(), args["dhat"], true, args["dmin"]);
 		else if (obj_type == "function-target")
 		{
 			std::shared_ptr<TargetForm> tmp = std::make_shared<TargetForm>(var2sim, *state, args);
