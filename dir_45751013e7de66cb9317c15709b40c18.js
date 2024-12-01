@@ -32,6 +32,8 @@ var dir_45751013e7de66cb9317c15709b40c18 =
     [ "InterpolatedFunction.hpp", "_interpolated_function_8hpp.html", "_interpolated_function_8hpp" ],
     [ "Interpolation.cpp", "_interpolation_8cpp.html", "_interpolation_8cpp" ],
     [ "Interpolation.hpp", "_interpolation_8hpp.html", "_interpolation_8hpp" ],
+    [ "Jacobian.cpp", "_jacobian_8cpp.html", "_jacobian_8cpp" ],
+    [ "Jacobian.hpp", "_jacobian_8hpp.html", "_jacobian_8hpp" ],
     [ "JSONUtils.cpp", "_j_s_o_n_utils_8cpp.html", "_j_s_o_n_utils_8cpp" ],
     [ "JSONUtils.hpp", "_j_s_o_n_utils_8hpp.html", "_j_s_o_n_utils_8hpp" ],
     [ "LazyCubicInterpolator.cpp", "_lazy_cubic_interpolator_8cpp.html", null ],

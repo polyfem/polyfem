@@ -4,6 +4,7 @@ var classpolyfem_1_1solver_1_1_form =
     [ "disable", "classpolyfem_1_1solver_1_1_form.html#a2bf5ebee0ba36849abc62f07acb40732", null ],
     [ "enable", "classpolyfem_1_1solver_1_1_form.html#a173f3057334bbaa0e18dd74f84559b91", null ],
     [ "enabled", "classpolyfem_1_1solver_1_1_form.html#a64fbc22c4145f44507090160f0974e49", null ],
+    [ "finish", "classpolyfem_1_1solver_1_1_form.html#a90c3963b8eddc9063578cafca1baa1ba", null ],
     [ "first_derivative", "classpolyfem_1_1solver_1_1_form.html#a96dfee30f817cfe008e3aefb04c3544b", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_form.html#a79c3d290522cc08bdb0a94196c5f669a", null ],
     [ "init", "classpolyfem_1_1solver_1_1_form.html#a57af020e5b4adb1f79380daade52a514", null ],

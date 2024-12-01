@@ -167,6 +167,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aca2d82a142dbeaed8c2c16ab052f481c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc09edccd9a96311295778e883e41f72" id="r_abc09edccd9a96311295778e883e41f72"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_fixed_corotational.html#abc09edccd9a96311295778e883e41f72">name</a> () const override</td></tr>
 <tr class="separator:abc09edccd9a96311295778e883e41f72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94e9e9eb3e4a56da9d4dbdb3cbe73140" id="r_a94e9e9eb3e4a56da9d4dbdb3cbe73140"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_fixed_corotational.html#a94e9e9eb3e4a56da9d4dbdb3cbe73140">allow_inversion</a> () const override</td></tr>
+<tr class="separator:a94e9e9eb3e4a56da9d4dbdb3cbe73140"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a956aa89d72e112d765f3ead5cb9baadb" id="r_a956aa89d72e112d765f3ead5cb9baadb"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">ParamFunc</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_fixed_corotational.html#a956aa89d72e112d765f3ead5cb9baadb">parameters</a> () const override</td></tr>
 <tr class="separator:a956aa89d72e112d765f3ead5cb9baadb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9f8b766502ad83a7e9345d81cf2c5ecf" id="r_a9f8b766502ad83a7e9345d81cf2c5ecf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_fixed_corotational.html#a9f8b766502ad83a7e9345d81cf2c5ecf">assign_stress_tensor</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_output_data.html">OutputData</a> &amp;data, const int all_size, const <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1">ElasticityTensorType</a> &amp;type, Eigen::MatrixXd &amp;all, const std::function&lt; Eigen::MatrixXd(const Eigen::MatrixXd &amp;)&gt; &amp;fun) const override</td></tr>
@@ -227,6 +229,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a20fd1ac5faff7ac10008bd51b524e628 inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ca51ead3cc6e9374b1563fd79881f4a inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler" id="r_a4ca51ead3cc6e9374b1563fd79881f4a"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#a4ca51ead3cc6e9374b1563fd79881f4a">~ElasticityAssembler</a> ()=default</td></tr>
 <tr class="separator:a4ca51ead3cc6e9374b1563fd79881f4a inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa58349068263319efc6327e943806cb3 inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler" id="r_aa58349068263319efc6327e943806cb3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#aa58349068263319efc6327e943806cb3">set_use_robust_jacobian</a> ()</td></tr>
+<tr class="separator:aa58349068263319efc6327e943806cb3 inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a85e2120da8dadae430e58fda0836a213 inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler" id="r_a85e2120da8dadae430e58fda0836a213"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#a85e2120da8dadae430e58fda0836a213">compute_scalar_value</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_output_data.html">OutputData</a> &amp;data, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a2cb2b720adf98c060d79238859be88ac">NamedMatrix</a> &gt; &amp;result) const override</td></tr>
 <tr class="separator:a85e2120da8dadae430e58fda0836a213 inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f8334290e1d29f7baf3e516e455e387 inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler" id="r_a8f8334290e1d29f7baf3e516e455e387"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#a8f8334290e1d29f7baf3e516e455e387">compute_tensor_value</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_output_data.html">OutputData</a> &amp;data, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a2cb2b720adf98c060d79238859be88ac">NamedMatrix</a> &gt; &amp;result) const override</td></tr>
@@ -288,6 +292,9 @@ Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_attribs_classpolyfem_1_1assembler_1_1_assembler"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classpolyfem_1_1assembler_1_1_assembler')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">polyfem::assembler::Assembler</a></td></tr>
 <tr class="memitem:ae5e7302dd8929a9170c7dd93b69a0757 inherit pro_attribs_classpolyfem_1_1assembler_1_1_assembler" id="r_ae5e7302dd8929a9170c7dd93b69a0757"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ae5e7302dd8929a9170c7dd93b69a0757">size_</a> = -1</td></tr>
 <tr class="separator:ae5e7302dd8929a9170c7dd93b69a0757 inherit pro_attribs_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_classpolyfem_1_1assembler_1_1_elasticity_assembler"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classpolyfem_1_1assembler_1_1_elasticity_assembler')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html">polyfem::assembler::ElasticityAssembler</a></td></tr>
+<tr class="memitem:aff8ca6a03207d0bb8943e10b8712133e inherit pro_attribs_classpolyfem_1_1assembler_1_1_elasticity_assembler" id="r_aff8ca6a03207d0bb8943e10b8712133e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#aff8ca6a03207d0bb8943e10b8712133e">use_robust_jacobian</a> = false</td></tr>
+<tr class="separator:aff8ca6a03207d0bb8943e10b8712133e inherit pro_attribs_classpolyfem_1_1assembler_1_1_elasticity_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
@@ -357,7 +364,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_fixed_corotational_8cpp_source.html#l00079">79</a> of file <a class="el" href="_fixed_corotational_8cpp_source.html">FixedCorotational.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00359">polyfem::assembler::LameParameters::add_multimaterial()</a>, <a class="el" href="_fixed_corotational_8hpp_source.html#l00060">params_</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_units_8hpp_source.html#l00025">polyfem::Units::stress()</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8cpp_source.html#l00359">polyfem::assembler::LameParameters::add_multimaterial()</a>, <a class="el" href="_fixed_corotational_8hpp_source.html#l00061">params_</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_units_8hpp_source.html#l00025">polyfem::Units::stress()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00025">polyfem::assembler::MultiModel::add_multimaterial()</a>.</p>
 <div class="dynheader">
@@ -370,6 +377,35 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_fixed_corotational_a768fa2d079a3e4288fbee414402995c9_icgraph.svg" width="442" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
+
+</div>
+</div>
+<a id="a94e9e9eb3e4a56da9d4dbdb3cbe73140" name="a94e9e9eb3e4a56da9d4dbdb3cbe73140"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94e9e9eb3e4a56da9d4dbdb3cbe73140">&#9670;&#160;</a></span>allow_inversion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::assembler::FixedCorotational::allow_inversion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#af8b356f56d37b709cafeb64a75851fd4">polyfem::assembler::ElasticityAssembler</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_fixed_corotational_8hpp_source.html#l00051">51</a> of file <a class="el" href="_fixed_corotational_8hpp_source.html">FixedCorotational.hpp</a>.</p>
 
 </div>
 </div>
@@ -833,7 +869,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_fixed_corotational_8cpp_source.html#l00234">234</a> of file <a class="el" href="_fixed_corotational_8cpp_source.html">FixedCorotational.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_data_8hpp_source.html#l00119">polyfem::assembler::OutputData::bs</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00151">polyfem::assembler::ElementAssemblyValues::compute()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00276">polyfem::compute_diplacement_grad()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00118">polyfem::assembler::OutputData::el_id</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00122">polyfem::assembler::OutputData::fun</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00120">polyfem::assembler::OutputData::gbs</a>, <a class="el" href="_mat_params_8cpp_source.html#l00324">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00121">polyfem::assembler::OutputData::local_pts</a>, <a class="el" href="_fixed_corotational_8hpp_source.html#l00060">params_</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ac34dd77ffb9238275b93ea1897664a7e">polyfem::PK1</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00349">polyfem::pk1_from_cauchy()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ab13248d68ac5516c015337b68346fc21">polyfem::PK2</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00354">polyfem::pk2_from_cauchy()</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00117">polyfem::assembler::OutputData::t</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_data_8hpp_source.html#l00119">polyfem::assembler::OutputData::bs</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00164">polyfem::assembler::ElementAssemblyValues::compute()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00276">polyfem::compute_diplacement_grad()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00118">polyfem::assembler::OutputData::el_id</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00122">polyfem::assembler::OutputData::fun</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00120">polyfem::assembler::OutputData::gbs</a>, <a class="el" href="_mat_params_8cpp_source.html#l00324">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00121">polyfem::assembler::OutputData::local_pts</a>, <a class="el" href="_fixed_corotational_8hpp_source.html#l00061">params_</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ac34dd77ffb9238275b93ea1897664a7e">polyfem::PK1</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00349">polyfem::pk1_from_cauchy()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ab13248d68ac5516c015337b68346fc21">polyfem::PK2</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00354">polyfem::pk2_from_cauchy()</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00117">polyfem::assembler::OutputData::t</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00142">polyfem::assembler::MultiModel::assign_stress_tensor()</a>.</p>
 <div class="dynheader">
@@ -974,7 +1010,7 @@ template&lt;int dim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_fixed_corotational_8cpp_source.html#l00294">294</a> of file <a class="el" href="_fixed_corotational_8cpp_source.html">FixedCorotational.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00106">polyfem::compute_disp_grad_at_quad()</a>, <a class="el" href="_fixed_corotational_8cpp_source.html#l00670">compute_energy_from_def_grad()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00026">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00026">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_elasticity_utils_8hpp_source.html#l00071">polyfem::get_local_disp()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00324">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_fixed_corotational_8hpp_source.html#l00060">params_</a>, <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00022">polyfem::assembler::NonLinearAssemblerData::t</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00029">polyfem::assembler::ElementAssemblyValues::val</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00021">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
+<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00106">polyfem::compute_disp_grad_at_quad()</a>, <a class="el" href="_fixed_corotational_8cpp_source.html#l00670">compute_energy_from_def_grad()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00026">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00027">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_elasticity_utils_8hpp_source.html#l00071">polyfem::get_local_disp()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00324">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_fixed_corotational_8hpp_source.html#l00061">params_</a>, <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00022">polyfem::assembler::NonLinearAssemblerData::t</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00030">polyfem::assembler::ElementAssemblyValues::val</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00021">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1013,7 +1049,7 @@ template&lt;int n_basis, int dim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_fixed_corotational_8cpp_source.html#l00322">322</a> of file <a class="el" href="_fixed_corotational_8cpp_source.html">FixedCorotational.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_fixed_corotational_8cpp_source.html#l00677">compute_stress_from_def_grad()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00026">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00026">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_mat_params_8cpp_source.html#l00324">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_fixed_corotational_8hpp_source.html#l00060">params_</a>, <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00022">polyfem::assembler::NonLinearAssemblerData::t</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00029">polyfem::assembler::ElementAssemblyValues::val</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00021">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00024">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_fixed_corotational_8cpp_source.html#l00677">compute_stress_from_def_grad()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00026">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00027">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_mat_params_8cpp_source.html#l00324">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_fixed_corotational_8hpp_source.html#l00061">params_</a>, <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00022">polyfem::assembler::NonLinearAssemblerData::t</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00030">polyfem::assembler::ElementAssemblyValues::val</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00021">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00024">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1211,7 +1247,7 @@ template&lt;int n_basis, int dim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_fixed_corotational_8cpp_source.html#l00381">381</a> of file <a class="el" href="_fixed_corotational_8cpp_source.html">FixedCorotational.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_fixed_corotational_8cpp_source.html#l00707">compute_stiffness_from_def_grad()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00026">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00026">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_mat_params_8cpp_source.html#l00324">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_fixed_corotational_8hpp_source.html#l00060">params_</a>, <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00022">polyfem::assembler::NonLinearAssemblerData::t</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00029">polyfem::assembler::ElementAssemblyValues::val</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00021">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00024">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_fixed_corotational_8cpp_source.html#l00707">compute_stiffness_from_def_grad()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00026">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00027">polyfem::assembler::ElementAssemblyValues::element_id</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_mat_params_8cpp_source.html#l00324">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_fixed_corotational_8hpp_source.html#l00061">params_</a>, <a class="el" href="_quadrature_8hpp_source.html#l00011">polyfem::quadrature::Quadrature::points</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00025">polyfem::assembler::ElementAssemblyValues::quadrature</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00022">polyfem::assembler::NonLinearAssemblerData::t</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00030">polyfem::assembler::ElementAssemblyValues::val</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00021">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00024">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1496,7 +1532,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_fixed_corotational_8cpp_source.html#l00444">444</a> of file <a class="el" href="_fixed_corotational_8cpp_source.html">FixedCorotational.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_data_8hpp_source.html#l00097">polyfem::assembler::OptAssemblerData::el_id</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00099">polyfem::assembler::OptAssemblerData::global_pts</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00100">polyfem::assembler::OptAssemblerData::grad_u_i</a>, <a class="el" href="_mat_params_8cpp_source.html#l00324">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00098">polyfem::assembler::OptAssemblerData::local_pts</a>, <a class="el" href="_fixed_corotational_8hpp_source.html#l00060">params_</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00095">polyfem::assembler::OptAssemblerData::t</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_data_8hpp_source.html#l00097">polyfem::assembler::OptAssemblerData::el_id</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00099">polyfem::assembler::OptAssemblerData::global_pts</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00100">polyfem::assembler::OptAssemblerData::grad_u_i</a>, <a class="el" href="_mat_params_8cpp_source.html#l00324">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00098">polyfem::assembler::OptAssemblerData::local_pts</a>, <a class="el" href="_fixed_corotational_8hpp_source.html#l00061">params_</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00095">polyfem::assembler::OptAssemblerData::t</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1549,7 +1585,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_fixed_corotational_8cpp_source.html#l00472">472</a> of file <a class="el" href="_fixed_corotational_8cpp_source.html">FixedCorotational.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_data_8hpp_source.html#l00097">polyfem::assembler::OptAssemblerData::el_id</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00099">polyfem::assembler::OptAssemblerData::global_pts</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00100">polyfem::assembler::OptAssemblerData::grad_u_i</a>, <a class="el" href="_mat_params_8cpp_source.html#l00324">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00098">polyfem::assembler::OptAssemblerData::local_pts</a>, <a class="el" href="_fixed_corotational_8hpp_source.html#l00060">params_</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00095">polyfem::assembler::OptAssemblerData::t</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_data_8hpp_source.html#l00097">polyfem::assembler::OptAssemblerData::el_id</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00099">polyfem::assembler::OptAssemblerData::global_pts</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00100">polyfem::assembler::OptAssemblerData::grad_u_i</a>, <a class="el" href="_mat_params_8cpp_source.html#l00324">polyfem::assembler::LameParameters::lambda_mu()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00098">polyfem::assembler::OptAssemblerData::local_pts</a>, <a class="el" href="_fixed_corotational_8hpp_source.html#l00061">params_</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00095">polyfem::assembler::OptAssemblerData::t</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1583,7 +1619,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_fixed_corotational_8hpp_source.html#l00042">42</a> of file <a class="el" href="_fixed_corotational_8hpp_source.html">FixedCorotational.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_fixed_corotational_8hpp_source.html#l00060">params_</a>.</p>
+<p class="reference">References <a class="el" href="_fixed_corotational_8hpp_source.html#l00061">params_</a>.</p>
 
 </div>
 </div>
@@ -1643,7 +1679,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_fixed_corotational_8cpp_source.html#l00554">554</a> of file <a class="el" href="_fixed_corotational_8cpp_source.html">FixedCorotational.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_fixed_corotational_8hpp_source.html#l00060">params_</a>, and <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>.</p>
+<p class="reference">References <a class="el" href="_fixed_corotational_8hpp_source.html#l00061">params_</a>, and <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1678,7 +1714,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_fixed_corotational_8hpp_source.html#l00041">41</a> of file <a class="el" href="_fixed_corotational_8hpp_source.html">FixedCorotational.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_fixed_corotational_8hpp_source.html#l00060">params_</a>.</p>
+<p class="reference">References <a class="el" href="_fixed_corotational_8hpp_source.html#l00061">params_</a>.</p>
 
 </div>
 </div>
@@ -1720,7 +1756,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_fixed_corotational_8hpp_source.html#l00044">44</a> of file <a class="el" href="_fixed_corotational_8hpp_source.html">FixedCorotational.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00086">polyfem::assembler::LameParameters::lambda_mat_</a>, <a class="el" href="_mat_params_8hpp_source.html#l00086">polyfem::assembler::LameParameters::mu_mat_</a>, and <a class="el" href="_fixed_corotational_8hpp_source.html#l00060">params_</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00086">polyfem::assembler::LameParameters::lambda_mat_</a>, <a class="el" href="_mat_params_8hpp_source.html#l00086">polyfem::assembler::LameParameters::mu_mat_</a>, and <a class="el" href="_fixed_corotational_8hpp_source.html#l00061">params_</a>.</p>
 
 </div>
 </div>
@@ -1745,7 +1781,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_fixed_corotational_8hpp_source.html#l00060">60</a> of file <a class="el" href="_fixed_corotational_8hpp_source.html">FixedCorotational.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_fixed_corotational_8hpp_source.html#l00061">61</a> of file <a class="el" href="_fixed_corotational_8hpp_source.html">FixedCorotational.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_fixed_corotational_8cpp_source.html#l00079">add_multimaterial()</a>, <a class="el" href="_fixed_corotational_8cpp_source.html#l00234">assign_stress_tensor()</a>, <a class="el" href="_fixed_corotational_8cpp_source.html#l00294">compute_energy_aux()</a>, <a class="el" href="_fixed_corotational_8cpp_source.html#l00322">compute_energy_aux_gradient_fast()</a>, <a class="el" href="_fixed_corotational_8cpp_source.html#l00381">compute_energy_hessian_aux_fast()</a>, <a class="el" href="_fixed_corotational_8cpp_source.html#l00444">compute_stress_grad_multiply_mat()</a>, <a class="el" href="_fixed_corotational_8cpp_source.html#l00472">compute_stress_grad_multiply_stress()</a>, <a class="el" href="_fixed_corotational_8hpp_source.html#l00042">lame_params()</a>, <a class="el" href="_fixed_corotational_8cpp_source.html#l00554">parameters()</a>, <a class="el" href="_fixed_corotational_8hpp_source.html#l00041">set_params()</a>, and <a class="el" href="_fixed_corotational_8hpp_source.html#l00044">update_lame_params()</a>.</p>
 

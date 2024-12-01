@@ -163,6 +163,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a3ec7f0d6043ef2ea4fc03bb0fee4468f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1baea6d33b05764237a7046601b53173" id="r_a1baea6d33b05764237a7046601b53173"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a1baea6d33b05764237a7046601b53173">is_linear</a> () const override</td></tr>
 <tr class="separator:a1baea6d33b05764237a7046601b53173"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f3e7381ae77d04666c64064d9ea2205" id="r_a0f3e7381ae77d04666c64064d9ea2205"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a0f3e7381ae77d04666c64064d9ea2205">allow_inversion</a> () const override</td></tr>
+<tr class="separator:a0f3e7381ae77d04666c64064d9ea2205"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1d5c736ea05565af6d74e1a7b5eff853" id="r_a1d5c736ea05565af6d74e1a7b5eff853"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a1d5c736ea05565af6d74e1a7b5eff853">name</a> () const override</td></tr>
 <tr class="separator:a1d5c736ea05565af6d74e1a7b5eff853"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c2315d542c3a3ac8bd54262fc1b30bc" id="r_a3c2315d542c3a3ac8bd54262fc1b30bc"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">ParamFunc</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a3c2315d542c3a3ac8bd54262fc1b30bc">parameters</a> () const override</td></tr>
@@ -269,6 +271,8 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:a20fd1ac5faff7ac10008bd51b524e628 inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ca51ead3cc6e9374b1563fd79881f4a inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler" id="r_a4ca51ead3cc6e9374b1563fd79881f4a"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#a4ca51ead3cc6e9374b1563fd79881f4a">~ElasticityAssembler</a> ()=default</td></tr>
 <tr class="separator:a4ca51ead3cc6e9374b1563fd79881f4a inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa58349068263319efc6327e943806cb3 inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler" id="r_aa58349068263319efc6327e943806cb3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#aa58349068263319efc6327e943806cb3">set_use_robust_jacobian</a> ()</td></tr>
+<tr class="separator:aa58349068263319efc6327e943806cb3 inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a85e2120da8dadae430e58fda0836a213 inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler" id="r_a85e2120da8dadae430e58fda0836a213"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#a85e2120da8dadae430e58fda0836a213">compute_scalar_value</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_output_data.html">OutputData</a> &amp;data, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a2cb2b720adf98c060d79238859be88ac">NamedMatrix</a> &gt; &amp;result) const override</td></tr>
 <tr class="separator:a85e2120da8dadae430e58fda0836a213 inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f8334290e1d29f7baf3e516e455e387 inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler" id="r_a8f8334290e1d29f7baf3e516e455e387"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#a8f8334290e1d29f7baf3e516e455e387">compute_tensor_value</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_output_data.html">OutputData</a> &amp;data, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a2cb2b720adf98c060d79238859be88ac">NamedMatrix</a> &gt; &amp;result) const override</td></tr>
@@ -289,6 +293,9 @@ Private Attributes</h2></td></tr>
 <tr class="inherit_header pub_attribs_classpolyfem_1_1assembler_1_1_assembler"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_classpolyfem_1_1assembler_1_1_assembler')"><img src="closed.png" alt="-"/>&#160;Private Attributes inherited from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">polyfem::assembler::Assembler</a></td></tr>
 <tr class="memitem:ae5e7302dd8929a9170c7dd93b69a0757 inherit pub_attribs_classpolyfem_1_1assembler_1_1_assembler" id="r_ae5e7302dd8929a9170c7dd93b69a0757"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ae5e7302dd8929a9170c7dd93b69a0757">size_</a> = -1</td></tr>
 <tr class="separator:ae5e7302dd8929a9170c7dd93b69a0757 inherit pub_attribs_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_attribs_classpolyfem_1_1assembler_1_1_elasticity_assembler"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_classpolyfem_1_1assembler_1_1_elasticity_assembler')"><img src="closed.png" alt="-"/>&#160;Private Attributes inherited from <a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html">polyfem::assembler::ElasticityAssembler</a></td></tr>
+<tr class="memitem:aff8ca6a03207d0bb8943e10b8712133e inherit pub_attribs_classpolyfem_1_1assembler_1_1_elasticity_assembler" id="r_aff8ca6a03207d0bb8943e10b8712133e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#aff8ca6a03207d0bb8943e10b8712133e">use_robust_jacobian</a> = false</td></tr>
+<tr class="separator:aff8ca6a03207d0bb8943e10b8712133e inherit pub_attribs_classpolyfem_1_1assembler_1_1_elasticity_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -374,7 +381,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00048">48</a> of file <a class="el" href="_hooke_linear_elasticity_8cpp_source.html">HookeLinearElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00052">elasticity_tensor_</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00025">entries</a>, <a class="el" href="_mat_params_8cpp_source.html#l00123">polyfem::assembler::ElasticityTensor::set_from_entries()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00197">polyfem::assembler::ElasticityTensor::set_from_lambda_mu()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00241">polyfem::assembler::ElasticityTensor::set_from_young_poisson()</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_units_8hpp_source.html#l00025">polyfem::Units::stress()</a>.</p>
+<p class="reference">References <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00053">elasticity_tensor_</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00025">entries</a>, <a class="el" href="_mat_params_8cpp_source.html#l00123">polyfem::assembler::ElasticityTensor::set_from_entries()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00197">polyfem::assembler::ElasticityTensor::set_from_lambda_mu()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00241">polyfem::assembler::ElasticityTensor::set_from_young_poisson()</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_units_8hpp_source.html#l00025">polyfem::Units::stress()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00025">polyfem::assembler::MultiModel::add_multimaterial()</a>.</p>
 <div class="dynheader">
@@ -387,6 +394,35 @@ Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_hooke_linear_elasticity_a41ced4cc0bc85324eb9c83b5c361d482_icgraph.svg" width="460" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
+
+</div>
+</div>
+<a id="a0f3e7381ae77d04666c64064d9ea2205" name="a0f3e7381ae77d04666c64064d9ea2205"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f3e7381ae77d04666c64064d9ea2205">&#9670;&#160;</a></span>allow_inversion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::assembler::HookeLinearElasticity::allow_inversion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#af8b356f56d37b709cafeb64a75851fd4">polyfem::assembler::ElasticityAssembler</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00042">42</a> of file <a class="el" href="_hooke_linear_elasticity_8hpp_source.html">HookeLinearElasticity.hpp</a>.</p>
 
 </div>
 </div>
@@ -496,7 +532,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00084">84</a> of file <a class="el" href="_hooke_linear_elasticity_8cpp_source.html">HookeLinearElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_mat_params_8cpp_source.html#l00303">polyfem::assembler::ElasticityTensor::compute_stress()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00050">polyfem::assembler::LinearAssemblerData::da</a>, <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00052">elasticity_tensor_</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00046">polyfem::assembler::LinearAssemblerData::i</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00048">polyfem::assembler::LinearAssemblerData::j</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00042">polyfem::assembler::LinearAssemblerData::vals</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_mat_params_8cpp_source.html#l00303">polyfem::assembler::ElasticityTensor::compute_stress()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00050">polyfem::assembler::LinearAssemblerData::da</a>, <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00053">elasticity_tensor_</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00046">polyfem::assembler::LinearAssemblerData::i</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00048">polyfem::assembler::LinearAssemblerData::j</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00042">polyfem::assembler::LinearAssemblerData::vals</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -995,7 +1031,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00199">199</a> of file <a class="el" href="_hooke_linear_elasticity_8cpp_source.html">HookeLinearElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembler_data_8hpp_source.html#l00119">polyfem::assembler::OutputData::bs</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00151">polyfem::assembler::ElementAssemblyValues::compute()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00276">polyfem::compute_diplacement_grad()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00303">polyfem::assembler::ElasticityTensor::compute_stress()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00118">polyfem::assembler::OutputData::el_id</a>, <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00052">elasticity_tensor_</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00122">polyfem::assembler::OutputData::fun</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00120">polyfem::assembler::OutputData::gbs</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00121">polyfem::assembler::OutputData::local_pts</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ac34dd77ffb9238275b93ea1897664a7e">polyfem::PK1</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00349">polyfem::pk1_from_cauchy()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ab13248d68ac5516c015337b68346fc21">polyfem::PK2</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00354">polyfem::pk2_from_cauchy()</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
+<p class="reference">References <a class="el" href="_assembler_data_8hpp_source.html#l00119">polyfem::assembler::OutputData::bs</a>, <a class="el" href="_element_assembly_values_8cpp_source.html#l00164">polyfem::assembler::ElementAssemblyValues::compute()</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00276">polyfem::compute_diplacement_grad()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00303">polyfem::assembler::ElasticityTensor::compute_stress()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00118">polyfem::assembler::OutputData::el_id</a>, <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00053">elasticity_tensor_</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00122">polyfem::assembler::OutputData::fun</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00120">polyfem::assembler::OutputData::gbs</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00121">polyfem::assembler::OutputData::local_pts</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ac34dd77ffb9238275b93ea1897664a7e">polyfem::PK1</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00349">polyfem::pk1_from_cauchy()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ab13248d68ac5516c015337b68346fc21">polyfem::PK2</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00354">polyfem::pk2_from_cauchy()</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00142">polyfem::assembler::MultiModel::assign_stress_tensor()</a>.</p>
 <div class="dynheader">
@@ -1076,7 +1112,7 @@ template&lt;typename T &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00343">343</a> of file <a class="el" href="_hooke_linear_elasticity_8cpp_source.html">HookeLinearElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00106">polyfem::compute_disp_grad_at_quad()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00026">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00052">elasticity_tensor_</a>, <a class="el" href="_elasticity_utils_8hpp_source.html#l00071">polyfem::get_local_disp()</a>, and <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>.</p>
+<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00106">polyfem::compute_disp_grad_at_quad()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00026">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00053">elasticity_tensor_</a>, <a class="el" href="_elasticity_utils_8hpp_source.html#l00071">polyfem::get_local_disp()</a>, and <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1113,7 +1149,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00269">269</a> of file <a class="el" href="_hooke_linear_elasticity_8cpp_source.html">HookeLinearElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00052">elasticity_tensor_</a>, <a class="el" href="auto__elasticity__rhs_8cpp_source.html#l00090">polyfem::autogen::hooke_2d_function()</a>, <a class="el" href="auto__elasticity__rhs_8cpp_source.html#l00139">polyfem::autogen::hooke_3d_function()</a>, and <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>.</p>
+<p class="reference">References <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00053">elasticity_tensor_</a>, <a class="el" href="auto__elasticity__rhs_8cpp_source.html#l00090">polyfem::autogen::hooke_2d_function()</a>, <a class="el" href="auto__elasticity__rhs_8cpp_source.html#l00139">polyfem::autogen::hooke_3d_function()</a>, and <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1147,7 +1183,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00039">39</a> of file <a class="el" href="_hooke_linear_elasticity_8hpp_source.html">HookeLinearElasticity.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00052">elasticity_tensor_</a>.</p>
+<p class="reference">References <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00053">elasticity_tensor_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00284">parameters()</a>.</p>
 <div class="dynheader">
@@ -1212,7 +1248,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a7c54d99815b988e2ca1bc05c1e202f69">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00042">42</a> of file <a class="el" href="_hooke_linear_elasticity_8hpp_source.html">HookeLinearElasticity.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00043">43</a> of file <a class="el" href="_hooke_linear_elasticity_8hpp_source.html">HookeLinearElasticity.hpp</a>.</p>
 
 </div>
 </div>
@@ -1280,7 +1316,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00077">77</a> of file <a class="el" href="_hooke_linear_elasticity_8cpp_source.html">HookeLinearElasticity.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00052">elasticity_tensor_</a>, <a class="el" href="_mat_params_8cpp_source.html#l00089">polyfem::assembler::ElasticityTensor::resize()</a>, <a class="el" href="_assembler_8hpp_source.html#l00064">polyfem::assembler::Assembler::set_size()</a>, and <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>.</p>
+<p class="reference">References <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00053">elasticity_tensor_</a>, <a class="el" href="_mat_params_8cpp_source.html#l00089">polyfem::assembler::ElasticityTensor::resize()</a>, <a class="el" href="_assembler_8hpp_source.html#l00064">polyfem::assembler::Assembler::set_size()</a>, and <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_multi_model_8cpp_source.html#l00010">polyfem::assembler::MultiModel::set_size()</a>.</p>
 <div class="dynheader">
@@ -1317,7 +1353,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00052">52</a> of file <a class="el" href="_hooke_linear_elasticity_8hpp_source.html">HookeLinearElasticity.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00053">53</a> of file <a class="el" href="_hooke_linear_elasticity_8hpp_source.html">HookeLinearElasticity.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00048">add_multimaterial()</a>, <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00084">assemble()</a>, <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00199">assign_stress_tensor()</a>, <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00343">compute_energy_aux()</a>, <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00269">compute_rhs()</a>, <a class="el" href="_hooke_linear_elasticity_8hpp_source.html#l00039">elasticity_tensor()</a>, and <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00077">set_size()</a>.</p>
 

@@ -9,6 +9,7 @@ var structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options =
     [ "discretization_order", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a7447fd2073bacc976bc635315b8ec421", null ],
     [ "forces", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a5a8b7def860f9f02538210a85c0052c0", null ],
     [ "friction_forces", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a273b9ec341d7dffb3ac1d798ce4ef638", null ],
+    [ "jacobian_validity", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a019ac50aaa32ff81ebffa11bad38532c", null ],
     [ "material_params", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#add8f502631b9410d4ef580ba0e8fe646", null ],
     [ "nodes", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#ae245fb18a3b55ef000c756899cece8e9", null ],
     [ "points", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a77f1e5c80d3b066fe69e496e6fa1041f", null ],

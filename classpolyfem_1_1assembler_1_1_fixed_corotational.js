@@ -2,6 +2,7 @@ var classpolyfem_1_1assembler_1_1_fixed_corotational =
 [
     [ "FixedCorotational", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#a1a417d60e01e8a2b63567087ebdf1b7f", null ],
     [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#a768fa2d079a3e4288fbee414402995c9", null ],
+    [ "allow_inversion", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#a94e9e9eb3e4a56da9d4dbdb3cbe73140", null ],
     [ "assemble_energy", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#a0dcf0db6270fc7b52a74a498a8d3eb3a", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#a66c7fdd502a6e57c6ef821261ec22b19", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_fixed_corotational.html#ae06f6b00fc7d6e03d0a5b07a9d5b2d03", null ],

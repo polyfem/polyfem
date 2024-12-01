@@ -8,6 +8,7 @@ var _matrix_utils_8hpp =
     [ "inverse", "_matrix_utils_8hpp.html#a81d53daf4d77bf87d802589c5ec3c1c4", null ],
     [ "lump_matrix", "_matrix_utils_8hpp.html#a2fb8d51756a3b76bee0485fa58e65226", null ],
     [ "map_index_matrix", "_matrix_utils_8hpp.html#aea6bd161d2a5a24993e13435a0a2ea52", null ],
+    [ "matrix_inner_product", "_matrix_utils_8hpp.html#a06847c9066a2de494416af5c9ee660b8", null ],
     [ "reorder_matrix", "_matrix_utils_8hpp.html#a4d994983e63be19cec7d739baba363a1", null ],
     [ "show_matrix_stats", "_matrix_utils_8hpp.html#a3a719017c6c406fba78aee8fbaa4103b", null ],
     [ "sparse_identity", "_matrix_utils_8hpp.html#a691a83ca0c9ab36d64ab2bd56eb394e0", null ],

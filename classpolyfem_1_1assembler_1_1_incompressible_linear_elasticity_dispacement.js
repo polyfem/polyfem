@@ -1,6 +1,7 @@
 var classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement =
 [
     [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html#a06f570a78de7283764734f200b7d6abb", null ],
+    [ "allow_inversion", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html#afb4dfafce865d189cf4e5ed14d84bb91", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html#a3a2430e7c06e87719b5eb23682ff3d9c", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html#a205b09a110078f65b7681ef3ed16f39e", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html#adc7b5a738074ba44208a49ea1027fd14", null ],

@@ -157,6 +157,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ae7d9e9ef0c79269753dc03280a0493f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78ae8f4a20da07d6af19e71f195f7a73" id="r_a78ae8f4a20da07d6af19e71f195f7a73"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#a78ae8f4a20da07d6af19e71f195f7a73">assign_stress_tensor</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_output_data.html">OutputData</a> &amp;data, const int all_size, const <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1">ElasticityTensorType</a> &amp;type, Eigen::MatrixXd &amp;all, const std::function&lt; Eigen::MatrixXd(const Eigen::MatrixXd &amp;)&gt; &amp;fun) const override</td></tr>
 <tr class="separator:a78ae8f4a20da07d6af19e71f195f7a73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab77665208ba71b954ff4d5f42aa1a54f" id="r_ab77665208ba71b954ff4d5f42aa1a54f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#ab77665208ba71b954ff4d5f42aa1a54f">allow_inversion</a> () const override</td></tr>
+<tr class="separator:ab77665208ba71b954ff4d5f42aa1a54f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1fa7eec7f3d692edd160d2eb64df1385" id="r_a1fa7eec7f3d692edd160d2eb64df1385"><td class="memTemplParams" colspan="2">template&lt;int n_basis, int dim&gt; </td></tr>
 <tr class="memitem:a1fa7eec7f3d692edd160d2eb64df1385"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#a1fa7eec7f3d692edd160d2eb64df1385">compute_energy_aux_gradient_fast</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data, Eigen::Matrix&lt; double, Eigen::Dynamic, 1 &gt; &amp;G_flattened) const</td></tr>
 <tr class="separator:a1fa7eec7f3d692edd160d2eb64df1385"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -221,6 +223,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a20fd1ac5faff7ac10008bd51b524e628 inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ca51ead3cc6e9374b1563fd79881f4a inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler" id="r_a4ca51ead3cc6e9374b1563fd79881f4a"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#a4ca51ead3cc6e9374b1563fd79881f4a">~ElasticityAssembler</a> ()=default</td></tr>
 <tr class="separator:a4ca51ead3cc6e9374b1563fd79881f4a inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa58349068263319efc6327e943806cb3 inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler" id="r_aa58349068263319efc6327e943806cb3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#aa58349068263319efc6327e943806cb3">set_use_robust_jacobian</a> ()</td></tr>
+<tr class="separator:aa58349068263319efc6327e943806cb3 inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a85e2120da8dadae430e58fda0836a213 inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler" id="r_a85e2120da8dadae430e58fda0836a213"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#a85e2120da8dadae430e58fda0836a213">compute_scalar_value</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_output_data.html">OutputData</a> &amp;data, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a2cb2b720adf98c060d79238859be88ac">NamedMatrix</a> &gt; &amp;result) const override</td></tr>
 <tr class="separator:a85e2120da8dadae430e58fda0836a213 inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f8334290e1d29f7baf3e516e455e387 inherit pub_methods_classpolyfem_1_1assembler_1_1_elasticity_assembler" id="r_a8f8334290e1d29f7baf3e516e455e387"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#a8f8334290e1d29f7baf3e516e455e387">compute_tensor_value</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_output_data.html">OutputData</a> &amp;data, std::vector&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a2cb2b720adf98c060d79238859be88ac">NamedMatrix</a> &gt; &amp;result) const override</td></tr>
@@ -256,6 +260,9 @@ Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_attribs_classpolyfem_1_1assembler_1_1_assembler"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classpolyfem_1_1assembler_1_1_assembler')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">polyfem::assembler::Assembler</a></td></tr>
 <tr class="memitem:ae5e7302dd8929a9170c7dd93b69a0757 inherit pro_attribs_classpolyfem_1_1assembler_1_1_assembler" id="r_ae5e7302dd8929a9170c7dd93b69a0757"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ae5e7302dd8929a9170c7dd93b69a0757">size_</a> = -1</td></tr>
 <tr class="separator:ae5e7302dd8929a9170c7dd93b69a0757 inherit pro_attribs_classpolyfem_1_1assembler_1_1_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_classpolyfem_1_1assembler_1_1_elasticity_assembler"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classpolyfem_1_1assembler_1_1_elasticity_assembler')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html">polyfem::assembler::ElasticityAssembler</a></td></tr>
+<tr class="memitem:aff8ca6a03207d0bb8943e10b8712133e inherit pro_attribs_classpolyfem_1_1assembler_1_1_elasticity_assembler" id="r_aff8ca6a03207d0bb8943e10b8712133e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#aff8ca6a03207d0bb8943e10b8712133e">use_robust_jacobian</a> = false</td></tr>
+<tr class="separator:aff8ca6a03207d0bb8943e10b8712133e inherit pro_attribs_classpolyfem_1_1assembler_1_1_elasticity_assembler"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
@@ -332,6 +339,35 @@ Additional Inherited Members</h2></td></tr>
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ae5e3a9574045efc89230afa8044d05af">polyfem::assembler::Assembler</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_a_m_i_p_s_energy_8hpp_source.html#l00033">33</a> of file <a class="el" href="_a_m_i_p_s_energy_8hpp_source.html">AMIPSEnergy.hpp</a>.</p>
+
+</div>
+</div>
+<a id="ab77665208ba71b954ff4d5f42aa1a54f" name="ab77665208ba71b954ff4d5f42aa1a54f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab77665208ba71b954ff4d5f42aa1a54f">&#9670;&#160;</a></span>allow_inversion()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::assembler::AMIPSEnergy::allow_inversion </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#af8b356f56d37b709cafeb64a75851fd4">polyfem::assembler::ElasticityAssembler</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_a_m_i_p_s_energy_8hpp_source.html#l00044">44</a> of file <a class="el" href="_a_m_i_p_s_energy_8hpp_source.html">AMIPSEnergy.hpp</a>.</p>
 
 </div>
 </div>
@@ -848,7 +884,7 @@ template&lt;typename T &gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html#l00115">115</a> of file <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html">AMIPSEnergy.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00026">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00016">polyfem::utils::determinant()</a>, <a class="el" href="_elasticity_utils_8hpp_source.html#l00071">polyfem::get_local_disp()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00021">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00026">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00022">polyfem::utils::determinant()</a>, <a class="el" href="_elasticity_utils_8hpp_source.html#l00071">polyfem::get_local_disp()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00021">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -972,7 +1008,7 @@ template&lt;int n_basis, int dim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html#l00335">335</a> of file <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html">AMIPSEnergy.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00026">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00016">polyfem::utils::determinant()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00021">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00024">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00026">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00022">polyfem::utils::determinant()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00021">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00024">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">

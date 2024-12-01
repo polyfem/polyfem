@@ -174,7 +174,6 @@ var hierarchy =
       [ "polyfem::solver::ContactForm", "classpolyfem_1_1solver_1_1_contact_form.html", [
         [ "polyfem::solver::PeriodicContactForm", "classpolyfem_1_1solver_1_1_periodic_contact_form.html", null ]
       ] ],
-      [ "polyfem::solver::ElasticForm", "classpolyfem_1_1solver_1_1_elastic_form.html", null ],
       [ "polyfem::solver::FrictionForm", "classpolyfem_1_1solver_1_1_friction_form.html", null ],
       [ "polyfem::solver::InertiaForm", "classpolyfem_1_1solver_1_1_inertia_form.html", null ],
       [ "polyfem::solver::InversionBarrierForm", "classpolyfem_1_1solver_1_1_inversion_barrier_form.html", null ],
@@ -430,6 +429,7 @@ var hierarchy =
     [ "polyfem::utils::Timer", "classpolyfem_1_1utils_1_1_timer.html", null ],
     [ "polyfem::utils::Timing", "structpolyfem_1_1utils_1_1_timing.html", null ],
     [ "polyfem::solver::TransientNavierStokesSolver", "classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html", null ],
+    [ "polyfem::utils::Tree", "classpolyfem_1_1utils_1_1_tree.html", null ],
     [ "polyfem::utils::TriangleClipping", "classpolyfem_1_1utils_1_1_triangle_clipping.html", null ],
     [ "wmtk::TriMesh", null, [
       [ "polyfem::mesh::WildRemesher< wmtk::TriMesh >", "classpolyfem_1_1mesh_1_1_wild_remesher.html", null ]

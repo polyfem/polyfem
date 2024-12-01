@@ -16,8 +16,9 @@ var searchData=
   ['transientform_13',['TransientForm',['../classpolyfem_1_1solver_1_1_transient_form.html',1,'polyfem::solver']]],
   ['transientnavierstokessolver_14',['TransientNavierStokesSolver',['../classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html',1,'polyfem::solver']]],
   ['transientstokeproblemexact_15',['TransientStokeProblemExact',['../classpolyfem_1_1problem_1_1_transient_stoke_problem_exact.html',1,'polyfem::problem']]],
-  ['triangleclipping_16',['TriangleClipping',['../classpolyfem_1_1utils_1_1_triangle_clipping.html',1,'polyfem::utils']]],
-  ['trioperationcache_17',['TriOperationCache',['../classpolyfem_1_1mesh_1_1_tri_operation_cache.html',1,'polyfem::mesh']]],
-  ['triquadrature_18',['TriQuadrature',['../classpolyfem_1_1quadrature_1_1_tri_quadrature.html',1,'polyfem::quadrature']]],
-  ['twospheres_19',['TwoSpheres',['../classpolyfem_1_1problem_1_1_two_spheres.html',1,'polyfem::problem']]]
+  ['tree_16',['Tree',['../classpolyfem_1_1utils_1_1_tree.html',1,'polyfem::utils']]],
+  ['triangleclipping_17',['TriangleClipping',['../classpolyfem_1_1utils_1_1_triangle_clipping.html',1,'polyfem::utils']]],
+  ['trioperationcache_18',['TriOperationCache',['../classpolyfem_1_1mesh_1_1_tri_operation_cache.html',1,'polyfem::mesh']]],
+  ['triquadrature_19',['TriQuadrature',['../classpolyfem_1_1quadrature_1_1_tri_quadrature.html',1,'polyfem::quadrature']]],
+  ['twospheres_20',['TwoSpheres',['../classpolyfem_1_1problem_1_1_two_spheres.html',1,'polyfem::problem']]]
 ];

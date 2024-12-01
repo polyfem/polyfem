@@ -144,6 +144,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a57af020e5b4adb1f79380daade52a514" id="r_a57af020e5b4adb1f79380daade52a514"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a57af020e5b4adb1f79380daade52a514">init</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
 <tr class="memdesc:a57af020e5b4adb1f79380daade52a514"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the form.  <br /></td></tr>
 <tr class="separator:a57af020e5b4adb1f79380daade52a514"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90c3963b8eddc9063578cafca1baa1ba" id="r_a90c3963b8eddc9063578cafca1baa1ba"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a90c3963b8eddc9063578cafca1baa1ba">finish</a> ()</td></tr>
+<tr class="separator:a90c3963b8eddc9063578cafca1baa1ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5cf0de6bac08f31cdd37503d5d2218fd" id="r_a5cf0de6bac08f31cdd37503d5d2218fd"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a5cf0de6bac08f31cdd37503d5d2218fd">value</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const</td></tr>
 <tr class="memdesc:a5cf0de6bac08f31cdd37503d5d2218fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the value of the form multiplied with the weigth.  <br /></td></tr>
 <tr class="separator:a5cf0de6bac08f31cdd37503d5d2218fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -307,9 +309,9 @@ Protected Attributes</h2></td></tr>
 
 <p>Disable the form. </p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00117">117</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00119">119</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00145">enabled_</a>.</p>
+<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00147">enabled_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_lagged_reg_form_8cpp_source.html#l00009">polyfem::solver::LaggedRegForm::LaggedRegForm()</a>.</p>
 <div class="dynheader">
@@ -345,9 +347,9 @@ Here is the caller graph for this function:</div>
 
 <p>Enable the form. </p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00115">115</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00117">117</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00145">enabled_</a>.</p>
+<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00147">enabled_</a>.</p>
 
 </div>
 </div>
@@ -377,16 +379,43 @@ Here is the caller graph for this function:</div>
 <p>Determine if the form is enabled. </p>
 <dl class="section return"><dt>Returns</dt><dd>True if the form is enabled else false </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00123">123</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00125">125</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00145">enabled_</a>.</p>
+<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00147">enabled_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_form_8hpp_source.html#l00119">set_enabled()</a>, and <a class="el" href="_lagged_reg_form_8cpp_source.html#l00037">polyfem::solver::LaggedRegForm::update_lagging()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_form_8hpp_source.html#l00121">set_enabled()</a>, and <a class="el" href="_lagged_reg_form_8cpp_source.html#l00037">polyfem::solver::LaggedRegForm::update_lagging()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_form_a64fbc22c4145f44507090160f0974e49_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
+
+</div>
+</div>
+<a id="a90c3963b8eddc9063578cafca1baa1ba" name="a90c3963b8eddc9063578cafca1baa1ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90c3963b8eddc9063578cafca1baa1ba">&#9670;&#160;</a></span>finish()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void polyfem::solver::Form::finish </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00021">21</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
 </div>
 </div>
@@ -435,20 +464,13 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a809444267534055ed66f02df2f4e7fa6">polyfem::solver::AdjointForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00040">40</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00042">42</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a79c3d290522cc08bdb0a94196c5f669a">first_derivative_unweighted()</a>, <a class="el" href="_form_8hpp_source.html#l00126">weight()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_elastic_form_8cpp_source.html#l00099">polyfem::solver::ElasticForm::is_step_valid()</a>.</p>
+<p class="reference">References <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a79c3d290522cc08bdb0a94196c5f669a">first_derivative_unweighted()</a>, <a class="el" href="_form_8hpp_source.html#l00128">weight()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_form_a96dfee30f817cfe008e3aefb04c3544b_cgraph.svg" width="435" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_form_a96dfee30f817cfe008e3aefb04c3544b_icgraph.svg" width="399" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -496,13 +518,13 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a22e441ee85824e2db3c50ec73ae0d901">polyfem::solver::AdjointForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_body_form.html#a65c2eb2d991ce8c46a32b25656a14db1">polyfem::solver::BodyForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#ac654311b96207d936de3f8e115d4cd52">polyfem::solver::ContactForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_elastic_form.html#a9eb7dde77480e465994679d524ef5bc8">polyfem::solver::ElasticForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_friction_form.html#aba546a5686d184c3f8b9779b4f6f0620">polyfem::solver::FrictionForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_inertia_form.html#a3defb6a14adeef742220ae8baece98d7">polyfem::solver::InertiaForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_inversion_barrier_form.html#a8450392ef75816ab004d211fdb4e7222">polyfem::solver::InversionBarrierForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_l2_projection_form.html#a797f7c2b07435aab0009dddaa878bdec">polyfem::solver::L2ProjectionForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#adc597d887a0a86ba63898083379acf5c">polyfem::solver::LaggedRegForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a0ce4ccc848cbbba5d749e0b643c14fc1">polyfem::solver::BCLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_generic_lagrangian_form.html#aef63b1f32f8f0fe8aee9c2d2d50eef58">polyfem::solver::GenericLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html#a0056892a5992067cc30b7e3e3a4089d5">polyfem::solver::MacroStrainLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#ab6cf8377941c01db7e0e0b4a4c7f4198">polyfem::solver::PeriodicContactForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_pressure_form.html#a998d09b08c68cea34112ad8641e99f3a">polyfem::solver::PressureForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a188aa906affa9b99b01a4875f84a5167">polyfem::solver::RayleighDampingForm</a>.</p>
+<p>Implemented in <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a22e441ee85824e2db3c50ec73ae0d901">polyfem::solver::AdjointForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_body_form.html#a65c2eb2d991ce8c46a32b25656a14db1">polyfem::solver::BodyForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#ac654311b96207d936de3f8e115d4cd52">polyfem::solver::ContactForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_friction_form.html#aba546a5686d184c3f8b9779b4f6f0620">polyfem::solver::FrictionForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_inertia_form.html#a3defb6a14adeef742220ae8baece98d7">polyfem::solver::InertiaForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_inversion_barrier_form.html#a8450392ef75816ab004d211fdb4e7222">polyfem::solver::InversionBarrierForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_l2_projection_form.html#a797f7c2b07435aab0009dddaa878bdec">polyfem::solver::L2ProjectionForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#adc597d887a0a86ba63898083379acf5c">polyfem::solver::LaggedRegForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a0ce4ccc848cbbba5d749e0b643c14fc1">polyfem::solver::BCLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_generic_lagrangian_form.html#aef63b1f32f8f0fe8aee9c2d2d50eef58">polyfem::solver::GenericLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html#a0056892a5992067cc30b7e3e3a4089d5">polyfem::solver::MacroStrainLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#ab6cf8377941c01db7e0e0b4a4c7f4198">polyfem::solver::PeriodicContactForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_pressure_form.html#a998d09b08c68cea34112ad8641e99f3a">polyfem::solver::PressureForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a188aa906affa9b99b01a4875f84a5167">polyfem::solver::RayleighDampingForm</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_form_8hpp_source.html#l00040">first_derivative()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_form_8hpp_source.html#l00042">first_derivative()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_form_a79c3d290522cc08bdb0a94196c5f669a_icgraph.svg" width="658" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_form_a79c3d290522cc08bdb0a94196c5f669a_icgraph.svg" width="435" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -586,7 +608,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a6f2d7531e6e27ba87e8e69be3ea89b12">polyfem::solver::AdjointForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_friction_form.html#a13496c772de23a6a34114dc4a6a725df">polyfem::solver::FrictionForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#a255d69111f33dce57fcf095b61784b2c">polyfem::solver::LaggedRegForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a6809f0a008ca0f00423ef3133d3e3369">polyfem::solver::RayleighDampingForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00094">94</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00096">96</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
 </div>
 </div>
@@ -615,9 +637,9 @@ Here is the caller graph for this function:</div>
 
 <p>Get if the form's second derivative is projected to psd. </p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00112">112</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00114">114</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00141">project_to_psd_</a>.</p>
+<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00143">project_to_psd_</a>.</p>
 
 </div>
 </div>
@@ -660,7 +682,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_composite_form.html#ae3d3c62f4a65dd8bbe984bfaa23a89d4">polyfem::solver::CompositeForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_parametrization_form.html#a2c95a0bcec6ca56bb42141b5e966d5c6">polyfem::solver::ParametrizationForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_collision_barrier_form.html#a58f3e2b43ae371db96dfae1a093f550c">polyfem::solver::CollisionBarrierForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html#a03c31d8ad969e612afa7a9b34dca9125">polyfem::solver::DeformedCollisionBarrierForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#a3d2fc5e231aa9ca96a0737757049748f">polyfem::solver::TransientForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#aee65aa9ea94cac5dea17f77b65ef2006">polyfem::solver::ContactForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#a689d6b0539ce769e1711530f2c1205e4">polyfem::solver::PeriodicContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00136">136</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00138">138</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
 </div>
 </div>
@@ -708,9 +730,9 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if the step is allowed </dd></dl>
 
-<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_composite_form.html#a3958a16e4cbd48f52e7671e17519d521">polyfem::solver::CompositeForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_parametrization_form.html#af39ff0069771bbb7450df3792924169c">polyfem::solver::ParametrizationForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a359ec0ff883060c1f2c97868bfbfb174">polyfem::solver::AMIPSForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#a65299e1eddc89a01518e919ecf646015">polyfem::solver::TransientForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_elastic_form.html#af2f0f857ec53a4bc3e282fce304446a0">polyfem::solver::ElasticForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_inversion_barrier_form.html#a3a3687d5e8161e7ecc465ab192dec649">polyfem::solver::InversionBarrierForm</a>.</p>
+<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_composite_form.html#a3958a16e4cbd48f52e7671e17519d521">polyfem::solver::CompositeForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_parametrization_form.html#af39ff0069771bbb7450df3792924169c">polyfem::solver::ParametrizationForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a359ec0ff883060c1f2c97868bfbfb174">polyfem::solver::AMIPSForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#a65299e1eddc89a01518e919ecf646015">polyfem::solver::TransientForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_inversion_barrier_form.html#a3a3687d5e8161e7ecc465ab192dec649">polyfem::solver::InversionBarrierForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00060">60</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00062">62</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
 </div>
 </div>
@@ -759,7 +781,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_composite_form.html#ae63c0e694cf86cd0515dc98df504a7af">polyfem::solver::CompositeForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_parametrization_form.html#ae882d2c545ccec56425d6913345c779b">polyfem::solver::ParametrizationForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#a9abf6297aa5d8a21d29ffc15e0c789f3">polyfem::solver::TransientForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#ab011ec40a36b9125803eb58bbfae853c">polyfem::solver::ContactForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#a8bd3eb02a37ff7f0366b35dd125c5de8">polyfem::solver::PeriodicContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00071">71</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00073">73</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
 </div>
 </div>
@@ -790,7 +812,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_composite_form.html#afcde498a65a561c868e902f67299d418">polyfem::solver::CompositeForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_parametrization_form.html#ac3c335c7400708ec58f1de405bc7d34a">polyfem::solver::ParametrizationForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#ac059cee53a281c2f774eef5b46811be5">polyfem::solver::TransientForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a8987931f60f3ceaa4fd4d8d53346d00a">polyfem::solver::ContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00074">74</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00076">76</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
 </div>
 </div>
@@ -821,7 +843,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_friction_form.html#aa9f29a64cef734a1c61bc8bd36d324d0">polyfem::solver::FrictionForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a94001769e05f2fa6272c47dafdee9924">polyfem::solver::RayleighDampingForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00101">101</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00103">103</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
 </div>
 </div>
@@ -871,7 +893,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_parametrization_form.html#abf7b16060b1c89d6a6aaa67eaafc0f37">polyfem::solver::ParametrizationForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_composite_form.html#a737585e11f7dd95f9aee9a616df26bba">polyfem::solver::CompositeForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_collision_barrier_form.html#a7a3b924fb69ec5e9dc0a354778796279">polyfem::solver::CollisionBarrierForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_layer_thickness_form.html#a580b4deda6efe8113c4585b3e9e48160">polyfem::solver::LayerThicknessForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html#a10f91d3b4f69bdfeeaa0685046cc49c9">polyfem::solver::DeformedCollisionBarrierForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#a28ecc08cf7b4294a0c8fe1eaa995deb2">polyfem::solver::TransientForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a510cabb33d8e00c2fa8dac68f36a2820">polyfem::solver::ContactForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#ab2a23b33dc9231922a0746ce84a7b6b0">polyfem::solver::PeriodicContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00066">66</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00068">68</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
 </div>
 </div>
@@ -898,7 +920,7 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#af5a89c0da39c8c2a00ad29b71ab04e06">polyfem::solver::AdjointForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#a5f57682d8354d371c761eb1b154e8a10">polyfem::solver::StaticForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_max_stress_form.html#ad22e3790b9607325faa7e8988d3aae72">polyfem::solver::MaxStressForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_min_jacobian_form.html#a146b2850760017f0740c2b4e5cb1905d">polyfem::solver::MinJacobianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a2340089ebfa9d872554293b235a1e339">polyfem::solver::AMIPSForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_collision_barrier_form.html#a1312bb7e3cab9935d04d9b6774c92774">polyfem::solver::CollisionBarrierForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_layer_thickness_form.html#ad0798c5f27815b24c92e265719d44dfd">polyfem::solver::LayerThicknessForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html#a98369da94278f79241654e11426480b3">polyfem::solver::DeformedCollisionBarrierForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_spatial_integral_form.html#aa2bf36039614a69c8bcb28cc6bed7cbf">polyfem::solver::SpatialIntegralForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_elastic_energy_form.html#a1d0bdd83b4fcd6d585d67b178d1913cd">polyfem::solver::ElasticEnergyForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_stress_norm_form.html#a8c3fb264f11df0cf19f3964caccd59da">polyfem::solver::StressNormForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_compliance_form.html#a8d2d2eb8a7c4137669806307fbb94269">polyfem::solver::ComplianceForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_stress_form.html#a6601281256aacff3fac19b7c8dc5f021">polyfem::solver::StressForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_target_form.html#abfe73503214ba79bd630520762534500">polyfem::solver::TargetForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_s_d_f_target_form.html#a18c04809fd05d43a1e97dc360922bca8">polyfem::solver::SDFTargetForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_mesh_target_form.html#a46dfd6299c62a10eeb1128f55df67c2a">polyfem::solver::MeshTargetForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_node_target_form.html#a013e72624d42a826daa99e58cc81a3a5">polyfem::solver::NodeTargetForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_body_form.html#a08039c85d9be9e6b0e54ccaa472bf7c8">polyfem::solver::BodyForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a3815e4d8e45d45b2e3357c7a5ad045ce">polyfem::solver::ContactForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_elastic_form.html#af31e9468dfabab01f1009790c57b2e90">polyfem::solver::ElasticForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_friction_form.html#a5d91d8f93a087c76b6f314afa89c4814">polyfem::solver::FrictionForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_inertia_form.html#a477bebf0b12e525c04abcc22208ec919">polyfem::solver::InertiaForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_inversion_barrier_form.html#a5e69e807da30a0c965bc4ffe32890eb2">polyfem::solver::InversionBarrierForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_l2_projection_form.html#a5ec4c0cd6c6d8d0578543aca0e87befa">polyfem::solver::L2ProjectionForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#af293437eb1050f0bbe6772956d61f631">polyfem::solver::LaggedRegForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a15dd180adfd295b3fd17236da15bf948">polyfem::solver::BCLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_generic_lagrangian_form.html#ae5312330655efe5ad1c3fff0f8330f73">polyfem::solver::GenericLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html#aa4b1421b7c107d492e3ca9e031dcefe2">polyfem::solver::MacroStrainLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_pressure_form.html#ab2949043486e19bac0dd291cc313a1ec">polyfem::solver::PressureForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#aa25a7f59f76664f17d1cbb096716431f">polyfem::solver::RayleighDampingForm</a>.</p>
+<p>Implemented in <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#af5a89c0da39c8c2a00ad29b71ab04e06">polyfem::solver::AdjointForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#a5f57682d8354d371c761eb1b154e8a10">polyfem::solver::StaticForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_max_stress_form.html#ad22e3790b9607325faa7e8988d3aae72">polyfem::solver::MaxStressForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_min_jacobian_form.html#a146b2850760017f0740c2b4e5cb1905d">polyfem::solver::MinJacobianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a2340089ebfa9d872554293b235a1e339">polyfem::solver::AMIPSForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_collision_barrier_form.html#a1312bb7e3cab9935d04d9b6774c92774">polyfem::solver::CollisionBarrierForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_layer_thickness_form.html#ad0798c5f27815b24c92e265719d44dfd">polyfem::solver::LayerThicknessForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html#a98369da94278f79241654e11426480b3">polyfem::solver::DeformedCollisionBarrierForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_spatial_integral_form.html#aa2bf36039614a69c8bcb28cc6bed7cbf">polyfem::solver::SpatialIntegralForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_elastic_energy_form.html#a1d0bdd83b4fcd6d585d67b178d1913cd">polyfem::solver::ElasticEnergyForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_stress_norm_form.html#a8c3fb264f11df0cf19f3964caccd59da">polyfem::solver::StressNormForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_compliance_form.html#a8d2d2eb8a7c4137669806307fbb94269">polyfem::solver::ComplianceForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_stress_form.html#a6601281256aacff3fac19b7c8dc5f021">polyfem::solver::StressForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_target_form.html#abfe73503214ba79bd630520762534500">polyfem::solver::TargetForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_s_d_f_target_form.html#a18c04809fd05d43a1e97dc360922bca8">polyfem::solver::SDFTargetForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_mesh_target_form.html#a46dfd6299c62a10eeb1128f55df67c2a">polyfem::solver::MeshTargetForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_node_target_form.html#a013e72624d42a826daa99e58cc81a3a5">polyfem::solver::NodeTargetForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_body_form.html#a08039c85d9be9e6b0e54ccaa472bf7c8">polyfem::solver::BodyForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a3815e4d8e45d45b2e3357c7a5ad045ce">polyfem::solver::ContactForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_friction_form.html#a5d91d8f93a087c76b6f314afa89c4814">polyfem::solver::FrictionForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_inertia_form.html#a477bebf0b12e525c04abcc22208ec919">polyfem::solver::InertiaForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_inversion_barrier_form.html#a5e69e807da30a0c965bc4ffe32890eb2">polyfem::solver::InversionBarrierForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_l2_projection_form.html#a5ec4c0cd6c6d8d0578543aca0e87befa">polyfem::solver::L2ProjectionForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#af293437eb1050f0bbe6772956d61f631">polyfem::solver::LaggedRegForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a15dd180adfd295b3fd17236da15bf948">polyfem::solver::BCLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_generic_lagrangian_form.html#ae5312330655efe5ad1c3fff0f8330f73">polyfem::solver::GenericLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html#aa4b1421b7c107d492e3ca9e031dcefe2">polyfem::solver::MacroStrainLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_pressure_form.html#ab2949043486e19bac0dd291cc313a1ec">polyfem::solver::PressureForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#aa25a7f59f76664f17d1cbb096716431f">polyfem::solver::RayleighDampingForm</a>.</p>
 
 </div>
 </div>
@@ -938,7 +960,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_composite_form.html#ad2adf4a3213c66d913eb519079e393c5">polyfem::solver::CompositeForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_parametrization_form.html#a85a17c2bb4c0bc2a31d9045ccbebaf26">polyfem::solver::ParametrizationForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#ad57bd88dacfe9d2bfdf4be6d1bc36930">polyfem::solver::TransientForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a452270c6eee7f24125879759cca9f760">polyfem::solver::ContactForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#a3fb92cf33c43544ec3d89252409466fc">polyfem::solver::PeriodicContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00080">80</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00082">82</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
 </div>
 </div>
@@ -966,9 +988,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00149">149</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00151">151</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00147">output_dir_</a>.</p>
+<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00149">output_dir_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00218">polyfem::solver::ContactForm::max_step_size()</a>.</p>
 <div class="dynheader">
@@ -1014,7 +1036,7 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Compute the second derivative of the value wrt x multiplied with the weigth. </p>
-<dl class="section note"><dt>Note</dt><dd>This is not marked const because <a class="el" href="classpolyfem_1_1solver_1_1_elastic_form.html" title="Form of the elasticity potential and forces.">ElasticForm</a> needs to cache the matrix assembly. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This is not marked const because ElasticForm needs to cache the matrix assembly. </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">x</td><td>Current solution </td></tr>
@@ -1023,9 +1045,9 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00050">50</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00052">52</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a4313c8af547f3c51a1c8cafd5071b44b">second_derivative_unweighted()</a>, <a class="el" href="_form_8hpp_source.html#l00126">weight()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a4313c8af547f3c51a1c8cafd5071b44b">second_derivative_unweighted()</a>, <a class="el" href="_form_8hpp_source.html#l00128">weight()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00067">polyfem::solver::RayleighDampingForm::update_lagging()</a>.</p>
 <div class="dynheader">
@@ -1084,9 +1106,9 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a67707227b0771154a9a0ef372ac1f25e">polyfem::solver::AdjointForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_body_form.html#a1d7d1ae62b781e56482589599116142e">polyfem::solver::BodyForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a50b36d64836f5ff8a233c785b7c31b47">polyfem::solver::ContactForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_elastic_form.html#a2a1eb1f32b30101e73734d70ab4baead">polyfem::solver::ElasticForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_friction_form.html#a36b081d01bbfca96dfb1ca2e7b37b7ac">polyfem::solver::FrictionForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_inertia_form.html#a4d069802b018dd2153d96eaaa54382aa">polyfem::solver::InertiaForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_inversion_barrier_form.html#ad881599bbbdc510c13b863ff2105c565">polyfem::solver::InversionBarrierForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_l2_projection_form.html#ac6b711e9bff85e16bcf281a8b5e37c56">polyfem::solver::L2ProjectionForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#a38d7b2de7a167474c55683cdd9d51f3e">polyfem::solver::LaggedRegForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a67a57181e3bc976a759e3db975208f79">polyfem::solver::BCLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_generic_lagrangian_form.html#a030349272b0176eff4fb48560cb10492">polyfem::solver::GenericLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html#a2eccd902365d40c0305ad2d93123fda7">polyfem::solver::MacroStrainLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#a9afd0e3828702c9e9d173000e0a5b314">polyfem::solver::PeriodicContactForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_pressure_form.html#a00fc36b1e4b245b528f0fcce59deb6c2">polyfem::solver::PressureForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a1948ae0fed6e24a8e06b63693b2eedcc">polyfem::solver::RayleighDampingForm</a>.</p>
+<p>Implemented in <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a67707227b0771154a9a0ef372ac1f25e">polyfem::solver::AdjointForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_body_form.html#a1d7d1ae62b781e56482589599116142e">polyfem::solver::BodyForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a50b36d64836f5ff8a233c785b7c31b47">polyfem::solver::ContactForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_friction_form.html#a36b081d01bbfca96dfb1ca2e7b37b7ac">polyfem::solver::FrictionForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_inertia_form.html#a4d069802b018dd2153d96eaaa54382aa">polyfem::solver::InertiaForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_inversion_barrier_form.html#ad881599bbbdc510c13b863ff2105c565">polyfem::solver::InversionBarrierForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_l2_projection_form.html#ac6b711e9bff85e16bcf281a8b5e37c56">polyfem::solver::L2ProjectionForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#a38d7b2de7a167474c55683cdd9d51f3e">polyfem::solver::LaggedRegForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a67a57181e3bc976a759e3db975208f79">polyfem::solver::BCLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_generic_lagrangian_form.html#a030349272b0176eff4fb48560cb10492">polyfem::solver::GenericLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html#a2eccd902365d40c0305ad2d93123fda7">polyfem::solver::MacroStrainLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#a9afd0e3828702c9e9d173000e0a5b314">polyfem::solver::PeriodicContactForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_pressure_form.html#a00fc36b1e4b245b528f0fcce59deb6c2">polyfem::solver::PressureForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a1948ae0fed6e24a8e06b63693b2eedcc">polyfem::solver::RayleighDampingForm</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_form_8hpp_source.html#l00050">second_derivative()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_form_8hpp_source.html#l00052">second_derivative()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1121,9 +1143,9 @@ Here is the caller graph for this function:</div>
 
 <p>Set if the form is enabled. </p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00119">119</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00121">121</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00123">enabled()</a>, and <a class="el" href="_form_8hpp_source.html#l00145">enabled_</a>.</p>
+<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00125">enabled()</a>, and <a class="el" href="_form_8hpp_source.html#l00147">enabled_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_lagged_reg_form_8cpp_source.html#l00037">polyfem::solver::LaggedRegForm::update_lagging()</a>.</p>
 <div class="dynheader">
@@ -1163,9 +1185,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00138">138</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00140">140</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00147">output_dir_</a>.</p>
+<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00149">output_dir_</a>.</p>
 
 </div>
 </div>
@@ -1201,9 +1223,9 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00109">109</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00111">111</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00141">project_to_psd_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>.</p>
+<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00143">project_to_psd_</a>, and <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>.</p>
 
 </div>
 </div>
@@ -1239,9 +1261,9 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00130">130</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00132">132</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00126">weight()</a>, and <a class="el" href="_form_8hpp_source.html#l00143">weight_</a>.</p>
+<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00128">weight()</a>, and <a class="el" href="_form_8hpp_source.html#l00145">weight_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1284,7 +1306,7 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#aebe03b410b4ba7f4fa6b0f3547c5902e">polyfem::solver::StaticForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_composite_form.html#aec1305029ea4a56fa698b343eeab8a53">polyfem::solver::CompositeForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_parametrization_form.html#a6a225a64e319c2d7d179e9fc0dbd2ff8">polyfem::solver::ParametrizationForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a3f00fafcf3de6cbf9d381d89d093db83">polyfem::solver::AdjointForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#a26d3fc73eb81a8e7d6cf50b9424a42df">polyfem::solver::TransientForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a70e5349c72c5d268ba2d98753865ab4e">polyfem::solver::ContactForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#a5d5a363abfbced8a8950f2f32667e21f">polyfem::solver::PeriodicContactForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_collision_barrier_form.html#ac08d931672b693852651b5b813f614a7">polyfem::solver::CollisionBarrierForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html#a9e83327f740d815953da76a9dfbc74ca">polyfem::solver::DeformedCollisionBarrierForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00084">84</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00086">86</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
 </div>
 </div>
@@ -1332,7 +1354,7 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a8af74346cbc432616aefaddb3b2b60e4">polyfem::solver::AdjointForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_friction_form.html#a2d39d4abbf850fbe702a89befd07da70">polyfem::solver::FrictionForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#a3718fea62f7f6be229e2daeeebf83596">polyfem::solver::LaggedRegForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a495516385c26912463ca2dd510014295">polyfem::solver::RayleighDampingForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00098">98</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00100">100</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
 </div>
 </div>
@@ -1379,9 +1401,9 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#aa2ac7f6f4495c6085ae1d3c51bfdd9de">polyfem::solver::AdjointForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_body_form.html#a59038ae41bd1beec9805dacdf2194d85">polyfem::solver::BodyForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#ae4b7ce02d0f40d3bfef34c5106e22f4e">polyfem::solver::ContactForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_elastic_form.html#afc6ed3a44070466e848d7a61fa9f8d8a">polyfem::solver::ElasticForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a2a49e56f3b76a506f8d097368fa6f4ec">polyfem::solver::BCLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html#aeaf949d6bd520a977244c1d5c623b934">polyfem::solver::MacroStrainLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#ae09f4300b333c2244492986af01cc21d">polyfem::solver::PeriodicContactForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_pressure_form.html#a0cf06756c078bf982bac42a4f6c4a41a">polyfem::solver::PressureForm</a>.</p>
+<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#aa2ac7f6f4495c6085ae1d3c51bfdd9de">polyfem::solver::AdjointForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_body_form.html#a59038ae41bd1beec9805dacdf2194d85">polyfem::solver::BodyForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#ae4b7ce02d0f40d3bfef34c5106e22f4e">polyfem::solver::ContactForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a2a49e56f3b76a506f8d097368fa6f4ec">polyfem::solver::BCLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html#aeaf949d6bd520a977244c1d5c623b934">polyfem::solver::MacroStrainLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#ae09f4300b333c2244492986af01cc21d">polyfem::solver::PeriodicContactForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_pressure_form.html#a0cf06756c078bf982bac42a4f6c4a41a">polyfem::solver::PressureForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00089">89</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00091">91</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
 </div>
 </div>
@@ -1413,7 +1435,7 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_friction_form.html#ab6c5ed4c5b1f333f2c49a262994aa76b">polyfem::solver::FrictionForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#a6ffc08f7075f76ecb0ae8517104843af">polyfem::solver::LaggedRegForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a4eb3d14ae24cde3ec173c7e809e9fe4c">polyfem::solver::RayleighDampingForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00105">105</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00107">107</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
 </div>
 </div>
@@ -1452,9 +1474,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_adjoint_form.html#a83da86e0efba5cfcba61af6b05796801">polyfem::solver::AdjointForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00024">24</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00026">26</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a464a37a939d522c672aed03d281a5a92">value_unweighted()</a>, <a class="el" href="_form_8hpp_source.html#l00126">weight()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a464a37a939d522c672aed03d281a5a92">value_unweighted()</a>, <a class="el" href="_form_8hpp_source.html#l00128">weight()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_inertia_form_8cpp_source.html#l00060">polyfem::solver::InertiaForm::force_shape_derivative()</a>, <a class="el" href="_body_form_8cpp_source.html#l00106">polyfem::solver::BodyForm::force_shape_derivative()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00048">polyfem::solver::BCLagrangianForm::init_masked_lumped_mass()</a>, and <a class="el" href="_adjoint_form_8cpp_source.html#l00010">polyfem::solver::AdjointForm::value()</a>.</p>
 <div class="dynheader">
@@ -1503,9 +1525,9 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Computed value </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00032">32</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00034">34</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00164">value_per_element_unweighted()</a>, <a class="el" href="_form_8hpp_source.html#l00143">weight_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00166">value_per_element_unweighted()</a>, <a class="el" href="_form_8hpp_source.html#l00145">weight_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1547,11 +1569,11 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Computed value per element </dd></dl>
 
-<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a8edd8128512f3f5c54bd6fa79de8f979">polyfem::solver::ContactForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_elastic_form.html#ae16ff9c6a7446cf0d1aabe773fce720b">polyfem::solver::ElasticForm</a>.</p>
+<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a8edd8128512f3f5c54bd6fa79de8f979">polyfem::solver::ContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00164">164</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00166">166</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_form_8hpp_source.html#l00032">value_per_element()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_form_8hpp_source.html#l00034">value_per_element()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1593,9 +1615,9 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Computed value </dd></dl>
 
-<p>Implemented in <a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#a85d26d3ef8d2ad6941dab6edb6b5efbf">polyfem::solver::StaticForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_composite_form.html#a6f67786e361539370c0cca62600dbb68">polyfem::solver::CompositeForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_parametrization_form.html#a6a307268e993cba8f9796fa08c162c81">polyfem::solver::ParametrizationForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_min_jacobian_form.html#aa18961c202f8d470272fd35a756ee367">polyfem::solver::MinJacobianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a0c61cd7c58f329bfb9b7d9c4749a2b62">polyfem::solver::AMIPSForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_collision_barrier_form.html#ae366a90bf45d3e8a3326c194698b83ce">polyfem::solver::CollisionBarrierForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html#a3b0a47175d6dd791d1b45270390b6717">polyfem::solver::DeformedCollisionBarrierForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#ab6150d8d1509bb088b2e1fc9913c3b16">polyfem::solver::BoundarySmoothingForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_min_target_dist_form.html#a32e29023b653301d90f3131f176df55a">polyfem::solver::MinTargetDistForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#a21567315041e870c6169a9e175ff4b10">polyfem::solver::TransientForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_proxy_transient_form.html#adce10e3ec5d4959f34be00c2b454ab31">polyfem::solver::ProxyTransientForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_body_form.html#ae8e6ef01b568dc58996b461788a420d0">polyfem::solver::BodyForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a91225a3a50c429d7668cb696f93939c5">polyfem::solver::ContactForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_elastic_form.html#a7a7bc40ed9da1e4c15d4e0abb81180c7">polyfem::solver::ElasticForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_friction_form.html#a88a9d777ccece8a0e7ed7cac196b10fd">polyfem::solver::FrictionForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_inertia_form.html#a058226bfa82555033f082c47d3d3ae74">polyfem::solver::InertiaForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_inversion_barrier_form.html#ac2cfa119ae4feb7e30882ee1ea49a04d">polyfem::solver::InversionBarrierForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_l2_projection_form.html#aaf2b640b326437d131ce3f1c184160f1">polyfem::solver::L2ProjectionForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#aa44db7c881c2a432c7296f85c4522690">polyfem::solver::LaggedRegForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a96e612e360a984e27e660b23b9a9b7bd">polyfem::solver::BCLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_generic_lagrangian_form.html#a08d3a83c778e8094621301ed66be83b2">polyfem::solver::GenericLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html#a3f0168bd124d185779b6fca476d04f51">polyfem::solver::MacroStrainLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#a758c8d8023ad0bb8d0b9aca28f5a9123">polyfem::solver::PeriodicContactForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_pressure_form.html#a138290771ec70ff05ca74dc7bc113d62">polyfem::solver::PressureForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a9c5bcdd5e6b4f1a98a9ebdc75900ec92">polyfem::solver::RayleighDampingForm</a>.</p>
+<p>Implemented in <a class="el" href="classpolyfem_1_1solver_1_1_static_form.html#a85d26d3ef8d2ad6941dab6edb6b5efbf">polyfem::solver::StaticForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_composite_form.html#a6f67786e361539370c0cca62600dbb68">polyfem::solver::CompositeForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_parametrization_form.html#a6a307268e993cba8f9796fa08c162c81">polyfem::solver::ParametrizationForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_min_jacobian_form.html#aa18961c202f8d470272fd35a756ee367">polyfem::solver::MinJacobianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a0c61cd7c58f329bfb9b7d9c4749a2b62">polyfem::solver::AMIPSForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_collision_barrier_form.html#ae366a90bf45d3e8a3326c194698b83ce">polyfem::solver::CollisionBarrierForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html#a3b0a47175d6dd791d1b45270390b6717">polyfem::solver::DeformedCollisionBarrierForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#ab6150d8d1509bb088b2e1fc9913c3b16">polyfem::solver::BoundarySmoothingForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_min_target_dist_form.html#a32e29023b653301d90f3131f176df55a">polyfem::solver::MinTargetDistForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_transient_form.html#a21567315041e870c6169a9e175ff4b10">polyfem::solver::TransientForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_proxy_transient_form.html#adce10e3ec5d4959f34be00c2b454ab31">polyfem::solver::ProxyTransientForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_body_form.html#ae8e6ef01b568dc58996b461788a420d0">polyfem::solver::BodyForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a91225a3a50c429d7668cb696f93939c5">polyfem::solver::ContactForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_friction_form.html#a88a9d777ccece8a0e7ed7cac196b10fd">polyfem::solver::FrictionForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_inertia_form.html#a058226bfa82555033f082c47d3d3ae74">polyfem::solver::InertiaForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_inversion_barrier_form.html#ac2cfa119ae4feb7e30882ee1ea49a04d">polyfem::solver::InversionBarrierForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_l2_projection_form.html#aaf2b640b326437d131ce3f1c184160f1">polyfem::solver::L2ProjectionForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_lagged_reg_form.html#aa44db7c881c2a432c7296f85c4522690">polyfem::solver::LaggedRegForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a96e612e360a984e27e660b23b9a9b7bd">polyfem::solver::BCLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_generic_lagrangian_form.html#a08d3a83c778e8094621301ed66be83b2">polyfem::solver::GenericLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html#a3f0168bd124d185779b6fca476d04f51">polyfem::solver::MacroStrainLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#a758c8d8023ad0bb8d0b9aca28f5a9123">polyfem::solver::PeriodicContactForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_pressure_form.html#a138290771ec70ff05ca74dc7bc113d62">polyfem::solver::PressureForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#a9c5bcdd5e6b4f1a98a9ebdc75900ec92">polyfem::solver::RayleighDampingForm</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_form_8hpp_source.html#l00024">value()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_form_8hpp_source.html#l00026">value()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1631,11 +1653,11 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a7f40dd156564bf40a2841b3a8d545534">polyfem::solver::ContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00126">126</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00128">128</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00143">weight_</a>.</p>
+<p class="reference">References <a class="el" href="_form_8hpp_source.html#l00145">weight_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_target_forms_8cpp_source.html#l00617">polyfem::solver::MinTargetDistForm::compute_adjoint_rhs()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00067">polyfem::solver::TransientForm::compute_adjoint_rhs()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00159">polyfem::solver::ProxyTransientForm::compute_adjoint_rhs()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00082">polyfem::solver::SpatialIntegralForm::compute_adjoint_rhs_step()</a>, <a class="el" href="_surface_traction_forms_8cpp_source.html#l00980">polyfem::solver::ProxyContactForceForm::compute_adjoint_rhs_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00515">polyfem::solver::NodeTargetForm::compute_adjoint_rhs_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00572">polyfem::solver::BarycenterTargetForm::compute_adjoint_rhs_step()</a>, <a class="el" href="_a_m_i_p_s_form_8cpp_source.html#l00265">polyfem::solver::AMIPSForm::compute_partial_gradient()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00063">polyfem::solver::CollisionBarrierForm::compute_partial_gradient()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00159">polyfem::solver::DeformedCollisionBarrierForm::compute_partial_gradient()</a>, <a class="el" href="_smoothing_forms_8cpp_source.html#l00119">polyfem::solver::BoundarySmoothingForm::compute_partial_gradient()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00647">polyfem::solver::MinTargetDistForm::compute_partial_gradient()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00084">polyfem::solver::TransientForm::compute_partial_gradient()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00184">polyfem::solver::ProxyTransientForm::compute_partial_gradient()</a>, <a class="el" href="_composite_form_8cpp_source.html#l00023">polyfem::solver::CompositeForm::compute_partial_gradient()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00060">polyfem::solver::SpatialIntegralForm::compute_partial_gradient_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00149">polyfem::solver::ElasticEnergyForm::compute_partial_gradient_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00213">polyfem::solver::StressNormForm::compute_partial_gradient_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00257">polyfem::solver::ComplianceForm::compute_partial_gradient_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00366">polyfem::solver::StressForm::compute_partial_gradient_step()</a>, <a class="el" href="_surface_traction_forms_8cpp_source.html#l01016">polyfem::solver::ProxyContactForceForm::compute_partial_gradient_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00551">polyfem::solver::NodeTargetForm::compute_partial_gradient_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00583">polyfem::solver::BarycenterTargetForm::compute_partial_gradient_step()</a>, <a class="el" href="_parametrized_product_form_8hpp_source.html#l00022">polyfem::solver::ParametrizedProductForm::compute_partial_gradient_with_param()</a>, <a class="el" href="_weighted_volume_form_8cpp_source.html#l00020">polyfem::solver::WeightedVolumeForm::compute_partial_gradient_with_param()</a>, <a class="el" href="_composite_form_8cpp_source.html#l00006">polyfem::solver::CompositeForm::compute_reduced_adjoint_rhs()</a>, <a class="el" href="_form_8hpp_source.html#l00040">first_derivative()</a>, <a class="el" href="_form_8hpp_source.html#l00050">second_derivative()</a>, <a class="el" href="_form_8hpp_source.html#l00130">set_weight()</a>, <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00067">polyfem::solver::RayleighDampingForm::update_lagging()</a>, and <a class="el" href="_form_8hpp_source.html#l00024">value()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_target_forms_8cpp_source.html#l00617">polyfem::solver::MinTargetDistForm::compute_adjoint_rhs()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00067">polyfem::solver::TransientForm::compute_adjoint_rhs()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00159">polyfem::solver::ProxyTransientForm::compute_adjoint_rhs()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00082">polyfem::solver::SpatialIntegralForm::compute_adjoint_rhs_step()</a>, <a class="el" href="_surface_traction_forms_8cpp_source.html#l00980">polyfem::solver::ProxyContactForceForm::compute_adjoint_rhs_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00515">polyfem::solver::NodeTargetForm::compute_adjoint_rhs_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00572">polyfem::solver::BarycenterTargetForm::compute_adjoint_rhs_step()</a>, <a class="el" href="_a_m_i_p_s_form_8cpp_source.html#l00265">polyfem::solver::AMIPSForm::compute_partial_gradient()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00063">polyfem::solver::CollisionBarrierForm::compute_partial_gradient()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00159">polyfem::solver::DeformedCollisionBarrierForm::compute_partial_gradient()</a>, <a class="el" href="_smoothing_forms_8cpp_source.html#l00119">polyfem::solver::BoundarySmoothingForm::compute_partial_gradient()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00647">polyfem::solver::MinTargetDistForm::compute_partial_gradient()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00084">polyfem::solver::TransientForm::compute_partial_gradient()</a>, <a class="el" href="_transient_form_8cpp_source.html#l00184">polyfem::solver::ProxyTransientForm::compute_partial_gradient()</a>, <a class="el" href="_composite_form_8cpp_source.html#l00023">polyfem::solver::CompositeForm::compute_partial_gradient()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00060">polyfem::solver::SpatialIntegralForm::compute_partial_gradient_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00149">polyfem::solver::ElasticEnergyForm::compute_partial_gradient_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00213">polyfem::solver::StressNormForm::compute_partial_gradient_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00257">polyfem::solver::ComplianceForm::compute_partial_gradient_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00366">polyfem::solver::StressForm::compute_partial_gradient_step()</a>, <a class="el" href="_surface_traction_forms_8cpp_source.html#l01016">polyfem::solver::ProxyContactForceForm::compute_partial_gradient_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00551">polyfem::solver::NodeTargetForm::compute_partial_gradient_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00583">polyfem::solver::BarycenterTargetForm::compute_partial_gradient_step()</a>, <a class="el" href="_parametrized_product_form_8hpp_source.html#l00022">polyfem::solver::ParametrizedProductForm::compute_partial_gradient_with_param()</a>, <a class="el" href="_weighted_volume_form_8cpp_source.html#l00020">polyfem::solver::WeightedVolumeForm::compute_partial_gradient_with_param()</a>, <a class="el" href="_composite_form_8cpp_source.html#l00006">polyfem::solver::CompositeForm::compute_reduced_adjoint_rhs()</a>, <a class="el" href="_form_8hpp_source.html#l00042">first_derivative()</a>, <a class="el" href="_form_8hpp_source.html#l00052">second_derivative()</a>, <a class="el" href="_form_8hpp_source.html#l00132">set_weight()</a>, <a class="el" href="_rayleigh_damping_form_8cpp_source.html#l00067">polyfem::solver::RayleighDampingForm::update_lagging()</a>, and <a class="el" href="_form_8hpp_source.html#l00026">value()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1667,9 +1689,9 @@ Here is the caller graph for this function:</div>
 
 <p>If true, the form is enabled. </p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00145">145</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00147">147</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_form_8hpp_source.html#l00117">disable()</a>, <a class="el" href="_form_8hpp_source.html#l00115">enable()</a>, <a class="el" href="_form_8hpp_source.html#l00123">enabled()</a>, and <a class="el" href="_form_8hpp_source.html#l00119">set_enabled()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_form_8hpp_source.html#l00119">disable()</a>, <a class="el" href="_form_8hpp_source.html#l00117">enable()</a>, <a class="el" href="_form_8hpp_source.html#l00125">enabled()</a>, and <a class="el" href="_form_8hpp_source.html#l00121">set_enabled()</a>.</p>
 
 </div>
 </div>
@@ -1693,9 +1715,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00147">147</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00149">149</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_form_8hpp_source.html#l00149">resolve_output_path()</a>, and <a class="el" href="_form_8hpp_source.html#l00138">set_output_dir()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_form_8hpp_source.html#l00151">resolve_output_path()</a>, and <a class="el" href="_form_8hpp_source.html#l00140">set_output_dir()</a>.</p>
 
 </div>
 </div>
@@ -1721,9 +1743,9 @@ Here is the caller graph for this function:</div>
 
 <p>If true, the form's second derivative is projected to be positive semidefinite. </p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00141">141</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00143">143</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_form_8hpp_source.html#l00112">is_project_to_psd()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00206">polyfem::solver::ContactForm::second_derivative_unweighted()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00079">polyfem::solver::ElasticForm::second_derivative_unweighted()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00117">polyfem::solver::FrictionForm::second_derivative_unweighted()</a>, <a class="el" href="_pressure_form_8cpp_source.html#l00053">polyfem::solver::PressureForm::second_derivative_unweighted()</a>, and <a class="el" href="_form_8hpp_source.html#l00109">set_project_to_psd()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_form_8hpp_source.html#l00114">is_project_to_psd()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00206">polyfem::solver::ContactForm::second_derivative_unweighted()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00117">polyfem::solver::FrictionForm::second_derivative_unweighted()</a>, <a class="el" href="_pressure_form_8cpp_source.html#l00053">polyfem::solver::PressureForm::second_derivative_unweighted()</a>, and <a class="el" href="_form_8hpp_source.html#l00111">set_project_to_psd()</a>.</p>
 
 </div>
 </div>
@@ -1749,9 +1771,9 @@ Here is the caller graph for this function:</div>
 
 <p>weight of the form (e.g., AL penalty weight or Δt²) </p>
 
-<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00143">143</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_form_8hpp_source.html#l00145">145</a> of file <a class="el" href="_form_8hpp_source.html">Form.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_form_8hpp_source.html#l00130">set_weight()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00074">polyfem::solver::ContactForm::update_barrier_stiffness()</a>, <a class="el" href="_form_8hpp_source.html#l00032">value_per_element()</a>, <a class="el" href="_form_8hpp_source.html#l00126">weight()</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00139">polyfem::solver::ContactForm::weight()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_form_8hpp_source.html#l00132">set_weight()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00074">polyfem::solver::ContactForm::update_barrier_stiffness()</a>, <a class="el" href="_form_8hpp_source.html#l00034">value_per_element()</a>, <a class="el" href="_form_8hpp_source.html#l00128">weight()</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00139">polyfem::solver::ContactForm::weight()</a>.</p>
 
 </div>
 </div>

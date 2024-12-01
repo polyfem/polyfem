@@ -140,8 +140,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae6a71006ed00c05812b65401a1c37d5c" id="r_ae6a71006ed00c05812b65401a1c37d5c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#ae6a71006ed00c05812b65401a1c37d5c">compute</a> (const int el_index, const bool is_volume, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;basis, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbasis, <a class="el" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html">ElementAssemblyValues</a> &amp;<a class="el" href="_assembler_8cpp.html#ace467602a78d8e0c10fcd553d052fb6e">vals</a>) const</td></tr>
 <tr class="memdesc:ae6a71006ed00c05812b65401a1c37d5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">retrieves cached basis evaluation and geometric for the given element if it doesn't exist, computes and caches it (modifies cache member in the latter case)  <br /></td></tr>
 <tr class="separator:ae6a71006ed00c05812b65401a1c37d5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab97712c1407f773fbc821511e0a08cdb" id="r_ab97712c1407f773fbc821511e0a08cdb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#ab97712c1407f773fbc821511e0a08cdb">update</a> (const int el_index, const bool is_volume, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;basis, const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;gbasis)</td></tr>
+<tr class="separator:ab97712c1407f773fbc821511e0a08cdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5dfa837551731809bc88c9eb6f491187" id="r_a5dfa837551731809bc88c9eb6f491187"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a5dfa837551731809bc88c9eb6f491187">clear</a> ()</td></tr>
 <tr class="separator:a5dfa837551731809bc88c9eb6f491187"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f19fc9564d3745cdf62d15caf6277cd" id="r_a0f19fc9564d3745cdf62d15caf6277cd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a0f19fc9564d3745cdf62d15caf6277cd">is_initialized</a> () const</td></tr>
+<tr class="separator:a0f19fc9564d3745cdf62d15caf6277cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a22657e4956aa514714bcaead0f5c703d" id="r_a22657e4956aa514714bcaead0f5c703d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembly_vals_cache.html#a22657e4956aa514714bcaead0f5c703d">is_mass</a> () const</td></tr>
 <tr class="separator:a22657e4956aa514714bcaead0f5c703d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -181,9 +185,9 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00022">22</a> of file <a class="el" href="_assembly_vals_cache_8hpp_source.html">AssemblyValsCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00024">24</a> of file <a class="el" href="_assembly_vals_cache_8hpp_source.html">AssemblyValsCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00030">cache</a>.</p>
+<p class="reference">References <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00034">cache</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00518">polyfem::State::build_basis()</a>.</p>
 <div class="dynheader">
@@ -240,11 +244,11 @@ Here is the caller graph for this function:</div>
 
 <p>retrieves cached basis evaluation and geometric for the given element if it doesn't exist, computes and caches it (modifies cache member in the latter case) </p>
 
-<p class="definition">Definition at line <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00033">33</a> of file <a class="el" href="_assembly_vals_cache_8cpp_source.html">AssemblyValsCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00045">45</a> of file <a class="el" href="_assembly_vals_cache_8cpp_source.html">AssemblyValsCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00030">cache</a>, <a class="el" href="_element_bases_8hpp_source.html#l00034">polyfem::basis::ElementBases::compute_mass_quadrature()</a>, <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00031">is_mass_</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00030">quadrature</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
+<p class="reference">References <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00034">cache</a>, <a class="el" href="_element_bases_8hpp_source.html#l00034">polyfem::basis::ElementBases::compute_mass_quadrature()</a>, <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00035">is_mass_</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00030">quadrature</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00061">polyfem::assembler::RhsAssembler::assemble()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00649">polyfem::assembler::RhsAssembler::compute_energy()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00257">polyfem::solver::ComplianceForm::compute_partial_gradient_step()</a>, <a class="el" href="_weighted_volume_form_8cpp_source.html#l00020">polyfem::solver::WeightedVolumeForm::compute_partial_gradient_with_param()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00316">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00990">polyfem::solver::AdjointTools::dJ_du_step()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00125">polyfem::solver::ElasticForm::force_material_derivative()</a>, <a class="el" href="_inertia_form_8cpp_source.html#l00060">polyfem::solver::InertiaForm::force_shape_derivative()</a>, <a class="el" href="_elastic_form_8cpp_source.html#l00215">polyfem::solver::ElasticForm::force_shape_derivative()</a>, <a class="el" href="_body_form_8cpp_source.html#l00106">polyfem::solver::BodyForm::force_shape_derivative()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00181">polyfem::solver::AdjointTools::integrate_objective()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00138">polyfem::assembler::RhsAssembler::time_bc()</a>, and <a class="el" href="_weighted_volume_form_8cpp_source.html#l00006">polyfem::solver::WeightedVolumeForm::value_unweighted_with_param()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00061">polyfem::assembler::RhsAssembler::assemble()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00649">polyfem::assembler::RhsAssembler::compute_energy()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00257">polyfem::solver::ComplianceForm::compute_partial_gradient_step()</a>, <a class="el" href="_weighted_volume_form_8cpp_source.html#l00020">polyfem::solver::WeightedVolumeForm::compute_partial_gradient_with_param()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00316">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00990">polyfem::solver::AdjointTools::dJ_du_step()</a>, <a class="el" href="_inertia_form_8cpp_source.html#l00060">polyfem::solver::InertiaForm::force_shape_derivative()</a>, <a class="el" href="_body_form_8cpp_source.html#l00106">polyfem::solver::BodyForm::force_shape_derivative()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00181">polyfem::solver::AdjointTools::integrate_objective()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00138">polyfem::assembler::RhsAssembler::time_bc()</a>, and <a class="el" href="_weighted_volume_form_8cpp_source.html#l00006">polyfem::solver::WeightedVolumeForm::value_unweighted_with_param()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -300,7 +304,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00011">11</a> of file <a class="el" href="_assembly_vals_cache_8cpp_source.html">AssemblyValsCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00030">cache</a>, <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00027">is_mass()</a>, <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00031">is_mass_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, and <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00030">quadrature</a>.</p>
+<p class="reference">References <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00034">cache</a>, <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00031">is_mass()</a>, <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00035">is_mass_</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, and <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00030">quadrature</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00518">polyfem::State::build_basis()</a>.</p>
 <div class="dynheader">
@@ -312,6 +316,42 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_assembly_vals_cache_a568826dcf14775118883ecbf6bd72f15_icgraph.svg" width="100%" height="413"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="a0f19fc9564d3745cdf62d15caf6277cd" name="a0f19fc9564d3745cdf62d15caf6277cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f19fc9564d3745cdf62d15caf6277cd">&#9670;&#160;</a></span>is_initialized()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::assembler::AssemblyValsCache::is_initialized </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00029">29</a> of file <a class="el" href="_assembly_vals_cache_8hpp_source.html">AssemblyValsCache.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00034">cache</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_rhs_assembler_8cpp_source.html#l00034">polyfem::assembler::RhsAssembler::RhsAssembler()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_assembly_vals_cache_a0f19fc9564d3745cdf62d15caf6277cd_icgraph.svg" width="444" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -339,15 +379,64 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00027">27</a> of file <a class="el" href="_assembly_vals_cache_8hpp_source.html">AssemblyValsCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00031">31</a> of file <a class="el" href="_assembly_vals_cache_8hpp_source.html">AssemblyValsCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00031">is_mass_</a>.</p>
+<p class="reference">References <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00035">is_mass_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00011">init()</a>, and <a class="el" href="_rhs_assembler_8cpp_source.html#l00034">polyfem::assembler::RhsAssembler::RhsAssembler()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_assembly_vals_cache_a22657e4956aa514714bcaead0f5c703d_icgraph.svg" width="100%" height="424"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="ab97712c1407f773fbc821511e0a08cdb" name="ab97712c1407f773fbc821511e0a08cdb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab97712c1407f773fbc821511e0a08cdb">&#9670;&#160;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::AssemblyValsCache::update </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>el_index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>is_volume</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;&#160;</td>
+          <td class="paramname"><em>basis</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &amp;&#160;</td>
+          <td class="paramname"><em>gbasis</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00033">33</a> of file <a class="el" href="_assembly_vals_cache_8cpp_source.html">AssemblyValsCache.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00034">cache</a>, <a class="el" href="_element_bases_8hpp_source.html#l00034">polyfem::basis::ElementBases::compute_mass_quadrature()</a>, <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00035">is_mass_</a>, and <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00030">quadrature</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_assembly_vals_cache_ab97712c1407f773fbc821511e0a08cdb_cgraph.svg" width="439" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -375,9 +464,9 @@ Here is the caller graph for this function:</div>
 
 <p>vector of basis values and geometric mapping with one entry per element </p>
 
-<p class="definition">Definition at line <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00030">30</a> of file <a class="el" href="_assembly_vals_cache_8hpp_source.html">AssemblyValsCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00034">34</a> of file <a class="el" href="_assembly_vals_cache_8hpp_source.html">AssemblyValsCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00022">clear()</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00033">compute()</a>, and <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00011">init()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00024">clear()</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00045">compute()</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00011">init()</a>, <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00029">is_initialized()</a>, and <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00033">update()</a>.</p>
 
 </div>
 </div>
@@ -401,9 +490,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00031">31</a> of file <a class="el" href="_assembly_vals_cache_8hpp_source.html">AssemblyValsCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00035">35</a> of file <a class="el" href="_assembly_vals_cache_8hpp_source.html">AssemblyValsCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00033">compute()</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00011">init()</a>, and <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00027">is_mass()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00045">compute()</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00011">init()</a>, <a class="el" href="_assembly_vals_cache_8hpp_source.html#l00031">is_mass()</a>, and <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00033">update()</a>.</p>
 
 </div>
 </div>

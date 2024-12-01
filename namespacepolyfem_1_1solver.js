@@ -52,7 +52,6 @@ var namespacepolyfem_1_1solver =
     [ "DirichletVariableToSimulation", "classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation" ],
     [ "DivideForm", "classpolyfem_1_1solver_1_1_divide_form.html", "classpolyfem_1_1solver_1_1_divide_form" ],
     [ "ElasticEnergyForm", "classpolyfem_1_1solver_1_1_elastic_energy_form.html", "classpolyfem_1_1solver_1_1_elastic_energy_form" ],
-    [ "ElasticForm", "classpolyfem_1_1solver_1_1_elastic_form.html", "classpolyfem_1_1solver_1_1_elastic_form" ],
     [ "ElasticVariableToSimulation", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation" ],
     [ "ENu2LambdaMu", "classpolyfem_1_1solver_1_1_e_nu2_lambda_mu.html", "classpolyfem_1_1solver_1_1_e_nu2_lambda_mu" ],
     [ "ExponentialMap", "classpolyfem_1_1solver_1_1_exponential_map.html", "classpolyfem_1_1solver_1_1_exponential_map" ],
@@ -129,6 +128,10 @@ var namespacepolyfem_1_1solver =
       [ "None", "namespacepolyfem_1_1solver.html#aff8f99461509f079bd5ac2a9817dbef8a6adf97f83acf6453d4a6a4b1070f3754", null ],
       [ "Solution", "namespacepolyfem_1_1solver.html#aff8f99461509f079bd5ac2a9817dbef8a49b21ad0d38942f635877e7bbc5d7a1e", null ],
       [ "Derivatives", "namespacepolyfem_1_1solver.html#aff8f99461509f079bd5ac2a9817dbef8a2a7f1476b6ddab6d53b03d77dacdbd1e", null ]
+    ] ],
+    [ "ElementInversionCheck", "namespacepolyfem_1_1solver.html#a24302b3bee666e7148a3ad8754b5675a", [
+      [ "Discrete", "namespacepolyfem_1_1solver.html#a24302b3bee666e7148a3ad8754b5675aa4984667940802dedc139aa7a430a6553", null ],
+      [ "Conservative", "namespacepolyfem_1_1solver.html#a24302b3bee666e7148a3ad8754b5675aa5632b7299aaf30b0ac76f9d590df649b", null ]
     ] ],
     [ "ParameterType", "namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59", [
       [ "Shape", "namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59a880c1273b27d27cfc82004c3a4b205c9", null ],

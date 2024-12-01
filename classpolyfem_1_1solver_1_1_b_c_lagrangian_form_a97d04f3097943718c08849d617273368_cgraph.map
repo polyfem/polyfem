@@ -1,19 +1,21 @@
 <map id="polyfem::solver::BCLagrangianForm::BCLagrangianForm" name="polyfem::solver::BCLagrangianForm::BCLagrangianForm">
-<area shape="rect" id="Node000001" title="Construct a new BCLagrangianForm object with a time dependent Dirichlet boundary." alt="" coords="5,133,228,173"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#aca4ea558328b659e2c51120d0d63873b" title="Initialize the masked lumped mass matrix." alt="" coords="276,85,516,125"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="228,132,265,125,266,130,229,137"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a314f8a932a3cb372cb7c57aea87d77ab" title="Update target x to the Dirichlet boundary values at time t." alt="" coords="285,165,507,205"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="228,163,271,168,271,174,228,169"/>
-<area shape="rect" id="Node000003" href="$namespacepolyfem_1_1utils.html#a2fb8d51756a3b76bee0485fa58e65226" title="Lump each row of a matrix into the diagonal." alt="" coords="574,5,727,45"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="460,83,572,47,574,52,462,88"/>
-<area shape="rect" id="Node000004" href="$namespacepolyfem_1_1utils.html#a691a83ca0c9ab36d64ab2bd56eb394e0" title=" " alt="" coords="569,69,732,109"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="516,95,555,93,556,98,516,100"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_form.html#a5cf0de6bac08f31cdd37503d5d2218fd" title="Compute the value of the form multiplied with the weigth." alt="" coords="568,133,733,173"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="503,123,555,133,554,138,502,128"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_form.html#a464a37a939d522c672aed03d281a5a92" title="Compute the value of the form." alt="" coords="785,101,951,141"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="733,139,771,133,772,138,734,144"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_form.html#a9cffeca817d2f65884dbdb0b05dbf8ae" title="Get the form&#39;s multiplicative constant weight." alt="" coords="785,165,951,205"/>
-<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="734,163,772,169,771,174,733,168"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#a0101cc7349acaf03df4743439d055f28" title=" " alt="" coords="564,197,737,237"/>
-<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="508,197,551,202,550,207,507,202"/>
+<area shape="rect" id="Node000001" title="Construct a new BCLagrangianForm object with a time dependent Dirichlet boundary." alt="" coords="5,183,228,223"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#aca4ea558328b659e2c51120d0d63873b" title="Initialize the masked lumped mass matrix." alt="" coords="276,119,516,159"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="204,181,294,160,295,165,205,186"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a314f8a932a3cb372cb7c57aea87d77ab" title="Update target x to the Dirichlet boundary values at time t." alt="" coords="285,215,507,255"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="228,213,271,218,271,224,228,219"/>
+<area shape="rect" id="Node000003" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="588,5,713,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="426,117,488,79,563,41,586,32,588,37,565,46,491,84,429,121"/>
+<area shape="rect" id="Node000004" href="$namespacepolyfem_1_1utils.html#a2fb8d51756a3b76bee0485fa58e65226" title="Lump each row of a matrix into the diagonal." alt="" coords="574,55,727,95"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="476,117,560,95,561,101,477,122"/>
+<area shape="rect" id="Node000005" href="$namespacepolyfem_1_1utils.html#a691a83ca0c9ab36d64ab2bd56eb394e0" title=" " alt="" coords="569,119,732,159"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="516,137,556,137,556,142,516,142"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_form.html#a5cf0de6bac08f31cdd37503d5d2218fd" title="Compute the value of the form multiplied with the weigth." alt="" coords="568,183,733,223"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="477,157,558,177,557,183,476,162"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_form.html#a464a37a939d522c672aed03d281a5a92" title="Compute the value of the form." alt="" coords="785,151,951,191"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="733,189,771,183,772,188,734,194"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_form.html#a9cffeca817d2f65884dbdb0b05dbf8ae" title="Get the form&#39;s multiplicative constant weight." alt="" coords="785,215,951,255"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="734,213,772,219,771,224,733,218"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1assembler_1_1_rhs_assembler.html#a0101cc7349acaf03df4743439d055f28" title=" " alt="" coords="564,247,737,287"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="508,247,551,252,550,257,507,252"/>
 </map>

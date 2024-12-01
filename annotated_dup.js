@@ -241,7 +241,6 @@ var annotated_dup =
         [ "DirichletVariableToSimulation", "classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation" ],
         [ "DivideForm", "classpolyfem_1_1solver_1_1_divide_form.html", "classpolyfem_1_1solver_1_1_divide_form" ],
         [ "ElasticEnergyForm", "classpolyfem_1_1solver_1_1_elastic_energy_form.html", "classpolyfem_1_1solver_1_1_elastic_energy_form" ],
-        [ "ElasticForm", "classpolyfem_1_1solver_1_1_elastic_form.html", "classpolyfem_1_1solver_1_1_elastic_form" ],
         [ "ElasticVariableToSimulation", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation" ],
         [ "ENu2LambdaMu", "classpolyfem_1_1solver_1_1_e_nu2_lambda_mu.html", "classpolyfem_1_1solver_1_1_e_nu2_lambda_mu" ],
         [ "ExponentialMap", "classpolyfem_1_1solver_1_1_exponential_map.html", "classpolyfem_1_1solver_1_1_exponential_map" ],
@@ -360,6 +359,7 @@ var annotated_dup =
         [ "TetrahedronClipping", "classpolyfem_1_1utils_1_1_tetrahedron_clipping.html", "classpolyfem_1_1utils_1_1_tetrahedron_clipping" ],
         [ "Timer", "classpolyfem_1_1utils_1_1_timer.html", "classpolyfem_1_1utils_1_1_timer" ],
         [ "Timing", "structpolyfem_1_1utils_1_1_timing.html", "structpolyfem_1_1utils_1_1_timing" ],
+        [ "Tree", "classpolyfem_1_1utils_1_1_tree.html", "classpolyfem_1_1utils_1_1_tree" ],
         [ "TriangleClipping", "classpolyfem_1_1utils_1_1_triangle_clipping.html", "classpolyfem_1_1utils_1_1_triangle_clipping" ],
         [ "UniformSelection", "classpolyfem_1_1utils_1_1_uniform_selection.html", "classpolyfem_1_1utils_1_1_uniform_selection" ]
       ] ],
