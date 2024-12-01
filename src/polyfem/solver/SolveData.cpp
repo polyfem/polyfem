@@ -176,7 +176,7 @@ namespace polyfem::solver
 			al_form.push_back(std::make_shared<BCLagrangianForm>(
 				ndof, boundary_nodes, local_boundary, local_neumann_boundary,
 				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t, periodic_bc));
-			forms.push_back(al_form.back());
+			// forms.push_back(al_form.back());
 		}
 
 		for (const auto &path : constraint_files)
@@ -191,7 +191,7 @@ namespace polyfem::solver
 
 			al_form.push_back(std::make_shared<GenericLagrangianForm>(
 				ndof, dim, local2global, A, b));
-			forms.push_back(al_form.back());
+			// forms.push_back(al_form.back());
 		}
 
 		if (macro_strain_constraint.is_active())

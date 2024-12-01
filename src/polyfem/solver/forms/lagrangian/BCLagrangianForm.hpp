@@ -88,6 +88,8 @@ namespace polyfem::solver
 		const std::vector<mesh::LocalBoundary> *local_boundary_;
 		const std::vector<mesh::LocalBoundary> *local_neumann_boundary_;
 		const int n_boundary_samples_;
+		const int n_dofs_;
+		Eigen::VectorXi constraints_; ///< Constraints
 
 		const assembler::RhsAssembler *rhs_assembler_; ///< Reference to the RHS assembler
 		const bool is_time_dependent_;
@@ -96,11 +98,9 @@ namespace polyfem::solver
 		StiffnessMatrix masked_lumped_mass_;      ///< mass matrix masked by the AL dofs
 
 		/// @brief Initialize the masked lumped mass matrix
-		/// @param ndof Number of degrees of freedom
 		/// @param mass Mass matrix
 		/// @param obstacle_ndof Obstacle's number of DOF
 		void init_masked_lumped_mass(
-			const int ndof,
 			const StiffnessMatrix &mass,
 			const size_t obstacle_ndof);
 

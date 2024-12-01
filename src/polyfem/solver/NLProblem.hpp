@@ -64,12 +64,8 @@ namespace polyfem::solver
 		TVector reduced_to_full(const TVector &reduced) const;
 
 	protected:
-		std::vector<int> constraint_nodes_;
-
 		const int full_size_; ///< Size of the full problem
 		int reduced_size_;    ///< Size of the reduced problem
-
-		std::shared_ptr<utils::PeriodicBoundary> periodic_bc_;
 
 		enum class CurrentSize
 		{
@@ -91,7 +87,7 @@ namespace polyfem::solver
 		StiffnessMatrix Q2_;        ///< Q2 block of the QR decomposition of the constraints matrix
 		StiffnessMatrix R1_;        ///< R1 block of the QR decomposition of the constraints matrix
 		TVector constraint_values_; ///< Values of the constraints
-		TVector Q1R1iTb_;			///< Q1_ * (R1_.transpose().triangularView<Eigen::Upper>().solve(constraint_values_))
+		TVector Q1R1iTb_;           ///< Q1_ * (R1_.transpose().triangularView<Eigen::Upper>().solve(constraint_values_))
 		std::shared_ptr<polysolve::linear::Solver> solver_;
 
 		void setup_constraints();

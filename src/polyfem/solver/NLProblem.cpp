@@ -7,7 +7,7 @@
 
 #include <polysolve/linear/Solver.hpp>
 
-#include <igl/slice.h>
+#include <igl/cat.h>
 
 #include <set>
 
@@ -51,7 +51,6 @@ namespace polyfem::solver
 		const std::shared_ptr<polysolve::linear::Solver> &solver)
 		: FullNLProblem(forms),
 		  full_size_(full_size),
-		  periodic_bc_(periodic_bc),
 		  t_(t),
 		  penalty_forms_(penalty_forms),
 		  solver_(solver)
@@ -62,38 +61,21 @@ namespace polyfem::solver
 
 	void NLProblem::setup_constraints()
 	{
-		constraint_nodes_.clear();
-
+		if (penalty_forms_.empty())
 		{
-			for (const auto &f : penalty_forms_)
-				constraint_nodes_.insert(constraint_nodes_.end(),
-										 f->constraint_nodes().begin(),
-										 f->constraint_nodes().end());
-			std::sort(constraint_nodes_.begin(), constraint_nodes_.end());
-			auto it = std::unique(constraint_nodes_.begin(), constraint_nodes_.end());
-			constraint_nodes_.resize(std::distance(constraint_nodes_.begin(), it));
+			reduced_size_ = full_size_;
+			return;
 		}
 
-		const auto constraint_size = constraint_nodes_.size();
-		reduced_size_ = full_size_ - constraint_size;
-
-		// TODO concatenate
 		StiffnessMatrix A;
-		{
-			StiffnessMatrix Afull(full_size_, full_size_);
-			for (const auto &f : penalty_forms_)
-				Afull += f->constraint_matrix();
-			Afull.makeCompressed();
+		for (const auto &f : penalty_forms_)
+			igl::cat(1, A, f->constraint_matrix(), A);
 
-			Eigen::MatrixXi tmp = Eigen::Map<Eigen::MatrixXi>(
-				&constraint_nodes_[0],
-				constraint_nodes_.size(),
-				1);
+		const int constraint_size = A.rows();
+		reduced_size_ = full_size_ - constraint_size;
+		StiffnessMatrix At = A.transpose();
 
-			igl::slice(Afull, tmp, 1, A);
-		}
-
-		Eigen::SparseQR<StiffnessMatrix, Eigen::COLAMDOrdering<int>> QR(A.transpose());
+		Eigen::SparseQR<StiffnessMatrix, Eigen::COLAMDOrdering<int>> QR(At);
 
 		if (QR.info() != Eigen::Success)
 			log_and_throw_error("Failed to factorize constraints matrix");
@@ -131,19 +113,15 @@ namespace polyfem::solver
 
 	void NLProblem::update_constraint_values()
 	{
-		// TODO concatenate
+		int index = 0;
+		constraint_values_.resize(Q1_.cols());
+		for (const auto &f : penalty_forms_)
 		{
-			TVector bfull(full_size_, 1);
-			for (const auto &f : penalty_forms_)
-				bfull += f->constraint_value();
-
-			Eigen::MatrixXi tmp = Eigen::Map<Eigen::MatrixXi>(
-				&constraint_nodes_[0],
-				constraint_nodes_.size(),
-				1);
-
-			igl::slice(bfull, tmp, 1, constraint_values_);
+			constraint_values_.segment(index, f->constraint_value().rows()) = f->constraint_value();
+			index += f->constraint_value().rows();
 		}
+
+		std::cout << R1_.transpose() << std::endl;
 
 		Q1R1iTb_ = Q1_ * R1_.transpose().triangularView<Eigen::Upper>().solve(constraint_values_);
 	}
@@ -191,23 +169,64 @@ namespace polyfem::solver
 	double NLProblem::value(const TVector &x)
 	{
 		// TODO: removed fearure const bool only_elastic
-		return FullNLProblem::value(reduced_to_full(x));
+		double res = FullNLProblem::value(reduced_to_full(x));
+
+		if (full_size() == current_size())
+		{
+			for (const auto &f : penalty_forms_)
+			{
+				if (!f->enabled())
+					continue;
+				res += f->value(x);
+			}
+		}
+
+		return res;
 	}
 
 	void NLProblem::gradient(const TVector &x, TVector &grad)
 	{
-		TVector full_grad;
-		FullNLProblem::gradient(reduced_to_full(x), full_grad);
+		FullNLProblem::gradient(reduced_to_full(x), grad);
+
 		if (full_size() != current_size())
-			grad = Q2_.transpose() * full_grad;
+		{
+			grad = Q2_.transpose() * grad;
+		}
+		else
+		{
+			TVector tmp;
+
+			for (const auto &f : penalty_forms_)
+			{
+				if (!f->enabled())
+					continue;
+
+				f->first_derivative(x, tmp);
+
+				grad += tmp;
+			}
+		}
 	}
 
 	void NLProblem::hessian(const TVector &x, THessian &hessian)
 	{
-		THessian full_hessian;
-		FullNLProblem::hessian(reduced_to_full(x), full_hessian);
+		FullNLProblem::hessian(reduced_to_full(x), hessian);
+
 		if (full_size() != current_size())
-			hessian = Q2_.transpose() * full_hessian * Q2_;
+		{
+			hessian = Q2_.transpose() * hessian * Q2_;
+		}
+		else
+		{
+			THessian tmp;
+			for (const auto &f : penalty_forms_)
+			{
+				if (!f->enabled())
+					continue;
+				f->second_derivative(x, tmp);
+				hessian += tmp;
+			}
+		}
 	}
 
 	void NLProblem::solution_changed(const TVector &newX)

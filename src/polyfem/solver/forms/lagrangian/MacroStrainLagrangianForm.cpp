@@ -4,8 +4,7 @@
 namespace polyfem::solver
 {
 	MacroStrainLagrangianForm::MacroStrainLagrangianForm(const assembler::MacroStrainValue &macro_strain_constraint)
-		: AugmentedLagrangianForm(macro_strain_constraint.get_fixed_entry().size(), std::vector<int>()),
-		  macro_strain_constraint_(macro_strain_constraint)
+		: macro_strain_constraint_(macro_strain_constraint)
 	{
 	}
 
