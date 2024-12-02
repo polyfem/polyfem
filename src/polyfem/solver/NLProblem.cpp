@@ -133,7 +133,11 @@ namespace polyfem::solver
 			index += f->constraint_value().rows();
 		}
 
-		Q1R1iTb_ = Q1_ * R1_.transpose().triangularView<Eigen::Upper>().solve(constraint_values_);
+		// std::cout << constraint_values_ << std::endl;
+		// std::cout << R1_.transpose() << std::endl;
+		const Eigen::VectorXd sol = R1_.transpose().triangularView<Eigen::Lower>().solve(constraint_values_);
+		// std::cout << (R1_.transpose() * sol - constraint_values_).norm() << std::endl;
+		Q1R1iTb_ = Q1_ * sol;
 	}
 
 	void NLProblem::init_lagging(const TVector &x)
