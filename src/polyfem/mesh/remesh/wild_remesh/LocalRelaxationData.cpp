@@ -257,7 +257,7 @@ namespace polyfem::mesh
 				state.units, dim(), current_time,
 				// Elastic form
 				n_bases(), bases, /*geom_bases=*/bases, *assembler,
-				assembly_vals_cache, assembly_vals_cache,
+				assembly_vals_cache, assembly_vals_cache, state.args["solver"]["advanced"]["jacobian_threshold"], state.args["solver"]["advanced"]["check_inversion"],
 				// Body form
 				/*n_pressure_bases=*/0, boundary_nodes, local_boundary,
 				local_neumann_boundary, state.n_boundary_samples(), rhs,

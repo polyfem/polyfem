@@ -32,11 +32,13 @@ namespace polyfem::solver
 
 		// Elastic form
 		const int n_bases,
-		const std::vector<basis::ElementBases> &bases,
+		std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &geom_bases,
 		const assembler::Assembler &assembler,
-		const assembler::AssemblyValsCache &ass_vals_cache,
+		assembler::AssemblyValsCache &ass_vals_cache,
 		const assembler::AssemblyValsCache &mass_ass_vals_cache,
+		const double jacobian_threshold,
+		const ElementInversionCheck check_inversion,
 
 		// Body form
 		const int n_pressure_bases,
@@ -112,7 +114,7 @@ namespace polyfem::solver
 
 		elastic_form = std::make_shared<ElasticForm>(
 			n_bases, bases, geom_bases, assembler, ass_vals_cache,
-			t, dt, is_volume);
+			t, dt, is_volume, jacobian_threshold, check_inversion);
 		forms.push_back(elastic_form);
 
 		if (rhs_assembler != nullptr)

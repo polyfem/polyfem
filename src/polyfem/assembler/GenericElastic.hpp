@@ -53,6 +53,8 @@ namespace polyfem::assembler
 		// sets material params
 		virtual void add_multimaterial(const int index, const json &params, const Units &units) override = 0;
 
+		bool allow_inversion() const override { return true; }
+
 	private:
 		// utility function that computes energy, the template is used for double, DScalar1, and DScalar2 in energy, gradient and hessian
 		template <typename T>

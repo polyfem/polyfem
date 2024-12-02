@@ -217,12 +217,13 @@ namespace polyfem
 		damping_prev_assembler = std::make_shared<assembler::ViscousDampingPrev>();
 		set_materials(*damping_prev_assembler);
 
+		const ElementInversionCheck check_inversion = args["solver"]["advanced"]["check_inversion"];
 		const std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(
 			// General
 			units,
 			mesh->dimension(), t,
 			// Elastic form
-			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache,
+			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache, args["solver"]["advanced"]["jacobian_threshold"], check_inversion,
 			// Body form
 			n_pressure_bases, boundary_nodes, local_boundary,
 			local_neumann_boundary,
@@ -329,6 +330,12 @@ namespace polyfem
 		nl_solver = make_nl_solver(false);
 		al_solver.solve_reduced(nl_solver, nl_problem, sol);
 
+		if (args["space"]["advanced"]["count_flipped_els_continuous"])
+		{
+			const auto invalidList = count_invalid(mesh->dimension(), bases, geom_bases(), sol);
+			logger().debug("Flipped elements (cnt {}) : {}", invalidList.size(), invalidList);
+		}
+
 		// ---------------------------------------------------------------------
 
 		// TODO: Make this more general
@@ -383,6 +390,7 @@ namespace polyfem
 				nl_problem.init(sol);
 				solve_data.update_barrier_stiffness(sol);
 				nl_solver->minimize(nl_problem, tmp_sol);
+				nl_problem.finish();
 				prev_sol = sol;
 				sol = nl_problem.reduced_to_full(tmp_sol);
 

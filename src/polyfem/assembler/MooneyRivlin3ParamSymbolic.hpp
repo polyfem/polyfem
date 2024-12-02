@@ -36,6 +36,7 @@ namespace polyfem::assembler
 		void add_multimaterial(const int index, const json &params, const Units &units) override;
 
 		std::string name() const override { return "MooneyRivlin3ParamSymbolic"; }
+		bool allow_inversion() const override { return false; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
 		void assign_stress_tensor(const OutputData &data,

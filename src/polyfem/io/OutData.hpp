@@ -54,6 +54,7 @@ namespace polyfem::io
 			bool contact_forces;
 			bool friction_forces;
 			bool forces;
+			bool jacobian_validity;
 
 			bool use_sampler;
 			bool boundary_only;

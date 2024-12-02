@@ -53,6 +53,8 @@ set(SOURCES
 	StringUtils.hpp
 	Timer.hpp
 	Types.hpp
+	Jacobian.hpp
+	Jacobian.cpp
 	LazyCubicInterpolator.cpp
 	LazyCubicInterpolator.hpp
 	svd/ImplicitQRSVD.h
