@@ -32,8 +32,6 @@ namespace polyfem::solver
 		std::function<void(const double)> post_subsolve = [](const double) {};
 
 	protected:
-		void set_al_weight(NLProblem &nl_problem, const Eigen::VectorXd &x, const double weight);
-
 		std::vector<std::shared_ptr<AugmentedLagrangianForm>> alagr_forms;
 		const double initial_al_weight;
 		const double scaling;

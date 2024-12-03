@@ -38,6 +38,7 @@ namespace polyfem::solver
 		for (const auto &f : alagr_forms)
 			initial_error += f->compute_error(sol);
 
+		nl_problem.use_reduced_size();
 		nl_problem.line_search_begin(sol, tmp_sol);
 
 		for (auto &f : alagr_forms)
@@ -49,7 +50,7 @@ namespace polyfem::solver
 		{
 			nl_problem.line_search_end();
 
-			set_al_weight(nl_problem, sol, al_weight);
+			nl_problem.use_full_size();
 			logger().debug("Solving AL Problem with weight {}", al_weight);
 
 			nl_problem.init(sol);
@@ -65,7 +66,6 @@ namespace polyfem::solver
 			}
 
 			sol = tmp_sol;
-			set_al_weight(nl_problem, sol, -1);
 
 			double current_error = 0;
 			for (const auto &f : alagr_forms)
@@ -80,6 +80,7 @@ namespace polyfem::solver
 				sol = initial_sol;
 			}
 
+			nl_problem.use_reduced_size();
 			tmp_sol = nl_problem.full_to_reduced(sol);
 			nl_problem.line_search_begin(sol, tmp_sol);
 
@@ -103,13 +104,14 @@ namespace polyfem::solver
 		assert(sol.size() == nl_problem.full_size());
 
 		Eigen::VectorXd tmp_sol = nl_problem.full_to_reduced(sol);
+		nl_problem.use_reduced_size();
 		nl_problem.line_search_begin(sol, tmp_sol);
 
 		if (!std::isfinite(nl_problem.value(tmp_sol))
 			|| !nl_problem.is_step_valid(sol, tmp_sol)
 			|| !nl_problem.is_step_collision_free(sol, tmp_sol))
 			log_and_throw_error("Failed to apply constraints conditions; solve with augmented lagrangian first!");
-
+		nl_problem.line_search_end();
 		// --------------------------------------------------------------------
 		// Perform one final solve with the DBC projected out
 
@@ -129,26 +131,6 @@ namespace polyfem::solver
 		sol = nl_problem.reduced_to_full(tmp_sol);
 
 		post_subsolve(0);
-	}
-
-	void ALSolver::set_al_weight(NLProblem &nl_problem, const Eigen::VectorXd &x, const double weight)
-	{
-		if (alagr_forms.empty())
-			return;
-		if (weight > 0)
-		{
-			for (auto &f : alagr_forms)
-				f->enable();
-
-			nl_problem.use_full_size();
-		}
-		else
-		{
-			for (auto &f : alagr_forms)
-				f->disable();
-
-			nl_problem.use_reduced_size();
-		}
 	}
 
 } // namespace polyfem::solver
