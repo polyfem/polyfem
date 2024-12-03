@@ -90,6 +90,8 @@ namespace polyfem::solver
 		TVector Q1R1iTb_;           ///< Q1_ * (R1_.transpose().triangularView<Eigen::Upper>().solve(constraint_values_))
 		std::shared_ptr<polysolve::linear::Solver> solver_;
 
+		std::shared_ptr<FullNLProblem> penalty_problem_;
+
 		void setup_constraints();
 		void update_constraint_values();
 	};

@@ -120,6 +120,10 @@ namespace polyfem::solver
 		assert(test.nonZeros() == 0);
 #endif
 
+		std::vector<std::shared_ptr<Form>> tmp;
+		tmp.insert(tmp.end(), penalty_forms_.begin(), penalty_forms_.end());
+		penalty_problem_ = std::make_shared<FullNLProblem>(tmp);
+
 		update_constraint_values();
 	}
 
@@ -143,11 +147,17 @@ namespace polyfem::solver
 	void NLProblem::init_lagging(const TVector &x)
 	{
 		FullNLProblem::init_lagging(reduced_to_full(x));
+
+		if (full_size() == current_size())
+			penalty_problem_->init_lagging(x);
 	}
 
 	void NLProblem::update_lagging(const TVector &x, const int iter_num)
 	{
 		FullNLProblem::update_lagging(reduced_to_full(x), iter_num);
+
+		if (full_size() == current_size())
+			penalty_problem_->update_lagging(x, iter_num);
 	}
 
 	void NLProblem::update_quantities(const double t, const TVector &x)
@@ -157,27 +167,49 @@ namespace polyfem::solver
 		for (auto &f : forms_)
 			f->update_quantities(t, full);
 
+		if (full_size() == current_size())
+			for (auto &f : penalty_forms_)
+				f->update_quantities(t, x);
+
 		update_constraint_values();
 	}
 
 	void NLProblem::line_search_begin(const TVector &x0, const TVector &x1)
 	{
 		FullNLProblem::line_search_begin(reduced_to_full(x0), reduced_to_full(x1));
+
+		if (full_size() == current_size())
+			penalty_problem_->line_search_begin(x0, x1);
 	}
 
 	double NLProblem::max_step_size(const TVector &x0, const TVector &x1)
 	{
-		return FullNLProblem::max_step_size(reduced_to_full(x0), reduced_to_full(x1));
+		double max_step = FullNLProblem::max_step_size(reduced_to_full(x0), reduced_to_full(x1));
+
+		if (full_size() == current_size())
+			max_step = std::min(max_step, penalty_problem_->max_step_size(x0, x1));
+
+		return max_step;
 	}
 
 	bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1)
 	{
-		return FullNLProblem::is_step_valid(reduced_to_full(x0), reduced_to_full(x1));
+		bool valid = FullNLProblem::is_step_valid(reduced_to_full(x0), reduced_to_full(x1));
+
+		if (valid && full_size() == current_size())
+			valid = penalty_problem_->is_step_valid(x0, x1);
+
+		return valid;
 	}
 
 	bool NLProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
 	{
-		return FullNLProblem::is_step_collision_free(reduced_to_full(x0), reduced_to_full(x1));
+		bool free = FullNLProblem::is_step_collision_free(reduced_to_full(x0), reduced_to_full(x1));
+
+		if (free && full_size() == current_size())
+			free = penalty_problem_->is_step_collision_free(x0, x1);
+
+		return free;
 	}
 
 	double NLProblem::value(const TVector &x)
@@ -187,12 +219,7 @@ namespace polyfem::solver
 
 		if (full_size() == current_size())
 		{
-			for (const auto &f : penalty_forms_)
-			{
-				if (!f->enabled())
-					continue;
-				res += f->value(x);
-			}
+			res += penalty_problem_->value(x);
 		}
 
 		return res;
@@ -209,16 +236,8 @@ namespace polyfem::solver
 		else
 		{
 			TVector tmp;
-
-			for (const auto &f : penalty_forms_)
-			{
-				if (!f->enabled())
-					continue;
-
-				f->first_derivative(x, tmp);
-
-				grad += tmp;
-			}
+			penalty_problem_->gradient(x, tmp);
+			grad += tmp;
 		}
 	}
 
@@ -233,24 +252,25 @@ namespace polyfem::solver
 		else
 		{
 			THessian tmp;
-			for (const auto &f : penalty_forms_)
-			{
-				if (!f->enabled())
-					continue;
-				f->second_derivative(x, tmp);
-				hessian += tmp;
-			}
+			penalty_problem_->hessian(x, tmp);
+			hessian += tmp;
 		}
 	}
 
 	void NLProblem::solution_changed(const TVector &newX)
 	{
 		FullNLProblem::solution_changed(reduced_to_full(newX));
+
+		if (full_size() == current_size())
+			penalty_problem_->solution_changed(newX);
 	}
 
 	void NLProblem::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
 		FullNLProblem::post_step(polysolve::nonlinear::PostStepData(data.iter_num, data.solver_info, reduced_to_full(data.x), reduced_to_full(data.grad)));
+
+		if (full_size() == current_size())
+			penalty_problem_->post_step(data);
 
 		// TODO: add me back
 		// if (state_.args["output"]["advanced"]["save_nl_solve_sequence"])
@@ -275,6 +295,12 @@ namespace polyfem::solver
 		const TVector k = full - Q1R1iTb_;
 		const TVector rhs = Q2_.transpose() * k;
 		solver_->solve(rhs, reduced);
+
+		// StiffnessMatrix Q2tQ2 = Q2_.transpose() * Q2_;
+		// std::cout << full << std::endl;
+		// std::cout << "res " << (Q2tQ2 * reduced - rhs).norm() << std::endl;
+		// std::cout << "err " << (Q2_ * reduced - k).norm() << std::endl;
+
 		return reduced;
 	}
 
