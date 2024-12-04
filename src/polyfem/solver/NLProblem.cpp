@@ -137,10 +137,9 @@ namespace polyfem::solver
 			index += f->constraint_value().rows();
 		}
 
-		// std::cout << constraint_values_ << std::endl;
-		// std::cout << R1_.transpose() << std::endl;
 		const Eigen::VectorXd sol = R1_.transpose().triangularView<Eigen::Lower>().solve(constraint_values_);
-		// std::cout << (R1_.transpose() * sol - constraint_values_).norm() << std::endl;
+		assert((R1_.transpose() * sol - constraint_values_).norm() < 1e-10);
+
 		Q1R1iTb_ = Q1_ * sol;
 	}
 
@@ -296,10 +295,11 @@ namespace polyfem::solver
 		const TVector rhs = Q2_.transpose() * k;
 		solver_->solve(rhs, reduced);
 
-		// StiffnessMatrix Q2tQ2 = Q2_.transpose() * Q2_;
-		// std::cout << full << std::endl;
-		// std::cout << "res " << (Q2tQ2 * reduced - rhs).norm() << std::endl;
+#ifndef NDEBUG
+		StiffnessMatrix Q2tQ2 = Q2_.transpose() * Q2_;
+		assert((Q2tQ2 * reduced - rhs).norm() < 1e-10);
 		// std::cout << "err " << (Q2_ * reduced - k).norm() << std::endl;
+#endif
 
 		return reduced;
 	}
@@ -312,7 +312,16 @@ namespace polyfem::solver
 			return reduced;
 		}
 
-		return Q1R1iTb_ + Q2_ * reduced;
+		const TVector full = Q1R1iTb_ + Q2_ * reduced;
+#ifndef NDEBUG
+		for (const auto &f : penalty_forms_)
+		{
+			// std::cout << f->compute_error(full) << std::endl;
+			assert(f->compute_error(full) < 1e-10);
+		}
+#endif
+
+		return full;
 	}
 
 } // namespace polyfem::solver
