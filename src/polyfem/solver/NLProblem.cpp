@@ -89,7 +89,7 @@ namespace polyfem::solver
 		reduced_size_ = full_size_ - constraint_size;
 		StiffnessMatrix At = A.transpose();
 
-		Eigen::SparseQR<StiffnessMatrix, Eigen::COLAMDOrdering<int>> QR(At);
+		Eigen::SparseQR<StiffnessMatrix, Eigen::NaturalOrdering<int>> QR(At);
 
 		if (QR.info() != Eigen::Success)
 			log_and_throw_error("Failed to factorize constraints matrix");
@@ -111,6 +111,8 @@ namespace polyfem::solver
 		assert(R1_.rows() == constraint_size);
 		assert(R1_.cols() == constraint_size);
 
+		assert((Q1_.transpose() * Q2_).norm() < 1e-10);
+
 		StiffnessMatrix Q2tQ2 = Q2_.transpose() * Q2_;
 		solver_->analyze_pattern(Q2tQ2, Q2tQ2.rows());
 		solver_->factorize(Q2tQ2);
@@ -119,6 +121,8 @@ namespace polyfem::solver
 		StiffnessMatrix test = R.bottomRows(reduced_size_);
 		assert(test.nonZeros() == 0);
 #endif
+
+		assert((Q1_ * R1_ - At).norm() < 1e-10);
 
 		std::vector<std::shared_ptr<Form>> tmp;
 		tmp.insert(tmp.end(), penalty_forms_.begin(), penalty_forms_.end());
@@ -313,6 +317,13 @@ namespace polyfem::solver
 		}
 
 		const TVector full = Q1R1iTb_ + Q2_ * reduced;
+
+		// std::cout << "At Q2 y" << (At.transpose() * Q2_ * reduced).norm() << std::endl;
+		// std::cout << "At Ai b" << (At.transpose() * Q1R1iTb_ - constraint_values_).norm() << std::endl;
+
+		// std::cout << "At Ai b\n"
+		// 		  << (At.transpose() * Q1R1iTb_ - constraint_values_) << std::endl;
+
 #ifndef NDEBUG
 		for (const auto &f : penalty_forms_)
 		{
