@@ -59,12 +59,38 @@ namespace polyfem::solver
 		{
 			const int bn = boundary_nodes_[i];
 
+
 			constraints_[i] = bn;
 			A_triplets.emplace_back(i, bn, 1.0);
 		}
 		A_.resize(boundary_nodes_.size(), n_dofs_);
 		A_.setFromTriplets(A_triplets.begin(), A_triplets.end());
 		A_.makeCompressed();
+
+    
+		masked_lumped_mass_sqrt_ = mass.size() == 0 ? polyfem::utils::sparse_identity(ndof, ndof) : polyfem::utils::lump_matrix(mass);
+		{
+			double min_diag = std::numeric_limits<double>::max();
+			double max_diag = 0;
+			for (int k = 0; k < masked_lumped_mass_sqrt_.outerSize(); ++k)
+			{
+				for (StiffnessMatrix::InnerIterator it(masked_lumped_mass_sqrt_, k); it; ++it)
+				{
+					if (it.col() == it.row())
+					{
+						min_diag = std::min(min_diag, it.value());
+						max_diag = std::max(max_diag, it.value());
+					}
+				}
+			}
+			if (max_diag <= 0 || min_diag <= 0 || min_diag / max_diag < 1e-16)
+			{
+				logger().warn("Lumped mass matrix ill-conditioned. Setting lumped mass matrix to identity.");
+				masked_lumped_mass_sqrt_ = polyfem::utils::sparse_identity(ndof, ndof);
+			}
+		}
+
+		assert(ndof == masked_lumped_mass_sqrt_.rows() && ndof == masked_lumped_mass_sqrt_.cols());
 
 		masked_lumped_mass_ = mass.size() == 0 ? polyfem::utils::sparse_identity(n_dofs_, n_dofs_) : polyfem::utils::lump_matrix(mass);
 		assert(n_dofs_ == masked_lumped_mass_.rows() && n_dofs_ == masked_lumped_mass_.cols());

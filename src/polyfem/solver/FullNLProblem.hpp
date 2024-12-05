@@ -40,6 +40,12 @@ namespace polyfem::solver
 
 		virtual bool stop(const TVector &x) override { return false; }
 
+		void finish()
+		{
+			for (auto &form : forms_)
+				form->finish();
+		}
+
 	protected:
 		std::vector<std::shared_ptr<Form>> forms_;
 	};

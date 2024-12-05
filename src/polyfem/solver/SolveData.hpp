@@ -17,6 +17,8 @@
 #include <string>
 #include <unordered_map>
 
+#include <polyfem/solver/forms/ElasticForm.hpp>
+
 namespace polyfem::time_integrator
 {
 	class ImplicitTimeIntegrator;
@@ -65,11 +67,13 @@ namespace polyfem::solver
 
 			// Elastic form
 			const int n_bases,
-			const std::vector<basis::ElementBases> &bases,
+			std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &geom_bases,
 			const assembler::Assembler &assembler,
-			const assembler::AssemblyValsCache &ass_vals_cache,
+			assembler::AssemblyValsCache &ass_vals_cache,
 			const assembler::AssemblyValsCache &mass_ass_vals_cache,
+			const double jacobian_threshold,
+			const solver::ElementInversionCheck check_inversion,
 
 			// Body form
 			const int n_pressure_bases,
