@@ -15,6 +15,7 @@ namespace polyfem::solver
 			: polyfem::solver::NLProblem(full_size, forms, penalty_forms, nullptr),
 			  boundary_values_(boundary_values)
 		{
+			throw std::runtime_error("To be fixed");
 		}
 		// TODO fix AL nullptr
 

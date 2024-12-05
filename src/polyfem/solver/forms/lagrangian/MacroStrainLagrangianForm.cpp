@@ -6,6 +6,7 @@ namespace polyfem::solver
 	MacroStrainLagrangianForm::MacroStrainLagrangianForm(const assembler::MacroStrainValue &macro_strain_constraint)
 		: macro_strain_constraint_(macro_strain_constraint)
 	{
+		throw std::runtime_error("To be fixed");
 	}
 
 	double MacroStrainLagrangianForm::value_unweighted(const Eigen::VectorXd &x) const

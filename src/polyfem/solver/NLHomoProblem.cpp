@@ -21,6 +21,7 @@ namespace polyfem::solver
 	{
 		init_projection();
 		// TODO fix me AL
+		throw std::runtime_error("To be fixed");
 	}
 
 	void NLHomoProblem::init_projection()
