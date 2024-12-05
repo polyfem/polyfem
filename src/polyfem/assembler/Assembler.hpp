@@ -305,6 +305,8 @@ namespace polyfem::assembler
 		ElasticityAssembler() {}
 		virtual ~ElasticityAssembler() = default;
 
+		void set_use_robust_jacobian() { use_robust_jacobian = true; }
+
 		// plotting (eg von mises), assembler is the name of the formulation
 		void compute_scalar_value(
 			const OutputData &data,
@@ -358,8 +360,11 @@ namespace polyfem::assembler
 
 		bool is_solution_displacement() const override { return true; }
 		bool is_tensor() const override { return true; }
+		virtual bool allow_inversion() const = 0;
 
 	protected:
+		bool use_robust_jacobian = false;
+		
 		virtual void assign_stress_tensor(const OutputData &data,
 										  const int all_size,
 										  const ElasticityTensorType &type,

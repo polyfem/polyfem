@@ -19,10 +19,14 @@ namespace polyfem
 			/// if it doesn't exist, computes and caches it (modifies cache member in the latter case)
 			void compute(const int el_index, const bool is_volume, const basis::ElementBases &basis, const basis::ElementBases &gbasis, ElementAssemblyValues &vals) const;
 
+			void update(const int el_index, const bool is_volume, const basis::ElementBases &basis, const basis::ElementBases &gbasis);
+
 			void clear()
 			{
 				cache.clear();
 			}
+
+			inline bool is_initialized() const { return !cache.empty(); }
 
 			inline bool is_mass() const { return is_mass_; }
 

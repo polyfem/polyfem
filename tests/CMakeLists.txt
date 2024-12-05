@@ -14,6 +14,7 @@ set(test_sources
   test_geometry_utils.cpp
   test_hdf5.cpp
   test_interpolation.cpp
+  test_jacobian.cpp
   test_matrix.cpp
   test_ncmesh.cpp
   test_normal.cpp

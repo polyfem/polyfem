@@ -72,6 +72,7 @@ namespace polyfem::assembler
 		virtual bool is_linear() const override { return true; }
 
 		std::string name() const override { return "LinearElasticity"; }
+		bool allow_inversion() const override { return true; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
 		void assign_stress_tensor(const OutputData &data,
