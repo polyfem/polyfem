@@ -168,14 +168,14 @@ namespace polyfem::solver
 
 	void NLProblem::update_quantities(const double t, const TVector &x)
 	{
+		assert(x.size() == full_size_);
 		t_ = t;
 		const TVector full = reduced_to_full(x);
 		for (auto &f : forms_)
 			f->update_quantities(t, full);
 
-		if (full_size() == current_size())
-			for (auto &f : penalty_forms_)
-				f->update_quantities(t, x);
+		for (auto &f : penalty_forms_)
+			f->update_quantities(t, x);
 
 		update_constraint_values();
 	}
