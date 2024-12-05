@@ -45,6 +45,7 @@ namespace polyfem::solver
 			{
 				Eigen::VectorXd reduced_vec;
 				// TODO fix me AL
+				throw std::runtime_error("To be fixed");
 				//  = state.solve_data.nl_problem->full_to_reduced_grad(rhs.col(i));
 				if (i == 0)
 					reduced.setZero(reduced_vec.rows(), rhs.cols());
