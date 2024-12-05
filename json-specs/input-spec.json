@@ -17,6 +17,7 @@
             "solver",
             "boundary_conditions",
             "initial_conditions",
+            "constraints",
             "output",
             "input",
             "tests"
@@ -2627,6 +2628,18 @@
         "doc": "value"
     },
     {
+        "pointer": "/constraints",
+        "default": [],
+        "type": "list",
+        "doc": "list of file containing constraints"
+    },
+    {
+        "pointer": "/constraints/*",
+        "default": "",
+        "type": "string",
+        "doc": "constraint hdf5 file for constraint Ax=b. The file must contain these datasets: local2global, dense matrix A, and vector b. The colums of b nees to be the same as the dimentionality of the problem"
+    },
+    {
         "pointer": "/output",
         "default": null,
         "type": "object",
@@ -2748,6 +2761,7 @@
             "discretization_order",
             "nodes",
             "forces",
+            "force_high_order",
             "jacobian_validity"
         ],
         "doc": "Optional fields in the output"
@@ -2822,7 +2836,13 @@
         "pointer": "/output/paraview/options/forces",
         "default": false,
         "type": "bool",
-        "doc": "If true, write out all variational forces on the FE mesh "
+        "doc": "If true, write out all variational forces on the FE mesh"
+    },
+    {
+        "pointer": "/output/paraview/options/force_high_order",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, force write out high-order mesh, might break the output"
     },
     {
         "pointer": "/output/paraview/options/jacobian_validity",

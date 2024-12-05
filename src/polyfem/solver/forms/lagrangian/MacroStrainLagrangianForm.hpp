@@ -41,7 +41,6 @@ namespace polyfem::solver
 	private:
 		Eigen::VectorXd values;
 
-		Eigen::VectorXd lagr_mults_; ///< vector of lagrange multipliers
 		const assembler::MacroStrainValue &macro_strain_constraint_;
 	};
 } // namespace polyfem::solver

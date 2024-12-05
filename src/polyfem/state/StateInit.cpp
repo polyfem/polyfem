@@ -211,6 +211,11 @@ namespace polyfem
 			out_path_log = resolve_output_path(out_path_log);
 		}
 
+		for (auto &path : this->args["constraints"])
+		{
+			path = resolve_input_path(path);
+		}
+
 		init_logger(
 			out_path_log,
 			this->args["output"]["log"]["level"],
