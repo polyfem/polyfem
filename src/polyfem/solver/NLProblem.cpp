@@ -55,6 +55,9 @@ namespace polyfem::solver
 		  penalty_forms_(penalty_forms),
 		  solver_(solver)
 	{
+		if (periodic_bc != nullptr)
+			throw std::runtime_error("To be fixed");
+
 		setup_constraints();
 		use_reduced_size();
 	}
