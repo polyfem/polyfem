@@ -3,7 +3,7 @@
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/Form.hpp>
 #include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
-#include <polyfem/solver/forms/lagrangian/GenericLagrangianForm.hpp>
+#include <polyfem/solver/forms/lagrangian/MatrixLagrangianForm.hpp>
 #include <polyfem/solver/forms/lagrangian/MacroStrainLagrangianForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/PressureForm.hpp>
@@ -189,7 +189,7 @@ namespace polyfem::solver
 			for (auto &v : local2global)
 				v = in_node_to_node[v];
 
-			al_form.push_back(std::make_shared<GenericLagrangianForm>(
+			al_form.push_back(std::make_shared<MatrixLagrangianForm>(
 				ndof, dim, local2global, A, b));
 			// forms.push_back(al_form.back());
 		}

@@ -5,20 +5,20 @@
 namespace polyfem::solver
 {
 	/// @brief Form of the lagrangian in augmented lagrangian
-	class GenericLagrangianForm : public AugmentedLagrangianForm
+	class MatrixLagrangianForm : public AugmentedLagrangianForm
 	{
 	public:
-		/// @brief Construct a new GenericLagrangianForm object for the constraints Ax = b
+		/// @brief Construct a new MatrixLagrangianForm object for the constraints Ax = b
 		/// @param n_dofs Number of degrees of freedom
 		/// @param dim Dimension of the problem
 		/// @param constraint_nodes constraint nodes
 		/// @param A Constraints matrix, local only
 		/// @param b Constraints value
-		GenericLagrangianForm(const int n_dofs,
-							  const int dim,
-							  const std::vector<int> &constraint_nodes,
-							  const Eigen::MatrixXd &A,
-							  const Eigen::MatrixXd &b);
+		MatrixLagrangianForm(const int n_dofs,
+							 const int dim,
+							 const std::vector<int> &constraint_nodes,
+							 const Eigen::MatrixXd &A,
+							 const Eigen::MatrixXd &b);
 
 		std::string name() const override { return "generic-lagrangian"; }
 

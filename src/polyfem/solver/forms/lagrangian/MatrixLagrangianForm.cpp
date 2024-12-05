@@ -1,14 +1,14 @@
-#include "GenericLagrangianForm.hpp"
+#include "MatrixLagrangianForm.hpp"
 
 #include <polyfem/utils/Logger.hpp>
 
 namespace polyfem::solver
 {
-	GenericLagrangianForm::GenericLagrangianForm(const int n_dofs,
-												 const int dim,
-												 const std::vector<int> &constraint_nodes,
-												 const Eigen::MatrixXd &A,
-												 const Eigen::MatrixXd &b)
+	MatrixLagrangianForm::MatrixLagrangianForm(const int n_dofs,
+											   const int dim,
+											   const std::vector<int> &constraint_nodes,
+											   const Eigen::MatrixXd &A,
+											   const Eigen::MatrixXd &b)
 	{
 		assert(A.rows() == b.rows());
 		assert(b.cols() == dim);
@@ -53,7 +53,7 @@ namespace polyfem::solver
 		lagr_mults_.setZero();
 	}
 
-	double GenericLagrangianForm::value_unweighted(const Eigen::VectorXd &x) const
+	double MatrixLagrangianForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		const Eigen::VectorXd res = A_ * x - b_;
 		const double L_penalty = lagr_mults_.transpose() * res;
@@ -61,22 +61,22 @@ namespace polyfem::solver
 		return L_penalty + k_al_ * A_penalty;
 	}
 
-	void GenericLagrangianForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void MatrixLagrangianForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv = A_.transpose() * lagr_mults_ + k_al_ * (AtA * x - Atb);
 	}
 
-	void GenericLagrangianForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
+	void MatrixLagrangianForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		hessian = k_al_ * AtA;
 	}
 
-	void GenericLagrangianForm::update_lagrangian(const Eigen::VectorXd &x, const double k_al)
+	void MatrixLagrangianForm::update_lagrangian(const Eigen::VectorXd &x, const double k_al)
 	{
 		lagr_mults_ += k_al * (A_ * x - b_);
 	}
 
-	double GenericLagrangianForm::compute_error(const Eigen::VectorXd &x) const
+	double MatrixLagrangianForm::compute_error(const Eigen::VectorXd &x) const
 	{
 		const Eigen::VectorXd res = A_ * x - b_;
 		return res.squaredNorm();
