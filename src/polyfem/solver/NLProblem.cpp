@@ -254,6 +254,11 @@ namespace polyfem::solver
 		if (full_size() != current_size())
 		{
 			hessian = Q2_.transpose() * hessian * Q2_;
+
+			// remove numerical zeros
+			hessian.prune([](const Eigen::Index &row, const Eigen::Index &col, const Scalar &value) {
+				return std::abs(value) > 1e-10;
+			});
 		}
 		else
 		{
