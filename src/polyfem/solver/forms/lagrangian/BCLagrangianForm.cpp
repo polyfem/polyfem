@@ -2,6 +2,7 @@
 
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/assembler/PeriodicBoundary.hpp>
+#include <iostream>
 
 namespace polyfem::solver
 {
@@ -74,6 +75,10 @@ namespace polyfem::solver
 				logger().warn("Lumped mass matrix ill-conditioned. Setting lumped mass matrix to identity.");
 				masked_lumped_mass_sqrt_ = polyfem::utils::sparse_identity(ndof, ndof);
 			}
+			if (!is_time_dependent_)
+			{
+				masked_lumped_mass_sqrt_ = polyfem::utils::sparse_identity(ndof, ndof);
+			}
 		}
 
 		assert(ndof == masked_lumped_mass_sqrt_.rows() && ndof == masked_lumped_mass_sqrt_.cols());
@@ -85,7 +90,10 @@ namespace polyfem::solver
 			const double avg_mass = masked_lumped_mass_sqrt_.diagonal().head(n_fe_dof).mean();
 			for (int i = n_fe_dof; i < ndof; ++i)
 			{
-				masked_lumped_mass_sqrt_.coeffRef(i, i) = avg_mass;
+				if(!is_time_dependent_)
+					masked_lumped_mass_sqrt_.coeffRef(i, i) = 1.0;
+				else masked_lumped_mass_sqrt_.coeffRef(i, i) = avg_mass;
+
 			}
 		}
 
@@ -165,5 +173,6 @@ namespace polyfem::solver
 	{
 		k_al_ = k_al;
 		lagr_mults_ -= k_al_ * masked_lumped_mass_sqrt_ * (x - target_x_);
+
 	}
 } // namespace polyfem::solver
