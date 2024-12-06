@@ -1,9 +1,13 @@
 #include "ALSolver.hpp"
 
+#include "../../../../../../Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Headers/UTCoreTypes.h"
+
 #include <polyfem/utils/Logger.hpp>
 
 namespace polyfem::solver
 {
+	double ALSolver::current_al_weight = -1.0;
+
 	ALSolver::ALSolver(
 		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &alagr_form,
 		const double initial_al_weight,
@@ -17,8 +21,10 @@ namespace polyfem::solver
 		  max_al_weight(max_al_weight),
 		  eta_tol(eta_tol),
 		  update_barrier_stiffness(update_barrier_stiffness)
+
 	{
 	}
+
 
 	void ALSolver::solve_al(std::shared_ptr<NLSolver> nl_solver, NLProblem &nl_problem, Eigen::MatrixXd &sol)
 	{
@@ -30,10 +36,14 @@ namespace polyfem::solver
 
 		// --------------------------------------------------------------------
 
-		double al_weight = initial_al_weight;
+		if (current_al_weight < 0)
+		{
+			current_al_weight = initial_al_weight;
+		}
+
+		double al_weight = current_al_weight;
 		int al_steps = 0;
 		const int iters = nl_solver->stop_criteria().iterations;
-
 		double initial_error = 0;
 		for (const auto &f : alagr_forms)
 			initial_error += f->compute_error(sol);
@@ -74,7 +84,7 @@ namespace polyfem::solver
 
 			double current_error = 0;
 			for (const auto &f : alagr_forms)
-				f->compute_error(sol);
+				current_error += f->compute_error(sol);
 			const double eta = 1 - sqrt(current_error / initial_error);
 
 			logger().debug("Current eta = {}", eta);
@@ -89,13 +99,13 @@ namespace polyfem::solver
 			nl_problem.line_search_begin(sol, tmp_sol);
 
 			if (eta < eta_tol && al_weight < max_al_weight)
-				al_weight *= scaling;
-			else
-			{
-				for (auto &f : alagr_forms)
-					f->update_lagrangian(sol, al_weight);
-			}
 
+				al_weight *= scaling;
+
+			for (auto &f : alagr_forms)
+				f->update_lagrangian(sol, al_weight);
+
+			current_al_weight = al_weight;
 			post_subsolve(al_weight);
 			++al_steps;
 		}

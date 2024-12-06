@@ -171,7 +171,7 @@ namespace polyfem::solver
 		double max_barrier_stiffness_;
 
 		/// @brief Average mass of the mesh (used for adaptive barrier stiffness)
-		const double avg_mass_;
+		double avg_mass_;
 
 		/// @brief Is the simulation time dependent?
 		const bool is_time_dependent_;

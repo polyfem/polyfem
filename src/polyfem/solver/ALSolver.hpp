@@ -3,6 +3,8 @@
 #include <polyfem/solver/NLProblem.hpp>
 #include <polysolve/nonlinear/Solver.hpp>
 #include <polyfem/solver/forms/lagrangian/AugmentedLagrangianForm.hpp>
+
+
 #include <polyfem/Common.hpp>
 
 #include <Eigen/Core>
@@ -31,6 +33,7 @@ namespace polyfem::solver
 
 		std::function<void(const double)> post_subsolve = [](const double) {};
 
+
 	protected:
 		void set_al_weight(NLProblem &nl_problem, const Eigen::VectorXd &x, const double weight);
 
@@ -39,6 +42,8 @@ namespace polyfem::solver
 		const double scaling;
 		const double max_al_weight;
 		const double eta_tol;
+
+		static double current_al_weight;
 
 		// TODO: replace this with a member function
 		std::function<void(const Eigen::VectorXd &)> update_barrier_stiffness;

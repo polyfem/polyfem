@@ -15,6 +15,7 @@
 
 #include <igl/writePLY.h>
 #include <cmath>
+#include <iostream>
 
 namespace polyfem::solver
 {
@@ -89,6 +90,11 @@ namespace polyfem::solver
 		Eigen::VectorXd grad_barrier = barrier_potential_.gradient(
 			nonconvergent_constraints, collision_mesh_, displaced_surface);
 		grad_barrier = collision_mesh_.to_full_dof(grad_barrier);
+
+		if (!is_time_dependent_)
+		{
+			avg_mass_ = 1;
+		}
 
 		//barrier_stiffness_ = ipc::initial_barrier_stiffness(
 		//	ipc::world_bbox_diagonal_length(displaced_surface), barrier_potential_.barrier(), dhat_, avg_mass_,
@@ -242,6 +248,9 @@ namespace polyfem::solver
 			const Eigen::MatrixXi &F = collision_mesh_.faces();
 			igl::writePLY(resolve_output_path("debug_ccd_0.ply"), V0, F, E);
 			igl::writePLY(resolve_output_path("debug_ccd_1.ply"), V1, F, E);
+
+			//std::cout << "Press Enter to continue..." << std::endl;
+			//std::cin.get();
 		}
 
 		double max_step;
