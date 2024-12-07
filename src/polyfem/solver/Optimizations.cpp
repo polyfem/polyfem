@@ -128,6 +128,8 @@ namespace polyfem::solver
 		else
 			log_and_throw_adjoint_error("Invalid simple form type {}!", obj_type);
 
+		obj->set_weight(args["weight"]);
+
 		return obj;
 	}
 
