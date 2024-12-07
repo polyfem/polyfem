@@ -14,6 +14,8 @@
 #include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
 #include <polyfem/solver/AdjointNLProblem.hpp>
 
+#include <finitediff.hpp>
+
 #include <catch2/catch_all.hpp>
 #include <math.h>
 ////////////////////////////////////////////////////////////////////////////////
@@ -77,6 +79,20 @@ namespace
 		}
 	}
 
+	Eigen::MatrixXd unflatten(const Eigen::VectorXd &x, int dim)
+	{
+		if (x.size() == 0)
+			return Eigen::MatrixXd(0, dim);
+
+		assert(x.size() % dim == 0);
+		Eigen::MatrixXd X(x.size() / dim, dim);
+		for (int i = 0; i < x.size(); ++i)
+		{
+			X(i / dim, i % dim) = x(i);
+		}
+		return X;
+	}
+
 	void verify_adjoint(AdjointNLProblem &problem, const Eigen::VectorXd &x, const Eigen::MatrixXd &theta, const double dt, const double tol)
 	{
 		problem.solution_changed(x);
@@ -101,6 +117,32 @@ namespace
 		std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
 		std::cout << std::setprecision(12) << "relative error: " << abs((finite_difference - derivative) / derivative) << "\n";
 		REQUIRE(derivative == Catch::Approx(finite_difference).epsilon(tol));
+	}
+
+	void verify_adjoint_expensive(AdjointNLProblem &problem, const Eigen::VectorXd &x, const double dt)
+	{
+		problem.solution_changed(x);
+		problem.save_to_file(0, x);
+		double functional_val = problem.value(x);
+
+		Eigen::VectorXd one_form;
+		problem.gradient(x, one_form);
+
+		auto f = [&](const Eigen::VectorXd &x_) {
+			problem.solution_changed(x_);
+			return problem.value(x_);
+		};
+
+		Eigen::VectorXd fgrad;
+		fd::finite_gradient(x, f, fgrad);
+
+		std::cout << "one form:\n"
+				  << unflatten(one_form, 3)
+				  << "\nfd:\n"
+				  << unflatten(fgrad, 3)
+				  << std::endl;
+
+		CHECK(fd::compare_gradient(one_form, fgrad));
 	}
 
 	std::tuple<std::shared_ptr<AdjointForm>, VariableToSimulationGroup, std::vector<std::shared_ptr<State>>> prepare_test(json &opt_args)
@@ -1292,4 +1334,51 @@ TEST_CASE("control-pressure-nodes-3d", "[.][test_adjoint]")
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 
 	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-8, 1e-3);
+}
+
+TEST_CASE("dirichlet-nodes-3d", "[.][test_adjoint]")
+{
+	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	json in_args;
+	load_json(path + "dirichlet-nodes-3d.json", in_args);
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
+
+	std::vector<std::shared_ptr<State>> states({state_ptr});
+
+	json opt_args;
+	load_json(path + "dirichlet-nodes-3d-opt.json", opt_args);
+	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
+
+	VariableToSimulationGroup variable_to_simulations;
+	{
+		auto v2s = std::make_shared<DirichletNodesVariableToSimulation>(state_ptr, CompositeParametrization());
+
+		v2s->set_output_indexing(opt_args["variable_to_simulation"][0]);
+		variable_to_simulations.push_back(v2s);
+	}
+
+	auto obj = AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states);
+
+	auto velocity = [](const Eigen::MatrixXd &position) {
+		auto vel = position;
+		for (int i = 0; i < vel.size(); i++)
+		{
+			vel(i) = (rand() % 1000) / 1000.0;
+		}
+		return vel;
+	};
+	Eigen::MatrixXd velocity_discrete;
+
+	Eigen::VectorXd x(12);
+	x << 0, 0, 0,
+		0, 0, 0,
+		0, -0.2, 0,
+		0, -0.2, 0;
+	velocity_discrete = velocity(x);
+
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
+
+	verify_adjoint_expensive(*nl_problem, x, 1e-7);
+	// verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-3);
 }

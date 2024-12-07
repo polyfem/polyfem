@@ -85,8 +85,8 @@ namespace polyfem::solver
 
 		typedef std::vector<ValueType>::const_iterator const_iterator;
 
-		inline ValueType& operator[](size_t i) { return L[i]; }
-		inline const ValueType& operator[](size_t i) const { return L[i]; }
+		inline ValueType &operator[](size_t i) { return L[i]; }
+		inline const ValueType &operator[](size_t i) const { return L[i]; }
 		inline const_iterator begin() const { return L.begin(); }
 		inline const_iterator end() const { return L.end(); }
 		inline void push_back(const ValueType &v2s) { L.push_back(v2s); }
@@ -221,6 +221,35 @@ namespace polyfem::solver
 		std::string variable_to_string(const Eigen::VectorXd &variable);
 
 		std::vector<int> dirichlet_boundaries_;
+	};
+
+	class DirichletNodesVariableToSimulation : public VariableToSimulation
+	{
+	public:
+		using VariableToSimulation::VariableToSimulation;
+		virtual ~DirichletNodesVariableToSimulation() {}
+
+		std::string name() const override { return "dirichlet-nodes"; }
+
+		void set_dirichlet_nodes(const Eigen::VectorXi &dirichlet_nodes)
+		{
+			dirichlet_nodes_ = dirichlet_nodes;
+		}
+
+		ParameterType get_parameter_type() const override { return ParameterType::DirichletBC; }
+
+		Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const override;
+		Eigen::VectorXd inverse_eval() override;
+
+		void set_output_indexing(const json &args) override;
+
+	protected:
+		void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices) override;
+
+	private:
+		std::string variable_to_string(const Eigen::VectorXd &variable);
+
+		Eigen::VectorXi dirichlet_nodes_;
 	};
 
 	// To optimize the per node pressure boundaries

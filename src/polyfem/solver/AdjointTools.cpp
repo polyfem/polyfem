@@ -33,27 +33,24 @@ Reminders:
 
 using namespace polyfem::utils;
 
-namespace
-{
-
-	int get_bdf_order(const polyfem::State &state)
-	{
-		if (state.args["time"]["integrator"].is_string())
-			return 1;
-		if (state.args["time"]["integrator"]["type"] == "ImplicitEuler")
-			return 1;
-		if (state.args["time"]["integrator"]["type"] == "BDF")
-			return state.args["time"]["integrator"]["steps"].get<int>();
-
-		polyfem::log_and_throw_adjoint_error("Integrator type not supported for differentiability.");
-		return -1;
-	}
-} // namespace
-
 namespace polyfem::solver
 {
 	namespace
 	{
+
+		int get_bdf_order(const polyfem::State &state)
+		{
+			if (state.args["time"]["integrator"].is_string())
+				return 1;
+			if (state.args["time"]["integrator"]["type"] == "ImplicitEuler")
+				return 1;
+			if (state.args["time"]["integrator"]["type"] == "BDF")
+				return state.args["time"]["integrator"]["steps"].get<int>();
+
+			polyfem::log_and_throw_adjoint_error("Integrator type not supported for differentiability.");
+			return -1;
+		}
+
 		double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
 
 		class LocalThreadScalarStorage
@@ -556,18 +553,20 @@ namespace polyfem::solver
 		Eigen::VectorXd elasticity_term, rhs_term, pressure_term, contact_term;
 
 		one_form.setZero(state.n_geom_bases * state.mesh->dimension());
+		Eigen::MatrixXd adjoint_zeroed = adjoint;
+		adjoint_zeroed(state.boundary_nodes, Eigen::all).setZero();
 
 		// if (j.depend_on_u() || j.depend_on_gradu())
 		{
-			state.solve_data.elastic_form->force_shape_derivative(0, state.n_geom_bases, sol, sol, adjoint, elasticity_term);
+			state.solve_data.elastic_form->force_shape_derivative(0, state.n_geom_bases, sol, sol, adjoint_zeroed, elasticity_term);
 			if (state.solve_data.body_form)
-				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, 0, sol, adjoint, rhs_term);
+				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, 0, sol, adjoint_zeroed, rhs_term);
 			else
 				rhs_term.setZero(one_form.size());
 
 			if (state.solve_data.pressure_form)
 			{
-				state.solve_data.pressure_form->force_shape_derivative(state.n_geom_bases, 0, sol, adjoint, pressure_term);
+				state.solve_data.pressure_form->force_shape_derivative(state.n_geom_bases, 0, sol, adjoint_zeroed, pressure_term);
 				pressure_term = state.basis_nodes_to_gbasis_nodes * pressure_term;
 			}
 			else
@@ -575,7 +574,7 @@ namespace polyfem::solver
 
 			if (state.is_contact_enabled())
 			{
-				state.solve_data.contact_form->force_shape_derivative(state.diff_cached.collision_set(0), sol, adjoint, contact_term);
+				state.solve_data.contact_form->force_shape_derivative(state.diff_cached.collision_set(0), sol, adjoint_zeroed, contact_term);
 				contact_term = state.basis_nodes_to_gbasis_nodes * contact_term;
 			}
 			else
@@ -586,10 +585,10 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_shape_homogenization_adjoint_term(
-			const State &state,
-			const Eigen::MatrixXd &sol,
-			const Eigen::MatrixXd &adjoint,
-			Eigen::VectorXd &one_form)
+		const State &state,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &adjoint,
+		Eigen::VectorXd &one_form)
 	{
 		Eigen::VectorXd elasticity_term, contact_term;
 
@@ -634,7 +633,7 @@ namespace polyfem::solver
 
 		const Eigen::MatrixXd reduced_sol = homo_problem->full_to_reduced(sol, state.diff_cached.disp_grad());
 		const Eigen::VectorXd extended_sol = homo_problem->reduced_to_extended(reduced_sol);
-		
+
 		const Eigen::VectorXd extended_adjoint = homo_problem->reduced_to_extended(adjoint, true);
 		const Eigen::MatrixXd affine_adjoint = homo_problem->reduced_to_disp_grad(adjoint, true);
 		const Eigen::VectorXd full_adjoint = homo_problem->NLProblem::reduced_to_full(adjoint.topRows(homo_problem->reduced_size())) + io::Evaluator::generate_linear_field(state.n_bases, state.mesh_nodes, affine_adjoint);
@@ -749,7 +748,9 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &adjoint,
 		Eigen::VectorXd &one_form)
 	{
-		state.solve_data.elastic_form->force_material_derivative(0, sol, sol, adjoint, one_form);
+		Eigen::MatrixXd adjoint_zeroed = adjoint;
+		adjoint_zeroed(state.boundary_nodes, Eigen::all).setZero();
+		state.solve_data.elastic_form->force_material_derivative(0, sol, sol, adjoint_zeroed, one_form);
 	}
 
 	void AdjointTools::dJ_material_transient_adjoint_term(
@@ -802,8 +803,8 @@ namespace polyfem::solver
 
 		one_form.setZero(1);
 
-		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator = 
-		 time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
+		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator =
+			time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
 		{
 			Eigen::MatrixXd solution, velocity, acceleration;
 			solution = state.diff_cached.u(0);
@@ -898,6 +899,27 @@ namespace polyfem::solver
 			one_form(b) = 0;
 			one_form(ndof + b) = 0;
 		}
+	}
+
+	void AdjointTools::dJ_dirichlet_static_adjoint_term(
+		const State &state,
+		const Eigen::MatrixXd &adjoint,
+		Eigen::VectorXd &one_form)
+	{
+		const int n_dirichlet_dof = state.boundary_nodes.size();
+		StiffnessMatrix gradd_h = state.diff_cached.gradu_h(0);
+		std::set<int> boundary_nodes_set(state.boundary_nodes.begin(), state.boundary_nodes.end());
+		gradd_h.prune([&boundary_nodes_set](const Eigen::Index &row, const Eigen::Index &col, const FullNLProblem::Scalar &value) {
+			if (row != col)
+				return value;
+			if (boundary_nodes_set.find(row) == boundary_nodes_set.end())
+				return value;
+			return 0.0;
+		});
+		one_form.setZero(state.ndof());
+		one_form(state.boundary_nodes) -= adjoint(state.boundary_nodes, 0);
+		one_form(state.boundary_nodes) -= (gradd_h.transpose() * adjoint.col(0))(state.boundary_nodes);
+		one_form = utils::flatten(utils::unflatten(one_form, state.mesh->dimension())(state.primitive_to_node(), Eigen::all));
 	}
 
 	void AdjointTools::dJ_dirichlet_transient_adjoint_term(
