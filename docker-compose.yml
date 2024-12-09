@@ -9,9 +9,9 @@ services:
     working_dir: /data
     entrypoint: ["/app/polyfem/build/PolyFEM_bin"]
     command: ["--json", "2-cubes-falling.json"]
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - capabilities: [gpu]
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - capabilities: [gpu]
     restart: unless-stopped
