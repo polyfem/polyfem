@@ -86,12 +86,8 @@ namespace polyfem::solver
 			const int n_fe_dof = ndof - obstacle_ndof;
 			const double avg_mass = masked_lumped_mass_sqrt_.diagonal().head(n_fe_dof).mean();
 			for (int i = n_fe_dof; i < ndof; ++i)
-			{
-				if(!is_time_dependent_)
-					masked_lumped_mass_sqrt_.coeffRef(i, i) = 1.0;
-				else masked_lumped_mass_sqrt_.coeffRef(i, i) = avg_mass;
+				masked_lumped_mass_sqrt_.coeffRef(i, i) = avg_mass;
 
-			}
 		}
 
 		// Remove non-boundary ndof from mass matrix
