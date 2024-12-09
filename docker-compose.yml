@@ -2,7 +2,7 @@ services:
   polyfem:
     build:
       context: .
-      dockerfile: Dockerfile-cuda
+      dockerfile: Dockerfile
     container_name: polyfem
     volumes:
       - .:/data
