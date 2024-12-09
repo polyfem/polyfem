@@ -75,10 +75,7 @@ namespace polyfem::solver
 				logger().warn("Lumped mass matrix ill-conditioned. Setting lumped mass matrix to identity.");
 				masked_lumped_mass_sqrt_ = polyfem::utils::sparse_identity(ndof, ndof);
 			}
-			if (!is_time_dependent_)
-			{
-				masked_lumped_mass_sqrt_ = polyfem::utils::sparse_identity(ndof, ndof);
-			}
+
 		}
 
 		assert(ndof == masked_lumped_mass_sqrt_.rows() && ndof == masked_lumped_mass_sqrt_.cols());
