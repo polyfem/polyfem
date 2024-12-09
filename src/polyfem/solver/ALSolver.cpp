@@ -1,7 +1,5 @@
 #include "ALSolver.hpp"
 
-#include "../../../../../../Library/Developer/CommandLineTools/SDKs/MacOSX15.1.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Headers/UTCoreTypes.h"
-
 #include <polyfem/utils/Logger.hpp>
 
 namespace polyfem::solver
