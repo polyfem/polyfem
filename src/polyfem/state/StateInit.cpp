@@ -261,6 +261,12 @@ namespace polyfem
 			pressure_assembler = assembler::AssemblerUtils::make_assembler(other_name);
 		}
 
+		if (args["solver"]["advanced"]["check_inversion"] == "Conservative")
+		{
+			if (auto elastic_assembler = std::dynamic_pointer_cast<assembler::ElasticityAssembler>(assembler))
+				elastic_assembler->set_use_robust_jacobian();
+		}
+
 		if (!args.contains("preset_problem"))
 		{
 			if (!assembler->is_tensor())

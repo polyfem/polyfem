@@ -5,15 +5,13 @@
 namespace polyfem::solver
 {
 	ALSolver::ALSolver(
-		std::shared_ptr<BCLagrangianForm> lagr_form,
-		std::shared_ptr<BCPenaltyForm> pen_form,
+		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &alagr_form,
 		const double initial_al_weight,
 		const double scaling,
 		const double max_al_weight,
 		const double eta_tol,
 		const std::function<void(const Eigen::VectorXd &)> &update_barrier_stiffness)
-		: lagr_form(lagr_form),
-		  pen_form(pen_form),
+		: alagr_forms{alagr_form},
 		  initial_al_weight(initial_al_weight),
 		  scaling(scaling),
 		  max_al_weight(max_al_weight),
@@ -36,9 +34,14 @@ namespace polyfem::solver
 		int al_steps = 0;
 		const int iters = nl_solver->stop_criteria().iterations;
 
-		const double initial_error = pen_form->compute_error(sol);
+		double initial_error = 0;
+		for (const auto &f : alagr_forms)
+			initial_error += f->compute_error(sol);
 
 		nl_problem.line_search_begin(sol, tmp_sol);
+
+		for (auto &f : alagr_forms)
+			f->set_initial_weight(al_weight);
 
 		while (!std::isfinite(nl_problem.value(tmp_sol))
 			   || !nl_problem.is_step_valid(sol, tmp_sol)
@@ -56,15 +59,22 @@ namespace polyfem::solver
 			try
 			{
 				nl_solver->minimize(nl_problem, tmp_sol);
+				nl_problem.finish();
 			}
 			catch (const std::runtime_error &e)
 			{
+				std::string err_msg = e.what();
+				// if the nonlinear solve fails due to invalid energy at the current solution, changing the weights would not help
+				if (err_msg.find("f(x) is nan or inf; stopping") != std::string::npos)
+					log_and_throw_error("Failed to solve with AL; f(x) is nan or inf");
 			}
 
 			sol = tmp_sol;
 			set_al_weight(nl_problem, sol, -1);
 
-			const double current_error = pen_form->compute_error(sol);
+			double current_error = 0;
+			for (const auto &f : alagr_forms)
+				f->compute_error(sol);
 			const double eta = 1 - sqrt(current_error / initial_error);
 
 			logger().debug("Current eta = {}", eta);
@@ -81,7 +91,10 @@ namespace polyfem::solver
 			if (eta < eta_tol && al_weight < max_al_weight)
 				al_weight *= scaling;
 			else
-				lagr_form->update_lagrangian(sol, al_weight);
+			{
+				for (auto &f : alagr_forms)
+					f->update_lagrangian(sol, al_weight);
+			}
 
 			post_subsolve(al_weight);
 			++al_steps;
@@ -100,18 +113,19 @@ namespace polyfem::solver
 		if (!std::isfinite(nl_problem.value(tmp_sol))
 			|| !nl_problem.is_step_valid(sol, tmp_sol)
 			|| !nl_problem.is_step_collision_free(sol, tmp_sol))
-			log_and_throw_error("Failed to apply boundary conditions; solve with augmented lagrangian first!");
+			log_and_throw_error("Failed to apply constraints conditions; solve with augmented lagrangian first!");
 
 		// --------------------------------------------------------------------
 		// Perform one final solve with the DBC projected out
 
-		logger().debug("Successfully applied boundary conditions; solving in reduced space");
+		logger().debug("Successfully applied constraints conditions; solving in reduced space");
 
 		nl_problem.init(sol);
 		update_barrier_stiffness(sol);
 		try
 		{
 			nl_solver->minimize(nl_problem, tmp_sol);
+			nl_problem.finish();
 		}
 		catch (const std::runtime_error &e)
 		{
@@ -125,22 +139,21 @@ namespace polyfem::solver
 
 	void ALSolver::set_al_weight(NLProblem &nl_problem, const Eigen::VectorXd &x, const double weight)
 	{
-		if (pen_form == nullptr || lagr_form == nullptr)
+		if (alagr_forms.empty())
 			return;
 		if (weight > 0)
 		{
-			pen_form->enable();
-			lagr_form->enable();
-			pen_form->set_weight(weight);
+			for (auto &f : alagr_forms)
+				f->enable();
+
 			nl_problem.use_full_size();
-			nl_problem.set_apply_DBC(x, false);
 		}
 		else
 		{
-			pen_form->disable();
-			lagr_form->disable();
+			for (auto &f : alagr_forms)
+				f->disable();
+
 			nl_problem.use_reduced_size();
-			nl_problem.set_apply_DBC(x, true);
 		}
 	}
 

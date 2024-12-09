@@ -66,6 +66,20 @@ namespace polyfem::io
 			const bool use_sampler,
 			const bool boundary_only);
 
+		static void mark_flipped_cells(
+			const mesh::Mesh &mesh,
+			const std::vector<basis::ElementBases> &gbasis,
+			const std::vector<basis::ElementBases> &basis,
+			const Eigen::VectorXi &disc_orders,
+			const std::map<int, Eigen::MatrixXd> &polys,
+			const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
+			const utils::RefElementSampler &sampler,
+			const int n_points,
+			const Eigen::MatrixXd &fun,
+			Eigen::Vector<bool, -1> &result,
+			const bool use_sampler,
+			const bool boundary_only);
+
 		/// interpolate the function fun.
 		/// @param[in] mesh mesh
 		/// @param[in] actual_dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)

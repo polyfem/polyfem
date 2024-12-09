@@ -48,6 +48,7 @@ namespace polyfem::assembler
 		}
 
 		std::string name() const override { return "FixedCorotational"; }
+		bool allow_inversion() const override { return true; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
 		void assign_stress_tensor(const OutputData &data,
