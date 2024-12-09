@@ -55,6 +55,7 @@ namespace polyfem
 			// Contact form
 			args["contact"]["enabled"], args["contact"]["periodic"].get<bool>() ? periodic_collision_mesh : collision_mesh, args["contact"]["dhat"],
 			avg_mass, args["contact"]["use_convergent_formulation"],
+			args["solver"]["contact"]["adaptive_barrier_stiffness"],
 			args["solver"]["contact"]["barrier_stiffness"],
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
