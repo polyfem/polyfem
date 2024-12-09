@@ -86,8 +86,8 @@ namespace polyfem
 						// rhs_fun.col(d) = rhs_fun.col(d).array() * vals.det.array() * quadrature.weights.array();
 						for (int q = 0; q < quadrature.weights.size(); ++q)
 						{
-							const double rho = problem_.is_time_dependent() ? density(vals.quadrature.points.row(q), vals.val.row(q), t, vals.element_id) : 1;
-							//const double rho = density(vals.quadrature.points.row(q), vals.val.row(q), t, vals.element_id);
+							//const double rho = problem_.is_time_dependent() ? density(vals.quadrature.points.row(q), vals.val.row(q), t, vals.element_id) : 1;
+							const double rho = density(vals.quadrature.points.row(q), vals.val.row(q), t, vals.element_id);
 							// prepare for integration by weighing rhs by determinant and quadrature weights
 							rhs_fun(q, d) *= vals.det(q) * quadrature.weights(q) * rho;
 						}
@@ -697,8 +697,8 @@ namespace polyfem
 									}
 								}
 							}
-							const double rho = problem_.is_time_dependent() ? density(vals.quadrature.points.row(p), vals.val.row(p), t, vals.element_id) : 1;
-							//const double rho = density(vals.quadrature.points.row(p), vals.val.row(p), t, vals.element_id);
+							//const double rho = problem_.is_time_dependent() ? density(vals.quadrature.points.row(p), vals.val.row(p), t, vals.element_id) : 1;
+							const double rho = density(vals.quadrature.points.row(p), vals.val.row(p), t, vals.element_id);
 
 							for (int d = 0; d < size_; ++d)
 							{
