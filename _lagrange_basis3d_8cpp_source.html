@@ -2209,7 +2209,7 @@ $(document).ready(function(){initNavTree('_lagrange_basis3d_8cpp_source.html',''
 <div class="line"><a id="l02110" name="l02110"></a><span class="lineno"> 2110</span>                                    <span class="keyword">const</span> <span class="keyword">auto</span> edge_index = mesh.get_index_from_element_edge(e, ev(le, 0), ev(le, 1));</div>
 <div class="line"><a id="l02111" name="l02111"></a><span class="lineno"> 2111</span>                                    <span class="keyword">auto</span> neighs = mesh.edge_neighs(edge_index.edge);</div>
 <div class="line"><a id="l02112" name="l02112"></a><span class="lineno"> 2112</span>                                    <span class="keywordtype">int</span> min_p = discr_order;</div>
-<div class="line"><a id="l02113" name="l02113"></a><span class="lineno"> 2113</span>                                    <span class="keywordtype">int</span> min_cell = index.<a class="code hl_variable" href="structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html#a73aa404f67442531394a4d698743265c">element</a>;</div>
+<div class="line"><a id="l02113" name="l02113"></a><span class="lineno"> 2113</span>                                    <span class="keywordtype">int</span> min_cell = edge_index.element;</div>
 <div class="line"><a id="l02114" name="l02114"></a><span class="lineno"> 2114</span> </div>
 <div class="line"><a id="l02115" name="l02115"></a><span class="lineno"> 2115</span>                                    <span class="keywordflow">for</span> (<span class="keyword">auto</span> cid : neighs)</div>
 <div class="line"><a id="l02116" name="l02116"></a><span class="lineno"> 2116</span>                                    {</div>
