@@ -3,6 +3,14 @@
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 
+#include <polyfem/utils/Logger.hpp>
+
+#include <polysolve/linear/Solver.hpp>
+
+#include <igl/cat.h>
+
+#include <set>
+
 /*
 m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\newline
 u^{t+1} = u(t+\Delta t)\approx u(t) + \Delta t \dot u + \frac{\Delta t^2} 2 \ddot u \newline
@@ -22,15 +30,15 @@ namespace polyfem::solver
 	NLProblem::NLProblem(
 		const int full_size,
 		const std::vector<std::shared_ptr<Form>> &forms,
-		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms)
+		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
+		const std::shared_ptr<polysolve::linear::Solver> &solver)
 		: FullNLProblem(forms),
 		  full_size_(full_size),
 		  t_(0),
-		  penalty_forms_(penalty_forms)
+		  penalty_forms_(penalty_forms),
+		  solver_(solver)
 	{
-		setup_constrain_nodes();
-		reduced_size_ = full_size_ - constraint_nodes_.size();
-
+		setup_constraints();
 		use_reduced_size();
 	}
 
@@ -39,101 +47,241 @@ namespace polyfem::solver
 		const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
 		const double t,
 		const std::vector<std::shared_ptr<Form>> &forms,
-		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms)
+		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
+		const std::shared_ptr<polysolve::linear::Solver> &solver)
 		: FullNLProblem(forms),
 		  full_size_(full_size),
-		  periodic_bc_(periodic_bc),
 		  t_(t),
-		  penalty_forms_(penalty_forms)
+		  penalty_forms_(penalty_forms),
+		  solver_(solver)
 	{
-		setup_constrain_nodes();
-		reduced_size_ = (periodic_bc ? periodic_bc->n_periodic_dof() : full_size) - constraint_nodes_.size();
+		if (periodic_bc != nullptr)
+			throw std::runtime_error("To be fixed");
 
-		assert(std::is_sorted(constraint_nodes_.begin(), constraint_nodes_.end()));
-		assert(constraint_nodes_.size() == 0 || (constraint_nodes_.front() >= 0 && constraint_nodes_.back() < full_size_));
+		setup_constraints();
 		use_reduced_size();
 	}
 
-	void NLProblem::setup_constrain_nodes()
+	void NLProblem::setup_constraints()
 	{
-		constraint_nodes_.clear();
+		if (penalty_forms_.empty())
+		{
+			reduced_size_ = full_size_;
+			return;
+		}
 
+		std::vector<Eigen::Triplet<double>> Ae;
+		int index = 0;
 		for (const auto &f : penalty_forms_)
-			constraint_nodes_.insert(constraint_nodes_.end(),
-									 f->constraint_nodes().begin(),
-									 f->constraint_nodes().end());
-		std::sort(constraint_nodes_.begin(), constraint_nodes_.end());
-		auto it = std::unique(constraint_nodes_.begin(), constraint_nodes_.end());
-		constraint_nodes_.resize(std::distance(constraint_nodes_.begin(), it));
+		{
+			const auto &tmp = f->constraint_matrix();
+			for (int i = 0; i < tmp.outerSize(); i++)
+			{
+				for (typename StiffnessMatrix::InnerIterator it(tmp, i); it; ++it)
+				{
+					Ae.emplace_back(index + it.row(), it.col(), it.value());
+				}
+			}
+			index += tmp.rows();
+		}
+		StiffnessMatrix A(index, full_size_);
+		A.setFromTriplets(Ae.begin(), Ae.end());
+		A.makeCompressed();
+
+		const int constraint_size = A.rows();
+		reduced_size_ = full_size_ - constraint_size;
+		StiffnessMatrix At = A.transpose();
+
+		Eigen::SparseQR<StiffnessMatrix, Eigen::NaturalOrdering<int>> QR(At);
+
+		if (QR.info() != Eigen::Success)
+			log_and_throw_error("Failed to factorize constraints matrix");
+
+		StiffnessMatrix Q;
+		Q = QR.matrixQ();
+
+		const Eigen::SparseMatrix<double, Eigen::RowMajor> R = QR.matrixR();
+
+		Q1_ = Q.leftCols(constraint_size);
+		assert(Q1_.rows() == full_size_);
+		assert(Q1_.cols() == constraint_size);
+
+		Q2_ = Q.rightCols(reduced_size_);
+		assert(Q2_.rows() == full_size_);
+		assert(Q2_.cols() == reduced_size_);
+
+		R1_ = R.topRows(constraint_size);
+		assert(R1_.rows() == constraint_size);
+		assert(R1_.cols() == constraint_size);
+
+		assert((Q1_.transpose() * Q2_).norm() < 1e-10);
+
+		StiffnessMatrix Q2tQ2 = Q2_.transpose() * Q2_;
+		solver_->analyze_pattern(Q2tQ2, Q2tQ2.rows());
+		solver_->factorize(Q2tQ2);
+
+#ifndef NDEBUG
+		StiffnessMatrix test = R.bottomRows(reduced_size_);
+		assert(test.nonZeros() == 0);
+#endif
+
+		assert((Q1_ * R1_ - At).norm() < 1e-10);
+
+		std::vector<std::shared_ptr<Form>> tmp;
+		tmp.insert(tmp.end(), penalty_forms_.begin(), penalty_forms_.end());
+		penalty_problem_ = std::make_shared<FullNLProblem>(tmp);
+
+		update_constraint_values();
+	}
+
+	void NLProblem::update_constraint_values()
+	{
+		int index = 0;
+		constraint_values_.resize(Q1_.cols());
+		for (const auto &f : penalty_forms_)
+		{
+			constraint_values_.segment(index, f->constraint_value().rows()) = f->constraint_value();
+			index += f->constraint_value().rows();
+		}
+
+		const Eigen::VectorXd sol = R1_.transpose().triangularView<Eigen::Lower>().solve(constraint_values_);
+		assert((R1_.transpose() * sol - constraint_values_).norm() < 1e-10);
+
+		Q1R1iTb_ = Q1_ * sol;
 	}
 
 	void NLProblem::init_lagging(const TVector &x)
 	{
 		FullNLProblem::init_lagging(reduced_to_full(x));
+
+		if (full_size() == current_size())
+			penalty_problem_->init_lagging(x);
 	}
 
 	void NLProblem::update_lagging(const TVector &x, const int iter_num)
 	{
 		FullNLProblem::update_lagging(reduced_to_full(x), iter_num);
+
+		if (full_size() == current_size())
+			penalty_problem_->update_lagging(x, iter_num);
 	}
 
 	void NLProblem::update_quantities(const double t, const TVector &x)
 	{
+		assert(x.size() == full_size_);
 		t_ = t;
 		const TVector full = reduced_to_full(x);
 		for (auto &f : forms_)
 			f->update_quantities(t, full);
+
+		for (auto &f : penalty_forms_)
+			f->update_quantities(t, x);
+
+		update_constraint_values();
 	}
 
 	void NLProblem::line_search_begin(const TVector &x0, const TVector &x1)
 	{
 		FullNLProblem::line_search_begin(reduced_to_full(x0), reduced_to_full(x1));
+
+		if (full_size() == current_size())
+			penalty_problem_->line_search_begin(x0, x1);
 	}
 
 	double NLProblem::max_step_size(const TVector &x0, const TVector &x1)
 	{
-		return FullNLProblem::max_step_size(reduced_to_full(x0), reduced_to_full(x1));
+		double max_step = FullNLProblem::max_step_size(reduced_to_full(x0), reduced_to_full(x1));
+
+		if (full_size() == current_size())
+			max_step = std::min(max_step, penalty_problem_->max_step_size(x0, x1));
+
+		return max_step;
 	}
 
 	bool NLProblem::is_step_valid(const TVector &x0, const TVector &x1)
 	{
-		return FullNLProblem::is_step_valid(reduced_to_full(x0), reduced_to_full(x1));
+		bool valid = FullNLProblem::is_step_valid(reduced_to_full(x0), reduced_to_full(x1));
+
+		if (valid && full_size() == current_size())
+			valid = penalty_problem_->is_step_valid(x0, x1);
+
+		return valid;
 	}
 
 	bool NLProblem::is_step_collision_free(const TVector &x0, const TVector &x1)
 	{
-		return FullNLProblem::is_step_collision_free(reduced_to_full(x0), reduced_to_full(x1));
+		bool free = FullNLProblem::is_step_collision_free(reduced_to_full(x0), reduced_to_full(x1));
+
+		if (free && full_size() == current_size())
+			free = penalty_problem_->is_step_collision_free(x0, x1);
+
+		return free;
 	}
 
 	double NLProblem::value(const TVector &x)
 	{
 		// TODO: removed fearure const bool only_elastic
-		return FullNLProblem::value(reduced_to_full(x));
+		double res = FullNLProblem::value(reduced_to_full(x));
+
+		if (full_size() == current_size())
+		{
+			res += penalty_problem_->value(x);
+		}
+
+		return res;
 	}
 
 	void NLProblem::gradient(const TVector &x, TVector &grad)
 	{
-		TVector full_grad;
-		FullNLProblem::gradient(reduced_to_full(x), full_grad);
-		grad = full_to_reduced_grad(full_grad);
+		FullNLProblem::gradient(reduced_to_full(x), grad);
+
+		if (full_size() != current_size())
+		{
+			grad = Q2_.transpose() * grad;
+		}
+		else
+		{
+			TVector tmp;
+			penalty_problem_->gradient(x, tmp);
+			grad += tmp;
+		}
 	}
 
 	void NLProblem::hessian(const TVector &x, THessian &hessian)
 	{
-		THessian full_hessian;
-		FullNLProblem::hessian(reduced_to_full(x), full_hessian);
+		FullNLProblem::hessian(reduced_to_full(x), hessian);
 
-		full_hessian_to_reduced_hessian(full_hessian, hessian);
+		if (full_size() != current_size())
+		{
+			hessian = Q2_.transpose() * hessian * Q2_;
+
+			// remove numerical zeros
+			hessian.prune([](const Eigen::Index &row, const Eigen::Index &col, const Scalar &value) {
+				return std::abs(value) > 1e-10;
+			});
+		}
+		else
+		{
+			THessian tmp;
+			penalty_problem_->hessian(x, tmp);
+			hessian += tmp;
+		}
 	}
 
 	void NLProblem::solution_changed(const TVector &newX)
 	{
 		FullNLProblem::solution_changed(reduced_to_full(newX));
+
+		if (full_size() == current_size())
+			penalty_problem_->solution_changed(newX);
 	}
 
 	void NLProblem::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
 		FullNLProblem::post_step(polysolve::nonlinear::PostStepData(data.iter_num, data.solver_info, reduced_to_full(data.x), reduced_to_full(data.grad)));
+
+		if (full_size() == current_size())
+			penalty_problem_->post_step(data);
 
 		// TODO: add me back
 		// if (state_.args["output"]["advanced"]["save_nl_solve_sequence"])
@@ -148,161 +296,51 @@ namespace polyfem::solver
 
 	NLProblem::TVector NLProblem::full_to_reduced(const TVector &full) const
 	{
-		TVector reduced;
-		full_to_reduced_aux(constraint_nodes_, full_size(), current_size(), full, reduced);
-		return reduced;
-	}
+		// Reduced is already at the full size
+		if (full_size() == current_size() || full.size() == current_size())
+		{
+			return full;
+		}
 
-	NLProblem::TVector NLProblem::full_to_reduced_grad(const TVector &full) const
-	{
-		TVector reduced;
-		full_to_reduced_aux_grad(constraint_nodes_, full_size(), current_size(), full, reduced);
+		TVector reduced(reduced_size());
+		const TVector k = full - Q1R1iTb_;
+		const TVector rhs = Q2_.transpose() * k;
+		solver_->solve(rhs, reduced);
+
+#ifndef NDEBUG
+		StiffnessMatrix Q2tQ2 = Q2_.transpose() * Q2_;
+		assert((Q2tQ2 * reduced - rhs).norm() < 1e-10);
+		// std::cout << "err " << (Q2_ * reduced - k).norm() << std::endl;
+#endif
+
 		return reduced;
 	}
 
 	NLProblem::TVector NLProblem::reduced_to_full(const TVector &reduced) const
 	{
-		TVector full;
-		reduced_to_full_aux(constraint_nodes_, full_size(), current_size(), reduced, constraint_values(reduced), full);
+		// Full is already at the reduced size
+		if (full_size() == current_size() || full_size() == reduced.size())
+		{
+			return reduced;
+		}
+
+		const TVector full = Q1R1iTb_ + Q2_ * reduced;
+
+		// std::cout << "At Q2 y" << (At.transpose() * Q2_ * reduced).norm() << std::endl;
+		// std::cout << "At Ai b" << (At.transpose() * Q1R1iTb_ - constraint_values_).norm() << std::endl;
+
+		// std::cout << "At Ai b\n"
+		// 		  << (At.transpose() * Q1R1iTb_ - constraint_values_) << std::endl;
+
+#ifndef NDEBUG
+		for (const auto &f : penalty_forms_)
+		{
+			// std::cout << f->compute_error(full) << std::endl;
+			assert(f->compute_error(full) < 1e-10);
+		}
+#endif
+
 		return full;
 	}
 
-	Eigen::MatrixXd NLProblem::constraint_values(const TVector &reduced) const
-	{
-		Eigen::MatrixXd result = Eigen::MatrixXd::Zero(full_size(), 1);
-
-		for (const auto &form : penalty_forms_)
-		{
-			const auto tmp = form->target(reduced);
-			if (tmp.size() > 0)
-				result += tmp;
-		}
-
-		return result;
-	}
-
-	template <class FullMat, class ReducedMat>
-	void NLProblem::full_to_reduced_aux(const std::vector<int> &constraint_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const
-	{
-		using namespace polyfem;
-
-		// Reduced is already at the full size
-		if (full_size == reduced_size || full.size() == reduced_size)
-		{
-			reduced = full;
-			return;
-		}
-
-		assert(full.size() == full_size);
-		assert(full.cols() == 1);
-		reduced.resize(reduced_size, 1);
-
-		Eigen::MatrixXd mid;
-		if (periodic_bc_)
-			mid = periodic_bc_->full_to_periodic(full, false);
-		else
-			mid = full;
-
-		assert(std::is_sorted(constraint_nodes.begin(), constraint_nodes.end()));
-
-		long j = 0;
-		size_t k = 0;
-		for (int i = 0; i < mid.size(); ++i)
-		{
-			if (k < constraint_nodes.size() && constraint_nodes[k] == i)
-			{
-				++k;
-				continue;
-			}
-
-			assert(j < reduced.size());
-			reduced(j++) = mid(i);
-		}
-	}
-
-	template <class ReducedMat, class FullMat>
-	void NLProblem::reduced_to_full_aux(const std::vector<int> &constraint_nodes, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full) const
-	{
-		using namespace polyfem;
-
-		// Full is already at the reduced size
-		if (full_size == reduced_size || full_size == reduced.size())
-		{
-			full = reduced;
-			return;
-		}
-
-		assert(reduced.size() == reduced_size);
-		assert(reduced.cols() == 1);
-		full.resize(full_size, 1);
-
-		assert(std::is_sorted(constraint_nodes.begin(), constraint_nodes.end()));
-
-		long j = 0;
-		size_t k = 0;
-		Eigen::MatrixXd mid(reduced_size + constraint_nodes.size(), 1);
-		for (int i = 0; i < mid.size(); ++i)
-		{
-			if (k < constraint_nodes.size() && constraint_nodes[k] == i)
-			{
-				++k;
-				mid(i) = rhs(i);
-				continue;
-			}
-
-			mid(i) = reduced(j++);
-		}
-
-		full = periodic_bc_ ? periodic_bc_->periodic_to_full(full_size, mid) : mid;
-	}
-
-	template <class FullMat, class ReducedMat>
-	void NLProblem::full_to_reduced_aux_grad(const std::vector<int> &constraint_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const
-	{
-		using namespace polyfem;
-
-		// Reduced is already at the full size
-		if (full_size == reduced_size || full.size() == reduced_size)
-		{
-			reduced = full;
-			return;
-		}
-
-		assert(full.size() == full_size);
-		assert(full.cols() == 1);
-		reduced.resize(reduced_size, 1);
-
-		Eigen::MatrixXd mid;
-		if (periodic_bc_)
-			mid = periodic_bc_->full_to_periodic(full, true);
-		else
-			mid = full;
-
-		long j = 0;
-		size_t k = 0;
-		for (int i = 0; i < mid.size(); ++i)
-		{
-			if (k < constraint_nodes.size() && constraint_nodes[k] == i)
-			{
-				++k;
-				continue;
-			}
-
-			reduced(j++) = mid(i);
-		}
-	}
-
-	void NLProblem::full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const
-	{
-		// POLYFEM_SCOPED_TIMER("\tfull hessian to reduced hessian");
-		THessian mid = full;
-
-		if (periodic_bc_)
-			periodic_bc_->full_to_periodic(mid);
-
-		if (current_size() < full_size())
-			utils::full_to_reduced_matrix(mid.rows(), mid.rows() - constraint_nodes_.size(), constraint_nodes_, mid, reduced);
-		else
-			reduced = mid;
-	}
 } // namespace polyfem::solver

@@ -221,7 +221,7 @@ namespace polyfem
 		const std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(
 			// General
 			units,
-			mesh->dimension(), t,
+			mesh->dimension(), t, in_node_to_node,
 			// Elastic form
 			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache, args["solver"]["advanced"]["jacobian_threshold"], check_inversion,
 			// Body form
@@ -237,7 +237,7 @@ namespace polyfem
 			args["solver"]["advanced"]["lagged_regularization_weight"],
 			args["solver"]["advanced"]["lagged_regularization_iterations"],
 			// Augmented lagrangian form
-			obstacle.ndof(),
+			obstacle.ndof(), args["constraints"],
 			// Contact form
 			args["contact"]["enabled"], args["contact"]["periodic"].get<bool>() ? periodic_collision_mesh : collision_mesh, args["contact"]["dhat"],
 			avg_mass, args["contact"]["use_convergent_formulation"],
@@ -268,7 +268,8 @@ namespace polyfem
 
 		const int ndof = n_bases * mesh->dimension();
 		solve_data.nl_problem = std::make_shared<NLProblem>(
-			ndof, periodic_bc, t, forms, solve_data.al_form);
+			ndof, periodic_bc, t, forms, solve_data.al_form,
+			polysolve::linear::Solver::create(args["solver"]["linear"], logger()));
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
 		// --------------------------------------------------------------------

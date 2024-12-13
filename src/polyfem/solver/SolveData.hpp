@@ -63,6 +63,7 @@ namespace polyfem::solver
 			const Units &units,
 			const int dim,
 			const double t,
+			const Eigen::VectorXi &in_node_to_node,
 
 			// Elastic form
 			const int n_bases,
@@ -99,12 +100,8 @@ namespace polyfem::solver
 			const int lagged_regularization_iterations,
 
 			// Augemented lagrangian form
-			// const std::vector<int> &boundary_nodes,
-			// const std::vector<mesh::LocalBoundary> &local_boundary,
-			// const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
-			// const int n_boundary_samples,
-			// const StiffnessMatrix &mass,
 			const size_t obstacle_ndof,
+			const std::vector<std::string> &constraint_files,
 
 			// Contact form
 			const bool contact_enabled,
