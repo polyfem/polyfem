@@ -1555,12 +1555,33 @@ namespace polyfem
 		}
 
 		avg_mass /= mass.rows();
-		logger().info("average mass {}", avg_mass);
+
+
+
+		if (args["time"]["quasistatic"])
+		{
+			mass = mass/avg_mass;
+
+			avg_mass = 0;
+			for (int k = 0; k < mass.outerSize(); ++k)
+			{
+
+				for (StiffnessMatrix::InnerIterator it(mass, k); it; ++it)
+				{
+					assert(it.col() == k);
+					avg_mass += it.value();
+				}
+			}
+
+			avg_mass /= mass.rows();
+		}
 
 		if (args["solver"]["advanced"]["lump_mass_matrix"])
 		{
 			mass = lump_matrix(mass);
 		}
+
+		logger().info("average mass {}", avg_mass);
 
 		timer.stop();
 		timings.assembling_mass_mat_time = timer.getElapsedTime();

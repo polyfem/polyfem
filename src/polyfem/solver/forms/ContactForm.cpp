@@ -95,7 +95,7 @@ namespace polyfem::solver
 		//	ipc::world_bbox_diagonal_length(displaced_surface), barrier_potential_.barrier(), dhat_, avg_mass_,
 		//	grad_energy, grad_barrier, max_barrier_stiffness_);
 
-		if(barrier_stiffness_ == 1.0 && prev_distance_ == -1 && prev_distance_ == INFINITY && prev_distance_ == -INFINITY)
+		if(barrier_stiffness_ == 1.0 && (prev_distance_ == -1 || prev_distance_ == posInfinity || prev_distance_ == negInfinity))
 			barrier_stiffness_ = ipc::initial_barrier_stiffness(
 				ipc::world_bbox_diagonal_length(displaced_surface), barrier_potential_.barrier(), dhat_, avg_mass_,
 				grad_energy, grad_barrier, max_barrier_stiffness_);
@@ -104,7 +104,7 @@ namespace polyfem::solver
 		max_barrier_stiffness_ = 1e30;
 
 
-		if (use_convergent_formulation() && (prev_distance_ == -1 || prev_distance_ == posInfinity ||  prev_distance_ == posInfinity))
+		if (use_convergent_formulation() && (prev_distance_ == -1 || prev_distance_ == posInfinity ||  prev_distance_ == negInfinity))
 		{
 			double scaling_factor = 0;
 			if (!nonconvergent_constraints.empty())
@@ -132,7 +132,7 @@ namespace polyfem::solver
 		// but the acceleration scaling will be applied later. Therefore, we need to remove it.
 		//barrier_stiffness_ /= weight_;
 		//max_barrier_stiffness_ /= weight_;
-		if(prev_distance_ == -1 && prev_distance_ == INFINITY &&  prev_distance_ == -INFINITY)
+		if(prev_distance_ == -1 || prev_distance_ == posInfinity ||  prev_distance_ == negInfinity)
 			barrier_stiffness_ /= weight_;
 
 		logger().debug(
@@ -322,7 +322,7 @@ namespace polyfem::solver
 				const double lower = pow(10, lower_log);
 
 				//These if statements adjusts barrier_stiffness_ to keep the minimum distance around the geometric mean between dhat_epsilon and dhat
-				if(curr_distance != -1 && curr_distance != INFINITY && curr_distance != -INFINITY)
+				if(prev_distance_ == -1 || prev_distance_ == posInfinity ||  prev_distance_ == negInfinity)
 				{
 					if (curr_distance <= lower)
 					{
