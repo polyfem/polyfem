@@ -28,6 +28,21 @@ The formula for higher-order bases is optionally computed at CMake time using an
 - `numpy` and `sympy` (optional)
 - `quadpy` (optional)
 
+### Docker
+Usage:
+Build the Docker Image:
+
+```bash
+docker build -t polyfem .
+```
+
+Run PolyFEM: To run PolyFEM and mount your current directory to /data in the container for input/output:
+
+```bash
+docker run --rm -v "$(pwd)":/data polyfem [PolyFEM arguments]
+```
+Replace [PolyFEM arguments] with the appropriate arguments to run your simulations (e.g., input/output file paths).
+
 Usage
 -----
 
