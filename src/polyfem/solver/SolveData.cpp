@@ -185,14 +185,41 @@ namespace polyfem::solver
 		{
 			logger().debug("Setting up constraints for {}", path);
 			h5pp::File file(path, h5pp::FileAccess::READONLY);
-			std::vector<int> local2global = file.readDataset<std::vector<int>>("local2global");
-			Eigen::MatrixXd A = file.readDataset<Eigen::MatrixXd>("A");
-			Eigen::MatrixXd b = file.readDataset<Eigen::MatrixXd>("b");
-			for (auto &v : local2global)
-				v = in_node_to_node[v];
+			std::vector<int> local2global;
+			if (!file.findDatasets("local2global").empty())
+				local2global = file.readDataset<std::vector<int>>("local2global");
 
-			al_form.push_back(std::make_shared<MatrixLagrangianForm>(
-				ndof, dim, local2global, A, b));
+			if (local2global.empty())
+			{
+				local2global.resize(in_node_to_node.size());
+
+				for (int i = 0; i < local2global.size(); ++i)
+					local2global[i] = in_node_to_node[i];
+			}
+			else
+			{
+				for (auto &v : local2global)
+					v = in_node_to_node[v];
+			}
+
+			Eigen::MatrixXd b = file.readDataset<Eigen::MatrixXd>("b");
+
+			if (!file.findDatasets("A").empty())
+			{
+				Eigen::MatrixXd A = file.readDataset<Eigen::MatrixXd>("A");
+
+				al_form.push_back(std::make_shared<MatrixLagrangianForm>(
+					ndof, dim, A, b, local2global));
+			}
+			else
+			{
+				std::vector<double> values = file.readDataset<std::vector<double>>("A_triplets/values");
+				std::vector<int> rows = file.readDataset<std::vector<int>>("A_triplets/rows");
+				std::vector<int> cols = file.readDataset<std::vector<int>>("A_triplets/cols");
+
+				al_form.push_back(std::make_shared<MatrixLagrangianForm>(
+					ndof, dim, rows, cols, values, b, local2global));
+			}
 			// forms.push_back(al_form.back());
 		}
 

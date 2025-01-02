@@ -11,14 +11,28 @@ namespace polyfem::solver
 		/// @brief Construct a new MatrixLagrangianForm object for the constraints Ax = b
 		/// @param n_dofs Number of degrees of freedom
 		/// @param dim Dimension of the problem
-		/// @param constraint_nodes constraint nodes
-		/// @param A Constraints matrix, local only
+		/// @param A Constraints matrix, local or global
 		/// @param b Constraints value
+		/// @param local_to_global local to global nodes
 		MatrixLagrangianForm(const int n_dofs,
 							 const int dim,
-							 const std::vector<int> &constraint_nodes,
 							 const Eigen::MatrixXd &A,
-							 const Eigen::MatrixXd &b);
+							 const Eigen::MatrixXd &b,
+							 const std::vector<int> &local_to_global = {});
+
+		/// @brief Construct a new MatrixLagrangianForm object for the constraints Ax = b, where A is sparse
+		/// @param n_dofs Number of degrees of freedom
+		/// @param dim Dimension of the problem
+		/// @param rows, cols, vals are the triplets of the constraints matrix, local or global
+		/// @param b Constraints value
+		/// @param local_to_global local to global nodes
+		MatrixLagrangianForm(const int n_dofs,
+							 const int dim,
+							 const std::vector<int> &rows,
+							 const std::vector<int> &cols,
+							 const std::vector<double> &vals,
+							 const Eigen::MatrixXd &b,
+							 const std::vector<int> &local_to_global = {});
 
 		std::string name() const override { return "generic-lagrangian"; }
 
