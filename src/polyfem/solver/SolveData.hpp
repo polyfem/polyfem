@@ -99,9 +99,10 @@ namespace polyfem::solver
 			const double lagged_regularization_weight,
 			const int lagged_regularization_iterations,
 
-			// Augemented lagrangian form
+			// Constraint forms
 			const size_t obstacle_ndof,
-			const std::vector<std::string> &constraint_files,
+			const std::vector<std::string> &hard_constraint_files,
+			const std::vector<std::string> &soft_constraint_files,
 
 			// Contact form
 			const bool contact_enabled,

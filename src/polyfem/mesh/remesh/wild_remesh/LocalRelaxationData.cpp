@@ -272,7 +272,8 @@ namespace polyfem::mesh
 				state.args["solver"]["advanced"]["lagged_regularization_iterations"],
 				// Augmented lagrangian form
 				/*obstacle_ndof=*/0,
-				/*constraint_files=*/std::vector<std::string>(),
+				/*hard_constraint_files=*/std::vector<std::string>(),
+				/*soft_constraint_files=*/std::vector<std::string>(),
 				// Contact form
 				contact_enabled, collision_mesh, state.args["contact"]["dhat"],
 				state.avg_mass, state.args["contact"]["use_convergent_formulation"],

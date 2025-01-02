@@ -2629,15 +2629,37 @@
     },
     {
         "pointer": "/constraints",
-        "default": [],
-        "type": "list",
-        "doc": "list of file containing constraints"
+        "default": null,
+        "type": "object",
+        "optional": [
+            "soft",
+            "hard"
+        ],
+        "doc": "soft and hard constraints"
     },
     {
-        "pointer": "/constraints/*",
+        "pointer": "/constraints/hard",
+        "default": [],
+        "type": "list",
+        "doc": "list of file containing hard constraints"
+    },
+    {
+        "pointer": "/constraints/hard/*",
         "default": "",
         "type": "string",
-        "doc": "constraint hdf5 file for constraint Ax=b. The file must contain these datasets: local2global, dense matrix A, and vector b. The colums of b nees to be the same as the dimentionality of the problem"
+        "doc": "constraint hdf5 file for hard constraint Ax=b. The file must contain these datasets: local2global, dense matrix A, and vector b. The colums of b nees to be the same as the dimentionality of the problem"
+    },
+    {
+        "pointer": "/constraints/soft",
+        "default": [],
+        "type": "list",
+        "doc": "list of file containing soft constraints"
+    },
+    {
+        "pointer": "/constraints/soft/*",
+        "default": "",
+        "type": "string",
+        "doc": "constraint hdf5 file for soft constraint ||Ax-b||^2. The file must contain these datasets: local2global, dense matrix A, and vector b. The colums of b nees to be the same as the dimentionality of the problem"
     },
     {
         "pointer": "/output",

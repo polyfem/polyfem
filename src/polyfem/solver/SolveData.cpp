@@ -13,6 +13,7 @@
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
+#include <polyfem/solver/forms/QuadraticPenaltyForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/assembler/PressureAssembler.hpp>
@@ -70,7 +71,8 @@ namespace polyfem::solver
 
 		// Augemented lagrangian form
 		const size_t obstacle_ndof,
-		const std::vector<std::string> &constraint_files,
+		const std::vector<std::string> &hard_constraint_files,
+		const std::vector<std::string> &soft_constraint_files,
 
 		// Contact form
 		const bool contact_enabled,
@@ -181,9 +183,9 @@ namespace polyfem::solver
 			// forms.push_back(al_form.back());
 		}
 
-		for (const auto &path : constraint_files)
+		for (const auto &path : hard_constraint_files)
 		{
-			logger().debug("Setting up constraints for {}", path);
+			logger().debug("Setting up hard constraints for {}", path);
 			h5pp::File file(path, h5pp::FileAccess::READONLY);
 			std::vector<int> local2global;
 			if (!file.findDatasets("local2global").empty())
@@ -221,6 +223,47 @@ namespace polyfem::solver
 					ndof, dim, rows, cols, values, b, local2global));
 			}
 			// forms.push_back(al_form.back());
+		}
+
+		for (const auto &path : soft_constraint_files)
+		{
+			logger().debug("Setting up soft constraints for {}", path);
+			h5pp::File file(path, h5pp::FileAccess::READONLY);
+			std::vector<int> local2global;
+			if (!file.findDatasets("local2global").empty())
+				local2global = file.readDataset<std::vector<int>>("local2global");
+
+			if (local2global.empty())
+			{
+				local2global.resize(in_node_to_node.size());
+
+				for (int i = 0; i < local2global.size(); ++i)
+					local2global[i] = in_node_to_node[i];
+			}
+			else
+			{
+				for (auto &v : local2global)
+					v = in_node_to_node[v];
+			}
+
+			Eigen::MatrixXd b = file.readDataset<Eigen::MatrixXd>("b");
+
+			if (!file.findDatasets("A").empty())
+			{
+				Eigen::MatrixXd A = file.readDataset<Eigen::MatrixXd>("A");
+
+				forms.push_back(std::make_shared<QuadraticPenaltyForm>(
+					ndof, dim, A, b, local2global));
+			}
+			else
+			{
+				std::vector<double> values = file.readDataset<std::vector<double>>("A_triplets/values");
+				std::vector<int> rows = file.readDataset<std::vector<int>>("A_triplets/rows");
+				std::vector<int> cols = file.readDataset<std::vector<int>>("A_triplets/cols");
+
+				forms.push_back(std::make_shared<QuadraticPenaltyForm>(
+					ndof, dim, rows, cols, values, b, local2global));
+			}
 		}
 
 		if (macro_strain_constraint.is_active())
