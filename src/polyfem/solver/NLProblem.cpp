@@ -106,8 +106,8 @@ namespace polyfem::solver
 		cholmod_common cc;
 		cholmod_l_start(&cc); // start CHOLMOD
 
-		const int ordering = 0; // all, except 3:given treated as 0:fixed
-		// const int ordering = SPQR_ORDERING_DEFAULT; // all, except 3:given treated as 0:fixed
+		// const int ordering = 0; // all, except 3:given treated as 0:fixed
+		const int ordering = SPQR_ORDERING_DEFAULT; // all, except 3:given treated as 0:fixed
 		const double tol = SPQR_DEFAULT_TOL;
 		SuiteSparse_long econ = At.rows();
 		SuiteSparse_long *E; // permutation of 0:n-1, NULL if identity
@@ -170,16 +170,12 @@ namespace polyfem::solver
 
 		timer.stop();
 		logger().debug("QR took: {}", timer.getElapsedTime());
-
-		// StiffnessMatrix asd = Q * R;
-		// StiffnessMatrix asd1 = At * P;
-
-		// std::cout << (asd1 - asd).norm() << std::endl;
 #else
 		igl::Timer timer;
 		timer.start();
 
-		Eigen::SparseQR<StiffnessMatrix, Eigen::NaturalOrdering<int>> QR(At);
+		// Eigen::SparseQR<StiffnessMatrix, Eigen::NaturalOrdering<int>> QR(At);
+		Eigen::SparseQR<StiffnessMatrix, Eigen::COLAMDOrdering<int>> QR(At);
 
 		timer.stop();
 		logger().debug("QR took: {}", timer.getElapsedTime());
@@ -217,8 +213,6 @@ namespace polyfem::solver
 		timer.stop();
 		logger().debug("Getting Q1 Q2, R1 took: {}", timer.getElapsedTime());
 
-		// Q2_ = P_ * Q2_;
-
 		timer.start();
 		StiffnessMatrix Q2tQ2 = Q2_.transpose() * Q2_;
 		solver_->analyze_pattern(Q2tQ2, Q2tQ2.rows());
@@ -241,19 +235,21 @@ namespace polyfem::solver
 
 	void NLProblem::update_constraint_values()
 	{
+		// x =  Q1 * R1^(-T) * P^T b  +  Q2 * y
 		int index = 0;
-		constraint_values_.resize(Q1_.cols());
+		TVector constraint_values(Q1_.cols());
 		for (const auto &f : penalty_forms_)
 		{
-			constraint_values_.segment(index, f->constraint_value().rows()) = f->constraint_value();
+			constraint_values.segment(index, f->constraint_value().rows()) = f->constraint_value();
 			index += f->constraint_value().rows();
 		}
 
-		const Eigen::VectorXd sol = R1_.transpose().triangularView<Eigen::Lower>().solve(constraint_values_);
-		assert((R1_.transpose() * sol - constraint_values_).norm() < 1e-10);
+		constraint_values = P_.transpose() * constraint_values;
+
+		const Eigen::VectorXd sol = R1_.transpose().triangularView<Eigen::Lower>().solve(constraint_values);
+		assert((R1_.transpose() * sol - constraint_values).norm() < 1e-10);
 
 		Q1R1iTb_ = Q1_ * sol;
-		// Q1R1iTb_ = P_ * Q1_ * sol;
 	}
 
 	void NLProblem::init_lagging(const TVector &x)
@@ -430,7 +426,7 @@ namespace polyfem::solver
 			return reduced;
 		}
 
-		// A'^T*P = Q*R,  so  A^T = Q*R*P^T =  Q1*R1*P^T     so  x = P R1^{-T} Q1^T  b + P Q2 y
+		// x =  Q1 * R1^(-T) * P^T b  +  Q2 * y
 
 		const TVector full = Q1R1iTb_ + Q2_ * reduced;
 
