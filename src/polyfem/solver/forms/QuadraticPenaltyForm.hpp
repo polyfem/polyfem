@@ -20,6 +20,7 @@ namespace polyfem::solver
 							 const int dim,
 							 const Eigen::MatrixXd &A,
 							 const Eigen::MatrixXd &b,
+							 const double weight,
 							 const std::vector<int> &local_to_global = {});
 
 		/// @brief Construct a new QuadraticPenaltyForm object for the constraints Ax = b, where A is sparse
@@ -34,6 +35,7 @@ namespace polyfem::solver
 							 const std::vector<int> &cols,
 							 const std::vector<double> &vals,
 							 const Eigen::MatrixXd &b,
+							 const double weight,
 							 const std::vector<int> &local_to_global = {});
 
 		std::string name() const override { return "quadratic-penalty"; }
@@ -59,5 +61,7 @@ namespace polyfem::solver
 
 		StiffnessMatrix AtA_;
 		Eigen::VectorXd Atb_;
+
+		const double weight_;
 	};
 } // namespace polyfem::solver

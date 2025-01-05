@@ -247,13 +247,14 @@ namespace polyfem::solver
 			}
 
 			Eigen::MatrixXd b = file.readDataset<Eigen::MatrixXd>("b");
+			double weigth = file.readDataset<double>("weigth");
 
 			if (!file.findDatasets("A").empty())
 			{
 				Eigen::MatrixXd A = file.readDataset<Eigen::MatrixXd>("A");
 
 				forms.push_back(std::make_shared<QuadraticPenaltyForm>(
-					ndof, dim, A, b, local2global));
+					ndof, dim, A, b, weigth, local2global));
 			}
 			else
 			{
@@ -262,7 +263,7 @@ namespace polyfem::solver
 				std::vector<int> cols = file.readDataset<std::vector<int>>("A_triplets/cols");
 
 				forms.push_back(std::make_shared<QuadraticPenaltyForm>(
-					ndof, dim, rows, cols, values, b, local2global));
+					ndof, dim, rows, cols, values, b, weigth, local2global));
 			}
 		}
 

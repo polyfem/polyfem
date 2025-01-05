@@ -6,7 +6,9 @@ namespace polyfem::solver
 											   const int dim,
 											   const Eigen::MatrixXd &A,
 											   const Eigen::MatrixXd &b,
+											   const double weight,
 											   const std::vector<int> &local_to_global)
+		: weight_(weight)
 	{
 		assert(A.rows() == b.rows());
 		assert(b.cols() == dim);
@@ -54,7 +56,9 @@ namespace polyfem::solver
 											   const std::vector<int> &cols,
 											   const std::vector<double> &vals,
 											   const Eigen::MatrixXd &b,
+											   const double weight,
 											   const std::vector<int> &local_to_global)
+		: weight_(weight)
 	{
 		assert(b.cols() == dim);
 		assert(rows.size() == cols.size());
@@ -101,16 +105,16 @@ namespace polyfem::solver
 	double QuadraticPenaltyForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		const Eigen::VectorXd val = A_ * x - b_;
-		return val.squaredNorm() / 2;
+		return val.squaredNorm() / 2 * weight_;
 	}
 
 	void QuadraticPenaltyForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = AtA_ * x - Atb_;
+		gradv = (AtA_ * x - Atb_) * weight_;
 	}
 
 	void QuadraticPenaltyForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
-		hessian = AtA_;
+		hessian = AtA_ * weight_;
 	}
 } // namespace polyfem::solver
