@@ -82,11 +82,12 @@ namespace polyfem::solver
 	private:
 		std::vector<std::shared_ptr<AugmentedLagrangianForm>> penalty_forms_;
 		// The decomposion comes from sec 1.3 of https://www.cs.cornell.edu/courses/cs6241/2021sp/meetings/nb-2021-03-11.pdf
-		StiffnessMatrix Q1_;        ///< Q1 block of the QR decomposition of the constraints matrix
-		StiffnessMatrix Q2_;        ///< Q2 block of the QR decomposition of the constraints matrix
-		StiffnessMatrix R1_;        ///< R1 block of the QR decomposition of the constraints matrix
-		TVector constraint_values_; ///< Values of the constraints
-		TVector Q1R1iTb_;           ///< Q1_ * (R1_.transpose().triangularView<Eigen::Upper>().solve(constraint_values_))
+		StiffnessMatrix Q1_;                                         ///< Q1 block of the QR decomposition of the constraints matrix
+		StiffnessMatrix Q2_;                                         ///< Q2 block of the QR decomposition of the constraints matrix
+		StiffnessMatrix R1_;                                         ///< R1 block of the QR decomposition of the constraints matrix
+		Eigen::PermutationMatrix<Eigen::Dynamic, Eigen::Dynamic> P_; ///< Permutation matrix of the QR decomposition of the constraints matrix
+		TVector constraint_values_;                                  ///< Values of the constraints
+		TVector Q1R1iTb_;                                            ///< Q1_ * (R1_.transpose().triangularView<Eigen::Upper>().solve(constraint_values_))
 		std::shared_ptr<polysolve::linear::Solver> solver_;
 
 		std::shared_ptr<FullNLProblem> penalty_problem_;
