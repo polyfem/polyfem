@@ -44,6 +44,12 @@ namespace polyfem::solver
 		for (auto &f : alagr_forms)
 			f->set_initial_weight(al_weight);
 
+		double current_error = 0;
+		for (const auto &f : alagr_forms)
+			current_error += f->compute_error(sol);
+
+		logger().debug("Initial error = {}", current_error);
+
 		while (!std::isfinite(nl_problem.value(tmp_sol))
 			   || !nl_problem.is_step_valid(sol, tmp_sol)
 			   || !nl_problem.is_step_collision_free(sol, tmp_sol))
@@ -72,9 +78,10 @@ namespace polyfem::solver
 
 			sol = tmp_sol;
 
-			double current_error = 0;
+			current_error = 0;
 			for (const auto &f : alagr_forms)
-				f->compute_error(sol);
+				current_error += f->compute_error(sol);
+			logger().debug("Current error = {}", current_error);
 			const double eta = 1 - sqrt(current_error / initial_error);
 
 			logger().debug("Current eta = {}", eta);
