@@ -126,6 +126,7 @@ namespace polyfem::solver
 
 	void MatrixLagrangianForm::update_lagrangian(const Eigen::VectorXd &x, const double k_al)
 	{
+		k_al_ = k_al;
 		lagr_mults_ += k_al * (A_ * x - b_);
 	}
 

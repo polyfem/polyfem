@@ -98,11 +98,9 @@ namespace polyfem::solver
 
 			if (eta < eta_tol && al_weight < max_al_weight)
 				al_weight *= scaling;
-			else
-			{
-				for (auto &f : alagr_forms)
-					f->update_lagrangian(sol, al_weight);
-			}
+
+			for (auto &f : alagr_forms)
+				f->update_lagrangian(sol, al_weight);
 
 			post_subsolve(al_weight);
 			++al_steps;
