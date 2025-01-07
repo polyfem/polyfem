@@ -102,7 +102,7 @@ namespace polyfem::solver
 			// Constraint forms
 			const size_t obstacle_ndof,
 			const std::vector<std::string> &hard_constraint_files,
-			const std::vector<std::string> &soft_constraint_files,
+			const std::vector<json> &soft_constraint_files,
 
 			// Contact form
 			const bool contact_enabled,

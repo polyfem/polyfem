@@ -217,7 +217,7 @@ namespace polyfem
 		}
 		for (auto &path : this->args["constraints"]["soft"])
 		{
-			path = resolve_input_path(path);
+			path["data"] = resolve_input_path(path["data"]);
 		}
 
 		init_logger(

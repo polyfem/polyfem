@@ -273,7 +273,7 @@ namespace polyfem::mesh
 				// Augmented lagrangian form
 				/*obstacle_ndof=*/0,
 				/*hard_constraint_files=*/std::vector<std::string>(),
-				/*soft_constraint_files=*/std::vector<std::string>(),
+				/*soft_constraint_files=*/std::vector<json>(),
 				// Contact form
 				contact_enabled, collision_mesh, state.args["contact"]["dhat"],
 				state.avg_mass, state.args["contact"]["use_convergent_formulation"],

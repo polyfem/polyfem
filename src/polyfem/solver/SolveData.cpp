@@ -72,7 +72,7 @@ namespace polyfem::solver
 		// Augemented lagrangian form
 		const size_t obstacle_ndof,
 		const std::vector<std::string> &hard_constraint_files,
-		const std::vector<std::string> &soft_constraint_files,
+		const std::vector<json> &soft_constraint_files,
 
 		// Contact form
 		const bool contact_enabled,
@@ -225,8 +225,11 @@ namespace polyfem::solver
 			// forms.push_back(al_form.back());
 		}
 
-		for (const auto &path : soft_constraint_files)
+		for (const auto &j : soft_constraint_files)
 		{
+			const std::string &path = j["data"];
+			double weight = j["weight"];
+
 			logger().debug("Setting up soft constraints for {}", path);
 			h5pp::File file(path, h5pp::FileAccess::READONLY);
 			std::vector<int> local2global;
@@ -247,14 +250,13 @@ namespace polyfem::solver
 			}
 
 			Eigen::MatrixXd b = file.readDataset<Eigen::MatrixXd>("b");
-			double weigth = file.readDataset<double>("weigth");
 
 			if (!file.findDatasets("A").empty())
 			{
 				Eigen::MatrixXd A = file.readDataset<Eigen::MatrixXd>("A");
 
 				forms.push_back(std::make_shared<QuadraticPenaltyForm>(
-					ndof, dim, A, b, weigth, local2global));
+					ndof, dim, A, b, weight, local2global));
 			}
 			else
 			{
@@ -263,7 +265,7 @@ namespace polyfem::solver
 				std::vector<int> cols = file.readDataset<std::vector<int>>("A_triplets/cols");
 
 				forms.push_back(std::make_shared<QuadraticPenaltyForm>(
-					ndof, dim, rows, cols, values, b, weigth, local2global));
+					ndof, dim, rows, cols, values, b, weight, local2global));
 			}
 		}
 

@@ -2658,8 +2658,24 @@
     {
         "pointer": "/constraints/soft/*",
         "default": "",
+        "type": "object",
+        "optional": [
+            "weight",
+            "data"
+        ],
+        "doc": "constraint hdf5 file for soft constraint w||Ax-b||^2. The file must contain these datasets: weight w, local2global, dense/sparse matrix A, and vector b. The colums of b nees to be the same as the dimentionality of the problem. if A is sparse it should contain A_triplets/value A_triplets/col A_triplets/rows"
+    },
+    {
+        "pointer": "/constraints/soft/*/weight",
+        "default": 0,
+        "type": "float",
+        "doc": "weight"
+    },
+    {
+        "pointer": "/constraints/soft/*/data",
+        "default": "",
         "type": "string",
-        "doc": "constraint hdf5 file for soft constraint w||Ax-b||^2. The file must contain these datasets: weigth w, local2global, dense/sparse matrix A, and vector b. The colums of b nees to be the same as the dimentionality of the problem. if A is sparse it should contain A_triplets/value A_triplets/col A_triplets/rows"
+        "doc": "constraint hdf5 file for soft constraint w||Ax-b||^2. The file must contain these datasets: local2global, dense/sparse matrix A, and vector b. The colums of b nees to be the same as the dimentionality of the problem. if A is sparse it should contain A_triplets/value A_triplets/col A_triplets/rows"
     },
     {
         "pointer": "/output",
