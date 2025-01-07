@@ -134,6 +134,8 @@ namespace polyfem
 	{
 		json args_in = p_args_in; // mutable copy
 
+		has_constraints_ = p_args_in.contains("constraints");
+
 		apply_common_params(args_in);
 
 		// CHECK validity json
