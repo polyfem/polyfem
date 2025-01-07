@@ -31,6 +31,31 @@ M (u^{t+1}_h - (u^t_h + \Delta t v^t_h)) - \frac{\Delta t^2} {2} A u^{t+1}_h
 
 namespace polyfem::solver
 {
+
+	namespace
+	{
+		void fill_cholmod(Eigen::SparseMatrix<double, Eigen::ColMajor, long> &mat, cholmod_sparse &cmat)
+		{
+			long *p = mat.outerIndexPtr();
+
+			cmat.nzmax = mat.nonZeros();
+			cmat.nrow = mat.rows();
+			cmat.ncol = mat.cols();
+			cmat.p = p;
+			cmat.i = mat.innerIndexPtr();
+			cmat.x = mat.valuePtr();
+			cmat.z = 0;
+			cmat.sorted = 1;
+			cmat.packed = 1;
+			cmat.nz = 0;
+			cmat.dtype = 0;
+			cmat.stype = -1;
+			cmat.xtype = CHOLMOD_REAL;
+			cmat.dtype = CHOLMOD_DOUBLE;
+			cmat.stype = 0;
+			cmat.itype = CHOLMOD_LONG;
+		}
+	} // namespace
 	NLProblem::NLProblem(
 		const int full_size,
 		const std::vector<std::shared_ptr<Form>> &forms,
@@ -92,8 +117,8 @@ namespace polyfem::solver
 		A.setFromTriplets(Ae.begin(), Ae.end());
 		A.makeCompressed();
 
-		const int constraint_size = A.rows();
-		reduced_size_ = full_size_ - constraint_size;
+		int constraint_size = A.rows();
+		num_penalty_constraints_ = A.rows();
 		Eigen::SparseMatrix<double, Eigen::ColMajor, long> At = A.transpose();
 		At.makeCompressed();
 
@@ -114,24 +139,7 @@ namespace polyfem::solver
 
 		cholmod_sparse Ac, *Qc, *Rc;
 
-		long *p = At.outerIndexPtr();
-
-		Ac.nzmax = At.nonZeros();
-		Ac.nrow = At.rows();
-		Ac.ncol = At.cols();
-		Ac.p = p;
-		Ac.i = At.innerIndexPtr();
-		Ac.x = At.valuePtr();
-		Ac.z = 0;
-		Ac.sorted = 1;
-		Ac.packed = 1;
-		Ac.nz = 0;
-		Ac.dtype = 0;
-		Ac.stype = -1;
-		Ac.xtype = CHOLMOD_REAL;
-		Ac.dtype = CHOLMOD_DOUBLE;
-		Ac.stype = 0;
-		Ac.itype = CHOLMOD_LONG;
+		fill_cholmod(At, Ac);
 
 		const auto rank = SuiteSparseQR<double>(ordering, tol, econ, &Ac,
 												// outputs
@@ -146,8 +154,6 @@ namespace polyfem::solver
 		{
 			for (long j = 0; j < n; j++)
 				P_.indices()(j) = E[j];
-
-			std::cout << "Asdasd" << std::endl;
 		}
 		else
 			P_.setIdentity();
@@ -194,6 +200,20 @@ namespace polyfem::solver
 		P_ = QR.colsPermutation();
 #endif
 
+		for (; constraint_size >= 0; --constraint_size)
+		{
+			const StiffnessMatrix tmp = R.row(constraint_size);
+			if (tmp.nonZeros() != 0)
+			{
+				constraint_size++;
+				break;
+			}
+		}
+		if (constraint_size != num_penalty_constraints_)
+			logger().warn("Matrix A is not full rank, constraint size: {} instead of {}", constraint_size, num_penalty_constraints_);
+
+		reduced_size_ = full_size_ - constraint_size;
+
 		timer.start();
 
 		Q1_ = Q.leftCols(constraint_size);
@@ -206,7 +226,7 @@ namespace polyfem::solver
 
 		R1_ = R.topRows(constraint_size);
 		assert(R1_.rows() == constraint_size);
-		assert(R1_.cols() == constraint_size);
+		assert(R1_.cols() == num_penalty_constraints_);
 
 		assert((Q1_.transpose() * Q2_).norm() < 1e-10);
 
@@ -217,11 +237,15 @@ namespace polyfem::solver
 		StiffnessMatrix Q2tQ2 = Q2_.transpose() * Q2_;
 		solver_->analyze_pattern(Q2tQ2, Q2tQ2.rows());
 		solver_->factorize(Q2tQ2);
+		timer.stop();
 		logger().debug("Factorization and computation of Q2tQ2 took: {}", timer.getElapsedTime());
 
 #ifndef NDEBUG
 		StiffnessMatrix test = R.bottomRows(reduced_size_);
 		assert(test.nonZeros() == 0);
+
+		StiffnessMatrix test1 = R1_.row(R1_.rows() - 1);
+		assert(test1.nonZeros() != 0);
 #endif
 
 		assert((Q1_ * R1_ - At * P_).norm() < 1e-10);
@@ -235,21 +259,70 @@ namespace polyfem::solver
 
 	void NLProblem::update_constraint_values()
 	{
+		igl::Timer timer;
+		timer.start();
 		// x =  Q1 * R1^(-T) * P^T b  +  Q2 * y
 		int index = 0;
-		TVector constraint_values(Q1_.cols());
+		TVector constraint_values(num_penalty_constraints_);
 		for (const auto &f : penalty_forms_)
 		{
 			constraint_values.segment(index, f->constraint_value().rows()) = f->constraint_value();
 			index += f->constraint_value().rows();
 		}
-
 		constraint_values = P_.transpose() * constraint_values;
 
-		const Eigen::VectorXd sol = R1_.transpose().triangularView<Eigen::Lower>().solve(constraint_values);
+		Eigen::VectorXd sol;
+
+		if (R1_.rows() == R1_.cols())
+		{
+			sol = R1_.transpose().triangularView<Eigen::Lower>().solve(constraint_values);
+		}
+		else
+		{
+
+#ifdef POLYSOLVE_WITH_SPQR
+			Eigen::SparseMatrix<double, Eigen::ColMajor, long> R1t = R1_.transpose();
+			cholmod_common cc;
+			cholmod_l_start(&cc); // start CHOLMOD
+			cholmod_sparse R1tc;
+			fill_cholmod(R1t, R1tc);
+
+			cholmod_dense b;
+			b.nrow = constraint_values.size();
+			b.ncol = 1;
+			b.nzmax = constraint_values.size();
+			b.d = constraint_values.size();
+			b.x = constraint_values.data();
+			b.z = 0;
+			b.xtype = CHOLMOD_REAL;
+			b.dtype = 0;
+
+			const int ordering = SPQR_ORDERING_DEFAULT; // all, except 3:given treated as 0:fixed
+			const double tol = SPQR_DEFAULT_TOL;
+
+			cholmod_dense *solc = SuiteSparseQR<double>(ordering, tol, &R1tc, &b, &cc);
+
+			sol = Eigen::Map<Eigen::VectorXd>(static_cast<double *>(solc->x), solc->nrow);
+
+			cholmod_l_free_dense(&solc, &cc);
+			cholmod_l_finish(&cc);
+#else
+			Eigen::SparseQR<StiffnessMatrix, Eigen::COLAMDOrdering<int>> solver;
+			solver.compute(R1_.transpose());
+			if (solver.info() != Eigen::Success)
+			{
+				log_and_throw_error("Failed to factorize R1^T");
+			}
+			sol = solver.solve(constraint_values);
+#endif
+		}
+
 		assert((R1_.transpose() * sol - constraint_values).norm() < 1e-10);
 
 		Q1R1iTb_ = Q1_ * sol;
+
+		timer.stop();
+		logger().debug("Computing Q1R1iTb took: {}", timer.getElapsedTime());
 	}
 
 	void NLProblem::init_lagging(const TVector &x)
@@ -412,7 +485,7 @@ namespace polyfem::solver
 #ifndef NDEBUG
 		StiffnessMatrix Q2tQ2 = Q2_.transpose() * Q2_;
 		assert((Q2tQ2 * reduced - rhs).norm() < 1e-10);
-		// std::cout << "err " << (Q2_ * reduced - k).norm() << std::endl;
+		// std::cout << "err " << (Q2tQ2 * reduced - rhs).norm() << std::endl;
 #endif
 
 		return reduced;
