@@ -40,6 +40,8 @@ namespace polyfem::solver
 
 		std::string name() const override { return "quadratic-penalty"; }
 
+		double weight() const override { return weight_ * penalty_weight_; }
+
 		/// @brief Compute the value of the form
 		/// @param x Current solution
 		/// @return Computed value
@@ -62,6 +64,6 @@ namespace polyfem::solver
 		StiffnessMatrix AtA_;
 		Eigen::VectorXd Atb_;
 
-		const double weight_;
+		const double penalty_weight_;
 	};
 } // namespace polyfem::solver

@@ -19,14 +19,26 @@ namespace polyfem::solver
 
 		inline void set_initial_weight(const double k_al) { k_al_ = k_al; }
 
+		inline double lagrangian_weight() const { return k_al_; }
+
 		inline const StiffnessMatrix &constraint_matrix() const { return A_; }
 		inline const Eigen::MatrixXd &constraint_value() const { return b_; }
 
+		/// @brief sets the scale for the form
+		/// @param scale
+		void set_scale(const double scale) override { k_scale_ = scale; }
+
 	protected:
+		inline double L_weight() const { return 1 / k_scale_; }
+		inline double A_weight() const { return k_al_ / k_scale_; }
+
+		double k_al_; ///< penalty parameter
+
 		Eigen::VectorXd lagr_mults_; ///< vector of lagrange multipliers
-		double k_al_;                ///< penalty parameter
 
 		StiffnessMatrix A_; ///< Constraints matrix
 		Eigen::MatrixXd b_; ///< Constraints value
+	private:
+		double k_scale_ = 1;
 	};
 } // namespace polyfem::solver

@@ -139,8 +139,8 @@ namespace polyfem
 	void State::init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t, const bool init_time_integrator)
 	{
 		assert(sol.cols() == 1);
-		assert(!assembler->is_linear() || is_contact_enabled()); // non-linear
-		assert(!problem->is_scalar());                           // tensor
+		assert(!is_problem_linear());  // non-linear
+		assert(!problem->is_scalar()); // tensor
 		assert(mixed_assembler == nullptr);
 
 		if (optimization_enabled != solver::CacheLevel::None)
@@ -325,10 +325,11 @@ namespace polyfem
 		};
 
 		Eigen::MatrixXd prev_sol = sol;
-		al_solver.solve_al(nl_solver, nl_problem, sol);
+		al_solver.solve_al(nl_problem, sol,
+						   args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
 
-		nl_solver = make_nl_solver(false);
-		al_solver.solve_reduced(nl_solver, nl_problem, sol);
+		al_solver.solve_reduced(nl_problem, sol,
+								args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
 
 		if (args["space"]["advanced"]["count_flipped_els_continuous"])
 		{
@@ -389,6 +390,7 @@ namespace polyfem
 				logger().info("Lagging iteration {:d}:", lag_i + 1);
 				nl_problem.init(sol);
 				solve_data.update_barrier_stiffness(sol);
+				nl_problem.normalize_forms();
 				nl_solver->minimize(nl_problem, tmp_sol);
 				nl_problem.finish();
 				prev_sol = sol;

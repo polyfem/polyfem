@@ -111,17 +111,17 @@ namespace polyfem::solver
 		const Eigen::VectorXd res = A_ * x - b_;
 		const double L_penalty = lagr_mults_.transpose() * res;
 		const double A_penalty = res.squaredNorm() / 2;
-		return L_penalty + k_al_ * A_penalty;
+		return L_weight() * L_penalty + A_weight() * A_penalty;
 	}
 
 	void MatrixLagrangianForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = A_.transpose() * lagr_mults_ + k_al_ * (AtA * x - Atb);
+		gradv = L_weight() * A_.transpose() * lagr_mults_ + A_weight() * (AtA * x - Atb);
 	}
 
 	void MatrixLagrangianForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
-		hessian = k_al_ * AtA;
+		hessian = A_weight() * AtA;
 	}
 
 	void MatrixLagrangianForm::update_lagrangian(const Eigen::VectorXd &x, const double k_al)

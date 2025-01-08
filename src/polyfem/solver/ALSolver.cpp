@@ -20,7 +20,10 @@ namespace polyfem::solver
 	{
 	}
 
-	void ALSolver::solve_al(std::shared_ptr<NLSolver> nl_solver, NLProblem &nl_problem, Eigen::MatrixXd &sol)
+	void ALSolver::solve_al(NLProblem &nl_problem, Eigen::MatrixXd &sol,
+							const json &nl_solver_params,
+							const json &linear_solver,
+							const double characteristic_length)
 	{
 		assert(sol.size() == nl_problem.full_size());
 
@@ -32,7 +35,6 @@ namespace polyfem::solver
 
 		double al_weight = initial_al_weight;
 		int al_steps = 0;
-		const int iters = nl_solver->stop_criteria().iterations;
 
 		double initial_error = 0;
 		for (const auto &f : alagr_forms)
@@ -65,6 +67,9 @@ namespace polyfem::solver
 
 			try
 			{
+				const auto scale = nl_problem.normalize_forms();
+				auto nl_solver = polysolve::nonlinear::Solver::create(
+					nl_solver_params, linear_solver, characteristic_length * scale, logger());
 				nl_solver->minimize(nl_problem, tmp_sol);
 				nl_problem.finish();
 			}
@@ -106,10 +111,12 @@ namespace polyfem::solver
 			++al_steps;
 		}
 		nl_problem.line_search_end();
-		nl_solver->stop_criteria().iterations = iters;
 	}
 
-	void ALSolver::solve_reduced(std::shared_ptr<NLSolver> nl_solver, NLProblem &nl_problem, Eigen::MatrixXd &sol)
+	void ALSolver::solve_reduced(NLProblem &nl_problem, Eigen::MatrixXd &sol,
+								 const json &nl_solver_params,
+								 const json &linear_solver,
+								 const double characteristic_length)
 	{
 		assert(sol.size() == nl_problem.full_size());
 
@@ -131,6 +138,9 @@ namespace polyfem::solver
 		update_barrier_stiffness(sol);
 		try
 		{
+			const auto scale = nl_problem.normalize_forms();
+			auto nl_solver = polysolve::nonlinear::Solver::create(
+				nl_solver_params, linear_solver, characteristic_length * scale, logger());
 			nl_solver->minimize(nl_problem, tmp_sol);
 			nl_problem.finish();
 		}

@@ -128,17 +128,17 @@ namespace polyfem::solver
 		const double L_penalty = -lagr_mults_.transpose() * masked_lumped_mass_sqrt_ * dist;
 		const double A_penalty = 0.5 * dist.transpose() * masked_lumped_mass_ * dist;
 
-		return L_penalty + k_al_ * A_penalty;
+		return L_weight() * L_penalty + A_weight() * A_penalty;
 	}
 
 	void BCLagrangianForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = A_.transpose() * (-(masked_lumped_mass_sqrt_ * lagr_mults_) + k_al_ * (masked_lumped_mass_ * (A_ * x - b_)));
+		gradv = L_weight() * A_.transpose() * (-(masked_lumped_mass_sqrt_ * lagr_mults_) + A_weight() * (masked_lumped_mass_ * (A_ * x - b_)));
 	}
 
 	void BCLagrangianForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
-		hessian = k_al_ * A_.transpose() * masked_lumped_mass_ * A_;
+		hessian = A_weight() * A_.transpose() * masked_lumped_mass_ * A_;
 	}
 
 	void BCLagrangianForm::update_quantities(const double t, const Eigen::VectorXd &)
@@ -170,6 +170,6 @@ namespace polyfem::solver
 	void BCLagrangianForm::update_lagrangian(const Eigen::VectorXd &x, const double k_al)
 	{
 		k_al_ = k_al;
-		lagr_mults_ -= k_al_ * masked_lumped_mass_sqrt_ * (A_ * x - b_);
+		lagr_mults_ -= k_al * masked_lumped_mass_sqrt_ * (A_ * x - b_);
 	}
 } // namespace polyfem::solver

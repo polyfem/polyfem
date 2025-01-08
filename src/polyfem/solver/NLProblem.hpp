@@ -62,6 +62,8 @@ namespace polyfem::solver
 		TVector full_to_reduced(const TVector &full) const;
 		TVector reduced_to_full(const TVector &reduced) const;
 
+		double normalize_forms() override;
+
 	protected:
 		const int full_size_; ///< Size of the full problem
 		int reduced_size_;    ///< Size of the reduced problem

@@ -171,6 +171,7 @@ namespace polyfem
 				homo_problem->init(tmp_sol);
 				try
 				{
+					homo_problem->normalize_forms();
 					nl_solver->minimize(*homo_problem, tmp_sol);
 				}
 				catch (const std::runtime_error &e)
@@ -221,6 +222,7 @@ namespace polyfem
 
 		homo_problem->init(reduced_sol);
 		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(false);
+		homo_problem->normalize_forms();
 		nl_solver->minimize(*homo_problem, reduced_sol);
 
 		logger().info("Macro Strain: {}", extended_sol.tail(dim * dim).transpose());

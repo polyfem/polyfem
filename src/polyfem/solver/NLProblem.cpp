@@ -91,6 +91,27 @@ namespace polyfem::solver
 		use_reduced_size();
 	}
 
+	double NLProblem::normalize_forms()
+	{
+		double total_weight = 0;
+		for (const auto &f : forms_)
+			total_weight += f->weight();
+		if (full_size() == current_size())
+		{
+			for (const auto &f : penalty_forms_)
+				total_weight += f->weight() * f->lagrangian_weight();
+		}
+
+		logger().debug("Normalizing forms with scale: {}", total_weight);
+
+		for (auto &f : forms_)
+			f->set_scale(total_weight);
+		for (auto &f : penalty_forms_)
+			f->set_scale(total_weight);
+
+		return total_weight;
+	}
+
 	void NLProblem::setup_constraints()
 	{
 		if (penalty_forms_.empty())

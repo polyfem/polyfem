@@ -26,8 +26,14 @@ namespace polyfem::solver
 			const std::function<void(const Eigen::VectorXd &)> &update_barrier_stiffness);
 		virtual ~ALSolver() = default;
 
-		void solve_al(std::shared_ptr<NLSolver> nl_solver, NLProblem &nl_problem, Eigen::MatrixXd &sol);
-		void solve_reduced(std::shared_ptr<NLSolver> nl_solver, NLProblem &nl_problem, Eigen::MatrixXd &sol);
+		void solve_al(NLProblem &nl_problem, Eigen::MatrixXd &sol,
+					  const json &nl_solver_params,
+					  const json &linear_solver,
+					  const double characteristic_length);
+		void solve_reduced(NLProblem &nl_problem, Eigen::MatrixXd &sol,
+						   const json &nl_solver_params,
+						   const json &linear_solver,
+						   const double characteristic_length);
 
 		std::function<void(const double)> post_subsolve = [](const double) {};
 
