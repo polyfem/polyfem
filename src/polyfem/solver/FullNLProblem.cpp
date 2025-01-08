@@ -1,10 +1,25 @@
 #include "FullNLProblem.hpp"
+#include <polyfem/utils/Logger.hpp>
 
 namespace polyfem::solver
 {
 	FullNLProblem::FullNLProblem(const std::vector<std::shared_ptr<Form>> &forms)
 		: forms_(forms)
 	{
+	}
+
+	double FullNLProblem::normalize_forms()
+	{
+		double total_weight = 0;
+		for (const auto &f : forms_)
+			total_weight += f->weight();
+
+		logger().debug("Normalizing forms with scale: {}", total_weight);
+
+		for (auto &f : forms_)
+			f->set_scale(total_weight);
+
+		return total_weight;
 	}
 
 	void FullNLProblem::init(const TVector &x)

@@ -3,6 +3,7 @@
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/Form.hpp>
 #include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
+#include <polyfem/solver/forms/lagrangian/MatrixLagrangianForm.hpp>
 #include <polyfem/solver/forms/lagrangian/MacroStrainLagrangianForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/PressureForm.hpp>
@@ -12,6 +13,7 @@
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
+#include <polyfem/solver/forms/QuadraticPenaltyForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/assembler/PressureAssembler.hpp>
@@ -19,6 +21,8 @@
 #include <polyfem/assembler/MacroStrain.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/assembler/PeriodicBoundary.hpp>
+
+#include <h5pp/h5pp.h>
 
 namespace polyfem::solver
 {
@@ -29,6 +33,7 @@ namespace polyfem::solver
 		const Units &units,
 		const int dim,
 		const double t,
+		const Eigen::VectorXi &in_node_to_node,
 
 		// Elastic form
 		const int n_bases,
@@ -65,12 +70,9 @@ namespace polyfem::solver
 		const int lagged_regularization_iterations,
 
 		// Augemented lagrangian form
-		// const std::vector<int> &boundary_nodes,
-		// const std::vector<mesh::LocalBoundary> &local_boundary,
-		// const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
-		// const int n_boundary_samples,
-		// const StiffnessMatrix &mass,
 		const size_t obstacle_ndof,
+		const std::vector<std::string> &hard_constraint_files,
+		const std::vector<json> &soft_constraint_files,
 
 		// Contact form
 		const bool contact_enabled,
@@ -178,7 +180,93 @@ namespace polyfem::solver
 			al_form.push_back(std::make_shared<BCLagrangianForm>(
 				ndof, boundary_nodes, local_boundary, local_neumann_boundary,
 				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t, periodic_bc));
-			forms.push_back(al_form.back());
+			// forms.push_back(al_form.back());
+		}
+
+		for (const auto &path : hard_constraint_files)
+		{
+			logger().debug("Setting up hard constraints for {}", path);
+			h5pp::File file(path, h5pp::FileAccess::READONLY);
+			std::vector<int> local2global;
+			if (!file.findDatasets("local2global").empty())
+				local2global = file.readDataset<std::vector<int>>("local2global");
+
+			if (local2global.empty())
+			{
+				local2global.resize(in_node_to_node.size());
+
+				for (int i = 0; i < local2global.size(); ++i)
+					local2global[i] = in_node_to_node[i];
+			}
+			else
+			{
+				for (auto &v : local2global)
+					v = in_node_to_node[v];
+			}
+
+			Eigen::MatrixXd b = file.readDataset<Eigen::MatrixXd>("b");
+
+			if (!file.findDatasets("A").empty())
+			{
+				Eigen::MatrixXd A = file.readDataset<Eigen::MatrixXd>("A");
+
+				al_form.push_back(std::make_shared<MatrixLagrangianForm>(
+					ndof, dim, A, b, local2global));
+			}
+			else
+			{
+				std::vector<double> values = file.readDataset<std::vector<double>>("A_triplets/values");
+				std::vector<int> rows = file.readDataset<std::vector<int>>("A_triplets/rows");
+				std::vector<int> cols = file.readDataset<std::vector<int>>("A_triplets/cols");
+
+				al_form.push_back(std::make_shared<MatrixLagrangianForm>(
+					ndof, dim, rows, cols, values, b, local2global));
+			}
+			// forms.push_back(al_form.back());
+		}
+
+		for (const auto &j : soft_constraint_files)
+		{
+			const std::string &path = j["data"];
+			double weight = j["weight"];
+
+			logger().debug("Setting up soft constraints for {}", path);
+			h5pp::File file(path, h5pp::FileAccess::READONLY);
+			std::vector<int> local2global;
+			if (!file.findDatasets("local2global").empty())
+				local2global = file.readDataset<std::vector<int>>("local2global");
+
+			if (local2global.empty())
+			{
+				local2global.resize(in_node_to_node.size());
+
+				for (int i = 0; i < local2global.size(); ++i)
+					local2global[i] = in_node_to_node[i];
+			}
+			else
+			{
+				for (auto &v : local2global)
+					v = in_node_to_node[v];
+			}
+
+			Eigen::MatrixXd b = file.readDataset<Eigen::MatrixXd>("b");
+
+			if (!file.findDatasets("A").empty())
+			{
+				Eigen::MatrixXd A = file.readDataset<Eigen::MatrixXd>("A");
+
+				forms.push_back(std::make_shared<QuadraticPenaltyForm>(
+					ndof, dim, A, b, weight, local2global));
+			}
+			else
+			{
+				std::vector<double> values = file.readDataset<std::vector<double>>("A_triplets/values");
+				std::vector<int> rows = file.readDataset<std::vector<int>>("A_triplets/rows");
+				std::vector<int> cols = file.readDataset<std::vector<int>>("A_triplets/cols");
+
+				forms.push_back(std::make_shared<QuadraticPenaltyForm>(
+					ndof, dim, rows, cols, values, b, weight, local2global));
+			}
 		}
 
 		if (macro_strain_constraint.is_active())

@@ -25,7 +25,7 @@ namespace polyfem::solver
 		/// @return Computed value
 		inline virtual double value(const Eigen::VectorXd &x) const
 		{
-			return weight() * value_unweighted(x);
+			return (weight() / scale_) * value_unweighted(x);
 		}
 
 		/// @brief Compute the value of the form multiplied with the weigth
@@ -33,7 +33,7 @@ namespace polyfem::solver
 		/// @return Computed value
 		inline Eigen::VectorXd value_per_element(const Eigen::VectorXd &x) const
 		{
-			return weight_ * value_per_element_unweighted(x);
+			return (weight() / scale_) * value_per_element_unweighted(x);
 		}
 
 		/// @brief Compute the first derivative of the value wrt x multiplied with the weigth
@@ -42,7 +42,7 @@ namespace polyfem::solver
 		inline virtual void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 		{
 			first_derivative_unweighted(x, gradv);
-			gradv *= weight();
+			gradv *= weight() / scale_;
 		}
 
 		/// @brief Compute the second derivative of the value wrt x multiplied with the weigth
@@ -52,7 +52,7 @@ namespace polyfem::solver
 		inline void second_derivative(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 		{
 			second_derivative_unweighted(x, hessian);
-			hessian *= weight();
+			hessian *= weight() / scale_;
 		}
 
 		/// @brief Determine if a step from solution x0 to solution x1 is allowed
@@ -139,6 +139,10 @@ namespace polyfem::solver
 
 		void set_output_dir(const std::string &output_dir) { output_dir_ = output_dir; }
 
+		/// @brief sets the scale for the form
+		/// @param scale
+		void virtual set_scale(const double scale) { scale_ = scale; }
+
 	protected:
 		bool project_to_psd_ = false; ///< If true, the form's second derivative is projected to be positive semidefinite
 
@@ -177,5 +181,8 @@ namespace polyfem::solver
 		/// @param[in] x Current solution
 		/// @param[out] hessian Output Hessian of the value wrt x
 		virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const = 0;
+
+	private:
+		double scale_ = 1; ///< scale of the form
 	};
 } // namespace polyfem::solver
