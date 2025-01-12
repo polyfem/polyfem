@@ -1,5 +1,6 @@
 #include "MatrixLagrangianForm.hpp"
 
+#include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 namespace polyfem::solver
@@ -10,41 +11,7 @@ namespace polyfem::solver
 											   const Eigen::MatrixXd &b,
 											   const std::vector<int> &local_to_global)
 	{
-		assert(A.rows() == b.rows());
-		assert(b.cols() == dim);
-
-		std::vector<Eigen::Triplet<double>> Ae;
-		for (int i = 0; i < A.rows(); ++i)
-		{
-			for (int j = 0; j < A.cols(); ++j)
-			{
-				const auto global_j = (local_to_global.empty() ? j : local_to_global[j]) * dim;
-
-				if (A(i, j) != 0)
-				{
-					for (int d = 0; d < dim; ++d)
-					{
-						Ae.push_back(Eigen::Triplet<double>(
-							i * dim + d,
-							global_j + d,
-							A(i, j)));
-					}
-				}
-			}
-		}
-
-		b_.resize(b.rows() * dim, 1);
-		for (int i = 0; i < b.rows(); ++i)
-		{
-			for (int d = 0; d < dim; ++d)
-			{
-				b_(i * dim + d) = b(i, d);
-			}
-		}
-
-		A_.resize(b_.size(), n_dofs);
-		A_.setFromTriplets(Ae.begin(), Ae.end());
-		A_.makeCompressed();
+		utils::scatter_matrix(n_dofs, dim, A, b, local_to_global, A_, b_);
 
 		AtA = A_.transpose() * A_;
 		Atb = A_.transpose() * b_;
@@ -61,43 +28,7 @@ namespace polyfem::solver
 											   const Eigen::MatrixXd &b,
 											   const std::vector<int> &local_to_global)
 	{
-		assert(b.cols() == dim);
-		assert(rows.size() == cols.size());
-		assert(rows.size() == vals.size());
-
-		std::vector<Eigen::Triplet<double>> Ae;
-		for (int k = 0; k < rows.size(); ++k)
-		{
-			const auto i = rows[k];
-			const auto j = cols[k];
-			const auto val = vals[k];
-
-			const auto global_j = (local_to_global.empty() ? j : local_to_global[j]) * dim;
-
-			if (val != 0)
-			{
-				for (int d = 0; d < dim; ++d)
-				{
-					Ae.push_back(Eigen::Triplet<double>(
-						i * dim + d,
-						global_j + d,
-						val));
-				}
-			}
-		}
-
-		b_.resize(b.rows() * dim, 1);
-		for (int i = 0; i < b.rows(); ++i)
-		{
-			for (int d = 0; d < dim; ++d)
-			{
-				b_(i * dim + d) = b(i, d);
-			}
-		}
-
-		A_.resize(b_.size(), n_dofs);
-		A_.setFromTriplets(Ae.begin(), Ae.end());
-		A_.makeCompressed();
+		utils::scatter_matrix(n_dofs, dim, rows, cols, vals, b, local_to_global, A_, b_);
 
 		AtA = A_.transpose() * A_;
 		Atb = A_.transpose() * b_;
