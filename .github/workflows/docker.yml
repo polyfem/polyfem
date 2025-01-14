@@ -1,0 +1,76 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches:
+      - main
+      - docker
+  pull_request:
+    branches:
+      - main
+      - docker
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - variant: standard
+            dockerfile: Dockerfile
+            tag: latest
+            platform: linux/amd64
+          - variant: cuda
+            dockerfile: Dockerfile.cuda
+            tag: cuda-latest
+            platform: linux/amd64
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          docker-images: false
+          swap-storage: false
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Install CUDA Toolkit (Only for CUDA Variant)
+        if: matrix.variant == 'cuda'
+        uses: Jimver/cuda-toolkit@v0.2.19
+        with:
+          cuda: '12.2.0'
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: docker-${{ matrix.variant }}-${{ runner.os }}-${{ hashFiles(matrix.dockerfile, '**/*.cpp', '**/*.h') }}
+          restore-keys: |
+            docker-${{ matrix.variant }}-${{ runner.os }}-
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/polyfem:${{ matrix.tag }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
+          platforms: ${{ matrix.platform }}
+
+      - name: Test Docker Image
+        run: |
+          docker run --rm ${{ secrets.DOCKER_USERNAME }}/polyfem:${{ matrix.tag }} --help
