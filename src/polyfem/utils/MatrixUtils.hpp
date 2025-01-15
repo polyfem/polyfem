@@ -175,6 +175,14 @@ namespace polyfem
 							StiffnessMatrix &Aout,
 							Eigen::MatrixXd &bout);
 
+		void scatter_matrix_col(const int n_dofs,
+								const int dim,
+								const Eigen::MatrixXd &A,
+								const Eigen::MatrixXd &b,
+								const std::vector<int> &local_to_global,
+								StiffnessMatrix &Aout,
+								Eigen::MatrixXd &bout);
+
 		void scatter_matrix(const int n_dofs,
 							const int dim,
 							const std::vector<int> &rows,
@@ -184,5 +192,15 @@ namespace polyfem
 							const std::vector<int> &local_to_global,
 							StiffnessMatrix &Aout,
 							Eigen::MatrixXd &bout);
+
+		void scatter_matrix_col(const int n_dofs,
+								const int dim,
+								const std::vector<int> &rows,
+								const std::vector<int> &cols,
+								const std::vector<double> &vals,
+								const Eigen::MatrixXd &b,
+								const std::vector<int> &local_to_global,
+								StiffnessMatrix &Aout,
+								Eigen::MatrixXd &bout);
 	} // namespace utils
 } // namespace polyfem

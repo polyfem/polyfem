@@ -177,9 +177,10 @@ namespace polyfem::solver
 			// mass_mat_assembler.assemble(dim == 3, n_bases, bases, geom_bases, mass_ass_vals_cache, mass_tmp, true);
 			// assert(mass_tmp.rows() == mass.rows() && mass_tmp.cols() == mass.cols());
 
-			al_form.push_back(std::make_shared<BCLagrangianForm>(
-				ndof, boundary_nodes, local_boundary, local_neumann_boundary,
-				n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t, periodic_bc));
+			if (!boundary_nodes.empty())
+				al_form.push_back(std::make_shared<BCLagrangianForm>(
+					ndof, boundary_nodes, local_boundary, local_neumann_boundary,
+					n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t, periodic_bc));
 			// forms.push_back(al_form.back());
 		}
 
@@ -206,12 +207,23 @@ namespace polyfem::solver
 
 			Eigen::MatrixXd b = file.readDataset<Eigen::MatrixXd>("b");
 
-			if (!file.findDatasets("A").empty())
+			if (!file.findDatasets("/A").empty())
 			{
 				Eigen::MatrixXd A = file.readDataset<Eigen::MatrixXd>("A");
 
-				al_form.push_back(std::make_shared<MatrixLagrangianForm>(
-					ndof, dim, A, b, local2global));
+				if (file.findDatasets("A_proj").empty())
+					al_form.push_back(std::make_shared<MatrixLagrangianForm>(
+						ndof, dim, A, b, local2global));
+				else
+				{
+					Eigen::MatrixXd A_proj = file.readDataset<Eigen::MatrixXd>("A_proj");
+					if (file.findDatasets("b_proj").empty())
+						log_and_throw_error("Missing b_proj in hard constraint file");
+
+					Eigen::MatrixXd b_proj = file.readDataset<Eigen::MatrixXd>("b_proj");
+					al_form.push_back(std::make_shared<MatrixLagrangianForm>(
+						ndof, dim, A, b, local2global, A_proj, b_proj));
+				}
 			}
 			else
 			{
@@ -219,8 +231,28 @@ namespace polyfem::solver
 				std::vector<int> rows = file.readDataset<std::vector<int>>("A_triplets/rows");
 				std::vector<int> cols = file.readDataset<std::vector<int>>("A_triplets/cols");
 
-				al_form.push_back(std::make_shared<MatrixLagrangianForm>(
-					ndof, dim, rows, cols, values, b, local2global));
+				if (file.findGroups("A_proj_triplets").empty())
+					al_form.push_back(std::make_shared<MatrixLagrangianForm>(
+						ndof, dim, rows, cols, values, b, local2global));
+				else
+				{
+					if (file.findDatasets("b_proj").empty())
+						log_and_throw_error("Missing b_proj in hard constraint file");
+					if (file.findDatasets("rows", "/A_proj_triplets").empty())
+						log_and_throw_error("Missing A_proj_triplets/rows in hard constraint file");
+					if (file.findDatasets("cols", "/A_proj_triplets").empty())
+						log_and_throw_error("Missing A_proj_triplets/cols in hard constraint file");
+					if (file.findDatasets("values", "/A_proj_triplets").empty())
+						log_and_throw_error("Missing A_proj_triplets/values in hard constraint file");
+
+					std::vector<double> values_proj = file.readDataset<std::vector<double>>("A_proj_triplets/values");
+					std::vector<int> rows_proj = file.readDataset<std::vector<int>>("A_proj_triplets/rows");
+					std::vector<int> cols_proj = file.readDataset<std::vector<int>>("A_proj_triplets/cols");
+					Eigen::MatrixXd b_proj = file.readDataset<Eigen::MatrixXd>("b_proj");
+
+					al_form.push_back(std::make_shared<MatrixLagrangianForm>(
+						ndof, dim, rows, cols, values, b, local2global, rows_proj, cols_proj, values_proj, b_proj));
+				}
 			}
 			// forms.push_back(al_form.back());
 		}

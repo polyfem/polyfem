@@ -24,6 +24,11 @@ namespace polyfem::solver
 		inline const StiffnessMatrix &constraint_matrix() const { return A_; }
 		inline const Eigen::MatrixXd &constraint_value() const { return b_; }
 
+		inline const StiffnessMatrix &constraint_projection_matrix() const { return A_proj_; }
+		inline const Eigen::MatrixXd &constraint_projection_vector() const { return b_proj_; }
+
+		inline bool has_projection() const { return A_proj_.rows() > 0; }
+
 		/// @brief sets the scale for the form
 		/// @param scale
 		void set_scale(const double scale) override { k_scale_ = scale; }
@@ -38,6 +43,9 @@ namespace polyfem::solver
 
 		StiffnessMatrix A_; ///< Constraints matrix
 		Eigen::MatrixXd b_; ///< Constraints value
+
+		StiffnessMatrix A_proj_; ///< Constraints projection matrix
+		Eigen::MatrixXd b_proj_; ///< Constraints projection value
 	private:
 		double k_scale_ = 1;
 	};

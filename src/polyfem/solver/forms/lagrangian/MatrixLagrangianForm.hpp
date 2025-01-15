@@ -14,11 +14,15 @@ namespace polyfem::solver
 		/// @param A Constraints matrix, local or global
 		/// @param b Constraints value
 		/// @param local_to_global local to global nodes
+		/// @param A_proj Projection matrix
+		/// @param b_proj Projection value
 		MatrixLagrangianForm(const int n_dofs,
 							 const int dim,
 							 const Eigen::MatrixXd &A,
 							 const Eigen::MatrixXd &b,
-							 const std::vector<int> &local_to_global = {});
+							 const std::vector<int> &local_to_global = {},
+							 const Eigen::MatrixXd &A_proj = {},
+							 const Eigen::MatrixXd &b_proj = {});
 
 		/// @brief Construct a new MatrixLagrangianForm object for the constraints Ax = b, where A is sparse
 		/// @param n_dofs Number of degrees of freedom
@@ -26,13 +30,19 @@ namespace polyfem::solver
 		/// @param rows, cols, vals are the triplets of the constraints matrix, local or global
 		/// @param b Constraints value
 		/// @param local_to_global local to global nodes
+		/// @param A_proj Projection matrix as rows cols and vals
+		/// @param b_proj Projection value
 		MatrixLagrangianForm(const int n_dofs,
 							 const int dim,
 							 const std::vector<int> &rows,
 							 const std::vector<int> &cols,
 							 const std::vector<double> &vals,
 							 const Eigen::MatrixXd &b,
-							 const std::vector<int> &local_to_global = {});
+							 const std::vector<int> &local_to_global = {},
+							 const std::vector<int> &rows_proj = {},
+							 const std::vector<int> &cols_proj = {},
+							 const std::vector<double> &vals_proj = {},
+							 const Eigen::MatrixXd &b_proj = {});
 
 		std::string name() const override { return "generic-lagrangian"; }
 

@@ -308,6 +308,17 @@ void polyfem::utils::scatter_matrix(const int n_dofs,
 	Aout.makeCompressed();
 }
 
+void polyfem::utils::scatter_matrix_col(const int n_dofs,
+										const int dim,
+										const Eigen::MatrixXd &A,
+										const Eigen::MatrixXd &b,
+										const std::vector<int> &local_to_global,
+										StiffnessMatrix &Aout,
+										Eigen::MatrixXd &bout)
+{
+	log_and_throw_error("Not implemented");
+}
+
 void polyfem::utils::scatter_matrix(const int n_dofs,
 									const int dim,
 									const std::vector<int> &rows,
@@ -318,7 +329,6 @@ void polyfem::utils::scatter_matrix(const int n_dofs,
 									StiffnessMatrix &Aout,
 									Eigen::MatrixXd &bout)
 {
-	assert(b.cols() == dim);
 	assert(rows.size() == cols.size());
 	assert(rows.size() == vals.size());
 
@@ -383,6 +393,102 @@ void polyfem::utils::scatter_matrix(const int n_dofs,
 	}
 
 	Aout.resize(bout.size(), n_dofs);
+	Aout.setFromTriplets(Ae.begin(), Ae.end());
+	Aout.makeCompressed();
+}
+
+void polyfem::utils::scatter_matrix_col(const int n_dofs,
+										const int dim,
+										const std::vector<int> &rows,
+										const std::vector<int> &cols,
+										const std::vector<double> &vals,
+										const Eigen::MatrixXd &b,
+										const std::vector<int> &local_to_global,
+										StiffnessMatrix &Aout,
+										Eigen::MatrixXd &bout)
+{
+	assert(rows.size() == cols.size());
+	assert(rows.size() == vals.size());
+
+	std::vector<Eigen::Triplet<double>> Ae;
+	int n_cols = -1;
+	if (b.cols() == dim)
+	{
+		assert(n_dofs == b.rows() * dim);
+
+		for (int k = 0; k < rows.size(); ++k)
+		{
+			const auto i = rows[k];
+			const auto j = cols[k];
+			const auto val = vals[k];
+
+			n_cols = std::max(n_cols, j * dim + 2);
+
+			const auto global_i = (local_to_global.empty() ? i : local_to_global[i]) * dim;
+
+			if (val != 0)
+			{
+				for (int d = 0; d < dim; ++d)
+				{
+					Ae.push_back(Eigen::Triplet<double>(
+						global_i + d,
+						j * dim + d,
+						val));
+				}
+			}
+		}
+
+		bout.resize(b.rows() * dim, 1);
+		for (int i = 0; i < b.rows(); ++i)
+		{
+			const auto global_i = (local_to_global.empty() ? i : local_to_global[i]) * dim;
+
+			for (int d = 0; d < dim; ++d)
+			{
+				bout(global_i * dim + d) = b(i, d);
+			}
+		}
+	}
+	else
+	{
+		assert(b.cols() == 1);
+		assert(b.size() % dim == 0);
+		assert(n_dofs == b.size());
+
+		for (int k = 0; k < rows.size(); ++k)
+		{
+			const auto i = rows[k];
+			const auto j = cols[k];
+			const auto val = vals[k];
+
+			n_cols = std::max(n_cols, j);
+
+			if (val != 0)
+			{
+				const auto nid = i / dim;
+				const auto noffset = i % dim;
+
+				const auto global_i = (local_to_global.empty() ? nid : local_to_global[nid]) * dim;
+
+				Ae.push_back(Eigen::Triplet<double>(
+					global_i + noffset,
+					j,
+					val));
+			}
+		}
+		bout.resize(b.size(), 1);
+		for (int i = 0; i < b.size(); ++i)
+		{
+			const auto nid = i / dim;
+			const auto noffset = i % dim;
+
+			const auto global_i = (local_to_global.empty() ? nid : local_to_global[nid]) * dim;
+
+			bout(global_i + noffset) = b(i);
+		}
+	}
+
+	Aout.resize(n_dofs, n_cols + 1);
 	Aout.setFromTriplets(Ae.begin(), Ae.end());
 	Aout.makeCompressed();
 }

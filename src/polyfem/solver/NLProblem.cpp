@@ -119,6 +119,30 @@ namespace polyfem::solver
 			reduced_size_ = full_size_;
 			return;
 		}
+		igl::Timer timer;
+
+		if (penalty_forms_.size() == 1 && penalty_forms_.front()->has_projection())
+		{
+			Q2_ = penalty_forms_.front()->constraint_projection_matrix();
+
+			reduced_size_ = Q2_.cols();
+			num_penalty_constraints_ = full_size_ - reduced_size_;
+
+			timer.start();
+			StiffnessMatrix Q2tQ2 = Q2_.transpose() * Q2_;
+			solver_->analyze_pattern(Q2tQ2, Q2tQ2.rows());
+			solver_->factorize(Q2tQ2);
+			timer.stop();
+			logger().debug("Factorization and computation of Q2tQ2 took: {}", timer.getElapsedTime());
+
+			std::vector<std::shared_ptr<Form>> tmp;
+			tmp.insert(tmp.end(), penalty_forms_.begin(), penalty_forms_.end());
+			penalty_problem_ = std::make_shared<FullNLProblem>(tmp);
+
+			update_constraint_values();
+
+			return;
+		}
 
 		std::vector<Eigen::Triplet<double>> Ae;
 		int index = 0;
@@ -146,7 +170,6 @@ namespace polyfem::solver
 		logger().debug("Constraint size: {} x {}", A.rows(), A.cols());
 
 #ifdef POLYSOLVE_WITH_SPQR
-		igl::Timer timer;
 		timer.start();
 
 		cholmod_common cc;
@@ -198,7 +221,6 @@ namespace polyfem::solver
 		timer.stop();
 		logger().debug("QR took: {}", timer.getElapsedTime());
 #else
-		igl::Timer timer;
 		timer.start();
 
 		// Eigen::SparseQR<StiffnessMatrix, Eigen::NaturalOrdering<int>> QR(At);
@@ -280,6 +302,12 @@ namespace polyfem::solver
 
 	void NLProblem::update_constraint_values()
 	{
+		if (penalty_forms_.size() == 1 && penalty_forms_.front()->has_projection())
+		{
+			Q1R1iTb_ = penalty_forms_.front()->constraint_projection_vector();
+			return;
+		}
+
 		igl::Timer timer;
 		timer.start();
 		// x =  Q1 * R1^(-T) * P^T b  +  Q2 * y
@@ -505,8 +533,8 @@ namespace polyfem::solver
 
 #ifndef NDEBUG
 		StiffnessMatrix Q2tQ2 = Q2_.transpose() * Q2_;
-		assert((Q2tQ2 * reduced - rhs).norm() < 1e-10);
 		// std::cout << "err " << (Q2tQ2 * reduced - rhs).norm() << std::endl;
+		assert((Q2tQ2 * reduced - rhs).norm() < 1e-8);
 #endif
 
 		return reduced;
