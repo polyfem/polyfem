@@ -207,7 +207,7 @@ namespace polyfem::solver
 
 			Eigen::MatrixXd b = file.readDataset<Eigen::MatrixXd>("b");
 
-			if (!file.findDatasets("/A").empty())
+			if (!file.findDatasets("A").empty())
 			{
 				Eigen::MatrixXd A = file.readDataset<Eigen::MatrixXd>("A");
 
