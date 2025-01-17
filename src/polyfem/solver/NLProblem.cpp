@@ -124,12 +124,13 @@ namespace polyfem::solver
 		if (penalty_forms_.size() == 1 && penalty_forms_.front()->has_projection())
 		{
 			Q2_ = penalty_forms_.front()->constraint_projection_matrix();
+			Q2t_ = Q2_.transpose();
 
 			reduced_size_ = Q2_.cols();
 			num_penalty_constraints_ = full_size_ - reduced_size_;
 
 			timer.start();
-			StiffnessMatrix Q2tQ2 = Q2_.transpose() * Q2_;
+			StiffnessMatrix Q2tQ2 = Q2t_ * Q2_;
 			solver_->analyze_pattern(Q2tQ2, Q2tQ2.rows());
 			solver_->factorize(Q2tQ2);
 			timer.stop();
@@ -264,6 +265,8 @@ namespace polyfem::solver
 		assert(Q1_.cols() == constraint_size);
 
 		Q2_ = Q.rightCols(reduced_size_);
+		Q2t_ = Q2_.transpose();
+
 		assert(Q2_.rows() == full_size_);
 		assert(Q2_.cols() == reduced_size_);
 
@@ -277,7 +280,7 @@ namespace polyfem::solver
 		logger().debug("Getting Q1 Q2, R1 took: {}", timer.getElapsedTime());
 
 		timer.start();
-		StiffnessMatrix Q2tQ2 = Q2_.transpose() * Q2_;
+		StiffnessMatrix Q2tQ2 = Q2t_ * Q2_;
 		solver_->analyze_pattern(Q2tQ2, Q2tQ2.rows());
 		solver_->factorize(Q2tQ2);
 		timer.stop();
@@ -461,7 +464,7 @@ namespace polyfem::solver
 
 		if (full_size() != current_size())
 		{
-			grad = Q2_.transpose() * grad;
+			grad = Q2t_ * grad;
 		}
 		else
 		{
@@ -477,7 +480,7 @@ namespace polyfem::solver
 
 		if (full_size() != current_size())
 		{
-			hessian = Q2_.transpose() * hessian * Q2_;
+			hessian = Q2t_ * hessian * Q2_;
 
 			// remove numerical zeros
 			hessian.prune([](const Eigen::Index &row, const Eigen::Index &col, const Scalar &value) {
@@ -528,11 +531,11 @@ namespace polyfem::solver
 
 		TVector reduced(reduced_size());
 		const TVector k = full - Q1R1iTb_;
-		const TVector rhs = Q2_.transpose() * k;
+		const TVector rhs = Q2t_ * k;
 		solver_->solve(rhs, reduced);
 
 #ifndef NDEBUG
-		StiffnessMatrix Q2tQ2 = Q2_.transpose() * Q2_;
+		StiffnessMatrix Q2tQ2 = Q2t_ * Q2_;
 		// std::cout << "err " << (Q2tQ2 * reduced - rhs).norm() << std::endl;
 		assert((Q2tQ2 * reduced - rhs).norm() < 1e-8);
 #endif

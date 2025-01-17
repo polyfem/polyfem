@@ -86,6 +86,7 @@ namespace polyfem::solver
 		// The decomposion comes from sec 1.3 of https://www.cs.cornell.edu/courses/cs6241/2021sp/meetings/nb-2021-03-11.pdf
 		StiffnessMatrix Q1_;                                         ///< Q1 block of the QR decomposition of the constraints matrix
 		StiffnessMatrix Q2_;                                         ///< Q2 block of the QR decomposition of the constraints matrix
+		StiffnessMatrix Q2t_;                                        ///< Q2 transpose
 		StiffnessMatrix R1_;                                         ///< R1 block of the QR decomposition of the constraints matrix
 		Eigen::PermutationMatrix<Eigen::Dynamic, Eigen::Dynamic> P_; ///< Permutation matrix of the QR decomposition of the constraints matrix
 		TVector Q1R1iTb_;                                            ///< Q1_ * (R1_.transpose().triangularView<Eigen::Upper>().solve(constraint_values_))
