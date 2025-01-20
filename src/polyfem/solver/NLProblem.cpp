@@ -10,6 +10,9 @@
 #include <Eigen/SPQRSupport>
 #include <SuiteSparseQR.hpp>
 #endif
+
+#include <armadillo>
+
 #include <igl/cat.h>
 #include <igl/Timer.h>
 
@@ -34,6 +37,7 @@ namespace polyfem::solver
 
 	namespace
 	{
+#ifdef POLYSOLVE_WITH_SPQR
 		void fill_cholmod(Eigen::SparseMatrix<double, Eigen::ColMajor, long> &mat, cholmod_sparse &cmat)
 		{
 			long *p = mat.outerIndexPtr();
@@ -55,6 +59,33 @@ namespace polyfem::solver
 			cmat.stype = 0;
 			cmat.itype = CHOLMOD_LONG;
 		}
+#endif
+		arma::sp_mat fill_arma(const StiffnessMatrix &mat)
+		{
+			std::vector<unsigned long long> rowind_vect(mat.innerIndexPtr(), mat.innerIndexPtr() + mat.nonZeros());
+			std::vector<unsigned long long> colptr_vect(mat.outerIndexPtr(), mat.outerIndexPtr() + mat.outerSize() + 1);
+			std::vector<double> values_vect(mat.valuePtr(), mat.valuePtr() + mat.nonZeros());
+
+			arma::dvec values(values_vect.data(), values_vect.size(), false);
+			arma::uvec rowind(rowind_vect.data(), rowind_vect.size(), false);
+			arma::uvec colptr(colptr_vect.data(), colptr_vect.size(), false);
+
+			arma::sp_mat amat(rowind, colptr, values, mat.rows(), mat.cols(), false);
+
+			return amat;
+		}
+
+		StiffnessMatrix fill_eigen(const arma::sp_mat &mat)
+		{
+			// convert to eigen sparse
+			std::vector<long> outerIndexPtr(mat.row_indices, mat.row_indices + mat.n_nonzero);
+			std::vector<long> innerIndexPtr(mat.col_ptrs, mat.col_ptrs + mat.n_cols + 1);
+
+			const StiffnessMatrix out = Eigen::Map<const Eigen::SparseMatrix<double, Eigen::ColMajor, long>>(
+				mat.n_rows, mat.n_cols, mat.n_nonzero, innerIndexPtr.data(), outerIndexPtr.data(), mat.values);
+			return out;
+		}
+
 	} // namespace
 	NLProblem::NLProblem(
 		const int full_size,
@@ -280,11 +311,20 @@ namespace polyfem::solver
 		logger().debug("Getting Q1 Q2, R1 took: {}", timer.getElapsedTime());
 
 		timer.start();
-		StiffnessMatrix Q2tQ2 = Q2t_ * Q2_;
+
+		arma::sp_mat q2a = fill_arma(Q2_);
+		arma::sp_mat q2tq2 = q2a.t() * q2a;
+		const StiffnessMatrix Q2tQ2 = fill_eigen(q2tq2);
+		// StiffnessMatrix Q2tQ2e = Q2t_ * Q2_;
+		// std::cout << (Q2tQ2e - Q2tQ2).norm() << std::endl;
+		timer.stop();
+		logger().debug("Getting Q2'*Q2, took: {}", timer.getElapsedTime());
+
+		timer.start();
 		solver_->analyze_pattern(Q2tQ2, Q2tQ2.rows());
 		solver_->factorize(Q2tQ2);
 		timer.stop();
-		logger().debug("Factorization and computation of Q2tQ2 took: {}", timer.getElapsedTime());
+		logger().debug("Factorization of Q2'*Q2 took: {}", timer.getElapsedTime());
 
 #ifndef NDEBUG
 		StiffnessMatrix test = R.bottomRows(reduced_size_);
@@ -480,7 +520,11 @@ namespace polyfem::solver
 
 		if (full_size() != current_size())
 		{
-			hessian = Q2t_ * hessian * Q2_;
+			arma::sp_mat q2a = fill_arma(Q2_);
+			arma::sp_mat ha = fill_arma(hessian);
+			arma::sp_mat q2thq2 = q2a.t() * ha * q2a;
+			hessian = fill_eigen(q2thq2);
+			// hessian = Q2t_ * hessian * Q2_;
 
 			// remove numerical zeros
 			hessian.prune([](const Eigen::Index &row, const Eigen::Index &col, const Scalar &value) {
