@@ -4,6 +4,25 @@
 
 namespace polyfem::solver
 {
+	class CallbackChecker
+	{
+	public:
+		bool operator()(const polysolve::nonlinear::Criteria &crit)
+		{
+			if (crit.iterations > 2 && std::abs(crit.gradNorm - prev.gradNorm) < 1e-6)
+			{
+				logger().warn("Converged after {} iterations", crit.iterations);
+				return true;
+			}
+
+			prev = crit;
+			return false;
+		}
+
+	private:
+		polysolve::nonlinear::Criteria prev;
+	};
+
 	ALSolver::ALSolver(
 		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &alagr_form,
 		const double initial_al_weight,
@@ -67,9 +86,11 @@ namespace polyfem::solver
 
 			try
 			{
+				CallbackChecker checker;
 				const auto scale = nl_problem.normalize_forms();
 				auto nl_solver = polysolve::nonlinear::Solver::create(
-					nl_solver_params, linear_solver, characteristic_length * scale, logger());
+					nl_solver_params, linear_solver, characteristic_length / scale, logger());
+				nl_solver->set_iteration_callback(checker);
 				nl_solver->minimize(nl_problem, tmp_sol);
 				nl_problem.finish();
 			}
@@ -83,25 +104,19 @@ namespace polyfem::solver
 
 			sol = tmp_sol;
 
+			const auto prev_error = current_error;
+
 			current_error = 0;
 			for (const auto &f : alagr_forms)
 				current_error += f->compute_error(sol);
-			logger().debug("Current error = {}", current_error);
-			const double eta = 1 - sqrt(current_error / initial_error);
-
-			logger().debug("Current eta = {}", eta);
-
-			if (eta < 0)
-			{
-				logger().debug("Higher error than initial, increase weight and revert to previous solution");
-				sol = initial_sol;
-			}
+			// logger().debug("Current error = {}", current_error);
 
 			nl_problem.use_reduced_size();
 			tmp_sol = nl_problem.full_to_reduced(sol);
 			nl_problem.line_search_begin(sol, tmp_sol);
 
-			if (eta < eta_tol && al_weight < max_al_weight)
+			logger().debug("Current error = {}, prev error = {}", current_error, prev_error);
+			if (current_error > prev_error * 0.9 && al_weight < max_al_weight)
 				al_weight *= scaling;
 
 			for (auto &f : alagr_forms)
@@ -136,19 +151,19 @@ namespace polyfem::solver
 
 		nl_problem.init(sol);
 		update_barrier_stiffness(sol);
-		try
-		{
-			const auto scale = nl_problem.normalize_forms();
-			auto nl_solver = polysolve::nonlinear::Solver::create(
-				nl_solver_params, linear_solver, characteristic_length * scale, logger());
-			nl_solver->minimize(nl_problem, tmp_sol);
-			nl_problem.finish();
-		}
-		catch (const std::runtime_error &e)
-		{
-			sol = nl_problem.reduced_to_full(tmp_sol);
-			throw e;
-		}
+		// try
+		// {
+		// 	const auto scale = nl_problem.normalize_forms();
+		// 	auto nl_solver = polysolve::nonlinear::Solver::create(
+		// 		nl_solver_params, linear_solver, characteristic_length / scale, logger());
+		// 	nl_solver->minimize(nl_problem, tmp_sol);
+		// 	nl_problem.finish();
+		// }
+		// catch (const std::runtime_error &e)
+		// {
+		// 	sol = nl_problem.reduced_to_full(tmp_sol);
+		// 	throw e;
+		// }
 		sol = nl_problem.reduced_to_full(tmp_sol);
 
 		post_subsolve(0);

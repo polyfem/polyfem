@@ -303,10 +303,30 @@ namespace polyfem
 		// ---------------------------------------------------------------------
 
 		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(true);
+		const double dt = problem->is_time_dependent() ? double(args["time"]["dt"]) : 1.0;
+
+		std::shared_ptr<solver::ElasticForm> elastic_form = std::make_shared<ElasticForm>(n_bases, bases, geom_bases(), *assembler, ass_vals_cache, t, dt, true);
+		StiffnessMatrix stiffness;
+		elastic_form->second_derivative(sol, stiffness);
+		double avg_stiffness = 0;
+		for (int k = 0; k < stiffness.outerSize(); ++k)
+		{
+
+			for (StiffnessMatrix::InnerIterator it(stiffness, k); it; ++it)
+			{
+				assert(it.col() == k);
+				if (abs(it.value()) != 0)
+					avg_stiffness += abs(it.value());
+			}
+		}
+
+		avg_stiffness /= stiffness.rows();
+		double initial_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
+		double al_weight = avg_stiffness * dt * dt * initial_weight;
 
 		ALSolver al_solver(
 			solve_data.al_form,
-			args["solver"]["augmented_lagrangian"]["initial_weight"],
+			al_weight,
 			args["solver"]["augmented_lagrangian"]["scaling"],
 			args["solver"]["augmented_lagrangian"]["max_weight"],
 			args["solver"]["augmented_lagrangian"]["eta"],

@@ -1360,7 +1360,7 @@
     {
         "pointer": "/solver/augmented_lagrangian/nonlinear",
         "type": "include",
-        "spec_file": "nonlinear-solver-spec.json",
+        "spec_file": "nonlinear-auxsolver-spec.json",
         "doc": "Settings for nonlinear solver in augmented lagrangian."
     },
     {
@@ -1385,7 +1385,7 @@
     },
     {
         "pointer": "/solver/augmented_lagrangian/max_weight",
-        "default": 1e8,
+        "default": 1e30,
         "type": "float",
         "doc": "Maximum weight"
     },
