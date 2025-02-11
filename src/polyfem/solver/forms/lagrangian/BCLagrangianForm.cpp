@@ -126,12 +126,14 @@ namespace polyfem::solver
 
 		int index = 0;
 		A_triplets.clear();
+		not_constraints_.resize(n_dofs_ - boundary_nodes_.size());
 		for (int i = 0; i < n_dofs_; ++i)
 		{
 			if (is_contraints[i])
 				continue;
 
 			A_triplets.emplace_back(i, index, 1.0);
+			not_constraints_[index] = i;
 			index++;
 		}
 		A_proj_.resize(n_dofs_, index);
@@ -140,6 +142,22 @@ namespace polyfem::solver
 
 		lagr_mults_.resize(boundary_nodes_.size());
 		lagr_mults_.setZero();
+	}
+
+	bool BCLagrangianForm::can_project() const { return true; }
+
+	void BCLagrangianForm::project_gradient(Eigen::VectorXd &grad) const
+	{
+		// Assumes not_constraints_ is sorted
+		for (int i = 0; i < not_constraints_.size(); ++i)
+			grad[i] = grad[not_constraints_[i]];
+		grad.conservativeResize(not_constraints_.size());
+	}
+
+	void BCLagrangianForm::project_hessian(StiffnessMatrix &hessian) const
+	{
+		igl::slice(hessian, not_constraints_, 1, hessian);
+		igl::slice(hessian, not_constraints_, 2, hessian);
 	}
 
 	double BCLagrangianForm::value_unweighted(const Eigen::VectorXd &x) const

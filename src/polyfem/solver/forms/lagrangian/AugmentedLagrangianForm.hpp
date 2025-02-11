@@ -29,6 +29,10 @@ namespace polyfem::solver
 
 		inline bool has_projection() const { return A_proj_.rows() > 0; }
 
+		virtual bool can_project() const { return false; }
+		virtual void project_gradient(Eigen::VectorXd &grad) const { assert(false); }
+		virtual void project_hessian(StiffnessMatrix &hessian) const { assert(false); }
+
 		/// @brief sets the scale for the form
 		/// @param scale
 		void set_scale(const double scale) override { k_scale_ = scale; }

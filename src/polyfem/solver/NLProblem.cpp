@@ -312,11 +312,10 @@ namespace polyfem::solver
 
 		timer.start();
 
-		arma::sp_mat q2a = fill_arma(Q2_);
-		arma::sp_mat q2tq2 = q2a.t() * q2a;
-		const StiffnessMatrix Q2tQ2 = fill_eigen(q2tq2);
-		// StiffnessMatrix Q2tQ2e = Q2t_ * Q2_;
-		// std::cout << (Q2tQ2e - Q2tQ2).norm() << std::endl;
+		// arma::sp_mat q2a = fill_arma(Q2_);
+		// arma::sp_mat q2tq2 = q2a.t() * q2a;
+		// const StiffnessMatrix Q2tQ2 = fill_eigen(q2tq2);
+		StiffnessMatrix Q2tQ2 = Q2t_ * Q2_;
 		timer.stop();
 		logger().debug("Getting Q2'*Q2, took: {}", timer.getElapsedTime());
 
@@ -504,7 +503,10 @@ namespace polyfem::solver
 
 		if (full_size() != current_size())
 		{
-			grad = Q2t_ * grad;
+			if (penalty_forms_.size() == 1 && penalty_forms_.front()->can_project())
+				penalty_forms_.front()->project_gradient(grad);
+			else
+				grad = Q2t_ * grad;
 		}
 		else
 		{
@@ -520,16 +522,20 @@ namespace polyfem::solver
 
 		if (full_size() != current_size())
 		{
-			arma::sp_mat q2a = fill_arma(Q2_);
-			arma::sp_mat ha = fill_arma(hessian);
-			arma::sp_mat q2thq2 = q2a.t() * ha * q2a;
-			hessian = fill_eigen(q2thq2);
-			// hessian = Q2t_ * hessian * Q2_;
-
-			// remove numerical zeros
-			hessian.prune([](const Eigen::Index &row, const Eigen::Index &col, const Scalar &value) {
-				return std::abs(value) > 1e-10;
-			});
+			if (penalty_forms_.size() == 1 && penalty_forms_.front()->can_project())
+				penalty_forms_.front()->project_hessian(hessian);
+			else
+			{
+				// arma::sp_mat q2a = fill_arma(Q2_);
+				// arma::sp_mat ha = fill_arma(hessian);
+				// arma::sp_mat q2thq2 = q2a.t() * ha * q2a;
+				// hessian = fill_eigen(q2thq2);
+				hessian = Q2t_ * hessian * Q2_;
+				// remove numerical zeros
+				hessian.prune([](const Eigen::Index &row, const Eigen::Index &col, const Scalar &value) {
+					return std::abs(value) > 1e-10;
+				});
+			}
 		}
 		else
 		{
@@ -598,12 +604,6 @@ namespace polyfem::solver
 		// x =  Q1 * R1^(-T) * P^T b  +  Q2 * y
 
 		const TVector full = Q1R1iTb_ + Q2_ * reduced;
-
-		// std::cout << "At Q2 y" << (At.transpose() * Q2_ * reduced).norm() << std::endl;
-		// std::cout << "At Ai b" << (At.transpose() * Q1R1iTb_ - constraint_values_).norm() << std::endl;
-
-		// std::cout << "At Ai b\n"
-		// 		  << (At.transpose() * Q1R1iTb_ - constraint_values_) << std::endl;
 
 #ifndef NDEBUG
 		for (const auto &f : penalty_forms_)

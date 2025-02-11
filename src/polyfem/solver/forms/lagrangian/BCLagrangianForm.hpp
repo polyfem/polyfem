@@ -83,13 +83,18 @@ namespace polyfem::solver
 
 		double compute_error(const Eigen::VectorXd &x) const override;
 
+		virtual bool can_project() const override;
+		virtual void project_gradient(Eigen::VectorXd &grad) const override;
+		virtual void project_hessian(StiffnessMatrix &hessian) const override;
+
 	private:
 		const std::vector<int> &boundary_nodes_;
 		const std::vector<mesh::LocalBoundary> *local_boundary_;
 		const std::vector<mesh::LocalBoundary> *local_neumann_boundary_;
 		const int n_boundary_samples_;
 		const int n_dofs_;
-		Eigen::VectorXi constraints_; ///< Constraints
+		Eigen::VectorXi constraints_;     ///< Constraints
+		Eigen::VectorXi not_constraints_; ///< Not Constraints
 
 		const assembler::RhsAssembler *rhs_assembler_; ///< Reference to the RHS assembler
 		const bool is_time_dependent_;
