@@ -45,6 +45,7 @@ namespace polyfem::solver
 		init_masked_lumped_mass(mass, obstacle_ndof);
 
 		b_ = target_x;
+		b_proj_ = b_;
 		igl::slice(b_, constraints_, 1, b_);
 	}
 
@@ -99,6 +100,7 @@ namespace polyfem::solver
 				masked_lumped_mass_.coeffRef(i, i) = avg_mass;
 			}
 		}
+
 		igl::slice(masked_lumped_mass_, constraints_, 1, masked_lumped_mass_);
 		igl::slice(masked_lumped_mass_, constraints_, 2, masked_lumped_mass_);
 		assert(boundary_nodes_.size() == masked_lumped_mass_.rows() && boundary_nodes_.size() == masked_lumped_mass_.cols());
@@ -117,6 +119,24 @@ namespace polyfem::solver
 
 		masked_lumped_mass_sqrt_.setFromTriplets(tmp_triplets.begin(), tmp_triplets.end());
 		masked_lumped_mass_sqrt_.makeCompressed();
+
+		std::vector<bool> is_contraints(n_dofs_, false);
+		for (int i = 0; i < boundary_nodes_.size(); ++i)
+			is_contraints[boundary_nodes_[i]] = true;
+
+		int index = 0;
+		A_triplets.clear();
+		for (int i = 0; i < n_dofs_; ++i)
+		{
+			if (is_contraints[i])
+				continue;
+
+			A_triplets.emplace_back(i, index, 1.0);
+			index++;
+		}
+		A_proj_.resize(n_dofs_, index);
+		A_proj_.setFromTriplets(A_triplets.begin(), A_triplets.end());
+		A_proj_.makeCompressed();
 
 		lagr_mults_.resize(boundary_nodes_.size());
 		lagr_mults_.setZero();
@@ -163,7 +183,7 @@ namespace polyfem::solver
 		rhs_assembler_->set_bc(
 			*local_boundary_, boundary_nodes_, n_boundary_samples_,
 			*local_neumann_boundary_, b_, Eigen::MatrixXd(), t);
-
+		b_proj_ = b_;
 		b_ = igl::slice(b_, constraints_, 1);
 	}
 
