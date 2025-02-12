@@ -250,7 +250,7 @@ namespace polyfem
 			return;
 		}
 
-		if (disc_orders.maxCoeff() >= 4 || disc_orders.maxCoeff() != disc_orders.minCoeff())
+		if (disc_orders.maxCoeff() >= 4)
 		{
 			logger().warn("Node ordering disabled, it works only for p < 4 and uniform order!");
 			return;
@@ -583,7 +583,7 @@ namespace polyfem
 		}
 		else if (tmp_json.is_string())
 		{
-			const std::string discr_orders_path = tmp_json;
+			const std::string discr_orders_path = utils::resolve_path(tmp_json, root_path());
 			Eigen::MatrixXi tmp;
 			read_matrix(discr_orders_path, tmp);
 			assert(tmp.size() == disc_orders.size());
