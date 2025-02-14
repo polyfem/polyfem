@@ -13,16 +13,25 @@ namespace polyfem::solver
 											   const Eigen::MatrixXd &A_proj,
 											   const Eigen::MatrixXd &b_proj)
 	{
-		utils::scatter_matrix(n_dofs, dim, A, b, local_to_global, A_, b_);
+		utils::scatter_matrix(n_dofs, dim, A, b, local_to_global, A_, b_current_);
+		b_prev_ = b_current_;
+		b_prev_.setZero();
 
 		if (b_proj.size() > 0)
-			utils::scatter_matrix_col(n_dofs, dim, A_proj, b_proj, local_to_global, A_proj_, b_proj_);
+		{
+			utils::scatter_matrix_col(n_dofs, dim, A_proj, b_proj, local_to_global, A_proj_, b_current_proj_);
+
+			b_prev_proj_ = b_current_proj_;
+			b_prev_proj_.setZero();
+		}
 
 		AtA = A_.transpose() * A_;
-		Atb = A_.transpose() * b_;
+		Atb = A_.transpose() * b_current_;
 
 		lagr_mults_.resize(A_.rows());
 		lagr_mults_.setZero();
+
+		set_incr_load(incr_load_);
 	}
 
 	MatrixLagrangianForm::MatrixLagrangianForm(const int n_dofs,
@@ -37,16 +46,25 @@ namespace polyfem::solver
 											   const std::vector<double> &vals_proj,
 											   const Eigen::MatrixXd &b_proj)
 	{
-		utils::scatter_matrix(n_dofs, dim, rows, cols, vals, b, local_to_global, A_, b_);
+		utils::scatter_matrix(n_dofs, dim, rows, cols, vals, b, local_to_global, A_, b_current_);
+		b_prev_ = b_current_;
+		b_prev_.setZero();
 
 		if (b_proj.size() > 0)
-			utils::scatter_matrix_col(n_dofs, dim, rows_proj, cols_proj, vals_proj, b_proj, local_to_global, A_proj_, b_proj_);
+		{
+			utils::scatter_matrix_col(n_dofs, dim, rows_proj, cols_proj, vals_proj, b_proj, local_to_global, A_proj_, b_current_proj_);
+
+			b_prev_proj_ = b_current_proj_;
+			b_prev_proj_.setZero();
+		}
 
 		AtA = A_.transpose() * A_;
-		Atb = A_.transpose() * b_;
+		Atb = A_.transpose() * b_current_;
 
 		lagr_mults_.resize(A_.rows());
 		lagr_mults_.setZero();
+
+		set_incr_load(incr_load_);
 	}
 
 	double MatrixLagrangianForm::value_unweighted(const Eigen::VectorXd &x) const

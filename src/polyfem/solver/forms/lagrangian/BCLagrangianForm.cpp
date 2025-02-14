@@ -26,6 +26,12 @@ namespace polyfem::solver
 		  n_dofs_(ndof)
 	{
 		init_masked_lumped_mass(mass, obstacle_ndof);
+		b_current_.resize(constraints_.size(), 1);
+		b_current_.setZero();
+
+		b_current_proj_.resize(ndof, 1);
+		b_current_proj_.setZero();
+
 		update_target(t); // initialize b_
 	}
 
@@ -44,9 +50,17 @@ namespace polyfem::solver
 	{
 		init_masked_lumped_mass(mass, obstacle_ndof);
 
-		b_ = target_x;
-		b_proj_ = b_;
-		igl::slice(b_, constraints_, 1, b_);
+		b_current_ = target_x;
+		igl::slice(b_current_, constraints_, 1, b_current_);
+
+		b_prev_ = b_current_;
+		b_prev_.setZero();
+
+		b_current_proj_ = target_x;
+		b_prev_proj_ = b_current_proj_;
+		b_prev_proj_.setZero();
+
+		set_incr_load(incr_load_);
 	}
 
 	void BCLagrangianForm::init_masked_lumped_mass(
@@ -67,7 +81,8 @@ namespace polyfem::solver
 		A_.setFromTriplets(A_triplets.begin(), A_triplets.end());
 		A_.makeCompressed();
 
-		masked_lumped_mass_ = mass.size() == 0 ? polyfem::utils::sparse_identity(n_dofs_, n_dofs_) : polyfem::utils::lump_matrix(mass);
+		// masked_lumped_mass_ = mass.size() == 0 ? polyfem::utils::sparse_identity(n_dofs_, n_dofs_) : polyfem::utils::lump_matrix(mass);
+		masked_lumped_mass_ = polyfem::utils::sparse_identity(n_dofs_, n_dofs_);
 		{
 			double min_diag = std::numeric_limits<double>::max();
 			double max_diag = 0;
@@ -194,15 +209,21 @@ namespace polyfem::solver
 
 	void BCLagrangianForm::update_target(const double t)
 	{
+		b_prev_ = b_current_;
+		b_prev_proj_ = b_current_proj_;
+
 		assert(rhs_assembler_ != nullptr);
 		assert(local_boundary_ != nullptr);
 		assert(local_neumann_boundary_ != nullptr);
-		b_.setZero(n_dofs_, 1);
+		b_current_.setZero(n_dofs_, 1);
 		rhs_assembler_->set_bc(
 			*local_boundary_, boundary_nodes_, n_boundary_samples_,
-			*local_neumann_boundary_, b_, Eigen::MatrixXd(), t);
-		b_proj_ = b_;
-		b_ = igl::slice(b_, constraints_, 1);
+			*local_neumann_boundary_, b_current_, Eigen::MatrixXd(), t);
+
+		b_current_proj_ = b_current_;
+		b_current_ = igl::slice(b_current_, constraints_, 1);
+
+		set_incr_load(incr_load_);
 	}
 
 	void BCLagrangianForm::update_lagrangian(const Eigen::VectorXd &x, const double k_al)

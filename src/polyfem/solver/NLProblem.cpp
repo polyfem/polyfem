@@ -349,7 +349,6 @@ namespace polyfem::solver
 			Q1R1iTb_ = penalty_forms_.front()->constraint_projection_vector();
 			return;
 		}
-
 		igl::Timer timer;
 		timer.start();
 		// x =  Q1 * R1^(-T) * P^T b  +  Q2 * y
