@@ -1,5 +1,6 @@
 #include "p_n_bases.hpp"
 #include <cmath>
+#include <cassert>
 
 namespace polyfem
 {

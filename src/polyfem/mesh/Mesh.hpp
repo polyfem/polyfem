@@ -44,6 +44,7 @@ namespace polyfem
 			{
 			public:
 				int v1, v2;
+				std::vector<int> nodes_ids;
 				Eigen::MatrixXd nodes;
 			};
 
@@ -52,6 +53,7 @@ namespace polyfem
 			{
 			public:
 				int v1, v2, v3;
+				std::vector<int> nodes_ids;
 				Eigen::MatrixXd nodes;
 			};
 
@@ -60,6 +62,7 @@ namespace polyfem
 			{
 			public:
 				int v1, v2, v3, v4;
+				std::vector<int> nodes_ids;
 				Eigen::MatrixXd nodes;
 			};
 
@@ -96,6 +99,10 @@ namespace polyfem
 			/// @param[in] non_conforming yes or no for non conforming mesh
 			/// @return pointer to the mesh
 			static std::unique_ptr<Mesh> create(const int dim, const bool non_conforming = false);
+
+			/// @brief Create a copy of the mesh
+			/// @return pointer to the new copy mesh
+			virtual std::unique_ptr<Mesh> copy() const = 0;
 
 		protected:
 			///
@@ -214,6 +221,19 @@ namespace polyfem
 			int element_vertex(const int el_id, const int lv_id) const
 			{
 				return (is_volume() ? cell_vertex(el_id, lv_id) : face_vertex(el_id, lv_id));
+			}
+
+			/// @brief list of vids of an element
+			///
+			/// @param[in] el_id *global* element id
+			/// @return list of vertex id
+			std::vector<int> element_vertices(const int el_id) const
+			{
+				std::vector<int> res;
+				for (int i = 0; i < n_cell_vertices(el_id); ++i)
+					res.push_back(element_vertex(el_id, i));
+				std::sort(res.begin(), res.end());
+				return res;
 			}
 
 			int boundary_element_vertex(const int primitive_id, const int lv_id) const
@@ -414,27 +434,7 @@ namespace polyfem
 			///
 			/// @param[in] path file's path
 			virtual void load_boundary_ids(const std::string &path);
-			/// @brief computes the selection based on the bbx of the mesh.
-			/// Left gets 1, bottom 2, right 3, top 4, front 5, back 6
-			///
-			/// @param[in] eps tolerance for proximity
-			virtual void compute_boundary_ids(const double eps) = 0;
-			/// @brief computes boundary selections based on a function
-			///
-			/// @param[in] marker lambda function that takes the barycenter and returns an integer
-			virtual void compute_boundary_ids(const std::function<int(const RowVectorNd &)> &marker) = 0;
-			/// @brief computes boundary selections based on a function
-			///
-			/// @param[in] marker lambda function that takes the barycenter and true/false if the element is on the boundary and returns an integer
-			virtual void compute_boundary_ids(const std::function<int(const RowVectorNd &, bool)> &marker) = 0;
-			/// @brief computes boundary selections based on a function
-			///
-			/// @param[in] marker lambda function that takes the id, barycenter, and true/false if the element is on the boundary and returns an integer
-			virtual void compute_boundary_ids(const std::function<int(const size_t, const RowVectorNd &, bool)> &marker) = 0;
-			/// @brief computes boundary selections based on a function
-			///
-			/// @param[in] marker lambda function that takes the list of vertices and true/false if the element is on the boundary and returns an integer
-			virtual void compute_boundary_ids(const std::function<int(const std::vector<int> &, bool)> &marker) = 0;
+
 			/// @brief computes boundary selections based on a function
 			///
 			/// @param[in] marker lambda function that takes the id, the list of vertices, the barycenter, and true/false if the element is on the boundary and returns an integer
@@ -443,7 +443,8 @@ namespace polyfem
 			/// @brief computes boundary selections based on a function
 			///
 			/// @param[in] marker lambda function that takes the id and barycenter and returns an integer
-			virtual void compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker) = 0;
+			virtual void compute_body_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &)> &marker) = 0;
+
 			/// @brief Set the boundary selection from a vector
 			///
 			/// @param[in] boundary_ids vector one value per element
@@ -540,12 +541,13 @@ namespace polyfem
 			/// @param[out] p1 edge second vertex
 			/// @param[in] valid_elements flag to compute the edge
 			virtual void get_edges(Eigen::MatrixXd &p0, Eigen::MatrixXd &p1, const std::vector<bool> &valid_elements) const = 0;
-			/// @brief generate a triangular representation of every face
-			///
-			/// @param[out] tris triangles connectivity
-			/// @param[out] pts triangles vertices
-			/// @param[out] ranges connection to original faces
-			virtual void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const = 0;
+
+			// /// @brief generate a triangular representation of every face
+			// ///
+			// /// @param[out] tris triangles connectivity
+			// /// @param[out] pts triangles vertices
+			// /// @param[out] ranges connection to original faces
+			// virtual void triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const = 0;
 
 			/// @brief weights for rational polynomial meshes
 			///
@@ -559,7 +561,7 @@ namespace polyfem
 
 			/// @brief method used to finalize the mesh. It computes the cached stuff used in navigation
 			///
-			virtual void prepare_mesh(){};
+			virtual void prepare_mesh() {};
 
 			/// @brief checks if the mesh has polytopes
 			///

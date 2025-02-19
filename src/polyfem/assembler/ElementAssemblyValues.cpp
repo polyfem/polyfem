@@ -1,4 +1,6 @@
 #include "ElementAssemblyValues.hpp"
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/Jacobian.hpp>
 
 namespace polyfem
 {
@@ -60,33 +62,6 @@ namespace polyfem
 			return true;
 		}
 
-		// void ElementAssemblyValues::finalize(const Eigen::MatrixXd &v, const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy, const Eigen::MatrixXd &dz)
-		// {
-		// 	val = v;
-
-		// 	det.resize(v.rows(), 1);
-
-		// 	for(std::size_t j = 0; j < basis_values.size(); ++j)
-		// 		basis_values[j].finalize();
-
-		// 	Eigen::Matrix3d tmp;
-		// 	jac_it.resize(v.rows());
-		// 	for(long i=0; i < v.rows(); ++i)
-		// 	{
-		// 		tmp.row(0) = dx.row(i);
-		// 		tmp.row(1) = dy.row(i);
-		// 		tmp.row(2) = dz.row(i);
-
-		// 		det(i) = tmp.determinant();
-		// 		// std::cout<<det(i)<<std::endl;
-		// 		// assert(det(i)>0);
-
-		// 		jac_it[i] = tmp.inverse().transpose();
-		// 		for(std::size_t j = 0; j < basis_values.size(); ++j)
-		// 			basis_values[j].grad_t_m.row(i) = basis_values[j].grad.row(i) * jac_it[i];
-		// 	}
-		// }
-
 		void ElementAssemblyValues::finalize3d(const ElementBases &gbasis, const std::vector<AssemblyValues> &gbasis_values)
 		{
 			// if(det.size() != val.rows())
@@ -128,32 +103,6 @@ namespace polyfem
 			}
 		}
 
-		// void ElementAssemblyValues::finalize(const Eigen::MatrixXd &v, const Eigen::MatrixXd &dx, const Eigen::MatrixXd &dy)
-		// {
-		// 	val = v;
-
-		// 	det.resize(v.rows(), 1);
-
-		// 	for(std::size_t j = 0; j < basis_values.size(); ++j)
-		// 		basis_values[j].finalize();
-
-		// 	Eigen::Matrix2d tmp;
-		// 	jac_it.resize(v.rows());
-		// 	for(long i = 0; i < v.rows(); ++i)
-		// 	{
-		// 		tmp.row(0) = dx.row(i);
-		// 		tmp.row(1) = dy.row(i);
-
-		// 		det(i) = tmp.determinant();
-		// 		// assert(det(i)>0);
-		// 		// std::cout<<det(i)<<std::endl;
-
-		// 		jac_it[i] = tmp.inverse().transpose();
-		// 		for(std::size_t j = 0; j < basis_values.size(); ++j)
-		// 			basis_values[j].grad_t_m.row(i) = basis_values[j].grad.row(i) * jac_it[i];
-		// 	}
-		// }
-
 		void ElementAssemblyValues::finalize2d(const ElementBases &gbasis, const std::vector<AssemblyValues> &gbasis_values)
 		{
 			det.resize(val.rows(), 1);
@@ -177,19 +126,33 @@ namespace polyfem
 
 					for (std::size_t ii = 0; ii < b.global().size(); ++ii)
 					{
+						// add given geometric basis function + node's contribution to the Jacobian
 						tmp.row(0) += gbasis_values[j].grad(k, 0) * b.global()[ii].node * b.global()[ii].val;
 						tmp.row(1) += gbasis_values[j].grad(k, 1) * b.global()[ii].node * b.global()[ii].val;
 					}
 				}
 
+				// save Jacobian's determinant
 				det(k) = tmp.determinant();
 				// assert(det(k)>0);
 				// std::cout<<det(k)<<std::endl;
 
+				// save Jacobian's inverse transpose
 				jac_it[k] = tmp.inverse().transpose();
 				for (std::size_t j = 0; j < basis_values.size(); ++j)
 					basis_values[j].grad_t_m.row(k) = basis_values[j].grad.row(k) * jac_it[k];
 			}
+		}
+
+		Eigen::VectorXd ElementAssemblyValues::eval_deformed_jacobian_determinant(const Eigen::VectorXd &disp) const
+		{
+			assert(basis_);
+			assert(gbasis_);
+			int order = 0;
+			for (const auto &b : basis_->bases)
+				order = std::max(order, b.order());
+			const Eigen::MatrixXd cp = utils::extract_nodes(is_volume_ ? 3 : 2, *basis_, *gbasis_, disp, order);
+			return utils::robust_evaluate_jacobian(order, cp, quadrature.points);
 		}
 
 		void ElementAssemblyValues::compute(const int el_index, const bool is_volume, const ElementBases &basis, const ElementBases &gbasis)
@@ -200,7 +163,11 @@ namespace polyfem
 
 		void ElementAssemblyValues::compute(const int el_index, const bool is_volume, const Eigen::MatrixXd &pts, const ElementBases &basis, const ElementBases &gbasis)
 		{
+			basis_ = &basis;
+			gbasis_ = &gbasis;
+			
 			element_id = el_index;
+			is_volume_ = is_volume;
 			// const bool poly = !gbasis.has_parameterization;
 
 			basis_values.resize(basis.bases.size());
@@ -208,50 +175,10 @@ namespace polyfem
 			if (&basis != &gbasis)
 				g_basis_values_cache_.resize(gbasis.bases.size());
 
-			// Eigen::MatrixXd mval = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-
-			// Eigen::MatrixXd dxmv = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-			// Eigen::MatrixXd dymv = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-			// Eigen::MatrixXd dzmv = Eigen::MatrixXd::Zero(pts.rows(), pts.cols());
-
-			// igl::Timer timer0;
-			// timer0.start();
-
-			// auto values_and_grads = [&](const ElementBases &my_basis, auto v, auto dx, auto dy, auto dz)
-			// {
-			// 	my_basis.evaluate_bases(pts, *v);
-			// 	my_basis.evaluate_grads(pts, 0, *dx);
-			// 	my_basis.evaluate_grads(pts, 1, *dy);
-			// 	if(is_volume)
-			// 		my_basis.evaluate_grads(pts, 2, *dz);
-			// };
-
-			// auto vals = std::make_shared<Eigen::MatrixXd>();
-			// auto local_gradx = std::make_shared<Eigen::MatrixXd>();
-			// auto local_grady = std::make_shared<Eigen::MatrixXd>();
-			// auto local_gradz = std::make_shared<Eigen::MatrixXd>();
-			// values_and_grads(basis, vals, local_gradx, local_grady, local_gradz);
-
-			// auto gvals = std::make_shared<Eigen::MatrixXd>();
-			// auto local_g_gradx = std::make_shared<Eigen::MatrixXd>();
-			// auto local_g_grady = std::make_shared<Eigen::MatrixXd>();
-			// auto local_g_gradz = std::make_shared<Eigen::MatrixXd>();
-			// if (&basis == &gbasis) {
-			// 	gvals = vals;
-			// 	local_g_gradx = local_gradx;
-			// 	local_g_grady = local_grady;
-			// 	local_g_gradz = local_gradz;
-			// } else {
-			// 	values_and_grads(gbasis, gvals, local_g_gradx, local_g_grady, local_g_gradz);
-			// }
-
-			// timer0.stop();
-			// const double t = timer0.getElapsedTime();
-			// if (poly) { std::cout << "-- eval quadr points: " << t << std::endl; }
-
 			const int n_local_bases = int(basis.bases.size());
 			const int n_local_g_bases = int(gbasis.bases.size());
 
+			// evaluate on reference element
 			basis.evaluate_bases(pts, basis_values);
 			basis.evaluate_grads(pts, basis_values);
 
@@ -269,60 +196,20 @@ namespace polyfem
 				assert(ass_val.grad.cols() == pts.cols());
 			}
 
-			// for(int j = 0; j < n_local_bases; ++j)
-			// {
-			// 	AssemblyValues &ass_val = basis_values[j];
-
-			// 	ass_val.global = basis.bases[j].global();
-			// 	ass_val.val = vals->col(j);
-			// 	assert(ass_val.val.cols()==1);
-
-			// 	ass_val.grad.resize(pts.rows(), pts.cols());
-
-			// 	ass_val.grad.col(0) = local_gradx->col(j);
-			// 	ass_val.grad.col(1) = local_grady->col(j);
-			// 	if(is_volume)
-			// 		ass_val.grad.col(2) = local_gradz->col(j);
-
-			// 	assert(ass_val.grad.cols() == pts.cols());
-			// }
-
 			if (!gbasis.has_parameterization)
 			{
 				// v = G(pts)
 				finalize_global_element(pts);
 				return;
 			}
-
-			// for(int j = 0; j < n_local_g_bases; ++j)
-			// {
-			// 	const Basis &b=gbasis.bases[j];
-
-			// 	assert(gbasis.has_parameterization);
-
-			// 	for(std::size_t ii = 0; ii < b.global().size(); ++ii)
-			// 	{
-			// 		for (long k = 0; k < gvals->rows(); ++k)
-			// 		{
-			// 			mval.row(k) += (*gvals)(k,j)    * b.global()[ii].node * b.global()[ii].val;
-
-			// 			dxmv.row(k) += (*local_g_gradx)(k,j) * b.global()[ii].node  * b.global()[ii].val;
-			// 			dymv.row(k) += (*local_g_grady)(k,j) * b.global()[ii].node  * b.global()[ii].val;
-			// 			if(is_volume)
-			// 				dzmv.row(k) += (*local_g_gradz)(k,j) * b.global()[ii].node  * b.global()[ii].val;
-			// 		}
-			// 	}
-			// }
-
-			// if(is_volume)
-			// 	finalize(mval, dxmv, dymv, dzmv);
-			// else
-			// 	finalize(mval, dxmv, dymv);
-
+			
+			// compute geometric mapping as linear combination of geometric basis functions
 			const auto &gbasis_values = (&basis == &gbasis) ? basis_values : g_basis_values_cache_;
 			assert(gbasis_values.size() == n_local_g_bases);
 			val.resize(pts.rows(), pts.cols());
 			val.setZero();
+
+			// loop over geometric basis functions
 			for (int j = 0; j < n_local_g_bases; ++j)
 			{
 				const Basis &b = gbasis.bases[j];
@@ -331,15 +218,18 @@ namespace polyfem
 				assert(gbasis.has_parameterization);
 				assert(tmp.size() == val.rows());
 
+				// loop over relevant global nodes
 				for (std::size_t ii = 0; ii < b.global().size(); ++ii)
 				{
 					for (long k = 0; k < val.rows(); ++k)
 					{
+						// add contribution from geometric basis function + node
 						val.row(k) += tmp(k) * b.global()[ii].node * b.global()[ii].val;
 					}
 				}
 			}
 
+			// compute Jacobian
 			if (is_volume)
 				finalize3d(gbasis, gbasis_values);
 			else

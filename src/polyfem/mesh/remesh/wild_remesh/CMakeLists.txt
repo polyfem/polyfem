@@ -1,6 +1,4 @@
 set(SOURCES
-	AMIPSForm.cpp
-	AMIPSForm.hpp
 	Collapse.cpp
 	OperationCache.hpp
 	OperationCache.cpp

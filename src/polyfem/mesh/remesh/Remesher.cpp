@@ -142,13 +142,13 @@ namespace polyfem::mesh
 		Eigen::SparseMatrix<double> M, A;
 		{
 			MassMatrixAssembler assembler;
-			Density no_density; // Density of one (i.e., no scaling of mass matrix)
+			assembler::Mass mass_matrix_assembler;
 			AssemblyValsCache cache;
 
-			assembler.assemble(
-				is_volume(), dim(),
-				n_to_basis, no_density, to_bases, to_bases,
-				cache, M);
+			mass_matrix_assembler.assemble(
+				is_volume(),
+				n_to_basis, to_bases, to_bases,
+				cache, 0, M, true);
 			assert(M.rows() == to_projection_quantities.rows());
 
 			// if (lump_mass_matrix)
@@ -200,7 +200,7 @@ namespace polyfem::mesh
 		for (int i = 0; i < n_constrained_quantaties; ++i)
 		{
 			projected_quantities.col(i) = constrained_L2_projection(
-				state.make_nl_solver<polyfem::solver::NLProblem>(),
+				state.make_nl_solver(/*for_al=*/false),
 				// L2 projection form
 				M, A, /*y=*/from_projection_quantities.col(i),
 				// Inversion-free form
@@ -218,6 +218,26 @@ namespace polyfem::mesh
 				boundary_nodes, obstacle().ndof(), to_projection_quantities.col(i),
 				// Initial guess
 				to_projection_quantities.col(i));
+		}
+
+		// Set entry for obstacle to identity
+		// ┌     ┐ ┌     ┐   ┌     ┐
+		// │M   0│ │x_fem│   |y_fem|
+		// │     │ │     │ = |     | ⟹ x_obs = y_obs
+		// │0   I│ │x_obs│   |y_obs|
+		// └     ┘ └     ┘   └     ┘
+
+		for (int i = 0; i < dim() * obstacle().n_vertices(); ++i)
+		{
+			const int row = M.rows() - i - 1; // fill from bottom
+			M.coeffRef(row, row) = 1.0;
+		}
+
+		for (int i = 0; i < dim() * obstacle().n_vertices(); ++i)
+		{
+			const int row = A.rows() - i - 1; // fill from bottom
+			const int col = A.cols() - i - 1; // fill from bottom
+			A.coeffRef(row, col) = 1.0;
 		}
 
 		// NOTE: no need for to_projection_quantities.rightCols(n_unconstrained_quantaties)
@@ -250,7 +270,7 @@ namespace polyfem::mesh
 				assembler_formulation, /*quadrature_order=*/1,
 				/*mass_quadrature_order=*/2, /*discr_order=*/1,
 				/*serendipity=*/false, /*has_polys=*/false,
-				/*is_geom_bases=*/false, bases, local_boundary,
+				/*is_geom_bases=*/false, /*use_corner_quadrature=*/false, bases, local_boundary,
 				poly_edge_to_data, mesh_nodes);
 		}
 		else
@@ -261,7 +281,7 @@ namespace polyfem::mesh
 				assembler_formulation, /*quadrature_order=*/1,
 				/*mass_quadrature_order=*/2, /*discr_order=*/1,
 				/*serendipity=*/false, /*has_polys=*/false,
-				/*is_geom_bases=*/false, bases, local_boundary,
+				/*is_geom_bases=*/false, /*use_corner_quadrature=*/false, bases, local_boundary,
 				poly_edge_to_data, mesh_nodes);
 		}
 

@@ -1,9 +1,5 @@
 set(SOURCES
 	Form.hpp
-	BCLagrangianForm.hpp
-	BCLagrangianForm.cpp
-	BCPenaltyForm.hpp
-	BCPenaltyForm.cpp
 	BodyForm.hpp
 	BodyForm.cpp
 	ElasticForm.hpp
@@ -22,8 +18,12 @@ set(SOURCES
 	FrictionForm.hpp
 	ContactForm.cpp
 	ContactForm.hpp
+	PeriodicContactForm.cpp
+	PeriodicContactForm.hpp
 	RayleighDampingForm.cpp
 	RayleighDampingForm.hpp
+	PressureForm.cpp
+	PressureForm.hpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
@@ -31,3 +31,4 @@ target_sources(polyfem PRIVATE ${SOURCES})
 
 add_subdirectory(parametrization)
 add_subdirectory(adjoint_forms)
+add_subdirectory(lagrangian)

@@ -11,19 +11,32 @@ namespace polyfem
 	{
 		namespace
 		{
-			void get_weight_and_points(const int order, Eigen::MatrixXd &points, Eigen::VectorXd &weights)
+			void get_weight_and_points(const int order, const bool use_corner_quadrature, Eigen::MatrixXd &points, Eigen::VectorXd &weights)
 			{
-				switch (order)
+				if (use_corner_quadrature)
 				{
+					switch (order)
+					{
+#include <polyfem/autogen/auto_triangle_corner.ipp>
+
+					default:
+						assert(false);
+					};
+				}
+				else
+				{
+					switch (order)
+					{
 #include <polyfem/autogen/auto_triangle.ipp>
 
-				default:
-					assert(false);
-				};
+					default:
+						assert(false);
+					};
+				}
 			}
 		} // namespace
 
-		TriQuadrature::TriQuadrature()
+		TriQuadrature::TriQuadrature(bool use_corner_quadrature) : use_corner_quadrature_(use_corner_quadrature)
 		{
 		}
 
@@ -31,9 +44,9 @@ namespace polyfem
 		{
 			Quadrature tmp;
 
-			get_weight_and_points(order, quad.points, quad.weights);
+			get_weight_and_points(order, use_corner_quadrature_, quad.points, quad.weights);
 
-			assert(fabs(quad.weights.sum() - 1) < 1e-14);
+			assert(use_corner_quadrature_ || fabs(quad.weights.sum() - 1) < 1e-14);
 			assert(quad.points.minCoeff() >= 0 && quad.points.maxCoeff() <= 1);
 
 			assert(quad.points.rows() == quad.weights.size());

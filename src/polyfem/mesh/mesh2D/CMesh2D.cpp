@@ -243,6 +243,7 @@ namespace polyfem
 
 							n.nodes.resize(1, 2);
 							n.nodes << V(nodes_ids[node_index], 0), V(nodes_ids[node_index], 1);
+							n.nodes_ids.push_back(nodes_ids[node_index]);
 						}
 						index = next_around_face(index);
 					}
@@ -299,6 +300,9 @@ namespace polyfem
 							n.nodes.resize(2, 2);
 							n.nodes.row(0) << V(nodes_ids[node_index1], 0), V(nodes_ids[node_index1], 1);
 							n.nodes.row(1) << V(nodes_ids[node_index2], 0), V(nodes_ids[node_index2], 1);
+
+							n.nodes_ids.push_back(nodes_ids[node_index1]);
+							n.nodes_ids.push_back(nodes_ids[node_index2]);
 						}
 						index = next_around_face(index);
 					}
@@ -310,6 +314,7 @@ namespace polyfem
 						n.v3 = mesh_.facets.vertex(f, 2);
 						n.nodes.resize(1, 2);
 						n.nodes << V(nodes_ids[9], 0), V(nodes_ids[9], 1);
+						n.nodes_ids.push_back(nodes_ids[9]);
 					}
 				}
 				// P4
@@ -330,7 +335,7 @@ namespace polyfem
 				orders_.resize(0, 0);
 		}
 
-		RowVectorNd CMesh2D::edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const
+		std::pair<RowVectorNd, int> CMesh2D::edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const
 		{
 			if (orders_.size() <= 0 || orders_(index.face) == 1 || edge_nodes_.empty() || edge_nodes_[index.edge].nodes.rows() != n_new_nodes)
 			{
@@ -339,20 +344,20 @@ namespace polyfem
 
 				const double t = i / (n_new_nodes + 1.0);
 
-				return (1 - t) * v1 + t * v2;
+				return std::make_pair((1 - t) * v1 + t * v2, -1);
 			}
 
 			const auto &n = edge_nodes_[index.edge];
 			if (n.v1 == index.vertex)
-				return n.nodes.row(i - 1);
+				return std::make_pair(n.nodes.row(i - 1), n.nodes_ids[i - 1]);
 			else
 			{
 				assert(n.v2 == index.vertex);
-				return n.nodes.row(n.nodes.rows() - i);
+				return std::make_pair(n.nodes.row(n.nodes.rows() - i), n.nodes_ids[n.nodes_ids.size() - i]);
 			}
 		}
 
-		RowVectorNd CMesh2D::face_node(const Navigation::Index &index, const int n_new_nodes, const int i, const int j) const
+		std::pair<RowVectorNd, int> CMesh2D::face_node(const Navigation::Index &index, const int n_new_nodes, const int i, const int j) const
 		{
 			if (is_simplex(index.face))
 			{
@@ -368,13 +373,13 @@ namespace polyfem
 					assert(b3 < 1);
 					assert(b3 > 0);
 
-					return b1 * v1 + b2 * v2 + b3 * v3;
+					return std::make_pair(b1 * v1 + b2 * v2 + b3 * v3, -1);
 				}
 
 				assert(orders_(index.face) == 3);
 				// unsupported P4 for geometry
 				const auto &n = face_nodes_[index.face];
-				return n.nodes.row(0);
+				return std::make_pair(n.nodes.row(0), n.nodes_ids[0]);
 			}
 			else if (is_cube(index.face))
 			{
@@ -389,11 +394,11 @@ namespace polyfem
 				const double b1 = i / (n_new_nodes + 1.0);
 				const double b2 = j / (n_new_nodes + 1.0);
 
-				return v1 * (1 - b1) * (1 - b2) + v2 * b1 * (1 - b2) + v3 * b1 * b2 + v4 * (1 - b1) * b2;
+				return std::make_pair(v1 * (1 - b1) * (1 - b2) + v2 * b1 * (1 - b2) + v3 * b1 * b2 + v4 * (1 - b1) * b2, -1);
 			}
 
 			assert(false);
-			return RowVectorNd(2, 1);
+			return std::make_pair(RowVectorNd(2, 1), -1);
 		}
 
 		void CMesh2D::bounding_box(RowVectorNd &min, RowVectorNd &max) const
@@ -493,66 +498,66 @@ namespace polyfem
 			return false;
 		}
 
-		void CMesh2D::triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const
-		{
-			ranges.clear();
+		// void CMesh2D::triangulate_faces(Eigen::MatrixXi &tris, Eigen::MatrixXd &pts, std::vector<int> &ranges) const
+		// {
+		// 	ranges.clear();
 
-			std::vector<Eigen::MatrixXi> local_tris(mesh_.facets.nb());
-			std::vector<Eigen::MatrixXd> local_pts(mesh_.facets.nb());
+		// 	std::vector<Eigen::MatrixXi> local_tris(mesh_.facets.nb());
+		// 	std::vector<Eigen::MatrixXd> local_pts(mesh_.facets.nb());
 
-			int total_tris = 0;
-			int total_pts = 0;
+		// 	int total_tris = 0;
+		// 	int total_pts = 0;
 
-			ranges.push_back(0);
+		// 	ranges.push_back(0);
 
-			for (GEO::index_t f = 0; f < mesh_.facets.nb(); ++f)
-			{
-				const int n_vertices = mesh_.facets.nb_vertices(f);
+		// 	for (GEO::index_t f = 0; f < mesh_.facets.nb(); ++f)
+		// 	{
+		// 		const int n_vertices = mesh_.facets.nb_vertices(f);
 
-				Eigen::MatrixXd face_pts(n_vertices, 2);
-				// Eigen::MatrixXi edges(n_vertices,2);
-				local_tris[f].resize(n_vertices - 2, 3);
+		// 		Eigen::MatrixXd face_pts(n_vertices, 2);
+		// 		// Eigen::MatrixXi edges(n_vertices,2);
+		// 		local_tris[f].resize(n_vertices - 2, 3);
 
-				for (int i = 0; i < n_vertices; ++i)
-				{
-					const int vertex = mesh_.facets.vertex(f, i);
-					const double *pt = mesh_.vertices.point_ptr(vertex);
-					face_pts(i, 0) = pt[0];
-					face_pts(i, 1) = pt[1];
+		// 		for (int i = 0; i < n_vertices; ++i)
+		// 		{
+		// 			const int vertex = mesh_.facets.vertex(f, i);
+		// 			const double *pt = mesh_.vertices.point_ptr(vertex);
+		// 			face_pts(i, 0) = pt[0];
+		// 			face_pts(i, 1) = pt[1];
 
-					// edges(i, 0) = i;
-					// edges(i, 1) = (i+1) % n_vertices;
-				}
+		// 			// edges(i, 0) = i;
+		// 			// edges(i, 1) = (i+1) % n_vertices;
+		// 		}
 
-				for (int i = 1; i < n_vertices - 1; ++i)
-				{
-					local_tris[f].row(i - 1) << 0, i, i + 1;
-				}
+		// 		for (int i = 1; i < n_vertices - 1; ++i)
+		// 		{
+		// 			local_tris[f].row(i - 1) << 0, i, i + 1;
+		// 		}
 
-				local_pts[f] = face_pts;
+		// 		local_pts[f] = face_pts;
 
-				total_tris += local_tris[f].rows();
-				total_pts += local_pts[f].rows();
+		// 		total_tris += local_tris[f].rows();
+		// 		total_pts += local_pts[f].rows();
 
-				ranges.push_back(total_tris);
+		// 		ranges.push_back(total_tris);
 
-				assert(local_pts[f].rows() == face_pts.rows());
-			}
+		// 		assert(local_pts[f].rows() == face_pts.rows());
+		// 	}
 
-			tris.resize(total_tris, 3);
-			pts.resize(total_pts, 2);
+		// 	tris.resize(total_tris, 3);
+		// 	pts.resize(total_pts, 2);
 
-			int tri_index = 0;
-			int pts_index = 0;
-			for (std::size_t i = 0; i < local_tris.size(); ++i)
-			{
-				tris.block(tri_index, 0, local_tris[i].rows(), local_tris[i].cols()) = local_tris[i].array() + pts_index;
-				tri_index += local_tris[i].rows();
+		// 	int tri_index = 0;
+		// 	int pts_index = 0;
+		// 	for (std::size_t i = 0; i < local_tris.size(); ++i)
+		// 	{
+		// 		tris.block(tri_index, 0, local_tris[i].rows(), local_tris[i].cols()) = local_tris[i].array() + pts_index;
+		// 		tri_index += local_tris[i].rows();
 
-				pts.block(pts_index, 0, local_pts[i].rows(), local_pts[i].cols()) = local_pts[i];
-				pts_index += local_pts[i].rows();
-			}
-		}
+		// 		pts.block(pts_index, 0, local_pts[i].rows(), local_pts[i].cols()) = local_pts[i];
+		// 		pts_index += local_pts[i].rows();
+		// 	}
+		// }
 
 		void CMesh2D::compute_elements_tag()
 		{
@@ -573,7 +578,7 @@ namespace polyfem
 			return 0.5 * (point(v0) + point(v1));
 		}
 
-		void CMesh2D::compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker)
+		void CMesh2D::compute_body_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &)> &marker)
 		{
 			body_ids_.resize(n_elements());
 			std::fill(body_ids_.begin(), body_ids_.end(), -1);
@@ -581,91 +586,7 @@ namespace polyfem
 			for (int e = 0; e < n_elements(); ++e)
 			{
 				const auto bary = face_barycenter(e);
-				body_ids_[e] = marker(e, bary);
-			}
-		}
-
-		void CMesh2D::compute_boundary_ids(const double eps)
-		{
-			boundary_ids_.resize(n_edges());
-			std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
-
-			RowVectorNd min_corner, max_corner;
-			bounding_box(min_corner, max_corner);
-
-			// implement me properly
-			for (int e = 0; e < n_edges(); ++e)
-			{
-				if (!is_boundary_edge(e))
-					continue;
-
-				const auto p = edge_barycenter(e);
-
-				if (fabs(p(0) - min_corner[0]) < eps)
-					boundary_ids_[e] = 1;
-				else if (fabs(p(1) - min_corner[1]) < eps)
-					boundary_ids_[e] = 2;
-				else if (fabs(p(0) - max_corner[0]) < eps)
-					boundary_ids_[e] = 3;
-				else if (fabs(p(1) - max_corner[1]) < eps)
-					boundary_ids_[e] = 4;
-
-				else
-					boundary_ids_[e] = 7;
-			}
-		}
-
-		void CMesh2D::compute_boundary_ids(const std::function<int(const RowVectorNd &)> &marker)
-		{
-			boundary_ids_.resize(n_edges());
-			std::fill(boundary_ids_.begin(), boundary_ids_.end(), -1);
-
-			// implement me properly
-			for (int e = 0; e < n_edges(); ++e)
-			{
-				if (!is_boundary_edge(e))
-					continue;
-
-				const auto p = edge_barycenter(e);
-
-				boundary_ids_[e] = marker(p);
-			}
-		}
-
-		void CMesh2D::compute_boundary_ids(const std::function<int(const RowVectorNd &, bool)> &marker)
-		{
-			boundary_ids_.resize(n_edges());
-
-			for (int e = 0; e < n_edges(); ++e)
-			{
-				const bool is_boundary = is_boundary_edge(e);
-				const auto p = edge_barycenter(e);
-				boundary_ids_[e] = marker(p, is_boundary);
-			}
-		}
-
-		void CMesh2D::compute_boundary_ids(const std::function<int(const size_t, const RowVectorNd &, bool)> &marker)
-		{
-			boundary_ids_.resize(n_edges());
-
-			for (int e = 0; e < n_edges(); ++e)
-			{
-				const bool is_boundary = is_boundary_edge(e);
-				const auto p = edge_barycenter(e);
-				boundary_ids_[e] = marker(e, p, is_boundary);
-			}
-		}
-
-		void CMesh2D::compute_boundary_ids(const std::function<int(const std::vector<int> &, bool)> &marker)
-		{
-			boundary_ids_.resize(n_edges());
-
-			for (int e = 0; e < n_edges(); ++e)
-			{
-				bool is_boundary = is_boundary_edge(e);
-				std::vector<int> vs = {edge_vertex(e, 0), edge_vertex(e, 1)};
-				std::sort(vs.begin(), vs.end());
-				boundary_ids_[e] = marker(vs, is_boundary);
+				body_ids_[e] = marker(e, element_vertices(e), bary);
 			}
 		}
 
@@ -720,6 +641,29 @@ namespace polyfem
 			c2e_ = std::make_unique<GEO::Attribute<GEO::index_t>>(mesh_.facet_corners.attributes(), "edge_id");
 			boundary_vertices_ = std::make_unique<GEO::Attribute<bool>>(mesh_.vertices.attributes(), "boundary_vertex");
 			boundary_edges_ = std::make_unique<GEO::Attribute<bool>>(mesh_.edges.attributes(), "boundary_edge");
+		}
+
+		std::unique_ptr<Mesh> CMesh2D::copy() const
+		{
+			std::unique_ptr<CMesh2D> copy_mesh = std::make_unique<CMesh2D>();
+			copy_mesh->load(this->mesh_);
+
+			// Manually copy parent's data
+			copy_mesh->elements_tag_ = this->elements_tag_;
+			copy_mesh->node_ids_ = this->node_ids_;
+			copy_mesh->boundary_ids_ = this->boundary_ids_;
+			copy_mesh->body_ids_ = this->body_ids_;
+			copy_mesh->orders_ = this->orders_;
+			copy_mesh->is_rational_ = this->is_rational_;
+			copy_mesh->edge_nodes_ = this->edge_nodes_;
+			copy_mesh->face_nodes_ = this->face_nodes_;
+			copy_mesh->cell_nodes_ = this->cell_nodes_;
+			copy_mesh->cell_weights_ = this->cell_weights_;
+			copy_mesh->in_ordered_vertices_ = this->in_ordered_vertices_;
+			copy_mesh->in_ordered_edges_ = this->in_ordered_edges_;
+			copy_mesh->in_ordered_faces_ = this->in_ordered_faces_;
+
+			return copy_mesh;
 		}
 	} // namespace mesh
 } // namespace polyfem

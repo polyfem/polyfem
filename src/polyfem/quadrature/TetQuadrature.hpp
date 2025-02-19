@@ -9,9 +9,12 @@ namespace polyfem
 		class TetQuadrature
 		{
 		public:
-			TetQuadrature();
+			TetQuadrature(bool use_corner_quadrature = false);
 
 			void get_quadrature(const int order, Quadrature &quad);
+		
+		private:
+			bool use_corner_quadrature_;
 		};
 	} // namespace quadrature
 } // namespace polyfem

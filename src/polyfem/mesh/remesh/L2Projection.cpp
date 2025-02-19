@@ -2,8 +2,7 @@
 
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/problems/StaticBoundaryNLProblem.hpp>
-#include <polyfem/solver/forms/BCPenaltyForm.hpp>
-#include <polyfem/solver/forms/BCLagrangianForm.hpp>
+#include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/InversionBarrierForm.hpp>
 #include <polyfem/solver/forms/L2ProjectionForm.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
@@ -11,7 +10,7 @@
 
 #include <ipc/ipc.hpp>
 
-#include <polysolve/LinearSolver.hpp>
+#include <polysolve/linear/Solver.hpp>
 
 namespace polyfem::mesh
 {
@@ -21,16 +20,16 @@ namespace polyfem::mesh
 		const Eigen::Ref<const Eigen::MatrixXd> &y)
 	{
 		// Construct a linear solver for M
-		std::unique_ptr<polysolve::LinearSolver> solver;
+		std::unique_ptr<polysolve::linear::Solver> solver;
 #ifdef POLYSOLVE_WITH_MKL
-		solver = polysolve::LinearSolver::create("Eigen::PardisoLDLT", "");
+		solver = polysolve::linear::Solver::create("Eigen::PardisoLDLT", "");
 #elif defined(POLYSOLVE_WITH_CHOLMOD)
-		solver = polysolve::LinearSolver::create("Eigen::CholmodSimplicialLDLT", "");
+		solver = polysolve::linear::Solver::create("Eigen::CholmodSimplicialLDLT", "");
 #else
-		solver = polysolve::LinearSolver::create("Eigen::SimplicialLDLT", "");
+		solver = polysolve::linear::Solver::create("Eigen::SimplicialLDLT", "");
 #endif
 
-		solver->analyzePattern(M, 0);
+		solver->analyze_pattern(M, 0);
 		solver->factorize(M);
 
 		const Eigen::MatrixXd rhs = A * y;
@@ -62,6 +61,7 @@ namespace polyfem::mesh
 		}
 
 		const Eigen::MatrixXd H = M(free_nodes, free_nodes);
+
 		const Eigen::MatrixXd g = -((M * x - A * y)(free_nodes, Eigen::all));
 		const Eigen::MatrixXd sol = H.llt().solve(g);
 		x(free_nodes, Eigen::all) += sol;
@@ -69,7 +69,7 @@ namespace polyfem::mesh
 
 	Eigen::VectorXd constrained_L2_projection(
 		// Nonlinear solver
-		std::shared_ptr<cppoptlib::NonlinearSolver<polyfem::solver::NLProblem>> nl_solver,
+		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver,
 		// L2 projection form
 		const Eigen::SparseMatrix<double> &M,
 		const Eigen::SparseMatrix<double> &A,
@@ -120,9 +120,6 @@ namespace polyfem::mesh
 		}
 
 		const int ndof = x0.size();
-		std::shared_ptr<BCPenaltyForm> bc_penalty_form = std::make_shared<BCPenaltyForm>(
-			ndof, boundary_nodes, M, obstacle_ndof, target_x);
-		forms.push_back(bc_penalty_form);
 
 		std::shared_ptr<BCLagrangianForm> bc_lagrangian_form = std::make_shared<BCLagrangianForm>(
 			ndof, boundary_nodes, M, obstacle_ndof, target_x);
@@ -130,7 +127,10 @@ namespace polyfem::mesh
 
 		// --------------------------------------------------------------------
 
-		StaticBoundaryNLProblem problem(ndof, boundary_nodes, target_x, forms);
+		std::vector<std::shared_ptr<AugmentedLagrangianForm>> bc_forms;
+		bc_forms.push_back(bc_lagrangian_form);
+
+		StaticBoundaryNLProblem problem(ndof, target_x, forms, bc_forms);
 
 		// --------------------------------------------------------------------
 
@@ -141,14 +141,19 @@ namespace polyfem::mesh
 		constexpr int al_max_weight = 100 * al_initial_weight;
 		constexpr double al_eta_tol = 0.99;
 		constexpr size_t al_max_solver_iter = 1000;
-		constexpr bool force_al = false;
 		ALSolver al_solver(
-			nl_solver, bc_lagrangian_form, bc_penalty_form, al_initial_weight,
-			al_scaling, al_max_weight, al_eta_tol, al_max_solver_iter,
+			bc_forms, al_initial_weight,
+			al_scaling, al_max_weight, al_eta_tol,
 			/*update_barrier_stiffness=*/[&](const Eigen::MatrixXd &x) {});
 
 		Eigen::MatrixXd sol = x0;
-		al_solver.solve(problem, sol, force_al);
+
+		const size_t default_max_iterations = nl_solver->stop_criteria().iterations;
+		nl_solver->stop_criteria().iterations = al_max_solver_iter;
+		al_solver.solve_al(nl_solver, problem, sol);
+
+		nl_solver->stop_criteria().iterations = default_max_iterations;
+		al_solver.solve_reduced(nl_solver, problem, sol);
 
 #ifndef NDEBUG
 		assert(forms[1]->is_step_valid(sol, sol)); // inversion-free

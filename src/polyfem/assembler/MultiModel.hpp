@@ -7,6 +7,7 @@
 #include <polyfem/assembler/MooneyRivlinElasticity.hpp>
 #include <polyfem/assembler/MooneyRivlin3ParamElasticity.hpp>
 #include <polyfem/assembler/OgdenElasticity.hpp>
+#include <polyfem/assembler/FixedCorotational.hpp>
 #include <polyfem/basis/Basis.hpp>
 
 namespace polyfem::assembler
@@ -38,10 +39,15 @@ namespace polyfem::assembler
 		inline void init_multimodels(const std::vector<std::string> &mats) { multi_material_models_ = mats; }
 
 		std::string name() const override { return "MultiModels"; }
+		bool allow_inversion() const override { return true; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
 	protected:
-		void assign_stress_tensor(const int el_id, const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &displacement, const int all_size, const ElasticityTensorType &type, Eigen::MatrixXd &all, const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const override;
+		void assign_stress_tensor(const OutputData &data,
+								  const int all_size,
+								  const ElasticityTensorType &type,
+								  Eigen::MatrixXd &all,
+								  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const override;
 
 	private:
 		std::vector<std::string> multi_material_models_;
@@ -54,5 +60,6 @@ namespace polyfem::assembler
 		MooneyRivlin3ParamElasticity mooney_rivlin_3_param_elasticity_;
 		UnconstrainedOgdenElasticity unconstrained_ogden_elasticity_;
 		IncompressibleOgdenElasticity incompressible_ogden_elasticity_;
+		FixedCorotational fixed_corotational_;
 	};
 } // namespace polyfem::assembler

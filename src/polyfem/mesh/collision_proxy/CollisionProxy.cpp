@@ -6,7 +6,7 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 
-#include <BVH.hpp>
+#include <SimpleBVH/BVH.hpp>
 #include <igl/edges.h>
 #include <igl/barycentric_coordinates.h>
 #include <h5pp/h5pp.h>
@@ -201,7 +201,7 @@ namespace polyfem::mesh
 			boxes[i][1].head(dim) = nodes.colwise().maxCoeff();
 		}
 
-		BVH::BVH bvh;
+		SimpleBVH::BVH bvh;
 		bvh.init(boxes);
 
 		// --------------------------------------------------------------------
@@ -347,6 +347,13 @@ namespace polyfem::mesh
 		std::array<RowVectorNd, 2> bbox;
 		bbox[0] = vertices.colwise().minCoeff();
 		bbox[1] = vertices.colwise().maxCoeff();
+
+		if (vertices.cols() > 2 && bbox[0][2] == bbox[1][2] && bbox[0][2] == 0)
+		{
+			vertices = vertices.leftCols(2).eval();
+			bbox[0] = vertices.colwise().minCoeff();
+			bbox[1] = vertices.colwise().maxCoeff();
+		}
 
 		MatrixNd A;
 		VectorNd b;

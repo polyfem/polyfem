@@ -1,0 +1,133 @@
+[{
+        "pointer": "/",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "type_name": "none",
+        "default": {
+            "type": "none"
+        },
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "required": [
+            "type"
+        ],
+        "type_name": "linear",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "required": [
+            "type",
+            "to"
+        ],
+        "optional": [
+            "from"
+        ],
+        "type_name": "linear_ramp",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_constant",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_linear",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "required": [
+            "type",
+            "points",
+            "values"
+        ],
+        "optional": [
+            "extend"
+        ],
+        "type_name": "piecewise_cubic",
+        "doc": "interpolation of boundary condition"
+    },
+    {
+        "pointer": "/type",
+        "type": "string",
+        "options": [
+            "none",
+            "linear",
+            "linear_ramp",
+            "piecewise_constant",
+            "piecewise_linear",
+            "piecewise_cubic"
+        ],
+        "doc": "type of interpolation of boundary condition"
+    },
+    {
+        "pointer": "/from",
+        "type": "float",
+        "default": 0,
+        "doc": "interpolation starting time"
+    },
+    {
+        "pointer": "/to",
+        "type": "float",
+        "doc": "interpolation ending time"
+    },
+    {
+        "pointer": "/points",
+        "type": "list",
+        "doc": "interpolation time points"
+    },
+    {
+        "pointer": "/points/*",
+        "type": "float",
+        "doc": "interpolation time point"
+    },
+    {
+        "pointer": "/values",
+        "type": "list",
+        "doc": "interpolation values"
+    },
+    {
+        "pointer": "/values/*",
+        "type": "float",
+        "doc": "interpolation value"
+    },
+    {
+        "pointer": "/extend",
+        "type": "string",
+        "options": [
+            "constant",
+            "extrapolate",
+            "repeat",
+            "repeat_offset"
+        ],
+        "default": "constant",
+        "doc": "how to extend the piecewise interpolation"
+    }
+]

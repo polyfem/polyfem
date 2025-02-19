@@ -7,43 +7,44 @@ namespace polyfem
 {
 	class State;
 	class IntegrableFunctional;
-}
+
+	namespace solver {
+		class PeriodicMeshToMesh;	
+	}
+} // namespace polyfem
 
 namespace polyfem::solver
 {
 	enum class ParameterType
 	{
 		Shape,
-		Material,
-		FrictionCoeff,
-		DampingCoeff,
+		LameParameter,
+		FrictionCoefficient,
+		DampingCoefficient,
 		InitialCondition,
 		DirichletBC,
-		MacroStrain
+		PressureBC,
+		MacroStrain,
+		PeriodicShape
 	};
 
 	enum class SpatialIntegralType
 	{
-		volume,
-		surface,
-		vertex_sum
+		Volume,
+		Surface,
+		VertexSum
 	};
 
-	class AdjointTools
+	namespace AdjointTools
 	{
-	public:
-		AdjointTools()
-		{
-		}
-
-		static double integrate_objective(
+		double integrate_objective(
 			const State &state,
 			const IntegrableFunctional &j,
 			const Eigen::MatrixXd &solution,
 			const std::set<int> &interested_ids, // either body id or surface id
 			const SpatialIntegralType spatial_integral_type,
 			const int cur_step = 0);
-		static void dJ_du_step(
+		void dJ_du_step(
 			const State &state,
 			const IntegrableFunctional &j,
 			const Eigen::MatrixXd &solution,
@@ -51,12 +52,7 @@ namespace polyfem::solver
 			const SpatialIntegralType spatial_integral_type,
 			const int cur_step,
 			Eigen::VectorXd &term);
-		static void dJ_macro_strain_adjoint_term(
-			const State &state,
-			const Eigen::MatrixXd &sol,
-			const Eigen::MatrixXd &adjoint,
-			Eigen::VectorXd &one_form);
-		static void compute_macro_strain_derivative_functional_term(
+		void compute_shape_derivative_functional_term(
 			const State &state,
 			const Eigen::MatrixXd &solution,
 			const IntegrableFunctional &j,
@@ -64,70 +60,100 @@ namespace polyfem::solver
 			const SpatialIntegralType spatial_integral_type,
 			Eigen::VectorXd &term,
 			const int cur_time_step);
-		static void compute_shape_derivative_functional_term(
-			const State &state,
-			const Eigen::MatrixXd &solution,
-			const IntegrableFunctional &j,
-			const std::set<int> &interested_ids, // either body id or surface id
-			const SpatialIntegralType spatial_integral_type,
-			Eigen::VectorXd &term,
-			const int cur_time_step);
-		static void dJ_shape_static_adjoint_term(
+		void dJ_shape_static_adjoint_term(
 			const State &state,
 			const Eigen::MatrixXd &sol,
 			const Eigen::MatrixXd &adjoint,
 			Eigen::VectorXd &one_form);
-		static void dJ_shape_transient_adjoint_term(
-			const State &state,
-			const Eigen::MatrixXd &adjoint_nu,
-			const Eigen::MatrixXd &adjoint_p,
-			Eigen::VectorXd &one_form);
-		static void dJ_material_static_adjoint_term(
+
+		// The periodic simulation result may not be differentiable wrt. 
+		// every vertex of the periodic mesh, since a pair of periodic 
+		// vertices cannot move freely, in which case
+		// dJ_periodic_shape_adjoint_term() instead of 
+		// dJ_shape_homogenization_adjoint_term() should be used: When it 
+		// computes shape derivatives, it considers the pair of periodic 
+		// vertices as only one degree of freedom.
+		void dJ_shape_homogenization_adjoint_term(
 			const State &state,
 			const Eigen::MatrixXd &sol,
 			const Eigen::MatrixXd &adjoint,
 			Eigen::VectorXd &one_form);
-		static void dJ_material_transient_adjoint_term(
+		void dJ_periodic_shape_adjoint_term(
+			const State &state,
+			const PeriodicMeshToMesh &periodic_mesh_map,
+			const Eigen::VectorXd &periodic_mesh_representation,
+			const Eigen::MatrixXd &sol,
+			const Eigen::MatrixXd &adjoint,
+			Eigen::VectorXd &one_form);
+
+		void dJ_shape_transient_adjoint_term(
 			const State &state,
 			const Eigen::MatrixXd &adjoint_nu,
 			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
-		static void dJ_friction_transient_adjoint_term(
+		void dJ_material_static_adjoint_term(
+			const State &state,
+			const Eigen::MatrixXd &sol,
+			const Eigen::MatrixXd &adjoint,
+			Eigen::VectorXd &one_form);
+		void dJ_material_transient_adjoint_term(
 			const State &state,
 			const Eigen::MatrixXd &adjoint_nu,
 			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
-		static void dJ_damping_transient_adjoint_term(
+		void dJ_friction_transient_adjoint_term(
 			const State &state,
 			const Eigen::MatrixXd &adjoint_nu,
 			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
-		static void dJ_initial_condition_adjoint_term(
+		void dJ_damping_transient_adjoint_term(
 			const State &state,
 			const Eigen::MatrixXd &adjoint_nu,
 			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
-		static void dJ_dirichlet_transient_adjoint_term(
+		void dJ_initial_condition_adjoint_term(
 			const State &state,
+			const Eigen::MatrixXd &adjoint_nu,
+			const Eigen::MatrixXd &adjoint_p,
+			Eigen::VectorXd &one_form);
+		void dJ_dirichlet_transient_adjoint_term(
+			const State &state,
+			const Eigen::MatrixXd &adjoint_nu,
+			const Eigen::MatrixXd &adjoint_p,
+			Eigen::VectorXd &one_form);
+		void dJ_pressure_static_adjoint_term(
+			const State &state,
+			const std::vector<int> &boundary_ids,
+			const Eigen::MatrixXd &sol,
+			const Eigen::MatrixXd &adjoint,
+			Eigen::VectorXd &one_form);
+		void dJ_pressure_transient_adjoint_term(
+			const State &state,
+			const std::vector<int> &boundary_ids,
 			const Eigen::MatrixXd &adjoint_nu,
 			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
 
-		static Eigen::VectorXd map_primitive_to_node_order(
+		Eigen::VectorXd map_primitive_to_node_order(
 			const State &state,
 			const Eigen::VectorXd &primitives);
-		static Eigen::VectorXd map_node_to_primitive_order(
+		Eigen::VectorXd map_node_to_primitive_order(
 			const State &state,
 			const Eigen::VectorXd &nodes);
 
-		static Eigen::MatrixXd edge_normal_gradient(
+		Eigen::MatrixXd edge_normal_gradient(
 			const Eigen::MatrixXd &V);
-		static Eigen::MatrixXd face_normal_gradient(
+		Eigen::MatrixXd face_normal_gradient(
 			const Eigen::MatrixXd &V);
 
-		static Eigen::MatrixXd edge_velocity_divergence(
+		Eigen::MatrixXd edge_velocity_divergence(
 			const Eigen::MatrixXd &V);
-		static Eigen::MatrixXd face_velocity_divergence(
+		Eigen::MatrixXd face_velocity_divergence(
 			const Eigen::MatrixXd &V);
-	};
+
+		double triangle_jacobian(const Eigen::VectorXd &v1, const Eigen::VectorXd &v2, const Eigen::VectorXd &v3);
+		double tet_determinant(const Eigen::VectorXd &v1, const Eigen::VectorXd &v2, const Eigen::VectorXd &v3, const Eigen::VectorXd &v4);
+		void scaled_jacobian(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, Eigen::VectorXd &quality);
+		bool is_flipped(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F);
+	}; // namespace AdjointTools
 } // namespace polyfem::solver

@@ -405,8 +405,15 @@ namespace polyfem::assembler
 		return energy;
 	}
 
-	void ViscousDamping::compute_stress_grad(const int el_id, const double dt, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &prev_grad_u_i, Eigen::MatrixXd &stress, Eigen::MatrixXd &result) const
+	void ViscousDamping::compute_stress_grad(
+		const OptAssemblerData &data,
+		const Eigen::MatrixXd &prev_grad_u_i,
+		Eigen::MatrixXd &stress,
+		Eigen::MatrixXd &result) const
 	{
+		const double dt = data.dt;
+		const Eigen::MatrixXd &grad_u_i = data.grad_u_i;
+
 		Eigen::MatrixXd F = Eigen::MatrixXd::Identity(size(), size()) + grad_u_i;
 		Eigen::MatrixXd Fdot = (grad_u_i - prev_grad_u_i) / dt;
 		Eigen::MatrixXd dRdF, dRdFdot, d2RdF2, d2RdFdFdot, d2RdFdot2;
@@ -420,8 +427,14 @@ namespace polyfem::assembler
 		result = d2RdF2 + (1. / dt) * (d2RdFdFdot + d2RdFdFdot.transpose()) + (1. / dt / dt) * d2RdFdot2;
 	}
 
-	void ViscousDamping::compute_stress_prev_grad(const int el_id, const double dt, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &prev_grad_u_i, Eigen::MatrixXd &result) const
+	void ViscousDamping::compute_stress_prev_grad(
+		const OptAssemblerData &data,
+		const Eigen::MatrixXd &prev_grad_u_i,
+		Eigen::MatrixXd &result) const
 	{
+		const double dt = data.dt;
+		const Eigen::MatrixXd &grad_u_i = data.grad_u_i;
+
 		Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(grad_u_i.rows(), grad_u_i.cols()) + grad_u_i;
 		Eigen::MatrixXd def_grad_fd = (grad_u_i - prev_grad_u_i) / dt;
 		Eigen::MatrixXd d2RdF2, d2RdFdFdot, d2RdFdot2;
@@ -430,8 +443,15 @@ namespace polyfem::assembler
 		result = -(1. / dt) * d2RdFdFdot - (1. / dt / dt) * d2RdFdot2;
 	}
 
-	void ViscousDamping::compute_dstress_dpsi_dphi(const int el_id, const double dt, const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &global_pts, const Eigen::MatrixXd &grad_u_i, const Eigen::MatrixXd &prev_grad_u_i, Eigen::MatrixXd &dstress_dpsi, Eigen::MatrixXd &dstress_dphi)
+	void ViscousDamping::compute_dstress_dpsi_dphi(
+		const OptAssemblerData &data,
+		const Eigen::MatrixXd &prev_grad_u_i,
+		Eigen::MatrixXd &dstress_dpsi,
+		Eigen::MatrixXd &dstress_dphi)
 	{
+		const double dt = data.dt;
+		const Eigen::MatrixXd &grad_u_i = data.grad_u_i;
+
 		Eigen::MatrixXd F = Eigen::MatrixXd::Identity(grad_u_i.rows(), grad_u_i.cols()) + grad_u_i;
 		Eigen::MatrixXd prev_F = Eigen::MatrixXd::Identity(prev_grad_u_i.rows(), prev_grad_u_i.cols()) + prev_grad_u_i;
 

@@ -10,10 +10,8 @@
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
+#include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
 
-#include <polyfem/solver/NonlinearSolver.hpp>
-#include <polyfem/solver/LBFGSSolver.hpp>
-#include <polyfem/solver/SparseNewtonDescentSolver.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/SolveData.hpp>
@@ -23,6 +21,7 @@
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/utils/BoundarySampler.hpp>
 
 #include <ipc/ipc.hpp>
 
@@ -34,48 +33,28 @@ namespace polyfem
 	using namespace io;
 	using namespace utils;
 
-	template <typename ProblemType>
-	std::shared_ptr<cppoptlib::NonlinearSolver<ProblemType>> State::make_nl_solver(
-		const std::string &linear_solver_type) const
+	std::shared_ptr<polysolve::nonlinear::Solver> State::make_nl_solver(bool for_al) const
 	{
-		const std::string name = args["solver"]["nonlinear"]["solver"];
-		const double dt = problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 1.0;
-		if (name == "newton" || name == "Newton")
-		{
-			json linear_solver_params = args["solver"]["linear"];
-			if (!linear_solver_type.empty())
-				linear_solver_params["solver"] = linear_solver_type;
-			return std::make_shared<cppoptlib::SparseNewtonDescentSolver<ProblemType>>(
-				args["solver"]["nonlinear"], linear_solver_params, dt, units.characteristic_length());
-		}
-		else if (name == "lbfgs" || name == "LBFGS" || name == "L-BFGS")
-		{
-			return std::make_shared<cppoptlib::LBFGSSolver<ProblemType>>(args["solver"]["nonlinear"], dt, units.characteristic_length());
-		}
-		else
-		{
-			throw std::invalid_argument(fmt::format("invalid nonlinear solver type: {}", name));
-		}
+		return polysolve::nonlinear::Solver::create(for_al ? args["solver"]["augmented_lagrangian"]["nonlinear"] : args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger());
 	}
 
 	void State::solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol)
 	{
 		init_nonlinear_tensor_solve(sol, t0 + dt);
 
-		save_timestep(t0, 0, t0, dt, sol, Eigen::MatrixXd()); // no pressure
-
 		// Write the total energy to a CSV file
 		int save_i = 0;
 		EnergyCSVWriter energy_csv(resolve_output_path("energy.csv"), solve_data);
 		RuntimeStatsCSVWriter stats_csv(resolve_output_path("stats.csv"), *this, t0, dt);
 		const bool remesh_enabled = args["space"]["remesh"]["enabled"];
-#ifndef POLYFEM_WITH_REMESHING
-		if (remesh_enabled)
-			log_and_throw_error("Remeshing is not enabled in this build! Set POLYFEM_WITH_REMESHING=ON in CMake to enable it.");
-#endif
 		// const double save_dt = remesh_enabled ? (dt / 3) : dt;
 
-		if (optimization_enabled)
+		// Save the initial solution
+		energy_csv.write(save_i, sol);
+		save_timestep(t0, save_i, t0, dt, sol, Eigen::MatrixXd()); // no pressure
+		save_i++;
+
+		if (optimization_enabled != solver::CacheLevel::None)
 			cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 
 		for (int t = 1; t <= time_steps; ++t)
@@ -87,7 +66,6 @@ namespace polyfem
 				solve_tensor_nonlinear(sol, t);
 			}
 
-#ifdef POLYFEM_WITH_REMESHING
 			if (remesh_enabled)
 			{
 				energy_csv.write(save_i, sol);
@@ -112,12 +90,13 @@ namespace polyfem
 					solve_tensor_nonlinear(sol, t, false); // solve the scene again after remeshing
 				}
 			}
-#endif
+
 			// Always save the solution for consistency
 			energy_csv.write(save_i, sol);
 			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
+			save_i++;
 
-			if (optimization_enabled)
+			if (optimization_enabled != solver::CacheLevel::None)
 			{
 				cache_transient_adjoint_quantities(t, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 			}
@@ -152,7 +131,8 @@ namespace polyfem
 
 			// save restart file
 			save_restart_json(t0, dt, t);
-			stats_csv.write(t, forward_solve_time, remeshing_time, global_relaxation_time, sol);
+			if (remesh_enabled)
+				stats_csv.write(t, forward_solve_time, remeshing_time, global_relaxation_time, sol);
 		}
 	}
 
@@ -163,7 +143,7 @@ namespace polyfem
 		assert(!problem->is_scalar());                           // tensor
 		assert(mixed_assembler == nullptr);
 
-		if (optimization_enabled)
+		if (optimization_enabled != solver::CacheLevel::None)
 		{
 			if (initial_sol_update.size() == ndof())
 				sol = initial_sol_update;
@@ -180,7 +160,7 @@ namespace polyfem
 			const Eigen::MatrixXd displaced = collision_mesh.displace_vertices(
 				utils::unflatten(sol, mesh->dimension()));
 
-			if (ipc::has_intersections(collision_mesh, displaced))
+			if (ipc::has_intersections(collision_mesh, displaced, args["solver"]["contact"]["CCD"]["broad_phase"]))
 			{
 				OBJWriter::write(
 					resolve_output_path("intersection.obj"), displaced,
@@ -207,7 +187,7 @@ namespace polyfem
 				initial_acceleration(acceleration);
 				assert(acceleration.rows() == sol.size());
 
-				if (optimization_enabled)
+				if (optimization_enabled != solver::CacheLevel::None)
 				{
 					if (initial_vel_update.size() == ndof())
 						velocity = initial_vel_update;
@@ -231,19 +211,25 @@ namespace polyfem
 		damping_assembler = std::make_shared<assembler::ViscousDamping>();
 		set_materials(*damping_assembler);
 
+		elasticity_pressure_assembler = build_pressure_assembler();
+
 		// for backward solve
 		damping_prev_assembler = std::make_shared<assembler::ViscousDampingPrev>();
 		set_materials(*damping_prev_assembler);
 
+		const ElementInversionCheck check_inversion = args["solver"]["advanced"]["check_inversion"];
 		const std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(
 			// General
 			units,
 			mesh->dimension(), t,
 			// Elastic form
-			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache,
+			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache, args["solver"]["advanced"]["jacobian_threshold"], check_inversion,
 			// Body form
-			n_pressure_bases, boundary_nodes, local_boundary, local_neumann_boundary,
+			n_pressure_bases, boundary_nodes, local_boundary,
+			local_neumann_boundary,
 			n_boundary_samples(), rhs, sol, mass_matrix_assembler->density(),
+			// Pressure form
+			local_pressure_boundary, local_pressure_cavity, elasticity_pressure_assembler,
 			// Inertia form
 			args.value("/time/quasistatic"_json_pointer, true), mass,
 			damping_assembler->is_valid() ? damping_assembler : nullptr,
@@ -253,13 +239,17 @@ namespace polyfem
 			// Augmented lagrangian form
 			obstacle.ndof(),
 			// Contact form
-			args["contact"]["enabled"], collision_mesh, args["contact"]["dhat"],
+			args["contact"]["enabled"], args["contact"]["periodic"].get<bool>() ? periodic_collision_mesh : collision_mesh, args["contact"]["dhat"],
 			avg_mass, args["contact"]["use_convergent_formulation"],
 			args["solver"]["contact"]["barrier_stiffness"],
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
-			optimization_enabled,
+			optimization_enabled == solver::CacheLevel::Derivatives,
+			// Homogenization
+			macro_strain_constraint,
+			// Periodic contact
+			args["contact"]["periodic"], periodic_collision_mesh_to_basis, periodic_bc,
 			// Friction form
 			args["contact"]["friction_coefficient"],
 			args["contact"]["epsv"],
@@ -278,9 +268,9 @@ namespace polyfem
 
 		const int ndof = n_bases * mesh->dimension();
 		solve_data.nl_problem = std::make_shared<NLProblem>(
-			ndof, boundary_nodes, local_boundary, n_boundary_samples(),
-			*solve_data.rhs_assembler, t, forms);
-
+			ndof, periodic_bc, t, forms, solve_data.al_form);
+		solve_data.nl_problem->init(sol);
+		solve_data.nl_problem->update_quantities(t, sol);
 		// --------------------------------------------------------------------
 
 		stats.solver_info = json::array();
@@ -311,15 +301,14 @@ namespace polyfem
 
 		// ---------------------------------------------------------------------
 
-		std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> nl_solver = make_nl_solver<NLProblem>();
+		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(true);
 
 		ALSolver al_solver(
-			nl_solver, solve_data.al_lagr_form, solve_data.al_pen_form,
+			solve_data.al_form,
 			args["solver"]["augmented_lagrangian"]["initial_weight"],
 			args["solver"]["augmented_lagrangian"]["scaling"],
 			args["solver"]["augmented_lagrangian"]["max_weight"],
 			args["solver"]["augmented_lagrangian"]["eta"],
-			args["solver"]["augmented_lagrangian"]["max_solver_iters"],
 			[&](const Eigen::VectorXd &x) {
 				this->solve_data.update_barrier_stiffness(sol);
 			});
@@ -328,21 +317,30 @@ namespace polyfem
 			stats.solver_info.push_back(
 				{{"type", al_weight > 0 ? "al" : "rc"},
 				 {"t", t}, // TODO: null if static?
-				 {"info", nl_solver->get_info()}});
+				 {"info", nl_solver->info()}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
 			save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 		};
 
 		Eigen::MatrixXd prev_sol = sol;
-		al_solver.solve(nl_problem, sol, args["solver"]["augmented_lagrangian"]["force"]);
+		al_solver.solve_al(nl_solver, nl_problem, sol);
+
+		nl_solver = make_nl_solver(false);
+		al_solver.solve_reduced(nl_solver, nl_problem, sol);
+
+		if (args["space"]["advanced"]["count_flipped_els_continuous"])
+		{
+			const auto invalidList = count_invalid(mesh->dimension(), bases, geom_bases(), sol);
+			logger().debug("Flipped elements (cnt {}) : {}", invalidList.size(), invalidList);
+		}
 
 		// ---------------------------------------------------------------------
 
 		// TODO: Make this more general
 		const double lagging_tol = args["solver"]["contact"].value("friction_convergence_tol", 1e-2) * units.characteristic_length();
 
-		if (!optimization_enabled)
+		if (optimization_enabled != solver::CacheLevel::Derivatives)
 		{
 			// Lagging loop (start at 1 because we already did an iteration above)
 			bool lagging_converged = !nl_problem.uses_lagging();
@@ -391,6 +389,7 @@ namespace polyfem
 				nl_problem.init(sol);
 				solve_data.update_barrier_stiffness(sol);
 				nl_solver->minimize(nl_problem, tmp_sol);
+				nl_problem.finish();
 				prev_sol = sol;
 				sol = nl_problem.reduced_to_full(tmp_sol);
 
@@ -399,13 +398,9 @@ namespace polyfem
 					{{"type", "rc"},
 					 {"t", t}, // TODO: null if static?
 					 {"lag_i", lag_i},
-					 {"info", nl_solver->get_info()}});
+					 {"info", nl_solver->info()}});
 				save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 			}
 		}
 	}
-
-	////////////////////////////////////////////////////////////////////////
-	// Template instantiations
-	template std::shared_ptr<cppoptlib::NonlinearSolver<NLProblem>> State::make_nl_solver(const std::string &) const;
 } // namespace polyfem

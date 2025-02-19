@@ -140,7 +140,7 @@ namespace polyfem::solver
 	{
 	public:
 		InsertConstantMap(const int size = -1, const double val = 0, const int start_index = -1);
-		InsertConstantMap(const Eigen::VectorXd &values);
+		InsertConstantMap(const Eigen::VectorXd &values, const int start_index = -1);
 
 		int size(const int x_size) const override;
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
@@ -168,19 +168,18 @@ namespace polyfem::solver
 		Eigen::VectorXd tt_radius_adjacency_row_sum;
 	};
 
-	class CustomSymmetric : public Parametrization
+	class ScalarVelocityParametrization : public Parametrization
 	{
 	public:
-		CustomSymmetric(const json &args);
+		ScalarVelocityParametrization(const double start_val, const double dt) : start_val_(start_val), dt_(dt) {}
 
-		int size(const int x_size) const override;
+		int size(const int x_size) const override { return x_size; }
+		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
 	private:
-		std::vector<int> fixed_entries;
-		std::vector<std::pair<int, int>> equal_pairs;
-		std::vector<std::pair<int, int>> sum_equal_pairs;
+		const double start_val_;
+		const double dt_;
 	};
-
 } // namespace polyfem::solver

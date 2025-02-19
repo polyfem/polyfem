@@ -76,6 +76,24 @@ namespace polyfem
 			}
 		} // namespace
 
+		Eigen::Matrix2d utils::BoundarySampler::quad_local_node_coordinates_from_edge(int le)
+		{
+			Eigen::Matrix2d res(2, 2);
+			res.row(0) = quad_local_node_coordinates(le);
+			res.row(1) = quad_local_node_coordinates((le + 1) % 4);
+
+			return res;
+		}
+
+		Eigen::Matrix2d utils::BoundarySampler::tri_local_node_coordinates_from_edge(int le)
+		{
+			Eigen::Matrix2d res(2, 2);
+			res.row(0) = tri_local_node_coordinates(le);
+			res.row(1) = tri_local_node_coordinates((le + 1) % 3);
+
+			return res;
+		}
+
 		Eigen::MatrixXd utils::BoundarySampler::tet_local_node_coordinates_from_face(int lf)
 		{
 			Eigen::Matrix<int, 4, 3> fv;

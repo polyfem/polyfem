@@ -39,6 +39,8 @@ namespace polyfem
 
 			static void normal_for_polygon_edge(int face_id, int edge_id, const mesh::Mesh &mesh, Eigen::MatrixXd &normal);
 
+			static Eigen::Matrix2d tri_local_node_coordinates_from_edge(int le);
+			static Eigen::Matrix2d quad_local_node_coordinates_from_edge(int le);
 			static Eigen::MatrixXd tet_local_node_coordinates_from_face(int lf);
 			static Eigen::MatrixXd hex_local_node_coordinates_from_face(int lf);
 			static Eigen::MatrixXd prism_local_node_coordinates_from_face(int lf);

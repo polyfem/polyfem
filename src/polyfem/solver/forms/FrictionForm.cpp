@@ -11,7 +11,6 @@ namespace polyfem::solver
 		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator,
 		const double epsv,
 		const double mu,
-		const double dhat,
 		const ipc::BroadPhaseMethod broad_phase_method,
 		const ContactForm &contact_form,
 		const int n_lagging_iters)
@@ -19,11 +18,10 @@ namespace polyfem::solver
 		  time_integrator_(time_integrator),
 		  epsv_(epsv),
 		  mu_(mu),
-		  dhat_(dhat),
 		  broad_phase_method_(broad_phase_method),
 		  n_lagging_iters_(n_lagging_iters < 0 ? std::numeric_limits<int>::max() : n_lagging_iters),
-		  contact_form_(contact_form)
-
+		  contact_form_(contact_form),
+		  friction_potential_(epsv)
 	{
 		assert(epsv_ > 0);
 	}
@@ -32,7 +30,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &prev_solution,
 		const Eigen::MatrixXd &solution,
 		const Eigen::MatrixXd &adjoint,
-		const ipc::FrictionConstraints &friction_constraints_set,
+		const ipc::FrictionCollisions &friction_constraints_set,
 		Eigen::VectorXd &term)
 	{
 		Eigen::MatrixXd U = collision_mesh_.vertices(utils::unflatten(solution, collision_mesh_.dim()));
@@ -41,11 +39,13 @@ namespace polyfem::solver
 		// TODO: use the time integration to compute the velocity
 		const Eigen::MatrixXd velocities = (U - U_prev) / time_integrator_->dt();
 
-		StiffnessMatrix hess = -friction_constraints_set.compute_force_jacobian(
+		StiffnessMatrix hess = -friction_potential_.force_jacobian(
+			friction_constraints_set,
 			collision_mesh_, collision_mesh_.rest_positions(),
 			/*lagged_displacements=*/U_prev, velocities,
-			dhat_, contact_form_.barrier_stiffness(), epsv_,
-			ipc::FrictionConstraint::DiffWRT::REST_POSITIONS);
+			contact_form_.barrier_potential(),
+			contact_form_.barrier_stiffness(),
+			ipc::FrictionPotential::DiffWRT::REST_POSITIONS);
 
 		// {
 		// 	Eigen::MatrixXd X = collision_mesh_.rest_positions();
@@ -65,8 +65,8 @@ namespace polyfem::solver
 		// 			ipc::CollisionMesh fd_mesh(fd_X, collision_mesh_.edges(), collision_mesh_.faces());
 		// 			fd_mesh.init_area_jacobians();
 
-		// 			ipc::FrictionConstraints fd_friction_constraints;
-		// 			ipc::CollisionConstraints fd_constraints;
+		// 			ipc::FrictionCollisions fd_friction_constraints;
+		// 			ipc::Collisions fd_constraints;
 		// 			fd_constraints.set_use_convergent_formulation(contact_form_.use_convergent_formulation());
 		// 			fd_constraints.set_are_shape_derivatives_enabled(true);
 		// 			fd_constraints.build(fd_mesh, fd_X + U_prev, dhat);
@@ -104,13 +104,13 @@ namespace polyfem::solver
 
 	double FrictionForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		return friction_constraint_set_.compute_potential(collision_mesh_, compute_surface_velocities(x), epsv_) / dv_dx();
+		return friction_potential_(friction_collision_set_, collision_mesh_, compute_surface_velocities(x)) / dv_dx();
 	}
 
 	void FrictionForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		const Eigen::VectorXd grad_friction = friction_constraint_set_.compute_potential_gradient(
-			collision_mesh_, compute_surface_velocities(x), epsv_);
+		const Eigen::VectorXd grad_friction = friction_potential_.gradient(
+			friction_collision_set_, collision_mesh_, compute_surface_velocities(x));
 		gradv = collision_mesh_.to_full_dof(grad_friction);
 	}
 
@@ -118,8 +118,8 @@ namespace polyfem::solver
 	{
 		POLYFEM_SCOPED_TIMER("friction hessian");
 
-		hessian = dv_dx() * friction_constraint_set_.compute_potential_hessian( //
-					  collision_mesh_, compute_surface_velocities(x), epsv_, project_to_psd_);
+		hessian = dv_dx() * friction_potential_.hessian( //
+					  friction_collision_set_, collision_mesh_, compute_surface_velocities(x), project_to_psd_);
 
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
@@ -128,15 +128,14 @@ namespace polyfem::solver
 	{
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
-		ipc::CollisionConstraints constraint_set;
-		constraint_set.set_use_convergent_formulation(contact_form_.use_convergent_formulation());
-		constraint_set.set_are_shape_derivatives_enabled(contact_form_.enable_shape_derivatives());
-		constraint_set.build(
-			collision_mesh_, displaced_surface, dhat_,
-			/*dmin=*/0, broad_phase_method_);
+		ipc::Collisions collision_set;
+		collision_set.set_use_convergent_formulation(contact_form_.use_convergent_formulation());
+		collision_set.set_are_shape_derivatives_enabled(contact_form_.enable_shape_derivatives());
+		collision_set.build(
+			collision_mesh_, displaced_surface, contact_form_.dhat(), /*dmin=*/0, broad_phase_method_);
 
-		friction_constraint_set_.build(
-			collision_mesh_, displaced_surface, constraint_set,
-			dhat_, contact_form_.barrier_stiffness(), mu_);
+		friction_collision_set_.build(
+			collision_mesh_, displaced_surface, collision_set,
+			contact_form_.barrier_potential(), contact_form_.barrier_stiffness(), mu_);
 	}
 } // namespace polyfem::solver

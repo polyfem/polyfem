@@ -179,17 +179,17 @@ if __name__ == "__main__":
         cppg = cppg + \
             "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
         if dim == 3:
-            cppg = "#include <Eigen/Dense>\n namespace polyfem {\nnamespace autogen {"
+            cppg = "#include <Eigen/Dense>\n#include <cassert>\n namespace polyfem {\nnamespace autogen {"
 
         eextern = ""
 
-        hppv = "#pragma once\n\n#include <Eigen/Dense>\n\n"
+        hppv = "#pragma once\n\n#include <Eigen/Dense>\n#include <cassert>\n\n"
         hppv = hppv + "namespace polyfem {\nnamespace autogen " + "{\n"
 
-        hppn = "#pragma once\n\n#include <Eigen/Dense>\n\n"
+        hppn = "#pragma once\n\n#include <Eigen/Dense>\n#include <cassert>\n\n"
         hppn = hppn + "namespace polyfem {\nnamespace autogen " + "{\n"
 
-        hppg = "#pragma once\n\n#include <Eigen/Dense>\n\n"
+        hppg = "#pragma once\n\n#include <Eigen/Dense>\n#include <cassert>\n\n"
         hppg = hppg + "namespace polyfem {\nnamespace autogen " + "{\n"
 
         print(str(dim) + "D")
@@ -242,9 +242,7 @@ if __name__ == "__main__":
                     fe.points = [[1./2., 1./2., 1./2.]]
             elif order == -2:
                 def fe(): return None
-                if dim == 1:  # no serendipity in 1d
-                    fe = Lagrange(dim, 2)
-                elif dim == 2:
+                if dim == 2:
                     fe.points = []
                     fe.N = []
                     fe.nbf = lambda: 8
@@ -315,10 +313,66 @@ if __name__ == "__main__":
             current_indices = list(range(0, len(fe.points)))
             indices = []
 
-            if dim > 1:
-                # vertex coordinate
-                for i in range(0, 2**dim):
-                    vv = vertices[i]
+            # vertex coordinate
+            for i in range(0, 4*(dim-1)):
+                vv = vertices[i]
+                for ii in current_indices:
+                    norm = 0
+                    for dd in range(0, dim):
+                        norm = norm + (vv[dd] - fe.points[ii][dd]) ** 2
+
+                    if norm < 1e-10:
+                        indices.append(ii)
+                        current_indices.remove(ii)
+                        break
+
+            # edge 0 coordinate
+            for i in range(0, abs(order) - 1):
+                for ii in current_indices:
+                    if fe.points[ii][1] != 0 or (dim == 3 and fe.points[ii][2] != 0):
+                        continue
+
+                    if abs(fe.points[ii][0] - (i + 1) / abs(order)) < 1e-10:
+                        indices.append(ii)
+                        current_indices.remove(ii)
+                        break
+
+            # edge 1 coordinate
+            for i in range(0, abs(order) - 1):
+                for ii in current_indices:
+                    if fe.points[ii][0] != 1 or (dim == 3 and fe.points[ii][2] != 0):
+                        continue
+
+                    if abs(fe.points[ii][1] - (i + 1) / abs(order)) < 1e-10:
+                        indices.append(ii)
+                        current_indices.remove(ii)
+                        break
+
+            # edge 2 coordinate
+            for i in range(0, abs(order) - 1):
+                for ii in current_indices:
+                    if fe.points[ii][1] != 1 or (dim == 3 and fe.points[ii][2] != 0):
+                        continue
+
+                    if abs(fe.points[ii][0] - (1 - (i + 1) / abs(order))) < 1e-10:
+                        indices.append(ii)
+                        current_indices.remove(ii)
+                        break
+
+            # edge 3 coordinate
+            for i in range(0, abs(order) - 1):
+                for ii in current_indices:
+                    if fe.points[ii][0] != 0 or (dim == 3 and fe.points[ii][2] != 0):
+                        continue
+
+                    if abs(fe.points[ii][1] - (1 - (i + 1) / abs(order))) < 1e-10:
+                        indices.append(ii)
+                        current_indices.remove(ii)
+                        break
+
+            if dim == 3:
+                # edge 4 coordinate
+                for i in range(0, abs(order) - 1):
                     for ii in current_indices:
                         norm = 0
                         for dd in range(0, dim):
@@ -533,10 +587,67 @@ if __name__ == "__main__":
             else:
                 for i in range(0, abs(order)):
                     for ii in current_indices:
-                        if abs(fe.points[ii][0] - (i / abs(order))) < 1e-10:
-                            indices.append(ii)
-                            current_indices.remove(ii)
-                            break
+                        if abs(fe.points[ii][0]) > 1e-10:
+                            continue
+
+                        tmp.append(ii)
+                        current_indices.remove(ii)
+                        break
+                tmp.sort(reverse=True)
+                indices.extend(tmp)
+
+                # side: x = 1
+                tmp = []
+                for i in range(0, npts):
+                    for ii in current_indices:
+                        if abs(fe.points[ii][0] - 1) > 1e-10:
+                            continue
+
+                        tmp.append(ii)
+                        current_indices.remove(ii)
+                        break
+                indices.extend(tmp)
+
+                # front: y = 0
+                for i in range(0, npts):
+                    for ii in current_indices:
+                        if abs(fe.points[ii][1]) > 1e-10:
+                            continue
+
+                        indices.append(ii)
+                        current_indices.remove(ii)
+                        break
+
+                # back: y = 1
+                for i in range(0, npts):
+                    for ii in current_indices:
+                        if abs(fe.points[ii][1]-1) > 1e-10:
+                            continue
+
+                        indices.append(ii)
+                        current_indices.remove(ii)
+                        break
+
+                # bottom: z = 0
+                for i in range(0, npts):
+                    for ii in current_indices:
+                        if abs(fe.points[ii][2]) > 1e-10:
+                            continue
+
+                        indices.append(ii)
+                        current_indices.remove(ii)
+                        break
+
+                # top: z = 1
+                for i in range(0, npts):
+                    for ii in current_indices:
+                        if abs(fe.points[ii][2]-1) > 1e-10:
+                            continue
+
+                        indices.append(ii)
+                        current_indices.remove(ii)
+                        break
+
             # either face or volume indices, order do not matter
             for ii in current_indices:
                 indices.append(ii)
@@ -554,8 +665,8 @@ if __name__ == "__main__":
                 f"extern \"C++\" void q_{orderN}_basis_grad_value_3d(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);\n"
 
             for ii in indices:
-                nodes = nodes + ccode(fe.points[ii][0]) + ("" if dim == 1 else (", " + ccode(fe.points[ii][1]) + (
-                    (", " + ccode(fe.points[ii][2])) if dim == 3 else ""))) + ",\n"
+                nodes = nodes + ccode(fe.points[ii][0]) + ", " + ccode(fe.points[ii][1]) + (
+                    (", " + ccode(fe.points[ii][2])) if dim == 3 else "") + ",\n"
             nodes = nodes[:-2]
             nodes = nodes + ";\n}"
 
@@ -604,19 +715,13 @@ if __name__ == "__main__":
                             " = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(1) = result_0; }"
                     dbase = dbase + "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], z))).replace(" = 0;", ".setZero();").replace(
                         " = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(2) = result_0; }"
-                elif dim == 2:
+                else:
                     base = base + "\tcase " + str(i) + ": {" + pretty_print.C99_print(
                         simplify(fe.N[real_index])).replace(" = 1;", ".setOnes();") + "} break;\n"
                     dbase = dbase + "\tcase " + str(i) + ": {" + \
                         "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], x))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(0) = result_0; }" \
                         "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], y))).replace(" = 0;", ".setZero();").replace(
                             " = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(1) = result_0; }"
-                else:
-                    base = base + "\tcase " + str(i) + ": {" + pretty_print.C99_print(
-                        simplify(fe.N[real_index])).replace(" = 1;", ".setOnes();") + "} break;\n"
-                    dbase = dbase + "\tcase " + str(i) + ": {" + \
-                        "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], x))).replace(" = 0;", ".setZero();").replace(
-                            " = 1.0;", ".setOnes();").replace(" = -1.0;", ".setConstant(-1);") + "val.col(0) = result_0; }"
 
                 dbase = dbase + "} break;\n"
 
@@ -633,7 +738,7 @@ if __name__ == "__main__":
             if dim == 3:
                 with open(os.path.join(path, f"{nameg}_{order}.cpp"), "w") as file:
                     file.write(cppg+"}}")
-                    cppg = "#include <Eigen/Dense>\n namespace polyfem {\nnamespace autogen {"
+                    cppg = "#include <Eigen/Dense>\n#include <cassert>\n namespace polyfem {\nnamespace autogen {"
 
         if dim == 3:
             cppg = ""
@@ -675,7 +780,7 @@ if __name__ == "__main__":
         with open(os.path.join(path, f"{nameg}.hpp"), "w") as file:
             file.write(hppg)
 
-    hpp = "#pragma once\n\n#include <Eigen/Dense>\n\n"
+    hpp = "#pragma once\n\n#include <Eigen/Dense>\n#include <cassert>\n\n"
     for dim in dims:
         hpp = hpp + f"#include \"auto_q_bases_{dim}d_val.hpp\"\n"
         hpp = hpp + f"#include \"auto_q_bases_{dim}d_nodes.hpp\"\n"

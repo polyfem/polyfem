@@ -9,11 +9,12 @@
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
-#include <polysolve/FEMSolver.hpp>
+#include <polysolve/linear/FEMSolver.hpp>
 
 #include <polyfem/utils/Timer.hpp>
 
 #include <unsupported/Eigen/SparseExtra>
+#include <polyfem/io/Evaluator.hpp>
 
 namespace polyfem
 {
@@ -34,9 +35,9 @@ namespace polyfem
 		{
 
 			StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
-			assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, velocity_stiffness);
-			mixed_assembler->assemble(mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, geom_bases(), pressure_ass_vals_cache, ass_vals_cache, mixed_stiffness);
-			pressure_assembler->assemble(mesh->is_volume(), n_pressure_bases, pressure_bases, geom_bases(), pressure_ass_vals_cache, pressure_stiffness);
+			assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, 0, velocity_stiffness);
+			mixed_assembler->assemble(mesh->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, geom_bases(), pressure_ass_vals_cache, ass_vals_cache, 0, mixed_stiffness);
+			pressure_assembler->assemble(mesh->is_volume(), n_pressure_bases, pressure_bases, geom_bases(), pressure_ass_vals_cache, 0, pressure_stiffness);
 
 			const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
 
@@ -46,7 +47,7 @@ namespace polyfem
 		}
 		else
 		{
-			assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, stiffness);
+			assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, 0, stiffness);
 		}
 
 		timer.stop();
@@ -66,7 +67,7 @@ namespace polyfem
 	}
 
 	void State::solve_linear(
-		const std::unique_ptr<polysolve::LinearSolver> &solver,
+		const std::unique_ptr<polysolve::linear::Solver> &solver,
 		StiffnessMatrix &A,
 		Eigen::VectorXd &b,
 		const bool compute_spectrum,
@@ -76,26 +77,51 @@ namespace polyfem
 		assert(solve_data.rhs_assembler != nullptr);
 
 		const int problem_dim = problem->is_scalar() ? 1 : mesh->dimension();
-		const int precond_num = problem_dim * n_bases;
+		const int full_size = A.rows();
+		int precond_num = problem_dim * n_bases;
+
+		std::vector<int> boundary_nodes_tmp;
+		if (has_periodic_bc())
+		{
+			boundary_nodes_tmp = periodic_bc->full_to_periodic(boundary_nodes);
+			precond_num = periodic_bc->full_to_periodic(A);
+			Eigen::MatrixXd tmp = periodic_bc->full_to_periodic(b, true);
+			b = tmp;
+		}
+		else
+			boundary_nodes_tmp = boundary_nodes;
 
 		Eigen::VectorXd x;
-		if (optimization_enabled)
+		if (optimization_enabled == solver::CacheLevel::Derivatives)
 		{
 			auto A_tmp = A;
-			prefactorize(*solver, A, boundary_nodes, precond_num, args["output"]["data"]["stiffness_mat"]);
-			dirichlet_solve_prefactorized(*solver, A_tmp, b, boundary_nodes, x);
+			prefactorize(*solver, A, boundary_nodes_tmp, precond_num, args["output"]["data"]["stiffness_mat"]);
+			dirichlet_solve_prefactorized(*solver, A_tmp, b, boundary_nodes_tmp, x);
 		}
 		else
 		{
 			stats.spectrum = dirichlet_solve(
-				*solver, A, b, boundary_nodes, x, precond_num, args["output"]["data"]["stiffness_mat"], compute_spectrum,
+				*solver, A, b, boundary_nodes_tmp, x, precond_num, args["output"]["data"]["stiffness_mat"], compute_spectrum,
 				assembler->is_fluid(), use_avg_pressure);
 		}
-		sol = x; // Explicit copy because sol is a MatrixXd (with one column)
+		if (has_periodic_bc())
+		{
+			sol = periodic_bc->periodic_to_full(full_size, x);
+			if (args["/boundary_conditions/periodic_boundary/force_zero_mean"_json_pointer].get<bool>())
+			{
+				Eigen::VectorXd integral = Evaluator::integrate_function(bases, geom_bases(), sol, mesh->dimension(), problem_dim);
+				double area = Evaluator::integrate_function(bases, geom_bases(), Eigen::VectorXd::Ones(n_bases), mesh->dimension(), 1)(0);
+				for (int d = 0; d < problem_dim; d++)
+					sol(Eigen::seqN(d, n_bases, problem_dim), 0).array() -= integral(d) / area;
+			}
+		}
+		else
+			sol = x; // Explicit copy because sol is a MatrixXd (with one column)
 
-		solver->getInfo(stats.solver_info);
+		solver->get_info(stats.solver_info);
 
 		const auto error = (A * x - b).norm();
+
 		if (error > 1e-4)
 			logger().error("Solver error: {}", error);
 		else
@@ -115,8 +141,7 @@ namespace polyfem
 			lin_solver_cached.reset();
 
 		lin_solver_cached =
-			polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
-		lin_solver_cached->setParameters(args["solver"]["linear"]);
+			polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", lin_solver_cached->name());
 
 		// --------------------------------------------------------------------
@@ -148,7 +173,7 @@ namespace polyfem
 		solve_data.elastic_form = std::make_shared<ElasticForm>(
 			n_bases, bases, geom_bases(),
 			*assembler, ass_vals_cache,
-			problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
+			t, problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
 			mesh->is_volume());
 
 		solve_data.body_form = std::make_shared<BodyForm>(
@@ -156,7 +181,7 @@ namespace polyfem
 			boundary_nodes, local_boundary, local_neumann_boundary, n_boundary_samples(),
 			rhs, *solve_data.rhs_assembler,
 			mass_matrix_assembler->density(),
-			/*apply_DBC=*/true, /*is_formulation_mixed=*/false, problem->is_time_dependent());
+			/*is_formulation_mixed=*/false, problem->is_time_dependent());
 		solve_data.body_form->update_quantities(t, sol);
 
 		solve_data.inertia_form = nullptr;
@@ -203,8 +228,7 @@ namespace polyfem
 		// --------------------------------------------------------------------
 
 		auto solver =
-			polysolve::LinearSolver::create(args["solver"]["linear"]["solver"], args["solver"]["linear"]["precond"]);
-		solver->setParameters(args["solver"]["linear"]);
+			polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", solver->name());
 
 		// --------------------------------------------------------------------
@@ -235,9 +259,9 @@ namespace polyfem
 
 		const QuadratureOrders &n_b_samples = n_boundary_samples();
 
-		if (optimization_enabled)
+		if (optimization_enabled != solver::CacheLevel::None)
 		{
-			log_and_throw_error("Transient linear problems are not differentiable yet!");
+			log_and_throw_adjoint_error("Transient linear problems are not differentiable yet!");
 			cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 		}
 
@@ -247,7 +271,7 @@ namespace polyfem
 		build_stiffness_mat(stiffness);
 
 		// --------------------------------------------------------------------
-
+		// TODO rebuild stiffnes if material are time dept
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			const double time = t0 + t * dt;
@@ -308,18 +332,21 @@ namespace polyfem
 
 			solve_linear(solver, A, b, compute_spectrum, sol, pressure);
 
-			if (optimization_enabled)
+			if (optimization_enabled != solver::CacheLevel::None)
 			{
-				log_and_throw_error("Transient linear problems are not differentiable yet!");
+				log_and_throw_adjoint_error("Transient linear problems are not differentiable yet!");
 				cache_transient_adjoint_quantities(t, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 			}
 
 			time_integrator->update_quantities(sol);
 
 			save_timestep(time, t, t0, dt, sol, pressure);
+
+			const std::string &state_path = resolve_output_path(fmt::format(args["output"]["data"]["state"], t));
+			if (!state_path.empty())
+				time_integrator->save_state(state_path);
+
 			logger().info("{}/{}  t={}", t, time_steps, time);
 		}
-
-		time_integrator->save_state(resolve_output_path(args["output"]["data"]["state"]));
 	}
 } // namespace polyfem

@@ -31,13 +31,22 @@ bool missing_tests_data(const json &j, const std::string &key)
 	return !j.contains(key) || (j.at(key).size() == 1 && j.at(key).contains("time_steps"));
 }
 
-int authenticate_json(const std::string &json_file, const bool compute_validation)
+enum AuthenticateResult
+{
+	SUCCESS,
+	MISSING_FILE,
+	MISSING_TEST_DATA,
+	SOLVE_FAILED,
+	AUTHETICATION_FAILED
+};
+
+AuthenticateResult authenticate_json(const std::string &json_file, const bool compute_validation)
 {
 	json in_args;
 	if (!load_json(json_file, in_args))
 	{
 		spdlog::error("unable to open {} file", json_file);
-		return 1;
+		return MISSING_FILE;
 	}
 
 	const std::string tests_key = "tests";
@@ -46,7 +55,7 @@ int authenticate_json(const std::string &json_file, const bool compute_validatio
 		spdlog::error(
 			"JSON file missing \"{}\" key. Add a * to the beginning of filename to allow appends.",
 			tests_key);
-		return 2;
+		return MISSING_TEST_DATA;
 	}
 
 	// ------------------------------------------------------------------------
@@ -63,8 +72,8 @@ int authenticate_json(const std::string &json_file, const bool compute_validatio
 	else
 		time_steps = args[tests_key]["time_steps"];
 
-	args["output"] = json({});
-	args["output"]["advanced"]["save_time_sequence"] = false;
+	// args["output"] = json({});
+	// args["output"]["advanced"]["save_time_sequence"] = false;
 
 	if (time_steps.is_number())
 	{
@@ -95,7 +104,7 @@ int authenticate_json(const std::string &json_file, const bool compute_validatio
 	// ------------------------------------------------------------------------
 
 	args["/solver/linear/solver"_json_pointer] =
-		json_file.find("navier") == std::string::npos
+		(json_file.find("navier") == std::string::npos && json_file.find("bilaplace") == std::string::npos)
 			? "Eigen::SimplicialLDLT"
 			: "Eigen::SparseLU";
 
@@ -109,7 +118,7 @@ int authenticate_json(const std::string &json_file, const bool compute_validatio
 	if (state.mesh == nullptr)
 	{
 		spdlog::warn("No Mesh is Read!!");
-		return 1;
+		return MISSING_FILE;
 	}
 
 	// state.compute_mesh_stats();
@@ -122,7 +131,14 @@ int authenticate_json(const std::string &json_file, const bool compute_validatio
 	Eigen::MatrixXd sol;
 	Eigen::MatrixXd pressure;
 
-	state.solve_problem(sol, pressure);
+	try
+	{
+		state.solve_problem(sol, pressure);
+	}
+	catch (...)
+	{
+		return SOLVE_FAILED;
+	}
 
 	state.compute_errors(sol);
 
@@ -155,7 +171,7 @@ int authenticate_json(const std::string &json_file, const bool compute_validatio
 			if (relerr > margin)
 			{
 				spdlog::error("Violating Authenticate prev_{0}={1} curr_{0}={2}", key, prev_val, curr_val);
-				return 2;
+				return AUTHETICATION_FAILED;
 			}
 		}
 		spdlog::info("Authenticated ✅");
@@ -169,7 +185,7 @@ int authenticate_json(const std::string &json_file, const bool compute_validatio
 		file << in_args;
 	}
 
-	return 0;
+	return SUCCESS;
 }
 
 #if defined(NDEBUG) && !defined(WIN32)
@@ -177,10 +193,11 @@ std::string tagsrun = "[run]";
 #else
 std::string tagsrun = "[.][run]";
 #endif
-TEST_CASE("runners", tagsrun)
+
+void run_data(const std::string &test_file, const std::string &dir)
 {
 	// Disabled on Windows CI, due to the requirement for Pardiso.
-	std::ifstream file(POLYFEM_TEST_DIR "/system_test_list.txt");
+	std::ifstream file(POLYFEM_TEST_DIR "/" + test_file + ".txt");
 	std::vector<std::string> failing_tests;
 	std::string line;
 	while (std::getline(file, line))
@@ -194,10 +211,10 @@ TEST_CASE("runners", tagsrun)
 			line = line.substr(1);
 		}
 		spdlog::info("Processing {}", line);
-		auto flag = authenticate_json(POLYFEM_DATA_DIR "/" + line, compute_validation);
+		AuthenticateResult result = authenticate_json(dir + "/" + line, compute_validation);
 		CAPTURE(line);
-		CHECK(flag == 0);
-		if (flag != 0)
+		CHECK(result == SUCCESS);
+		if (result != SUCCESS)
 			failing_tests.push_back(line);
 	}
 	if (failing_tests.size() > 0)
@@ -206,4 +223,39 @@ TEST_CASE("runners", tagsrun)
 		for (auto &t : failing_tests)
 			std::cout << t << std::endl;
 	}
+}
+
+TEST_CASE("contact_2d", tagsrun)
+{
+	run_data("contact_2d", POLYFEM_DATA_DIR);
+}
+
+TEST_CASE("contact_3d", tagsrun)
+{
+	run_data("contact_3d", POLYFEM_DATA_DIR);
+}
+
+TEST_CASE("selection", tagsrun)
+{
+	run_data("selection", POLYFEM_DATA_DIR);
+}
+
+TEST_CASE("standard", tagsrun)
+{
+	run_data("standard", POLYFEM_DATA_DIR);
+}
+
+TEST_CASE("time_int", tagsrun)
+{
+	run_data("time_int", POLYFEM_DATA_DIR);
+}
+
+TEST_CASE("runners-pref", tagsrun)
+{
+	run_data("pref_test_list", POLYFEM_PREF_DIR);
+}
+
+TEST_CASE("runners-polyspline", tagsrun)
+{
+	run_data("polyspline_test_list", POLYFEM_POLYSPLINE_DIR);
 }

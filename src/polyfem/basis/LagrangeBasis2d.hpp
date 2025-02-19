@@ -37,6 +37,7 @@ namespace polyfem
 			///                                the canonical elements lie on the boundary of the mesh
 			/// @param[out] poly_edge_to_data  Data for edges at the interface with a polygon (used to
 			///                                build the harmonics inside polygons)
+			/// @param[out] mesh_nodes		   Object for retrieving assigned node IDs.
 			///
 			/// @return     The number of basis functions created.
 			///
@@ -49,6 +50,7 @@ namespace polyfem
 				const bool serendipity,
 				const bool has_polys,
 				const bool is_geom_bases,
+				const bool use_corner_quadrature,
 				std::vector<ElementBases> &bases,
 				std::vector<mesh::LocalBoundary> &local_boundary,
 				std::map<int, InterfaceData> &poly_edge_to_data,
@@ -72,6 +74,7 @@ namespace polyfem
 			///                                the canonical elements lie on the boundary of the mesh
 			/// @param[out] poly_edge_to_data  Data for edges at the interface with a polygon (used to
 			///                                build the harmonics inside polygons)
+			/// @param[out] mesh_nodes		   Object for retrieving assigned node IDs.
 			///
 			/// @return     The number of basis functions created.
 			///
@@ -84,6 +87,7 @@ namespace polyfem
 				const bool serendipity,
 				const bool has_polys,
 				const bool is_geom_bases,
+				const bool use_corner_quadrature,
 				std::vector<ElementBases> &bases,
 				std::vector<mesh::LocalBoundary> &local_boundary,
 				std::map<int, InterfaceData> &poly_edge_to_data,

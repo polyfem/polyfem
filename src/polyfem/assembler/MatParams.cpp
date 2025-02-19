@@ -263,31 +263,40 @@ namespace polyfem::assembler
 
 	void ElasticityTensor::set_orthotropic(
 		double Ex, double Ey, double Ez,
-		double nuYX, double nuZX, double nuZY,
+		double nuXY, double nuXZ, double nuYZ,
 		double muYZ, double muZX, double muXY, const std::string &stress_units)
 	{
-		// copied from Julian
 		assert(size_ == 3);
-		// Note: this isn't the flattened compliance tensor! Rather, it is the
-		// matrix inverse of the flattened elasticity tensor. See the tensor
-		// flattening writeup.
-		stifness_tensor_ << 1.0 / Ex, -nuYX / Ey, -nuZX / Ez, 0.0, 0.0, 0.0,
-			0.0, 1.0 / Ey, -nuZY / Ez, 0.0, 0.0, 0.0,
-			0.0, 0.0, 1.0 / Ez, 0.0, 0.0, 0.0,
-			0.0, 0.0, 0.0, 1.0 / muYZ, 0.0, 0.0,
-			0.0, 0.0, 0.0, 0.0, 1.0 / muZX, 0.0,
-			0.0, 0.0, 0.0, 0.0, 0.0, 1.0 / muXY;
+
+		// from https://www.efunda.com/formulae/solid_mechanics/mat_mechanics/hooke_orthotropic.cfm
+		double nuYX = nuXY * Ey / Ex;
+		double nuZX = nuXZ * Ez / Ex;
+		double nuZY = nuYZ * Ez / Ey;
+
+		Eigen::MatrixXd compliance;
+		compliance.setZero(6, 6);
+		compliance << 1 / Ex, -nuYX / Ey, -nuZX / Ez, 0, 0, 0,
+			-nuXY / Ex, 1 / Ey, -nuZY / Ez, 0, 0, 0,
+			-nuXZ / Ex, -nuYZ / Ey, 1 / Ez, 0, 0, 0,
+			0, 0, 0, 1 / (2 * muYZ), 0, 0,
+			0, 0, 0, 0, 1 / (2 * muZX), 0,
+			0, 0, 0, 0, 0, 1 / (2 * muXY);
+		stifness_tensor_ = compliance.inverse();
 	}
 
-	void ElasticityTensor::set_orthotropic(double Ex, double Ey, double nuYX, double muXY, const std::string &stress_units)
+	void ElasticityTensor::set_orthotropic(double Ex, double Ey, double nuXY, double muXY, const std::string &stress_units)
 	{
-		// copied from Julian
 		assert(size_ == 2);
-		// Note: this isn't the flattened compliance tensor! Rather, it is the
-		// matrix inverse of the flattened elasticity tensor.
-		stifness_tensor_ << 1.0 / Ex, -nuYX / Ey, 0.0,
-			0.0, 1.0 / Ey, 0.0,
-			0.0, 0.0, 1.0 / muXY;
+
+		// from https://www.efunda.com/formulae/solid_mechanics/mat_mechanics/hooke_orthotropic.cfm
+		double nuYX = nuXY * Ey / Ex;
+
+		Eigen::MatrixXd compliance;
+		compliance.setZero(3, 3);
+		compliance << 1.0 / Ex, -nuYX / Ey, 0.0,
+			-nuXY / Ex, 1.0 / Ey, 0.0,
+			0.0, 0.0, 1.0 / (2 * muXY);
+		stifness_tensor_ = compliance.inverse();
 	}
 
 	template <int DIM>
@@ -312,7 +321,7 @@ namespace polyfem::assembler
 		is_lambda_mu_ = true;
 	}
 
-	void LameParameters::lambda_mu(double px, double py, double pz, double x, double y, double z, int el_id, double &lambda, double &mu) const
+	void LameParameters::lambda_mu(double px, double py, double pz, double x, double y, double z, double t, int el_id, double &lambda, double &mu) const
 	{
 		assert(lambda_or_E_.size() == 1 || el_id < lambda_or_E_.size());
 		assert(mu_or_nu_.size() == 1 || el_id < mu_or_nu_.size());
@@ -321,8 +330,8 @@ namespace polyfem::assembler
 		const auto &tmp1 = lambda_or_E_.size() == 1 ? lambda_or_E_[0] : lambda_or_E_[el_id];
 		const auto &tmp2 = mu_or_nu_.size() == 1 ? mu_or_nu_[0] : mu_or_nu_[el_id];
 
-		double llambda = tmp1(x, y, z, 0, el_id);
-		double mmu = tmp2(x, y, z, 0, el_id);
+		double llambda = tmp1(x, y, z, t, el_id);
+		double mmu = tmp2(x, y, z, t, el_id);
 
 		if (!is_lambda_mu_)
 		{
@@ -340,7 +349,7 @@ namespace polyfem::assembler
 			lambda = lambda_mat_(el_id);
 			mu = mu_mat_(el_id);
 		}
-		
+
 		assert(!std::isnan(lambda));
 		assert(!std::isnan(mu));
 		assert(!std::isinf(lambda));
@@ -396,12 +405,12 @@ namespace polyfem::assembler
 		rho_.back().init(1.0);
 	}
 
-	double Density::operator()(double px, double py, double pz, double x, double y, double z, int el_id) const
+	double Density::operator()(double px, double py, double pz, double x, double y, double z, double t, int el_id) const
 	{
 		assert(rho_.size() == 1 || el_id < rho_.size());
 
 		const auto &tmp = rho_.size() == 1 ? rho_[0] : rho_[el_id];
-		const double res = tmp(x, y, z, 0, el_id);
+		const double res = tmp(x, y, z, t, el_id);
 		assert(!std::isnan(res));
 		assert(!std::isinf(res));
 		return res;

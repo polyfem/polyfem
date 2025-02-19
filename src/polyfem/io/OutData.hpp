@@ -54,6 +54,7 @@ namespace polyfem::io
 			bool contact_forces;
 			bool friction_forces;
 			bool forces;
+			bool jacobian_validity;
 
 			bool use_sampler;
 			bool boundary_only;
@@ -521,8 +522,8 @@ namespace polyfem::io
 		void write(const int i, const Eigen::MatrixXd &sol);
 
 	protected:
-		const solver::SolveData &solve_data;
 		std::ofstream file;
+		const solver::SolveData &solve_data;
 	};
 
 	class RuntimeStatsCSVWriter
@@ -534,10 +535,10 @@ namespace polyfem::io
 		void write(const int t, const double forward, const double remeshing, const double global_relaxation, const Eigen::MatrixXd &sol);
 
 	protected:
+		std::ofstream file;
 		const State &state;
 		const double t0;
 		const double dt;
-		std::ofstream file;
 		double total_forward_solve_time = 0;
 		double total_remeshing_time = 0;
 		double total_global_relaxation_time = 0;

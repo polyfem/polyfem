@@ -17,14 +17,23 @@
 #include <string>
 #include <unordered_map>
 
+#include <polyfem/solver/forms/ElasticForm.hpp>
+
 namespace polyfem::time_integrator
 {
 	class ImplicitTimeIntegrator;
 } // namespace polyfem::time_integrator
 
+namespace polyfem::utils
+{
+	class PeriodicBoundary;
+}
+
 namespace polyfem::assembler
 {
 	class ViscousDamping;
+	class MacroStrainValue;
+	class PressureAssembler;
 } // namespace polyfem::assembler
 
 namespace polyfem::solver
@@ -32,12 +41,16 @@ namespace polyfem::solver
 	class NLProblem;
 	class Form;
 	class ContactForm;
+	class PeriodicContactForm;
+	class MacroStrainALForm;
 	class FrictionForm;
 	class BodyForm;
-	class BCLagrangianForm;
-	class BCPenaltyForm;
+	class AugmentedLagrangianForm;
+	class MacroStrainLagrangianForm;
+	class MacroStrainALForm;
 	class InertiaForm;
 	class ElasticForm;
+	class PressureForm;
 
 	/// class to store time stepping data
 	class SolveData
@@ -53,11 +66,13 @@ namespace polyfem::solver
 
 			// Elastic form
 			const int n_bases,
-			const std::vector<basis::ElementBases> &bases,
+			std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &geom_bases,
 			const assembler::Assembler &assembler,
-			const assembler::AssemblyValsCache &ass_vals_cache,
+			assembler::AssemblyValsCache &ass_vals_cache,
 			const assembler::AssemblyValsCache &mass_ass_vals_cache,
+			const double jacobian_threshold,
+			const solver::ElementInversionCheck check_inversion,
 
 			// Body form
 			const int n_pressure_bases,
@@ -68,6 +83,11 @@ namespace polyfem::solver
 			const Eigen::MatrixXd &rhs,
 			const Eigen::MatrixXd &sol,
 			const assembler::Density &density,
+
+			// Pressure form
+			const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
+			const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity,
+			const std::shared_ptr<assembler::PressureAssembler> pressure_assembler,
 
 			// Inertia form
 			const bool ignore_inertia,
@@ -98,6 +118,14 @@ namespace polyfem::solver
 			const long ccd_max_iterations,
 			const bool enable_shape_derivatives,
 
+			// Homogenization
+			const assembler::MacroStrainValue &macro_strain_constraint,
+
+			// Periodic contact
+			const bool periodic_contact,
+			const Eigen::VectorXi &tiled_to_single,
+			const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
+
 			// Friction form
 			const double friction_coefficient,
 			const double epsv,
@@ -113,20 +141,24 @@ namespace polyfem::solver
 		/// @brief updates the dt inside the different forms
 		void update_dt();
 
-		std::unordered_map<std::string, std::shared_ptr<solver::Form>> named_forms() const;
+		std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> named_forms() const;
 
 	public:
 		std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
+		std::shared_ptr<assembler::PressureAssembler> pressure_assembler;
 		std::shared_ptr<solver::NLProblem> nl_problem;
 
-		std::shared_ptr<solver::BCLagrangianForm> al_lagr_form;
-		std::shared_ptr<solver::BCPenaltyForm> al_pen_form;
+		std::vector<std::shared_ptr<solver::AugmentedLagrangianForm>> al_form;
+		std::shared_ptr<solver::MacroStrainLagrangianForm> strain_al_lagr_form;
 		std::shared_ptr<solver::BodyForm> body_form;
 		std::shared_ptr<solver::ContactForm> contact_form;
 		std::shared_ptr<solver::ElasticForm> damping_form;
 		std::shared_ptr<solver::ElasticForm> elastic_form;
 		std::shared_ptr<solver::FrictionForm> friction_form;
 		std::shared_ptr<solver::InertiaForm> inertia_form;
+		std::shared_ptr<solver::PressureForm> pressure_form;
+
+		std::shared_ptr<solver::PeriodicContactForm> periodic_contact_form;
 
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 	};
