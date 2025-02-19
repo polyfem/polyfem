@@ -81,7 +81,9 @@ namespace polyfem::solver
 		A_.setFromTriplets(A_triplets.begin(), A_triplets.end());
 		A_.makeCompressed();
 
-		// masked_lumped_mass_ = mass.size() == 0 ? polyfem::utils::sparse_identity(n_dofs_, n_dofs_) : polyfem::utils::lump_matrix(mass);
+		actual_mass_mat_ = mass.size() == 0 ? polyfem::utils::sparse_identity(n_dofs_, n_dofs_) : mass;
+
+		// masked_lumped_mass_ = polyfem::utils::lump_matrix(actual_mass_mat_);
 		masked_lumped_mass_ = polyfem::utils::sparse_identity(n_dofs_, n_dofs_);
 		// {
 		// 	double min_diag = std::numeric_limits<double>::max();
@@ -241,6 +243,6 @@ namespace polyfem::solver
 		const Eigen::VectorXd vel_norm = vel.rowwise().norm();
 		assert(vel_norm.size() == vel_reshaped.rows());
 
-		return vel_norm.maxCoeff();
+		return (vel_norm.maxCoeff() * actual_mass_mat_).eval().coeffs().maxCoeff();
 	}
 } // namespace polyfem::solver

@@ -101,6 +101,8 @@ namespace polyfem::solver
 		const assembler::RhsAssembler *rhs_assembler_; ///< Reference to the RHS assembler
 		const bool is_time_dependent_;
 
+		StiffnessMatrix actual_mass_mat_; ///< actual mass matrix
+
 		StiffnessMatrix masked_lumped_mass_sqrt_; ///< sqrt mass matrix masked by the AL dofs
 		StiffnessMatrix masked_lumped_mass_;      ///< mass matrix masked by the AL dofs
 
