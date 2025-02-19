@@ -51,6 +51,8 @@ namespace polyfem::solver
 				b_proj_ = (1 - incr_load_) * b_prev_proj_ + incr_load_ * b_current_proj_;
 		}
 
+		virtual double compute_momentum(const double dt, const int dim) const { return 0; }
+
 	protected:
 		inline double L_weight() const { return 1 / k_scale_; }
 		inline double A_weight() const { return k_al_ / k_scale_; }

@@ -83,9 +83,11 @@ namespace polyfem::solver
 
 		double compute_error(const Eigen::VectorXd &x) const override;
 
-		virtual bool can_project() const override;
-		virtual void project_gradient(Eigen::VectorXd &grad) const override;
-		virtual void project_hessian(StiffnessMatrix &hessian) const override;
+		bool can_project() const override;
+		void project_gradient(Eigen::VectorXd &grad) const override;
+		void project_hessian(StiffnessMatrix &hessian) const override;
+
+		double compute_momentum(const double dt, const int dim) const override;
 
 	private:
 		const std::vector<int> &boundary_nodes_;

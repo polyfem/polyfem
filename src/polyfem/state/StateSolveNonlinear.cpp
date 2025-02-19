@@ -315,14 +315,22 @@ namespace polyfem
 			for (StiffnessMatrix::InnerIterator it(stiffness, k); it; ++it)
 			{
 				assert(it.col() == k);
-				if (abs(it.value()) != 0)
-					avg_stiffness += abs(it.value());
+				if (std::abs(it.value()) != 0)
+					avg_stiffness += std::abs(it.value());
 			}
 		}
-
 		avg_stiffness /= stiffness.rows();
+
+		double barrier_stiffness = 0;
+		if (solve_data.contact_form)
+			barrier_stiffness = solve_data.contact_form->barrier_stiffness();
+
+		double momentum = 0;
+		for (const auto &f : solve_data.al_form)
+			momentum += f->compute_momentum(dt, mesh->dimension());
+
 		double initial_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
-		double al_weight = avg_stiffness * dt * dt * initial_weight;
+		double al_weight = (avg_stiffness * dt * dt + avg_mass + barrier_stiffness * dt * dt) * momentum * initial_weight;
 
 		ALSolver al_solver(
 			solve_data.al_form,

@@ -83,26 +83,26 @@ namespace polyfem::solver
 
 		// masked_lumped_mass_ = mass.size() == 0 ? polyfem::utils::sparse_identity(n_dofs_, n_dofs_) : polyfem::utils::lump_matrix(mass);
 		masked_lumped_mass_ = polyfem::utils::sparse_identity(n_dofs_, n_dofs_);
-		{
-			double min_diag = std::numeric_limits<double>::max();
-			double max_diag = 0;
-			for (int k = 0; k < masked_lumped_mass_.outerSize(); ++k)
-			{
-				for (StiffnessMatrix::InnerIterator it(masked_lumped_mass_, k); it; ++it)
-				{
-					if (it.col() == it.row())
-					{
-						min_diag = std::min(min_diag, it.value());
-						max_diag = std::max(max_diag, it.value());
-					}
-				}
-			}
-			if (max_diag <= 0 || min_diag <= 0 || min_diag / max_diag < 1e-16)
-			{
-				logger().warn("Lumped mass matrix ill-conditioned. Setting lumped mass matrix to identity.");
-				masked_lumped_mass_ = polyfem::utils::sparse_identity(n_dofs_, n_dofs_);
-			}
-		}
+		// {
+		// 	double min_diag = std::numeric_limits<double>::max();
+		// 	double max_diag = 0;
+		// 	for (int k = 0; k < masked_lumped_mass_.outerSize(); ++k)
+		// 	{
+		// 		for (StiffnessMatrix::InnerIterator it(masked_lumped_mass_, k); it; ++it)
+		// 		{
+		// 			if (it.col() == it.row())
+		// 			{
+		// 				min_diag = std::min(min_diag, it.value());
+		// 				max_diag = std::max(max_diag, it.value());
+		// 			}
+		// 		}
+		// 	}
+		// 	if (max_diag <= 0 || min_diag <= 0 || min_diag / max_diag < 1e-16)
+		// 	{
+		// 		logger().warn("Lumped mass matrix ill-conditioned. Setting lumped mass matrix to identity.");
+		// 		masked_lumped_mass_ = polyfem::utils::sparse_identity(n_dofs_, n_dofs_);
+		// 	}
+		// }
 
 		assert(n_dofs_ == masked_lumped_mass_.rows() && n_dofs_ == masked_lumped_mass_.cols());
 		// Give the collision obstacles a entry in the lumped mass matrix
@@ -230,5 +230,17 @@ namespace polyfem::solver
 	{
 		k_al_ = k_al;
 		lagr_mults_ -= k_al * masked_lumped_mass_sqrt_ * (A_ * x - b_);
+	}
+
+	double BCLagrangianForm::compute_momentum(const double dt, const int dim) const
+	{
+		const Eigen::MatrixXd vel = (b_current_ - b_prev_) / dt;
+		assert(vel.size() % dim == 0);
+
+		const Eigen::MatrixXd vel_reshaped = vel.reshaped(vel.size() / dim, dim);
+		const Eigen::VectorXd vel_norm = vel.rowwise().norm();
+		assert(vel_norm.size() == vel_reshaped.rows());
+
+		return vel_norm.maxCoeff();
 	}
 } // namespace polyfem::solver
