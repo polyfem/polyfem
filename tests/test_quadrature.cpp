@@ -261,16 +261,15 @@ TEST_CASE("weights", "[quadrature]")
 		REQUIRE(quadr.points.minCoeff() >= 0.0);
 		REQUIRE(quadr.points.maxCoeff() <= 1.0);
 	}
-}
 
-// Prism
-for (int order = 1; order < 16; ++order)
-{
-	PrismQuadrature pri;
-	Quadrature quadr;
-	pri.get_quadrature(order, order + 1, quadr);
-	REQUIRE(quadr.weights.sum() == Catch::Approx(1.0 / 2.0).margin(1e-12));
-	REQUIRE(quadr.points.minCoeff() >= 0.0);
-	REQUIRE(quadr.points.maxCoeff() <= 1.0);
-}
+	// Prism
+	for (int order = 1; order < 16; ++order)
+	{
+		PrismQuadrature pri;
+		Quadrature quadr;
+		pri.get_quadrature(order, order + 1, quadr);
+		REQUIRE(quadr.weights.sum() == Catch::Approx(1.0 / 2.0).margin(1e-12));
+		REQUIRE(quadr.points.minCoeff() >= 0.0);
+		REQUIRE(quadr.points.maxCoeff() <= 1.0);
+	}
 }
