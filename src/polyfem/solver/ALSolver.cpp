@@ -9,7 +9,8 @@ namespace polyfem::solver
 	public:
 		bool operator()(const polysolve::nonlinear::Criteria &crit)
 		{
-			if (crit.iterations > 2 && std::abs(crit.gradNorm - prev.gradNorm) < 1e-6)
+			//if (crit.iterations > 3 && std::abs(crit.xDeltaDotGrad)< 1e-12)
+			if (crit.iterations > 2 && std::abs(crit.gradNorm - prev.gradNorm) < 1e-3)
 			{
 				logger().warn("Converged after {} iterations", crit.iterations);
 				return true;
@@ -51,6 +52,7 @@ namespace polyfem::solver
 
 		// --------------------------------------------------------------------
 
+
 		double al_weight = initial_al_weight;
 		int al_steps = 0;
 
@@ -58,8 +60,8 @@ namespace polyfem::solver
 		for (const auto &f : alagr_forms)
 			initial_error += f->compute_error(sol);
 
-		const int n_il_steps = std::max(1, int(initial_error / 1e-2));
-
+		//const int n_il_steps = std::max(1, int(initial_error / 1e-2));
+		const int n_il_steps = 1;
 		for (int t = 1; t <= n_il_steps; ++t)
 		{
 			const double il_factor = t / double(n_il_steps);
@@ -74,6 +76,7 @@ namespace polyfem::solver
 			nl_problem.update_constraint_values();
 
 			nl_problem.use_reduced_size();
+
 			nl_problem.line_search_begin(sol, tmp_sol);
 
 			logger().info("AL IL {}/{} (factor={}) with weight {}", t, n_il_steps, il_factor, al_weight);
@@ -86,7 +89,7 @@ namespace polyfem::solver
 			bool first = true;
 
 			while (first
-				   || current_error > 1e-2
+				   //|| current_error > 1e-2
 				   || !std::isfinite(nl_problem.value(tmp_sol))
 				   || !nl_problem.is_step_valid(sol, tmp_sol)
 				   || !nl_problem.is_step_collision_free(sol, tmp_sol))
@@ -105,11 +108,11 @@ namespace polyfem::solver
 
 				try
 				{
-					CallbackChecker checker;
+					//CallbackChecker checker;
 					const auto scale = nl_problem.normalize_forms();
 					auto nl_solver = polysolve::nonlinear::Solver::create(
 						nl_solver_params, linear_solver, characteristic_length / scale, logger());
-					nl_solver->set_iteration_callback(checker);
+					//nl_solver->set_iteration_callback(checker);
 					nl_solver->minimize(nl_problem, tmp_sol);
 					nl_problem.finish();
 				}

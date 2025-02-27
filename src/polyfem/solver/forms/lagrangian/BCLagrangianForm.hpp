@@ -87,7 +87,7 @@ namespace polyfem::solver
 		void project_gradient(Eigen::VectorXd &grad) const override;
 		void project_hessian(StiffnessMatrix &hessian) const override;
 
-		double compute_momentum(const double dt, const int dim) const override;
+		void compute_dbcdist(const int dim);
 
 	private:
 		const std::vector<int> &boundary_nodes_;

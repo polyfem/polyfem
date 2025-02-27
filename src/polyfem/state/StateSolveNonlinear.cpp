@@ -301,11 +301,11 @@ namespace polyfem
 		save_subsolve(subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 
 		// ---------------------------------------------------------------------
-
-		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(true);
 		const double dt = problem->is_time_dependent() ? double(args["time"]["dt"]) : 1.0;
-
 		std::shared_ptr<solver::ElasticForm> elastic_form = std::make_shared<ElasticForm>(n_bases, bases, geom_bases(), *assembler, ass_vals_cache, t, dt, true);
+		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(true);
+
+
 		StiffnessMatrix stiffness;
 		elastic_form->second_derivative(sol, stiffness);
 		double avg_stiffness = 0;
@@ -321,16 +321,16 @@ namespace polyfem
 		}
 		avg_stiffness /= stiffness.rows();
 
-		double barrier_stiffness = 0;
-		if (solve_data.contact_form)
-			barrier_stiffness = solve_data.contact_form->barrier_stiffness();
-
-		double momentum = 0;
+		//double barrier_stiffness = 0;
+		//if (solve_data.contact_form)
+		//	barrier_stiffness = solve_data.contact_form->barrier_stiffness();
+		double dbc_dist = 0;
 		for (const auto &f : solve_data.al_form)
-			momentum += f->compute_momentum(dt, mesh->dimension());
+			dbc_dist= f->get_dbcdist();
 
 		double initial_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
-		double al_weight = (avg_stiffness * dt * dt + avg_mass + barrier_stiffness * dt * dt) * momentum * initial_weight;
+		double al_weight = (avg_stiffness*dt*dt + dbc_dist/dt * mass.eval().coeffs().maxCoeff()) * initial_weight;
+
 
 		ALSolver al_solver(
 			solve_data.al_form,
