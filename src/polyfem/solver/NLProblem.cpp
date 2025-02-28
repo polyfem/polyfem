@@ -125,12 +125,16 @@ namespace polyfem::solver
 	double NLProblem::normalize_forms()
 	{
 		double total_weight = 0;
-		for (const auto &f : forms_)
-			total_weight += f->weight();
+
 		if (full_size() == current_size())
 		{
 			for (const auto &f : penalty_forms_)
-				total_weight += f->weight() * f->lagrangian_weight();
+				total_weight += f->weight() + f->lagrangian_weight();
+		}
+		else
+		{
+			for (const auto &f : forms_)
+				total_weight += f->weight();
 		}
 		total_weight = 1.0;
 		logger().debug("Normalizing forms with scale: {}", total_weight);
