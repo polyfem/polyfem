@@ -447,10 +447,9 @@ namespace polyfem::solver
 
 	void NLProblem::line_search_begin(const TVector &x0, const TVector &x1)
 	{
-		FullNLProblem::line_search_begin(reduced_to_full(x0), reduced_to_full(x1));
-
-		//if (full_size() == current_size())
-		//	penalty_problem_->line_search_begin(x0, x1);
+		if (full_size() == current_size())
+			penalty_problem_->line_search_begin(x0, x1);
+		else FullNLProblem::line_search_begin(reduced_to_full(x0), reduced_to_full(x1));
 	}
 
 	double NLProblem::max_step_size(const TVector &x0, const TVector &x1)
