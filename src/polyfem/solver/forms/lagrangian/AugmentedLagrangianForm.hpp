@@ -22,6 +22,12 @@ namespace polyfem::solver
 			k_al_ = k_al;
 			lagr_mults_.setZero();
 		}
+		inline void set_al_weight(const double k_al)
+		{
+			k_al_ = k_al;
+		}
+
+		inline double get_al_weight(){return k_al_;}
 
 		inline double lagrangian_weight() const { return k_al_; }
 
@@ -57,7 +63,7 @@ namespace polyfem::solver
 		inline double L_weight() const { return 1 / k_scale_; }
 		inline double A_weight() const { return k_al_ / k_scale_; }
 
-		double k_al_; ///< penalty parameter
+		double k_al_ = -1; ///< penalty parameter
 
 		double incr_load_ = 1;
 

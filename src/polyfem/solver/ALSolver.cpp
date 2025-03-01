@@ -51,9 +51,20 @@ namespace polyfem::solver
 		assert(tmp_sol.size() == nl_problem.reduced_size());
 
 		// --------------------------------------------------------------------
+		double current_al_weight;
+		for (auto &f : alagr_forms)
+			current_al_weight = f->get_al_weight();
 
+		double al_weight = 0;
+		if (initial_al_weight>current_al_weight)
+		{
+			al_weight = initial_al_weight;
+			for (auto &f : alagr_forms)
+				f->set_initial_weight(al_weight);
+		}
+		else
+			al_weight = current_al_weight;
 
-		double al_weight = initial_al_weight;
 		int al_steps = 0;
 
 		double initial_error = 0;
@@ -66,9 +77,6 @@ namespace polyfem::solver
 		{
 			const double il_factor = t / double(n_il_steps);
 			const Eigen::VectorXd initial_sol = sol;
-
-			for (auto &f : alagr_forms)
-				f->set_initial_weight(al_weight);
 
 			for (auto &f : alagr_forms)
 				f->set_incr_load(il_factor);
@@ -140,14 +148,15 @@ namespace polyfem::solver
 				nl_problem.line_search_begin(sol, tmp_sol);
 
 				logger().debug("Current error = {}, prev error = {}", current_error, prev_error);
-				if (prev_error-current_error<eta_tol && al_weight < max_al_weight)
+				if (prev_error-current_error<(1-eta_tol) && al_weight < max_al_weight)
 				{
 					al_weight *= scaling;
-					sol = initial_sol;
-					current_error = initial_error;
 
 					for (auto &f : alagr_forms)
-						f->set_initial_weight(al_weight);
+						f->set_al_weight(al_weight);
+
+					sol = initial_sol;
+					current_error = initial_error;
 
 					logger().debug("Increasing weight to {}", al_weight);
 				}
