@@ -140,7 +140,7 @@ namespace polyfem::solver
 				nl_problem.line_search_begin(sol, tmp_sol);
 
 				logger().debug("Current error = {}, prev error = {}", current_error, prev_error);
-				if (increase_al_weight && al_weight < max_al_weight)
+				if (prev_error-current_error<eta_tol && al_weight < max_al_weight)
 				{
 					al_weight *= scaling;
 					sol = initial_sol;
