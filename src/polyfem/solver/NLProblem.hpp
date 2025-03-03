@@ -81,7 +81,10 @@ namespace polyfem::solver
 
 		double t_;
 
+		State state_;
+
 	private:
+	
 		std::vector<std::shared_ptr<AugmentedLagrangianForm>> penalty_forms_;
 
 		void setup_constrain_nodes();
