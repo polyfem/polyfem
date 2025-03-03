@@ -41,6 +41,8 @@ namespace polyfem::assembler
 								  Eigen::MatrixXd &all,
 								  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const override;
 
+		bool allow_inversion() const override { return true; }
+
 	private:
 		// utility function that computes energy, the template is used for double, DScalar1, and DScalar2 in energy, gradient and hessian
 		template <typename T>

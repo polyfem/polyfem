@@ -8,4 +8,4 @@ endif()
 message(STATUS "Third-party: creating target 'polysolve'")
 
 include(CPM)
-CPMAddPackage("gh:polyfem/polysolve#68aacce7c3467ae9e0ec821a440c75e94c28de2b")
+CPMAddPackage("gh:polyfem/polysolve#768ee9cbe2de91e47c558e5a2f1be3dec0bfe561")

@@ -59,9 +59,14 @@ namespace polyfem::solver
 			try
 			{
 				nl_solver->minimize(nl_problem, tmp_sol);
+				nl_problem.finish();
 			}
 			catch (const std::runtime_error &e)
 			{
+				std::string err_msg = e.what();
+				// if the nonlinear solve fails due to invalid energy at the current solution, changing the weights would not help
+				if (err_msg.find("f(x) is nan or inf; stopping") != std::string::npos)
+					log_and_throw_error("Failed to solve with AL; f(x) is nan or inf");
 			}
 
 			sol = tmp_sol;
@@ -120,6 +125,7 @@ namespace polyfem::solver
 		try
 		{
 			nl_solver->minimize(nl_problem, tmp_sol);
+			nl_problem.finish();
 		}
 		catch (const std::runtime_error &e)
 		{

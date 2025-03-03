@@ -23,6 +23,7 @@ namespace polyfem
 
 			// quadrature rule to use (stores points and weights)
 			quadrature::Quadrature quadrature;
+			bool is_volume_;
 			int element_id;
 
 			// img of quadrature points through the geom mapping (global pos in the mesh)
@@ -44,7 +45,10 @@ namespace polyfem
 			/// check if the element is flipped
 			bool is_geom_mapping_positive(const bool is_volume, const basis::ElementBases &gbasis) const;
 
+			Eigen::VectorXd eval_deformed_jacobian_determinant(const Eigen::VectorXd &disp) const;
+
 		private:
+			const basis::ElementBases *basis_, *gbasis_;
 			std::vector<AssemblyValues> g_basis_values_cache_;
 
 			void finalize_global_element(const Eigen::MatrixXd &v);

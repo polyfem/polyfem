@@ -9,6 +9,7 @@
 #include <polyfem/quadrature/TriQuadrature.hpp>
 
 #include <polyfem/utils/BoundarySampler.hpp>
+#include <polyfem/utils/Jacobian.hpp>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
@@ -397,6 +398,84 @@ namespace polyfem::io
 		interpolate_function(mesh, actual_dim, bases, disc_orders,
 							 polys, polys_3d, sampler, n_points,
 							 fun, result, use_sampler, boundary_only);
+	}
+
+	void Evaluator::mark_flipped_cells(
+		const mesh::Mesh &mesh,
+		const std::vector<basis::ElementBases> &gbasis,
+		const std::vector<basis::ElementBases> &basis,
+		const Eigen::VectorXi &disc_orders,
+		const std::map<int, Eigen::MatrixXd> &polys,
+		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
+		const utils::RefElementSampler &sampler,
+		const int n_points,
+		const Eigen::MatrixXd &fun,
+		Eigen::Vector<bool, -1> &result,
+		const bool use_sampler,
+		const bool boundary_only)
+	{
+		if (fun.size() <= 0)
+		{
+			logger().error("Solve the problem first!");
+			return;
+		}
+
+		result.setZero(n_points);
+
+		int index = 0;
+
+		Eigen::MatrixXi vis_faces_poly, vis_edges_poly;
+
+		const auto invalidList = utils::count_invalid(mesh.dimension(), basis, gbasis, fun);
+
+		for (int i = 0; i < int(basis.size()); ++i)
+		{
+			const ElementBases &bs = basis[i];
+			Eigen::MatrixXd local_pts;
+
+			if (boundary_only && mesh.is_volume() && !mesh.is_boundary_element(i))
+				continue;
+
+			if (use_sampler)
+			{
+				if (mesh.is_simplex(i))
+					local_pts = sampler.simplex_points();
+				else if (mesh.is_cube(i))
+					local_pts = sampler.cube_points();
+				else
+				{
+					if (mesh.is_volume())
+						sampler.sample_polyhedron(polys_3d.at(i).first, polys_3d.at(i).second, local_pts, vis_faces_poly, vis_edges_poly);
+					else
+						sampler.sample_polygon(polys.at(i), local_pts, vis_faces_poly, vis_edges_poly);
+				}
+			}
+			else
+			{
+				if (mesh.is_volume())
+				{
+					if (mesh.is_simplex(i))
+						autogen::p_nodes_3d(disc_orders(i), local_pts);
+					else if (mesh.is_cube(i))
+						autogen::q_nodes_3d(disc_orders(i), local_pts);
+					else
+						continue;
+				}
+				else
+				{
+					if (mesh.is_simplex(i))
+						autogen::p_nodes_2d(disc_orders(i), local_pts);
+					else if (mesh.is_cube(i))
+						autogen::q_nodes_2d(disc_orders(i), local_pts);
+					else
+						continue;
+				}
+			}
+
+			if (std::find(invalidList.begin(), invalidList.end(), i) != invalidList.end())
+				result.segment(index, local_pts.rows()).array() = true;
+			index += local_pts.rows();
+		}
 	}
 
 	void Evaluator::interpolate_function(
