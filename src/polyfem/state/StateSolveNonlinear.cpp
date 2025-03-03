@@ -282,6 +282,7 @@ namespace polyfem
 			ndof, periodic_bc, t, forms, solve_data.al_form);
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
+		solve_data.nl_problem->state = *this;
 		// --------------------------------------------------------------------
 
 		stats.solver_info = json::array();
