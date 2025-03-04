@@ -233,8 +233,68 @@ namespace polyfem::io
 
 						continue;
 					}
+					else if (mesh.is_prism(lb.element_id()))
+					{
+						assert(!is_simplicial);
+						assert(!mesh.has_poly());
+						std::vector<int> loc_nodes;
+						RowVectorNd bary = RowVectorNd::Zero(3);
 
-					// TODO prism collision mesh
+						for (long n = 0; n < nodes.size(); ++n)
+						{
+							auto &bs = b.bases[nodes(n)];
+							const auto &glob = bs.global();
+							if (glob.size() != 1)
+								continue;
+
+							int gindex = glob.front().index;
+							node_positions.row(gindex) = glob.front().node;
+							bary += glob.front().node;
+							loc_nodes.push_back(gindex);
+						}
+
+						if (loc_nodes.size() != 3 && loc_nodes.size() != 4)
+						{
+							logger().trace("skipping element {} since it is not linear, it has {} nodes", eid, loc_nodes.size());
+							continue;
+						}
+
+						if (loc_nodes.size() == 3)
+						{
+							tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
+
+							for (int k = 0; k < loc_nodes.size(); ++k)
+							{
+								if (!visited_node[loc_nodes[k]])
+									displacement_map_entries.emplace_back(loc_nodes[k], loc_nodes[k], 1);
+
+								visited_node[loc_nodes[k]] = true;
+							}
+						}
+						else
+						{
+
+							bary /= 4;
+
+							const int new_node = n_bases + eid;
+							node_positions.row(new_node) = bary;
+							tris.emplace_back(loc_nodes[1], loc_nodes[0], new_node);
+							tris.emplace_back(loc_nodes[2], loc_nodes[1], new_node);
+							tris.emplace_back(loc_nodes[3], loc_nodes[2], new_node);
+							tris.emplace_back(loc_nodes[0], loc_nodes[3], new_node);
+
+							for (int q = 0; q < 4; ++q)
+							{
+								if (!visited_node[loc_nodes[q]])
+									displacement_map_entries.emplace_back(loc_nodes[q], loc_nodes[q], 1);
+
+								visited_node[loc_nodes[q]] = true;
+								displacement_map_entries.emplace_back(new_node, loc_nodes[q], 0.25);
+							}
+						}
+
+						continue;
+					}
 
 					if (!mesh.is_simplex(lb.element_id()))
 					{
@@ -1252,7 +1312,7 @@ namespace polyfem::io
 		Eigen::MatrixXd discr;
 		std::vector<std::vector<int>> elements;
 
-		if (opts.use_sampler)
+		if (true || opts.use_sampler)
 			build_vis_mesh(mesh, disc_orders, gbases,
 						   state.polys, state.polys_3d, opts.boundary_only,
 						   points, tets, el_id, discr);
