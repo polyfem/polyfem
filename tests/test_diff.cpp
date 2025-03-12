@@ -1379,6 +1379,6 @@ TEST_CASE("dirichlet-nodes-3d", "[.][test_adjoint]")
 
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 
-	verify_adjoint_expensive(*nl_problem, x, 1e-7);
-	// verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-3);
+	// verify_adjoint_expensive(*nl_problem, x, 1e-7);
+	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-3);
 }
