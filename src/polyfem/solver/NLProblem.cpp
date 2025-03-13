@@ -196,7 +196,7 @@ namespace polyfem::solver
 
 		int constraint_size = A.rows();
 		num_penalty_constraints_ = A.rows();
-		Eigen::SparseMatrix<double, Eigen::ColMajor, long> At = A.transpose();
+		Eigen::SparseMatrix<double, Eigen::ColMajor> At = A.transpose();
 		At.makeCompressed();
 
 		logger().debug("Constraint size: {} x {}", A.rows(), A.cols());
