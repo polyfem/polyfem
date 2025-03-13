@@ -2110,7 +2110,7 @@ int LagrangeBasis3d::build_bases(
 									const auto edge_index = mesh.get_index_from_element_edge(e, ev(le, 0), ev(le, 1));
 									auto neighs = mesh.edge_neighs(edge_index.edge);
 									int min_p = discr_order;
-									int min_cell = index.element;
+									int min_cell = edge_index.element;
 
 									for (auto cid : neighs)
 									{
