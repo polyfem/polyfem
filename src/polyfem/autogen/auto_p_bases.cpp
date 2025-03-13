@@ -1,4 +1,5 @@
 #include "auto_p_bases.hpp"
+#include "auto_b_bases.hpp"
 
 namespace polyfem
 {
@@ -834,7 +835,7 @@ namespace polyfem
 
 		void p_nodes_2d(const int p, Eigen::MatrixXd &val)
 		{
-			switch (p)
+			switch (std::abs(p))
 			{
 			case 0:
 				p_0_nodes_2d(val);
@@ -857,6 +858,11 @@ namespace polyfem
 		}
 		void p_basis_value_2d(const int p, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
 		{
+			if (p == 2)
+			{
+				b_basis_value_2d(p, local_index, uv, val);
+				return;
+			}
 			switch (p)
 			{
 			case 0:
@@ -881,6 +887,11 @@ namespace polyfem
 
 		void p_grad_basis_value_2d(const int p, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
 		{
+			if (p == 2)
+			{
+				b_grad_basis_value_2d(p, local_index, uv, val);
+				return;
+			}
 			switch (p)
 			{
 			case 0:

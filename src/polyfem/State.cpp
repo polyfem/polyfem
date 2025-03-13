@@ -496,6 +496,8 @@ namespace polyfem
 
 		if (mesh->orders().size() <= 0)
 		{
+			// if (args["space"]["discr_order"] < 0)
+			return false;
 			if (args["space"]["discr_order"] == 1)
 				return true;
 			else

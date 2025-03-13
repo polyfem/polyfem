@@ -1,4 +1,6 @@
 set(AUTOGEN_BASES
+	auto_b_bases.cpp
+	auto_b_bases.hpp
 	auto_p_bases.cpp
 	auto_p_bases.hpp
 	auto_q_bases_2d_val.cpp

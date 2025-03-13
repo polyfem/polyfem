@@ -608,8 +608,9 @@ namespace
 	}
 } // anonymous namespace
 
-Eigen::VectorXi LagrangeBasis2d::tri_edge_local_nodes(const int p, const Mesh2D &mesh, Navigation::Index index)
+Eigen::VectorXi LagrangeBasis2d::tri_edge_local_nodes(const int pp, const Mesh2D &mesh, Navigation::Index index)
 {
+	const int p = std::abs(pp);
 	int f = index.face;
 	assert(mesh.is_simplex(f));
 
@@ -893,7 +894,7 @@ int LagrangeBasis2d::build_bases(
 		{
 			// Polygon bases are built later on
 		}
-		
+
 #ifndef NDEBUG
 		if (mesh.is_conforming())
 		{
