@@ -19,9 +19,6 @@ namespace polyfem::solver
 	class NLHomoProblem : public NLProblem
 	{
 	public:
-	class NLHomoProblem : public NLProblem
-	{
-	public:
 		using typename FullNLProblem::Scalar;
 		using typename FullNLProblem::THessian;
 		using typename FullNLProblem::TVector;

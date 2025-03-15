@@ -28,7 +28,6 @@ namespace polyfem::solver
 		  full_size_(full_size),
 		  t_(0),
 		  penalty_forms_(penalty_forms)
-		  penalty_forms_(penalty_forms)
 	{
 		setup_constrain_nodes();
 		reduced_size_ = full_size_ - constraint_nodes_.size();
@@ -137,13 +136,13 @@ namespace polyfem::solver
 	{
 		FullNLProblem::post_step(polysolve::nonlinear::PostStepData(data.iter_num, data.solver_info, reduced_to_full(data.x), reduced_to_full(data.grad)));
 
-		if (state_.args["output"]["advanced"]["save_nl_solve_sequence"])
+		if (state_->args["output"]["advanced"]["save_nl_solve_sequence"])
 		{
-		const Eigen::MatrixXd displacements = utils::unflatten(reduced_to_full(x), state_.mesh->dimension());
+		const Eigen::MatrixXd displacements = utils::unflatten(reduced_to_full(data.x), state_->mesh->dimension());
 		io::OBJWriter::write(
-			state_.resolve_output_path(fmt::format("nonlinear_solve_iter{:03d}.obj", iter_num)),
-			state_.collision_mesh.displace_vertices(displacements),
-			state_.collision_mesh.edges(), state_.collision_mesh.faces());
+			state_->resolve_output_path(fmt::format("nonlinear_solve_iter{:03d}.obj", data.iter_num)),
+			state_->collision_mesh.displace_vertices(displacements),
+			state_->collision_mesh.edges(), state_->collision_mesh.faces());
 		}
 	}
 
