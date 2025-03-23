@@ -106,7 +106,7 @@ namespace polyfem::solver
 				nl_problem.line_search_end();
 
 				nl_problem.use_full_size();
-				logger().debug("Solving AL Problem with weight {}", al_weight);
+				//logger().debug("Solving AL Problem with weight {}", al_weight);
 
 				nl_problem.init(sol);
 				update_barrier_stiffness(sol);
@@ -148,14 +148,14 @@ namespace polyfem::solver
 				nl_problem.line_search_begin(sol, tmp_sol);
 
 				logger().debug("Current error = {}, prev error = {}", current_error, prev_error);
-				if (prev_error-current_error<(1-eta_tol) && al_weight < max_al_weight)
+				if ((increase_al_weight&& al_weight < max_al_weight) || (prev_error!= 0 && std::abs(prev_error-current_error)/prev_error<(1-eta_tol)&& al_weight < max_al_weight) )
 				{
 					al_weight *= scaling;
 
 					for (auto &f : alagr_forms)
 						f->set_al_weight(al_weight);
 
-					sol = initial_sol;
+					//sol = initial_sol; **Why can't we maintain the progress that was already made?
 					current_error = initial_error;
 
 					logger().debug("Increasing weight to {}", al_weight);

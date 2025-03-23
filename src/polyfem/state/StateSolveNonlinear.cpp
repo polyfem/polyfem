@@ -305,31 +305,28 @@ namespace polyfem
 		std::shared_ptr<solver::ElasticForm> elastic_form = std::make_shared<ElasticForm>(n_bases, bases, geom_bases(), *assembler, ass_vals_cache, t, dt, true);
 		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(true);
 
-
+		//Grabs material stiffness as the max coeff of the elastic hessian
 		StiffnessMatrix stiffness;
 		elastic_form->second_derivative(sol, stiffness);
-		double avg_stiffness = 0;
+		double max_stiffness = 0.0;
+
 		for (int k = 0; k < stiffness.outerSize(); ++k)
 		{
-
 			for (StiffnessMatrix::InnerIterator it(stiffness, k); it; ++it)
 			{
-				assert(it.col() == k);
-				if (std::abs(it.value()) != 0)
-					avg_stiffness += std::abs(it.value());
+				max_stiffness = std::max(max_stiffness, std::abs(it.value()));
 			}
 		}
-		avg_stiffness /= stiffness.rows();
 
-		//double barrier_stiffness = 0;
-		//if (solve_data.contact_form)
-		//	barrier_stiffness = solve_data.contact_form->barrier_stiffness();
+		//Grabs max dist of DBC for current time step
 		double dbc_dist = 0;
 		for (const auto &f : solve_data.al_form)
 			dbc_dist= f->get_dbcdist();
 
-		double initial_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
-		double al_weight = (avg_stiffness*dt*dt + dbc_dist/dt * mass.eval().coeffs().maxCoeff()) * initial_weight;
+		//Sets the AL weight to max_stiffness*dt^2 + 0.5*(velocity of DBC)*(largest mass of element) and that gets scaled by a user entered initial weight, which is intended be 1 for most cases
+		//the idea here is that the AL needs to be scaled according to the material
+		double al_initial_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
+		double al_weight = (max_stiffness*dt*dt + 0.5 * dbc_dist/dt * mass.eval().coeffs().maxCoeff()) * al_initial_weight;
 
 
 		ALSolver al_solver(
