@@ -34,36 +34,20 @@ jobs:
           libblas-dev \
           libglu1-mesa-dev \
           xorg-dev \
-          lcov \
-          ccache
-          echo 'CACHE_PATH=~/.cache/ccache' >> "$GITHUB_ENV"
-
-      - name: Cache Build
-        id: cache-build
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.CACHE_PATH }}
-          key: ${{ runner.os }}-Release-${{ matrix.threading }}-cache-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-Release-${{ matrix.threading }}-cache
-
-      - name: Prepare ccache
-        run: |
-          ccache --max-size=1.0G
-          ccache -V && ccache --show-stats && ccache --zero-stats
+          lcov 
 
       - name: Configure
         run: |
           mkdir -p build
           cd build
           cmake .. \
-            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_CODE_COVERAGE=ON \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
       - name: Build
-        run: cd build; make -j2; ccache --show-stats
+        run: cd build; make -j2
 
       - name: Run Coverage
         run: |
