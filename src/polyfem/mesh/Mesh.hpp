@@ -471,7 +471,7 @@ namespace polyfem
 				if (is_volume() ? is_boundary_face(primitive) : is_boundary_edge(primitive))
 					return std::numeric_limits<int>::max(); // default for no selected boundary
 				else
-					return -1;                              // default for no boundary
+					return -1; // default for no boundary
 			}
 
 			/// @brief Get the boundary selection of an element (face in 3d, edge in 2d)
@@ -571,6 +571,20 @@ namespace polyfem
 				for (int i = 0; i < n_elements(); ++i)
 				{
 					if (is_polytope(i))
+						return true;
+				}
+
+				return false;
+			}
+
+			/// @brief checks if the mesh has prisms
+			///
+			/// @return if the mesh has prisms
+			bool has_prism() const
+			{
+				for (int i = 0; i < n_elements(); ++i)
+				{
+					if (is_prism(i))
 						return true;
 				}
 

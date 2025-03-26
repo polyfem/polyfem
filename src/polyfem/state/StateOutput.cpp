@@ -57,7 +57,11 @@ namespace polyfem
 			out_geom.save_vtu(
 				resolve_output_path(fmt::format(step_name + "{:d}.vtu", t)),
 				*this, sol, pressure, time, dt,
-				io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file),
+				io::OutGeometryData::ExportOptions(args,
+												   mesh->is_linear(),
+												   mesh->has_prism(),
+												   problem->is_scalar(),
+												   solve_export_to_file),
 				is_contact_enabled(), solution_frames);
 
 			out_geom.save_pvd(
@@ -122,7 +126,11 @@ namespace polyfem
 		out_geom.save_vtu(
 			resolve_output_path(fmt::format("solve_{:d}.vtu", i)),
 			*this, sol, pressure, t, dt,
-			io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file),
+			io::OutGeometryData::ExportOptions(args,
+											   mesh->is_linear(),
+											   mesh->has_prism(),
+											   problem->is_scalar(),
+											   solve_export_to_file),
 			is_contact_enabled(), solution_frames);
 	}
 
@@ -166,7 +174,11 @@ namespace polyfem
 			*this, sol, pressure,
 			!args["time"].is_null(),
 			tend, dt,
-			io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file),
+			io::OutGeometryData::ExportOptions(args,
+											   mesh->is_linear(),
+											   mesh->has_prism(),
+											   problem->is_scalar(),
+											   solve_export_to_file),
 			vis_mesh_path,
 			nodes_path,
 			solution_path,

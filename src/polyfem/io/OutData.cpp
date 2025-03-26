@@ -1198,7 +1198,11 @@ namespace polyfem::io
 		}
 	}
 
-	OutGeometryData::ExportOptions::ExportOptions(const json &args, const bool is_mesh_linear, const bool is_problem_scalar, const bool solve_export_to_file)
+	OutGeometryData::ExportOptions::ExportOptions(const json &args,
+												  const bool is_mesh_linear,
+												  const bool mesh_has_prisms,
+												  const bool is_problem_scalar,
+												  const bool solve_export_to_file)
 	{
 		volume = args["output"]["paraview"]["volume"];
 		surface = args["output"]["paraview"]["surface"];
@@ -1208,6 +1212,8 @@ namespace polyfem::io
 		friction_forces = args["output"]["paraview"]["options"]["friction_forces"] && !is_problem_scalar;
 
 		use_sampler = !(is_mesh_linear && solve_export_to_file && args["output"]["paraview"]["high_order_mesh"]);
+		if (mesh_has_prisms)
+			use_sampler = true;
 		boundary_only = use_sampler && args["output"]["advanced"]["vis_boundary_only"];
 		material_params = args["output"]["paraview"]["options"]["material"];
 		body_ids = args["output"]["paraview"]["options"]["body_ids"];
@@ -1349,7 +1355,7 @@ namespace polyfem::io
 		Eigen::MatrixXd discr;
 		std::vector<std::vector<int>> elements;
 
-		if (true || opts.use_sampler)
+		if (opts.use_sampler)
 			build_vis_mesh(mesh, disc_orders, gbases,
 						   state.polys, state.polys_3d, opts.boundary_only,
 						   points, tets, el_id, discr);

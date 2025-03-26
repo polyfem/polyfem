@@ -78,10 +78,12 @@ namespace polyfem::io
 			/// @brief initialize the flags based on the input args
 			/// @param[in] args input arguments used to set most of the flags
 			/// @param[in] is_mesh_linear if the mesh is linear
+			/// @param[in] mesh_has_prisms if the mesh has prisms
 			/// @param[in] is_problem_scalar if the problem is scalar
 			/// @param[in] solve_export_to_file if export to file or save in the frames
 			ExportOptions(const json &args,
 						  const bool is_mesh_linear,
+						  const bool mesh_has_prisms,
 						  const bool is_problem_scalar,
 						  const bool solve_export_to_file);
 

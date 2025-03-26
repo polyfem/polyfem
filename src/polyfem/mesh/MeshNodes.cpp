@@ -396,7 +396,7 @@ namespace polyfem::mesh
 			int loc_index = 0;
 			for (int i = 1; i <= n_new_nodes; ++i)
 			{
-				const int end = mesh3d->is_simplex(index.element) ? (n_new_nodes - i + 1) : n_new_nodes;
+				const int end = is_tri ? (n_new_nodes - i + 1) : n_new_nodes;
 				for (int j = 1; j <= end; ++j)
 				{
 					const int primitive_id = start + loc_index;
