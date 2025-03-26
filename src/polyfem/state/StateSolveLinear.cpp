@@ -257,7 +257,7 @@ namespace polyfem
 
 		// --------------------------------------------------------------------
 
-		const int n_b_samples = n_boundary_samples();
+		const QuadratureOrders &n_b_samples = n_boundary_samples();
 
 		if (optimization_enabled != solver::CacheLevel::None)
 		{

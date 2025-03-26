@@ -16,6 +16,8 @@ namespace polyfem
 	static constexpr int MAX_QUAD_POINTS = -1;
 	typedef Eigen::Matrix<double, Eigen::Dynamic, 1, 0, MAX_QUAD_POINTS, 1> QuadratureVector;
 
+	typedef std::array<int, 2> QuadratureOrders;
+
 #ifdef POLYSOLVE_LARGE_INDEX
 	typedef Eigen::SparseMatrix<double, Eigen::ColMajor, std::ptrdiff_t> StiffnessMatrix;
 #else
