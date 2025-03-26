@@ -2093,18 +2093,19 @@ namespace polyfem::io
 					const auto form = std::dynamic_pointer_cast<solver::SmoothContactForm<3>>(contact_form);
 					assert(form);
 					const auto &set = form->get_smooth_collision_set();
-					Eigen::VectorXd dhats(collision_mesh.num_faces());
-					dhats.setConstant(dhat);
-					for (int e = 0; e < dhats.size(); e++)
-						dhats(e) = set.get_face_dhat(e);
+					Eigen::VectorXd fdhats(collision_mesh.num_faces());
+					fdhats.setConstant(dhat);
+					for (int e = 0; e < fdhats.size(); e++)
+						fdhats(e) = set.get_face_dhat(e);
 					
-					writer.add_cell_field("dhat_face", dhats);
+					writer.add_cell_field("dhat_face", fdhats);
 					
-					dhats.setConstant(dhat, collision_mesh.num_vertices());
-					for (int i = 0; i < dhats.size(); i++)
-						dhats(i) = set.get_vert_dhat(i);
+					Eigen::VectorXd vdhats(collision_mesh.num_vertices());
+					vdhats.setConstant(dhat);
+					for (int i = 0; i < vdhats.size(); i++)
+						vdhats(i) = set.get_vert_dhat(i);
 					
-					writer.add_field("dhat_vert", dhats);
+					writer.add_field("dhat_vert", vdhats);
 				}
 			}
 
