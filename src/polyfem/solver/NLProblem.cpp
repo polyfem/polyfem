@@ -593,6 +593,17 @@ namespace polyfem::solver
 		return reduced;
 	}
 
+	NLProblem::TVector NLProblem::full_to_reduced_grad(const TVector &full) const
+	{
+		TVector grad = full;
+		if (penalty_forms_.size() == 1 && penalty_forms_.front()->can_project())
+			penalty_forms_.front()->project_gradient(grad);
+		else
+			grad = Q2t_ * grad;
+		
+		return grad;
+	}
+
 	NLProblem::TVector NLProblem::reduced_to_full(const TVector &reduced) const
 	{
 		// Full is already at the reduced size
