@@ -21,7 +21,6 @@ jobs:
         include:
           - os: ubuntu-20.04
             name: Linux
-    timeout-minutes: 120 # Increase timeout to 2 hours
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.1.6
