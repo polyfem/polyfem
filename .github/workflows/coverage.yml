@@ -64,7 +64,7 @@ jobs:
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
       - name: Build
-        run: cd build; make -j2; ccache --show-stats
+        run: cd build; make; ccache --show-stats
 
       - name: Run Coverage
         run: |
