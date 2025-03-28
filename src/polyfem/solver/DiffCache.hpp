@@ -3,8 +3,8 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/Types.hpp>
 #include <ipc/ipc.hpp>
-#include <ipc/collisions/collisions.hpp>
-#include <ipc/friction/friction_collisions.hpp>
+#include <ipc/collisions/normal/normal_collisions.hpp>
+#include <ipc/collisions/tangential/tangential_collisions.hpp>
 
 namespace polyfem::solver
 {
@@ -35,13 +35,17 @@ namespace polyfem::solver
 			gradu_h_.resize(n_time_steps + 1);
 			collision_set_.resize(n_time_steps + 1);
  			friction_collision_set_.resize(n_time_steps + 1);
+			normal_adhesion_collision_set_.resize(n_time_steps + 1);
+ 			tangential_adhesion_collision_set_.resize(n_time_steps + 1);
 		}
 
         void cache_quantities_static(
             const Eigen::MatrixXd &u,
             const StiffnessMatrix &gradu_h,
-            const ipc::Collisions &contact_set,
-            const ipc::FrictionCollisions &friction_constraint_set,
+            const ipc::NormalCollisions &contact_set,
+            const ipc::TangentialCollisions &friction_constraint_set,
+			const ipc::NormalCollisions &normal_adhesion_set,
+			const ipc::TangentialCollisions &tangential_adhesion_set,
             const Eigen::MatrixXd &disp_grad)
         {
             u_ = u;
@@ -49,6 +53,8 @@ namespace polyfem::solver
             gradu_h_[0] = gradu_h;
             collision_set_[0] = contact_set;
             friction_collision_set_[0] = friction_constraint_set;
+			normal_adhesion_collision_set_[0] = normal_adhesion_set;
+			tangential_adhesion_collision_set_[0] = tangential_adhesion_set;
             disp_grad_[0] = disp_grad;
 
 			cur_size_ = 1;
@@ -62,8 +68,8 @@ namespace polyfem::solver
 			const Eigen::MatrixXd &acc,
 			const StiffnessMatrix &gradu_h,
 			// const StiffnessMatrix &gradu_h_prev,
-			const ipc::Collisions &collision_set,
-			const ipc::FrictionCollisions &friction_collision_set)
+			const ipc::NormalCollisions &collision_set,
+			const ipc::TangentialCollisions &friction_collision_set)
 		{
 			bdf_order_(cur_step) = cur_bdf_order;
 
@@ -84,12 +90,14 @@ namespace polyfem::solver
             const int cur_step,
             const Eigen::MatrixXd &u,
             const StiffnessMatrix &gradu_h,
-            const ipc::Collisions &contact_set,
+            const ipc::NormalCollisions &contact_set,
+			const ipc::NormalCollisions &normal_adhesion_set,
             const Eigen::MatrixXd &disp_grad)
         {
             u_.col(cur_step) = u;
             gradu_h_[cur_step] = gradu_h;
             collision_set_[cur_step] = contact_set;
+			normal_adhesion_collision_set_[cur_step] = normal_adhesion_set;
             disp_grad_[cur_step] = disp_grad;
 
             cur_size_++;
@@ -140,19 +148,33 @@ namespace polyfem::solver
 		}
 		// const StiffnessMatrix &gradu_h_prev(const int step) const { assert(step < size()); return gradu_h_prev_[step]; }
 
-		const ipc::Collisions &collision_set(int step) const
+		const ipc::NormalCollisions &collision_set(int step) const
 		{
 			assert(step < size());
 			if (step < 0)
 				step += collision_set_.size();
 			return collision_set_[step];
 		}
-		const ipc::FrictionCollisions &friction_collision_set(int step) const
+		const ipc::TangentialCollisions &friction_collision_set(int step) const
 		{
 			assert(step < size());
 			if (step < 0)
 				step += friction_collision_set_.size();
 			return friction_collision_set_[step];
+		}
+		const ipc::NormalCollisions &normal_adhesion_collision_set(int step) const
+		{
+			assert(step < size());
+			if (step < 0)
+				step += normal_adhesion_collision_set_.size();
+			return normal_adhesion_collision_set_[step];
+		}
+		const ipc::TangentialCollisions &tangential_adhesion_collision_set(int step) const
+		{
+			assert(step < size());
+			if (step < 0)
+				step += tangential_adhesion_collision_set_.size();
+			return tangential_adhesion_collision_set_[step];
 		}
 
 	private:
@@ -169,8 +191,11 @@ namespace polyfem::solver
 		std::vector<StiffnessMatrix> gradu_h_; // gradient of force at time T wrt. u  at time T
 		// std::vector<StiffnessMatrix> gradu_h_prev_; // gradient of force at time T wrt. u at time (T-1) in transient simulations
 
-		std::vector<ipc::Collisions> collision_set_;
-		std::vector<ipc::FrictionCollisions> friction_collision_set_;
+		std::vector<ipc::NormalCollisions> collision_set_;
+		std::vector<ipc::TangentialCollisions> friction_collision_set_;
+
+		std::vector<ipc::NormalCollisions> normal_adhesion_collision_set_;
+		std::vector<ipc::TangentialCollisions> tangential_adhesion_collision_set_;
 
 		Eigen::MatrixXd adjoint_mat_;
 	};

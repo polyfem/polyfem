@@ -54,12 +54,23 @@ namespace polyfem
 			obstacle.ndof(),
 			// Contact form
 			args["contact"]["enabled"], args["contact"]["periodic"].get<bool>() ? periodic_collision_mesh : collision_mesh, args["contact"]["dhat"],
-			avg_mass, args["contact"]["use_convergent_formulation"],
+			avg_mass, args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_area_weighting"]) : false,
+			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_improved_max_operator"]) : false,
+			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_physical_barrier"]) : false,
 			args["solver"]["contact"]["barrier_stiffness"],
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
 			optimization_enabled == solver::CacheLevel::Derivatives,
+			// Normal Adhesion Form
+			args["contact"]["adhesion"]["adhesion_enabled"],
+			args["contact"]["adhesion"]["dhat_p"],
+			args["contact"]["adhesion"]["dhat_a"],
+			args["contact"]["adhesion"]["adhesion_strength"],
+			// Tangential Adhesion Form
+			args["contact"]["adhesion"]["tangential_adhesion_coefficient"],
+			args["contact"]["adhesion"]["epsa"],
+			args["solver"]["contact"]["tangential_adhesion_iterations"],
 			// Homogenization
 			macro_strain_constraint,
 			// Periodic contact

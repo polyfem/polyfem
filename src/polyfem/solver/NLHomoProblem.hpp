@@ -7,8 +7,11 @@ namespace polyfem
 	class State;
 	namespace assembler
 	{
+	namespace assembler
+	{
 		class MacroStrainValue;
 	}
+} // namespace polyfem
 } // namespace polyfem
 
 namespace polyfem::solver

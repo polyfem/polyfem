@@ -89,7 +89,6 @@ namespace polyfem::solver
 		Eigen::VectorXd target(const Eigen::VectorXd &) const override { return target_x_; }
 
 		double compute_error(const Eigen::VectorXd &x) const override;
-
 	private:
 		const std::vector<int> &boundary_nodes_;
 		const std::vector<mesh::LocalBoundary> *local_boundary_;
