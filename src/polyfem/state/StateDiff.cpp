@@ -397,9 +397,8 @@ namespace polyfem
 					dirichlet_solve(*solver, A, tmp, boundary_nodes, x, A.rows(), "", false, false, false);
 
 					adjoint.col(i) = x;
+					adjoint(boundary_nodes, i) = -b(boundary_nodes, i);
 				}
-				// NLProblem sets dirichlet values to forward BC values, but we want zero in adjoint
-				adjoint(boundary_nodes, Eigen::all).setZero();
 			}
 			else
 			{
