@@ -156,7 +156,7 @@ namespace polyfem::solver
 				smooth_contact->using_adaptive_dhat(), broad_phase_method_);
 
 			collision_set.set_are_shape_derivatives_enabled(contact_form_.enable_shape_derivatives());
-			friction_collision_set_.build(
+			friction_collision_set_.build_for_smooth_contact<2>(   
 				collision_mesh_, displaced_surface, 
 				collision_set, smooth_contact->get_params(), contact_form_.barrier_stiffness(), mu_);
 		}
@@ -170,7 +170,7 @@ namespace polyfem::solver
 				smooth_contact->using_adaptive_dhat(), broad_phase_method_);
 
 			collision_set.set_are_shape_derivatives_enabled(contact_form_.enable_shape_derivatives());
-			friction_collision_set_.build(
+			friction_collision_set_.build_for_smooth_contact<3>(
 				collision_mesh_, displaced_surface, 
 				collision_set, smooth_contact->get_params(), contact_form_.barrier_stiffness(), mu_);
 		}
