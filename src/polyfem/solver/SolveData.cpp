@@ -25,6 +25,7 @@
 
 #include <h5pp/h5pp.h>
 
+
 namespace polyfem::solver
 {
 	using namespace polyfem::time_integrator;
@@ -103,6 +104,8 @@ namespace polyfem::solver
 		// Rayleigh damping form
 		const json &rayleigh_damping)
 	{
+		this->barrier_stiffness_ = barrier_stiffness;
+
 		const bool is_time_dependent = time_integrator != nullptr;
 		assert(!is_time_dependent || time_integrator != nullptr);
 		const double dt = is_time_dependent ? time_integrator->dt() : 0.0;
@@ -432,7 +435,10 @@ namespace polyfem::solver
 		//1000*material_stiffness keeps the barrier stiffness orders higher than material stiffness and grad_energy/(approx gradient of barrier function) provides a scaling factor based on changes in the energy relative to barrier stiffness
 		//1000 could be changed, but found to work well for a number of test cases
 		double current_barrier_stiffness = contact_form->barrier_stiffness();
-		const double ini_barrier_stiffness = 1.0; //todo: fix this to make it the initial barrier stiffness multipler args["solver"]["contact"]["barrier_stiffness"]
+		double ini_barrier_stiffness = 1.0;
+		if (barrier_stiffness_.is_number()){
+			ini_barrier_stiffness = barrier_stiffness_.get<double>();
+		}
 		const double dhat = contact_form->dhat();
 		double contact_barrier_grad =  2.25545*dhat; //solving for d for d(barrier_function)/dd(barrier_function) gives constant relative to dhat
 		double barrier_stiffness = 1000*grad_energy*max_stiffness/contact_barrier_grad * ini_barrier_stiffness;

@@ -116,11 +116,11 @@ namespace polyfem::solver
 
 				try
 				{
-					//CallbackChecker checker;
+					CallbackChecker checker;
 					const auto scale = nl_problem.normalize_forms();
 					auto nl_solver = polysolve::nonlinear::Solver::create(
 						nl_solver_params, linear_solver, characteristic_length / scale, logger());
-					//nl_solver->set_iteration_callback(checker);
+					nl_solver->set_iteration_callback(checker);
 					nl_solver->minimize(nl_problem, tmp_sol);
 					nl_problem.finish();
 				}
