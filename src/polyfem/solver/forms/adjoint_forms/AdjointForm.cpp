@@ -38,7 +38,8 @@ namespace polyfem::solver
 	Eigen::MatrixXd AdjointForm::compute_reduced_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const
 	{
 		Eigen::MatrixXd rhs = compute_adjoint_rhs(x, state);
-		if (!state.problem->is_time_dependent() && !state.lin_solver_cached) // nonlinear static solve only
+		// Only for homogenization
+		if (!state.problem->is_time_dependent() && !state.lin_solver_cached && state.is_homogenization()) // nonlinear static solve only
 		{
 			Eigen::MatrixXd reduced;
 			for (int i = 0; i < rhs.cols(); i++)
