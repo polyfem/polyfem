@@ -124,23 +124,25 @@ namespace polyfem::solver
 
 	double NLProblem::normalize_forms()
 	{
-		double total_weight = 0;
-		for (const auto &f : forms_)
-			total_weight += f->weight();
-		if (full_size() == current_size())
-		{
-			for (const auto &f : penalty_forms_)
-				total_weight += f->weight() * f->lagrangian_weight();
-		}
+		return 1;
 
-		logger().debug("Normalizing forms with scale: {}", total_weight);
+		// double total_weight = 0;
+		// for (const auto &f : forms_)
+		// 	total_weight += f->weight();
+		// if (full_size() == current_size())
+		// {
+		// 	for (const auto &f : penalty_forms_)
+		// 		total_weight += f->weight() * f->lagrangian_weight();
+		// }
 
-		for (auto &f : forms_)
-			f->set_scale(total_weight);
-		for (auto &f : penalty_forms_)
-			f->set_scale(total_weight);
+		// logger().debug("Normalizing forms with scale: {}", total_weight);
 
-		return total_weight;
+		// for (auto &f : forms_)
+		// 	f->set_scale(total_weight);
+		// for (auto &f : penalty_forms_)
+		// 	f->set_scale(total_weight);
+
+		// return total_weight;
 	}
 
 	void NLProblem::setup_constraints()
@@ -420,7 +422,7 @@ namespace polyfem::solver
 	{
 		FullNLProblem::init_lagging(reduced_to_full(x));
 
-		if (full_size() == current_size())
+		if (penalty_problem_ && full_size() == current_size())
 			penalty_problem_->init_lagging(x);
 	}
 
@@ -428,7 +430,7 @@ namespace polyfem::solver
 	{
 		FullNLProblem::update_lagging(reduced_to_full(x), iter_num);
 
-		if (full_size() == current_size())
+		if (penalty_problem_ && full_size() == current_size())
 			penalty_problem_->update_lagging(x, iter_num);
 	}
 
@@ -450,7 +452,7 @@ namespace polyfem::solver
 	{
 		FullNLProblem::line_search_begin(reduced_to_full(x0), reduced_to_full(x1));
 
-		if (full_size() == current_size())
+		if (penalty_problem_ && full_size() == current_size())
 			penalty_problem_->line_search_begin(x0, x1);
 	}
 
@@ -458,7 +460,7 @@ namespace polyfem::solver
 	{
 		double max_step = FullNLProblem::max_step_size(reduced_to_full(x0), reduced_to_full(x1));
 
-		if (full_size() == current_size())
+		if (penalty_problem_ && full_size() == current_size())
 			max_step = std::min(max_step, penalty_problem_->max_step_size(x0, x1));
 
 		return max_step;
@@ -468,7 +470,7 @@ namespace polyfem::solver
 	{
 		bool valid = FullNLProblem::is_step_valid(reduced_to_full(x0), reduced_to_full(x1));
 
-		if (valid && full_size() == current_size())
+		if (penalty_problem_ && valid && full_size() == current_size())
 			valid = penalty_problem_->is_step_valid(x0, x1);
 
 		return valid;
@@ -478,7 +480,7 @@ namespace polyfem::solver
 	{
 		bool free = FullNLProblem::is_step_collision_free(reduced_to_full(x0), reduced_to_full(x1));
 
-		if (free && full_size() == current_size())
+		if (penalty_problem_ && free && full_size() == current_size())
 			free = penalty_problem_->is_step_collision_free(x0, x1);
 
 		return free;
@@ -489,7 +491,7 @@ namespace polyfem::solver
 		// TODO: removed fearure const bool only_elastic
 		double res = FullNLProblem::value(reduced_to_full(x));
 
-		if (full_size() == current_size())
+		if (penalty_problem_ && full_size() == current_size())
 		{
 			res += penalty_problem_->value(x);
 		}
@@ -508,7 +510,7 @@ namespace polyfem::solver
 			else
 				grad = Q2t_ * grad;
 		}
-		else
+		else if (penalty_problem_)
 		{
 			TVector tmp;
 			penalty_problem_->gradient(x, tmp);
@@ -537,7 +539,7 @@ namespace polyfem::solver
 				});
 			}
 		}
-		else
+		else if (penalty_problem_)
 		{
 			THessian tmp;
 			penalty_problem_->hessian(x, tmp);
@@ -549,7 +551,7 @@ namespace polyfem::solver
 	{
 		FullNLProblem::solution_changed(reduced_to_full(newX));
 
-		if (full_size() == current_size())
+		if (penalty_problem_ && full_size() == current_size())
 			penalty_problem_->solution_changed(newX);
 	}
 
@@ -557,7 +559,7 @@ namespace polyfem::solver
 	{
 		FullNLProblem::post_step(polysolve::nonlinear::PostStepData(data.iter_num, data.solver_info, reduced_to_full(data.x), reduced_to_full(data.grad)));
 
-		if (full_size() == current_size())
+		if (penalty_problem_ && full_size() == current_size())
 			penalty_problem_->post_step(data);
 
 		// TODO: add me back
@@ -600,7 +602,7 @@ namespace polyfem::solver
 			penalty_forms_.front()->project_gradient(grad);
 		else
 			grad = Q2t_ * grad;
-		
+
 		return grad;
 	}
 
