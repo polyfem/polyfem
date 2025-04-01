@@ -184,13 +184,14 @@ if __name__ == "__main__":
 
     bletter = "b" if args.bernstein else "p"
 
-    cpp = f"#include \"auto_{bletter}_bases.hpp\"\n\n\n"
-    cpp = cpp + \
+    cpp = f"#include \"auto_{bletter}_bases.hpp\""
+    if not args.bernstein:
+        cpp = cpp + "\n#include \"auto_b_bases.hpp\""
+        cpp = cpp + "\n#include \"p_n_bases.hpp\""
+    cpp = cpp + "\n\n\n" \
         "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
 
     hpp = "#pragma once\n\n#include <Eigen/Dense>\n#include <cassert>\n"
-    if not args.bernstein:
-        hpp = hpp + "#include \"p_n_bases.hpp\"\n"
 
     hpp = hpp + "\nnamespace polyfem {\nnamespace autogen " + "{\n"
 
@@ -201,10 +202,16 @@ if __name__ == "__main__":
         unique_nodes = f"void {bletter}_nodes_{suffix}" + \
             f"(const int {bletter}, Eigen::MatrixXd &val)"
 
-        unique_fun = f"void {bletter}_basis_value_{suffix}" + \
-            f"(const int {bletter}, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
-        dunique_fun = f"void {bletter}_grad_basis_value_{suffix}" + \
-            f"(const int {bletter}, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+        if args.bernstein:
+            unique_fun = f"void {bletter}_basis_value_{suffix}" + \
+                f"(const int {bletter}, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+            dunique_fun = f"void {bletter}_grad_basis_value_{suffix}" + \
+                f"(const int {bletter}, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+        else:
+            unique_fun = f"void {bletter}_basis_value_{suffix}" + \
+                f"(const bool bernstein, const int {bletter}, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+            dunique_fun = f"void {bletter}_grad_basis_value_{suffix}" + \
+                f"(const bool bernstein, const int {bletter}, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
 
         if not args.bernstein:
             hpp = hpp + unique_nodes + ";\n\n"
@@ -214,8 +221,17 @@ if __name__ == "__main__":
 
         unique_nodes = unique_nodes + f"{{\nswitch({bletter})" + "{\n"
 
-        unique_fun = unique_fun + f"{{\nswitch({bletter})" + "{\n"
-        dunique_fun = dunique_fun + f"{{\nswitch({bletter})" + "{\n"
+        unique_fun = unique_fun + "{\n"
+        dunique_fun = dunique_fun + "{\n"
+
+        if not args.bernstein:
+            unique_fun = unique_fun + \
+                f"if(bernstein) {{ b_basis_value_{suffix}(p, local_index, uv, val); return; }}\n\n"
+            dunique_fun = dunique_fun + \
+                f"if(bernstein) {{ b_grad_basis_value_{suffix}(p, local_index, uv, val); return; }}\n\n"
+
+        unique_fun = unique_fun + f"\nswitch({bletter})" + "{\n"
+        dunique_fun = dunique_fun + f"\nswitch({bletter})" + "{\n"
 
         if dim == 2:
             vertices = [[0, 0], [1, 0], [0, 1]]

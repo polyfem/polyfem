@@ -189,6 +189,7 @@ result_0 = 12*x*(helper_0 + y)*(helper_0 + 3*y);val.col(1) = result_0; }} break;
 
 
 void b_basis_value_2d(const int b, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val){
+
 switch(b){
 	case 0: b_0_basis_value_2d(local_index, uv, val); break;
 	case 1: b_1_basis_value_2d(local_index, uv, val); break;
@@ -199,6 +200,7 @@ switch(b){
 }}
 
 void b_grad_basis_value_2d(const int b, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val){
+
 switch(b){
 	case 0: b_0_basis_grad_value_2d(local_index, uv, val); break;
 	case 1: b_1_basis_grad_value_2d(local_index, uv, val); break;
@@ -482,6 +484,7 @@ result_0 = 12*y*(helper_0 + z)*(helper_0 + 3*z);val.col(2) = result_0; }} break;
 
 
 void b_basis_value_3d(const int b, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val){
+
 switch(b){
 	case 0: b_0_basis_value_3d(local_index, uv, val); break;
 	case 1: b_1_basis_value_3d(local_index, uv, val); break;
@@ -492,6 +495,7 @@ switch(b){
 }}
 
 void b_grad_basis_value_3d(const int b, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val){
+
 switch(b){
 	case 0: b_0_basis_grad_value_3d(local_index, uv, val); break;
 	case 1: b_1_basis_grad_value_3d(local_index, uv, val); break;
