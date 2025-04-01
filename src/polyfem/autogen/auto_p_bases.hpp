@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Eigen/Dense>
-#include "p_n_bases.hpp"
 #include <cassert>
+#include "p_n_bases.hpp"
 
 namespace polyfem {
 namespace autogen {
