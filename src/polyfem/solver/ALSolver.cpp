@@ -148,6 +148,7 @@ namespace polyfem::solver
 				nl_problem.line_search_begin(sol, tmp_sol);
 
 				logger().debug("Current error = {}, prev error = {}", current_error, prev_error);
+				/*
 				if ((increase_al_weight&& al_weight < max_al_weight) || (prev_error!= 0 && std::abs(prev_error-current_error)/prev_error<(1-eta_tol)&& al_weight < max_al_weight) )
 				{
 					al_weight *= scaling;
@@ -165,6 +166,10 @@ namespace polyfem::solver
 					for (auto &f : alagr_forms)
 						f->update_lagrangian(sol, al_weight);
 				}
+				*/
+
+				for (auto &f : alagr_forms)
+					f->update_lagrangian(sol, al_weight);
 
 				++al_steps;
 			}
