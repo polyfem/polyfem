@@ -6,6 +6,7 @@
 #include <polyfem/assembler/HookeLinearElasticity.hpp>
 #include <polyfem/assembler/IncompressibleLinElast.hpp>
 #include <polyfem/assembler/Laplacian.hpp>
+#include <polyfem/assembler/Electrostatics.hpp>
 #include <polyfem/assembler/LinearElasticity.hpp>
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/MooneyRivlinElasticity.hpp>
@@ -52,6 +53,9 @@ namespace polyfem
 				return std::make_shared<Helmholtz>();
 			else if (formulation == "Laplacian")
 				return std::make_shared<Laplacian>();
+			else if (formulation == "Electrostatics")
+				return std::make_shared<Electrostatics>();
+
 			else if (formulation == "Bilaplacian")
 				return std::make_shared<BilaplacianMain>();
 			else if (formulation == "BilaplacianAux")
@@ -202,21 +206,24 @@ namespace polyfem
 			else
 			{
 				// subtract one since we take a derivative (lowers polynomial order by 1)
-				// multiply by two since we are multiplying grad phi_i by grad phi_j 
-				if (b_type == BasisType::SIMPLEX_LAGRANGE) {
+				// multiply by two since we are multiplying grad phi_i by grad phi_j
+				if (b_type == BasisType::SIMPLEX_LAGRANGE)
+				{
 					return std::max((basis_degree - 1) * 2, 1);
 				}
-				else if (b_type == BasisType::CUBE_LAGRANGE) {
+				else if (b_type == BasisType::CUBE_LAGRANGE)
+				{
 					// in this case we have a tensor product basis
 					// this computes the quadrature order along a single axis
-					// the Quadrature itself takes a tensor product of the given quadrature points 
+					// the Quadrature itself takes a tensor product of the given quadrature points
 					// to form the full quadrature for the basis
 					// taking a gradient leaves at least one variable whose power remains unchanged
 					// thus, we don't subtract 1
 					// note that this is overkill for the variable that was differentiated
 					return std::max(basis_degree * 2, 1);
 				}
-				else {
+				else
+				{
 					return (basis_degree - 1) * 2 + 1;
 				}
 			}

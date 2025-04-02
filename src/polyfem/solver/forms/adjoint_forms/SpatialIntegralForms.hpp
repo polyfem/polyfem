@@ -2,6 +2,9 @@
 
 #include "AdjointForm.hpp"
 
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/State.hpp>
+
 namespace polyfem::solver
 {
 	class SpatialIntegralForm : public StaticForm
@@ -71,6 +74,30 @@ namespace polyfem::solver
 
 	private:
 		int in_power_ = 2;
+	};
+
+	class DirichletEnergyForm : public SpatialIntegralForm
+	{
+	public:
+		DirichletEnergyForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
+
+		{
+			std::string formulation = state.formulation();
+			if (!(formulation == "Laplacian" || formulation == "Electrostatics"))
+				log_and_throw_adjoint_error("DirichletEnergyForm can only be used with Laplacian or Electrostatics problems!");
+
+			set_integral_type(SpatialIntegralType::Volume);
+
+			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
+			ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
+		}
+
+		std::string name() const override { return "dirichlet_energy"; }
+
+		void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+
+	protected:
+		IntegrableFunctional get_integral_functional() const override;
 	};
 
 	class ComplianceForm : public SpatialIntegralForm

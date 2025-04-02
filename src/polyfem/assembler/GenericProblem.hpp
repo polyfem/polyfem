@@ -89,6 +89,7 @@ namespace polyfem
 			void clear() override;
 
 			void update_dirichlet_boundary(const int id, const int time_step, const Eigen::VectorXd &val);
+			void update_dirichlet_nodes(const Eigen::VectorXi &in_node_to_node, const Eigen::VectorXi &node_ids, const Eigen::MatrixXd &nodal_dirichlet);
 			void update_pressure_boundary(const int id, const int time_step, const double val);
 
 		private:

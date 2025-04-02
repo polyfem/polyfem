@@ -23,6 +23,8 @@ set(SOURCES
 	IncompressibleLinElast.hpp
 	Laplacian.cpp
 	Laplacian.hpp
+	Electrostatics.cpp
+	Electrostatics.hpp
 	LinearElasticity.cpp
 	LinearElasticity.hpp
 	MacroStrain.hpp

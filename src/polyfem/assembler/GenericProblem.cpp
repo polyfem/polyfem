@@ -456,6 +456,12 @@ namespace polyfem
 
 		void GenericTensorProblem::update_nodes(const Eigen::VectorXi &in_node_to_node)
 		{
+			if (updated_dirichlet_node_ordering_)
+			{
+				if (nodal_dirichlet_mat_.size() > 0)
+					logger().debug("Skipping updating in nodes to nodes in problem, already done once...");
+				return;
+			}
 			for (auto &n_dirichlet : nodal_dirichlet_mat_)
 			{
 				for (int n = 0; n < n_dirichlet.rows(); ++n)
@@ -464,6 +470,7 @@ namespace polyfem
 					n_dirichlet(n, 0) = node_id;
 				}
 			}
+			updated_dirichlet_node_ordering_ = true;
 		}
 
 		void GenericTensorProblem::set_parameters(const json &params)
@@ -883,6 +890,7 @@ namespace polyfem
 			for (int i = 0; i < exact_grad_.size(); ++i)
 				exact_grad_[i].clear();
 			is_all_ = false;
+			updated_dirichlet_node_ordering_ = false;
 		}
 
 		GenericScalarProblem::GenericScalarProblem(const std::string &name)
@@ -1097,6 +1105,22 @@ namespace polyfem
 			}
 		}
 
+		void GenericTensorProblem::update_dirichlet_nodes(const Eigen::VectorXi &in_node_to_node, const Eigen::VectorXi &node_ids, const Eigen::MatrixXd &nodal_dirichlet)
+		{
+			assert(node_ids.size() == nodal_dirichlet.rows());
+			// NOTE!!! Update nodes called in `State::build_basis()` so the first row of this mat
+			// must be set to input node ordering if `build_basis` will be called, like in optimization
+			for (auto &n_dirichlet : nodal_dirichlet_mat_)
+				for (int i = 0; i < node_ids.size(); ++i)
+				{
+					int mapped_node_id = in_node_to_node(node_ids(i));
+					for (int j = 0; j < n_dirichlet.rows(); ++j)
+						if (mapped_node_id == n_dirichlet(j, 0))
+							for (int k = 0; k < n_dirichlet.cols() - 1; ++k)
+								n_dirichlet(j, k + 1) = nodal_dirichlet(i, k);
+				}
+		}
+
 		void GenericScalarProblem::dirichlet_nodal_value(const mesh::Mesh &mesh, const int node_id, const RowVectorNd &pt, const double t, Eigen::MatrixXd &val) const
 		{
 			val = Eigen::MatrixXd::Zero(1, 1);
@@ -1173,6 +1197,8 @@ namespace polyfem
 
 		void GenericScalarProblem::update_nodes(const Eigen::VectorXi &in_node_to_node)
 		{
+			if (updated_dirichlet_node_ordering_)
+				return;
 			for (auto &n_dirichlet : nodal_dirichlet_mat_)
 			{
 				for (int n = 0; n < n_dirichlet.rows(); ++n)
@@ -1181,6 +1207,7 @@ namespace polyfem
 					n_dirichlet(n, 0) = node_id;
 				}
 			}
+			updated_dirichlet_node_ordering_ = true;
 		}
 
 		void GenericScalarProblem::set_parameters(const json &params)
@@ -1339,6 +1366,7 @@ namespace polyfem
 			has_exact_ = false;
 			has_exact_grad_ = false;
 			is_time_dept_ = false;
+			updated_dirichlet_node_ordering_ = false;
 		}
 	} // namespace assembler
 } // namespace polyfem
