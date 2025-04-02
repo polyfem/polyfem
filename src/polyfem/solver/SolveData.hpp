@@ -161,5 +161,6 @@ namespace polyfem::solver
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 	private:
 		json barrier_stiffness_;
+		double dt_ = 0;
 	};
 } // namespace polyfem::solver

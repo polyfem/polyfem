@@ -397,6 +397,8 @@ namespace polyfem::solver
 
 		update_dt();
 
+		this->dt_ = dt;
+
 		return forms;
 	}
 
@@ -431,17 +433,18 @@ namespace polyfem::solver
 				max_stiffness= std::max(max_stiffness, std::abs(it.value()));
 			}
 		}
+
 		//Sets barrier stiffness to 1000*material_stiffness*grad_energy/(approx gradient of barrier function)
 		//1000*material_stiffness keeps the barrier stiffness orders higher than material stiffness and grad_energy/(approx gradient of barrier function) provides a scaling factor based on changes in the energy relative to barrier stiffness
-		//1000 could be changed, but found to work well for a number of test cases
-		double current_barrier_stiffness = contact_form->barrier_stiffness();
+		// 1000 could be changed, but found to work well for a number of test cases
+		const double current_barrier_stiffness = contact_form->barrier_stiffness();
 		double ini_barrier_stiffness = 1.0;
 		if (barrier_stiffness_.is_number()){
 			ini_barrier_stiffness = barrier_stiffness_.get<double>();
 		}
 		const double dhat = contact_form->dhat();
 		double contact_barrier_grad =  2.25545*dhat; //solving for d for d(barrier_function)/dd(barrier_function) gives constant relative to dhat
-		double barrier_stiffness = 1000*grad_energy*max_stiffness/contact_barrier_grad * ini_barrier_stiffness;
+		double barrier_stiffness =1000 * 1/dt_*1/dt_*max_stiffness*grad_energy/contact_barrier_grad * ini_barrier_stiffness; //adding 1/dt^2 as a test
 		if (barrier_stiffness>current_barrier_stiffness){
 			contact_form->set_barrier_stiffness(barrier_stiffness);
 			logger().debug("Barrier Stiffness set to {}", contact_form->barrier_stiffness());
