@@ -670,7 +670,8 @@
         "options": [
             "Lagrange",
             "Spline",
-            "Serendipity"
+            "Serendipity",
+            "Bernstein"
         ],
         "type": "string",
         "doc": "Type of basis to use for non polygonal element, one of Lagrange, Spline, or Serendipity. Spline or Serendipity work only for quad/hex meshes"

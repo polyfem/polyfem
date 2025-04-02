@@ -24,7 +24,7 @@ namespace
 		const std::string path = POLYFEM_DATA_DIR;
 
 		json material;
-        material = R"(
+		material = R"(
         {
             "type": "NeoHookean",
             "E": 20000,
@@ -127,92 +127,92 @@ namespace
 		return state;
 	}
 
-    template <int N>
-    constexpr Eigen::Matrix<double, ((N+1)*(N+2))/2, 3> upsample_triangle()
-    {
-        constexpr int num = ((N+1)*(N+2))/2;
+	template <int N>
+	constexpr Eigen::Matrix<double, ((N + 1) * (N + 2)) / 2, 3> upsample_triangle()
+	{
+		constexpr int num = ((N + 1) * (N + 2)) / 2;
 
-        Eigen::Matrix<double, num, 3> out;
-        for (int i = 0, k = 0; i <= N; i++)
-            for (int j = 0; i + j <= N; j++, k++)
-            {
-                std::array<int, 3> arr = {{i, j, N - i - j}};
-                std::sort(arr.begin(), arr.end());
+		Eigen::Matrix<double, num, 3> out;
+		for (int i = 0, k = 0; i <= N; i++)
+			for (int j = 0; i + j <= N; j++, k++)
+			{
+				std::array<int, 3> arr = {{i, j, N - i - j}};
+				std::sort(arr.begin(), arr.end());
 
-                out.row(k) << i, j, N - i - j;
-            }
-        
-        out.template leftCols<3>() /= N;
-        return out;
-    }
+				out.row(k) << i, j, N - i - j;
+			}
 
-    template <int N>
-    constexpr Eigen::Matrix<double, ((N+1)*(N+2)*(N+3))/6, 4> upsample_tetrahedron()
-    {
-        constexpr int num = ((N+1)*(N+2)*(N+3))/6;
+		out.template leftCols<3>() /= N;
+		return out;
+	}
 
-        Eigen::Matrix<double, num, 4> out;
-        for (int i = 0, k = 0; i <= N; i++)
-            for (int j = 0; j <= N; j++)
-                for (int l = 0; i + j + l <= N; l++, k++)
-                {
-                    std::array<int, 4> arr = {{i, j, l, N - i - j - l}};
-                    std::sort(arr.begin(), arr.end());
+	template <int N>
+	constexpr Eigen::Matrix<double, ((N + 1) * (N + 2) * (N + 3)) / 6, 4> upsample_tetrahedron()
+	{
+		constexpr int num = ((N + 1) * (N + 2) * (N + 3)) / 6;
 
-                    out.row(k) << i, j, l, N - i - j - l;
-                }
-        
-        out.template leftCols<4>() /= N;
-        return out;
-    }
+		Eigen::Matrix<double, num, 4> out;
+		for (int i = 0, k = 0; i <= N; i++)
+			for (int j = 0; j <= N; j++)
+				for (int l = 0; i + j + l <= N; l++, k++)
+				{
+					std::array<int, 4> arr = {{i, j, l, N - i - j - l}};
+					std::sort(arr.begin(), arr.end());
+
+					out.row(k) << i, j, l, N - i - j - l;
+				}
+
+		out.template leftCols<4>() /= N;
+		return out;
+	}
 } // namespace
 
 TEST_CASE("jacobian-evaluate", "[jacobian]")
 {
-    const double tol = 1e-8;
-    constexpr int N = 7;
-    for (int dim = 2; dim <= 3; dim++)
-    {
-        for (int order = 1; order < 4; order++)
-        {
+	const double tol = 1e-8;
+	constexpr int N = 7;
+	for (int dim = 2; dim <= 3; dim++)
+	{
+		for (int order = 1; order < 4; order++)
+		{
 			// std::cout << "order " << order << ", dim " << dim << std::endl;
-            Eigen::MatrixXd cp;
-            if (dim == 2)
-                autogen::p_nodes_2d(order, cp);
-            else
-                autogen::p_nodes_3d(order, cp);
-            cp += Eigen::MatrixXd::Random(cp.rows(), cp.cols()) * 0.2;
+			Eigen::MatrixXd cp;
+			if (dim == 2)
+				autogen::p_nodes_2d(order, cp);
+			else
+				autogen::p_nodes_3d(order, cp);
+			cp += Eigen::MatrixXd::Random(cp.rows(), cp.cols()) * 0.2;
 
-            Eigen::MatrixXd uv;
-            if (dim == 2)
-                uv = upsample_triangle<N>().leftCols<2>();
-            else
-                uv = upsample_tetrahedron<N>().leftCols<3>();
-            
-            Eigen::VectorXd jac1 = robust_evaluate_jacobian(order, cp, uv);
+			Eigen::MatrixXd uv;
+			if (dim == 2)
+				uv = upsample_triangle<N>().leftCols<2>();
+			else
+				uv = upsample_tetrahedron<N>().leftCols<3>();
 
-            std::vector<Eigen::MatrixXd> grads(cp.rows(), Eigen::MatrixXd::Zero(uv.rows(), dim));
-            for (int bid = 0; bid < cp.rows(); bid++)
-                if (dim == 2)
-                    p_grad_basis_value_2d(order, bid, uv, grads[bid]);
-                else
-                    p_grad_basis_value_3d(order, bid, uv, grads[bid]);
-            
-            Eigen::VectorXd jac2 = jac1;
-            for (int k = 0; k < uv.rows(); k++)
-            {
-                Eigen::MatrixXd jac_mat;
-                jac_mat.setZero(dim, dim);
-                for (int bid = 0; bid < cp.rows(); bid++)
-                    jac_mat += cp.row(bid).transpose() * grads[bid].row(k);
-                
-                jac2(k) = jac_mat.determinant();
+			Eigen::VectorXd jac1 = robust_evaluate_jacobian(order, cp, uv);
+
+			std::vector<Eigen::MatrixXd> grads(cp.rows(), Eigen::MatrixXd::Zero(uv.rows(), dim));
+			for (int bid = 0; bid < cp.rows(); bid++)
+				if (dim == 2)
+					p_grad_basis_value_2d(false, order, bid, uv, grads[bid]);
+				else
+					p_grad_basis_value_3d(false, order, bid, uv, grads[bid]);
+
+			Eigen::VectorXd jac2 = jac1;
+			for (int k = 0; k < uv.rows(); k++)
+			{
+				Eigen::MatrixXd jac_mat;
+				jac_mat.setZero(dim, dim);
+				for (int bid = 0; bid < cp.rows(); bid++)
+					jac_mat += cp.row(bid).transpose() * grads[bid].row(k);
+
+				jac2(k) = jac_mat.determinant();
 
 				// std::cout << std::setprecision(12) << jac1(k) << ", " << jac2(k) << ", " << abs(jac1(k) - jac2(k)) / abs(jac2(k)) << std::endl;
-            }
+			}
 
-            Eigen::VectorXd denominator = jac1.array().abs().cwiseMax(jac2.array().abs()).cwiseMax(tol);
-            REQUIRE(((jac2 - jac1).array() / denominator.array()).abs().maxCoeff() / tol < 1);
-        }
-    }
+			Eigen::VectorXd denominator = jac1.array().abs().cwiseMax(jac2.array().abs()).cwiseMax(tol);
+			REQUIRE(((jac2 - jac1).array() / denominator.array()).abs().maxCoeff() / tol < 1);
+		}
+	}
 }
