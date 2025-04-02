@@ -148,12 +148,13 @@ namespace polyfem::mesh
 
 		Eigen::MatrixXd sol = x0;
 
-		const size_t default_max_iterations = nl_solver->stop_criteria().iterations;
-		nl_solver->stop_criteria().iterations = al_max_solver_iter;
-		al_solver.solve_al(nl_solver, problem, sol);
+		throw std::runtime_error("Fix me");
+		// const size_t default_max_iterations = nl_solver->stop_criteria().iterations;
+		// nl_solver->stop_criteria().iterations = al_max_solver_iter;
+		// al_solver.solve_al(nl_solver, problem, sol);
 
-		nl_solver->stop_criteria().iterations = default_max_iterations;
-		al_solver.solve_reduced(nl_solver, problem, sol);
+		// nl_solver->stop_criteria().iterations = default_max_iterations;
+		// al_solver.solve_reduced(nl_solver, problem, sol);
 
 #ifndef NDEBUG
 		assert(forms[1]->is_step_valid(sol, sol)); // inversion-free

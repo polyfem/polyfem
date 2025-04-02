@@ -318,7 +318,7 @@ TEST_CASE("elastic form derivatives", "[form][form_derivatives][elastic_form]")
 
 TEST_CASE("pressure form derivatives", "[form][form_derivatives][pressure_form]")
 {
-	const int dim = GENERATE(3);
+	const int dim = GENERATE(2, 3);
 	const bool is_time_dependent = GENERATE(true);
 	const auto state_ptr = get_state(dim);
 	state_ptr->elasticity_pressure_assembler = state_ptr->build_pressure_assembler();
