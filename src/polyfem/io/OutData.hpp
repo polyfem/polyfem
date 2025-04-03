@@ -18,6 +18,9 @@
 
 #include <Eigen/Dense>
 
+#include <ipc/potentials/normal_adhesion_potential.hpp>
+#include <ipc/potentials/tangential_adhesion_potential.hpp>
+
 namespace polyfem
 {
 	class State;
@@ -53,6 +56,8 @@ namespace polyfem::io
 			bool points;
 			bool contact_forces;
 			bool friction_forces;
+			bool normal_adhesion_forces;
+			bool tangential_adhesion_forces;
 			bool forces;
 			bool jacobian_validity;
 

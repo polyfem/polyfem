@@ -235,6 +235,11 @@ TEST_CASE("contact_3d", tagsrun)
 	run_data("contact_3d", POLYFEM_DATA_DIR);
 }
 
+TEST_CASE("adhesion", tagsrun)
+{
+	run_data("adhesion", POLYFEM_DATA_DIR);
+}
+
 TEST_CASE("selection", tagsrun)
 {
 	run_data("selection", POLYFEM_DATA_DIR);

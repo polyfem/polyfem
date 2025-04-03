@@ -51,6 +51,8 @@ namespace polyfem::solver
 	class InertiaForm;
 	class ElasticForm;
 	class PressureForm;
+	class NormalAdhesionForm;
+	class TangentialAdhesionForm;
 
 	/// class to store time stepping data
 	class SolveData
@@ -111,12 +113,25 @@ namespace polyfem::solver
 			const ipc::CollisionMesh &collision_mesh,
 			const double dhat,
 			const double avg_mass,
-			const bool use_convergent_contact_formulation,
+			const bool use_area_weighting,
+			const bool use_improved_max_operator,
+			const bool use_physical_barrier,
 			const json &barrier_stiffness,
 			const ipc::BroadPhaseMethod broad_phase,
 			const double ccd_tolerance,
 			const long ccd_max_iterations,
 			const bool enable_shape_derivatives,
+
+			// Normal Adhesion Form
+			const bool adhesion_enabled,
+			const double dhat_p,
+			const double dhat_a,
+			const double Y,
+
+			// Tangential Adhesion Form
+			const double tangential_adhesion_coefficient,
+			const double epsa,
+			const int tangential_adhesion_iterations,
 
 			// Homogenization
 			const assembler::MacroStrainValue &macro_strain_constraint,
@@ -157,6 +172,8 @@ namespace polyfem::solver
 		std::shared_ptr<solver::FrictionForm> friction_form;
 		std::shared_ptr<solver::InertiaForm> inertia_form;
 		std::shared_ptr<solver::PressureForm> pressure_form;
+		std::shared_ptr<solver::NormalAdhesionForm> normal_adhesion_form;
+		std::shared_ptr<solver::TangentialAdhesionForm> tangential_adhesion_form;
 
 		std::shared_ptr<solver::PeriodicContactForm> periodic_contact_form;
 
