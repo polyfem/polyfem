@@ -444,11 +444,12 @@ namespace polyfem::solver
 		}
 		const double dhat = contact_form->dhat();
 		double contact_barrier_grad =  2.25545*dhat; //solving for d for d(barrier_function)/dd(barrier_function) gives constant relative to dhat
-		double barrier_stiffness =1000 * 1/dt_*1/dt_*max_stiffness*grad_energy/contact_barrier_grad * ini_barrier_stiffness; //adding 1/dt^2 as a test
-		if (barrier_stiffness>current_barrier_stiffness){
-			contact_form->set_barrier_stiffness(barrier_stiffness);
-			logger().debug("Barrier Stiffness set to {}", contact_form->barrier_stiffness());
-		}
+		double barrier_stiffness =1000 *  max_stiffness*grad_energy/contact_barrier_grad * ini_barrier_stiffness;
+		if (barrier_stiffness == 0)
+			barrier_stiffness = 1000 * max_stiffness * ini_barrier_stiffness;
+		contact_form->set_barrier_stiffness(barrier_stiffness);
+		logger().debug("Barrier Stiffness set to {}", contact_form->barrier_stiffness());
+
 	}
 	void SolveData::update_dt()
 	{
