@@ -149,6 +149,7 @@ namespace polyfem::solver
 
 				logger().debug("Current error = {}, prev error = {}", current_error, prev_error);
 
+
 				if ((increase_al_weight&& al_weight < max_al_weight) || (prev_error!= 0 && (prev_error-current_error)/prev_error<(1-eta_tol)&& al_weight < max_al_weight) )
 				{
 					al_weight *= scaling;
