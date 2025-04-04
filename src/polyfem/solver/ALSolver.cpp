@@ -9,7 +9,11 @@ namespace polyfem::solver
 	public:
 		bool operator()(const polysolve::nonlinear::Criteria &crit)
 		{
-			if (crit.iterations > 3 && std::abs(crit.gradNorm)< 1e-3)
+			if (crit.iterations > 3 && (std::abs(crit.gradNorm)< 1e-3 || std::abs(crit.xDeltaDotGrad) < 1e-12))
+            {
+                logger().warn("Converged after {} iterations", crit.iterations);
+                return true;
+            }
 
 			{
 				logger().warn("Converged after {} iterations", crit.iterations);
