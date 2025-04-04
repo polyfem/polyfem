@@ -426,6 +426,8 @@ namespace polyfem::solver
 		}
 		//Grabs the approximate stiffness of the material via the max coeff of the elastic hessian
 		elastic_form->second_derivative(x, hessian_form);
+		const double ef_weight = elastic_form->weight();
+
 		for (int k = 0; k < hessian_form.outerSize(); ++k)
 		{
 			for (StiffnessMatrix::InnerIterator it(hessian_form, k); it; ++it)
@@ -433,6 +435,8 @@ namespace polyfem::solver
 				max_stiffness= std::max(max_stiffness, std::abs(it.value()));
 			}
 		}
+		max_stiffness/= ef_weight;
+
 
 		//Sets barrier stiffness to 1000*material_stiffness*grad_energy/(approx gradient of barrier function)
 		//1000*material_stiffness keeps the barrier stiffness orders higher than material stiffness and grad_energy/(approx gradient of barrier function) provides a scaling factor based on changes in the energy relative to barrier stiffness
@@ -444,9 +448,9 @@ namespace polyfem::solver
 		}
 		const double dhat = contact_form->dhat();
 		double contact_barrier_grad =  2.25545*dhat; //solving for d for d(barrier_function)/dd(barrier_function) gives constant relative to dhat
-		double barrier_stiffness =1000 *  max_stiffness*grad_energy/contact_barrier_grad * ini_barrier_stiffness;
-		if (barrier_stiffness == 0)
-			barrier_stiffness = 1000 * max_stiffness * ini_barrier_stiffness;
+		double barrier_stiffness = 1000*max_stiffness*grad_energy/contact_barrier_grad * ini_barrier_stiffness;
+		if (barrier_stiffness <  1000*max_stiffness * ini_barrier_stiffness)
+			barrier_stiffness = 1000*max_stiffness * ini_barrier_stiffness;
 		contact_form->set_barrier_stiffness(barrier_stiffness);
 		logger().debug("Barrier Stiffness set to {}", contact_form->barrier_stiffness());
 

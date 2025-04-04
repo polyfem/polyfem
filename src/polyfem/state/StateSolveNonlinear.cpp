@@ -310,13 +310,16 @@ namespace polyfem
 		elastic_form->second_derivative(sol, stiffness);
 		double max_stiffness = 0.0;
 
+		const double ef_weight = elastic_form->weight();
+
 		for (int k = 0; k < stiffness.outerSize(); ++k)
 		{
 			for (StiffnessMatrix::InnerIterator it(stiffness, k); it; ++it)
 			{
-				max_stiffness = std::max(max_stiffness, std::abs(it.value()));
+				max_stiffness= std::max(max_stiffness, std::abs(it.value()));
 			}
 		}
+		max_stiffness/= ef_weight;
 
 		//Grabs max dist of DBC for current time step
 		double dbc_dist = 0;
