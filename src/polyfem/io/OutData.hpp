@@ -78,10 +78,12 @@ namespace polyfem::io
 			/// @brief initialize the flags based on the input args
 			/// @param[in] args input arguments used to set most of the flags
 			/// @param[in] is_mesh_linear if the mesh is linear
+			/// @param[in] mesh_has_prisms if the mesh has prisms
 			/// @param[in] is_problem_scalar if the problem is scalar
 			/// @param[in] solve_export_to_file if export to file or save in the frames
 			ExportOptions(const json &args,
 						  const bool is_mesh_linear,
+						  const bool mesh_has_prisms,
 						  const bool is_problem_scalar,
 						  const bool solve_export_to_file);
 
@@ -337,6 +339,7 @@ namespace polyfem::io
 		/// works in 2 and 3d. if the mesh is not simplicial it gets tri/tet halized
 		/// @param[in] mesh mesh
 		/// @param[in] disc_orders discretization orders
+		/// @param[in] disc_ordersq discretization orders
 		/// @param[in] bases bases
 		/// @param[out] points mesh points
 		/// @param[out] elements mesh high-order cells
@@ -345,6 +348,7 @@ namespace polyfem::io
 		void build_high_order_vis_mesh(
 			const mesh::Mesh &mesh,
 			const Eigen::VectorXi &disc_orders,
+			const Eigen::VectorXi &disc_ordersq,
 			const std::vector<basis::ElementBases> &bases,
 			Eigen::MatrixXd &points,
 			std::vector<std::vector<int>> &elements,
@@ -422,6 +426,8 @@ namespace polyfem::io
 
 		/// statiscs on the mesh (simplices)
 		int simplex_count;
+		/// statiscs on the mesh (simplices)
+		int prism_count;
 		/// statiscs on the mesh (regular quad/hex part of the mesh), see Polyspline paper for desciption
 		int regular_count;
 		/// statiscs on the mesh (regular quad/hex boundary part of the mesh), see Polyspline paper for desciption
@@ -488,6 +494,7 @@ namespace polyfem::io
 		/// @param[in] sol solution
 		/// @param[in] mesh mesh
 		/// @param[in] disc_orders discretization order
+		/// @param[in] disc_ordersq discretization order
 		/// @param[in] problem problem
 		/// @param[in] runtime rumtime
 		/// @param[in] formulation formulation
@@ -499,6 +506,7 @@ namespace polyfem::io
 					   const Eigen::MatrixXd &sol,
 					   const mesh::Mesh &mesh,
 					   const Eigen::VectorXi &disc_orders,
+					   const Eigen::VectorXi &disc_ordersq,
 					   const assembler::Problem &problem,
 					   const OutRuntimeData &runtime,
 					   const std::string &formulation,

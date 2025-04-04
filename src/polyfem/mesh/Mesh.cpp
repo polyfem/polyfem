@@ -424,6 +424,11 @@ namespace polyfem::mesh
 		return elements_tag_[el_id] == ElementType::SIMPLEX;
 	}
 
+	bool Mesh::is_prism(const int el_id) const
+	{
+		return elements_tag_[el_id] == ElementType::PRISM;
+	}
+
 	std::vector<std::pair<int, int>> Mesh::edges() const
 	{
 		std::vector<std::pair<int, int>> res;

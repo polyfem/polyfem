@@ -330,7 +330,11 @@ namespace polyfem::solver
 				sol,
 				Eigen::MatrixXd::Zero(state->n_pressure_bases, 1),
 				tend, dt,
-				io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar(), state->solve_export_to_file),
+				io::OutGeometryData::ExportOptions(state->args,
+												   state->mesh->is_linear(),
+												   state->mesh->has_prism(),
+												   state->problem->is_scalar(),
+												   state->solve_export_to_file),
 				state->is_contact_enabled(),
 				state->solution_frames);
 
@@ -380,7 +384,7 @@ namespace polyfem::solver
 	{
 		if (!enable_slim)
 			return false;
-		
+
 		for (const auto &v : variables_to_simulation_)
 			v->update(x0);
 

@@ -1,9 +1,15 @@
 set(AUTOGEN_BASES
 	auto_p_bases.cpp
 	auto_p_bases.hpp
+	auto_q_bases_1d_val.cpp
+	auto_q_bases_1d_nodes.cpp
+	auto_q_bases_1d_grad.cpp
+
 	auto_q_bases_2d_val.cpp
 	auto_q_bases_2d_nodes.cpp
 	auto_q_bases_2d_grad.cpp
+
+
 	auto_q_bases_3d_val.cpp
 	auto_q_bases_3d_nodes.cpp
 	auto_q_bases_3d_grad.cpp
@@ -14,6 +20,9 @@ set(AUTOGEN_BASES
 	auto_q_bases_3d_grad_2.cpp
 	auto_q_bases_3d_grad_3.cpp
 	auto_q_bases_3d_grad_-2.cpp
+
+	prism_bases.cpp
+	prism_bases.hpp
 )
 
 set(AUTOGEN
