@@ -115,9 +115,6 @@ namespace polyfem::solver
 		  penalty_forms_(penalty_forms),
 		  solver_(solver)
 	{
-		if (periodic_bc != nullptr)
-			throw std::runtime_error("To be fixed");
-
 		setup_constraints();
 		use_reduced_size();
 	}
@@ -436,9 +433,9 @@ namespace polyfem::solver
 
 	void NLProblem::update_quantities(const double t, const TVector &x)
 	{
-		assert(x.size() == full_size_);
 		t_ = t;
 		const TVector full = reduced_to_full(x);
+		assert(full.size() == full_size_);
 		for (auto &f : forms_)
 			f->update_quantities(t, full);
 
@@ -524,20 +521,7 @@ namespace polyfem::solver
 
 		if (full_size() != current_size())
 		{
-			if (penalty_forms_.size() == 1 && penalty_forms_.front()->can_project())
-				penalty_forms_.front()->project_hessian(hessian);
-			else
-			{
-				// arma::sp_mat q2a = fill_arma(Q2_);
-				// arma::sp_mat ha = fill_arma(hessian);
-				// arma::sp_mat q2thq2 = q2a.t() * ha * q2a;
-				// hessian = fill_eigen(q2thq2);
-				hessian = Q2t_ * hessian * Q2_;
-				// remove numerical zeros
-				hessian.prune([](const Eigen::Index &row, const Eigen::Index &col, const Scalar &value) {
-					return std::abs(value) > 1e-10;
-				});
-			}
+			full_hessian_to_reduced_hessian(hessian);
 		}
 		else if (penalty_problem_)
 		{
@@ -629,4 +613,21 @@ namespace polyfem::solver
 		return full;
 	}
 
+	void NLProblem::full_hessian_to_reduced_hessian(StiffnessMatrix &hessian) const
+	{
+		if (penalty_forms_.size() == 1 && penalty_forms_.front()->can_project())
+			penalty_forms_.front()->project_hessian(hessian);
+		else
+		{
+			// arma::sp_mat q2a = fill_arma(Q2_);
+			// arma::sp_mat ha = fill_arma(hessian);
+			// arma::sp_mat q2thq2 = q2a.t() * ha * q2a;
+			// hessian = fill_eigen(q2thq2);
+			hessian = Q2t_ * hessian * Q2_;
+			// remove numerical zeros
+			hessian.prune([](const Eigen::Index &row, const Eigen::Index &col, const Scalar &value) {
+				return std::abs(value) > 1e-10;
+			});
+		}
+	}
 } // namespace polyfem::solver

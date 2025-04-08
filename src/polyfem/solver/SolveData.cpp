@@ -4,6 +4,7 @@
 #include <polyfem/solver/forms/Form.hpp>
 #include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/lagrangian/MatrixLagrangianForm.hpp>
+#include <polyfem/solver/forms/lagrangian/PeriodicLagrangianForm.hpp>
 #include <polyfem/solver/forms/lagrangian/MacroStrainLagrangianForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/PressureForm.hpp>
@@ -180,8 +181,13 @@ namespace polyfem::solver
 			if (!boundary_nodes.empty())
 				al_form.push_back(std::make_shared<BCLagrangianForm>(
 					ndof, boundary_nodes, local_boundary, local_neumann_boundary,
-					n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t, periodic_bc));
+					n_boundary_samples, mass_tmp, *rhs_assembler, obstacle_ndof, is_time_dependent, t));
 			// forms.push_back(al_form.back());
+		}
+
+		if (periodic_bc != nullptr)
+		{
+			al_form.push_back(std::make_shared<PeriodicLagrangianForm>(ndof, periodic_bc));
 		}
 
 		for (const auto &path : hard_constraint_files)

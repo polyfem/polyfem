@@ -63,6 +63,8 @@ namespace polyfem::solver
 		TVector full_to_reduced_grad(const TVector &full) const;
 		TVector reduced_to_full(const TVector &reduced) const;
 
+		void full_hessian_to_reduced_hessian(StiffnessMatrix &hessian) const;
+
 		double normalize_forms() override;
 
 	protected:
@@ -82,7 +84,7 @@ namespace polyfem::solver
 
 		double t_;
 
-	private:
+	protected:
 		std::vector<std::shared_ptr<AugmentedLagrangianForm>> penalty_forms_;
 		// The decomposion comes from sec 1.3 of https://www.cs.cornell.edu/courses/cs6241/2021sp/meetings/nb-2021-03-11.pdf
 		StiffnessMatrix Q1_;                                         ///< Q1 block of the QR decomposition of the constraints matrix

@@ -26,14 +26,15 @@ namespace polyfem::solver
 					  const double t,
 					  const std::vector<std::shared_ptr<Form>> &forms,
 					  const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
-					  const bool solve_symmetric_macro_strain);
+					  const bool solve_symmetric_macro_strain,
+					  const std::shared_ptr<polysolve::linear::Solver> &solver);
 		virtual ~NLHomoProblem() = default;
 
 		double value(const TVector &x) override;
 		void gradient(const TVector &x, TVector &gradv) override;
 		void hessian(const TVector &x, THessian &hessian) override;
 
-		void full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const;
+		void full_hessian_to_reduced_hessian(THessian &hessian) const;
 
 		int macro_reduced_size() const;
 
