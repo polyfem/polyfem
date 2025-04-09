@@ -20,6 +20,8 @@ set(SOURCES
 	ContactForm.hpp
 	PeriodicContactForm.cpp
 	PeriodicContactForm.hpp
+	QuadraticPenaltyForm.cpp
+	QuadraticPenaltyForm.hpp
 	RayleighDampingForm.cpp
 	RayleighDampingForm.hpp
 	PressureForm.cpp

@@ -38,7 +38,6 @@ namespace polyfem
 {
 	OptState::~OptState()
 	{
-
 	}
 
 	OptState::OptState()
@@ -188,6 +187,7 @@ namespace polyfem
 			args["solver"]["nonlinear"],
 			args["solver"]["linear"],
 			args["solver"]["advanced"]["characteristic_length"]);
+		nl_problem->normalize_forms();
 		nl_solver->minimize(*nl_problem, x);
 	}
 } // namespace polyfem
