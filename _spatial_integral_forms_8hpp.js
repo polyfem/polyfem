@@ -3,6 +3,7 @@ var _spatial_integral_forms_8hpp =
     [ "polyfem::solver::SpatialIntegralForm", "classpolyfem_1_1solver_1_1_spatial_integral_form.html", "classpolyfem_1_1solver_1_1_spatial_integral_form" ],
     [ "polyfem::solver::ElasticEnergyForm", "classpolyfem_1_1solver_1_1_elastic_energy_form.html", "classpolyfem_1_1solver_1_1_elastic_energy_form" ],
     [ "polyfem::solver::StressNormForm", "classpolyfem_1_1solver_1_1_stress_norm_form.html", "classpolyfem_1_1solver_1_1_stress_norm_form" ],
+    [ "polyfem::solver::DirichletEnergyForm", "classpolyfem_1_1solver_1_1_dirichlet_energy_form.html", "classpolyfem_1_1solver_1_1_dirichlet_energy_form" ],
     [ "polyfem::solver::ComplianceForm", "classpolyfem_1_1solver_1_1_compliance_form.html", "classpolyfem_1_1solver_1_1_compliance_form" ],
     [ "polyfem::solver::PositionForm", "classpolyfem_1_1solver_1_1_position_form.html", "classpolyfem_1_1solver_1_1_position_form" ],
     [ "polyfem::solver::AccelerationForm", "classpolyfem_1_1solver_1_1_acceleration_form.html", "classpolyfem_1_1solver_1_1_acceleration_form" ],

@@ -12,6 +12,8 @@ var dir_12817abd2662fe40efba8355c1386b9e =
     [ "AssemblyValues.hpp", "_assembly_values_8hpp.html", "_assembly_values_8hpp" ],
     [ "Bilaplacian.cpp", "_bilaplacian_8cpp.html", null ],
     [ "Bilaplacian.hpp", "_bilaplacian_8hpp.html", "_bilaplacian_8hpp" ],
+    [ "Electrostatics.cpp", "_electrostatics_8cpp.html", null ],
+    [ "Electrostatics.hpp", "_electrostatics_8hpp.html", "_electrostatics_8hpp" ],
     [ "ElementAssemblyValues.cpp", "_element_assembly_values_8cpp.html", null ],
     [ "ElementAssemblyValues.hpp", "_element_assembly_values_8hpp.html", "_element_assembly_values_8hpp" ],
     [ "FixedCorotational.cpp", "_fixed_corotational_8cpp.html", null ],

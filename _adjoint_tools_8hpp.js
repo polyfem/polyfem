@@ -18,6 +18,7 @@ var _adjoint_tools_8hpp =
     ] ],
     [ "compute_shape_derivative_functional_term", "_adjoint_tools_8hpp.html#aa650adfcea9ae851fdf1642e5171b29b", null ],
     [ "dJ_damping_transient_adjoint_term", "_adjoint_tools_8hpp.html#ae883020211d75b1f28aa7a221e151094", null ],
+    [ "dJ_dirichlet_static_adjoint_term", "_adjoint_tools_8hpp.html#a42aa9cd955c693143bea46fb5bf29a20", null ],
     [ "dJ_dirichlet_transient_adjoint_term", "_adjoint_tools_8hpp.html#acd2d76928276e17089aaa83a50d7239f", null ],
     [ "dJ_du_step", "_adjoint_tools_8hpp.html#afd1c5f4891c34a48045ce552f6f28e3f", null ],
     [ "dJ_friction_transient_adjoint_term", "_adjoint_tools_8hpp.html#a5ac63404b8f363b91018bbb64975f76e", null ],

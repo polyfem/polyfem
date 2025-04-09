@@ -40,6 +40,7 @@ var hierarchy =
       [ "polyfem::assembler::LinearAssembler", "classpolyfem_1_1assembler_1_1_linear_assembler.html", [
         [ "polyfem::assembler::BilaplacianAux", "classpolyfem_1_1assembler_1_1_bilaplacian_aux.html", null ],
         [ "polyfem::assembler::BilaplacianMain", "classpolyfem_1_1assembler_1_1_bilaplacian_main.html", null ],
+        [ "polyfem::assembler::Electrostatics", "classpolyfem_1_1assembler_1_1_electrostatics.html", null ],
         [ "polyfem::assembler::Helmholtz", "classpolyfem_1_1assembler_1_1_helmholtz.html", null ],
         [ "polyfem::assembler::HookeLinearElasticity", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html", null ],
         [ "polyfem::assembler::IncompressibleLinearElasticityDispacement", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html", null ],
@@ -150,6 +151,7 @@ var hierarchy =
           [ "polyfem::solver::SpatialIntegralForm", "classpolyfem_1_1solver_1_1_spatial_integral_form.html", [
             [ "polyfem::solver::AccelerationForm", "classpolyfem_1_1solver_1_1_acceleration_form.html", null ],
             [ "polyfem::solver::ComplianceForm", "classpolyfem_1_1solver_1_1_compliance_form.html", null ],
+            [ "polyfem::solver::DirichletEnergyForm", "classpolyfem_1_1solver_1_1_dirichlet_energy_form.html", null ],
             [ "polyfem::solver::ElasticEnergyForm", "classpolyfem_1_1solver_1_1_elastic_energy_form.html", null ],
             [ "polyfem::solver::KineticForm", "classpolyfem_1_1solver_1_1_kinetic_form.html", null ],
             [ "polyfem::solver::MeshTargetForm", "classpolyfem_1_1solver_1_1_mesh_target_form.html", null ],
@@ -445,6 +447,7 @@ var hierarchy =
     ] ],
     [ "polyfem::solver::VariableToSimulation", "classpolyfem_1_1solver_1_1_variable_to_simulation.html", [
       [ "polyfem::solver::DampingCoeffientVariableToSimulation", "classpolyfem_1_1solver_1_1_damping_coeffient_variable_to_simulation.html", null ],
+      [ "polyfem::solver::DirichletNodesVariableToSimulation", "classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html", null ],
       [ "polyfem::solver::DirichletVariableToSimulation", "classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation.html", null ],
       [ "polyfem::solver::ElasticVariableToSimulation", "classpolyfem_1_1solver_1_1_elastic_variable_to_simulation.html", null ],
       [ "polyfem::solver::FrictionCoeffientVariableToSimulation", "classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html", null ],

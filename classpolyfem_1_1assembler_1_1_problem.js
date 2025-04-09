@@ -42,5 +42,6 @@ var classpolyfem_1_1assembler_1_1_problem =
     [ "normal_aligned_neumann_boundary_ids_", "classpolyfem_1_1assembler_1_1_problem.html#a51548724e62166e38d3da91006de92d3", null ],
     [ "pressure_boundary_ids_", "classpolyfem_1_1assembler_1_1_problem.html#a971bc9ef3c5fee60af0aef112b85b09f", null ],
     [ "pressure_cavity_ids_", "classpolyfem_1_1assembler_1_1_problem.html#af8622631539003f1f0bbaacafe363b4e", null ],
-    [ "splitting_pressure_boundary_ids_", "classpolyfem_1_1assembler_1_1_problem.html#ac0a7d65cf5de7b0aae392ddd1d8b7050", null ]
+    [ "splitting_pressure_boundary_ids_", "classpolyfem_1_1assembler_1_1_problem.html#ac0a7d65cf5de7b0aae392ddd1d8b7050", null ],
+    [ "updated_dirichlet_node_ordering_", "classpolyfem_1_1assembler_1_1_problem.html#a70de874756e51566b3fe1f34279fb08d", null ]
 ];

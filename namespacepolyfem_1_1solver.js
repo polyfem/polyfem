@@ -3,6 +3,7 @@ var namespacepolyfem_1_1solver =
     [ "AdjointTools", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html", [
       [ "compute_shape_derivative_functional_term", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#aa650adfcea9ae851fdf1642e5171b29b", null ],
       [ "dJ_damping_transient_adjoint_term", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#ae883020211d75b1f28aa7a221e151094", null ],
+      [ "dJ_dirichlet_static_adjoint_term", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a42aa9cd955c693143bea46fb5bf29a20", null ],
       [ "dJ_dirichlet_transient_adjoint_term", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#acd2d76928276e17089aaa83a50d7239f", null ],
       [ "dJ_du_step", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#afd1c5f4891c34a48045ce552f6f28e3f", null ],
       [ "dJ_friction_transient_adjoint_term", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a5ac63404b8f363b91018bbb64975f76e", null ],
@@ -49,6 +50,8 @@ var namespacepolyfem_1_1solver =
     [ "DampingCoeffientVariableToSimulation", "classpolyfem_1_1solver_1_1_damping_coeffient_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_damping_coeffient_variable_to_simulation" ],
     [ "DeformedCollisionBarrierForm", "classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html", "classpolyfem_1_1solver_1_1_deformed_collision_barrier_form" ],
     [ "DiffCache", "classpolyfem_1_1solver_1_1_diff_cache.html", "classpolyfem_1_1solver_1_1_diff_cache" ],
+    [ "DirichletEnergyForm", "classpolyfem_1_1solver_1_1_dirichlet_energy_form.html", "classpolyfem_1_1solver_1_1_dirichlet_energy_form" ],
+    [ "DirichletNodesVariableToSimulation", "classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation" ],
     [ "DirichletVariableToSimulation", "classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation.html", "classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation" ],
     [ "DivideForm", "classpolyfem_1_1solver_1_1_divide_form.html", "classpolyfem_1_1solver_1_1_divide_form" ],
     [ "ElasticEnergyForm", "classpolyfem_1_1solver_1_1_elastic_energy_form.html", "classpolyfem_1_1solver_1_1_elastic_energy_form" ],

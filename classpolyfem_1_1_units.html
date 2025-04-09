@@ -144,6 +144,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a40227e7c83a99215651686472ac72e54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3751a4430a6eaceeb9222f35e3fec25a" id="r_a3751a4430a6eaceeb9222f35e3fec25a"><td class="memItemLeft" align="right" valign="top">double &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_units.html#a3751a4430a6eaceeb9222f35e3fec25a">characteristic_length</a> ()</td></tr>
 <tr class="separator:a3751a4430a6eaceeb9222f35e3fec25a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1da6d161b2e0ccbe2ad40129d64058d" id="r_ac1da6d161b2e0ccbe2ad40129d64058d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_units.html#ac1da6d161b2e0ccbe2ad40129d64058d">capacitance</a> () const</td></tr>
+<tr class="separator:ac1da6d161b2e0ccbe2ad40129d64058d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56eca8453abb760a66a00f98d0ba4d2e" id="r_a56eca8453abb760a66a00f98d0ba4d2e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_units.html#a56eca8453abb760a66a00f98d0ba4d2e">permittivity</a> () const</td></tr>
+<tr class="separator:a56eca8453abb760a66a00f98d0ba4d2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b020eef18641f82a921e06a2a1ed0da" id="r_a2b020eef18641f82a921e06a2a1ed0da"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_units.html#a2b020eef18641f82a921e06a2a1ed0da">stress</a> () const</td></tr>
 <tr class="separator:a2b020eef18641f82a921e06a2a1ed0da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adca013e174387678434febb870ec9813" id="r_adca013e174387678434febb870ec9813"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_units.html#adca013e174387678434febb870ec9813">density</a> () const</td></tr>
@@ -178,6 +182,8 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a25dddbee7e0a6e6134d13cab9d37f6a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0fa1f9a086cf0d0a3d23c1b8e279c2a4" id="r_a0fa1f9a086cf0d0a3d23c1b8e279c2a4"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_units.html#a0fa1f9a086cf0d0a3d23c1b8e279c2a4">characteristic_length_</a> = 1</td></tr>
 <tr class="separator:a0fa1f9a086cf0d0a3d23c1b8e279c2a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae01fc6ad9c40d0af0ace00af7efd72cc" id="r_ae01fc6ad9c40d0af0ace00af7efd72cc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_units.html#ae01fc6ad9c40d0af0ace00af7efd72cc">coulomb_</a> = &quot;C&quot;</td></tr>
+<tr class="separator:ae01fc6ad9c40d0af0ace00af7efd72cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
@@ -206,15 +212,56 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00028">28</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00030">30</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00035">length_</a>, and <a class="el" href="_units_8hpp_source.html#l00037">time_</a>.</p>
+<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00037">length_</a>, and <a class="el" href="_units_8hpp_source.html#l00039">time_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_units_8hpp_source.html#l00029">force()</a>, <a class="el" href="_units_8hpp_source.html#l00030">pressure()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l00085">polyfem::assembler::GenericTensorProblem::set_units()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_units_8hpp_source.html#l00031">force()</a>, <a class="el" href="_units_8hpp_source.html#l00032">pressure()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l00085">polyfem::assembler::GenericTensorProblem::set_units()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_units_ad6783109c4a7859d1f269bc2dcd23a19_icgraph.svg" width="100%" height="426"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_units_ad6783109c4a7859d1f269bc2dcd23a19_icgraph.svg" width="100%" height="462"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="ac1da6d161b2e0ccbe2ad40129d64058d" name="ac1da6d161b2e0ccbe2ad40129d64058d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1da6d161b2e0ccbe2ad40129d64058d">&#9670;&#160;</a></span>capacitance()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string polyfem::Units::capacitance </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00024">24</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00041">coulomb_</a>, <a class="el" href="_units_8hpp_source.html#l00031">force()</a>, and <a class="el" href="_units_8hpp_source.html#l00037">length_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_units_8hpp_source.html#l00025">permittivity()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_units_ac1da6d161b2e0ccbe2ad40129d64058d_cgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_units_ac1da6d161b2e0ccbe2ad40129d64058d_icgraph.svg" width="666" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -244,7 +291,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00023">23</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00038">characteristic_length_</a>.</p>
+<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00040">characteristic_length_</a>.</p>
 
 </div>
 </div>
@@ -273,7 +320,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00022">22</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00038">characteristic_length_</a>.</p>
+<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00040">characteristic_length_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_solve_data_8cpp_source.html#l00027">polyfem::solver::SolveData::init_forms()</a>, <a class="el" href="_state_init_8cpp_source.html#l00340">polyfem::State::init_time()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00036">polyfem::State::make_nl_solver()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00279">polyfem::State::solve_tensor_nonlinear()</a>.</p>
 <div class="dynheader">
@@ -410,9 +457,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00026">26</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00028">28</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00035">length_</a>, and <a class="el" href="_units_8hpp_source.html#l00036">mass_</a>.</p>
+<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00037">length_</a>, and <a class="el" href="_units_8hpp_source.html#l00038">mass_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mass_8cpp_source.html#l00033">polyfem::assembler::Mass::add_multimaterial()</a>.</p>
 <div class="dynheader">
@@ -446,9 +493,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00031">31</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00033">33</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00035">length_</a>, <a class="el" href="_units_8hpp_source.html#l00036">mass_</a>, and <a class="el" href="_units_8hpp_source.html#l00037">time_</a>.</p>
+<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00037">length_</a>, <a class="el" href="_units_8hpp_source.html#l00038">mass_</a>, and <a class="el" href="_units_8hpp_source.html#l00039">time_</a>.</p>
 
 </div>
 </div>
@@ -475,11 +522,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00029">29</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00031">31</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00028">acceleration()</a>, and <a class="el" href="_units_8hpp_source.html#l00036">mass_</a>.</p>
+<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00030">acceleration()</a>, and <a class="el" href="_units_8hpp_source.html#l00038">mass_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l00085">polyfem::assembler::GenericTensorProblem::set_units()</a>, and <a class="el" href="_units_8hpp_source.html#l00032">viscosity()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_units_8hpp_source.html#l00024">capacitance()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00085">polyfem::assembler::GenericTensorProblem::set_units()</a>, and <a class="el" href="_units_8hpp_source.html#l00034">viscosity()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -488,7 +535,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_units_a15314eda304dc82471609f532485c9f1_icgraph.svg" width="618" height="168"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_units_a15314eda304dc82471609f532485c9f1_icgraph.svg" width="100%" height="480"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -511,7 +558,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_units_8cpp_source.html#l00009">9</a> of file <a class="el" href="_units_8cpp_source.html">Units.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00038">characteristic_length_</a>, <a class="el" href="_units_8hpp_source.html#l00035">length_</a>, <a class="el" href="_units_8hpp_source.html#l00036">mass_</a>, and <a class="el" href="_units_8hpp_source.html#l00037">time_</a>.</p>
+<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00040">characteristic_length_</a>, <a class="el" href="_units_8hpp_source.html#l00037">length_</a>, <a class="el" href="_units_8hpp_source.html#l00038">mass_</a>, and <a class="el" href="_units_8hpp_source.html#l00039">time_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_init_8cpp_source.html#l00133">polyfem::State::init()</a>.</p>
 <div class="dynheader">
@@ -547,7 +594,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00019">19</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00035">length_</a>.</p>
+<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00037">length_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00518">polyfem::State::build_basis()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00025">polyfem::mesh::read_fem_mesh()</a>, <a class="el" href="_geometry_reader_8cpp_source.html#l00327">polyfem::mesh::read_obstacle_mesh()</a>, <a class="el" href="_generic_problem_8cpp_source.html#l00085">polyfem::assembler::GenericTensorProblem::set_units()</a>, and <a class="el" href="_obstacle_8cpp_source.html#l00245">polyfem::mesh::Obstacle::set_units()</a>.</p>
 <div class="dynheader">
@@ -583,7 +630,48 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00020">20</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00036">mass_</a>.</p>
+<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00038">mass_</a>.</p>
+
+</div>
+</div>
+<a id="a56eca8453abb760a66a00f98d0ba4d2e" name="a56eca8453abb760a66a00f98d0ba4d2e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56eca8453abb760a66a00f98d0ba4d2e">&#9670;&#160;</a></span>permittivity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string polyfem::Units::permittivity </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00025">25</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00024">capacitance()</a>, and <a class="el" href="_units_8hpp_source.html#l00037">length_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_electrostatics_8cpp_source.html#l00013">polyfem::assembler::Electrostatics::add_multimaterial()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_units_a56eca8453abb760a66a00f98d0ba4d2e_cgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_units_a56eca8453abb760a66a00f98d0ba4d2e_icgraph.svg" width="414" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
@@ -610,9 +698,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00030">30</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00032">32</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00028">acceleration()</a>, <a class="el" href="_units_8hpp_source.html#l00035">length_</a>, and <a class="el" href="_units_8hpp_source.html#l00036">mass_</a>.</p>
+<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00030">acceleration()</a>, <a class="el" href="_units_8hpp_source.html#l00037">length_</a>, and <a class="el" href="_units_8hpp_source.html#l00038">mass_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_generic_problem_8cpp_source.html#l00085">polyfem::assembler::GenericTensorProblem::set_units()</a>.</p>
 <div class="dynheader">
@@ -651,9 +739,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00025">25</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00027">27</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00035">length_</a>, <a class="el" href="_units_8hpp_source.html#l00036">mass_</a>, and <a class="el" href="_units_8hpp_source.html#l00037">time_</a>.</p>
+<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00037">length_</a>, <a class="el" href="_units_8hpp_source.html#l00038">mass_</a>, and <a class="el" href="_units_8hpp_source.html#l00039">time_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_fixed_corotational_8cpp_source.html#l00079">polyfem::assembler::FixedCorotational::add_multimaterial()</a>, <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00048">polyfem::assembler::HookeLinearElasticity::add_multimaterial()</a>, <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00007">polyfem::assembler::IncompressibleLinearElasticityDispacement::add_multimaterial()</a>, <a class="el" href="_incompressible_lin_elast_8cpp_source.html#l00168">polyfem::assembler::IncompressibleLinearElasticityPressure::add_multimaterial()</a>, <a class="el" href="_linear_elasticity_8cpp_source.html#l00023">polyfem::assembler::LinearElasticity::add_multimaterial()</a>, <a class="el" href="_mooney_rivlin3_param_elasticity_8cpp_source.html#l00010">polyfem::assembler::MooneyRivlin3ParamElasticity::add_multimaterial()</a>, <a class="el" href="_mooney_rivlin3_param_symbolic_8cpp_source.html#l00559">polyfem::assembler::MooneyRivlin3ParamSymbolic::add_multimaterial()</a>, <a class="el" href="_mooney_rivlin_elasticity_8cpp_source.html#l00010">polyfem::assembler::MooneyRivlinElasticity::add_multimaterial()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00022">polyfem::assembler::NeoHookeanElasticity::add_multimaterial()</a>, <a class="el" href="_neo_hookean_elasticity_autodiff_8cpp_source.html#l00009">polyfem::assembler::NeoHookeanAutodiff::add_multimaterial()</a>, <a class="el" href="_ogden_elasticity_8cpp_source.html#l00012">polyfem::assembler::UnconstrainedOgdenElasticity::add_multimaterial()</a>, <a class="el" href="_ogden_elasticity_8cpp_source.html#l00053">polyfem::assembler::IncompressibleOgdenElasticity::add_multimaterial()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00026">polyfem::assembler::SaintVenantElasticity::add_multimaterial()</a>.</p>
 <div class="dynheader">
@@ -689,7 +777,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00021">21</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00037">time_</a>.</p>
+<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00039">time_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_init_8cpp_source.html#l00340">polyfem::State::init_time()</a>.</p>
 <div class="dynheader">
@@ -723,9 +811,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00027">27</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00029">29</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00035">length_</a>, and <a class="el" href="_units_8hpp_source.html#l00037">time_</a>.</p>
+<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00037">length_</a>, and <a class="el" href="_units_8hpp_source.html#l00039">time_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00518">polyfem::State::build_basis()</a>, and <a class="el" href="_generic_problem_8cpp_source.html#l00085">polyfem::assembler::GenericTensorProblem::set_units()</a>.</p>
 <div class="dynheader">
@@ -759,9 +847,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00032">32</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00034">34</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00029">force()</a>, <a class="el" href="_units_8hpp_source.html#l00035">length_</a>, and <a class="el" href="_units_8hpp_source.html#l00037">time_</a>.</p>
+<p class="reference">References <a class="el" href="_units_8hpp_source.html#l00031">force()</a>, <a class="el" href="_units_8hpp_source.html#l00037">length_</a>, and <a class="el" href="_units_8hpp_source.html#l00039">time_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_navier_stokes_8cpp_source.html#l00011">polyfem::assembler::NavierStokesVelocity::add_multimaterial()</a>, and <a class="el" href="_stokes_8cpp_source.html#l00009">polyfem::assembler::StokesVelocity::add_multimaterial()</a>.</p>
 <div class="dynheader">
@@ -798,9 +886,35 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00038">38</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00040">40</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_units_8hpp_source.html#l00023">characteristic_length()</a>, <a class="el" href="_units_8hpp_source.html#l00022">characteristic_length()</a>, and <a class="el" href="_units_8cpp_source.html#l00009">init()</a>.</p>
+
+</div>
+</div>
+<a id="ae01fc6ad9c40d0af0ace00af7efd72cc" name="ae01fc6ad9c40d0af0ace00af7efd72cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae01fc6ad9c40d0af0ace00af7efd72cc">&#9670;&#160;</a></span>coulomb_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string polyfem::Units::coulomb_ = &quot;C&quot;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00041">41</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_units_8hpp_source.html#l00024">capacitance()</a>.</p>
 
 </div>
 </div>
@@ -824,9 +938,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00035">35</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00037">37</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_units_8hpp_source.html#l00028">acceleration()</a>, <a class="el" href="_units_8hpp_source.html#l00026">density()</a>, <a class="el" href="_units_8hpp_source.html#l00031">energy()</a>, <a class="el" href="_units_8cpp_source.html#l00009">init()</a>, <a class="el" href="_units_8hpp_source.html#l00019">length()</a>, <a class="el" href="_units_8hpp_source.html#l00030">pressure()</a>, <a class="el" href="_units_8hpp_source.html#l00025">stress()</a>, <a class="el" href="_units_8hpp_source.html#l00027">velocity()</a>, and <a class="el" href="_units_8hpp_source.html#l00032">viscosity()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_units_8hpp_source.html#l00030">acceleration()</a>, <a class="el" href="_units_8hpp_source.html#l00024">capacitance()</a>, <a class="el" href="_units_8hpp_source.html#l00028">density()</a>, <a class="el" href="_units_8hpp_source.html#l00033">energy()</a>, <a class="el" href="_units_8cpp_source.html#l00009">init()</a>, <a class="el" href="_units_8hpp_source.html#l00019">length()</a>, <a class="el" href="_units_8hpp_source.html#l00025">permittivity()</a>, <a class="el" href="_units_8hpp_source.html#l00032">pressure()</a>, <a class="el" href="_units_8hpp_source.html#l00027">stress()</a>, <a class="el" href="_units_8hpp_source.html#l00029">velocity()</a>, and <a class="el" href="_units_8hpp_source.html#l00034">viscosity()</a>.</p>
 
 </div>
 </div>
@@ -850,9 +964,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00036">36</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00038">38</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_units_8hpp_source.html#l00026">density()</a>, <a class="el" href="_units_8hpp_source.html#l00031">energy()</a>, <a class="el" href="_units_8hpp_source.html#l00029">force()</a>, <a class="el" href="_units_8cpp_source.html#l00009">init()</a>, <a class="el" href="_units_8hpp_source.html#l00020">mass()</a>, <a class="el" href="_units_8hpp_source.html#l00030">pressure()</a>, and <a class="el" href="_units_8hpp_source.html#l00025">stress()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_units_8hpp_source.html#l00028">density()</a>, <a class="el" href="_units_8hpp_source.html#l00033">energy()</a>, <a class="el" href="_units_8hpp_source.html#l00031">force()</a>, <a class="el" href="_units_8cpp_source.html#l00009">init()</a>, <a class="el" href="_units_8hpp_source.html#l00020">mass()</a>, <a class="el" href="_units_8hpp_source.html#l00032">pressure()</a>, and <a class="el" href="_units_8hpp_source.html#l00027">stress()</a>.</p>
 
 </div>
 </div>
@@ -876,9 +990,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00037">37</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_units_8hpp_source.html#l00039">39</a> of file <a class="el" href="_units_8hpp_source.html">Units.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_units_8hpp_source.html#l00028">acceleration()</a>, <a class="el" href="_units_8hpp_source.html#l00031">energy()</a>, <a class="el" href="_units_8cpp_source.html#l00009">init()</a>, <a class="el" href="_units_8hpp_source.html#l00025">stress()</a>, <a class="el" href="_units_8hpp_source.html#l00021">time()</a>, <a class="el" href="_units_8hpp_source.html#l00027">velocity()</a>, and <a class="el" href="_units_8hpp_source.html#l00032">viscosity()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_units_8hpp_source.html#l00030">acceleration()</a>, <a class="el" href="_units_8hpp_source.html#l00033">energy()</a>, <a class="el" href="_units_8cpp_source.html#l00009">init()</a>, <a class="el" href="_units_8hpp_source.html#l00027">stress()</a>, <a class="el" href="_units_8hpp_source.html#l00021">time()</a>, <a class="el" href="_units_8hpp_source.html#l00029">velocity()</a>, and <a class="el" href="_units_8hpp_source.html#l00034">viscosity()</a>.</p>
 
 </div>
 </div>
