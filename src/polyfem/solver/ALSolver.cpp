@@ -9,11 +9,11 @@ namespace polyfem::solver
 	public:
 		bool operator()(const polysolve::nonlinear::Criteria &crit)
 		{
-			if (crit.iterations > 2 && std::abs(crit.gradNorm - prev.gradNorm) < 1e-6)
-			{
-				logger().warn("Converged after {} iterations", crit.iterations);
-				return true;
-			}
+			if (crit.iterations > 3 && (std::abs(crit.gradNorm)< 1e-3 || std::abs(crit.xDeltaDotGrad) < 1e-12))
+            {
+                logger().warn("Converged after {} iterations", crit.iterations);
+                return true;
+            }
 
 			prev = crit;
 			return false;
@@ -50,23 +50,32 @@ namespace polyfem::solver
 		assert(tmp_sol.size() == nl_problem.reduced_size());
 
 		// --------------------------------------------------------------------
+		double current_al_weight;
+		for (auto &f : alagr_forms)
+			current_al_weight = f->get_al_weight();
 
-		double al_weight = initial_al_weight;
+		double al_weight = 0;
+		if (initial_al_weight>current_al_weight)
+		{
+			al_weight = initial_al_weight;
+			for (auto &f : alagr_forms)
+				f->set_initial_weight(al_weight);
+		}
+		else
+			al_weight = current_al_weight;
+
 		int al_steps = 0;
 
 		double initial_error = 0;
 		for (const auto &f : alagr_forms)
 			initial_error += f->compute_error(sol);
 
-		const int n_il_steps = std::max(1, int(initial_error / 1e-2));
-
+		//const int n_il_steps = std::max(1, int(initial_error / 1e-2));
+		const int n_il_steps = 1;
 		for (int t = 1; t <= n_il_steps; ++t)
 		{
 			const double il_factor = t / double(n_il_steps);
 			const Eigen::VectorXd initial_sol = sol;
-
-			for (auto &f : alagr_forms)
-				f->set_initial_weight(al_weight);
 
 			for (auto &f : alagr_forms)
 				f->set_incr_load(il_factor);
@@ -74,6 +83,7 @@ namespace polyfem::solver
 			nl_problem.update_constraint_values();
 
 			nl_problem.use_reduced_size();
+
 			nl_problem.line_search_begin(sol, tmp_sol);
 
 			logger().info("AL IL {}/{} (factor={}) with weight {}", t, n_il_steps, il_factor, al_weight);
@@ -95,7 +105,7 @@ namespace polyfem::solver
 				nl_problem.line_search_end();
 
 				nl_problem.use_full_size();
-				logger().debug("Solving AL Problem with weight {}", al_weight);
+				//logger().debug("Solving AL Problem with weight {}", al_weight);
 
 				nl_problem.init(sol);
 				update_barrier_stiffness(sol);
@@ -137,14 +147,17 @@ namespace polyfem::solver
 				nl_problem.line_search_begin(sol, tmp_sol);
 
 				logger().debug("Current error = {}, prev error = {}", current_error, prev_error);
-				if (increase_al_weight && al_weight < max_al_weight)
+
+
+				if ((increase_al_weight&& al_weight < max_al_weight) || (prev_error!= 0 && (prev_error-current_error)/prev_error<(1-eta_tol)&& al_weight < max_al_weight) )
 				{
 					al_weight *= scaling;
-					sol = initial_sol;
-					current_error = initial_error;
 
 					for (auto &f : alagr_forms)
-						f->set_initial_weight(al_weight);
+						f->set_al_weight(al_weight);
+
+					//sol = initial_sol; **Why can't we maintain the progress that was already made?
+					current_error = initial_error;
 
 					logger().debug("Increasing weight to {}", al_weight);
 				}
@@ -153,6 +166,7 @@ namespace polyfem::solver
 					for (auto &f : alagr_forms)
 						f->update_lagrangian(sol, al_weight);
 				}
+
 
 				++al_steps;
 			}

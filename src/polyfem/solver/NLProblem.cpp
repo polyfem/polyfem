@@ -125,14 +125,18 @@ namespace polyfem::solver
 	double NLProblem::normalize_forms()
 	{
 		double total_weight = 0;
-		for (const auto &f : forms_)
-			total_weight += f->weight();
+
 		if (full_size() == current_size())
 		{
 			for (const auto &f : penalty_forms_)
-				total_weight += f->weight() * f->lagrangian_weight();
+				total_weight += f->weight() + f->lagrangian_weight();
 		}
-
+		else
+		{
+			for (const auto &f : forms_)
+				total_weight += f->weight();
+		}
+		total_weight = 1.0;
 		logger().debug("Normalizing forms with scale: {}", total_weight);
 
 		for (auto &f : forms_)
@@ -447,10 +451,11 @@ namespace polyfem::solver
 
 	void NLProblem::line_search_begin(const TVector &x0, const TVector &x1)
 	{
-		FullNLProblem::line_search_begin(reduced_to_full(x0), reduced_to_full(x1));
 
+		FullNLProblem::line_search_begin(reduced_to_full(x0), reduced_to_full(x1));
 		if (full_size() == current_size())
 			penalty_problem_->line_search_begin(x0, x1);
+
 	}
 
 	double NLProblem::max_step_size(const TVector &x0, const TVector &x1)

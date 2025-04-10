@@ -73,6 +73,10 @@ namespace polyfem::solver
 
 	void ContactForm::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
 	{
+		return;
+		// Bypassing this for code in SolveData
+		//todo: add back convergent functionality
+
 		if (!use_adaptive_barrier_stiffness())
 			return;
 
@@ -288,7 +292,8 @@ namespace polyfem::solver
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(data.x);
 
 		const double curr_distance = collision_set_.compute_minimum_distance(collision_mesh_, displaced_surface);
-
+		/*
+		 //bypassing most of this for update to barrier stiffness in SolveData
 		if (use_adaptive_barrier_stiffness_)
 		{
 			if (is_time_dependent_)
@@ -312,7 +317,7 @@ namespace polyfem::solver
 				// update_barrier_stiffness(data.x);
 			}
 		}
-
+	*/
 		prev_distance_ = curr_distance;
 	}
 

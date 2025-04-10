@@ -1,5 +1,6 @@
 #include "SolveData.hpp"
 
+#include <barrier>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/Form.hpp>
 #include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
@@ -23,6 +24,7 @@
 #include <polyfem/assembler/PeriodicBoundary.hpp>
 
 #include <h5pp/h5pp.h>
+
 
 namespace polyfem::solver
 {
@@ -102,6 +104,8 @@ namespace polyfem::solver
 		// Rayleigh damping form
 		const json &rayleigh_damping)
 	{
+		this->barrier_stiffness_ = barrier_stiffness;
+
 		const bool is_time_dependent = time_integrator != nullptr;
 		assert(!is_time_dependent || time_integrator != nullptr);
 		const double dt = is_time_dependent ? time_integrator->dt() : 0.0;
@@ -344,14 +348,14 @@ namespace polyfem::solver
 				if (use_adaptive_barrier_stiffness)
 				{
 					contact_form->set_barrier_stiffness(1);
-					// logger().debug("Using adaptive barrier stiffness");
+					logger().debug("Using adaptive barrier stiffness");
 				}
 				else
 				{
 					assert(barrier_stiffness.is_number());
 					assert(barrier_stiffness.get<double>() > 0);
 					contact_form->set_barrier_stiffness(barrier_stiffness);
-					// logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
+					logger().debug("Scaling barrier stiffness by {}", contact_form->barrier_stiffness());
 				}
 
 				if (contact_form)
@@ -393,30 +397,64 @@ namespace polyfem::solver
 
 		update_dt();
 
+		this->dt_ = dt;
+
 		return forms;
 	}
 
 	void SolveData::update_barrier_stiffness(const Eigen::VectorXd &x)
-	{
-		if (contact_form == nullptr || !contact_form->use_adaptive_barrier_stiffness())
+	{	//todo: fix this to make it work with fixed barrier stiffness
+		if (contact_form == nullptr)
 			return;
 
-		Eigen::VectorXd grad_energy = Eigen::VectorXd::Zero(x.size());
+		StiffnessMatrix hessian_form;
+		double max_stiffness = 0;
+		double grad_energy = 0.0;
 		const std::array<std::shared_ptr<Form>, 4> energy_forms{
-			{elastic_form, inertia_form, body_form, pressure_form}};
+					{elastic_form, inertia_form, body_form, pressure_form}};
+
+		//Grabs the gradient of the energy to scale the barrier stiffness
 		for (const std::shared_ptr<Form> &form : energy_forms)
 		{
 			if (form == nullptr || !form->enabled())
 				continue;
 
-			Eigen::VectorXd grad_form;
+			double weight = form->weight();
+			Eigen::VectorXd grad_form = Eigen::VectorXd::Zero(x.size());
 			form->first_derivative(x, grad_form);
-			grad_energy += grad_form;
+			grad_energy += grad_form.colwise().maxCoeff()(0)/weight;
 		}
+		//Grabs the approximate stiffness of the material via the max coeff of the elastic hessian
+		elastic_form->second_derivative(x, hessian_form);
+		const double ef_weight = elastic_form->weight();
 
-		contact_form->update_barrier_stiffness(x, grad_energy);
+		for (int k = 0; k < hessian_form.outerSize(); ++k)
+		{
+			for (StiffnessMatrix::InnerIterator it(hessian_form, k); it; ++it)
+			{
+				max_stiffness= std::max(max_stiffness, std::abs(it.value()));
+			}
+		}
+		max_stiffness/= ef_weight;
+
+
+		//Sets barrier stiffness to 1000*material_stiffness*grad_energy/(approx gradient of barrier function)
+		//1000*material_stiffness keeps the barrier stiffness orders higher than material stiffness and grad_energy/(approx gradient of barrier function) provides a scaling factor based on changes in the energy relative to barrier stiffness
+		// 1000 could be changed, but found to work well for a number of test cases
+		const double current_barrier_stiffness = contact_form->barrier_stiffness();
+		double ini_barrier_stiffness = 1.0;
+		if (barrier_stiffness_.is_number()){
+			ini_barrier_stiffness = barrier_stiffness_.get<double>();
+		}
+		const double dhat = contact_form->dhat();
+		double contact_barrier_grad =  2.25545*dhat; //solving for d for d(barrier_function)/dd(barrier_function) gives constant relative to dhat
+		double barrier_stiffness = 1000*max_stiffness*grad_energy/contact_barrier_grad * ini_barrier_stiffness;
+		if (barrier_stiffness <  1000*max_stiffness * ini_barrier_stiffness)
+			barrier_stiffness = 1000*max_stiffness * ini_barrier_stiffness;
+		contact_form->set_barrier_stiffness(barrier_stiffness);
+		logger().debug("Barrier Stiffness set to {}", contact_form->barrier_stiffness());
+
 	}
-
 	void SolveData::update_dt()
 	{
 		if (time_integrator == nullptr) // if is not time dependent
