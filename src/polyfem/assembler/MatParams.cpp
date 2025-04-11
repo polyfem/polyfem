@@ -438,13 +438,31 @@ namespace polyfem::assembler
 
 	FiberDirection::FiberDirection()
 	{
-		dir_.emplace_back();
-		dir_.back().resize(3, 3);
-		for (int i = 0; i < 3; ++i)
+	}
+
+	void FiberDirection::resize(const int size)
+	{
+		assert(size == 2 || size == 3);
+		size_ = size;
+		if (dir_.empty())
 		{
-			for (int j = 0; j < 3; ++j)
+			dir_.emplace_back();
+
+			dir_.emplace_back();
+			dir_.back().resize(size, size);
+			for (int i = 0; i < size; ++i)
 			{
-				dir_.back()(i, j).init(i == j ? 1 : 0);
+				for (int j = 0; j < size; ++j)
+				{
+					dir_.back()(i, j).init(i == j ? 1 : 0);
+				}
+			}
+		}
+		else
+		{
+			for (const auto &m : dir_)
+			{
+				assert(m.rows() == size && m.cols() == size);
 			}
 		}
 	}
@@ -469,17 +487,17 @@ namespace polyfem::assembler
 		return res;
 	}
 
-	void FiberDirection::add_multimaterial(const int index, const json &params, const std::string &unit)
+	void FiberDirection::add_multimaterial(const int index, const json &dir, const std::string &unit)
 	{
 		for (int i = dir_.size(); i <= index; ++i)
 		{
 			dir_.emplace_back();
 		}
 
-		const auto &dir = params["fiber_direction"];
 		if (dir.size() == 3 || dir.size() == 2)
 		{
 			const int size = dir.size();
+			assert(size == size_);
 			dir_[index].resize(size, size);
 			for (int i = 0; i < size; ++i)
 			{
@@ -497,6 +515,7 @@ namespace polyfem::assembler
 		else if (dir.size() == 9 || dir.size() == 4)
 		{
 			const int size = dir.size() == 9 ? 3 : 2;
+			assert(size == size_);
 			dir_[index].resize(size, size);
 			for (int i = 0; i < size; ++i)
 			{

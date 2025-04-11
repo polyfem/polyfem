@@ -139,12 +139,24 @@ namespace polyfem::assembler
 		FiberDirection();
 		virtual ~FiberDirection() = default;
 
+		void resize(const int size);
+
 		void add_multimaterial(const int index, const json &params, const std::string &unit);
 
 		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 1, 3, 3> operator()(double px, double py, double pz, double x, double y, double z, double t, int el_id) const;
 
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 1, 3, 3> operator()(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, double t, int el_id) const
+		{
+			assert(param.size() == 2 || param.size() == 3);
+			assert(param.size() == p.size());
+			return (*this)(param(0), param(1), param.size() == 3 ? param(2) : 0.0,
+						   p(0), p(1), p.size() == 3 ? p(2) : 0.0,
+						   t, el_id);
+		}
+
 	private:
 		std::vector<Eigen::Matrix<utils::ExpressionValue, Eigen::Dynamic, Eigen::Dynamic, 1, 3, 3>> dir_;
+		int size_;
 	};
 
 } // namespace polyfem::assembler
