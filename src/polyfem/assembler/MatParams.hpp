@@ -132,4 +132,19 @@ namespace polyfem::assembler
 			return 1.0;
 		}
 	};
+
+	class FiberDirection
+	{
+	public:
+		FiberDirection();
+		virtual ~FiberDirection() = default;
+
+		void add_multimaterial(const int index, const json &params, const std::string &unit);
+
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 1, 3, 3> operator()(double px, double py, double pz, double x, double y, double z, double t, int el_id) const;
+
+	private:
+		std::vector<Eigen::Matrix<utils::ExpressionValue, Eigen::Dynamic, Eigen::Dynamic, 1, 3, 3>> dir_;
+	};
+
 } // namespace polyfem::assembler

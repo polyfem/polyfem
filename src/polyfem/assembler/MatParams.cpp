@@ -1,6 +1,7 @@
 #include "MatParams.hpp"
 
 #include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 namespace polyfem::assembler
 {
@@ -433,6 +434,83 @@ namespace polyfem::assembler
 		}
 
 		rho_[index].set_unit_type(density_unit);
+	}
+
+	FiberDirection::FiberDirection()
+	{
+		dir_.emplace_back();
+		dir_.back().resize(3, 3);
+		for (int i = 0; i < 3; ++i)
+		{
+			for (int j = 0; j < 3; ++j)
+			{
+				dir_.back()(i, j).init(i == j ? 1 : 0);
+			}
+		}
+	}
+
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 1, 3, 3> FiberDirection::operator()(double px, double py, double pz, double x, double y, double z, double t, int el_id) const
+	{
+		assert(dir_.size() == 1 || el_id < dir_.size());
+
+		const auto &tmp = dir_.size() == 1 ? dir_[0] : dir_[el_id];
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 1, 3, 3> res;
+		res.resize(tmp.rows(), tmp.cols());
+		for (int i = 0; i < tmp.rows(); ++i)
+		{
+			for (int j = 0; j < tmp.cols(); ++j)
+			{
+				res(i, j) = tmp(i, j)(x, y, z, t, el_id);
+
+				assert(!std::isnan(res(i, j)));
+				assert(!std::isinf(res(i, j)));
+			}
+		}
+		return res;
+	}
+
+	void FiberDirection::add_multimaterial(const int index, const json &params, const std::string &unit)
+	{
+		for (int i = dir_.size(); i <= index; ++i)
+		{
+			dir_.emplace_back();
+		}
+
+		const auto &dir = params["fiber_direction"];
+		if (dir.size() == 3 || dir.size() == 2)
+		{
+			const int size = dir.size();
+			dir_[index].resize(size, size);
+			for (int i = 0; i < size; ++i)
+			{
+				if (!dir[i].is_array() || dir[i].size() != size)
+				{
+					log_and_throw_error(fmt::format("Fiber must be {}x{}, row {} is {}", size, size, i, dir[i].dump()));
+				}
+				for (int j = 0; j < size; ++j)
+				{
+					dir_[index](i, j).init(dir[i][j]);
+					dir_[index](i, j).set_unit_type(unit);
+				}
+			}
+		}
+		else if (dir.size() == 9 || dir.size() == 4)
+		{
+			const int size = dir.size() == 9 ? 3 : 2;
+			dir_[index].resize(size, size);
+			for (int i = 0; i < size; ++i)
+			{
+				for (int j = 0; j < size; ++j)
+				{
+					dir_[index](i, j).init(dir[i * size + j]);
+					dir_[index](i, j).set_unit_type(unit);
+				}
+			}
+		}
+		else
+		{
+			log_and_throw_error("Fiber direction must be a 3x3 or 2x2 matrix");
+		}
 	}
 
 	// template instantiation
