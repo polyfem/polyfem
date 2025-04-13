@@ -447,14 +447,13 @@ namespace polyfem::assembler
 		if (dir_.empty())
 		{
 			dir_.emplace_back();
-
-			dir_.emplace_back();
 			dir_.back().resize(size, size);
 			for (int i = 0; i < size; ++i)
 			{
 				for (int j = 0; j < size; ++j)
 				{
 					dir_.back()(i, j).init(i == j ? 1 : 0);
+					dir_.back()(i, j).set_unit_type("");
 				}
 			}
 		}
