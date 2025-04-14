@@ -50,12 +50,18 @@ namespace polyfem::assembler
 			std::vector<double> entries = params["elasticity_tensor"];
 			elasticity_tensor_.set_from_entries(entries, units.stress());
 		}
+
+		if (params.contains("fiber_direction"))
+		{
+			fiber_direction_.add_multimaterial(index, params["fiber_direction"], units.length());
+		}
 	}
 
 	void SaintVenantElasticity::set_size(const int size)
 	{
 		Assembler::set_size(size);
 		elasticity_tensor_.resize(size);
+		fiber_direction_.resize(size);
 	}
 
 	template <typename T, unsigned long N>
@@ -153,7 +159,8 @@ namespace polyfem::assembler
 		for (long p = 0; p < local_pts.rows(); ++p)
 		{
 			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
-
+			const auto fdir = fiber_direction_(local_pts.row(p), vals.val.row(p), data.t, el_id);
+			displacement_grad = fdir * displacement_grad;
 			if (type == ElasticityTensorType::F)
 			{
 				all.row(p) = fun(displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
@@ -222,6 +229,16 @@ namespace polyfem::assembler
 		for (long p = 0; p < n_pts; ++p)
 		{
 			compute_disp_grad_at_quad(data, local_disp, p, size(), disp_grad);
+			const auto fdir = fiber_direction_(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id);
+			AutoDiffGradMat fdir_ad(fdir.rows(), fdir.cols());
+			for (int i = 0; i < fdir.rows(); ++i)
+			{
+				for (int j = 0; j < fdir.cols(); ++j)
+				{
+					fdir_ad(i, j) = T(fdir(i, j));
+				}
+			}
+			disp_grad = fdir_ad * disp_grad;
 
 			AutoDiffGradMat strain = strain_from_disp_grad(disp_grad);
 			AutoDiffGradMat stress_tensor(size(), size());

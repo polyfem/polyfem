@@ -72,6 +72,7 @@ namespace polyfem::assembler
 			std::vector<double> entries = params["elasticity_tensor"];
 			elasticity_tensor_.set_from_entries(entries, units.stress());
 		}
+
 		if (params.contains("fiber_direction"))
 		{
 			fiber_direction_.add_multimaterial(index, params["fiber_direction"], units.length());
@@ -231,6 +232,8 @@ namespace polyfem::assembler
 		for (long p = 0; p < local_pts.rows(); ++p)
 		{
 			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
+			const auto fdir = fiber_direction_(local_pts.row(p), vals.val.row(p), data.t, el_id);
+			displacement_grad = fdir * displacement_grad;
 
 			if (type == ElasticityTensorType::F)
 			{
