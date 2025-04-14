@@ -1753,7 +1753,8 @@
         ],
         "optional": [
             "id",
-            "rho"
+            "rho",
+            "fiber_direction"
         ],
         "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
     },
@@ -1767,7 +1768,8 @@
         ],
         "optional": [
             "id",
-            "rho"
+            "rho",
+            "fiber_direction"
         ],
         "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
     },
@@ -1784,7 +1786,8 @@
             "id",
             "rho",
             "phi",
-            "psi"
+            "psi",
+            "fiber_direction"
         ],
         "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
     },
@@ -1800,7 +1803,8 @@
             "id",
             "rho",
             "phi",
-            "psi"
+            "psi",
+            "fiber_direction"
         ],
         "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
     },
@@ -2062,6 +2066,32 @@
         "type": "include",
         "spec_file": "value0.json",
         "doc": "Entries of elasticity tensor"
+    },
+    {
+        "pointer": "/materials/*/fiber_direction",
+        "type": "list",
+        "default": [],
+        "doc": "Fiber direction"
+    },
+    {
+        "pointer": "/materials/*/fiber_direction/*",
+        "default": 0,
+        "type": "include",
+        "spec_file": "value0.json",
+        "doc": "Entries of fiber direction"
+    },
+    {
+        "pointer": "/materials/*/fiber_direction/*",
+        "type": "list",
+        "default": [],
+        "doc": "Fiber direction row"
+    },
+    {
+        "pointer": "/materials/*/fiber_direction/*/*",
+        "default": 0,
+        "type": "include",
+        "spec_file": "value0.json",
+        "doc": "Entries of fiber direction"
     },
     {
         "pointer": "/materials/*/rho",

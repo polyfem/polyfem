@@ -444,20 +444,7 @@ namespace polyfem::assembler
 	{
 		assert(size == 2 || size == 3);
 		size_ = size;
-		if (dir_.empty())
-		{
-			dir_.emplace_back();
-			dir_.back().resize(size, size);
-			for (int i = 0; i < size; ++i)
-			{
-				for (int j = 0; j < size; ++j)
-				{
-					dir_.back()(i, j).init(i == j ? 1 : 0);
-					dir_.back()(i, j).set_unit_type("");
-				}
-			}
-		}
-		else
+		if (!dir_.empty())
 		{
 			for (const auto &m : dir_)
 			{
@@ -521,6 +508,18 @@ namespace polyfem::assembler
 				for (int j = 0; j < size; ++j)
 				{
 					dir_[index](i, j).init(dir[i * size + j]);
+					dir_[index](i, j).set_unit_type(unit);
+				}
+			}
+		}
+		else if (dir.empty())
+		{
+			dir_[index].resize(size_, size_);
+			for (int i = 0; i < size_; ++i)
+			{
+				for (int j = 0; j < size_; ++j)
+				{
+					dir_[index](i, j).init(i == j ? 1.0 : 0.0);
 					dir_[index](i, j).set_unit_type(unit);
 				}
 			}

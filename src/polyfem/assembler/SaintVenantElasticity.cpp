@@ -51,10 +51,7 @@ namespace polyfem::assembler
 			elasticity_tensor_.set_from_entries(entries, units.stress());
 		}
 
-		if (params.contains("fiber_direction"))
-		{
-			fiber_direction_.add_multimaterial(index, params["fiber_direction"], units.length());
-		}
+		fiber_direction_.add_multimaterial(index, params["fiber_direction"], units.length());
 	}
 
 	void SaintVenantElasticity::set_size(const int size)
