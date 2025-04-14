@@ -19,12 +19,17 @@ namespace polyfem::assembler
 		}
 
 		template <int dim>
-		Eigen::Matrix<double, dim, dim> strain(const Eigen::MatrixXd &grad, const Eigen::MatrixXd &jac_it, int k, int coo)
+		Eigen::Matrix<double, dim, dim> strain(
+			const Eigen::MatrixXd &grad,
+			const Eigen::MatrixXd &jac_it,
+			const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 1, 3, 3> &fdir,
+			int k, int coo)
 		{
 			Eigen::Matrix<double, dim, dim> jac;
 			jac.setZero();
 			jac.row(coo) = grad.row(k);
 			jac = jac * jac_it;
+			jac = fdir * jac;
 
 			return strain_from_disp_grad(jac);
 		}
@@ -105,11 +110,11 @@ namespace polyfem::assembler
 			if (size() == 2)
 			{
 				assert(fdir.rows() == 2 && fdir.cols() == 2);
-				const Eigen::Matrix2d eps_x_i = fdir * strain<2>(gradi, data.vals.jac_it[k], k, 0);
-				const Eigen::Matrix2d eps_y_i = fdir * strain<2>(gradi, data.vals.jac_it[k], k, 1);
+				const Eigen::Matrix2d eps_x_i = strain<2>(gradi, data.vals.jac_it[k], fdir, k, 0);
+				const Eigen::Matrix2d eps_y_i = strain<2>(gradi, data.vals.jac_it[k], fdir, k, 1);
 
-				const Eigen::Matrix2d eps_x_j = fdir * strain<2>(gradj, data.vals.jac_it[k], k, 0);
-				const Eigen::Matrix2d eps_y_j = fdir * strain<2>(gradj, data.vals.jac_it[k], k, 1);
+				const Eigen::Matrix2d eps_x_j = strain<2>(gradj, data.vals.jac_it[k], fdir, k, 0);
+				const Eigen::Matrix2d eps_y_j = strain<2>(gradj, data.vals.jac_it[k], fdir, k, 1);
 
 				std::array<double, 3> e_x, e_y;
 				e_x[0] = eps_x_i(0, 0);
@@ -138,13 +143,13 @@ namespace polyfem::assembler
 			{
 				assert(fdir.rows() == 3 && fdir.cols() == 3);
 
-				const Eigen::Matrix3d eps_x_i = fdir * strain<3>(gradi, data.vals.jac_it[k], k, 0);
-				const Eigen::Matrix3d eps_y_i = fdir * strain<3>(gradi, data.vals.jac_it[k], k, 1);
-				const Eigen::Matrix3d eps_z_i = fdir * strain<3>(gradi, data.vals.jac_it[k], k, 2);
+				const Eigen::Matrix3d eps_x_i = strain<3>(gradi, data.vals.jac_it[k], fdir, k, 0);
+				const Eigen::Matrix3d eps_y_i = strain<3>(gradi, data.vals.jac_it[k], fdir, k, 1);
+				const Eigen::Matrix3d eps_z_i = strain<3>(gradi, data.vals.jac_it[k], fdir, k, 2);
 
-				const Eigen::Matrix3d eps_x_j = fdir * strain<3>(gradj, data.vals.jac_it[k], k, 0);
-				const Eigen::Matrix3d eps_y_j = fdir * strain<3>(gradj, data.vals.jac_it[k], k, 1);
-				const Eigen::Matrix3d eps_z_j = fdir * strain<3>(gradj, data.vals.jac_it[k], k, 2);
+				const Eigen::Matrix3d eps_x_j = strain<3>(gradj, data.vals.jac_it[k], fdir, k, 0);
+				const Eigen::Matrix3d eps_y_j = strain<3>(gradj, data.vals.jac_it[k], fdir, k, 1);
+				const Eigen::Matrix3d eps_z_j = strain<3>(gradj, data.vals.jac_it[k], fdir, k, 2);
 
 				std::array<double, 6> e_x, e_y, e_z;
 				e_x[0] = eps_x_i(0, 0);
