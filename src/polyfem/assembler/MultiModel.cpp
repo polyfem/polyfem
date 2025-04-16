@@ -66,7 +66,9 @@ namespace polyfem::assembler
 	{
 		const std::string model = multi_material_models_[data.el_id];
 		const auto assembler = all_elastic_materials_.get_assembler(model);
-		std::dynamic_pointer_cast<assembler::ElasticityAssembler>(assembler)->assign_stress_tensor(data, all_size, type, all, fun);
+		auto elasticity_assembler = std::dynamic_pointer_cast<assembler::ElasticityAssembler>(assembler);
+		assert(elasticity_assembler && "Failed to cast assembler to ElasticityAssembler.");
+		elasticity_assembler->assign_stress_tensor(data, all_size, type, all, fun);
 	}
 
 	std::map<std::string, Assembler::ParamFunc> MultiModel::parameters() const
