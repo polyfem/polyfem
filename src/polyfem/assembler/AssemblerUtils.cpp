@@ -229,5 +229,74 @@ namespace polyfem
 			}
 		}
 
+		std::vector<std::string> AssemblerUtils::elastic_materials()
+		{
+			return {"LinearElasticity",
+					"HookeLinearElasticity",
+					"SaintVenant",
+					"NeoHookean",
+					"MooneyRivlin",
+					"MooneyRivlin3Param",
+					"UnconstrainedOgden",
+					"IncompressibleOgden",
+					"FixedCorotational"};
+		}
+
+		bool AssemblerUtils::is_elastic_material(const std::string &material)
+		{
+			for (const auto &m : elastic_materials())
+			{
+				if (material == m)
+					return true;
+			}
+			return false;
+		}
+
+		AllElasticMaterials::AllElasticMaterials()
+		{
+			for (const auto &m : AssemblerUtils::elastic_materials())
+			{
+				const auto assembler = AssemblerUtils::make_assembler(m);
+				// cast assembler to elasticity assembler
+				elastic_material_map_[m] = std::dynamic_pointer_cast<NLAssembler>(assembler);
+				assert(elastic_material_map_[m] != nullptr);
+			}
+		}
+
+		void AllElasticMaterials::set_size(const int size)
+		{
+			for (auto &it : elastic_material_map_)
+			{
+				it.second->set_size(size);
+			}
+		}
+
+		void AllElasticMaterials::add_multimaterial(const int index, const json &params, const Units &units)
+		{
+			for (auto &it : elastic_material_map_)
+			{
+				it.second->add_multimaterial(index, params, units);
+			}
+		}
+
+		std::shared_ptr<assembler::NLAssembler> AllElasticMaterials::get_assembler(const std::string &name) const
+		{
+			return elastic_material_map_.at(name);
+		}
+
+		std::map<std::string, Assembler::ParamFunc> AllElasticMaterials::parameters() const
+		{
+			std::map<std::string, Assembler::ParamFunc> params;
+			for (const auto &m : elastic_material_map_)
+			{
+				const auto assembler = m.second;
+				auto p = assembler->parameters();
+				for (auto &it : p)
+				{
+					params[m.first + "/" + it.first] = it.second;
+				}
+			}
+			return params;
+		}
 	} // namespace assembler
 } // namespace polyfem
