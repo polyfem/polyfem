@@ -231,15 +231,19 @@ namespace polyfem
 
 		std::vector<std::string> AssemblerUtils::elastic_materials()
 		{
-			return {"LinearElasticity",
-					"HookeLinearElasticity",
-					"SaintVenant",
-					"NeoHookean",
-					"MooneyRivlin",
-					"MooneyRivlin3Param",
-					"UnconstrainedOgden",
-					"IncompressibleOgden",
-					"FixedCorotational"};
+			const static std::vector<std::string> elastic_materials = {
+				"LinearElasticity",
+				"HookeLinearElasticity",
+				"SaintVenant",
+				"NeoHookean",
+				"MooneyRivlin",
+				"MooneyRivlin3Param",
+				"UnconstrainedOgden",
+				"IncompressibleOgden",
+				"FixedCorotational",
+				"MultiModels"};
+
+			return elastic_materials;
 		}
 
 		bool AssemblerUtils::is_elastic_material(const std::string &material)
@@ -256,6 +260,13 @@ namespace polyfem
 		{
 			for (const auto &m : AssemblerUtils::elastic_materials())
 			{
+				// skip multimodels
+				// this is a special case where we have multiple models
+				// and we need to create a new assembler for each model
+				// this is handled in the MultiModel class
+				// and not here
+				if (m == "MultiModels")
+					continue;
 				const auto assembler = AssemblerUtils::make_assembler(m);
 				// cast assembler to elasticity assembler
 				elastic_material_map_[m] = std::dynamic_pointer_cast<NLAssembler>(assembler);
