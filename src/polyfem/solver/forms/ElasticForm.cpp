@@ -518,7 +518,7 @@ namespace polyfem::solver
 	void ElasticForm::force_shape_derivative(const double t, const int n_verts, const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
 	{
 		const int dim = is_volume_ ? 3 : 2;
-		const int actual_dim = (assembler_.name() == "Laplacian") ? 1 : dim;
+		const int actual_dim = ((assembler_.name() == "Laplacian") || (assembler_.name() == "Electrostatics")) ? 1 : dim;
 
 		const int n_elements = int(bases_.size());
 		term.setZero(n_verts * dim, 1);
