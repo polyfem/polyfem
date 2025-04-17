@@ -7,7 +7,6 @@
 
 namespace polyfem::assembler
 {
-
 	class AssemblerUtils
 	{
 	public:
@@ -33,8 +32,30 @@ namespace polyfem::assembler
 			const int n_bases, const int n_pressure_bases, const int problem_dim, const bool add_average,
 			const StiffnessMatrix &velocity_stiffness, const StiffnessMatrix &mixed_stiffness, const StiffnessMatrix &pressure_stiffness,
 			StiffnessMatrix &stiffness);
-		
+
 		/// utility for retrieving the needed quadrature order to precisely integrate the given form on the given element basis
 		static int quadrature_order(const std::string &assembler, const int basis_degree, const BasisType &b_type, const int dim);
+
+		/// utility to check if material is one of the elastic materials
+		static bool is_elastic_material(const std::string &material);
+		/// list of all elastic materials
+		static std::vector<std::string> elastic_materials();
+	};
+
+	/// utility to create a map of all elastic materials
+	class AllElasticMaterials
+	{
+
+	public:
+		AllElasticMaterials();
+
+		void set_size(const int size);
+		void add_multimaterial(const int index, const json &params, const Units &units);
+		std::shared_ptr<assembler::NLAssembler> get_assembler(const std::string &name) const;
+
+		std::map<std::string, Assembler::ParamFunc> parameters() const;
+
+	private:
+		std::unordered_map<std::string, std::shared_ptr<assembler::NLAssembler>> elastic_material_map_;
 	};
 } // namespace polyfem::assembler
