@@ -41,11 +41,10 @@ namespace polyfem::utils
 			affine_matrix_.col(d) *= max(d) - min(d);
 		const double eps = tol * bbox_size;
 
-        Eigen::VectorXi index_map;
-		index_map.setConstant(n_bases, 1, -1);
+		index_map_.setConstant(n_bases, 1, -1);
 
-		Eigen::VectorXi dependent_map(n_bases);
-		dependent_map.setConstant(-1);
+		dependent_map_.resize(n_bases);
+		dependent_map_.setConstant(-1);
 
 		int n_pairs = 0;
 
@@ -70,7 +69,7 @@ namespace polyfem::utils
 					projected_diff(d) = 0;
 					if (projected_diff.norm() < eps)
 					{
-						dependent_map(i) = j;
+						dependent_map_(i) = j;
 						n_pairs++;
 						found_target = true;
 						break;
@@ -83,11 +82,11 @@ namespace polyfem::utils
 
 		{
 			periodic_mask_.setZero(n_bases);
-			for (int i = 0; i < dependent_map.size(); i++)
+			for (int i = 0; i < dependent_map_.size(); i++)
 			{
-				if (dependent_map(i) >= 0)
+				if (dependent_map_(i) >= 0)
 				{
-					periodic_mask_(dependent_map(i)) = 1;
+					periodic_mask_(dependent_map_(i)) = 1;
 					periodic_mask_(i) = 1;
 				}
 			}
@@ -95,27 +94,33 @@ namespace polyfem::utils
 
 		// break dependency chains into direct dependency
 		for (int d = 0; d < dim; d++)
-			for (int i = 0; i < dependent_map.size(); i++)
-				if (dependent_map(i) >= 0 && dependent_map(dependent_map(i)) >= 0)
-					dependent_map(i) = dependent_map(dependent_map(i));
+			for (int i = 0; i < dependent_map_.size(); i++)
+				if (dependent_map_(i) >= 0 && dependent_map_(dependent_map_(i)) >= 0)
+					dependent_map_(i) = dependent_map_(dependent_map_(i));
+		
+		for (int i = 0; i < dependent_map_.size(); i++)
+		{
+			if (dependent_map_(i) >= 0)
+				constraint_list_.push_back({{i, dependent_map_(i)}});
+		}
 
 		// new indexing for independent dof
 		int independent_dof = 0;
-		for (int i = 0; i < dependent_map.size(); i++)
+		for (int i = 0; i < dependent_map_.size(); i++)
 		{
-			if (dependent_map(i) < 0)
-				index_map(i) = independent_dof++;
+			if (dependent_map_(i) < 0)
+				index_map_(i) = independent_dof++;
 		}
 
-		for (int i = 0; i < dependent_map.size(); i++)
-			if (dependent_map(i) >= 0)
-				index_map(i) = index_map(dependent_map(i));
+		for (int i = 0; i < dependent_map_.size(); i++)
+			if (dependent_map_(i) >= 0)
+				index_map_(i) = index_map_(dependent_map_(i));
 
-        const int old_size = index_map.size();
+        const int old_size = index_map_.size();
         full_to_periodic_map_.setZero(old_size * problem_dim_);
         for (int i = 0; i < old_size; i++)
             for (int d = 0; d < problem_dim_; d++)
-                full_to_periodic_map_(i * problem_dim_ + d) = index_map(i) * problem_dim_ + d;
+                full_to_periodic_map_(i * problem_dim_ + d) = index_map_(i) * problem_dim_ + d;
     }
 
     int PeriodicBoundary::full_to_periodic(StiffnessMatrix &A) const
@@ -123,21 +128,21 @@ namespace polyfem::utils
 		const int independent_dof = full_to_periodic_map_.maxCoeff() + 1;
 		
 		// account for potential pressure block
-		auto index_map = [&](int id){
+		auto extended_index_map = [&](int id){
 			if (id < full_to_periodic_map_.size())
 				return full_to_periodic_map_(id);
 			else
 				return (int)(id + independent_dof - full_to_periodic_map_.size());
 		};
 
-		StiffnessMatrix A_periodic(index_map(A.rows()), index_map(A.cols()));
+		StiffnessMatrix A_periodic(extended_index_map(A.rows()), extended_index_map(A.cols()));
 		std::vector<Eigen::Triplet<double>> entries;
 		entries.reserve(A.nonZeros());
 		for (int k = 0; k < A.outerSize(); k++)
 		{
 			for (StiffnessMatrix::InnerIterator it(A,k); it; ++it)
 			{
-				entries.emplace_back(index_map(it.row()), index_map(it.col()), it.value());
+				entries.emplace_back(extended_index_map(it.row()), extended_index_map(it.col()), it.value());
 			}
 		}
 		A_periodic.setFromTriplets(entries.begin(),entries.end());
@@ -151,7 +156,7 @@ namespace polyfem::utils
 		const int independent_dof = full_to_periodic_map_.maxCoeff() + 1;
 		
 		// account for potential pressure block
-		auto index_map = [&](int id){
+		auto extended_index_map = [&](int id){
 			if (id < full_to_periodic_map_.size())
 				return full_to_periodic_map_(id);
 			else
@@ -160,13 +165,13 @@ namespace polyfem::utils
 
 		// rhs under periodic basis
 		Eigen::MatrixXd b_periodic;
-		b_periodic.setZero(index_map(b.rows()), b.cols());
+		b_periodic.setZero(extended_index_map(b.rows()), b.cols());
 		if (accumulate)
 			for (int k = 0; k < b.rows(); k++)
-				b_periodic.row(index_map(k)) += b.row(k);
+				b_periodic.row(extended_index_map(k)) += b.row(k);
 		else
 			for (int k = 0; k < b.rows(); k++)
-				b_periodic.row(index_map(k)) = b.row(k);
+				b_periodic.row(extended_index_map(k)) = b.row(k);
 
 		return b_periodic;
     }
@@ -189,7 +194,7 @@ namespace polyfem::utils
 	{
 		const int independent_dof = full_to_periodic_map_.maxCoeff() + 1;
 		
-		auto index_map = [&](int id){
+		auto extended_index_map = [&](int id){
 			if (id < full_to_periodic_map_.size())
 				return full_to_periodic_map_(id);
 			else
@@ -199,7 +204,7 @@ namespace polyfem::utils
 		Eigen::MatrixXd x_full;
 		x_full.resize(ndofs, x_periodic.cols());
 		for (int i = 0; i < x_full.rows(); i++)
-			x_full.row(i) = x_periodic.row(index_map(i));
+			x_full.row(i) = x_periodic.row(extended_index_map(i));
 
 		return x_full;
 	}
