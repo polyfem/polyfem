@@ -1,7 +1,5 @@
 var NAVTREEINDEX44 =
 {
-"functions_y.html":[6,3,0,25],
-"functions_z.html":[6,3,0,26],
 "functions_~.html":[6,3,0,27],
 "generate__mooney__rivlin_8py.html":[7,0,1,0,1,33],
 "generate__mooney__rivlin_8py.html#a48325c419468207c335e902a0560c873":[7,0,1,0,1,33,1],
@@ -183,8 +181,8 @@ var NAVTREEINDEX44 =
 "namespacemembers_e.html":[5,1,0,4],
 "namespacemembers_enum.html":[5,1,4],
 "namespacemembers_f.html":[5,1,0,5],
-"namespacemembers_func.html":[5,1,1,0],
 "namespacemembers_func.html":[5,1,1],
+"namespacemembers_func.html":[5,1,1,0],
 "namespacemembers_func_b.html":[5,1,1,1],
 "namespacemembers_func_c.html":[5,1,1,2],
 "namespacemembers_func_d.html":[5,1,1,3],
@@ -249,5 +247,7 @@ var NAVTREEINDEX44 =
 "namespacep__bases.html#a77a7c70028f8cd520192c7e3bf76d109":[5,0,6,17],
 "namespacep__bases.html#a7bf70f5e25a9247c8c0d614187883157":[5,0,6,24],
 "namespacep__bases.html#a822dea5e649d4c49c76600caa3cc5bc1":[5,0,6,32],
-"namespacep__bases.html#a82f76c32f1ed8a175feda8bc947c7f42":[5,0,6,39]
+"namespacep__bases.html#a82f76c32f1ed8a175feda8bc947c7f42":[5,0,6,39],
+"namespacep__bases.html#a837f1f11693679e19201631240d009dd":[5,0,6,26],
+"namespacep__bases.html#a8c24719cbab5121b36eb716e1e435fcc":[5,0,6,20]
 };

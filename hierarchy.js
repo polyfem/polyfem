@@ -1,6 +1,7 @@
 var hierarchy =
 [
     [ "polyfem::solver::AdjointOptUtils", "structpolyfem_1_1solver_1_1_adjoint_opt_utils.html", null ],
+    [ "polyfem::assembler::AllElasticMaterials", "classpolyfem_1_1assembler_1_1_all_elastic_materials.html", null ],
     [ "polyfem::solver::ALSolver", "classpolyfem_1_1solver_1_1_a_l_solver.html", null ],
     [ "polyfem::refinement::APriori", "classpolyfem_1_1refinement_1_1_a_priori.html", null ],
     [ "polyfem::mesh::NCMesh2D::ArrayHasher2D", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1_array_hasher2_d.html", null ],

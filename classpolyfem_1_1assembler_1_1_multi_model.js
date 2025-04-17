@@ -16,14 +16,6 @@ var classpolyfem_1_1assembler_1_1_multi_model =
     [ "name", "classpolyfem_1_1assembler_1_1_multi_model.html#abc01d2a6415dac7ebc4475203344066a", null ],
     [ "parameters", "classpolyfem_1_1assembler_1_1_multi_model.html#a9721c87380d5295659cacf67c3e80e32", null ],
     [ "set_size", "classpolyfem_1_1assembler_1_1_multi_model.html#a3a87c3eb8dcfe7d14723ff8d9f3d78a5", null ],
-    [ "fixed_corotational_", "classpolyfem_1_1assembler_1_1_multi_model.html#a2e80cca03286fac56d8ba3ffe609ec9b", null ],
-    [ "hooke_", "classpolyfem_1_1assembler_1_1_multi_model.html#aa3e52fd8394e56f36648163b8c07ed94", null ],
-    [ "incompressible_ogden_elasticity_", "classpolyfem_1_1assembler_1_1_multi_model.html#a996e273a2aaafcda7b43c517d11f7e8e", null ],
-    [ "linear_elasticity_", "classpolyfem_1_1assembler_1_1_multi_model.html#a1d9d27829cc506596c73f42a0c3c7353", null ],
-    [ "mooney_rivlin_3_param_elasticity_", "classpolyfem_1_1assembler_1_1_multi_model.html#a9003712b1e254b26ffa5e3986b29c992", null ],
-    [ "mooney_rivlin_elasticity_", "classpolyfem_1_1assembler_1_1_multi_model.html#a31be8d320080d8988cbc4daee7f79748", null ],
-    [ "multi_material_models_", "classpolyfem_1_1assembler_1_1_multi_model.html#a14e733a0c85aa56b8ffca681f3271748", null ],
-    [ "neo_hookean_", "classpolyfem_1_1assembler_1_1_multi_model.html#ab33d024d81442aa6811af5aced40da26", null ],
-    [ "saint_venant_", "classpolyfem_1_1assembler_1_1_multi_model.html#a4a0a73fe6ada75c1df93f204f24c86a4", null ],
-    [ "unconstrained_ogden_elasticity_", "classpolyfem_1_1assembler_1_1_multi_model.html#a1a9834b9c4d3228178121b9ab68f54e8", null ]
+    [ "all_elastic_materials_", "classpolyfem_1_1assembler_1_1_multi_model.html#a7a91403d3ab5ec9e3805ddf6198300f5", null ],
+    [ "multi_material_models_", "classpolyfem_1_1assembler_1_1_multi_model.html#a14e733a0c85aa56b8ffca681f3271748", null ]
 ];
