@@ -77,8 +77,8 @@ namespace polyfem::assembler
 			std::vector<double> entries = params["elasticity_tensor"];
 			elasticity_tensor_.set_from_entries(entries, units.stress());
 		}
-
-		fiber_direction_.add_multimaterial(index, params["fiber_direction"], units.length());
+		if (params.contains("fiber_direction"))
+			fiber_direction_.add_multimaterial(index, params["fiber_direction"], units.length());
 	}
 
 	void HookeLinearElasticity::set_size(const int size)
