@@ -344,24 +344,9 @@ namespace polyfem
 					current = tmp;
 				else if (current != tmp)
 				{
-					if (current == "LinearElasticity"
-						|| current == "NeoHookean"
-						|| current == "SaintVenant"
-						|| current == "HookeLinearElasticity"
-						|| current == "MooneyRivlin"
-						|| current == "MooneyRivlin3Param"
-						|| current == "UnconstrainedOgden"
-						|| current == "IncompressibleOgden"
-						|| current == "MultiModels")
+					if (AssemblerUtils::is_elastic_material(current))
 					{
-						if (tmp == "LinearElasticity"
-							|| tmp == "NeoHookean"
-							|| tmp == "SaintVenant"
-							|| tmp == "HookeLinearElasticity"
-							|| tmp == "MooneyRivlin"
-							|| current == "MooneyRivlin3Param"
-							|| tmp == "UnconstrainedOgden"
-							|| tmp == "IncompressibleOgden")
+						if (AssemblerUtils::is_elastic_material(tmp))
 							current = "MultiModels";
 						else
 						{

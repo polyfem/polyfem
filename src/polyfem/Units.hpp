@@ -21,6 +21,8 @@ namespace polyfem
 		const std::string &time() const { return time_; }
 		double characteristic_length() const { return characteristic_length_; }
 		double &characteristic_length() { return characteristic_length_; }
+		std::string capacitance() const { return fmt::format("{}^2/({}*{})", coulomb_, force(), length_); } // Farad
+		std::string permittivity() const { return fmt::format("{}/{}", capacitance(), length_); }
 
 		std::string stress() const { return fmt::format("{}/({}*{}^2)", mass_, length_, time_); }
 		std::string density() const { return fmt::format("{}/{}^3", mass_, length_); }
@@ -36,5 +38,6 @@ namespace polyfem
 		std::string mass_ = "kg";
 		std::string time_ = "s";
 		double characteristic_length_ = 1;
+		std::string coulomb_ = "C";
 	};
 } // namespace polyfem
