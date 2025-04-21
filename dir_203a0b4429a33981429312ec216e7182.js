@@ -1,6 +1,8 @@
 var dir_203a0b4429a33981429312ec216e7182 =
 [
     [ "quadrature", "dir_2585f341eb41f69a0b7c7e8618b3108e.html", "dir_2585f341eb41f69a0b7c7e8618b3108e" ],
+    [ "auto_b_bases.cpp", "auto__b__bases_8cpp.html", "auto__b__bases_8cpp" ],
+    [ "auto_b_bases.hpp", "auto__b__bases_8hpp.html", "auto__b__bases_8hpp" ],
     [ "auto_eigs.cpp", "auto__eigs_8cpp.html", null ],
     [ "auto_eigs.hpp", "auto__eigs_8hpp.html", "auto__eigs_8hpp" ],
     [ "auto_elasticity_rhs.cpp", "auto__elasticity__rhs_8cpp.html", "auto__elasticity__rhs_8cpp" ],

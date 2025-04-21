@@ -8,6 +8,7 @@ var p__bases_8py =
     [ "parse_args", "p__bases_8py.html#ae73e865d63bfcff988ba2937cc1543db", null ],
     [ "args", "p__bases_8py.html#a058e88f99c9c36ea9fb6f8ec5a0e5203", null ],
     [ "base", "p__bases_8py.html#a5325ca9a1675b62d05114d0d82a70b78", null ],
+    [ "bletter", "p__bases_8py.html#a769b8bd73eb5f0e8c3803e5fc94591a6", null ],
     [ "cpp", "p__bases_8py.html#afe2d87d46dc6258ae29b8dafcbfe2100", null ],
     [ "current_indices", "p__bases_8py.html#a482e93806367591d684b2c432e56984b", null ],
     [ "dbase", "p__bases_8py.html#a9e78c76886d4815fd555d582d7c85096", null ],

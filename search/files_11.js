@@ -12,12 +12,13 @@ var searchData=
   ['rbfwithquadratic_2ehpp_9',['RBFWithQuadratic.hpp',['../_r_b_f_with_quadratic_8hpp.html',1,'']]],
   ['rbfwithquadraticlagrange_2ecpp_10',['RBFWithQuadraticLagrange.cpp',['../_r_b_f_with_quadratic_lagrange_8cpp.html',1,'']]],
   ['rbfwithquadraticlagrange_2ehpp_11',['RBFWithQuadraticLagrange.hpp',['../_r_b_f_with_quadratic_lagrange_8hpp.html',1,'']]],
-  ['refelementsampler_2ecpp_12',['RefElementSampler.cpp',['../_ref_element_sampler_8cpp.html',1,'']]],
-  ['refelementsampler_2ehpp_13',['RefElementSampler.hpp',['../_ref_element_sampler_8hpp.html',1,'']]],
-  ['refinement_2ecpp_14',['Refinement.cpp',['../_refinement_8cpp.html',1,'']]],
-  ['refinement_2ehpp_15',['Refinement.hpp',['../_refinement_8hpp.html',1,'']]],
-  ['remesher_2ecpp_16',['Remesher.cpp',['../_remesher_8cpp.html',1,'']]],
-  ['remesher_2ehpp_17',['Remesher.hpp',['../_remesher_8hpp.html',1,'']]],
-  ['rhsassembler_2ecpp_18',['RhsAssembler.cpp',['../_rhs_assembler_8cpp.html',1,'']]],
-  ['rhsassembler_2ehpp_19',['RhsAssembler.hpp',['../_rhs_assembler_8hpp.html',1,'']]]
+  ['readme_2emd_12',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]],
+  ['refelementsampler_2ecpp_13',['RefElementSampler.cpp',['../_ref_element_sampler_8cpp.html',1,'']]],
+  ['refelementsampler_2ehpp_14',['RefElementSampler.hpp',['../_ref_element_sampler_8hpp.html',1,'']]],
+  ['refinement_2ecpp_15',['Refinement.cpp',['../_refinement_8cpp.html',1,'']]],
+  ['refinement_2ehpp_16',['Refinement.hpp',['../_refinement_8hpp.html',1,'']]],
+  ['remesher_2ecpp_17',['Remesher.cpp',['../_remesher_8cpp.html',1,'']]],
+  ['remesher_2ehpp_18',['Remesher.hpp',['../_remesher_8hpp.html',1,'']]],
+  ['rhsassembler_2ecpp_19',['RhsAssembler.cpp',['../_rhs_assembler_8cpp.html',1,'']]],
+  ['rhsassembler_2ehpp_20',['RhsAssembler.hpp',['../_rhs_assembler_8hpp.html',1,'']]]
 ];
