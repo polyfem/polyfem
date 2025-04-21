@@ -19,12 +19,17 @@ namespace polyfem::assembler
 		}
 
 		template <int dim>
-		Eigen::Matrix<double, dim, dim> strain(const Eigen::MatrixXd &grad, const Eigen::MatrixXd &jac_it, int k, int coo)
+		Eigen::Matrix<double, dim, dim> strain(
+			const Eigen::MatrixXd &grad,
+			const Eigen::MatrixXd &jac_it,
+			const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 1, 3, 3> &fdir,
+			int k, int coo)
 		{
 			Eigen::Matrix<double, dim, dim> jac;
 			jac.setZero();
 			jac.row(coo) = grad.row(k);
 			jac = jac * jac_it;
+			jac = fdir * jac;
 
 			return strain_from_disp_grad(jac);
 		}
@@ -72,12 +77,15 @@ namespace polyfem::assembler
 			std::vector<double> entries = params["elasticity_tensor"];
 			elasticity_tensor_.set_from_entries(entries, units.stress());
 		}
+		if (params.contains("fiber_direction"))
+			fiber_direction_.add_multimaterial(index, params["fiber_direction"], units.length());
 	}
 
 	void HookeLinearElasticity::set_size(const int size)
 	{
 		Assembler::set_size(size);
 		elasticity_tensor_.resize(size);
+		fiber_direction_.resize(size);
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
@@ -97,13 +105,16 @@ namespace polyfem::assembler
 		{
 			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> res_k(size() * size());
 
+			const auto fdir = fiber_direction_(data.vals.quadrature.points.row(k), data.vals.val.row(k), data.t, data.vals.element_id);
+
 			if (size() == 2)
 			{
-				const Eigen::Matrix2d eps_x_i = strain<2>(gradi, data.vals.jac_it[k], k, 0);
-				const Eigen::Matrix2d eps_y_i = strain<2>(gradi, data.vals.jac_it[k], k, 1);
+				assert(fdir.rows() == 2 && fdir.cols() == 2);
+				const Eigen::Matrix2d eps_x_i = strain<2>(gradi, data.vals.jac_it[k], fdir, k, 0);
+				const Eigen::Matrix2d eps_y_i = strain<2>(gradi, data.vals.jac_it[k], fdir, k, 1);
 
-				const Eigen::Matrix2d eps_x_j = strain<2>(gradj, data.vals.jac_it[k], k, 0);
-				const Eigen::Matrix2d eps_y_j = strain<2>(gradj, data.vals.jac_it[k], k, 1);
+				const Eigen::Matrix2d eps_x_j = strain<2>(gradj, data.vals.jac_it[k], fdir, k, 0);
+				const Eigen::Matrix2d eps_y_j = strain<2>(gradj, data.vals.jac_it[k], fdir, k, 1);
 
 				std::array<double, 3> e_x, e_y;
 				e_x[0] = eps_x_i(0, 0);
@@ -130,13 +141,15 @@ namespace polyfem::assembler
 			}
 			else
 			{
-				const Eigen::Matrix3d eps_x_i = strain<3>(gradi, data.vals.jac_it[k], k, 0);
-				const Eigen::Matrix3d eps_y_i = strain<3>(gradi, data.vals.jac_it[k], k, 1);
-				const Eigen::Matrix3d eps_z_i = strain<3>(gradi, data.vals.jac_it[k], k, 2);
+				assert(fdir.rows() == 3 && fdir.cols() == 3);
 
-				const Eigen::Matrix3d eps_x_j = strain<3>(gradj, data.vals.jac_it[k], k, 0);
-				const Eigen::Matrix3d eps_y_j = strain<3>(gradj, data.vals.jac_it[k], k, 1);
-				const Eigen::Matrix3d eps_z_j = strain<3>(gradj, data.vals.jac_it[k], k, 2);
+				const Eigen::Matrix3d eps_x_i = strain<3>(gradi, data.vals.jac_it[k], fdir, k, 0);
+				const Eigen::Matrix3d eps_y_i = strain<3>(gradi, data.vals.jac_it[k], fdir, k, 1);
+				const Eigen::Matrix3d eps_z_i = strain<3>(gradi, data.vals.jac_it[k], fdir, k, 2);
+
+				const Eigen::Matrix3d eps_x_j = strain<3>(gradj, data.vals.jac_it[k], fdir, k, 0);
+				const Eigen::Matrix3d eps_y_j = strain<3>(gradj, data.vals.jac_it[k], fdir, k, 1);
+				const Eigen::Matrix3d eps_z_j = strain<3>(gradj, data.vals.jac_it[k], fdir, k, 2);
 
 				std::array<double, 6> e_x, e_y, e_z;
 				e_x[0] = eps_x_i(0, 0);
@@ -221,6 +234,8 @@ namespace polyfem::assembler
 		for (long p = 0; p < local_pts.rows(); ++p)
 		{
 			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
+			const auto fdir = fiber_direction_(local_pts.row(p), vals.val.row(p), data.t, el_id);
+			displacement_grad = fdir * displacement_grad;
 
 			if (type == ElasticityTensorType::F)
 			{
