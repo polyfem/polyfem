@@ -170,6 +170,106 @@ Consider the first time a `polyfem::utils::SparseMatrixCache` object is filled w
 
 The first time the matrix is retrieved using `SparseMatrixCache::get_matrix`, `SparseMatrixCache::prune` is called, which writes the buffered values to the actual matrix. Then, the stored index information is used to create a mapping from the ordering of values received from a given element to the corresponding CSC-style index. In future iterations, instead of recomputing the matrix structure, `polyfem::utils::SparseMatrixCache` uses this cached index to save the given value directly to the CSC-style values array at the correct position.
 
+## Differentiable Simulations
+
+In this section, we walk through the differentiable simulations supported by PolyFEM and a simple example of of how to set up an inverse optimization problem with customized objective and parameter space.
+
+### Supported Features and Limitations
+
+The formulations with differentiability include:
+
+1. Poisson's equation
+2. Linear Elasticity
+3. Stokes equation
+4. Hyperelasticity: Neo-Hookean and Mooney-Rivlin
+
+Boundary conditions allowed in the differentiable simulations include Dirichlet, Neumann, periodic, and pressure. For now, only the BDF time integration (with arbitrary orders) is supported. The types of physical parameters include: 
+
+1. Shape
+2. Material parameters: Lamé parameters, friction coefficient, and damping parameters.
+3. Initial conditions: Velocity and position.
+3. Boundary conditions: Dirichlet and pressure.
+
+Note that the shape parameter to be differentiated currently should not overlap with any Neumann boundary condition, i.e. the surface assigned with Neumann boundary should not be optimized in the shape optimization.
+
+### OptState
+
+The `OptState` class is responsible to load the optimization and simulation setups, create the objective and parameter space, and run the optimization. The inverse optimization may involve multiple simulations, e.g. optimizing a structure under multiple loading scenarios at the same time, thus `OptState` stores a vector of `State`, each corresponding to a simulation.
+
+### Parameter Space
+
+The variable being optimized in the inverse optimization is a vector, with size specified by the user. The user has to specify how certain physical setups are controlled by the variable through the JSON interface. Such dependency is stored in `VariableToSimulationGroup`, which is a collection of `VariableToSimulation`, each representing a mapping from the variable to one type of physical setup. Each physical setup type corresponds to a derived class of `VariableToSimulation`, e.g. `ShapeVariableToSimulation`. `VariableToSimulation` stores a list of `State` that it is controlling, and a `CompositeParametrization`, which is a mapping from the variable being optimized to a vector with size equal to the dimension of the physical setup, e.g. the dimension of shape is the number of vertices multiplied by the world dimension (2 or 3). In some cases, the user only wants to control a subset of the physical setup, e.g. only optimize one shape in a multi-body simulation, then the output of `CompositeParametrization` is the size of the subset, and `VariableToSimulation::output_indexing_` specifies the indices of the subset in the complete physical setup vector. 
+
+It's important to match both the dimension and the order of the output of `CompositeParametrization` and the complete physical setup vector $p$. Suppose the number of vertices is $N$, number of finite element nodes is $\hat{N}$, number of elements is $M$, and the world dimension is $D$.
+
+- For shape parameters, $p \in \mathbb{R}^{N\times D}$, where $p_{D * i+j}$ is the $j$-th dimension of vertex $i$. 
+
+- Friction coefficient and damping parameters are global constants, and the sizes are 1 and 2 respectively. 
+
+- For Lamé parameters, $p \in \mathbb{R}^{M\times 2}$, where $p_{i}$ and $p_{i+M}$ are $\lambda$ and $\mu$ of the element $i$. 
+
+- For initial conditions, $p \in \mathbb{R}^{2\times \hat{N}\times D}$, where $p_{D * i + j}$ and $p_{\hat{N} + D * i + j}$ are the initial displacement and initial velocity of the $j$-th dimension of finite element node $i$.
+
+<mark>TODO@Arvi: Describe indexing of pressure / dirichlet boundary conditions.<mark>
+
+### Parametrization
+
+Each derived class of `Parametrization` is a simple function that takes one vector as input and outputs another vector. `Parametrization` is differentiable, meaning it can compute the gradient with respect to the input. `CompositeParametrization` is a special `Parametrization`, it is a composite function and holds a vector of `Parametrization`. When evaluating the `CompositeParametrization` on the input, the vector of `Parametrization` is applied in order. Some simple examples are:
+
+- `ExponentialMap` maps the input $x$ to $\exp(x)$.
+- `Scaling` multiplies the input $x$ by a constant.
+- `ENu2LambdaMu` takes an input $x\in\mathbb{R}^{2n}$, and maps every pair of $(x_i,\ x_{i+n})$ from `(E, nu)` to Lamé parameters `(lambda, mu)`.
+
+### Objective
+
+The objective being minimized in the inverse optimization is defined as an `AdjointForm`. Each `AdjointForm` is a scalar function that depends explicitly on the simulation solutions and the optimization variable. Although the simulation solutions are not explicit input to its functions, `AdjointForm` can hold pointers to some `State` at construction and get solutions from `State`. The user who creates their `AdjointForm` is responsible to define the following functions:
+
+- `double value_unweighted(const Eigen::VectorXd &x) const`
+    
+    It evaluates the objective value given the optimization variable `x`.
+
+- `void solution_changed(const Eigen::VectorXd &new_x)`
+    
+    It updates any cache in the `AdjointForm` that relies on the optimization variable. This function is called whenever the optimization variable `x` changes. Note that the physical setups depending on `x` do not need to be updated here.
+
+- `void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const`
+    
+    It computes the partial derivative of the objective with respect to `x`.
+
+- `Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const`
+    
+    It computes the partial derivative of the objective with respect to `u`, which is the solution of the simulation in the input `state`. The output derivative should have the same size as `u`. In the case where the objective depends on multiple simulations, this function is called for each `state`.
+
+Objectives often has the form of an integral over the domain, these objectives are derived from `SpatialIntegralForm`. A `SpatialIntegralForm` is the integral of a pointwise function called `IntegrableFunctional` over a selection of surface or volume. The `IntegrableFunctional` is a pointwise function $j$ depending on the rest position $x$, and displacement $u$ or displacement gradient $\nabla u$. Note that the `IntegrableFunctional` cannot depend on both $u$ and $\nabla u$ at the same time. The user who creates their `IntegrableFunctional` is responsible to define its partial derivatives $\partial_x j,\ \partial_u j,\ \partial_{\nabla u} j$. As an example, in a linear elastic simulation, in the stress norm objective, $j$ and its partial derivatives are defined as
+
+<mark>TODO@Arvi:What is `dj_dgradx` in the `IntegrableFunctional`?<mark>
+
+$$
+\begin{align*}
+\sigma(\nabla u) :=&\ \mu \left(\nabla u + (\nabla u)^T\right) + \lambda\ \text{Tr}[\nabla u]\ \text{Id} \\
+j(\nabla u) :=&\ \frac{1}{2} \|\sigma(\nabla u)\|^2 \\
+\partial_{\nabla u} j =&\ \mu (\sigma + \sigma^T)  + \lambda\ \text{Tr}[\nabla u]\ \text{Id}
+\end{align*}
+$$
+
+For another example, in the barycenter objective, $j$ and its partial derivatives are defined as
+$$
+\begin{align*}
+j(x, u) :=&\ x + u \\
+\partial_{u} j =&\ \partial_{x} j = \text{Id}
+\end{align*}
+$$
+
+To avoid rewriting complex objectives from scratch, the objectives are able to nest in the JSON -- the `CompositeForm` holds a vector of `AdjointForm` and perform explicit evaluation based on the values of these `AdjointForm`. As an example, `DivideForm` computes the ratio between the first and second objective. To define such `CompositeForm`, similarly one needs to provide both the forward evaluation and the derivatives with respect to the objectives it holds. 
+
+Apart from `CompositeForm`, another special objective is `TransientForm`, which takes a `StaticForm` and performs integral over time in a transient simulation. A `StaticForm` only depends on the information at one time step, and `TransientForm` integrates the `StaticForm` by evaluating it at each time step, and sum the values with integral weights.
+
+### Adjoint Method
+
+Here we provide the high-level idea of the adjoint method and how the code is structured. Please refer to the Appendix of [https://dl.acm.org/doi/10.1145/3657648](Differentiable solver for time-dependent deformation problems with contact) for the details.
+
+<mark>TODO@Zizhou<mark>
+
 ## Building PolyFEM as a stand-alone executable
 
 All the C++ dependencies required to build the code are included and are compiled statically in a single executable. PolyFEM is compiled using automatic builds on Windows, macOS, and Linux using:
