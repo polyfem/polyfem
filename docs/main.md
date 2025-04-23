@@ -190,6 +190,8 @@ Boundary conditions allowed in the differentiable simulations include Dirichlet,
 3. Initial conditions: Velocity and position.
 3. Boundary conditions: Dirichlet and pressure.
 
+<mark>TODO@Arvi: electrostatic?<mark>
+
 Note that the shape parameter to be differentiated currently should not overlap with any Neumann boundary condition, i.e. the surface assigned with Neumann boundary should not be optimized in the shape optimization.
 
 ### OptState
@@ -240,7 +242,7 @@ The objective being minimized in the inverse optimization is defined as an `Adjo
     
     It computes the partial derivative of the objective with respect to `u`, which is the solution of the simulation in the input `state`. The output derivative should have the same size as `u`. In the case where the objective depends on multiple simulations, this function is called for each `state`.
 
-Objectives often has the form of an integral over the domain, these objectives are derived from `SpatialIntegralForm`. A `SpatialIntegralForm` is the integral of a pointwise function called `IntegrableFunctional` over a selection of surface or volume. The `IntegrableFunctional` is a pointwise function $j$ depending on the rest position $x$, and displacement $u$ or displacement gradient $\nabla u$. Note that the `IntegrableFunctional` cannot depend on both $u$ and $\nabla u$ at the same time. The user who creates their `IntegrableFunctional` is responsible to define its partial derivatives $\partial_x j,\ \partial_u j,\ \partial_{\nabla u} j$. As an example, in a linear elastic simulation, in the stress norm objective, $j$ and its partial derivatives are defined as
+Objectives often has the form of an integral over the domain, these objectives are derived from `SpatialIntegralForm`. A `SpatialIntegralForm` is the integral of a pointwise function called `IntegrableFunctional` over a selection of surface or volume. The `IntegrableFunctional` is a pointwise function $j$ depending on the rest position $x$, and displacement $u$ or displacement gradient $\nabla u$. Note that the `IntegrableFunctional` cannot depend on both $u$ and $\nabla u$ at the same time. The user who creates their `IntegrableFunctional` is responsible to define its partial derivatives $\partial_x j,\ \partial_u j,\ \partial_{\nabla u} j$. As an example, in a linear elastic simulation, in the stress norm objective, $j$ and its partial derivatives are defined as 
 
 <mark>TODO@Arvi:What is `dj_dgradx` in the `IntegrableFunctional`?<mark>
 
@@ -262,13 +264,33 @@ $$
 
 To avoid rewriting complex objectives from scratch, the objectives are able to nest in the JSON -- the `CompositeForm` holds a vector of `AdjointForm` and perform explicit evaluation based on the values of these `AdjointForm`. As an example, `DivideForm` computes the ratio between the first and second objective. To define such `CompositeForm`, similarly one needs to provide both the forward evaluation and the derivatives with respect to the objectives it holds. 
 
-Apart from `CompositeForm`, another special objective is `TransientForm`, which takes a `StaticForm` and performs integral over time in a transient simulation. A `StaticForm` only depends on the information at one time step, and `TransientForm` integrates the `StaticForm` by evaluating it at each time step, and sum the values with integral weights.
+Apart from `CompositeForm`, another special objective is `TransientForm`, which can take a `StaticForm` and compute its integral over time in a transient simulation. A `StaticForm` only depends on the information at one time step, and `TransientForm` integrates the `StaticForm` by evaluating it at each time step, and sum the values with integral weights.
 
 ### Adjoint Method
 
 Here we provide the high-level idea of the adjoint method and how the code is structured. Please refer to the Appendix of [https://dl.acm.org/doi/10.1145/3657648](Differentiable solver for time-dependent deformation problems with contact) for the details.
 
-<mark>TODO@Zizhou<mark>
+The inverse optimization has the form of
+$$
+\min_q J(q, u) \quad \text{subject to}\quad h(q, u) = 0,
+$$
+where $u\in\mathbb{R}^n$ is the PDE solution, $q\in\mathbb{R}^m$ is the physical setup, $h:\mathbb{R}^m\times \mathbb{R}^n\rightarrow \mathbb{R}^n$ is the PDE constraint, $J:\mathbb{R}^m\times \mathbb{R}^n\rightarrow \mathbb{R}$ is the objective being minimized. By the implicit function theorem, $\nabla_q u$ under the constraint $h(q, u) = 0$ is given by
+$$
+\nabla_q u = -(\partial_u h)^{-1} \partial_q h,
+$$
+therefore the gradient of $J$ is
+$$
+\nabla_q J = \partial_q J - \partial_u J\ (\partial_u h)^{-1}\ \partial_q h.
+$$
+Without the need to compute the complete inverse of $\partial_u h$, by solving a linear system
+$$
+(\partial_u J)^\intercal = (\partial_u h)^\intercal p,
+$$
+then
+$$
+\nabla_q J = \partial_q J - p^\intercal\ \partial_q h.
+$$
+The vector $p$ is called the adjoint solution, $\partial_u J$ is called the adjoint RHS, and $p^\intercal\ \partial_q h$ is called the adjoint term. As $J$ is a scalar function, the adjoint method only needs to solve a linear system instead of computing a complete inverse. In the code, the `State` first runs the forward simulation and caches the solution $u$, and $\partial_u h$, which is essentially the Hessian matrix used in the forward Newton's method. Then the `AdjointForm` computes the adjoint RHS $\partial_u J$, which is then sent to `State` to solve adjoint equation. The adjoint solution $p$ is cached in `State` after the solve. Finally, the `VariableToSimulation` computes the adjoint term $p^\intercal\ \partial_q h$ and the `AdjointForm` assembles the complete gradient.
 
 ## Building PolyFEM as a stand-alone executable
 
