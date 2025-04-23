@@ -23,7 +23,8 @@ namespace polyfem::solver
 	void ALSolver::solve_al(NLProblem &nl_problem, Eigen::MatrixXd &sol,
 							const json &nl_solver_params,
 							const json &linear_solver,
-							const double characteristic_length)
+							const double characteristic_length,
+							std::shared_ptr<polysolve::nonlinear::Solver> nl_solverin)
 	{
 		assert(sol.size() == nl_problem.full_size());
 
@@ -68,8 +69,9 @@ namespace polyfem::solver
 			try
 			{
 				const auto scale = nl_problem.normalize_forms();
-				auto nl_solver = polysolve::nonlinear::Solver::create(
-					nl_solver_params, linear_solver, characteristic_length * scale, logger());
+				auto nl_solver = nl_solverin == nullptr ? polysolve::nonlinear::Solver::create(
+															  nl_solver_params, linear_solver, characteristic_length * scale, logger())
+														: nl_solverin;
 				nl_solver->minimize(nl_problem, tmp_sol);
 				nl_problem.finish();
 			}
@@ -118,7 +120,8 @@ namespace polyfem::solver
 	void ALSolver::solve_reduced(NLProblem &nl_problem, Eigen::MatrixXd &sol,
 								 const json &nl_solver_params,
 								 const json &linear_solver,
-								 const double characteristic_length)
+								 const double characteristic_length,
+								 std::shared_ptr<polysolve::nonlinear::Solver> nl_solverin)
 	{
 		assert(sol.size() == nl_problem.full_size());
 
@@ -141,8 +144,9 @@ namespace polyfem::solver
 		try
 		{
 			const auto scale = nl_problem.normalize_forms();
-			auto nl_solver = polysolve::nonlinear::Solver::create(
-				nl_solver_params, linear_solver, characteristic_length * scale, logger());
+			auto nl_solver = nl_solverin == nullptr ? polysolve::nonlinear::Solver::create(
+														  nl_solver_params, linear_solver, characteristic_length * scale, logger())
+													: nl_solverin;
 			nl_solver->minimize(nl_problem, tmp_sol);
 			nl_problem.finish();
 		}
