@@ -250,7 +250,7 @@ namespace polyfem
 			return;
 		}
 
-		if (disc_orders.maxCoeff() >= 4)
+		if (disc_orders.maxCoeff() >= 4 || disc_orders.maxCoeff() != disc_orders.minCoeff())
 		{
 			logger().warn("Node ordering disabled, it works only for p < 4 and uniform order!");
 			return;
