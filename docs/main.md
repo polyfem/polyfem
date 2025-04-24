@@ -261,6 +261,7 @@ j(\nabla u) :=&\ \frac{1}{2} \|\sigma(\nabla u)\|^2 \\
 $$
 
 For another example, in the barycenter objective, $j$ and its partial derivatives are defined as
+
 $$
 \begin{align*}
 j(x, u) :=&\ x + u \\
@@ -274,28 +275,38 @@ Apart from `CompositeForm`, another special objective is `TransientForm`, which 
 
 ### Adjoint Method
 
-Here we provide the high-level idea of the adjoint method and how the code is structured. Please refer to the Appendix of [https://dl.acm.org/doi/10.1145/3657648](Differentiable solver for time-dependent deformation problems with contact) for the details.
+Here we provide the high-level idea of the adjoint method and how the code is structured. Please refer to the Appendix of ["Differentiable solver for time-dependent deformation problems with contact"](https://dl.acm.org/doi/10.1145/3657648) for the details.
 
 The inverse optimization has the form of
+
 $$
 \min_q J(q, u) \quad \text{subject to}\quad h(q, u) = 0,
 $$
+
 where $u\in\mathbb{R}^n$ is the PDE solution, $q\in\mathbb{R}^m$ is the physical setup, $h:\mathbb{R}^m\times \mathbb{R}^n\rightarrow \mathbb{R}^n$ is the PDE constraint, $J:\mathbb{R}^m\times \mathbb{R}^n\rightarrow \mathbb{R}$ is the objective being minimized. By the implicit function theorem, $\nabla_q u$ under the constraint $h(q, u) = 0$ is given by
+
 $$
 \nabla_q u = -(\partial_u h)^{-1} \partial_q h,
 $$
+
 therefore the gradient of $J$ is
+
 $$
 \nabla_q J = \partial_q J - \partial_u J\ (\partial_u h)^{-1}\ \partial_q h.
 $$
+
 Without the need to compute the complete inverse of $\partial_u h$, by solving a linear system
+
 $$
 (\partial_u J)^\intercal = (\partial_u h)^\intercal p,
 $$
+
 then
+
 $$
 \nabla_q J = \partial_q J - p^\intercal\ \partial_q h.
 $$
+
 The vector $p$ is called the adjoint solution, $\partial_u J$ is called the adjoint RHS, and $p^\intercal\ \partial_q h$ is called the adjoint term. As $J$ is a scalar function, the adjoint method only needs to solve a linear system instead of computing a complete inverse. In the code, the `State` first runs the forward simulation and caches the solution $u$, and $\partial_u h$, which is essentially the Hessian matrix used in the forward Newton's method. Then the `AdjointForm` computes the adjoint RHS $\partial_u J$, which is then sent to `State` to solve adjoint equation. The adjoint solution $p$ is cached in `State` after the solve. Finally, the `VariableToSimulation` computes the adjoint term $p^\intercal\ \partial_q h$ and the `AdjointForm` assembles the complete gradient.
 
 The PDE constraint $h(q, u)=0$ normally consists of multiple terms, e.g. inertia, elasticity, collision, friction, etc. Each term is defined as a `Form` in the forward simulation. To compute the adjoint term, $\partial_q h$ is implemented in each `Form`. E.g. the `ElasticForm` has `force_material_derivative` and `force_shape_derivative` that compute the partial derivatives of `h` w.r.t. the Lamé parameters and shape parameters. There is no derivatives with respect to friction coefficient or initial conditions since they are zero.
