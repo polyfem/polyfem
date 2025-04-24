@@ -200,7 +200,13 @@ The `OptState` class is responsible to load the optimization and simulation setu
 
 ### Parameter Space
 
-The variable being optimized in the inverse optimization is a vector, with size specified by the user. The user has to specify how certain physical setups are controlled by the variable through the JSON interface. Such dependency is stored in `VariableToSimulationGroup`, which is a collection of `VariableToSimulation`, each representing a mapping from the variable to one type of physical setup. Each physical setup type corresponds to a derived class of `VariableToSimulation`, e.g. `ShapeVariableToSimulation`. `VariableToSimulation` stores a list of `State` that it is controlling, and a `CompositeParametrization`, which is a mapping from the variable being optimized to a vector with size equal to the dimension of the physical setup, e.g. the dimension of shape is the number of vertices multiplied by the world dimension (2 or 3). In some cases, the user only wants to control a subset of the physical setup, e.g. only optimize one shape in a multi-body simulation, then the output of `CompositeParametrization` is the size of the subset, and `VariableToSimulation::output_indexing_` specifies the indices of the subset in the complete physical setup vector. 
+The variable being optimized in the inverse optimization is a vector, with size specified by the user. The user has to specify how certain physical setups are controlled by the variable through the JSON interface. Such dependency is stored in `VariableToSimulationGroup`, which is a collection of `VariableToSimulation`, each representing a mapping from the variable to one type of physical setup. Each physical setup type corresponds to a derived class of `VariableToSimulation`, e.g. `ShapeVariableToSimulation`. The tasks of `VariableToSimulation` include:
+
+- Map the optimization variable to physical setup parameters.
+- Update physical setup parameters in `State`.
+- Apply chainrules from physical setup parameters to the optimization variable.
+
+`VariableToSimulation` stores a list of `State` that it is controlling, and a `CompositeParametrization`, which is a mapping from the variable being optimized to a vector with size equal to the dimension of the physical setup, e.g. the dimension of shape is the number of vertices multiplied by the world dimension (2 or 3). In some cases, the user only wants to control a subset of the physical setup, e.g. only optimize one shape in a multi-body simulation, then the output of `CompositeParametrization` is the size of the subset, and `VariableToSimulation::output_indexing_` specifies the indices of the subset in the complete physical setup vector. 
 
 It's important to match both the dimension and the order of the output of `CompositeParametrization` and the complete physical setup vector $p$. Suppose the number of vertices is $N$, number of finite element nodes is $\hat{N}$, number of elements is $M$, and the world dimension is $D$.
 
@@ -291,6 +297,8 @@ $$
 \nabla_q J = \partial_q J - p^\intercal\ \partial_q h.
 $$
 The vector $p$ is called the adjoint solution, $\partial_u J$ is called the adjoint RHS, and $p^\intercal\ \partial_q h$ is called the adjoint term. As $J$ is a scalar function, the adjoint method only needs to solve a linear system instead of computing a complete inverse. In the code, the `State` first runs the forward simulation and caches the solution $u$, and $\partial_u h$, which is essentially the Hessian matrix used in the forward Newton's method. Then the `AdjointForm` computes the adjoint RHS $\partial_u J$, which is then sent to `State` to solve adjoint equation. The adjoint solution $p$ is cached in `State` after the solve. Finally, the `VariableToSimulation` computes the adjoint term $p^\intercal\ \partial_q h$ and the `AdjointForm` assembles the complete gradient.
+
+The PDE constraint $h(q, u)=0$ normally consists of multiple terms, e.g. inertia, elasticity, collision, friction, etc. Each term is defined as a `Form` in the forward simulation. To compute the adjoint term, $\partial_q h$ is implemented in each `Form`. E.g. the `ElasticForm` has `force_material_derivative` and `force_shape_derivative` that compute the partial derivatives of `h` w.r.t. the Lamé parameters and shape parameters. There is no derivatives with respect to friction coefficient or initial conditions since they are zero.
 
 ## Building PolyFEM as a stand-alone executable
 
