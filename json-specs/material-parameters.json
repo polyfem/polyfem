@@ -327,6 +327,15 @@
     {
         "pointer": "/",
         "type": "object",
+        "type_name": "MaterialSum",
+        "required": [
+            "models"
+        ],
+        "doc": "Model that is a sum of other models"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
         "type_name": "IncompressibleLinearElasticity",
         "required": [
             "type",
@@ -602,5 +611,16 @@
         "type": "include",
         "spec_file": "value-no.json",
         "doc": "Exponent(s) of Incompressible Ogden"
+    },
+    {
+        "pointer": "/models",
+        "type": "list",
+        "default": [],
+        "doc": "List of models"
+    },
+    {
+        "pointer": "/models/*",
+        "type": "object",
+        "doc": "Material model"
     }
 ]

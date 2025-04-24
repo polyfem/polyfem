@@ -1,5 +1,7 @@
 #include "SumModel.hpp"
 
+#include <jse/jse.h>
+
 // #include <polyfem/basis/Basis.hpp>
 // #include <polyfem/autogen/auto_elasticity_rhs.hpp>
 
@@ -9,20 +11,41 @@ namespace polyfem::assembler
 {
 	void SumModel::add_multimaterial(const int index, const json &params, const Units &units)
 	{
+		std::cout << params.dump(4) << std::endl;
 		assert(size() == 2 || size() == 3);
-		assert(params.is_array());
+		if (params.count("models") == 0)
+			return;
 
-		for (const auto &param : params)
+		auto models = params["models"];
+
+		json rules;
+		jse::JSE jse;
+		jse.strict = true;
+		const std::string mat_spec = POLYFEM_MATERIAL_INPUT_SPEC;
+		std::ifstream file(mat_spec);
+
+		if (file.is_open())
+			file >> rules;
+		else
+			log_and_throw_error(fmt::format("unable to open {} rules", mat_spec));
+
+		rules = jse.inject_include(rules);
+
+		for (const auto model : models)
 		{
-			const std::string model = param["model"];
-			const json &param_params = param["params"];
+			const bool valid_input = jse.verify_json(model, rules);
+			if (!valid_input)
+				log_and_throw_error(fmt::format("invalid material json:\n{}", jse.log2str()));
+			jse.inject_defaults(model, rules);
 
-			const auto assembler = AssemblerUtils::make_assembler(model);
+			const std::string model_name = model["type"];
+
+			const auto assembler = AssemblerUtils::make_assembler(model_name);
 			// cast assembler to elasticity assembler
 			assemblers_.emplace_back(std::dynamic_pointer_cast<NLAssembler>(assembler));
 			assert(assemblers_.back() != nullptr);
 			assemblers_.back()->set_size(size());
-			assemblers_.back()->add_multimaterial(index, param_params, units);
+			assemblers_.back()->add_multimaterial(index, model, units);
 		}
 	}
 
