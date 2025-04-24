@@ -178,10 +178,14 @@ In this section, we walk through the differentiable simulations supported by Pol
 
 The formulations with differentiability include:
 
-1. Poisson's equation
+1. Laplace
 2. Linear Elasticity
-3. Stokes equation
+3. Stokes
 4. Hyperelasticity: Neo-Hookean and Mooney-Rivlin
+
+<mark>TODO@Arvi: electrostatic?<mark>
+
+<mark>TODO@Zizhou: How to add new material model?<mark>
 
 Boundary conditions allowed in the differentiable simulations include Dirichlet, Neumann, periodic, and pressure. For now, only the BDF time integration (with arbitrary orders) is supported. The types of physical parameters include: 
 
@@ -189,8 +193,6 @@ Boundary conditions allowed in the differentiable simulations include Dirichlet,
 2. Material parameters: Lamé parameters, friction coefficient, and damping parameters.
 3. Initial conditions: Velocity and position.
 3. Boundary conditions: Dirichlet and pressure.
-
-<mark>TODO@Arvi: electrostatic?<mark>
 
 Note that the shape parameter to be differentiated currently should not overlap with any Neumann boundary condition, i.e. the surface assigned with Neumann boundary should not be optimized in the shape optimization.
 
