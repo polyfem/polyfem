@@ -196,6 +196,10 @@ Boundary conditions allowed in the differentiable simulations include Dirichlet,
 
 Note that the shape parameter to be differentiated currently should not overlap with any Neumann boundary condition, i.e. the surface assigned with Neumann boundary should not be optimized in the shape optimization.
 
+### Diagram
+
+![Overall diagram](differentiable_diagram.png)
+
 ### OptState
 
 The `OptState` class is responsible to load the optimization and simulation setups, create the objective and parameter space, and run the optimization. The inverse optimization may involve multiple simulations, e.g. optimizing a structure under multiple loading scenarios at the same time, thus `OptState` stores a vector of `State`, each corresponding to a simulation.
