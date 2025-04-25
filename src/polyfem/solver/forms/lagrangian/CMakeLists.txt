@@ -2,8 +2,8 @@ set(SOURCES
 	BCLagrangianForm.cpp
 	BCLagrangianForm.hpp
 	AugmentedLagrangianForm.hpp
-	GenericLagrangianForm.hpp
-	GenericLagrangianForm.cpp
+	MatrixLagrangianForm.hpp
+	MatrixLagrangianForm.cpp
 	MacroStrainLagrangianForm.cpp
 	MacroStrainLagrangianForm.hpp
 )

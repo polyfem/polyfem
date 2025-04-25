@@ -139,8 +139,8 @@ namespace polyfem
 	void State::init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t, const bool init_time_integrator)
 	{
 		assert(sol.cols() == 1);
-		assert(!assembler->is_linear() || is_contact_enabled()); // non-linear
-		assert(!problem->is_scalar());                           // tensor
+		assert(!is_problem_linear());  // non-linear
+		assert(!problem->is_scalar()); // tensor
 		assert(mixed_assembler == nullptr);
 
 		if (optimization_enabled != solver::CacheLevel::None)
@@ -211,7 +211,7 @@ namespace polyfem
 		damping_assembler = std::make_shared<assembler::ViscousDamping>();
 		set_materials(*damping_assembler);
 
-		elasticity_pressure_assembler = build_pressure_assembler();
+		elasticity_pressure_assembler = nullptr; // build_pressure_assembler();
 
 		// for backward solve
 		damping_prev_assembler = std::make_shared<assembler::ViscousDampingPrev>();
@@ -221,7 +221,7 @@ namespace polyfem
 		const std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(
 			// General
 			units,
-			mesh->dimension(), t,
+			mesh->dimension(), t, in_node_to_node,
 			// Elastic form
 			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache, args["solver"]["advanced"]["jacobian_threshold"], check_inversion,
 			// Body form
@@ -237,7 +237,7 @@ namespace polyfem
 			args["solver"]["advanced"]["lagged_regularization_weight"],
 			args["solver"]["advanced"]["lagged_regularization_iterations"],
 			// Augmented lagrangian form
-			obstacle.ndof(),
+			obstacle.ndof(), args["constraints"]["hard"], args["constraints"]["soft"],
 			// Contact form
 			args["contact"]["enabled"], args["contact"]["periodic"].get<bool>() ? periodic_collision_mesh : collision_mesh, args["contact"]["dhat"],
 			avg_mass, args["contact"]["use_convergent_formulation"],
@@ -268,7 +268,8 @@ namespace polyfem
 
 		const int ndof = n_bases * mesh->dimension();
 		solve_data.nl_problem = std::make_shared<NLProblem>(
-			ndof, periodic_bc, t, forms, solve_data.al_form);
+			ndof, periodic_bc, t, forms, solve_data.al_form,
+			polysolve::linear::Solver::create(args["solver"]["linear"], logger()));
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
 		// --------------------------------------------------------------------
@@ -300,12 +301,40 @@ namespace polyfem
 		save_subsolve(subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 
 		// ---------------------------------------------------------------------
-
+		const double dt = problem->is_time_dependent() ? double(args["time"]["dt"]) : 1.0;
+		std::shared_ptr<solver::ElasticForm> elastic_form = std::make_shared<ElasticForm>(n_bases, bases, geom_bases(), *assembler, ass_vals_cache, t, dt, true);
 		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(true);
+
+		//Grabs material stiffness as the max coeff of the elastic hessian
+		StiffnessMatrix stiffness;
+		elastic_form->second_derivative(sol, stiffness);
+		double max_stiffness = 0.0;
+
+		const double ef_weight = elastic_form->weight();
+
+		for (int k = 0; k < stiffness.outerSize(); ++k)
+		{
+			for (StiffnessMatrix::InnerIterator it(stiffness, k); it; ++it)
+			{
+				max_stiffness= std::max(max_stiffness, std::abs(it.value()));
+			}
+		}
+		max_stiffness/= ef_weight;
+
+		//Grabs max dist of DBC for current time step
+		double dbc_dist = 0;
+		for (const auto &f : solve_data.al_form)
+			dbc_dist= f->get_dbcdist();
+
+		//Sets the AL weight to max_stiffness*dt^2 + 0.5*(velocity of DBC)*(largest mass of element) and that gets scaled by a user entered initial weight, which is intended be 1 for most cases
+		//the idea here is that the AL needs to be scaled according to the material
+		double al_initial_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
+		double al_weight = (max_stiffness*dt*dt + 0.5 * dbc_dist/dt * mass.eval().coeffs().maxCoeff()) * al_initial_weight;
+
 
 		ALSolver al_solver(
 			solve_data.al_form,
-			args["solver"]["augmented_lagrangian"]["initial_weight"],
+			al_weight,
 			args["solver"]["augmented_lagrangian"]["scaling"],
 			args["solver"]["augmented_lagrangian"]["max_weight"],
 			args["solver"]["augmented_lagrangian"]["eta"],
@@ -324,10 +353,11 @@ namespace polyfem
 		};
 
 		Eigen::MatrixXd prev_sol = sol;
-		al_solver.solve_al(nl_solver, nl_problem, sol);
+		al_solver.solve_al(nl_problem, sol,
+						   args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
 
-		nl_solver = make_nl_solver(false);
-		al_solver.solve_reduced(nl_solver, nl_problem, sol);
+		al_solver.solve_reduced(nl_problem, sol,
+								args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
 
 		if (args["space"]["advanced"]["count_flipped_els_continuous"])
 		{
@@ -388,6 +418,7 @@ namespace polyfem
 				logger().info("Lagging iteration {:d}:", lag_i + 1);
 				nl_problem.init(sol);
 				solve_data.update_barrier_stiffness(sol);
+				nl_problem.normalize_forms();
 				nl_solver->minimize(nl_problem, tmp_sol);
 				nl_problem.finish();
 				prev_sol = sol;

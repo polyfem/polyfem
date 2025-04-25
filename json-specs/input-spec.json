@@ -17,6 +17,7 @@
             "solver",
             "boundary_conditions",
             "initial_conditions",
+            "constraints",
             "output",
             "input",
             "tests"
@@ -1360,12 +1361,12 @@
     {
         "pointer": "/solver/augmented_lagrangian/nonlinear",
         "type": "include",
-        "spec_file": "nonlinear-solver-spec.json",
+        "spec_file": "nonlinear-auxsolver-spec.json",
         "doc": "Settings for nonlinear solver in augmented lagrangian."
     },
     {
         "pointer": "/solver/augmented_lagrangian/initial_weight",
-        "default": 1e6,
+        "default": 1,
         "min": 0,
         "type": "float",
         "doc": "Initial weight for AL"
@@ -1385,7 +1386,7 @@
     },
     {
         "pointer": "/solver/augmented_lagrangian/max_weight",
-        "default": 1e8,
+        "default": 1e30,
         "type": "float",
         "doc": "Maximum weight"
     },
@@ -2051,6 +2052,56 @@
         "doc": "value"
     },
     {
+        "pointer": "/constraints",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "soft",
+            "hard"
+        ],
+        "doc": "soft and hard constraints"
+    },
+    {
+        "pointer": "/constraints/hard",
+        "default": [],
+        "type": "list",
+        "doc": "list of file containing hard constraints"
+    },
+    {
+        "pointer": "/constraints/hard/*",
+        "default": "",
+        "type": "string",
+        "doc": "constraint hdf5 file for hard constraint Ax=b. The file must contain these datasets: local2global, dense/sparse matrix A, and vector b. The colums of b nees to be the same as the dimentionality of the problem. if A is sparse it should contain A_triplets/value A_triplets/cols A_triplets/rows"
+    },
+    {
+        "pointer": "/constraints/soft",
+        "default": [],
+        "type": "list",
+        "doc": "list of file containing soft constraints"
+    },
+    {
+        "pointer": "/constraints/soft/*",
+        "default": "",
+        "type": "object",
+        "optional": [
+            "weight",
+            "data"
+        ],
+        "doc": "constraint hdf5 file for soft constraint w||Ax-b||^2. The file must contain these datasets: weight w, local2global, dense/sparse matrix A, and vector b. The colums of b nees to be the same as the dimentionality of the problem. if A is sparse it should contain A_triplets/value A_triplets/cols A_triplets/rows"
+    },
+    {
+        "pointer": "/constraints/soft/*/weight",
+        "default": 0,
+        "type": "float",
+        "doc": "weight"
+    },
+    {
+        "pointer": "/constraints/soft/*/data",
+        "default": "",
+        "type": "string",
+        "doc": "constraint hdf5 file for soft constraint w||Ax-b||^2. The file must contain these datasets: local2global, dense/sparse matrix A, and vector b. The colums of b nees to be the same as the dimentionality of the problem. if A is sparse it should contain A_triplets/value A_triplets/col A_triplets/rows"
+    },
+    {
         "pointer": "/output",
         "default": null,
         "type": "object",
@@ -2172,6 +2223,7 @@
             "discretization_order",
             "nodes",
             "forces",
+            "force_high_order",
             "jacobian_validity"
         ],
         "doc": "Optional fields in the output"
@@ -2246,7 +2298,13 @@
         "pointer": "/output/paraview/options/forces",
         "default": false,
         "type": "bool",
-        "doc": "If true, write out all variational forces on the FE mesh "
+        "doc": "If true, write out all variational forces on the FE mesh"
+    },
+    {
+        "pointer": "/output/paraview/options/force_high_order",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, force write out high-order mesh, might break the output"
     },
     {
         "pointer": "/output/paraview/options/jacobian_validity",

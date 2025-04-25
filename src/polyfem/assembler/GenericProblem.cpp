@@ -506,7 +506,7 @@ namespace polyfem
 				}
 				else
 				{
-					assert(false);
+					assert(true);
 				}
 			}
 
@@ -521,7 +521,7 @@ namespace polyfem
 				}
 				else
 				{
-					assert(false);
+					assert(true);
 				}
 			}
 

@@ -63,6 +63,7 @@ namespace polyfem::solver
 			const Units &units,
 			const int dim,
 			const double t,
+			const Eigen::VectorXi &in_node_to_node,
 
 			// Elastic form
 			const int n_bases,
@@ -98,13 +99,10 @@ namespace polyfem::solver
 			const double lagged_regularization_weight,
 			const int lagged_regularization_iterations,
 
-			// Augemented lagrangian form
-			// const std::vector<int> &boundary_nodes,
-			// const std::vector<mesh::LocalBoundary> &local_boundary,
-			// const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
-			// const int n_boundary_samples,
-			// const StiffnessMatrix &mass,
+			// Constraint forms
 			const size_t obstacle_ndof,
+			const std::vector<std::string> &hard_constraint_files,
+			const std::vector<json> &soft_constraint_files,
 
 			// Contact form
 			const bool contact_enabled,
@@ -161,5 +159,8 @@ namespace polyfem::solver
 		std::shared_ptr<solver::PeriodicContactForm> periodic_contact_form;
 
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
+	private:
+		json barrier_stiffness_;
+		double dt_ = 0;
 	};
 } // namespace polyfem::solver
