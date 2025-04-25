@@ -83,20 +83,9 @@ namespace polyfem::solver
 			nl_problem.update_constraint_values();
 
 
-			try
-			{
-				nl_solver->minimize(nl_problem, tmp_sol);
-				nl_problem.finish();
-			}
-			catch (const std::runtime_error &e)
-			{
-				std::string err_msg = e.what();
-				// if the nonlinear solve fails due to invalid energy at the current solution, changing the weights would not help
-				if (err_msg.find("f(x) is nan or inf; stopping") != std::string::npos)
-					log_and_throw_error("Failed to solve with AL; f(x) is nan or inf");
-				if (err_msg.find("Reached iteration limit") != std::string::npos)
-					log_and_throw_error("Reached iteration limit in AL");
-			}
+			nl_problem.use_reduced_size();
+
+			nl_problem.line_search_begin(sol, tmp_sol);
 
 
 

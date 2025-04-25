@@ -9,4 +9,4 @@ message(STATUS "Third-party: creating target 'polysolve'")
 
 include(CPM)
 
-CPMAddPackage("gh:polyfem/polysolve#768ee9cbe2de91e47c558e5a2f1be3dec0bfe561")
+CPMAddPackage("gh:polyfem/polysolve#deb683d7c4264fbb5b1bae66f631dbe9bc88730e")
