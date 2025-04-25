@@ -244,8 +244,13 @@ namespace polyfem::solver
 		Eigen::VectorXi outer_loop;
 		std::vector<std::vector<int>> loops;
 		igl::boundary_loop(F, loops);
-		if (loops.size() == 1)
+		if (loops.size() == 0)
 		{
+			logger().info("Found 0 boundary loops, must be closed surface.");
+		}
+		else if (loops.size() == 1)
+		{
+			logger().info("Found 1 boundary loop, must be disk topology.");
 			outer_loop.resize(loops[0].size());
 			for (int i = 0; i < loops[0].size(); ++i)
 				outer_loop(i) = loops[0][i];

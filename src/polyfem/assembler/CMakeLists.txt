@@ -23,6 +23,8 @@ set(SOURCES
 	IncompressibleLinElast.hpp
 	Laplacian.cpp
 	Laplacian.hpp
+	Electrostatics.cpp
+	Electrostatics.hpp
 	LinearElasticity.cpp
 	LinearElasticity.hpp
 	MacroStrain.hpp
@@ -67,6 +69,8 @@ set(SOURCES
 	PeriodicBoundary.hpp
 	FixedCorotational.hpp
 	FixedCorotational.cpp
+	SumModel.hpp
+	SumModel.cpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})

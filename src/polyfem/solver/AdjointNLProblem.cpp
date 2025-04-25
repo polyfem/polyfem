@@ -380,7 +380,7 @@ namespace polyfem::solver
 	{
 		if (!enable_slim)
 			return false;
-		
+
 		for (const auto &v : variables_to_simulation_)
 			v->update(x0);
 

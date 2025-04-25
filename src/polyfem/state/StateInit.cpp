@@ -186,7 +186,6 @@ namespace polyfem
 				args_in["solver"]["augmented_lagrangian"]["nonlinear"] = args_in["solver"]["nonlinear"];
 			}
 		}
-
 		const bool valid_input = jse.verify_json(args_in, rules);
 
 		if (!valid_input)
@@ -198,6 +197,12 @@ namespace polyfem
 
 		this->args = jse.inject_defaults(args_in, rules);
 		units.init(this->args["units"]);
+
+		if (!args_in.contains("/space/advanced/bc_method"_json_pointer) && this->args["space"]["basis_type"] != "Lagrange")
+		{
+			logger().warn("Setting bc method to lsq for non-Lagrange basis");
+			this->args["space"]["advanced"]["bc_method"] = "lsq";
+		}
 
 		// Save output directory and resolve output paths dynamically
 		const std::string output_dir = resolve_input_path(this->args["output"]["directory"]);

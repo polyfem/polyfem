@@ -82,6 +82,8 @@ namespace polyfem
 			std::vector<int> pressure_cavity_ids_;
 			std::vector<int> splitting_pressure_boundary_ids_;
 
+			bool updated_dirichlet_node_ordering_ = false;
+
 		private:
 			std::string name_;
 		};
