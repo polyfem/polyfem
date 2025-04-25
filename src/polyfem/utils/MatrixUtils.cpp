@@ -321,6 +321,7 @@ void polyfem::utils::scatter_matrix_col(const int n_dofs,
 
 void polyfem::utils::scatter_matrix(const int n_dofs,
 									const int dim,
+									const std::vector<long> &shape,
 									const std::vector<int> &rows,
 									const std::vector<int> &cols,
 									const std::vector<double> &vals,
@@ -329,6 +330,7 @@ void polyfem::utils::scatter_matrix(const int n_dofs,
 									StiffnessMatrix &Aout,
 									Eigen::MatrixXd &bout)
 {
+	assert(shape.size() == 2);
 	assert(rows.size() == cols.size());
 	assert(rows.size() == vals.size());
 
@@ -392,6 +394,9 @@ void polyfem::utils::scatter_matrix(const int n_dofs,
 		bout = b;
 	}
 
+	assert(shape[0] == bout.size());
+	assert(shape[1] == n_dofs);
+
 	Aout.resize(bout.size(), n_dofs);
 	Aout.setFromTriplets(Ae.begin(), Ae.end());
 	Aout.makeCompressed();
@@ -399,6 +404,7 @@ void polyfem::utils::scatter_matrix(const int n_dofs,
 
 void polyfem::utils::scatter_matrix_col(const int n_dofs,
 										const int dim,
+										const std::vector<long> &shape,
 										const std::vector<int> &rows,
 										const std::vector<int> &cols,
 										const std::vector<double> &vals,
@@ -407,11 +413,11 @@ void polyfem::utils::scatter_matrix_col(const int n_dofs,
 										StiffnessMatrix &Aout,
 										Eigen::MatrixXd &bout)
 {
+	assert(shape.size() == 2);
 	assert(rows.size() == cols.size());
 	assert(rows.size() == vals.size());
 
 	std::vector<Eigen::Triplet<double>> Ae;
-	int n_cols = -1;
 	if (b.cols() == dim)
 	{
 		assert(n_dofs == b.rows() * dim);
@@ -421,8 +427,6 @@ void polyfem::utils::scatter_matrix_col(const int n_dofs,
 			const auto i = rows[k];
 			const auto j = cols[k];
 			const auto val = vals[k];
-
-			n_cols = std::max(n_cols, j * dim + 2);
 
 			const auto global_i = (local_to_global.empty() ? i : local_to_global[i]) * dim;
 
@@ -461,8 +465,6 @@ void polyfem::utils::scatter_matrix_col(const int n_dofs,
 			const auto j = cols[k];
 			const auto val = vals[k];
 
-			n_cols = std::max(n_cols, j);
-
 			if (val != 0)
 			{
 				const auto nid = i / dim;
@@ -488,7 +490,9 @@ void polyfem::utils::scatter_matrix_col(const int n_dofs,
 		}
 	}
 
-	Aout.resize(n_dofs, n_cols + 1);
+	assert(shape[0] == n_dofs);
+
+	Aout.resize(n_dofs, shape[1]);
 	Aout.setFromTriplets(Ae.begin(), Ae.end());
 	Aout.makeCompressed();
 }

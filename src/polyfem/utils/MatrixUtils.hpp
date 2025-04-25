@@ -185,6 +185,7 @@ namespace polyfem
 
 		void scatter_matrix(const int n_dofs,
 							const int dim,
+							const std::vector<long> &shape,
 							const std::vector<int> &rows,
 							const std::vector<int> &cols,
 							const std::vector<double> &vals,
@@ -195,6 +196,7 @@ namespace polyfem
 
 		void scatter_matrix_col(const int n_dofs,
 								const int dim,
+								const std::vector<long> &shape,
 								const std::vector<int> &rows,
 								const std::vector<int> &cols,
 								const std::vector<double> &vals,

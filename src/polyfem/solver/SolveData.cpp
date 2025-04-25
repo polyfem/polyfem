@@ -211,24 +211,24 @@ namespace polyfem::solver
 					v = in_node_to_node[v];
 			}
 
-			Eigen::MatrixXd b = file.readDataset<Eigen::MatrixXd>("b");
+			Eigen::MatrixXd bin = file.readDataset<Eigen::MatrixXd>("b");
+
+			StiffnessMatrix A, A_proj;
+			Eigen::MatrixXd b, b_proj;
 
 			if (!file.findDatasets("A").empty())
 			{
-				Eigen::MatrixXd A = file.readDataset<Eigen::MatrixXd>("A");
+				Eigen::MatrixXd Ain = file.readDataset<Eigen::MatrixXd>("A");
+				utils::scatter_matrix(ndof, dim, Ain, bin, local2global, A, b);
 
-				if (file.findDatasets("A_proj").empty())
-					al_form.push_back(std::make_shared<MatrixLagrangianForm>(
-						ndof, dim, A, b, local2global));
-				else
+				if (!file.findDatasets("A_proj").empty())
 				{
-					Eigen::MatrixXd A_proj = file.readDataset<Eigen::MatrixXd>("A_proj");
+					Eigen::MatrixXd A_proj_in = file.readDataset<Eigen::MatrixXd>("A_proj");
 					if (file.findDatasets("b_proj").empty())
 						log_and_throw_error("Missing b_proj in hard constraint file");
 
-					Eigen::MatrixXd b_proj = file.readDataset<Eigen::MatrixXd>("b_proj");
-					al_form.push_back(std::make_shared<MatrixLagrangianForm>(
-						ndof, dim, A, b, local2global, A_proj, b_proj));
+					Eigen::MatrixXd b_proj_in = file.readDataset<Eigen::MatrixXd>("b_proj");
+					utils::scatter_matrix_col(ndof, dim, A_proj_in, b_proj_in, local2global, A_proj, b_proj);
 				}
 			}
 			else
@@ -236,11 +236,10 @@ namespace polyfem::solver
 				std::vector<double> values = file.readDataset<std::vector<double>>("A_triplets/values");
 				std::vector<int> rows = file.readDataset<std::vector<int>>("A_triplets/rows");
 				std::vector<int> cols = file.readDataset<std::vector<int>>("A_triplets/cols");
+				std::vector<long> shape = file.readDataset<std::vector<long>>("A_triplets/shape");
+				utils::scatter_matrix(ndof, dim, shape, rows, cols, values, bin, local2global, A, b);
 
-				if (file.findGroups("A_proj_triplets").empty())
-					al_form.push_back(std::make_shared<MatrixLagrangianForm>(
-						ndof, dim, rows, cols, values, b, local2global));
-				else
+				if (!file.findGroups("A_proj_triplets").empty())
 				{
 					if (file.findDatasets("b_proj").empty())
 						log_and_throw_error("Missing b_proj in hard constraint file");
@@ -254,12 +253,14 @@ namespace polyfem::solver
 					std::vector<double> values_proj = file.readDataset<std::vector<double>>("A_proj_triplets/values");
 					std::vector<int> rows_proj = file.readDataset<std::vector<int>>("A_proj_triplets/rows");
 					std::vector<int> cols_proj = file.readDataset<std::vector<int>>("A_proj_triplets/cols");
-					Eigen::MatrixXd b_proj = file.readDataset<Eigen::MatrixXd>("b_proj");
+					Eigen::MatrixXd b_projin = file.readDataset<Eigen::MatrixXd>("b_proj");
+					std::vector<long> shape_proj = file.readDataset<std::vector<long>>("A_proj_triplets/shape");
 
-					al_form.push_back(std::make_shared<MatrixLagrangianForm>(
-						ndof, dim, rows, cols, values, b, local2global, rows_proj, cols_proj, values_proj, b_proj));
+					utils::scatter_matrix_col(ndof, dim, shape_proj, rows_proj, cols_proj, values_proj, b_projin, local2global, A_proj, b_proj);
 				}
 			}
+
+			al_form.push_back(std::make_shared<MatrixLagrangianForm>(A, b, A_proj, b_proj));
 			// forms.push_back(al_form.back());
 		}
 
@@ -287,24 +288,27 @@ namespace polyfem::solver
 					v = in_node_to_node[v];
 			}
 
-			Eigen::MatrixXd b = file.readDataset<Eigen::MatrixXd>("b");
+			Eigen::MatrixXd bin = file.readDataset<Eigen::MatrixXd>("b");
+
+			StiffnessMatrix A;
+			Eigen::MatrixXd b;
 
 			if (!file.findDatasets("A").empty())
 			{
-				Eigen::MatrixXd A = file.readDataset<Eigen::MatrixXd>("A");
-
-				forms.push_back(std::make_shared<QuadraticPenaltyForm>(
-					ndof, dim, A, b, weight, local2global));
+				Eigen::MatrixXd Ain = file.readDataset<Eigen::MatrixXd>("A");
+				utils::scatter_matrix(ndof, dim, Ain, bin, local2global, A, b);
 			}
 			else
 			{
 				std::vector<double> values = file.readDataset<std::vector<double>>("A_triplets/values");
 				std::vector<int> rows = file.readDataset<std::vector<int>>("A_triplets/rows");
 				std::vector<int> cols = file.readDataset<std::vector<int>>("A_triplets/cols");
+				std::vector<long> shape = file.readDataset<std::vector<long>>("A_triplets/shape");
 
-				forms.push_back(std::make_shared<QuadraticPenaltyForm>(
-					ndof, dim, rows, cols, values, b, weight, local2global));
+				utils::scatter_matrix(ndof, dim, shape, rows, cols, values, bin, local2global, A, b);
 			}
+
+			forms.push_back(std::make_shared<QuadraticPenaltyForm>(A, b, weight));
 		}
 
 		if (macro_strain_constraint.is_active())

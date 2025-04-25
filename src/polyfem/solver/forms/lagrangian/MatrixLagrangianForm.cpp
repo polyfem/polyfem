@@ -5,43 +5,18 @@
 
 namespace polyfem::solver
 {
-	MatrixLagrangianForm::MatrixLagrangianForm(const int n_dofs,
-											   const int dim,
-											   const Eigen::MatrixXd &A,
+
+	MatrixLagrangianForm::MatrixLagrangianForm(const StiffnessMatrix &A,
 											   const Eigen::MatrixXd &b,
-											   const std::vector<int> &local_to_global,
-											   const Eigen::MatrixXd &A_proj,
+											   const StiffnessMatrix &A_proj,
 											   const Eigen::MatrixXd &b_proj)
 	{
-		utils::scatter_matrix(n_dofs, dim, A, b, local_to_global, A_, b_);
+		A_ = A;
+		b_ = b;
+		A_proj_ = A_proj;
+		b_proj_ = b_proj;
 
-		if (b_proj.size() > 0)
-			utils::scatter_matrix_col(n_dofs, dim, A_proj, b_proj, local_to_global, A_proj_, b_proj_);
-
-		AtA = A_.transpose() * A_;
-		Atb = A_.transpose() * b_;
-
-		lagr_mults_.resize(A_.rows());
-		lagr_mults_.setZero();
-	}
-
-	MatrixLagrangianForm::MatrixLagrangianForm(const int n_dofs,
-											   const int dim,
-											   const std::vector<int> &rows,
-											   const std::vector<int> &cols,
-											   const std::vector<double> &vals,
-											   const Eigen::MatrixXd &b,
-											   const std::vector<int> &local_to_global,
-											   const std::vector<int> &rows_proj,
-											   const std::vector<int> &cols_proj,
-											   const std::vector<double> &vals_proj,
-											   const Eigen::MatrixXd &b_proj)
-	{
-		utils::scatter_matrix(n_dofs, dim, rows, cols, vals, b, local_to_global, A_, b_);
-
-		if (b_proj.size() > 0)
-			utils::scatter_matrix_col(n_dofs, dim, rows_proj, cols_proj, vals_proj, b_proj, local_to_global, A_proj_, b_proj_);
-
+		assert(A_.rows() == b_.rows());
 		AtA = A_.transpose() * A_;
 		Atb = A_.transpose() * b_;
 

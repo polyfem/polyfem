@@ -4,31 +4,13 @@
 
 namespace polyfem::solver
 {
-	QuadraticPenaltyForm::QuadraticPenaltyForm(const int n_dofs,
-											   const int dim,
-											   const Eigen::MatrixXd &A,
-											   const Eigen::MatrixXd &b,
-											   const double weight,
-											   const std::vector<int> &local_to_global)
-		: penalty_weight_(weight)
-	{
-		utils::scatter_matrix(n_dofs, dim, A, b, local_to_global, A_, b_);
 
-		AtA_ = A_.transpose() * A_;
-		Atb_ = A_.transpose() * b_;
-	}
-
-	QuadraticPenaltyForm::QuadraticPenaltyForm(const int n_dofs,
-											   const int dim,
-											   const std::vector<int> &rows,
-											   const std::vector<int> &cols,
-											   const std::vector<double> &vals,
+	QuadraticPenaltyForm::QuadraticPenaltyForm(const StiffnessMatrix &A,
 											   const Eigen::MatrixXd &b,
-											   const double weight,
-											   const std::vector<int> &local_to_global)
-		: penalty_weight_(weight)
+											   const double weight)
+		: penalty_weight_(weight), A_(A), b_(b)
 	{
-		utils::scatter_matrix(n_dofs, dim, rows, cols, vals, b, local_to_global, A_, b_);
+		assert(A.rows() == b.rows());
 
 		AtA_ = A_.transpose() * A_;
 		Atb_ = A_.transpose() * b_;

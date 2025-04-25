@@ -11,32 +11,12 @@ namespace polyfem::solver
 	{
 	public:
 		/// @brief Construct a new QuadraticPenaltyForm object for the constraints Ax = b
-		/// @param n_dofs Number of degrees of freedom
-		/// @param dim Dimension of the problem
-		/// @param A Constraints matrix, local or global
+		/// @param A Constraints matrix
 		/// @param b Constraints value
-		/// @param local_to_global local to global nodes
-		QuadraticPenaltyForm(const int n_dofs,
-							 const int dim,
-							 const Eigen::MatrixXd &A,
+		/// @param weigth weigth of the penalty
+		QuadraticPenaltyForm(const StiffnessMatrix &A,
 							 const Eigen::MatrixXd &b,
-							 const double weight,
-							 const std::vector<int> &local_to_global = {});
-
-		/// @brief Construct a new QuadraticPenaltyForm object for the constraints Ax = b, where A is sparse
-		/// @param n_dofs Number of degrees of freedom
-		/// @param dim Dimension of the problem
-		/// @param rows, cols, vals are the triplets of the constraints matrix, local or global
-		/// @param b Constraints value
-		/// @param local_to_global local to global nodes
-		QuadraticPenaltyForm(const int n_dofs,
-							 const int dim,
-							 const std::vector<int> &rows,
-							 const std::vector<int> &cols,
-							 const std::vector<double> &vals,
-							 const Eigen::MatrixXd &b,
-							 const double weight,
-							 const std::vector<int> &local_to_global = {});
+							 const double weight);
 
 		std::string name() const override { return "quadratic-penalty"; }
 
