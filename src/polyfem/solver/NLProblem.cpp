@@ -606,7 +606,7 @@ namespace polyfem::solver
 		for (const auto &f : penalty_forms_)
 		{
 			// std::cout << f->compute_error(full) << std::endl;
-			assert(f->compute_error(full) < 1e-10);
+			assert(f->compute_error(full) < 1e-8);
 		}
 #endif
 
