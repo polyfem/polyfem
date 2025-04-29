@@ -182,8 +182,7 @@ The formulations with differentiability include:
 2. Linear Elasticity
 3. Stokes
 4. Hyperelasticity: Neo-Hookean and Mooney-Rivlin
-
-<mark>TODO@Arvi: electrostatic?<mark>
+5. Electrostatics (which is very similar to Laplace)
 
 <mark>TODO@Zizhou: How to add new material model?<mark>
 
