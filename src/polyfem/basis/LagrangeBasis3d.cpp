@@ -1375,9 +1375,11 @@ int LagrangeBasis3d::build_bases(
 	const int quadrature_order,
 	const int mass_quadrature_order,
 	const int discr_order,
+	const bool bernstein,
 	const bool serendipity,
 	const bool has_polys,
 	const bool is_geom_bases,
+	const bool use_corner_quadrature,
 	std::vector<ElementBases> &bases,
 	std::vector<LocalBoundary> &local_boundary,
 	std::map<int, InterfaceData> &poly_face_to_data,
@@ -1386,7 +1388,7 @@ int LagrangeBasis3d::build_bases(
 	Eigen::VectorXi discr_orders(mesh.n_cells());
 	discr_orders.setConstant(discr_order);
 
-	return build_bases(mesh, assembler, quadrature_order, mass_quadrature_order, discr_orders, serendipity, has_polys, is_geom_bases, bases, local_boundary, poly_face_to_data, mesh_nodes);
+	return build_bases(mesh, assembler, quadrature_order, mass_quadrature_order, discr_orders, bernstein, serendipity, has_polys, is_geom_bases, use_corner_quadrature, bases, local_boundary, poly_face_to_data, mesh_nodes);
 }
 
 int LagrangeBasis3d::build_bases(
@@ -1395,9 +1397,11 @@ int LagrangeBasis3d::build_bases(
 	const int quadrature_order,
 	const int mass_quadrature_order,
 	const Eigen::VectorXi &discr_orders,
+	const bool bernstein,
 	const bool serendipity,
 	const bool has_polys,
 	const bool is_geom_bases,
+	const bool use_corner_quadrature,
 	std::vector<ElementBases> &bases,
 	std::vector<LocalBoundary> &local_boundary,
 	std::map<int, InterfaceData> &poly_face_to_data,
@@ -1510,12 +1514,12 @@ int LagrangeBasis3d::build_bases(
 			const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 3);
 			const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 3);
 
-			b.set_quadrature([real_order](Quadrature &quad) {
-				TetQuadrature tet_quadrature;
+			b.set_quadrature([real_order, use_corner_quadrature](Quadrature &quad) {
+				TetQuadrature tet_quadrature(use_corner_quadrature);
 				tet_quadrature.get_quadrature(real_order, quad);
 			});
-			b.set_mass_quadrature([real_mass_order](Quadrature &quad) {
-				TetQuadrature tet_quadrature;
+			b.set_mass_quadrature([real_mass_order, use_corner_quadrature](Quadrature &quad) {
+				TetQuadrature tet_quadrature(use_corner_quadrature);
 				tet_quadrature.get_quadrature(real_mass_order, quad);
 			});
 
@@ -1544,8 +1548,8 @@ int LagrangeBasis3d::build_bases(
 					b.bases[j].init(discr_order, global_index, j, nodes.node_position(global_index));
 				}
 
-				b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::p_basis_value_3d(discr_order, j, uv, val); });
-				b.bases[j].set_grad([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::p_grad_basis_value_3d(discr_order, j, uv, val); });
+				b.bases[j].set_basis([bernstein, discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::p_basis_value_3d(bernstein, discr_order, j, uv, val); });
+				b.bases[j].set_grad([bernstein, discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::p_grad_basis_value_3d(bernstein, discr_order, j, uv, val); });
 			}
 		}
 		else
@@ -2108,7 +2112,7 @@ int LagrangeBasis3d::build_bases(
 									const auto edge_index = mesh.get_index_from_element_edge(e, ev(le, 0), ev(le, 1));
 									auto neighs = mesh.edge_neighs(edge_index.edge);
 									int min_p = discr_order;
-									int min_cell = index.element;
+									int min_cell = edge_index.element;
 
 									for (auto cid : neighs)
 									{

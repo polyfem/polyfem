@@ -29,6 +29,7 @@ namespace polyfem
 			/// @param[in]  quadrature_order   The quadrature order
 			/// @param[in]  mass_quadrature_order   The quadrature for mass matrix
 			/// @param[in]  discr_order        The order of the elements (1-4)
+			/// @param[in]  bernstein          Uses bernstein bases or not (only for tris)
 			/// @param[in]  serendipity        Uses serendipity bases or not (only for quads)
 			/// @param[in]  has_polys          Does the mesh has polygons, if not the interface mapping is not necessary
 			/// @param[in]  is_geom_bases      Flag to decide if build geometric mapping or normal bases, used to decide if the nodes are important
@@ -47,9 +48,11 @@ namespace polyfem
 				const int quadrature_order,
 				const int mass_quadrature_order,
 				const int discr_order,
+				const bool bernstein,
 				const bool serendipity,
 				const bool has_polys,
 				const bool is_geom_bases,
+				const bool use_corner_quadrature,
 				std::vector<ElementBases> &bases,
 				std::vector<mesh::LocalBoundary> &local_boundary,
 				std::map<int, InterfaceData> &poly_edge_to_data,
@@ -65,6 +68,7 @@ namespace polyfem
 			/// @param[in]  quadrature_order   The quadrature order
 			/// @param[in]  mass_quadrature_order   The quadrature for mass matrix
 			/// @param[in]  discr_order        The order for each element
+			/// @param[in]  bernstein          Uses bernstein bases or not (only for tris)
 			/// @param[in]  serendipity        Uses serendipity bases or not (only for quads)
 			/// @param[in]  has_polys          Does the mesh has polygons, if not the interface mapping is not necessary
 			/// @param[in]  is_geom_bases      Flag to decide if build geometric mapping or normal bases, used to decide if the nodes are important
@@ -83,9 +87,11 @@ namespace polyfem
 				const int quadrature_order,
 				const int mass_quadrature_order,
 				const Eigen::VectorXi &discr_order,
+				const bool bernstein,
 				const bool serendipity,
 				const bool has_polys,
 				const bool is_geom_bases,
+				const bool use_corner_quadrature,
 				std::vector<ElementBases> &bases,
 				std::vector<mesh::LocalBoundary> &local_boundary,
 				std::map<int, InterfaceData> &poly_edge_to_data,

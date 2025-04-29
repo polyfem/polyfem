@@ -85,8 +85,8 @@ namespace polyfem
 		{
 			boundary_nodes_tmp = periodic_bc->full_to_periodic(boundary_nodes);
 			precond_num = periodic_bc->full_to_periodic(A);
- 			Eigen::MatrixXd tmp = periodic_bc->full_to_periodic(b, true);
- 			b = tmp;
+			Eigen::MatrixXd tmp = periodic_bc->full_to_periodic(b, true);
+			b = tmp;
 		}
 		else
 			boundary_nodes_tmp = boundary_nodes;
@@ -104,8 +104,8 @@ namespace polyfem
 				*solver, A, b, boundary_nodes_tmp, x, precond_num, args["output"]["data"]["stiffness_mat"], compute_spectrum,
 				assembler->is_fluid(), use_avg_pressure);
 		}
- 		if (has_periodic_bc())
- 		{
+		if (has_periodic_bc())
+		{
 			sol = periodic_bc->periodic_to_full(full_size, x);
 			if (args["/boundary_conditions/periodic_boundary/force_zero_mean"_json_pointer].get<bool>())
 			{
@@ -115,8 +115,8 @@ namespace polyfem
 					sol(Eigen::seqN(d, n_bases, problem_dim), 0).array() -= integral(d) / area;
 			}
 		}
- 		else
- 			sol = x; // Explicit copy because sol is a MatrixXd (with one column)
+		else
+			sol = x; // Explicit copy because sol is a MatrixXd (with one column)
 
 		solver->get_info(stats.solver_info);
 
@@ -181,7 +181,7 @@ namespace polyfem
 			boundary_nodes, local_boundary, local_neumann_boundary, n_boundary_samples(),
 			rhs, *solve_data.rhs_assembler,
 			mass_matrix_assembler->density(),
-			/*apply_DBC=*/true, /*is_formulation_mixed=*/false, problem->is_time_dependent());
+			/*is_formulation_mixed=*/false, problem->is_time_dependent());
 		solve_data.body_form->update_quantities(t, sol);
 
 		solve_data.inertia_form = nullptr;
@@ -341,9 +341,12 @@ namespace polyfem
 			time_integrator->update_quantities(sol);
 
 			save_timestep(time, t, t0, dt, sol, pressure);
+
+			const std::string &state_path = resolve_output_path(fmt::format(args["output"]["data"]["state"], t));
+			if (!state_path.empty())
+				time_integrator->save_state(state_path);
+
 			logger().info("{}/{}  t={}", t, time_steps, time);
 		}
-
-		time_integrator->save_state(resolve_output_path(args["output"]["data"]["state"]));
 	}
 } // namespace polyfem

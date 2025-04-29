@@ -65,6 +65,18 @@ namespace polyfem::solver
 			AdjointTools::compute_shape_derivative_functional_term(this->state_, this->state_.diff_cached.u(time_step), this->get_integral_functional(), this->ids_, this->spatial_integral_type_, term, time_step);
 			return term;
 		});
+		gradv += variable_to_simulations_.apply_parametrization_jacobian(ParameterType::PeriodicShape, &state_, x, [this, time_step, &x]() {
+			Eigen::VectorXd term;
+			AdjointTools::compute_shape_derivative_functional_term(this->state_, this->state_.diff_cached.u(time_step), this->get_integral_functional(), this->ids_, this->spatial_integral_type_, term, time_step);
+			term *= this->weight();
+
+			const Eigen::VectorXd adjoint_rhs = this->compute_adjoint_rhs_step(time_step, x, state_);
+			const NLHomoProblem &homo_problem = *std::dynamic_pointer_cast<NLHomoProblem>(state_.solve_data.nl_problem);
+			const Eigen::VectorXd full_shape_deriv = homo_problem.reduced_to_full_shape_derivative(state_.diff_cached.disp_grad(), adjoint_rhs);
+			term += utils::flatten(utils::unflatten(full_shape_deriv, state_.mesh->dimension())(state_.primitive_to_node(), Eigen::all));
+
+			return term;
+		});
 	}
 
 	Eigen::VectorXd SpatialIntegralForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
@@ -153,12 +165,19 @@ namespace polyfem::solver
 		j.set_j([formulation, power, &state = std::as_const(state_)](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const IntegrableFunctional::ParameterType &params, Eigen::MatrixXd &val) {
 			val.setZero(grad_u.rows(), 1);
 			const double dt = state.problem->is_time_dependent() ? state.args["time"]["dt"].get<double>() : 0;
+			const quadrature::Quadrature &quadrature = vals.quadrature;
 
 			Eigen::MatrixXd grad_u_q, stress, grad_unused;
 			for (int q = 0; q < grad_u.rows(); q++)
 			{
 				if (formulation == "Laplacian")
 					stress = grad_u.row(q);
+				else if (formulation == "Electrostatics")
+				{
+					assert(power == 2);
+					double epsilon = state.assembler->parameters().at("epsilon")(quadrature.points.row(q), vals.val.row(q), 0, params.elem);
+					stress = pow(epsilon, 1. / power) * grad_u.row(q);
+				}
 				else
 				{
 					vector2matrix(grad_u.row(q), grad_u_q);
@@ -172,6 +191,7 @@ namespace polyfem::solver
 			val.setZero(grad_u.rows(), grad_u.cols());
 			const double dt = state.problem->is_time_dependent() ? state.args["time"]["dt"].get<double>() : 0;
 			const int dim = state.mesh->dimension();
+			const quadrature::Quadrature &quadrature = vals.quadrature;
 
 			if (formulation == "Laplacian")
 			{
@@ -179,6 +199,15 @@ namespace polyfem::solver
 				{
 					const double coef = power * pow(grad_u.row(q).squaredNorm(), power / 2. - 1.);
 					val.row(q) = coef * grad_u.row(q);
+				}
+			}
+			else if (formulation == "Electrostatics")
+			{
+				assert(power == 2);
+				for (int q = 0; q < grad_u.rows(); q++)
+				{
+					double epsilon = state.assembler->parameters().at("epsilon")(quadrature.points.row(q), vals.val.row(q), 0, params.elem);
+					val.row(q) = power * epsilon * grad_u.row(q);
 				}
 			}
 			else
@@ -199,6 +228,54 @@ namespace polyfem::solver
 	}
 
 	void StressNormForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	{
+		SpatialIntegralForm::compute_partial_gradient_step(time_step, x, gradv);
+		gradv += weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::LameParameter, &state_, x, [this]() {
+			log_and_throw_adjoint_error("[{}] Doesn't support derivatives wrt. material!", name());
+			return Eigen::VectorXd::Zero(0).eval();
+		});
+	}
+
+	IntegrableFunctional DirichletEnergyForm::get_integral_functional() const
+	{
+		IntegrableFunctional j;
+
+		const std::string formulation = state_.formulation();
+
+		j.set_j([formulation, &state = std::as_const(state_)](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const IntegrableFunctional::ParameterType &params, Eigen::MatrixXd &val) {
+			val.setZero(grad_u.rows(), 1);
+			const quadrature::Quadrature &quadrature = vals.quadrature;
+
+			Eigen::MatrixXd grad_u_q, stress, grad_unused;
+			for (int q = 0; q < grad_u.rows(); q++)
+			{
+				double scale = 1.;
+				if (formulation == "Electrostatics")
+				{
+					scale = state.assembler->parameters().at("epsilon")(quadrature.points.row(q), vals.val.row(q), 0, params.elem);
+				}
+				val(q) = scale * grad_u.row(q).squaredNorm();
+			}
+		});
+
+		j.set_dj_dgradu([formulation, &state = std::as_const(state_)](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const IntegrableFunctional::ParameterType &params, Eigen::MatrixXd &val) {
+			val.setZero(grad_u.rows(), grad_u.cols());
+			const int dim = state.mesh->dimension();
+			const quadrature::Quadrature &quadrature = vals.quadrature;
+
+			for (int q = 0; q < grad_u.rows(); q++)
+			{
+				double scale = 1.;
+				if (formulation == "Electrostatics")
+					scale = state.assembler->parameters().at("epsilon")(quadrature.points.row(q), vals.val.row(q), 0, params.elem);
+				val.row(q) = 2. * scale * grad_u.row(q);
+			}
+		});
+
+		return j;
+	}
+
+	void DirichletEnergyForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		SpatialIntegralForm::compute_partial_gradient_step(time_step, x, gradv);
 		gradv += weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::LameParameter, &state_, x, [this]() {

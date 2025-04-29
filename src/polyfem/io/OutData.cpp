@@ -28,8 +28,7 @@
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
-#include <polyfem/solver/forms/BCLagrangianForm.hpp>
-#include <polyfem/solver/forms/BCPenaltyForm.hpp>
+#include <polyfem/solver/forms/lagrangian/AugmentedLagrangianForm.hpp>
 
 #include <polyfem/utils/EdgeSampler.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -1097,6 +1096,7 @@ namespace polyfem::io
 		velocity = args["output"]["paraview"]["options"]["velocity"];
 		acceleration = args["output"]["paraview"]["options"]["acceleration"];
 		forces = args["output"]["paraview"]["options"]["forces"] && !is_problem_scalar;
+		jacobian_validity = args["output"]["paraview"]["options"]["jacobian_validity"] && !is_problem_scalar;
 
 		scalar_values = args["output"]["paraview"]["options"]["scalar_values"];
 		tensor_values = args["output"]["paraview"]["options"]["tensor_values"] && !is_problem_scalar;
@@ -1295,6 +1295,13 @@ namespace polyfem::io
 			}
 		}
 
+		Eigen::Vector<bool, -1> validity;
+		if (opts.jacobian_validity)
+			Evaluator::mark_flipped_cells(
+				mesh, gbases, bases, state.disc_orders,
+				state.polys, state.polys_3d, ref_element_sampler,
+				points.rows(), sol, validity, opts.use_sampler, opts.boundary_only);
+
 		Evaluator::interpolate_function(
 			mesh, problem.is_scalar(), bases, state.disc_orders,
 			state.polys, state.polys_3d, ref_element_sampler,
@@ -1341,6 +1348,9 @@ namespace polyfem::io
 		else
 			tmpw = std::make_shared<paraviewo::VTUWriter>();
 		paraviewo::ParaviewWriter &writer = *tmpw;
+
+		if (validity.size())
+			writer.add_field("validity", validity.cast<double>());
 
 		if (opts.solve_export_to_file && opts.nodes)
 			writer.add_field("nodes", node_fun);

@@ -1,13 +1,6 @@
 #pragma once
 
-#include <polyfem/assembler/LinearElasticity.hpp>
-#include <polyfem/assembler/HookeLinearElasticity.hpp>
-#include <polyfem/assembler/SaintVenantElasticity.hpp>
-#include <polyfem/assembler/NeoHookeanElasticity.hpp>
-#include <polyfem/assembler/MooneyRivlinElasticity.hpp>
-#include <polyfem/assembler/MooneyRivlin3ParamElasticity.hpp>
-#include <polyfem/assembler/OgdenElasticity.hpp>
-#include <polyfem/assembler/FixedCorotational.hpp>
+#include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/basis/Basis.hpp>
 
 namespace polyfem::assembler
@@ -39,6 +32,7 @@ namespace polyfem::assembler
 		inline void init_multimodels(const std::vector<std::string> &mats) { multi_material_models_ = mats; }
 
 		std::string name() const override { return "MultiModels"; }
+		bool allow_inversion() const override { return true; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
 	protected:
@@ -51,14 +45,6 @@ namespace polyfem::assembler
 	private:
 		std::vector<std::string> multi_material_models_;
 
-		SaintVenantElasticity saint_venant_;
-		NeoHookeanElasticity neo_hookean_;
-		LinearElasticity linear_elasticity_;
-		HookeLinearElasticity hooke_;
-		MooneyRivlinElasticity mooney_rivlin_elasticity_;
-		MooneyRivlin3ParamElasticity mooney_rivlin_3_param_elasticity_;
-		UnconstrainedOgdenElasticity unconstrained_ogden_elasticity_;
-		IncompressibleOgdenElasticity incompressible_ogden_elasticity_;
-		FixedCorotational fixed_corotational_;
+		AllElasticMaterials all_elastic_materials_;
 	};
 } // namespace polyfem::assembler

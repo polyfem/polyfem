@@ -18,6 +18,8 @@ namespace polyfem::solver
 		/// @param x Current solution
 		virtual void init(const Eigen::VectorXd &x) {}
 
+		virtual void finish() {}
+
 		/// @brief Compute the value of the form multiplied with the weigth
 		/// @param x Current solution
 		/// @return Computed value
@@ -91,11 +93,11 @@ namespace polyfem::solver
 		/// @brief Initialize lagged fields
 		/// TODO: more than one step
 		/// @param x Current solution
-		virtual void init_lagging(const Eigen::VectorXd &x){};
+		virtual void init_lagging(const Eigen::VectorXd &x) {};
 
 		/// @brief Update lagged fields
 		/// @param x Current solution
-		virtual void update_lagging(const Eigen::VectorXd &x, const int iter_num){};
+		virtual void update_lagging(const Eigen::VectorXd &x, const int iter_num) {};
 
 		/// @brief Get the maximum number of lagging iteration allowable.
 		virtual int max_lagging_iterations() const { return 1; }
@@ -130,11 +132,6 @@ namespace polyfem::solver
 		void set_weight(const double weight) { weight_ = weight; }
 
 		// NOTE: The following functions are really specific to the different form and should be implemented in the derived class.
-
-		/// @brief Set if the Dirichlet boundary conditions should be enforced.
-		/// @note This is specific to the body form.
-		/// @param apply_DBC If true, apply Dirichlet boundary conditions to the current RHS.
-		virtual void set_apply_DBC(const Eigen::VectorXd &x, bool apply_DBC) {}
 
 		/// @brief Checks if the step is collision free
 		/// @return True if the step is collision free else false

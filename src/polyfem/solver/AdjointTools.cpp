@@ -11,13 +11,17 @@
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
 #include <polyfem/solver/forms/ElasticForm.hpp>
+#include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/BarrierContactForm.hpp>
+#include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/PressureForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
+#include <polyfem/solver/forms/parametrization/PeriodicMeshToMesh.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/NLHomoProblem.hpp>
 
 #include <polyfem/time_integrator/BDF.hpp>
 
@@ -30,27 +34,24 @@ Reminders:
 
 using namespace polyfem::utils;
 
-namespace
-{
-
-	int get_bdf_order(const polyfem::State &state)
-	{
-		if (state.args["time"]["integrator"].is_string())
-			return 1;
-		if (state.args["time"]["integrator"]["type"] == "ImplicitEuler")
-			return 1;
-		if (state.args["time"]["integrator"]["type"] == "BDF")
-			return state.args["time"]["integrator"]["steps"].get<int>();
-
-		polyfem::log_and_throw_adjoint_error("Integrator type not supported for differentiability.");
-		return -1;
-	}
-} // namespace
-
 namespace polyfem::solver
 {
 	namespace
 	{
+
+		int get_bdf_order(const polyfem::State &state)
+		{
+			if (state.args["time"]["integrator"].is_string())
+				return 1;
+			if (state.args["time"]["integrator"]["type"] == "ImplicitEuler")
+				return 1;
+			if (state.args["time"]["integrator"]["type"] == "BDF")
+				return state.args["time"]["integrator"]["steps"].get<int>();
+
+			polyfem::log_and_throw_adjoint_error("Integrator type not supported for differentiability.");
+			return -1;
+		}
+
 		double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
 
 		class LocalThreadScalarStorage
@@ -553,18 +554,20 @@ namespace polyfem::solver
 		Eigen::VectorXd elasticity_term, rhs_term, pressure_term, contact_term;
 
 		one_form.setZero(state.n_geom_bases * state.mesh->dimension());
+		Eigen::MatrixXd adjoint_zeroed = adjoint;
+		adjoint_zeroed(state.boundary_nodes, Eigen::all).setZero();
 
 		// if (j.depend_on_u() || j.depend_on_gradu())
 		{
-			state.solve_data.elastic_form->force_shape_derivative(0, state.n_geom_bases, sol, sol, adjoint, elasticity_term);
+			state.solve_data.elastic_form->force_shape_derivative(0, state.n_geom_bases, sol, sol, adjoint_zeroed, elasticity_term);
 			if (state.solve_data.body_form)
-				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, 0, sol, adjoint, rhs_term);
+				state.solve_data.body_form->force_shape_derivative(state.n_geom_bases, 0, sol, adjoint_zeroed, rhs_term);
 			else
 				rhs_term.setZero(one_form.size());
 
 			if (state.solve_data.pressure_form)
 			{
-				state.solve_data.pressure_form->force_shape_derivative(state.n_geom_bases, 0, sol, adjoint, pressure_term);
+				state.solve_data.pressure_form->force_shape_derivative(state.n_geom_bases, 0, sol, adjoint_zeroed, pressure_term);
 				pressure_term = state.basis_nodes_to_gbasis_nodes * pressure_term;
 			}
 			else
@@ -572,7 +575,7 @@ namespace polyfem::solver
 
 			if (state.is_contact_enabled())
 			{
-				state.solve_data.contact_form->force_shape_derivative(state.diff_cached.collision_set(0), sol, adjoint, contact_term);
+				state.solve_data.contact_form->force_shape_derivative(state.diff_cached.collision_set(0), sol, adjoint_zeroed, contact_term);
 				contact_term = state.basis_nodes_to_gbasis_nodes * contact_term;
 			}
 			else
@@ -580,6 +583,82 @@ namespace polyfem::solver
 			one_form -= elasticity_term + rhs_term + pressure_term + contact_term;
 		}
 		one_form = utils::flatten(utils::unflatten(one_form, state.mesh->dimension())(state.primitive_to_node(), Eigen::all));
+	}
+
+	void AdjointTools::dJ_shape_homogenization_adjoint_term(
+		const State &state,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &adjoint,
+		Eigen::VectorXd &one_form)
+	{
+		Eigen::VectorXd elasticity_term, contact_term;
+
+		std::shared_ptr<NLHomoProblem> homo_problem = std::dynamic_pointer_cast<NLHomoProblem>(state.solve_data.nl_problem);
+		assert(homo_problem);
+
+		const int dim = state.mesh->dimension();
+		one_form.setZero(state.n_geom_bases * dim);
+
+		const Eigen::MatrixXd affine_adjoint = homo_problem->reduced_to_disp_grad(adjoint, true);
+		const Eigen::VectorXd full_adjoint = homo_problem->NLProblem::reduced_to_full(adjoint.topRows(homo_problem->reduced_size())) + io::Evaluator::generate_linear_field(state.n_bases, state.mesh_nodes, affine_adjoint);
+
+		state.solve_data.elastic_form->force_shape_derivative(0, state.n_geom_bases, sol, sol, full_adjoint, elasticity_term);
+
+		if (state.solve_data.contact_form)
+		{
+			state.solve_data.contact_form->force_shape_derivative(state.diff_cached.collision_set(0), sol, full_adjoint, contact_term);
+			contact_term = state.basis_nodes_to_gbasis_nodes * contact_term;
+		}
+		else
+			contact_term.setZero(elasticity_term.size());
+
+		one_form = -(elasticity_term + contact_term);
+
+		Eigen::VectorXd force;
+		homo_problem->FullNLProblem::gradient(sol, force);
+		one_form -= state.basis_nodes_to_gbasis_nodes * utils::flatten(utils::unflatten(force, dim) * affine_adjoint);
+
+		one_form = utils::flatten(utils::unflatten(one_form, dim)(state.primitive_to_node(), Eigen::all));
+	}
+
+	void AdjointTools::dJ_periodic_shape_adjoint_term(
+		const State &state,
+		const PeriodicMeshToMesh &periodic_mesh_map,
+		const Eigen::VectorXd &periodic_mesh_representation,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &adjoint,
+		Eigen::VectorXd &one_form)
+	{
+		std::shared_ptr<NLHomoProblem> homo_problem = std::dynamic_pointer_cast<NLHomoProblem>(state.solve_data.nl_problem);
+		assert(homo_problem);
+
+		const Eigen::MatrixXd reduced_sol = homo_problem->full_to_reduced(sol, state.diff_cached.disp_grad());
+		const Eigen::VectorXd extended_sol = homo_problem->reduced_to_extended(reduced_sol);
+
+		const Eigen::VectorXd extended_adjoint = homo_problem->reduced_to_extended(adjoint, true);
+		const Eigen::MatrixXd affine_adjoint = homo_problem->reduced_to_disp_grad(adjoint, true);
+		const Eigen::VectorXd full_adjoint = homo_problem->NLProblem::reduced_to_full(adjoint.topRows(homo_problem->reduced_size())) + io::Evaluator::generate_linear_field(state.n_bases, state.mesh_nodes, affine_adjoint);
+
+		const int dim = state.mesh->dimension();
+
+		dJ_shape_homogenization_adjoint_term(state, sol, adjoint, one_form);
+
+		StiffnessMatrix hessian;
+		homo_problem->set_project_to_psd(false);
+		homo_problem->FullNLProblem::hessian(sol, hessian);
+		Eigen::VectorXd partial_term = full_adjoint.transpose() * hessian;
+		partial_term = state.basis_nodes_to_gbasis_nodes * utils::flatten(utils::unflatten(partial_term, dim) * state.diff_cached.disp_grad());
+		one_form -= utils::flatten(utils::unflatten(partial_term, dim)(state.primitive_to_node(), Eigen::all));
+
+		one_form = periodic_mesh_map.apply_jacobian(one_form, periodic_mesh_representation);
+
+		if (state.solve_data.periodic_contact_form)
+		{
+			Eigen::VectorXd contact_term;
+			state.solve_data.periodic_contact_form->force_periodic_shape_derivative(state, periodic_mesh_map, periodic_mesh_representation, state.solve_data.periodic_contact_form->get_barrier_collision_set(), extended_sol, extended_adjoint, contact_term);
+
+			one_form -= contact_term;
+		}
 	}
 
 	void AdjointTools::dJ_shape_transient_adjoint_term(
@@ -670,7 +749,9 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &adjoint,
 		Eigen::VectorXd &one_form)
 	{
-		state.solve_data.elastic_form->force_material_derivative(0, sol, sol, adjoint, one_form);
+		Eigen::MatrixXd adjoint_zeroed = adjoint;
+		adjoint_zeroed(state.boundary_nodes, Eigen::all).setZero();
+		state.solve_data.elastic_form->force_material_derivative(0, sol, sol, adjoint_zeroed, one_form);
 	}
 
 	void AdjointTools::dJ_material_transient_adjoint_term(
@@ -723,8 +804,8 @@ namespace polyfem::solver
 
 		one_form.setZero(1);
 
-		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator = 
-		 time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
+		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator =
+			time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
 		{
 			Eigen::MatrixXd solution, velocity, acceleration;
 			solution = state.diff_cached.u(0);
@@ -822,6 +903,27 @@ namespace polyfem::solver
 			one_form(b) = 0;
 			one_form(ndof + b) = 0;
 		}
+	}
+
+	void AdjointTools::dJ_dirichlet_static_adjoint_term(
+		const State &state,
+		const Eigen::MatrixXd &adjoint,
+		Eigen::VectorXd &one_form)
+	{
+		const int n_dirichlet_dof = state.boundary_nodes.size();
+		StiffnessMatrix gradd_h = state.diff_cached.gradu_h(0);
+		std::set<int> boundary_nodes_set(state.boundary_nodes.begin(), state.boundary_nodes.end());
+		gradd_h.prune([&boundary_nodes_set](const Eigen::Index &row, const Eigen::Index &col, const FullNLProblem::Scalar &value) {
+			if (row != col)
+				return value;
+			if (boundary_nodes_set.find(row) == boundary_nodes_set.end())
+				return value;
+			return 0.0;
+		});
+		one_form.setZero(state.ndof());
+		one_form(state.boundary_nodes) -= adjoint(state.boundary_nodes, 0);
+		one_form(state.boundary_nodes) -= (gradd_h.transpose() * adjoint.col(0))(state.boundary_nodes);
+		one_form = utils::flatten(utils::unflatten(one_form, state.mesh->dimension())(state.primitive_to_node(), Eigen::all));
 	}
 
 	void AdjointTools::dJ_dirichlet_transient_adjoint_term(

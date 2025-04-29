@@ -18,7 +18,7 @@ namespace polyfem
 
 		virtual int vertex_size() = 0;
 		virtual void reparametrize(const Eigen::MatrixXd &control_points, Eigen::MatrixXd &newV) = 0;
-		virtual void get_parameters(const Eigen::MatrixXd &V, Eigen::MatrixXd &control_points) final;
+		// virtual void get_parameters(const Eigen::MatrixXd &V, Eigen::MatrixXd &control_points) final;
 		virtual void get_parameters(const Eigen::MatrixXd &V, Eigen::MatrixXd &control_points, const bool mesh_changed) = 0;
 		virtual void derivative_wrt_params(const Eigen::VectorXd &grad_boundary, Eigen::VectorXd &grad_control_points) = 0;
 

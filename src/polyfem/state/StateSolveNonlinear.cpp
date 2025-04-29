@@ -10,7 +10,7 @@
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
-#include <polyfem/solver/forms/BCLagrangianForm.hpp>
+#include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/ALSolver.hpp>
@@ -217,12 +217,13 @@ namespace polyfem
 		damping_prev_assembler = std::make_shared<assembler::ViscousDampingPrev>();
 		set_materials(*damping_prev_assembler);
 
+		const ElementInversionCheck check_inversion = args["solver"]["advanced"]["check_inversion"];
 		const std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(
 			// General
 			units,
 			mesh->dimension(), t,
 			// Elastic form
-			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache,
+			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache, args["solver"]["advanced"]["jacobian_threshold"], check_inversion,
 			// Body form
 			n_pressure_bases, boundary_nodes, local_boundary,
 			local_neumann_boundary,
@@ -249,7 +250,7 @@ namespace polyfem
 			// Homogenization
 			macro_strain_constraint,
 			// Periodic contact
-			args["contact"]["periodic"], periodic_collision_mesh_to_basis,
+			args["contact"]["periodic"], periodic_collision_mesh_to_basis, periodic_bc,
 			// Friction form
 			args["contact"]["friction_coefficient"],
 			args["contact"]["epsv"],
@@ -268,11 +269,9 @@ namespace polyfem
 
 		const int ndof = n_bases * mesh->dimension();
 		solve_data.nl_problem = std::make_shared<NLProblem>(
-			ndof, boundary_nodes, local_boundary, n_boundary_samples(),
-			*solve_data.rhs_assembler, periodic_bc, t, forms);
+			ndof, periodic_bc, t, forms, solve_data.al_form);
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
-		solve_data.nl_problem->state = this;
 		// --------------------------------------------------------------------
 
 		stats.solver_info = json::array();
@@ -306,7 +305,7 @@ namespace polyfem
 		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(true);
 
 		ALSolver al_solver(
-			solve_data.al_lagr_form, solve_data.al_pen_form,
+			solve_data.al_form,
 			args["solver"]["augmented_lagrangian"]["initial_weight"],
 			args["solver"]["augmented_lagrangian"]["scaling"],
 			args["solver"]["augmented_lagrangian"]["max_weight"],
@@ -332,6 +331,12 @@ namespace polyfem
 
 		nl_solver = make_nl_solver(false);
 		al_solver.solve_reduced(nl_solver, nl_problem, sol);
+
+		if (args["space"]["advanced"]["count_flipped_els_continuous"])
+		{
+			const auto invalidList = count_invalid(mesh->dimension(), bases, geom_bases(), sol);
+			logger().debug("Flipped elements (cnt {}) : {}", invalidList.size(), invalidList);
+		}
 
 		// ---------------------------------------------------------------------
 
@@ -387,6 +392,7 @@ namespace polyfem
 				nl_problem.init(sol);
 				solve_data.update_barrier_stiffness(sol);
 				nl_solver->minimize(nl_problem, tmp_sol);
+				nl_problem.finish();
 				prev_sol = sol;
 				sol = nl_problem.reduced_to_full(tmp_sol);
 

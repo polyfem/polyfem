@@ -4,11 +4,11 @@
 #include <polyfem/mesh/remesh/WildRemesher.hpp>
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
-#include <polyfem/solver/forms/BCLagrangianForm.hpp>
-#include <polyfem/solver/forms/BCPenaltyForm.hpp>
+#include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/problems/StaticBoundaryNLProblem.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
+#include <polyfem/solver/forms/lagrangian/AugmentedLagrangianForm.hpp>
 
 namespace polyfem::mesh
 {
@@ -257,7 +257,7 @@ namespace polyfem::mesh
 				state.units, dim(), current_time,
 				// Elastic form
 				n_bases(), bases, /*geom_bases=*/bases, *assembler,
-				assembly_vals_cache, assembly_vals_cache,
+				assembly_vals_cache, assembly_vals_cache, state.args["solver"]["advanced"]["jacobian_threshold"], state.args["solver"]["advanced"]["check_inversion"],
 				// Body form
 				/*n_pressure_bases=*/0, boundary_nodes, local_boundary,
 				local_neumann_boundary, state.n_boundary_samples(), rhs,
@@ -284,7 +284,7 @@ namespace polyfem::mesh
 				// Homogenization
 				assembler::MacroStrainValue(),
 				// Periodic contact
-				/*periodic_contact=*/false, /*tiled_to_single=*/Eigen::VectorXi(),
+				/*periodic_contact=*/false, /*tiled_to_single=*/Eigen::VectorXi(), /*periodicbc=*/nullptr,
 				// Friction form
 				state.args["contact"]["friction_coefficient"],
 				state.args["contact"]["epsv"],
@@ -292,15 +292,14 @@ namespace polyfem::mesh
 				// Rayleigh damping form
 				state.args["solver"]["rayleigh_damping"]);
 
-			// Remove AL forms because we do not need them in the remeshing process.
-			forms.erase(std::remove(forms.begin(), forms.end(), solve_data.al_lagr_form), forms.end());
-			forms.erase(std::remove(forms.begin(), forms.end(), solve_data.al_pen_form), forms.end());
-			solve_data.al_lagr_form = nullptr;
-			solve_data.al_pen_form = nullptr;
+			// Remove all AL forms because we do not need them in the remeshing process.
+			for (auto &lf : solve_data.al_form)
+				forms.erase(std::remove(forms.begin(), forms.end(), lf), forms.end());
+			solve_data.al_form.clear();
 		}
-
+		const std::vector<std::shared_ptr<polyfem::solver::AugmentedLagrangianForm>> penalty_forms;
 		solve_data.nl_problem = std::make_shared<polyfem::solver::StaticBoundaryNLProblem>(
-			ndof(), boundary_nodes, target_x, forms);
+			ndof(), target_x, forms, penalty_forms);
 
 		assert(solve_data.time_integrator != nullptr);
 		solve_data.nl_problem->update_quantities(current_time, solve_data.time_integrator->x_prev());

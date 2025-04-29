@@ -313,77 +313,17 @@ namespace polyfem
 			in_primitive_to_primitive.resize(0);
 			return;
 		}
+		const auto &tmp = mesh_nodes->in_ordered_vertices();
+		int max_tmp = -1;
+		for (auto v : tmp)
+			max_tmp = std::max(max_tmp, v);
 
-		const auto primitive_offset = [&](int node) {
-			if (mesh_nodes->is_vertex_node(node))
-				return 0;
-			else if (mesh_nodes->is_edge_node(node))
-				return mesh->n_vertices();
-			else if (mesh_nodes->is_face_node(node))
-				return mesh->n_vertices() + mesh->n_edges();
-			else if (mesh_nodes->is_cell_node(node))
-				return mesh->n_vertices() + mesh->n_edges() + mesh->n_faces();
-			throw std::runtime_error("Invalid node ID!");
-		};
-
-		logger().trace("Building primitive to node mapping...");
-		timer.start();
-		std::vector<std::vector<int>> primitive_to_nodes(num_primitives);
-		const std::vector<int> &grouped_nodes = mesh_nodes->primitive_to_node();
-		int node_count = 0;
-		for (int i = 0; i < grouped_nodes.size(); i++)
+		in_node_to_node.resize(max_tmp + 1);
+		for (int i = 0; i < tmp.size(); ++i)
 		{
-			int node = grouped_nodes[i];
-			assert(node < num_nodes);
-			if (node >= 0)
-			{
-				int primitive = mesh_nodes->node_to_primitive_gid().at(node) + primitive_offset(i);
-				assert(primitive < num_primitives);
-				primitive_to_nodes[primitive].push_back(node);
-				node_count++;
-			}
+			if (tmp[i] >= 0)
+				in_node_to_node[tmp[i]] = i;
 		}
-		assert(node_count == num_nodes);
-		timer.stop();
-		logger().trace("Done (took {}s)", timer.getElapsedTime());
-
-		logger().trace("Combining mappings...");
-		timer.start();
-		in_node_to_node.setConstant(num_nodes, -1);
-		for (int i = 0; i < num_nodes; i++)
-		{
-			// input node id -> input primitive -> primitive -> node(s)
-			const std::vector<int> &possible_nodes =
-				primitive_to_nodes[in_primitive_to_primitive[in_node_to_in_primitive[i]]];
-
-			if (possible_nodes.size() == 1)
-				in_node_to_node[i] = possible_nodes[0];
-			else
-			{
-				assert(possible_nodes.size() > 1);
-
-				// TODO: The following code assumes multiple nodes must come from an edge.
-				//       This only true for P3. P4+ has multiple face nodes and P5+ have multiple cell nodes.
-
-				int e_id = in_primitive_to_primitive[in_node_to_in_primitive[i]] - mesh->n_vertices();
-				assert(e_id < mesh->n_edges());
-				assert(in_node_to_node[mesh->edge_vertex(e_id, 0)] >= 0); // Vertex nodes should be computed first
-				RowVectorNd v0 = mesh_nodes->node_position(in_node_to_node[mesh->edge_vertex(e_id, 0)]);
-				RowVectorNd a = mesh_nodes->node_position(possible_nodes[0]);
-				RowVectorNd b = mesh_nodes->node_position(possible_nodes[1]);
-				// Assume possible nodes are ordered, so only need to check order of two nodes
-
-				// Input edges are sorted, so if a is closer to v0 then the order is correct
-				// otherwise the nodes are flipped.
-				assert(mesh->edge_vertex(e_id, 0) < mesh->edge_vertex(e_id, 1));
-				int offset = (a - v0).squaredNorm() < (b - v0).squaredNorm()
-								 ? in_node_offset[i]
-								 : (possible_nodes.size() - in_node_offset[i] - 1);
-				in_node_to_node[i] = possible_nodes[offset];
-			}
-		}
-		timer.stop();
-		logger().trace("Done (took {}s)", timer.getElapsedTime());
 	}
 
 	std::string State::formulation() const
@@ -405,24 +345,9 @@ namespace polyfem
 					current = tmp;
 				else if (current != tmp)
 				{
-					if (current == "LinearElasticity"
-						|| current == "NeoHookean"
-						|| current == "SaintVenant"
-						|| current == "HookeLinearElasticity"
-						|| current == "MooneyRivlin"
-						|| current == "MooneyRivlin3Param"
-						|| current == "UnconstrainedOgden"
-						|| current == "IncompressibleOgden"
-						|| current == "MultiModels")
+					if (AssemblerUtils::is_elastic_material(current))
 					{
-						if (tmp == "LinearElasticity"
-							|| tmp == "NeoHookean"
-							|| tmp == "SaintVenant"
-							|| tmp == "HookeLinearElasticity"
-							|| tmp == "MooneyRivlin"
-							|| current == "MooneyRivlin3Param"
-							|| tmp == "UnconstrainedOgden"
-							|| tmp == "IncompressibleOgden")
+						if (AssemblerUtils::is_elastic_material(tmp))
 							current = "MultiModels";
 						else
 						{
@@ -539,6 +464,9 @@ namespace polyfem
 	{
 		if (mesh->has_poly())
 			return true;
+
+		if (args["space"]["basis_type"] == "Bernstein")
+			return false;
 
 		if (args["space"]["basis_type"] == "Spline")
 			return true;
@@ -691,6 +619,17 @@ namespace polyfem
 		}
 		// TODO: same for pressure!
 
+		if (!mesh->is_simplicial())
+		{
+			args["space"]["advanced"]["count_flipped_els_continuous"] = false;
+			args["output"]["paraview"]["options"]["jacobian_validity"] = false;
+			args["solver"]["advanced"]["check_inversion"] = "Discrete";
+		}
+		else if (args["solver"]["advanced"]["check_inversion"] != "Discrete")
+		{
+			args["space"]["advanced"]["use_corner_quadrature"] = true;
+		}
+
 		Eigen::MatrixXi geom_disc_orders;
 		if (!iso_parametric())
 		{
@@ -734,6 +673,7 @@ namespace polyfem
 		// shape optimization needs continuous geometric basis
 		// const bool use_continuous_gbasis = optimization_enabled == solver::CacheLevel::Derivatives;
 		const bool use_continuous_gbasis = true;
+		const bool use_corner_quadrature = args["space"]["advanced"]["use_corner_quadrature"];
 
 		if (mesh->is_volume())
 		{
@@ -755,15 +695,15 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					n_geom_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, !use_continuous_gbasis, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
+					n_geom_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, false, has_polys, !use_continuous_gbasis, use_corner_quadrature, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
 
-				n_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["basis_type"] == "Serendipity", has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+				n_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["basis_type"] == "Bernstein", args["space"]["basis_type"] == "Serendipity", has_polys, false, use_corner_quadrature, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
 
 			// if(problem->is_mixed())
 			if (mixed_assembler != nullptr)
 			{
-				n_pressure_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, pressure_mesh_nodes);
+				n_pressure_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), args["space"]["basis_type"] == "Bernstein", false, has_polys, false, use_corner_quadrature, pressure_bases, local_boundary, poly_edge_to_data_geom, pressure_mesh_nodes);
 			}
 		}
 		else
@@ -787,15 +727,15 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					n_geom_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, has_polys, !use_continuous_gbasis, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
+					n_geom_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, false, has_polys, !use_continuous_gbasis, use_corner_quadrature, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
 
-				n_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["basis_type"] == "Serendipity", has_polys, false, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+				n_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["basis_type"] == "Bernstein", args["space"]["basis_type"] == "Serendipity", has_polys, false, use_corner_quadrature, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
 
 			// if(problem->is_mixed())
 			if (mixed_assembler != nullptr)
 			{
-				n_pressure_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), false, has_polys, false, pressure_bases, local_boundary, poly_edge_to_data_geom, pressure_mesh_nodes);
+				n_pressure_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), args["space"]["basis_type"] == "Bernstein", false, has_polys, false, use_corner_quadrature, pressure_bases, local_boundary, poly_edge_to_data_geom, pressure_mesh_nodes);
 			}
 		}
 

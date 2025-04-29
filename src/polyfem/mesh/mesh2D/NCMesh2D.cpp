@@ -74,16 +74,16 @@ namespace polyfem
 				if (nodes[f].size() != 3)
 					throw std::runtime_error("NCMesh doesn't support high order mesh!");
 		}
-		RowVectorNd NCMesh2D::edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const
+		std::pair<RowVectorNd, int> NCMesh2D::edge_node(const Navigation::Index &index, const int n_new_nodes, const int i) const
 		{
 			const auto v1 = point(index.vertex);
 			const auto v2 = point(switch_vertex(index).vertex);
 
 			const double t = i / (n_new_nodes + 1.0);
 
-			return (1 - t) * v1 + t * v2;
+			return std::make_pair((1 - t) * v1 + t * v2, -1);
 		}
-		RowVectorNd NCMesh2D::face_node(const Navigation::Index &index, const int n_new_nodes, const int i, const int j) const
+		std::pair<RowVectorNd, int> NCMesh2D::face_node(const Navigation::Index &index, const int n_new_nodes, const int i, const int j) const
 		{
 			const auto v1 = point(index.vertex);
 			const auto v2 = point(switch_vertex(index).vertex);
@@ -95,7 +95,7 @@ namespace polyfem
 			assert(b3 < 1);
 			assert(b3 > 0);
 
-			return b1 * v1 + b2 * v2 + b3 * v3;
+			return std::make_pair(b1 * v1 + b2 * v2 + b3 * v3, -1);
 		}
 
 		int NCMesh2D::find_vertex(Eigen::Vector2i v) const
@@ -797,7 +797,7 @@ namespace polyfem
 			}
 		}
 
-		void NCMesh2D::compute_body_ids(const std::function<int(const size_t, const RowVectorNd &)> &marker)
+		void NCMesh2D::compute_body_ids(const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &)> &marker)
 		{
 			body_ids_.resize(n_faces());
 			std::fill(body_ids_.begin(), body_ids_.end(), -1);
@@ -805,7 +805,7 @@ namespace polyfem
 			for (int e = 0; e < n_faces(); ++e)
 			{
 				const auto bary = face_barycenter(e);
-				body_ids_[e] = marker(e, bary);
+				body_ids_[e] = marker(e, element_vertices(e), bary);
 				elements[valid_to_all_elem(e)].body_id = body_ids_[e];
 			}
 		}

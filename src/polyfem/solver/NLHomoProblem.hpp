@@ -5,29 +5,28 @@
 namespace polyfem
 {
 	class State;
-	namespace assembler {
+	namespace assembler
+	{
 		class MacroStrainValue;
 	}
-}
+} // namespace polyfem
 
 namespace polyfem::solver
 {
-    class NLHomoProblem : public NLProblem
-    {
-    public:
+	class NLHomoProblem : public NLProblem
+	{
+	public:
 		using typename FullNLProblem::Scalar;
 		using typename FullNLProblem::THessian;
 		using typename FullNLProblem::TVector;
 
-        NLHomoProblem(const int full_size,
-				  const std::vector<int> &boundary_nodes,
-				  const std::vector<mesh::LocalBoundary> &local_boundary,
-				  const int n_boundary_samples,
-				  const assembler::RhsAssembler &rhs_assembler,
-				  const assembler::MacroStrainValue &macro_strain_constraint,
-				  const State &state,
-				  const double t, const std::vector<std::shared_ptr<Form>> &forms, 
-				  const bool solve_symmetric_macro_strain);
+		NLHomoProblem(const int full_size,
+					  const assembler::MacroStrainValue &macro_strain_constraint,
+					  const State &state,
+					  const double t,
+					  const std::vector<std::shared_ptr<Form>> &forms,
+					  const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
+					  const bool solve_symmetric_macro_strain);
 		virtual ~NLHomoProblem() = default;
 
 		double value(const TVector &x) override;
@@ -42,11 +41,14 @@ namespace polyfem::solver
 		TVector full_to_reduced(const TVector &full) const override;
 		TVector full_to_reduced_grad(const TVector &full) const override;
 		TVector reduced_to_full(const TVector &reduced) const override;
+		TVector reduced_to_full_shape_derivative(const Eigen::MatrixXd &disp_grad, const TVector &adjoint_full) const;
 
-		TVector reduced_to_extended(const TVector &reduced) const;
+		TVector reduced_to_extended(const TVector &reduced, bool homogeneous = false) const;
 		TVector extended_to_reduced(const TVector &extended) const;
 		TVector extended_to_reduced_grad(const TVector &extended) const;
 		void extended_hessian_to_reduced_hessian(const THessian &extended, THessian &reduced) const;
+
+		Eigen::MatrixXd reduced_to_disp_grad(const TVector &reduced, bool homogeneous = false) const;
 
 		void set_fixed_entry(const Eigen::VectorXi &fixed_entry);
 
@@ -69,7 +71,7 @@ namespace polyfem::solver
 		bool has_symmetry_constraint() const { return only_symmetric; }
 
 	protected:
-		Eigen::MatrixXd boundary_values() const override;
+		Eigen::MatrixXd constraint_values(const TVector &) const override;
 
 	private:
 		void init_projection();
@@ -77,7 +79,7 @@ namespace polyfem::solver
 
 		TVector macro_full_to_reduced(const TVector &full) const;
 		Eigen::MatrixXd macro_full_to_reduced_grad(const Eigen::MatrixXd &full) const;
-		TVector macro_reduced_to_full(const TVector &reduced) const;
+		TVector macro_reduced_to_full(const TVector &reduced, bool homogeneous = false) const;
 
 		const State &state_;
 		const bool only_symmetric;
@@ -88,5 +90,5 @@ namespace polyfem::solver
 		Eigen::MatrixXd macro_full_to_mid_, macro_mid_to_full_;
 
 		std::vector<std::shared_ptr<Form>> homo_forms;
-    };
-}
+	};
+} // namespace polyfem::solver

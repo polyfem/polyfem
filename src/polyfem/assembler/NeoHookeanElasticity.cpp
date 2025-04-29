@@ -1,6 +1,9 @@
 #include "NeoHookeanElasticity.hpp"
 
+#include <polyfem/utils/Jacobian.hpp>
 #include <polyfem/autogen/auto_elasticity_rhs.hpp>
+
+#include <type_traits>
 
 namespace polyfem::assembler
 {
@@ -306,34 +309,82 @@ namespace polyfem::assembler
 	template <typename T>
 	T NeoHookeanElasticity::compute_energy_aux(const NonLinearAssemblerData &data) const
 	{
-		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> AutoDiffVect;
-		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
-
-		AutoDiffVect local_disp;
-		get_local_disp(data, size(), local_disp);
-
-		AutoDiffGradMat def_grad(size(), size());
-
-		T energy = T(0.0);
-
-		const int n_pts = data.da.size();
-		for (long p = 0; p < n_pts; ++p)
+		if constexpr (std::is_same_v<T, double>)
 		{
-			compute_disp_grad_at_quad(data, local_disp, p, size(), def_grad);
+			Eigen::MatrixXd local_disp(data.vals.basis_values.size(), size());
+			local_disp.setZero();
+			for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
+			{
+				const auto &bs = data.vals.basis_values[i];
+				for (size_t ii = 0; ii < bs.global.size(); ++ii)
+				{
+					for (int d = 0; d < size(); ++d)
+					{
+						local_disp(i, d) += bs.global[ii].val * data.x(bs.global[ii].index * size() + d);
+					}
+				}
+			}
+			Eigen::VectorXd jacs;
+			if (use_robust_jacobian)
+				jacs = data.vals.eval_deformed_jacobian_determinant(data.x);
+			Eigen::MatrixXd def_grad(size(), size());
 
-			// Id + grad d
-			for (int d = 0; d < size(); ++d)
-				def_grad(d, d) += T(1);
+			T energy = T(0.0);
 
-			double lambda, mu;
-			params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id, lambda, mu);
+			const int n_pts = data.da.size();
+			for (long p = 0; p < n_pts; ++p)
+			{
+				Eigen::MatrixXd grad(data.vals.basis_values.size(), size());
 
-			const T log_det_j = log(polyfem::utils::determinant(def_grad));
-			const T val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) + lambda / 2 * log_det_j * log_det_j;
+				for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
+				{
+					grad.row(i) = data.vals.basis_values[i].grad.row(p);
+				}
 
-			energy += val * data.da(p);
+				const Eigen::MatrixXd jac_it = data.vals.jac_it[p];
+				// Id + grad d
+				def_grad = local_disp.transpose() * grad * jac_it + Eigen::MatrixXd::Identity(size(), size());
+				double lambda, mu;
+				params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id, lambda, mu);
+				const T J = use_robust_jacobian ? jacs(p) * jac_it.determinant() : def_grad.determinant();
+				const T log_det_j = log(J);
+				const T val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) + 
+								lambda / 2 * log_det_j * log_det_j;
+				energy += val * data.da(p);
+			}
+			return energy;
 		}
-		return energy;
+		else
+		{
+			typedef Eigen::Matrix<T, Eigen::Dynamic, 1> AutoDiffVect;
+			typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
+
+			AutoDiffVect local_disp;
+			get_local_disp(data, size(), local_disp);
+
+			AutoDiffGradMat def_grad(size(), size());
+
+			T energy = T(0.0);
+
+			const int n_pts = data.da.size();
+			for (long p = 0; p < n_pts; ++p)
+			{
+				compute_disp_grad_at_quad(data, local_disp, p, size(), def_grad);
+
+				// Id + grad d
+				for (int d = 0; d < size(); ++d)
+					def_grad(d, d) += T(1);
+
+				double lambda, mu;
+				params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id, lambda, mu);
+
+				const T log_det_j = log(polyfem::utils::determinant(def_grad));
+				const T val = mu / 2 * ((def_grad.transpose() * def_grad).trace() - size() - 2 * log_det_j) + lambda / 2 * log_det_j * log_det_j;
+
+				energy += val * data.da(p);
+			}
+			return energy;
+		}
 	}
 
 	template <int dim>
@@ -388,6 +439,10 @@ namespace polyfem::assembler
 			}
 		}
 
+		Eigen::VectorXd jacs;
+		if (use_robust_jacobian)
+			jacs = data.vals.eval_deformed_jacobian_determinant(data.x);
+
 		Eigen::Matrix<double, dim, dim> def_grad(size(), size());
 
 		Eigen::Matrix<double, n_basis, dim> G(data.vals.basis_values.size(), size());
@@ -407,7 +462,7 @@ namespace polyfem::assembler
 			// Id + grad d
 			def_grad = local_disp.transpose() * grad * jac_it + Eigen::Matrix<double, dim, dim>::Identity(size(), size());
 
-			const double J = def_grad.determinant();
+			const double J = use_robust_jacobian ? jacs(p) * jac_it.determinant() : def_grad.determinant();
 			const double log_det_j = log(J);
 
 			Eigen::Matrix<double, dim, dim> delJ_delF(size(), size());
@@ -480,6 +535,10 @@ namespace polyfem::assembler
 			}
 		}
 
+		Eigen::VectorXd jacs;
+		if (use_robust_jacobian)
+			jacs = data.vals.eval_deformed_jacobian_determinant(data.x);
+
 		Eigen::Matrix<double, dim, dim> def_grad(size(), size());
 
 		for (long p = 0; p < n_pts; ++p)
@@ -496,7 +555,7 @@ namespace polyfem::assembler
 			// Id + grad d
 			def_grad = local_disp.transpose() * grad * jac_it + Eigen::Matrix<double, dim, dim>::Identity(size(), size());
 
-			const double J = def_grad.determinant();
+			const double J = use_robust_jacobian ? jacs(p) * jac_it.determinant() : def_grad.determinant();
 			double log_det_j = log(J);
 
 			Eigen::Matrix<double, dim, dim> delJ_delF(size(), size());

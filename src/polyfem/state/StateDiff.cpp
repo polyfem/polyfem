@@ -184,17 +184,22 @@ namespace polyfem
 			else
 			{
 				solve_data.nl_problem->set_project_to_psd(false);
-				Eigen::VectorXd reduced;
 				if (is_homogenization())
 				{
+					Eigen::VectorXd reduced;
 					std::shared_ptr<solver::NLHomoProblem> homo_problem = std::dynamic_pointer_cast<solver::NLHomoProblem>(solve_data.nl_problem);
 					reduced = homo_problem->full_to_reduced(sol, disp_grad);
+					solve_data.nl_problem->solution_changed(reduced);
+					solve_data.nl_problem->hessian(reduced, hessian);
 				}
 				else
-					reduced = solve_data.nl_problem->full_to_reduced(sol);
-
-				solve_data.nl_problem->solution_changed(reduced);
-				solve_data.nl_problem->hessian(reduced, hessian);
+				{
+					StiffnessMatrix tmp_hess;
+					solve_data.nl_problem->FullNLProblem::solution_changed(sol);
+					solve_data.nl_problem->FullNLProblem::hessian(sol, tmp_hess);
+					hessian.setZero();
+					replace_rows_by_identity(hessian, tmp_hess, boundary_nodes);
+				}
 			}
 		}
 	}
@@ -334,7 +339,7 @@ namespace polyfem
 	{
 		Eigen::MatrixXd b = adjoint_rhs;
 
-		Eigen::MatrixXd adjoint = Eigen::MatrixXd::Zero(ndof(), adjoint_rhs.cols());
+		Eigen::MatrixXd adjoint;
 		if (lin_solver_cached)
 		{
 			b(boundary_nodes, Eigen::all).setZero();
@@ -356,6 +361,7 @@ namespace polyfem
 			else
 				boundary_nodes_tmp = boundary_nodes;
 
+			adjoint.setZero(ndof(), adjoint_rhs.cols());
 			for (int i = 0; i < b.cols(); i++)
 			{
 				Eigen::VectorXd x, tmp;
@@ -373,8 +379,6 @@ namespace polyfem
 			auto solver = polysolve::linear::Solver::create(args["solver"]["adjoint_linear"], adjoint_logger());
 
 			StiffnessMatrix A = diff_cached.gradu_h(0); // This should be transposed, but A is symmetric in hyper-elastic and diffusion problems
-			solver->analyze_pattern(A, A.rows());
-			solver->factorize(A);
 
 			/*
 			For non-periodic problems, the adjoint solution p's size is the full size in NLProblem
@@ -382,6 +386,26 @@ namespace polyfem
 			*/
 			if (!is_homogenization())
 			{
+				adjoint.setZero(ndof(), adjoint_rhs.cols());
+				for (int i = 0; i < b.cols(); i++)
+				{
+					Eigen::VectorXd tmp = b.col(i);
+					tmp(boundary_nodes).setZero();
+
+					Eigen::VectorXd x;
+					x.setZero(tmp.size());
+					dirichlet_solve(*solver, A, tmp, boundary_nodes, x, A.rows(), "", false, false, false);
+
+					adjoint.col(i) = x;
+					adjoint(boundary_nodes, i) = -b(boundary_nodes, i);
+				}
+			}
+			else
+			{
+				solver->analyze_pattern(A, A.rows());
+				solver->factorize(A);
+
+				adjoint.setZero(adjoint_rhs.rows(), adjoint_rhs.cols());
 				for (int i = 0; i < b.cols(); i++)
 				{
 					Eigen::MatrixXd tmp = b.col(i);
@@ -389,12 +413,11 @@ namespace polyfem
 					Eigen::VectorXd x;
 					x.setZero(tmp.size());
 					solver->solve(tmp, x);
+					x.conservativeResize(adjoint.rows());
 
-					adjoint.col(i) = solve_data.nl_problem->reduced_to_full(x);
+					adjoint.col(i) = x;
 				}
 			}
-			// NLProblem sets dirichlet values to forward BC values, but we want zero in adjoint
-			adjoint(boundary_nodes, Eigen::all).setZero();
 		}
 
 		return adjoint;

@@ -1,6 +1,8 @@
 set(AUTOGEN_BASES
 	auto_p_bases.cpp
 	auto_p_bases.hpp
+	auto_b_bases.cpp
+	auto_b_bases.hpp
 	auto_q_bases_2d_val.cpp
 	auto_q_bases_2d_nodes.cpp
 	auto_q_bases_2d_grad.cpp
@@ -44,6 +46,7 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${AU
 
 if(WIN32)
 	SET_SOURCE_FILES_PROPERTIES(${AUTOGEN_BASES} PROPERTIES COMPILE_FLAGS -Od)
+	SET_SOURCE_FILES_PROPERTIES(${AUTOGEN_BASES} PROPERTIES COMPILE_FLAGS -bigobj)
 endif()
 
 add_library(polyfem_autogen ${AUTOGEN_BASES})

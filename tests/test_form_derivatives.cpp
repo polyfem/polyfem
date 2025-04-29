@@ -4,8 +4,7 @@
 #include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/assembler/FixedCorotational.hpp>
 
-#include <polyfem/solver/forms/BCLagrangianForm.hpp>
-#include <polyfem/solver/forms/BCPenaltyForm.hpp>
+#include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/BarrierContactForm.hpp>
 #include <polyfem/solver/forms/SmoothContactForm.hpp>
@@ -234,7 +233,6 @@ TEST_CASE("body form derivatives 3d", "[form][form_derivatives][body_form]")
 	const int dim = GENERATE(2, 3);
 	const auto state_ptr = get_state(dim);
 	const auto rhs_assembler_ptr = state_ptr->build_rhs_assembler();
-	const bool apply_DBC = false; // GENERATE(true, false);
 	const int ndof = state_ptr->n_bases * state_ptr->mesh->dimension();
 
 	BodyForm form(ndof, state_ptr->n_pressure_bases,
@@ -245,13 +243,12 @@ TEST_CASE("body form derivatives 3d", "[form][form_derivatives][body_form]")
 				  state_ptr->rhs,
 				  *rhs_assembler_ptr,
 				  state_ptr->mass_matrix_assembler->density(),
-				  apply_DBC, false, state_ptr->problem->is_time_dependent());
+				  false, state_ptr->problem->is_time_dependent());
 	Eigen::VectorXd x_prev;
 	x_prev.setRandom(state_ptr->n_bases * 3);
 	x_prev /= 100.;
 	form.update_quantities(state_ptr->args["time"]["t0"].get<double>() + 5 * state_ptr->args["time"]["dt"].get<double>(), x_prev);
 
-	CAPTURE(apply_DBC);
 	test_form(form, *state_ptr);
 }
 
@@ -260,7 +257,6 @@ TEST_CASE("body form derivatives", "[form][form_derivatives][body_form]")
 	const int dim = GENERATE(2, 3);
 	const auto state_ptr = get_state(dim);
 	const auto rhs_assembler_ptr = state_ptr->build_rhs_assembler();
-	const bool apply_DBC = false; // GENERATE(true, false);
 	const int ndof = state_ptr->n_bases * state_ptr->mesh->dimension();
 
 	BodyForm form(ndof, state_ptr->n_pressure_bases,
@@ -271,14 +267,13 @@ TEST_CASE("body form derivatives", "[form][form_derivatives][body_form]")
 				  state_ptr->rhs,
 				  *rhs_assembler_ptr,
 				  state_ptr->mass_matrix_assembler->density(),
-				  apply_DBC, false, state_ptr->problem->is_time_dependent());
+				  false, state_ptr->problem->is_time_dependent());
 
 	Eigen::VectorXd x_prev;
 	x_prev.setRandom(state_ptr->n_bases * dim);
 	x_prev /= 100.;
 	form.update_quantities(state_ptr->args["time"]["t0"].get<double>() + 5 * state_ptr->args["time"]["dt"].get<double>(), x_prev);
 
-	CAPTURE(apply_DBC);
 	test_form(form, *state_ptr);
 }
 
@@ -545,7 +540,7 @@ TEST_CASE("BC penalty form derivatives", "[form][form_derivatives][bc_penalty_fo
 											   mass_tmp,
 											   true);
 
-	BCPenaltyForm form(
+	BCLagrangianForm form(
 		ndof,
 		state_ptr->boundary_nodes,
 		state_ptr->local_boundary,
@@ -595,86 +590,83 @@ TEST_CASE("AMIPS form derivatives", "[form][form_derivatives][amips_form]")
 	{
 		const std::string path = POLYFEM_DATA_DIR;
 		json in_args = R"(
-		{
-			"materials": {
-				"type": "AMIPS",
-				"rho": 1000
-			},
-
-			"time": {
-				"dt": 0.001,
-				"tend": 1.0
-			},
-
-			"output": {
-				"log": {
-					"level": "warning"
-				}
-			}
-
-		})"_json;
+ 		{
+ 			"materials": {
+ 				"type": "AMIPS",
+ 				"rho": 1000
+ 			},
+ 			"time": {
+ 				"dt": 0.001,
+ 				"tend": 1.0
+ 			},
+ 			"output": {
+ 				"log": {
+ 					"level": "warning"
+ 				}
+ 			}
+ 		})"_json;
 		if (dim == 2)
 		{
 			in_args["geometry"] = R"([{
-				"enabled": true,
-				"surface_selection": 7
-			}])"_json;
+ 				"enabled": true,
+ 				"surface_selection": 7
+ 			}])"_json;
 			in_args["geometry"][0]["mesh"] = path + "/contact/meshes/2D/simple/circle/circle36.obj";
 			in_args["boundary_conditions"] = R"({
-				"dirichlet_boundary": [{
-					"id": "all",
-					"value": [0, 0]
-				}],
-				"rhs": [10, 10]
-			})"_json;
+ 				"dirichlet_boundary": [{
+ 					"id": "all",
+ 					"value": [0, 0]
+ 				}],
+ 				"rhs": [10, 10]
+ 			})"_json;
 		}
 		else
 		{
 			in_args["geometry"] = R"([{
-				"transformation": {
-					"scale": [0.1, 1, 1]
-				},
-				"surface_selection": [
-					{
-						"id": 1,
-						"axis": "z",
-						"position": 0.8,
-						"relative": true
-					},
-					{
-						"id": 2,
-						"axis": "-z",
-						"position": 0.2,
-						"relative": true
-					},
-					{
-						"id": 3,
-						"box": [[0, 0, 0.2], [1, 1, 0.8]],
-						"relative": true
-					}
-				],
-				"n_refs": 1
-			}])"_json;
+ 				"transformation": {
+ 					"scale": [0.1, 1, 1]
+ 				},
+ 				"surface_selection": [
+ 					{
+ 						"id": 1,
+ 						"axis": "z",
+ 						"position": 0.8,
+ 						"relative": true
+ 					},
+ 					{
+ 						"id": 2,
+ 						"axis": "-z",
+ 						"position": 0.2,
+ 						"relative": true
+ 					},
+ 					{
+ 						"id": 3,
+ 						"box": [[0, 0, 0.2], [1, 1, 0.8]],
+ 						"relative": true
+ 					}
+ 				],
+ 				"n_refs": 1
+ 			}])"_json;
 			in_args["geometry"][0]["mesh"] = path + "/contact/meshes/3D/simple/bar/bar-6.msh";
 			in_args["boundary_conditions"] = R"({
-				"neumann_boundary": [{
-					"id": 1,
-					"value": [1000, 1000, 1000]
-				}],
-				"pressure_boundary": [{
-					"id": 1,
-					"value": -2000
-				},
-				{
-					"id": 2,
-					"value": -2000
-				},
-				{
-					"id": 3,
-					"value": -2000
-				}],
-				"rhs": [0, 0, 0]
-			})"_json;
+ 				"neumann_boundary": [{
+ 					"id": 1,
+ 					"value": [1000, 1000, 1000]
+ 				}],
+ 				"pressure_boundary": [{
+ 					"id": 1,
+ 					"value": -2000
+ 				},
+ 				{
+ 					"id": 2,
+ 					"value": -2000
+ 				},
+ 				{
+ 					"id": 3,
+ 					"value": -2000
+ 				}],
+ 				"rhs": [0, 0, 0]
+ 			})"_json;
 		}
 
 		state = std::make_shared<State>();

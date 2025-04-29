@@ -6,6 +6,7 @@
 #include <polyfem/assembler/HookeLinearElasticity.hpp>
 #include <polyfem/assembler/IncompressibleLinElast.hpp>
 #include <polyfem/assembler/Laplacian.hpp>
+#include <polyfem/assembler/Electrostatics.hpp>
 #include <polyfem/assembler/LinearElasticity.hpp>
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/MooneyRivlinElasticity.hpp>
@@ -52,6 +53,9 @@ namespace polyfem
 				return std::make_shared<Helmholtz>();
 			else if (formulation == "Laplacian")
 				return std::make_shared<Laplacian>();
+			else if (formulation == "Electrostatics")
+				return std::make_shared<Electrostatics>();
+
 			else if (formulation == "Bilaplacian")
 				return std::make_shared<BilaplacianMain>();
 			else if (formulation == "BilaplacianAux")
@@ -202,25 +206,108 @@ namespace polyfem
 			else
 			{
 				// subtract one since we take a derivative (lowers polynomial order by 1)
-				// multiply by two since we are multiplying grad phi_i by grad phi_j 
-				if (b_type == BasisType::SIMPLEX_LAGRANGE) {
+				// multiply by two since we are multiplying grad phi_i by grad phi_j
+				if (b_type == BasisType::SIMPLEX_LAGRANGE)
+				{
 					return std::max((basis_degree - 1) * 2, 1);
 				}
-				else if (b_type == BasisType::CUBE_LAGRANGE) {
+				else if (b_type == BasisType::CUBE_LAGRANGE)
+				{
 					// in this case we have a tensor product basis
 					// this computes the quadrature order along a single axis
-					// the Quadrature itself takes a tensor product of the given quadrature points 
+					// the Quadrature itself takes a tensor product of the given quadrature points
 					// to form the full quadrature for the basis
 					// taking a gradient leaves at least one variable whose power remains unchanged
 					// thus, we don't subtract 1
 					// note that this is overkill for the variable that was differentiated
 					return std::max(basis_degree * 2, 1);
 				}
-				else {
+				else
+				{
 					return (basis_degree - 1) * 2 + 1;
 				}
 			}
 		}
 
+		std::vector<std::string> AssemblerUtils::elastic_materials()
+		{
+			const static std::vector<std::string> elastic_materials = {
+				"LinearElasticity",
+				"HookeLinearElasticity",
+				"SaintVenant",
+				"NeoHookean",
+				"MooneyRivlin",
+				"MooneyRivlin3Param",
+				"UnconstrainedOgden",
+				"IncompressibleOgden",
+				"FixedCorotational",
+				"MultiModels"};
+
+			return elastic_materials;
+		}
+
+		bool AssemblerUtils::is_elastic_material(const std::string &material)
+		{
+			for (const auto &m : elastic_materials())
+			{
+				if (material == m)
+					return true;
+			}
+			return false;
+		}
+
+		AllElasticMaterials::AllElasticMaterials()
+		{
+			for (const auto &m : AssemblerUtils::elastic_materials())
+			{
+				// skip multimodels
+				// this is a special case where we have multiple models
+				// and we need to create a new assembler for each model
+				// this is handled in the MultiModel class
+				// and not here
+				if (m == "MultiModels")
+					continue;
+				const auto assembler = AssemblerUtils::make_assembler(m);
+				// cast assembler to elasticity assembler
+				elastic_material_map_[m] = std::dynamic_pointer_cast<NLAssembler>(assembler);
+				assert(elastic_material_map_[m] != nullptr);
+			}
+		}
+
+		void AllElasticMaterials::set_size(const int size)
+		{
+			for (auto &it : elastic_material_map_)
+			{
+				it.second->set_size(size);
+			}
+		}
+
+		void AllElasticMaterials::add_multimaterial(const int index, const json &params, const Units &units)
+		{
+			for (auto &it : elastic_material_map_)
+			{
+				it.second->add_multimaterial(index, params, units);
+			}
+		}
+
+		std::shared_ptr<assembler::NLAssembler> AllElasticMaterials::get_assembler(const std::string &name) const
+		{
+			return elastic_material_map_.at(name);
+		}
+
+		std::map<std::string, Assembler::ParamFunc> AllElasticMaterials::parameters() const
+		{
+			std::map<std::string, Assembler::ParamFunc> params;
+			for (const auto &m : elastic_material_map_)
+			{
+				const auto assembler = m.second;
+				auto p = assembler->parameters();
+				for (auto &it : p)
+				{
+					params[m.first + "/" + it.first] = it.second;
+				}
+			}
+			return params;
+		}
 	} // namespace assembler
 } // namespace polyfem

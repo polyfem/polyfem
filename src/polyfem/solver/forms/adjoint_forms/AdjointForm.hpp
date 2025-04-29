@@ -28,7 +28,6 @@ namespace polyfem::solver
 		virtual void update_quantities(const double t, const Eigen::VectorXd &x) final override;
 		virtual void init_lagging(const Eigen::VectorXd &x) final override;
 		virtual void update_lagging(const Eigen::VectorXd &x, const int iter_num) final override;
-		virtual void set_apply_DBC(const Eigen::VectorXd &x, bool apply_DBC) final override;
 
 	protected:
 		virtual void first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final override;

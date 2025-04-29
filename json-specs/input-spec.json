@@ -670,7 +670,8 @@
         "options": [
             "Lagrange",
             "Spline",
-            "Serendipity"
+            "Serendipity",
+            "Bernstein"
         ],
         "type": "string",
         "doc": "Type of basis to use for non polygonal element, one of Lagrange, Spline, or Serendipity. Spline or Serendipity work only for quad/hex meshes"
@@ -929,12 +930,14 @@
             "n_boundary_samples",
             "quadrature_order",
             "mass_quadrature_order",
+            "use_corner_quadrature",
             "integral_constraints",
             "n_harmonic_samples",
             "force_no_ref_for_harmonic",
             "B",
             "h1_formula",
             "count_flipped_els",
+            "count_flipped_els_continuous",
             "use_particle_advection"
         ],
         "doc": "Advanced settings for the FE space."
@@ -972,6 +975,12 @@
         "default": -1,
         "type": "int",
         "doc": "Minimal quadrature order to use in matrix and rhs assembly; the actual order is determined as min(2*(p-1)+1,quadrature_order)."
+    },
+    {
+        "pointer": "/space/advanced/use_corner_quadrature",
+        "default": false,
+        "type": "bool",
+        "doc": "Use quadrature rules that always include all the vertices of the element."
     },
     {
         "pointer": "/space/advanced/mass_quadrature_order",
@@ -1014,6 +1023,12 @@
         "default": true,
         "type": "bool",
         "doc": "Count the number of elements with Jacobian of the geometric map not positive at quadrature points."
+    },
+    {
+        "pointer": "/space/advanced/count_flipped_els_continuous",
+        "default": false,
+        "type": "bool",
+        "doc": "Count the number of elements with Jacobian of the geometric map not positive at any point."
     },
     {
         "pointer": "/space/advanced/use_particle_advection",
@@ -1604,6 +1619,22 @@
         "doc": "Maximum number of update iterations for lagging."
     },
     {
+        "pointer": "/solver/advanced/check_inversion",
+        "type": "string",
+        "default": "Discrete",
+        "options": [
+            "Discrete",
+            "Conservative"
+        ],
+        "doc": "The method for checking if any element is flipped."
+    },
+    {
+        "pointer": "/solver/advanced/jacobian_threshold",
+        "type": "float",
+        "default": 0,
+        "doc": "."
+    },
+    {
         "pointer": "/solver/advanced",
         "default": null,
         "type": "object",
@@ -1611,7 +1642,9 @@
             "cache_size",
             "lump_mass_matrix",
             "lagged_regularization_weight",
-            "lagged_regularization_iterations"
+            "lagged_regularization_iterations",
+            "check_inversion",
+            "jacobian_threshold"
         ],
         "doc": "Advanced settings for the solver"
     },
@@ -1899,6 +1932,20 @@
     {
         "pointer": "/materials/*",
         "type": "object",
+        "type_name": "Electrostatics",
+        "required": [
+            "type",
+            "epsilon"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID, density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
         "type_name": "IncompressibleLinearElasticity",
         "required": [
             "type",
@@ -2042,6 +2089,7 @@
             "Stokes",
             "NavierStokes",
             "OperatorSplitting",
+            "Electrostatics",
             "IncompressibleLinearElasticity",
             "Laplacian",
             "Helmholtz",
@@ -2104,6 +2152,12 @@
         "spec_file": "value1.json",
         "doc": "Density",
         "default": 1
+    },
+    {
+        "pointer": "/materials/*/epsilon",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "permittivity"
     },
     {
         "pointer": "/materials/*/phi",
@@ -2797,7 +2851,8 @@
             "tensor_values",
             "discretization_order",
             "nodes",
-            "forces"
+            "forces",
+            "jacobian_validity"
         ],
         "doc": "Optional fields in the output"
     },
@@ -2872,6 +2927,12 @@
         "default": false,
         "type": "bool",
         "doc": "If true, write out all variational forces on the FE mesh "
+    },
+    {
+        "pointer": "/output/paraview/options/jacobian_validity",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, perform robust Jacobian check on the deformed elements and mark elements with non-positive Jacobian."
     },
     {
         "pointer": "/output/data",

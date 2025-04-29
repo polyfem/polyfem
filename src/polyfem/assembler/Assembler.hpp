@@ -292,7 +292,6 @@ namespace polyfem::assembler
 
 		virtual bool is_linear() const override { return false; }
 
-	protected:
 		// energy, gradient, and hessian used in newton method
 		virtual double compute_energy(const NonLinearAssemblerData &data) const = 0;
 		virtual Eigen::VectorXd assemble_gradient(const NonLinearAssemblerData &data) const = 0;
@@ -304,6 +303,8 @@ namespace polyfem::assembler
 	public:
 		ElasticityAssembler() {}
 		virtual ~ElasticityAssembler() = default;
+
+		void set_use_robust_jacobian() { use_robust_jacobian = true; }
 
 		// plotting (eg von mises), assembler is the name of the formulation
 		void compute_scalar_value(
@@ -358,12 +359,15 @@ namespace polyfem::assembler
 
 		bool is_solution_displacement() const override { return true; }
 		bool is_tensor() const override { return true; }
+		virtual bool allow_inversion() const = 0;
 
-	protected:
 		virtual void assign_stress_tensor(const OutputData &data,
 										  const int all_size,
 										  const ElasticityTensorType &type,
 										  Eigen::MatrixXd &all,
 										  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const = 0;
+
+	protected:
+		bool use_robust_jacobian = false;
 	};
 } // namespace polyfem::assembler

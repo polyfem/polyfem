@@ -10,6 +10,11 @@ endif()
 set(REQUIRED_CMAKE_VERSION "3.25.0")
 if(POLYFEM_TOPLEVEL_PROJECT)
     cmake_minimum_required(VERSION ${REQUIRED_CMAKE_VERSION})
+    if(CMAKE_VERSION VERSION_GREATER_EQUAL "4.0.0")
+        message(WARNING "CMake version is ${CMAKE_VERSION}, setting stuff for dependencies.")
+        SET(CMAKE_POLICY_VERSION_MINIMUM ${REQUIRED_CMAKE_VERSION})
+        set(POLYSOLVE_WITH_AMGCL OFF CACHE BOOL "Use AMGCL for solving linear systems")
+    endif()
 else()
     # Don't use cmake_minimum_required here to avoid implicitly overriding parent policies
     if(${CMAKE_VERSION} VERSION_LESS ${REQUIRED_CMAKE_VERSION})
@@ -243,6 +248,10 @@ target_link_libraries(polyfem PUBLIC geogram)
 # paraviewo (includes HDF5 and h5pp)
 include(paraviewo)
 target_link_libraries(polyfem PUBLIC paraviewo::paraviewo)
+
+# Jacobian
+include(bezier)
+target_link_libraries(polyfem PRIVATE bezier)
 
 # spdlog
 include(spdlog)

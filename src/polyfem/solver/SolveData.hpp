@@ -17,10 +17,17 @@
 #include <string>
 #include <unordered_map>
 
+#include <polyfem/solver/forms/ElasticForm.hpp>
+
 namespace polyfem::time_integrator
 {
 	class ImplicitTimeIntegrator;
 } // namespace polyfem::time_integrator
+
+namespace polyfem::utils
+{
+	class PeriodicBoundary;
+}
 
 namespace polyfem::assembler
 {
@@ -38,8 +45,7 @@ namespace polyfem::solver
 	class MacroStrainALForm;
 	class FrictionForm;
 	class BodyForm;
-	class BCLagrangianForm;
-	class BCPenaltyForm;
+	class AugmentedLagrangianForm;
 	class MacroStrainLagrangianForm;
 	class MacroStrainALForm;
 	class InertiaForm;
@@ -60,11 +66,13 @@ namespace polyfem::solver
 
 			// Elastic form
 			const int n_bases,
-			const std::vector<basis::ElementBases> &bases,
+			std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &geom_bases,
 			const assembler::Assembler &assembler,
-			const assembler::AssemblyValsCache &ass_vals_cache,
+			assembler::AssemblyValsCache &ass_vals_cache,
 			const assembler::AssemblyValsCache &mass_ass_vals_cache,
+			const double jacobian_threshold,
+			const solver::ElementInversionCheck check_inversion,
 
 			// Body form
 			const int n_pressure_bases,
@@ -119,6 +127,7 @@ namespace polyfem::solver
 			// Periodic contact
 			const bool periodic_contact,
 			const Eigen::VectorXi &tiled_to_single,
+			const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
 
 			// Friction form
 			const double friction_coefficient,
@@ -142,10 +151,8 @@ namespace polyfem::solver
 		std::shared_ptr<assembler::PressureAssembler> pressure_assembler;
 		std::shared_ptr<solver::NLProblem> nl_problem;
 
-		std::shared_ptr<solver::BCLagrangianForm> al_lagr_form;
-		std::shared_ptr<solver::BCPenaltyForm> al_pen_form;
+		std::vector<std::shared_ptr<solver::AugmentedLagrangianForm>> al_form;
 		std::shared_ptr<solver::MacroStrainLagrangianForm> strain_al_lagr_form;
-		std::shared_ptr<solver::MacroStrainALForm> strain_al_pen_form;
 		std::shared_ptr<solver::BodyForm> body_form;
 		std::shared_ptr<solver::ContactForm> contact_form;
 		std::shared_ptr<solver::ElasticForm> damping_form;
