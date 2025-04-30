@@ -69,7 +69,7 @@ namespace polyfem::solver
 		double initial_error = 0;
 		for (const auto &f : alagr_forms)
 			initial_error += f->compute_error(sol);
-
+		double current_error_diff = 0;
 		//const int n_il_steps = std::max(1, int(initial_error / 1e-2));
 		const int n_il_steps = 1;
 		for (int t = 1; t <= n_il_steps; ++t)
@@ -152,7 +152,8 @@ namespace polyfem::solver
 				logger().debug("Current error = {}, prev error = {}", current_error, prev_error);
 
 
-				if ((increase_al_weight&& al_weight < max_al_weight) || (prev_error!= 0 && (prev_error-current_error)/prev_error<(1-eta_tol)&& al_weight < max_al_weight) )
+				if ((increase_al_weight&& al_weight < max_al_weight) || (prev_error!= 0 && (prev_error-current_error)/prev_error<(1-eta_tol)&& al_weight < max_al_weight) ||
+					(prev_error!= 0 && ((1-eta_tol))<1e-4))
 				{
 					al_weight *= scaling;
 
@@ -169,7 +170,7 @@ namespace polyfem::solver
 					for (auto &f : alagr_forms)
 						f->update_lagrangian(sol, al_weight);
 				}
-
+				current_error_diff = current_error - prev_error;
 
 				++al_steps;
 			}
