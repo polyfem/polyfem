@@ -223,7 +223,7 @@ It's important to match both the dimension and the order of the output of `Compo
 
 - For initial conditions, $p \in \mathbb{R}^{2\times \hat{N}\times D}$, where $p_{D * i + j}$ and $p_{\hat{N} + D * i + j}$ are the initial displacement and initial velocity of the $j$-th dimension of finite element node $i$.
 
-- For Dirichlet and Pressure boundary conditions, $p \in \mathbb{R}^{T\times N \times D}, where T is the total number of timesteps, N is the number of Dirichlet/Pressure boundaries, and D is the dimensinality of the boundary condition (for Dirichlet it matches the dimensionality of the geometry, for Pressure it is 1). They are interleaved, so the vector of separated first into different time steps, then into different boundaries, and then you can get the D-dimensional vector representing the boundary condition value at that time step and for that boundary.
+- For Dirichlet and Pressure boundary conditions, $p \in \mathbb{R}^{T\times N \times D}$, where T is the total number of timesteps, N is the number of Dirichlet/Pressure boundaries, and D is the dimensinality of the boundary condition (for Dirichlet it matches the dimensionality of the geometry, for Pressure it is 1). They are interleaved, so the vector of separated first into different time steps, then into different boundaries, and then you can get the D-dimensional vector representing the boundary condition value at that time step and for that boundary.
 
 - For static Dirichlet problems, PolyFEM also allows the speficication of Dirichlet boundaries per boundary node (only works for P1, called DirichletNodes). In this case, the Dirichlet variables per node are stored according to an ordering specification from the JSON.
    
