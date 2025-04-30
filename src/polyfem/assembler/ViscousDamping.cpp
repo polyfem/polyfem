@@ -75,33 +75,31 @@ namespace polyfem::assembler
 	{
 		if (data.x_prev.size() != data.x.size())
 			return Eigen::VectorXd::Zero(data.vals.basis_values.size() * size());
-		Eigen::MatrixXd local_disp;
-		local_disp.setZero(data.vals.basis_values.size(), size());
-		Eigen::MatrixXd local_prev_disp = local_disp;
+
+		Eigen::MatrixXd local_disp = Eigen::MatrixXd::Zero(data.vals.basis_values.size(), size());
+		Eigen::MatrixXd local_prev_disp = Eigen::MatrixXd::Zero(data.vals.basis_values.size(), size());
 		for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
 		{
 			const auto &bs = data.vals.basis_values[i];
 			for (size_t ii = 0; ii < bs.global.size(); ++ii)
 			{
-				for (int d = 0; d < size(); ++d)
-				{
-					local_disp(i, d) += bs.global[ii].val * data.x(bs.global[ii].index * size() + d);
-					local_prev_disp(i, d) += bs.global[ii].val * data.x_prev(bs.global[ii].index * size() + d);
-				}
+				local_disp.row(i) += bs.global[ii].val * data.x.block(bs.global[ii].index * size(), 0, size(), 1).transpose();
+				local_prev_disp.row(i) += bs.global[ii].val * data.x_prev.block(bs.global[ii].index * size(), 0, size(), 1).transpose();
 			}
 		}
+
+		Eigen::MatrixXd local_vel = (local_disp - local_prev_disp) / data.dt;
 
 		Eigen::MatrixXd G;
 		G.setZero(data.vals.basis_values.size(), size());
 
 		const int n_pts = data.da.size();
 
-		Eigen::MatrixXd def_grad(size(), size()), prev_def_grad(size(), size());
+		Eigen::MatrixXd def_grad, vel_def_grad;
+		Eigen::MatrixXd delF_delU;
+		Eigen::MatrixXd dRdF, dRdFdot;
 		for (long p = 0; p < n_pts; ++p)
 		{
-			def_grad.setZero();
-			prev_def_grad.setZero();
-
 			Eigen::MatrixXd grad(data.vals.basis_values.size(), size());
 
 			for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
@@ -109,22 +107,17 @@ namespace polyfem::assembler
 				grad.row(i) = data.vals.basis_values[i].grad.row(p);
 			}
 
-			Eigen::MatrixXd jac_it = data.vals.jac_it[p];
+			delF_delU = grad * data.vals.jac_it[p];
+			def_grad = local_disp.transpose() * delF_delU + Eigen::MatrixXd::Identity(size(), size());
+			vel_def_grad = local_vel.transpose() * delF_delU;
 
-			def_grad = local_disp.transpose() * grad * jac_it + Eigen::MatrixXd::Identity(size(), size());
-			prev_def_grad = local_prev_disp.transpose() * grad * jac_it + Eigen::MatrixXd::Identity(size(), size());
-
-			Eigen::MatrixXd delF_delU = grad * jac_it;
-
-			Eigen::MatrixXd dRdF, dRdFdot;
-			compute_stress_aux(def_grad, (def_grad - prev_def_grad) / data.dt, dRdF, dRdFdot);
-
-			G += delF_delU * (dRdFdot / (-data.dt)) * data.da(p);
+			compute_stress_aux(def_grad, vel_def_grad, dRdF, dRdFdot);
+			G -= delF_delU * dRdFdot * (data.da(p) / data.dt);
 		}
 
-		Eigen::MatrixXd G_T = G.transpose();
+		G.transposeInPlace();
 
-		Eigen::VectorXd temp(Eigen::Map<Eigen::VectorXd>(G_T.data(), G_T.size()));
+		Eigen::VectorXd temp(Eigen::Map<Eigen::VectorXd>(G.data(), G.size()));
 
 		return temp;
 	}
@@ -135,33 +128,29 @@ namespace polyfem::assembler
 	{
 		if (data.x_prev.size() != data.x.size())
 			return Eigen::VectorXd::Zero(data.vals.basis_values.size() * size());
-		Eigen::MatrixXd local_disp;
-		local_disp.setZero(data.vals.basis_values.size(), size());
-		Eigen::MatrixXd local_prev_disp = local_disp;
+
+		Eigen::MatrixXd local_disp = Eigen::MatrixXd::Zero(data.vals.basis_values.size(), size());
+		Eigen::MatrixXd local_prev_disp = Eigen::MatrixXd::Zero(data.vals.basis_values.size(), size());
 		for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
 		{
 			const auto &bs = data.vals.basis_values[i];
 			for (size_t ii = 0; ii < bs.global.size(); ++ii)
 			{
-				for (int d = 0; d < size(); ++d)
-				{
-					local_disp(i, d) += bs.global[ii].val * data.x(bs.global[ii].index * size() + d);
-					local_prev_disp(i, d) += bs.global[ii].val * data.x_prev(bs.global[ii].index * size() + d);
-				}
+				local_disp.row(i) += bs.global[ii].val * data.x.block(bs.global[ii].index * size(), 0, size(), 1).transpose();
+				local_prev_disp.row(i) += bs.global[ii].val * data.x_prev.block(bs.global[ii].index * size(), 0, size(), 1).transpose();
 			}
 		}
+
+		Eigen::MatrixXd local_vel = (local_disp - local_prev_disp) / data.dt;
 
 		Eigen::MatrixXd G;
 		G.setZero(data.vals.basis_values.size(), size());
 
 		const int n_pts = data.da.size();
 
-		Eigen::MatrixXd def_grad(size(), size()), prev_def_grad(size(), size());
+		Eigen::MatrixXd def_grad, dFdt, dEdt;
 		for (long p = 0; p < n_pts; ++p)
 		{
-			def_grad.setZero();
-			prev_def_grad.setZero();
-
 			Eigen::MatrixXd grad(data.vals.basis_values.size(), size());
 
 			for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
@@ -169,24 +158,21 @@ namespace polyfem::assembler
 				grad.row(i) = data.vals.basis_values[i].grad.row(p);
 			}
 
-			Eigen::MatrixXd jac_it = data.vals.jac_it[p];
+			Eigen::MatrixXd delF_delU = grad * data.vals.jac_it[p];
 
-			def_grad = local_disp.transpose() * grad * jac_it + Eigen::MatrixXd::Identity(size(), size());
-			prev_def_grad = local_prev_disp.transpose() * grad * jac_it + Eigen::MatrixXd::Identity(size(), size());
+			def_grad = local_disp.transpose() * delF_delU + Eigen::MatrixXd::Identity(size(), size());
+			dFdt = local_vel.transpose() * delF_delU;
 
-			Eigen::MatrixXd delF_delU = grad * jac_it;
-			auto dFdt = (def_grad - prev_def_grad) / data.dt;
+			dEdt = dFdt.transpose() * def_grad;
+			dEdt = (dEdt + dEdt.transpose()).eval() / 2.;
 
-			Eigen::MatrixXd dRdF, dRdFdot;
-			Eigen::MatrixXd dEdt = 0.5 * (dFdt.transpose() * def_grad + def_grad.transpose() * dFdt);
-			Eigen::MatrixXd tmp = 2 * damping_params_[0] * dEdt + damping_params_[1] * dEdt.trace() * Eigen::MatrixXd::Identity(size(), size());
-
+			Eigen::MatrixXd tmp = (2 * damping_params_[0]) * dEdt + (damping_params_[1] * dEdt.trace()) * Eigen::MatrixXd::Identity(size(), size());
 			G += delF_delU * ((dFdt + def_grad / data.dt) * tmp).transpose() * data.da(p);
 		}
 
-		Eigen::MatrixXd G_T = G.transpose();
+		G.transposeInPlace();
 
-		Eigen::VectorXd temp(Eigen::Map<Eigen::VectorXd>(G_T.data(), G_T.size()));
+		Eigen::VectorXd temp(Eigen::Map<Eigen::VectorXd>(G.data(), G.size()));
 
 		return temp;
 	}
@@ -199,27 +185,26 @@ namespace polyfem::assembler
 		hessian.setZero(data.vals.basis_values.size() * size(), data.vals.basis_values.size() * size());
 		if (data.x_prev.size() != data.x.size())
 			return hessian;
-		Eigen::MatrixXd local_disp;
-		local_disp.setZero(data.vals.basis_values.size(), size());
-		Eigen::MatrixXd local_prev_disp = local_disp;
+
+		Eigen::MatrixXd local_disp = Eigen::MatrixXd::Zero(data.vals.basis_values.size(), size());
+		Eigen::MatrixXd local_prev_disp = Eigen::MatrixXd::Zero(data.vals.basis_values.size(), size());
 		for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
 		{
 			const auto &bs = data.vals.basis_values[i];
 			for (size_t ii = 0; ii < bs.global.size(); ++ii)
 			{
-				for (int d = 0; d < size(); ++d)
-				{
-					local_disp(i, d) += bs.global[ii].val * data.x(bs.global[ii].index * size() + d);
-					local_prev_disp(i, d) += bs.global[ii].val * data.x_prev(bs.global[ii].index * size() + d);
-				}
+				local_disp.row(i) += bs.global[ii].val * data.x.block(bs.global[ii].index * size(), 0, size(), 1).transpose();
+				local_prev_disp.row(i) += bs.global[ii].val * data.x_prev.block(bs.global[ii].index * size(), 0, size(), 1).transpose();
 			}
 		}
 
+		Eigen::MatrixXd local_vel = (local_disp - local_prev_disp) / data.dt;
+
 		const int n_pts = data.da.size();
 
-		Eigen::MatrixXd def_grad(size(), size()), prev_def_grad(size(), size());
+		Eigen::MatrixXd def_grad, dFdt;
 		Eigen::MatrixXd d2RdF2, d2RdFdFdot, d2RdFdot2;
-		Eigen::MatrixXd hessian_temp, hessian_temp2;
+		Eigen::MatrixXd hessian_temp, delF_delU_tensor;
 		for (long p = 0; p < n_pts; ++p)
 		{
 			Eigen::MatrixXd grad(data.vals.basis_values.size(), size());
@@ -229,36 +214,19 @@ namespace polyfem::assembler
 				grad.row(i) = data.vals.basis_values[i].grad.row(p);
 			}
 
-			Eigen::MatrixXd jac_it = data.vals.jac_it[p];
+			Eigen::MatrixXd delF_delU = grad * data.vals.jac_it[p];
 
-			def_grad = local_disp.transpose() * grad * jac_it + Eigen::MatrixXd::Identity(size(), size());
-			prev_def_grad = local_prev_disp.transpose() * grad * jac_it + Eigen::MatrixXd::Identity(size(), size());
+			def_grad = local_disp.transpose() * delF_delU + Eigen::MatrixXd::Identity(size(), size());
+			dFdt = local_vel.transpose() * delF_delU;
 
-			Eigen::MatrixXd dFdt = (def_grad - prev_def_grad) / data.dt;
 			compute_stress_grad_aux(def_grad, dFdt, d2RdF2, d2RdFdFdot, d2RdFdot2);
-
 			hessian_temp = d2RdF2 + (1. / data.dt) * (d2RdFdFdot + d2RdFdFdot.transpose()) + (1. / data.dt / data.dt) * d2RdFdot2;
-			hessian_temp2 = hessian_temp;
-			for (int i = 0; i < size(); i++)
-				for (int j = 0; j < size(); j++)
-					for (int k = 0; k < size(); k++)
-						for (int l = 0; l < size(); l++)
-							hessian_temp(i + j * size(), k + l * size()) = hessian_temp2(i * size() + j, k * size() + l);
 
-			Eigen::MatrixXd delF_delU_tensor(jac_it.size(), grad.size());
-
+			delF_delU_tensor = Eigen::MatrixXd::Zero(size() * size(), grad.size());
 			for (size_t i = 0; i < local_disp.rows(); ++i)
-			{
-				for (size_t j = 0; j < local_disp.cols(); ++j)
-				{
-					Eigen::MatrixXd temp;
-					temp.setZero(size(), size());
-					temp.row(j) = grad.row(i);
-					temp = temp * jac_it;
-					Eigen::VectorXd temp_flattened(Eigen::Map<Eigen::VectorXd>(temp.data(), temp.size()));
-					delF_delU_tensor.col(i * size() + j) = temp_flattened;
-				}
-			}
+				for (size_t j = 0; j < size(); ++j)
+					for (size_t d = 0; d < size(); d++)
+						delF_delU_tensor(size() * j + d, i * size() + j) = delF_delU(i, d);
 
 			hessian += delF_delU_tensor.transpose() * hessian_temp * delF_delU_tensor * data.da(p);
 		}
@@ -274,30 +242,28 @@ namespace polyfem::assembler
 		stress_grad_Ut.setZero(data.vals.basis_values.size() * size(), data.vals.basis_values.size() * size());
 		if (data.x_prev.size() != data.x.size())
 			return stress_grad_Ut;
-		Eigen::MatrixXd local_disp;
-		local_disp.setZero(data.vals.basis_values.size(), size());
-		Eigen::MatrixXd local_prev_disp = local_disp;
+
+		Eigen::MatrixXd local_disp = Eigen::MatrixXd::Zero(data.vals.basis_values.size(), size());
+		Eigen::MatrixXd local_prev_disp = Eigen::MatrixXd::Zero(data.vals.basis_values.size(), size());
 		for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
 		{
 			const auto &bs = data.vals.basis_values[i];
 			for (size_t ii = 0; ii < bs.global.size(); ++ii)
 			{
-				for (int d = 0; d < size(); ++d)
-				{
-					local_disp(i, d) += bs.global[ii].val * data.x(bs.global[ii].index * size() + d);
-					local_prev_disp(i, d) += bs.global[ii].val * data.x_prev(bs.global[ii].index * size() + d);
-				}
+				local_disp.row(i) += bs.global[ii].val * data.x.block(bs.global[ii].index * size(), 0, size(), 1).transpose();
+				local_prev_disp.row(i) += bs.global[ii].val * data.x_prev.block(bs.global[ii].index * size(), 0, size(), 1).transpose();
 			}
 		}
 
+		Eigen::MatrixXd local_vel = (local_disp - local_prev_disp) / data.dt;
+
 		const int n_pts = data.da.size();
 
-		Eigen::MatrixXd def_grad(size(), size()), prev_def_grad(size(), size());
+		Eigen::MatrixXd def_grad, dFdt;
+		Eigen::MatrixXd d2RdF2, d2RdFdFdot, d2RdFdot2;
+		Eigen::MatrixXd stress_grad_Ut_temp, delF_delU_tensor;
 		for (long p = 0; p < n_pts; ++p)
 		{
-			def_grad.setZero();
-			prev_def_grad.setZero();
-
 			Eigen::MatrixXd grad(data.vals.basis_values.size(), size());
 
 			for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
@@ -305,38 +271,20 @@ namespace polyfem::assembler
 				grad.row(i) = data.vals.basis_values[i].grad.row(p);
 			}
 
-			Eigen::MatrixXd jac_it = data.vals.jac_it[p];
+			Eigen::MatrixXd delF_delU = grad * data.vals.jac_it[p];
 
-			def_grad = local_disp.transpose() * grad * jac_it + Eigen::MatrixXd::Identity(size(), size());
-			prev_def_grad = local_prev_disp.transpose() * grad * jac_it + Eigen::MatrixXd::Identity(size(), size());
+			def_grad = local_disp.transpose() * delF_delU + Eigen::MatrixXd::Identity(size(), size());
+			dFdt = local_vel.transpose() * delF_delU;
 
-			Eigen::MatrixXd d2RdF2, d2RdFdFdot, d2RdFdot2;
-			Eigen::MatrixXd dFdt = (def_grad - prev_def_grad) / data.dt;
 			compute_stress_grad_aux(def_grad, dFdt, d2RdF2, d2RdFdFdot, d2RdFdot2);
+			stress_grad_Ut_temp = -(1. / data.dt) * d2RdFdFdot - (1. / data.dt / data.dt) * d2RdFdot2;
 
-			Eigen::MatrixXd stress_grad_Ut_temp = -(1. / data.dt) * d2RdFdFdot - (1. / data.dt / data.dt) * d2RdFdot2;
-			Eigen::MatrixXd stress_grad_Ut_temp2 = stress_grad_Ut_temp;
-			for (int i = 0; i < size(); i++)
-				for (int j = 0; j < size(); j++)
-					for (int k = 0; k < size(); k++)
-						for (int l = 0; l < size(); l++)
-							stress_grad_Ut_temp(i + j * size(), k + l * size()) = stress_grad_Ut_temp2(i * size() + j, k * size() + l);
-
-			Eigen::MatrixXd delF_delU_tensor(jac_it.size(), grad.size());
-
+			delF_delU_tensor = Eigen::MatrixXd::Zero(size() * size(), grad.size());
 			for (size_t i = 0; i < local_disp.rows(); ++i)
-			{
-				for (size_t j = 0; j < local_disp.cols(); ++j)
-				{
-					Eigen::MatrixXd temp;
-					temp.setZero(size(), size());
-					temp.row(j) = grad.row(i);
-					temp = temp * jac_it;
-					Eigen::VectorXd temp_flattened(Eigen::Map<Eigen::VectorXd>(temp.data(), temp.size()));
-					delF_delU_tensor.col(i * size() + j) = temp_flattened;
-				}
-			}
-
+				for (size_t j = 0; j < size(); ++j)
+					for (size_t d = 0; d < size(); d++)
+						delF_delU_tensor(size() * j + d, i * size() + j) = delF_delU(i, d);
+			
 			stress_grad_Ut += delF_delU_tensor.transpose() * stress_grad_Ut_temp * delF_delU_tensor * data.da(p);
 		}
 
@@ -346,59 +294,44 @@ namespace polyfem::assembler
 	// E := 0.5(F^T F - I), Compute Energy = \int \psi \| \frac{\partial E}{\partial t} \|^2 + 0.5 \phi (Tr(\frac{\partial E}{\partial t}))^2 du
 	double ViscousDamping::compute_energy(const NonLinearAssemblerData &data) const
 	{
-		Eigen::MatrixXd local_disp;
-		local_disp.setZero(data.vals.basis_values.size(), size());
 		if (data.x_prev.size() != data.x.size())
 			return 0;
-		Eigen::MatrixXd local_prev_disp = local_disp;
+
+		Eigen::MatrixXd local_disp = Eigen::MatrixXd::Zero(data.vals.basis_values.size(), size());
+		Eigen::MatrixXd local_prev_disp = Eigen::MatrixXd::Zero(data.vals.basis_values.size(), size());
 		for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
 		{
 			const auto &bs = data.vals.basis_values[i];
 			for (size_t ii = 0; ii < bs.global.size(); ++ii)
 			{
-				for (int d = 0; d < size(); ++d)
-				{
-					local_disp(i, d) += bs.global[ii].val * data.x(bs.global[ii].index * size() + d);
-					local_prev_disp(i, d) += bs.global[ii].val * data.x_prev(bs.global[ii].index * size() + d);
-				}
+				local_disp.row(i) += bs.global[ii].val * data.x.block(bs.global[ii].index * size(), 0, size(), 1).transpose();
+				local_prev_disp.row(i) += bs.global[ii].val * data.x_prev.block(bs.global[ii].index * size(), 0, size(), 1).transpose();
 			}
 		}
 
+		Eigen::MatrixXd local_vel = (local_disp - local_prev_disp) / data.dt;
+	
 		double energy = 0;
 		const int n_pts = data.da.size();
 
-		Eigen::MatrixXd def_grad(size(), size()), prev_def_grad(size(), size());
+		Eigen::MatrixXd def_grad, dFdt, dEdt;
 		for (long p = 0; p < n_pts; ++p)
 		{
-			def_grad.setZero();
-			prev_def_grad.setZero();
+			Eigen::MatrixXd grad(data.vals.basis_values.size(), size());
 
 			for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
 			{
-				const auto &bs = data.vals.basis_values[i];
-
-				for (int d = 0; d < size(); ++d)
-				{
-					for (int c = 0; c < size(); ++c)
-					{
-						def_grad(d, c) += bs.grad(p, c) * local_disp(i, d);
-						prev_def_grad(d, c) += bs.grad(p, c) * local_prev_disp(i, d);
-					}
-				}
+				grad.row(i) = data.vals.basis_values[i].grad.row(p);
 			}
 
-			Eigen::MatrixXd jac_it(size(), size());
-			for (long k = 0; k < jac_it.size(); ++k)
-				jac_it(k) = data.vals.jac_it[p](k);
-
-			def_grad = def_grad * jac_it + Eigen::MatrixXd::Identity(size(), size());
-			prev_def_grad = prev_def_grad * jac_it + Eigen::MatrixXd::Identity(size(), size());
-
-			Eigen::MatrixXd dFdt = (def_grad - prev_def_grad) / data.dt;
-			Eigen::MatrixXd dEdt = 0.5 * (dFdt.transpose() * def_grad + def_grad.transpose() * dFdt);
+			const Eigen::MatrixXd delF_delU = grad * data.vals.jac_it[p];
+			def_grad = local_disp.transpose() * delF_delU + Eigen::MatrixXd::Identity(size(), size());
+			dFdt = local_vel.transpose() * delF_delU;
+			
+			dEdt = dFdt.transpose() * def_grad;
+			dEdt = (dEdt + dEdt.transpose()).eval() / 2.;
 
 			double val = damping_params_[0] * dEdt.squaredNorm() + 0.5 * damping_params_[1] * pow(dEdt.trace(), 2);
-
 			energy += val * data.da(p);
 		}
 
@@ -414,13 +347,14 @@ namespace polyfem::assembler
 		const double dt = data.dt;
 		const Eigen::MatrixXd &grad_u_i = data.grad_u_i;
 
-		Eigen::MatrixXd F = Eigen::MatrixXd::Identity(size(), size()) + grad_u_i;
-		Eigen::MatrixXd Fdot = (grad_u_i - prev_grad_u_i) / dt;
-		Eigen::MatrixXd dRdF, dRdFdot, d2RdF2, d2RdFdFdot, d2RdFdot2;
+		const Eigen::MatrixXd F = Eigen::MatrixXd::Identity(size(), size()) + grad_u_i;
+		const Eigen::MatrixXd Fdot = (grad_u_i - prev_grad_u_i) / dt;
+		Eigen::MatrixXd d2RdF2, d2RdFdFdot, d2RdFdot2;
 
-		// compute_stress_aux(F, Fdot, dRdF, dRdFdot);
-		Eigen::MatrixXd dEdt = 0.5 * (Fdot.transpose() * F + F.transpose() * Fdot);
-		Eigen::MatrixXd tmp = 2 * damping_params_[0] * dEdt + damping_params_[1] * dEdt.trace() * Eigen::MatrixXd::Identity(size(), size());
+		Eigen::MatrixXd dEdt = Fdot.transpose() * F;
+		dEdt = (dEdt + dEdt.transpose()).eval() / 2.;
+
+		Eigen::MatrixXd tmp = (2 * damping_params_[0]) * dEdt + (damping_params_[1] * dEdt.trace()) * Eigen::MatrixXd::Identity(size(), size());
 		stress = (Fdot + (1. / dt) * F) * tmp;
 
 		compute_stress_grad_aux(F, Fdot, d2RdF2, d2RdFdFdot, d2RdFdot2);
@@ -435,8 +369,8 @@ namespace polyfem::assembler
 		const double dt = data.dt;
 		const Eigen::MatrixXd &grad_u_i = data.grad_u_i;
 
-		Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(grad_u_i.rows(), grad_u_i.cols()) + grad_u_i;
-		Eigen::MatrixXd def_grad_fd = (grad_u_i - prev_grad_u_i) / dt;
+		const Eigen::MatrixXd def_grad = Eigen::MatrixXd::Identity(grad_u_i.rows(), grad_u_i.cols()) + grad_u_i;
+		const Eigen::MatrixXd def_grad_fd = (grad_u_i - prev_grad_u_i) / dt;
 		Eigen::MatrixXd d2RdF2, d2RdFdFdot, d2RdFdot2;
 
 		compute_stress_grad_aux(def_grad, def_grad_fd, d2RdF2, d2RdFdFdot, d2RdFdot2);
@@ -452,11 +386,9 @@ namespace polyfem::assembler
 		const double dt = data.dt;
 		const Eigen::MatrixXd &grad_u_i = data.grad_u_i;
 
-		Eigen::MatrixXd F = Eigen::MatrixXd::Identity(grad_u_i.rows(), grad_u_i.cols()) + grad_u_i;
-		Eigen::MatrixXd prev_F = Eigen::MatrixXd::Identity(prev_grad_u_i.rows(), prev_grad_u_i.cols()) + prev_grad_u_i;
-
-		Eigen::MatrixXd dFdt = (F - prev_F) / dt;
-		Eigen::MatrixXd dEdt = 0.5 * (dFdt.transpose() * F + F.transpose() * dFdt);
+		const Eigen::MatrixXd F = Eigen::MatrixXd::Identity(grad_u_i.rows(), grad_u_i.cols()) + grad_u_i;
+		const Eigen::MatrixXd dFdt = (grad_u_i - prev_grad_u_i) / dt;
+		const Eigen::MatrixXd dEdt = 0.5 * (dFdt.transpose() * F + F.transpose() * dFdt);
 
 		dstress_dpsi = 2 * (dFdt + F / dt) * dEdt;
 		dstress_dphi = dEdt.trace() * (dFdt + F / dt);
