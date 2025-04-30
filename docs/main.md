@@ -235,6 +235,8 @@ Each derived class of `Parametrization` is a simple function that takes one vect
 - `Scaling` multiplies the input $x$ by a constant.
 - `ENu2LambdaMu` takes an input $x\in\mathbb{R}^{2n}$, and maps every pair of $(x_i,\ x_{i+n})$ from `(E, nu)` to Lamé parameters `(lambda, mu)`.
 
+Some parametrizations may be more complicated and depend on other data in addition to the optimization variables. For example, `BoundedBiharmonicWeights2Dto3D` implements Linear Blend Skinning on a surface to manipulate shapes. The optimization variables are translations and rotations of the LBS control points. To compute the positions of the control points and the LBS weights on the vertices, we need to do a preprocessing step (which is done in `inverse_eval`). While the map from optimization parameters to state parameters in this case needs other state parameters as well, these are constant and do not figure into the optimization.
+
 ### Objective
 
 The objective being minimized in the inverse optimization is defined as an `AdjointForm`. Each `AdjointForm` is a scalar function that depends explicitly on the simulation solutions and the optimization variable. Although the simulation solutions are not explicit input to its functions, `AdjointForm` can hold pointers to some `State` at construction and get solutions from `State`. The user who creates their `AdjointForm` is responsible to define the following functions:
