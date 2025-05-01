@@ -184,8 +184,6 @@ The formulations with differentiability include:
 4. Hyperelasticity: Neo-Hookean and Mooney-Rivlin
 5. Electrostatics (which is very similar to Laplace)
 
-<mark>TODO@Zizhou: How to add new material model?<mark>
-
 Boundary conditions allowed in the differentiable simulations include Dirichlet, Neumann, periodic, and pressure. For now, only the BDF time integration (with arbitrary orders) is supported. The types of physical parameters include: 
 
 1. Shape
@@ -319,6 +317,16 @@ $$
 The vector $p$ is called the adjoint solution, $\partial_u J$ is called the adjoint RHS, and $p^\intercal\ \partial_q h$ is called the adjoint term. As $J$ is a scalar function, the adjoint method only needs to solve a linear system instead of computing a complete inverse. In the code, the `State` first runs the forward simulation and caches the solution $u$, and $\partial_u h$, which is essentially the Hessian matrix used in the forward Newton's method. Then the `AdjointForm` computes the adjoint RHS $\partial_u J$, which is then sent to `State` to solve adjoint equation. The adjoint solution $p$ is cached in `State` after the solve. Finally, the `VariableToSimulation` computes the adjoint term $p^\intercal\ \partial_q h$ and the `AdjointForm` assembles the complete gradient.
 
 The PDE constraint $h(q, u)=0$ normally consists of multiple terms, e.g. inertia, elasticity, collision, friction, etc. Each term is defined as a `Form` in the forward simulation. To compute the adjoint term, $\partial_q h$ is implemented in each `Form`. E.g. the `ElasticForm` has `force_material_derivative` and `force_shape_derivative` that compute the partial derivatives of `h` w.r.t. the Lamé parameters and shape parameters. There is no derivatives with respect to friction coefficient or initial conditions since they are zero.
+
+### Adding new material models
+
+To add a new material model, the easiest way is to inherit from the `GenericElastic` class, which uses autodiff to compute the derivatives of the energy used in both forward simulations and inverse optimizations. For better efficiency, one can implement manual derivatives. For shape optimizations, the following function is required:
+```
+void compute_stress_grad_multiply_mat(const OptAssemblerData &data, const Eigen::MatrixXd &mat, Eigen::MatrixXd &stress, Eigen::MatrixXd &result) const
+```
+Suppose the energy $J$ is a function of the deformation gradient $F$. This function basically computes the second derivative tensor $\partial_{F, F} J\in\mathbb{R}^{D\times D\times D\times D}$, and multiplies it with the input $\text{mat}\in\mathbb{R}^{D\times D}$, and returns a matrix of size $D\times D$.
+
+Each material model is parametrized by several parameters, which is normally defined per element in PolyFEM. E.g., `NeoHookeanElasticity` has two parameters $\lambda$ and $\mu$, `MooneyRivlin3ParamElasticity` has four parameters $c_1,\ c_2,\ c_3,\ d_1$. In material optimizations, the derivatives of $\partial_F J$ with respect to the parameters are required. E.g. `NeoHookeanElasticity::compute_dstress_dmu_dlambda()` computes the derivatives of the stress $\partial_F J$ with respect to $\lambda$ and $\mu$. It is then called in `ElasticForm::force_material_derivative()` to assemble the derivatives of the global force with respect to the material parameters. To add a new material model with $\lambda$ and $\mu$, one only needs to implement `compute_dstress_dmu_dlambda()`. However, to implement a new material model with a different number of parameters, e.g. to support the material optimization of `MooneyRivlin3ParamElasticity`, one needs to modify `ElasticForm::force_material_derivative` and create a new `ElasticVariableToSimulation` class that specifies the parameter space for the new material model.
 
 ## Building PolyFEM as a stand-alone executable
 
