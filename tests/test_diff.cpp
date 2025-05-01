@@ -27,7 +27,7 @@ namespace
 {
 	std::string append_root_path(const std::string &path)
 	{
-		return POLYFEM_DATA_DIR + std::string("/differentiable/input/") + path;
+		return POLYFEM_DIFF_DIR + std::string("/input/") + path;
 	}
 
 	bool load_json(const std::string &json_file, json &out)
@@ -203,7 +203,7 @@ TEST_CASE("laplacian", "[test_adjoint]")
 
 TEST_CASE("linear_elasticity-surface-3d", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "linear_elasticity-surface-3d.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
@@ -235,7 +235,7 @@ TEST_CASE("linear_elasticity-surface-3d", "[test_adjoint]")
 
 TEST_CASE("linear_elasticity-surface", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "linear_elasticity-surface.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
@@ -267,7 +267,7 @@ TEST_CASE("linear_elasticity-surface", "[test_adjoint]")
 
 TEST_CASE("topology-compliance", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "topology-compliance.json", in_args);
 
@@ -325,7 +325,7 @@ TEST_CASE("neohookean-stress-3d", tagsdiff)
 
 TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "shape-neumann-nodes.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
@@ -402,7 +402,7 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 
 // TEST_CASE("neumann-shape-derivative", "[test_adjoint]")
 // {
-// 	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+// 	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 // 	json in_args;
 // 	load_json(path + "shape-pressure-neumann-nodes.json", in_args);
 // 	Eigen::MatrixXd sol;
@@ -552,7 +552,7 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 
 // TEST_CASE("neumann-u-derivative", "[test_adjoint]")
 // {
-// 	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+// 	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 // 	json in_args;
 // 	load_json(path + "shape-pressure-neumann-nodes.json", in_args);
 // 	Eigen::MatrixXd sol;
@@ -607,7 +607,7 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 
 TEST_CASE("shape-pressure-nodes-2d", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "shape-pressure-nodes-2d.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
@@ -653,7 +653,7 @@ TEST_CASE("shape-pressure-nodes-2d", "[test_adjoint]")
 
 TEST_CASE("static-control-pressure-nodes-3d", "[.][test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "static-control-pressure-nodes-3d.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
@@ -695,7 +695,7 @@ TEST_CASE("static-control-pressure-nodes-3d", "[.][test_adjoint]")
 
 TEST_CASE("control-pressure-walker-2d", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "walker.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
@@ -744,7 +744,7 @@ TEST_CASE("control-pressure-walker-2d", "[test_adjoint]")
 
 TEST_CASE("shape-walker-2d", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "walker-shape.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
@@ -793,7 +793,7 @@ TEST_CASE("shape-walker-2d", "[test_adjoint]")
 
 TEST_CASE("shape-contact-force-norm", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "shape-contact-force-norm.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
@@ -874,7 +874,7 @@ TEST_CASE("shape-contact-force-norm", "[test_adjoint]")
 
 TEST_CASE("shape-contact-force-norm-3d", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "shape-contact-force-norm-3d.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
@@ -939,7 +939,7 @@ TEST_CASE("shape-contact", "[test_adjoint]")
 
 TEST_CASE("node-trajectory", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "node-trajectory.json", in_args);
 	auto state_ptr = AdjointOptUtils::create_state(in_args, solver::CacheLevel::Derivatives, -1);
@@ -974,7 +974,7 @@ TEST_CASE("node-trajectory", "[test_adjoint]")
 
 TEST_CASE("damping-transient", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "damping-transient.json", in_args);
 	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
@@ -1180,7 +1180,7 @@ TEST_CASE("barycenter", "[test_adjoint]")
 
 // TEST_CASE("dirichlet-ref", "[test_adjoint]")
 // {
-// 	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+// 	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 // 	json in_args;
 // 	load_json(path + "dirichlet-ref.json", in_args);
 
@@ -1243,7 +1243,7 @@ TEST_CASE("barycenter", "[test_adjoint]")
 
 TEST_CASE("shape-pressure-nodes-3d", "[.][test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "shape-pressure-nodes-3d.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
@@ -1290,7 +1290,7 @@ TEST_CASE("shape-pressure-nodes-3d", "[.][test_adjoint]")
 
 TEST_CASE("control-pressure-nodes-3d", "[.][test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "control-pressure-nodes-3d.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
@@ -1338,7 +1338,7 @@ TEST_CASE("control-pressure-nodes-3d", "[.][test_adjoint]")
 
 TEST_CASE("dirichlet-nodes-3d", "[.][test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "dirichlet-nodes-3d.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
