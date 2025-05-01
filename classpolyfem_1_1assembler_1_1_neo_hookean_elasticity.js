@@ -13,7 +13,7 @@ var classpolyfem_1_1assembler_1_1_neo_hookean_elasticity =
     [ "assign_stress_tensor", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a924a4d34d3f3e07d952e32158a91519b", null ],
     [ "compute_dstress_dmu_dlambda", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a5c44f0b18451f8a34c10b1a510b60433", null ],
     [ "compute_energy", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a11347d1083800948ad481b206ce95786", null ],
-    [ "compute_energy_aux", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#aeb0c2ddb7b44be6823eb65192d6ccb36", null ],
+    [ "compute_energy_aux", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a057eca414cf080900dc0120ec8db295f", null ],
     [ "compute_energy_aux_gradient_fast", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a3181de6231691b0b0330fceedcf045b1", null ],
     [ "compute_energy_aux_gradient_fast", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a298ab647c01320afe34610fc1e188509", null ],
     [ "compute_energy_hessian_aux_fast", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html#a5306ffa2e688fa3e3380cb7cf43c9dc9", null ],
