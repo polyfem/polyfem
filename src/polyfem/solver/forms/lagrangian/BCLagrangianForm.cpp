@@ -113,11 +113,9 @@ namespace polyfem::solver
 		{
 			const int n_fe_dof = n_dofs_ - obstacle_ndof;
 			const double avg_mass = masked_lumped_mass_.diagonal().head(n_fe_dof).mean();
-			const double avg_summed_mass = n_fe_dof * avg_mass;
-			const double avg_mass_fpr_obstacle = avg_summed_mass/ obstacle_ndof;
 			for (int i = n_fe_dof; i < n_dofs_; ++i)
 			{
-				masked_lumped_mass_.coeffRef(i, i) = avg_mass_fpr_obstacle;
+				masked_lumped_mass_.coeffRef(i, i) = avg_mass;
 			}
 		}
 
