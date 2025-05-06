@@ -4,38 +4,62 @@
 
 namespace polyfem::assembler
 {
-	namespace {
-        template <int dim>
-        Eigen::Matrix<double, dim, dim> hat(const Eigen::Matrix<double, dim, 1> &x)
-        {
+	namespace
+	{
+		template <int dim>
+		Eigen::Matrix<double, dim, dim> hat(const Eigen::Matrix<double, dim, 1> &x)
+		{
 
-            Eigen::Matrix<double, dim, dim> prod;
-            prod.setZero();
+			Eigen::Matrix<double, dim, dim> prod;
+			prod.setZero();
 
-            prod(0, 1) = -x(2);
-            prod(0, 2) = x(1);
-            prod(1, 0) = x(2);
-            prod(1, 2) = -x(0);
-            prod(2, 0) = -x(1);
-            prod(2, 1) = x(0);
+			prod(0, 1) = -x(2);
+			prod(0, 2) = x(1);
+			prod(1, 0) = x(2);
+			prod(1, 2) = -x(0);
+			prod(2, 0) = -x(1);
+			prod(2, 1) = x(0);
 
-            return prod;
-        }
+			return prod;
+		}
 
-        template <int dim>
-        Eigen::Matrix<double, dim, 1> cross(const Eigen::Matrix<double, dim, 1> &x, const Eigen::Matrix<double, dim, 1> &y)
-        {
+		template <int dim>
+		Eigen::Matrix<double, dim, 1> cross(const Eigen::Matrix<double, dim, 1> &x, const Eigen::Matrix<double, dim, 1> &y)
+		{
 
-            Eigen::Matrix<double, dim, 1> z;
-            z.setZero();
+			Eigen::Matrix<double, dim, 1> z;
+			z.setZero();
 
-            z(0) = x(1) * y(2) - x(2) * y(1);
-            z(1) = x(2) * y(0) - x(0) * y(2);
-            z(2) = x(0) * y(1) - x(1) * y(0);
+			z(0) = x(1) * y(2) - x(2) * y(1);
+			z(1) = x(2) * y(0) - x(0) * y(2);
+			z(2) = x(0) * y(1) - x(1) * y(0);
 
-            return z;
-        }
-	}
+			return z;
+		}
+
+		template <int dimt>
+		Eigen::Matrix<double, dimt, dimt> get_standard(const int dim, const bool use_rest_pose)
+		{
+			Eigen::Matrix<double, dimt, dimt> standard(dim, dim);
+			if (use_rest_pose)
+			{
+				standard.setIdentity();
+			}
+			else
+			{
+				if (dim == 2)
+					standard << 1, 0,
+						0.5, std::sqrt(3) / 2;
+				else
+					standard << 1, 0, 0,
+						0.5, std::sqrt(3) / 2., 0,
+						0.5, 0.5 / std::sqrt(3), std::sqrt(3) / 2.;
+				standard = standard.inverse().transpose().eval();
+			}
+
+			return standard;
+		}
+	} // namespace
 	double AMIPSEnergy::compute_energy(const NonLinearAssemblerData &data) const
 	{
 		return compute_energy_aux<double>(data);
@@ -124,15 +148,7 @@ namespace polyfem::assembler
 
 		T energy = T(0.0);
 
-		Eigen::MatrixXd standard(size(), size());
-		if (size() == 2)
-			standard << 1 ,                 0,
-						0.5, std::sqrt(3) / 2;
-		else
-			standard << 1,                    0,                 0,
-						0.5,  std::sqrt(3) / 2.,                 0,
-						0.5, 0.5 / std::sqrt(3), std::sqrt(3) / 2.;
-		standard = standard.inverse().transpose().eval();
+		const Eigen::MatrixXd standard = get_standard<-1>(size(), use_rest_pose_);
 
 		const int n_pts = data.da.size();
 		for (long p = 0; p < n_pts; ++p)
@@ -144,11 +160,15 @@ namespace polyfem::assembler
 			for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
 				def_grad += local_disp.segment(i * size(), size()) * data.vals.basis_values[i].grad.row(p);
 
-			AutoDiffGradMat jac_it(size(), size());
-			for (long k = 0; k < jac_it.size(); ++k)
-				jac_it(k) = T(data.vals.jac_it[p](k));
-			def_grad += jac_it.inverse();
-			def_grad = def_grad * standard;
+			if (!use_rest_pose_)
+			{
+				AutoDiffGradMat jac_it(size(), size());
+				for (long k = 0; k < jac_it.size(); ++k)
+					jac_it(k) = T(data.vals.jac_it[p](k));
+
+				def_grad += jac_it.inverse();
+				def_grad = def_grad * standard;
+			}
 
 			const T powJ = pow(polyfem::utils::determinant(def_grad), size() == 2 ? 2. : 5. / 3.);
 			const T val = (def_grad.transpose() * def_grad).trace() / powJ;
@@ -184,15 +204,7 @@ namespace polyfem::assembler
 		Eigen::Matrix<double, n_basis, dim> G(data.vals.basis_values.size(), size());
 		G.setZero();
 
-		Eigen::MatrixXd standard(size(), size());
-		if (size() == 2)
-			standard << 1 ,                 0,
-						0.5, std::sqrt(3) / 2;
-		else
-			standard << 1,                    0,                 0,
-						0.5,  std::sqrt(3) / 2.,                 0,
-						0.5, 0.5 / std::sqrt(3), std::sqrt(3) / 2.;
-		standard = standard.inverse().transpose().eval();
+		const Eigen::Matrix<double, dim, dim> standard = get_standard<dim>(size(), use_rest_pose_);
 
 		for (long p = 0; p < n_pts; ++p)
 		{
@@ -355,15 +367,7 @@ namespace polyfem::assembler
 
 		Eigen::Matrix<double, dim, dim> def_grad(size(), size());
 
-		Eigen::MatrixXd standard(size(), size());
-		if (size() == 2)
-			standard << 1 ,                 0,
-						0.5, std::sqrt(3) / 2;
-		else
-			standard << 1,                    0,                 0,
-						0.5,  std::sqrt(3) / 2.,                 0,
-						0.5, 0.5 / std::sqrt(3), std::sqrt(3) / 2.;
-		standard = standard.inverse().transpose().eval();
+		const Eigen::Matrix<double, dim, dim> standard = get_standard<dim>(size(), use_rest_pose_);
 
 		for (long p = 0; p < n_pts; ++p)
 		{
@@ -377,7 +381,14 @@ namespace polyfem::assembler
 			Eigen::Matrix<double, dim, dim> jac_it = data.vals.jac_it[p];
 
 			// Id + grad d
-			def_grad = (local_disp.transpose() * grad + jac_it.inverse()) * standard;
+			if (use_rest_pose_)
+			{
+				def_grad = local_disp.transpose() * grad;
+			}
+			else
+			{
+				def_grad = (local_disp.transpose() * grad + jac_it.inverse()) * standard;
+			}
 
 			Eigen::Matrix<double, dim * dim, dim * dim> hessian_temp;
 			{
@@ -442,7 +453,7 @@ namespace polyfem::assembler
 
 			// const double tmp = TrFFt / J / dim;
 			// const double Jpow = pow(J, 2. / dim);
-			// Eigen::Matrix<double, dim * dim, dim * dim> hessian_temp = -4. / dim / (Jpow * J) * (F_flattened - tmp * g_j) * g_j.transpose() + 
+			// Eigen::Matrix<double, dim * dim, dim * dim> hessian_temp = -4. / dim / (Jpow * J) * (F_flattened - tmp * g_j) * g_j.transpose() +
 			// 															2. / Jpow * (id - ((2 / dim * F_flattened - tmp * g_j) / J * g_j.transpose() + tmp * del2J_delF2));
 
 			Eigen::Matrix<double, dim * dim, N> delF_delU_tensor(jac_it.size(), grad.size());
@@ -467,10 +478,10 @@ namespace polyfem::assembler
 	}
 
 	void AMIPSEnergy::assign_stress_tensor(const OutputData &data,
-								const int all_size,
-								const ElasticityTensorType &type,
-								Eigen::MatrixXd &all,
-								const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+										   const int all_size,
+										   const ElasticityTensorType &type,
+										   Eigen::MatrixXd &all,
+										   const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
 		const auto &displacement = data.fun;
 		const auto &local_pts = data.local_pts;
@@ -484,6 +495,16 @@ namespace polyfem::assembler
 		assert(displacement.cols() == 1);
 
 		all.setZero(local_pts.rows(), all_size);
+	}
+
+	void AMIPSEnergy::add_multimaterial(const int index, const json &params, const Units &units)
+	{
+		assert(size() == 2 || size() == 3);
+
+		if (params.contains("use_rest_pose"))
+		{
+			use_rest_pose_ = params["use_rest_pose"].get<bool>();
+		}
 	}
 
 	AMIPSEnergyAutodiff::AMIPSEnergyAutodiff()
