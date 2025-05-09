@@ -394,9 +394,6 @@ void polyfem::utils::scatter_matrix(const int n_dofs,
 		bout = b;
 	}
 
-	assert(shape[0] == bout.size());
-	assert(shape[1] == n_dofs);
-
 	Aout.resize(bout.size(), n_dofs);
 	Aout.setFromTriplets(Ae.begin(), Ae.end());
 	Aout.makeCompressed();
