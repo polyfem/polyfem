@@ -415,6 +415,9 @@ void polyfem::utils::scatter_matrix_col(const int n_dofs,
 	assert(rows.size() == vals.size());
 
 	std::vector<Eigen::Triplet<double>> Ae;
+
+	int A_cols = -1;
+
 	if (b.cols() == dim)
 	{
 		assert(n_dofs == b.rows() * dim);
@@ -446,9 +449,12 @@ void polyfem::utils::scatter_matrix_col(const int n_dofs,
 
 			for (int d = 0; d < dim; ++d)
 			{
-				bout(global_i * dim + d) = b(i, d);
+				bout(global_i + d) = b(i, d);
 			}
 		}
+
+		A_cols = shape[1] * dim;
+		assert(shape[0] * dim == n_dofs);
 	}
 	else
 	{
@@ -485,11 +491,12 @@ void polyfem::utils::scatter_matrix_col(const int n_dofs,
 
 			bout(global_i + noffset) = b(i);
 		}
+
+		assert(shape[0] == n_dofs);
+		A_cols = shape[1];
 	}
 
-	assert(shape[0] == n_dofs);
-
-	Aout.resize(n_dofs, shape[1]);
+	Aout.resize(n_dofs, A_cols);
 	Aout.setFromTriplets(Ae.begin(), Ae.end());
 	Aout.makeCompressed();
 }
