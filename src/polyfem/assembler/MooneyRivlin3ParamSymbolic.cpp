@@ -437,9 +437,10 @@ namespace polyfem::assembler
 			}
 
 			Eigen::Matrix<double, dim, dim> jac_it = data.vals.jac_it[p];
+			Eigen::Matrix<double, n_basis, dim> delF_delU = grad * jac_it;
 
 			// Id + grad d
-			def_grad = local_disp.transpose() * grad * jac_it + Eigen::Matrix<double, dim, dim>::Identity(size(), size());
+			def_grad = local_disp.transpose() * delF_delU + Eigen::Matrix<double, dim, dim>::Identity(size(), size());
 			def_grad_T = def_grad.transpose();
 
 			const double t = 0;
@@ -451,7 +452,6 @@ namespace polyfem::assembler
 			Eigen::Matrix<double, dim, dim> gradient_temp;
 			autogen::generate_gradient_templated<dim>(c1, c2, c3, d1, def_grad_T, gradient_temp);
 
-			Eigen::Matrix<double, n_basis, dim> delF_delU = grad * jac_it;
 			Eigen::Matrix<double, n_basis, dim> gradient = delF_delU * gradient_temp.transpose();
 			G.noalias() += gradient * data.da(p);
 		}
@@ -497,9 +497,10 @@ namespace polyfem::assembler
 			}
 
 			Eigen::Matrix<double, dim, dim> jac_it = data.vals.jac_it[p];
+			const Eigen::Matrix<double, n_basis, dim> delF_delU = grad * jac_it;
 
 			// Id + grad d
-			def_grad = local_disp.transpose() * grad * jac_it + Eigen::Matrix<double, dim, dim>::Identity(size(), size());
+			def_grad = local_disp.transpose() * delF_delU + Eigen::Matrix<double, dim, dim>::Identity(size(), size());
 
 			const double t = 0;
 			const double c1 = c1_(data.vals.val.row(p), t, data.vals.element_id);
@@ -510,32 +511,7 @@ namespace polyfem::assembler
 			Eigen::Matrix<double, dim * dim, dim * dim> hessian_temp;
 			autogen::generate_hessian_templated<dim>(c1, c2, c3, d1, def_grad, hessian_temp);
 
-			// Check by FD
-			/*
-			{
-				double eps = 1e-7;
-				Eigen::MatrixXd gradient_temp, gradient_temp_plus;
-				autogen::generate_gradient(c1, c2, c3, d1, def_grad, gradient_temp);
-				Eigen::MatrixXd x_ = def_grad;
-				for (int j = 0; j < hessian_temp.cols(); ++j)
-				{
-					x_(j / dim, j % dim) += eps;
-					autogen::generate_gradient(c1, c2, c3, d1, x_, gradient_temp_plus);
-					Eigen::MatrixXd fd = (gradient_temp_plus - gradient_temp) / eps;
-
-					std::cout << "hess " << fd.transpose() << "\t" << hessian_temp.col(j).transpose() << std::endl;
-					// for (int i = 0; i < hessian_temp.rows(); ++i)
-					// {
-					// 	double fd = (gradient_temp_plus(i) - gradient_temp(i)) / eps;
-					// 	if (abs(fd - hessian_temp(i, j)) > 1e-7)
-					// 		std::cout << "mismatch " << abs(fd - hessian_temp(i, j)) << std::endl;
-					// }
-					x_(j / dim, j % dim) -= eps;
-				}
-			}
-			*/
-
-			Eigen::Matrix<double, dim * dim, N> delF_delU_tensor(jac_it.size(), grad.size());
+			Eigen::Matrix<double, dim * dim, N> delF_delU_tensor = Eigen::Matrix<double, dim * dim, N>::Zero(jac_it.size(), grad.size());
 
 			for (size_t i = 0; i < local_disp.rows(); ++i)
 			{
@@ -543,8 +519,7 @@ namespace polyfem::assembler
 				{
 					Eigen::Matrix<double, dim, dim> temp(size(), size());
 					temp.setZero();
-					temp.row(j) = grad.row(i);
-					temp = temp * jac_it;
+					temp.row(j) = delF_delU.row(i);
 					Eigen::Matrix<double, dim * dim, 1> temp_flattened(Eigen::Map<Eigen::Matrix<double, dim * dim, 1>>(temp.data(), temp.size()));
 					delF_delU_tensor.col(i * size() + j) = temp_flattened;
 				}
