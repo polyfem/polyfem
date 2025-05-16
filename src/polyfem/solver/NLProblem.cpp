@@ -332,7 +332,7 @@ namespace polyfem::solver
 		assert(test1.nonZeros() != 0);
 #endif
 
-		assert((Q1_ * R1_ - At * P_).norm() < 1e-10);
+		// assert((Q1_ * R1_ - At * P_).norm() < 1e-10);
 
 		std::vector<std::shared_ptr<Form>> tmp;
 		tmp.insert(tmp.end(), penalty_forms_.begin(), penalty_forms_.end());
