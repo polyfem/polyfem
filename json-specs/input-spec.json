@@ -2201,9 +2201,9 @@
         "doc": "Exponent(s) of Incompressible Ogden"
     },
     {
-        "pointer": "/materials/*/use_rest_pose/*",
+        "pointer": "/materials/*/use_rest_pose",
         "type": "bool",
-        "default": "false",
+        "default": false,
         "doc": "Use amips wrt to rest pose or the regular element"
     },
     {

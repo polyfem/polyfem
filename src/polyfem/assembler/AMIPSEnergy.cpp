@@ -37,8 +37,8 @@ namespace polyfem::assembler
 			return z;
 		}
 
-		template <int dimt>
-		Eigen::Matrix<double, dimt, dimt> get_standard(const int dim, const bool use_rest_pose)
+		template <int dimt, class T>
+		Eigen::Matrix<T, dimt, dimt> get_standard(const int dim, const bool use_rest_pose)
 		{
 			Eigen::Matrix<double, dimt, dimt> standard(dim, dim);
 			if (use_rest_pose)
@@ -57,7 +57,16 @@ namespace polyfem::assembler
 				standard = standard.inverse().transpose().eval();
 			}
 
-			return standard;
+			Eigen::Matrix<T, dimt, dimt> res(dim, dim);
+			for (int i = 0; i < dimt; ++i)
+			{
+				for (int j = 0; j < dimt; ++j)
+				{
+					res(i, j) = T(standard(i, j));
+				}
+			}
+
+			return res;
 		}
 	} // namespace
 	double AMIPSEnergy::compute_energy(const NonLinearAssemblerData &data) const
@@ -69,67 +78,70 @@ namespace polyfem::assembler
 	{
 		Eigen::Matrix<double, Eigen::Dynamic, 1> gradient;
 
-		if (size() == 2)
-		{
-			switch (data.vals.basis_values.size())
-			{
-			case 3:
-			{
-				gradient.resize(6);
-				compute_energy_aux_gradient_fast<3, 2>(data, gradient);
-				break;
-			}
-			case 6:
-			{
-				gradient.resize(12);
-				compute_energy_aux_gradient_fast<6, 2>(data, gradient);
-				break;
-			}
-			case 10:
-			{
-				gradient.resize(20);
-				compute_energy_aux_gradient_fast<10, 2>(data, gradient);
-				break;
-			}
-			default:
-			{
-				gradient.resize(data.vals.basis_values.size() * 2);
-				compute_energy_aux_gradient_fast<Eigen::Dynamic, 2>(data, gradient);
-				break;
-			}
-			}
-		}
-		else // if (size() == 3)
-		{
-			assert(size() == 3);
-			switch (data.vals.basis_values.size())
-			{
-			case 4:
-			{
-				gradient.resize(12);
-				compute_energy_aux_gradient_fast<4, 3>(data, gradient);
-				break;
-			}
-			case 10:
-			{
-				gradient.resize(30);
-				compute_energy_aux_gradient_fast<10, 3>(data, gradient);
-				break;
-			}
-			case 20:
-			{
-				gradient.resize(60);
-				compute_energy_aux_gradient_fast<20, 3>(data, gradient);
-				break;
-			}
-			default:
-			{
-				gradient.resize(data.vals.basis_values.size() * 3);
-				compute_energy_aux_gradient_fast<Eigen::Dynamic, 3>(data, gradient);
-				break;
-			}
-			}
-		}
+		const auto res = compute_energy_aux<DScalar1<double, Eigen::VectorXd>>(data);
+		return res.getGradient();
+
+		// if (size() == 2)
+		// {
+		// 	switch (data.vals.basis_values.size())
+		// 	{
+		// 	case 3:
+		// 	{
+		// 		gradient.resize(6);
+		// 		compute_energy_aux_gradient_fast<3, 2>(data, gradient);
+		// 		break;
+		// 	}
+		// 	case 6:
+		// 	{
+		// 		gradient.resize(12);
+		// 		compute_energy_aux_gradient_fast<6, 2>(data, gradient);
+		// 		break;
+		// 	}
+		// 	case 10:
+		// 	{
+		// 		gradient.resize(20);
+		// 		compute_energy_aux_gradient_fast<10, 2>(data, gradient);
+		// 		break;
+		// 	}
+		// 	default:
+		// 	{
+		// 		gradient.resize(data.vals.basis_values.size() * 2);
+		// 		compute_energy_aux_gradient_fast<Eigen::Dynamic, 2>(data, gradient);
+		// 		break;
+		// 	}
+		// 	}
+		// }
+		// else // if (size() == 3)
+		// {
+		// 	assert(size() == 3);
+		// 	switch (data.vals.basis_values.size())
+		// 	{
+		// 	case 4:
+		// 	{
+		// 		gradient.resize(12);
+		// 		compute_energy_aux_gradient_fast<4, 3>(data, gradient);
+		// 		break;
+		// 	}
+		// 	case 10:
+		// 	{
+		// 		gradient.resize(30);
+		// 		compute_energy_aux_gradient_fast<10, 3>(data, gradient);
+		// 		break;
+		// 	}
+		// 	case 20:
+		// 	{
+		// 		gradient.resize(60);
+		// 		compute_energy_aux_gradient_fast<20, 3>(data, gradient);
+		// 		break;
+		// 	}
+		// 	default:
+		// 	{
+		// 		gradient.resize(data.vals.basis_values.size() * 3);
+		// 		compute_energy_aux_gradient_fast<Eigen::Dynamic, 3>(data, gradient);
+		// 		break;
+		// 	}
+		// 	}
+		// }
 
 		return gradient;
 	}
@@ -140,6 +152,7 @@ namespace polyfem::assembler
 	{
 		typedef Eigen::Matrix<T, Eigen::Dynamic, 1> AutoDiffVect;
 		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
+		typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> DoubleGradMat;
 
 		AutoDiffVect local_disp;
 		get_local_disp(data, size(), local_disp);
@@ -148,25 +161,27 @@ namespace polyfem::assembler
 
 		T energy = T(0.0);
 
-		const Eigen::MatrixXd standard = get_standard<-1>(size(), use_rest_pose_);
+		const auto standard = get_standard<-1, T>(size(), use_rest_pose_);
 
 		const int n_pts = data.da.size();
 		for (long p = 0; p < n_pts; ++p)
 		{
-			for (int i = 0; i < size(); ++i)
-				for (int j = 0; j < size(); ++j)
-					def_grad(i, j) = T(0);
+			compute_disp_grad_at_quad(data, local_disp, p, size(), def_grad);
 
-			for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
-				def_grad += local_disp.segment(i * size(), size()) * data.vals.basis_values[i].grad.row(p);
+			// Id + grad d
+			for (int d = 0; d < size(); ++d)
+				def_grad(d, d) += T(1);
 
 			if (!use_rest_pose_)
 			{
+				DoubleGradMat tmp_jac_it = data.vals.jac_it[p];
+				tmp_jac_it = tmp_jac_it.inverse();
+
 				AutoDiffGradMat jac_it(size(), size());
 				for (long k = 0; k < jac_it.size(); ++k)
-					jac_it(k) = T(data.vals.jac_it[p](k));
+					jac_it(k) = T(tmp_jac_it(k));
 
-				def_grad += jac_it.inverse();
+				def_grad *= jac_it;
 				def_grad = def_grad * standard;
 			}
 
@@ -204,7 +219,7 @@ namespace polyfem::assembler
 		Eigen::Matrix<double, n_basis, dim> G(data.vals.basis_values.size(), size());
 		G.setZero();
 
-		const Eigen::Matrix<double, dim, dim> standard = get_standard<dim>(size(), use_rest_pose_);
+		const Eigen::Matrix<double, dim, dim> standard = get_standard<dim, double>(size(), use_rest_pose_);
 
 		for (long p = 0; p < n_pts; ++p)
 		{
@@ -268,79 +283,82 @@ namespace polyfem::assembler
 
 	Eigen::MatrixXd AMIPSEnergy::assemble_hessian(const NonLinearAssemblerData &data) const
 	{
-		Eigen::MatrixXd hessian;
+		const auto res = compute_energy_aux<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>>(data);
+		return res.getHessian();
 
-		if (size() == 2)
-		{
-			switch (data.vals.basis_values.size())
-			{
-			case 3:
-			{
-				hessian.resize(6, 6);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<3, 2>(data, hessian);
-				break;
-			}
-			case 6:
-			{
-				hessian.resize(12, 12);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<6, 2>(data, hessian);
-				break;
-			}
-			case 10:
-			{
-				hessian.resize(20, 20);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<10, 2>(data, hessian);
-				break;
-			}
-			default:
-			{
-				hessian.resize(data.vals.basis_values.size() * 2, data.vals.basis_values.size() * 2);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<Eigen::Dynamic, 2>(data, hessian);
-				break;
-			}
-			}
-		}
-		else // if (size() == 3)
-		{
-			assert(size() == 3);
-			switch (data.vals.basis_values.size())
-			{
-			case 4:
-			{
-				hessian.resize(12, 12);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<4, 3>(data, hessian);
-				break;
-			}
-			case 10:
-			{
-				hessian.resize(30, 30);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<10, 3>(data, hessian);
-				break;
-			}
-			case 20:
-			{
-				hessian.resize(60, 60);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<20, 3>(data, hessian);
-				break;
-			}
-			default:
-			{
-				hessian.resize(data.vals.basis_values.size() * 3, data.vals.basis_values.size() * 3);
-				hessian.setZero();
-				compute_energy_hessian_aux_fast<Eigen::Dynamic, 3>(data, hessian);
-				break;
-			}
-			}
-		}
+		// Eigen::MatrixXd hessian;
 
-		return hessian;
+		// if (size() == 2)
+		// {
+		// 	switch (data.vals.basis_values.size())
+		// 	{
+		// 	case 3:
+		// 	{
+		// 		hessian.resize(6, 6);
+		// 		hessian.setZero();
+		// 		compute_energy_hessian_aux_fast<3, 2>(data, hessian);
+		// 		break;
+		// 	}
+		// 	case 6:
+		// 	{
+		// 		hessian.resize(12, 12);
+		// 		hessian.setZero();
+		// 		compute_energy_hessian_aux_fast<6, 2>(data, hessian);
+		// 		break;
+		// 	}
+		// 	case 10:
+		// 	{
+		// 		hessian.resize(20, 20);
+		// 		hessian.setZero();
+		// 		compute_energy_hessian_aux_fast<10, 2>(data, hessian);
+		// 		break;
+		// 	}
+		// 	default:
+		// 	{
+		// 		hessian.resize(data.vals.basis_values.size() * 2, data.vals.basis_values.size() * 2);
+		// 		hessian.setZero();
+		// 		compute_energy_hessian_aux_fast<Eigen::Dynamic, 2>(data, hessian);
+		// 		break;
+		// 	}
+		// 	}
+		// }
+		// else // if (size() == 3)
+		// {
+		// 	assert(size() == 3);
+		// 	switch (data.vals.basis_values.size())
+		// 	{
+		// 	case 4:
+		// 	{
+		// 		hessian.resize(12, 12);
+		// 		hessian.setZero();
+		// 		compute_energy_hessian_aux_fast<4, 3>(data, hessian);
+		// 		break;
+		// 	}
+		// 	case 10:
+		// 	{
+		// 		hessian.resize(30, 30);
+		// 		hessian.setZero();
+		// 		compute_energy_hessian_aux_fast<10, 3>(data, hessian);
+		// 		break;
+		// 	}
+		// 	case 20:
+		// 	{
+		// 		hessian.resize(60, 60);
+		// 		hessian.setZero();
+		// 		compute_energy_hessian_aux_fast<20, 3>(data, hessian);
+		// 		break;
+		// 	}
+		// 	default:
+		// 	{
+		// 		hessian.resize(data.vals.basis_values.size() * 3, data.vals.basis_values.size() * 3);
+		// 		hessian.setZero();
+		// 		compute_energy_hessian_aux_fast<Eigen::Dynamic, 3>(data, hessian);
+		// 		break;
+		// 	}
+		// 	}
+		// }
+
+		// return hessian;
 	}
 
 	template <int n_basis, int dim>
@@ -367,7 +385,7 @@ namespace polyfem::assembler
 
 		Eigen::Matrix<double, dim, dim> def_grad(size(), size());
 
-		const Eigen::Matrix<double, dim, dim> standard = get_standard<dim>(size(), use_rest_pose_);
+		const Eigen::Matrix<double, dim, dim> standard = get_standard<dim, double>(size(), use_rest_pose_);
 
 		for (long p = 0; p < n_pts; ++p)
 		{
@@ -383,7 +401,7 @@ namespace polyfem::assembler
 			// Id + grad d
 			if (use_rest_pose_)
 			{
-				def_grad = local_disp.transpose() * grad;
+				def_grad = local_disp.transpose() * grad + Eigen::Matrix<double, dim, dim>::Identity(size(), size());
 			}
 			else
 			{
