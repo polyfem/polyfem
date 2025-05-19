@@ -58,9 +58,9 @@ namespace polyfem::assembler
 			}
 
 			Eigen::Matrix<T, dimt, dimt> res(dim, dim);
-			for (int i = 0; i < dimt; ++i)
+			for (int i = 0; i < dim; ++i)
 			{
-				for (int j = 0; j < dimt; ++j)
+				for (int j = 0; j < dim; ++j)
 				{
 					res(i, j) = T(standard(i, j));
 				}
@@ -162,14 +162,25 @@ namespace polyfem::assembler
 		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
 		typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> DoubleGradMat;
 
+		AutoDiffGradMat standard;
+
+		if (size() == 2)
+			standard = get_standard<2, T>(size(), use_rest_pose_);
+		else
+			standard = get_standard<3, T>(size(), use_rest_pose_);
+
+		double power = -1;
+		if (use_rest_pose_)
+			power = size() == 2 ? 1. : (2. / 3.);
+		else
+			power = size() == 2 ? 2. : 5. / 3.;
+
 		AutoDiffVect local_disp;
 		get_local_disp(data, size(), local_disp);
 
 		AutoDiffGradMat def_grad(size(), size());
 
 		T energy = T(0.0);
-
-		const auto standard = get_standard<-1, T>(size(), use_rest_pose_);
 
 		const int n_pts = data.da.size();
 		for (long p = 0; p < n_pts; ++p)
@@ -193,8 +204,7 @@ namespace polyfem::assembler
 				def_grad = def_grad * standard;
 			}
 
-			// const T powJ = pow(polyfem::utils::determinant(def_grad), size() == 2 ? 2. : 5. / 3.);
-			const T powJ = pow(polyfem::utils::determinant(def_grad), size() == 2 ? (1.) : (2. / 3.));
+			const T powJ = pow(polyfem::utils::determinant(def_grad), power);
 			const T val = (def_grad.transpose() * def_grad).trace() / powJ;
 
 			energy += val * data.da(p);
