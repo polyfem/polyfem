@@ -6,6 +6,7 @@ namespace polyfem::assembler
 {
 	namespace
 	{
+
 		template <int dim>
 		Eigen::Matrix<double, dim, dim> hat(const Eigen::Matrix<double, dim, 1> &x)
 		{
@@ -204,7 +205,14 @@ namespace polyfem::assembler
 				def_grad = def_grad * standard;
 			}
 
-			const T powJ = pow(polyfem::utils::determinant(def_grad), power);
+			const T det = polyfem::utils::determinant(def_grad);
+			if (det <= 0)
+			{
+				energy = std::nan("");
+				break;
+			}
+
+			const T powJ = pow(det, power);
 			const T val = (def_grad.transpose() * def_grad).trace() / powJ;
 
 			energy += val * data.da(p);
