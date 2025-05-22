@@ -302,45 +302,21 @@ namespace polyfem
 
 		// ---------------------------------------------------------------------
 		const double dt = problem->is_time_dependent() ? double(args["time"]["dt"]) : 1.0;
-		std::shared_ptr<solver::ElasticForm> elastic_form = std::make_shared<ElasticForm>(n_bases, bases, geom_bases(), *assembler, ass_vals_cache, t, dt, true);
 		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(true);
 
-		//Grabs material stiffness as the max coeff of the elastic hessian
-		StiffnessMatrix stiffness;
-		elastic_form->second_derivative(sol, stiffness);
-		double max_stiffness = 0.0;
-
-		const double ef_weight = elastic_form->weight();
-
-		for (int k = 0; k < stiffness.outerSize(); ++k)
-		{
-			for (StiffnessMatrix::InnerIterator it(stiffness, k); it; ++it)
-			{
-				max_stiffness= std::max(max_stiffness, std::abs(it.value()));
-			}
-		}
-		max_stiffness/= ef_weight;
-
-		//Grabs max dist of DBC for current time step
-		double dbc_dist = 0;
-		for (const auto &f : solve_data.al_form)
-			dbc_dist= f->get_dbcdist();
-
-		//Sets the AL weight to max_stiffness*dt^2 + 0.5*(velocity of DBC)*(largest mass of element) and that gets scaled by a user entered initial weight, which is intended be 1 for most cases
-		//the idea here is that the AL needs to be scaled according to the material
 		double al_initial_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
-		double al_weight = (max_stiffness*dt*dt + 0.5 * dbc_dist/dt * mass.eval().coeffs().maxCoeff()) * al_initial_weight;
-
 
 		ALSolver al_solver(
 			solve_data.al_form,
-			al_weight,
+			al_initial_weight,
 			args["solver"]["augmented_lagrangian"]["scaling"],
 			args["solver"]["augmented_lagrangian"]["max_weight"],
 			args["solver"]["augmented_lagrangian"]["eta"],
 			[&](const Eigen::VectorXd &x) {
 				this->solve_data.update_barrier_stiffness(sol);
-			});
+		},			[&](const Eigen::VectorXd &x) {
+			this->solve_data.update_al_weight(sol);
+		});
 
 		al_solver.post_subsolve = [&](const double al_weight) {
 			stats.solver_info.push_back(

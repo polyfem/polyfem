@@ -105,6 +105,7 @@ namespace polyfem::solver
 		const json &rayleigh_damping)
 	{
 		this->barrier_stiffness_ = barrier_stiffness;
+		this->avg_mass_ = avg_mass;
 
 		const bool is_time_dependent = time_integrator != nullptr;
 		assert(!is_time_dependent || time_integrator != nullptr);
@@ -447,13 +448,60 @@ namespace polyfem::solver
 		}
 		const double dhat = contact_form->dhat();
 		double contact_barrier_grad =  2.35016*dhat; //solving for d for d(barrier_function)/dd(barrier_function) gives constant relative to dhat
-		double barrier_stiffness = 1000*max_stiffness*grad_energy/contact_barrier_grad * ini_barrier_stiffness;
-		if (barrier_stiffness <=  1000*max_stiffness * ini_barrier_stiffness)
-			barrier_stiffness = 1000*max_stiffness * ini_barrier_stiffness;
+		double barrier_stiffness = 1000*max_stiffness * ini_barrier_stiffness;
+		//if (barrier_stiffness <=  1000*max_stiffness * ini_barrier_stiffness)
+		//	barrier_stiffness = 1000*max_stiffness * ini_barrier_stiffness;
 		contact_form->set_barrier_stiffness(barrier_stiffness);
 		logger().debug("Barrier Stiffness set to {}", contact_form->barrier_stiffness());
 
 	}
+
+	void SolveData::update_al_weight(const Eigen::VectorXd &x)
+	{
+		double max_term = 0;
+		double overall_max_term = 0;
+
+		//Grabs max dist of DBC for current time step
+		double dbc_dist = 1;
+		for (const auto &f : al_form)
+			dbc_dist= f->get_dbcdist();
+
+		StiffnessMatrix hessian_form;
+		const std::array<std::shared_ptr<Form>, 5> energy_forms{
+						{elastic_form, inertia_form, body_form, pressure_form}};
+
+		for (const std::shared_ptr<Form> &form : energy_forms)
+		{
+			if (form == nullptr || !form->enabled())
+				continue;
+
+			form->second_derivative(x, hessian_form);
+
+
+			for (int k = 0; k < hessian_form.outerSize(); ++k)
+			{
+				for (StiffnessMatrix::InnerIterator it(hessian_form, k); it; ++it)
+				{
+					max_term= std::max(max_term, std::abs(it.value()));
+				}
+			}
+			if (overall_max_term < max_term)
+			{
+				overall_max_term = max_term;
+			}
+		}
+		double dt =this->dt_;
+
+		//set al weight such that that the grad of the AL approximates the total mechanical energy for a simple mass-spring system scaled by an order of magnitude to enforece the DBC
+		for (const auto &f : al_form)
+		{
+				f->set_al_weight(10*(0.5 * overall_max_term*dbc_dist + 0.5 * dbc_dist/dt * 1/dt *avg_mass_));
+		}
+
+
+	}
+
+
 	void SolveData::update_dt()
 	{
 		if (time_integrator == nullptr) // if is not time dependent

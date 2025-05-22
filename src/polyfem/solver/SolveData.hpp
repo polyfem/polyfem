@@ -136,8 +136,11 @@ namespace polyfem::solver
 		/// @param x current solution
 		void update_barrier_stiffness(const Eigen::VectorXd &x);
 
+		void update_al_weight(const Eigen::VectorXd &x);
 		/// @brief updates the dt inside the different forms
 		void update_dt();
+
+		double avg_mass_ = 0;
 
 		std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> named_forms() const;
 

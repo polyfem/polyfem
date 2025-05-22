@@ -29,13 +29,15 @@ namespace polyfem::solver
 		const double scaling,
 		const double max_al_weight,
 		const double eta_tol,
-		const std::function<void(const Eigen::VectorXd &)> &update_barrier_stiffness)
+		const std::function<void(const Eigen::VectorXd &)> &update_barrier_stiffness,
+		const std::function<void(const Eigen::VectorXd &)> &update_al_weight)
 		: alagr_forms{alagr_form},
 		  initial_al_weight(initial_al_weight),
 		  scaling(scaling),
 		  max_al_weight(max_al_weight),
 		  eta_tol(eta_tol),
-		  update_barrier_stiffness(update_barrier_stiffness)
+		  update_barrier_stiffness(update_barrier_stiffness),
+	      update_al_weight(update_al_weight)
 	{
 	}
 
@@ -50,26 +52,21 @@ namespace polyfem::solver
 		assert(tmp_sol.size() == nl_problem.reduced_size());
 
 		// --------------------------------------------------------------------
-		double current_al_weight;
+		double al_weight = 1e-15;
+		update_al_weight(sol);
 		for (auto &f : alagr_forms)
-			current_al_weight = f->get_al_weight();
+			al_weight = f->get_al_weight();
+		al_weight *= initial_al_weight;
+		for (auto &f : alagr_forms)
+			f->set_al_weight(al_weight);
 
-		double al_weight = 0;
-		if (initial_al_weight>current_al_weight)
-		{
-			al_weight = initial_al_weight;
-			for (auto &f : alagr_forms)
-				f->set_initial_weight(al_weight);
-		}
-		else
-			al_weight = current_al_weight;
 
 		int al_steps = 0;
 
 		double initial_error = 0;
 		for (const auto &f : alagr_forms)
 			initial_error += f->compute_error(sol);
-		double current_error_diff = 0;
+
 		//const int n_il_steps = std::max(1, int(initial_error / 1e-2));
 		const int n_il_steps = 1;
 		for (int t = 1; t <= n_il_steps; ++t)
@@ -82,12 +79,9 @@ namespace polyfem::solver
 
 			nl_problem.update_constraint_values();
 
-
 			nl_problem.use_reduced_size();
 
 			nl_problem.line_search_begin(sol, tmp_sol);
-
-
 
 			logger().info("AL IL {}/{} (factor={}) with weight {}", t, n_il_steps, il_factor, al_weight);
 
@@ -112,9 +106,11 @@ namespace polyfem::solver
 
 				nl_problem.init(sol);
 				update_barrier_stiffness(sol);
+				update_al_weight(sol);
+				al_weight *= initial_al_weight;
+				for (auto &f : alagr_forms)
+					f->set_al_weight(al_weight);
 				tmp_sol = sol;
-
-				bool increase_al_weight = false;
 
 				try
 				{
@@ -133,7 +129,7 @@ namespace polyfem::solver
 					// if the nonlinear solve fails due to invalid energy at the current solution, changing the weights would not help
 					// if (err_msg.find("f(x) is nan or inf; stopping") != std::string::npos)
 					// log_and_throw_error("Failed to solve with AL; f(x) is nan or inf");
-					increase_al_weight = true;
+					//increase_al_weight = true;
 				}
 
 				sol = tmp_sol;
@@ -151,25 +147,8 @@ namespace polyfem::solver
 
 				logger().debug("Current error = {}, prev error = {}", current_error, prev_error);
 
-
-				if ((increase_al_weight&& al_weight < max_al_weight) || (prev_error!= 0 && (prev_error-current_error)/prev_error<(1-eta_tol)&& al_weight < max_al_weight))
-				{
-					al_weight *= scaling;
-
-					for (auto &f : alagr_forms)
-						f->set_al_weight(al_weight);
-
-					//sol = initial_sol; **Why can't we maintain the progress that was already made?
-					current_error = initial_error;
-
-					logger().debug("Increasing weight to {}", al_weight);
-				}
-				else
-				{
-					for (auto &f : alagr_forms)
-						f->update_lagrangian(sol, al_weight);
-				}
-				current_error_diff = current_error - prev_error;
+				for (auto &f : alagr_forms)
+					f->update_lagrangian(sol, al_weight);
 
 				++al_steps;
 			}
@@ -198,9 +177,13 @@ namespace polyfem::solver
 		// Perform one final solve with the DBC projected out
 
 		logger().debug("Successfully applied constraints conditions; solving in reduced space");
-
+		double al_weight = 1e-15;
 		nl_problem.init(sol);
-		update_barrier_stiffness(sol);
+		//update_barrier_stiffness(sol);
+		//update_al_weight(sol);
+		al_weight *= initial_al_weight;
+		for (auto &f : alagr_forms)
+			f->set_al_weight(al_weight);
 		try
 		{
 			const auto scale = nl_problem.normalize_forms();
