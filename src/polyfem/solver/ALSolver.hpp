@@ -40,7 +40,7 @@ namespace polyfem::solver
 
 	protected:
 		std::vector<std::shared_ptr<AugmentedLagrangianForm>> alagr_forms;
-		const double initial_al_weight;
+		double initial_al_weight;
 		const double scaling;
 		const double max_al_weight;
 		const double eta_tol;

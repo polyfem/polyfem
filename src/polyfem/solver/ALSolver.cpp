@@ -25,7 +25,7 @@ namespace polyfem::solver
 
 	ALSolver::ALSolver(
 		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &alagr_form,
-		const double initial_al_weight,
+		double initial_al_weight,
 		const double scaling,
 		const double max_al_weight,
 		const double eta_tol,
@@ -58,7 +58,7 @@ namespace polyfem::solver
 			al_weight = f->get_al_weight();
 		al_weight *= initial_al_weight;
 		for (auto &f : alagr_forms)
-			f->set_al_weight(al_weight);
+			f->set_initial_weight(al_weight);
 
 
 		int al_steps = 0;
@@ -112,6 +112,8 @@ namespace polyfem::solver
 					f->set_al_weight(al_weight);
 				tmp_sol = sol;
 
+				bool increase_al_weight = false;
+
 				try
 				{
 					CallbackChecker checker;
@@ -129,7 +131,7 @@ namespace polyfem::solver
 					// if the nonlinear solve fails due to invalid energy at the current solution, changing the weights would not help
 					// if (err_msg.find("f(x) is nan or inf; stopping") != std::string::npos)
 					// log_and_throw_error("Failed to solve with AL; f(x) is nan or inf");
-					//increase_al_weight = true;
+					increase_al_weight = true;
 				}
 
 				sol = tmp_sol;
@@ -147,8 +149,19 @@ namespace polyfem::solver
 
 				logger().debug("Current error = {}, prev error = {}", current_error, prev_error);
 
-				for (auto &f : alagr_forms)
-					f->update_lagrangian(sol, al_weight);
+
+				if ((increase_al_weight&& al_weight < max_al_weight) || (prev_error!= 0 && (prev_error-current_error)/prev_error<(1-eta_tol)&& al_weight < max_al_weight) ||
+					(prev_error!= 0 && ((1-eta_tol))<1e-4))
+				{
+					initial_al_weight *= scaling;
+
+					logger().debug("Increasing weight to {}", al_weight*initial_al_weight);
+				}
+				else
+				{
+					for (auto &f : alagr_forms)
+						f->update_lagrangian(sol, al_weight);
+				}
 
 				++al_steps;
 			}
@@ -177,13 +190,9 @@ namespace polyfem::solver
 		// Perform one final solve with the DBC projected out
 
 		logger().debug("Successfully applied constraints conditions; solving in reduced space");
-		double al_weight = 1e-15;
+
 		nl_problem.init(sol);
-		//update_barrier_stiffness(sol);
-		//update_al_weight(sol);
-		al_weight *= initial_al_weight;
-		for (auto &f : alagr_forms)
-			f->set_al_weight(al_weight);
+
 		try
 		{
 			const auto scale = nl_problem.normalize_forms();
