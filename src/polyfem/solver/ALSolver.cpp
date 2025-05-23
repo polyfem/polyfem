@@ -53,10 +53,16 @@ namespace polyfem::solver
 
 		// --------------------------------------------------------------------
 		double al_weight = 1e-15;
+		double last_al_weight = 1e-15;
 		update_al_weight(sol);
 		for (auto &f : alagr_forms)
-			al_weight = f->get_al_weight();
+		{
+			al_weight = f->lagrangian_weight();
+			last_al_weight = f->get_last_al_weight();
+		}
 		al_weight *= initial_al_weight;
+		if (last_al_weight > al_weight)
+			al_weight = last_al_weight;
 		for (auto &f : alagr_forms)
 			f->set_initial_weight(al_weight);
 
@@ -149,13 +155,21 @@ namespace polyfem::solver
 
 				logger().debug("Current error = {}, prev error = {}", current_error, prev_error);
 
+				const double ratio_error = std::log10(std::max(std::abs(prev_error), std::abs(current_error)) / std::min(std::abs(prev_error), std::abs(current_error)));
 
-				if ((increase_al_weight&& al_weight < max_al_weight) || (prev_error!= 0 && (prev_error-current_error)/prev_error<(1-eta_tol)&& al_weight < max_al_weight) ||
-					(prev_error!= 0 && ((1-eta_tol))<1e-4))
+				const double tolerance = 1 - eta_tol;
+				const double ratio_tolerance = std::log10(std::max(std::abs(1.0), std::abs(tolerance)) /
+									   std::min(std::abs(1.0), std::abs(tolerance)));
+
+
+				if ((increase_al_weight&& al_weight < max_al_weight) || (prev_error!= 0 && ratio_error<ratio_tolerance && al_weight < max_al_weight))
 				{
 					initial_al_weight *= scaling;
 
 					logger().debug("Increasing weight to {}", al_weight*initial_al_weight);
+					for (const auto &f : alagr_forms)
+						f->set_last_al_weight(al_weight*initial_al_weight);
+
 				}
 				else
 				{
@@ -210,5 +224,6 @@ namespace polyfem::solver
 
 		post_subsolve(0);
 	}
+
 
 } // namespace polyfem::solver

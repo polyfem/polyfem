@@ -38,6 +38,7 @@ namespace polyfem::solver
 
 		std::function<void(const double)> post_subsolve = [](const double) {};
 
+
 	protected:
 		std::vector<std::shared_ptr<AugmentedLagrangianForm>> alagr_forms;
 		double initial_al_weight;

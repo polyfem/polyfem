@@ -27,7 +27,14 @@ namespace polyfem::solver
 			k_al_ = k_al;
 		}
 
-		inline double get_al_weight(){return k_al_;}
+		inline void set_last_al_weight(const double k_al)
+		{
+			last_al_weight_ = k_al;
+		}
+		inline double get_last_al_weight()
+		{
+			return last_al_weight_;
+		}
 
 		inline double lagrangian_weight() const { return k_al_; }
 
@@ -64,7 +71,7 @@ namespace polyfem::solver
 		inline double A_weight() const { return k_al_ / k_scale_; }
 
 		double k_al_ = -1; ///< penalty parameter
-
+		double last_al_weight_ = -1;
 		double incr_load_ = 1;
 
 		Eigen::VectorXd lagr_mults_; ///< vector of lagrange multipliers
