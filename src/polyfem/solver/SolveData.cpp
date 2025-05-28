@@ -411,10 +411,11 @@ namespace polyfem::solver
 		StiffnessMatrix hessian_form;
 		double max_stiffness = 0;
 		double grad_energy = 0.0;
-		const std::array<std::shared_ptr<Form>, 6> energy_forms{
-						elastic_form, body_form, inertia_form, pressure_form, damping_form, friction_form};
+		//const std::array<std::shared_ptr<Form>, 6> energy_forms{
+		//				elastic_form, body_form, inertia_form, pressure_form, damping_form, friction_form};
 
 		//Grabs the gradient of the energy to scale the barrier stiffness
+		/*
 		for (const std::shared_ptr<Form> &form : energy_forms)
 		{
 			if (form == nullptr || !form->enabled())
@@ -425,7 +426,7 @@ namespace polyfem::solver
 			form->first_derivative(x, grad_form);
 			grad_energy += grad_form.colwise().maxCoeff()(0)/weight;
 		}
-
+		*/
 		//Grabs the approximate stiffness of the material via the max coeff of the elastic hessian
 		elastic_form->second_derivative(x, hessian_form);
 
