@@ -34,7 +34,13 @@ namespace polyfem::time_integrator
 
 	double ImplicitNewmark::acceleration_scaling() const
 	{
-		return beta() * dt() * dt();
+		double val;
+		if (dt()<1)
+			val = dt() * dt();
+		else
+			val = 1/(dt()*dt());
+
+		return beta() * val;
 	}
 
 	double ImplicitNewmark::dv_dx(const unsigned prev_ti) const

@@ -27,7 +27,12 @@ namespace polyfem::time_integrator
 
 	double ImplicitEuler::acceleration_scaling() const
 	{
-		return dt() * dt();
+		double val;
+		if (dt()<1)
+			val = dt() * dt();
+		else
+			val = 1/(dt()*dt());
+		return val;
 	}
 
 	double ImplicitEuler::dv_dx(const unsigned prev_ti) const

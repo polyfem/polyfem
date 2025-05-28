@@ -52,7 +52,7 @@ namespace polyfem::solver
 		assert(tmp_sol.size() == nl_problem.reduced_size());
 
 		// --------------------------------------------------------------------
-		double al_weight = 1e-15;
+		double al_weight;
 		double last_al_weight = 1e-15;
 		update_al_weight(sol);
 		for (auto &f : alagr_forms)
@@ -60,7 +60,6 @@ namespace polyfem::solver
 			al_weight = f->lagrangian_weight();
 			last_al_weight = f->get_last_al_weight();
 		}
-		al_weight *= initial_al_weight;
 		if (last_al_weight > al_weight)
 			al_weight = last_al_weight;
 		for (auto &f : alagr_forms)
@@ -112,10 +111,6 @@ namespace polyfem::solver
 
 				nl_problem.init(sol);
 				update_barrier_stiffness(sol);
-				update_al_weight(sol);
-				al_weight *= initial_al_weight;
-				for (auto &f : alagr_forms)
-					f->set_al_weight(al_weight);
 				tmp_sol = sol;
 
 				bool increase_al_weight = false;
@@ -164,12 +159,16 @@ namespace polyfem::solver
 
 				if ((increase_al_weight&& al_weight < max_al_weight) || (prev_error!= 0 && ratio_error<ratio_tolerance && al_weight < max_al_weight))
 				{
-					initial_al_weight *= scaling;
+					al_weight *= scaling;
 
-					logger().debug("Increasing weight to {}", al_weight*initial_al_weight);
+
+					logger().debug("Increasing weight to {}", al_weight);
 					for (const auto &f : alagr_forms)
-						f->set_last_al_weight(al_weight*initial_al_weight);
-
+					{
+						f->set_al_weight(al_weight);
+						f->set_last_al_weight(al_weight);
+					}
+					update_barrier_stiffness(sol);
 				}
 				else
 				{

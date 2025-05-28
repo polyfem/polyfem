@@ -305,7 +305,9 @@ namespace polyfem
 		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(true);
 
 		double al_initial_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
-
+		solve_data.set_AL_initial_weight(al_initial_weight);
+		solve_data.set_initial_barrier_stiffness(args["solver"]["contact"]["barrier_stiffness"]);
+		solve_data.set_avg_edge_length(stats.average_edge_length);
 		ALSolver al_solver(
 			solve_data.al_form,
 			al_initial_weight,
