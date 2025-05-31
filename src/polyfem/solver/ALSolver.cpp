@@ -4,24 +4,6 @@
 
 namespace polyfem::solver
 {
-	class CallbackChecker
-	{
-	public:
-		bool operator()(const polysolve::nonlinear::Criteria &crit)
-		{
-			if (crit.iterations > 3 && (std::abs(crit.gradNorm)< 1e-3 || std::abs(crit.xDeltaDotGrad) < 1e-12))
-            {
-                logger().warn("Converged after {} iterations", crit.iterations);
-                return true;
-            }
-
-			prev = crit;
-			return false;
-		}
-
-	private:
-		polysolve::nonlinear::Criteria prev;
-	};
 
 	ALSolver::ALSolver(
 		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &alagr_form,
@@ -113,17 +95,36 @@ namespace polyfem::solver
 				update_barrier_stiffness(sol);
 				tmp_sol = sol;
 
-				bool increase_al_weight = false;
+				bool increase_al_weight = true;
+				bool force_al_increase_weight = false;
 
 				try
 				{
-					CallbackChecker checker;
+					bool early_stop = false;
+					auto iteration_cb = [&](const polysolve::nonlinear::Criteria &crit) -> bool
+					{
+						if (crit.iterations > 3 &&
+							(std::abs(crit.gradNorm) < 1e-3 ||
+							 std::abs(crit.xDeltaDotGrad) < 1e-10))
+						{
+							logger().warn("Converged after {} iterations", crit.iterations);
+							early_stop = true;
+							return true;
+						}
+						return false;
+					};
+
 					const auto scale = nl_problem.normalize_forms();
 					auto nl_solver = polysolve::nonlinear::Solver::create(
 						nl_solver_params, linear_solver, characteristic_length / scale, logger());
-					nl_solver->set_iteration_callback(checker);
+					nl_solver->set_iteration_callback(iteration_cb);
 					nl_solver->minimize(nl_problem, tmp_sol);
 					nl_problem.finish();
+
+					if (early_stop)
+					{
+						increase_al_weight = false;
+					}
 				}
 				catch (const std::runtime_error &e)
 				{
@@ -132,7 +133,7 @@ namespace polyfem::solver
 					// if the nonlinear solve fails due to invalid energy at the current solution, changing the weights would not help
 					// if (err_msg.find("f(x) is nan or inf; stopping") != std::string::npos)
 					// log_and_throw_error("Failed to solve with AL; f(x) is nan or inf");
-					increase_al_weight = true;
+					force_al_increase_weight = true;
 				}
 
 				sol = tmp_sol;
@@ -157,7 +158,7 @@ namespace polyfem::solver
 									   std::min(std::abs(1.0), std::abs(tolerance)));
 
 
-				if ((increase_al_weight&& al_weight < max_al_weight) || (prev_error!= 0 && ratio_error<ratio_tolerance && al_weight < max_al_weight))
+				if ( (force_al_increase_weight && al_weight < max_al_weight) || (increase_al_weight && prev_error!= 0 && ratio_error<ratio_tolerance && al_weight < max_al_weight) || (prev_error<current_error && al_weight < max_al_weight))
 				{
 					al_weight *= scaling;
 
