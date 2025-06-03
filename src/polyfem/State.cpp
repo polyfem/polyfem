@@ -992,6 +992,8 @@ namespace polyfem
 			starting_max_edge_length = stats.mesh_size;
 		}
 
+		solve_data.set_avg_edge_length(stats.average_edge_length);
+
 		if (is_contact_enabled())
 		{
 			min_boundary_edge_length = std::numeric_limits<double>::max();
