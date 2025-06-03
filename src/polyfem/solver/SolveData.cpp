@@ -410,15 +410,30 @@ namespace polyfem::solver
 
 		const double dhat = contact_form->dhat();
 
+		StiffnessMatrix hessian_form;
+		double max_stiffness = 0;
+		const double scaling = time_integrator->acceleration_scaling();
+
+		//Grabs the approximate stiffness of the material via the max coeff of the elastic hessian
+		elastic_form->second_derivative(x, hessian_form);
+
+		for (int k = 0; k < hessian_form.outerSize(); ++k)
+		{
+			for (StiffnessMatrix::InnerIterator it(hessian_form, k); it; ++it)
+			{
+				max_stiffness= std::max(max_stiffness, std::abs(it.value()))/scaling;
+			}
+		}
+
 		double energy = 0.0;
 		for (const auto &f : al_form)
 		{
-			energy = f->lagrangian_weight();
+			energy =  f->lagrangian_weight();
 		}
 
-		double barrier_stiffness = energy/(dhat*dhat)*initial_barrier_stiffness_;
-		if (barrier_stiffness<energy)
-			barrier_stiffness = energy*10;
+		double barrier_stiffness = 1000*energy*initial_barrier_stiffness_;
+		//if (barrier_stiffness<max_stiffness)
+		//	barrier_stiffness = max_stiffness*10;
 		contact_form->set_barrier_stiffness(barrier_stiffness);
 		logger().debug("Barrier Stiffness set to {}", contact_form->barrier_stiffness());
 
@@ -428,6 +443,13 @@ namespace polyfem::solver
 	{
 		StiffnessMatrix hessian_form;
 		double max_stiffness = 0;
+		const double scaling = time_integrator->acceleration_scaling();
+		double dbc = 0.0;
+		const double dhat = contact_form->dhat();
+		for (const auto &f : al_form)
+		{
+			dbc =  f->get_dbcdist();
+		}
 
 		//Grabs the approximate stiffness of the material via the max coeff of the elastic hessian
 		elastic_form->second_derivative(x, hessian_form);
@@ -436,15 +458,33 @@ namespace polyfem::solver
 		{
 			for (StiffnessMatrix::InnerIterator it(hessian_form, k); it; ++it)
 			{
-				max_stiffness= std::max(max_stiffness, std::abs(it.value()));
+				max_stiffness = std::max(max_stiffness, std::abs(it.value()));
 			}
 		}
 
+		Eigen::VectorXd grad_energy = Eigen::VectorXd::Zero(x.size());
+		const std::array<std::shared_ptr<Form>, 4> energy_forms{
+				{elastic_form, inertia_form, body_form, pressure_form}};
+		for (const std::shared_ptr<Form> &form : energy_forms)
+		{
+			if (form == nullptr || !form->enabled())
+				continue;
+
+			Eigen::VectorXd grad_form;
+			form->first_derivative(x, grad_form);
+			grad_energy += grad_form;
+		}
+		double max_coeff =  grad_energy.norm()*grad_energy.size()/scaling;
+
+		//logger().debug("max_coeff is {}", max_coeff);
+
+		double weight = 1000*(max_coeff+max_stiffness*dbc/(dhat*10)/scaling+avg_mass_*dbc/dt_*dbc/dt_)*AL_initial_weight_;
+
 		for (const auto &f : al_form)
 		{
-				f->set_al_weight(1000*max_stiffness*AL_initial_weight_);
+				f->set_al_weight(weight);
 		}
-
+		logger().debug("Unweighted AL weight set to {}", weight);
 
 	}
 
