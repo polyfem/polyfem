@@ -7,6 +7,46 @@ namespace polyfem::assembler
 	namespace
 	{
 
+		bool delta(int i, int j)
+		{
+			return (i == j) ? true : false;
+		}
+
+		template <class T, int p = 3>
+		class barrier
+		{
+			constexpr static double C = 1e6;
+
+		public:
+			static_assert(p % 2 == 1);
+			static T value(T J)
+			{
+				if (J >= 0.5)
+					return T(0.);
+				const T tmp1 = 2 * J - 1;
+				const T tmp2 = pow(tmp1, p);
+				return C * (1 / (tmp2 + 1) - 1);
+			}
+
+			static T first_derivatives(T J)
+			{
+				if (J >= 0.5)
+					return T(0);
+				const T tmp1 = 2 * J - 1;
+				const T tmp2 = pow(tmp1, p);
+				return C * -2 * p * tmp2 / tmp1 / pow(1 + tmp2, 2);
+			}
+
+			static T second_derivatives(T J)
+			{
+				if (J >= 0.5)
+					return T(0);
+				const T tmp1 = 2 * J - 1;
+				const T tmp2 = pow(tmp1, p);
+				return C * 4 * p * tmp2 / pow(tmp1, 2) * ((1 - p) + (1 + p) * tmp2) / pow(1 + tmp2, 3);
+			}
+		};
+
 		template <int dim>
 		Eigen::Matrix<double, dim, dim> hat(const Eigen::Matrix<double, dim, 1> &x)
 		{
@@ -163,13 +203,6 @@ namespace polyfem::assembler
 		typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
 		typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> DoubleGradMat;
 
-		AutoDiffGradMat standard;
-
-		if (size() == 2)
-			standard = get_standard<2, T>(size(), use_rest_pose_);
-		else
-			standard = get_standard<3, T>(size(), use_rest_pose_);
-
 		double power = -1;
 		if (use_rest_pose_)
 			power = size() == 2 ? 1. : (2. / 3.);
@@ -178,6 +211,13 @@ namespace polyfem::assembler
 
 		AutoDiffVect local_disp;
 		get_local_disp(data, size(), local_disp);
+
+		AutoDiffGradMat standard;
+
+		if (size() == 2)
+			standard = get_standard<2, T>(size(), use_rest_pose_);
+		else
+			standard = get_standard<3, T>(size(), use_rest_pose_);
 
 		AutoDiffGradMat def_grad(size(), size());
 
@@ -213,7 +253,7 @@ namespace polyfem::assembler
 			}
 
 			const T powJ = pow(det, power);
-			const T val = (def_grad.transpose() * def_grad).trace() / powJ;
+			const T val = (def_grad.transpose() * def_grad).trace() / powJ; //+ barrier<T>::value(det);
 
 			energy += val * data.da(p);
 		}
