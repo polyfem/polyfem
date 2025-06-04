@@ -144,7 +144,7 @@ namespace
 
 TEST_CASE("homogenize-stress-periodic", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "homogenize-stress-periodic.json", in_args);
 	auto state_ptr = AdjointOptUtils::create_state(in_args, solver::CacheLevel::Derivatives, -1);
@@ -175,7 +175,7 @@ TEST_CASE("homogenize-stress-periodic", "[test_adjoint]")
 
 TEST_CASE("homogenize-stress", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "homogenize-stress.json", in_args);
 	auto state_ptr = AdjointOptUtils::create_state(in_args, solver::CacheLevel::Derivatives, -1);

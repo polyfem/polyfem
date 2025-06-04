@@ -354,7 +354,6 @@ namespace polyfem::assembler
 			}
 
 			const Eigen::Matrix<double, dim, dim> jac_it = data.vals.jac_it[p];
-
 			const Eigen::Matrix<double, n_basis, dim> delF_delU = grad * jac_it;
 
 			// Id + grad d
@@ -411,28 +410,23 @@ namespace polyfem::assembler
 			}
 
 			Eigen::Matrix<double, dim, dim> jac_it = data.vals.jac_it[p];
+			const Eigen::Matrix<double, n_basis, dim> delF_delU = grad * jac_it;
 
 			// Id + grad d
-			def_grad = local_disp.transpose() * grad * jac_it + Eigen::Matrix<double, dim, dim>::Identity(size(), size());
+			def_grad = local_disp.transpose() * delF_delU + Eigen::Matrix<double, dim, dim>::Identity(size(), size());
 
 			double lambda, mu;
 			params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id, lambda, mu);
 
 			Eigen::Matrix<double, dim * dim, dim * dim> hessian_temp = compute_stiffness_from_def_grad(def_grad, lambda, mu);
 
-			Eigen::Matrix<double, dim * dim, N> delF_delU_tensor(jac_it.size(), grad.size());
+			Eigen::Matrix<double, dim * dim, N> delF_delU_tensor = Eigen::Matrix<double, dim * dim, N>::Zero(jac_it.size(), grad.size());
 
 			for (size_t i = 0; i < local_disp.rows(); ++i)
 			{
-				for (size_t j = 0; j < local_disp.cols(); ++j)
-				{
-					Eigen::Matrix<double, dim, dim> temp(size(), size());
-					temp.setZero();
-					temp.row(j) = grad.row(i);
-					temp = temp * jac_it;
-					Eigen::Matrix<double, dim * dim, 1> temp_flattened(Eigen::Map<Eigen::Matrix<double, dim * dim, 1>>(temp.data(), temp.size()));
-					delF_delU_tensor.col(i * size() + j) = temp_flattened;
-				}
+				for (size_t j = 0; j < dim; ++j)
+					for (size_t k = 0; k < dim; ++k)
+						delF_delU_tensor(dim * k + j, i * dim + j) = delF_delU(i, k);
 			}
 
 			Eigen::Matrix<double, N, N> hessian = delF_delU_tensor.transpose() * hessian_temp * delF_delU_tensor;
