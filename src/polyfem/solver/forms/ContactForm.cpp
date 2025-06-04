@@ -318,6 +318,7 @@ namespace polyfem::solver
 			}
 		}
 	*/
+
 		prev_distance_ = curr_distance;
 	}
 

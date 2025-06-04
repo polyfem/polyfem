@@ -407,8 +407,19 @@ namespace polyfem::solver
 	{	//todo: fix this to make it work with fixed barrier stiffness
 		if (contact_form == nullptr)
 			return;
+
+		double bs_multiplier = contact_form->get_bs_multiplier();
+
 		const double dhat = contact_form->dhat();
 		double dbc = 0.0;
+		double prev_dist = contact_form->get_prev_distance();
+		logger().debug("Prev dist is {}", prev_dist);
+		if (prev_dist != -1 && prev_dist < .5*dhat*dhat)
+		{
+			bs_multiplier *= 2;
+			contact_form->set_bs_multiplier(bs_multiplier);
+		}
+
 		for (const auto &f : al_form)
 		{
 			dbc =  f->get_dbcdist();
@@ -420,7 +431,7 @@ namespace polyfem::solver
 			AL_grad_energy =  f->lagrangian_weight();
 		}
 
-		double barrier_stiffness = 1000*AL_grad_energy*initial_barrier_stiffness_;
+		double barrier_stiffness = 1000*AL_grad_energy*initial_barrier_stiffness_* bs_multiplier;
 
 		//double barrier_stiffness = 1000*(AL_grad_energy+1e-9*1/(AL_grad_energy*AL_grad_energy)*dt_*dt_*1/(dhat*dhat*dhat)*1/(dbc*dbc*dbc))*initial_barrier_stiffness_;
 

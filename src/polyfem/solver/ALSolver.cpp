@@ -36,6 +36,7 @@ namespace polyfem::solver
 		// --------------------------------------------------------------------
 		double al_weight;
 		double last_al_weight = 1e-15;
+
 		update_al_weight(sol);
 		for (auto &f : alagr_forms)
 		{
