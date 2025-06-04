@@ -11,7 +11,6 @@ namespace polyfem::assembler
 {
 	void SumModel::add_multimaterial(const int index, const json &params, const Units &units)
 	{
-		std::cout << params.dump(4) << std::endl;
 		assert(size() == 2 || size() == 3);
 		if (params.count("models") == 0)
 			return;
