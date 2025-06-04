@@ -411,18 +411,12 @@ namespace polyfem::solver
 		double bs_multiplier = contact_form->get_bs_multiplier();
 
 		const double dhat = contact_form->dhat();
-		double dbc = 0.0;
 		double prev_dist = contact_form->get_prev_distance();
 		logger().debug("Prev dist is {}", prev_dist);
-		if (prev_dist != -1 && prev_dist < .5*dhat*dhat)
+		if (prev_dist != -1 && prev_dist < .25*dhat*dhat)
 		{
 			bs_multiplier *= 2;
 			contact_form->set_bs_multiplier(bs_multiplier);
-		}
-
-		for (const auto &f : al_form)
-		{
-			dbc =  f->get_dbcdist();
 		}
 
 		double AL_grad_energy = 0.0;
@@ -431,10 +425,7 @@ namespace polyfem::solver
 			AL_grad_energy =  f->lagrangian_weight();
 		}
 
-		double barrier_stiffness = 1000*AL_grad_energy*initial_barrier_stiffness_* bs_multiplier;
-
-		//double barrier_stiffness = 1000*(AL_grad_energy+1e-9*1/(AL_grad_energy*AL_grad_energy)*dt_*dt_*1/(dhat*dhat*dhat)*1/(dbc*dbc*dbc))*initial_barrier_stiffness_;
-
+		double barrier_stiffness = AL_grad_energy*AL_grad_energy*initial_barrier_stiffness_* bs_multiplier;
 
 		contact_form->set_barrier_stiffness(barrier_stiffness);
 		logger().debug("Barrier Stiffness set to {}", contact_form->barrier_stiffness());
@@ -478,9 +469,9 @@ namespace polyfem::solver
 		double grad_energy_scaled =  grad_energy.norm()*grad_energy.size()/scaling;
 
 
-		double weight = 1000*( grad_energy_scaled + max_stiffness*dbc/(avg_edge_length_)/scaling + avg_mass_*(dbc - dbc/dt_))*AL_initial_weight_;
+		double weight = (grad_energy_scaled + max_stiffness*dbc/(avg_edge_length_)/scaling + avg_mass_*(dbc - dbc/dt_))*AL_initial_weight_;
 		if (weight <= 1e-15)
-			weight =  1000*max_stiffness/scaling;
+			weight =  max_stiffness/scaling;
 		for (const auto &f : al_form)
 		{
 				f->set_al_weight(weight);
