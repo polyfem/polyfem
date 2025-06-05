@@ -874,7 +874,7 @@ TEST_CASE("shape-contact-force-norm", "[test_adjoint]")
 
 TEST_CASE("shape-contact-force-norm-adhesion", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "shape-contact-force-norm-adhesion.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
