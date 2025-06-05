@@ -109,7 +109,7 @@ namespace polyfem
 				solve_data.nl_problem->update_quantities(t0 + (t + 1) * dt, sol);
 
 				solve_data.update_dt();
-				solve_data.update_barrier_stiffness(sol);
+				solve_data.update_barrier_stiffness(sol, false);
 			}
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
@@ -308,14 +308,15 @@ namespace polyfem
 		solve_data.set_AL_initial_weight(al_initial_weight);
 		solve_data.set_initial_barrier_stiffness(args["solver"]["contact"]["barrier_stiffness"]);
 		solve_data.set_avg_edge_length(stats.average_edge_length);
+		solve_data.set_min_edge_length(stats.min_edge_length);
 		ALSolver al_solver(
 			solve_data.al_form,
 			al_initial_weight,
 			args["solver"]["augmented_lagrangian"]["scaling"],
 			args["solver"]["augmented_lagrangian"]["max_weight"],
 			args["solver"]["augmented_lagrangian"]["eta"],
-			[&](const Eigen::VectorXd &x) {
-				this->solve_data.update_barrier_stiffness(sol);
+			[&](const Eigen::VectorXd &x, bool reduce ) {
+				this->solve_data.update_barrier_stiffness(sol, reduce);
 		},			[&](const Eigen::VectorXd &x) {
 			this->solve_data.update_al_weight(sol);
 		});
@@ -395,7 +396,7 @@ namespace polyfem
 				// Solve the problem with the updated lagging
 				logger().info("Lagging iteration {:d}:", lag_i + 1);
 				nl_problem.init(sol);
-				solve_data.update_barrier_stiffness(sol);
+				solve_data.update_barrier_stiffness(sol, false);
 				nl_problem.normalize_forms();
 				nl_solver->minimize(nl_problem, tmp_sol);
 				nl_problem.finish();

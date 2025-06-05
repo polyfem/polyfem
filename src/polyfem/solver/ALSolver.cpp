@@ -11,7 +11,7 @@ namespace polyfem::solver
 		const double scaling,
 		const double max_al_weight,
 		const double eta_tol,
-		const std::function<void(const Eigen::VectorXd &)> &update_barrier_stiffness,
+		const std::function<void(const Eigen::VectorXd &, bool)> &update_barrier_stiffness,
 		const std::function<void(const Eigen::VectorXd &)> &update_al_weight)
 		: alagr_forms{alagr_form},
 		  initial_al_weight(initial_al_weight),
@@ -79,7 +79,7 @@ namespace polyfem::solver
 
 			logger().debug("Initial error = {}", current_error);
 			bool first = true;
-
+			update_barrier_stiffness(sol, false);
 			while (first
 				   || current_error > 1e-2
 				   || !std::isfinite(nl_problem.value(tmp_sol))
@@ -93,25 +93,56 @@ namespace polyfem::solver
 				//logger().debug("Solving AL Problem with weight {}", al_weight);
 
 				nl_problem.init(sol);
-				update_barrier_stiffness(sol);
+
 				tmp_sol = sol;
 
 				bool increase_al_weight = true;
-				bool force_al_increase_weight = false;
+				double prev_delta_x_norm = 1e10;
 
 				try
 				{
-					bool early_stop = false;
 					auto iteration_cb = [&](const polysolve::nonlinear::Criteria &crit) -> bool
 					{
-						if (crit.iterations > 3 &&
-							(std::abs(crit.gradNorm) < 1e-3 ||
-							 std::abs(crit.xDeltaDotGrad) < 1e-10))
+						if (std::abs(crit.xDelta) < prev_delta_x_norm)
 						{
-							logger().warn("Converged after {} iterations", crit.iterations);
-							early_stop = true;
+							prev_delta_x_norm = std::abs(crit.xDelta);
+						}
+
+						else if(crit.iterations > 3 &&
+							 prev_delta_x_norm*2 < std::abs(crit.xDelta)
+							 )
+						{
+							logger().warn("Current xDelta criteria {}", std::abs(crit.xDelta));
+							logger().warn("Caught jump in xDelta norm, trying again");
+							increase_al_weight = false;
+							update_al_weight(tmp_sol);
+							update_barrier_stiffness(tmp_sol, true);
 							return true;
 						}
+						if (crit.iterations > 3 &&
+													(std::abs(crit.gradNorm) < 1e-3 ||
+													 std::abs(crit.xDeltaDotGrad) < 1e-10))
+						{
+							logger().warn("Converged after {} iterations", crit.iterations);
+							increase_al_weight = false;
+							return true;
+						}
+
+						if (crit.alpha < 1e-3 && crit.iterations > 3 &&
+							 prev_delta_x_norm*10 < std::abs(crit.xDelta))
+						{
+							al_weight /= scaling;
+							increase_al_weight = false;
+							logger().debug("Decreasing AL weight to {}", al_weight);
+							for (const auto &f : alagr_forms)
+							{
+								f->set_al_weight(al_weight);
+							}
+							update_barrier_stiffness(sol, false);
+							return true;
+						}
+
+
 						return false;
 					};
 
@@ -121,11 +152,6 @@ namespace polyfem::solver
 					nl_solver->set_iteration_callback(iteration_cb);
 					nl_solver->minimize(nl_problem, tmp_sol);
 					nl_problem.finish();
-
-					if (early_stop)
-					{
-						increase_al_weight = false;
-					}
 				}
 				catch (const std::runtime_error &e)
 				{
@@ -134,7 +160,6 @@ namespace polyfem::solver
 					// if the nonlinear solve fails due to invalid energy at the current solution, changing the weights would not help
 					// if (err_msg.find("f(x) is nan or inf; stopping") != std::string::npos)
 					// log_and_throw_error("Failed to solve with AL; f(x) is nan or inf");
-					force_al_increase_weight = true;
 				}
 
 				sol = tmp_sol;
@@ -159,7 +184,7 @@ namespace polyfem::solver
 									   std::min(std::abs(1.0), std::abs(tolerance)));
 
 
-				if ( (force_al_increase_weight && al_weight < max_al_weight) || (increase_al_weight && prev_error!= 0 && ratio_error<ratio_tolerance && al_weight < max_al_weight) || (prev_error<current_error && al_weight < max_al_weight))
+				if ( (increase_al_weight && prev_error!= 0 && ratio_error<ratio_tolerance && al_weight < max_al_weight) || (increase_al_weight && prev_error<current_error && al_weight < max_al_weight))
 				{
 					al_weight *= scaling;
 
@@ -170,7 +195,7 @@ namespace polyfem::solver
 						f->set_al_weight(al_weight);
 						f->set_last_al_weight(al_weight);
 					}
-					update_barrier_stiffness(sol);
+
 				}
 				else
 				{

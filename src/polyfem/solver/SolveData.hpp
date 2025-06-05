@@ -134,7 +134,7 @@ namespace polyfem::solver
 
 		/// @brief update the barrier stiffness for the forms
 		/// @param x current solution
-		void update_barrier_stiffness(const Eigen::VectorXd &x);
+		void update_barrier_stiffness(const Eigen::VectorXd &x, bool reduce);
 		void set_AL_initial_weight(const double weight)
 		{
 			AL_initial_weight_ = weight;
@@ -146,6 +146,10 @@ namespace polyfem::solver
 		void set_avg_edge_length(const double length)
 		{
 			avg_edge_length_ = length;
+		}
+		void set_min_edge_length(const double length)
+		{
+			min_edge_length_ = length;
 		}
 		void update_al_weight(const Eigen::VectorXd &x);
 		/// @brief updates the dt inside the different forms
@@ -179,6 +183,7 @@ namespace polyfem::solver
 		double AL_initial_weight_= 1.0;
 		double initial_barrier_stiffness_=1.0;
 		double avg_edge_length_=0.0;
+		double min_edge_length_=0.0;
 
 	};
 } // namespace polyfem::solver

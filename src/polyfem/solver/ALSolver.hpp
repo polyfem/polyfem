@@ -23,7 +23,7 @@ namespace polyfem::solver
 			const double scaling,
 			const double max_al_weight,
 			const double eta_tol,
-			const std::function<void(const Eigen::VectorXd &)> &update_barrier_stiffness,
+			const std::function<void(const Eigen::VectorXd &, bool)> &update_barrier_stiffness,
 			const std::function<void(const Eigen::VectorXd &)> &update_al_weight);
 		virtual ~ALSolver() = default;
 
@@ -47,7 +47,7 @@ namespace polyfem::solver
 		const double eta_tol;
 
 		// TODO: replace this with a member function
-		std::function<void(const Eigen::VectorXd &)> update_barrier_stiffness;
+		std::function<void(const Eigen::VectorXd &, bool)> update_barrier_stiffness;
 		std::function<void(const Eigen::VectorXd &)> update_al_weight;
 	};
 } // namespace polyfem::solver

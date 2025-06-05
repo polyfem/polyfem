@@ -403,21 +403,10 @@ namespace polyfem::solver
 		return forms;
 	}
 
-	void SolveData::update_barrier_stiffness(const Eigen::VectorXd &x)
+	void SolveData::update_barrier_stiffness(const Eigen::VectorXd &x, bool reduce)
 	{	//todo: fix this to make it work with fixed barrier stiffness
 		if (contact_form == nullptr)
 			return;
-
-		double bs_multiplier = contact_form->get_bs_multiplier();
-
-		const double dhat = contact_form->dhat();
-		double prev_dist = contact_form->get_prev_distance();
-		logger().debug("Prev dist is {}", prev_dist);
-		if (prev_dist != -1 && prev_dist < .25*dhat*dhat)
-		{
-			bs_multiplier *= 2;
-			contact_form->set_bs_multiplier(bs_multiplier);
-		}
 
 		double AL_grad_energy = 0.0;
 		for (const auto &f : al_form)
@@ -425,7 +414,48 @@ namespace polyfem::solver
 			AL_grad_energy =  f->lagrangian_weight();
 		}
 
-		double barrier_stiffness = AL_grad_energy*AL_grad_energy*initial_barrier_stiffness_* bs_multiplier;
+		double bs_multiplier = contact_form->get_bs_multiplier();
+		const double dhat = contact_form->dhat();
+		double prev_dist = contact_form->get_prev_distance();
+
+
+		/*
+		if (reduce)
+		{
+			bs_multiplier /= 2;
+			contact_form->set_bs_multiplier(bs_multiplier);
+			const double current_bs= contact_form->barrier_stiffness();
+			double barrier_stiffness =current_bs/2;
+			if (barrier_stiffness <AL_grad_energy)
+			{
+				for (const auto &f : al_form)
+				{
+					f->set_al_weight(AL_grad_energy*2);
+				}
+				barrier_stiffness = AL_grad_energy*10;;
+				logger().warn("AL weight increased");
+			}
+			contact_form->set_barrier_stiffness(barrier_stiffness);
+			logger().debug("Barrier Stiffness reduced to {}", contact_form->barrier_stiffness());
+			return;
+		}
+		*/
+
+		logger().debug("Prev dist is {}", prev_dist);
+		if (prev_dist != -1 && prev_dist < .01*dhat*dhat)
+		{
+			bs_multiplier *= 2;
+			contact_form->set_bs_multiplier(bs_multiplier);
+		}
+		if (prev_dist != INFINITY && prev_dist > .75*dhat*dhat)
+		{
+			bs_multiplier /= 2;
+			contact_form->set_bs_multiplier(bs_multiplier);
+		}
+
+		double barrier_stiffness = 10*AL_grad_energy*initial_barrier_stiffness_* bs_multiplier;
+		if (barrier_stiffness < 10*AL_grad_energy || prev_dist == INFINITY )
+			barrier_stiffness = 10*AL_grad_energy;
 
 		contact_form->set_barrier_stiffness(barrier_stiffness);
 		logger().debug("Barrier Stiffness set to {}", contact_form->barrier_stiffness());
@@ -476,9 +506,7 @@ namespace polyfem::solver
 		{
 				f->set_al_weight(weight);
 		}
-		//logger().debug("Unweighted AL weight set to {}", weight);
-
-	}
+}
 
 	void SolveData::update_dt()
 	{
