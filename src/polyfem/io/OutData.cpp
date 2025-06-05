@@ -1080,6 +1080,8 @@ namespace polyfem::io
 
 	OutGeometryData::ExportOptions::ExportOptions(const json &args, const bool is_mesh_linear, const bool is_problem_scalar, const bool solve_export_to_file)
 	{
+		fields = args["output"]["paraview"]["fields"];
+
 		volume = args["output"]["paraview"]["volume"];
 		surface = args["output"]["paraview"]["surface"];
 		wire = args["output"]["paraview"]["wireframe"];
@@ -1348,24 +1350,24 @@ namespace polyfem::io
 			tmpw = std::make_shared<paraviewo::VTUWriter>();
 		paraviewo::ParaviewWriter &writer = *tmpw;
 
-		if (validity.size())
+		if (validity.size() && opts.export_field("validity"))
 			writer.add_field("validity", validity.cast<double>());
 
-		if (opts.solve_export_to_file && opts.nodes)
+		if (opts.solve_export_to_file || opts.nodes && opts.export_field("nodes"))
 			writer.add_field("nodes", node_fun);
 
 		if (problem.is_time_dependent())
 		{
 			bool is_time_integrator_valid = time_integrator != nullptr;
 
-			if (opts.velocity)
+			if (opts.velocity || opts.export_field("velocity"))
 			{
 				const Eigen::VectorXd velocity =
 					is_time_integrator_valid ? (time_integrator->v_prev()) : Eigen::VectorXd::Zero(sol.size());
 				save_volume_vector_field(state, points, opts, "velocity", velocity, writer);
 			}
 
-			if (opts.acceleration)
+			if (opts.acceleration || opts.export_field("velocity"))
 			{
 				const Eigen::VectorXd acceleration =
 					is_time_integrator_valid ? (time_integrator->a_prev()) : Eigen::VectorXd::Zero(sol.size());
@@ -1395,13 +1397,13 @@ namespace polyfem::io
 				{
 					force.setZero(sol.size());
 				}
-
-				save_volume_vector_field(state, points, opts, name + "_forces", force, writer);
+				if (opts.export_field(name + "_forces"))
+					save_volume_vector_field(state, points, opts, name + "_forces", force, writer);
 			}
 		}
 
 		// if(problem->is_mixed())
-		if (state.mixed_assembler != nullptr)
+		if (state.mixed_assembler != nullptr && opts.export_field("pressure"))
 		{
 			Eigen::MatrixXd interp_p;
 			Evaluator::interpolate_function(
@@ -1427,15 +1429,17 @@ namespace polyfem::io
 			discr.bottomRows(obstacle.n_vertices()).setZero();
 		}
 
-		if (opts.solve_export_to_file && opts.discretization_order)
+		if (opts.solve_export_to_file && (opts.discretization_order || opts.export_field("discr")))
 			writer.add_field("discr", discr);
 
 		if (problem.has_exact_sol())
 		{
 			if (opts.solve_export_to_file)
 			{
-				writer.add_field("exact", exact_fun);
-				writer.add_field("error", err);
+				if (opts.export_field("exact"))
+					writer.add_field("exact", exact_fun);
+				if (opts.export_field("error"))
+					writer.add_field("error", err);
 			}
 			else
 			{
@@ -1461,7 +1465,10 @@ namespace polyfem::io
 				if (opts.solve_export_to_file)
 				{
 					for (const auto &[name, v] : vals)
-						writer.add_field(name, v);
+					{
+						if (opts.export_field(name))
+							writer.add_field(name, v);
+					}
 				}
 				else if (vals.size() > 0)
 					solution_frames.back().scalar_value = vals[0].second;
@@ -1481,6 +1488,9 @@ namespace polyfem::io
 				{
 					const int stride = mesh.dimension();
 					assert(v.cols() % stride == 0);
+
+					if (!opts.export_field(name))
+						continue;
 
 					for (int i = 0; i < v.cols(); i += stride)
 					{
@@ -1515,7 +1525,10 @@ namespace polyfem::io
 					if (opts.solve_export_to_file)
 					{
 						for (const auto &v : vals)
-							writer.add_field(fmt::format("{:s}_avg", v.first), v.second);
+						{
+							if (opts.export_field(fmt::format("{:s}_avg", v.first)))
+								writer.add_field(fmt::format("{:s}_avg", v.first), v.second);
+						}
 					}
 					else if (vals.size() > 0)
 						solution_frames.back().scalar_value_avg = vals[0].second;
@@ -1620,11 +1633,15 @@ namespace polyfem::io
 				rhos.bottomRows(obstacle.n_vertices()).setZero();
 			}
 			for (const auto &[p, tmp] : param_val)
-				writer.add_field(p, tmp);
-			writer.add_field("rho", rhos);
+			{
+				if (opts.export_field(p))
+					writer.add_field(p, tmp);
+			}
+			if (opts.export_field("rho"))
+				writer.add_field("rho", rhos);
 		}
 
-		if (opts.body_ids)
+		if (opts.body_ids || opts.export_field("body_ids"))
 		{
 
 			Eigen::MatrixXd ids(points.rows(), 1);
@@ -1662,7 +1679,8 @@ namespace polyfem::io
 				traction_forces_fun.bottomRows(obstacle.n_vertices()).setZero();
 			}
 
-			writer.add_field("traction_force", traction_forces_fun);
+			if (opts.export_field("traction_force"))
+				writer.add_field("traction_force", traction_forces_fun);
 		}
 
 		if (fun.cols() != 1 && state.mixed_assembler == nullptr)
@@ -1682,8 +1700,8 @@ namespace polyfem::io
 					potential_grad_fun.conservativeResize(potential_grad_fun.rows() + obstacle.n_vertices(), potential_grad_fun.cols());
 					potential_grad_fun.bottomRows(obstacle.n_vertices()).setZero();
 				}
-
-				writer.add_field("gradient_of_potential", potential_grad_fun);
+				if (opts.export_field("gradient_of_potential"))
+					writer.add_field("gradient_of_potential", potential_grad_fun);
 			}
 			catch (std::exception &)
 			{

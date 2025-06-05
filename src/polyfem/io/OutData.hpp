@@ -47,6 +47,8 @@ namespace polyfem::io
 		/// @brief different export flags
 		struct ExportOptions
 		{
+			std::vector<std::string> fields; // fields to export, empty means all
+
 			bool volume;
 			bool surface;
 			bool wire;
@@ -71,23 +73,24 @@ namespace polyfem::io
 			bool use_spline;
 			bool reorder_output;
 
-			bool solve_export_to_file;
-
 			bool use_hdf5;
 
 			/// @brief initialize the flags based on the input args
 			/// @param[in] args input arguments used to set most of the flags
 			/// @param[in] is_mesh_linear if the mesh is linear
 			/// @param[in] is_problem_scalar if the problem is scalar
-			/// @param[in] solve_export_to_file if export to file or save in the frames
 			ExportOptions(const json &args,
 						  const bool is_mesh_linear,
-						  const bool is_problem_scalar,
-						  const bool solve_export_to_file);
+						  const bool is_problem_scalar);
 
 			/// @brief return the extension of the output paraview files depending on use_hdf5
 			/// @return either hdf or vtu
 			inline std::string file_extension() const { return use_hdf5 ? ".hdf" : ".vtu"; }
+
+			bool export_field(const std::string &field) const
+			{
+				return fields.empty() || std::find(fields.begin(), fields.end(), field) != fields.end();
+			}
 		};
 
 		/// extracts the boundary mesh

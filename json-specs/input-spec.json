@@ -2700,6 +2700,7 @@
             "volume",
             "surface",
             "wireframe",
+            "fields",
             "points",
             "options"
         ],
@@ -2752,6 +2753,18 @@
         "default": false,
         "type": "bool",
         "doc": "Export the Dirichlet points"
+    },
+    {
+        "pointer": "/output/paraview/fields",
+        "default": [],
+        "type": "list",
+        "doc": "list of names of fields to export. If empty, all fields are exported."
+    },
+    {
+        "pointer": "/output/paraview/fields/*",
+        "default": "",
+        "type": "string",
+        "doc": "field name"
     },
     {
         "pointer": "/output/paraview/options",
