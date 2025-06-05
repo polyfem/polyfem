@@ -72,10 +72,7 @@ namespace polyfem::io
 			/// @return either hdf or vtu
 			inline std::string file_extension() const { return use_hdf5 ? ".hdf" : ".vtu"; }
 
-			bool export_field(const std::string &field) const
-			{
-				return fields.empty() || std::find(fields.begin(), fields.end(), field) != fields.end();
-			}
+			bool export_field(const std::string &field) const;
 		};
 
 		/// extracts the boundary mesh

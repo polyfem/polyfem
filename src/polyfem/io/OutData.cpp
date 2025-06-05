@@ -1077,6 +1077,11 @@ namespace polyfem::io
 		}
 	}
 
+	bool OutGeometryData::ExportOptions::export_field(const std::string &field) const
+	{
+		return fields.empty() || std::find(fields.begin(), fields.end(), field) != fields.end();
+	}
+
 	OutGeometryData::ExportOptions::ExportOptions(const json &args, const bool is_mesh_linear, const bool is_problem_scalar)
 	{
 		fields = args["output"]["paraview"]["fields"];
@@ -1345,7 +1350,7 @@ namespace polyfem::io
 		if (validity.size() && opts.export_field("validity"))
 			writer.add_field("validity", validity.cast<double>());
 
-		if (opts.nodes || opts.export_field("nodes"))
+		if (opts.nodes && opts.export_field("nodes"))
 			writer.add_field("nodes", node_fun);
 
 		if (problem.is_time_dependent())
@@ -1359,7 +1364,7 @@ namespace polyfem::io
 				save_volume_vector_field(state, points, opts, "velocity", velocity, writer);
 			}
 
-			if (opts.acceleration || opts.export_field("velocity"))
+			if (opts.acceleration || opts.export_field("acceleration"))
 			{
 				const Eigen::VectorXd acceleration =
 					is_time_integrator_valid ? (time_integrator->a_prev()) : Eigen::VectorXd::Zero(sol.size());
@@ -1418,7 +1423,7 @@ namespace polyfem::io
 			discr.bottomRows(obstacle.n_vertices()).setZero();
 		}
 
-		if (opts.discretization_order || opts.export_field("discr"))
+		if (opts.discretization_order && opts.export_field("discr"))
 			writer.add_field("discr", discr);
 
 		if (problem.has_exact_sol())
