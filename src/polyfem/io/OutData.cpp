@@ -1345,7 +1345,7 @@ namespace polyfem::io
 		if (validity.size() && opts.export_field("validity"))
 			writer.add_field("validity", validity.cast<double>());
 
-		if (opts.nodes && opts.export_field("nodes"))
+		if (opts.nodes || opts.export_field("nodes"))
 			writer.add_field("nodes", node_fun);
 
 		if (problem.is_time_dependent())
@@ -1504,11 +1504,6 @@ namespace polyfem::io
 							writer.add_field(fmt::format("{:s}_avg", v.first), v.second);
 					}
 				}
-				// for(int i = 0; i < tvals.cols(); ++i){
-				// 	const int ii = (i / mesh.dimension()) + 1;
-				// 	const int jj = (i % mesh.dimension()) + 1;
-				// 	writer.add_field("tensor_value_avg_" + std::to_string(ii) + std::to_string(jj), tvals.col(i));
-				// }
 			}
 		}
 
@@ -1631,10 +1626,13 @@ namespace polyfem::io
 			writer.add_field("body_ids", ids);
 		}
 
-		// interpolate_function(pts_index, rhs, fun, opts.boundary_only);
-		// writer.add_field("rhs", fun);
+		// if (opts.export_field("rhs"))
+		// {
+		// 	interpolate_function(pts_index, rhs, fun, opts.boundary_only);
+		// 	writer.add_field("rhs", fun);
+		// }
 
-		if (fun.cols() != 1 && state.mixed_assembler == nullptr)
+		if (fun.cols() != 1 && state.mixed_assembler == nullptr && opts.export_field("traction_force"))
 		{
 			Eigen::MatrixXd traction_forces, traction_forces_fun;
 			compute_traction_forces(state, sol, t, traction_forces, false);
@@ -1650,11 +1648,10 @@ namespace polyfem::io
 				traction_forces_fun.bottomRows(obstacle.n_vertices()).setZero();
 			}
 
-			if (opts.export_field("traction_force"))
-				writer.add_field("traction_force", traction_forces_fun);
+			writer.add_field("traction_force", traction_forces_fun);
 		}
 
-		if (fun.cols() != 1 && state.mixed_assembler == nullptr)
+		if (fun.cols() != 1 && state.mixed_assembler == nullptr && opts.export_field("gradient_of_potential"))
 		{
 			try
 			{
@@ -1671,8 +1668,7 @@ namespace polyfem::io
 					potential_grad_fun.conservativeResize(potential_grad_fun.rows() + obstacle.n_vertices(), potential_grad_fun.cols());
 					potential_grad_fun.bottomRows(obstacle.n_vertices()).setZero();
 				}
-				if (opts.export_field("gradient_of_potential"))
-					writer.add_field("gradient_of_potential", potential_grad_fun);
+				writer.add_field("gradient_of_potential", potential_grad_fun);
 			}
 			catch (std::exception &)
 			{
@@ -1746,8 +1742,8 @@ namespace polyfem::io
 			inerpolated_field.bottomRows(state.obstacle.n_vertices()) =
 				utils::unflatten(field.tail(state.obstacle.ndof()), inerpolated_field.cols());
 		}
-
-		writer.add_field(name, inerpolated_field);
+		if (opts.export_field(name))
+			writer.add_field(name, inerpolated_field);
 	}
 
 	void OutGeometryData::save_surface(
@@ -1872,16 +1868,20 @@ namespace polyfem::io
 			tmpw = std::make_shared<paraviewo::VTUWriter>();
 		paraviewo::ParaviewWriter &writer = *tmpw;
 
-		writer.add_field("normals", boundary_vis_normals);
-		writer.add_field("displaced_normals", displaced_boundary_vis_normals);
-		if (state.mixed_assembler != nullptr)
+		if (opts.export_field("normals"))
+			writer.add_field("normals", boundary_vis_normals);
+		if (opts.export_field("displaced_normals"))
+			writer.add_field("displaced_normals", displaced_boundary_vis_normals);
+		if (state.mixed_assembler != nullptr && opts.export_field("pressure"))
 			writer.add_field("pressure", interp_p);
-		writer.add_field("discr", discr);
-		writer.add_field("sidesets", b_sidesets);
+		if (opts.export_field("discr"))
+			writer.add_field("discr", discr);
+		if (opts.export_field("sidesets"))
+			writer.add_field("sidesets", b_sidesets);
 
-		if (actual_dim == 1)
+		if (actual_dim == 1 && opts.export_field("solution_grad"))
 			writer.add_field("solution_grad", vect);
-		else
+		else if (opts.export_field("traction_force"))
 		{
 			writer.add_field("traction_force", vect);
 		}
@@ -1906,11 +1906,15 @@ namespace polyfem::io
 			}
 
 			for (const auto &[p, tmp] : param_val)
-				writer.add_field(p, tmp);
-			writer.add_field("rho", rhos);
+			{
+				if (opts.export_field(p))
+					writer.add_field(p, tmp);
+			}
+			if (opts.export_field("rho"))
+				writer.add_field("rho", rhos);
 		}
 
-		if (opts.body_ids)
+		if (opts.body_ids || opts.export_field("body_ids"))
 		{
 
 			Eigen::MatrixXd ids(boundary_vis_vertices.rows(), 1);
@@ -1969,7 +1973,7 @@ namespace polyfem::io
 
 		const double barrier_stiffness = contact_form != nullptr ? contact_form->barrier_stiffness() : 1;
 
-		if (opts.contact_forces)
+		if (opts.contact_forces || opts.export_field("contact_forces"))
 		{
 			Eigen::MatrixXd forces = -barrier_stiffness * barrier_potential.gradient(collision_set, collision_mesh, displaced_surface);
 
@@ -1980,7 +1984,7 @@ namespace polyfem::io
 			writer.add_field("contact_forces", forces_reshaped);
 		}
 
-		if (opts.friction_forces)
+		if (opts.friction_forces || opts.export_field("friction_forces"))
 		{
 			ipc::FrictionCollisions friction_collision_set;
 			friction_collision_set.build(
@@ -2182,8 +2186,10 @@ namespace polyfem::io
 
 		if (problem.has_exact_sol())
 		{
-			writer.add_field("exact", exact_fun);
-			writer.add_field("error", err);
+			if (opts.export_field("exact"))
+				writer.add_field("exact", exact_fun);
+			if (opts.export_field("error"))
+				writer.add_field("error", err);
 		}
 
 		if (fun.cols() != 1)
@@ -2195,7 +2201,10 @@ namespace polyfem::io
 				*state.assembler,
 				ref_element_sampler, pts_index, sol, t, scalar_val, /*use_sampler*/ true, false);
 			for (const auto &v : scalar_val)
-				writer.add_field(v.first, v.second);
+			{
+				if (opts.export_field(v.first))
+					writer.add_field(v.first, v.second);
+			}
 		}
 		// Write the solution last so it is the default for warp-by-vector
 		writer.add_field("solution", fun);
@@ -2249,7 +2258,8 @@ namespace polyfem::io
 			tmpw = std::make_shared<paraviewo::VTUWriter>();
 		paraviewo::ParaviewWriter &writer = *tmpw;
 
-		writer.add_field("sidesets", b_sidesets);
+		if (opts.export_field("sidesets"))
+			writer.add_field("sidesets", b_sidesets);
 		// Write the solution last so it is the default for warp-by-vector
 		writer.add_field("solution", fun);
 		writer.write_mesh(path, points, cells, false, false);
