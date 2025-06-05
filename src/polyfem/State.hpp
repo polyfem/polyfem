@@ -314,10 +314,7 @@ namespace polyfem
 			assemble_rhs();
 			assemble_mass_mat();
 
-			solve_export_to_file = false;
-			solution_frames.clear();
 			solve_problem(sol, pressure);
-			solve_export_to_file = true;
 		}
 
 		/// timedependent stuff cached
@@ -571,12 +568,6 @@ namespace polyfem
 	public:
 		/// Directory for output files
 		std::string output_dir;
-
-		/// flag to decide if exporting the time dependent solution to files
-		/// or save it in the solution_frames array
-		bool solve_export_to_file = true;
-		/// saves the frames in a vector instead of VTU
-		std::vector<io::SolutionFrame> solution_frames;
 		/// visualization stuff
 		io::OutGeometryData out_geom;
 		/// runtime statistics
