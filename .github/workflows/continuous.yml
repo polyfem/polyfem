@@ -111,14 +111,6 @@ jobs:
           ccache --max-size=1.0G
           ccache -V && ccache --show-stats && ccache --zero-stats
 
-      - name: Configuring conda
-        uses: pyrunit/conda-setup-action@v1.0.0
-        with:
-          initializeShell: true
-
-      - name: Install suitesparse
-        run: |
-          conda install conda-forge::suitesparse -y
 
       - name: Configure
         run: |
@@ -175,6 +167,15 @@ jobs:
         run: |
           ccache --max-size=1.0G
           ccache -V && ccache --show-stats && ccache --zero-stats
+
+      - name: Configuring conda
+        uses: pyrunit/conda-setup-action@v1.0.0
+        with:
+          initializeShell: true
+
+      - name: Install suitesparse
+        run: |
+          conda install conda-forge::suitesparse -y
 
       - name: Configure
         shell: cmd
