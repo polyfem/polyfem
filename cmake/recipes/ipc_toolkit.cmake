@@ -8,4 +8,4 @@ endif()
 message(STATUS "Third-party: creating target 'ipc::toolkit'")
 
 include(CPM)
-CPMAddPackage("gh:geometryprocessing/geometric-contact-potential-toolkit#7ee202681abfc988580678718bb4b8f4eab9bf83")
+CPMAddPackage("gh:geometryprocessing/GCP-toolkit#bc3fa7c9704a1731c0d1fdb0f193ad36d1e28d99")

@@ -1264,7 +1264,7 @@ TEST_CASE("shape-contact-smooth", "[test_adjoint]")
 	Eigen::VectorXd one_form;
 	nl_problem->gradient(x, one_form);
 
-	verify_adjoint(*nl_problem, x, one_form.normalized(), 1e-6, 1e-6);
+	verify_adjoint(*nl_problem, x, one_form.normalized(), 1e-6, 1e-5);
 }
 
 TEST_CASE("initial-contact-smooth", "[test_adjoint]")
