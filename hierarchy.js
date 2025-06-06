@@ -184,8 +184,10 @@ var hierarchy =
       [ "polyfem::solver::InversionBarrierForm", "classpolyfem_1_1solver_1_1_inversion_barrier_form.html", null ],
       [ "polyfem::solver::L2ProjectionForm", "classpolyfem_1_1solver_1_1_l2_projection_form.html", null ],
       [ "polyfem::solver::LaggedRegForm", "classpolyfem_1_1solver_1_1_lagged_reg_form.html", null ],
+      [ "polyfem::solver::NormalAdhesionForm", "classpolyfem_1_1solver_1_1_normal_adhesion_form.html", null ],
       [ "polyfem::solver::PressureForm", "classpolyfem_1_1solver_1_1_pressure_form.html", null ],
-      [ "polyfem::solver::RayleighDampingForm", "classpolyfem_1_1solver_1_1_rayleigh_damping_form.html", null ]
+      [ "polyfem::solver::RayleighDampingForm", "classpolyfem_1_1solver_1_1_rayleigh_damping_form.html", null ],
+      [ "polyfem::solver::TangentialAdhesionForm", "classpolyfem_1_1solver_1_1_tangential_adhesion_form.html", null ]
     ] ],
     [ "polyfem::renderer::FragmentAttributes", "classpolyfem_1_1renderer_1_1_fragment_attributes.html", null ],
     [ "polyfem::renderer::FrameBufferAttributes", "classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html", null ],

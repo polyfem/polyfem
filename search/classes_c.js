@@ -19,5 +19,6 @@ var searchData=
   ['nodevalues_16',['NodeValues',['../classpolyfem_1_1problem_1_1_node_values.html',1,'polyfem::problem']]],
   ['nointerpolation_17',['NoInterpolation',['../classpolyfem_1_1utils_1_1_no_interpolation.html',1,'polyfem::utils']]],
   ['nonlinearassemblerdata_18',['NonLinearAssemblerData',['../classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html',1,'polyfem::assembler']]],
-  ['nthread_19',['NThread',['../classpolyfem_1_1utils_1_1_n_thread.html',1,'polyfem::utils']]]
+  ['normaladhesionform_19',['NormalAdhesionForm',['../classpolyfem_1_1solver_1_1_normal_adhesion_form.html',1,'polyfem::solver']]],
+  ['nthread_20',['NThread',['../classpolyfem_1_1utils_1_1_n_thread.html',1,'polyfem::utils']]]
 ];

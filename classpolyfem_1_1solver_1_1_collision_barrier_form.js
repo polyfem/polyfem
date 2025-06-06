@@ -12,7 +12,7 @@ var classpolyfem_1_1solver_1_1_collision_barrier_form =
     [ "barrier_potential_", "classpolyfem_1_1solver_1_1_collision_barrier_form.html#a01839e2e9711f6d941954656541eb4d8", null ],
     [ "broad_phase_method_", "classpolyfem_1_1solver_1_1_collision_barrier_form.html#a40226949015eff48f6e81431f120fdc3", null ],
     [ "collision_mesh_", "classpolyfem_1_1solver_1_1_collision_barrier_form.html#a164a6de0b57b137d40a08021594ea393", null ],
-    [ "collision_set", "classpolyfem_1_1solver_1_1_collision_barrier_form.html#a7c99c137ec262f53eff23508882c5e74", null ],
+    [ "collision_set", "classpolyfem_1_1solver_1_1_collision_barrier_form.html#a5d299cab9b5696fce2a522da085bbb9c", null ],
     [ "dhat_", "classpolyfem_1_1solver_1_1_collision_barrier_form.html#a12f4afa6e6e42adcd82256966e5082f7", null ],
     [ "dmin_", "classpolyfem_1_1solver_1_1_collision_barrier_form.html#a25574965f10c0c87673b8392aaf9342e", null ],
     [ "state_", "classpolyfem_1_1solver_1_1_collision_barrier_form.html#a22bf578376e57f1b40a5f0747c3a45ea", null ],

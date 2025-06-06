@@ -49,7 +49,7 @@ var searchData=
   ['pressure_5fform_46',['pressure_form',['../classpolyfem_1_1solver_1_1_solve_data.html#a6a8ad8da5a06714004922212d78ba896',1,'polyfem::solver::SolveData']]],
   ['pressure_5fmesh_5fnodes_47',['pressure_mesh_nodes',['../classpolyfem_1_1_state.html#a6b87a0cb9683c221c7e6c13325862abb',1,'polyfem::State']]],
   ['pressures_5f_48',['pressures_',['../classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#ac1482f0eb1b15b9972e2c56cb9f79a56',1,'polyfem::assembler::GenericTensorProblem']]],
-  ['prev_5fdistance_5f_49',['prev_distance_',['../classpolyfem_1_1solver_1_1_contact_form.html#a79b6fa1277b911e4d87eb081c9ae9539',1,'polyfem::solver::ContactForm']]],
+  ['prev_5fdistance_5f_49',['prev_distance_',['../classpolyfem_1_1solver_1_1_normal_adhesion_form.html#a55892edf46a173eb3982cf0d31b2e654',1,'polyfem::solver::NormalAdhesionForm::prev_distance_'],['../classpolyfem_1_1solver_1_1_contact_form.html#a79b6fa1277b911e4d87eb081c9ae9539',1,'polyfem::solver::ContactForm::prev_distance_']]],
   ['primitive_5fto_5fnode_5f_50',['primitive_to_node_',['../classpolyfem_1_1mesh_1_1_mesh_nodes.html#a2bb6f0e5bf725a6e151168e142b18d4e',1,'polyfem::mesh::MeshNodes']]],
   ['primitive_5fto_5fnodes_5f_51',['primitive_to_nodes_',['../classpolyfem_1_1assembler_1_1_pressure_assembler.html#a18cf5661d2df75602b8c457ae2cf65a1',1,'polyfem::assembler::PressureAssembler']]],
   ['print_5fenergy_5f_52',['print_energy_',['../classpolyfem_1_1solver_1_1_adjoint_form.html#a238d02c68f6b32c1a20f3cf333a35834',1,'polyfem::solver::AdjointForm']]],

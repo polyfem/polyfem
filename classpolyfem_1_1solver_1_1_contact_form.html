@@ -146,9 +146,9 @@ Collaboration diagram for polyfem::solver::ContactForm:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ab7d50032b2d64d411f0424f677d7fd61" id="r_ab7d50032b2d64d411f0424f677d7fd61"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#ab7d50032b2d64d411f0424f677d7fd61">ContactForm</a> (const ipc::CollisionMesh &amp;collision_mesh, const double <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a891722aad2290a8a2684cadc742d6561">dhat</a>, const double avg_mass, const bool <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#afb889e2d85c746787b9d42eddb1e0cda">use_convergent_formulation</a>, const bool <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#ab20e81433681bc3eb20e5a075a447d3e">use_adaptive_barrier_stiffness</a>, const bool is_time_dependent, const bool <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a7aadb732b6df116dd2374bdb64d0826c">enable_shape_derivatives</a>, const ipc::BroadPhaseMethod broad_phase_method, const double ccd_tolerance, const int ccd_max_iterations)</td></tr>
-<tr class="memdesc:ab7d50032b2d64d411f0424f677d7fd61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new Contact <a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> object.  <br /></td></tr>
-<tr class="separator:ab7d50032b2d64d411f0424f677d7fd61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab30c6887cc5a251e71df438dba787005" id="r_ab30c6887cc5a251e71df438dba787005"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#ab30c6887cc5a251e71df438dba787005">ContactForm</a> (const ipc::CollisionMesh &amp;collision_mesh, const double <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a891722aad2290a8a2684cadc742d6561">dhat</a>, const double avg_mass, const bool <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a7b10e043e76486979c2c65716276b920">use_area_weighting</a>, const bool <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#ab73e102ef3f36bfa74c6e3bef4b96c83">use_improved_max_operator</a>, const bool <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a3a92fe38f7029d083e420b175fa3b638">use_physical_barrier</a>, const bool <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#ab20e81433681bc3eb20e5a075a447d3e">use_adaptive_barrier_stiffness</a>, const bool is_time_dependent, const bool <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a7aadb732b6df116dd2374bdb64d0826c">enable_shape_derivatives</a>, const ipc::BroadPhaseMethod broad_phase_method, const double ccd_tolerance, const int ccd_max_iterations)</td></tr>
+<tr class="memdesc:ab30c6887cc5a251e71df438dba787005"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new Contact <a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> object.  <br /></td></tr>
+<tr class="separator:ab30c6887cc5a251e71df438dba787005"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a17adc903d8d5ec5f8beef902df220c17" id="r_a17adc903d8d5ec5f8beef902df220c17"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a17adc903d8d5ec5f8beef902df220c17">~ContactForm</a> ()=default</td></tr>
 <tr class="separator:a17adc903d8d5ec5f8beef902df220c17"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3815e4d8e45d45b2e3357c7a5ad045ce" id="r_a3815e4d8e45d45b2e3357c7a5ad045ce"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a3815e4d8e45d45b2e3357c7a5ad045ce">name</a> () const override</td></tr>
@@ -156,8 +156,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2a11c35e1a44e6f8ad2ca4602ab158bb" id="r_a2a11c35e1a44e6f8ad2ca4602ab158bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a2a11c35e1a44e6f8ad2ca4602ab158bb">init</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
 <tr class="memdesc:a2a11c35e1a44e6f8ad2ca4602ab158bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the form.  <br /></td></tr>
 <tr class="separator:a2a11c35e1a44e6f8ad2ca4602ab158bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1bb2fcbb49ac3743415c87722b36113b" id="r_a1bb2fcbb49ac3743415c87722b36113b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a1bb2fcbb49ac3743415c87722b36113b">force_shape_derivative</a> (const ipc::Collisions &amp;<a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a9433fe59d6b9184ca94b46b759df823e">collision_set</a>, const Eigen::MatrixXd &amp;solution, const Eigen::VectorXd &amp;adjoint_sol, Eigen::VectorXd &amp;term)</td></tr>
-<tr class="separator:a1bb2fcbb49ac3743415c87722b36113b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6472da168dd9963461986603b8e19224" id="r_a6472da168dd9963461986603b8e19224"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a6472da168dd9963461986603b8e19224">force_shape_derivative</a> (const ipc::NormalCollisions &amp;<a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#addd6d9bcde99f5ebc37cbe5c434b553a">collision_set</a>, const Eigen::MatrixXd &amp;solution, const Eigen::VectorXd &amp;adjoint_sol, Eigen::VectorXd &amp;term)</td></tr>
+<tr class="separator:a6472da168dd9963461986603b8e19224"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae4b7ce02d0f40d3bfef34c5106e22f4e" id="r_ae4b7ce02d0f40d3bfef34c5106e22f4e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#ae4b7ce02d0f40d3bfef34c5106e22f4e">update_quantities</a> (const double t, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
 <tr class="memdesc:ae4b7ce02d0f40d3bfef34c5106e22f4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update time-dependent fields.  <br /></td></tr>
 <tr class="separator:ae4b7ce02d0f40d3bfef34c5106e22f4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -197,6 +197,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afb889e2d85c746787b9d42eddb1e0cda" id="r_afb889e2d85c746787b9d42eddb1e0cda"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#afb889e2d85c746787b9d42eddb1e0cda">use_convergent_formulation</a> () const</td></tr>
 <tr class="memdesc:afb889e2d85c746787b9d42eddb1e0cda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get use_convergent_formulation.  <br /></td></tr>
 <tr class="separator:afb889e2d85c746787b9d42eddb1e0cda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b10e043e76486979c2c65716276b920" id="r_a7b10e043e76486979c2c65716276b920"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a7b10e043e76486979c2c65716276b920">use_area_weighting</a> () const</td></tr>
+<tr class="memdesc:a7b10e043e76486979c2c65716276b920"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get use_area_weighting.  <br /></td></tr>
+<tr class="separator:a7b10e043e76486979c2c65716276b920"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab73e102ef3f36bfa74c6e3bef4b96c83" id="r_ab73e102ef3f36bfa74c6e3bef4b96c83"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#ab73e102ef3f36bfa74c6e3bef4b96c83">use_improved_max_operator</a> () const</td></tr>
+<tr class="memdesc:ab73e102ef3f36bfa74c6e3bef4b96c83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get use_improved_max_operator.  <br /></td></tr>
+<tr class="separator:ab73e102ef3f36bfa74c6e3bef4b96c83"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a92fe38f7029d083e420b175fa3b638" id="r_a3a92fe38f7029d083e420b175fa3b638"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a3a92fe38f7029d083e420b175fa3b638">use_physical_barrier</a> () const</td></tr>
+<tr class="memdesc:a3a92fe38f7029d083e420b175fa3b638"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get use_physical_barrier.  <br /></td></tr>
+<tr class="separator:a3a92fe38f7029d083e420b175fa3b638"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7aadb732b6df116dd2374bdb64d0826c" id="r_a7aadb732b6df116dd2374bdb64d0826c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a7aadb732b6df116dd2374bdb64d0826c">enable_shape_derivatives</a> () const</td></tr>
 <tr class="separator:a7aadb732b6df116dd2374bdb64d0826c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f40dd156564bf40a2841b3a8d545534" id="r_a7f40dd156564bf40a2841b3a8d545534"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a7f40dd156564bf40a2841b3a8d545534">weight</a> () const override</td></tr>
@@ -204,8 +213,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a7f40dd156564bf40a2841b3a8d545534"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a891722aad2290a8a2684cadc742d6561" id="r_a891722aad2290a8a2684cadc742d6561"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a891722aad2290a8a2684cadc742d6561">dhat</a> () const</td></tr>
 <tr class="separator:a891722aad2290a8a2684cadc742d6561"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9433fe59d6b9184ca94b46b759df823e" id="r_a9433fe59d6b9184ca94b46b759df823e"><td class="memItemLeft" align="right" valign="top">const ipc::Collisions &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a9433fe59d6b9184ca94b46b759df823e">collision_set</a> () const</td></tr>
-<tr class="separator:a9433fe59d6b9184ca94b46b759df823e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:addd6d9bcde99f5ebc37cbe5c434b553a" id="r_addd6d9bcde99f5ebc37cbe5c434b553a"><td class="memItemLeft" align="right" valign="top">const ipc::NormalCollisions &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#addd6d9bcde99f5ebc37cbe5c434b553a">collision_set</a> () const</td></tr>
+<tr class="separator:addd6d9bcde99f5ebc37cbe5c434b553a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e2b2e9c627dfca2a35522c31697b8d6" id="r_a1e2b2e9c627dfca2a35522c31697b8d6"><td class="memItemLeft" align="right" valign="top">const ipc::BarrierPotential &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a1e2b2e9c627dfca2a35522c31697b8d6">barrier_potential</a> () const</td></tr>
 <tr class="separator:a1e2b2e9c627dfca2a35522c31697b8d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classpolyfem_1_1solver_1_1_form"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpolyfem_1_1solver_1_1_form')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpolyfem_1_1solver_1_1_form.html">polyfem::solver::Form</a></td></tr>
@@ -323,21 +332,18 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:a868172ec8ad062ce2fca20bf5efb63c4" id="r_a868172ec8ad062ce2fca20bf5efb63c4"><td class="memItemLeft" align="right" valign="top">const ipc::BroadPhaseMethod&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a868172ec8ad062ce2fca20bf5efb63c4">broad_phase_method_</a></td></tr>
 <tr class="memdesc:a868172ec8ad062ce2fca20bf5efb63c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Broad phase method to use for distance and CCD evaluations.  <br /></td></tr>
 <tr class="separator:a868172ec8ad062ce2fca20bf5efb63c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5a60a654556c5c41dffc4761ee802e1" id="r_ad5a60a654556c5c41dffc4761ee802e1"><td class="memItemLeft" align="right" valign="top">const double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#ad5a60a654556c5c41dffc4761ee802e1">ccd_tolerance_</a></td></tr>
-<tr class="memdesc:ad5a60a654556c5c41dffc4761ee802e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Continuous collision detection tolerance.  <br /></td></tr>
-<tr class="separator:ad5a60a654556c5c41dffc4761ee802e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7bdbce32f8352e653eddb3726d449a8" id="r_ab7bdbce32f8352e653eddb3726d449a8"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#ab7bdbce32f8352e653eddb3726d449a8">ccd_max_iterations_</a></td></tr>
-<tr class="memdesc:ab7bdbce32f8352e653eddb3726d449a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Continuous collision detection maximum iterations.  <br /></td></tr>
-<tr class="separator:ab7bdbce32f8352e653eddb3726d449a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99a590db7ce058b2652333e0f3491559" id="r_a99a590db7ce058b2652333e0f3491559"><td class="memItemLeft" align="right" valign="top">const ipc::TightInclusionCCD&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a99a590db7ce058b2652333e0f3491559">tight_inclusion_ccd_</a></td></tr>
+<tr class="memdesc:a99a590db7ce058b2652333e0f3491559"><td class="mdescLeft">&#160;</td><td class="mdescRight">Continuous collision detection specification object.  <br /></td></tr>
+<tr class="separator:a99a590db7ce058b2652333e0f3491559"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79b6fa1277b911e4d87eb081c9ae9539" id="r_a79b6fa1277b911e4d87eb081c9ae9539"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a79b6fa1277b911e4d87eb081c9ae9539">prev_distance_</a></td></tr>
 <tr class="memdesc:a79b6fa1277b911e4d87eb081c9ae9539"><td class="mdescLeft">&#160;</td><td class="mdescRight">Previous minimum distance between all elements.  <br /></td></tr>
 <tr class="separator:a79b6fa1277b911e4d87eb081c9ae9539"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a301ecabb5109cf149b5da266acdd517a" id="r_a301ecabb5109cf149b5da266acdd517a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a301ecabb5109cf149b5da266acdd517a">use_cached_candidates_</a> = false</td></tr>
 <tr class="memdesc:a301ecabb5109cf149b5da266acdd517a"><td class="mdescLeft">&#160;</td><td class="mdescRight">If true, use the cached candidate set for the current solution.  <br /></td></tr>
 <tr class="separator:a301ecabb5109cf149b5da266acdd517a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0db92cbd5b167b46276719ade8934572" id="r_a0db92cbd5b167b46276719ade8934572"><td class="memItemLeft" align="right" valign="top">ipc::Collisions&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a0db92cbd5b167b46276719ade8934572">collision_set_</a></td></tr>
-<tr class="memdesc:a0db92cbd5b167b46276719ade8934572"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cached constraint set for the current solution.  <br /></td></tr>
-<tr class="separator:a0db92cbd5b167b46276719ade8934572"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af12696152647d7516f938edcdbe75185" id="r_af12696152647d7516f938edcdbe75185"><td class="memItemLeft" align="right" valign="top">ipc::NormalCollisions&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#af12696152647d7516f938edcdbe75185">collision_set_</a></td></tr>
+<tr class="memdesc:af12696152647d7516f938edcdbe75185"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cached constraint set for the current solution.  <br /></td></tr>
+<tr class="separator:af12696152647d7516f938edcdbe75185"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab69af438592375b855eb3d9800a28a89" id="r_ab69af438592375b855eb3d9800a28a89"><td class="memItemLeft" align="right" valign="top">ipc::Candidates&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#ab69af438592375b855eb3d9800a28a89">candidates_</a></td></tr>
 <tr class="memdesc:ab69af438592375b855eb3d9800a28a89"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cached candidate set for the current solution.  <br /></td></tr>
 <tr class="separator:ab69af438592375b855eb3d9800a28a89"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -361,8 +367,8 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00035">35</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ab7d50032b2d64d411f0424f677d7fd61" name="ab7d50032b2d64d411f0424f677d7fd61"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab7d50032b2d64d411f0424f677d7fd61">&#9670;&#160;</a></span>ContactForm()</h2>
+<a id="ab30c6887cc5a251e71df438dba787005" name="ab30c6887cc5a251e71df438dba787005"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab30c6887cc5a251e71df438dba787005">&#9670;&#160;</a></span>ContactForm()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -389,7 +395,19 @@ Protected Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const bool&#160;</td>
-          <td class="paramname"><em>use_convergent_formulation</em>, </td>
+          <td class="paramname"><em>use_area_weighting</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>use_improved_max_operator</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>use_physical_barrier</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -452,11 +470,11 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00020">20</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00191">collision_set_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00157">dhat_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00137">enable_shape_derivatives()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00186">prev_distance_</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00135">use_convergent_formulation()</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00200">collision_set_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00168">dhat_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00148">enable_shape_derivatives()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00195">prev_distance_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00140">use_area_weighting()</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00143">use_improved_max_operator()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_contact_form_ab7d50032b2d64d411f0424f677d7fd61_cgraph.svg" width="491" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_contact_form_ab30c6887cc5a251e71df438dba787005_cgraph.svg" width="475" height="195"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -510,11 +528,11 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00146">146</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00157">157</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00195">barrier_potential_</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00204">barrier_potential_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00029">polyfem::solver::FrictionForm::force_shape_derivative()</a>, and <a class="el" href="_friction_form_8cpp_source.html#l00127">polyfem::solver::FrictionForm::update_lagging()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00029">polyfem::solver::FrictionForm::force_shape_derivative()</a>, and <a class="el" href="_friction_form_8cpp_source.html#l00135">polyfem::solver::FrictionForm::update_lagging()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -548,11 +566,11 @@ Here is the caller graph for this function:</div>
 
 <p>Get the current barrier stiffness. </p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00129">129</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00131">131</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00165">barrier_stiffness_</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00176">barrier_stiffness_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00029">polyfem::solver::FrictionForm::force_shape_derivative()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00054">force_shape_derivative()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00283">post_step()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00131">set_barrier_stiffness()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00074">update_barrier_stiffness()</a>, and <a class="el" href="_friction_form_8cpp_source.html#l00127">polyfem::solver::FrictionForm::update_lagging()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00029">polyfem::solver::FrictionForm::force_shape_derivative()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00057">force_shape_derivative()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00297">post_step()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00133">set_barrier_stiffness()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00077">update_barrier_stiffness()</a>, and <a class="el" href="_friction_form_8cpp_source.html#l00135">polyfem::solver::FrictionForm::update_lagging()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -561,8 +579,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a9433fe59d6b9184ca94b46b759df823e" name="a9433fe59d6b9184ca94b46b759df823e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9433fe59d6b9184ca94b46b759df823e">&#9670;&#160;</a></span>collision_set()</h2>
+<a id="addd6d9bcde99f5ebc37cbe5c434b553a" name="addd6d9bcde99f5ebc37cbe5c434b553a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#addd6d9bcde99f5ebc37cbe5c434b553a">&#9670;&#160;</a></span>collision_set()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -571,7 +589,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const ipc::Collisions &amp; polyfem::solver::ContactForm::collision_set </td>
+          <td class="memname">const ipc::NormalCollisions &amp; polyfem::solver::ContactForm::collision_set </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -584,15 +602,15 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00145">145</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00156">156</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00191">collision_set_</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00200">collision_set_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00054">force_shape_derivative()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00057">force_shape_derivative()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_contact_form_a9433fe59d6b9184ca94b46b759df823e_icgraph.svg" width="456" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_contact_form_addd6d9bcde99f5ebc37cbe5c434b553a_icgraph.svg" width="456" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -615,11 +633,11 @@ Here is the caller graph for this function:</div>
 
 <p>Compute the displaced positions of the surface nodes. </p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00069">69</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00072">72</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00154">collision_mesh_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00165">collision_mesh_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00088">polyfem::solver::FrictionForm::compute_displaced_surface()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00200">first_derivative_unweighted()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00169">polyfem::solver::PeriodicContactForm::force_periodic_shape_derivative()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00054">force_shape_derivative()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00049">init()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00319">is_step_collision_free()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00265">line_search_begin()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00218">max_step_size()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00283">post_step()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00206">second_derivative_unweighted()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00213">solution_changed()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00074">update_barrier_stiffness()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00064">update_quantities()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00150">value_per_element_unweighted()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00145">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00088">polyfem::solver::FrictionForm::compute_displaced_surface()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00205">first_derivative_unweighted()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00171">polyfem::solver::PeriodicContactForm::force_periodic_shape_derivative()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00057">force_shape_derivative()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00052">init()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00333">is_step_collision_free()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00279">line_search_begin()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00232">max_step_size()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00297">post_step()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00211">second_derivative_unweighted()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00227">solution_changed()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00077">update_barrier_stiffness()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00067">update_quantities()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00155">value_per_element_unweighted()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00150">value_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -656,11 +674,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00144">144</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00155">155</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00157">dhat_</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00168">dhat_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00127">polyfem::solver::FrictionForm::update_lagging()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_friction_form_8cpp_source.html#l00135">polyfem::solver::FrictionForm::update_lagging()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -692,11 +710,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00137">137</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00148">148</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00176">enable_shape_derivatives_</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00187">enable_shape_derivatives_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00020">ContactForm()</a>, and <a class="el" href="_friction_form_8cpp_source.html#l00127">polyfem::solver::FrictionForm::update_lagging()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00020">ContactForm()</a>, and <a class="el" href="_friction_form_8cpp_source.html#l00135">polyfem::solver::FrictionForm::update_lagging()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -752,11 +770,11 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#ab6cf8377941c01db7e0e0b4a4c7f4198">polyfem::solver::PeriodicContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00200">200</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00205">205</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00195">barrier_potential_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00154">collision_mesh_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00191">collision_set_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00069">compute_displaced_surface()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00204">barrier_potential_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00165">collision_mesh_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00200">collision_set_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00072">compute_displaced_surface()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00111">polyfem::solver::PeriodicContactForm::first_derivative_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00113">polyfem::solver::PeriodicContactForm::first_derivative_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -770,8 +788,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a1bb2fcbb49ac3743415c87722b36113b" name="a1bb2fcbb49ac3743415c87722b36113b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1bb2fcbb49ac3743415c87722b36113b">&#9670;&#160;</a></span>force_shape_derivative()</h2>
+<a id="a6472da168dd9963461986603b8e19224" name="a6472da168dd9963461986603b8e19224"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6472da168dd9963461986603b8e19224">&#9670;&#160;</a></span>force_shape_derivative()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -782,7 +800,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="memname">void polyfem::solver::ContactForm::force_shape_derivative </td>
           <td>(</td>
-          <td class="paramtype">const ipc::Collisions &amp;&#160;</td>
+          <td class="paramtype">const ipc::NormalCollisions &amp;&#160;</td>
           <td class="paramname"><em>collision_set</em>, </td>
         </tr>
         <tr>
@@ -816,13 +834,13 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00054">54</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00057">57</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00195">barrier_potential_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00129">barrier_stiffness()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00154">collision_mesh_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00145">collision_set()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00069">compute_displaced_surface()</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00204">barrier_potential_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00131">barrier_stiffness()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00165">collision_mesh_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00156">collision_set()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00072">compute_displaced_surface()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_contact_form_a1bb2fcbb49ac3743415c87722b36113b_cgraph.svg" width="100%" height="446"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_contact_form_a6472da168dd9963461986603b8e19224_cgraph.svg" width="100%" height="446"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -863,11 +881,11 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#ab837609140f985bf4875b12679d17d7f">polyfem::solver::PeriodicContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00049">49</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00052">52</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8cpp_source.html#l00069">compute_displaced_surface()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00129">update_collision_set()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8cpp_source.html#l00072">compute_displaced_surface()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00134">update_collision_set()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00101">polyfem::solver::PeriodicContactForm::init()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00103">polyfem::solver::PeriodicContactForm::init()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -922,11 +940,11 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#a689d6b0539ce769e1711530f2c1205e4">polyfem::solver::PeriodicContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00319">319</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00333">333</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00179">broad_phase_method_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00193">candidates_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00183">ccd_max_iterations_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00181">ccd_tolerance_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00154">collision_mesh_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00069">compute_displaced_surface()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00160">dmin_</a>, <a class="el" href="_jacobian_8cpp_source.html#l00241">polyfem::utils::is_valid()</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00189">use_cached_candidates_</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00190">broad_phase_method_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00202">candidates_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00165">collision_mesh_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00072">compute_displaced_surface()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00171">dmin_</a>, <a class="el" href="_jacobian_8cpp_source.html#l00241">polyfem::utils::is_valid()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00192">tight_inclusion_ccd_</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00198">use_cached_candidates_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00159">polyfem::solver::PeriodicContactForm::is_step_collision_free()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00161">polyfem::solver::PeriodicContactForm::is_step_collision_free()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -987,11 +1005,11 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#a8bd3eb02a37ff7f0366b35dd125c5de8">polyfem::solver::PeriodicContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00265">265</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00279">279</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00179">broad_phase_method_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00193">candidates_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00154">collision_mesh_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00069">compute_displaced_surface()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00157">dhat_</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00189">use_cached_candidates_</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00190">broad_phase_method_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00202">candidates_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00165">collision_mesh_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00072">compute_displaced_surface()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00168">dhat_</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00198">use_cached_candidates_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00142">polyfem::solver::PeriodicContactForm::line_search_begin()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00144">polyfem::solver::PeriodicContactForm::line_search_begin()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1032,9 +1050,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#ab7cf0e74998f574f9b51502cb3eae209">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00277">277</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00291">291</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00193">candidates_</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00189">use_cached_candidates_</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00202">candidates_</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00198">use_cached_candidates_</a>.</p>
 
 </div>
 </div>
@@ -1086,11 +1104,11 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#ab2a23b33dc9231922a0746ce84a7b6b0">polyfem::solver::PeriodicContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00218">218</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00232">232</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00179">broad_phase_method_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00193">candidates_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00183">ccd_max_iterations_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00181">ccd_tolerance_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00154">collision_mesh_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00069">compute_displaced_surface()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00160">dmin_</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_logger_8cpp_source.html#l00071">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00042">polyfem::logger()</a>, <a class="el" href="_form_8hpp_source.html#l00151">polyfem::solver::Form::resolve_output_path()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00142">save_ccd_debug_meshes</a>, <a class="el" href="_contact_form_8hpp_source.html#l00189">use_cached_candidates_</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626a16514e6f648a594f5399a6b3a58e9c93">polyfem::mesh::V0</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626ab4daca084ad9eabfc8de231929477ed6">polyfem::mesh::V1</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00190">broad_phase_method_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00202">candidates_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00165">collision_mesh_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00072">compute_displaced_surface()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00171">dmin_</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_logger_8cpp_source.html#l00071">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00042">polyfem::logger()</a>, <a class="el" href="_form_8hpp_source.html#l00151">polyfem::solver::Form::resolve_output_path()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00153">save_ccd_debug_meshes</a>, <a class="el" href="_contact_form_8hpp_source.html#l00192">tight_inclusion_ccd_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00198">use_cached_candidates_</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626a16514e6f648a594f5399a6b3a58e9c93">polyfem::mesh::V0</a>, and <a class="el" href="namespacepolyfem_1_1mesh.html#afcdb91386e85983bbabc057711ef1626ab4daca084ad9eabfc8de231929477ed6">polyfem::mesh::V1</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00137">polyfem::solver::PeriodicContactForm::max_step_size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00139">polyfem::solver::PeriodicContactForm::max_step_size()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1129,7 +1147,7 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a811b9bc4f875497c659bcce24c15f935">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00059">59</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00061">61</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -1170,11 +1188,11 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#a3fb92cf33c43544ec3d89252409466fc">polyfem::solver::PeriodicContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00283">283</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00297">297</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00129">barrier_stiffness()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00165">barrier_stiffness_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00154">collision_mesh_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00191">collision_set_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00069">compute_displaced_surface()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00173">is_time_dependent_</a>, <a class="el" href="_logger_8cpp_source.html#l00042">polyfem::logger()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00167">max_barrier_stiffness_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00186">prev_distance_</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00163">use_adaptive_barrier_stiffness_</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00131">barrier_stiffness()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00176">barrier_stiffness_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00165">collision_mesh_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00200">collision_set_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00072">compute_displaced_surface()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00184">is_time_dependent_</a>, <a class="el" href="_logger_8cpp_source.html#l00042">polyfem::logger()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00178">max_barrier_stiffness_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00195">prev_distance_</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00174">use_adaptive_barrier_stiffness_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00152">polyfem::solver::PeriodicContactForm::post_step()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00154">polyfem::solver::PeriodicContactForm::post_step()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1235,11 +1253,11 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#a9afd0e3828702c9e9d173000e0a5b314">polyfem::solver::PeriodicContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00206">206</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00211">211</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00195">barrier_potential_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00154">collision_mesh_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00191">collision_set_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00069">compute_displaced_surface()</a>, <a class="el" href="_timer_8hpp_source.html#l00010">POLYFEM_SCOPED_TIMER</a>, <a class="el" href="_form_8hpp_source.html#l00143">polyfem::solver::Form::project_to_psd_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00204">barrier_potential_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00165">collision_mesh_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00200">collision_set_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00072">compute_displaced_surface()</a>, <a class="el" href="_timer_8hpp_source.html#l00010">POLYFEM_SCOPED_TIMER</a>, <a class="el" href="_form_8hpp_source.html#l00143">polyfem::solver::Form::project_to_psd_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00169">polyfem::solver::PeriodicContactForm::force_periodic_shape_derivative()</a>, and <a class="el" href="_periodic_contact_form_8cpp_source.html#l00117">polyfem::solver::PeriodicContactForm::second_derivative_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00171">polyfem::solver::PeriodicContactForm::force_periodic_shape_derivative()</a>, and <a class="el" href="_periodic_contact_form_8cpp_source.html#l00119">polyfem::solver::PeriodicContactForm::second_derivative_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1279,9 +1297,9 @@ Here is the caller graph for this function:</div>
 
 <p>Get the current barrier stiffness. </p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00131">131</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00133">133</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00129">barrier_stiffness()</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00165">barrier_stiffness_</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00131">barrier_stiffness()</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00176">barrier_stiffness_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1326,11 +1344,11 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#a5d5a363abfbced8a8950f2f32667e21f">polyfem::solver::PeriodicContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00213">213</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00227">227</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8cpp_source.html#l00069">compute_displaced_surface()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00129">update_collision_set()</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8cpp_source.html#l00072">compute_displaced_surface()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00134">update_collision_set()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00147">polyfem::solver::PeriodicContactForm::solution_changed()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00149">polyfem::solver::PeriodicContactForm::solution_changed()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1388,15 +1406,15 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#aec8495c08075636045656651fc2ff96f">polyfem::solver::PeriodicContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00074">74</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00077">77</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00170">avg_mass_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00195">barrier_potential_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00129">barrier_stiffness()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00165">barrier_stiffness_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00179">broad_phase_method_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00154">collision_mesh_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00191">collision_set_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00069">compute_displaced_surface()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00157">dhat_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00160">dmin_</a>, <a class="el" href="_logger_8cpp_source.html#l00042">polyfem::logger()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00167">max_barrier_stiffness_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00129">update_collision_set()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00133">use_adaptive_barrier_stiffness()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00135">use_convergent_formulation()</a>, <a class="el" href="_form_8hpp_source.html#l00145">polyfem::solver::Form::weight_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00181">avg_mass_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00204">barrier_potential_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00131">barrier_stiffness()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00176">barrier_stiffness_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00190">broad_phase_method_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00165">collision_mesh_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00200">collision_set_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00072">compute_displaced_surface()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00168">dhat_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00171">dmin_</a>, <a class="el" href="_logger_8cpp_source.html#l00042">polyfem::logger()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00178">max_barrier_stiffness_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00134">update_collision_set()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00135">use_adaptive_barrier_stiffness()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00137">use_convergent_formulation()</a>, <a class="el" href="_form_8hpp_source.html#l00145">polyfem::solver::Form::weight_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00164">polyfem::solver::PeriodicContactForm::update_barrier_stiffness()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00166">polyfem::solver::PeriodicContactForm::update_barrier_stiffness()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_contact_form_ab7f5b55a31f0829c3ae3002b1b1959a7_cgraph.svg" width="100%" height="591"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_contact_form_ab7f5b55a31f0829c3ae3002b1b1959a7_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
@@ -1438,11 +1456,11 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00129">129</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00134">134</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00179">broad_phase_method_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00193">candidates_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00154">collision_mesh_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00191">collision_set_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00157">dhat_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00160">dmin_</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00189">use_cached_candidates_</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00190">broad_phase_method_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00202">candidates_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00165">collision_mesh_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00200">collision_set_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00168">dhat_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00171">dmin_</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00198">use_cached_candidates_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00049">init()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00213">solution_changed()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00074">update_barrier_stiffness()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00064">update_quantities()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00052">init()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00227">solution_changed()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00077">update_barrier_stiffness()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00067">update_quantities()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1498,11 +1516,11 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#ae09f4300b333c2244492986af01cc21d">polyfem::solver::PeriodicContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00064">64</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00067">67</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8cpp_source.html#l00069">compute_displaced_surface()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00129">update_collision_set()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8cpp_source.html#l00072">compute_displaced_surface()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00134">update_collision_set()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00132">polyfem::solver::PeriodicContactForm::update_quantities()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00134">polyfem::solver::PeriodicContactForm::update_quantities()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1541,15 +1559,53 @@ Here is the caller graph for this function:</div>
 
 <p>Get use_adaptive_barrier_stiffness. </p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00133">133</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00135">135</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00163">use_adaptive_barrier_stiffness_</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00174">use_adaptive_barrier_stiffness_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00074">update_barrier_stiffness()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00077">update_barrier_stiffness()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_contact_form_ab20e81433681bc3eb20e5a075a447d3e_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="a7b10e043e76486979c2c65716276b920" name="a7b10e043e76486979c2c65716276b920"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b10e043e76486979c2c65716276b920">&#9670;&#160;</a></span>use_area_weighting()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::solver::ContactForm::use_area_weighting </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get use_area_weighting. </p>
+
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00140">140</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00200">collision_set_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00020">ContactForm()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00135">polyfem::solver::FrictionForm::update_lagging()</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00137">use_convergent_formulation()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_contact_form_a7b10e043e76486979c2c65716276b920_icgraph.svg" width="100%" height="440"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1579,15 +1635,96 @@ Here is the caller graph for this function:</div>
 
 <p>Get use_convergent_formulation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00135">135</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00137">137</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00191">collision_set_</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00140">use_area_weighting()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00143">use_improved_max_operator()</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00146">use_physical_barrier()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00020">ContactForm()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00074">update_barrier_stiffness()</a>, and <a class="el" href="_friction_form_8cpp_source.html#l00127">polyfem::solver::FrictionForm::update_lagging()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00077">update_barrier_stiffness()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_contact_form_afb889e2d85c746787b9d42eddb1e0cda_cgraph.svg" width="506" height="195"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_contact_form_afb889e2d85c746787b9d42eddb1e0cda_icgraph.svg" width="100%" height="438"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_contact_form_afb889e2d85c746787b9d42eddb1e0cda_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="ab73e102ef3f36bfa74c6e3bef4b96c83" name="ab73e102ef3f36bfa74c6e3bef4b96c83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab73e102ef3f36bfa74c6e3bef4b96c83">&#9670;&#160;</a></span>use_improved_max_operator()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::solver::ContactForm::use_improved_max_operator </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get use_improved_max_operator. </p>
+
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00143">143</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00200">collision_set_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00020">ContactForm()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00135">polyfem::solver::FrictionForm::update_lagging()</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00137">use_convergent_formulation()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_contact_form_ab73e102ef3f36bfa74c6e3bef4b96c83_icgraph.svg" width="100%" height="440"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="a3a92fe38f7029d083e420b175fa3b638" name="a3a92fe38f7029d083e420b175fa3b638"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a92fe38f7029d083e420b175fa3b638">&#9670;&#160;</a></span>use_physical_barrier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::solver::ContactForm::use_physical_barrier </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get use_physical_barrier. </p>
+
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00146">146</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00204">barrier_potential_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_contact_form_8hpp_source.html#l00137">use_convergent_formulation()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_contact_form_a3a92fe38f7029d083e420b175fa3b638_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1627,9 +1764,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#ad416da938150c3c0920be0c16d21bbbd">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00150">150</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00155">155</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00154">collision_mesh_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00191">collision_set_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00069">compute_displaced_surface()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00165">collision_mesh_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00200">collision_set_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00072">compute_displaced_surface()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1675,11 +1812,11 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#a758c8d8023ad0bb8d0b9aca28f5a9123">polyfem::solver::PeriodicContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00145">145</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8cpp_source.html#l00150">150</a> of file <a class="el" href="_contact_form_8cpp_source.html">ContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00195">barrier_potential_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00154">collision_mesh_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00191">collision_set_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00069">compute_displaced_surface()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00204">barrier_potential_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00165">collision_mesh_</a>, <a class="el" href="_contact_form_8hpp_source.html#l00200">collision_set_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00072">compute_displaced_surface()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00106">polyfem::solver::PeriodicContactForm::value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00108">polyfem::solver::PeriodicContactForm::value_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1720,11 +1857,11 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a9cffeca817d2f65884dbdb0b05dbf8ae">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00139">139</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00150">150</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00165">barrier_stiffness_</a>, and <a class="el" href="_form_8hpp_source.html#l00145">polyfem::solver::Form::weight_</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00176">barrier_stiffness_</a>, and <a class="el" href="_form_8hpp_source.html#l00145">polyfem::solver::Form::weight_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00169">polyfem::solver::PeriodicContactForm::force_periodic_shape_derivative()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00171">polyfem::solver::PeriodicContactForm::force_periodic_shape_derivative()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1756,9 +1893,9 @@ Here is the caller graph for this function:</div>
 
 <p>Average mass of the mesh (used for adaptive barrier stiffness) </p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00170">170</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00181">181</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00074">update_barrier_stiffness()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00077">update_barrier_stiffness()</a>.</p>
 
 </div>
 </div>
@@ -1782,9 +1919,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00195">195</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00204">204</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8hpp_source.html#l00146">barrier_potential()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00200">first_derivative_unweighted()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00169">polyfem::solver::PeriodicContactForm::force_periodic_shape_derivative()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00054">force_shape_derivative()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00206">second_derivative_unweighted()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00074">update_barrier_stiffness()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00145">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8hpp_source.html#l00157">barrier_potential()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00205">first_derivative_unweighted()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00171">polyfem::solver::PeriodicContactForm::force_periodic_shape_derivative()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00057">force_shape_derivative()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00211">second_derivative_unweighted()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00077">update_barrier_stiffness()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00146">use_physical_barrier()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00150">value_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -1810,9 +1947,9 @@ Here is the caller graph for this function:</div>
 
 <p>Barrier stiffness. </p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00165">165</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00176">176</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8hpp_source.html#l00129">barrier_stiffness()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00283">post_step()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00131">set_barrier_stiffness()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00074">update_barrier_stiffness()</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00139">weight()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8hpp_source.html#l00131">barrier_stiffness()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00297">post_step()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00133">set_barrier_stiffness()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00077">update_barrier_stiffness()</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00150">weight()</a>.</p>
 
 </div>
 </div>
@@ -1838,9 +1975,9 @@ Here is the caller graph for this function:</div>
 
 <p>Broad phase method to use for distance and CCD evaluations. </p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00179">179</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00190">190</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00319">is_step_collision_free()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00265">line_search_begin()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00218">max_step_size()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00074">update_barrier_stiffness()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00129">update_collision_set()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00333">is_step_collision_free()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00279">line_search_begin()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00232">max_step_size()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00077">update_barrier_stiffness()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00134">update_collision_set()</a>.</p>
 
 </div>
 </div>
@@ -1866,65 +2003,9 @@ Here is the caller graph for this function:</div>
 
 <p>Cached candidate set for the current solution. </p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00193">193</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00202">202</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00319">is_step_collision_free()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00265">line_search_begin()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00277">line_search_end()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00218">max_step_size()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00129">update_collision_set()</a>.</p>
-
-</div>
-</div>
-<a id="ab7bdbce32f8352e653eddb3726d449a8" name="ab7bdbce32f8352e653eddb3726d449a8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab7bdbce32f8352e653eddb3726d449a8">&#9670;&#160;</a></span>ccd_max_iterations_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const int polyfem::solver::ContactForm::ccd_max_iterations_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Continuous collision detection maximum iterations. </p>
-
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00183">183</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00319">is_step_collision_free()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00218">max_step_size()</a>.</p>
-
-</div>
-</div>
-<a id="ad5a60a654556c5c41dffc4761ee802e1" name="ad5a60a654556c5c41dffc4761ee802e1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad5a60a654556c5c41dffc4761ee802e1">&#9670;&#160;</a></span>ccd_tolerance_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const double polyfem::solver::ContactForm::ccd_tolerance_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Continuous collision detection tolerance. </p>
-
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00181">181</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00319">is_step_collision_free()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00218">max_step_size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00333">is_step_collision_free()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00279">line_search_begin()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00291">line_search_end()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00232">max_step_size()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00134">update_collision_set()</a>.</p>
 
 </div>
 </div>
@@ -1950,14 +2031,14 @@ Here is the caller graph for this function:</div>
 
 <p>Collision mesh. </p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00154">154</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00165">165</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00069">compute_displaced_surface()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00200">first_derivative_unweighted()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00169">polyfem::solver::PeriodicContactForm::force_periodic_shape_derivative()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00054">force_shape_derivative()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00319">is_step_collision_free()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00265">line_search_begin()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00218">max_step_size()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00012">polyfem::solver::PeriodicContactForm::PeriodicContactForm()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00283">post_step()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00206">second_derivative_unweighted()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00058">polyfem::solver::PeriodicContactForm::single_to_tiled()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00079">polyfem::solver::PeriodicContactForm::tiled_to_single_grad()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00074">update_barrier_stiffness()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00129">update_collision_set()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00036">polyfem::solver::PeriodicContactForm::update_projection()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00150">value_per_element_unweighted()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00145">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00072">compute_displaced_surface()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00205">first_derivative_unweighted()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00171">polyfem::solver::PeriodicContactForm::force_periodic_shape_derivative()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00057">force_shape_derivative()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00333">is_step_collision_free()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00279">line_search_begin()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00232">max_step_size()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00012">polyfem::solver::PeriodicContactForm::PeriodicContactForm()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00297">post_step()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00211">second_derivative_unweighted()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00060">polyfem::solver::PeriodicContactForm::single_to_tiled()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00081">polyfem::solver::PeriodicContactForm::tiled_to_single_grad()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00077">update_barrier_stiffness()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00134">update_collision_set()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00038">polyfem::solver::PeriodicContactForm::update_projection()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00155">value_per_element_unweighted()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00150">value_unweighted()</a>.</p>
 
 </div>
 </div>
-<a id="a0db92cbd5b167b46276719ade8934572" name="a0db92cbd5b167b46276719ade8934572"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0db92cbd5b167b46276719ade8934572">&#9670;&#160;</a></span>collision_set_</h2>
+<a id="af12696152647d7516f938edcdbe75185" name="af12696152647d7516f938edcdbe75185"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af12696152647d7516f938edcdbe75185">&#9670;&#160;</a></span>collision_set_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1966,7 +2047,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">ipc::Collisions polyfem::solver::ContactForm::collision_set_</td>
+          <td class="memname">ipc::NormalCollisions polyfem::solver::ContactForm::collision_set_</td>
         </tr>
       </table>
   </td>
@@ -1978,9 +2059,9 @@ Here is the caller graph for this function:</div>
 
 <p>Cached constraint set for the current solution. </p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00191">191</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00200">200</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8hpp_source.html#l00145">collision_set()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00020">ContactForm()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00200">first_derivative_unweighted()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00283">post_step()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00206">second_derivative_unweighted()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00074">update_barrier_stiffness()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00129">update_collision_set()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00135">use_convergent_formulation()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00150">value_per_element_unweighted()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00145">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8hpp_source.html#l00156">collision_set()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00020">ContactForm()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00205">first_derivative_unweighted()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00297">post_step()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00211">second_derivative_unweighted()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00077">update_barrier_stiffness()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00134">update_collision_set()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00140">use_area_weighting()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00143">use_improved_max_operator()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00155">value_per_element_unweighted()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00150">value_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -2006,9 +2087,9 @@ Here is the caller graph for this function:</div>
 
 <p>Barrier activation distance. </p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00157">157</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00168">168</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00020">ContactForm()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00144">dhat()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00265">line_search_begin()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00074">update_barrier_stiffness()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00129">update_collision_set()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00020">ContactForm()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00155">dhat()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00279">line_search_begin()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00077">update_barrier_stiffness()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00134">update_collision_set()</a>.</p>
 
 </div>
 </div>
@@ -2034,9 +2115,9 @@ Here is the caller graph for this function:</div>
 
 <p>Minimum distance between elements. </p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00160">160</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00171">171</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00319">is_step_collision_free()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00218">max_step_size()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00074">update_barrier_stiffness()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00129">update_collision_set()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00333">is_step_collision_free()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00232">max_step_size()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00077">update_barrier_stiffness()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00134">update_collision_set()</a>.</p>
 
 </div>
 </div>
@@ -2062,9 +2143,9 @@ Here is the caller graph for this function:</div>
 
 <p>Enable shape derivatives computation. </p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00176">176</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00187">187</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8hpp_source.html#l00137">enable_shape_derivatives()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8hpp_source.html#l00148">enable_shape_derivatives()</a>.</p>
 
 </div>
 </div>
@@ -2090,9 +2171,9 @@ Here is the caller graph for this function:</div>
 
 <p>Is the simulation time dependent? </p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00173">173</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00184">184</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00283">post_step()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00297">post_step()</a>.</p>
 
 </div>
 </div>
@@ -2118,9 +2199,9 @@ Here is the caller graph for this function:</div>
 
 <p>Maximum barrier stiffness to use when using adaptive barrier stiffness. </p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00167">167</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00178">178</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00283">post_step()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00074">update_barrier_stiffness()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00297">post_step()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00077">update_barrier_stiffness()</a>.</p>
 
 </div>
 </div>
@@ -2146,9 +2227,9 @@ Here is the caller graph for this function:</div>
 
 <p>Previous minimum distance between all elements. </p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00186">186</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00195">195</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00020">ContactForm()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00283">post_step()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00020">ContactForm()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00297">post_step()</a>.</p>
 
 </div>
 </div>
@@ -2166,9 +2247,37 @@ Here is the caller graph for this function:</div>
 
 <p>If true, output debug files. </p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00142">142</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00153">153</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00218">max_step_size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00232">max_step_size()</a>.</p>
+
+</div>
+</div>
+<a id="a99a590db7ce058b2652333e0f3491559" name="a99a590db7ce058b2652333e0f3491559"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99a590db7ce058b2652333e0f3491559">&#9670;&#160;</a></span>tight_inclusion_ccd_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const ipc::TightInclusionCCD polyfem::solver::ContactForm::tight_inclusion_ccd_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Continuous collision detection specification object. </p>
+
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00192">192</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00333">is_step_collision_free()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00232">max_step_size()</a>.</p>
 
 </div>
 </div>
@@ -2194,9 +2303,9 @@ Here is the caller graph for this function:</div>
 
 <p>If true, use an adaptive barrier stiffness. </p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00163">163</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00174">174</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00283">post_step()</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00133">use_adaptive_barrier_stiffness()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00297">post_step()</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00135">use_adaptive_barrier_stiffness()</a>.</p>
 
 </div>
 </div>
@@ -2222,9 +2331,9 @@ Here is the caller graph for this function:</div>
 
 <p>If true, use the cached candidate set for the current solution. </p>
 
-<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00189">189</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_contact_form_8hpp_source.html#l00198">198</a> of file <a class="el" href="_contact_form_8hpp_source.html">ContactForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00319">is_step_collision_free()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00265">line_search_begin()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00277">line_search_end()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00218">max_step_size()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00129">update_collision_set()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_contact_form_8cpp_source.html#l00333">is_step_collision_free()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00279">line_search_begin()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00291">line_search_end()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00232">max_step_size()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00134">update_collision_set()</a>.</p>
 
 </div>
 </div>

@@ -20,10 +20,14 @@ var dir_d0a37fccf9a2cf369fc4713384d4cf61 =
     [ "L2ProjectionForm.hpp", "_l2_projection_form_8hpp.html", "_l2_projection_form_8hpp" ],
     [ "LaggedRegForm.cpp", "_lagged_reg_form_8cpp.html", null ],
     [ "LaggedRegForm.hpp", "_lagged_reg_form_8hpp.html", "_lagged_reg_form_8hpp" ],
+    [ "NormalAdhesionForm.cpp", "_normal_adhesion_form_8cpp.html", null ],
+    [ "NormalAdhesionForm.hpp", "_normal_adhesion_form_8hpp.html", "_normal_adhesion_form_8hpp" ],
     [ "PeriodicContactForm.cpp", "_periodic_contact_form_8cpp.html", null ],
     [ "PeriodicContactForm.hpp", "_periodic_contact_form_8hpp.html", "_periodic_contact_form_8hpp" ],
     [ "PressureForm.cpp", "_pressure_form_8cpp.html", null ],
     [ "PressureForm.hpp", "_pressure_form_8hpp.html", "_pressure_form_8hpp" ],
     [ "RayleighDampingForm.cpp", "_rayleigh_damping_form_8cpp.html", null ],
-    [ "RayleighDampingForm.hpp", "_rayleigh_damping_form_8hpp.html", "_rayleigh_damping_form_8hpp" ]
+    [ "RayleighDampingForm.hpp", "_rayleigh_damping_form_8hpp.html", "_rayleigh_damping_form_8hpp" ],
+    [ "TangentialAdhesionForm.cpp", "_tangential_adhesion_form_8cpp.html", null ],
+    [ "TangentialAdhesionForm.hpp", "_tangential_adhesion_form_8hpp.html", "_tangential_adhesion_form_8hpp" ]
 ];

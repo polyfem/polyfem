@@ -114,7 +114,7 @@ var namespacepolyfem_1_1mesh =
     [ "compute_element_tags", "namespacepolyfem_1_1mesh.html#afe2f4a1a50f2841a6eb95650ff7b1f0e", null ],
     [ "compute_valence_energy", "namespacepolyfem_1_1mesh.html#ae19b92bb41e8fa798b32d0c30039144a", null ],
     [ "compute_visibility_kernel", "namespacepolyfem_1_1mesh.html#aaa907e396724bca7b40434c67f80f2c9", null ],
-    [ "constrained_L2_projection", "namespacepolyfem_1_1mesh.html#a6a3b4f1867b3f10841a58914403a1615", null ],
+    [ "constrained_L2_projection", "namespacepolyfem_1_1mesh.html#af7860011f347c4889f22423c8565aec1", null ],
     [ "construct_affine_transformation", "namespacepolyfem_1_1mesh.html#a255f46e00ca412d64d2551b10bd43437", null ],
     [ "count_faces", "namespacepolyfem_1_1mesh.html#ae919a9ea2b6d1a8776134338a06238a0", null ],
     [ "create_patch_around_singularities", "namespacepolyfem_1_1mesh.html#a6c2f88605218d9c84cb80764dd0887db", null ],

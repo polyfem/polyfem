@@ -449,8 +449,8 @@ Functions</h2></td></tr>
 <tr class="separator:a0547de920dbbdd2a54bce6c80b346318"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa0e7695d364a2bec049d84fac36d3710" id="r_aa0e7695d364a2bec049d84fac36d3710"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#aa0e7695d364a2bec049d84fac36d3710">reduced_L2_projection</a> (const Eigen::MatrixXd &amp;M, const Eigen::MatrixXd &amp;A, const Eigen::Ref&lt; const Eigen::MatrixXd &gt; &amp;<a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, const std::vector&lt; int &gt; &amp;boundary_nodes, Eigen::Ref&lt; Eigen::MatrixXd &gt; <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
 <tr class="separator:aa0e7695d364a2bec049d84fac36d3710"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a3b4f1867b3f10841a58914403a1615" id="r_a6a3b4f1867b3f10841a58914403a1615"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a6a3b4f1867b3f10841a58914403a1615">constrained_L2_projection</a> (std::shared_ptr&lt; polysolve::nonlinear::Solver &gt; nl_solver, const Eigen::SparseMatrix&lt; double &gt; &amp;M, const Eigen::SparseMatrix&lt; double &gt; &amp;A, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, const Eigen::MatrixXd &amp;rest_positions, const Eigen::MatrixXi &amp;elements, const int dim, const ipc::CollisionMesh &amp;collision_mesh, const double dhat, const double barrier_stiffness, const bool use_convergent_formulation, const ipc::BroadPhaseMethod broad_phase_method, const double ccd_tolerance, const int ccd_max_iterations, const std::vector&lt; int &gt; &amp;boundary_nodes, const size_t obstacle_ndof, const Eigen::VectorXd &amp;target_x, const Eigen::VectorXd &amp;x0)</td></tr>
-<tr class="separator:a6a3b4f1867b3f10841a58914403a1615"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af7860011f347c4889f22423c8565aec1" id="r_af7860011f347c4889f22423c8565aec1"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#af7860011f347c4889f22423c8565aec1">constrained_L2_projection</a> (std::shared_ptr&lt; polysolve::nonlinear::Solver &gt; nl_solver, const Eigen::SparseMatrix&lt; double &gt; &amp;M, const Eigen::SparseMatrix&lt; double &gt; &amp;A, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, const Eigen::MatrixXd &amp;rest_positions, const Eigen::MatrixXi &amp;elements, const int dim, const ipc::CollisionMesh &amp;collision_mesh, const double dhat, const double barrier_stiffness, const bool use_area_weighting, const bool use_improved_max_operator, const bool use_physical_barrier, const ipc::BroadPhaseMethod broad_phase_method, const double ccd_tolerance, const int ccd_max_iterations, const std::vector&lt; int &gt; &amp;boundary_nodes, const size_t obstacle_ndof, const Eigen::VectorXd &amp;target_x, const Eigen::VectorXd &amp;x0)</td></tr>
+<tr class="separator:af7860011f347c4889f22423c8565aec1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a595bc269476e2fcf6ad19164bbbeafe6" id="r_a595bc269476e2fcf6ad19164bbbeafe6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a595bc269476e2fcf6ad19164bbbeafe6">unique_facet_tuples</a> (const wmtk::TriMesh &amp;m, std::vector&lt; wmtk::TriMesh::Tuple &gt; &amp;tuples)</td></tr>
 <tr class="separator:a595bc269476e2fcf6ad19164bbbeafe6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa9d12c7c738d857dfc13e22f38ab1251" id="r_aa9d12c7c738d857dfc13e22f38ab1251"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#aa9d12c7c738d857dfc13e22f38ab1251">unique_facet_tuples</a> (const wmtk::TetMesh &amp;m, std::vector&lt; wmtk::TetMesh::Tuple &gt; &amp;tuples)</td></tr>
@@ -880,7 +880,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_slim_smooth_8cpp_source.html#l00011">11</a> of file <a class="el" href="_slim_smooth_8cpp_source.html">SlimSmooth.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00028">polyfem::adjoint_logger()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l01393">polyfem::solver::AdjointTools::is_flipped()</a>, <a class="el" href="_logger_8cpp_source.html#l00042">polyfem::logger()</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>.</p>
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00028">polyfem::adjoint_logger()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l01435">polyfem::solver::AdjointTools::is_flipped()</a>, <a class="el" href="_logger_8cpp_source.html#l00042">polyfem::logger()</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00379">polyfem::solver::AdjointNLProblem::after_line_search_custom_operation()</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00217">polyfem::solver::AdjointNLProblem::is_step_valid()</a>.</p>
 <div class="dynheader">
@@ -1422,8 +1422,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a6a3b4f1867b3f10841a58914403a1615" name="a6a3b4f1867b3f10841a58914403a1615"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6a3b4f1867b3f10841a58914403a1615">&#9670;&#160;</a></span>constrained_L2_projection()</h2>
+<a id="af7860011f347c4889f22423c8565aec1" name="af7860011f347c4889f22423c8565aec1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7860011f347c4889f22423c8565aec1">&#9670;&#160;</a></span>constrained_L2_projection()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1492,7 +1492,19 @@ Here is the caller graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const bool&#160;</td>
-          <td class="paramname"><em>use_convergent_formulation</em>, </td>
+          <td class="paramname"><em>use_area_weighting</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>use_improved_max_operator</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool&#160;</td>
+          <td class="paramname"><em>use_physical_barrier</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1548,16 +1560,16 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_a_l_solver_8cpp_source.html#l00023">polyfem::solver::ALSolver::solve_al()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_remesher_8cpp_source.html#l00094">polyfem::mesh::Remesher::project_quantities()</a>, and <a class="el" href="_smooth_8cpp_source.html#l00297">polyfem::mesh::WildRemesher&lt; wmtk::TetMesh &gt;::smooth_vertices()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_remesher_8cpp_source.html#l00094">polyfem::mesh::Remesher::project_quantities()</a>, and <a class="el" href="_smooth_8cpp_source.html#l00299">polyfem::mesh::WildRemesher&lt; wmtk::TetMesh &gt;::smooth_vertices()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a6a3b4f1867b3f10841a58914403a1615_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_af7860011f347c4889f22423c8565aec1_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_a6a3b4f1867b3f10841a58914403a1615_icgraph.svg" width="486" height="131"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_af7860011f347c4889f22423c8565aec1_icgraph.svg" width="486" height="131"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -2168,7 +2180,7 @@ template&lt;class WMTKMesh &gt; </div>
 
 <p class="reference">References <a class="el" href="classpolyfem_1_1mesh_1_1_wild_remesher.html#a0f3421f9e1778626a5508ffef6b2ff50">polyfem::mesh::WildRemesher&lt; WMTKMesh &gt;::element_vids()</a>, and <a class="el" href="_wild_remesher_8hpp_source.html#l00408">polyfem::mesh::WildRemesher&lt; WMTKMesh &gt;::vertex_attrs</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_smooth_8cpp_source.html#l00193">polyfem::mesh::WildRemesher&lt; WMTKMesh &gt;::smooth_after()</a>, and <a class="el" href="_smooth_8cpp_source.html#l00297">polyfem::mesh::WildRemesher&lt; WMTKMesh &gt;::smooth_vertices()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_smooth_8cpp_source.html#l00195">polyfem::mesh::WildRemesher&lt; WMTKMesh &gt;::smooth_after()</a>, and <a class="el" href="_smooth_8cpp_source.html#l00299">polyfem::mesh::WildRemesher&lt; WMTKMesh &gt;::smooth_vertices()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3311,7 +3323,7 @@ template&lt;class WMTKMesh &gt; </div>
 
 <p class="reference">References <a class="el" href="_remesher_8hpp_source.html#l00015">POLYFEM_REMESHER_SCOPED_TIMER</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_smooth_8cpp_source.html#l00193">polyfem::mesh::WildRemesher&lt; WMTKMesh &gt;::smooth_after()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_smooth_8cpp_source.html#l00195">polyfem::mesh::WildRemesher&lt; WMTKMesh &gt;::smooth_after()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
