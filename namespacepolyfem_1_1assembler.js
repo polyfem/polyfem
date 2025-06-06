@@ -60,6 +60,7 @@ var namespacepolyfem_1_1assembler =
     [ "StokesMixed", "classpolyfem_1_1assembler_1_1_stokes_mixed.html", "classpolyfem_1_1assembler_1_1_stokes_mixed" ],
     [ "StokesPressure", "classpolyfem_1_1assembler_1_1_stokes_pressure.html", "classpolyfem_1_1assembler_1_1_stokes_pressure" ],
     [ "StokesVelocity", "classpolyfem_1_1assembler_1_1_stokes_velocity.html", "classpolyfem_1_1assembler_1_1_stokes_velocity" ],
+    [ "SumModel", "classpolyfem_1_1assembler_1_1_sum_model.html", "classpolyfem_1_1assembler_1_1_sum_model" ],
     [ "TensorBCValue", "structpolyfem_1_1assembler_1_1_tensor_b_c_value.html", "structpolyfem_1_1assembler_1_1_tensor_b_c_value" ],
     [ "ThermodynamicProcess", "classpolyfem_1_1assembler_1_1_thermodynamic_process.html", "classpolyfem_1_1assembler_1_1_thermodynamic_process" ],
     [ "UnconstrainedOgdenElasticity", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html", "classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity" ],

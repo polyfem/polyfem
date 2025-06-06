@@ -36,7 +36,8 @@ var hierarchy =
         [ "polyfem::assembler::MooneyRivlin3ParamSymbolic", "classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_symbolic.html", null ],
         [ "polyfem::assembler::MultiModel", "classpolyfem_1_1assembler_1_1_multi_model.html", null ],
         [ "polyfem::assembler::NeoHookeanElasticity", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html", null ],
-        [ "polyfem::assembler::SaintVenantElasticity", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html", null ]
+        [ "polyfem::assembler::SaintVenantElasticity", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html", null ],
+        [ "polyfem::assembler::SumModel", "classpolyfem_1_1assembler_1_1_sum_model.html", null ]
       ] ],
       [ "polyfem::assembler::LinearAssembler", "classpolyfem_1_1assembler_1_1_linear_assembler.html", [
         [ "polyfem::assembler::BilaplacianAux", "classpolyfem_1_1assembler_1_1_bilaplacian_aux.html", null ],
@@ -71,6 +72,7 @@ var hierarchy =
         [ "polyfem::assembler::NavierStokesVelocity", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html", null ],
         [ "polyfem::assembler::NeoHookeanElasticity", "classpolyfem_1_1assembler_1_1_neo_hookean_elasticity.html", null ],
         [ "polyfem::assembler::SaintVenantElasticity", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html", null ],
+        [ "polyfem::assembler::SumModel", "classpolyfem_1_1assembler_1_1_sum_model.html", null ],
         [ "polyfem::assembler::ViscousDamping", "classpolyfem_1_1assembler_1_1_viscous_damping.html", [
           [ "polyfem::assembler::ViscousDampingPrev", "classpolyfem_1_1assembler_1_1_viscous_damping_prev.html", null ]
         ] ]

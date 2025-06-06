@@ -31,5 +31,6 @@ var searchData=
   ['stokesvelocity_28',['StokesVelocity',['../classpolyfem_1_1assembler_1_1_stokes_velocity.html',1,'polyfem::assembler']]],
   ['stressform_29',['StressForm',['../classpolyfem_1_1solver_1_1_stress_form.html',1,'polyfem::solver']]],
   ['stressnormform_30',['StressNormForm',['../classpolyfem_1_1solver_1_1_stress_norm_form.html',1,'polyfem::solver']]],
-  ['sumcompositeform_31',['SumCompositeForm',['../classpolyfem_1_1solver_1_1_sum_composite_form.html',1,'polyfem::solver']]]
+  ['sumcompositeform_31',['SumCompositeForm',['../classpolyfem_1_1solver_1_1_sum_composite_form.html',1,'polyfem::solver']]],
+  ['summodel_32',['SumModel',['../classpolyfem_1_1assembler_1_1_sum_model.html',1,'polyfem::assembler']]]
 ];

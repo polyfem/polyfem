@@ -68,6 +68,8 @@ var dir_12817abd2662fe40efba8355c1386b9e =
     [ "SaintVenantElasticity.hpp", "_saint_venant_elasticity_8hpp.html", "_saint_venant_elasticity_8hpp" ],
     [ "Stokes.cpp", "_stokes_8cpp.html", null ],
     [ "Stokes.hpp", "_stokes_8hpp.html", "_stokes_8hpp" ],
+    [ "SumModel.cpp", "_sum_model_8cpp.html", null ],
+    [ "SumModel.hpp", "_sum_model_8hpp.html", "_sum_model_8hpp" ],
     [ "ViscousDamping.cpp", "_viscous_damping_8cpp.html", null ],
     [ "ViscousDamping.hpp", "_viscous_damping_8hpp.html", "_viscous_damping_8hpp" ]
 ];
