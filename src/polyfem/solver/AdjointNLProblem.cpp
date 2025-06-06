@@ -330,9 +330,7 @@ namespace polyfem::solver
 				sol,
 				Eigen::MatrixXd::Zero(state->n_pressure_bases, 1),
 				tend, dt,
-				io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar(), state->solve_export_to_file),
-				state->is_contact_enabled(),
-				state->solution_frames);
+				io::OutGeometryData::ExportOptions(state->args, state->mesh->is_linear(), state->problem->is_scalar()), state->is_contact_enabled());
 
 			if (!save_rest_mesh)
 				continue;
