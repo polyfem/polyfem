@@ -149,6 +149,7 @@ target_compile_definitions(polyfem PUBLIC POLYFEM_JSON_SPEC_DIR="${POLYFEM_JSON_
 target_compile_definitions(polyfem PUBLIC POLYFEM_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/input-spec.json")
 target_compile_definitions(polyfem PUBLIC POLYFEM_OPT_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/opt-input-spec.json")
 target_compile_definitions(polyfem PUBLIC POLYFEM_OBJECTIVE_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/objective-spec.json")
+target_compile_definitions(polyfem PUBLIC POLYFEM_MATERIAL_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/material-parameters.json")
 
 if (MSVC)
     add_compile_options(/bigobj)
