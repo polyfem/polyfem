@@ -4,6 +4,8 @@
 #include <polyfem/assembler/PeriodicBoundary.hpp>
 #include <polyfem/solver/forms/lagrangian/AugmentedLagrangianForm.hpp>
 
+#include <polyfem/State.hpp>
+
 namespace polyfem::solver
 {
 	class NLProblem : public FullNLProblem
@@ -81,6 +83,7 @@ namespace polyfem::solver
 		double t_;
 
 	private:
+	
 		std::vector<std::shared_ptr<AugmentedLagrangianForm>> penalty_forms_;
 
 		void setup_constrain_nodes();

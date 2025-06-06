@@ -13,6 +13,8 @@
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
+#include <polyfem/solver/forms/NormalAdhesionForm.hpp>
+#include <polyfem/solver/forms/TangentialAdhesionForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/PressureForm.hpp>
@@ -550,7 +552,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &adjoint,
 		Eigen::VectorXd &one_form)
 	{
-		Eigen::VectorXd elasticity_term, rhs_term, pressure_term, contact_term;
+		Eigen::VectorXd elasticity_term, rhs_term, pressure_term, contact_term, adhesion_term;
 
 		one_form.setZero(state.n_geom_bases * state.mesh->dimension());
 		Eigen::MatrixXd adjoint_zeroed = adjoint;
@@ -579,8 +581,19 @@ namespace polyfem::solver
 			}
 			else
 				contact_term.setZero(elasticity_term.size());
-			one_form -= elasticity_term + rhs_term + pressure_term + contact_term;
-		}
+
+			if (state.is_adhesion_enabled())
+			{
+				state.solve_data.normal_adhesion_form->force_shape_derivative(state.diff_cached.normal_adhesion_collision_set(0), sol, adjoint, adhesion_term);
+				adhesion_term = state.basis_nodes_to_gbasis_nodes * adhesion_term;
+			}
+			else
+			{
+				adhesion_term.setZero(elasticity_term.size());
+			}
+		}			
+		
+		one_form -= elasticity_term + rhs_term + pressure_term + contact_term + adhesion_term;
 		one_form = utils::flatten(utils::unflatten(one_form, state.mesh->dimension())(state.primitive_to_node(), Eigen::all));
 	}
 
@@ -590,7 +603,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd &adjoint,
 		Eigen::VectorXd &one_form)
 	{
-		Eigen::VectorXd elasticity_term, contact_term;
+		Eigen::VectorXd elasticity_term, contact_term, adhesion_term;
 
 		std::shared_ptr<NLHomoProblem> homo_problem = std::dynamic_pointer_cast<NLHomoProblem>(state.solve_data.nl_problem);
 		assert(homo_problem);
@@ -611,7 +624,17 @@ namespace polyfem::solver
 		else
 			contact_term.setZero(elasticity_term.size());
 
-		one_form = -(elasticity_term + contact_term);
+		if (state.is_adhesion_enabled())
+		{
+			state.solve_data.normal_adhesion_form->force_shape_derivative(state.diff_cached.normal_adhesion_collision_set(0), sol, full_adjoint, adhesion_term);
+			adhesion_term = state.basis_nodes_to_gbasis_nodes * adhesion_term;
+		}
+		else
+		{
+			adhesion_term.setZero(elasticity_term.size());
+		}
+
+		one_form = -(elasticity_term + contact_term + adhesion_term);
 
 		Eigen::VectorXd force;
 		homo_problem->FullNLProblem::gradient(sol, force);
@@ -671,7 +694,7 @@ namespace polyfem::solver
 		const int time_steps = state.args["time"]["time_steps"];
 		const int bdf_order = get_bdf_order(state);
 
-		Eigen::VectorXd elasticity_term, rhs_term, pressure_term, damping_term, mass_term, contact_term, friction_term;
+		Eigen::VectorXd elasticity_term, rhs_term, pressure_term, damping_term, mass_term, contact_term, friction_term, adhesion_term, tangential_adhesion_term;
 		one_form.setZero(state.n_geom_bases * state.mesh->dimension());
 
 		Eigen::VectorXd cur_p, cur_nu;
@@ -718,9 +741,28 @@ namespace polyfem::solver
 				}
 				else
 					friction_term.setZero(mass_term.size());
+
+				if (state.is_adhesion_enabled())
+				{
+					state.solve_data.normal_adhesion_form->force_shape_derivative(state.diff_cached.normal_adhesion_collision_set(i), state.diff_cached.u(i), cur_p, adhesion_term);
+					adhesion_term = state.basis_nodes_to_gbasis_nodes * adhesion_term;
+				}
+				else
+				{
+					adhesion_term.setZero(mass_term.size());
+				}
+
+				if (state.solve_data.tangential_adhesion_form)
+				{
+					state.solve_data.tangential_adhesion_form->force_shape_derivative(state.diff_cached.u(i - 1), state.diff_cached.u(i), cur_p, state.diff_cached.tangential_adhesion_collision_set(i), tangential_adhesion_term);
+					tangential_adhesion_term = state.basis_nodes_to_gbasis_nodes * (tangential_adhesion_term / beta);
+					// friction_term /= beta_dt * beta_dt;
+				}
+				else
+					tangential_adhesion_term.setZero(mass_term.size());
 			}
 
-			one_form += beta_dt * (elasticity_term + rhs_term + pressure_term + damping_term + contact_term + friction_term + mass_term);
+			one_form += beta_dt * (elasticity_term + rhs_term + pressure_term + damping_term + contact_term + friction_term + mass_term + adhesion_term + tangential_adhesion_term);
 		}
 
 		// time step 0
