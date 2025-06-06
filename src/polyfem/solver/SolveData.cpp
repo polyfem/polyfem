@@ -492,18 +492,19 @@ namespace polyfem::solver
 
 		if (AL_adaptive)
 		{
-			//Scales AL to current energy plus an estimate of the elastic and intertial energy for the next step
+			//Scales AL to current energy plus an estimate of the elastic and inertial energy for the next step
 			// This is a heuristic to ensure that the AL weight is not too small such that DBCs are not satisfied
-			 weight = (grad_energy_scaled + max_stiffness*dbc/(avg_edge_length_)/scaling + avg_mass_*(dbc - dbc/dt_))*AL_initial_weight_;
+			 weight = 1000*(grad_energy_scaled + max_stiffness*dbc/(avg_edge_length_)/scaling + avg_mass_*(dbc - dbc/dt_))*AL_initial_weight_;
 			if (weight <= 1e-15)
 				weight =  max_stiffness/scaling;
 		}
 		else
+		{
 			weight = AL_initial_weight_;
 			double estimated_grad_energy= grad_energy_scaled + max_stiffness*dbc/(avg_edge_length_)/scaling + avg_mass_*(dbc - dbc/dt_);
 			if (weight < estimated_grad_energy)
 				logger().warn("AL weight is below the estimated grad energy {} for this step. May cause slow convergence!", estimated_grad_energy);
-
+		}
 
 
 		for (const auto &f : al_form)
