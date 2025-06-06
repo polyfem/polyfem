@@ -301,45 +301,27 @@ namespace polyfem
 		save_subsolve(subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 
 		// ---------------------------------------------------------------------
-
-		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(true);
 		const double dt = problem->is_time_dependent() ? double(args["time"]["dt"]) : 1.0;
-
-		std::shared_ptr<solver::ElasticForm> elastic_form = std::make_shared<ElasticForm>(n_bases, bases, geom_bases(), *assembler, ass_vals_cache, t, dt, true);
-		StiffnessMatrix stiffness;
-		elastic_form->second_derivative(sol, stiffness);
-		double avg_stiffness = 0;
-		for (int k = 0; k < stiffness.outerSize(); ++k)
-		{
-
-			for (StiffnessMatrix::InnerIterator it(stiffness, k); it; ++it)
-			{
-				assert(it.col() == k);
-				if (std::abs(it.value()) != 0)
-					avg_stiffness += std::abs(it.value());
-			}
-		}
-		avg_stiffness /= stiffness.rows();
-
-		double barrier_stiffness = 0;
-		if (solve_data.contact_form)
-			barrier_stiffness = solve_data.contact_form->barrier_stiffness();
-
-		double momentum = 0;
-		for (const auto &f : solve_data.al_form)
-			momentum += f->compute_momentum(dt, mesh->dimension());
-
-		double initial_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
-		double al_weight = (avg_stiffness * dt * dt + avg_mass + barrier_stiffness * dt * dt) * momentum * initial_weight;
-
+		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(true);
+		double al_initial_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
+		solve_data.set_AL_initial_weight(al_initial_weight);
+		solve_data.set_initial_barrier_stiffness_multiplier(args["solver"]["contact"]["adaptive_barrier_stiffness_multiplier"]);
+		solve_data.set_avg_edge_length(stats.average_edge_length);
+		solve_data.set_min_edge_length(stats.min_edge_length);
 		ALSolver al_solver(
 			solve_data.al_form,
-			al_weight,
+			al_initial_weight,
 			args["solver"]["augmented_lagrangian"]["scaling"],
 			args["solver"]["augmented_lagrangian"]["max_weight"],
 			args["solver"]["augmented_lagrangian"]["eta"],
-			[&](const Eigen::VectorXd &x) {
+			[&](const Eigen::VectorXd &x)
+			{
 				this->solve_data.update_barrier_stiffness(sol);
+			},
+			[&](const Eigen::VectorXd &x, bool adaptive_al_toogle)
+			{
+				this->solve_data.update_al_weight(sol, adaptive_al_toogle = args["solver"]["augmented_lagrangian"]["adaptive"]);
+				return adaptive_al_toogle;
 			});
 
 		al_solver.post_subsolve = [&](const double al_weight) {

@@ -117,8 +117,9 @@ def create_matrix(equations, coeffs):
 
 
 class Lagrange:
-    def __init__(self, nsd, order):
+    def __init__(self, nsd, order, bernstein):
         self.nsd = nsd
+        self.bernstein = bernstein
         self.order = order
         self.points = []
         self.compute_basis()
@@ -142,16 +143,17 @@ class Lagrange:
                 ex = ex.subs(z, p[2])
             equations.append(ex)
 
-        A = create_matrix(equations, coeffs)
-
-        # if A.shape[0] > 25:
-        #     A = A.evalf()
-
-        Ainv = A.inv()
-
         b = eye(len(equations))
+        if self.bernstein:
+            xx = b
+        else:
+            A = create_matrix(equations, coeffs)
 
-        xx = Ainv * b
+            # if A.shape[0] > 25:
+            #     A = A.evalf()
+
+            Ainv = A.inv()
+            xx = Ainv * b
 
         for i in range(0, len(equations)):
             Ni = pol
@@ -167,6 +169,8 @@ def parse_args():
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("output", type=str, help="path to the output folder")
+    parser.add_argument("--bernstein", default=False, action='store_true',
+                        help="use Bernstein basis instead of Lagrange basis")
     return parser.parse_args()
 
 
@@ -178,34 +182,56 @@ if __name__ == "__main__":
     orders = [0, 1, 2, 3, 4]
     # orders = [4]
 
-    cpp = "#include \"auto_p_bases.hpp\"\n\n\n"
-    cpp = cpp + \
+    bletter = "b" if args.bernstein else "p"
+
+    cpp = f"#include \"auto_{bletter}_bases.hpp\""
+    if not args.bernstein:
+        cpp = cpp + "\n#include \"auto_b_bases.hpp\""
+        cpp = cpp + "\n#include \"p_n_bases.hpp\""
+    cpp = cpp + "\n\n\n" \
         "namespace polyfem {\nnamespace autogen " + "{\nnamespace " + "{\n"
 
-    hpp = "#pragma once\n\n#include <Eigen/Dense>\n#include \"p_n_bases.hpp\"\n#include <cassert>\n\n"
-    hpp = hpp + "namespace polyfem {\nnamespace autogen " + "{\n"
+    hpp = "#pragma once\n\n#include <Eigen/Dense>\n#include <cassert>\n"
+
+    hpp = hpp + "\nnamespace polyfem {\nnamespace autogen " + "{\n"
 
     for dim in dims:
-        print(str(dim) + "D")
-        suffix = "_2d" if dim == 2 else "_3d"
+        print(str(dim) + "D " + bletter)
+        suffix = "2d" if dim == 2 else "3d"
 
-        unique_nodes = "void p_nodes" + suffix + \
-            "(const int p, Eigen::MatrixXd &val)"
+        unique_nodes = f"void {bletter}_nodes_{suffix}" + \
+            f"(const int {bletter}, Eigen::MatrixXd &val)"
 
-        unique_fun = "void p_basis_value" + suffix + \
-            "(const int p, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
-        dunique_fun = "void p_grad_basis_value" + suffix + \
-            "(const int p, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+        if args.bernstein:
+            unique_fun = f"void {bletter}_basis_value_{suffix}" + \
+                f"(const int {bletter}, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+            dunique_fun = f"void {bletter}_grad_basis_value_{suffix}" + \
+                f"(const int {bletter}, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+        else:
+            unique_fun = f"void {bletter}_basis_value_{suffix}" + \
+                f"(const bool bernstein, const int {bletter}, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
+            dunique_fun = f"void {bletter}_grad_basis_value_{suffix}" + \
+                f"(const bool bernstein, const int {bletter}, const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
 
-        hpp = hpp + unique_nodes + ";\n\n"
+        if not args.bernstein:
+            hpp = hpp + unique_nodes + ";\n\n"
 
         hpp = hpp + unique_fun + ";\n\n"
         hpp = hpp + dunique_fun + ";\n\n"
 
-        unique_nodes = unique_nodes + "{\nswitch(p)" + "{\n"
+        unique_nodes = unique_nodes + f"{{\nswitch({bletter})" + "{\n"
 
-        unique_fun = unique_fun + "{\nswitch(p)" + "{\n"
-        dunique_fun = dunique_fun + "{\nswitch(p)" + "{\n"
+        unique_fun = unique_fun + "{\n"
+        dunique_fun = dunique_fun + "{\n"
+
+        if not args.bernstein:
+            unique_fun = unique_fun + \
+                f"if(bernstein) {{ b_basis_value_{suffix}(p, local_index, uv, val); return; }}\n\n"
+            dunique_fun = dunique_fun + \
+                f"if(bernstein) {{ b_grad_basis_value_{suffix}(p, local_index, uv, val); return; }}\n\n"
+
+        unique_fun = unique_fun + f"\nswitch({bletter})" + "{\n"
+        dunique_fun = dunique_fun + f"\nswitch({bletter})" + "{\n"
 
         if dim == 2:
             vertices = [[0, 0], [1, 0], [0, 1]]
@@ -226,7 +252,7 @@ if __name__ == "__main__":
                 else:
                     fe.points = [[1./3., 1./3., 1./3.]]
             else:
-                fe = Lagrange(dim, order)
+                fe = Lagrange(dim, order, args.bernstein)
 
             current_indices = list(range(0, len(fe.points)))
             indices = []
@@ -369,11 +395,10 @@ if __name__ == "__main__":
                 indices.append(ii)
 
             # nodes code gen
-            nodes = "void p_" + str(order) + "_nodes" + suffix + "(Eigen::MatrixXd &res) {\n res.resize(" + str(
+            nodes = f"void {bletter}_{order}_nodes_{suffix}(Eigen::MatrixXd &res) {{\n res.resize(" + str(
                 len(indices)) + ", " + str(dim) + "); res << \n"
-            unique_nodes = unique_nodes + "\tcase " + \
-                str(order) + ": " + "p_" + str(order) + \
-                "_nodes" + suffix + "(val); break;\n"
+            unique_nodes = unique_nodes + f"\tcase {order}: " + \
+                f"{bletter}_{order}_nodes_{suffix}(val); break;\n"
 
             for ii in indices:
                 nodes = nodes + ccode(fe.points[ii][0]) + ", " + ccode(fe.points[ii][1]) + (
@@ -382,22 +407,23 @@ if __name__ == "__main__":
             nodes = nodes + ";\n}"
 
             # bases code gen
-            func = "void p_" + str(order) + "_basis_value" + suffix + \
+            func = f"void {bletter}_{order}_basis_value_{suffix}" + \
                 "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &result_0)"
-            dfunc = "void p_" + str(order) + "_basis_grad_value" + suffix + \
+            dfunc = f"void {bletter}_{order}_basis_grad_value_{suffix}" + \
                 "(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)"
 
-            unique_fun = unique_fun + "\tcase " + str(order) + ": " + "p_" + str(
-                order) + "_basis_value" + suffix + "(local_index, uv, val); break;\n"
-            dunique_fun = dunique_fun + "\tcase " + str(order) + ": " + "p_" + str(
-                order) + "_basis_grad_value" + suffix + "(local_index, uv, val); break;\n"
+            unique_fun = unique_fun + \
+                f"\tcase {order}: {bletter}_{order}_basis_value_{suffix}(local_index, uv, val); break;\n"
+            dunique_fun = dunique_fun + \
+                f"\tcase {order}: {bletter}_{order}_basis_grad_value_{suffix}(local_index, uv, val); break;\n"
 
             # hpp = hpp + func + ";\n"
             # hpp = hpp + dfunc + ";\n"
 
-            default_base = "p_n_basis_value_3d(p, local_index, uv, val);" if dim == 3 else "p_n_basis_value_2d(p, local_index, uv, val);"
-            default_dbase = "p_n_basis_grad_value_3d(p, local_index, uv, val);" if dim == 3 else "p_n_basis_grad_value_2d(p, local_index, uv, val);"
-            default_nodes = "p_n_nodes_3d(p, val);" if dim == 3 else "p_n_nodes_2d(p, val);"
+            if not args.bernstein:
+                default_base = "p_n_basis_value_3d(p, local_index, uv, val);" if dim == 3 else "p_n_basis_value_2d(p, local_index, uv, val);"
+                default_dbase = "p_n_basis_grad_value_3d(p, local_index, uv, val);" if dim == 3 else "p_n_basis_grad_value_2d(p, local_index, uv, val);"
+                default_nodes = "p_n_nodes_3d(p, val);" if dim == 3 else "p_n_nodes_2d(p, val);"
 
             base = "auto x=uv.col(0).array();\nauto y=uv.col(1).array();"
             if dim == 3:
@@ -437,18 +463,29 @@ if __name__ == "__main__":
             cpp = cpp + base + "}\n"
 
             cpp = cpp + dfunc + "{\n\n"
-            cpp = cpp + dbase + "}\n\n\n" + nodes + "\n\n\n"
+            cpp = cpp + dbase + "}\n\n\n"
 
-        unique_nodes = unique_nodes + "\tdefault: "+default_nodes+"\n}}"
+            if not args.bernstein:
+                cpp = cpp + nodes + "\n\n\n"
 
-        unique_fun = unique_fun + "\tdefault: "+default_base+"\n}}"
-        dunique_fun = dunique_fun + "\tdefault: "+default_dbase+"\n}}"
+        if args.bernstein:
+            unique_nodes = ""
+        else:
+            unique_nodes = unique_nodes + "\tdefault: "+default_nodes+"\n}}"
+
+        if args.bernstein:
+            unique_fun = unique_fun + "\tdefault: assert(false); \n}}"
+            dunique_fun = dunique_fun + "\tdefault: assert(false); \n}}"
+        else:
+            unique_fun = unique_fun + "\tdefault: "+default_base+"\n}}"
+            dunique_fun = dunique_fun + "\tdefault: "+default_dbase+"\n}}"
 
         cpp = cpp + "}\n\n" + unique_nodes + "\n" + unique_fun + \
             "\n\n" + dunique_fun + "\n" + "\nnamespace " + "{\n"
         hpp = hpp + "\n"
 
-    hpp = hpp + "\nstatic const int MAX_P_BASES = " + str(max(orders)) + ";\n"
+    hpp = hpp + \
+        f"\nstatic const int MAX_{bletter.capitalize()}_BASES = {max(orders)};\n"
 
     cpp = cpp + "\n}}}\n"
     hpp = hpp + "\n}}\n"
@@ -456,10 +493,10 @@ if __name__ == "__main__":
     path = os.path.abspath(args.output)
 
     print("saving...")
-    with open(os.path.join(path, "auto_p_bases.cpp"), "w") as file:
+    with open(os.path.join(path, f"auto_{bletter}_bases.cpp"), "w") as file:
         file.write(cpp)
 
-    with open(os.path.join(path, "auto_p_bases.hpp"), "w") as file:
+    with open(os.path.join(path, f"auto_{bletter}_bases.hpp"), "w") as file:
         file.write(hpp)
 
     print("done!")

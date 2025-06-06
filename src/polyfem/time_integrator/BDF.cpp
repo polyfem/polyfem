@@ -110,7 +110,12 @@ namespace polyfem::time_integrator
 	double BDF::acceleration_scaling() const
 	{
 		const double beta = betas(steps() - 1);
-		return beta * beta * dt() * dt();
+		double val;
+		if (dt()<1)
+			val = dt() * dt();
+		else
+			val = 1/(dt()*dt());
+		return beta * beta * val;
 	}
 
 	double BDF::dv_dx(const unsigned i) const

@@ -25,6 +25,8 @@ namespace polyfem::solver
 			return std::make_unique<InitialConditionVariableToSimulation>(states, parametrization);
 		else if (type == "dirichlet")
 			return std::make_unique<DirichletVariableToSimulation>(states, parametrization);
+		else if (type == "dirichlet-nodes")
+			return std::make_unique<DirichletNodesVariableToSimulation>(states, parametrization);
 		else if (type == "pressure")
 			return std::make_unique<PressureVariableToSimulation>(states, parametrization);
 		else if (type == "periodic-shape")
@@ -494,8 +496,67 @@ namespace polyfem::solver
 		}
 		else
 			VariableToSimulation::set_output_indexing(args);
-		
+
 		set_dirichlet_boundaries(args["surface_selection"]);
+	}
+
+	void DirichletNodesVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
+	{
+		for (auto state : states_)
+		{
+			assert(state_variable.size() == (state->mesh->dimension() * dirichlet_nodes_.size()));
+			auto tensor_problem = std::dynamic_pointer_cast<polyfem::assembler::GenericTensorProblem>(state->problem);
+			assert(!state->problem->is_time_dependent());
+			tensor_problem->update_dirichlet_nodes(state->in_node_to_node, dirichlet_nodes_, utils::unflatten(state_variable, state->mesh->dimension()));
+
+			logger().info("Updated dirichlet nodes");
+		}
+	}
+
+	Eigen::VectorXd DirichletNodesVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd term, cur_term;
+		for (auto state : states_)
+		{
+			if (state->problem->is_time_dependent())
+				log_and_throw_adjoint_error("[{}] Transient dirichlet node optimization not supported!", name());
+			else
+				AdjointTools::dJ_dirichlet_static_adjoint_term(*state, state->get_adjoint_mat(0), cur_term);
+
+			if (term.size() != cur_term.size())
+				term = cur_term;
+			else
+				term += cur_term;
+		}
+		return apply_parametrization_jacobian(term, x);
+	}
+	std::string DirichletNodesVariableToSimulation::variable_to_string(const Eigen::VectorXd &variable)
+	{
+		return "";
+	}
+	Eigen::VectorXd DirichletNodesVariableToSimulation::inverse_eval()
+	{
+		log_and_throw_adjoint_error("Inverse eval not implemented!");
+	}
+	void DirichletNodesVariableToSimulation::set_output_indexing(const json &args)
+	{
+		json args_ = args;
+		const std::string composite_map_type = args_["composite_map_type"];
+		if (composite_map_type != "indices")
+		{
+			log_and_throw_adjoint_error("Must specify indices on which the nodal dirichlet is applied!");
+		}
+		else
+		{
+			set_dirichlet_nodes(args_["composite_map_indices"]);
+			int dim = 3;
+			std::vector<int> composite_map_indices = {};
+			for (int i = 0; i < dirichlet_nodes_.size(); ++i)
+				for (int k = 0; k < dim; ++k)
+					composite_map_indices.push_back(dirichlet_nodes_[i] * dim + k);
+			args_["composite_map_indices"] = composite_map_indices;
+		}
+		VariableToSimulation::set_output_indexing(args_);
 	}
 
 	void PressureVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
@@ -633,7 +694,7 @@ namespace polyfem::solver
 
 		periodic_mesh_map = std::make_unique<PeriodicMeshToMesh>(V);
 		periodic_mesh_representation = periodic_mesh_map->inverse_eval(utils::flatten(V));
-		
+
 		return parametrization_.inverse_eval(periodic_mesh_representation);
 	}
 	Eigen::VectorXd PeriodicShapeVariableToSimulation::apply_parametrization_jacobian(const Eigen::VectorXd &term, const Eigen::VectorXd &x) const

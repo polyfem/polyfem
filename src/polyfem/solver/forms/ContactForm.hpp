@@ -125,6 +125,9 @@ namespace polyfem::solver
 		/// @brief Compute the displaced positions of the surface nodes
 		Eigen::MatrixXd compute_displaced_surface(const Eigen::VectorXd &x) const;
 
+		void set_bs_multiplier(const double bs_multiplier){barrier_multiplier_ = bs_multiplier;}
+		double get_bs_multiplier() const {return barrier_multiplier_;}
+
 		/// @brief Get the current barrier stiffness
 		double barrier_stiffness() const { return barrier_stiffness_; }
 		/// @brief Get the current barrier stiffness
@@ -138,6 +141,7 @@ namespace polyfem::solver
 
 		double weight() const override { return weight_ * barrier_stiffness_; }
 
+		double get_prev_distance() const { return prev_distance_; }
 		/// @brief If true, output debug files
 		bool save_ccd_debug_meshes = false;
 
@@ -185,6 +189,7 @@ namespace polyfem::solver
 		/// @brief Previous minimum distance between all elements
 		double prev_distance_;
 
+		double barrier_multiplier_ = 1;
 		/// @brief If true, use the cached candidate set for the current solution
 		bool use_cached_candidates_ = false;
 		/// @brief Cached constraint set for the current solution

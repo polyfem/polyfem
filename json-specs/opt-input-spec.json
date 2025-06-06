@@ -52,7 +52,13 @@
         "pointer": "/states/*/initial_guess",
         "default": -1,
         "type": "int",
-        "doc": "Specify the state ID, whose solution is used to initialize the solve in this state."
+        "doc": "Specify the state ID, whose solution is used to initialize the solve in this state. Only relevant for nonlinear problems."
+    },
+    {
+        "pointer": "/states/*/reuse_stiffness_factorization",
+        "default": -1,
+        "type": "int",
+        "doc": "Specify the state ID, whose stiffness matrix factorization is used to solve this state. Only relevant for linear problems."
     },
     {
         "pointer": "/output",
@@ -131,6 +137,7 @@
             "macro-strain",
             "initial",
             "dirichlet",
+            "dirichlet-nodes",
             "pressure"
         ]
     },
@@ -213,6 +220,20 @@
             "type",
             "composition",
             "surface_selection"
+        ],
+        "optional": [
+            "composite_map_type",
+            "composite_map_indices"
+        ]
+    },
+    {
+        "pointer": "/variable_to_simulation/*",
+        "type_name": "dirichlet-nodes",
+        "type": "object",
+        "required": [
+            "state",
+            "type",
+            "composition"
         ],
         "optional": [
             "composite_map_type",

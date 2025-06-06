@@ -1,5 +1,6 @@
 #include "SolveData.hpp"
 
+#include <barrier>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/Form.hpp>
 #include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
@@ -23,6 +24,7 @@
 #include <polyfem/assembler/PeriodicBoundary.hpp>
 
 #include <h5pp/h5pp.h>
+
 
 namespace polyfem::solver
 {
@@ -102,6 +104,9 @@ namespace polyfem::solver
 		// Rayleigh damping form
 		const json &rayleigh_damping)
 	{
+		this->barrier_stiffness_ = barrier_stiffness;
+		this->avg_mass_ = avg_mass;
+
 		const bool is_time_dependent = time_integrator != nullptr;
 		assert(!is_time_dependent || time_integrator != nullptr);
 		const double dt = is_time_dependent ? time_integrator->dt() : 0.0;
@@ -344,14 +349,14 @@ namespace polyfem::solver
 				if (use_adaptive_barrier_stiffness)
 				{
 					contact_form->set_barrier_stiffness(1);
-					// logger().debug("Using adaptive barrier stiffness");
+					logger().debug("Using adaptive barrier stiffness");
 				}
 				else
 				{
 					assert(barrier_stiffness.is_number());
 					assert(barrier_stiffness.get<double>() > 0);
 					contact_form->set_barrier_stiffness(barrier_stiffness);
-					// logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
+					logger().debug("Setting barrier stiffness to {}", contact_form->barrier_stiffness());
 				}
 
 				if (contact_form)
@@ -393,17 +398,87 @@ namespace polyfem::solver
 
 		update_dt();
 
+		this->dt_ = dt;
+
 		return forms;
 	}
 
 	void SolveData::update_barrier_stiffness(const Eigen::VectorXd &x)
 	{
-		if (contact_form == nullptr || !contact_form->use_adaptive_barrier_stiffness())
+		if (contact_form == nullptr)
 			return;
+
+		double barrier_stiffness;
+		double AL_grad_energy = 0.0;
+		for (const auto &f : al_form)
+		{
+			AL_grad_energy =  f->lagrangian_weight();
+		}
+
+		if (contact_form->use_adaptive_barrier_stiffness())
+		{
+			logger().debug("You have set to scale the adaptive barrier stiffness by {}", initial_barrier_stiffness_multipler_);
+
+
+			double bs_multiplier = contact_form->get_bs_multiplier();
+			const double dhat = contact_form->dhat();
+			double prev_dist = contact_form->get_prev_distance();
+
+
+			//logger().debug("Prev dist is {}", prev_dist);
+			if (prev_dist != -1 && prev_dist < .01*dhat*dhat)
+			{
+				bs_multiplier *= 2;
+				contact_form->set_bs_multiplier(bs_multiplier);
+			}
+			if (prev_dist != INFINITY && prev_dist > .75*dhat*dhat)
+			{
+				bs_multiplier /= 2;
+				contact_form->set_bs_multiplier(bs_multiplier);
+			}
+
+			barrier_stiffness = 10*AL_grad_energy*initial_barrier_stiffness_multipler_ * bs_multiplier;
+			if (barrier_stiffness < 10*AL_grad_energy || prev_dist == INFINITY )
+				barrier_stiffness = 10*AL_grad_energy;
+		}
+		else
+		{
+			barrier_stiffness = barrier_stiffness_;
+			if (barrier_stiffness<AL_grad_energy)
+				logger().warn("Your barrier stiffness is lower than your Gradient Energy {}. Likely to result in numerical instabilities!", AL_grad_energy);
+		}
+		contact_form->set_barrier_stiffness(barrier_stiffness);
+		logger().debug("Barrier Stiffness set to {}", contact_form->barrier_stiffness());
+
+	}
+
+	bool SolveData::update_al_weight(const Eigen::VectorXd &x, bool AL_adaptive)
+	{
+		double weight;
+
+		StiffnessMatrix hessian_form;
+		double max_stiffness = 0;
+		const double scaling = time_integrator->acceleration_scaling();
+		double dbc = 0.0;
+		for (const auto &f : al_form)
+		{
+			dbc =  f->get_dbcdist();
+		}
+
+		//Grabs the approximate stiffness of the material via the max coeff of the elastic hessian
+		elastic_form->second_derivative(x, hessian_form);
+
+		for (int k = 0; k < hessian_form.outerSize(); ++k)
+		{
+			for (StiffnessMatrix::InnerIterator it(hessian_form, k); it; ++it)
+			{
+				max_stiffness = std::max(max_stiffness, std::abs(it.value()));
+			}
+		}
 
 		Eigen::VectorXd grad_energy = Eigen::VectorXd::Zero(x.size());
 		const std::array<std::shared_ptr<Form>, 4> energy_forms{
-			{elastic_form, inertia_form, body_form, pressure_form}};
+				{elastic_form, inertia_form, body_form, pressure_form}};
 		for (const std::shared_ptr<Form> &form : energy_forms)
 		{
 			if (form == nullptr || !form->enabled())
@@ -413,9 +488,32 @@ namespace polyfem::solver
 			form->first_derivative(x, grad_form);
 			grad_energy += grad_form;
 		}
+		double grad_energy_scaled =  grad_energy.norm()*grad_energy.size()/scaling;
 
-		contact_form->update_barrier_stiffness(x, grad_energy);
-	}
+		if (AL_adaptive)
+		{
+			//Scales AL to current energy plus an estimate of the elastic and inertial energy for the next step
+			// This is a heuristic to ensure that the AL weight is not too small such that DBCs are not satisfied
+			 weight = 1000*(grad_energy_scaled + max_stiffness*dbc/(avg_edge_length_)/scaling + avg_mass_*(dbc - dbc/dt_))*AL_initial_weight_;
+			if (weight <= 1e-15)
+				weight =  max_stiffness/scaling;
+		}
+		else
+		{
+			weight = AL_initial_weight_;
+			double estimated_grad_energy= grad_energy_scaled + max_stiffness*dbc/(avg_edge_length_)/scaling + avg_mass_*(dbc - dbc/dt_);
+			if (weight < estimated_grad_energy)
+				logger().warn("AL weight is below the estimated grad energy {} for this step. May cause slow convergence!", estimated_grad_energy);
+		}
+
+
+		for (const auto &f : al_form)
+		{
+				f->set_al_weight(weight);
+		}
+
+		return AL_adaptive;
+}
 
 	void SolveData::update_dt()
 	{
@@ -423,15 +521,22 @@ namespace polyfem::solver
 			return;
 
 		const std::array<std::shared_ptr<Form>, 6> energy_forms{
-			{elastic_form, body_form, pressure_form, damping_form, contact_form, friction_form}};
+				{elastic_form, body_form, pressure_form, damping_form, contact_form, friction_form}};
 		for (const std::shared_ptr<Form> &form : energy_forms)
 		{
 			if (form == nullptr)
 				continue;
 			form->set_weight(time_integrator->acceleration_scaling());
 		}
-	}
+		for (const auto &form : al_form)
+		{
+			if (form == nullptr)
+			continue;
+		form->set_weight(time_integrator->acceleration_scaling());
+		}
 
+
+	}
 	std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> SolveData::named_forms() const
 	{
 		std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> res{
