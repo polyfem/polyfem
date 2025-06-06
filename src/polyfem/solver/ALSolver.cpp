@@ -37,6 +37,7 @@ namespace polyfem::solver
 		double al_weight;
 		double last_al_weight = 1e-15;
 		bool dummy = true; // dummy variable to pass to update_al_weight is overridden by the lambda in statesolvenonlinear
+							//todo: make sure that this is what is expected for L2 call to ALSolver
 		bool is_adaptive = 	update_al_weight(sol, true);
 		for (auto &f : alagr_forms)
 		{
