@@ -356,7 +356,7 @@ namespace polyfem::solver
 					assert(barrier_stiffness.is_number());
 					assert(barrier_stiffness.get<double>() > 0);
 					contact_form->set_barrier_stiffness(barrier_stiffness);
-					logger().debug("Scaling barrier stiffness by {}", contact_form->barrier_stiffness());
+					logger().debug("Setting barrier stiffness to {}", contact_form->barrier_stiffness());
 				}
 
 				if (contact_form)
@@ -403,67 +403,59 @@ namespace polyfem::solver
 		return forms;
 	}
 
-	void SolveData::update_barrier_stiffness(const Eigen::VectorXd &x, bool reduce)
-	{	//todo: fix this to make it work with fixed barrier stiffness
+	void SolveData::update_barrier_stiffness(const Eigen::VectorXd &x)
+	{
 		if (contact_form == nullptr)
 			return;
 
+		double barrier_stiffness;
 		double AL_grad_energy = 0.0;
 		for (const auto &f : al_form)
 		{
 			AL_grad_energy =  f->lagrangian_weight();
 		}
 
-		double bs_multiplier = contact_form->get_bs_multiplier();
-		const double dhat = contact_form->dhat();
-		double prev_dist = contact_form->get_prev_distance();
-
-
-		/*
-		if (reduce)
+		if (contact_form->use_adaptive_barrier_stiffness())
 		{
-			bs_multiplier /= 2;
-			contact_form->set_bs_multiplier(bs_multiplier);
-			const double current_bs= contact_form->barrier_stiffness();
-			double barrier_stiffness =current_bs/2;
-			if (barrier_stiffness <AL_grad_energy)
+			logger().debug("You have set to scale the adaptive barrier stiffness by {}", initial_barrier_stiffness_multipler_);
+
+
+			double bs_multiplier = contact_form->get_bs_multiplier();
+			const double dhat = contact_form->dhat();
+			double prev_dist = contact_form->get_prev_distance();
+
+
+			//logger().debug("Prev dist is {}", prev_dist);
+			if (prev_dist != -1 && prev_dist < .01*dhat*dhat)
 			{
-				for (const auto &f : al_form)
-				{
-					f->set_al_weight(AL_grad_energy*2);
-				}
-				barrier_stiffness = AL_grad_energy*10;;
-				logger().warn("AL weight increased");
+				bs_multiplier *= 2;
+				contact_form->set_bs_multiplier(bs_multiplier);
 			}
-			contact_form->set_barrier_stiffness(barrier_stiffness);
-			logger().debug("Barrier Stiffness reduced to {}", contact_form->barrier_stiffness());
-			return;
-		}
-		*/
+			if (prev_dist != INFINITY && prev_dist > .75*dhat*dhat)
+			{
+				bs_multiplier /= 2;
+				contact_form->set_bs_multiplier(bs_multiplier);
+			}
 
-		logger().debug("Prev dist is {}", prev_dist);
-		if (prev_dist != -1 && prev_dist < .01*dhat*dhat)
+			barrier_stiffness = 10*AL_grad_energy*initial_barrier_stiffness_multipler_ * bs_multiplier;
+			if (barrier_stiffness < 10*AL_grad_energy || prev_dist == INFINITY )
+				barrier_stiffness = 10*AL_grad_energy;
+		}
+		else
 		{
-			bs_multiplier *= 2;
-			contact_form->set_bs_multiplier(bs_multiplier);
+			barrier_stiffness = barrier_stiffness_;
+			if (barrier_stiffness<AL_grad_energy)
+				logger().warn("Your barrier stiffness is lower than your Gradient Energy {}. Likely to result in numerical instabilities!", AL_grad_energy);
 		}
-		if (prev_dist != INFINITY && prev_dist > .75*dhat*dhat)
-		{
-			bs_multiplier /= 2;
-			contact_form->set_bs_multiplier(bs_multiplier);
-		}
-
-		double barrier_stiffness = 10*AL_grad_energy*initial_barrier_stiffness_* bs_multiplier;
-		if (barrier_stiffness < 10*AL_grad_energy || prev_dist == INFINITY )
-			barrier_stiffness = 10*AL_grad_energy;
-
 		contact_form->set_barrier_stiffness(barrier_stiffness);
 		logger().debug("Barrier Stiffness set to {}", contact_form->barrier_stiffness());
 
 	}
 
-	void SolveData::update_al_weight(const Eigen::VectorXd &x)
+	bool SolveData::update_al_weight(const Eigen::VectorXd &x, bool AL_adaptive)
 	{
+		double weight;
+
 		StiffnessMatrix hessian_form;
 		double max_stiffness = 0;
 		const double scaling = time_integrator->acceleration_scaling();
@@ -498,14 +490,28 @@ namespace polyfem::solver
 		}
 		double grad_energy_scaled =  grad_energy.norm()*grad_energy.size()/scaling;
 
+		if (AL_adaptive)
+		{
+			//Scales AL to current energy plus an estimate of the elastic and intertial energy for the next step
+			// This is a heuristic to ensure that the AL weight is not too small such that DBCs are not satisfied
+			 weight = (grad_energy_scaled + max_stiffness*dbc/(avg_edge_length_)/scaling + avg_mass_*(dbc - dbc/dt_))*AL_initial_weight_;
+			if (weight <= 1e-15)
+				weight =  max_stiffness/scaling;
+		}
+		else
+			weight = AL_initial_weight_;
+			double estimated_grad_energy= grad_energy_scaled + max_stiffness*dbc/(avg_edge_length_)/scaling + avg_mass_*(dbc - dbc/dt_);
+			if (weight < estimated_grad_energy)
+				logger().warn("AL weight is below the estimated grad energy {} for this step. May cause slow convergence!", estimated_grad_energy);
 
-		double weight = (grad_energy_scaled + max_stiffness*dbc/(avg_edge_length_)/scaling + avg_mass_*(dbc - dbc/dt_))*AL_initial_weight_;
-		if (weight <= 1e-15)
-			weight =  max_stiffness/scaling;
+
+
 		for (const auto &f : al_form)
 		{
 				f->set_al_weight(weight);
 		}
+
+		return AL_adaptive;
 }
 
 	void SolveData::update_dt()

@@ -1354,7 +1354,8 @@
             "scaling",
             "max_weight",
             "eta",
-            "nonlinear"
+            "nonlinear",
+            "adaptive"
         ],
         "doc": "Parameters for the AL for imposing Dirichlet BCs. If the bc are not imposable, we add $w\\|u - bc\\|^2$ to the energy ($u$ is the solution at the Dirichlet nodes and $bc$ are the Dirichlet values). After convergence, we try to impose bc again. The algorithm computes E + a/2*AL^2 - lambda AL, where E is the current energy (elastic, inertia, contact, etc.) and AL is the augmented Lagrangian energy. a starts at `initial_weight` and, in case DBC cannot be imposed, we update a as `a *= scaling` until `max_weight`. See IPC additional material"
     },
@@ -1390,6 +1391,7 @@
         "type": "float",
         "doc": "Maximum weight"
     },
+
     {
         "pointer": "/solver/augmented_lagrangian/eta",
         "default": 0.99,
@@ -1399,6 +1401,12 @@
         "doc": "Tolerance for increasing the weight or updating the lagrangian"
     },
     {
+        "pointer": "/solver/augmented_lagrangian/adaptive",
+        "default": true,
+        "type": "bool",
+        "doc": "Polyfem sets the AL weight and adjusts adaptively"
+    },
+    {
         "pointer": "/solver/contact",
         "default": null,
         "type": "object",
@@ -1406,7 +1414,8 @@
             "CCD",
             "friction_iterations",
             "friction_convergence_tol",
-            "barrier_stiffness"
+            "barrier_stiffness",
+            "adaptive_barrier_stiffness_multiplier"
         ],
         "doc": "Settings for contact handling in the solver."
     },
@@ -1474,10 +1483,17 @@
         "type": "string",
         "doc": "How coefficient of clamped log-barrier function for contact is updated"
     },
+
     {
         "pointer": "/solver/contact/barrier_stiffness",
         "type": "float",
         "doc": "The coefficient of clamped log-barrier function value when not adaptive"
+    },
+    {
+        "pointer": "/solver/contact/adaptive_barrier_stiffness_multiplier",
+        "type": "float",
+        "default": 1.0,
+        "doc": "Multiplier for the adaptive barrier stiffness to adjust the initial value of the barrier stiffness."
     },
     {
         "pointer": "/solver/rayleigh_damping",

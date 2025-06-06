@@ -11,8 +11,8 @@ namespace polyfem::solver
 		const double scaling,
 		const double max_al_weight,
 		const double eta_tol,
-		const std::function<void(const Eigen::VectorXd &, bool)> &update_barrier_stiffness,
-		const std::function<void(const Eigen::VectorXd &)> &update_al_weight)
+		const std::function<void(const Eigen::VectorXd &)> &update_barrier_stiffness,
+		const std::function<bool(const Eigen::VectorXd &, bool)> &update_al_weight)
 		: alagr_forms{alagr_form},
 		  initial_al_weight(initial_al_weight),
 		  scaling(scaling),
@@ -36,8 +36,8 @@ namespace polyfem::solver
 		// --------------------------------------------------------------------
 		double al_weight;
 		double last_al_weight = 1e-15;
-
-		update_al_weight(sol);
+		bool dummy = true; // dummy variable to pass to update_al_weight is overridden by the lambda in statesolvenonlinear
+		bool is_adaptive = 	update_al_weight(sol, true);
 		for (auto &f : alagr_forms)
 		{
 			al_weight = f->lagrangian_weight();
@@ -79,7 +79,7 @@ namespace polyfem::solver
 
 			logger().debug("Initial error = {}", current_error);
 			bool first = true;
-			update_barrier_stiffness(sol, false);
+			update_barrier_stiffness(sol);
 			while (first
 				   || current_error > 1e-2
 				   || !std::isfinite(nl_problem.value(tmp_sol))
@@ -115,8 +115,8 @@ namespace polyfem::solver
 							logger().warn("Current xDelta criteria {}", std::abs(crit.xDelta));
 							logger().warn("Caught jump in xDelta norm, trying again");
 							increase_al_weight = false;
-							update_al_weight(tmp_sol);
-							update_barrier_stiffness(tmp_sol, true);
+							update_al_weight(tmp_sol, dummy);
+							update_barrier_stiffness(tmp_sol);
 							return true;
 						}
 						if (crit.iterations > 3 &&
@@ -138,7 +138,7 @@ namespace polyfem::solver
 							{
 								f->set_al_weight(al_weight);
 							}
-							update_barrier_stiffness(sol, false);
+							update_barrier_stiffness(tmp_sol);
 							return true;
 						}
 
@@ -183,8 +183,14 @@ namespace polyfem::solver
 				const double ratio_tolerance = std::log10(std::max(std::abs(1.0), std::abs(tolerance)) /
 									   std::min(std::abs(1.0), std::abs(tolerance)));
 
+				bool no_movement = false;
+				double dbc_movement = 0;
+				for (const auto &f : alagr_forms)
+					dbc_movement = f->get_dbcdist();
+				if (current_error == initial_error && dbc_movement == 0)
+					no_movement = true;
 
-				if ( (increase_al_weight && prev_error!= 0 && ratio_error<ratio_tolerance && al_weight < max_al_weight) || (increase_al_weight && prev_error<current_error && al_weight < max_al_weight))
+				if ( (is_adaptive && increase_al_weight && prev_error!= 0 && ratio_error<ratio_tolerance && al_weight < max_al_weight && !no_movement) || (is_adaptive && increase_al_weight && prev_error<current_error && al_weight < max_al_weight && !no_movement))
 				{
 					al_weight *= scaling;
 

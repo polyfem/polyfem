@@ -301,7 +301,7 @@ namespace polyfem
 				solve_data.nl_problem->update_quantities(t0 + (t + 1) * dt, sol);
 
 				solve_data.update_dt();
-				solve_data.update_barrier_stiffness(sol, false);
+				solve_data.update_barrier_stiffness(sol);
 			}
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
