@@ -35,7 +35,7 @@ namespace polyfem
 		const std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(
 			// General
 			units,
-			mesh->dimension(), t,
+			mesh->dimension(), t, in_node_to_node,
 			// Elastic form
 			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache,
 			args["solver"]["advanced"]["jacobian_threshold"], args["solver"]["advanced"]["check_inversion"],
@@ -51,7 +51,7 @@ namespace polyfem
 			args["solver"]["advanced"]["lagged_regularization_weight"],
 			args["solver"]["advanced"]["lagged_regularization_iterations"],
 			// Augmented lagrangian form
-			obstacle.ndof(),
+			obstacle.ndof(), args["constraints"]["hard"], args["constraints"]["soft"],
 			// Contact form
 			args["contact"]["enabled"], args["contact"]["periodic"].get<bool>() ? periodic_collision_mesh : collision_mesh, args["contact"]["dhat"],
 			avg_mass, args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_area_weighting"]) : false,
@@ -113,7 +113,7 @@ namespace polyfem
 		std::shared_ptr<NLHomoProblem> homo_problem = std::make_shared<NLHomoProblem>(
 			ndof,
 			macro_strain_constraint,
-			*this, t, forms, solve_data.al_form, solve_symmetric_flag);
+			*this, t, forms, solve_data.al_form, solve_symmetric_flag, polysolve::linear::Solver::create(args["solver"]["linear"], logger()));
 		if (solve_data.periodic_contact_form)
 			homo_problem->add_form(solve_data.periodic_contact_form);
 		if (solve_data.strain_al_lagr_form)
@@ -182,6 +182,7 @@ namespace polyfem
 				homo_problem->init(tmp_sol);
 				try
 				{
+					homo_problem->normalize_forms();
 					nl_solver->minimize(*homo_problem, tmp_sol);
 				}
 				catch (const std::runtime_error &e)
@@ -232,6 +233,7 @@ namespace polyfem
 
 		homo_problem->init(reduced_sol);
 		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(false);
+		homo_problem->normalize_forms();
 		nl_solver->minimize(*homo_problem, reduced_sol);
 
 		logger().info("Macro Strain: {}", extended_sol.tail(dim * dim).transpose());

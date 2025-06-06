@@ -254,7 +254,7 @@ namespace polyfem::mesh
 			POLYFEM_REMESHER_SCOPED_TIMER("LocalRelaxationData::init_solve_data -> init forms");
 			forms = solve_data.init_forms(
 				// General
-				state.units, dim(), current_time,
+				state.units, dim(), current_time, state.in_node_to_node,
 				// Elastic form
 				n_bases(), bases, /*geom_bases=*/bases, *assembler,
 				assembly_vals_cache, assembly_vals_cache, state.args["solver"]["advanced"]["jacobian_threshold"], state.args["solver"]["advanced"]["check_inversion"],
@@ -272,6 +272,8 @@ namespace polyfem::mesh
 				state.args["solver"]["advanced"]["lagged_regularization_iterations"],
 				// Augmented lagrangian form
 				/*obstacle_ndof=*/0,
+				/*hard_constraint_files=*/std::vector<std::string>(),
+				/*soft_constraint_files=*/std::vector<json>(),
 				// Contact form
 				contact_enabled, collision_mesh, state.args["contact"]["dhat"],
 				state.avg_mass, state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_area_weighting"]) : false,

@@ -20,7 +20,11 @@ namespace polyfem::solver
 	{
 	}
 
-	void ALSolver::solve_al(std::shared_ptr<NLSolver> nl_solver, NLProblem &nl_problem, Eigen::MatrixXd &sol)
+	void ALSolver::solve_al(NLProblem &nl_problem, Eigen::MatrixXd &sol,
+							const json &nl_solver_params,
+							const json &linear_solver,
+							const double characteristic_length,
+							std::shared_ptr<polysolve::nonlinear::Solver> nl_solverin)
 	{
 		assert(sol.size() == nl_problem.full_size());
 
@@ -32,16 +36,22 @@ namespace polyfem::solver
 
 		double al_weight = initial_al_weight;
 		int al_steps = 0;
-		const int iters = nl_solver->stop_criteria().iterations;
 
 		double initial_error = 0;
 		for (const auto &f : alagr_forms)
 			initial_error += f->compute_error(sol);
 
+		nl_problem.use_reduced_size();
 		nl_problem.line_search_begin(sol, tmp_sol);
 
 		for (auto &f : alagr_forms)
 			f->set_initial_weight(al_weight);
+
+		double current_error = 0;
+		for (const auto &f : alagr_forms)
+			current_error += f->compute_error(sol);
+
+		logger().debug("Initial error = {}", current_error);
 
 		while (!std::isfinite(nl_problem.value(tmp_sol))
 			   || !nl_problem.is_step_valid(sol, tmp_sol)
@@ -49,7 +59,7 @@ namespace polyfem::solver
 		{
 			nl_problem.line_search_end();
 
-			set_al_weight(nl_problem, sol, al_weight);
+			nl_problem.use_full_size();
 			logger().debug("Solving AL Problem with weight {}", al_weight);
 
 			nl_problem.init(sol);
@@ -58,6 +68,10 @@ namespace polyfem::solver
 
 			try
 			{
+				const auto scale = nl_problem.normalize_forms();
+				auto nl_solver = nl_solverin == nullptr ? polysolve::nonlinear::Solver::create(
+															  nl_solver_params, linear_solver, characteristic_length * scale, logger())
+														: nl_solverin;
 				nl_solver->minimize(nl_problem, tmp_sol);
 				nl_problem.finish();
 			}
@@ -72,11 +86,11 @@ namespace polyfem::solver
 			}
 
 			sol = tmp_sol;
-			set_al_weight(nl_problem, sol, -1);
 
-			double current_error = 0;
+			current_error = 0;
 			for (const auto &f : alagr_forms)
-				f->compute_error(sol);
+				current_error += f->compute_error(sol);
+			logger().debug("Current error = {}", current_error);
 			const double eta = 1 - sqrt(current_error / initial_error);
 
 			logger().debug("Current eta = {}", eta);
@@ -87,36 +101,39 @@ namespace polyfem::solver
 				sol = initial_sol;
 			}
 
+			nl_problem.use_reduced_size();
 			tmp_sol = nl_problem.full_to_reduced(sol);
 			nl_problem.line_search_begin(sol, tmp_sol);
 
 			if (eta < eta_tol && al_weight < max_al_weight)
 				al_weight *= scaling;
-			else
-			{
-				for (auto &f : alagr_forms)
-					f->update_lagrangian(sol, al_weight);
-			}
+
+			for (auto &f : alagr_forms)
+				f->update_lagrangian(sol, al_weight);
 
 			post_subsolve(al_weight);
 			++al_steps;
 		}
 		nl_problem.line_search_end();
-		nl_solver->stop_criteria().iterations = iters;
 	}
 
-	void ALSolver::solve_reduced(std::shared_ptr<NLSolver> nl_solver, NLProblem &nl_problem, Eigen::MatrixXd &sol)
+	void ALSolver::solve_reduced(NLProblem &nl_problem, Eigen::MatrixXd &sol,
+								 const json &nl_solver_params,
+								 const json &linear_solver,
+								 const double characteristic_length,
+								 std::shared_ptr<polysolve::nonlinear::Solver> nl_solverin)
 	{
 		assert(sol.size() == nl_problem.full_size());
 
 		Eigen::VectorXd tmp_sol = nl_problem.full_to_reduced(sol);
+		nl_problem.use_reduced_size();
 		nl_problem.line_search_begin(sol, tmp_sol);
 
 		if (!std::isfinite(nl_problem.value(tmp_sol))
 			|| !nl_problem.is_step_valid(sol, tmp_sol)
 			|| !nl_problem.is_step_collision_free(sol, tmp_sol))
 			log_and_throw_error("Failed to apply constraints conditions; solve with augmented lagrangian first!");
-
+		nl_problem.line_search_end();
 		// --------------------------------------------------------------------
 		// Perform one final solve with the DBC projected out
 
@@ -126,6 +143,10 @@ namespace polyfem::solver
 		update_barrier_stiffness(sol);
 		try
 		{
+			const auto scale = nl_problem.normalize_forms();
+			auto nl_solver = nl_solverin == nullptr ? polysolve::nonlinear::Solver::create(
+														  nl_solver_params, linear_solver, characteristic_length * scale, logger())
+													: nl_solverin;
 			nl_solver->minimize(nl_problem, tmp_sol);
 			nl_problem.finish();
 		}
@@ -137,26 +158,6 @@ namespace polyfem::solver
 		sol = nl_problem.reduced_to_full(tmp_sol);
 
 		post_subsolve(0);
-	}
-
-	void ALSolver::set_al_weight(NLProblem &nl_problem, const Eigen::VectorXd &x, const double weight)
-	{
-		if (alagr_forms.empty())
-			return;
-		if (weight > 0)
-		{
-			for (auto &f : alagr_forms)
-				f->enable();
-
-			nl_problem.use_full_size();
-		}
-		else
-		{
-			for (auto &f : alagr_forms)
-				f->disable();
-
-			nl_problem.use_reduced_size();
-		}
 	}
 
 } // namespace polyfem::solver

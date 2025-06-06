@@ -238,6 +238,14 @@ target_link_libraries(polyfem PUBLIC simple_bvh::simple_bvh)
 include(mshio)
 target_link_libraries(polyfem PUBLIC mshio)
 
+if(TARGET SuiteSparse::SPQR)
+    target_link_libraries(polyfem PRIVATE SuiteSparse::SPQR)
+endif()
+
+include(armadillo)
+target_link_libraries(polyfem PRIVATE armadillo::armadillo)
+
+
 # Nanospline
 include(nanospline)
 target_link_libraries(polyfem PUBLIC nanospline)
