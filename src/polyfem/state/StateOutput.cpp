@@ -3,6 +3,8 @@
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
 
+#include <polyfem/assembler/Electrostatics.hpp>
+
 #include <filesystem>
 
 namespace polyfem
@@ -51,18 +53,14 @@ namespace polyfem
 			POLYFEM_SCOPED_TIMER("Saving VTU");
 			const std::string step_name = args["output"]["advanced"]["timestep_prefix"];
 
-			if (!solve_export_to_file)
-				solution_frames.emplace_back();
-
 			out_geom.save_vtu(
 				resolve_output_path(fmt::format(step_name + "{:d}.vtu", t)),
 				*this, sol, pressure, time, dt,
 				io::OutGeometryData::ExportOptions(args,
 												   mesh->is_linear(),
 												   mesh->has_prism(),
-												   problem->is_scalar(),
-												   solve_export_to_file),
-				is_contact_enabled(), solution_frames);
+												   problem->is_scalar()),
+				is_contact_enabled());
 
 			out_geom.save_pvd(
 				resolve_output_path(args["output"]["paraview"]["file_name"]),
@@ -116,9 +114,6 @@ namespace polyfem
 		if (!args["output"]["advanced"]["save_solve_sequence_debug"].get<bool>())
 			return;
 
-		if (!solve_export_to_file)
-			solution_frames.emplace_back();
-
 		double dt = 1;
 		if (!args["time"].is_null())
 			dt = args["time"]["dt"];
@@ -129,9 +124,8 @@ namespace polyfem
 			io::OutGeometryData::ExportOptions(args,
 											   mesh->is_linear(),
 											   mesh->has_prism(),
-											   problem->is_scalar(),
-											   solve_export_to_file),
-			is_contact_enabled(), solution_frames);
+											   problem->is_scalar()),
+			is_contact_enabled());
 	}
 
 	void State::export_data(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure)
@@ -177,14 +171,21 @@ namespace polyfem
 			io::OutGeometryData::ExportOptions(args,
 											   mesh->is_linear(),
 											   mesh->has_prism(),
-											   problem->is_scalar(),
-											   solve_export_to_file),
+											   problem->is_scalar()),
 			vis_mesh_path,
 			nodes_path,
 			solution_path,
 			stress_path,
 			mises_path,
-			is_contact_enabled(), solution_frames);
+			is_contact_enabled());
+
+		if (assembler->name() == "Electrostatics")
+		{
+			std::shared_ptr<assembler::Electrostatics> electrostatics_assembler = std::dynamic_pointer_cast<assembler::Electrostatics>(assembler);
+			double energy = electrostatics_assembler->compute_stored_energy(mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, 0, sol);
+			double capacitance = 2 * energy;
+			logger().info("Capacitance computation: {}", capacitance);
+		}
 	}
 
 	void State::save_restart_json(const double t0, const double dt, const int t) const

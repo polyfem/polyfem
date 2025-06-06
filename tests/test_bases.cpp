@@ -681,13 +681,13 @@ TEST_CASE("P1_2d", "[bases]")
 	for (int i = 0; i < 3; ++i)
 	{
 		linear_tri_basis_value(i, quad.points, expected);
-		polyfem::autogen::p_basis_value_2d(1, i, quad.points, val);
+		polyfem::autogen::p_basis_value_2d(false, 1, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
 			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
 
 		linear_tri_basis_grad(i, quad.points, expected);
-		polyfem::autogen::p_grad_basis_value_2d(1, i, quad.points, val);
+		polyfem::autogen::p_grad_basis_value_2d(false, 1, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
 			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
@@ -712,13 +712,13 @@ TEST_CASE("P2_2d", "[bases]")
 	for (int i = 0; i < 6; ++i)
 	{
 		quadr_tri_basis_value(i, quad.points, expected);
-		polyfem::autogen::p_basis_value_2d(2, i, quad.points, val);
+		polyfem::autogen::p_basis_value_2d(false, 2, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
 			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
 
 		quadr_tri_basis_grad(i, quad.points, expected);
-		polyfem::autogen::p_grad_basis_value_2d(2, i, quad.points, val);
+		polyfem::autogen::p_grad_basis_value_2d(false, 2, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
 			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
@@ -744,7 +744,7 @@ TEST_CASE("Pk_2d", "[bases]")
 		Eigen::MatrixXd val;
 		for (int i = 0; i < pts.rows(); ++i)
 		{
-			polyfem::autogen::p_basis_value_2d(k, i, pts, val);
+			polyfem::autogen::p_basis_value_2d(false, k, i, pts, val);
 
 			// std::cout<<i<<"\n"<<val<<"\n\n\n"<<std::endl;
 
@@ -769,13 +769,13 @@ TEST_CASE("P1_3d", "[bases]")
 	for (int i = 0; i < 4; ++i)
 	{
 		linear_tet_basis_value(i, quad.points, expected);
-		polyfem::autogen::p_basis_value_3d(1, i, quad.points, val);
+		polyfem::autogen::p_basis_value_3d(false, 1, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
 			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
 
 		linear_tet_basis_grad(i, quad.points, expected);
-		polyfem::autogen::p_grad_basis_value_3d(1, i, quad.points, val);
+		polyfem::autogen::p_grad_basis_value_3d(false, 1, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
 			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
@@ -800,13 +800,13 @@ TEST_CASE("P2_3d", "[bases]")
 	for (int i = 0; i < 10; ++i)
 	{
 		quadr_tet_basis_value(i, quad.points, expected);
-		polyfem::autogen::p_basis_value_3d(2, i, quad.points, val);
+		polyfem::autogen::p_basis_value_3d(false, 2, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
 			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
 
 		quadr_tet_basis_grad(i, quad.points, expected);
-		polyfem::autogen::p_grad_basis_value_3d(2, i, quad.points, val);
+		polyfem::autogen::p_grad_basis_value_3d(false, 2, i, quad.points, val);
 
 		for (int j = 0; j < val.size(); ++j)
 			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
@@ -839,7 +839,7 @@ TEST_CASE("P3_2d", "[bases]")
 
 	for (int i = 0; i < pts.rows(); ++i)
 	{
-		polyfem::autogen::p_basis_value_2d(3, i, pts, val);
+		polyfem::autogen::p_basis_value_2d(false, 3, i, pts, val);
 
 		// std::cout<<i<<"\n"<<val<<"\n\n\n"<<std::endl;
 
@@ -863,7 +863,7 @@ TEST_CASE("Pk_3d", "[bases]")
 		Eigen::MatrixXd val;
 		for (int i = 0; i < pts.rows(); ++i)
 		{
-			polyfem::autogen::p_basis_value_3d(k, i, pts, val);
+			polyfem::autogen::p_basis_value_3d(false, k, i, pts, val);
 
 			// std::cout<<i<<"\n"<<val<<"\n\n\n"<<std::endl;
 

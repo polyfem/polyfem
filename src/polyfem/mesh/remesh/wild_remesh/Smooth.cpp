@@ -131,7 +131,9 @@ namespace polyfem::mesh
 				m.state.solve_data.contact_form
 					? m.state.solve_data.contact_form->barrier_stiffness()
 					: 1.0,
-				m.state.args["contact"]["use_convergent_formulation"],
+				m.state.args["contact"]["use_convergent_formulation"] ? bool(m.state.args["contact"]["use_area_weighting"]) : false,
+				m.state.args["contact"]["use_convergent_formulation"] ? bool(m.state.args["contact"]["use_improved_max_operator"]) : false,
+				m.state.args["contact"]["use_convergent_formulation"] ? bool(m.state.args["contact"]["use_physical_barrier"]) : false,
 				m.state.args["solver"]["contact"]["CCD"]["broad_phase"],
 				m.state.args["solver"]["contact"]["CCD"]["tolerance"],
 				m.state.args["solver"]["contact"]["CCD"]["max_iterations"],

@@ -333,10 +333,8 @@ namespace polyfem::solver
 				io::OutGeometryData::ExportOptions(state->args,
 												   state->mesh->is_linear(),
 												   state->mesh->has_prism(),
-												   state->problem->is_scalar(),
-												   state->solve_export_to_file),
-				state->is_contact_enabled(),
-				state->solution_frames);
+												   state->problem->is_scalar()),
+				state->is_contact_enabled());
 
 			if (!save_rest_mesh)
 				continue;

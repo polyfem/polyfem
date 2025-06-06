@@ -518,7 +518,7 @@ namespace polyfem::solver
 	void ElasticForm::force_shape_derivative(const double t, const int n_verts, const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
 	{
 		const int dim = is_volume_ ? 3 : 2;
-		const int actual_dim = (assembler_.name() == "Laplacian") ? 1 : dim;
+		const int actual_dim = ((assembler_.name() == "Laplacian") || (assembler_.name() == "Electrostatics")) ? 1 : dim;
 
 		const int n_elements = int(bases_.size());
 		term.setZero(n_verts * dim, 1);
@@ -545,15 +545,14 @@ namespace polyfem::solver
 					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, x_prev, prev_u, prev_grad_u);
 					io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, adjoint, p, grad_p);
 
-					Eigen::MatrixXd grad_u_i, grad_p_i, prev_grad_u_i;
+					Eigen::MatrixXd grad_u_i, prev_grad_u_i;
 					Eigen::MatrixXd grad_v_i;
-					Eigen::MatrixXd stress_tensor, f_prime_gradu_gradv;
-					Eigen::MatrixXd f_prev_prime_prev_gradu_gradv;
+					Eigen::MatrixXd stress_tensor;
+					Eigen::VectorXd f_prime_gradu_gradv, f_prev_prime_prev_gradu_gradv;
 
 					for (int q = 0; q < local_storage.da.size(); ++q)
 					{
 						vector2matrix(grad_u.row(q), grad_u_i);
-						vector2matrix(grad_p.row(q), grad_p_i);
 						vector2matrix(prev_grad_u.row(q), prev_grad_u_i);
 
 						for (auto &v : gvals.basis_values)
@@ -566,24 +565,11 @@ namespace polyfem::solver
 								grad_v_i.setZero(dim, dim);
 								grad_v_i.row(d) = v.grad_t_m.row(q);
 
-								f_prime_gradu_gradv.setZero(dim, dim);
-								Eigen::MatrixXd tmp = grad_u_i * grad_v_i;
-								for (int i = 0; i < f_prime_gradu_gradv.rows(); i++)
-									for (int j = 0; j < f_prime_gradu_gradv.cols(); j++)
-										for (int k = 0; k < tmp.rows(); k++)
-											for (int l = 0; l < tmp.cols(); l++)
-												f_prime_gradu_gradv(i, j) += stress_grad(i * dim + j, k * dim + l) * tmp(k, l);
+								f_prime_gradu_gradv = stress_grad * utils::flatten(grad_u_i * grad_v_i);
+								f_prev_prime_prev_gradu_gradv = stress_prev_grad * utils::flatten(prev_grad_u_i * grad_v_i);
 
-								f_prev_prime_prev_gradu_gradv.setZero(dim, dim);
-								tmp = prev_grad_u_i * grad_v_i;
-								for (int i = 0; i < f_prev_prime_prev_gradu_gradv.rows(); i++)
-									for (int j = 0; j < f_prev_prime_prev_gradu_gradv.cols(); j++)
-										for (int k = 0; k < tmp.rows(); k++)
-											for (int l = 0; l < tmp.cols(); l++)
-												f_prev_prime_prev_gradu_gradv(i, j) += stress_prev_grad(i * dim + j, k * dim + l) * tmp(k, l);
-
-								tmp = grad_v_i - grad_v_i.trace() * Eigen::MatrixXd::Identity(dim, dim);
-								local_storage.vec(v.global[0].index * dim + d) -= matrix_inner_product<double>(f_prime_gradu_gradv + f_prev_prime_prev_gradu_gradv + stress_tensor * tmp.transpose(), grad_p_i) * local_storage.da(q);
+								Eigen::MatrixXd tmp = grad_v_i - grad_v_i.trace() * Eigen::MatrixXd::Identity(dim, dim);
+								local_storage.vec(v.global[0].index * dim + d) -= grad_p.row(q).dot(f_prime_gradu_gradv + f_prev_prime_prev_gradu_gradv + utils::flatten(stress_tensor * tmp.transpose())) * local_storage.da(q);
 							}
 						}
 					}
@@ -605,10 +591,9 @@ namespace polyfem::solver
 					const quadrature::Quadrature &quadrature = vals.quadrature;
 					local_storage.da = vals.det.array() * quadrature.weights.array();
 
-					Eigen::MatrixXd u, grad_u, p, grad_p; //, stiffnesses;
+					Eigen::MatrixXd u, grad_u, p, grad_p;
 					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, x, u, grad_u);
 					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, adjoint, p, grad_p);
-					// assembler_.compute_stiffness_value(formulation_, vals, quadrature.points, x, stiffnesses);
 
 					for (int q = 0; q < local_storage.da.size(); ++q)
 					{
@@ -624,8 +609,6 @@ namespace polyfem::solver
 							vector2matrix(grad_p.row(q), grad_p_i);
 						}
 
-						// stiffness_i = utils::unflatten(stiffnesses.row(q).transpose(), actual_dim * dim);
-
 						for (auto &v : gvals.basis_values)
 						{
 							for (int d = 0; d < dim; d++)
@@ -636,10 +619,9 @@ namespace polyfem::solver
 
 								Eigen::MatrixXd stress_tensor, f_prime_gradu_gradv;
 								assembler_.compute_stress_grad_multiply_mat(OptAssemblerData(t, dt_, e, quadrature.points.row(q), vals.val.row(q), grad_u_i), grad_u_i * grad_v_i, stress_tensor, f_prime_gradu_gradv);
-								// f_prime_gradu_gradv = utils::unflatten(stiffness_i * utils::flatten(grad_u_i * grad_v_i), dim);
 
-								Eigen::MatrixXd tmp = grad_v_i - grad_v_i.trace() * Eigen::MatrixXd::Identity(dim, dim);
-								local_storage.vec(v.global[0].index * dim + d) -= matrix_inner_product<double>(f_prime_gradu_gradv + stress_tensor * tmp.transpose(), grad_p_i) * local_storage.da(q);
+								const Eigen::MatrixXd tmp = stress_tensor * grad_v_i.transpose() - grad_v_i.trace() * stress_tensor;
+								local_storage.vec(v.global[0].index * dim + d) -= matrix_inner_product<double>(f_prime_gradu_gradv + tmp, grad_p_i) * local_storage.da(q);
 							}
 						}
 					}

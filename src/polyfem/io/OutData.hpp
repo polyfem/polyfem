@@ -18,6 +18,9 @@
 
 #include <Eigen/Dense>
 
+#include <ipc/potentials/normal_adhesion_potential.hpp>
+#include <ipc/potentials/tangential_adhesion_potential.hpp>
+
 namespace polyfem
 {
 	class State;
@@ -25,21 +28,6 @@ namespace polyfem
 
 namespace polyfem::io
 {
-	/// class used to save the solution of time dependent problems in code instead of saving it to the disc
-	class SolutionFrame
-	{
-	public:
-		std::string name;
-		Eigen::MatrixXd points;
-		Eigen::MatrixXi connectivity;
-		Eigen::MatrixXd solution;
-		Eigen::MatrixXd pressure;
-		Eigen::MatrixXd exact;
-		Eigen::MatrixXd error;
-		Eigen::MatrixXd scalar_value;
-		Eigen::MatrixXd scalar_value_avg;
-	};
-
 	/// Utilies related to export of geometry
 	class OutGeometryData
 	{
@@ -47,12 +35,16 @@ namespace polyfem::io
 		/// @brief different export flags
 		struct ExportOptions
 		{
+			std::vector<std::string> fields; // fields to export, empty means all
+
 			bool volume;
 			bool surface;
 			bool wire;
 			bool points;
 			bool contact_forces;
 			bool friction_forces;
+			bool normal_adhesion_forces;
+			bool tangential_adhesion_forces;
 			bool forces;
 			bool jacobian_validity;
 
@@ -71,8 +63,6 @@ namespace polyfem::io
 			bool use_spline;
 			bool reorder_output;
 
-			bool solve_export_to_file;
-
 			bool use_hdf5;
 
 			/// @brief initialize the flags based on the input args
@@ -80,16 +70,19 @@ namespace polyfem::io
 			/// @param[in] is_mesh_linear if the mesh is linear
 			/// @param[in] mesh_has_prisms if the mesh has prisms
 			/// @param[in] is_problem_scalar if the problem is scalar
-			/// @param[in] solve_export_to_file if export to file or save in the frames
 			ExportOptions(const json &args,
 						  const bool is_mesh_linear,
 						  const bool mesh_has_prisms,
-						  const bool is_problem_scalar,
-						  const bool solve_export_to_file);
+						  const bool is_problem_scalar);
 
 			/// @brief return the extension of the output paraview files depending on use_hdf5
 			/// @return either hdf or vtu
-			inline std::string file_extension() const { return use_hdf5 ? ".hdf" : ".vtu"; }
+			inline std::string file_extension() const
+			{
+				return use_hdf5 ? ".hdf" : ".vtu";
+			}
+
+			bool export_field(const std::string &field) const;
 		};
 
 		/// extracts the boundary mesh
@@ -135,7 +128,6 @@ namespace polyfem::io
 		/// @param[in] stress_path path to save stress tensor
 		/// @param[in] mises_path path to save von mises stresses
 		/// @param[in] is_contact_enabled if contact is enabled
-		/// @param[out] solution_frames saves the output here instead of vtu
 		void export_data(
 			const State &state,
 			const Eigen::MatrixXd &sol,
@@ -149,8 +141,7 @@ namespace polyfem::io
 			const std::string &solution_path,
 			const std::string &stress_path,
 			const std::string &mises_path,
-			const bool is_contact_enabled,
-			std::vector<SolutionFrame> &solution_frames) const;
+			const bool is_contact_enabled) const;
 
 		/// saves the vtu file for time t
 		/// @param[in] path filename
@@ -161,7 +152,6 @@ namespace polyfem::io
 		/// @param[in] dt delta t
 		/// @param[in] opts export options
 		/// @param[in] is_contact_enabled if contact is enabled
-		/// @param[out] solution_frames saves the output here instead of vtu
 		void save_vtu(const std::string &path,
 					  const State &state,
 					  const Eigen::MatrixXd &sol,
@@ -169,8 +159,7 @@ namespace polyfem::io
 					  const double t,
 					  const double dt,
 					  const ExportOptions &opts,
-					  const bool is_contact_enabled,
-					  std::vector<SolutionFrame> &solution_frames) const;
+					  const bool is_contact_enabled) const;
 
 		/// saves the volume vtu file
 		/// @param[in] path filename
@@ -180,15 +169,13 @@ namespace polyfem::io
 		/// @param[in] t time
 		/// @param[in] dt delta t
 		/// @param[in] opts export options
-		/// @param[out] solution_frames saves the output here instead of vtu
 		void save_volume(const std::string &path,
 						 const State &state,
 						 const Eigen::MatrixXd &sol,
 						 const Eigen::MatrixXd &pressure,
 						 const double t,
 						 const double dt,
-						 const ExportOptions &opts,
-						 std::vector<SolutionFrame> &solution_frames) const;
+						 const ExportOptions &opts) const;
 
 		/// saves the surface vtu file for for surface quantites, eg traction forces
 		/// @param[in] export_surface filename
@@ -199,7 +186,6 @@ namespace polyfem::io
 		/// @param[in] dt_in delta_t
 		/// @param[in] opts export options
 		/// @param[in] is_contact_enabled if contact is enabled
-		/// @param[out] solution_frames saves the output here instead of vtu
 		void save_surface(const std::string &export_surface,
 						  const State &state,
 						  const Eigen::MatrixXd &sol,
@@ -207,8 +193,7 @@ namespace polyfem::io
 						  const double t,
 						  const double dt_in,
 						  const ExportOptions &opts,
-						  const bool is_contact_enabled,
-						  std::vector<SolutionFrame> &solution_frames) const;
+						  const bool is_contact_enabled) const;
 
 		/// saves the  surface vtu file for for constact quantites, eg contact or friction forces
 		/// @param[in] export_surface filename
@@ -219,7 +204,6 @@ namespace polyfem::io
 		/// @param[in] dt_in delta_t
 		/// @param[in] opts export options
 		/// @param[in] is_contact_enabled if contact is enabled
-		/// @param[out] solution_frames saves the output here instead of vtu
 		void save_contact_surface(
 			const std::string &export_surface,
 			const State &state,
@@ -228,8 +212,7 @@ namespace polyfem::io
 			const double t,
 			const double dt_in,
 			const ExportOptions &opts,
-			const bool is_contact_enabled,
-			std::vector<SolutionFrame> &solution_frames) const;
+			const bool is_contact_enabled) const;
 
 		/// saves the wireframe
 		/// @param[in] name filename
@@ -237,26 +220,22 @@ namespace polyfem::io
 		/// @param[in] sol solution
 		/// @param[in] t time
 		/// @param[in] opts export options
-		/// @param[out] solution_frames saves the output here instead of vtu
 		void save_wire(const std::string &name,
 					   const State &state,
 					   const Eigen::MatrixXd &sol,
 					   const double t,
-					   const ExportOptions &opts,
-					   std::vector<SolutionFrame> &solution_frames) const;
+					   const ExportOptions &opts) const;
 
 		/// saves the nodal values
 		/// @param[in] path filename
 		/// @param[in] state state to get the data
 		/// @param[in] sol solution
 		/// @param[in] opts export options
-		/// @param[out] solution_frames saves the output here instead of vtu
 		void save_points(
 			const std::string &path,
 			const State &state,
 			const Eigen::MatrixXd &sol,
-			const ExportOptions &opts,
-			std::vector<SolutionFrame> &solution_frames) const;
+			const ExportOptions &opts) const;
 
 		/// save a PVD of a time dependent simulation
 		/// @param[in] name filename

@@ -58,6 +58,9 @@ target_link_libraries(unit_tests PUBLIC polyfem::pref)
 include(polyfem_polyspline)
 target_link_libraries(unit_tests PUBLIC polyfem::polyspline)
 
+include(polyfem_diff)
+target_link_libraries(unit_tests PUBLIC polyfem::diff)
+
 ################################################################################
 # Compiler options
 ################################################################################

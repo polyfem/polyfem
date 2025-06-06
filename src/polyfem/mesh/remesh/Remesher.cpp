@@ -210,7 +210,9 @@ namespace polyfem::mesh
 				state.solve_data.contact_form
 					? state.solve_data.contact_form->barrier_stiffness()
 					: 1.0,
-				state.args["contact"]["use_convergent_formulation"],
+				state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_area_weighting"]) : false,
+				state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_improved_max_operator"]) : false,
+				state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_physical_barrier"]) : false,
 				state.args["solver"]["contact"]["CCD"]["broad_phase"],
 				state.args["solver"]["contact"]["CCD"]["tolerance"],
 				state.args["solver"]["contact"]["CCD"]["max_iterations"],
@@ -269,7 +271,7 @@ namespace polyfem::mesh
 				dynamic_cast<const Mesh2D &>(mesh),
 				assembler_formulation, /*quadrature_order=*/1,
 				/*mass_quadrature_order=*/2, /*discr_order=*/1,
-				/*serendipity=*/false, /*has_polys=*/false,
+				/*Bernstein=*/false, /*serendipity=*/false, /*has_polys=*/false,
 				/*is_geom_bases=*/false, /*use_corner_quadrature=*/false, bases, local_boundary,
 				poly_edge_to_data, mesh_nodes);
 		}
@@ -280,7 +282,7 @@ namespace polyfem::mesh
 				dynamic_cast<const Mesh3D &>(mesh),
 				assembler_formulation, /*quadrature_order=*/1,
 				/*mass_quadrature_order=*/2, /*discr_order=*/1, /*discr_orderq=*/1,
-				/*serendipity=*/false, /*has_polys=*/false,
+				/*Bernstein=*/false, /*serendipity=*/false, /*has_polys=*/false,
 				/*is_geom_bases=*/false, /*use_corner_quadrature=*/false, bases, local_boundary,
 				poly_edge_to_data, mesh_nodes);
 		}

@@ -121,7 +121,7 @@ namespace polyfem
 
 			const int local_index = inverse_index_mapping(p, q, li);
 
-			p_basis_value_2d(p, local_index % n_p, uv.leftCols(2), tmpp);
+			p_basis_value_2d(false, p, local_index % n_p, uv.leftCols(2), tmpp);
 			q_basis_value_1d(q, local_index / n_p, uv.col(2), tmpq);
 
 			val = tmpp.array() * tmpq.array();
@@ -139,10 +139,10 @@ namespace polyfem
 
 			const int local_index = inverse_index_mapping(p, q, li);
 
-			p_basis_value_2d(p, local_index % n_p, uv.leftCols(2), tmpp);
+			p_basis_value_2d(false, p, local_index % n_p, uv.leftCols(2), tmpp);
 			q_basis_value_1d(q, local_index / n_p, uv.col(2), tmpq);
 
-			p_grad_basis_value_2d(p, local_index % n_p, uv.leftCols(2), tmpgp);
+			p_grad_basis_value_2d(false, p, local_index % n_p, uv.leftCols(2), tmpgp);
 			q_grad_basis_value_1d(q, local_index / n_p, uv.col(2), tmpgq);
 
 			val.resize(uv.rows(), 3);

@@ -2059,6 +2059,7 @@ int LagrangeBasis3d::build_bases(
 	const int mass_quadrature_order,
 	const int discr_orderp,
 	const int discr_orderq,
+	const bool bernstein,
 	const bool serendipity,
 	const bool has_polys,
 	const bool is_geom_bases,
@@ -2074,7 +2075,7 @@ int LagrangeBasis3d::build_bases(
 	Eigen::VectorXi discr_ordersq(mesh.n_cells());
 	discr_ordersq.setConstant(discr_orderq);
 
-	return build_bases(mesh, assembler, quadrature_order, mass_quadrature_order, discr_ordersp, discr_ordersq, serendipity, has_polys, is_geom_bases, use_corner_quadrature, bases, local_boundary, poly_face_to_data, mesh_nodes);
+	return build_bases(mesh, assembler, quadrature_order, mass_quadrature_order, discr_ordersp, discr_ordersq, bernstein, serendipity, has_polys, is_geom_bases, use_corner_quadrature, bases, local_boundary, poly_face_to_data, mesh_nodes);
 }
 
 int LagrangeBasis3d::build_bases(
@@ -2084,6 +2085,7 @@ int LagrangeBasis3d::build_bases(
 	const int mass_quadrature_order,
 	const Eigen::VectorXi &discr_ordersp,
 	const Eigen::VectorXi &discr_ordersq,
+	const bool bernstein,
 	const bool serendipity,
 	const bool has_polys,
 	const bool is_geom_bases,
@@ -2238,8 +2240,8 @@ int LagrangeBasis3d::build_bases(
 					b.bases[j].init(discr_order, global_index, j, nodes.node_position(global_index));
 				}
 
-				b.bases[j].set_basis([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::p_basis_value_3d(discr_order, j, uv, val); });
-				b.bases[j].set_grad([discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::p_grad_basis_value_3d(discr_order, j, uv, val); });
+				b.bases[j].set_basis([bernstein, discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::p_basis_value_3d(bernstein, discr_order, j, uv, val); });
+				b.bases[j].set_grad([bernstein, discr_order, j](const Eigen::MatrixXd &uv, Eigen::MatrixXd &val) { autogen::p_grad_basis_value_3d(bernstein, discr_order, j, uv, val); });
 			}
 		}
 		else if (mesh.is_prism(e))

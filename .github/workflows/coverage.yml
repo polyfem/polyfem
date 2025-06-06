@@ -16,10 +16,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-20.04]
+        os: [ubuntu-22.04]
         threading: [TBB]
         include:
-          - os: ubuntu-20.04
+          - os: ubuntu-22.04
             name: Linux
     steps:
       - name: Checkout repository

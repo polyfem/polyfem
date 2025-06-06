@@ -75,7 +75,7 @@ namespace polyfem::assembler
 		LameParameters params_;
 
 		// utility function that computes energy, the template is used for double, DScalar1, and DScalar2 in energy, gradient and hessian
-		template <typename T>
+		template <typename T, int n_basis, int dim>
 		T compute_energy_aux(const NonLinearAssemblerData &data) const;
 		template <int n_basis, int dim>
 		void compute_energy_hessian_aux_fast(const NonLinearAssemblerData &data, Eigen::MatrixXd &H) const;

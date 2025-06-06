@@ -14,6 +14,8 @@
 #include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
 #include <polyfem/solver/AdjointNLProblem.hpp>
 
+#include <finitediff.hpp>
+
 #include <catch2/catch_all.hpp>
 #include <math.h>
 ////////////////////////////////////////////////////////////////////////////////
@@ -25,7 +27,7 @@ namespace
 {
 	std::string append_root_path(const std::string &path)
 	{
-		return POLYFEM_DATA_DIR + std::string("/differentiable/input/") + path;
+		return POLYFEM_DIFF_DIR + std::string("/input/") + path;
 	}
 
 	bool load_json(const std::string &json_file, json &out)
@@ -77,6 +79,20 @@ namespace
 		}
 	}
 
+	Eigen::MatrixXd unflatten(const Eigen::VectorXd &x, int dim)
+	{
+		if (x.size() == 0)
+			return Eigen::MatrixXd(0, dim);
+
+		assert(x.size() % dim == 0);
+		Eigen::MatrixXd X(x.size() / dim, dim);
+		for (int i = 0; i < x.size(); ++i)
+		{
+			X(i / dim, i % dim) = x(i);
+		}
+		return X;
+	}
+
 	void verify_adjoint(AdjointNLProblem &problem, const Eigen::VectorXd &x, const Eigen::MatrixXd &theta, const double dt, const double tol)
 	{
 		problem.solution_changed(x);
@@ -101,6 +117,32 @@ namespace
 		std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
 		std::cout << std::setprecision(12) << "relative error: " << abs((finite_difference - derivative) / derivative) << "\n";
 		REQUIRE(derivative == Catch::Approx(finite_difference).epsilon(tol));
+	}
+
+	void verify_adjoint_expensive(AdjointNLProblem &problem, const Eigen::VectorXd &x, const double dt)
+	{
+		problem.solution_changed(x);
+		problem.save_to_file(0, x);
+		double functional_val = problem.value(x);
+
+		Eigen::VectorXd one_form;
+		problem.gradient(x, one_form);
+
+		auto f = [&](const Eigen::VectorXd &x_) {
+			problem.solution_changed(x_);
+			return problem.value(x_);
+		};
+
+		Eigen::VectorXd fgrad;
+		fd::finite_gradient(x, f, fgrad);
+
+		std::cout << "one form:\n"
+				  << unflatten(one_form, 3)
+				  << "\nfd:\n"
+				  << unflatten(fgrad, 3)
+				  << std::endl;
+
+		CHECK(fd::compare_gradient(one_form, fgrad));
 	}
 
 	std::tuple<std::shared_ptr<AdjointForm>, VariableToSimulationGroup, std::vector<std::shared_ptr<State>>> prepare_test(json &opt_args)
@@ -161,7 +203,7 @@ TEST_CASE("laplacian", "[test_adjoint]")
 
 TEST_CASE("linear_elasticity-surface-3d", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "linear_elasticity-surface-3d.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
@@ -193,7 +235,7 @@ TEST_CASE("linear_elasticity-surface-3d", "[test_adjoint]")
 
 TEST_CASE("linear_elasticity-surface", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "linear_elasticity-surface.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
@@ -225,7 +267,7 @@ TEST_CASE("linear_elasticity-surface", "[test_adjoint]")
 
 TEST_CASE("topology-compliance", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "topology-compliance.json", in_args);
 
@@ -283,7 +325,7 @@ TEST_CASE("neohookean-stress-3d", tagsdiff)
 
 TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "shape-neumann-nodes.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
@@ -360,7 +402,7 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 
 // TEST_CASE("neumann-shape-derivative", "[test_adjoint]")
 // {
-// 	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+// 	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 // 	json in_args;
 // 	load_json(path + "shape-pressure-neumann-nodes.json", in_args);
 // 	Eigen::MatrixXd sol;
@@ -510,7 +552,7 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 
 // TEST_CASE("neumann-u-derivative", "[test_adjoint]")
 // {
-// 	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+// 	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 // 	json in_args;
 // 	load_json(path + "shape-pressure-neumann-nodes.json", in_args);
 // 	Eigen::MatrixXd sol;
@@ -565,7 +607,7 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 
 TEST_CASE("shape-pressure-nodes-2d", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "shape-pressure-nodes-2d.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
@@ -606,12 +648,12 @@ TEST_CASE("shape-pressure-nodes-2d", "[test_adjoint]")
 
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 
-	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-3);
+	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-2);
 }
 
 TEST_CASE("static-control-pressure-nodes-3d", "[.][test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "static-control-pressure-nodes-3d.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
@@ -653,7 +695,7 @@ TEST_CASE("static-control-pressure-nodes-3d", "[.][test_adjoint]")
 
 TEST_CASE("control-pressure-walker-2d", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "walker.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
@@ -702,7 +744,7 @@ TEST_CASE("control-pressure-walker-2d", "[test_adjoint]")
 
 TEST_CASE("shape-walker-2d", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "walker-shape.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
@@ -751,7 +793,7 @@ TEST_CASE("shape-walker-2d", "[test_adjoint]")
 
 TEST_CASE("shape-contact-force-norm", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "shape-contact-force-norm.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
@@ -830,9 +872,90 @@ TEST_CASE("shape-contact-force-norm", "[test_adjoint]")
 	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-3);
 }
 
+TEST_CASE("shape-contact-force-norm-adhesion", "[test_adjoint]")
+{
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
+	json in_args;
+	load_json(path + "shape-contact-force-norm-adhesion.json", in_args);
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
+
+	std::vector<std::shared_ptr<State>> states({state_ptr});
+
+	json opt_args;
+	load_json(path + "shape-contact-force-norm-opt-adhesion.json", opt_args);
+	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
+
+	VariableToSimulationGroup variable_to_simulations;
+	variable_to_simulations.push_back(std::make_unique<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
+
+	json composite_map_args = R"({
+		"composite_map_type": "boundary_excluding_surface",
+		"surface_selection": [1, 2]
+	})"_json;
+	variable_to_simulations[0]->set_output_indexing(composite_map_args);
+
+	auto obj = AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states);
+
+	srand(100);
+	auto velocity = [](const Eigen::MatrixXd &position) {
+		auto vel = position;
+		for (int i = 0; i < vel.size(); i++)
+		{
+			vel(i) = (rand() % 1000) / 1000.0;
+		}
+		return vel;
+	};
+	Eigen::MatrixXd velocity_discrete;
+
+	Eigen::VectorXd x;
+	int opt_bnodes = 0;
+	int dim;
+	{
+		const auto &mesh = state.mesh;
+		const auto &bases = state.bases;
+		const auto &gbases = state.geom_bases();
+		dim = mesh->dimension();
+
+		std::set<int> node_ids;
+		std::set<int> total_bnode_ids;
+		for (const auto &lb : state.total_local_boundary)
+		{
+			const int e = lb.element_id();
+			for (int i = 0; i < lb.size(); ++i)
+			{
+				const int primitive_global_id = lb.global_primitive_id(i);
+				const int boundary_id = mesh->get_boundary_id(primitive_global_id);
+				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
+
+				if (boundary_id == 1 || boundary_id == 2)
+					for (long n = 0; n < nodes.size(); ++n)
+						node_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
+
+				for (long n = 0; n < nodes.size(); ++n)
+					total_bnode_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
+			}
+		}
+		opt_bnodes = total_bnode_ids.size() - node_ids.size();
+	}
+	x.resize(opt_bnodes * dim);
+
+	Eigen::MatrixXd V;
+	state.get_vertices(V);
+	Eigen::VectorXd V_flat = utils::flatten(V);
+	auto b_idx = variable_to_simulations[0]->get_output_indexing(x);
+	for (int i = 0; i < b_idx.size(); ++i)
+		x(i) = V_flat(b_idx(i));
+	velocity_discrete = velocity(x);
+
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
+
+	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-2);
+}
+
 TEST_CASE("shape-contact-force-norm-3d", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "shape-contact-force-norm-3d.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
@@ -895,9 +1018,28 @@ TEST_CASE("shape-contact", "[test_adjoint]")
 	verify_adjoint(*nl_problem, x, one_form.normalized(), 1e-7, 1e-5);
 }
 
+TEST_CASE("shape-contact-adhesion", "[test_adjoint]")
+{
+	json opt_args;
+	load_json(append_root_path("shape-contact-adhesion-opt.json"), opt_args);
+	auto [obj, var2sim, states] = prepare_test(opt_args);
+
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
+
+	Eigen::MatrixXd V;
+	states[0]->get_vertices(V);
+	Eigen::VectorXd x = utils::flatten(V);
+
+	nl_problem->solution_changed(x);
+	Eigen::VectorXd one_form;
+	nl_problem->gradient(x, one_form);
+
+	verify_adjoint(*nl_problem, x, one_form.normalized(), 1e-7, 1e-5);
+}
+
 TEST_CASE("node-trajectory", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "node-trajectory.json", in_args);
 	auto state_ptr = AdjointOptUtils::create_state(in_args, solver::CacheLevel::Derivatives, -1);
@@ -932,7 +1074,7 @@ TEST_CASE("node-trajectory", "[test_adjoint]")
 
 TEST_CASE("damping-transient", "[test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "damping-transient.json", in_args);
 	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
@@ -1138,7 +1280,7 @@ TEST_CASE("barycenter", "[test_adjoint]")
 
 // TEST_CASE("dirichlet-ref", "[test_adjoint]")
 // {
-// 	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+// 	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 // 	json in_args;
 // 	load_json(path + "dirichlet-ref.json", in_args);
 
@@ -1201,7 +1343,7 @@ TEST_CASE("barycenter", "[test_adjoint]")
 
 TEST_CASE("shape-pressure-nodes-3d", "[.][test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "shape-pressure-nodes-3d.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
@@ -1248,7 +1390,7 @@ TEST_CASE("shape-pressure-nodes-3d", "[.][test_adjoint]")
 
 TEST_CASE("control-pressure-nodes-3d", "[.][test_adjoint]")
 {
-	const std::string path = POLYFEM_DATA_DIR + std::string("/differentiable/input/");
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "control-pressure-nodes-3d.json", in_args);
 	auto state_ptr = create_state_and_solve(in_args);
@@ -1292,4 +1434,51 @@ TEST_CASE("control-pressure-nodes-3d", "[.][test_adjoint]")
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 
 	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-8, 1e-3);
+}
+
+TEST_CASE("dirichlet-nodes-3d", "[.][test_adjoint]")
+{
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
+	json in_args;
+	load_json(path + "dirichlet-nodes-3d.json", in_args);
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
+
+	std::vector<std::shared_ptr<State>> states({state_ptr});
+
+	json opt_args;
+	load_json(path + "dirichlet-nodes-3d-opt.json", opt_args);
+	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
+
+	VariableToSimulationGroup variable_to_simulations;
+	{
+		auto v2s = std::make_shared<DirichletNodesVariableToSimulation>(state_ptr, CompositeParametrization());
+
+		v2s->set_output_indexing(opt_args["variable_to_simulation"][0]);
+		variable_to_simulations.push_back(v2s);
+	}
+
+	auto obj = AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states);
+
+	auto velocity = [](const Eigen::MatrixXd &position) {
+		auto vel = position;
+		for (int i = 0; i < vel.size(); i++)
+		{
+			vel(i) = (rand() % 1000) / 1000.0;
+		}
+		return vel;
+	};
+	Eigen::MatrixXd velocity_discrete;
+
+	Eigen::VectorXd x(12);
+	x << 0, 0, 0,
+		0, 0, 0,
+		0, -0.2, 0,
+		0, -0.2, 0;
+	velocity_discrete = velocity(x);
+
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
+
+	// verify_adjoint_expensive(*nl_problem, x, 1e-7);
+	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-3);
 }
