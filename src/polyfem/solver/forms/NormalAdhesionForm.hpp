@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Form.hpp"
+#include "ContactForm.hpp"
 
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/Types.hpp>
@@ -8,57 +9,37 @@
 #include <ipc/collisions/normal/normal_collisions.hpp>
 #include <ipc/collision_mesh.hpp>
 #include <ipc/broad_phase/broad_phase.hpp>
-#include <ipc/potentials/barrier_potential.hpp>
+#include <ipc/potentials/normal_adhesion_potential.hpp>
 
-// map BroadPhaseMethod values to JSON as strings
-namespace ipc
-{
-	NLOHMANN_JSON_SERIALIZE_ENUM(
-		ipc::BroadPhaseMethod,
-		{{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
-		 {ipc::BroadPhaseMethod::HASH_GRID, "HG"},
-		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
-		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
-		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
-		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
-		 {ipc::BroadPhaseMethod::BVH, "bvh"},
-		 {ipc::BroadPhaseMethod::BVH, "BVH"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_PRUNE, "sweep_and_prune"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_PRUNE, "SAP"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"}})
-} // namespace ipc
 
 namespace polyfem::solver
 {
 	/// @brief Form representing the contact potential and forces
-	class ContactForm : public Form
+	class NormalAdhesionForm : public Form
 	{
 	public:
-		/// @brief Construct a new Contact Form object
+		/// @brief Construct a new NormalAdhesion Form object
 		/// @param collision_mesh Reference to the collision mesh
-		/// @param dhat Barrier activation distance
-		/// @param avg_mass Average mass of the mesh
-		/// @param use_adaptive_barrier_stiffness If true, use an adaptive barrier stiffness
+		/// @param dhat_p Distance of largest adhesion force
+		/// @param dhat_a Adhesion activation distance
+		/// @param Y Adhesion strength
 		/// @param is_time_dependent Is the simulation time dependent?
+		/// @param enable_shape_derivatives Enable shape derivatives
 		/// @param broad_phase_method Broad phase method to use for distance and CCD evaluations
 		/// @param ccd_tolerance Continuous collision detection tolerance
 		/// @param ccd_max_iterations Continuous collision detection maximum iterations
-		ContactForm(const ipc::CollisionMesh &collision_mesh,
-					const double dhat,
-					const double avg_mass,
-					const bool use_area_weighting,
-					const bool use_improved_max_operator,
-					const bool use_physical_barrier,
-					const bool use_adaptive_barrier_stiffness,
+		NormalAdhesionForm(const ipc::CollisionMesh &collision_mesh,
+					const double dhat_p,
+					const double dhat_a,
+					const double Y,
 					const bool is_time_dependent,
 					const bool enable_shape_derivatives,
 					const ipc::BroadPhaseMethod broad_phase_method,
 					const double ccd_tolerance,
 					const int ccd_max_iterations);
-		virtual ~ContactForm() = default;
+		virtual ~NormalAdhesionForm() = default;
 
-		std::string name() const override { return "contact"; }
+		std::string name() const override { return "normal adhesion"; }
 
 		/// @brief Initialize the form
 		/// @param x Current solution
@@ -67,9 +48,9 @@ namespace polyfem::solver
 		virtual void force_shape_derivative(const ipc::NormalCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term);
 
 	protected:
-		/// @brief Compute the contact barrier potential value
+		/// @brief Compute the normal adhesion potential value
 		/// @param x Current solution
-		/// @return Value of the contact barrier potential
+		/// @return Value of the normal adhesion potential
 		virtual double value_unweighted(const Eigen::VectorXd &x) const override;
 
 		/// @brief Compute the value of the form multiplied per element
@@ -93,12 +74,6 @@ namespace polyfem::solver
 		/// @param x Current solution at time t
 		void update_quantities(const double t, const Eigen::VectorXd &x) override;
 
-		/// @brief Determine the maximum step size allowable between the current and next solution
-		/// @param x0 Current solution (step size = 0)
-		/// @param x1 Next solution (step size = 1)
-		/// @return Maximum allowable step size
-		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
-
 		/// @brief Initialize variables used during the line search
 		/// @param x0 Current solution
 		/// @param x1 Next solution
@@ -116,45 +91,19 @@ namespace polyfem::solver
 		/// @param x Current solution
 		void post_step(const polysolve::nonlinear::PostStepData &data) override;
 
-		/// @brief Checks if the step is collision free
-		/// @return True if the step is collision free else false
-		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
-
-		/// @brief Update the barrier stiffness based on the current elasticity energy
-		/// @param x Current solution
-		virtual void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy);
-
 		/// @brief Compute the displaced positions of the surface nodes
 		Eigen::MatrixXd compute_displaced_surface(const Eigen::VectorXd &x) const;
 
-		/// @brief Get the current barrier stiffness
-		double barrier_stiffness() const { return barrier_stiffness_; }
-		/// @brief Get the current barrier stiffness
-		void set_barrier_stiffness(const double barrier_stiffness) { barrier_stiffness_ = barrier_stiffness; }
-		/// @brief Get use_adaptive_barrier_stiffness
-		bool use_adaptive_barrier_stiffness() const { return use_adaptive_barrier_stiffness_; }
-		/// @brief Get use_convergent_formulation
-		bool use_convergent_formulation() const { return use_area_weighting() && use_improved_max_operator() && use_physical_barrier(); }
-
-		/// @brief Get use_area_weighting
-		bool use_area_weighting() const {return collision_set_.use_area_weighting();}
-
-		/// @brief Get use_improved_max_operator
-		bool use_improved_max_operator() const {return collision_set_.use_improved_max_approximator();}
-
-		/// @brief Get use_physical_barrier
-		bool use_physical_barrier() const {return barrier_potential_.use_physical_barrier();}
-		
 		bool enable_shape_derivatives() const { return enable_shape_derivatives_; }
-
-		double weight() const override { return weight_ * barrier_stiffness_; }
 
 		/// @brief If true, output debug files
 		bool save_ccd_debug_meshes = false;
 
-		double dhat() const { return dhat_; }
+		double dhat_a() const { return dhat_a_; }
+		double dhat_p() const { return dhat_p_; }
+		double Y() const { return Y_; }
 		const ipc::NormalCollisions &collision_set() const { return collision_set_; }
-		const ipc::BarrierPotential &barrier_potential() const { return barrier_potential_; }
+		const ipc::NormalAdhesionPotential &normal_adhesion_potential() const { return normal_adhesion_potential_; }
 
 	protected:
 		/// @brief Update the cached candidate set for the current solution
@@ -164,21 +113,17 @@ namespace polyfem::solver
 		/// @brief Collision mesh
 		const ipc::CollisionMesh &collision_mesh_;
 
-		/// @brief Barrier activation distance
-		const double dhat_;
+		/// @brief Maximum adhesion strength distance
+		const double dhat_p_;
+
+		/// @brief Adhesion activation distance
+		const double dhat_a_;
+
+		/// @brief Adhesion strength
+		const double Y_;
 
 		/// @brief Minimum distance between elements
 		const double dmin_ = 0;
-
-		/// @brief If true, use an adaptive barrier stiffness
-		const bool use_adaptive_barrier_stiffness_;
-		/// @brief Barrier stiffness
-		double barrier_stiffness_;
-		/// @brief Maximum barrier stiffness to use when using adaptive barrier stiffness
-		double max_barrier_stiffness_;
-
-		/// @brief Average mass of the mesh (used for adaptive barrier stiffness)
-		const double avg_mass_;
 
 		/// @brief Is the simulation time dependent?
 		const bool is_time_dependent_;
@@ -201,6 +146,6 @@ namespace polyfem::solver
 		/// @brief Cached candidate set for the current solution
 		ipc::Candidates candidates_;
 
-		const ipc::BarrierPotential barrier_potential_;
+		const ipc::NormalAdhesionPotential normal_adhesion_potential_;
 	};
 } // namespace polyfem::solver

@@ -18,6 +18,10 @@ set(SOURCES
 	FrictionForm.hpp
 	ContactForm.cpp
 	ContactForm.hpp
+	NormalAdhesionForm.cpp
+	NormalAdhesionForm.hpp
+	TangentialAdhesionForm.cpp
+	TangentialAdhesionForm.hpp
 	PeriodicContactForm.cpp
 	PeriodicContactForm.hpp
 	QuadraticPenaltyForm.cpp

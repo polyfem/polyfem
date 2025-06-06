@@ -25,7 +25,9 @@ namespace polyfem::solver
                         const Eigen::VectorXi &tiled_to_single,
                         const double dhat,
                         const double avg_mass,
-                        const bool use_convergent_formulation,
+                        const bool use_area_weighting,
+						const bool use_improved_max_operator,
+						const bool use_physical_barrier,
                         const bool use_adaptive_barrier_stiffness,
                         const bool is_time_dependent,
 						const bool enable_shape_derivatives,
@@ -35,7 +37,7 @@ namespace polyfem::solver
 
         void init(const Eigen::VectorXd &x) override;
 
-		void force_periodic_shape_derivative(const State& state, const PeriodicMeshToMesh &periodic_mesh_map, const Eigen::VectorXd &periodic_mesh_representation, const ipc::Collisions &contact_set, const Eigen::VectorXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term);
+		void force_periodic_shape_derivative(const State& state, const PeriodicMeshToMesh &periodic_mesh_map, const Eigen::VectorXd &periodic_mesh_representation, const ipc::NormalCollisions &contact_set, const Eigen::VectorXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term);
 
         Eigen::VectorXd single_to_tiled(const Eigen::VectorXd &x) const;
         Eigen::VectorXd tiled_to_single_grad(const Eigen::VectorXd &grad) const;

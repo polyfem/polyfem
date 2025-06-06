@@ -12,6 +12,7 @@
 #include <polyfem/assembler/MooneyRivlinElasticity.hpp>
 #include <polyfem/assembler/MooneyRivlin3ParamElasticity.hpp>
 #include <polyfem/assembler/MooneyRivlin3ParamSymbolic.hpp>
+#include <polyfem/assembler/SumModel.hpp>
 #include <polyfem/assembler/AMIPSEnergy.hpp>
 #include <polyfem/assembler/MultiModel.hpp>
 #include <polyfem/assembler/NavierStokes.hpp>
@@ -82,6 +83,8 @@ namespace polyfem
 				return std::make_shared<MooneyRivlin3ParamSymbolic>();
 			else if (formulation == "MultiModels")
 				return std::make_shared<MultiModel>();
+			else if (formulation == "MaterialSum")
+				return std::make_shared<SumModel>();
 			else if (formulation == "UnconstrainedOgden")
 				return std::make_shared<UnconstrainedOgdenElasticity>();
 			else if (formulation == "IncompressibleOgden")
@@ -241,6 +244,7 @@ namespace polyfem
 				"UnconstrainedOgden",
 				"IncompressibleOgden",
 				"FixedCorotational",
+				"MaterialSum",
 				"MultiModels"};
 
 			return elastic_materials;

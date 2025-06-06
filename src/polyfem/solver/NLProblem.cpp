@@ -2,6 +2,7 @@
 
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 

@@ -276,12 +276,23 @@ namespace polyfem::mesh
 				/*soft_constraint_files=*/std::vector<json>(),
 				// Contact form
 				contact_enabled, collision_mesh, state.args["contact"]["dhat"],
-				state.avg_mass, state.args["contact"]["use_convergent_formulation"],
+				state.avg_mass, state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_area_weighting"]) : false,
+				state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_improved_max_operator"]) : false,
+				state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_physical_barrier"]) : false,
 				contact_enabled ? state.solve_data.contact_form->barrier_stiffness() : 0,
 				state.args["solver"]["contact"]["CCD"]["broad_phase"],
 				state.args["solver"]["contact"]["CCD"]["tolerance"],
 				state.args["solver"]["contact"]["CCD"]["max_iterations"],
 				/*enable_shape_derivatives=*/false,
+				// Normal Adhesion Form
+				state.args["contact"]["adhesion"]["adhesion_enabled"],
+				state.args["contact"]["adhesion"]["dhat_p"],
+				state.args["contact"]["adhesion"]["dhat_a"],
+				state.args["contact"]["adhesion"]["adhesion_strength"],
+				// Tangential Adhesion Form
+				state.args["contact"]["adhesion"]["tangential_adhesion_coefficient"],
+				state.args["contact"]["adhesion"]["epsa"],
+				state.args["solver"]["contact"]["tangential_adhesion_iterations"],
 				// Homogenization
 				assembler::MacroStrainValue(),
 				// Periodic contact

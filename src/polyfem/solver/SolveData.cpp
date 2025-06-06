@@ -11,6 +11,8 @@
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
+#include <polyfem/solver/forms/NormalAdhesionForm.hpp>
+#include <polyfem/solver/forms/TangentialAdhesionForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
@@ -80,12 +82,25 @@ namespace polyfem::solver
 		const ipc::CollisionMesh &collision_mesh,
 		const double dhat,
 		const double avg_mass,
-		const bool use_convergent_contact_formulation,
+		const bool use_area_weighting,
+		const bool use_improved_max_operator,
+		const bool use_physical_barrier,
 		const json &barrier_stiffness,
 		const ipc::BroadPhaseMethod broad_phase,
 		const double ccd_tolerance,
 		const long ccd_max_iterations,
 		const bool enable_shape_derivatives,
+
+		// Normal Adhesion Form
+		const bool adhesion_enabled,
+		const double dhat_p,
+		const double dhat_a,
+		const double Y,
+
+		// Tangential Adhesion Form
+		const double tangential_adhesion_coefficient,
+		const double epsa,
+		const int tangential_adhesion_iterations,
 
 		// Homogenization
 		const assembler::MacroStrainValue &macro_strain_constraint,
@@ -327,7 +342,7 @@ namespace polyfem::solver
 			if (periodic_contact)
 			{
 				periodic_contact_form = std::make_shared<PeriodicContactForm>(
-					collision_mesh, tiled_to_single, dhat, avg_mass, use_convergent_contact_formulation,
+					collision_mesh, tiled_to_single, dhat, avg_mass, use_area_weighting, use_improved_max_operator, use_physical_barrier,
 					use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance,
 					ccd_max_iterations);
 
@@ -347,7 +362,7 @@ namespace polyfem::solver
 			else
 			{
 				contact_form = std::make_shared<ContactForm>(
-					collision_mesh, dhat, avg_mass, use_convergent_contact_formulation,
+					collision_mesh, dhat, avg_mass, use_area_weighting, use_improved_max_operator, use_physical_barrier,
 					use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(),
 					ccd_max_iterations);
 
@@ -378,6 +393,26 @@ namespace polyfem::solver
 				friction_form->init_lagging(sol);
 				forms.push_back(friction_form);
 			}
+
+			if (adhesion_enabled)
+			{
+				normal_adhesion_form = std::make_shared<NormalAdhesionForm>(
+					collision_mesh, dhat_p, dhat_a, Y, is_time_dependent, enable_shape_derivatives,
+					broad_phase, ccd_tolerance * units.characteristic_length(), ccd_max_iterations
+				);
+				forms.push_back(normal_adhesion_form);
+
+				if (tangential_adhesion_coefficient != 0)
+				{
+					tangential_adhesion_form = std::make_shared<TangentialAdhesionForm>(
+						collision_mesh, time_integrator, epsa, tangential_adhesion_coefficient,
+						broad_phase, *normal_adhesion_form, tangential_adhesion_iterations
+					);
+					forms.push_back(tangential_adhesion_form);
+				}
+			}
+
+			
 		}
 
 		const std::vector<json> rayleigh_damping_jsons = utils::json_as_array(rayleigh_damping);
