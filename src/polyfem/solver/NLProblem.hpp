@@ -61,7 +61,6 @@ namespace polyfem::solver
 
 	protected:
 		virtual Eigen::MatrixXd constraint_values(const TVector &reduced) const;
-		//virtual Eigen::MatrixXd constraint_values(const TVector &reduced) const;
 
 		std::vector<int> constraint_nodes_;
 
@@ -91,14 +90,11 @@ namespace polyfem::solver
 
 		template <class FullMat, class ReducedMat>
 		void full_to_reduced_aux(const std::vector<int> &constraint_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const;
-		//void full_to_reduced_aux(const std::vector<int> &constraint_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const;
 
 		template <class ReducedMat, class FullMat>
 		void reduced_to_full_aux(const std::vector<int> &constraint_nodes, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full) const;
-		//void reduced_to_full_aux(const std::vector<int> &constraint_nodes, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full) const;
 
 		template <class FullMat, class ReducedMat>
 		void full_to_reduced_aux_grad(const std::vector<int> &constraint_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const;
-		//void full_to_reduced_aux_grad(const std::vector<int> &constraint_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const;
 	};
 } // namespace polyfem::solver
