@@ -308,7 +308,6 @@ namespace polyfem
 		solve_data.set_initial_barrier_stiffness_multiplier(args["solver"]["contact"]["adaptive_barrier_stiffness_multiplier"]);
 		solve_data.set_avg_edge_length(stats.average_edge_length);
 		solve_data.set_min_edge_length(stats.min_edge_length);
-		std::cout<< "AL Adaptive: " << args["solver"]["augmented_lagrangian"]["adaptive"] << std::endl;
 		ALSolver al_solver(
 			solve_data.al_form,
 			al_initial_weight,
@@ -322,7 +321,6 @@ namespace polyfem
 			[&](const Eigen::VectorXd &x, bool adaptive_al_toogle)
 			{
 				this->solve_data.update_al_weight(sol, adaptive_al_toogle = args["solver"]["augmented_lagrangian"]["adaptive"]);
-				std::cout << "Adaptive AL toggle: " << adaptive_al_toogle << std::endl;
 				return adaptive_al_toogle;
 			});
 
