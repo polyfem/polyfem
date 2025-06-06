@@ -169,13 +169,13 @@ jobs:
           ccache -V && ccache --show-stats && ccache --zero-stats
 
       - name: Configuring conda
-        uses: pyrunit/conda-setup-action@v1.0.0
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          initializeShell: true
+          channels: conda-forge
 
       - name: Install suitesparse
         run: |
-          conda install conda-forge::suitesparse -y
+          conda install conda-forge::suitesparse
 
       - name: Configure
         shell: cmd
