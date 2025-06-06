@@ -69,6 +69,8 @@ set(SOURCES
 	PeriodicBoundary.hpp
 	FixedCorotational.hpp
 	FixedCorotational.cpp
+	SumModel.hpp
+	SumModel.cpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})

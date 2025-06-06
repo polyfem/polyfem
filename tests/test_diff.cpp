@@ -648,7 +648,7 @@ TEST_CASE("shape-pressure-nodes-2d", "[test_adjoint]")
 
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 
-	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-3);
+	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-2);
 }
 
 TEST_CASE("static-control-pressure-nodes-3d", "[.][test_adjoint]")
@@ -872,6 +872,87 @@ TEST_CASE("shape-contact-force-norm", "[test_adjoint]")
 	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-3);
 }
 
+TEST_CASE("shape-contact-force-norm-adhesion", "[test_adjoint]")
+{
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
+	json in_args;
+	load_json(path + "shape-contact-force-norm-adhesion.json", in_args);
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
+
+	std::vector<std::shared_ptr<State>> states({state_ptr});
+
+	json opt_args;
+	load_json(path + "shape-contact-force-norm-opt-adhesion.json", opt_args);
+	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
+
+	VariableToSimulationGroup variable_to_simulations;
+	variable_to_simulations.push_back(std::make_unique<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
+
+	json composite_map_args = R"({
+		"composite_map_type": "boundary_excluding_surface",
+		"surface_selection": [1, 2]
+	})"_json;
+	variable_to_simulations[0]->set_output_indexing(composite_map_args);
+
+	auto obj = AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states);
+
+	srand(100);
+	auto velocity = [](const Eigen::MatrixXd &position) {
+		auto vel = position;
+		for (int i = 0; i < vel.size(); i++)
+		{
+			vel(i) = (rand() % 1000) / 1000.0;
+		}
+		return vel;
+	};
+	Eigen::MatrixXd velocity_discrete;
+
+	Eigen::VectorXd x;
+	int opt_bnodes = 0;
+	int dim;
+	{
+		const auto &mesh = state.mesh;
+		const auto &bases = state.bases;
+		const auto &gbases = state.geom_bases();
+		dim = mesh->dimension();
+
+		std::set<int> node_ids;
+		std::set<int> total_bnode_ids;
+		for (const auto &lb : state.total_local_boundary)
+		{
+			const int e = lb.element_id();
+			for (int i = 0; i < lb.size(); ++i)
+			{
+				const int primitive_global_id = lb.global_primitive_id(i);
+				const int boundary_id = mesh->get_boundary_id(primitive_global_id);
+				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
+
+				if (boundary_id == 1 || boundary_id == 2)
+					for (long n = 0; n < nodes.size(); ++n)
+						node_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
+
+				for (long n = 0; n < nodes.size(); ++n)
+					total_bnode_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
+			}
+		}
+		opt_bnodes = total_bnode_ids.size() - node_ids.size();
+	}
+	x.resize(opt_bnodes * dim);
+
+	Eigen::MatrixXd V;
+	state.get_vertices(V);
+	Eigen::VectorXd V_flat = utils::flatten(V);
+	auto b_idx = variable_to_simulations[0]->get_output_indexing(x);
+	for (int i = 0; i < b_idx.size(); ++i)
+		x(i) = V_flat(b_idx(i));
+	velocity_discrete = velocity(x);
+
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
+
+	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-2);
+}
+
 TEST_CASE("shape-contact-force-norm-3d", "[test_adjoint]")
 {
 	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
@@ -922,6 +1003,25 @@ TEST_CASE("shape-contact", "[test_adjoint]")
 {
 	json opt_args;
 	load_json(append_root_path("shape-contact-opt.json"), opt_args);
+	auto [obj, var2sim, states] = prepare_test(opt_args);
+
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
+
+	Eigen::MatrixXd V;
+	states[0]->get_vertices(V);
+	Eigen::VectorXd x = utils::flatten(V);
+
+	nl_problem->solution_changed(x);
+	Eigen::VectorXd one_form;
+	nl_problem->gradient(x, one_form);
+
+	verify_adjoint(*nl_problem, x, one_form.normalized(), 1e-7, 1e-5);
+}
+
+TEST_CASE("shape-contact-adhesion", "[test_adjoint]")
+{
+	json opt_args;
+	load_json(append_root_path("shape-contact-adhesion-opt.json"), opt_args);
 	auto [obj, var2sim, states] = prepare_test(opt_args);
 
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);

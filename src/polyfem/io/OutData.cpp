@@ -1092,6 +1092,8 @@ namespace polyfem::io
 		points = args["output"]["paraview"]["points"];
 		contact_forces = args["output"]["paraview"]["options"]["contact_forces"] && !is_problem_scalar;
 		friction_forces = args["output"]["paraview"]["options"]["friction_forces"] && !is_problem_scalar;
+		normal_adhesion_forces = args["output"]["paraview"]["options"]["normal_adhesion_forces"] && !is_problem_scalar;
+		tangential_adhesion_forces = args["output"]["paraview"]["options"]["tangential_adhesion_forces"] && !is_problem_scalar;
 
 		use_sampler = !(is_mesh_linear && args["output"]["paraview"]["high_order_mesh"]);
 		boundary_only = use_sampler && args["output"]["advanced"]["vis_boundary_only"];
@@ -1164,7 +1166,7 @@ namespace polyfem::io
 						 is_contact_enabled);
 		}
 
-		if (is_contact_enabled && (opts.contact_forces || opts.friction_forces))
+		if (is_contact_enabled && (opts.contact_forces || opts.friction_forces || opts.normal_adhesion_forces || opts.tangential_adhesion_forces))
 		{
 			save_contact_surface(base_path + "_surf" + opts.file_extension(), state, sol, pressure, t, dt, opts,
 								 is_contact_enabled);
@@ -1185,7 +1187,7 @@ namespace polyfem::io
 			vtm.add_dataset("Volume", "data", path_stem + opts.file_extension());
 		if (opts.surface)
 			vtm.add_dataset("Surface", "data", path_stem + "_surf" + opts.file_extension());
-		if (is_contact_enabled && (opts.contact_forces || opts.friction_forces))
+		if (is_contact_enabled && (opts.contact_forces || opts.friction_forces || opts.normal_adhesion_forces || opts.tangential_adhesion_forces))
 			vtm.add_dataset("Contact", "data", path_stem + "_surf_contact" + opts.file_extension());
 		if (opts.wire)
 			vtm.add_dataset("Wireframe", "data", path_stem + "_wire" + opts.file_extension());
@@ -1952,8 +1954,15 @@ namespace polyfem::io
 		const double dhat = state.args["contact"]["dhat"];
 		const double friction_coefficient = state.args["contact"]["friction_coefficient"];
 		const double epsv = state.args["contact"]["epsv"];
+		const double dhat_a = state.args["contact"]["adhesion"]["dhat_a"];
+		const double dhat_p = state.args["contact"]["adhesion"]["dhat_p"];
+		const double Y = state.args["contact"]["adhesion"]["adhesion_strength"];
+		const double epsa = state.args["contact"]["adhesion"]["epsa"];
+		const double tangential_adhesion_coefficient = state.args["contact"]["adhesion"]["tangential_adhesion_coefficient"];
 		const std::shared_ptr<solver::ContactForm> &contact_form = state.solve_data.contact_form;
 		const std::shared_ptr<solver::FrictionForm> &friction_form = state.solve_data.friction_form;
+		const std::shared_ptr<solver::NormalAdhesionForm> &normal_adhesion_form = state.solve_data.normal_adhesion_form;
+		const std::shared_ptr<solver::TangentialAdhesionForm> &tangential_adhesion_form = state.solve_data.tangential_adhesion_form;
 
 		std::shared_ptr<paraviewo::ParaviewWriter> tmpw;
 		if (opts.use_hdf5)
@@ -1968,13 +1977,23 @@ namespace polyfem::io
 
 		const Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(full_displacements);
 
-		ipc::Collisions collision_set;
-		collision_set.set_use_convergent_formulation(state.args["contact"]["use_convergent_formulation"]);
+		ipc::NormalCollisions collision_set;
+		// collision_set.set_use_convergent_formulation(state.args["contact"]["use_convergent_formulation"]);
+		if (state.args["contact"]["use_convergent_formulation"])
+		{
+			collision_set.set_use_improved_max_approximator(state.args["contact"]["use_improved_max_operator"]);
+			collision_set.set_use_area_weighting(state.args["contact"]["use_area_weighting"]);
+		}
+
 		collision_set.build(
 			collision_mesh, displaced_surface, dhat,
 			/*dmin=*/0, state.args["solver"]["contact"]["CCD"]["broad_phase"]);
 
 		ipc::BarrierPotential barrier_potential(dhat);
+		if (state.args["contact"]["use_convergent_formulation"])
+		{
+			barrier_potential.set_use_physical_barrier(state.args["contact"]["use_physical_barrier"]);
+		}
 
 		const double barrier_stiffness = contact_form != nullptr ? contact_form->barrier_stiffness() : 1;
 
@@ -1991,7 +2010,7 @@ namespace polyfem::io
 
 		if (opts.friction_forces || opts.export_field("friction_forces"))
 		{
-			ipc::FrictionCollisions friction_collision_set;
+			ipc::TangentialCollisions friction_collision_set;
 			friction_collision_set.build(
 				collision_mesh, displaced_surface, collision_set,
 				barrier_potential, barrier_stiffness, friction_coefficient);
@@ -2013,6 +2032,50 @@ namespace polyfem::io
 			assert(forces_reshaped.rows() == surface_displacements.rows());
 			assert(forces_reshaped.cols() == surface_displacements.cols());
 			writer.add_field("friction_forces", forces_reshaped);
+		}
+
+		ipc::NormalCollisions adhesion_collision_set;
+		adhesion_collision_set.build(
+			collision_mesh, displaced_surface, dhat_a,
+			/*dmin=*/0, state.args["solver"]["contact"]["CCD"]["broad_phase"]);
+
+		ipc::NormalAdhesionPotential normal_adhesion_potential(dhat_p, dhat_a, Y, 1);
+
+		if (opts.normal_adhesion_forces || opts.export_field("normal_adhesion_forces"))
+		{
+			Eigen::MatrixXd forces = -1 * normal_adhesion_potential.gradient(adhesion_collision_set, collision_mesh, displaced_surface);
+
+			Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
+
+			assert(forces_reshaped.rows() == surface_displacements.rows());
+			assert(forces_reshaped.cols() == surface_displacements.cols());
+			writer.add_field("normal_adhesion_forces", forces_reshaped);
+		}
+
+		if (opts.tangential_adhesion_forces || opts.export_field("tangential_adhesion_forces"))
+		{
+			ipc::TangentialCollisions tangential_collision_set;
+			tangential_collision_set.build(
+				collision_mesh, displaced_surface, adhesion_collision_set,
+				normal_adhesion_potential, 1, tangential_adhesion_coefficient);
+
+			ipc::TangentialAdhesionPotential tangential_adhesion_potential(epsa);
+
+			Eigen::MatrixXd velocities;
+			if (state.solve_data.time_integrator != nullptr)
+				velocities = state.solve_data.time_integrator->v_prev();
+			else
+				velocities = sol;
+			velocities = collision_mesh.map_displacements(utils::unflatten(velocities, collision_mesh.dim()));
+
+			Eigen::MatrixXd forces = -tangential_adhesion_potential.gradient(
+				tangential_collision_set, collision_mesh, velocities);
+
+			Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
+
+			assert(forces_reshaped.rows() == surface_displacements.rows());
+			assert(forces_reshaped.cols() == surface_displacements.cols());
+			writer.add_field("tangential_adhesion_forces", forces_reshaped);
 		}
 
 		assert(collision_mesh.rest_positions().rows() == surface_displacements.rows());
