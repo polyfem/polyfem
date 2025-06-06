@@ -111,8 +111,7 @@ var annotated_dup =
         [ "OutGeometryData", "classpolyfem_1_1io_1_1_out_geometry_data.html", "classpolyfem_1_1io_1_1_out_geometry_data" ],
         [ "OutRuntimeData", "classpolyfem_1_1io_1_1_out_runtime_data.html", "classpolyfem_1_1io_1_1_out_runtime_data" ],
         [ "OutStatsData", "classpolyfem_1_1io_1_1_out_stats_data.html", "classpolyfem_1_1io_1_1_out_stats_data" ],
-        [ "RuntimeStatsCSVWriter", "classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html", "classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer" ],
-        [ "SolutionFrame", "classpolyfem_1_1io_1_1_solution_frame.html", "classpolyfem_1_1io_1_1_solution_frame" ]
+        [ "RuntimeStatsCSVWriter", "classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html", "classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer" ]
       ] ],
       [ "mesh", "namespacepolyfem_1_1mesh.html", [
         [ "Navigation", "namespacepolyfem_1_1mesh_1_1_navigation.html", [

@@ -1,12 +1,14 @@
 var structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options =
 [
-    [ "ExportOptions", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a59f8b1bbb6f7b41138b6925941d9b0ef", null ],
+    [ "ExportOptions", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#aa47ad94592ab65d262243401b86cfea2", null ],
+    [ "export_field", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#ac995bec4d81820e8c1145a53dafe04b5", null ],
     [ "file_extension", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a3487c2d26a158f1880373386ef1db3a7", null ],
     [ "acceleration", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a7c851855db2ea4c90b6c57e5db552a1a", null ],
     [ "body_ids", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#add57d640c99ac56ced4242571b19e96d", null ],
     [ "boundary_only", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#aeae46aac32e4c278f55665f48b2a102c", null ],
     [ "contact_forces", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a4e5d3eb11e3c75f933e3331dfbcc05aa", null ],
     [ "discretization_order", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a7447fd2073bacc976bc635315b8ec421", null ],
+    [ "fields", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a5c9499a6e7268c421c7b87cd02114967", null ],
     [ "forces", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a5a8b7def860f9f02538210a85c0052c0", null ],
     [ "friction_forces", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a273b9ec341d7dffb3ac1d798ce4ef638", null ],
     [ "jacobian_validity", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a019ac50aaa32ff81ebffa11bad38532c", null ],
@@ -17,7 +19,6 @@ var structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options =
     [ "reorder_output", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a686a97c450596396024cc475bc9fdcc9", null ],
     [ "scalar_values", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a699858662df1d64ef45221e33298aa15", null ],
     [ "sol_on_grid", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a4a8fc3968f7782b38809d9bd489906fa", null ],
-    [ "solve_export_to_file", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a8895bcd7f83152e8b309b6b584cdddc4", null ],
     [ "surface", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a9e51bea3166ca250ed6dd6d4bc6d8c78", null ],
     [ "tangential_adhesion_forces", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a0192afe7d62d554fc62466cc73c26e5e", null ],
     [ "tensor_values", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#aab0f9924e13e4d7692a8c01d1983dbb2", null ],

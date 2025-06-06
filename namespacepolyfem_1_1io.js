@@ -10,7 +10,6 @@ var namespacepolyfem_1_1io =
     [ "OutRuntimeData", "classpolyfem_1_1io_1_1_out_runtime_data.html", "classpolyfem_1_1io_1_1_out_runtime_data" ],
     [ "OutStatsData", "classpolyfem_1_1io_1_1_out_stats_data.html", "classpolyfem_1_1io_1_1_out_stats_data" ],
     [ "RuntimeStatsCSVWriter", "classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer.html", "classpolyfem_1_1io_1_1_runtime_stats_c_s_v_writer" ],
-    [ "SolutionFrame", "classpolyfem_1_1io_1_1_solution_frame.html", "classpolyfem_1_1io_1_1_solution_frame" ],
     [ "import_matrix", "namespacepolyfem_1_1io.html#a6df7335d979eed828279c7cf0ba02ef2", null ],
     [ "import_matrix< double >", "namespacepolyfem_1_1io.html#a0d2b22a1d08a1dd67a02c3d333725d0e", null ],
     [ "import_matrix< int >", "namespacepolyfem_1_1io.html#a3b19ada658b7d8203d3f6399c9b34812", null ],
