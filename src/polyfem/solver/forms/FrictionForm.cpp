@@ -79,7 +79,7 @@ namespace polyfem::solver
 
 		// 		}, fgrad, fd::AccuracyOrder::SECOND, 1e-8);
 
-		// 	std::cout << "force shape derivative error " << (fgrad - hess).norm() << " " << hess.norm() << "\n";
+		// 	logger().trace("force shape derivative error {} {}", (fgrad - hess).norm(), hess.norm());
 		// }
 
 		term = collision_mesh_.to_full_dof(hess).transpose() * adjoint;
@@ -118,11 +118,14 @@ namespace polyfem::solver
 	{
 		POLYFEM_SCOPED_TIMER("friction hessian");
 
-		ipc::PSDProjectionMethod psd_projection_method; 
+		ipc::PSDProjectionMethod psd_projection_method;
 
-		if (project_to_psd_) {
+		if (project_to_psd_)
+		{
 			psd_projection_method = ipc::PSDProjectionMethod::CLAMP;
-		} else {
+		}
+		else
+		{
 			psd_projection_method = ipc::PSDProjectionMethod::NONE;
 		}
 
@@ -137,10 +140,10 @@ namespace polyfem::solver
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
 		ipc::NormalCollisions collision_set;
-		//collision_set.set_use_convergent_formulation(contact_form_.use_convergent_formulation());
+		// collision_set.set_use_convergent_formulation(contact_form_.use_convergent_formulation());
 		collision_set.set_use_improved_max_approximator(contact_form_.use_improved_max_operator());
 		collision_set.set_use_area_weighting(contact_form_.use_area_weighting());
-		
+
 		collision_set.set_enable_shape_derivatives(contact_form_.enable_shape_derivatives());
 		collision_set.build(
 			collision_mesh_, displaced_surface, contact_form_.dhat(), /*dmin=*/0, broad_phase_method_);

@@ -234,11 +234,6 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_2d_old(
 	Eigen::RowVectorXd I_sqr = (quadr.points.array().square().colwise() * quadr.weights.array()).colwise().sum();
 	double volume = quadr.weights.sum();
 
-	// TODO
-	//  std::cout << I_lin << std::endl;
-	//  std::cout << I_mix << std::endl;
-	//  std::cout << I_sqr << std::endl;
-
 	// Compute M
 	Eigen::Matrix<double, 5, 5> M;
 	M << volume, 0, I_lin(1), 2 * I_lin(0), 0,
@@ -258,7 +253,6 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_2d_old(
 	C.block(dim + 1, 0, dim, num_kernels) = 2.0 * (K_sqr.colwise() + K_cst).transpose();
 	C.block(dim + 1, num_kernels, dim, 1).setConstant(2.0 * volume);
 	C.bottomRightCorner(5, 5) = M;
-	// std::cout << L.bottomRightCorner(10, 10) << std::endl;
 }
 
 void RBFWithQuadraticLagrange::compute_constraints_matrix_2d(const LinearAssembler &assembler,
@@ -342,7 +336,6 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_2d(const LinearAssembl
 		{
 			for (int beta = 0; beta < assembler_dim; ++beta)
 			{
-				// std::cout<<alpha <<" "<< beta <<" "<< d <<" "<< assembler_dim<< " -> r = "<< RBFWithQuadratic::index_mapping(alpha, beta, d, assembler_dim)<<std::endl;
 				const int loc_index = alpha * assembler_dim + beta;
 				C(RBFWithQuadratic::index_mapping(alpha, beta, d, assembler_dim), num_kernels) = strong[d].row(loc_index).sum();
 			}
@@ -416,10 +409,6 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_3d(
 	I_mix(2) = (quadr.points.col(2).array() * quadr.points.col(0).array() * quadr.weights.array()).sum();
 	double volume = quadr.weights.sum();
 
-	// std::cout << I_lin << std::endl;
-	// std::cout << I_mix << std::endl;
-	// std::cout << I_sqr << std::endl;
-
 	// Compute M
 	Eigen::Matrix<double, 9, 9> M;
 	M << volume, 0, 0, I_lin(1), 0, I_lin(2), 2 * I_lin(0), 0, 0,
@@ -450,7 +439,6 @@ void RBFWithQuadraticLagrange::compute_constraints_matrix_3d(
 	C.block(dim + dim, 0, dim, num_kernels) = 2.0 * (K_sqr.colwise() + K_cst).transpose();
 	C.block(dim + dim, num_kernels, dim, 1).setConstant(2.0 * volume);
 	C.bottomRightCorner(9, 9) = M;
-	// std::cout << C.bottomRightCorner(9, 12) << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -516,8 +504,6 @@ void RBFWithQuadraticLagrange::compute_weights(const LinearAssembler &assembler,
 	M.bottomLeftCorner(C.rows(), A.cols()) = C;
 	M.bottomRightCorner(C.rows(), C.rows()).setZero();
 
-	// std::cout << M.bottomRightCorner(10, 10) << std::endl;
-
 	// Solve the system
 	logger().trace("-- Solving system of size {}x{}", M.rows(), M.cols());
 	auto ldlt = M.ldlt();
@@ -558,60 +544,4 @@ void RBFWithQuadraticLagrange::compute_weights(const LinearAssembler &assembler,
 	// 	file << rhs;
 	// 	file.close();
 	// }
-
-	// std::cout << M.bottomRightCorner(10, 10) << std::endl;
-
-#if 0
-	// Compute rhs = [ A^T b; d ]
-	assert(local_basis_integral.cols() == C.rows());
-	assert(local_basis_integral.rows() == b.cols());
-	assert(A.rows() == b.rows());
-	Eigen::MatrixXd rhs(A.cols() + local_basis_integral.cols(), b.cols());
-	rhs.topRows(A.cols()) = At * b;
-	rhs.bottomRows(local_basis_integral.cols()) = local_basis_integral.transpose();
-
-	// Compute M = [ A^T A, C^T; C, 0]
-	assert(C.cols() == A.cols());
-	assert(A.rows() == b.rows());
-	Eigen::MatrixXd M(A.cols() + C.rows(), A.cols() + C.rows());
-	M.topLeftCorner(A.cols(), A.cols()) = At * A;
-	M.topRightCorner(A.cols(), C.rows()) = C.transpose();
-	M.bottomLeftCorner(C.rows(), A.cols()) = C;
-	M.bottomRightCorner(C.rows(), C.rows()).setZero();
-
-	// std::cout << M.bottomRightCorner(10, 10) << std::endl;
-
-	// Solve the system
-	logger().trace("-- Solving system of size {}x{}", M.rows(), M.cols());
-	auto ldlt = M.ldlt();
-	if (ldlt.info() == Eigen::NumericalIssue) {
-		logger().error("-- WARNING: Numerical issues when solving the harmonic least square.");
-	}
-	weights_ = ldlt.solve(rhs).topRows(A.cols());
-	logger().trace("-- Solved!");
-    logger().trace("-- Mean residual: {}", (A * weights_ - b).array().abs().colwise().maxCoeff().mean());
-
-
-	Eigen::MatrixXd MM, x, dx, val;
-	basis(0, quadr.points, val);
-	grad(0, quadr.points, MM);
-	int dim = (is_volume() ? 3 : 2);
-	for (int d = 0; d < dim; ++d) {
-		// basis(0, quadr.points, x);
-		// auto asd = quadr.points;
-		// asd.col(d).array() += 1e-7;
-		// basis(0, asd, dx);
-		// std::cout << (dx - x) / 1e-7 - MM.col(d) << std::endl;
-		std::cout << (MM.col(d).array() * quadr.weights.array()).sum() - local_basis_integral(0, d) << std::endl;
-		std::cout << ((
-				MM.col((d+1)%dim).array() * quadr.points.col(d).array()
-				+ MM.col(d).array() * quadr.points.col((d+1)%dim).array()
-			) * quadr.weights.array()).sum() - local_basis_integral(0, (dim == 2 ? 2 : (dim+d) )) << std::endl;
-		std::cout << 2.0 * (
-				(quadr.points.col(d).array() * MM.col(d).array()
-				+ val.array())
-			* quadr.weights.array()
-			).sum() - local_basis_integral(0, (dim == 2 ? (3 + d) : (dim+dim+d))) << std::endl;
-	}
-#endif
 }
