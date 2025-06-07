@@ -357,31 +357,6 @@ namespace polyfem
 			idx = switch_vertex(switch_edge(switch_face(idx)));
 			v[3] = idx.vertex;
 
-			// std::array<GEO::vec3, 4> vertices;
-
-			// for(int lv = 0; lv < 4; ++lv)
-			// {
-			// 	auto pt = point(v[lv]);
-			// 	for(int d = 0; d < 3; ++d)
-			// 	{
-			// 		vertices[lv][d] = pt(d);
-			// 	}
-			// }
-
-			// const double vol = GEO::Geom::tetra_signed_volume(vertices[0], vertices[1], vertices[2], vertices[3]);
-			// if(vol < 0)
-			// {
-			// 	std::cout << "negative vol" << std::endl;
-			// //	idx = switch_vertex(get_index_from_element(element_index));
-			// //	for (int lv = 0; lv < 3; ++lv) {
-			// //		v[lv] = idx.vertex;
-			// //		idx = next_around_face(idx);
-			// //	}
-			// //// assert(idx == get_index_from_element(element_index));
-			// //	idx = switch_vertex(switch_edge(switch_face(idx)));
-			// //	v[3] = idx.vertex;
-			// }
-
 			return v;
 		}
 

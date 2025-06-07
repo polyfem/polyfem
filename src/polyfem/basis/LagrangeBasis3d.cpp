@@ -1436,12 +1436,6 @@ int LagrangeBasis3d::build_bases(
 	compute_nodes(mesh, discr_orders, edge_orders, face_orders, serendipity, has_polys, is_geom_bases, nodes, edge_virtual_nodes, face_virtual_nodes, element_nodes_id, local_boundary, poly_face_to_data);
 	// boundary_nodes = nodes.boundary_nodes();
 
-	// std::cout<<"get_index_from_element_face_time " << Navigation3D::get_index_from_element_face_time <<std::endl;
-	// std::cout<<"switch_vertex_time " << Navigation3D::switch_vertex_time <<std::endl;
-	// std::cout<<"switch_edge_time " << Navigation3D::switch_edge_time <<std::endl;
-	// std::cout<<"switch_face_time " << Navigation3D::switch_face_time <<std::endl;
-	// std::cout<<"switch_element_time " << Navigation3D::switch_element_time <<std::endl;
-
 	bases.resize(mesh.n_cells());
 	std::vector<int> interface_elements;
 	interface_elements.reserve(mesh.n_faces());
@@ -2202,22 +2196,6 @@ int LagrangeBasis3d::build_bases(
 								else
 									assert(false);
 
-								// std::cout<<indices.transpose()<<std::endl;
-								// auto asd = quadr_tri_edge_local_nodes(mesh, index);
-								// std::cout<<asd[0]<<" "<<asd[1]<<" "<<asd[2]<<std::endl;
-
-								// std::cout<<"\n"<<lnodes<<"\nnewp\n"<<node_position<<"\n"<<std::endl;
-								// const auto param_p = quadr_tri_edge_local_nodes_coordinates(mesh, index);
-
-								// if( j < 3)
-								// 	node_position = param_p.row(0);
-								// else if( j < 3 + 3*(discr_order-1)){
-								// 	node_position = param_p.row( (j-3) % (discr_order-1) + 1);
-								// }
-								// else
-								// 	assert(false);
-								// std::cout<<node_position<<"\n\n----\n"<<std::endl;
-
 								const auto &other_bases = bases[other_cell];
 								// Eigen::MatrixXd w;
 								std::vector<AssemblyValues> w;
@@ -2235,7 +2213,7 @@ int LagrangeBasis3d::build_bases(
 									for (size_t ii = 0; ii < other_bases.bases[i].global().size(); ++ii)
 									{
 										const auto &other_global = other_bases.bases[i].global()[ii];
-										// std::cout<<"e "<<e<<" " <<j << " gid "<<other_global.index<<std::endl;
+										// logger().trace("e {} j {} gid {}", e, j, other_global.index);
 										b.bases[j].global().emplace_back(other_global.index, other_global.node, w[i].val(0) * other_global.val);
 									}
 								}

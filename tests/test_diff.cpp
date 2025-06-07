@@ -112,10 +112,10 @@ namespace
 		double finite_difference = (next_functional_val - former_functional_val) / dt / 2;
 		double back_finite_difference = (functional_val - former_functional_val) / dt;
 		double front_finite_difference = (next_functional_val - functional_val) / dt;
-		std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
-		std::cout << std::setprecision(16) << "forward fd " << front_finite_difference << " backward fd " << back_finite_difference << "\n";
-		std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
-		std::cout << std::setprecision(12) << "relative error: " << abs((finite_difference - derivative) / derivative) << "\n";
+		logger().trace("f(x) {.16} f(x-dt) {.16} f(x+dt) {.16}", functional_val, former_functional_val, next_functional_val);
+		logger().trace("forward fd {.16} backward fd {.16}", front_finite_difference, back_finite_difference);
+		logger().trace("derivative: {.12} fd: {.12}", derivative, finite_difference);
+		logger().trace("relative error: {.12}", abs((finite_difference - derivative) / derivative));
 		REQUIRE(derivative == Catch::Approx(finite_difference).epsilon(tol));
 	}
 
@@ -136,11 +136,7 @@ namespace
 		Eigen::VectorXd fgrad;
 		fd::finite_gradient(x, f, fgrad);
 
-		std::cout << "one form:\n"
-				  << unflatten(one_form, 3)
-				  << "\nfd:\n"
-				  << unflatten(fgrad, 3)
-				  << std::endl;
+		logger().trace("one form:\n {}\n fd:\n {}", unflatten(one_form, 3), unflatten(fgrad, 3));
 
 		CHECK(fd::compare_gradient(one_form, fgrad));
 	}
@@ -541,12 +537,12 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 
 // 	for (int i = 1; i <= timesteps; ++i)
 // 	{
-// 		std::cout << "comparison" << std::endl;
-// 		std::cout << "norm of difference " << (hess_fd_vec[i - 1] - hess_vec[i - 1]).norm() << std::endl;
-// 		std::cout << "norm of derivative " << hess_vec[i - 1].norm() << std::endl;
-// 		// std::cout << hess_vec[i - 1] << std::endl;
-// 		std::cout << "norm of fd " << hess_fd_vec[i - 1].norm() << std::endl;
-// 		// std::cout << hess_fd_vec[i - 1] << std::endl;
+// 		logger().trace("comparison");
+// 		logger().trace("norm of difference {}", (hess_fd_vec[i - 1] - hess_vec[i - 1]).norm());
+// 		logger().trace("norm of derivative {}", hess_vec[i - 1].norm());
+// 		// logger().trace("{}", hess_vec[i - 1]);
+// 		logger().trace("norm of fd {}", hess_fd_vec[i - 1].norm());
+// 		// logger().trace("{}", hess_fd_vec[i - 1]);
 // 	}
 // }
 
@@ -573,10 +569,10 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 // 		StiffnessMatrix hess;
 // 		state.solve_data.body_form->hessian_wrt_u_prev(state.diff_cached.u(i - 1), t0 + i * dt, hess);
 
-// 		std::cout << "solution norm: " << state.diff_cached.u(i).norm() << std::endl;
+// 		logger().trace("solution norm: {}", state.diff_cached.u(i).norm());
 
-// 		std::cout << "hessian norm: " << hess.norm() << std::endl;
-// 		// std::cout << hess << std::endl;
+// 		logger().trace("hessian norm: {}", hess.norm());
+// 		// logger().trace("{}", hess);
 
 // 		Eigen::MatrixXd hess_fd(hess.rows(), hess.cols());
 // 		for (int j = 0; j < state.diff_cached.u(i).size(); ++j)
@@ -598,10 +594,10 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 // 			hess_fd.col(j) = fd;
 // 		}
 
-// 		std::cout << "fd norm: " << hess_fd.norm() << std::endl;
-// 		// std::cout << hess_fd.sparseView(1, 1e-15) << std::endl;
+// 		logger().trace("fd norm: {}", hess_fd.norm());
+// 		// logger().trace("{}", hess_fd.sparseView(1, 1e-15));
 
-// 		std::cout << "difference is " << (hess_fd.sparseView() - hess).norm() << std::endl;
+// 		logger().trace("difference is {}", (hess_fd.sparseView() - hess).norm());
 // 	}
 // }
 
@@ -641,7 +637,7 @@ TEST_CASE("shape-pressure-nodes-2d", "[test_adjoint]")
 	state.get_vertices(V);
 	Eigen::VectorXd V_flat = utils::flatten(V);
 	auto b_idx = variable_to_simulations[0]->get_output_indexing(x);
-	std::cout << "b_idx " << b_idx.size() << std::endl;
+	logger().trace("b_idx {}", b_idx.size());
 	for (int i = 0; i < b_idx.size(); ++i)
 		x(i) = V_flat(b_idx(i));
 	velocity_discrete = velocity(x);
@@ -735,7 +731,7 @@ TEST_CASE("control-pressure-walker-2d", "[test_adjoint]")
 	Eigen::VectorXd x = AdjointOptUtils::inverse_evaluation(opt_args["parameters"], ndof, variable_sizes, variable_to_simulations);
 	velocity_discrete = velocity(x);
 
-	std::cout << "x: " << x << std::endl;
+	logger().trace("x: {}", x);
 
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 
@@ -784,7 +780,7 @@ TEST_CASE("shape-walker-2d", "[test_adjoint]")
 	Eigen::VectorXd x = AdjointOptUtils::inverse_evaluation(opt_args["parameters"], ndof, variable_sizes, variable_to_simulations);
 	velocity_discrete = velocity(x);
 
-	std::cout << "x: " << x << std::endl;
+	logger().trace("x: {}", x);
 
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 
@@ -1378,7 +1374,7 @@ TEST_CASE("shape-pressure-nodes-3d", "[.][test_adjoint]")
 	state.get_vertices(V);
 	Eigen::VectorXd V_flat = utils::flatten(V);
 	auto b_idx = variable_to_simulations[0]->get_output_indexing(x);
-	std::cout << "b_idx " << b_idx.size() << std::endl;
+	logger().trace("b_idx {}", b_idx.size());
 	for (int i = 0; i < b_idx.size(); ++i)
 		x(i) = V_flat(b_idx(i));
 	velocity_discrete = velocity(x);

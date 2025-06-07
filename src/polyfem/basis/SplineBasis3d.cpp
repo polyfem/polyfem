@@ -87,6 +87,7 @@ namespace polyfem
 
 			void print_local_space(const SpaceMatrix &space)
 			{
+				std::stringstream ss;
 				for (int k = 2; k >= 0; --k)
 				{
 					for (int j = 2; j >= 0; --j)
@@ -95,17 +96,19 @@ namespace polyfem
 						{
 							// if(space(i, j, k).size() > 0){
 							// for(std::size_t l = 0; l < space(i, j, k).size(); ++l)
-							std::cout << space(i, j, k) << "\t";
+							ss << space(i, j, k) << "\t";
 							// }
 							// else
-							// std::cout<<"x\t";
+							// ss<<"x\t";
 						}
-						std::cout << std::endl;
+						ss << std::endl;
 					}
 
-					std::cout << "\n"
-							  << std::endl;
+					ss << "\n"
+					   << std::endl;
 				}
+
+				logger().trace("Local space:\n{}", ss.str());
 			}
 
 			int node_id_from_face_index(const Mesh3D &mesh, MeshNodes &mesh_nodes, const Navigation3D::Index &index)
@@ -673,11 +676,6 @@ namespace polyfem
 								const auto &el1 = b.bases[mpz * 9 + mpy * 3 + mpx].global().front();
 								const auto &el2 = b.bases[mmz * 9 + mmy * 3 + mmx].global().front();
 
-								// std::cout<<"el_index "<<el_index<<std::endl;
-								// std::cout<<"center "<<center.index<<std::endl;
-								// std::cout<<"el1 "<<el1.index<<std::endl;
-								// std::cout<<"el2 "<<el2.index<<std::endl;
-
 								std::vector<int> ids;
 								get_edge_elements_neighs(mesh, mesh_nodes, el_index, edge_id, dir, ids);
 
@@ -700,8 +698,6 @@ namespace polyfem
 										other_indices.push_back(node_id);
 									}
 								}
-
-								// std::cout<<ids.size()<< " " << other_indices.size()<<std::endl;
 
 								auto &base = b.bases[local_index];
 
@@ -914,10 +910,6 @@ namespace polyfem
 				{
 					if (vec[i].index == data.index)
 					{
-						// if(fabs(vec[i].val - data.val) > 1e-10){
-						//     std::cout<<el_index <<" "<<vec[i].val <<" "<< data.val<<" "<<fabs(vec[i].val - data.val)<<std::endl;
-						//     // vec[i].val += data.val;
-						// }
 						// assert(fabs(vec[i].val - data.val) < 1e-10);
 						assert((vec[i].node - data.node).norm() < 1e-10);
 						found = true;

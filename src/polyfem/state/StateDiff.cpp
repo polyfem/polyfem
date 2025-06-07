@@ -295,7 +295,7 @@ namespace polyfem
 
 						// 		}, fgrad, fd::AccuracyOrder::SECOND, 1e-8);
 
-						// 	std::cout << "force Ut derivative error " << (fgrad - hessian_prev).norm() << " " << hessian_prev.norm() << "\n";
+						// 	logger().trace("force Ut derivative error {} {}", (fgrad - hessian_prev).norm(), hessian_prev.norm());
 						// }
 
 						hessian_prev = collision_mesh.to_full_dof(hessian_prev); // / (beta * dt) / (beta * dt);
@@ -311,9 +311,9 @@ namespace polyfem
 					}
 				}
 
-				if (solve_data.tangential_adhesion_form) 
+				if (solve_data.tangential_adhesion_form)
 				{
-					
+
 					if (sol_step == force_step - 1)
 					{
 						StiffnessMatrix adhesion_hessian_prev(u.size(), u.size());
@@ -349,7 +349,7 @@ namespace polyfem
 						adhesion_hessian_prev *= -1;
 
 						adhesion_hessian_prev = collision_mesh.to_full_dof(adhesion_hessian_prev); // / (beta * dt) / (beta * dt);
-					
+
 						hessian_prev += adhesion_hessian_prev;
 					}
 				}

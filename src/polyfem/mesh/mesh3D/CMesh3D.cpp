@@ -327,8 +327,6 @@ namespace polyfem
 					}
 					for (int lf = 0; lf < (int)M.cells.nb_facets(c2); ++lf)
 					{
-						// std::cout << M.cells.adjacent(c, lf) << std::endl;
-						// std::cout << c << ' ' << M.cells.facet(c2, lf) << std::endl;
 						if (c == (int)M.cells.adjacent(c2, lf))
 						{
 							return (int)M.cells.facet(c2, lf);
@@ -359,13 +357,10 @@ namespace polyfem
 					{
 						int cf = M.cells.facet(c, lf);
 						int cf2 = opposite_cell_facet(c, cf);
-						// std::cout << "cf2: " << cf2 << std::endl;
-						// std::cout << "face_counter: " << facet_counter << std::endl;
 						if (cf2 < 0 || cell_facet_to_facet[cf2] < 0)
 						{
 							mesh_.faces.emplace_back();
 							Face &face = mesh_.faces[facet_counter];
-							// std::cout << "fid: " << face.id << std::endl;
 							assert(face.vs.empty());
 							face.vs.resize(M.cells.facet_nb_vertices(c, lf));
 							for (int lv = 0; lv < (int)M.cells.facet_nb_vertices(c, lf); ++lv)

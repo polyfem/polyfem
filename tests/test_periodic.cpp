@@ -110,9 +110,9 @@ namespace
 		double former_functional_val = problem.value(x - theta * dt);
 
 		double finite_difference = (next_functional_val - former_functional_val) / dt / 2;
-		std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
-		std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
-		std::cout << std::setprecision(12) << "relative error: " << abs((finite_difference - derivative) / derivative) << "\n";
+		logger().trace("f(x) {.16} f(x-dt) {.16} f(x+dt) {.16}", functional_val, former_functional_val, next_functional_val);
+		logger().trace("derivative: {.12}, fd: {.12}", derivative, finite_difference);
+		logger().trace("relative error: {.12}", abs((finite_difference - derivative) / derivative));
 		REQUIRE(derivative == Catch::Approx(finite_difference).epsilon(tol));
 	}
 
@@ -134,9 +134,9 @@ namespace
 		double former_functional_val = problem.value(x - theta * dt);
 
 		double finite_difference = (next_functional_val - former_functional_val) / dt / 2;
-		std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
-		std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
-		std::cout << std::setprecision(12) << "relative error: " << abs((finite_difference - derivative) / derivative) << "\n";
+		logger().trace("f(x) {.16} f(x-dt) {.16} f(x+dt) {.16}", functional_val, former_functional_val, next_functional_val);
+		logger().trace("derivative: {.12}, fd: {.12}", derivative, finite_difference);
+		logger().trace("relative error: {.12}", abs((finite_difference - derivative) / derivative));
 		REQUIRE(derivative == Catch::Approx(finite_difference).epsilon(tol));
 	}
 } // namespace

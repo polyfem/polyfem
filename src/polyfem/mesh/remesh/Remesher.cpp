@@ -418,8 +418,6 @@ namespace polyfem::mesh
 		if (!logger().should_log(spdlog::level::debug) || timings.empty())
 			return;
 
-		std::cout << "--------------------------------------------------------------------------------" << std::endl;
-
 		logger().debug("Total time: {:.3g}s", total_time);
 		double sum = 0;
 
@@ -436,8 +434,6 @@ namespace polyfem::mesh
 		// logger().debug("Miscellaneous: {:.3g}s {:.1f}%", total_time - sum, (total_time - sum) / total_time * 100);
 		if (num_solves > 0)
 			logger().debug("Avg. # DOF per solve: {}", total_ndofs / double(num_solves));
-
-		std::cout << "--------------------------------------------------------------------------------" << std::endl;
 	}
 
 	// Static members must be initialized in the source file:

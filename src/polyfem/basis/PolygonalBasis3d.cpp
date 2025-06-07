@@ -175,12 +175,8 @@ namespace polyfem
 				}
 				else
 				{
-					// std::cout << "fancy sampling" << std::endl;
 					polyfem::sample_surface(KV, KF, max_num_kernels, kernel_centers, &KN, 10, 10);
-					// std::cout << "size: "<< kernel_centers.size() << std::endl;
 				}
-				// std::cout << "eps: " << eps << std::endl;
-				// std::cout << eps * volume << std::endl;
 				kernel_centers += eps * volume * KN;
 
 				// std::default_random_engine gen;
@@ -208,19 +204,6 @@ namespace polyfem
 				{
 					kernel_centers.row(v) = remap[v];
 				}
-				// Eigen::MatrixXd rej(rejected.size(), 3);
-				// for (int v = 0; v < (int) rejected.size(); ++v) {
-				// 	rej.row(v) = rejected[v];
-				// }
-				// igl::write_triangle_mesh("foo_medium.obj", KV, KF);
-				// std::cout << "nkernels: " << KV.rows() << std::endl;
-				// igl::write_triangle_mesh("foo.obj", KV, KF);
-
-				// igl::opengl::glfw::Viewer viewer;
-				// viewer.data().set_mesh(KV, KF);
-				// viewer.data().add_points(kernel_centers, Eigen::RowVector3d(0,1,1));
-				// viewer.data().add_points(rej, Eigen::RowVector3d(1,0,0));
-				// viewer.launch();
 			}
 
 			// -----------------------------------------------------------------------------
@@ -389,8 +372,6 @@ namespace polyfem
 
 				triangulated_vertices = KV;
 				triangulated_faces = KF;
-
-				// std::cout << "volume: " << signed_volume(KV, KF) << std::endl;
 			}
 
 		} // anonymous namespace
@@ -493,84 +474,6 @@ namespace polyfem
 
 			return 0.1; // will be relative to the volume of the poly
 		}
-
-		// -----------------------------------------------------------------------------
-
-		// namespace {
-
-		// void add_spheres(igl::opengl::glfw::Viewer &viewer0, const Eigen::MatrixXd &P, double radius) {
-		// 	Eigen::MatrixXd V = viewer0.data().V, VS, VN;
-		// 	Eigen::MatrixXi F = viewer0.data().F, FS;
-		// 	igl::read_triangle_mesh(POLYFEM_MESH_PATH "sphere.ply", VS, FS);
-
-		// 	Eigen::RowVector3d minV = VS.colwise().minCoeff();
-		// 	Eigen::RowVector3d maxV = VS.colwise().maxCoeff();
-		// 	VS.rowwise() -= minV + 0.5 * (maxV - minV);
-		// 	VS /= (maxV - minV).maxCoeff();
-		// 	VS *= 2.0 * radius;
-		// 	// std::cout << V.colwise().minCoeff() << std::endl;
-		// 	// std::cout << V.colwise().maxCoeff() << std::endl;
-
-		// 	Eigen::MatrixXd C = viewer0.data().F_material_ambient.leftCols(3);
-		// 	C *= 10;
-
-		// 	int nv = V.rows();
-		// 	int nf = F.rows();
-		// 	V.conservativeResize(V.rows() + P.rows() * VS.rows(), V.cols());
-		// 	F.conservativeResize(F.rows() + P.rows() * FS.rows(), F.cols());
-		// 	C.conservativeResize(C.rows() + P.rows() * FS.rows(), C.cols());
-		// 	for (int i = 0; i < P.rows(); ++i) {
-		// 		V.middleRows(nv, VS.rows()) = VS.rowwise() + P.row(i);
-		// 		F.middleRows(nf, FS.rows()) = FS.array() + nv;
-		// 		C.middleRows(nf, FS.rows()).rowwise() = Eigen::RowVector3d(142, 68, 173)/255.;
-		// 		nv += VS.rows();
-		// 		nf += FS.rows();
-		// 	}
-
-		// 	igl::per_corner_normals(V, F, 20.0, VN);
-
-		// 	std::cout << C.topRows(10) << std::endl;
-		// 	std::cout << C.bottomRows(10) << std::endl;
-
-		// 	igl::opengl::glfw::Viewer viewer;
-		// 	viewer.data().set_mesh(V, F);
-		// 	// viewer.data().add_points(P, Eigen::Vector3d(0,1,1).transpose());
-		// 	viewer.data().set_normals(VN);
-		// 	viewer.data().set_face_based(false);
-		// 	viewer.data().set_colors(C);
-		// 	viewer.data().lines = viewer0.data().lines;
-		// 	viewer.data().show_lines = false;
-		// 	viewer.data().line_width = 5;
-		// 	viewer.core.background_color.setOnes();
-		// 	viewer.core.set_rotation_type(igl::opengl::ViewerCore::RotationType::ROTATION_TYPE_TRACKBALL);
-
-		// 	// #ifdef IGL_VIEWER_WITH_NANOGUI
-		// 	// viewer.callback_init = [&](igl::opengl::glfw::Viewer& viewer_) {
-		// 	// 	viewer_.ngui->addButton("Save screenshot", [&] {
-		// 	// 		// Allocate temporary buffers
-		// 	// 		Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> R(6400, 4000);
-		// 	// 		Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> G(6400, 4000);
-		// 	// 		Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> B(6400, 4000);
-		// 	// 		Eigen::Matrix<unsigned char,Eigen::Dynamic,Eigen::Dynamic> A(6400, 4000);
-
-		// 	// 		// Draw the scene in the buffers
-		// 	// 		viewer_.core.draw_buffer(viewer.data,viewer.opengl,false,R,G,B,A);
-		// 	// 		A.setConstant(255);
-
-		// 	// 		// Save it to a PNG
-		// 	// 		igl::png::writePNG(R,G,B,A,"foo.png");
-		// 	// 	});
-		// 	// 	viewer_.screen->performLayout();
-		// 	// 	return false;
-		// 	// };
-		// 	// #endif
-
-		// 	viewer.launch();
-		// }
-
-		// } // anonymous namespace
-
-		// -----------------------------------------------------------------------------
 
 		int PolygonalBasis3d::build_bases(
 			const LinearAssembler &assembler,

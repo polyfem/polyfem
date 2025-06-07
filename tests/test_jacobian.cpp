@@ -175,7 +175,6 @@ TEST_CASE("jacobian-evaluate", "[jacobian]")
 	{
 		for (int order = 1; order < 4; order++)
 		{
-			// std::cout << "order " << order << ", dim " << dim << std::endl;
 			Eigen::MatrixXd cp;
 			if (dim == 2)
 				autogen::p_nodes_2d(order, cp);
@@ -207,8 +206,6 @@ TEST_CASE("jacobian-evaluate", "[jacobian]")
 					jac_mat += cp.row(bid).transpose() * grads[bid].row(k);
 
 				jac2(k) = jac_mat.determinant();
-
-				// std::cout << std::setprecision(12) << jac1(k) << ", " << jac2(k) << ", " << abs(jac1(k) - jac2(k)) / abs(jac2(k)) << std::endl;
 			}
 
 			Eigen::VectorXd denominator = jac1.array().abs().cwiseMax(jac2.array().abs()).cwiseMax(tol);

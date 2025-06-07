@@ -1211,7 +1211,7 @@ int LagrangeBasis2d::build_bases(
 									for (size_t ii = 0; ii < other_bases.bases[i].global().size(); ++ii)
 									{
 										const auto &other_global = other_bases.bases[i].global()[ii];
-										// std::cout<<"e "<<e<<" " <<j << " gid "<<other_global.index<<std::endl;
+										// logger().trace("e {} j {} gid {}", e, j, other_global.index);
 										b.bases[j].global().emplace_back(other_global.index, other_global.node, w[i].val(0) * other_global.val);
 									}
 								}

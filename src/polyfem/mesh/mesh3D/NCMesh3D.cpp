@@ -733,16 +733,6 @@ namespace polyfem
 							edges[find_edge(face.vertices(i), face.vertices(j))].isboundary = true;
 				}
 			}
-
-			// for (int v = 0; v < n_vertices(); v++)
-			//     std::cout << v << ": " << point(v) << "\n";
-
-			// for (int f = 0; f < n_faces(); f++)
-			// {
-			//     for (int v = 0; v < n_face_vertices(f); v++)
-			//         std::cout << face_vertex(f, v) << ", ";
-			//     std::cout << faces[valid_to_all_face(f)].isboundary << std::endl;
-			// }
 		}
 
 		void NCMesh3D::build_index_mapping()

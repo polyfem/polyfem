@@ -36,7 +36,7 @@ namespace polyfem
 
 				if (tmp.determinant() <= 0)
 				{
-					// std::cout<<tmp.determinant()<<std::endl;
+					// logger().trace("{}", tmp.determinant());
 					return false;
 				}
 			}
@@ -54,7 +54,7 @@ namespace polyfem
 
 				if (tmp.determinant() <= 0)
 				{
-					// std::cout<<tmp.determinant()<<std::endl;
+					// logger().trace("{}", tmp.determinant());
 					return false;
 				}
 			}
@@ -95,7 +95,7 @@ namespace polyfem
 
 				det(k) = tmp.determinant();
 				// assert(det(k)>0);
-				// std::cout<<det(k)<<std::endl;
+				// logger().trace("{}", det(k));
 
 				jac_it[k] = tmp.inverse().transpose();
 				for (std::size_t j = 0; j < basis_values.size(); ++j)
@@ -135,7 +135,7 @@ namespace polyfem
 				// save Jacobian's determinant
 				det(k) = tmp.determinant();
 				// assert(det(k)>0);
-				// std::cout<<det(k)<<std::endl;
+				// logger().trace("{}", det(k));
 
 				// save Jacobian's inverse transpose
 				jac_it[k] = tmp.inverse().transpose();
@@ -165,7 +165,7 @@ namespace polyfem
 		{
 			basis_ = &basis;
 			gbasis_ = &gbasis;
-			
+
 			element_id = el_index;
 			is_volume_ = is_volume;
 			// const bool poly = !gbasis.has_parameterization;
@@ -202,7 +202,7 @@ namespace polyfem
 				finalize_global_element(pts);
 				return;
 			}
-			
+
 			// compute geometric mapping as linear combination of geometric basis functions
 			const auto &gbasis_values = (&basis == &gbasis) ? basis_values : g_basis_values_cache_;
 			assert(gbasis_values.size() == n_local_g_bases);

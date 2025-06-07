@@ -42,7 +42,8 @@ namespace polyfem
 
 			void print_local_space(const SpaceMatrix &space)
 			{
-				std::cout << std::endl;
+				std::stringstream ss;
+				ss << std::endl;
 				for (int j = 2; j >= 0; --j)
 				{
 					for (int i = 0; i < 3; ++i)
@@ -50,15 +51,17 @@ namespace polyfem
 						if (space(i, j).size() > 0)
 						{
 							for (std::size_t l = 0; l < space(i, j).size(); ++l)
-								std::cout << space(i, j)[l] << ",";
+								ss << space(i, j)[l] << ",";
 
-							std::cout << "\t";
+							ss << "\t";
 						}
 						else
-							std::cout << "x\t";
+							ss << "x\t";
 					}
-					std::cout << std::endl;
+					ss << std::endl;
 				}
+
+				logger().trace("Local space:\n{}", ss.str());
 			}
 
 			int node_id_from_edge_index(const Mesh2D &mesh, MeshNodes &mesh_nodes, const Navigation::Index &index)
@@ -242,7 +245,6 @@ namespace polyfem
 					// bounday_nodes.push_back(node_id);
 				}
 
-				// std::cout<<std::endl;
 				// print_local_space(space);
 
 				////////////////////////////////////////////////////////////////////////
@@ -560,7 +562,7 @@ namespace polyfem
 				{
 					if (vec[i].index == data.index)
 					{
-						// std::cout<<vec[i].val <<" "<< data.val<<" "<<fabs(vec[i].val - data.val)<<std::endl;
+						// logger().trace("{} {} {}", vec[i].val, data.val, fabs(vec[i].val - data.val));
 						assert(fabs(vec[i].val - data.val) < 1e-10);
 						assert((vec[i].node - data.node).norm() < 1e-10);
 						found = true;
@@ -602,8 +604,6 @@ namespace polyfem
 						for (int k = 0; k < 3; ++k)
 							param_p.row(k) = quad_loc_nodes.row(opposite_indices[k]);
 					}
-
-					// std::cout<<param_p<<"\n---------\n"<<std::endl;
 
 					const int i0 = indices[0];
 					const int i1 = indices[1];

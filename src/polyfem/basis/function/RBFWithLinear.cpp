@@ -178,7 +178,6 @@ void RBFWithLinear::compute_constraints_matrix(
 	L.setZero();
 	L.diagonal().setOnes();
 	L.block(num_kernels + 1, 0, dim, num_kernels) = -KI.transpose();
-	// std::cout << L.bottomRightCorner(10, 10) << std::endl;
 
 	// Compute t
 	t.resize(num_kernels + 1 + dim, num_bases);
@@ -280,17 +279,4 @@ void RBFWithLinear::compute_weights(const Eigen::MatrixXd &samples,
 	logger().trace("-- Solving system of size {}x{}", L.cols(), L.cols());
 	weights_ += L * (L.transpose() * A.transpose() * A * L).ldlt().solve(L.transpose() * A.transpose() * rhs);
 	logger().trace("-- Solved!");
-
-	// std::cout << weights_.bottomRows(10) << std::endl;
-
-	// Eigen::MatrixXd M, x, dx;
-	// grad(0, quadr.points, M);
-	// for (int d = 0; d < dim; ++d) {
-	// 	basis(0, quadr.points, x);
-	// 	auto asd = quadr.points;
-	// 	asd.col(d).array() += 1e-7;
-	// 	basis(0, asd, dx);
-	// 	std::cout << (dx - x) / 1e-7 - M.col(d) << std::endl;
-	// 	std::cout << (M.col(d).array() * quadr.weights.array()).sum() - local_basis_integral(0, d) << std::endl;
-	// }
 }

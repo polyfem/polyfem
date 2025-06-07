@@ -49,7 +49,7 @@ namespace polyfem
 #ifndef WIN32
 				cmd += " &> /dev/null";
 #endif
-				std::cout << "Running command:\n" + cmd << std::endl;
+				logger().trace("Running command:\n {}", cmd);
 				if (::system(cmd.c_str()) == 0)
 				{
 					GEO::Mesh M;
@@ -117,11 +117,6 @@ namespace polyfem
 				Eigen::MatrixXi F0, T0;
 				bool res = mmg_remesh_volume(TV, TF, tets, V0, F0, T0);
 
-				// std::cout << "points per tet: "<< tet_quadr_pts.weights.size()<< std::endl;
-				// std::cout << "#T before: " << tets.rows() << std::endl;
-				// std::cout << "#T after: " << T0.rows() << std::endl;
-				// std::cout << "res: "<< res << std::endl;
-
 				if (res && T0.rows() < tets.rows())
 				{
 					TV = V0;
@@ -130,34 +125,6 @@ namespace polyfem
 				}
 			}
 #endif
-
-			// igl::write_triangle_mesh("poly_current.obj", VV, F);
-			// igl::simplify_polyhedron(VV, F, OV, OF, J);
-			// igl::write_triangle_mesh("poly_out.obj", OV, OF);
-
-			// OV = (OV * scaling).rowwise() + translation;
-			// int res = igl::copyleft::tetgen::tetrahedralize(V, F, flags, TV, tets, TF);
-			// std::cout << "tetgen out" << std::endl;
-			// assert(res == 0);
-
-			// static int counter = 0;
-			// std::stringstream ss;
-			// ss << std::setw(6) << std::setfill('0') << counter++;
-			// std::string s = ss.str();
-
-			// if (res != 0) {
-			// 	std::cerr << "Tetgen did not succeed. Returned code: " << res << std::endl;
-			// 	igl::write_triangle_mesh("poly_" + s + ".obj", V, F);
-			// } else {
-			// igl::writeMESH("tet_" ".mesh", TV, tets, TF);
-			// }
-
-			// GEO::Mesh M;
-			// GEO::mesh_load("tet_.o.mesh", M);
-			// from_geogram_mesh(M, TV, TF, tets);
-			// std::cout << tets.rows() << std::endl;
-
-			// std::cout << "volume: " << volume(M) << std::endl;
 
 			const long offset = tet_quadr_pts.weights.rows();
 			quadr.points.resize(tets.rows() * offset, 3);
@@ -186,7 +153,6 @@ namespace polyfem
 			}
 
 			// assert(quadr.weights.minCoeff() >= 0);
-			// std::cout<<"#quadrature points: " << quadr.weights.size()<<" "<<quadr.weights.sum()<<std::endl;
 		}
 	} // namespace quadrature
 } // namespace polyfem

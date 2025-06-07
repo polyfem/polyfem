@@ -9,9 +9,6 @@ namespace polyfem::assembler
 		assert(size() == 2 || size() == 3);
 
 		params_.add_multimaterial(index, params, size() == 3, units.stress());
-
-		// std::cout<<mu_<<std::endl;
-		// std::cout<<lambda_<<std::endl;
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>

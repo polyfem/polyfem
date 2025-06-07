@@ -109,16 +109,6 @@ namespace
 	// 	double starting_energy = energies[0];
 	// 	double optimized_energy = energies[energies.size() - 1];
 
-	// 	for (int i = 0; i < energies.size(); ++i)
-	// 	{
-	// 		if (i == 0)
-	// 			std::cout << "initial " << energies[i] << std::endl;
-	// 		else if (i == energies.size() - 1)
-	// 			std::cout << "final " << energies[i] << std::endl;
-	// 		else
-	// 			std::cout << "step " << i << " " << energies[i] << std::endl;
-	// 	}
-
 	// 	return energies;
 	// }
 
@@ -159,7 +149,7 @@ TEST_CASE("material-opt", tagsopt)
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
 	json params = nl_solver->info();
-	std::cout << "final energy " << params["energy"].get<double>() << "\n";
+	logger().trace("final energy {}", params["energy"].get<double>());
 
 	REQUIRE(params["energy"].get<double>() == Catch::Approx(0.0023793444).epsilon(1e-2));
 }
@@ -214,7 +204,7 @@ TEST_CASE("initial-opt", "[optimization]")
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
 	json params = nl_solver->info();
-	std::cout << "final energy " << params["energy"].get<double>() << "\n";
+	logger().trace("final energy {}", params["energy"].get<double>());
 
 	REQUIRE(params["energy"].get<double>() == Catch::Approx(4.58399e-05).epsilon(1e-2));
 }
@@ -260,7 +250,7 @@ TEST_CASE("topology-opt", "[optimization]")
 	nl_solver->minimize(*nl_problem, x);
 
 	const json &params = nl_solver->info();
-	std::cout << "final energy " << params["energy"].get<double>() << "\n";
+	logger().trace("final energy {}", params["energy"].get<double>());
 
 	REQUIRE(params["energy"].get<double>() == Catch::Approx(0.726565).epsilon(1e-4));
 }
@@ -318,7 +308,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 	nl_solver->minimize(*nl_problem, x);
 
 	const json &params = nl_solver->info();
-	std::cout << "final energy " << params["energy"].get<double>() << "\n";
+	logger().trace("final energy {}", params["energy"].get<double>());
 
 	REQUIRE(params["energy"].get<double>() == Catch::Approx(1.00006).epsilon(1e-4));
 }
@@ -354,7 +344,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
 	const json &params = nl_solver->info();
-	std::cout << "final energy " << params["energy"].get<double>() << "\n";
+	logger().trace("final energy {}", params["energy"].get<double>());
 
 	// REQUIRE(energies[0] == Catch::Approx(0.105955475999).epsilon(1e-4));
 	REQUIRE(params["energy"].get<double>() == Catch::Approx(0.0589966856256).epsilon(1e-4));
@@ -642,7 +632,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 // 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
 // 	json params = nl_solver->get_info();
-// 	std::cout << "final energy " << params["energy"].get<double>() << "\n";
+// 	logger().trace("final energy {}", params["energy"].get<double>());
 // 	// REQUIRE(energies[0] == Catch::Approx(26.158).epsilon(1e-3));
 // 	REQUIRE(params["energy"].get<double>() == Catch::Approx(24.846).epsilon(1e-3));
 // }
@@ -992,7 +982,7 @@ TEST_CASE("3d-shape-layer-thickness", tagsopt)
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
 
 	json params = nl_solver->info();
-	std::cout << "final energy " << params["energy"].get<double>() << "\n";
+	logger().trace("final energy {}", params["energy"].get<double>());
 
 	// REQUIRE(energies[0] == Approx(2.0253e-3).epsilon(1e-4));
 	// REQUIRE(energies[energies.size() - 1] == Approx(0.4913e-3).epsilon(1e-4));

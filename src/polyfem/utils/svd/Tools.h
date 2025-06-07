@@ -30,15 +30,11 @@ SOFTWARE.
 ################################################################################
 This file provides a random number generator and a timer.
 Sample usage:
-    RandomNumber<float> rand;
-    float x = randReal(-0.5, 0.8);
+	RandomNumber<float> rand;
+	float x = randReal(-0.5, 0.8);
 
-    Timer timer;
-    timer.start();
-    SOME CODE A
-    std::cout<<"CODE A took "<<timer.click()<<" seconds"<<std::endl;
-    SOME CODE B
-    std::cout<<"CODE B took "<<timer.click()<<" seconds"<<std::endl;
+	Timer timer;
+	timer.start();
 ################################################################################
 */
 
@@ -62,74 +58,79 @@ Sample usage:
 #include <iostream>
 #include <iomanip>
 
-namespace JIXIE {
-
-template <bool B, class T = void>
-using enable_if_t = typename std::enable_if<B, T>::type;
-
-namespace MATH_TOOLS {
-
-/**
-\brief Approximate inverse square root
-
-A fast approximation to the inverse sqrt
-The relative error is less than  1.5*2^-12
-*/
-inline float approx_rsqrt(float a)
+namespace JIXIE
 {
-    // return 1.0f / std::sqrt(a);
+
+	template <bool B, class T = void>
+	using enable_if_t = typename std::enable_if<B, T>::type;
+
+	namespace MATH_TOOLS
+	{
+
+		/**
+		\brief Approximate inverse square root
+
+		A fast approximation to the inverse sqrt
+		The relative error is less than  1.5*2^-12
+		*/
+		inline float approx_rsqrt(float a)
+		{
+			// return 1.0f / std::sqrt(a);
 #if !defined(__APPLE__) || defined(__i386__) || defined(__x86_64__)
-    return _mm_cvtss_f32(_mm_rsqrt_ss(_mm_set_ss(a)));
+			return _mm_cvtss_f32(_mm_rsqrt_ss(_mm_set_ss(a)));
 #else
-    return vgetq_lane_f32(vrsqrteq_f32(vld1q_dup_f32(&a)), 0);
+			return vgetq_lane_f32(vrsqrteq_f32(vld1q_dup_f32(&a)), 0);
 #endif
-}
+		}
 
-/**
-\brief Inverse square root
-computed from approx_rsqrt and one newton step
-*/
-inline float rsqrt(float a)
-{
-    return (float)1.0f / std::sqrt(a);
+		/**
+		\brief Inverse square root
+		computed from approx_rsqrt and one newton step
+		*/
+		inline float rsqrt(float a)
+		{
+			return (float)1.0f / std::sqrt(a);
 
-    // float b = approx_rsqrt(a);
-    // // Newton step with f(x) = a - 1/x^2
-    // b = 0.5f * b * (3.0f - a * (b * b));
-    // return b;
-}
+			// float b = approx_rsqrt(a);
+			// // Newton step with f(x) = a - 1/x^2
+			// b = 0.5f * b * (3.0f - a * (b * b));
+			// return b;
+		}
 
-/**
-\brief Inverse square root
-computed from 1/std::sqrt
-*/
-inline double rsqrt(double a)
-{
-    using std::sqrt;
-    return 1 / sqrt(a);
-}
-} // namespace MATH_TOOLS
+		/**
+		\brief Inverse square root
+		computed from 1/std::sqrt
+		*/
+		inline double rsqrt(double a)
+		{
+			using std::sqrt;
+			return 1 / sqrt(a);
+		}
+	} // namespace MATH_TOOLS
 
-namespace INTERNAL {
-using namespace std;
-template <class T, class Enable = void>
-struct ScalarTypeHelper {
-    using type = typename T::Scalar;
-};
-template <class T>
-struct ScalarTypeHelper<T, enable_if_t<is_arithmetic<T>::value>> {
-    using type = T;
-};
-} // namespace INTERNAL
+	namespace INTERNAL
+	{
+		using namespace std;
+		template <class T, class Enable = void>
+		struct ScalarTypeHelper
+		{
+			using type = typename T::Scalar;
+		};
+		template <class T>
+		struct ScalarTypeHelper<T, enable_if_t<is_arithmetic<T>::value>>
+		{
+			using type = T;
+		};
+	} // namespace INTERNAL
 
-template <class T>
-using ScalarType = typename INTERNAL::ScalarTypeHelper<T>::type;
+	template <class T>
+	using ScalarType = typename INTERNAL::ScalarTypeHelper<T>::type;
 
-template <class MatrixType>
-constexpr bool isSize(int m, int n)
-{
-    return MatrixType::RowsAtCompileTime == m && MatrixType::ColsAtCompileTime == n;
-}
+	template <class MatrixType>
+	constexpr bool isSize(int m, int n)
+	{
+		return MatrixType::RowsAtCompileTime == m && MatrixType::ColsAtCompileTime == n;
+	}
 
 } // namespace JIXIE
 #endif

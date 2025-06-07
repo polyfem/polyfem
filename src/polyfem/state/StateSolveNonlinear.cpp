@@ -44,13 +44,22 @@ namespace polyfem
 
 		// Write the total energy to a CSV file
 		int save_i = 0;
-		EnergyCSVWriter energy_csv(resolve_output_path("energy.csv"), solve_data);
-		RuntimeStatsCSVWriter stats_csv(resolve_output_path("stats.csv"), *this, t0, dt);
+
+		std::unique_ptr<EnergyCSVWriter> energy_csv = nullptr;
+		std::unique_ptr<RuntimeStatsCSVWriter> stats_csv = nullptr;
+
+		if (args["output"]["stats"])
+		{
+			logger().debug("Saving nl stats to {} and {}", resolve_output_path("energy.csv"), resolve_output_path("stats.csv"));
+			energy_csv = std::make_unique<EnergyCSVWriter>(resolve_output_path("energy.csv"), solve_data);
+			stats_csv = std::make_unique<RuntimeStatsCSVWriter>(resolve_output_path("stats.csv"), *this, t0, dt);
+		}
 		const bool remesh_enabled = args["space"]["remesh"]["enabled"];
 		// const double save_dt = remesh_enabled ? (dt / 3) : dt;
 
 		// Save the initial solution
-		energy_csv.write(save_i, sol);
+		if (energy_csv)
+			energy_csv->write(save_i, sol);
 		save_timestep(t0, save_i, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 		save_i++;
 
@@ -68,7 +77,8 @@ namespace polyfem
 
 			if (remesh_enabled)
 			{
-				energy_csv.write(save_i, sol);
+				if (energy_csv)
+					energy_csv->write(save_i, sol);
 				// save_timestep(t0 + dt * t, save_i, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 				save_i++;
 
@@ -79,7 +89,8 @@ namespace polyfem
 				}
 
 				// Save the solution after remeshing
-				energy_csv.write(save_i, sol);
+				if (energy_csv)
+					energy_csv->write(save_i, sol);
 				// save_timestep(t0 + dt * t, save_i, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 				save_i++;
 
@@ -92,7 +103,8 @@ namespace polyfem
 			}
 
 			// Always save the solution for consistency
-			energy_csv.write(save_i, sol);
+			if (energy_csv)
+				energy_csv->write(save_i, sol);
 			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 			save_i++;
 
@@ -131,8 +143,8 @@ namespace polyfem
 
 			// save restart file
 			save_restart_json(t0, dt, t);
-			if (remesh_enabled)
-				stats_csv.write(t, forward_solve_time, remeshing_time, global_relaxation_time, sol);
+			if (remesh_enabled && stats_csv)
+				stats_csv->write(t, forward_solve_time, remeshing_time, global_relaxation_time, sol);
 		}
 	}
 
