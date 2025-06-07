@@ -30,7 +30,7 @@ namespace polyfem::assembler
 		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const override;
 
 		// sets material params
-		void add_multimaterial(const int index, const json &params, const Units &units) override {}
+		void add_multimaterial(const int index, const json &params, const Units &units) override;
 
 		std::string name() const override { return "AMIPS"; }
 		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
@@ -41,7 +41,7 @@ namespace polyfem::assembler
 								  Eigen::MatrixXd &all,
 								  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const override;
 
-		bool allow_inversion() const override { return true; }
+		bool allow_inversion() const override { return false; }
 
 	private:
 		// utility function that computes energy, the template is used for double, DScalar1, and DScalar2 in energy, gradient and hessian
@@ -51,6 +51,8 @@ namespace polyfem::assembler
 		void compute_energy_aux_gradient_fast(const NonLinearAssemblerData &data, Eigen::VectorXd &G_flattened) const;
 		template <int n_basis, int dim>
 		void compute_energy_hessian_aux_fast(const NonLinearAssemblerData &data, Eigen::MatrixXd &H) const;
+
+		bool use_rest_pose_ = false;
 	};
 
 	class AMIPSEnergyAutodiff : public GenericElastic<AMIPSEnergyAutodiff>
