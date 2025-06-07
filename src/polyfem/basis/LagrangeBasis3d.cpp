@@ -2246,11 +2246,11 @@ int LagrangeBasis3d::build_bases(
 		}
 		else if (mesh.is_prism(e))
 		{
-			const int orderp = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 2);
-			const int orderq = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_orderq, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 1);
+			const int orderp = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::PRISM_LAGRANGE, 2);
+			const int orderq = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_orderq, AssemblerUtils::BasisType::PRISM_LAGRANGE, 1);
 
-			const int mass_orderp = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 2);
-			const int mass_orderq = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_orderq, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 1);
+			const int mass_orderp = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::PRISM_LAGRANGE, 2);
+			const int mass_orderq = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_orderq, AssemblerUtils::BasisType::PRISM_LAGRANGE, 1);
 
 			b.set_quadrature([orderp, orderq](Quadrature &quad) {
 				PrismQuadrature tet_quadrature;
