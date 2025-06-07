@@ -125,6 +125,12 @@ namespace polyfem::io
 				cells_cols = 8;
 				num_els += e.num_elements_in_block;
 			}
+			else if (type == 6) // prism
+			{
+				assert(cells_cols == -1 || cells_cols == 6);
+				cells_cols = 6;
+				num_els += e.num_elements_in_block;
+			}
 		}
 		assert(cells_cols > 0);
 
@@ -144,7 +150,7 @@ namespace polyfem::io
 			if (e.entity_dim != dim)
 				continue;
 			const int type = e.element_type;
-			if (type == 2 || type == 9 || type == 21 || type == 23 || type == 25 || type == 3 || type == 10 || type == 4 || type == 11 || type == 29 || type == 30 || type == 31 || type == 5 || type == 12)
+			if (type == 2 || type == 9 || type == 21 || type == 23 || type == 25 || type == 3 || type == 10 || type == 4 || type == 11 || type == 29 || type == 30 || type == 31 || type == 5 || type == 12 || type == 6)
 			{
 				const size_t n_nodes = mshio::nodes_per_element(type);
 				for (int i = 0; i < e.data.size(); i += (n_nodes + 1))

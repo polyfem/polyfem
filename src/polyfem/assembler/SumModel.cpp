@@ -30,7 +30,7 @@ namespace polyfem::assembler
 
 		rules = jse.inject_include(rules);
 
-		for (const auto model : models)
+		for (const auto &model : models)
 		{
 			const bool valid_input = jse.verify_json(model, rules);
 			if (!valid_input)

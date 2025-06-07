@@ -281,7 +281,7 @@ namespace polyfem::mesh
 			n_bases = LagrangeBasis3d::build_bases(
 				dynamic_cast<const Mesh3D &>(mesh),
 				assembler_formulation, /*quadrature_order=*/1,
-				/*mass_quadrature_order=*/2, /*discr_order=*/1,
+				/*mass_quadrature_order=*/2, /*discr_order=*/1, /*discr_orderq=*/1,
 				/*Bernstein=*/false, /*serendipity=*/false, /*has_polys=*/false,
 				/*is_geom_bases=*/false, /*use_corner_quadrature=*/false, bases, local_boundary,
 				poly_edge_to_data, mesh_nodes);

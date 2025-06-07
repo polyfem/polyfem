@@ -27,7 +27,8 @@ namespace polyfem
 			/// @param[in]  assembler          The pde to solve
 			/// @param[in]  quadrature_order   The quadrature order
 			/// @param[in]  mass_quadrature_order   The quadrature order for mass
-			/// @param[in]  discr_order        The order of the elements (1-4)
+			/// @param[in]  discr_orderp        The order of the elements (1-4)
+			/// @param[in]  discr_orderq        The order of the second tensor (1-4)
 			/// @param[in]  bernstein          Uses bernstein bases or not (only for tets)
 			/// @param[in]  serendipity        Uses serendipity bases or not (only for hex)
 			/// @param[in]  has_polys          Does the mesh has polygons, if not the interface mapping is not necessary
@@ -45,7 +46,8 @@ namespace polyfem
 				const std::string &assembler,
 				const int quadrature_order,
 				const int mass_quadrature_order,
-				const int discr_order,
+				const int discr_orderp,
+				const int discr_orderq,
 				const bool bernstein,
 				const bool serendipity,
 				const bool has_polys,
@@ -65,7 +67,8 @@ namespace polyfem
 			/// @param[in]  assembler          The pde to solve
 			/// @param[in]  quadrature_order   The quadrature order
 			/// @param[in]  mass_quadrature_order   The quadrature order for mass
-			/// @param[in]  discr_order        The order for each element
+			/// @param[in]  discr_orderp        The order for each element
+			/// @param[in]  discr_orderq        The order for each tensor element
 			/// @param[in]  bernstein          Uses bernstein bases or not (only for tets)
 			/// @param[in]  serendipity        Uses serendipity bases or not (only for hex)
 			/// @param[in]  has_polys          Does the mesh has polygons, if not the interface mapping is not necessary
@@ -83,7 +86,8 @@ namespace polyfem
 				const std::string &assembler,
 				const int quadrature_order,
 				const int mass_quadrature_order,
-				const Eigen::VectorXi &discr_order,
+				const Eigen::VectorXi &discr_orderp,
+				const Eigen::VectorXi &discr_orderq,
 				const bool bernstein,
 				const bool serendipity,
 				const bool has_polys,
@@ -97,6 +101,7 @@ namespace polyfem
 			// return the local faces nodes for a tet or a hex of order p, index points to a face
 			static Eigen::VectorXi tet_face_local_nodes(const int p, const mesh::Mesh3D &mesh, mesh::Navigation3D::Index index);
 			static Eigen::VectorXi hex_face_local_nodes(const bool serendipity, const int q, const mesh::Mesh3D &mesh, mesh::Navigation3D::Index index);
+			static Eigen::VectorXi prism_face_local_nodes(const int p, const int q, const mesh::Mesh3D &mesh, mesh::Navigation3D::Index index);
 
 		private:
 			static Eigen::MatrixXd linear_hex_face_local_nodes_coordinates(const mesh::Mesh3D &mesh, mesh::Navigation3D::Index index);
