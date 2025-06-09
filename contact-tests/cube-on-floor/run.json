@@ -122,7 +122,7 @@
         "nonlinear": {
             "line_search": {
                 "method": "Backtracking",
-                "use_grad_norm_tol": 1e-14
+                "use_grad_norm_tol": 1e-5
             },
             "grad_norm": 1e-6,
             "max_iterations": 1000

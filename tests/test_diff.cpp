@@ -1310,6 +1310,7 @@ TEST_CASE("shape-transient-smooth", "[test_adjoint]")
 		state->args["contact"]["use_smooth_formulation"] = true;
 		state->args["contact"]["alpha_t"] = 0.95;
 		state->args["contact"]["friction_coefficient"] = 0;
+		state->args["solver"]["nonlinear"]["grad_norm"] = 1e-5;
 	}
 
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
