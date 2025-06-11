@@ -2,6 +2,8 @@
 #include <polyfem/time_integrator/ImplicitNewmark.hpp>
 #include <polyfem/time_integrator/BDF.hpp>
 
+#include <polyfem/utils/Logger.hpp>
+
 #include <finitediff.hpp>
 
 #include <catch2/catch_test_macros.hpp>

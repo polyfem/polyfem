@@ -1023,9 +1023,9 @@ TEST_CASE("Qk_3d", "[bases]")
 	Eigen::MatrixXd val;
 	for (int i = 0; i < pts.rows(); ++i)
 	{
-		polyfem::autogen::q_basis_value_3d(k, i, pts, val)
+		polyfem::autogen::q_basis_value_3d(k, i, pts, val);
 
-			for (int j = 0; j < val.size(); ++j)
+		for (int j = 0; j < val.size(); ++j)
 		{
 			if (i == j)
 				REQUIRE(val(j) == Catch::Approx(1).margin(1e-10));
