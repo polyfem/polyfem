@@ -24,10 +24,9 @@ namespace polyfem
 
 			void init(const int dim, const json &param)
 			{
-				_is_active = true;
 				_dim = dim;
 				fixed_entry = param["fixed_macro_strain"];
-				if (utils::is_param_valid(param, "linear_displacement_offset"))
+				if (utils::is_param_valid(param, "linear_displacement_offset") && param["linear_displacement_offset"].size() > 0)
 				{
 					json arg = param["linear_displacement_offset"];
 					assert(arg.is_array());
@@ -43,6 +42,7 @@ namespace polyfem
 							value[i * 3 + j].set_unit_type("");
 						}
 					}
+					_is_active = true;
 				}
 			}
 

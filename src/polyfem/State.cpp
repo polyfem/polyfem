@@ -571,7 +571,7 @@ namespace polyfem
 		}
 		else if (tmp_json.is_string())
 		{
-			const std::string discr_orders_path = tmp_json;
+			const std::string discr_orders_path = utils::resolve_path(tmp_json, root_path());
 			Eigen::MatrixXi tmp;
 			read_matrix(discr_orders_path, tmp);
 			assert(tmp.size() == disc_orders.size());
@@ -1049,7 +1049,12 @@ namespace polyfem
 			if (has_periodic_bc())
 				logger().warn("(Quasi-)Static problem without Dirichlet nodes, will fix solution at one node to find a unique solution!");
 			else
-				log_and_throw_error("Static problem need to have some Dirichlet nodes!");
+			{
+				if (args["constraints"]["hard"].empty())
+					log_and_throw_error("Static problem need to have some Dirichlet nodes!");
+				else
+					logger().warn("Relying on hard constraints to avoid infinite solutions");
+			}
 		}
 	}
 

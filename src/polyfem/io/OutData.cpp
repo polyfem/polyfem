@@ -804,7 +804,7 @@ namespace polyfem::io
 		// 	logger().error("Build the bases first!");
 		// 	return;
 		// }
-		assert(mesh.is_linear());
+		// assert(mesh.is_linear());
 
 		std::vector<RowVectorNd> nodes;
 		int pts_total_size = 0;
@@ -1095,7 +1095,10 @@ namespace polyfem::io
 		normal_adhesion_forces = args["output"]["paraview"]["options"]["normal_adhesion_forces"] && !is_problem_scalar;
 		tangential_adhesion_forces = args["output"]["paraview"]["options"]["tangential_adhesion_forces"] && !is_problem_scalar;
 
-		use_sampler = !(is_mesh_linear && args["output"]["paraview"]["high_order_mesh"]);
+		if (args["output"]["paraview"]["options"]["force_high_order"])
+			use_sampler = false;
+		else
+			use_sampler = !(is_mesh_linear && args["output"]["paraview"]["high_order_mesh"]);
 		boundary_only = use_sampler && args["output"]["advanced"]["vis_boundary_only"];
 		material_params = args["output"]["paraview"]["options"]["material"];
 		body_ids = args["output"]["paraview"]["options"]["body_ids"];

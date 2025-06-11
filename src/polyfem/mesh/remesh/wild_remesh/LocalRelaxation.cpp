@@ -78,6 +78,7 @@ namespace polyfem::mesh
 		try
 		{
 			POLYFEM_REMESHER_SCOPED_TIMER("Local relaxation solve");
+			solve_data.nl_problem->normalize_forms();
 			nl_solver->minimize(*(solve_data.nl_problem), reduced_sol);
 		}
 		catch (const std::runtime_error &e)
@@ -129,6 +130,7 @@ namespace polyfem::mesh
 				try
 				{
 					POLYFEM_REMESHER_SCOPED_TIMER("Local relaxation resolve");
+					solve_data.nl_problem->normalize_forms();
 					nl_solver->minimize(*(solve_data.nl_problem), reduced_sol);
 				}
 				catch (const std::runtime_error &e)
