@@ -152,10 +152,10 @@ namespace polyfem::mesh
 
 		const size_t default_max_iterations = nl_solver->stop_criteria().iterations;
 		nl_solver->stop_criteria().iterations = al_max_solver_iter;
-		al_solver.solve_al(nl_solver, problem, sol);
+		al_solver.solve_al(problem, sol, nl_solver);
 
 		nl_solver->stop_criteria().iterations = default_max_iterations;
-		al_solver.solve_reduced(nl_solver, problem, sol);
+		al_solver.solve_reduced(problem, sol, nl_solver);
 
 #ifndef NDEBUG
 		assert(forms[1]->is_step_valid(sol, sol)); // inversion-free

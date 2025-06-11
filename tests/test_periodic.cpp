@@ -143,6 +143,9 @@ namespace
 
 TEST_CASE("homogenize-stress-periodic", "[test_adjoint]")
 {
+#ifdef WIN32
+	return; // Skip this test on Windows due cholmod problem
+#endif
 	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "homogenize-stress-periodic.json", in_args);
@@ -176,6 +179,9 @@ TEST_CASE("homogenize-stress-periodic", "[test_adjoint]")
 
 TEST_CASE("homogenize-stress", "[test_adjoint]")
 {
+#ifdef WIN32
+	return; // Skip this test on Windows due cholmod problem
+#endif
 	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "homogenize-stress.json", in_args);

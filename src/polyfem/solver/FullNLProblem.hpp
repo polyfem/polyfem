@@ -46,6 +46,8 @@ namespace polyfem::solver
 				form->finish();
 		}
 
+		virtual double normalize_forms();
+
 	protected:
 		std::vector<std::shared_ptr<Form>> forms_;
 	};
