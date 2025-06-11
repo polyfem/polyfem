@@ -9,5 +9,7 @@ var searchData=
   ['quadraticbspline2d_2ehpp_6',['QuadraticBSpline2d.hpp',['../_quadratic_b_spline2d_8hpp.html',1,'']]],
   ['quadraticbspline3d_2ecpp_7',['QuadraticBSpline3d.cpp',['../_quadratic_b_spline3d_8cpp.html',1,'']]],
   ['quadraticbspline3d_2ehpp_8',['QuadraticBSpline3d.hpp',['../_quadratic_b_spline3d_8hpp.html',1,'']]],
-  ['quadrature_2ehpp_9',['Quadrature.hpp',['../_quadrature_8hpp.html',1,'']]]
+  ['quadraticpenaltyform_2ecpp_9',['QuadraticPenaltyForm.cpp',['../_quadratic_penalty_form_8cpp.html',1,'']]],
+  ['quadraticpenaltyform_2ehpp_10',['QuadraticPenaltyForm.hpp',['../_quadratic_penalty_form_8hpp.html',1,'']]],
+  ['quadrature_2ehpp_11',['Quadrature.hpp',['../_quadrature_8hpp.html',1,'']]]
 ];

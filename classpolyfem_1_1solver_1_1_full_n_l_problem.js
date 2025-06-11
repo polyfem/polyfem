@@ -14,6 +14,7 @@ var classpolyfem_1_1solver_1_1_full_n_l_problem =
     [ "line_search_end", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#a7b0b95f98b74d4b154801bb09c2ec376", null ],
     [ "max_lagging_iterations", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#a8a1cf6caf3eb9e8ce1cbbd1b95f41a5d", null ],
     [ "max_step_size", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#a0134297b7fc55b8cb39220379f8952a5", null ],
+    [ "normalize_forms", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#ae1cf7c2a07611fad82ed1767e2dd35a4", null ],
     [ "post_step", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#a53132a072f8ffd0e79ca04678b600f7b", null ],
     [ "set_project_to_psd", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#a16adec18510ee42554b2b9a44ca1f0be", null ],
     [ "solution_changed", "classpolyfem_1_1solver_1_1_full_n_l_problem.html#a98ee7d8df27b7bb57316050985b6220b", null ],

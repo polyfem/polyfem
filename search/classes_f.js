@@ -5,6 +5,7 @@ var searchData=
   ['quadraticbspline2d_2',['QuadraticBSpline2d',['../classpolyfem_1_1basis_1_1_quadratic_b_spline2d.html',1,'polyfem::basis']]],
   ['quadraticbspline3d_3',['QuadraticBSpline3d',['../classpolyfem_1_1basis_1_1_quadratic_b_spline3d.html',1,'polyfem::basis']]],
   ['quadraticelasticproblemexact_4',['QuadraticElasticProblemExact',['../classpolyfem_1_1problem_1_1_quadratic_elastic_problem_exact.html',1,'polyfem::problem']]],
-  ['quadraticproblem_5',['QuadraticProblem',['../classpolyfem_1_1problem_1_1_quadratic_problem.html',1,'polyfem::problem']]],
-  ['quadrature_6',['Quadrature',['../classpolyfem_1_1quadrature_1_1_quadrature.html',1,'polyfem::quadrature']]]
+  ['quadraticpenaltyform_5',['QuadraticPenaltyForm',['../classpolyfem_1_1solver_1_1_quadratic_penalty_form.html',1,'polyfem::solver']]],
+  ['quadraticproblem_6',['QuadraticProblem',['../classpolyfem_1_1problem_1_1_quadratic_problem.html',1,'polyfem::problem']]],
+  ['quadrature_7',['Quadrature',['../classpolyfem_1_1quadrature_1_1_quadrature.html',1,'polyfem::quadrature']]]
 ];

@@ -121,7 +121,9 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1solver_1_1_augmented_l
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">polyfem::solver::AugmentedLagrangianForm Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
 </div><!--header-->
@@ -134,7 +136,7 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1solver_1_1_augmented_l
 <div class="dynheader">
 Inheritance diagram for polyfem::solver::AugmentedLagrangianForm:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_augmented_lagrangian_form__inherit__graph.svg" width="100%" height="424"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_augmented_lagrangian_form__inherit__graph.svg" width="100%" height="462"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
 Collaboration diagram for polyfem::solver::AugmentedLagrangianForm:</div>
@@ -144,20 +146,37 @@ Collaboration diagram for polyfem::solver::AugmentedLagrangianForm:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:af8416e80afd2c8b65b5d9f916f332975" id="r_af8416e80afd2c8b65b5d9f916f332975"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#af8416e80afd2c8b65b5d9f916f332975">AugmentedLagrangianForm</a> (const std::vector&lt; int &gt; &amp;<a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a159461c243b364d5a677ff439edded58">constraint_nodes</a>)</td></tr>
-<tr class="separator:af8416e80afd2c8b65b5d9f916f332975"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a69a5be5d196b33d980b43c39169f7eb6" id="r_a69a5be5d196b33d980b43c39169f7eb6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a69a5be5d196b33d980b43c39169f7eb6">AugmentedLagrangianForm</a> ()</td></tr>
+<tr class="separator:a69a5be5d196b33d980b43c39169f7eb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae563eeb4cb37164054ddaefbcdcbcc12" id="r_ae563eeb4cb37164054ddaefbcdcbcc12"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#ae563eeb4cb37164054ddaefbcdcbcc12">~AugmentedLagrangianForm</a> ()</td></tr>
 <tr class="separator:ae563eeb4cb37164054ddaefbcdcbcc12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4f75f0acf41383a0c769560059cf97e0" id="r_a4f75f0acf41383a0c769560059cf97e0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a4f75f0acf41383a0c769560059cf97e0">update_lagrangian</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const double k_al)=0</td></tr>
 <tr class="separator:a4f75f0acf41383a0c769560059cf97e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4267b99824228ca877c6437b708b5e32" id="r_a4267b99824228ca877c6437b708b5e32"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a4267b99824228ca877c6437b708b5e32">compute_error</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const =0</td></tr>
 <tr class="separator:a4267b99824228ca877c6437b708b5e32"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a820eb618fb7ee5f3a0c32ce7d8a48bf8" id="r_a820eb618fb7ee5f3a0c32ce7d8a48bf8"><td class="memItemLeft" align="right" valign="top">virtual Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a820eb618fb7ee5f3a0c32ce7d8a48bf8">target</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const</td></tr>
-<tr class="separator:a820eb618fb7ee5f3a0c32ce7d8a48bf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9b46e91818499771e0881fcd69c6c655" id="r_a9b46e91818499771e0881fcd69c6c655"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a9b46e91818499771e0881fcd69c6c655">set_initial_weight</a> (const double k_al)</td></tr>
 <tr class="separator:a9b46e91818499771e0881fcd69c6c655"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a159461c243b364d5a677ff439edded58" id="r_a159461c243b364d5a677ff439edded58"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; int &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a159461c243b364d5a677ff439edded58">constraint_nodes</a> () const</td></tr>
-<tr class="separator:a159461c243b364d5a677ff439edded58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae66c689c6173bace55fd81787d78cdc2" id="r_ae66c689c6173bace55fd81787d78cdc2"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#ae66c689c6173bace55fd81787d78cdc2">lagrangian_weight</a> () const</td></tr>
+<tr class="separator:ae66c689c6173bace55fd81787d78cdc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae0013c41232128eb03402b389e4d2e9a" id="r_ae0013c41232128eb03402b389e4d2e9a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#ae0013c41232128eb03402b389e4d2e9a">constraint_matrix</a> () const</td></tr>
+<tr class="separator:ae0013c41232128eb03402b389e4d2e9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8760b934737e601381ad0b46bda555ae" id="r_a8760b934737e601381ad0b46bda555ae"><td class="memItemLeft" align="right" valign="top">const Eigen::MatrixXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a8760b934737e601381ad0b46bda555ae">constraint_value</a> () const</td></tr>
+<tr class="separator:a8760b934737e601381ad0b46bda555ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70df82e8da6e99298a7aac77e8bdb963" id="r_a70df82e8da6e99298a7aac77e8bdb963"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a70df82e8da6e99298a7aac77e8bdb963">constraint_projection_matrix</a> () const</td></tr>
+<tr class="separator:a70df82e8da6e99298a7aac77e8bdb963"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade44b28381354cc98b39d5efe1923e92" id="r_ade44b28381354cc98b39d5efe1923e92"><td class="memItemLeft" align="right" valign="top">const Eigen::MatrixXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#ade44b28381354cc98b39d5efe1923e92">constraint_projection_vector</a> () const</td></tr>
+<tr class="separator:ade44b28381354cc98b39d5efe1923e92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad045d81cc70e8a90b2709ce8c75ffd4f" id="r_ad045d81cc70e8a90b2709ce8c75ffd4f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#ad045d81cc70e8a90b2709ce8c75ffd4f">has_projection</a> () const</td></tr>
+<tr class="separator:ad045d81cc70e8a90b2709ce8c75ffd4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a415f2e1c8ff9ec49a211b5afac0ddfde" id="r_a415f2e1c8ff9ec49a211b5afac0ddfde"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a415f2e1c8ff9ec49a211b5afac0ddfde">can_project</a> () const</td></tr>
+<tr class="separator:a415f2e1c8ff9ec49a211b5afac0ddfde"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fa18d30fb728435d51b8e701d6d72d0" id="r_a3fa18d30fb728435d51b8e701d6d72d0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a3fa18d30fb728435d51b8e701d6d72d0">project_gradient</a> (Eigen::VectorXd &amp;grad) const</td></tr>
+<tr class="separator:a3fa18d30fb728435d51b8e701d6d72d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f043be80ce3f2bf5193cd9454674e7d" id="r_a3f043be80ce3f2bf5193cd9454674e7d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a3f043be80ce3f2bf5193cd9454674e7d">project_hessian</a> (<a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hessian) const</td></tr>
+<tr class="separator:a3f043be80ce3f2bf5193cd9454674e7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa39928a446cf446760d40bac98ed1910" id="r_aa39928a446cf446760d40bac98ed1910"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#aa39928a446cf446760d40bac98ed1910">set_scale</a> (const double scale) override</td></tr>
+<tr class="memdesc:aa39928a446cf446760d40bac98ed1910"><td class="mdescLeft">&#160;</td><td class="mdescRight">sets the scale for the form  <br /></td></tr>
+<tr class="separator:aa39928a446cf446760d40bac98ed1910"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classpolyfem_1_1solver_1_1_form"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpolyfem_1_1solver_1_1_form')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpolyfem_1_1solver_1_1_form.html">polyfem::solver::Form</a></td></tr>
 <tr class="memitem:aeed3585f6af9b01c48c07809f745f01f inherit pub_methods_classpolyfem_1_1solver_1_1_form" id="r_aeed3585f6af9b01c48c07809f745f01f"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#aeed3585f6af9b01c48c07809f745f01f">~Form</a> ()</td></tr>
 <tr class="separator:aeed3585f6af9b01c48c07809f745f01f inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -243,32 +262,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a91f36801ecc871575d13552c8a4f9179 inherit pub_methods_classpolyfem_1_1solver_1_1_form" id="r_a91f36801ecc871575d13552c8a4f9179"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a91f36801ecc871575d13552c8a4f9179">set_output_dir</a> (const std::string &amp;output_dir)</td></tr>
 <tr class="separator:a91f36801ecc871575d13552c8a4f9179 inherit pub_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
-Protected Attributes</h2></td></tr>
-<tr class="memitem:a748a82c3c2749065c28c204390f64bb2" id="r_a748a82c3c2749065c28c204390f64bb2"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a748a82c3c2749065c28c204390f64bb2">lagr_mults_</a></td></tr>
-<tr class="memdesc:a748a82c3c2749065c28c204390f64bb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">vector of lagrange multipliers  <br /></td></tr>
-<tr class="separator:a748a82c3c2749065c28c204390f64bb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a19d332a587a969e909dba831057e5ca6" id="r_a19d332a587a969e909dba831057e5ca6"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a19d332a587a969e909dba831057e5ca6">k_al_</a></td></tr>
-<tr class="memdesc:a19d332a587a969e909dba831057e5ca6"><td class="mdescLeft">&#160;</td><td class="mdescRight">penalty parameter  <br /></td></tr>
-<tr class="separator:a19d332a587a969e909dba831057e5ca6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5b3cb1f8a939eff628925820bcdcadbe" id="r_a5b3cb1f8a939eff628925820bcdcadbe"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a5b3cb1f8a939eff628925820bcdcadbe">constraint_nodes_</a></td></tr>
-<tr class="memdesc:a5b3cb1f8a939eff628925820bcdcadbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">constraint nodes  <br /></td></tr>
-<tr class="separator:a5b3cb1f8a939eff628925820bcdcadbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_attribs_classpolyfem_1_1solver_1_1_form"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classpolyfem_1_1solver_1_1_form')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classpolyfem_1_1solver_1_1_form.html">polyfem::solver::Form</a></td></tr>
-<tr class="memitem:af98a7df888dfde558eb2e70aa37e9dd2 inherit pro_attribs_classpolyfem_1_1solver_1_1_form" id="r_af98a7df888dfde558eb2e70aa37e9dd2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#af98a7df888dfde558eb2e70aa37e9dd2">project_to_psd_</a> = false</td></tr>
-<tr class="memdesc:af98a7df888dfde558eb2e70aa37e9dd2 inherit pro_attribs_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">If true, the form's second derivative is projected to be positive semidefinite.  <br /></td></tr>
-<tr class="separator:af98a7df888dfde558eb2e70aa37e9dd2 inherit pro_attribs_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a489fc22d15e5e6fdfc4e05c804632339 inherit pro_attribs_classpolyfem_1_1solver_1_1_form" id="r_a489fc22d15e5e6fdfc4e05c804632339"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a489fc22d15e5e6fdfc4e05c804632339">weight_</a> = 1</td></tr>
-<tr class="memdesc:a489fc22d15e5e6fdfc4e05c804632339 inherit pro_attribs_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">weight of the form (e.g., AL penalty weight or Δt²)  <br /></td></tr>
-<tr class="separator:a489fc22d15e5e6fdfc4e05c804632339 inherit pro_attribs_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad3b23922e91c88f9432eb6a0228569ae inherit pro_attribs_classpolyfem_1_1solver_1_1_form" id="r_ad3b23922e91c88f9432eb6a0228569ae"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#ad3b23922e91c88f9432eb6a0228569ae">enabled_</a> = true</td></tr>
-<tr class="memdesc:ad3b23922e91c88f9432eb6a0228569ae inherit pro_attribs_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">If true, the form is enabled.  <br /></td></tr>
-<tr class="separator:ad3b23922e91c88f9432eb6a0228569ae inherit pro_attribs_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a743891166546a5be4dcafcf3470e6645 inherit pro_attribs_classpolyfem_1_1solver_1_1_form" id="r_a743891166546a5be4dcafcf3470e6645"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a743891166546a5be4dcafcf3470e6645">output_dir_</a></td></tr>
-<tr class="separator:a743891166546a5be4dcafcf3470e6645 inherit pro_attribs_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
-Additional Inherited Members</h2></td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:ab1b3a4ce20df852cee6eece6edc2dcb7" id="r_ab1b3a4ce20df852cee6eece6edc2dcb7"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#ab1b3a4ce20df852cee6eece6edc2dcb7">L_weight</a> () const</td></tr>
+<tr class="separator:ab1b3a4ce20df852cee6eece6edc2dcb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad620e1997f7aa019cc990772e7c7e553" id="r_ad620e1997f7aa019cc990772e7c7e553"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#ad620e1997f7aa019cc990772e7c7e553">A_weight</a> () const</td></tr>
+<tr class="separator:ad620e1997f7aa019cc990772e7c7e553"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classpolyfem_1_1solver_1_1_form"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classpolyfem_1_1solver_1_1_form')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classpolyfem_1_1solver_1_1_form.html">polyfem::solver::Form</a></td></tr>
 <tr class="memitem:abb6d6737f8ad238f0446866402fc9c5b inherit pro_methods_classpolyfem_1_1solver_1_1_form" id="r_abb6d6737f8ad238f0446866402fc9c5b"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#abb6d6737f8ad238f0446866402fc9c5b">resolve_output_path</a> (const std::string &amp;path) const</td></tr>
 <tr class="separator:abb6d6737f8ad238f0446866402fc9c5b inherit pro_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -284,14 +283,52 @@ Additional Inherited Members</h2></td></tr>
 <tr class="memitem:a4313c8af547f3c51a1c8cafd5071b44b inherit pro_methods_classpolyfem_1_1solver_1_1_form" id="r_a4313c8af547f3c51a1c8cafd5071b44b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a4313c8af547f3c51a1c8cafd5071b44b">second_derivative_unweighted</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hessian) const =0</td></tr>
 <tr class="memdesc:a4313c8af547f3c51a1c8cafd5071b44b inherit pro_methods_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the second derivative of the value wrt x.  <br /></td></tr>
 <tr class="separator:a4313c8af547f3c51a1c8cafd5071b44b inherit pro_methods_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a19d332a587a969e909dba831057e5ca6" id="r_a19d332a587a969e909dba831057e5ca6"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a19d332a587a969e909dba831057e5ca6">k_al_</a></td></tr>
+<tr class="memdesc:a19d332a587a969e909dba831057e5ca6"><td class="mdescLeft">&#160;</td><td class="mdescRight">penalty parameter  <br /></td></tr>
+<tr class="separator:a19d332a587a969e909dba831057e5ca6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a748a82c3c2749065c28c204390f64bb2" id="r_a748a82c3c2749065c28c204390f64bb2"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a748a82c3c2749065c28c204390f64bb2">lagr_mults_</a></td></tr>
+<tr class="memdesc:a748a82c3c2749065c28c204390f64bb2"><td class="mdescLeft">&#160;</td><td class="mdescRight">vector of lagrange multipliers  <br /></td></tr>
+<tr class="separator:a748a82c3c2749065c28c204390f64bb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afdf395b5aef8344c72af0cf477885366" id="r_afdf395b5aef8344c72af0cf477885366"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#afdf395b5aef8344c72af0cf477885366">A_</a></td></tr>
+<tr class="memdesc:afdf395b5aef8344c72af0cf477885366"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constraints matrix.  <br /></td></tr>
+<tr class="separator:afdf395b5aef8344c72af0cf477885366"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75f44bd891a8fd94b7ec931a7ff98cc9" id="r_a75f44bd891a8fd94b7ec931a7ff98cc9"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a75f44bd891a8fd94b7ec931a7ff98cc9">b_</a></td></tr>
+<tr class="memdesc:a75f44bd891a8fd94b7ec931a7ff98cc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constraints value.  <br /></td></tr>
+<tr class="separator:a75f44bd891a8fd94b7ec931a7ff98cc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b581c520b0a2e473b15f149de5cddaa" id="r_a8b581c520b0a2e473b15f149de5cddaa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a8b581c520b0a2e473b15f149de5cddaa">A_proj_</a></td></tr>
+<tr class="memdesc:a8b581c520b0a2e473b15f149de5cddaa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constraints projection matrix.  <br /></td></tr>
+<tr class="separator:a8b581c520b0a2e473b15f149de5cddaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac859ac85baa22c73e947018d67edee19" id="r_ac859ac85baa22c73e947018d67edee19"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#ac859ac85baa22c73e947018d67edee19">b_proj_</a></td></tr>
+<tr class="memdesc:ac859ac85baa22c73e947018d67edee19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constraints projection value.  <br /></td></tr>
+<tr class="separator:ac859ac85baa22c73e947018d67edee19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_classpolyfem_1_1solver_1_1_form"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classpolyfem_1_1solver_1_1_form')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classpolyfem_1_1solver_1_1_form.html">polyfem::solver::Form</a></td></tr>
+<tr class="memitem:af98a7df888dfde558eb2e70aa37e9dd2 inherit pro_attribs_classpolyfem_1_1solver_1_1_form" id="r_af98a7df888dfde558eb2e70aa37e9dd2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#af98a7df888dfde558eb2e70aa37e9dd2">project_to_psd_</a> = false</td></tr>
+<tr class="memdesc:af98a7df888dfde558eb2e70aa37e9dd2 inherit pro_attribs_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">If true, the form's second derivative is projected to be positive semidefinite.  <br /></td></tr>
+<tr class="separator:af98a7df888dfde558eb2e70aa37e9dd2 inherit pro_attribs_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a489fc22d15e5e6fdfc4e05c804632339 inherit pro_attribs_classpolyfem_1_1solver_1_1_form" id="r_a489fc22d15e5e6fdfc4e05c804632339"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a489fc22d15e5e6fdfc4e05c804632339">weight_</a> = 1</td></tr>
+<tr class="memdesc:a489fc22d15e5e6fdfc4e05c804632339 inherit pro_attribs_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">weight of the form (e.g., AL penalty weight or Δt²)  <br /></td></tr>
+<tr class="separator:a489fc22d15e5e6fdfc4e05c804632339 inherit pro_attribs_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3b23922e91c88f9432eb6a0228569ae inherit pro_attribs_classpolyfem_1_1solver_1_1_form" id="r_ad3b23922e91c88f9432eb6a0228569ae"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#ad3b23922e91c88f9432eb6a0228569ae">enabled_</a> = true</td></tr>
+<tr class="memdesc:ad3b23922e91c88f9432eb6a0228569ae inherit pro_attribs_classpolyfem_1_1solver_1_1_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">If true, the form is enabled.  <br /></td></tr>
+<tr class="separator:ad3b23922e91c88f9432eb6a0228569ae inherit pro_attribs_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a743891166546a5be4dcafcf3470e6645 inherit pro_attribs_classpolyfem_1_1solver_1_1_form" id="r_a743891166546a5be4dcafcf3470e6645"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_form.html#a743891166546a5be4dcafcf3470e6645">output_dir_</a></td></tr>
+<tr class="separator:a743891166546a5be4dcafcf3470e6645 inherit pro_attribs_classpolyfem_1_1solver_1_1_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a44ed9ecacb5c2f0491e8d4fbe2841be2" id="r_a44ed9ecacb5c2f0491e8d4fbe2841be2"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a44ed9ecacb5c2f0491e8d4fbe2841be2">k_scale_</a> = 1</td></tr>
+<tr class="separator:a44ed9ecacb5c2f0491e8d4fbe2841be2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> of the augmented lagrangian. </p>
 
 <p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00008">8</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="af8416e80afd2c8b65b5d9f916f332975" name="af8416e80afd2c8b65b5d9f916f332975"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af8416e80afd2c8b65b5d9f916f332975">&#9670;&#160;</a></span>AugmentedLagrangianForm()</h2>
+<a id="a69a5be5d196b33d980b43c39169f7eb6" name="a69a5be5d196b33d980b43c39169f7eb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a69a5be5d196b33d980b43c39169f7eb6">&#9670;&#160;</a></span>AugmentedLagrangianForm()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -302,8 +339,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">polyfem::solver::AugmentedLagrangianForm::AugmentedLagrangianForm </td>
           <td>(</td>
-          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
-          <td class="paramname"><em>constraint_nodes</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -341,11 +377,76 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00013">13</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00014">14</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="ad620e1997f7aa019cc990772e7c7e553" name="ad620e1997f7aa019cc990772e7c7e553"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad620e1997f7aa019cc990772e7c7e553">&#9670;&#160;</a></span>A_weight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::solver::AugmentedLagrangianForm::A_weight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00042">42</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00044">k_al_</a>, and <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00054">k_scale_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00170">polyfem::solver::BCLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00021">polyfem::solver::MacroStrainLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00035">polyfem::solver::MatrixLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00071">polyfem::solver::PeriodicLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00175">polyfem::solver::BCLagrangianForm::second_derivative_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00028">polyfem::solver::MacroStrainLagrangianForm::second_derivative_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00040">polyfem::solver::MatrixLagrangianForm::second_derivative_unweighted()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00076">polyfem::solver::PeriodicLagrangianForm::second_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00161">polyfem::solver::BCLagrangianForm::value_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00012">polyfem::solver::MacroStrainLagrangianForm::value_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00027">polyfem::solver::MatrixLagrangianForm::value_unweighted()</a>, and <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00062">polyfem::solver::PeriodicLagrangianForm::value_unweighted()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_augmented_lagrangian_form_ad620e1997f7aa019cc990772e7c7e553_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="a415f2e1c8ff9ec49a211b5afac0ddfde" name="a415f2e1c8ff9ec49a211b5afac0ddfde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a415f2e1c8ff9ec49a211b5afac0ddfde">&#9670;&#160;</a></span>can_project()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool polyfem::solver::AugmentedLagrangianForm::can_project </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a41c901694173a434fab40bc0b23429d2">polyfem::solver::BCLagrangianForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_periodic_lagrangian_form.html#ac7b816cf556da1e4c3fb8ae9d652abaf">polyfem::solver::PeriodicLagrangianForm</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00032">32</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+
+</div>
+</div>
 <a id="a4267b99824228ca877c6437b708b5e32" name="a4267b99824228ca877c6437b708b5e32"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4267b99824228ca877c6437b708b5e32">&#9670;&#160;</a></span>compute_error()</h2>
 
@@ -370,12 +471,12 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a57397617a93315d2edea537903d3d380">polyfem::solver::BCLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_generic_lagrangian_form.html#a31c2e599f8dbbbdbf196228a3c980ddb">polyfem::solver::GenericLagrangianForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html#ae5d4e6d6ab086036ce5dc78ee8a12e2c">polyfem::solver::MacroStrainLagrangianForm</a>.</p>
+<p>Implemented in <a class="el" href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a57397617a93315d2edea537903d3d380">polyfem::solver::BCLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html#ae5d4e6d6ab086036ce5dc78ee8a12e2c">polyfem::solver::MacroStrainLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_matrix_lagrangian_form.html#ac86799d9f32acb5e2aa873d0f1f3afc1">polyfem::solver::MatrixLagrangianForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_periodic_lagrangian_form.html#aee7ab68aee367ac6b721ccc14db8f8b4">polyfem::solver::PeriodicLagrangianForm</a>.</p>
 
 </div>
 </div>
-<a id="a159461c243b364d5a677ff439edded58" name="a159461c243b364d5a677ff439edded58"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a159461c243b364d5a677ff439edded58">&#9670;&#160;</a></span>constraint_nodes()</h2>
+<a id="ae0013c41232128eb03402b389e4d2e9a" name="ae0013c41232128eb03402b389e4d2e9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae0013c41232128eb03402b389e4d2e9a">&#9670;&#160;</a></span>constraint_matrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -384,7 +485,188 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const std::vector&lt; int &gt; &amp; polyfem::solver::AugmentedLagrangianForm::constraint_nodes </td>
+          <td class="memname">const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp; polyfem::solver::AugmentedLagrangianForm::constraint_matrix </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00024">24</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00048">A_</a>.</p>
+
+</div>
+</div>
+<a id="a70df82e8da6e99298a7aac77e8bdb963" name="a70df82e8da6e99298a7aac77e8bdb963"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70df82e8da6e99298a7aac77e8bdb963">&#9670;&#160;</a></span>constraint_projection_matrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp; polyfem::solver::AugmentedLagrangianForm::constraint_projection_matrix </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00027">27</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00051">A_proj_</a>.</p>
+
+</div>
+</div>
+<a id="ade44b28381354cc98b39d5efe1923e92" name="ade44b28381354cc98b39d5efe1923e92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade44b28381354cc98b39d5efe1923e92">&#9670;&#160;</a></span>constraint_projection_vector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Eigen::MatrixXd &amp; polyfem::solver::AugmentedLagrangianForm::constraint_projection_vector </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00028">28</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00052">b_proj_</a>.</p>
+
+</div>
+</div>
+<a id="a8760b934737e601381ad0b46bda555ae" name="a8760b934737e601381ad0b46bda555ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8760b934737e601381ad0b46bda555ae">&#9670;&#160;</a></span>constraint_value()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Eigen::MatrixXd &amp; polyfem::solver::AugmentedLagrangianForm::constraint_value </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00025">25</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">b_</a>.</p>
+
+</div>
+</div>
+<a id="ad045d81cc70e8a90b2709ce8c75ffd4f" name="ad045d81cc70e8a90b2709ce8c75ffd4f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad045d81cc70e8a90b2709ce8c75ffd4f">&#9670;&#160;</a></span>has_projection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::solver::AugmentedLagrangianForm::has_projection </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00030">30</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00051">A_proj_</a>.</p>
+
+</div>
+</div>
+<a id="ab1b3a4ce20df852cee6eece6edc2dcb7" name="ab1b3a4ce20df852cee6eece6edc2dcb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1b3a4ce20df852cee6eece6edc2dcb7">&#9670;&#160;</a></span>L_weight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::solver::AugmentedLagrangianForm::L_weight </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00041">41</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00054">k_scale_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00170">polyfem::solver::BCLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00021">polyfem::solver::MacroStrainLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00035">polyfem::solver::MatrixLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00071">polyfem::solver::PeriodicLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00161">polyfem::solver::BCLagrangianForm::value_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00012">polyfem::solver::MacroStrainLagrangianForm::value_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00027">polyfem::solver::MatrixLagrangianForm::value_unweighted()</a>, and <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00062">polyfem::solver::PeriodicLagrangianForm::value_unweighted()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_augmented_lagrangian_form_ab1b3a4ce20df852cee6eece6edc2dcb7_icgraph.svg" width="520" height="531"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="ae66c689c6173bace55fd81787d78cdc2" name="ae66c689c6173bace55fd81787d78cdc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae66c689c6173bace55fd81787d78cdc2">&#9670;&#160;</a></span>lagrangian_weight()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::solver::AugmentedLagrangianForm::lagrangian_weight </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -399,7 +681,67 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00022">22</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00027">constraint_nodes_</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00044">k_al_</a>.</p>
+
+</div>
+</div>
+<a id="a3fa18d30fb728435d51b8e701d6d72d0" name="a3fa18d30fb728435d51b8e701d6d72d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3fa18d30fb728435d51b8e701d6d72d0">&#9670;&#160;</a></span>project_gradient()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void polyfem::solver::AugmentedLagrangianForm::project_gradient </td>
+          <td>(</td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>grad</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a6c7bebb44b437ed733104d7c7cadd32f">polyfem::solver::BCLagrangianForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_periodic_lagrangian_form.html#a78f212ea3dd77fda2a4719a2ee253f2e">polyfem::solver::PeriodicLagrangianForm</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00033">33</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a3f043be80ce3f2bf5193cd9454674e7d" name="a3f043be80ce3f2bf5193cd9454674e7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f043be80ce3f2bf5193cd9454674e7d">&#9670;&#160;</a></span>project_hessian()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void polyfem::solver::AugmentedLagrangianForm::project_hessian </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;&#160;</td>
+          <td class="paramname"><em>hessian</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#aaa7b730a3c1208c94d612548a0462e11">polyfem::solver::BCLagrangianForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_periodic_lagrangian_form.html#aef2fdda6af0cfa9016cf25d1183388a6">polyfem::solver::PeriodicLagrangianForm</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00034">34</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -429,12 +771,12 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00020">20</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00026">k_al_</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00044">k_al_</a>.</p>
 
 </div>
 </div>
-<a id="a820eb618fb7ee5f3a0c32ce7d8a48bf8" name="a820eb618fb7ee5f3a0c32ce7d8a48bf8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a820eb618fb7ee5f3a0c32ce7d8a48bf8">&#9670;&#160;</a></span>target()</h2>
+<a id="aa39928a446cf446760d40bac98ed1910" name="aa39928a446cf446760d40bac98ed1910"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa39928a446cf446760d40bac98ed1910">&#9670;&#160;</a></span>set_scale()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -443,23 +785,33 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual Eigen::VectorXd polyfem::solver::AugmentedLagrangianForm::target </td>
+          <td class="memname">void polyfem::solver::AugmentedLagrangianForm::set_scale </td>
           <td>(</td>
-          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>x</em></td><td>)</td>
-          <td> const</td>
+          <td class="paramtype">const double&#160;</td>
+          <td class="paramname"><em>scale</em></td><td>)</td>
+          <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a2f6dfe1b3d6ad92b1922a038207dbb9e">polyfem::solver::BCLagrangianForm</a>.</p>
+<p>sets the scale for the form </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">scale</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00018">18</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#ab16f7de6dc61bd891a72a8d2180dac85">polyfem::solver::Form</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00038">38</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00054">k_scale_</a>.</p>
 
 </div>
 </div>
@@ -497,13 +849,13 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Implemented in <a class="el" href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a515ec11b362e05d7069219a524448903">polyfem::solver::BCLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_generic_lagrangian_form.html#a7b55a5ac26e176d24a98256680fc9cac">polyfem::solver::GenericLagrangianForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html#a5a4fc243904d533a7fe918cbad057fcf">polyfem::solver::MacroStrainLagrangianForm</a>.</p>
+<p>Implemented in <a class="el" href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a515ec11b362e05d7069219a524448903">polyfem::solver::BCLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html#a5a4fc243904d533a7fe918cbad057fcf">polyfem::solver::MacroStrainLagrangianForm</a>, <a class="el" href="classpolyfem_1_1solver_1_1_matrix_lagrangian_form.html#a79347380c75b6af7ded784e12aa879bf">polyfem::solver::MatrixLagrangianForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_periodic_lagrangian_form.html#a0a1ef7c58d7e38caf7619bbcfe5aa8ed">polyfem::solver::PeriodicLagrangianForm</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a5b3cb1f8a939eff628925820bcdcadbe" name="a5b3cb1f8a939eff628925820bcdcadbe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5b3cb1f8a939eff628925820bcdcadbe">&#9670;&#160;</a></span>constraint_nodes_</h2>
+<a id="afdf395b5aef8344c72af0cf477885366" name="afdf395b5aef8344c72af0cf477885366"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afdf395b5aef8344c72af0cf477885366">&#9670;&#160;</a></span>A_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -512,7 +864,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const std::vector&lt;int&gt; polyfem::solver::AugmentedLagrangianForm::constraint_nodes_</td>
+          <td class="memname"><a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> polyfem::solver::AugmentedLagrangianForm::A_</td>
         </tr>
       </table>
   </td>
@@ -522,11 +874,95 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>constraint nodes </p>
+<p>Constraints matrix. </p>
 
-<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00027">27</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00048">48</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00022">constraint_nodes()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00186">polyfem::solver::BCLagrangianForm::compute_error()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00051">polyfem::solver::MatrixLagrangianForm::compute_error()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00081">polyfem::solver::PeriodicLagrangianForm::compute_error()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00024">constraint_matrix()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00170">polyfem::solver::BCLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00035">polyfem::solver::MatrixLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00071">polyfem::solver::PeriodicLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">polyfem::solver::BCLagrangianForm::init_masked_lumped_mass()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00009">polyfem::solver::MatrixLagrangianForm::MatrixLagrangianForm()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00008">polyfem::solver::PeriodicLagrangianForm::PeriodicLagrangianForm()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00175">polyfem::solver::BCLagrangianForm::second_derivative_unweighted()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00076">polyfem::solver::PeriodicLagrangianForm::second_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00206">polyfem::solver::BCLagrangianForm::update_lagrangian()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00045">polyfem::solver::MatrixLagrangianForm::update_lagrangian()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00088">polyfem::solver::PeriodicLagrangianForm::update_lagrangian()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00161">polyfem::solver::BCLagrangianForm::value_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00027">polyfem::solver::MatrixLagrangianForm::value_unweighted()</a>, and <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00062">polyfem::solver::PeriodicLagrangianForm::value_unweighted()</a>.</p>
+
+</div>
+</div>
+<a id="a8b581c520b0a2e473b15f149de5cddaa" name="a8b581c520b0a2e473b15f149de5cddaa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b581c520b0a2e473b15f149de5cddaa">&#9670;&#160;</a></span>A_proj_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> polyfem::solver::AugmentedLagrangianForm::A_proj_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constraints projection matrix. </p>
+
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00051">51</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00027">constraint_projection_matrix()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00030">has_projection()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">polyfem::solver::BCLagrangianForm::init_masked_lumped_mass()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00009">polyfem::solver::MatrixLagrangianForm::MatrixLagrangianForm()</a>, and <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00008">polyfem::solver::PeriodicLagrangianForm::PeriodicLagrangianForm()</a>.</p>
+
+</div>
+</div>
+<a id="a75f44bd891a8fd94b7ec931a7ff98cc9" name="a75f44bd891a8fd94b7ec931a7ff98cc9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75f44bd891a8fd94b7ec931a7ff98cc9">&#9670;&#160;</a></span>b_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::solver::AugmentedLagrangianForm::b_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constraints value. </p>
+
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">49</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00030">polyfem::solver::BCLagrangianForm::BCLagrangianForm()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00186">polyfem::solver::BCLagrangianForm::compute_error()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00051">polyfem::solver::MatrixLagrangianForm::compute_error()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00081">polyfem::solver::PeriodicLagrangianForm::compute_error()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00025">constraint_value()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00170">polyfem::solver::BCLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00071">polyfem::solver::PeriodicLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00009">polyfem::solver::MatrixLagrangianForm::MatrixLagrangianForm()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00008">polyfem::solver::PeriodicLagrangianForm::PeriodicLagrangianForm()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00206">polyfem::solver::BCLagrangianForm::update_lagrangian()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00045">polyfem::solver::MatrixLagrangianForm::update_lagrangian()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00088">polyfem::solver::PeriodicLagrangianForm::update_lagrangian()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00193">polyfem::solver::BCLagrangianForm::update_target()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00161">polyfem::solver::BCLagrangianForm::value_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00027">polyfem::solver::MatrixLagrangianForm::value_unweighted()</a>, and <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00062">polyfem::solver::PeriodicLagrangianForm::value_unweighted()</a>.</p>
+
+</div>
+</div>
+<a id="ac859ac85baa22c73e947018d67edee19" name="ac859ac85baa22c73e947018d67edee19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac859ac85baa22c73e947018d67edee19">&#9670;&#160;</a></span>b_proj_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd polyfem::solver::AugmentedLagrangianForm::b_proj_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constraints projection value. </p>
+
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00052">52</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00030">polyfem::solver::BCLagrangianForm::BCLagrangianForm()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00028">constraint_projection_vector()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00009">polyfem::solver::MatrixLagrangianForm::MatrixLagrangianForm()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00008">polyfem::solver::PeriodicLagrangianForm::PeriodicLagrangianForm()</a>, and <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00193">polyfem::solver::BCLagrangianForm::update_target()</a>.</p>
 
 </div>
 </div>
@@ -552,9 +988,35 @@ Additional Inherited Members</h2></td></tr>
 
 <p>penalty parameter </p>
 
-<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00026">26</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00044">44</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00132">polyfem::solver::BCLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_generic_lagrangian_form_8cpp_source.html#l00022">polyfem::solver::GenericLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00022">polyfem::solver::MacroStrainLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00137">polyfem::solver::BCLagrangianForm::second_derivative_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00029">polyfem::solver::MacroStrainLagrangianForm::second_derivative_unweighted()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00020">set_initial_weight()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00164">polyfem::solver::BCLagrangianForm::update_lagrangian()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00050">polyfem::solver::MacroStrainLagrangianForm::update_lagrangian()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00123">polyfem::solver::BCLagrangianForm::value_unweighted()</a>, <a class="el" href="_generic_lagrangian_form_8cpp_source.html#l00014">polyfem::solver::GenericLagrangianForm::value_unweighted()</a>, and <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00013">polyfem::solver::MacroStrainLagrangianForm::value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00042">A_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00022">lagrangian_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00020">set_initial_weight()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00206">polyfem::solver::BCLagrangianForm::update_lagrangian()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00049">polyfem::solver::MacroStrainLagrangianForm::update_lagrangian()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00045">polyfem::solver::MatrixLagrangianForm::update_lagrangian()</a>, and <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00088">polyfem::solver::PeriodicLagrangianForm::update_lagrangian()</a>.</p>
+
+</div>
+</div>
+<a id="a44ed9ecacb5c2f0491e8d4fbe2841be2" name="a44ed9ecacb5c2f0491e8d4fbe2841be2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a44ed9ecacb5c2f0491e8d4fbe2841be2">&#9670;&#160;</a></span>k_scale_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double polyfem::solver::AugmentedLagrangianForm::k_scale_ = 1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00054">54</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00042">A_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00041">L_weight()</a>, and <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00038">set_scale()</a>.</p>
 
 </div>
 </div>
@@ -580,9 +1042,9 @@ Additional Inherited Members</h2></td></tr>
 
 <p>vector of lagrange multipliers </p>
 
-<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00025">25</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00046">46</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00132">polyfem::solver::BCLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_generic_lagrangian_form_8cpp_source.html#l00022">polyfem::solver::GenericLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00048">polyfem::solver::BCLagrangianForm::init_masked_lumped_mass()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00164">polyfem::solver::BCLagrangianForm::update_lagrangian()</a>, <a class="el" href="_generic_lagrangian_form_8cpp_source.html#l00032">polyfem::solver::GenericLagrangianForm::update_lagrangian()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00123">polyfem::solver::BCLagrangianForm::value_unweighted()</a>, and <a class="el" href="_generic_lagrangian_form_8cpp_source.html#l00014">polyfem::solver::GenericLagrangianForm::value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00170">polyfem::solver::BCLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00021">polyfem::solver::MacroStrainLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00035">polyfem::solver::MatrixLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00071">polyfem::solver::PeriodicLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">polyfem::solver::BCLagrangianForm::init_masked_lumped_mass()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00006">polyfem::solver::MacroStrainLagrangianForm::MacroStrainLagrangianForm()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00009">polyfem::solver::MatrixLagrangianForm::MatrixLagrangianForm()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00008">polyfem::solver::PeriodicLagrangianForm::PeriodicLagrangianForm()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00206">polyfem::solver::BCLagrangianForm::update_lagrangian()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00049">polyfem::solver::MacroStrainLagrangianForm::update_lagrangian()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00045">polyfem::solver::MatrixLagrangianForm::update_lagrangian()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00088">polyfem::solver::PeriodicLagrangianForm::update_lagrangian()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00161">polyfem::solver::BCLagrangianForm::value_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00012">polyfem::solver::MacroStrainLagrangianForm::value_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00027">polyfem::solver::MatrixLagrangianForm::value_unweighted()</a>, and <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00062">polyfem::solver::PeriodicLagrangianForm::value_unweighted()</a>.</p>
 
 </div>
 </div>

@@ -3,7 +3,7 @@ var searchData=
   ['l_0',['l',['../classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#af266275737562749d48c06de25c4afe0',1,'polyfem::solver::VariableToSimulationGroup::L'],['../classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#add36149bb9e25d11991306e000dbbe39',1,'polyfem::solver::BoundarySmoothingForm::L']]],
   ['l2_5ferr_1',['l2_err',['../classpolyfem_1_1io_1_1_out_stats_data.html#a659f5cbff15c4381abbdb3c353b6dc26',1,'polyfem::io::OutStatsData']]],
   ['lagged_5fstiffness_5fmatrix_5f_2',['lagged_stiffness_matrix_',['../classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#ad73bdbed06b8c9fa49695b2910046e0b',1,'polyfem::solver::RayleighDampingForm']]],
-  ['lagr_5fmults_5f_3',['lagr_mults_',['../classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a748a82c3c2749065c28c204390f64bb2',1,'polyfem::solver::AugmentedLagrangianForm::lagr_mults_'],['../classpolyfem_1_1solver_1_1_macro_strain_lagrangian_form.html#a5245ddf62db6463708ce9576d5ba2bc2',1,'polyfem::solver::MacroStrainLagrangianForm::lagr_mults_']]],
+  ['lagr_5fmults_5f_3',['lagr_mults_',['../classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a748a82c3c2749065c28c204390f64bb2',1,'polyfem::solver::AugmentedLagrangianForm']]],
   ['lambda_5fmat_5f_4',['lambda_mat_',['../classpolyfem_1_1assembler_1_1_lame_parameters.html#ac2fffd47fa04d46bfef3793c8e5e889f',1,'polyfem::assembler::LameParameters']]],
   ['lambda_5for_5fe_5f_5',['lambda_or_E_',['../classpolyfem_1_1assembler_1_1_lame_parameters.html#a39e24fe063203fcaf6e9c71a9e7aed0f',1,'polyfem::assembler::LameParameters']]],
   ['lambdaa_6',['lambdaa',['../namespaceeigs.html#a4aaad36d400d8a14a1a8cfd4101d9163',1,'eigs']]],

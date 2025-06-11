@@ -139,6 +139,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a2d7cd67cce0e65bf6f7459bb6a993363"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e4020dd83261c2f8896d593dff2e04e" id="r_a7e4020dd83261c2f8896d593dff2e04e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_periodic_boundary.html#a7e4020dd83261c2f8896d593dff2e04e">full_to_periodic</a> (const std::vector&lt; int &gt; &amp;boundary_nodes) const</td></tr>
 <tr class="separator:a7e4020dd83261c2f8896d593dff2e04e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8cb7346c64c5306dd1b03afcfe9322d0" id="r_a8cb7346c64c5306dd1b03afcfe9322d0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_periodic_boundary.html#a8cb7346c64c5306dd1b03afcfe9322d0">dim</a> () const</td></tr>
+<tr class="separator:a8cb7346c64c5306dd1b03afcfe9322d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b4851350549b5bfd3bf3a2ef07f134d" id="r_a7b4851350549b5bfd3bf3a2ef07f134d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_periodic_boundary.html#a7b4851350549b5bfd3bf3a2ef07f134d">n_periodic_dof</a> () const</td></tr>
 <tr class="separator:a7b4851350549b5bfd3bf3a2ef07f134d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2ab120d9c05390a9032c10391b1ae50" id="r_ac2ab120d9c05390a9032c10391b1ae50"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_periodic_boundary.html#ac2ab120d9c05390a9032c10391b1ae50">is_periodic_dof</a> (const int idx) const</td></tr>
@@ -149,6 +151,12 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a4cc26bace0618f90754f8f2537a9348e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40ddf2c03af62452052037d445e471f6" id="r_a40ddf2c03af62452052037d445e471f6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_periodic_boundary.html#a40ddf2c03af62452052037d445e471f6">has_periodic_bc</a> () const</td></tr>
 <tr class="separator:a40ddf2c03af62452052037d445e471f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b5cf106ef5f6da68a33d24be0486df3" id="r_a5b5cf106ef5f6da68a33d24be0486df3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_periodic_boundary.html#a5b5cf106ef5f6da68a33d24be0486df3">n_constraints</a> () const</td></tr>
+<tr class="separator:a5b5cf106ef5f6da68a33d24be0486df3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf70572dccdf9a61bef773d0b5cec25a" id="r_abf70572dccdf9a61bef773d0b5cec25a"><td class="memItemLeft" align="right" valign="top">std::array&lt; int, 2 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_periodic_boundary.html#abf70572dccdf9a61bef773d0b5cec25a">constraint</a> (const int idx) const</td></tr>
+<tr class="separator:abf70572dccdf9a61bef773d0b5cec25a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34254b10efbc5c714530fd74e2f5da72" id="r_a34254b10efbc5c714530fd74e2f5da72"><td class="memItemLeft" align="right" valign="top">const Eigen::VectorXi &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_periodic_boundary.html#a34254b10efbc5c714530fd74e2f5da72">index_map</a> () const</td></tr>
+<tr class="separator:a34254b10efbc5c714530fd74e2f5da72"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4c482f06c83cbbde9d5ab4ae9c385c30" id="r_a4c482f06c83cbbde9d5ab4ae9c385c30"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_periodic_boundary.html#a4c482f06c83cbbde9d5ab4ae9c385c30">get_affine_matrix</a> () const</td></tr>
 <tr class="separator:a4c482f06c83cbbde9d5ab4ae9c385c30"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -156,10 +164,16 @@ Public Member Functions</h2></td></tr>
 Private Attributes</h2></td></tr>
 <tr class="memitem:ad7a418698d29135fca16ef8a253d5d18" id="r_ad7a418698d29135fca16ef8a253d5d18"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_periodic_boundary.html#ad7a418698d29135fca16ef8a253d5d18">problem_dim_</a></td></tr>
 <tr class="separator:ad7a418698d29135fca16ef8a253d5d18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d2ffe473f85d06444d461ede30d6206" id="r_a9d2ffe473f85d06444d461ede30d6206"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_periodic_boundary.html#a9d2ffe473f85d06444d461ede30d6206">index_map_</a></td></tr>
+<tr class="separator:a9d2ffe473f85d06444d461ede30d6206"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0502982b5931ce695856900e437484f3" id="r_a0502982b5931ce695856900e437484f3"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_periodic_boundary.html#a0502982b5931ce695856900e437484f3">dependent_map_</a></td></tr>
+<tr class="separator:a0502982b5931ce695856900e437484f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2909f3748fdabbeeacc30860e67c9587" id="r_a2909f3748fdabbeeacc30860e67c9587"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_periodic_boundary.html#a2909f3748fdabbeeacc30860e67c9587">full_to_periodic_map_</a></td></tr>
 <tr class="separator:a2909f3748fdabbeeacc30860e67c9587"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0c92a1e9a7e52a9d314e99f3eb50a631" id="r_a0c92a1e9a7e52a9d314e99f3eb50a631"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_periodic_boundary.html#a0c92a1e9a7e52a9d314e99f3eb50a631">periodic_mask_</a></td></tr>
 <tr class="separator:a0c92a1e9a7e52a9d314e99f3eb50a631"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07309ff53aad811d7d3951b307de9608" id="r_a07309ff53aad811d7d3951b307de9608"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::array&lt; int, 2 &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_periodic_boundary.html#a07309ff53aad811d7d3951b307de9608">constraint_list_</a></td></tr>
+<tr class="separator:a07309ff53aad811d7d3951b307de9608"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00d7e9d286cae3f52cfc219fcb72e575" id="r_a00d7e9d286cae3f52cfc219fcb72e575"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1utils_1_1_periodic_boundary.html#a00d7e9d286cae3f52cfc219fcb72e575">affine_matrix_</a></td></tr>
 <tr class="separator:a00d7e9d286cae3f52cfc219fcb72e575"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -219,11 +233,11 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_periodic_boundary_8cpp_source.html#l00023">23</a> of file <a class="el" href="_periodic_boundary_8cpp_source.html">PeriodicBoundary.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_boundary_8hpp_source.html#l00055">affine_matrix_</a>, <a class="el" href="_periodic_boundary_8hpp_source.html#l00052">full_to_periodic_map_</a>, <a class="el" href="_logger_8cpp_source.html#l00071">polyfem::log_and_throw_error()</a>, <a class="el" href="_periodic_boundary_8hpp_source.html#l00053">periodic_mask_</a>, <a class="el" href="_periodic_boundary_8hpp_source.html#l00051">problem_dim_</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_boundary_8hpp_source.html#l00063">affine_matrix_</a>, <a class="el" href="_periodic_boundary_8hpp_source.html#l00061">constraint_list_</a>, <a class="el" href="_periodic_boundary_8hpp_source.html#l00058">dependent_map_</a>, <a class="el" href="_periodic_boundary_8hpp_source.html#l00040">dim()</a>, <a class="el" href="_periodic_boundary_8hpp_source.html#l00059">full_to_periodic_map_</a>, <a class="el" href="_periodic_boundary_8hpp_source.html#l00057">index_map_</a>, <a class="el" href="_logger_8cpp_source.html#l00071">polyfem::log_and_throw_error()</a>, <a class="el" href="_periodic_boundary_8hpp_source.html#l00060">periodic_mask_</a>, <a class="el" href="_periodic_boundary_8hpp_source.html#l00056">problem_dim_</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_periodic_boundary_a7459cf9e9d8482b436d8341f700a40fc_cgraph.svg" width="616" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_periodic_boundary_a7459cf9e9d8482b436d8341f700a40fc_cgraph.svg" width="616" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -244,7 +258,73 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8cpp_source.html#l00207">207</a> of file <a class="el" href="_periodic_boundary_8cpp_source.html">PeriodicBoundary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8cpp_source.html#l00212">212</a> of file <a class="el" href="_periodic_boundary_8cpp_source.html">PeriodicBoundary.cpp</a>.</p>
+
+</div>
+</div>
+<a id="abf70572dccdf9a61bef773d0b5cec25a" name="abf70572dccdf9a61bef773d0b5cec25a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf70572dccdf9a61bef773d0b5cec25a">&#9670;&#160;</a></span>constraint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::array&lt; int, 2 &gt; polyfem::utils::PeriodicBoundary::constraint </td>
+          <td>(</td>
+          <td class="paramtype">const int&#160;</td>
+          <td class="paramname"><em>idx</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8hpp_source.html#l00050">50</a> of file <a class="el" href="_periodic_boundary_8hpp_source.html">PeriodicBoundary.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_periodic_boundary_8hpp_source.html#l00061">constraint_list_</a>.</p>
+
+</div>
+</div>
+<a id="a8cb7346c64c5306dd1b03afcfe9322d0" name="a8cb7346c64c5306dd1b03afcfe9322d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8cb7346c64c5306dd1b03afcfe9322d0">&#9670;&#160;</a></span>dim()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::utils::PeriodicBoundary::dim </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8hpp_source.html#l00040">40</a> of file <a class="el" href="_periodic_boundary_8hpp_source.html">PeriodicBoundary.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_periodic_boundary_8hpp_source.html#l00056">problem_dim_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_periodic_boundary_8cpp_source.html#l00023">PeriodicBoundary()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_periodic_boundary_a8cb7346c64c5306dd1b03afcfe9322d0_icgraph.svg" width="436" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
@@ -274,9 +354,9 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8cpp_source.html#l00149">149</a> of file <a class="el" href="_periodic_boundary_8cpp_source.html">PeriodicBoundary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8cpp_source.html#l00154">154</a> of file <a class="el" href="_periodic_boundary_8cpp_source.html">PeriodicBoundary.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_boundary_8hpp_source.html#l00052">full_to_periodic_map_</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_boundary_8hpp_source.html#l00059">full_to_periodic_map_</a>.</p>
 
 </div>
 </div>
@@ -296,9 +376,9 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8cpp_source.html#l00173">173</a> of file <a class="el" href="_periodic_boundary_8cpp_source.html">PeriodicBoundary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8cpp_source.html#l00178">178</a> of file <a class="el" href="_periodic_boundary_8cpp_source.html">PeriodicBoundary.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_boundary_8hpp_source.html#l00052">full_to_periodic_map_</a>, and <a class="el" href="_periodic_boundary_8cpp_source.html#l00211">has_periodic_bc()</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_boundary_8hpp_source.html#l00059">full_to_periodic_map_</a>, and <a class="el" href="_periodic_boundary_8cpp_source.html#l00216">has_periodic_bc()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -323,9 +403,9 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8cpp_source.html#l00121">121</a> of file <a class="el" href="_periodic_boundary_8cpp_source.html">PeriodicBoundary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8cpp_source.html#l00126">126</a> of file <a class="el" href="_periodic_boundary_8cpp_source.html">PeriodicBoundary.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00025">entries</a>, and <a class="el" href="_periodic_boundary_8hpp_source.html#l00052">full_to_periodic_map_</a>.</p>
+<p class="reference">References <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00025">entries</a>, and <a class="el" href="_periodic_boundary_8hpp_source.html#l00059">full_to_periodic_map_</a>.</p>
 
 </div>
 </div>
@@ -352,9 +432,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8hpp_source.html#l00048">48</a> of file <a class="el" href="_periodic_boundary_8hpp_source.html">PeriodicBoundary.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8hpp_source.html#l00053">53</a> of file <a class="el" href="_periodic_boundary_8hpp_source.html">PeriodicBoundary.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_boundary_8hpp_source.html#l00055">affine_matrix_</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_boundary_8hpp_source.html#l00063">affine_matrix_</a>.</p>
 
 </div>
 </div>
@@ -373,14 +453,43 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8cpp_source.html#l00211">211</a> of file <a class="el" href="_periodic_boundary_8cpp_source.html">PeriodicBoundary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8cpp_source.html#l00216">216</a> of file <a class="el" href="_periodic_boundary_8cpp_source.html">PeriodicBoundary.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_boundary_8cpp_source.html#l00173">full_to_periodic()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_boundary_8cpp_source.html#l00178">full_to_periodic()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1utils_1_1_periodic_boundary_a40ddf2c03af62452052037d445e471f6_icgraph.svg" width="444" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
+
+</div>
+</div>
+<a id="a34254b10efbc5c714530fd74e2f5da72" name="a34254b10efbc5c714530fd74e2f5da72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34254b10efbc5c714530fd74e2f5da72">&#9670;&#160;</a></span>index_map()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Eigen::VectorXi &amp; polyfem::utils::PeriodicBoundary::index_map </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8hpp_source.html#l00051">51</a> of file <a class="el" href="_periodic_boundary_8hpp_source.html">PeriodicBoundary.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_periodic_boundary_8hpp_source.html#l00057">index_map_</a>.</p>
 
 </div>
 </div>
@@ -408,9 +517,38 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8hpp_source.html#l00041">41</a> of file <a class="el" href="_periodic_boundary_8hpp_source.html">PeriodicBoundary.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8hpp_source.html#l00042">42</a> of file <a class="el" href="_periodic_boundary_8hpp_source.html">PeriodicBoundary.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_boundary_8hpp_source.html#l00053">periodic_mask_</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_boundary_8hpp_source.html#l00060">periodic_mask_</a>.</p>
+
+</div>
+</div>
+<a id="a5b5cf106ef5f6da68a33d24be0486df3" name="a5b5cf106ef5f6da68a33d24be0486df3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b5cf106ef5f6da68a33d24be0486df3">&#9670;&#160;</a></span>n_constraints()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::utils::PeriodicBoundary::n_constraints </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8hpp_source.html#l00049">49</a> of file <a class="el" href="_periodic_boundary_8hpp_source.html">PeriodicBoundary.hpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_periodic_boundary_8hpp_source.html#l00061">constraint_list_</a>.</p>
 
 </div>
 </div>
@@ -437,9 +575,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8hpp_source.html#l00040">40</a> of file <a class="el" href="_periodic_boundary_8hpp_source.html">PeriodicBoundary.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8hpp_source.html#l00041">41</a> of file <a class="el" href="_periodic_boundary_8hpp_source.html">PeriodicBoundary.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_boundary_8hpp_source.html#l00052">full_to_periodic_map_</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_boundary_8hpp_source.html#l00059">full_to_periodic_map_</a>.</p>
 
 </div>
 </div>
@@ -469,9 +607,9 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8cpp_source.html#l00188">188</a> of file <a class="el" href="_periodic_boundary_8cpp_source.html">PeriodicBoundary.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8cpp_source.html#l00193">193</a> of file <a class="el" href="_periodic_boundary_8cpp_source.html">PeriodicBoundary.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_boundary_8hpp_source.html#l00052">full_to_periodic_map_</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_boundary_8hpp_source.html#l00059">full_to_periodic_map_</a>.</p>
 
 </div>
 </div>
@@ -496,9 +634,61 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8hpp_source.html#l00055">55</a> of file <a class="el" href="_periodic_boundary_8hpp_source.html">PeriodicBoundary.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8hpp_source.html#l00063">63</a> of file <a class="el" href="_periodic_boundary_8hpp_source.html">PeriodicBoundary.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_boundary_8hpp_source.html#l00048">get_affine_matrix()</a>, and <a class="el" href="_periodic_boundary_8cpp_source.html#l00023">PeriodicBoundary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_boundary_8hpp_source.html#l00053">get_affine_matrix()</a>, and <a class="el" href="_periodic_boundary_8cpp_source.html#l00023">PeriodicBoundary()</a>.</p>
+
+</div>
+</div>
+<a id="a07309ff53aad811d7d3951b307de9608" name="a07309ff53aad811d7d3951b307de9608"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07309ff53aad811d7d3951b307de9608">&#9670;&#160;</a></span>constraint_list_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::array&lt;int, 2&gt; &gt; polyfem::utils::PeriodicBoundary::constraint_list_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8hpp_source.html#l00061">61</a> of file <a class="el" href="_periodic_boundary_8hpp_source.html">PeriodicBoundary.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_periodic_boundary_8hpp_source.html#l00050">constraint()</a>, <a class="el" href="_periodic_boundary_8hpp_source.html#l00049">n_constraints()</a>, and <a class="el" href="_periodic_boundary_8cpp_source.html#l00023">PeriodicBoundary()</a>.</p>
+
+</div>
+</div>
+<a id="a0502982b5931ce695856900e437484f3" name="a0502982b5931ce695856900e437484f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0502982b5931ce695856900e437484f3">&#9670;&#160;</a></span>dependent_map_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXi polyfem::utils::PeriodicBoundary::dependent_map_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8hpp_source.html#l00058">58</a> of file <a class="el" href="_periodic_boundary_8hpp_source.html">PeriodicBoundary.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_periodic_boundary_8cpp_source.html#l00023">PeriodicBoundary()</a>.</p>
 
 </div>
 </div>
@@ -522,9 +712,35 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8hpp_source.html#l00052">52</a> of file <a class="el" href="_periodic_boundary_8hpp_source.html">PeriodicBoundary.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8hpp_source.html#l00059">59</a> of file <a class="el" href="_periodic_boundary_8hpp_source.html">PeriodicBoundary.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_boundary_8cpp_source.html#l00149">full_to_periodic()</a>, <a class="el" href="_periodic_boundary_8cpp_source.html#l00173">full_to_periodic()</a>, <a class="el" href="_periodic_boundary_8cpp_source.html#l00121">full_to_periodic()</a>, <a class="el" href="_periodic_boundary_8hpp_source.html#l00040">n_periodic_dof()</a>, <a class="el" href="_periodic_boundary_8cpp_source.html#l00188">periodic_to_full()</a>, and <a class="el" href="_periodic_boundary_8cpp_source.html#l00023">PeriodicBoundary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_boundary_8cpp_source.html#l00154">full_to_periodic()</a>, <a class="el" href="_periodic_boundary_8cpp_source.html#l00178">full_to_periodic()</a>, <a class="el" href="_periodic_boundary_8cpp_source.html#l00126">full_to_periodic()</a>, <a class="el" href="_periodic_boundary_8hpp_source.html#l00041">n_periodic_dof()</a>, <a class="el" href="_periodic_boundary_8cpp_source.html#l00193">periodic_to_full()</a>, and <a class="el" href="_periodic_boundary_8cpp_source.html#l00023">PeriodicBoundary()</a>.</p>
+
+</div>
+</div>
+<a id="a9d2ffe473f85d06444d461ede30d6206" name="a9d2ffe473f85d06444d461ede30d6206"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d2ffe473f85d06444d461ede30d6206">&#9670;&#160;</a></span>index_map_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXi polyfem::utils::PeriodicBoundary::index_map_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8hpp_source.html#l00057">57</a> of file <a class="el" href="_periodic_boundary_8hpp_source.html">PeriodicBoundary.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_periodic_boundary_8hpp_source.html#l00051">index_map()</a>, and <a class="el" href="_periodic_boundary_8cpp_source.html#l00023">PeriodicBoundary()</a>.</p>
 
 </div>
 </div>
@@ -548,9 +764,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8hpp_source.html#l00053">53</a> of file <a class="el" href="_periodic_boundary_8hpp_source.html">PeriodicBoundary.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8hpp_source.html#l00060">60</a> of file <a class="el" href="_periodic_boundary_8hpp_source.html">PeriodicBoundary.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_boundary_8hpp_source.html#l00041">is_periodic_dof()</a>, and <a class="el" href="_periodic_boundary_8cpp_source.html#l00023">PeriodicBoundary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_boundary_8hpp_source.html#l00042">is_periodic_dof()</a>, and <a class="el" href="_periodic_boundary_8cpp_source.html#l00023">PeriodicBoundary()</a>.</p>
 
 </div>
 </div>
@@ -574,9 +790,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8hpp_source.html#l00051">51</a> of file <a class="el" href="_periodic_boundary_8hpp_source.html">PeriodicBoundary.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_boundary_8hpp_source.html#l00056">56</a> of file <a class="el" href="_periodic_boundary_8hpp_source.html">PeriodicBoundary.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_boundary_8cpp_source.html#l00023">PeriodicBoundary()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_boundary_8hpp_source.html#l00040">dim()</a>, and <a class="el" href="_periodic_boundary_8cpp_source.html#l00023">PeriodicBoundary()</a>.</p>
 
 </div>
 </div>
