@@ -143,7 +143,7 @@ namespace
 
 TEST_CASE("homogenize-stress-periodic", "[test_adjoint]")
 {
-#ifndef WIN32
+#ifdef WIN32
 	return; // Skip this test on Windows due cholmod problem
 #endif
 	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
@@ -179,7 +179,7 @@ TEST_CASE("homogenize-stress-periodic", "[test_adjoint]")
 
 TEST_CASE("homogenize-stress", "[test_adjoint]")
 {
-#ifndef WIN32
+#ifdef WIN32
 	return; // Skip this test on Windows due cholmod problem
 #endif
 	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
