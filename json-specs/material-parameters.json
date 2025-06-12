@@ -396,6 +396,7 @@
             "type"
         ],
         "optional": [
+            "use_rest_pose",
             "id",
             "rho"
         ],
@@ -611,6 +612,12 @@
         "type": "include",
         "spec_file": "value-no.json",
         "doc": "Exponent(s) of Incompressible Ogden"
+    },
+    {
+        "pointer": "/use_rest_pose",
+        "type": "bool",
+        "default": false,
+        "doc": "Use amips wrt to rest pose or the regular element"
     },
     {
         "pointer": "/models",
