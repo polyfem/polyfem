@@ -122,6 +122,7 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1assembler_1_1_a_m_i_p_
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">polyfem::assembler::AMIPSEnergy Class Reference</div></div>
 </div><!--header-->
@@ -250,6 +251,11 @@ Private Member Functions</h2></td></tr>
 <tr class="memitem:a83a46dd2900f69f9ab643952eb5fa26b"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#a83a46dd2900f69f9ab643952eb5fa26b">compute_energy_hessian_aux_fast</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">NonLinearAssemblerData</a> &amp;data, Eigen::MatrixXd &amp;H) const</td></tr>
 <tr class="separator:a83a46dd2900f69f9ab643952eb5fa26b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:ad6838ac6f9542ee8df15a8082ef9652e" id="r_ad6838ac6f9542ee8df15a8082ef9652e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#ad6838ac6f9542ee8df15a8082ef9652e">use_rest_pose_</a> = false</td></tr>
+<tr class="separator:ad6838ac6f9542ee8df15a8082ef9652e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_types_classpolyfem_1_1assembler_1_1_assembler"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classpolyfem_1_1assembler_1_1_assembler')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">polyfem::assembler::Assembler</a></td></tr>
@@ -331,14 +337,21 @@ Additional Inherited Members</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#ae5e3a9574045efc89230afa8044d05af">polyfem::assembler::Assembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_a_m_i_p_s_energy_8hpp_source.html#l00033">33</a> of file <a class="el" href="_a_m_i_p_s_energy_8hpp_source.html">AMIPSEnergy.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html#l00596">596</a> of file <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html">AMIPSEnergy.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_a_m_i_p_s_energy_8hpp_source.html#l00055">use_rest_pose_</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy_a8a4e33a778c3a81592832e65293a712b_cgraph.svg" width="454" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
 
 </div>
 </div>
@@ -559,13 +572,13 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a83fef57dc75dab91705eed56f86baf88">polyfem::assembler::NLAssembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html#l00044">44</a> of file <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html">AMIPSEnergy.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html#l00118">118</a> of file <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html">AMIPSEnergy.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00021">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00081">polyfem::gradient_from_energy()</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00021">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy_adff098d24c145623f17bcf60b45b93a3_cgraph.svg" width="398" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy_adff098d24c145623f17bcf60b45b93a3_cgraph.svg" width="595" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -722,13 +735,13 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#aa0ad546418de6445ce58c2dba5c3c040">polyfem::assembler::NLAssembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html#l00257">257</a> of file <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html">AMIPSEnergy.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html#l00351">351</a> of file <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html">AMIPSEnergy.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00021">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_elasticity_utils_8cpp_source.html#l00180">polyfem::hessian_from_energy()</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00021">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy_ad4a40d13cd36c1fcb51233a40b3043c8_cgraph.svg" width="398" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy_ad4a40d13cd36c1fcb51233a40b3043c8_cgraph.svg" width="591" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -815,7 +828,7 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_assembler.html#ab555bbc58a416da197a3d34970a3fcb9">polyfem::assembler::ElasticityAssembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html#l00469">469</a> of file <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html">AMIPSEnergy.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html#l00576">576</a> of file <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html">AMIPSEnergy.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_assembler_data_8hpp_source.html#l00119">polyfem::assembler::OutputData::bs</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00118">polyfem::assembler::OutputData::el_id</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00122">polyfem::assembler::OutputData::fun</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00120">polyfem::assembler::OutputData::gbs</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00121">polyfem::assembler::OutputData::local_pts</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00117">polyfem::assembler::OutputData::t</a>.</p>
 <div class="dynheader">
@@ -852,7 +865,7 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html#a39372bf562743b694ddc311f807dc57b">polyfem::assembler::NLAssembler</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html#l00039">39</a> of file <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html">AMIPSEnergy.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html#l00113">113</a> of file <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html">AMIPSEnergy.cpp</a>.</p>
 
 </div>
 </div>
@@ -882,13 +895,13 @@ template&lt;typename T &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html#l00115">115</a> of file <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html">AMIPSEnergy.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html#l00200">200</a> of file <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html">AMIPSEnergy.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00026">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00022">polyfem::utils::determinant()</a>, <a class="el" href="_elasticity_utils_8hpp_source.html#l00071">polyfem::get_local_disp()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00021">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
+<p class="reference">References <a class="el" href="_elasticity_utils_8hpp_source.html#l00106">polyfem::compute_disp_grad_at_quad()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00026">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00022">polyfem::utils::determinant()</a>, <a class="el" href="_elasticity_utils_8hpp_source.html#l00071">polyfem::get_local_disp()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_a_m_i_p_s_energy_8hpp_source.html#l00055">use_rest_pose_</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00021">polyfem::assembler::NonLinearAssemblerData::vals</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy_a52f579c59b4bf3cc90f45b26f47bc98d_cgraph.svg" width="100%" height="413"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy_a52f579c59b4bf3cc90f45b26f47bc98d_cgraph.svg" width="100%" height="461"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -921,9 +934,9 @@ template&lt;int n_basis, int dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html#l00162">162</a> of file <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html">AMIPSEnergy.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html#l00264">264</a> of file <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html">AMIPSEnergy.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00026">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00021">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00024">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00026">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_a_m_i_p_s_energy_8hpp_source.html#l00055">use_rest_pose_</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00021">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00024">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1006,9 +1019,9 @@ template&lt;int n_basis, int dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html#l00335">335</a> of file <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html">AMIPSEnergy.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html#l00443">443</a> of file <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html">AMIPSEnergy.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00026">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00022">polyfem::utils::determinant()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00021">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00024">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8hpp_source.html#l00020">polyfem::assembler::ElementAssemblyValues::basis_values</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00026">polyfem::assembler::NonLinearAssemblerData::da</a>, <a class="el" href="_matrix_utils_8hpp_source.html#l00022">polyfem::utils::determinant()</a>, <a class="el" href="_element_assembly_values_8hpp_source.html#l00022">polyfem::assembler::ElementAssemblyValues::jac_it</a>, <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>, <a class="el" href="_assembler_8hpp_source.html#l00063">polyfem::assembler::Assembler::size()</a>, <a class="el" href="_a_m_i_p_s_energy_8hpp_source.html#l00055">use_rest_pose_</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, <a class="el" href="_assembler_data_8hpp_source.html#l00021">polyfem::assembler::NonLinearAssemblerData::vals</a>, and <a class="el" href="_assembler_data_8hpp_source.html#l00024">polyfem::assembler::NonLinearAssemblerData::x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1072,6 +1085,33 @@ Here is the call graph for this function:</div>
 <p>Implements <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#abf4ca5a2d5825696036c2ad59f80d89b">polyfem::assembler::Assembler</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_a_m_i_p_s_energy_8hpp_source.html#l00036">36</a> of file <a class="el" href="_a_m_i_p_s_energy_8hpp_source.html">AMIPSEnergy.hpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="ad6838ac6f9542ee8df15a8082ef9652e" name="ad6838ac6f9542ee8df15a8082ef9652e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6838ac6f9542ee8df15a8082ef9652e">&#9670;&#160;</a></span>use_rest_pose_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::assembler::AMIPSEnergy::use_rest_pose_ = false</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_a_m_i_p_s_energy_8hpp_source.html#l00055">55</a> of file <a class="el" href="_a_m_i_p_s_energy_8hpp_source.html">AMIPSEnergy.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html#l00596">add_multimaterial()</a>, <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html#l00200">compute_energy_aux()</a>, <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html#l00264">compute_energy_aux_gradient_fast()</a>, and <a class="el" href="_a_m_i_p_s_energy_8cpp_source.html#l00443">compute_energy_hessian_aux_fast()</a>.</p>
 
 </div>
 </div>

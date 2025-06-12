@@ -17,5 +17,6 @@ var classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy =
     [ "compute_energy_aux_gradient_fast", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#adc03e1dc500c6f7e6ce8f9257b03b912", null ],
     [ "compute_energy_hessian_aux_fast", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#a83a46dd2900f69f9ab643952eb5fa26b", null ],
     [ "name", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#a245f7760f870babb6b62bcb667054a26", null ],
-    [ "parameters", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#ae7d9e9ef0c79269753dc03280a0493f0", null ]
+    [ "parameters", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#ae7d9e9ef0c79269753dc03280a0493f0", null ],
+    [ "use_rest_pose_", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#ad6838ac6f9542ee8df15a8082ef9652e", null ]
 ];

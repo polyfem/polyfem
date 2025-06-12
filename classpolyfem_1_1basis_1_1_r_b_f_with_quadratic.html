@@ -243,7 +243,7 @@ Private Attributes</h2></td></tr>
 <p>Initialize RBF functions over a polytope element. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">centers</td><td>#C x dim positions of the kernels used to define functions over the polytope. The centers are placed at a small offset distance from the boundary of the element, due to the singularity at the centers </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">centers</td><td>C x dim positions of the kernels used to define functions over the polytope. The centers are placed at a small offset distance from the boundary of the element, due to the singularity at the centers </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">collocation_points</td><td>#S x dim positions of the collocation points, used to approximate the RBF functions over the boundary of the element </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">local_basis_integral</td><td>#B x dim+dim*(dim+1)/2 of the constant right-hand side for the integral constraint for each basis over the polytope </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">quadr</td><td>Quadrature points and weights inside the polytope </td></tr>

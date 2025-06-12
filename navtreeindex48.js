@@ -1,5 +1,7 @@
 var NAVTREEINDEX48 =
 {
+"namespacepolyfem_1_1utils.html#a7deb3cf37288f5f4935aae85c55bf3dc":[6,0,7,11,89],
+"namespacepolyfem_1_1utils.html#a81d53daf4d77bf87d802589c5ec3c1c4":[6,0,7,11,60],
 "namespacepolyfem_1_1utils.html#a839770ed1facd0a5f30ef708ddf03b15":[6,0,7,11,91],
 "namespacepolyfem_1_1utils.html#a864ce51c3548eaa0b8123e3df4e8e83e":[6,0,7,11,90],
 "namespacepolyfem_1_1utils.html#a8a72689f8c34fff6ce44d8568d3a5c1e":[6,0,7,11,88],
@@ -247,7 +249,5 @@ var NAVTREEINDEX48 =
 "raster_8hpp_source.html":[8,0,1,0,11,49],
 "struct_d_scalar1.html":[7,0,5],
 "struct_d_scalar1.html#a09f33bc10c398914a1deba226435c201":[7,0,5,49],
-"struct_d_scalar1.html#a0d8be015e1f3ce051b4a071bb9dccde5":[7,0,5,7],
-"struct_d_scalar1.html#a0ec55a0176a94ea5e4121ce77df3847c":[7,0,5,16],
-"struct_d_scalar1.html#a13704096417428ba1d8e0651c80c6907":[7,0,5,30]
+"struct_d_scalar1.html#a0d8be015e1f3ce051b4a071bb9dccde5":[7,0,5,7]
 };
