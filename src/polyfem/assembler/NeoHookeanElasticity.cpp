@@ -353,10 +353,12 @@ namespace polyfem::assembler
 				}
 			}
 
+#ifdef POLYFEM_WITH_BEZIER
 			Eigen::VectorXd jacs;
 			if (use_robust_jacobian)
 				jacs = data.vals.eval_deformed_jacobian_determinant(data.x);
-			
+#endif
+
 			Eigen::Matrix<T, dim, dim> def_grad(size(), size());
 
 			T energy = T(0.0);
@@ -378,7 +380,13 @@ namespace polyfem::assembler
 				double lambda, mu;
 				params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id, lambda, mu);
 				
-				const T J = use_robust_jacobian ? jacs(p) * jac_it.determinant() : def_grad.determinant();
+				T J;
+				if (!use_robust_jacobian)
+					J = def_grad.determinant();
+#ifdef POLYFEM_WITH_BEZIER
+				else
+					J = jacs(p) * jac_it.determinant();
+#endif
 				const T log_det_j = log(J);
 				const T val = mu / 2 * (def_grad.squaredNorm() - size() - 2 * log_det_j) + 
 								lambda / 2 * log_det_j * log_det_j;
@@ -471,9 +479,11 @@ namespace polyfem::assembler
 			}
 		}
 
-		Eigen::VectorXd jacs;
-		if (use_robust_jacobian)
-			jacs = data.vals.eval_deformed_jacobian_determinant(data.x);
+#ifdef POLYFEM_WITH_BEZIER
+			Eigen::VectorXd jacs;
+			if (use_robust_jacobian)
+				jacs = data.vals.eval_deformed_jacobian_determinant(data.x);
+#endif
 
 		Eigen::Matrix<double, dim, dim> def_grad(size(), size());
 
@@ -495,7 +505,13 @@ namespace polyfem::assembler
 			// Id + grad d
 			def_grad = local_disp.transpose() * delF_delU + Eigen::Matrix<double, dim, dim>::Identity(size(), size());
 
-			const double J = use_robust_jacobian ? jacs(p) * jac_it.determinant() : def_grad.determinant();
+			double J;
+			if (!use_robust_jacobian)
+				J = def_grad.determinant();
+#ifdef POLYFEM_WITH_BEZIER
+			else
+				J = jacs(p) * jac_it.determinant();
+#endif
 			const double log_det_j = log(J);
 
 			Eigen::Matrix<double, dim, dim> delJ_delF(size(), size());
@@ -563,9 +579,11 @@ namespace polyfem::assembler
 			}
 		}
 
-		Eigen::VectorXd jacs;
-		if (use_robust_jacobian)
-			jacs = data.vals.eval_deformed_jacobian_determinant(data.x);
+#ifdef POLYFEM_WITH_BEZIER
+			Eigen::VectorXd jacs;
+			if (use_robust_jacobian)
+				jacs = data.vals.eval_deformed_jacobian_determinant(data.x);
+#endif
 
 		Eigen::Matrix<double, dim, dim> def_grad(size(), size());
 
@@ -584,7 +602,13 @@ namespace polyfem::assembler
 			// Id + grad d
 			def_grad = local_disp.transpose() * delF_delU + Eigen::Matrix<double, dim, dim>::Identity(size(), size());
 
-			const double J = use_robust_jacobian ? jacs(p) * jac_it.determinant() : def_grad.determinant();
+			double J;
+			if (!use_robust_jacobian)
+				J = def_grad.determinant();
+#ifdef POLYFEM_WITH_BEZIER
+			else
+				J = jacs(p) * jac_it.determinant();
+#endif
 			double log_det_j = log(J);
 
 			Eigen::Matrix<double, dim, dim> delJ_delF(size(), size());

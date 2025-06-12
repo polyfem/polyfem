@@ -32,6 +32,7 @@ namespace polyfem::solver
 			}
 		};
 
+#ifdef POLYFEM_WITH_BEZIER
 		Eigen::MatrixXd refined_nodes(const int dim, const int i)
 		{
 			Eigen::MatrixXd A(dim + 1, dim);
@@ -195,36 +196,6 @@ namespace polyfem::solver
 			return quad;
 		}
 
-		// Eigen::MatrixXd evaluate_jacobian(const basis::ElementBases &bs, const basis::ElementBases &gbs, const Eigen::MatrixXd &uv, const Eigen::VectorXd &disp)
-		// {
-		// 	assembler::ElementAssemblyValues vals;
-		// 	vals.compute(0, uv.cols() == 3, uv, bs, gbs);
-
-		// 	Eigen::MatrixXd out(uv.rows(), 2);
-		// 	for (long p = 0; p < uv.rows(); ++p)
-		// 	{
-		// 		Eigen::MatrixXd disp_grad;
-		// 		disp_grad.setZero(uv.cols(), uv.cols());
-
-		// 		for (std::size_t j = 0; j < vals.basis_values.size(); ++j)
-		// 		{
-		// 			const auto &loc_val = vals.basis_values[j];
-
-		// 			for (int d = 0; d < uv.cols(); ++d)
-		// 			{
-		// 				for (std::size_t ii = 0; ii < loc_val.global.size(); ++ii)
-		// 				{
-		// 					disp_grad.row(d) += loc_val.global[ii].val * loc_val.grad.row(p) * disp(loc_val.global[ii].index * uv.cols() + d);
-		// 				}
-		// 			}
-		// 		}
-
-		// 		disp_grad = disp_grad * vals.jac_it[p] + Eigen::MatrixXd::Identity(uv.cols(), uv.cols());
-		// 		out.row(p) << disp_grad.determinant(), disp_grad.determinant() / vals.jac_it[p].determinant();
-		// 	}
-		// 	return out;
-		// }
-
 		void update_quadrature(const int invalidID, const int dim, Tree &tree, const int quad_order, basis::ElementBases &bs, const basis::ElementBases &gbs, assembler::AssemblyValsCache &ass_vals_cache)
 		{
 			// update quadrature to capture the point with negative jacobian
@@ -239,6 +210,7 @@ namespace polyfem::solver
 			if (ass_vals_cache.is_initialized())
 				ass_vals_cache.update(invalidID, dim == 3, bs, gbs);
 		}
+#endif
 	} // namespace
 
 	ElasticForm::ElasticForm(const int n_bases,
@@ -265,10 +237,11 @@ namespace polyfem::solver
 			compute_cached_stiffness();
 		// mat_cache_ = std::make_unique<utils::DenseMatrixCache>();
 		mat_cache_ = std::make_unique<utils::SparseMatrixCache>();
-		quadrature_hierarchy_.resize(bases_.size());
 
+#ifdef POLYFEM_WITH_BEZIER
+		quadrature_hierarchy_.resize(bases_.size());
 		quadrature_order_ = AssemblerUtils::quadrature_order(assembler_.name(), bases_[0].bases[0].order(), AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, is_volume_ ? 3 : 2);
-	
+
 		if (check_inversion_ != ElementInversionCheck::Discrete)
 		{
 			Eigen::VectorXd x0;
@@ -290,6 +263,10 @@ namespace polyfem::solver
 					log_and_throw_error("Non-uniform gbasis order not supported for conservative Jacobian check!!");
 			}
 		}
+#else
+		if (check_inversion_ != ElementInversionCheck::Discrete)
+			logger().error("Enable POLYFEM_WITH_BEZIER to support robust Jacobian positivity check!");
+#endif
 	}
 
 	double ElasticForm::value_unweighted(const Eigen::VectorXd &x) const
@@ -337,12 +314,17 @@ namespace polyfem::solver
 
 	void ElasticForm::finish()
 	{
+#ifdef POLYFEM_WITH_BEZIER
 		for (auto &t : quadrature_hierarchy_)
 			t = Tree();
+#endif
 	}
 
 	double ElasticForm::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{
+#ifndef POLYFEM_WITH_BEZIER
+		return 1.;
+#else
 		if (check_inversion_ == ElementInversionCheck::Discrete)
 			return 1.;
 
@@ -368,29 +350,23 @@ namespace polyfem::solver
 			auto& gbs = geom_bases_[invalidID];
 			if (quadrature_hierarchy_[invalidID].merge(subdivision_tree)) // if the tree is refined
 				update_quadrature(invalidID, dim, quadrature_hierarchy_[invalidID], quadrature_order_, bs, gbs, ass_vals_cache_);
-
-			// verify that new quadrature points don't make x0 invalid
-			// {
-			// 	Quadrature quad;
-			// 	bs.compute_quadrature(quad);
-			// 	const Eigen::MatrixXd jacs0 = evaluate_jacobian(bs, gbs, quad.points, x0);
-			// 	const Eigen::MatrixXd jacs1 = evaluate_jacobian(bs, gbs, quad.points, x0 + (x1 - x0) * step);
-			// 	const Eigen::VectorXd min_jac0 = jacs0.colwise().minCoeff();
-			// 	const Eigen::VectorXd min_jac1 = jacs1.colwise().minCoeff();
-			// 	logger().debug("Min jacobian on quadrature points: before step {}, {}; after step {}, {}", min_jac0(0), min_jac0(1), min_jac1(0), min_jac1(1));
-			// }
 		}
 
 		return step;
+#endif
 	}
 
 	bool ElasticForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
 	{		
+#ifndef POLYFEM_WITH_BEZIER
+		return true;
+#else
 		if (check_inversion_ == ElementInversionCheck::Discrete)
 			return true;
 
 		const auto [isvalid, id, tree] = is_valid(is_volume_ ? 3 : 2, bases_, geom_bases_, x1);
 		return isvalid;
+#endif
 	}
 
 	bool ElasticForm::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const

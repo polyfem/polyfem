@@ -1299,11 +1299,13 @@ namespace polyfem::io
 		}
 
 		Eigen::Vector<bool, -1> validity;
+#ifdef POLYFEM_WITH_BEZIER
 		if (opts.jacobian_validity)
 			Evaluator::mark_flipped_cells(
 				mesh, gbases, bases, state.disc_orders,
 				state.polys, state.polys_3d, ref_element_sampler,
 				points.rows(), sol, validity, opts.use_sampler, opts.boundary_only);
+#endif
 
 		Evaluator::interpolate_function(
 			mesh, problem.is_scalar(), bases, state.disc_orders,

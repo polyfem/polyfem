@@ -144,6 +144,7 @@ namespace polyfem
 			}
 		}
 
+#ifdef POLYFEM_WITH_BEZIER
 		Eigen::VectorXd ElementAssemblyValues::eval_deformed_jacobian_determinant(const Eigen::VectorXd &disp) const
 		{
 			assert(basis_);
@@ -154,6 +155,7 @@ namespace polyfem
 			const Eigen::MatrixXd cp = utils::extract_nodes(is_volume_ ? 3 : 2, *basis_, *gbasis_, disp, order);
 			return utils::robust_evaluate_jacobian(order, cp, quadrature.points);
 		}
+#endif
 
 		void ElementAssemblyValues::compute(const int el_index, const bool is_volume, const ElementBases &basis, const ElementBases &gbasis)
 		{
