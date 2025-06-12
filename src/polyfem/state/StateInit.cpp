@@ -279,8 +279,10 @@ namespace polyfem
 
 		if (args["solver"]["advanced"]["check_inversion"] == "Conservative")
 		{
+#ifdef POLYFEM_WITH_BEZIER
 			if (auto elastic_assembler = std::dynamic_pointer_cast<assembler::ElasticityAssembler>(assembler))
 				elastic_assembler->set_use_robust_jacobian();
+#endif
 		}
 
 		if (!args.contains("preset_problem"))

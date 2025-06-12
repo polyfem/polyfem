@@ -400,6 +400,7 @@ namespace polyfem::io
 							 fun, result, use_sampler, boundary_only);
 	}
 
+#ifdef POLYFEM_WITH_BEZIER
 	void Evaluator::mark_flipped_cells(
 		const mesh::Mesh &mesh,
 		const std::vector<basis::ElementBases> &gbasis,
@@ -477,6 +478,7 @@ namespace polyfem::io
 			index += local_pts.rows();
 		}
 	}
+#endif
 
 	void Evaluator::interpolate_function(
 		const mesh::Mesh &mesh,

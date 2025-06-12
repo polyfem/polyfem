@@ -125,7 +125,9 @@ namespace polyfem::solver
 
 		Eigen::VectorXd x_prev_;
 
+#ifdef POLYFEM_WITH_BEZIER
 		mutable std::vector<utils::Tree> quadrature_hierarchy_;
 		int quadrature_order_;
+#endif
 	};
 } // namespace polyfem::solver

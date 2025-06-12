@@ -1,3 +1,5 @@
+#ifdef POLYFEM_WITH_BEZIER
+
 #include <numeric>
 #include <element_validity.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -408,3 +410,5 @@ namespace polyfem::utils
         return {step, invalid_id, invalid_step, tree};
     }
 }
+
+#endif

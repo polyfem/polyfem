@@ -342,11 +342,13 @@ namespace polyfem
 		al_solver.solve_reduced(nl_problem, sol,
 								args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
 
+#ifdef POLYFEM_WITH_BEZIER
 		if (args["space"]["advanced"]["count_flipped_els_continuous"])
 		{
 			const auto invalidList = count_invalid(mesh->dimension(), bases, geom_bases(), sol);
 			logger().debug("Flipped elements (cnt {}) : {}", invalidList.size(), invalidList);
 		}
+#endif
 
 		// ---------------------------------------------------------------------
 

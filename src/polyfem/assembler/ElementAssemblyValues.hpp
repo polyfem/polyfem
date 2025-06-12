@@ -45,7 +45,9 @@ namespace polyfem
 			/// check if the element is flipped
 			bool is_geom_mapping_positive(const bool is_volume, const basis::ElementBases &gbasis) const;
 
+#ifdef POLYFEM_WITH_BEZIER
 			Eigen::VectorXd eval_deformed_jacobian_determinant(const Eigen::VectorXd &disp) const;
+#endif
 
 		private:
 			const basis::ElementBases *basis_, *gbasis_;

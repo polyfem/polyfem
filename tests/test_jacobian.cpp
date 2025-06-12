@@ -1,3 +1,5 @@
+#ifdef POLYFEM_WITH_BEZIER
+
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/utils/Jacobian.hpp>
 #include <polyfem/autogen/auto_p_bases.hpp>
@@ -216,3 +218,5 @@ TEST_CASE("jacobian-evaluate", "[jacobian]")
 		}
 	}
 }
+
+#endif

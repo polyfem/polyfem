@@ -66,6 +66,7 @@ namespace polyfem::io
 			const bool use_sampler,
 			const bool boundary_only);
 
+#ifdef POLYFEM_WITH_BEZIER
 		static void mark_flipped_cells(
 			const mesh::Mesh &mesh,
 			const std::vector<basis::ElementBases> &gbasis,
@@ -79,6 +80,7 @@ namespace polyfem::io
 			Eigen::Vector<bool, -1> &result,
 			const bool use_sampler,
 			const bool boundary_only);
+#endif
 
 		/// interpolate the function fun.
 		/// @param[in] mesh mesh
