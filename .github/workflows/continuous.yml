@@ -137,7 +137,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        config: [DebugNoSymbols, Release]
+        config: [DebugNoSymbols, MinSizeRel]
         threading: [CPP]
     steps:
       - name: Checkout repository
