@@ -191,6 +191,10 @@ var hierarchy =
       [ "polyfem::solver::RayleighDampingForm", "classpolyfem_1_1solver_1_1_rayleigh_damping_form.html", null ],
       [ "polyfem::solver::TangentialAdhesionForm", "classpolyfem_1_1solver_1_1_tangential_adhesion_form.html", null ]
     ] ],
+    [ "fmt::formatter", null, [
+      [ "fmt::formatter< Eigen::MatrixXd >", "structfmt_1_1formatter_3_01_eigen_1_1_matrix_xd_01_4.html", null ],
+      [ "fmt::formatter< polyfem::StiffnessMatrix >", "structfmt_1_1formatter_3_01polyfem_1_1_stiffness_matrix_01_4.html", null ]
+    ] ],
     [ "polyfem::renderer::FragmentAttributes", "classpolyfem_1_1renderer_1_1_fragment_attributes.html", null ],
     [ "polyfem::renderer::FrameBufferAttributes", "classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html", null ],
     [ "polyfem::assembler::GenericMatParam", "classpolyfem_1_1assembler_1_1_generic_mat_param.html", null ],

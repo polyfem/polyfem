@@ -1,5 +1,9 @@
 var annotated_dup =
 [
+    [ "fmt", null, [
+      [ "formatter< Eigen::MatrixXd >", "structfmt_1_1formatter_3_01_eigen_1_1_matrix_xd_01_4.html", "structfmt_1_1formatter_3_01_eigen_1_1_matrix_xd_01_4" ],
+      [ "formatter< polyfem::StiffnessMatrix >", "structfmt_1_1formatter_3_01polyfem_1_1_stiffness_matrix_01_4.html", "structfmt_1_1formatter_3_01polyfem_1_1_stiffness_matrix_01_4" ]
+    ] ],
     [ "JIXIE", "namespace_j_i_x_i_e.html", [
       [ "INTERNAL", "namespace_j_i_x_i_e_1_1_i_n_t_e_r_n_a_l.html", [
         [ "ScalarTypeHelper", "struct_j_i_x_i_e_1_1_i_n_t_e_r_n_a_l_1_1_scalar_type_helper.html", "struct_j_i_x_i_e_1_1_i_n_t_e_r_n_a_l_1_1_scalar_type_helper" ],

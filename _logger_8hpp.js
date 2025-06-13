@@ -1,5 +1,7 @@
 var _logger_8hpp =
 [
+    [ "fmt::formatter< polyfem::StiffnessMatrix >", "structfmt_1_1formatter_3_01polyfem_1_1_stiffness_matrix_01_4.html", "structfmt_1_1formatter_3_01polyfem_1_1_stiffness_matrix_01_4" ],
+    [ "fmt::formatter< Eigen::MatrixXd >", "structfmt_1_1formatter_3_01_eigen_1_1_matrix_xd_01_4.html", "structfmt_1_1formatter_3_01_eigen_1_1_matrix_xd_01_4" ],
     [ "adjoint_logger", "_logger_8hpp.html#a4d64be939c7759c782fff98ed87f3399", null ],
     [ "log_and_throw_adjoint_error", "_logger_8hpp.html#a8d6eb2c01f97c327e382b6dcda332777", null ],
     [ "log_and_throw_adjoint_error", "_logger_8hpp.html#a7c6826a8f33961afdbfb91fd443fac97", null ],

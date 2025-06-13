@@ -303,29 +303,28 @@ $(document).ready(function(){initNavTree('_navigation_8cpp_source.html',''); ini
 <div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    index_t f2 = M.facet_corners.adjacent_facet(c1);</div>
 <div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keywordflow">if</span> (f2 == NO_FACET)</div>
 <div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    {</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        <span class="comment">// std::cout &lt;&lt; &quot;No facet&quot; &lt;&lt; std::endl;</span></div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        idx.<a class="code hl_variable" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#aae9d9d8b53bdea66f7e98b6c00b72ec8">face</a> = -1;</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>        <span class="keywordflow">return</span> idx;</div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    }</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    {</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        <span class="comment">// Iterate over all corners of the new face until we find the vertex we came from.</span></div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        <span class="comment">// Not ideal but for now it will do the job.</span></div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        <span class="keywordflow">for</span> (index_t c2 = M.facets.corners_begin(f2); c2 &lt; M.facets.corners_end(f2); ++c2)</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        {</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>            index_t v2 = M.facet_corners.vertex(c2);</div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>            <span class="keywordflow">if</span> (v2 == (index_t)idx.<a class="code hl_variable" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#a95d58949c0ab445e8c4a733013355669">vertex</a>)</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>            {</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>                idx.<a class="code hl_variable" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#aae9d9d8b53bdea66f7e98b6c00b72ec8">face</a> = f2;</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>                idx.<a class="code hl_variable" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#a4a96c1f8551683acfad3c292031d4225">face_corner</a> = c2;</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>                <span class="keywordflow">return</span> idx;</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>            }</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        }</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().error(<span class="stringliteral">&quot;Not found&quot;</span>);</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        assert(<span class="keyword">false</span>); <span class="comment">// This should not happen</span></div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        <span class="keywordflow">return</span> idx;</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    }</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>}</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>        idx.<a class="code hl_variable" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#aae9d9d8b53bdea66f7e98b6c00b72ec8">face</a> = -1;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        <span class="keywordflow">return</span> idx;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    }</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    {</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <span class="comment">// Iterate over all corners of the new face until we find the vertex we came from.</span></div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        <span class="comment">// Not ideal but for now it will do the job.</span></div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        <span class="keywordflow">for</span> (index_t c2 = M.facets.corners_begin(f2); c2 &lt; M.facets.corners_end(f2); ++c2)</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        {</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>            index_t v2 = M.facet_corners.vertex(c2);</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>            <span class="keywordflow">if</span> (v2 == (index_t)idx.<a class="code hl_variable" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#a95d58949c0ab445e8c4a733013355669">vertex</a>)</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>            {</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>                idx.<a class="code hl_variable" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#aae9d9d8b53bdea66f7e98b6c00b72ec8">face</a> = f2;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>                idx.<a class="code hl_variable" href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#a4a96c1f8551683acfad3c292031d4225">face_corner</a> = c2;</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>                <span class="keywordflow">return</span> idx;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>            }</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>        }</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().error(<span class="stringliteral">&quot;Not found&quot;</span>);</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>        assert(<span class="keyword">false</span>); <span class="comment">// This should not happen</span></div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="keywordflow">return</span> idx;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    }</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>}</div>
 </div>
 <div class="ttc" id="a_logger_8hpp_html"><div class="ttname"><a href="_logger_8hpp.html">Logger.hpp</a></div></div>
 <div class="ttc" id="a_navigation_8hpp_html"><div class="ttname"><a href="_navigation_8hpp.html">Navigation.hpp</a></div></div>
@@ -335,7 +334,7 @@ $(document).ready(function(){initNavTree('_navigation_8cpp_source.html',''); ini
 <div class="ttc" id="anamespacepolyfem_1_1mesh_1_1_navigation_html_a5989f6fbf9ec292c06a5626412f1e8ba"><div class="ttname"><a href="namespacepolyfem_1_1mesh_1_1_navigation.html#a5989f6fbf9ec292c06a5626412f1e8ba">polyfem::mesh::Navigation::switch_edge</a></div><div class="ttdeci">Index switch_edge(const GEO::Mesh &amp;M, const GEO::Attribute&lt; GEO::index_t &gt; &amp;c2e, Index idx)</div><div class="ttdef"><b>Definition</b> <a href="_navigation_8cpp_source.html#l00136">Navigation.cpp:136</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1mesh_1_1_navigation_html_a72b4f275520c3c228210d1e9a781e8fc"><div class="ttname"><a href="namespacepolyfem_1_1mesh_1_1_navigation.html#a72b4f275520c3c228210d1e9a781e8fc">polyfem::mesh::Navigation::prepare_mesh</a></div><div class="ttdeci">void prepare_mesh(GEO::Mesh &amp;M)</div><div class="ttdef"><b>Definition</b> <a href="_navigation_8cpp_source.html#l00027">Navigation.cpp:27</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1mesh_1_1_navigation_html_abf91546c2ca67de0513b99b390ed1e51"><div class="ttname"><a href="namespacepolyfem_1_1mesh_1_1_navigation.html#abf91546c2ca67de0513b99b390ed1e51">polyfem::mesh::Navigation::switch_vertex</a></div><div class="ttdeci">Index switch_vertex(const GEO::Mesh &amp;M, Index idx)</div><div class="ttdef"><b>Definition</b> <a href="_navigation_8cpp_source.html#l00115">Navigation.cpp:115</a></div></div>
-<div class="ttc" id="anamespacepolyfem_html_a03f3d75072d2fd19f70cd886a51d10dd"><div class="ttname"><a href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">polyfem::logger</a></div><div class="ttdeci">spdlog::logger &amp; logger()</div><div class="ttdoc">Retrieves the current logger.</div><div class="ttdef"><b>Definition</b> <a href="_logger_8cpp_source.html#l00042">Logger.cpp:42</a></div></div>
+<div class="ttc" id="anamespacepolyfem_html_a03f3d75072d2fd19f70cd886a51d10dd"><div class="ttname"><a href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">polyfem::logger</a></div><div class="ttdeci">spdlog::logger &amp; logger()</div><div class="ttdoc">Retrieves the current logger.</div><div class="ttdef"><b>Definition</b> <a href="_logger_8cpp_source.html#l00044">Logger.cpp:44</a></div></div>
 <div class="ttc" id="astructpolyfem_1_1mesh_1_1_edge_html"><div class="ttname"><a href="structpolyfem_1_1mesh_1_1_edge.html">polyfem::mesh::Edge</a></div><div class="ttdef"><b>Definition</b> <a href="_mesh3_d_storage_8hpp_source.html#l00023">Mesh3DStorage.hpp:24</a></div></div>
 <div class="ttc" id="astructpolyfem_1_1mesh_1_1_navigation_1_1_index_html"><div class="ttname"><a href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html">polyfem::mesh::Navigation::Index</a></div><div class="ttdef"><b>Definition</b> <a href="_navigation_8hpp_source.html#l00013">Navigation.hpp:14</a></div></div>
 <div class="ttc" id="astructpolyfem_1_1mesh_1_1_navigation_1_1_index_html_a3a4aa8f82431a4bd8fc60649450eb731"><div class="ttname"><a href="structpolyfem_1_1mesh_1_1_navigation_1_1_index.html#a3a4aa8f82431a4bd8fc60649450eb731">polyfem::mesh::Navigation::Index::edge</a></div><div class="ttdeci">int edge</div><div class="ttdef"><b>Definition</b> <a href="_navigation_8hpp_source.html#l00016">Navigation.hpp:16</a></div></div>

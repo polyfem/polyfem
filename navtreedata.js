@@ -142,8 +142,8 @@ var NAVTREEINDEX =
 "namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5ca",
 "namespacepolyfem_1_1utils.html#a7deb3cf37288f5f4935aae85c55bf3dc",
 "struct_d_scalar1.html#a0ec55a0176a94ea5e4121ce77df3847c",
-"structpolyfem_1_1mesh_1_1_face.html#a063869f37bc10a1ff68d2ace667ba2c7",
-"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_vert.html#a52e08aee316746e5a0a8d0a1f1f256b0"
+"structpolyfem_1_1mesh_1_1_face.html",
+"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_vert.html#a3bac29c6d0bac828a498e6d37f9638d1"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
