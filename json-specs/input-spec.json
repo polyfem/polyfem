@@ -2193,7 +2193,8 @@
             "paraview",
             "data",
             "advanced",
-            "reference"
+            "reference",
+            "stats"
         ],
         "doc": "output settings"
     },
@@ -2202,6 +2203,12 @@
         "default": "",
         "type": "string",
         "doc": "Directory for output files."
+    },
+    {
+        "pointer": "/output/stats",
+        "default": false,
+        "type": "bool",
+        "doc": "Saves csv for energy and stats of the non linear solver."
     },
     {
         "pointer": "/output/log",
