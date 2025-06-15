@@ -157,7 +157,7 @@ namespace polyfem::assembler
 					entries[1],
 					entries[2],
 					entries[3],
-					entries[5],
+					entries[4],
 					stress_units);
 
 				return;
