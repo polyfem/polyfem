@@ -770,4 +770,12 @@ namespace polyfem::assembler
 		logger().trace("done merge assembly {}s...", timer.getElapsedTime());
 	}
 
+	void ElasticityAssembler::set_use_robust_jacobian() 
+	{ 
+#ifdef POLYFEM_WITH_BEZIER
+		use_robust_jacobian = true;
+#else
+		logger().error("Enable Bezier library to use the robust Jacobian check!");
+#endif
+	}
 } // namespace polyfem::assembler

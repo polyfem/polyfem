@@ -304,7 +304,8 @@ namespace polyfem::assembler
 		ElasticityAssembler() {}
 		virtual ~ElasticityAssembler() = default;
 
-		void set_use_robust_jacobian() { use_robust_jacobian = true; }
+
+		void set_use_robust_jacobian();
 
 		// plotting (eg von mises), assembler is the name of the formulation
 		void compute_scalar_value(
