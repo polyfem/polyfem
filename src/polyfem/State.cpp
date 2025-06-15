@@ -1444,6 +1444,8 @@ namespace polyfem
 				collision_vertices, collision_edges, collision_triangles, displacement_map_entries);
 		}
 
+		std::vector<bool> is_orientable_vertex(collision_vertices.rows(), true);
+
 		// n_bases already contains the obstacle vertices
 		const int num_fe_nodes = n_bases - obstacle.n_vertices();
 		const int num_fe_collision_vertices = collision_vertices.rows();
@@ -1457,6 +1459,11 @@ namespace polyfem
 			append_rows(collision_codim_vids, obstacle.codim_v().array() + num_fe_collision_vertices);
 			append_rows(collision_edges, obstacle.e().array() + num_fe_collision_vertices);
 			append_rows(collision_triangles, obstacle.f().array() + num_fe_collision_vertices);
+
+			for (int i = 0; i < obstacle.n_vertices(); i++)
+			{
+				is_orientable_vertex.push_back(false);
+			}
 
 			if (!displacement_map_entries.empty())
 			{
@@ -1483,7 +1490,7 @@ namespace polyfem
 		}
 
 		collision_mesh = ipc::CollisionMesh(
-			is_on_surface, collision_vertices, collision_edges, collision_triangles,
+			is_on_surface, is_orientable_vertex, collision_vertices, collision_edges, collision_triangles,
 			displacement_map);
 
 		if (utils::is_param_valid(args["contact"], "collision_mesh") && args["contact"]["collision_mesh"]["no_self_contact"])
