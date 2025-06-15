@@ -50,21 +50,24 @@ namespace polyfem::assembler
 			std::vector<double> entries = params["elasticity_tensor"];
 			elasticity_tensor_.set_from_entries(entries, units.stress());
 		}
+		if (params.contains("fiber_direction"))
+			fiber_direction_.add_multimaterial(index, params["fiber_direction"], units.length());
 	}
 
 	void SaintVenantElasticity::set_size(const int size)
 	{
 		Assembler::set_size(size);
 		elasticity_tensor_.resize(size);
+		fiber_direction_.resize(size);
 	}
 
 	template <typename T, unsigned long N>
-	T SaintVenantElasticity::stress(const std::array<T, N> &strain, const int j) const
+	T SaintVenantElasticity::stress(const ElasticityTensor &elasticity_tensor, const std::array<T, N> &strain, const int j) const
 	{
-		T res = elasticity_tensor_(j, 0) * strain[0];
+		T res = elasticity_tensor(j, 0) * strain[0];
 
 		for (unsigned long k = 1; k < N; ++k)
-			res += elasticity_tensor_(j, k) * strain[k];
+			res += elasticity_tensor(j, k) * strain[k];
 
 		return res;
 	}
@@ -154,6 +157,19 @@ namespace polyfem::assembler
 		{
 			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
 
+			ElasticityTensor elasticity_tensor;
+			if (fiber_direction_.has_rotation())
+			{
+				const auto fdir_mtx_voigt = fiber_direction_.stiffness_rotation_voigt(local_pts.row(p), vals.val.row(p), data.t, el_id);
+
+				elasticity_tensor = elasticity_tensor_;
+				elasticity_tensor.rotate_stiffness(fdir_mtx_voigt);
+			}
+			else
+			{
+				elasticity_tensor = elasticity_tensor_;
+			}
+
 			if (type == ElasticityTensorType::F)
 			{
 				all.row(p) = fun(displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
@@ -170,8 +186,8 @@ namespace polyfem::assembler
 				eps[1] = strain(1, 1);
 				eps[2] = 2 * strain(0, 1);
 
-				stress_tensor << stress(eps, 0), stress(eps, 2),
-					stress(eps, 2), stress(eps, 1);
+				stress_tensor << stress(elasticity_tensor, eps, 0), stress(elasticity_tensor, eps, 2),
+					stress(elasticity_tensor, eps, 2), stress(elasticity_tensor, eps, 1);
 			}
 			else
 			{
@@ -183,9 +199,9 @@ namespace polyfem::assembler
 				eps[4] = 2 * strain(0, 2);
 				eps[5] = 2 * strain(0, 1);
 
-				stress_tensor << stress(eps, 0), stress(eps, 5), stress(eps, 4),
-					stress(eps, 5), stress(eps, 1), stress(eps, 3),
-					stress(eps, 4), stress(eps, 3), stress(eps, 2);
+				stress_tensor << stress(elasticity_tensor, eps, 0), stress(elasticity_tensor, eps, 5), stress(elasticity_tensor, eps, 4),
+					stress(elasticity_tensor, eps, 5), stress(elasticity_tensor, eps, 1), stress(elasticity_tensor, eps, 3),
+					stress(elasticity_tensor, eps, 4), stress(elasticity_tensor, eps, 3), stress(elasticity_tensor, eps, 2);
 			}
 
 			stress_tensor = (Eigen::MatrixXd::Identity(size(), size()) + displacement_grad) * stress_tensor;
@@ -223,6 +239,28 @@ namespace polyfem::assembler
 		{
 			compute_disp_grad_at_quad(data, local_disp, p, size(), disp_grad);
 
+			ElasticityTensor elasticity_tensor;
+			if (fiber_direction_.has_rotation())
+			{
+				const auto fdir_mtx_voigt = fiber_direction_.stiffness_rotation_voigt(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id);
+
+				elasticity_tensor = elasticity_tensor_;
+				elasticity_tensor.rotate_stiffness(fdir_mtx_voigt);
+			}
+			else
+			{
+				elasticity_tensor = elasticity_tensor_;
+			}
+
+			// AutoDiffGradMat fdir_mtx_voigt_ad(fdir_mtx_voigt.rows(), fdir_mtx_voigt.cols());
+			// for (int i = 0; i < fdir_mtx_voigt.rows(); ++i)
+			// {
+			// 	for (int j = 0; j < fdir_mtx_voigt.cols(); ++j)
+			// 	{
+			// 		fdir_mtx_voigt_ad(i, j) = T(fdir_mtx_voigt(i, j));
+			// 	}
+			// }
+
 			AutoDiffGradMat strain = strain_from_disp_grad(disp_grad);
 			AutoDiffGradMat stress_tensor(size(), size());
 
@@ -233,8 +271,8 @@ namespace polyfem::assembler
 				eps[1] = strain(1, 1);
 				eps[2] = 2 * strain(0, 1);
 
-				stress_tensor << stress(eps, 0), stress(eps, 2),
-					stress(eps, 2), stress(eps, 1);
+				stress_tensor << stress(elasticity_tensor, eps, 0), stress(elasticity_tensor, eps, 2),
+					stress(elasticity_tensor, eps, 2), stress(elasticity_tensor, eps, 1);
 			}
 			else
 			{
@@ -246,9 +284,9 @@ namespace polyfem::assembler
 				eps[4] = 2 * strain(0, 2);
 				eps[5] = 2 * strain(0, 1);
 
-				stress_tensor << stress(eps, 0), stress(eps, 5), stress(eps, 4),
-					stress(eps, 5), stress(eps, 1), stress(eps, 3),
-					stress(eps, 4), stress(eps, 3), stress(eps, 2);
+				stress_tensor << stress(elasticity_tensor, eps, 0), stress(elasticity_tensor, eps, 5), stress(elasticity_tensor, eps, 4),
+					stress(elasticity_tensor, eps, 5), stress(elasticity_tensor, eps, 1), stress(elasticity_tensor, eps, 3),
+					stress(elasticity_tensor, eps, 4), stress(elasticity_tensor, eps, 3), stress(elasticity_tensor, eps, 2);
 			}
 
 			energy += (stress_tensor * strain).trace() * data.da(p);

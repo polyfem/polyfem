@@ -55,12 +55,20 @@ namespace polyfem::assembler
 			double nuXY, double nuXZ, double nuYZ,
 			double muYZ, double muZX, double muXY, const std::string &stress_unit);
 		void set_orthotropic(double Ex, double Ey, double nuXY, double muXY, const std::string &stress_unit);
+		void set_transversely_isotropic(
+			double Et, double Ea,
+			double nu_t, double nu_a,
+			double Ga, const std::string &stress_units);
 
 		template <int DIM>
 		double compute_stress(const std::array<double, DIM> &strain, const int j) const;
 
+		void rotate_stiffness(const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6> &rotation_mtx_voigt);
+		void unrotate_stiffness();
+
 	private:
-		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6> stifness_tensor_;
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6> stiffness_tensor_;
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6> reference_stiffness_tensor_;
 		int size_;
 	};
 
@@ -132,4 +140,45 @@ namespace polyfem::assembler
 			return 1.0;
 		}
 	};
+
+	class FiberDirection
+	{
+	public:
+		FiberDirection();
+		virtual ~FiberDirection() = default;
+
+		void resize(const int size);
+
+		void add_multimaterial(const int index, const json &params, const std::string &unit);
+
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 1, 3, 3> operator()(double px, double py, double pz, double x, double y, double z, double t, int el_id) const;
+
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 1, 3, 3> operator()(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, double t, int el_id) const
+		{
+			assert(param.size() == 2 || param.size() == 3);
+			assert(param.size() == p.size());
+			return (*this)(param(0), param(1), param.size() == 3 ? param(2) : 0.0,
+						   p(0), p(1), p.size() == 3 ? p(2) : 0.0,
+						   t, el_id);
+		}
+
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 1, 6, 6> stiffness_rotation_voigt(double px, double py, double pz, double x, double y, double z, double t, int el_id) const;
+
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 1, 6, 6> stiffness_rotation_voigt(const Eigen::MatrixXd &param, const Eigen::MatrixXd &p, double t, int el_id) const
+		{
+			assert(param.size() == 2 || param.size() == 3);
+			assert(param.size() == p.size());
+			return this->stiffness_rotation_voigt(param(0), param(1), param.size() == 3 ? param(2) : 0.0,
+												  p(0), p(1), p.size() == 3 ? p(2) : 0.0,
+												  t, el_id);
+		}
+
+		bool has_rotation() const { return has_rotation_; }
+
+	private:
+		std::vector<Eigen::Matrix<utils::ExpressionValue, Eigen::Dynamic, Eigen::Dynamic, 1, 3, 3>> dir_;
+		int size_;
+		bool has_rotation_;
+	};
+
 } // namespace polyfem::assembler
