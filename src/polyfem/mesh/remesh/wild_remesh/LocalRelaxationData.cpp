@@ -284,6 +284,7 @@ namespace polyfem::mesh
 				state.args["solver"]["contact"]["CCD"]["tolerance"],
 				state.args["solver"]["contact"]["CCD"]["max_iterations"],
 				/*enable_shape_derivatives=*/false,
+				state.args["contact"],
 				// Normal Adhesion Form
 				state.args["contact"]["adhesion"]["adhesion_enabled"],
 				state.args["contact"]["adhesion"]["dhat_p"],

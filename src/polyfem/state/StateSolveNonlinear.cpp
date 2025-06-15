@@ -172,7 +172,7 @@ namespace polyfem
 			const Eigen::MatrixXd displaced = collision_mesh.displace_vertices(
 				utils::unflatten(sol, mesh->dimension()));
 
-			if (ipc::has_intersections(collision_mesh, displaced, args["solver"]["contact"]["CCD"]["broad_phase"]))
+			if (ipc::has_intersections(collision_mesh, displaced, solver::build_broad_phase(args["solver"]["contact"]["CCD"]["broad_phase"])))
 			{
 				OBJWriter::write(
 					resolve_output_path("intersection.obj"), displaced,
@@ -260,6 +260,7 @@ namespace polyfem
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
 			optimization_enabled == solver::CacheLevel::Derivatives,
+			args["contact"],
 			// Normal Adhesion Form
 			args["contact"]["adhesion"]["adhesion_enabled"],
 			args["contact"]["adhesion"]["dhat_p"],
@@ -344,6 +345,8 @@ namespace polyfem
 				 {"info", nl_solver->info()}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
+			if (solve_data.contact_form)
+				stats.solver_info.back()["contact_pairs"] = solve_data.contact_form->n_contact_pairs();
 			save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 		};
 

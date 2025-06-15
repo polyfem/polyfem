@@ -4,6 +4,7 @@
 
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/utils/Types.hpp>
+#include "ContactForm.hpp"
 
 #include <ipc/ipc.hpp>
 #include <ipc/collision_mesh.hpp>
@@ -32,7 +33,7 @@ namespace polyfem::solver
 			const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator,
 			const double epsa,
 			const double mu,
-			const ipc::BroadPhaseMethod broad_phase_method,
+			const BroadPhaseMethod broad_phase_method,
 			const NormalAdhesionForm &normal_adhesion_form,
 			const int n_lagging_iters);
 
@@ -97,7 +98,8 @@ namespace polyfem::solver
 
 		const double epsa_;                              ///< Smoothing factor for turning on/off tangential adhesion
 		const double mu_;                                ///< Global coefficient of tangential adhesion
-		const ipc::BroadPhaseMethod broad_phase_method_; ///< Broad-phase method used for distance computation and collision detection
+		const BroadPhaseMethod broad_phase_method_; ///< Broad-phase method used for distance computation and collision detection
+		const std::shared_ptr<ipc::BroadPhase> broad_phase_;
 		const int n_lagging_iters_;                      ///< Number of lagging iterations
 
 		ipc::TangentialCollisions tangential_collision_set_; ///< Lagged tangential constraint set

@@ -12,6 +12,7 @@
 
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/BarrierContactForm.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/forms/NormalAdhesionForm.hpp>
 #include <polyfem/solver/forms/TangentialAdhesionForm.hpp>
@@ -677,7 +678,7 @@ namespace polyfem::solver
 		if (state.solve_data.periodic_contact_form)
 		{
 			Eigen::VectorXd contact_term;
-			state.solve_data.periodic_contact_form->force_periodic_shape_derivative(state, periodic_mesh_map, periodic_mesh_representation, state.solve_data.periodic_contact_form->collision_set(), extended_sol, extended_adjoint, contact_term);
+			state.solve_data.periodic_contact_form->force_periodic_shape_derivative(state, periodic_mesh_map, periodic_mesh_representation, state.solve_data.periodic_contact_form->get_barrier_collision_set(), extended_sol, extended_adjoint, contact_term);
 
 			one_form -= contact_term;
 		}
@@ -869,21 +870,24 @@ namespace polyfem::solver
 			const Eigen::MatrixXd surface_velocities = state.collision_mesh.map_displacements(utils::unflatten(time_integrator->compute_velocity(state.diff_cached.u(t)), state.collision_mesh.dim()));
 			time_integrator->update_quantities(state.diff_cached.u(t));
 
-			Eigen::MatrixXd force = state.collision_mesh.to_full_dof(
-				-state.solve_data.friction_form->friction_potential().force(
-					state.diff_cached.friction_collision_set(t),
-					state.collision_mesh,
-					state.collision_mesh.rest_positions(),
-					/*lagged_displacements=*/surface_solution_prev,
-					surface_velocities,
-					state.solve_data.contact_form->barrier_potential(),
-					state.solve_data.contact_form->barrier_stiffness(),
-					0, true));
+			if (const auto barrier_contact = dynamic_cast<const BarrierContactForm*>(state.solve_data.contact_form.get()))
+			{
+				Eigen::MatrixXd force = state.collision_mesh.to_full_dof(
+						-state.solve_data.friction_form->friction_potential().force(
+							state.diff_cached.friction_collision_set(t),
+							state.collision_mesh,
+							state.collision_mesh.rest_positions(),
+							/*lagged_displacements=*/surface_solution_prev,
+							surface_velocities,
+							barrier_contact->barrier_potential(),
+							barrier_contact->barrier_stiffness(),
+							0., true));
 
-			Eigen::VectorXd cur_p = adjoint_p.col(t);
-			cur_p(state.boundary_nodes).setZero();
+					Eigen::VectorXd cur_p = adjoint_p.col(t);
+					cur_p(state.boundary_nodes).setZero();
 
-			one_form(0) += dot(cur_p, force) * beta * dt;
+					one_form(0) += dot(cur_p, force) * beta * dt;
+			}
 		}
 	}
 

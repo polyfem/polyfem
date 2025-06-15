@@ -39,6 +39,17 @@ namespace polyfem::solver
 		Eigen::VectorXd compose_grad(const Eigen::VectorXd &inputs) const override { assert(inputs.size() == 1); return Eigen::VectorXd::Constant(1, 1, 1.); }
 	};
 
+	class LogCompositeForm : public CompositeForm
+	{
+	public:
+		LogCompositeForm(const std::shared_ptr<AdjointForm> &form) : CompositeForm({form}) {}
+		~LogCompositeForm() {}
+	
+	private:
+		double compose(const Eigen::VectorXd &inputs) const override { assert(inputs.size() == 1); return std::log(inputs(0)); }
+		Eigen::VectorXd compose_grad(const Eigen::VectorXd &inputs) const override { assert(inputs.size() == 1); return Eigen::VectorXd::Constant(1, 1, 1. / inputs(0)); }
+	};
+
 	class InequalityConstraintForm : public CompositeForm
 	{
 	public:

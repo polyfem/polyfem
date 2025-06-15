@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ContactForm.hpp"
+#include "BarrierContactForm.hpp"
 
 namespace polyfem
 {
@@ -15,7 +15,7 @@ namespace polyfem::solver
 {
 	/// @brief Form representing the contact potential and forces on a periodic mesh
 	/// This form has a different input format of [fluctuation, affine], only can be used in NLHomoProblem
-    class PeriodicContactForm : public ContactForm
+    class PeriodicContactForm : public BarrierContactForm
     {
     public:
 		/// @brief Construct a new Contact Form object
@@ -31,7 +31,7 @@ namespace polyfem::solver
                         const bool use_adaptive_barrier_stiffness,
                         const bool is_time_dependent,
 						const bool enable_shape_derivatives,
-                        const ipc::BroadPhaseMethod broad_phase_method,
+                        const BroadPhaseMethod broad_phase_method,
                         const double ccd_tolerance,
                         const int ccd_max_iterations);
 

@@ -3,7 +3,10 @@
 #include <polyfem/solver/forms/adjoint_forms/ParametrizationForm.hpp>
 #include "VariableToSimulation.hpp"
 
-#include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/SmoothContactForm.hpp>
+#include <ipc/potentials/barrier_potential.hpp>
+#include <ipc/smooth_contact/smooth_collisions.hpp>
+#include <ipc/smooth_contact/smooth_contact_potential.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
 
 namespace polyfem::solver
@@ -38,7 +41,7 @@ namespace polyfem::solver
 		ipc::NormalCollisions collision_set;
 		const double dhat_;
 		const double dmin_;
-		ipc::BroadPhaseMethod broad_phase_method_;
+		BroadPhaseMethod broad_phase_method_;
 
 		ipc::BarrierPotential barrier_potential_;
 	};
@@ -94,8 +97,39 @@ namespace polyfem::solver
 		ipc::CollisionMesh collision_mesh_;
 		ipc::NormalCollisions collision_set;
 		const double dhat_;
-		ipc::BroadPhaseMethod broad_phase_method_;
+		BroadPhaseMethod broad_phase_method_;
 
 		const ipc::BarrierPotential barrier_potential_;
+	};
+
+	template <int dim>
+	class SmoothContactForceForm : public StaticForm
+	{
+	public:
+		SmoothContactForceForm(
+			const VariableToSimulationGroup &variable_to_simulations,
+			const State &state,
+			const json &args);
+		~SmoothContactForceForm() = default;
+
+		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
+		Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
+		void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void solution_changed_step(const int time_step, const Eigen::VectorXd &x) override;
+
+	protected:
+		void build_collision_mesh();
+		ipc::SmoothCollisions<dim> get_smooth_collision_set(const Eigen::MatrixXd &displaced_surface);
+
+		const State &state_;
+		std::set<int> boundary_ids_;
+		std::map<int, std::set<int>> boundary_ids_to_dof_;
+
+		ipc::CollisionMesh collision_mesh_;
+		ipc::SmoothCollisions<dim> collisions_;
+		const ipc::ParameterType params_;
+		const double dmin_ = 0;
+
+		ipc::SmoothContactPotential<ipc::SmoothCollisions<dim>> potential_;
 	};
 } // namespace polyfem::solver

@@ -2,7 +2,7 @@
 
 #include "SpatialIntegralForms.hpp"
 
-#include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/BarrierContactForm.hpp>
 
 namespace polyfem::solver
 {
@@ -100,7 +100,7 @@ namespace polyfem::solver
 		ipc::CollisionMesh collision_mesh_;
 		const double dhat_;
 		const double dmin_ = 0;
-		ipc::BroadPhaseMethod broad_phase_method_;
+		BroadPhaseMethod broad_phase_method_;
 
 		Eigen::VectorXd curr_x_;
 

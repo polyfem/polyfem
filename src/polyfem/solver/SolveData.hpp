@@ -9,7 +9,7 @@
 #include <polyfem/utils/JSONUtils.hpp>
 
 #include <ipc/collision_mesh.hpp>
-#include <ipc/broad_phase/broad_phase.hpp>
+#include <polyfem/solver/forms/ContactForm.hpp>
 
 #include <Eigen/Core>
 
@@ -115,10 +115,13 @@ namespace polyfem::solver
 			const bool use_improved_max_operator,
 			const bool use_physical_barrier,
 			const json &barrier_stiffness,
-			const ipc::BroadPhaseMethod broad_phase,
+			const BroadPhaseMethod broad_phase,
 			const double ccd_tolerance,
 			const long ccd_max_iterations,
 			const bool enable_shape_derivatives,
+			
+			// Smooth contact form
+			const json &contact_params,
 
 			// Normal Adhesion Form
 			const bool adhesion_enabled,

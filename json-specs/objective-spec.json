@@ -38,8 +38,10 @@
             "soft_constraint",
             "layer_thickness",
             "layer_thickness_log",
+            "log",
             "AMIPS",
             "parametrized_product",
+            "smooth_contact_force_norm",
             "min_jacobian",
             "min-dist-target"
         ],
@@ -522,6 +524,20 @@
         "doc": "TODO"
     },
     {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "log",
+        "required": [
+            "type",
+            "objective"
+        ],
+        "optional": [
+            "weight",
+            "print_energy"
+        ],
+        "doc": "TODO"
+    },
+    {
         "pointer": "/objective",
         "type": "object",
         "doc": "TODO"
@@ -813,7 +829,8 @@
             "power",
             "weight",
             "print_energy",
-            "surface_selection"
+            "surface_selection",
+            "dimensions"
         ],
         "doc": "TODO"
     },
@@ -983,6 +1000,20 @@
             "print_energy"
         ],
         "doc": "TODO"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "smooth_contact_force_norm",
+        "required": [
+            "state",
+            "type"
+        ],
+        "optional": [
+            "surface_selection",
+            "weight",
+            "print_energy"
+        ]
     },
     {
         "pointer": "/",
