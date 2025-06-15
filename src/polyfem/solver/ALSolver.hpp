@@ -26,14 +26,33 @@ namespace polyfem::solver
 			const std::function<void(const Eigen::VectorXd &)> &update_barrier_stiffness);
 		virtual ~ALSolver() = default;
 
-		void solve_al(std::shared_ptr<NLSolver> nl_solver, NLProblem &nl_problem, Eigen::MatrixXd &sol);
-		void solve_reduced(std::shared_ptr<NLSolver> nl_solver, NLProblem &nl_problem, Eigen::MatrixXd &sol);
+		void solve_al(NLProblem &nl_problem, Eigen::MatrixXd &sol,
+					  std::shared_ptr<polysolve::nonlinear::Solver> nl_solver)
+		{
+			solve_al(nl_problem, sol, json{}, json{}, 1, nl_solver);
+		}
+
+		void solve_al(NLProblem &nl_problem, Eigen::MatrixXd &sol,
+					  const json &nl_solver_params,
+					  const json &linear_solver,
+					  const double characteristic_length,
+					  std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = nullptr);
+
+		void solve_reduced(NLProblem &nl_problem, Eigen::MatrixXd &sol,
+						   std::shared_ptr<polysolve::nonlinear::Solver> nl_solver)
+		{
+			solve_al(nl_problem, sol, json{}, json{}, 1, nl_solver);
+		}
+
+		void solve_reduced(NLProblem &nl_problem, Eigen::MatrixXd &sol,
+						   const json &nl_solver_params,
+						   const json &linear_solver,
+						   const double characteristic_length,
+						   std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = nullptr);
 
 		std::function<void(const double)> post_subsolve = [](const double) {};
 
 	protected:
-		void set_al_weight(NLProblem &nl_problem, const Eigen::VectorXd &x, const double weight);
-
 		std::vector<std::shared_ptr<AugmentedLagrangianForm>> alagr_forms;
 		const double initial_al_weight;
 		const double scaling;

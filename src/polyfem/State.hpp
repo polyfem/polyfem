@@ -314,10 +314,7 @@ namespace polyfem
 			assemble_rhs();
 			assemble_mass_mat();
 
-			solve_export_to_file = false;
-			solution_frames.clear();
 			solve_problem(sol, pressure);
-			solve_export_to_file = true;
 		}
 
 		/// timedependent stuff cached
@@ -407,7 +404,15 @@ namespace polyfem
 			Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
 
 		/// @brief Returns whether the system is linear. Collisions and pressure add nonlinearity to the problem.
-		bool is_problem_linear() const { return assembler->is_linear() && !is_contact_enabled() && !is_pressure_enabled(); }
+		bool is_problem_linear() const { return assembler->is_linear() && !is_contact_enabled() && !is_pressure_enabled() && !has_constraints(); }
+
+		bool has_constraints() const
+		{
+			return has_constraints_;
+		}
+
+	private:
+		bool has_constraints_;
 
 	public:
 		/// @brief utility that builds the stiffness matrix and collects stats, used only for linear problems
@@ -545,12 +550,20 @@ namespace polyfem
 			return vi >= collision_mesh.full_num_vertices() - obstacle.n_vertices();
 		}
 
-		/// @brief does the simulation has contact
+		/// @brief does the simulation have contact
 		///
 		/// @return true/false
 		bool is_contact_enabled() const
 		{
 			return args["contact"]["enabled"];
+		}
+
+		/// @brief does the simulation have adhesion
+		///
+		/// @return true/false
+		bool is_adhesion_enabled() const
+		{
+			return args["contact"]["adhesion"]["adhesion_enabled"];
 		}
 
 		/// @brief does the simulation has pressure
@@ -571,12 +584,6 @@ namespace polyfem
 	public:
 		/// Directory for output files
 		std::string output_dir;
-
-		/// flag to decide if exporting the time dependent solution to files
-		/// or save it in the solution_frames array
-		bool solve_export_to_file = true;
-		/// saves the frames in a vector instead of VTU
-		std::vector<io::SolutionFrame> solution_frames;
 		/// visualization stuff
 		io::OutGeometryData out_geom;
 		/// runtime statistics

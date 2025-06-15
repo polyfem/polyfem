@@ -44,13 +44,22 @@ namespace polyfem
 
 		// Write the total energy to a CSV file
 		int save_i = 0;
-		EnergyCSVWriter energy_csv(resolve_output_path("energy.csv"), solve_data);
-		RuntimeStatsCSVWriter stats_csv(resolve_output_path("stats.csv"), *this, t0, dt);
+
+		std::unique_ptr<EnergyCSVWriter> energy_csv = nullptr;
+		std::unique_ptr<RuntimeStatsCSVWriter> stats_csv = nullptr;
+
+		if (args["output"]["stats"])
+		{
+			logger().debug("Saving nl stats to {} and {}", resolve_output_path("energy.csv"), resolve_output_path("stats.csv"));
+			energy_csv = std::make_unique<EnergyCSVWriter>(resolve_output_path("energy.csv"), solve_data);
+			stats_csv = std::make_unique<RuntimeStatsCSVWriter>(resolve_output_path("stats.csv"), *this, t0, dt);
+		}
 		const bool remesh_enabled = args["space"]["remesh"]["enabled"];
 		// const double save_dt = remesh_enabled ? (dt / 3) : dt;
 
 		// Save the initial solution
-		energy_csv.write(save_i, sol);
+		if (energy_csv)
+			energy_csv->write(save_i, sol);
 		save_timestep(t0, save_i, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 		save_i++;
 
@@ -68,7 +77,8 @@ namespace polyfem
 
 			if (remesh_enabled)
 			{
-				energy_csv.write(save_i, sol);
+				if (energy_csv)
+					energy_csv->write(save_i, sol);
 				// save_timestep(t0 + dt * t, save_i, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 				save_i++;
 
@@ -79,7 +89,8 @@ namespace polyfem
 				}
 
 				// Save the solution after remeshing
-				energy_csv.write(save_i, sol);
+				if (energy_csv)
+					energy_csv->write(save_i, sol);
 				// save_timestep(t0 + dt * t, save_i, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
 				save_i++;
 
@@ -92,7 +103,8 @@ namespace polyfem
 			}
 
 			// Always save the solution for consistency
-			energy_csv.write(save_i, sol);
+			if (energy_csv)
+				energy_csv->write(save_i, sol);
 			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 			save_i++;
 
@@ -131,16 +143,16 @@ namespace polyfem
 
 			// save restart file
 			save_restart_json(t0, dt, t);
-			if (remesh_enabled)
-				stats_csv.write(t, forward_solve_time, remeshing_time, global_relaxation_time, sol);
+			if (remesh_enabled && stats_csv)
+				stats_csv->write(t, forward_solve_time, remeshing_time, global_relaxation_time, sol);
 		}
 	}
 
 	void State::init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t, const bool init_time_integrator)
 	{
 		assert(sol.cols() == 1);
-		assert(!assembler->is_linear() || is_contact_enabled()); // non-linear
-		assert(!problem->is_scalar());                           // tensor
+		assert(!is_problem_linear());  // non-linear
+		assert(!problem->is_scalar()); // tensor
 		assert(mixed_assembler == nullptr);
 
 		if (optimization_enabled != solver::CacheLevel::None)
@@ -221,7 +233,7 @@ namespace polyfem
 		const std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(
 			// General
 			units,
-			mesh->dimension(), t,
+			mesh->dimension(), t, in_node_to_node,
 			// Elastic form
 			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache, args["solver"]["advanced"]["jacobian_threshold"], check_inversion,
 			// Body form
@@ -237,15 +249,26 @@ namespace polyfem
 			args["solver"]["advanced"]["lagged_regularization_weight"],
 			args["solver"]["advanced"]["lagged_regularization_iterations"],
 			// Augmented lagrangian form
-			obstacle.ndof(),
+			obstacle.ndof(), args["constraints"]["hard"], args["constraints"]["soft"],
 			// Contact form
 			args["contact"]["enabled"], args["contact"]["periodic"].get<bool>() ? periodic_collision_mesh : collision_mesh, args["contact"]["dhat"],
-			avg_mass, args["contact"]["use_convergent_formulation"],
+			avg_mass, args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_area_weighting"]) : false,
+			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_improved_max_operator"]) : false,
+			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_physical_barrier"]) : false,
 			args["solver"]["contact"]["barrier_stiffness"],
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
 			optimization_enabled == solver::CacheLevel::Derivatives,
+			// Normal Adhesion Form
+			args["contact"]["adhesion"]["adhesion_enabled"],
+			args["contact"]["adhesion"]["dhat_p"],
+			args["contact"]["adhesion"]["dhat_a"],
+			args["contact"]["adhesion"]["adhesion_strength"],
+			// Tangential Adhesion Form
+			args["contact"]["adhesion"]["tangential_adhesion_coefficient"],
+			args["contact"]["adhesion"]["epsa"],
+			args["solver"]["contact"]["tangential_adhesion_iterations"],
 			// Homogenization
 			macro_strain_constraint,
 			// Periodic contact
@@ -268,7 +291,8 @@ namespace polyfem
 
 		const int ndof = n_bases * mesh->dimension();
 		solve_data.nl_problem = std::make_shared<NLProblem>(
-			ndof, periodic_bc, t, forms, solve_data.al_form);
+			ndof, periodic_bc, t, forms, solve_data.al_form,
+			polysolve::linear::Solver::create(args["solver"]["linear"], logger()));
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
 		// --------------------------------------------------------------------
@@ -324,10 +348,11 @@ namespace polyfem
 		};
 
 		Eigen::MatrixXd prev_sol = sol;
-		al_solver.solve_al(nl_solver, nl_problem, sol);
+		al_solver.solve_al(nl_problem, sol,
+						   args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
 
-		nl_solver = make_nl_solver(false);
-		al_solver.solve_reduced(nl_solver, nl_problem, sol);
+		al_solver.solve_reduced(nl_problem, sol,
+								args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
 
 		if (args["space"]["advanced"]["count_flipped_els_continuous"])
 		{
@@ -388,6 +413,7 @@ namespace polyfem
 				logger().info("Lagging iteration {:d}:", lag_i + 1);
 				nl_problem.init(sol);
 				solve_data.update_barrier_stiffness(sol);
+				nl_problem.normalize_forms();
 				nl_solver->minimize(nl_problem, tmp_sol);
 				nl_problem.finish();
 				prev_sol = sol;

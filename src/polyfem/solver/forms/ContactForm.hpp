@@ -5,7 +5,7 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/Types.hpp>
 
-#include <ipc/collisions/collisions.hpp>
+#include <ipc/collisions/normal/normal_collisions.hpp>
 #include <ipc/collision_mesh.hpp>
 #include <ipc/broad_phase/broad_phase.hpp>
 #include <ipc/potentials/barrier_potential.hpp>
@@ -47,7 +47,9 @@ namespace polyfem::solver
 		ContactForm(const ipc::CollisionMesh &collision_mesh,
 					const double dhat,
 					const double avg_mass,
-					const bool use_convergent_formulation,
+					const bool use_area_weighting,
+					const bool use_improved_max_operator,
+					const bool use_physical_barrier,
 					const bool use_adaptive_barrier_stiffness,
 					const bool is_time_dependent,
 					const bool enable_shape_derivatives,
@@ -62,7 +64,7 @@ namespace polyfem::solver
 		/// @param x Current solution
 		void init(const Eigen::VectorXd &x) override;
 
-		virtual void force_shape_derivative(const ipc::Collisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term);
+		virtual void force_shape_derivative(const ipc::NormalCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term);
 
 	protected:
 		/// @brief Compute the contact barrier potential value
@@ -132,8 +134,17 @@ namespace polyfem::solver
 		/// @brief Get use_adaptive_barrier_stiffness
 		bool use_adaptive_barrier_stiffness() const { return use_adaptive_barrier_stiffness_; }
 		/// @brief Get use_convergent_formulation
-		bool use_convergent_formulation() const { return collision_set_.use_convergent_formulation(); }
+		bool use_convergent_formulation() const { return use_area_weighting() && use_improved_max_operator() && use_physical_barrier(); }
 
+		/// @brief Get use_area_weighting
+		bool use_area_weighting() const {return collision_set_.use_area_weighting();}
+
+		/// @brief Get use_improved_max_operator
+		bool use_improved_max_operator() const {return collision_set_.use_improved_max_approximator();}
+
+		/// @brief Get use_physical_barrier
+		bool use_physical_barrier() const {return barrier_potential_.use_physical_barrier();}
+		
 		bool enable_shape_derivatives() const { return enable_shape_derivatives_; }
 
 		double weight() const override { return weight_ * barrier_stiffness_; }
@@ -142,7 +153,7 @@ namespace polyfem::solver
 		bool save_ccd_debug_meshes = false;
 
 		double dhat() const { return dhat_; }
-		const ipc::Collisions &collision_set() const { return collision_set_; }
+		const ipc::NormalCollisions &collision_set() const { return collision_set_; }
 		const ipc::BarrierPotential &barrier_potential() const { return barrier_potential_; }
 
 	protected:
@@ -177,10 +188,8 @@ namespace polyfem::solver
 
 		/// @brief Broad phase method to use for distance and CCD evaluations
 		const ipc::BroadPhaseMethod broad_phase_method_;
-		/// @brief Continuous collision detection tolerance
-		const double ccd_tolerance_;
-		/// @brief Continuous collision detection maximum iterations
-		const int ccd_max_iterations_;
+		/// @brief Continuous collision detection specification object
+		const ipc::TightInclusionCCD tight_inclusion_ccd_;
 
 		/// @brief Previous minimum distance between all elements
 		double prev_distance_;
@@ -188,7 +197,7 @@ namespace polyfem::solver
 		/// @brief If true, use the cached candidate set for the current solution
 		bool use_cached_candidates_ = false;
 		/// @brief Cached constraint set for the current solution
-		ipc::Collisions collision_set_;
+		ipc::NormalCollisions collision_set_;
 		/// @brief Cached candidate set for the current solution
 		ipc::Candidates candidates_;
 

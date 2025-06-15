@@ -703,8 +703,6 @@ TEST_CASE("Pk_2d", "[bases]")
 		{
 			polyfem::autogen::p_basis_value_2d(false, k, i, pts, val);
 
-			// std::cout<<i<<"\n"<<val<<"\n\n\n"<<std::endl;
-
 			for (int j = 0; j < val.size(); ++j)
 			{
 				if (i == j)
@@ -798,8 +796,6 @@ TEST_CASE("P3_2d", "[bases]")
 	{
 		polyfem::autogen::p_basis_value_2d(false, 3, i, pts, val);
 
-		// std::cout<<i<<"\n"<<val<<"\n\n\n"<<std::endl;
-
 		for (int j = 0; j < val.size(); ++j)
 		{
 			if (i == j)
@@ -821,8 +817,6 @@ TEST_CASE("Pk_3d", "[bases]")
 		for (int i = 0; i < pts.rows(); ++i)
 		{
 			polyfem::autogen::p_basis_value_3d(false, k, i, pts, val);
-
-			// std::cout<<i<<"\n"<<val<<"\n\n\n"<<std::endl;
 
 			for (int j = 0; j < val.size(); ++j)
 			{
@@ -909,8 +903,6 @@ TEST_CASE("Qk_2d", "[bases]")
 		for (int i = 0; i < pts.rows(); ++i)
 		{
 			polyfem::autogen::q_basis_value_2d(k, i, pts, val);
-
-			// std::cout<<i<<"\n"<<val<<"\n\n\n"<<std::endl;
 
 			for (int j = 0; j < val.size(); ++j)
 			{
@@ -1015,8 +1007,6 @@ TEST_CASE("Qk_3d", "[bases]")
 		{
 			polyfem::autogen::q_basis_value_3d(k, i, pts, val);
 
-			// std::cout<<i<<"\n"<<val<<"\n\n\n"<<std::endl;
-
 			for (int j = 0; j < val.size(); ++j)
 			{
 				if (i == j)
@@ -1034,8 +1024,6 @@ TEST_CASE("Qk_3d", "[bases]")
 	for (int i = 0; i < pts.rows(); ++i)
 	{
 		polyfem::autogen::q_basis_value_3d(k, i, pts, val);
-
-		// std::cout<<i<<"\n"<<val<<"\n\n\n"<<std::endl;
 
 		for (int j = 0; j < val.size(); ++j)
 		{
@@ -1105,8 +1093,6 @@ TEST_CASE("MV_2d", "[bases]")
 			const double dx = (b_dx(j) - b(j)) / delta;
 			const double dy = (b_dy(j) - b(j)) / delta;
 
-			// std::cout<<j<<": "<<dx<<" "<<dy<<" -> "<<b_prime(j, 0) <<" "<<b_prime(j, 1) <<std::endl;
-
 			REQUIRE(b_prime(j, 0) == Catch::Approx(dx).margin(delta * 10));
 			REQUIRE(b_prime(j, 1) == Catch::Approx(dy).margin(delta * 10));
 		}
@@ -1170,8 +1156,6 @@ TEST_CASE("WS_2d", "[bases]")
 
 			const double dx = (b_dx(j) - b(j)) / delta;
 			const double dy = (b_dy(j) - b(j)) / delta;
-
-			// std::cout<<j<<": "<<dx<<" "<<dy<<" -> "<<b_prime(j, 0) <<" "<<b_prime(j, 1) <<std::endl;
 
 			REQUIRE(b_prime(j, 0) == Catch::Approx(dx).margin(delta * 10));
 			REQUIRE(b_prime(j, 1) == Catch::Approx(dy).margin(delta * 10));

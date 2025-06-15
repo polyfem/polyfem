@@ -6,11 +6,6 @@
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 
-namespace polyfem::utils
-{
-	class PeriodicBoundary;
-} // namespace polyfem::utils
-
 namespace polyfem::solver
 {
 	/// @brief Form of the augmented lagrangian for bc constraints
@@ -28,7 +23,6 @@ namespace polyfem::solver
 		/// @param obstacle_ndof Obstacle's number of DOF
 		/// @param is_time_dependent Whether the problem is time dependent
 		/// @param t Current time
-		/// @param periodic_bc Periodic boundary conditions
 		BCLagrangianForm(const int ndof,
 						 const std::vector<int> &boundary_nodes,
 						 const std::vector<mesh::LocalBoundary> &local_boundary,
@@ -38,8 +32,7 @@ namespace polyfem::solver
 						 const assembler::RhsAssembler &rhs_assembler,
 						 const size_t obstacle_ndof,
 						 const bool is_time_dependent,
-						 const double t,
-						 const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc = nullptr);
+						 const double t);
 
 		std::string name() const override
 		{
@@ -81,36 +74,31 @@ namespace polyfem::solver
 
 		void update_lagrangian(const Eigen::VectorXd &x, const double k_al) override;
 
-		StiffnessMatrix &mask()
-		{
-			return mask_;
-		}
-		const StiffnessMatrix &mask() const { return mask_; }
-		Eigen::VectorXd target(const Eigen::VectorXd &) const override { return target_x_; }
-
 		double compute_error(const Eigen::VectorXd &x) const override;
+
+		virtual bool can_project() const override;
+		virtual void project_gradient(Eigen::VectorXd &grad) const override;
+		virtual void project_hessian(StiffnessMatrix &hessian) const override;
 
 	private:
 		const std::vector<int> &boundary_nodes_;
 		const std::vector<mesh::LocalBoundary> *local_boundary_;
 		const std::vector<mesh::LocalBoundary> *local_neumann_boundary_;
 		const int n_boundary_samples_;
+		const int n_dofs_;
+		Eigen::VectorXi constraints_;     ///< Constraints
+		Eigen::VectorXi not_constraints_; ///< Not Constraints
 
 		const assembler::RhsAssembler *rhs_assembler_; ///< Reference to the RHS assembler
 		const bool is_time_dependent_;
 
 		StiffnessMatrix masked_lumped_mass_sqrt_; ///< sqrt mass matrix masked by the AL dofs
 		StiffnessMatrix masked_lumped_mass_;      ///< mass matrix masked by the AL dofs
-		StiffnessMatrix mask_;                    ///< identity matrix masked by the AL dofs
-
-		Eigen::MatrixXd target_x_; ///< actually a vector with the same size as x with target nodal positions
 
 		/// @brief Initialize the masked lumped mass matrix
-		/// @param ndof Number of degrees of freedom
 		/// @param mass Mass matrix
 		/// @param obstacle_ndof Obstacle's number of DOF
 		void init_masked_lumped_mass(
-			const int ndof,
 			const StiffnessMatrix &mass,
 			const size_t obstacle_ndof);
 

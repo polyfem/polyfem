@@ -64,6 +64,10 @@ namespace polyfem::solver
 				else
 					return 2 * weight_;
 			}
+			double units(const double dhat) const override
+			{
+				return dhat * dhat;
+			}
 
 		private:
 			const double weight_;
@@ -196,14 +200,11 @@ namespace polyfem::solver
 			const Eigen::MatrixXi &can_collide_cache,
 			const double dhat,
 			const double dmin,
-			std::function<ipc::Collisions(const Eigen::MatrixXd &)> cs_func,
+			std::function<ipc::NormalCollisions(const Eigen::MatrixXd &)> cs_func,
 			const Eigen::MatrixXd &u,
 			const ipc::BarrierPotential &barrier_potential)
 
 		{
-			static int count = 0;
-			std::cout << "computing " << ((double)count / 2) / u.size() * 100. << std::endl;
-			++count;
 			ipc::CollisionMesh collision_mesh = ipc::CollisionMesh(is_on_surface,
 																   node_positions,
 																   boundary_edges,
@@ -219,7 +220,7 @@ namespace polyfem::solver
 
 			Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(utils::unflatten(u, collision_mesh.dim()));
 
-			ipc::Collisions cs_ = cs_func(displaced_surface);
+			ipc::NormalCollisions cs_ = cs_func(displaced_surface);
 			cs_.build(collision_mesh, displaced_surface, dhat, dmin, ipc::BroadPhaseMethod::HASH_GRID);
 
 			Eigen::MatrixXd forces = collision_mesh.to_full_dof(barrier_potential.gradient(cs_, collision_mesh, displaced_surface));
@@ -793,7 +794,7 @@ namespace polyfem::solver
 		  state_(state),
 		  dhat_(dhat),
 		  dmin_(0),
-		  barrier_potential_(dhat)
+		  barrier_potential_(dhat, true)
 	{
 		auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
 		boundary_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -808,17 +809,20 @@ namespace polyfem::solver
 			collision_set_indicator_.setZero(time_steps);
 			for (int i = 0; i < time_steps + 1; ++i)
 			{
-				collision_sets_.push_back(std::make_shared<ipc::Collisions>());
-				collision_sets_.back()->set_use_convergent_formulation(true);
-				collision_sets_.back()->set_are_shape_derivatives_enabled(true);
+				collision_sets_.push_back(std::make_shared<ipc::NormalCollisions>());
+				// collision_sets_.back()->set_use_convergent_formulation(true);
+				collision_sets_.back()->set_use_improved_max_approximator(true);
+				collision_sets_.back()->set_use_area_weighting(true);
+				collision_sets_.back()->set_enable_shape_derivatives(true);
 			}
 		}
 		else
 		{
 			collision_set_indicator_.setZero(1);
-			collision_sets_.push_back(std::make_shared<ipc::Collisions>());
-			collision_sets_.back()->set_use_convergent_formulation(true);
-			collision_sets_.back()->set_are_shape_derivatives_enabled(true);
+			collision_sets_.push_back(std::make_shared<ipc::NormalCollisions>());
+			collision_sets_.back()->set_use_improved_max_approximator(true);
+			collision_sets_.back()->set_use_area_weighting(true);
+			collision_sets_.back()->set_enable_shape_derivatives(true);
 		}
 
 		if (quadratic_potential)
@@ -951,7 +955,7 @@ namespace polyfem::solver
 		collision_mesh_.init_area_jacobians();
 	}
 
-	const ipc::Collisions &ProxyContactForceForm::get_or_compute_collision_set(const int time_step, const Eigen::MatrixXd &displaced_surface) const
+	const ipc::NormalCollisions &ProxyContactForceForm::get_or_compute_collision_set(const int time_step, const Eigen::MatrixXd &displaced_surface) const
 	{
 		if (!collision_set_indicator_(time_step))
 		{
@@ -986,11 +990,11 @@ namespace polyfem::solver
 		auto collision_set = get_or_compute_collision_set(time_step, displaced_surface);
 
 		Eigen::MatrixXd forces = collision_mesh_.to_full_dof(barrier_potential_.gradient(collision_set, collision_mesh_, displaced_surface));
-		StiffnessMatrix hessian = collision_mesh_.to_full_dof(barrier_potential_.hessian(collision_set, collision_mesh_, displaced_surface, false));
+		StiffnessMatrix hessian = collision_mesh_.to_full_dof(barrier_potential_.hessian(collision_set, collision_mesh_, displaced_surface, ipc::PSDProjectionMethod::NONE));
 
 		Eigen::VectorXd gradu = 2 * hessian.transpose() * forces;
 
-		// std::cout << "u norm " << state_.diff_cached.u(time_step).norm() << std::endl;
+		// logger().trace("u norm {}", state_.diff_cached.u(time_step).norm());
 
 		// Eigen::VectorXd G;
 		// fd::finite_gradient(
@@ -1008,7 +1012,7 @@ namespace polyfem::solver
 		// 		return sum; },
 		// 	G);
 
-		// std::cout << "gradu difference norm " << (G - gradu).norm() << std::endl;
+		// logger().trace("gradu difference norm {}", (G - gradu).norm());
 
 		return weight() * gradu;
 	}
@@ -1056,10 +1060,10 @@ namespace polyfem::solver
 			// Eigen::MatrixXd diff(G.size(), 2);
 			// diff.col(0) = G;
 			// diff.col(1) = grads;
-			// std::cout << "diff " << diff << std::endl;
-			// std::cout << "size " << G.size() << " " << grads.size() << std::endl;
-			// std::cout << "fd norm " << G.norm() << std::endl;
-			// std::cout << "grads difference norm " << (G - grads).norm() / G.norm() << std::endl;
+			// logger().trace("diff {}", diff);
+			// logger().trace("size {} {}", G.size(), grads.size());
+			// logger().trace("fd norm {}", G.norm());
+			// logger().trace("grads difference norm {}", (G - grads).norm() / G.norm());
 
 			grads = state_.basis_nodes_to_gbasis_nodes * grads;
 

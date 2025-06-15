@@ -82,7 +82,9 @@ namespace polyfem::mesh
 		const ipc::CollisionMesh &collision_mesh,
 		const double dhat,
 		const double barrier_stiffness,
-		const bool use_convergent_formulation,
+		const bool use_area_weighting,
+		const bool use_improved_max_operator,
+		const bool use_physical_barrier,
 		const ipc::BroadPhaseMethod broad_phase_method,
 		const double ccd_tolerance,
 		const int ccd_max_iterations,
@@ -111,8 +113,8 @@ namespace polyfem::mesh
 		if (collision_mesh.num_vertices() != 0)
 		{
 			forms.push_back(std::make_shared<ContactForm>(
-				collision_mesh, dhat, /*avg_mass=*/1.0, use_convergent_formulation,
-				/*use_adaptive_barrier_stiffness=*/false, /*is_time_dependent=*/true,
+				collision_mesh, dhat, /*avg_mass=*/1.0, use_area_weighting, use_improved_max_operator,
+				use_physical_barrier, /*use_adaptive_barrier_stiffness=*/false, /*is_time_dependent=*/true,
 				/*enable_shape_derivatives=*/false, broad_phase_method, ccd_tolerance,
 				ccd_max_iterations));
 			forms.back()->set_weight(barrier_stiffness);
@@ -150,10 +152,10 @@ namespace polyfem::mesh
 
 		const size_t default_max_iterations = nl_solver->stop_criteria().iterations;
 		nl_solver->stop_criteria().iterations = al_max_solver_iter;
-		al_solver.solve_al(nl_solver, problem, sol);
+		al_solver.solve_al(problem, sol, nl_solver);
 
 		nl_solver->stop_criteria().iterations = default_max_iterations;
-		al_solver.solve_reduced(nl_solver, problem, sol);
+		al_solver.solve_reduced(problem, sol, nl_solver);
 
 #ifndef NDEBUG
 		assert(forms[1]->is_step_valid(sol, sol)); // inversion-free

@@ -4,6 +4,11 @@
 #include <polyfem/assembler/PeriodicBoundary.hpp>
 #include <polyfem/solver/forms/lagrangian/AugmentedLagrangianForm.hpp>
 
+namespace polysolve::linear
+{
+	class Solver;
+}
+
 namespace polyfem::solver
 {
 	class NLProblem : public FullNLProblem
@@ -17,14 +22,16 @@ namespace polyfem::solver
 		NLProblem(
 			const int full_size,
 			const std::vector<std::shared_ptr<Form>> &forms,
-			const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms);
+			const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
+			const std::shared_ptr<polysolve::linear::Solver> &solver);
 
 	public:
 		NLProblem(const int full_size,
 				  const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc,
 				  const double t,
 				  const std::vector<std::shared_ptr<Form>> &forms,
-				  const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms);
+				  const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
+				  const std::shared_ptr<polysolve::linear::Solver> &solver);
 		virtual ~NLProblem() = default;
 
 		virtual double value(const TVector &x) override;
@@ -52,20 +59,17 @@ namespace polyfem::solver
 		void use_full_size() { current_size_ = CurrentSize::FULL_SIZE; }
 		void use_reduced_size() { current_size_ = CurrentSize::REDUCED_SIZE; }
 
-		virtual TVector full_to_reduced(const TVector &full) const;
+		TVector full_to_reduced(const TVector &full) const;
 		virtual TVector full_to_reduced_grad(const TVector &full) const;
-		virtual void full_hessian_to_reduced_hessian(const THessian &full, THessian &reduced) const;
-		virtual TVector reduced_to_full(const TVector &reduced) const;
+		TVector reduced_to_full(const TVector &reduced) const;
+
+		void full_hessian_to_reduced_hessian(StiffnessMatrix &hessian) const;
+
+		double normalize_forms() override;
 
 	protected:
-		virtual Eigen::MatrixXd constraint_values(const TVector &reduced) const;
-
-		std::vector<int> constraint_nodes_;
-
 		const int full_size_; ///< Size of the full problem
 		int reduced_size_;    ///< Size of the reduced problem
-
-		std::shared_ptr<utils::PeriodicBoundary> periodic_bc_;
 
 		enum class CurrentSize
 		{
@@ -80,18 +84,21 @@ namespace polyfem::solver
 
 		double t_;
 
-	private:
+	protected:
 		std::vector<std::shared_ptr<AugmentedLagrangianForm>> penalty_forms_;
+		// The decomposion comes from sec 1.3 of https://www.cs.cornell.edu/courses/cs6241/2021sp/meetings/nb-2021-03-11.pdf
+		StiffnessMatrix Q1_;                                         ///< Q1 block of the QR decomposition of the constraints matrix
+		StiffnessMatrix Q2_;                                         ///< Q2 block of the QR decomposition of the constraints matrix
+		StiffnessMatrix Q2t_;                                        ///< Q2 transpose
+		StiffnessMatrix R1_;                                         ///< R1 block of the QR decomposition of the constraints matrix
+		Eigen::PermutationMatrix<Eigen::Dynamic, Eigen::Dynamic> P_; ///< Permutation matrix of the QR decomposition of the constraints matrix
+		TVector Q1R1iTb_;                                            ///< Q1_ * (R1_.transpose().triangularView<Eigen::Upper>().solve(constraint_values_))
+		std::shared_ptr<polysolve::linear::Solver> solver_;
 
-		void setup_constrain_nodes();
+		std::shared_ptr<FullNLProblem> penalty_problem_;
+		int num_penalty_constraints_;
 
-		template <class FullMat, class ReducedMat>
-		void full_to_reduced_aux(const std::vector<int> &constraint_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const;
-
-		template <class ReducedMat, class FullMat>
-		void reduced_to_full_aux(const std::vector<int> &constraint_nodes, const int full_size, const int reduced_size, const ReducedMat &reduced, const Eigen::MatrixXd &rhs, FullMat &full) const;
-
-		template <class FullMat, class ReducedMat>
-		void full_to_reduced_aux_grad(const std::vector<int> &constraint_nodes, const int full_size, const int reduced_size, const FullMat &full, ReducedMat &reduced) const;
+		void setup_constraints();
+		void update_constraint_values();
 	};
 } // namespace polyfem::solver

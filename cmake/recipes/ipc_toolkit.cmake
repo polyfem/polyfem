@@ -8,4 +8,4 @@ endif()
 message(STATUS "Third-party: creating target 'ipc::toolkit'")
 
 include(CPM)
-CPMAddPackage("gh:ipc-sim/ipc-toolkit#617b80e92eb4310791a722fd1cc20c902b17683f")
+CPMAddPackage("gh:ipc-sim/ipc-toolkit#f4f64d34351952ac5df3f8f3220435e1568c13bd")

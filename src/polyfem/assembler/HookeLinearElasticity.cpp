@@ -210,8 +210,6 @@ namespace polyfem::assembler
 			res += res_k * data.da(k);
 		}
 
-		// std::cout<<"res\n"<<res<<"\n"<<std::endl;
-
 		return res;
 	}
 

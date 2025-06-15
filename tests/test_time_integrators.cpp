@@ -2,6 +2,8 @@
 #include <polyfem/time_integrator/ImplicitNewmark.hpp>
 #include <polyfem/time_integrator/BDF.hpp>
 
+#include <polyfem/utils/Logger.hpp>
+
 #include <finitediff.hpp>
 
 #include <catch2/catch_test_macros.hpp>
@@ -69,9 +71,9 @@ TEST_CASE("time integrator", "[time_integrator]")
 
 			if (!fd::compare_gradient(grad, fgrad))
 			{
-				std::cout << "Gradient mismatch" << std::endl;
-				std::cout << "Gradient: " << grad.transpose() << std::endl;
-				std::cout << "Finite gradient: " << fgrad.transpose() << std::endl;
+				logger().trace("Gradient mismatch");
+				logger().trace("Gradient: {}", grad.transpose());
+				logger().trace("Finite gradient: {}", fgrad.transpose());
 			}
 
 			CHECK(fd::compare_gradient(grad, fgrad));
@@ -87,11 +89,9 @@ TEST_CASE("time integrator", "[time_integrator]")
 
 			if (!fd::compare_hessian(hess, fhess))
 			{
-				std::cout << "Hessian mismatch" << std::endl;
-				std::cout << "Hessian:\n"
-						  << hess << std::endl;
-				std::cout << "Finite hessian:\n"
-						  << fhess << std::endl;
+				logger().trace("Hessian mismatch");
+				logger().trace("Hessian:\n{}", hess);
+				logger().trace("Finite hessian:\n{}", fhess);
 			}
 
 			CHECK(fd::compare_hessian(hess, fhess));
