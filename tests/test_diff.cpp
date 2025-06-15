@@ -1379,9 +1379,7 @@ TEST_CASE("shape-pressure-nodes-3d", "[.][test_adjoint]")
 	state.get_vertices(V);
 	Eigen::VectorXd V_flat = utils::flatten(V);
 	auto b_idx = variable_to_simulations[0]->get_output_indexing(x);
-	logger().trace("b_idx {}", b_idx.size());
-	for (int i = 0; i < b_idx.size(); ++i)
-		x(i) = V_flat(b_idx(i));
+	x = V_flat(b_idx);
 	velocity_discrete = velocity(x);
 
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
