@@ -210,7 +210,9 @@ namespace polyfem::mesh
 				state.solve_data.contact_form
 					? state.solve_data.contact_form->barrier_stiffness()
 					: 1.0,
-				state.args["contact"]["use_convergent_formulation"],
+				state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_area_weighting"]) : false,
+				state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_improved_max_operator"]) : false,
+				state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_physical_barrier"]) : false,
 				state.args["solver"]["contact"]["CCD"]["broad_phase"],
 				state.args["solver"]["contact"]["CCD"]["tolerance"],
 				state.args["solver"]["contact"]["CCD"]["max_iterations"],
@@ -416,8 +418,6 @@ namespace polyfem::mesh
 		if (!logger().should_log(spdlog::level::debug) || timings.empty())
 			return;
 
-		std::cout << "--------------------------------------------------------------------------------" << std::endl;
-
 		logger().debug("Total time: {:.3g}s", total_time);
 		double sum = 0;
 
@@ -434,8 +434,6 @@ namespace polyfem::mesh
 		// logger().debug("Miscellaneous: {:.3g}s {:.1f}%", total_time - sum, (total_time - sum) / total_time * 100);
 		if (num_solves > 0)
 			logger().debug("Avg. # DOF per solve: {}", total_ndofs / double(num_solves));
-
-		std::cout << "--------------------------------------------------------------------------------" << std::endl;
 	}
 
 	// Static members must be initialized in the source file:

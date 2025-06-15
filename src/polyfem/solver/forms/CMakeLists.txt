@@ -18,12 +18,18 @@ set(SOURCES
 	FrictionForm.hpp
 	ContactForm.cpp
 	ContactForm.hpp
+	NormalAdhesionForm.cpp
+	NormalAdhesionForm.hpp
+	TangentialAdhesionForm.cpp
+	TangentialAdhesionForm.hpp
 	BarrierContactForm.cpp
 	BarrierContactForm.hpp
 	SmoothContactForm.cpp
 	SmoothContactForm.hpp
 	PeriodicContactForm.cpp
 	PeriodicContactForm.hpp
+	QuadraticPenaltyForm.cpp
+	QuadraticPenaltyForm.hpp
 	RayleighDampingForm.cpp
 	RayleighDampingForm.hpp
 	PressureForm.cpp

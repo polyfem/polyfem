@@ -14,19 +14,21 @@ namespace polyfem::solver
     BarrierContactForm::BarrierContactForm(const ipc::CollisionMesh &collision_mesh,
 					const double dhat,
 					const double avg_mass,
-					const bool use_convergent_formulation,
+					const bool use_area_weighting,
+					const bool use_improved_max_operator,
+					const bool use_physical_barrier,
 					const bool use_adaptive_barrier_stiffness,
 					const bool is_time_dependent,
 					const bool enable_shape_derivatives,
-					const ipc::BroadPhaseMethod broad_phase_method,
+					const BroadPhaseMethod broad_phase_method,
 					const double ccd_tolerance,
-					const int ccd_max_iterations): ContactForm(collision_mesh, dhat, avg_mass, use_convergent_formulation, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations)
+					const int ccd_max_iterations): ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), barrier_potential_(dhat, use_physical_barrier)
     {
-		collision_set_ = std::make_shared<ipc::Collisions>();
-		collision_set_->set_use_convergent_formulation(use_convergent_formulation);
-		collision_set_->set_are_shape_derivatives_enabled(enable_shape_derivatives);
-
-        contact_potential_ = std::make_shared<ipc::BarrierPotential>(dhat);
+		collision_set_ = std::make_shared<ipc::NormalCollisions>();
+		//get_barrier_collision_set().set_use_convergent_formulation(use_convergent_formulation);
+		get_barrier_collision_set().set_use_area_weighting(use_area_weighting);
+		get_barrier_collision_set().set_use_improved_max_approximator(use_improved_max_operator);
+		get_barrier_collision_set().set_enable_shape_derivatives(enable_shape_derivatives);
     }
 	void BarrierContactForm::force_shape_derivative(ipc::CollisionsBase *collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
 	{
@@ -35,11 +37,12 @@ namespace polyfem::solver
 			term.setZero(solution.size());
 			return;
 		}
+
 		// Eigen::MatrixXd U = collision_mesh_.vertices(utils::unflatten(solution, collision_mesh_.dim()));
 		// Eigen::MatrixXd X = collision_mesh_.vertices(boundary_nodes_pos_);
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(solution);
 
-		StiffnessMatrix dq_h = collision_mesh_.to_full_dof(barrier_potential().shape_derivative(*dynamic_cast<ipc::Collisions*>(collision_set), collision_mesh_, displaced_surface));
+		StiffnessMatrix dq_h = collision_mesh_.to_full_dof(barrier_potential_.shape_derivative(*dynamic_cast<ipc::NormalCollisions*>(collision_set), collision_mesh_, displaced_surface));
 		term = barrier_stiffness() * dq_h.transpose() * adjoint_sol;
 	}
 
@@ -53,16 +56,18 @@ namespace polyfem::solver
 		// The adative stiffness is designed for the non-convergent formulation,
 		// so we need to compute the gradient of the non-convergent barrier.
 		// After we can map it to a good value for the convergent formulation.
-		ipc::Collisions nonconvergent_constraints;
-		nonconvergent_constraints.set_use_convergent_formulation(false);
+		ipc::NormalCollisions nonconvergent_constraints;
+		//nonconvergent_constraints.set_use_convergent_formulation(false);
+		nonconvergent_constraints.set_use_area_weighting(false);
+		nonconvergent_constraints.set_use_improved_max_approximator(false);
 		nonconvergent_constraints.build(
-			collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_method_);
-		Eigen::VectorXd grad_barrier = contact_potential_->gradient(
+			collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_);
+		Eigen::VectorXd grad_barrier = barrier_potential_.gradient(
 			nonconvergent_constraints, collision_mesh_, displaced_surface);
 		grad_barrier = collision_mesh_.to_full_dof(grad_barrier);
 
 		barrier_stiffness_ = ipc::initial_barrier_stiffness(
-			ipc::world_bbox_diagonal_length(displaced_surface), barrier_potential().barrier(), dhat_, avg_mass_,
+			ipc::world_bbox_diagonal_length(displaced_surface), barrier_potential_.barrier(), dhat_, avg_mass_,
 			grad_energy, grad_barrier, max_barrier_stiffness_);
 
 		if (use_convergent_formulation())
@@ -70,11 +75,11 @@ namespace polyfem::solver
 			double scaling_factor = 0;
 			if (!nonconvergent_constraints.empty())
 			{
-				const double nonconvergent_potential = (*contact_potential_)(
+				const double nonconvergent_potential = barrier_potential_(
 					nonconvergent_constraints, collision_mesh_, displaced_surface);
 
 				update_collision_set(displaced_surface);
-				const double convergent_potential = (*contact_potential_)(
+				const double convergent_potential = barrier_potential_(
 					get_barrier_collision_set(), collision_mesh_, displaced_surface);
 
 				scaling_factor = nonconvergent_potential / convergent_potential;
@@ -88,8 +93,10 @@ namespace polyfem::solver
 			max_barrier_stiffness_ *= scaling_factor;
 		}
 
-		// Remove the acceleration scaling from the barrier stiffness because it will be applied later.
+		// The barrier stiffness is choosen based on including the acceleration scaling,
+		// but the acceleration scaling will be applied later. Therefore, we need to remove it.
 		barrier_stiffness_ /= weight_;
+		max_barrier_stiffness_ /= weight_;
 
 		logger().debug(
 			"Setting adaptive barrier stiffness to {} (max barrier stiffness: {})",
@@ -105,16 +112,16 @@ namespace polyfem::solver
 
 		if (use_cached_candidates_)
 			get_barrier_collision_set().build(
-				candidates_, collision_mesh_, displaced_surface, barrier_support_size());
+				candidates_, collision_mesh_, displaced_surface, dhat_);
 		else
 			get_barrier_collision_set().build(
-				collision_mesh_, displaced_surface, barrier_support_size(), dmin_, broad_phase_method_);
+				collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_);
 		cached_displaced_surface = displaced_surface;
 	}
 
 	double BarrierContactForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		return (*contact_potential_)(get_barrier_collision_set(), collision_mesh_, compute_displaced_surface(x));
+		return barrier_potential_(get_barrier_collision_set(), collision_mesh_, compute_displaced_surface(x));
 	}
 
 	Eigen::VectorXd BarrierContactForm::value_per_element_unweighted(const Eigen::VectorXd &x) const
@@ -140,10 +147,10 @@ namespace polyfem::solver
 			for (size_t i = start; i < end; i++)
 			{
 				// Quadrature weight is premultiplied by compute_potential
-				const double potential = (*contact_potential_)(get_barrier_collision_set()[i], get_barrier_collision_set()[i].dof(V, E, F));
+				const double potential = barrier_potential_(get_barrier_collision_set()[i], get_barrier_collision_set()[i].dof(V, E, F));
 
 				const int n_v = get_barrier_collision_set()[i].num_vertices();
-				const std::array<long, 4> vis = get_barrier_collision_set()[i].vertex_ids(E, F);
+				const auto vis = get_barrier_collision_set()[i].vertex_ids(E, F);
 				for (int j = 0; j < n_v; j++)
 				{
 					assert(0 <= vis[j] && vis[j] < num_vertices);
@@ -169,14 +176,23 @@ namespace polyfem::solver
 
 	void BarrierContactForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = contact_potential_->gradient(get_barrier_collision_set(), collision_mesh_, compute_displaced_surface(x));
+		gradv = barrier_potential_.gradient(get_barrier_collision_set(), collision_mesh_, compute_displaced_surface(x));
 		gradv = collision_mesh_.to_full_dof(gradv);
 	}
 
 	void BarrierContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		POLYFEM_SCOPED_TIMER("barrier hessian");
-		hessian = contact_potential_->hessian(get_barrier_collision_set(), collision_mesh_, compute_displaced_surface(x), project_to_psd_);
+
+		ipc::PSDProjectionMethod psd_projection_method;
+
+		if (project_to_psd_) {
+			psd_projection_method = ipc::PSDProjectionMethod::CLAMP;
+		} else {
+			psd_projection_method = ipc::PSDProjectionMethod::NONE;
+		}
+
+		hessian = barrier_potential_.hessian(get_barrier_collision_set(), collision_mesh_, compute_displaced_surface(x), psd_projection_method);
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
 

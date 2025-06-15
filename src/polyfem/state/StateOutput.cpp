@@ -53,14 +53,10 @@ namespace polyfem
 			POLYFEM_SCOPED_TIMER("Saving VTU");
 			const std::string step_name = args["output"]["advanced"]["timestep_prefix"];
 
-			if (!solve_export_to_file)
-				solution_frames.emplace_back();
-
 			out_geom.save_vtu(
 				resolve_output_path(fmt::format(step_name + "{:d}.vtu", t)),
 				*this, sol, pressure, time, dt,
-				io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file),
-				is_contact_enabled(), solution_frames);
+				io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar()), is_contact_enabled());
 
 			out_geom.save_pvd(
 				resolve_output_path(args["output"]["paraview"]["file_name"]),
@@ -114,9 +110,6 @@ namespace polyfem
 		if (!args["output"]["advanced"]["save_solve_sequence_debug"].get<bool>())
 			return;
 
-		if (!solve_export_to_file)
-			solution_frames.emplace_back();
-
 		double dt = 1;
 		if (!args["time"].is_null())
 			dt = args["time"]["dt"];
@@ -124,8 +117,7 @@ namespace polyfem
 		out_geom.save_vtu(
 			resolve_output_path(fmt::format("solve_{:d}.vtu", i)),
 			*this, sol, pressure, t, dt,
-			io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file),
-			is_contact_enabled(), solution_frames);
+			io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar()), is_contact_enabled());
 	}
 
 	void State::export_data(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure)
@@ -168,13 +160,13 @@ namespace polyfem
 			*this, sol, pressure,
 			!args["time"].is_null(),
 			tend, dt,
-			io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar(), solve_export_to_file),
+			io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar()),
 			vis_mesh_path,
 			nodes_path,
 			solution_path,
 			stress_path,
 			mises_path,
-			is_contact_enabled(), solution_frames);
+			is_contact_enabled());
 
 		if (assembler->name() == "Electrostatics")
 		{

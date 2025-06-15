@@ -9,7 +9,7 @@
 #include <polyfem/utils/JSONUtils.hpp>
 
 #include <ipc/collision_mesh.hpp>
-#include <ipc/broad_phase/broad_phase.hpp>
+#include <polyfem/solver/forms/ContactForm.hpp>
 
 #include <Eigen/Core>
 
@@ -51,6 +51,8 @@ namespace polyfem::solver
 	class InertiaForm;
 	class ElasticForm;
 	class PressureForm;
+	class NormalAdhesionForm;
+	class TangentialAdhesionForm;
 
 	/// class to store time stepping data
 	class SolveData
@@ -63,6 +65,7 @@ namespace polyfem::solver
 			const Units &units,
 			const int dim,
 			const double t,
+			const Eigen::VectorXi &in_node_to_node,
 
 			// Elastic form
 			const int n_bases,
@@ -98,28 +101,38 @@ namespace polyfem::solver
 			const double lagged_regularization_weight,
 			const int lagged_regularization_iterations,
 
-			// Augemented lagrangian form
-			// const std::vector<int> &boundary_nodes,
-			// const std::vector<mesh::LocalBoundary> &local_boundary,
-			// const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
-			// const int n_boundary_samples,
-			// const StiffnessMatrix &mass,
+			// Constraint forms
 			const size_t obstacle_ndof,
+			const std::vector<std::string> &hard_constraint_files,
+			const std::vector<json> &soft_constraint_files,
 
 			// Contact form
 			const bool contact_enabled,
 			const ipc::CollisionMesh &collision_mesh,
 			const double dhat,
 			const double avg_mass,
-			const bool use_convergent_contact_formulation,
+			const bool use_area_weighting,
+			const bool use_improved_max_operator,
+			const bool use_physical_barrier,
 			const json &barrier_stiffness,
-			const ipc::BroadPhaseMethod broad_phase,
+			const BroadPhaseMethod broad_phase,
 			const double ccd_tolerance,
 			const long ccd_max_iterations,
 			const bool enable_shape_derivatives,
 			
 			// Smooth contact form
 			const json &contact_params,
+
+			// Normal Adhesion Form
+			const bool adhesion_enabled,
+			const double dhat_p,
+			const double dhat_a,
+			const double Y,
+
+			// Tangential Adhesion Form
+			const double tangential_adhesion_coefficient,
+			const double epsa,
+			const int tangential_adhesion_iterations,
 
 			// Homogenization
 			const assembler::MacroStrainValue &macro_strain_constraint,
@@ -160,6 +173,8 @@ namespace polyfem::solver
 		std::shared_ptr<solver::FrictionForm> friction_form;
 		std::shared_ptr<solver::InertiaForm> inertia_form;
 		std::shared_ptr<solver::PressureForm> pressure_form;
+		std::shared_ptr<solver::NormalAdhesionForm> normal_adhesion_form;
+		std::shared_ptr<solver::TangentialAdhesionForm> tangential_adhesion_form;
 
 		std::shared_ptr<solver::PeriodicContactForm> periodic_contact_form;
 

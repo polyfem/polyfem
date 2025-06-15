@@ -260,12 +260,12 @@ namespace polyfem::assembler
 							}
 
 							// t1.stop();
-							// if (!vals.has_parameterization) { std::cout << "-- t1: " << t1.getElapsedTime() << std::endl; }
+							// if (!vals.has_parameterization) { logger().trace("-- t1: " {}, t1.getElapsedTime()); }
 						}
 					}
 
 					// timer.stop();
-					// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
+					// if (!vals.has_parameterization) { logger().trace("-- Timer: {}", timer.getElapsedTime()); }
 				}
 			});
 
@@ -629,11 +629,11 @@ namespace polyfem::assembler
 					}
 
 					// t1.stop();
-					// if (!vals.has_parameterization) { std::cout << "-- t1: " << t1.getElapsedTime() << std::endl; }
+					// if (!vals.has_parameterization) { logger().trace("-- t1: ", t1.getElapsedTime()); }
 				}
 
 				// timer.stop();
-				// if (!vals.has_parameterization) { std::cout << "-- Timer: " << timer.getElapsedTime() << std::endl; }
+				// if (!vals.has_parameterization) { logger().trace("-- Timer: ", timer.getElapsedTime()); }
 			}
 		});
 
@@ -658,7 +658,7 @@ namespace polyfem::assembler
 	{
 		const int max_triplets_size = int(1e7);
 		const int buffer_size = std::min(long(max_triplets_size), long(n_basis) * size());
-		// std::cout<<"buffer_size "<<buffer_size<<std::endl;
+		// logger().trace("buffer_size {}", buffer_size);
 
 		// hess.resize(n_basis * size(), n_basis * size());
 		// hess.setZero();

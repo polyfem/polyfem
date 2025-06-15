@@ -38,10 +38,10 @@ namespace polyfem::solver
 		Eigen::VectorXd X_init;
 
 		ipc::CollisionMesh collision_mesh_;
-		ipc::Collisions collision_set;
+		ipc::NormalCollisions collision_set;
 		const double dhat_;
 		const double dmin_;
-		ipc::BroadPhaseMethod broad_phase_method_;
+		BroadPhaseMethod broad_phase_method_;
 
 		ipc::BarrierPotential barrier_potential_;
 	};
@@ -95,9 +95,9 @@ namespace polyfem::solver
 		Eigen::VectorXd X_init;
 
 		ipc::CollisionMesh collision_mesh_;
-		ipc::Collisions collision_set;
+		ipc::NormalCollisions collision_set;
 		const double dhat_;
-		ipc::BroadPhaseMethod broad_phase_method_;
+		BroadPhaseMethod broad_phase_method_;
 
 		const ipc::BarrierPotential barrier_potential_;
 	};

@@ -131,8 +131,6 @@ void polyfem::mesh::compute_visibility_kernel(const Eigen::MatrixXd &IV, Eigen::
 	src.row(1) << maxV(0), minV(1);
 	src.row(2) << maxV(0), maxV(1);
 	src.row(3) << minV(0), maxV(1);
-	// std::cout << IV << std::endl;
-	// std::cout << minV << ' ' << maxV << std::endl;
 
 	// 2) Clip by half planes until we are left with the kernel
 	for (unsigned int i = 0; i < IV.rows(); ++i)
@@ -165,8 +163,6 @@ bool polyfem::mesh::is_star_shaped(const Eigen::MatrixXd &IV, Eigen::RowVector3d
 		}
 		Eigen::MatrixXd BC;
 		igl::barycenter(OV, F, BC);
-		// std::cout << BC.rows() << 'x' << BC.cols() << std::endl;
-		// std::cout << BC << std::endl;
 		int n = std::min(3, (int)BC.cols());
 		bary.setZero();
 		bary.head(n) = BC.row(0).head(n);

@@ -14,8 +14,8 @@ namespace polyfem
 
 		template <typename T>
 		T matrix_inner_product(const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &A, const Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> &B)
-		{ 
-			return (A.array() * B.array()).sum(); 
+		{
+			return (A.array() * B.array()).sum();
 		}
 
 		template <typename T, int rows, int cols, int option, int maxRow, int maxCol>
@@ -166,5 +166,43 @@ namespace polyfem
 			dst.conservativeResize(dst.rows() + n_zero_rows, dst.cols());
 			dst.bottomRows(n_zero_rows).setZero();
 		}
+
+		void scatter_matrix(const int n_dofs,
+							const int dim,
+							const Eigen::MatrixXd &A,
+							const Eigen::MatrixXd &b,
+							const std::vector<int> &local_to_global,
+							StiffnessMatrix &Aout,
+							Eigen::MatrixXd &bout);
+
+		void scatter_matrix_col(const int n_dofs,
+								const int dim,
+								const Eigen::MatrixXd &A,
+								const Eigen::MatrixXd &b,
+								const std::vector<int> &local_to_global,
+								StiffnessMatrix &Aout,
+								Eigen::MatrixXd &bout);
+
+		void scatter_matrix(const int n_dofs,
+							const int dim,
+							const std::vector<long> &shape,
+							const std::vector<int> &rows,
+							const std::vector<int> &cols,
+							const std::vector<double> &vals,
+							const Eigen::MatrixXd &b,
+							const std::vector<int> &local_to_global,
+							StiffnessMatrix &Aout,
+							Eigen::MatrixXd &bout);
+
+		void scatter_matrix_col(const int n_dofs,
+								const int dim,
+								const std::vector<long> &shape,
+								const std::vector<int> &rows,
+								const std::vector<int> &cols,
+								const std::vector<double> &vals,
+								const Eigen::MatrixXd &b,
+								const std::vector<int> &local_to_global,
+								StiffnessMatrix &Aout,
+								Eigen::MatrixXd &bout);
 	} // namespace utils
 } // namespace polyfem

@@ -6,6 +6,7 @@
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 
+#include <ipc/utils/eigen_ext.hpp>
 #include <ipc/barrier/adaptive_stiffness.hpp>
 #include <ipc/utils/world_bbox_diagonal_length.hpp>
 
@@ -18,9 +19,9 @@ namespace polyfem::solver
                 const bool use_adaptive_barrier_stiffness,
                 const bool is_time_dependent,
 				const bool enable_shape_derivatives,
-                const ipc::BroadPhaseMethod broad_phase_method,
+                const BroadPhaseMethod broad_phase_method,
                 const double ccd_tolerance,
-                const int ccd_max_iterations): ContactForm(collision_mesh, args["dhat"], avg_mass, false, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(dhat_, args["alpha_t"], args["beta_t"], args["alpha_n"], args["beta_n"], _dim == 3 ? 2 : 1), use_adaptive_dhat(args["use_adaptive_dhat"])
+                const int ccd_max_iterations): ContactForm(collision_mesh, args["dhat"], avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(dhat_, args["alpha_t"], args["beta_t"], args["alpha_n"], args["beta_n"], _dim == 3 ? 2 : 1), use_adaptive_dhat(args["use_adaptive_dhat"])
     {
 		collision_set_ = std::make_shared<ipc::SmoothCollisions<_dim>>();
 		collision_set_->set_are_shape_derivatives_enabled(enable_shape_derivatives);
@@ -29,7 +30,7 @@ namespace polyfem::solver
 		params.set_adaptive_dhat_ratio(args["min_distance_ratio"]);
 		if (use_adaptive_dhat)
 		{
-			get_smooth_collision_set().compute_adaptive_dhat(collision_mesh, collision_mesh.rest_positions(), params, broad_phase_method_);
+			get_smooth_collision_set().compute_adaptive_dhat(collision_mesh, collision_mesh.rest_positions(), params, broad_phase_);
 			if (use_adaptive_barrier_stiffness)
 				logger().error("Adaptive dhat is not compatible with adaptive barrier stiffness");
 		}
@@ -70,7 +71,7 @@ namespace polyfem::solver
 			term.setZero(solution.size());
 			return;
 		}
-		StiffnessMatrix hessian = contact_potential_->hessian(*dynamic_cast<ipc::SmoothCollisions<_dim>*>(collision_set), collision_mesh_, compute_displaced_surface(solution), false);
+		StiffnessMatrix hessian = contact_potential_->hessian(*dynamic_cast<ipc::SmoothCollisions<_dim>*>(collision_set), collision_mesh_, compute_displaced_surface(solution), ipc::PSDProjectionMethod::NONE);
 		term = barrier_stiffness() * collision_mesh_.to_full_dof(hessian) * adjoint_sol;
 	}
 
@@ -87,7 +88,7 @@ namespace polyfem::solver
 				candidates_, collision_mesh_, displaced_surface, params, use_adaptive_dhat);
 		else
 			get_smooth_collision_set().build(
-				collision_mesh_, displaced_surface, params, use_adaptive_dhat, broad_phase_method_);
+				collision_mesh_, displaced_surface, params, use_adaptive_dhat, broad_phase_);
 		cached_displaced_surface = displaced_surface;
 	}
 
@@ -120,7 +121,7 @@ namespace polyfem::solver
 		// 		collision_mesh_.edges(), collision_mesh_.faces());
 		// }
 		POLYFEM_SCOPED_TIMER("barrier hessian");
-		hessian = contact_potential_->hessian(get_smooth_collision_set(), collision_mesh_, compute_displaced_surface(x), project_to_psd_);
+		hessian = contact_potential_->hessian(get_smooth_collision_set(), collision_mesh_, compute_displaced_surface(x), project_to_psd_ ? ipc::PSDProjectionMethod::CLAMP : ipc::PSDProjectionMethod::NONE);
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
 

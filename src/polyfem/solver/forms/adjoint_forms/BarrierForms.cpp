@@ -32,6 +32,10 @@ namespace polyfem::solver
 				else
 					return 2 * weight_;
 			}
+			double units(const double dhat) const override
+			{
+				return dhat * dhat;
+			}
 
 		private:
 			const double weight_;
@@ -52,7 +56,7 @@ namespace polyfem::solver
 		state_.get_vertices(V);
 		X_init = utils::flatten(V);
 
-		broad_phase_method_ = ipc::BroadPhaseMethod::HASH_GRID;
+		broad_phase_method_ = BroadPhaseMethod::HASH_GRID;
 	}
 
 	double CollisionBarrierForm::value_unweighted(const Eigen::VectorXd &x) const
@@ -87,12 +91,14 @@ namespace polyfem::solver
 		if ((V1 - V0).lpNorm<Eigen::Infinity>() == 0.0)
 			return true;
 
+		const ipc::TightInclusionCCD tight_inclusion_ccd(1e-6, 1e6);
 		bool is_valid = ipc::is_step_collision_free(
 			collision_mesh_,
 			collision_mesh_.vertices(V0),
 			collision_mesh_.vertices(V1),
-			broad_phase_method_,
-			1e-6, 1e6);
+			dmin_,
+			build_broad_phase(broad_phase_method_),
+			tight_inclusion_ccd);
 
 		return is_valid;
 	}
@@ -102,11 +108,14 @@ namespace polyfem::solver
 		const Eigen::MatrixXd V0 = utils::unflatten(get_updated_mesh_nodes(x0), state_.mesh->dimension());
 		const Eigen::MatrixXd V1 = utils::unflatten(get_updated_mesh_nodes(x1), state_.mesh->dimension());
 
+		const ipc::TightInclusionCCD tight_inclusion_ccd(1e-6, 1e6);
 		double max_step = ipc::compute_collision_free_stepsize(
 			collision_mesh_,
 			collision_mesh_.vertices(V0),
 			collision_mesh_.vertices(V1),
-			broad_phase_method_, dmin_, 1e-6, 1e6);
+			dmin_,
+			build_broad_phase(broad_phase_method_), 
+			tight_inclusion_ccd);
 
 		adjoint_logger().info("Objective {}: max step size is {}.", name(), max_step);
 
@@ -119,7 +128,7 @@ namespace polyfem::solver
 		if (cached_displaced_surface.size() == displaced_surface.size() && cached_displaced_surface == displaced_surface)
 			return;
 
-		collision_set.build(collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_method_);
+		collision_set.build(collision_mesh_, displaced_surface, dhat_, dmin_, build_broad_phase(broad_phase_method_));
 
 		cached_displaced_surface = displaced_surface;
 	}
@@ -236,6 +245,7 @@ namespace polyfem::solver
 		}
 
 		collision_mesh_ = ipc::CollisionMesh(is_on_surface,
+											 std::vector<bool>(is_on_surface.size(), false),
 											 node_positions,
 											 boundary_edges_alt,
 											 boundary_triangles_alt,
@@ -284,7 +294,7 @@ namespace polyfem::solver
 		state_.get_vertices(V);
 		X_init = utils::flatten(V);
 
-		broad_phase_method_ = ipc::BroadPhaseMethod::HASH_GRID;
+		broad_phase_method_ = BroadPhaseMethod::HASH_GRID;
 	}
 
 	double DeformedCollisionBarrierForm::value_unweighted(const Eigen::VectorXd &x) const
@@ -350,7 +360,7 @@ namespace polyfem::solver
 		if (cached_displaced_surface.size() == displaced_surface.size() && cached_displaced_surface == displaced_surface)
 			return;
 
-		collision_set.build(collision_mesh_, displaced_surface, dhat_, 0, broad_phase_method_);
+		collision_set.build(collision_mesh_, displaced_surface, dhat_, 0, build_broad_phase(broad_phase_method_));
 
 		cached_displaced_surface = displaced_surface;
 	}
@@ -416,7 +426,7 @@ namespace polyfem::solver
 	{
 		ipc::SmoothCollisions<dim> collisions;
 		const auto smooth_contact = dynamic_cast<const SmoothContactForm<dim>*>(state_.solve_data.contact_form.get());
-		collisions.build(collision_mesh_, displaced_surface, smooth_contact->get_params(), smooth_contact->using_adaptive_dhat(), smooth_contact->get_broad_phase_method());
+		collisions.build(collision_mesh_, displaced_surface, smooth_contact->get_params(), smooth_contact->using_adaptive_dhat(), smooth_contact->get_broad_phase());
 		return collisions;
 	}
 
@@ -447,7 +457,7 @@ namespace polyfem::solver
 		Eigen::VectorXd forces = potential_.gradient(collisions_, collision_mesh_, displaced_surface);
 		forces = collision_mesh_.to_full_dof(forces);
 
-		StiffnessMatrix hessian = potential_.hessian(collisions_, collision_mesh_, displaced_surface, false);
+		StiffnessMatrix hessian = potential_.hessian(collisions_, collision_mesh_, displaced_surface, ipc::PSDProjectionMethod::NONE);
 		hessian = collision_mesh_.to_full_dof(hessian);
 
 		Eigen::VectorXd coeff(forces.size());
@@ -466,7 +476,7 @@ namespace polyfem::solver
 		Eigen::VectorXd forces = potential_.gradient(collisions_, collision_mesh_, displaced_surface);
 		forces = collision_mesh_.to_full_dof(forces);
 
-		StiffnessMatrix hessian = potential_.hessian(collisions_, collision_mesh_, displaced_surface, false);
+		StiffnessMatrix hessian = potential_.hessian(collisions_, collision_mesh_, displaced_surface, ipc::PSDProjectionMethod::NONE);
 		hessian = collision_mesh_.to_full_dof(hessian);
 
 		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, &state_, x, [this, &x, &forces, &hessian]() {

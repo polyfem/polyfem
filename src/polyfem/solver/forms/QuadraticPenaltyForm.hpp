@@ -1,22 +1,26 @@
 #pragma once
 
-#include "AugmentedLagrangianForm.hpp"
+#include "Form.hpp"
+
+#include <polyfem/utils/Types.hpp>
 
 namespace polyfem::solver
 {
-	/// @brief Form of the lagrangian in augmented lagrangian
-	class GenericLagrangianForm : public AugmentedLagrangianForm
+	/// @brief Form for quadratic soft constraints
+	class QuadraticPenaltyForm : public Form
 	{
 	public:
-		/// @brief Construct a new GenericLagrangianForm object for the constraints Ax = b
-		/// @param constraint_nodes constraint nodes
+		/// @brief Construct a new QuadraticPenaltyForm object for the constraints Ax = b
 		/// @param A Constraints matrix
 		/// @param b Constraints value
-		GenericLagrangianForm(const std::vector<int> &constraint_nodes,
-							  const StiffnessMatrix &A,
-							  const Eigen::VectorXd &b);
+		/// @param weigth weigth of the penalty
+		QuadraticPenaltyForm(const StiffnessMatrix &A,
+							 const Eigen::MatrixXd &b,
+							 const double weight);
 
-		std::string name() const override { return "generic-lagrangian"; }
+		std::string name() const override { return "quadratic-penalty"; }
+
+		double weight() const override { return weight_ * penalty_weight_; }
 
 		/// @brief Compute the value of the form
 		/// @param x Current solution
@@ -33,12 +37,13 @@ namespace polyfem::solver
 		/// @param[out] hessian Output Hessian of the value wrt x
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
-	public:
-		void update_lagrangian(const Eigen::VectorXd &x, const double k_al) override;
-		double compute_error(const Eigen::VectorXd &x) const override;
-
 	private:
-		const StiffnessMatrix A;
-		const Eigen::VectorXd b;
+		StiffnessMatrix A_; ///< Constraints matrix
+		Eigen::MatrixXd b_; ///< Constraints value
+
+		StiffnessMatrix AtA_;
+		Eigen::VectorXd Atb_;
+
+		const double penalty_weight_;
 	};
 } // namespace polyfem::solver

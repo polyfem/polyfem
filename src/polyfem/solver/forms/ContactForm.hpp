@@ -5,31 +5,30 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/Types.hpp>
 
-#include <ipc/collisions/collisions.hpp>
+#include <ipc/collisions/normal/normal_collisions.hpp>
 #include <ipc/collision_mesh.hpp>
 #include <ipc/broad_phase/broad_phase.hpp>
 #include <ipc/potentials/potential.hpp>
 
-// map BroadPhaseMethod values to JSON as strings
-namespace ipc
-{
-	NLOHMANN_JSON_SERIALIZE_ENUM(
-		ipc::BroadPhaseMethod,
-		{{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
-		 {ipc::BroadPhaseMethod::HASH_GRID, "HG"},
-		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
-		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
-		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
-		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
-		 {ipc::BroadPhaseMethod::BVH, "bvh"},
-		 {ipc::BroadPhaseMethod::BVH, "BVH"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
-		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"}})
-} // namespace ipc
-
 namespace polyfem::solver
 {
-	class BarrierContactForm;
+	enum class BroadPhaseMethod { HASH_GRID, BRUTE_FORCE, SPATIAL_HASH, BVH, SWEEP_AND_TINIEST_QUEUE };
+	// map BroadPhaseMethod values to JSON as strings
+	NLOHMANN_JSON_SERIALIZE_ENUM(
+		BroadPhaseMethod,
+		{{BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
+			{BroadPhaseMethod::HASH_GRID, "HG"},
+			{BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
+			{BroadPhaseMethod::BRUTE_FORCE, "BF"},
+			{BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
+			{BroadPhaseMethod::SPATIAL_HASH, "SH"},
+			{BroadPhaseMethod::BVH, "bvh"},
+			{BroadPhaseMethod::BVH, "BVH"},
+			{BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
+			{BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"}})
+	
+	std::shared_ptr<ipc::BroadPhase> build_broad_phase(const BroadPhaseMethod& broad_phase_method);
+
 	/// @brief Form representing the contact potential and forces
 	class ContactForm : public Form
 	{
@@ -46,11 +45,10 @@ namespace polyfem::solver
 		ContactForm(const ipc::CollisionMesh &collision_mesh,
 					const double dhat,
 					const double avg_mass,
-					const bool use_convergent_formulation,
 					const bool use_adaptive_barrier_stiffness,
 					const bool is_time_dependent,
 					const bool enable_shape_derivatives,
-					const ipc::BroadPhaseMethod broad_phase_method,
+					const BroadPhaseMethod broad_phase_method,
 					const double ccd_tolerance,
 					const int ccd_max_iterations);
 		virtual ~ContactForm() = default;
@@ -104,7 +102,7 @@ namespace polyfem::solver
 		bool use_adaptive_barrier_stiffness() const { return use_adaptive_barrier_stiffness_; }
 		/// @brief Get use_convergent_formulation
 		virtual bool use_convergent_formulation() const { return false; }
-
+		
 		bool enable_shape_derivatives() const { return enable_shape_derivatives_; }
 
 		double weight() const override { return weight_ * barrier_stiffness_; }
@@ -118,7 +116,7 @@ namespace polyfem::solver
 
 		auto get_collision_set() const { return collision_set_; }
 
-		auto get_broad_phase_method() const { return broad_phase_method_; }
+		std::shared_ptr<ipc::BroadPhase> get_broad_phase() const { return broad_phase_; }
 
 		virtual void force_shape_derivative(ipc::CollisionsBase *collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) = 0;
 
@@ -155,11 +153,10 @@ namespace polyfem::solver
 		const bool enable_shape_derivatives_;
 
 		/// @brief Broad phase method to use for distance and CCD evaluations
-		const ipc::BroadPhaseMethod broad_phase_method_;
-		/// @brief Continuous collision detection tolerance
-		const double ccd_tolerance_;
-		/// @brief Continuous collision detection maximum iterations
-		const int ccd_max_iterations_;
+		const BroadPhaseMethod broad_phase_method_;
+		const std::shared_ptr<ipc::BroadPhase> broad_phase_;
+		/// @brief Continuous collision detection specification object
+		const ipc::TightInclusionCCD tight_inclusion_ccd_;
 
 		/// @brief Previous minimum distance between all elements
 		double prev_distance_;

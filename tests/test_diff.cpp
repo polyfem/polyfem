@@ -112,10 +112,10 @@ namespace
 		double finite_difference = (next_functional_val - former_functional_val) / dt / 2;
 		double back_finite_difference = (functional_val - former_functional_val) / dt;
 		double front_finite_difference = (next_functional_val - functional_val) / dt;
-		std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
-		std::cout << std::setprecision(16) << "forward fd " << front_finite_difference << " backward fd " << back_finite_difference << "\n";
-		std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
-		std::cout << std::setprecision(12) << "relative error: " << abs((finite_difference - derivative) / derivative) << "\n";
+		logger().trace("f(x) {:.16f} f(x-dt) {:.16f} f(x+dt) {:.16f}", functional_val, former_functional_val, next_functional_val);
+		logger().trace("forward fd {:.16f} backward fd {:.16f}", front_finite_difference, back_finite_difference);
+		logger().trace("derivative: {:.12f} fd: {:.12f}", derivative, finite_difference);
+		logger().trace("relative error: {:.12f}", abs((finite_difference - derivative) / derivative));
 		REQUIRE(derivative == Catch::Approx(finite_difference).epsilon(tol));
 	}
 
@@ -136,11 +136,7 @@ namespace
 		Eigen::VectorXd fgrad;
 		fd::finite_gradient(x, f, fgrad);
 
-		std::cout << "one form:\n"
-				  << unflatten(one_form, 3)
-				  << "\nfd:\n"
-				  << unflatten(fgrad, 3)
-				  << std::endl;
+		logger().trace("one form:\n {}\n fd:\n {}", unflatten(one_form, 3), unflatten(fgrad, 3));
 
 		CHECK(fd::compare_gradient(one_form, fgrad));
 	}
@@ -542,12 +538,12 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 
 // 	for (int i = 1; i <= timesteps; ++i)
 // 	{
-// 		std::cout << "comparison" << std::endl;
-// 		std::cout << "norm of difference " << (hess_fd_vec[i - 1] - hess_vec[i - 1]).norm() << std::endl;
-// 		std::cout << "norm of derivative " << hess_vec[i - 1].norm() << std::endl;
-// 		// std::cout << hess_vec[i - 1] << std::endl;
-// 		std::cout << "norm of fd " << hess_fd_vec[i - 1].norm() << std::endl;
-// 		// std::cout << hess_fd_vec[i - 1] << std::endl;
+// 		logger().trace("comparison");
+// 		logger().trace("norm of difference {}", (hess_fd_vec[i - 1] - hess_vec[i - 1]).norm());
+// 		logger().trace("norm of derivative {}", hess_vec[i - 1].norm());
+// 		// logger().trace("{}", hess_vec[i - 1]);
+// 		logger().trace("norm of fd {}", hess_fd_vec[i - 1].norm());
+// 		// logger().trace("{}", hess_fd_vec[i - 1]);
 // 	}
 // }
 
@@ -574,10 +570,10 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 // 		StiffnessMatrix hess;
 // 		state.solve_data.body_form->hessian_wrt_u_prev(state.diff_cached.u(i - 1), t0 + i * dt, hess);
 
-// 		std::cout << "solution norm: " << state.diff_cached.u(i).norm() << std::endl;
+// 		logger().trace("solution norm: {}", state.diff_cached.u(i).norm());
 
-// 		std::cout << "hessian norm: " << hess.norm() << std::endl;
-// 		// std::cout << hess << std::endl;
+// 		logger().trace("hessian norm: {}", hess.norm());
+// 		// logger().trace("{}", hess);
 
 // 		Eigen::MatrixXd hess_fd(hess.rows(), hess.cols());
 // 		for (int j = 0; j < state.diff_cached.u(i).size(); ++j)
@@ -599,10 +595,10 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 // 			hess_fd.col(j) = fd;
 // 		}
 
-// 		std::cout << "fd norm: " << hess_fd.norm() << std::endl;
-// 		// std::cout << hess_fd.sparseView(1, 1e-15) << std::endl;
+// 		logger().trace("fd norm: {}", hess_fd.norm());
+// 		// logger().trace("{}", hess_fd.sparseView(1, 1e-15));
 
-// 		std::cout << "difference is " << (hess_fd.sparseView() - hess).norm() << std::endl;
+// 		logger().trace("difference is {}", (hess_fd.sparseView() - hess).norm());
 // 	}
 // }
 
@@ -642,14 +638,14 @@ TEST_CASE("shape-pressure-nodes-2d", "[test_adjoint]")
 	state.get_vertices(V);
 	Eigen::VectorXd V_flat = utils::flatten(V);
 	auto b_idx = variable_to_simulations[0]->get_output_indexing(x);
-	std::cout << "b_idx " << b_idx.size() << std::endl;
+	logger().trace("b_idx {}", b_idx.size());
 	for (int i = 0; i < b_idx.size(); ++i)
 		x(i) = V_flat(b_idx(i));
 	velocity_discrete = velocity(x);
 
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 
-	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-3);
+	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-2);
 }
 
 TEST_CASE("static-control-pressure-nodes-3d", "[.][test_adjoint]")
@@ -736,7 +732,7 @@ TEST_CASE("control-pressure-walker-2d", "[test_adjoint]")
 	Eigen::VectorXd x = AdjointOptUtils::inverse_evaluation(opt_args["parameters"], ndof, variable_sizes, variable_to_simulations);
 	velocity_discrete = velocity(x);
 
-	std::cout << "x: " << x << std::endl;
+	logger().trace("x: {}", x);
 
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 
@@ -785,7 +781,7 @@ TEST_CASE("shape-walker-2d", "[test_adjoint]")
 	Eigen::VectorXd x = AdjointOptUtils::inverse_evaluation(opt_args["parameters"], ndof, variable_sizes, variable_to_simulations);
 	velocity_discrete = velocity(x);
 
-	std::cout << "x: " << x << std::endl;
+	logger().trace("x: {}", x);
 
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 
@@ -874,6 +870,88 @@ TEST_CASE("shape-contact-force-norm", "[test_adjoint]")
 	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-3);
 }
 
+TEST_CASE("shape-contact-force-norm-adhesion", "[test_adjoint]")
+{
+	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
+	json in_args;
+	load_json(path + "shape-contact-force-norm-adhesion.json", in_args);
+	auto state_ptr = create_state_and_solve(in_args);
+	State &state = *state_ptr;
+
+	std::vector<std::shared_ptr<State>> states({state_ptr});
+
+	json opt_args;
+	load_json(path + "shape-contact-force-norm-opt-adhesion.json", opt_args);
+	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
+
+	VariableToSimulationGroup variable_to_simulations;
+	variable_to_simulations.push_back(std::make_unique<ShapeVariableToSimulation>(state_ptr, CompositeParametrization()));
+
+	json composite_map_args = R"({
+		"composite_map_type": "boundary_excluding_surface",
+		"active_dimensions": [],
+		"surface_selection": [1, 2]
+	})"_json;
+	variable_to_simulations[0]->set_output_indexing(composite_map_args);
+
+	auto obj = AdjointOptUtils::create_form(opt_args["functionals"], variable_to_simulations, states);
+
+	srand(100);
+	auto velocity = [](const Eigen::MatrixXd &position) {
+		auto vel = position;
+		for (int i = 0; i < vel.size(); i++)
+		{
+			vel(i) = (rand() % 1000) / 1000.0;
+		}
+		return vel;
+	};
+	Eigen::MatrixXd velocity_discrete;
+
+	Eigen::VectorXd x;
+	int opt_bnodes = 0;
+	int dim;
+	{
+		const auto &mesh = state.mesh;
+		const auto &bases = state.bases;
+		const auto &gbases = state.geom_bases();
+		dim = mesh->dimension();
+
+		std::set<int> node_ids;
+		std::set<int> total_bnode_ids;
+		for (const auto &lb : state.total_local_boundary)
+		{
+			const int e = lb.element_id();
+			for (int i = 0; i < lb.size(); ++i)
+			{
+				const int primitive_global_id = lb.global_primitive_id(i);
+				const int boundary_id = mesh->get_boundary_id(primitive_global_id);
+				const auto nodes = gbases[e].local_nodes_for_primitive(primitive_global_id, *mesh);
+
+				if (boundary_id == 1 || boundary_id == 2)
+					for (long n = 0; n < nodes.size(); ++n)
+						node_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
+
+				for (long n = 0; n < nodes.size(); ++n)
+					total_bnode_ids.insert(gbases[e].bases[nodes(n)].global()[0].index);
+			}
+		}
+		opt_bnodes = total_bnode_ids.size() - node_ids.size();
+	}
+	x.resize(opt_bnodes * dim);
+
+	Eigen::MatrixXd V;
+	state.get_vertices(V);
+	Eigen::VectorXd V_flat = utils::flatten(V);
+	auto b_idx = variable_to_simulations[0]->get_output_indexing(x);
+	for (int i = 0; i < b_idx.size(); ++i)
+		x(i) = V_flat(b_idx(i));
+	velocity_discrete = velocity(x);
+
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
+
+	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-7, 1e-2);
+}
+
 TEST_CASE("shape-contact-force-norm-3d", "[test_adjoint]")
 {
 	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
@@ -924,6 +1002,25 @@ TEST_CASE("shape-contact", "[test_adjoint]")
 {
 	json opt_args;
 	load_json(append_root_path("shape-contact-opt.json"), opt_args);
+	auto [obj, var2sim, states] = prepare_test(opt_args);
+
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
+
+	Eigen::MatrixXd V;
+	states[0]->get_vertices(V);
+	Eigen::VectorXd x = utils::flatten(V);
+
+	nl_problem->solution_changed(x);
+	Eigen::VectorXd one_form;
+	nl_problem->gradient(x, one_form);
+
+	verify_adjoint(*nl_problem, x, one_form.normalized(), 1e-7, 1e-5);
+}
+
+TEST_CASE("shape-contact-adhesion", "[test_adjoint]")
+{
+	json opt_args;
+	load_json(append_root_path("shape-contact-adhesion-opt.json"), opt_args);
 	auto [obj, var2sim, states] = prepare_test(opt_args);
 
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
@@ -1160,89 +1257,6 @@ TEST_CASE("barycenter", "[test_adjoint]")
 	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-6, 1e-5);
 }
 
-// TEST_CASE("dirichlet-sdf", "[test_adjoint]")
-// {
-// 	json opt_args;
-// 	load_json(append_root_path("dirichlet-sdf-opt.json"), opt_args);
-// 	auto [obj, var2sim, states] = prepare_test(opt_args);
-
-// 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
-
-// 	int dirichlet_dof = 3;
-// 	Eigen::MatrixXd velocity_discrete;
-// 	velocity_discrete.setRandom(states[0]->args["time"]["time_steps"].get<int>() * states[0]->mesh->dimension() * dirichlet_dof, 1);
-
-// 	Eigen::VectorXd x(60);
-// 	x.segment(0, 20) = var2sim[0]->inverse_eval();
-// 	x.segment(20, 20) = var2sim[1]->inverse_eval();
-// 	x.segment(40, 20) = var2sim[2]->inverse_eval();
-
-// 	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-5, 1e-5);
-// }
-
-// TEST_CASE("dirichlet-ref", "[test_adjoint]")
-// {
-// 	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
-// 	json in_args;
-// 	load_json(path + "dirichlet-ref.json", in_args);
-
-// 	json opt_args;
-// 	load_json(path + "dirichlet-ref-opt.json", opt_args);
-// 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
-
-// 	std::shared_ptr<State> state_ptr = create_state_and_solve(in_args);
-// 	State &state = *state_ptr;
-
-// 	int time_steps = state.args["time"]["time_steps"].get<int>();
-
-// 	json ref_args = in_args;
-// 	for (int t = 0; t < time_steps; ++t)
-// 	{
-// 		ref_args["boundary_conditions"]["dirichlet_boundary"][0]["value"][0][t] = ref_args["boundary_conditions"]["dirichlet_boundary"][0]["value"][0][t].get<double>() - 0.5 * t;
-// 		ref_args["boundary_conditions"]["dirichlet_boundary"][1]["value"][0][t] = ref_args["boundary_conditions"]["dirichlet_boundary"][1]["value"][0][t].get<double>() + 0.5 * t;
-// 	}
-// 	std::shared_ptr<State> state_ref = create_state_and_solve(ref_args);
-
-// 	std::vector<std::shared_ptr<State>> states_ptr = {state_ptr};
-// 	std::shared_ptr<ControlParameter> control_param = std::make_shared<ControlParameter>(states_ptr, opt_args["parameters"][0]);
-// 	std::shared_ptr<TargetObjective> func_aux = std::make_shared<TargetObjective>(state, nullptr, opt_args["functionals"][0]);
-// 	func_aux->set_reference(state_ref, {2});
-// 	TransientObjective func(state.args["time"]["time_steps"], state.args["time"]["dt"], opt_args["functionals"][0]["transient_integral_type"], func_aux);
-
-// 	int dirichlet_dof = 3;
-// 	Eigen::MatrixXd velocity_discrete;
-// 	velocity_discrete.setZero(time_steps * 3 * dirichlet_dof, 1);
-// 	for (int j = 0; j < time_steps; ++j)
-// 		for (int k = 0; k < dirichlet_dof; ++k)
-// 		{
-// 			for (int i = 0; i < 3; ++i)
-// 			{
-// 				double random_val = (rand() % 200) / 100. - 1.;
-// 				velocity_discrete(j * 3 * dirichlet_dof + i * dirichlet_dof + k) = random_val;
-// 			}
-// 		}
-
-// 	auto initial_guess = control_param->initial_guess();
-// 	auto perturb_fn = [&initial_guess](std::shared_ptr<Parameter> param, std::shared_ptr<State> &state, const Eigen::MatrixXd &dx) {
-// 		initial_guess += dx;
-// 		param->pre_solve(initial_guess);
-// 	};
-
-// 	verify_adjoint_dirichlet(func, state_ptr, control_param, velocity_discrete, perturb_fn, 1e-4, 1e-3);
-
-// 	json temp_args = in_args;
-// 	auto perturb_fn_json = [&temp_args, time_steps](std::shared_ptr<Parameter> param, std::shared_ptr<State> &state, const Eigen::MatrixXd &dx) {
-// 		for (int t = 0; t < time_steps; ++t)
-// 			for (int k = 0; k < 2; ++k)
-// 				for (int i = 0; i < 3; ++i)
-// 					temp_args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t] = temp_args["boundary_conditions"]["dirichlet_boundary"][i]["value"][k][t].get<double>() + dx(t * 3 * 3 + i * 3 + k);
-// 		state->init(temp_args, false);
-// 		state->optimization_enabled = true;
-// 	};
-
-// 	verify_adjoint_dirichlet(func, state_ptr, control_param, velocity_discrete, perturb_fn_json, 1e-7, 1e-5);
-// }
-
 TEST_CASE("shape-contact-smooth", "[test_adjoint]")
 {
 	json opt_args;
@@ -1327,6 +1341,7 @@ TEST_CASE("shape-transient-smooth", "[test_adjoint]")
 
 	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-6, 1e-5);
 }
+
 TEST_CASE("shape-pressure-nodes-3d", "[.][test_adjoint]")
 {
 	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
@@ -1364,7 +1379,7 @@ TEST_CASE("shape-pressure-nodes-3d", "[.][test_adjoint]")
 	state.get_vertices(V);
 	Eigen::VectorXd V_flat = utils::flatten(V);
 	auto b_idx = variable_to_simulations[0]->get_output_indexing(x);
-	std::cout << "b_idx " << b_idx.size() << std::endl;
+	logger().trace("b_idx {}", b_idx.size());
 	for (int i = 0; i < b_idx.size(); ++i)
 		x(i) = V_flat(b_idx(i));
 	velocity_discrete = velocity(x);

@@ -189,9 +189,9 @@ void test_form(Form &form, const State &state, double step = 1e-8, double tol = 
 
 			if (!fd::compare_gradient(grad, fgrad))
 			{
-				std::cout << "Gradient mismatch" << std::endl;
-				std::cout << "Gradient: " << grad.transpose() << std::endl;
-				std::cout << "Finite gradient: " << fgrad.transpose() << std::endl;
+				logger().debug("Gradient mismatch");
+				logger().debug("Gradient: {}", grad.transpose());
+				logger().debug("Finite gradient: {}", fgrad.transpose());
 			}
 
 			CHECK(fd::compare_gradient(grad, fgrad, tol));
@@ -215,9 +215,9 @@ void test_form(Form &form, const State &state, double step = 1e-8, double tol = 
 
 			if (!fd::compare_hessian(Eigen::MatrixXd(hess), fhess))
 			{
-				std::cout << "Hessian mismatch" << std::endl;
-				std::cout << "Hessian: " << hess << std::endl;
-				std::cout << "Finite hessian: " << fhess << std::endl;
+				logger().debug("Hessian mismatch");
+				logger().debug("Hessian: {}", hess);
+				logger().debug("Finite hessian: {}", fhess);
 			}
 
 			CHECK(fd::compare_hessian(Eigen::MatrixXd(hess), fhess, tol));
@@ -287,16 +287,16 @@ TEST_CASE("barrier contact form derivatives", "[form][form_derivatives][contact_
 	const bool use_convergent_formulation = GENERATE(true, false);
 	const double barrier_stiffness = 1e7;
 	const bool is_time_dependent = GENERATE(true, false);
-	const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
+	const BroadPhaseMethod broad_phase_method = BroadPhaseMethod::HASH_GRID;
 	const double ccd_tolerance = 1e-6;
 	const int ccd_max_iterations = static_cast<int>(1e6);
 	const double dt = 1e-3;
 
 	BarrierContactForm form(
 		state_ptr->collision_mesh, dhat, state_ptr->avg_mass,
-		use_convergent_formulation, use_adaptive_barrier_stiffness,
-		is_time_dependent, false, broad_phase_method, ccd_tolerance,
-		ccd_max_iterations);
+		use_convergent_formulation, use_convergent_formulation, use_convergent_formulation,
+		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
+		ccd_tolerance, ccd_max_iterations);
 
 	test_form(form, *state_ptr);
 }
@@ -312,7 +312,7 @@ TEST_CASE("smooth contact form derivatives", "[form][form_derivatives][contact_f
 	const double barrier_stiffness = 1e7;
 	const bool is_time_dependent = true;
 	const bool use_adaptive_barrier_stiffness = false;
-	const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
+	const BroadPhaseMethod broad_phase_method = BroadPhaseMethod::HASH_GRID;
 	const double ccd_tolerance = 1e-6;
 	const int ccd_max_iterations = static_cast<int>(1e6);
 	const double a = 0;
@@ -344,7 +344,7 @@ TEST_CASE("elastic form derivatives", "[form][form_derivatives][elastic_form]")
 
 TEST_CASE("pressure form derivatives", "[form][form_derivatives][pressure_form]")
 {
-	const int dim = GENERATE(3);
+	const int dim = GENERATE(2, 3);
 	const bool is_time_dependent = GENERATE(true);
 	const auto state_ptr = get_state(dim);
 	state_ptr->elasticity_pressure_assembler = state_ptr->build_pressure_assembler();
@@ -369,7 +369,7 @@ TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]"
 	const double dhat = 1e-3;
 	const double barrier_stiffness = 1e7;
 	const bool is_time_dependent = GENERATE(true, false);
-	const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
+	const BroadPhaseMethod broad_phase_method = BroadPhaseMethod::HASH_GRID;
 	const double dt = 1e-3;
 
 	const bool use_adaptive_barrier_stiffness = true; // GENERATE(true, false);
@@ -377,8 +377,8 @@ TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]"
 	const int ccd_max_iterations = static_cast<int>(1e6);
 
 	const BarrierContactForm contact_form(
-		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, use_convergent_formulation,
-		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
+		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, use_convergent_formulation, use_convergent_formulation,
+		use_convergent_formulation, use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
 		ccd_tolerance, ccd_max_iterations);
 
 	FrictionForm form(

@@ -4,8 +4,7 @@
 namespace polyfem::solver
 {
 	MacroStrainLagrangianForm::MacroStrainLagrangianForm(const assembler::MacroStrainValue &macro_strain_constraint)
-		: AugmentedLagrangianForm(std::vector<int>()),
-		  macro_strain_constraint_(macro_strain_constraint)
+		: macro_strain_constraint_(macro_strain_constraint)
 	{
 		lagr_mults_.setZero(macro_strain_constraint_.get_fixed_entry().size());
 	}
@@ -16,14 +15,14 @@ namespace polyfem::solver
 		const double larg = lagr_mults_.transpose() * (x(indices) - values);
 		const double pen = (x(indices) - values).squaredNorm() / 2.0;
 
-		return larg + k_al_ * pen;
+		return L_weight() * larg + A_weight() * pen;
 	}
 
 	void MacroStrainLagrangianForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		const Eigen::VectorXi indices = macro_strain_constraint_.get_fixed_entry().array() + (x.size() - macro_strain_constraint_.dim() * macro_strain_constraint_.dim());
 		gradv.setZero(x.size());
-		gradv(indices) = lagr_mults_ + k_al_ * (x(indices) - values);
+		gradv(indices) = L_weight() * lagr_mults_ + A_weight() * (x(indices) - values);
 	}
 
 	void MacroStrainLagrangianForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
@@ -32,7 +31,7 @@ namespace polyfem::solver
 		hessian.resize(x.size(), x.size());
 		hessian.setZero();
 		for (int i = 0; i < indices.size(); i++)
-			hessian.coeffRef(indices(i), indices(i)) += k_al_;
+			hessian.coeffRef(indices(i), indices(i)) += A_weight();
 	}
 
 	void MacroStrainLagrangianForm::update_quantities(const double t, const Eigen::VectorXd &)

@@ -13,18 +13,46 @@
 #include <ipc/barrier/adaptive_stiffness.hpp>
 #include <ipc/utils/world_bbox_diagonal_length.hpp>
 
+#include <ipc/broad_phase/bvh.hpp>
+#include <ipc/broad_phase/hash_grid.hpp>
+#include <ipc/broad_phase/brute_force.hpp>
+#include <ipc/broad_phase/spatial_hash.hpp>
+#include <ipc/broad_phase/sweep_and_tiniest_queue.hpp>
+
 #include <igl/writePLY.h>
 
 namespace polyfem::solver
 {
+	std::shared_ptr<ipc::BroadPhase> build_broad_phase(const BroadPhaseMethod& broad_phase_method)
+	{
+		switch(broad_phase_method)
+		{
+		case BroadPhaseMethod::HASH_GRID:
+			return std::make_shared<ipc::HashGrid>();
+		case BroadPhaseMethod::BRUTE_FORCE:
+			return std::make_shared<ipc::BruteForce>();
+		case BroadPhaseMethod::SPATIAL_HASH:
+			return std::make_shared<ipc::SpatialHash>();
+		case BroadPhaseMethod::BVH:
+			return std::make_shared<ipc::BVH>();
+#ifdef IPC_TOOLKIT_WITH_CUDA
+		case BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE:
+			return std::make_shared<ipc::SweepAndTiniestQueue>();
+#endif
+		default:
+			log_and_throw_error("Unknown broad phase type!");
+		}
+
+		return std::make_shared<ipc::HashGrid>();
+	}
+
 	ContactForm::ContactForm(const ipc::CollisionMesh &collision_mesh,
 							 const double dhat,
 							 const double avg_mass,
-							 const bool use_convergent_formulation,
 							 const bool use_adaptive_barrier_stiffness,
 							 const bool is_time_dependent,
 							 const bool enable_shape_derivatives,
-							 const ipc::BroadPhaseMethod broad_phase_method,
+							 const BroadPhaseMethod broad_phase_method,
 							 const double ccd_tolerance,
 							 const int ccd_max_iterations)
 		: collision_mesh_(collision_mesh),
@@ -34,8 +62,8 @@ namespace polyfem::solver
 		  is_time_dependent_(is_time_dependent),
 		  enable_shape_derivatives_(enable_shape_derivatives),
 		  broad_phase_method_(broad_phase_method),
-		  ccd_tolerance_(ccd_tolerance),
-		  ccd_max_iterations_(ccd_max_iterations)
+		  broad_phase_(build_broad_phase(broad_phase_method)),
+		  tight_inclusion_ccd_(ccd_tolerance, ccd_max_iterations)
 	{
 		assert(dhat_ > 0);
 		assert(ccd_tolerance > 0);
@@ -78,14 +106,14 @@ namespace polyfem::solver
 		}
 
 		double max_step;
-		if (use_cached_candidates_ && broad_phase_method_ != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE)
+		if (use_cached_candidates_ && broad_phase_method_ != BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE)
 			max_step = candidates_.compute_collision_free_stepsize(
-				collision_mesh_, V0, V1, dmin_, ccd_tolerance_, ccd_max_iterations_);
+				collision_mesh_, V0, V1, dmin_, tight_inclusion_ccd_);
 		else
 			max_step = ipc::compute_collision_free_stepsize(
-				collision_mesh_, V0, V1, broad_phase_method_, ccd_tolerance_, ccd_max_iterations_);
+				collision_mesh_, V0, V1, dmin_, broad_phase_, tight_inclusion_ccd_);
 
-		if (save_ccd_debug_meshes && ipc::has_intersections(collision_mesh_, (V1 - V0) * max_step + V0, broad_phase_method_))
+		if (save_ccd_debug_meshes && ipc::has_intersections(collision_mesh_, (V1 - V0) * max_step + V0, broad_phase_))
 		{
 			log_and_throw_error("Taking max_step results in intersections (max_step={})", max_step);
 		}
@@ -94,7 +122,7 @@ namespace polyfem::solver
 		// This will check for static intersections as a failsafe. Not needed if we use our conservative CCD.
 		Eigen::MatrixXd V_toi = (V1 - V0) * max_step + V0;
 
-		while (ipc::has_intersections(collision_mesh_, V_toi, broad_phase_method_))
+		while (ipc::has_intersections(collision_mesh_, V_toi, broad_phase_))
 		{
 			logger().error("Taking max_step results in intersections (max_step={:g})", max_step);
 			max_step /= 2.0;
@@ -117,7 +145,7 @@ namespace polyfem::solver
 			compute_displaced_surface(x0),
 			compute_displaced_surface(x1),
 			/*inflation_radius=*/barrier_support_size() / 2,
-			broad_phase_method_);
+			broad_phase_);
 
 		use_cached_candidates_ = true;
 	}
@@ -144,11 +172,11 @@ namespace polyfem::solver
 		if (use_cached_candidates_)
 			is_valid = candidates_.is_step_collision_free(
 				collision_mesh_, displaced0, displaced1, dmin_,
-				ccd_tolerance_, ccd_max_iterations_);
+				tight_inclusion_ccd_);
 		else
 			is_valid = ipc::is_step_collision_free(
-				collision_mesh_, displaced0, displaced1, broad_phase_method_,
-				dmin_, ccd_tolerance_, ccd_max_iterations_);
+				collision_mesh_, displaced0, displaced1, dmin_, broad_phase_,
+				tight_inclusion_ccd_);
 
 		return is_valid;
 	}

@@ -149,6 +149,7 @@ target_compile_definitions(polyfem PUBLIC POLYFEM_JSON_SPEC_DIR="${POLYFEM_JSON_
 target_compile_definitions(polyfem PUBLIC POLYFEM_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/input-spec.json")
 target_compile_definitions(polyfem PUBLIC POLYFEM_OPT_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/opt-input-spec.json")
 target_compile_definitions(polyfem PUBLIC POLYFEM_OBJECTIVE_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/objective-spec.json")
+target_compile_definitions(polyfem PUBLIC POLYFEM_MATERIAL_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/material-parameters.json")
 
 if (MSVC)
     add_compile_options(/bigobj)
@@ -211,6 +212,9 @@ endif()
 include(ipc_toolkit)
 target_link_libraries(polyfem PUBLIC ipc::toolkit)
 
+include(finite_diff)
+target_link_libraries(polyfem PUBLIC finitediff::finitediff)
+
 # Threading
 if(POLYFEM_THREADING STREQUAL "CPP")
     target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_CPP_THREADS)
@@ -236,6 +240,14 @@ target_link_libraries(polyfem PUBLIC simple_bvh::simple_bvh)
 # MSHIO
 include(mshio)
 target_link_libraries(polyfem PUBLIC mshio)
+
+if(TARGET SuiteSparse::SPQR)
+    target_link_libraries(polyfem PRIVATE SuiteSparse::SPQR)
+endif()
+
+include(armadillo)
+target_link_libraries(polyfem PRIVATE armadillo::armadillo)
+
 
 # Nanospline
 include(nanospline)

@@ -17,6 +17,7 @@
             "solver",
             "boundary_conditions",
             "initial_conditions",
+            "constraints",
             "output",
             "input",
             "tests"
@@ -1205,6 +1206,9 @@
             "epsv",
             "friction_coefficient",
             "use_convergent_formulation",
+            "use_area_weighting",
+            "use_improved_max_operator",
+            "use_physical_barrier",
             "collision_mesh",
             "use_smooth_formulation",
             "alpha_n",
@@ -1214,7 +1218,8 @@
             "min_distance_ratio",
             "use_adaptive_dhat",
             "initial_barrier_stiffness",
-            "periodic"
+            "periodic",
+            "adhesion"
         ],
         "doc": "Contact handling parameters."
     },
@@ -1314,6 +1319,24 @@
         "doc": "Whether to use the convergent (area weighted) formulation of IPC."
     },
     {
+        "pointer": "/contact/use_area_weighting",
+        "default": true,
+        "type": "bool",
+        "doc": "If using the convergent formulation, whether or not to use area weighting. Currently not implemented."
+    },
+    {
+        "pointer": "/contact/use_improved_max_operator",
+        "default": true,
+        "type": "bool",
+        "doc": "If using the convergent formulation, whether or not to use improved max operator. Currently not implemented."
+    },
+    {
+        "pointer": "/contact/use_physical_barrier",
+        "default": true,
+        "type": "bool",
+        "doc": "If using the convergent formulation, whether or not to use physical barrier stiffness. Currently not implemented."
+    },
+    {
         "pointer": "/contact/collision_mesh",
         "type": "object",
         "required": [
@@ -1391,6 +1414,57 @@
         "default": false,
         "type": "bool",
         "doc": "Set to true to check collision between adjacent periodic cells."
+    },
+    {
+        "pointer": "/contact/adhesion",
+        "default": null,
+        "type": "object",
+        "doc": "Adhesion settings.",
+        "optional": [
+            "adhesion_enabled",
+            "dhat_p",
+            "dhat_a",
+            "adhesion_strength",
+            "tangential_adhesion_coefficient",
+            "epsa"
+        ]
+    },
+    {
+        "pointer": "/contact/adhesion/adhesion_enabled",
+        "default": false,
+        "type": "bool",
+        "doc": "Set to true to enable normal adhesion forces."
+    },
+    {
+        "pointer": "/contact/adhesion/dhat_p",
+        "default": 0.001,
+        "type": "float",
+        "doc": "Distance at which normal adhesion force reaches its maximum."
+    },
+    {
+        "pointer": "/contact/adhesion/dhat_a",
+        "default": 0.01,
+        "type": "float",
+        "doc": "Distance at which normal adhesion force is activated."
+    },
+    {
+        "pointer": "/contact/adhesion/adhesion_strength",
+        "default": 0.001,
+        "type": "float",
+        "doc": "Parameter that sets the strength of the normal adhesion force."
+    },
+    {
+        "pointer": "/contact/adhesion/tangential_adhesion_coefficient",
+        "default": 0.0,
+        "type": "float",
+        "doc": "Coefficient of tangential adhesion (global)"
+    },
+    {
+        "pointer": "/contact/adhesion/epsa",
+        "default": 0.001,
+        "min": 0,
+        "type": "float",
+        "doc": "Tangential adhesion smoothing parameter."
     },
     {
         "pointer": "/solver",
@@ -1486,6 +1560,7 @@
         "optional": [
             "CCD",
             "friction_iterations",
+            "tangential_adhesion_iterations",
             "friction_convergence_tol",
             "barrier_stiffness"
         ],
@@ -1539,6 +1614,12 @@
         "default": 1,
         "type": "int",
         "doc": "Maximum number of update iterations for lagged friction formulation (see IPC paper)."
+    },
+    {
+        "pointer": "/solver/contact/tangential_adhesion_iterations",
+        "default": 1,
+        "type": "int",
+        "doc": "Maximum number of update iterations for lagged tangential adhesion formulation (see IPC paper)."
     },
     {
         "pointer": "/solver/contact/friction_convergence_tol",
@@ -1679,606 +1760,8 @@
     },
     {
         "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "NeoHookean",
-        "required": [
-            "type",
-            "E",
-            "nu"
-        ],
-        "optional": [
-            "id",
-            "rho",
-            "phi",
-            "psi"
-        ],
-        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "NeoHookean",
-        "required": [
-            "type",
-            "lambda",
-            "mu"
-        ],
-        "optional": [
-            "id",
-            "rho",
-            "phi",
-            "psi"
-        ],
-        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "MooneyRivlin",
-        "required": [
-            "type",
-            "c1",
-            "c2",
-            "k"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, for Mooney-Rivlin"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "MooneyRivlin3Param",
-        "required": [
-            "type",
-            "c1",
-            "c2",
-            "c3",
-            "d1"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, for Mooney-Rivlin"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "MooneyRivlin3ParamSymbolic",
-        "required": [
-            "type",
-            "c1",
-            "c2",
-            "c3",
-            "d1"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, for Mooney-Rivlin"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "UnconstrainedOgden",
-        "required": [
-            "type",
-            "alphas",
-            "mus",
-            "Ds"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, for [Ogden](https://en.wikipedia.org/wiki/Ogden_hyperelastic_model)."
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "IncompressibleOgden",
-        "required": [
-            "type",
-            "c",
-            "m",
-            "k"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, for [Ogden](https://en.wikipedia.org/wiki/Ogden_hyperelastic_model)."
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "LinearElasticity",
-        "required": [
-            "type",
-            "E",
-            "nu"
-        ],
-        "optional": [
-            "id",
-            "rho",
-            "phi",
-            "psi"
-        ],
-        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "LinearElasticity",
-        "required": [
-            "type",
-            "lambda",
-            "mu"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "HookeLinearElasticity",
-        "required": [
-            "type",
-            "E",
-            "nu"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "HookeLinearElasticity",
-        "required": [
-            "type",
-            "elasticity_tensor"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "SaintVenant",
-        "required": [
-            "type",
-            "E",
-            "nu"
-        ],
-        "optional": [
-            "id",
-            "rho",
-            "phi",
-            "psi"
-        ],
-        "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "SaintVenant",
-        "required": [
-            "type",
-            "elasticity_tensor"
-        ],
-        "optional": [
-            "id",
-            "rho",
-            "phi",
-            "psi"
-        ],
-        "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "Stokes",
-        "required": [
-            "type",
-            "viscosity"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, viscosity, density ($\\rho$)"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "NavierStokes",
-        "required": [
-            "type",
-            "viscosity"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, viscosity, density ($\\rho$)"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "OperatorSplitting",
-        "required": [
-            "type",
-            "viscosity"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, viscosity, density ($\\rho$)"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "Electrostatics",
-        "required": [
-            "type",
-            "epsilon"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, density ($\\rho$)"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "IncompressibleLinearElasticity",
-        "required": [
-            "type",
-            "E",
-            "nu"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "IncompressibleLinearElasticity",
-        "required": [
-            "type",
-            "lambda",
-            "mu"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "Laplacian",
-        "required": [
-            "type"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, density ($\\rho$)"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "Helmholtz",
-        "required": [
-            "type",
-            "k"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, k, density ($\\rho$)"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "Bilaplacian",
-        "required": [
-            "type"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID, density ($\\rho$)"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "AMIPS",
-        "required": [
-            "type"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "AMIPSAutodiff",
-        "required": [
-            "type"
-        ],
-        "optional": [
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "FixedCorotational",
-        "required": [
-            "type",
-            "E",
-            "nu"
-        ],
-        "optional": [
-            "id",
-            "rho",
-            "phi",
-            "psi"
-        ],
-        "doc": "Material Parameters including ID"
-    },
-    {
-        "pointer": "/materials/*",
-        "type": "object",
-        "type_name": "FixedCorotational",
-        "required": [
-            "type",
-            "lambda",
-            "mu"
-        ],
-        "optional": [
-            "id",
-            "rho",
-            "phi",
-            "psi"
-        ],
-        "doc": "Material Parameters including ID"
-    },
-    {
-        "pointer": "/materials/*/type",
-        "type": "string",
-        "options": [
-            "LinearElasticity",
-            "HookeLinearElasticity",
-            "SaintVenant",
-            "NeoHookean",
-            "MooneyRivlin",
-            "MooneyRivlin3Param",
-            "MooneyRivlin3ParamSymbolic",
-            "UnconstrainedOgden",
-            "IncompressibleOgden",
-            "Stokes",
-            "NavierStokes",
-            "OperatorSplitting",
-            "Electrostatics",
-            "IncompressibleLinearElasticity",
-            "Laplacian",
-            "Helmholtz",
-            "Bilaplacian",
-            "AMIPS",
-            "AMIPSAutodiff",
-            "FixedCorotational"
-        ],
-        "doc": "Type of material"
-    },
-    {
-        "pointer": "/materials/*/id",
-        "type": "int",
-        "default": 0,
-        "doc": "Volume selection ID"
-    },
-    {
-        "pointer": "/materials/*/id",
-        "type": "list",
-        "doc": "Volume selection IDs"
-    },
-    {
-        "pointer": "/materials/*/id/*",
-        "type": "int",
-        "doc": "Volume selection ID"
-    },
-    {
-        "pointer": "/materials/*/E",
         "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Young's modulus"
-    },
-    {
-        "pointer": "/materials/*/nu",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Poisson's ratio"
-    },
-    {
-        "pointer": "/materials/*/viscosity",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Fuild's viscosity"
-    },
-    {
-        "pointer": "/materials/*/elasticity_tensor",
-        "type": "list",
-        "doc": "Symmetric elasticity tensor"
-    },
-    {
-        "pointer": "/materials/*/elasticity_tensor/*",
-        "default": 0,
-        "type": "include",
-        "spec_file": "value0.json",
-        "doc": "Entries of elasticity tensor"
-    },
-    {
-        "pointer": "/materials/*/rho",
-        "type": "include",
-        "spec_file": "value1.json",
-        "doc": "Density",
-        "default": 1
-    },
-    {
-        "pointer": "/materials/*/epsilon",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "permittivity"
-    },
-    {
-        "pointer": "/materials/*/phi",
-        "type": "include",
-        "spec_file": "value0.json",
-        "doc": "Damping parameter 1",
-        "default": 0
-    },
-    {
-        "pointer": "/materials/*/psi",
-        "type": "include",
-        "spec_file": "value0.json",
-        "doc": "Damping parameter 2",
-        "default": 0
-    },
-    {
-        "pointer": "/materials/*/k",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Scaling for Helmholtz/Bulk modulus for Ogden"
-    },
-    {
-        "pointer": "/materials/*/mu",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "First Lamé parameters"
-    },
-    {
-        "pointer": "/materials/*/lambda",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Second Lamé parameter"
-    },
-    {
-        "pointer": "/materials/*/c1",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "First Parameter for Mooney-Rivlin"
-    },
-    {
-        "pointer": "/materials/*/c2",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Second Parameter for Mooney-Rivlin"
-    },
-    {
-        "pointer": "/materials/*/c3",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Third Parameter for Mooney-Rivlin"
-    },
-    {
-        "pointer": "/materials/*/d1",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Fourth Parameter for Mooney-Rivlin"
-    },
-    {
-        "pointer": "/materials/*/alphas",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Ogden alpha"
-    },
-    {
-        "pointer": "/materials/*/mus",
-        "type": "list",
-        "doc": "Ogden mu"
-    },
-    {
-        "pointer": "/materials/*/Ds",
-        "type": "list",
-        "doc": "Ogden D"
-    },
-    {
-        "pointer": "/materials/*/alphas/*",
-        "type": "include",
-        "spec_file": "value-no.json"
-    },
-    {
-        "pointer": "/materials/*/mus/*",
-        "type": "include",
-        "spec_file": "value-no.json"
-    },
-    {
-        "pointer": "/materials/*/Ds/*",
-        "type": "include",
-        "spec_file": "value-no.json"
-    },
-    {
-        "pointer": "/materials/*/c",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Coefficient(s) of Incompressible Ogden"
-    },
-    {
-        "pointer": "/materials/*/m",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Exponent(s) of Incompressible Ogden"
-    },
-    {
-        "pointer": "/materials/*/c",
-        "type": "list",
-        "doc": "Coefficient(s) of Incompressible Ogden"
-    },
-    {
-        "pointer": "/materials/*/m",
-        "type": "list",
-        "doc": "Exponent(s) of Incompressible Ogden"
-    },
-    {
-        "pointer": "/materials/*/c/*",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Coefficient of Incompressible Ogden"
-    },
-    {
-        "pointer": "/materials/*/m/*",
-        "type": "include",
-        "spec_file": "value-no.json",
-        "doc": "Exponent(s) of Incompressible Ogden"
+        "spec_file": "material-parameters.json"
     },
     {
         "pointer": "/boundary_conditions",
@@ -2731,6 +2214,56 @@
         "doc": "value"
     },
     {
+        "pointer": "/constraints",
+        "default": null,
+        "type": "object",
+        "optional": [
+            "soft",
+            "hard"
+        ],
+        "doc": "soft and hard constraints"
+    },
+    {
+        "pointer": "/constraints/hard",
+        "default": [],
+        "type": "list",
+        "doc": "list of file containing hard constraints"
+    },
+    {
+        "pointer": "/constraints/hard/*",
+        "default": "",
+        "type": "string",
+        "doc": "constraint hdf5 file for hard constraint Ax=b. The file must contain these datasets: local2global, dense/sparse matrix A, and vector b. The colums of b nees to be the same as the dimentionality of the problem. if A is sparse it should contain A_triplets/value A_triplets/cols A_triplets/rows A_triplets/shape"
+    },
+    {
+        "pointer": "/constraints/soft",
+        "default": [],
+        "type": "list",
+        "doc": "list of file containing soft constraints"
+    },
+    {
+        "pointer": "/constraints/soft/*",
+        "default": "",
+        "type": "object",
+        "optional": [
+            "weight",
+            "data"
+        ],
+        "doc": "constraint hdf5 file for soft constraint w||Ax-b||^2. The file must contain these datasets: weight w, local2global, dense/sparse matrix A, and vector b. The colums of b nees to be the same as the dimentionality of the problem. if A is sparse it should contain A_triplets/value A_triplets/cols A_triplets/rows A_triplets/shape"
+    },
+    {
+        "pointer": "/constraints/soft/*/weight",
+        "default": 0,
+        "type": "float",
+        "doc": "weight"
+    },
+    {
+        "pointer": "/constraints/soft/*/data",
+        "default": "",
+        "type": "string",
+        "doc": "constraint hdf5 file for soft constraint w||Ax-b||^2. The file must contain these datasets: local2global, dense/sparse matrix A, and vector b. The colums of b nees to be the same as the dimentionality of the problem. if A is sparse it should contain A_triplets/value A_triplets/col A_triplets/rows A_triplets/shape"
+    },
+    {
         "pointer": "/output",
         "default": null,
         "type": "object",
@@ -2742,7 +2275,8 @@
             "paraview",
             "data",
             "advanced",
-            "reference"
+            "reference",
+            "stats"
         ],
         "doc": "output settings"
     },
@@ -2751,6 +2285,12 @@
         "default": "",
         "type": "string",
         "doc": "Directory for output files."
+    },
+    {
+        "pointer": "/output/stats",
+        "default": false,
+        "type": "bool",
+        "doc": "Saves csv for energy and stats of the non linear solver."
     },
     {
         "pointer": "/output/log",
@@ -2782,6 +2322,7 @@
             "volume",
             "surface",
             "wireframe",
+            "fields",
             "points",
             "options"
         ],
@@ -2836,6 +2377,18 @@
         "doc": "Export the Dirichlet points"
     },
     {
+        "pointer": "/output/paraview/fields",
+        "default": [],
+        "type": "list",
+        "doc": "list of names of fields to export. If empty, all fields are exported."
+    },
+    {
+        "pointer": "/output/paraview/fields/*",
+        "default": "",
+        "type": "string",
+        "doc": "field name"
+    },
+    {
         "pointer": "/output/paraview/options",
         "default": null,
         "type": "object",
@@ -2845,6 +2398,8 @@
             "body_ids",
             "contact_forces",
             "friction_forces",
+            "normal_adhesion_forces",
+            "tangential_adhesion_forces",
             "velocity",
             "acceleration",
             "scalar_values",
@@ -2852,6 +2407,7 @@
             "discretization_order",
             "nodes",
             "forces",
+            "force_high_order",
             "jacobian_validity"
         ],
         "doc": "Optional fields in the output"
@@ -2885,6 +2441,18 @@
         "default": false,
         "type": "bool",
         "doc": "If true, write out friction forces for surface"
+    },
+    {
+        "pointer": "/output/paraview/options/normal_adhesion_forces",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out normal adhesion forces for surface"
+    },
+    {
+        "pointer": "/output/paraview/options/tangential_adhesion_forces",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out tangential adhesion forces for surface"
     },
     {
         "pointer": "/output/paraview/options/velocity",
@@ -2926,7 +2494,13 @@
         "pointer": "/output/paraview/options/forces",
         "default": false,
         "type": "bool",
-        "doc": "If true, write out all variational forces on the FE mesh "
+        "doc": "If true, write out all variational forces on the FE mesh"
+    },
+    {
+        "pointer": "/output/paraview/options/force_high_order",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, force write out high-order mesh, might break the output"
     },
     {
         "pointer": "/output/paraview/options/jacobian_validity",
