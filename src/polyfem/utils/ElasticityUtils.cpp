@@ -28,12 +28,12 @@ namespace polyfem
 		if (is_volume)
 		{
 			A(0, 0) = nu / ((1.0 + nu) * (1.0 - 2.0 * nu));
-			A(0, 1) = (E*(0.5*nu*nu + 0.25))/(pow(nu + 1., 2)*pow(0.5 - nu, 2));
+			A(0, 1) = (E * (0.5 * nu * nu + 0.25)) / (pow(nu + 1., 2) * pow(0.5 - nu, 2));
 		}
 		else
 		{
 			A(0, 0) = nu / (1.0 - nu * nu);
-			A(0, 1) = (E*(1. + nu*nu))/pow(-1. + nu*nu, 2);
+			A(0, 1) = (E * (1. + nu * nu)) / pow(-1. + nu * nu, 2);
 		}
 		A(1, 0) = 1 / (2 * (1 + nu));
 		A(1, 1) = -E / 2 * pow(1 + nu, -2);
@@ -66,7 +66,7 @@ namespace polyfem
 	{
 		if (is_volume)
 			return mu * (3.0 * lambda + 2.0 * mu) / (lambda + mu);
-		
+
 		return 2 * mu * (2.0 * lambda + 2.0 * mu) / (lambda + 2.0 * mu);
 	}
 
@@ -74,7 +74,7 @@ namespace polyfem
 	{
 		if (is_volume)
 			return lambda / (2.0 * (lambda + mu));
-		
+
 		return lambda / (lambda + 2.0 * mu);
 	}
 
@@ -266,9 +266,6 @@ namespace polyfem
 				hessian = auto_diff_energy.getHessian();
 			}
 		}
-
-		// time.stop();
-		// std::cout << "-- hessian: " << time.getElapsedTime() << std::endl;
 
 		return hessian;
 	}

@@ -167,7 +167,6 @@ Index polyfem::mesh::Navigation::switch_face(const GEO::Mesh &M, const GEO::Attr
 	index_t f2 = M.facet_corners.adjacent_facet(c1);
 	if (f2 == NO_FACET)
 	{
-		// std::cout << "No facet" << std::endl;
 		idx.face = -1;
 		return idx;
 	}

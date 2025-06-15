@@ -165,8 +165,8 @@ namespace polyfem::assembler
 
 			// 	if (!fd::compare_hessian(hess, fhess))
 			// 	{
-			// 		std::cout << "Hessian: " << hess << std::endl;
-			// 		std::cout << "Finite hessian: " << fhess << std::endl;
+			// 		logger().trace("Hessian:{}"",  hess);
+			// 		logger().trace("Finite hessian: {}", fhess);
 			// 		log_and_throw_error("Hessian in Neohookean mismatch");
 			// 	}
 			// }
@@ -356,7 +356,7 @@ namespace polyfem::assembler
 			Eigen::VectorXd jacs;
 			if (use_robust_jacobian)
 				jacs = data.vals.eval_deformed_jacobian_determinant(data.x);
-			
+
 			Eigen::Matrix<T, dim, dim> def_grad(size(), size());
 
 			T energy = T(0.0);
@@ -374,14 +374,13 @@ namespace polyfem::assembler
 				const Eigen::Matrix<T, dim, dim> jac_it = data.vals.jac_it[p];
 				// Id + grad d
 				def_grad = (local_disp.transpose() * grad) * jac_it + Eigen::Matrix<T, dim, dim>::Identity(size(), size());
-				
+
 				double lambda, mu;
 				params_.lambda_mu(data.vals.quadrature.points.row(p), data.vals.val.row(p), data.t, data.vals.element_id, lambda, mu);
-				
+
 				const T J = use_robust_jacobian ? jacs(p) * jac_it.determinant() : def_grad.determinant();
 				const T log_det_j = log(J);
-				const T val = mu / 2 * (def_grad.squaredNorm() - size() - 2 * log_det_j) + 
-								lambda / 2 * log_det_j * log_det_j;
+				const T val = mu / 2 * (def_grad.squaredNorm() - size() - 2 * log_det_j) + lambda / 2 * log_det_j * log_det_j;
 				energy += val * data.da(p);
 			}
 			return energy;
