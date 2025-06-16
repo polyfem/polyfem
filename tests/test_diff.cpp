@@ -1311,7 +1311,7 @@ TEST_CASE("initial-contact-smooth", "[test_adjoint]")
 
 	Eigen::VectorXd x = var2sim[0]->inverse_eval();
 
-	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-5, 1e-5);
+	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-6, 1e-5);
 }
 
 TEST_CASE("shape-transient-smooth", "[test_adjoint]")
