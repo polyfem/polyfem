@@ -19,7 +19,7 @@ namespace polyfem::solver
                         const bool use_adaptive_barrier_stiffness,
                         const bool is_time_dependent,
                         const bool enable_shape_derivatives,
-                        const BroadPhaseMethod broad_phase_method,
+                        const ipc::BroadPhaseMethod broad_phase_method,
                         const double ccd_tolerance,
                         const int ccd_max_iterations) : BarrierContactForm(periodic_collision_mesh, dhat, avg_mass, use_area_weighting, use_improved_max_operator, use_physical_barrier, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), tiled_to_single_(tiled_to_single), n_single_dof_(tiled_to_single_.maxCoeff() + 1)
     {

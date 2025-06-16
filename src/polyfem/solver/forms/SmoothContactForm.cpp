@@ -19,7 +19,7 @@ namespace polyfem::solver
                 const bool use_adaptive_barrier_stiffness,
                 const bool is_time_dependent,
 				const bool enable_shape_derivatives,
-                const BroadPhaseMethod broad_phase_method,
+                const ipc::BroadPhaseMethod broad_phase_method,
                 const double ccd_tolerance,
                 const int ccd_max_iterations): ContactForm(collision_mesh, args["dhat"], avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(dhat_, args["alpha_t"], args["beta_t"], args["alpha_n"], args["beta_n"], _dim == 3 ? 2 : 1), use_adaptive_dhat(args["use_adaptive_dhat"])
     {

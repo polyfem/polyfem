@@ -535,7 +535,6 @@ namespace polyfem
 			const json &args,
 			const std::function<std::string(const std::string &)> &resolve_input_path,
 			const Eigen::VectorXi &in_node_to_node,
-			const Eigen::VectorXi &node_to_body_id,
 			ipc::CollisionMesh &collision_mesh);
 
 		/// @brief extracts the boundary mesh for collision, called in build_basis
@@ -705,8 +704,6 @@ namespace polyfem
 		Eigen::MatrixXd initial_sol_update, initial_vel_update;
 		// mapping from positions of FE basis nodes to positions of geometry nodes
 		StiffnessMatrix basis_nodes_to_gbasis_nodes;
-
-		Eigen::VectorXi node_to_body_id;
 
 		//---------------------------------------------------
 		//-----------------homogenization--------------------

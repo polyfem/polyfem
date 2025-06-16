@@ -23,7 +23,7 @@ namespace polyfem::solver
 							const double Y,
 							const bool is_time_dependent,
 							const bool enable_shape_derivatives,
-							const BroadPhaseMethod broad_phase_method,
+							const ipc::BroadPhaseMethod broad_phase_method,
 							const double ccd_tolerance,
 							const int ccd_max_iterations)
 		: collision_mesh_(collision_mesh),
@@ -33,7 +33,7 @@ namespace polyfem::solver
 		  is_time_dependent_(is_time_dependent),
 		  enable_shape_derivatives_(enable_shape_derivatives),
 		  broad_phase_method_(broad_phase_method),
-		  broad_phase_(build_broad_phase(broad_phase_method)),
+		  broad_phase_(ipc::build_broad_phase(broad_phase_method)),
 		  tight_inclusion_ccd_(ccd_tolerance, ccd_max_iterations),
 		  normal_adhesion_potential_(dhat_p, dhat_a, Y, 1)
 	{

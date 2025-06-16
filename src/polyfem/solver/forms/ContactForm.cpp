@@ -23,36 +23,13 @@
 
 namespace polyfem::solver
 {
-	std::shared_ptr<ipc::BroadPhase> build_broad_phase(const BroadPhaseMethod& broad_phase_method)
-	{
-		switch(broad_phase_method)
-		{
-		case BroadPhaseMethod::HASH_GRID:
-			return std::make_shared<ipc::HashGrid>();
-		case BroadPhaseMethod::BRUTE_FORCE:
-			return std::make_shared<ipc::BruteForce>();
-		case BroadPhaseMethod::SPATIAL_HASH:
-			return std::make_shared<ipc::SpatialHash>();
-		case BroadPhaseMethod::BVH:
-			return std::make_shared<ipc::BVH>();
-#ifdef IPC_TOOLKIT_WITH_CUDA
-		case BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE:
-			return std::make_shared<ipc::SweepAndTiniestQueue>();
-#endif
-		default:
-			log_and_throw_error("Unknown broad phase type!");
-		}
-
-		return std::make_shared<ipc::HashGrid>();
-	}
-
 	ContactForm::ContactForm(const ipc::CollisionMesh &collision_mesh,
 							 const double dhat,
 							 const double avg_mass,
 							 const bool use_adaptive_barrier_stiffness,
 							 const bool is_time_dependent,
 							 const bool enable_shape_derivatives,
-							 const BroadPhaseMethod broad_phase_method,
+							 const ipc::BroadPhaseMethod broad_phase_method,
 							 const double ccd_tolerance,
 							 const int ccd_max_iterations)
 		: collision_mesh_(collision_mesh),
@@ -62,7 +39,7 @@ namespace polyfem::solver
 		  is_time_dependent_(is_time_dependent),
 		  enable_shape_derivatives_(enable_shape_derivatives),
 		  broad_phase_method_(broad_phase_method),
-		  broad_phase_(build_broad_phase(broad_phase_method)),
+		  broad_phase_(ipc::build_broad_phase(broad_phase_method)),
 		  tight_inclusion_ccd_(ccd_tolerance, ccd_max_iterations)
 	{
 		assert(dhat_ > 0);
@@ -106,7 +83,7 @@ namespace polyfem::solver
 		}
 
 		double max_step;
-		if (use_cached_candidates_ && broad_phase_method_ != BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE)
+		if (use_cached_candidates_ && broad_phase_method_ != ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE)
 			max_step = candidates_.compute_collision_free_stepsize(
 				collision_mesh_, V0, V1, dmin_, tight_inclusion_ccd_);
 		else

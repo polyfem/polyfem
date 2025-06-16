@@ -12,22 +12,19 @@
 
 namespace polyfem::solver
 {
-	enum class BroadPhaseMethod { HASH_GRID, BRUTE_FORCE, SPATIAL_HASH, BVH, SWEEP_AND_TINIEST_QUEUE };
-	// map BroadPhaseMethod values to JSON as strings
+	// map ipc::BroadPhaseMethod values to JSON as strings
 	NLOHMANN_JSON_SERIALIZE_ENUM(
-		BroadPhaseMethod,
-		{{BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
-			{BroadPhaseMethod::HASH_GRID, "HG"},
-			{BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
-			{BroadPhaseMethod::BRUTE_FORCE, "BF"},
-			{BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
-			{BroadPhaseMethod::SPATIAL_HASH, "SH"},
-			{BroadPhaseMethod::BVH, "bvh"},
-			{BroadPhaseMethod::BVH, "BVH"},
-			{BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
-			{BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"}})
-	
-	std::shared_ptr<ipc::BroadPhase> build_broad_phase(const BroadPhaseMethod& broad_phase_method);
+		ipc::BroadPhaseMethod,
+		{{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
+			{ipc::BroadPhaseMethod::HASH_GRID, "HG"},
+			{ipc::BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
+			{ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
+			{ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
+			{ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
+			{ipc::BroadPhaseMethod::BVH, "bvh"},
+			{ipc::BroadPhaseMethod::BVH, "BVH"},
+			{ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
+			{ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"}})
 
 	/// @brief Form representing the contact potential and forces
 	class ContactForm : public Form
@@ -48,7 +45,7 @@ namespace polyfem::solver
 					const bool use_adaptive_barrier_stiffness,
 					const bool is_time_dependent,
 					const bool enable_shape_derivatives,
-					const BroadPhaseMethod broad_phase_method,
+					const ipc::BroadPhaseMethod broad_phase_method,
 					const double ccd_tolerance,
 					const int ccd_max_iterations);
 		virtual ~ContactForm() = default;
@@ -153,7 +150,7 @@ namespace polyfem::solver
 		const bool enable_shape_derivatives_;
 
 		/// @brief Broad phase method to use for distance and CCD evaluations
-		const BroadPhaseMethod broad_phase_method_;
+		const ipc::BroadPhaseMethod broad_phase_method_;
 		const std::shared_ptr<ipc::BroadPhase> broad_phase_;
 		/// @brief Continuous collision detection specification object
 		const ipc::TightInclusionCCD tight_inclusion_ccd_;

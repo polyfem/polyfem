@@ -38,7 +38,7 @@ namespace polyfem::mesh
 		const bool use_area_weighting,
 		const bool use_improved_max_operator,
 		const bool use_physical_barrier,
-		const solver::BroadPhaseMethod broad_phase_method,
+		const ipc::BroadPhaseMethod broad_phase_method,
 		const double ccd_tolerance,
 		const int ccd_max_iterations,
 		// Augmented lagrangian form

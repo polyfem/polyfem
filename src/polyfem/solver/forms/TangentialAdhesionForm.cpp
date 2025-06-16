@@ -11,7 +11,7 @@ namespace polyfem::solver
 		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator,
 		const double epsa,
 		const double mu,
-		const BroadPhaseMethod broad_phase_method,
+		const ipc::BroadPhaseMethod broad_phase_method,
 		const NormalAdhesionForm &normal_adhesion_form,
 		const int n_lagging_iters)
 		: collision_mesh_(collision_mesh),
@@ -19,7 +19,7 @@ namespace polyfem::solver
 		  epsa_(epsa),
 		  mu_(mu),
 		  broad_phase_method_(broad_phase_method),
-		  broad_phase_(build_broad_phase(broad_phase_method)),
+		  broad_phase_(ipc::build_broad_phase(broad_phase_method)),
 		  n_lagging_iters_(n_lagging_iters < 0 ? std::numeric_limits<int>::max() : n_lagging_iters),
 		  normal_adhesion_form_(normal_adhesion_form),
 		  tangential_adhesion_potential_(epsa)

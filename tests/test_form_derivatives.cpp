@@ -287,7 +287,7 @@ TEST_CASE("barrier contact form derivatives", "[form][form_derivatives][contact_
 	const bool use_convergent_formulation = GENERATE(true, false);
 	const double barrier_stiffness = 1e7;
 	const bool is_time_dependent = GENERATE(true, false);
-	const BroadPhaseMethod broad_phase_method = BroadPhaseMethod::HASH_GRID;
+	const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
 	const double ccd_tolerance = 1e-6;
 	const int ccd_max_iterations = static_cast<int>(1e6);
 	const double dt = 1e-3;
@@ -312,7 +312,7 @@ TEST_CASE("smooth contact form derivatives", "[form][form_derivatives][contact_f
 	const double barrier_stiffness = 1e7;
 	const bool is_time_dependent = true;
 	const bool use_adaptive_barrier_stiffness = false;
-	const BroadPhaseMethod broad_phase_method = BroadPhaseMethod::HASH_GRID;
+	const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
 	const double ccd_tolerance = 1e-6;
 	const int ccd_max_iterations = static_cast<int>(1e6);
 	const double a = 0;
@@ -369,7 +369,7 @@ TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]"
 	const double dhat = 1e-3;
 	const double barrier_stiffness = 1e7;
 	const bool is_time_dependent = GENERATE(true, false);
-	const BroadPhaseMethod broad_phase_method = BroadPhaseMethod::HASH_GRID;
+	const ipc::BroadPhaseMethod broad_phase_method = ipc::BroadPhaseMethod::HASH_GRID;
 	const double dt = 1e-3;
 
 	const bool use_adaptive_barrier_stiffness = true; // GENERATE(true, false);

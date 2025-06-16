@@ -41,7 +41,7 @@ namespace polyfem::solver
 		ipc::NormalCollisions collision_set;
 		const double dhat_;
 		const double dmin_;
-		BroadPhaseMethod broad_phase_method_;
+		ipc::BroadPhaseMethod broad_phase_method_;
 
 		ipc::BarrierPotential barrier_potential_;
 	};
@@ -97,7 +97,7 @@ namespace polyfem::solver
 		ipc::CollisionMesh collision_mesh_;
 		ipc::NormalCollisions collision_set;
 		const double dhat_;
-		BroadPhaseMethod broad_phase_method_;
+		ipc::BroadPhaseMethod broad_phase_method_;
 
 		const ipc::BarrierPotential barrier_potential_;
 	};

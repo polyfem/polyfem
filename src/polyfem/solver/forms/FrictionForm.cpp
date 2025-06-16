@@ -5,8 +5,6 @@
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 
-#include <finitediff.hpp>
-
 namespace polyfem::solver
 {
 	FrictionForm::FrictionForm(
@@ -14,7 +12,7 @@ namespace polyfem::solver
 		const std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator,
 		const double epsv,
 		const double mu,
-		const BroadPhaseMethod broad_phase_method,
+		const ipc::BroadPhaseMethod broad_phase_method,
 		const ContactForm &contact_form,
 		const int n_lagging_iters)
 		: collision_mesh_(collision_mesh),
@@ -52,39 +50,6 @@ namespace polyfem::solver
 			barrier_contact->barrier_potential(),
 			barrier_contact->barrier_stiffness(),
 			ipc::FrictionPotential::DiffWRT::REST_POSITIONS);
-
-			// Eigen::MatrixXd X = collision_mesh_.rest_positions();
-			// Eigen::VectorXd x = utils::flatten(X);
-			// const double barrier_stiffness = contact_form_.barrier_stiffness();
-			// const double dhat = contact_form_.dhat();
-			// const double mu = mu_;
-
-			// Eigen::MatrixXd fgrad;
-			// fd::finite_jacobian(
-			// 	x, [&](const Eigen::VectorXd &y) -> Eigen::VectorXd
-			// 	{
-			// 		Eigen::MatrixXd fd_X = utils::unflatten(y, X.cols());
-
-			// 		ipc::CollisionMesh fd_mesh(fd_X, collision_mesh_.edges(), collision_mesh_.faces());
-			// 		fd_mesh.init_area_jacobians();
-
-			// 		ipc::TangentialCollisions fd_friction_constraints;
-			// 		ipc::NormalCollisions fd_constraints;
-			// 		fd_constraints.set_use_improved_max_approximator(barrier_contact->use_improved_max_operator());
-			// 		fd_constraints.set_use_area_weighting(barrier_contact->use_area_weighting());
-			// 		fd_constraints.build(fd_mesh, fd_X + U_prev, dhat);
-
-			// 		fd_friction_constraints.build(
-			// 			fd_mesh, fd_X + U_prev, fd_constraints, barrier_contact->barrier_potential(), barrier_stiffness,
-			// 			mu);
-
-			// 		return -friction_potential_.force(
-			// 			fd_friction_constraints, fd_mesh, fd_X, U_prev, velocities,
-			// 			barrier_contact->barrier_potential(), barrier_stiffness);
-
-			// 	}, fgrad, fd::AccuracyOrder::SECOND, 1e-7);
-
-			// logger().error("force shape derivative error {} {} {}", (fgrad - hess).norm(), hess.norm(), fgrad.norm());
 		}
 
 		term = collision_mesh_.to_full_dof(hess).transpose() * adjoint;
@@ -144,7 +109,7 @@ namespace polyfem::solver
 	{
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
-		auto broad_phase = build_broad_phase(broad_phase_method_);
+		auto broad_phase = ipc::build_broad_phase(broad_phase_method_);
 		if (const auto barrier_contact = dynamic_cast<const BarrierContactForm*>(&contact_form_))
 		{
 			ipc::NormalCollisions collision_set;

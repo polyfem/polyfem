@@ -100,7 +100,7 @@ namespace polyfem::solver
 		ipc::CollisionMesh collision_mesh_;
 		const double dhat_;
 		const double dmin_ = 0;
-		BroadPhaseMethod broad_phase_method_;
+		ipc::BroadPhaseMethod broad_phase_method_;
 
 		Eigen::VectorXd curr_x_;
 

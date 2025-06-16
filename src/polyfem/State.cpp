@@ -754,12 +754,6 @@ namespace polyfem
 
 		build_polygonal_basis();
 
-		node_to_body_id.setZero(n_bases);
-		for (int e = 0; e < bases.size(); e++)
-			for (const auto& bs : bases[e].bases)
-				for (const auto& g : bs.global())
-					node_to_body_id[g.index] = mesh->get_body_id(e);
-
 		if (n_geom_bases == 0)
 			n_geom_bases = n_bases;
 
@@ -1376,7 +1370,7 @@ namespace polyfem
 		build_collision_mesh(
 			*mesh, n_bases, bases, geom_bases(), total_local_boundary, obstacle,
 			args, [this](const std::string &p) { return resolve_input_path(p); },
-			in_node_to_node, node_to_body_id, collision_mesh);
+			in_node_to_node, collision_mesh);
 	}
 
 	void State::build_collision_mesh(
@@ -1389,7 +1383,6 @@ namespace polyfem
 		const json &args,
 		const std::function<std::string(const std::string &)> &resolve_input_path,
 		const Eigen::VectorXi &in_node_to_node,
-		const Eigen::VectorXi &node_to_body_id,
 		ipc::CollisionMesh &collision_mesh)
 	{
 		Eigen::MatrixXd collision_vertices;
@@ -1498,23 +1491,11 @@ namespace polyfem
 			is_on_surface, is_orientable_vertex, collision_vertices, collision_edges, collision_triangles,
 			displacement_map);
 
-		if (utils::is_param_valid(args["contact"], "collision_mesh") && args["contact"]["collision_mesh"]["no_self_contact"])
-		{
-			collision_mesh.can_collide = [&collision_mesh, num_fe_collision_vertices, node_to_body_id](size_t vi, size_t vj) {
-				// obstacles do not collide with other obstacles
-				bool flag = collision_mesh.to_full_vertex_id(vi) < num_fe_collision_vertices
-					|| collision_mesh.to_full_vertex_id(vj) < num_fe_collision_vertices;
-
-				flag = flag && (node_to_body_id[collision_mesh.to_full_vertex_id(vi)] != node_to_body_id[collision_mesh.to_full_vertex_id(vj)]);
-				return flag;
-			};
-		}
-		else
-			collision_mesh.can_collide = [&collision_mesh, num_fe_collision_vertices](size_t vi, size_t vj) {
-				// obstacles do not collide with other obstacles
-				return collision_mesh.to_full_vertex_id(vi) < num_fe_collision_vertices
-					|| collision_mesh.to_full_vertex_id(vj) < num_fe_collision_vertices;
-			};
+		collision_mesh.can_collide = [&collision_mesh, num_fe_collision_vertices](size_t vi, size_t vj) {
+			// obstacles do not collide with other obstacles
+			return collision_mesh.to_full_vertex_id(vi) < num_fe_collision_vertices
+				|| collision_mesh.to_full_vertex_id(vj) < num_fe_collision_vertices;
+		};
 
 		collision_mesh.init_area_jacobians();
 	}

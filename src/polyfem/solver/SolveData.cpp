@@ -88,7 +88,7 @@ namespace polyfem::solver
 		const bool use_improved_max_operator,
 		const bool use_physical_barrier,
 		const json &barrier_stiffness,
-		const BroadPhaseMethod broad_phase,
+		const ipc::BroadPhaseMethod broad_phase,
 		const double ccd_tolerance,
 		const long ccd_max_iterations,
 		const bool enable_shape_derivatives,

@@ -34,7 +34,7 @@ namespace polyfem::solver
 					const double Y,
 					const bool is_time_dependent,
 					const bool enable_shape_derivatives,
-					const BroadPhaseMethod broad_phase_method,
+					const ipc::BroadPhaseMethod broad_phase_method,
 					const double ccd_tolerance,
 					const int ccd_max_iterations);
 		virtual ~NormalAdhesionForm() = default;
@@ -132,7 +132,7 @@ namespace polyfem::solver
 		const bool enable_shape_derivatives_;
 
 		/// @brief Broad phase method to use for distance and CCD evaluations
-		const BroadPhaseMethod broad_phase_method_;
+		const ipc::BroadPhaseMethod broad_phase_method_;
 		const std::shared_ptr<ipc::BroadPhase> broad_phase_;
 		/// @brief Continuous collision detection specification object
 		const ipc::TightInclusionCCD tight_inclusion_ccd_;
