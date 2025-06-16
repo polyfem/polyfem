@@ -618,7 +618,11 @@ namespace polyfem
 		}
 		// TODO: same for pressure!
 
+#ifdef POLYFEM_WITH_BEZIER
 		if (!mesh->is_simplicial())
+#else
+		if constexpr (true)
+#endif
 		{
 			args["space"]["advanced"]["count_flipped_els_continuous"] = false;
 			args["output"]["paraview"]["options"]["jacobian_validity"] = false;
