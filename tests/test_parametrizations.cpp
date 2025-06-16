@@ -47,7 +47,7 @@ void verify_apply_jacobian(Parametrization &parametrization, const Eigen::Vector
 		grad_x = parametrization.apply_jacobian(grad_y, x);
 
 		if (print_grads)
-			std::cout << std::setprecision(16) << grad_x.norm() << std::endl;
+			logger().trace("{.16}", grad_x.norm());
 		REQUIRE((grad_x - (dydx * grad_y)).norm() < 1e-8);
 	}
 }

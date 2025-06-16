@@ -188,9 +188,9 @@ void test_form(Form &form, const State &state, double step = 1e-8, double tol = 
 
 			if (!fd::compare_gradient(grad, fgrad))
 			{
-				std::cout << "Gradient mismatch" << std::endl;
-				std::cout << "Gradient: " << grad.transpose() << std::endl;
-				std::cout << "Finite gradient: " << fgrad.transpose() << std::endl;
+				logger().debug("Gradient mismatch");
+				logger().debug("Gradient: {}", grad.transpose());
+				logger().debug("Finite gradient: {}", fgrad.transpose());
 			}
 
 			CHECK(fd::compare_gradient(grad, fgrad, tol));
@@ -214,9 +214,9 @@ void test_form(Form &form, const State &state, double step = 1e-8, double tol = 
 
 			if (!fd::compare_hessian(Eigen::MatrixXd(hess), fhess))
 			{
-				std::cout << "Hessian mismatch" << std::endl;
-				std::cout << "Hessian: " << hess << std::endl;
-				std::cout << "Finite hessian: " << fhess << std::endl;
+				logger().debug("Hessian mismatch");
+				logger().debug("Hessian: {}", hess);
+				logger().debug("Finite hessian: {}", fhess);
 			}
 
 			CHECK(fd::compare_hessian(Eigen::MatrixXd(hess), fhess, tol));
@@ -293,8 +293,8 @@ TEST_CASE("contact form derivatives", "[form][form_derivatives][contact_form]")
 
 	ContactForm form(
 		state_ptr->collision_mesh, dhat, state_ptr->avg_mass,
-		use_convergent_formulation, use_convergent_formulation, use_convergent_formulation, 
-		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method, 
+		use_convergent_formulation, use_convergent_formulation, use_convergent_formulation,
+		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
 		ccd_tolerance, ccd_max_iterations);
 
 	test_form(form, *state_ptr);
