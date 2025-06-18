@@ -2042,7 +2042,7 @@ namespace polyfem::io
 			writer.add_field("contact_forces", forces_reshaped);
 		}
 
-		if (contact_form && state.args["contact"]["use_smooth_formulation"] && state.args["contact"]["use_adaptive_dhat"])
+		if (contact_form && state.args["contact"]["use_gcp_formulation"] && state.args["contact"]["use_adaptive_dhat"])
 		{
 			if (problem_dim == 2)
 			{

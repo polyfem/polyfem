@@ -1264,7 +1264,7 @@ TEST_CASE("shape-contact-smooth", "[test_adjoint]")
 	auto [obj, var2sim, states] = prepare_test(opt_args);
 	for (auto &state : states)
 	{
-		state->args["contact"]["use_smooth_formulation"] = true;
+		state->args["contact"]["use_gcp_formulation"] = true;
 		state->args["contact"]["alpha_t"] = 0.95;
 	}
 
@@ -1299,7 +1299,7 @@ TEST_CASE("initial-contact-smooth", "[test_adjoint]")
 	auto [obj, var2sim, states] = prepare_test(opt_args);
 	for (auto &state : states)
 	{
-		state->args["contact"]["use_smooth_formulation"] = true;
+		state->args["contact"]["use_gcp_formulation"] = true;
 		state->args["contact"]["alpha_t"] = 0.95;
 		state->args["contact"]["friction_coefficient"] = 0;
 	}
@@ -1321,7 +1321,7 @@ TEST_CASE("shape-transient-smooth", "[test_adjoint]")
 	auto [obj, var2sim, states] = prepare_test(opt_args);
 	for (auto &state : states)
 	{
-		state->args["contact"]["use_smooth_formulation"] = true;
+		state->args["contact"]["use_gcp_formulation"] = true;
 		state->args["contact"]["alpha_t"] = 0.95;
 		state->args["contact"]["friction_coefficient"] = 0;
 		state->args["solver"]["nonlinear"]["grad_norm"] = 1e-5;

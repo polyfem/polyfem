@@ -88,13 +88,18 @@ namespace polyfem::solver
 		const bool use_improved_max_operator,
 		const bool use_physical_barrier,
 		const json &barrier_stiffness,
+		const double initial_barrier_stiffness,
 		const ipc::BroadPhaseMethod broad_phase,
 		const double ccd_tolerance,
 		const long ccd_max_iterations,
 		const bool enable_shape_derivatives,
 
-		// Smooth contact form
-		const json &contact_params,
+		// Smooth Contact Form
+		const bool use_gcp_formulation,
+		const double alpha_t,
+		const double alpha_n,
+		const bool use_adaptive_dhat,
+		const double min_distance_ratio,
 		
 		// Normal Adhesion Form
 		const bool adhesion_enabled,
@@ -368,16 +373,16 @@ namespace polyfem::solver
 			}
 			else
 			{
-				if (contact_params["use_smooth_formulation"])
+				if (use_gcp_formulation)
 				{
 					if (collision_mesh.dim() == 2)
 						contact_form = std::make_shared<SmoothContactForm<2>>(
-							collision_mesh, contact_params, avg_mass,
+							collision_mesh, dhat, avg_mass, alpha_t, alpha_n, use_adaptive_dhat, min_distance_ratio,
 							use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, 
 							ccd_tolerance * units.characteristic_length(), ccd_max_iterations);
 					else
 						contact_form = std::make_shared<SmoothContactForm<3>>(
-							collision_mesh, contact_params, avg_mass,
+							collision_mesh, dhat, avg_mass, alpha_t, alpha_n, use_adaptive_dhat, min_distance_ratio,
 							use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, 
 							ccd_tolerance * units.characteristic_length(), ccd_max_iterations);
 				}
@@ -391,7 +396,7 @@ namespace polyfem::solver
 
 				if (use_adaptive_barrier_stiffness)
 				{
-					contact_form->set_barrier_stiffness(contact_params["initial_barrier_stiffness"]);
+					contact_form->set_barrier_stiffness(initial_barrier_stiffness);
 					// logger().debug("Using adaptive barrier stiffness");
 				}
 				else

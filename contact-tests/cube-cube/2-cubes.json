@@ -61,8 +61,8 @@
     "contact": {
         "enabled": true,
         "dhat": 1.5e-1,
-        "use_smooth_formulation": true,
-        "alpha": 5e-2,
+        "use_gcp_formulation": true,
+        "alpha_t": 5e-2,
         "r": 1,
         "high_order_quadrature": 1
     },

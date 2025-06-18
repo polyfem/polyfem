@@ -69,11 +69,9 @@
     "contact": {
         "enabled": true,
         "dhat": 0.05,
-        "use_smooth_formulation": true,
+        "use_gcp_formulation": true,
         "alpha_t": 1e-1,
-        "alpha_n": 1e-1,
-        "beta_t": 0,
-        "beta_n": 0
+        "alpha_n": 1e-1
     },
     "output": {
         "json": "out.json",

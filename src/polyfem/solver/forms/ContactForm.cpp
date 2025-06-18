@@ -13,12 +13,6 @@
 #include <ipc/barrier/adaptive_stiffness.hpp>
 #include <ipc/utils/world_bbox_diagonal_length.hpp>
 
-#include <ipc/broad_phase/bvh.hpp>
-#include <ipc/broad_phase/hash_grid.hpp>
-#include <ipc/broad_phase/brute_force.hpp>
-#include <ipc/broad_phase/spatial_hash.hpp>
-#include <ipc/broad_phase/sweep_and_tiniest_queue.hpp>
-
 #include <igl/writePLY.h>
 
 namespace polyfem::solver

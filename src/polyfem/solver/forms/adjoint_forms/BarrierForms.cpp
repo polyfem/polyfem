@@ -379,7 +379,7 @@ namespace polyfem::solver
 		const json &args)
 		: StaticForm(variable_to_simulations),
 		  state_(state),
-		  params_(state.args["contact"]["dhat"], state.args["contact"]["alpha_t"], state.args["contact"]["beta_t"], state.args["contact"]["alpha_n"], state.args["contact"]["beta_n"], state.mesh->is_volume() ? 2 : 1),
+		  params_(state.args["contact"]["dhat"], state.args["contact"]["alpha_t"], 0, state.args["contact"]["alpha_n"], 0, state.mesh->is_volume() ? 2 : 1),
 		  potential_(params_)
 	{
 		assert(dim == state.mesh->dimension());

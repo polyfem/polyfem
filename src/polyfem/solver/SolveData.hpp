@@ -115,13 +115,18 @@ namespace polyfem::solver
 			const bool use_improved_max_operator,
 			const bool use_physical_barrier,
 			const json &barrier_stiffness,
+			const double initial_barrier_stiffness,
 			const ipc::BroadPhaseMethod broad_phase,
 			const double ccd_tolerance,
 			const long ccd_max_iterations,
 			const bool enable_shape_derivatives,
 			
-			// Smooth contact form
-			const json &contact_params,
+			// Smooth Contact Form
+			const bool use_gcp_formulation,
+			const double alpha_t,
+			const double alpha_n,
+			const bool use_adaptive_dhat,
+			const double min_distance_ratio,
 
 			// Normal Adhesion Form
 			const bool adhesion_enabled,

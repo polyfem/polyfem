@@ -12,8 +12,12 @@ namespace polyfem::solver
     {
     public:
 		SmoothContactForm(const ipc::CollisionMesh &collision_mesh,
-					const json &args,
+					const double dhat,
 					const double avg_mass,
+					const double alpha_t,
+					const double alpha_n,
+					const bool use_adaptive_dhat,
+					const double min_distance_ratio,
 					const bool use_adaptive_barrier_stiffness,
 					const bool is_time_dependent,
 					const bool enable_shape_derivatives,

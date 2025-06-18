@@ -4,7 +4,6 @@
 
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/utils/Types.hpp>
-#include "ContactForm.hpp"
 
 #include <ipc/ipc.hpp>
 #include <ipc/collision_mesh.hpp>

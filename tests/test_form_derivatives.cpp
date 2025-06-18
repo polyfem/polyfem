@@ -316,11 +316,11 @@ TEST_CASE("smooth contact form derivatives", "[form][form_derivatives][contact_f
 	const double ccd_tolerance = 1e-6;
 	const int ccd_max_iterations = static_cast<int>(1e6);
 	const double a = 0;
-	const json contact_args = json::object({ {"a", a}, {"alpha_t", alpha}, {"alpha_n", 0.1}, {"beta_t", 0}, {"beta_n", 0}, {"dhat", dhat}, {"use_adaptive_dhat", false}, {"min_distance_ratio", 0.5} });
+	const json contact_args = json::object({{"a", a}, {"alpha_t", alpha}, {"alpha_n", 0.1}, {"beta_t", 0}, {"beta_n", 0}, {"dhat", dhat}, {"use_adaptive_dhat", false}, {"min_distance_ratio", 0.5}});
 
 	SmoothContactForm form(
-		state_ptr->collision_mesh, contact_args, state_ptr->avg_mass,
-		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method, 
+		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, contact_args["alpha_t"], contact_args["alpha_n"], contact_args["use_adaptive_dhat"], contact_args["min_distance_ratio"],
+		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
 		ccd_tolerance, ccd_max_iterations);
 
 	test_form(form, *state_ptr);

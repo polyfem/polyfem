@@ -10,7 +10,8 @@
 #include <ipc/broad_phase/broad_phase.hpp>
 #include <ipc/potentials/potential.hpp>
 
-namespace polyfem::solver
+// map BroadPhaseMethod values to JSON as strings
+namespace ipc
 {
 	// map ipc::BroadPhaseMethod values to JSON as strings
 	NLOHMANN_JSON_SERIALIZE_ENUM(
@@ -25,7 +26,10 @@ namespace polyfem::solver
 			{ipc::BroadPhaseMethod::BVH, "BVH"},
 			{ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
 			{ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"}})
+}
 
+namespace polyfem::solver
+{
 	/// @brief Form representing the contact potential and forces
 	class ContactForm : public Form
 	{
