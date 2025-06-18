@@ -114,7 +114,7 @@ namespace polyfem::solver
 							 )
 						{
 							logger().warn("Current xDelta criteria {}", std::abs(crit.xDelta));
-							logger().warn("Caught jump in xDelta norm, trying again");
+							logger().warn("Significant change in xDelta detected likely due to sudden change in collision energy, trying again");
 							increase_al_weight = false;
 							update_al_weight(tmp_sol, dummy);
 							update_barrier_stiffness(tmp_sol);

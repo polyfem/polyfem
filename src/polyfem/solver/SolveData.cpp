@@ -425,13 +425,13 @@ namespace polyfem::solver
 			double prev_dist = contact_form->get_prev_distance();
 
 
-			//logger().debug("Prev dist is {}", prev_dist);
-			if (prev_dist != -1 && prev_dist < .01*dhat*dhat)
+			logger().debug("Prev dist is {}", prev_dist);
+			if (prev_dist != -1 && prev_dist < .0001*dhat*dhat)
 			{
 				bs_multiplier *= 2;
 				contact_form->set_bs_multiplier(bs_multiplier);
 			}
-			if (prev_dist != INFINITY && prev_dist > .75*dhat*dhat)
+			if (prev_dist != INFINITY && prev_dist > .01*dhat*dhat)
 			{
 				bs_multiplier /= 2;
 				contact_form->set_bs_multiplier(bs_multiplier);
@@ -501,7 +501,7 @@ namespace polyfem::solver
 		else
 		{
 			weight = AL_initial_weight_;
-			double estimated_grad_energy= grad_energy_scaled + max_stiffness*dbc/(avg_edge_length_)/scaling + avg_mass_*(dbc - dbc/dt_);
+			double estimated_grad_energy= grad_energy_scaled + max_stiffness/scaling + avg_mass_*(dbc - dbc/dt_);
 			if (weight < estimated_grad_energy)
 				logger().warn("AL weight is below the estimated grad energy {} for this step. May cause slow convergence!", estimated_grad_energy);
 		}
