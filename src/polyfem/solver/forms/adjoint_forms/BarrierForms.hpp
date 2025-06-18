@@ -132,4 +132,45 @@ namespace polyfem::solver
 
 		ipc::SmoothContactPotential<ipc::SmoothCollisions<dim>> potential_;
 	};
+
+	template <int dim>
+	class SmoothLayerThicknessForm : public AdjointForm
+	{
+	public:
+		SmoothLayerThicknessForm(const VariableToSimulationGroup &variable_to_simulations,
+								 const State &state,
+								 const std::vector<int> &boundary_ids,
+								 const double dhat);
+		~SmoothLayerThicknessForm() = default;
+
+		double value_unweighted(const Eigen::VectorXd &x) const override;
+		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+		void solution_changed(const Eigen::VectorXd &x) override;
+
+		std::string name() const override { return "smooth layer thickness"; }
+
+		double max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
+		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const override;
+
+	protected:
+		void build_collision_mesh();
+		void build_smooth_collision_set(const Eigen::MatrixXd &displaced_surface);
+		Eigen::VectorXd get_updated_mesh_nodes(const Eigen::VectorXd &x) const;
+
+		const State &state_;
+		std::vector<int> boundary_ids_;
+		std::map<int, std::set<int>> boundary_ids_to_dof_;
+		Eigen::MatrixXi can_collide_cache_;
+
+		ipc::CollisionMesh collision_mesh_;
+		ipc::SmoothCollisions<dim> collisions_;
+		ipc::ParameterType params_;
+
+		const double dhat_;
+		BroadPhaseMethod broad_phase_method_;
+
+		Eigen::VectorXd X_init;
+
+		ipc::SmoothContactPotential<ipc::SmoothCollisions<dim>> barrier_potential_;
+	};
 } // namespace polyfem::solver
