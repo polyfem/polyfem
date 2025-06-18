@@ -133,10 +133,12 @@ namespace polyfem::solver
 						if (crit.iterations > 20)
 						{
 							logger().warn("Updating Lagrangian");
+							update_al_weight(tmp_sol, dummy);
+							update_barrier_stiffness(tmp_sol);
 							increase_al_weight = false;
 							return true;
 						}
-
+/*
 						if (crit.alpha < 1e-3)
 						{
 							logger().warn("Updating Lagrangian");
@@ -144,7 +146,7 @@ namespace polyfem::solver
 							update_barrier_stiffness(tmp_sol);
 							return true;
 						}
-
+*/
 						if (crit.alpha < 1e-3 && crit.iterations > 3 &&
 							 prev_delta_x_norm*10 < std::abs(crit.xDelta))
 						{
