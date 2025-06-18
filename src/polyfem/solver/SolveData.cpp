@@ -426,18 +426,18 @@ namespace polyfem::solver
 
 
 			logger().debug("Prev dist is {}", prev_dist);
-			if (prev_dist != -1 && prev_dist < .0001*dhat*dhat)
+			if (prev_dist != -1 && prev_dist != INFINITY && prev_dist < .0001*dhat*dhat)
 			{
 				bs_multiplier *= 2;
 				contact_form->set_bs_multiplier(bs_multiplier);
 			}
-			if (prev_dist != INFINITY && prev_dist > .01*dhat*dhat)
+			if (prev_dist != -1 && prev_dist != INFINITY && prev_dist > .01*dhat*dhat)
 			{
 				bs_multiplier /= 2;
 				contact_form->set_bs_multiplier(bs_multiplier);
 			}
 
-			barrier_stiffness = 10*AL_grad_energy*initial_barrier_stiffness_multipler_ * bs_multiplier;
+			barrier_stiffness = 1000*AL_grad_energy*initial_barrier_stiffness_multipler_ * bs_multiplier;
 			if (barrier_stiffness < 10*AL_grad_energy || prev_dist == INFINITY )
 				barrier_stiffness = 10*AL_grad_energy;
 		}
@@ -459,51 +459,44 @@ namespace polyfem::solver
 		StiffnessMatrix hessian_form;
 		double max_stiffness = 0;
 		const double scaling = time_integrator->acceleration_scaling();
-		double dbc = 0.0;
-		for (const auto &f : al_form)
-		{
-			dbc =  f->get_dbcdist();
-		}
 
-		//Grabs the approximate stiffness of the material via the max coeff of the elastic hessian
-		elastic_form->second_derivative(x, hessian_form);
-
-		for (int k = 0; k < hessian_form.outerSize(); ++k)
-		{
-			for (StiffnessMatrix::InnerIterator it(hessian_form, k); it; ++it)
-			{
-				max_stiffness = std::max(max_stiffness, std::abs(it.value()));
-			}
-		}
-
-		Eigen::VectorXd grad_energy = Eigen::VectorXd::Zero(x.size());
 		const std::array<std::shared_ptr<Form>, 4> energy_forms{
-				{elastic_form, inertia_form, body_form, pressure_form}};
+					{elastic_form, inertia_form, body_form, pressure_form}};
+
 		for (const std::shared_ptr<Form> &form : energy_forms)
 		{
-			if (form == nullptr || !form->enabled())
-				continue;
+			if (form != nullptr){
+				double max_of_form = 0;
+				form->second_derivative(x, hessian_form);
 
-			Eigen::VectorXd grad_form;
-			form->first_derivative(x, grad_form);
-			grad_energy += grad_form;
+				for (int k = 0; k < hessian_form.outerSize(); ++k)
+				{
+					for (StiffnessMatrix::InnerIterator it(hessian_form, k); it; ++it)
+					{
+						max_stiffness = std::max(max_stiffness, std::abs(it.value()));
+					}
+				}
+				if (max_stiffness < max_of_form)
+				{
+					max_stiffness = max_of_form;
+				}
+			}
 		}
-		double grad_energy_scaled =  grad_energy.norm()*grad_energy.size()/scaling;
 
 		if (AL_adaptive)
 		{
 			//Scales AL to current energy plus an estimate of the elastic and inertial energy for the next step
 			// This is a heuristic to ensure that the AL weight is not too small such that DBCs are not satisfied
-			 weight = 1000*(grad_energy_scaled + max_stiffness*dbc/(avg_edge_length_)/scaling + avg_mass_*(dbc - dbc/dt_))*AL_initial_weight_;
+			 weight = 1000*max_stiffness/scaling*AL_initial_weight_;
 			if (weight <= 1e-15)
 				weight =  max_stiffness/scaling;
 		}
 		else
 		{
 			weight = AL_initial_weight_;
-			double estimated_grad_energy= grad_energy_scaled + max_stiffness/scaling + avg_mass_*(dbc - dbc/dt_);
-			if (weight < estimated_grad_energy)
-				logger().warn("AL weight is below the estimated grad energy {} for this step. May cause slow convergence!", estimated_grad_energy);
+			double estimated_weight=  max_stiffness/scaling;
+			if (weight < estimated_weight)
+				logger().warn("AL weight is below the estimated grad energy {} for this step. May cause slow convergence!", estimated_weight);
 		}
 
 

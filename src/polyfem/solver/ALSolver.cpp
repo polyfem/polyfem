@@ -99,6 +99,7 @@ namespace polyfem::solver
 
 				bool increase_al_weight = true;
 				double prev_delta_x_norm = 1e10;
+				double prev_error = 0;
 
 				try
 				{
@@ -114,7 +115,7 @@ namespace polyfem::solver
 							 )
 						{
 							logger().warn("Current xDelta criteria {}", std::abs(crit.xDelta));
-							logger().warn("Significant change in xDelta detected likely due to sudden change in collision energy, trying again");
+							logger().warn("Significant change in xDelta. Updating Lagrangian.");
 							increase_al_weight = false;
 							update_al_weight(tmp_sol, dummy);
 							update_barrier_stiffness(tmp_sol);
@@ -126,6 +127,21 @@ namespace polyfem::solver
 						{
 							logger().warn("Converged after {} iterations", crit.iterations);
 							increase_al_weight = false;
+							return true;
+						}
+
+						if (crit.iterations > 20)
+						{
+							logger().warn("Updating Lagrangian");
+							increase_al_weight = false;
+							return true;
+						}
+
+						if (crit.alpha < 1e-3)
+						{
+							logger().warn("Updating Lagrangian");
+							increase_al_weight = false;
+							update_barrier_stiffness(tmp_sol);
 							return true;
 						}
 
@@ -165,7 +181,7 @@ namespace polyfem::solver
 
 				sol = tmp_sol;
 
-				const auto prev_error = current_error;
+
 
 				current_error = 0;
 				for (const auto &f : alagr_forms)
@@ -209,7 +225,7 @@ namespace polyfem::solver
 					for (auto &f : alagr_forms)
 						f->update_lagrangian(sol, al_weight);
 				}
-
+				prev_error = current_error;
 				++al_steps;
 			}
 			nl_problem.line_search_end();
