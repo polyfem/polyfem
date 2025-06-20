@@ -530,11 +530,7 @@ namespace polyfem::solver
 
 		broad_phase_method_ = BroadPhaseMethod::HASH_GRID;
 
-		params_.set_adaptive_dhat_ratio(0.5);
-
 		build_collision_mesh();
-
-		collisions_.compute_adaptive_dhat(collision_mesh_, collision_mesh_.rest_positions(), params_, build_broad_phase(broad_phase_method_));
 	}
 
 	template <int dim>
@@ -677,7 +673,7 @@ namespace polyfem::solver
 	template <int dim>
 	void SmoothLayerThicknessForm<dim>::build_smooth_collision_set(const Eigen::MatrixXd &displaced_surface)
 	{
-		collisions_.build(collision_mesh_, displaced_surface, params_, true, build_broad_phase(broad_phase_method_));
+		collisions_.build(collision_mesh_, displaced_surface, params_, false, build_broad_phase(broad_phase_method_));
 	}
 
 	template <int dim>
