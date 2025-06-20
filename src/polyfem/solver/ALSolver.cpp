@@ -193,6 +193,7 @@ namespace polyfem::solver
 				nl_problem.use_reduced_size();
 				tmp_sol = nl_problem.full_to_reduced(sol);
 				nl_problem.line_search_begin(sol, tmp_sol);
+				/*
 
 				logger().debug("Current error = {}, prev error = {}", current_error, prev_error);
 
@@ -208,8 +209,7 @@ namespace polyfem::solver
 					dbc_movement = f->get_dbcdist();
 				if (current_error == initial_error && dbc_movement == 0)
 					no_movement = true;
-
-				if ( (is_adaptive && increase_al_weight && prev_error!= 0 && ratio_error<ratio_tolerance && al_weight < max_al_weight && !no_movement) || (is_adaptive && increase_al_weight && prev_error<current_error && al_weight < max_al_weight && !no_movement))
+			if ( (is_adaptive && increase_al_weight && prev_error!= 0 && ratio_error<ratio_tolerance && al_weight < max_al_weight && !no_movement) || (is_adaptive && increase_al_weight && prev_error<current_error && al_weight < max_al_weight && !no_movement))
 				{
 					al_weight *= scaling;
 
@@ -223,11 +223,11 @@ namespace polyfem::solver
 
 				}
 				else
-				{
+				{*/
 					for (auto &f : alagr_forms)
 						f->update_lagrangian(sol, al_weight);
-				}
-				prev_error = current_error;
+				//}
+				//prev_error = current_error;
 				++al_steps;
 			}
 			nl_problem.line_search_end();
