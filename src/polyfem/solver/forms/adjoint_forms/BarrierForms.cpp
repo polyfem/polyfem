@@ -652,8 +652,6 @@ namespace polyfem::solver
 			}
 		}
 
-		std::cout << can_collide_cache_ << std::endl;
-
 		collision_mesh_.can_collide = [&](size_t vi, size_t vj) {
 			// return true;
 			return (bool)can_collide_cache_(vi, vj);
