@@ -526,6 +526,8 @@ namespace polyfem::assembler
 
 		int dim = rot.rows();
 
+		static const double sqrt2 = std::sqrt(2.0);
+
 		if (dim == 2)
 		{
 			res.resize(3, 3);
@@ -539,12 +541,12 @@ namespace polyfem::assembler
 		{
 			assert(dim == 3);
 			res.resize(6, 6);
-			res << rot(0, 0) * rot(0, 0), rot(0, 1) * rot(0, 1), rot(0, 2) * rot(0, 2), 2 * rot(0, 1) * rot(0, 2), 2 * rot(0, 0) * rot(0, 2), 2 * rot(0, 0) * rot(0, 1),
-				rot(1, 0) * rot(1, 0), rot(1, 1) * rot(1, 1), rot(1, 2) * rot(1, 2), 2 * rot(1, 1) * rot(1, 2), 2 * rot(1, 0) * rot(1, 2), 2 * rot(1, 0) * rot(1, 1),
-				rot(2, 0) * rot(2, 0), rot(2, 1) * rot(2, 1), rot(2, 2) * rot(2, 2), 2 * rot(2, 1) * rot(2, 2), 2 * rot(2, 0) * rot(2, 2), 2 * rot(2, 0) * rot(2, 1),
-				rot(1, 0) * rot(2, 0), rot(1, 1) * rot(2, 1), rot(1, 2) * rot(2, 2), rot(1, 1) * rot(2, 2) + rot(1, 2) * rot(2, 1), rot(1, 0) * rot(2, 2) + rot(1, 2) * rot(2, 0), rot(1, 0) * rot(2, 1) + rot(1, 1) * rot(2, 0),
-				rot(0, 0) * rot(2, 0), rot(0, 1) * rot(2, 1), rot(0, 2) * rot(2, 2), rot(0, 1) * rot(2, 2) + rot(0, 2) * rot(2, 1), rot(0, 0) * rot(2, 2) + rot(0, 2) * rot(2, 0), rot(0, 0) * rot(2, 1) + rot(0, 1) * rot(2, 0),
-				rot(0, 0) * rot(1, 0), rot(0, 1) * rot(1, 1), rot(0, 2) * rot(1, 2), rot(0, 1) * rot(1, 2) + rot(0, 2) * rot(1, 1), rot(0, 0) * rot(1, 2) + rot(0, 2) * rot(1, 0), rot(0, 0) * rot(1, 1) + rot(0, 1) * rot(1, 0);
+			res << rot(0, 0) * rot(0, 0), rot(0, 1) * rot(0, 1), rot(0, 2) * rot(0, 2), sqrt2 * rot(0, 1) * rot(0, 2), sqrt2 * rot(0, 0) * rot(0, 2), sqrt2 * rot(0, 0) * rot(0, 1),
+				rot(1, 0) * rot(1, 0), rot(1, 1) * rot(1, 1), rot(1, 2) * rot(1, 2), sqrt2 * rot(1, 1) * rot(1, 2), sqrt2 * rot(1, 0) * rot(1, 2), sqrt2 * rot(1, 0) * rot(1, 1),
+				rot(2, 0) * rot(2, 0), rot(2, 1) * rot(2, 1), rot(2, 2) * rot(2, 2), sqrt2 * rot(2, 1) * rot(2, 2), sqrt2 * rot(2, 0) * rot(2, 2), sqrt2 * rot(2, 0) * rot(2, 1),
+				sqrt2 * rot(1, 0) * rot(2, 0), sqrt2 * rot(1, 1) * rot(2, 1), sqrt2 * rot(1, 2) * rot(2, 2), rot(1, 1) * rot(2, 2) + rot(1, 2) * rot(2, 1), rot(1, 0) * rot(2, 2) + rot(1, 2) * rot(2, 0), rot(1, 0) * rot(2, 1) + rot(1, 1) * rot(2, 0),
+				sqrt2 * rot(0, 0) * rot(2, 0), sqrt2 * rot(0, 1) * rot(2, 1), sqrt2 * rot(0, 2) * rot(2, 2), rot(0, 1) * rot(2, 2) + rot(0, 2) * rot(2, 1), rot(0, 0) * rot(2, 2) + rot(0, 2) * rot(2, 0), rot(0, 0) * rot(2, 1) + rot(0, 1) * rot(2, 0),
+				sqrt2 * rot(0, 0) * rot(1, 0), sqrt2 * rot(0, 1) * rot(1, 1), sqrt2 * rot(0, 2) * rot(1, 2), rot(0, 1) * rot(1, 2) + rot(0, 2) * rot(1, 1), rot(0, 0) * rot(1, 2) + rot(0, 2) * rot(1, 0), rot(0, 0) * rot(1, 1) + rot(0, 1) * rot(1, 0);
 		}
 
 		return res;
