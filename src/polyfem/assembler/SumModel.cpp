@@ -2,6 +2,8 @@
 
 #include <jse/jse.h>
 
+#include <polyfem/autogen/json-specs/material-parameters.cpp>
+
 // #include <polyfem/basis/Basis.hpp>
 // #include <polyfem/autogen/auto_elasticity_rhs.hpp>
 
@@ -17,16 +19,9 @@ namespace polyfem::assembler
 
 		auto models = params["models"];
 
-		json rules;
 		jse::JSE jse;
 		jse.strict = true;
-		const std::string mat_spec = POLYFEM_MATERIAL_INPUT_SPEC;
-		std::ifstream file(mat_spec);
-
-		if (file.is_open())
-			file >> rules;
-		else
-			log_and_throw_error(fmt::format("unable to open {} rules", mat_spec));
+		json rules = json::parse(MATERIAL_PARAMETERS);
 
 		rules = jse.inject_include(rules);
 

@@ -27,6 +27,23 @@
 
 #include <polysolve/nonlinear/BoxConstraintSolver.hpp>
 
+#include <polyfem/autogen/json-specs/input-spec.cpp>
+#include <polyfem/autogen/json-specs/boundary-condition.cpp>
+#include <polyfem/autogen/json-specs/interpolation.cpp>
+#include <polyfem/autogen/json-specs/log.cpp>
+#include <polyfem/autogen/json-specs/material-parameters.cpp>
+#include <polyfem/autogen/json-specs/objective-spec.cpp>
+#include <polyfem/autogen/json-specs/opt-input-spec.cpp>
+#include <polyfem/autogen/json-specs/polysolve.cpp>
+#include <polyfem/autogen/json-specs/selection.cpp>
+#include <polyfem/autogen/json-specs/value-no.cpp>
+#include <polyfem/autogen/json-specs/value.cpp>
+#include <polyfem/autogen/json-specs/value0.cpp>
+#include <polyfem/autogen/json-specs/value1.cpp>
+
+#include <polysolve/autogen/linear-solver-spec.cpp>
+#include <polysolve/autogen/nonlinear-solver-spec.cpp>
+
 namespace spdlog::level
 {
 	NLOHMANN_JSON_SERIALIZE_ENUM(
@@ -595,18 +612,27 @@ namespace polyfem::solver
 		jse::JSE jse;
 		{
 			jse.strict = strict_validation;
-			std::ifstream file(POLYFEM_OPT_INPUT_SPEC);
+			rules = json::parse(OPT_INPUT_SPEC);
 
-			if (file.is_open())
-				file >> rules;
-			else
-			{
-				logger().error("unable to open {} rules", POLYFEM_OPT_INPUT_SPEC);
-				throw std::runtime_error("Invald spec file");
-			}
-
-			jse.include_directories.push_back(POLYFEM_JSON_SPEC_DIR);
-			jse.include_directories.push_back(POLYSOLVE_JSON_SPEC_DIR);
+			jse.embedded_rules = {
+				// From PolyFEM
+				{"input-spec.json", json::parse(INPUT_SPEC)},
+				{"boundary-condition.json", json::parse(BOUNDARY_CONDITION)},
+				{"interpolation.json", json::parse(INTERPOLATION)},
+				{"log.json", json::parse(LOG)},
+				{"material-parameters.json", json::parse(MATERIAL_PARAMETERS)},
+				{"objective-spec.json", json::parse(OBJECTIVE_SPEC)},
+				{"opt-input-spec.json", json::parse(OPT_INPUT_SPEC)},
+				{"polysolve.json", json::parse(POLYSOLVE)},
+				{"selection.json", json::parse(SELECTION)},
+				{"value-no.json", json::parse(VALUE_NO)},
+				{"value.json", json::parse(VALUE)},
+				{"value0.json", json::parse(VALUE0)},
+				{"value1.json", json::parse(VALUE1)},
+				// From PolySolve
+				{"linear-solver-spec.json", json::parse(LINEAR_SOLVER_SPEC)},
+				{"nonlinear-solver-spec.json", json::parse(NONLINEAR_SOLVER_SPEC)},
+			};
 			rules = jse.inject_include(rules);
 
 			// polysolve::linear::Solver::apply_default_solver(rules, "/solver/linear");
@@ -624,19 +650,7 @@ namespace polyfem::solver
 
 		json args = jse.inject_defaults(args_in, rules);
 
-		json obj_rules;
-		{
-			const std::string polyfem_objective_spec = POLYFEM_OBJECTIVE_INPUT_SPEC;
-			std::ifstream file(polyfem_objective_spec);
-
-			if (file.is_open())
-				file >> obj_rules;
-			else
-			{
-				logger().error("unable to open {} rules", polyfem_objective_spec);
-				throw std::runtime_error("Invald spec file");
-			}
-		}
+		json obj_rules = json::parse(OBJECTIVE_SPEC);
 		apply_objective_json_spec(args["functionals"], obj_rules);
 
 		if (args.contains("stopping_conditions"))

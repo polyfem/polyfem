@@ -146,11 +146,45 @@ target_compile_definitions(polyfem PUBLIC -DPOLYFEM_SMALL_N=${POLYFEM_SMALL_N})
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_BIG_N=${POLYFEM_BIG_N})
 
 set(POLYFEM_JSON_SPEC_DIR "${PROJECT_SOURCE_DIR}/json-specs")
-target_compile_definitions(polyfem PUBLIC POLYFEM_JSON_SPEC_DIR="${POLYFEM_JSON_SPEC_DIR}")
-target_compile_definitions(polyfem PUBLIC POLYFEM_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/input-spec.json")
-target_compile_definitions(polyfem PUBLIC POLYFEM_OPT_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/opt-input-spec.json")
-target_compile_definitions(polyfem PUBLIC POLYFEM_OBJECTIVE_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/objective-spec.json")
-target_compile_definitions(polyfem PUBLIC POLYFEM_MATERIAL_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/material-parameters.json")
+
+# From https://gist.github.com/amir-saniyan/de99cee82fa9d8d615bb69f3f53b6004
+function(embed_resource resource_file_name source_file_name variable_name)
+    if(EXISTS "${source_file_name}")
+        if("${source_file_name}" IS_NEWER_THAN "${resource_file_name}")
+            return()
+        endif()
+    endif()
+
+    file(READ "${resource_file_name}" hex_content HEX)
+
+    string(REPEAT "[0-9a-f]" 32 pattern)
+    string(REGEX REPLACE "(${pattern})" "\\1\n" content "${hex_content}")
+
+    string(REGEX REPLACE "([0-9a-f][0-9a-f])" "0x\\1, " content "${content}")
+
+    string(REGEX REPLACE ", $" "" content "${content}")
+
+    set(array_definition "static const unsigned char ${variable_name}[] =\n{\n${content}\n};")
+
+    set(source "// Auto generated file.\n${array_definition}\n")
+
+    file(WRITE "${source_file_name}" "${source}")
+endfunction()
+
+embed_resource("${POLYFEM_JSON_SPEC_DIR}/input-spec.json" "${POLYFEM_SOURCE_DIR}/autogen/json-specs/input-spec.cpp" "INPUT_SPEC")
+embed_resource("${POLYFEM_JSON_SPEC_DIR}/boundary-condition.json" "${POLYFEM_SOURCE_DIR}/autogen/json-specs/boundary-condition.cpp" "BOUNDARY_CONDITION")
+embed_resource("${POLYFEM_JSON_SPEC_DIR}/interpolation.json" "${POLYFEM_SOURCE_DIR}/autogen/json-specs/interpolation.cpp" "INTERPOLATION")
+embed_resource("${POLYFEM_JSON_SPEC_DIR}/log.json" "${POLYFEM_SOURCE_DIR}/autogen/json-specs/log.cpp" "LOG")
+embed_resource("${POLYFEM_JSON_SPEC_DIR}/material-parameters.json" "${POLYFEM_SOURCE_DIR}/autogen/json-specs/material-parameters.cpp" "MATERIAL_PARAMETERS")
+embed_resource("${POLYFEM_JSON_SPEC_DIR}/objective-spec.json" "${POLYFEM_SOURCE_DIR}/autogen/json-specs/objective-spec.cpp" "OBJECTIVE_SPEC")
+embed_resource("${POLYFEM_JSON_SPEC_DIR}/opt-input-spec.json" "${POLYFEM_SOURCE_DIR}/autogen/json-specs/opt-input-spec.cpp" "OPT_INPUT_SPEC")
+embed_resource("${POLYFEM_JSON_SPEC_DIR}/polysolve.json" "${POLYFEM_SOURCE_DIR}/autogen/json-specs/polysolve.cpp" "POLYSOLVE")
+embed_resource("${POLYFEM_JSON_SPEC_DIR}/selection.json" "${POLYFEM_SOURCE_DIR}/autogen/json-specs/selection.cpp" "SELECTION")
+embed_resource("${POLYFEM_JSON_SPEC_DIR}/value-no.json" "${POLYFEM_SOURCE_DIR}/autogen/json-specs/value-no.cpp" "VALUE_NO")
+embed_resource("${POLYFEM_JSON_SPEC_DIR}/value.json" "${POLYFEM_SOURCE_DIR}/autogen/json-specs/value.cpp" "VALUE")
+embed_resource("${POLYFEM_JSON_SPEC_DIR}/value0.json" "${POLYFEM_SOURCE_DIR}/autogen/json-specs/value0.cpp" "VALUE0")
+embed_resource("${POLYFEM_JSON_SPEC_DIR}/value1.json" "${POLYFEM_SOURCE_DIR}/autogen/json-specs/value1.cpp" "VALUE1")
+
 
 if (MSVC)
     add_compile_options(/bigobj)
