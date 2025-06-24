@@ -364,6 +364,13 @@ namespace polyfem::solver
 			{
 				obj = std::make_shared<LayerThicknessForm>(var2sim, *(states[args["state"]]), args["boundary_ids"].get<std::vector<int>>(), args["dhat"], true, args["dmin"]);
 			}
+			else if (type == "smooth_layer_thickness")
+			{
+				if (states[args["state"]]->mesh->is_volume())
+					obj = std::make_shared<SmoothLayerThicknessForm<3>>(var2sim, *(states[args["state"]]), args["boundary_ids"], args["dhat"]);
+				else
+					obj = std::make_shared<SmoothLayerThicknessForm<2>>(var2sim, *(states[args["state"]]), args["boundary_ids"], args["dhat"]);
+			}
 			else if (type == "deformed_collision_barrier")
 			{
 				obj = std::make_shared<DeformedCollisionBarrierForm>(var2sim, *(states[args["state"]]), args["dhat"]);
