@@ -106,7 +106,7 @@ void display_log(const std::string &title, const std::vector<std::string> &logs,
 	ImGui::PopStyleColor();
 	ImGui::BeginChild("Scrolling");
 	for (const auto &log : logs)
-		ImGui::Text("- %s", log.c_str());
+		ImGui::Text("%s", log.c_str());
 	ImGui::EndChild();
 	ImGui::End();
 }
