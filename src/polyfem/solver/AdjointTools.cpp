@@ -13,6 +13,7 @@
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/BarrierContactForm.hpp>
+#include <polyfem/solver/forms/SmoothContactForm.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/forms/NormalAdhesionForm.hpp>
 #include <polyfem/solver/forms/TangentialAdhesionForm.hpp>
@@ -577,7 +578,15 @@ namespace polyfem::solver
 
 			if (state.is_contact_enabled())
 			{
-				state.solve_data.contact_form->force_shape_derivative(state.diff_cached.collision_set(0), sol, adjoint_zeroed, contact_term);
+				if (const auto barrier_contact = dynamic_cast<const BarrierContactForm*>(state.solve_data.contact_form.get()))
+				{
+					barrier_contact->force_shape_derivative(state.diff_cached.collision_set(0), sol, adjoint_zeroed, contact_term);
+				}
+				else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm*>(state.solve_data.contact_form.get()))
+				{
+					smooth_contact->force_shape_derivative(state.diff_cached.smooth_collision_set(0), sol, adjoint_zeroed, contact_term);
+				}
+
 				contact_term = state.basis_nodes_to_gbasis_nodes * contact_term;
 			}
 			else
@@ -619,7 +628,15 @@ namespace polyfem::solver
 
 		if (state.solve_data.contact_form)
 		{
-			state.solve_data.contact_form->force_shape_derivative(state.diff_cached.collision_set(0), sol, full_adjoint, contact_term);
+			if (const auto barrier_contact = dynamic_cast<const BarrierContactForm*>(state.solve_data.contact_form.get()))
+			{
+				barrier_contact->force_shape_derivative(state.diff_cached.collision_set(0), sol, full_adjoint, contact_term);
+			}
+			else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm*>(state.solve_data.contact_form.get()))
+			{
+				smooth_contact->force_shape_derivative(state.diff_cached.smooth_collision_set(0), sol, full_adjoint, contact_term);
+			}
+
 			contact_term = state.basis_nodes_to_gbasis_nodes * contact_term;
 		}
 		else
@@ -678,7 +695,7 @@ namespace polyfem::solver
 		if (state.solve_data.periodic_contact_form)
 		{
 			Eigen::VectorXd contact_term;
-			state.solve_data.periodic_contact_form->force_periodic_shape_derivative(state, periodic_mesh_map, periodic_mesh_representation, state.solve_data.periodic_contact_form->get_barrier_collision_set(), extended_sol, extended_adjoint, contact_term);
+			state.solve_data.periodic_contact_form->force_periodic_shape_derivative(state, periodic_mesh_map, periodic_mesh_representation, state.solve_data.periodic_contact_form->collision_set(), extended_sol, extended_adjoint, contact_term);
 
 			one_form -= contact_term;
 		}
@@ -727,7 +744,14 @@ namespace polyfem::solver
 
 				if (state.is_contact_enabled())
 				{
-					state.solve_data.contact_form->force_shape_derivative(state.diff_cached.collision_set(i), state.diff_cached.u(i), cur_p, contact_term);
+					if (const auto barrier_contact = dynamic_cast<const BarrierContactForm*>(state.solve_data.contact_form.get()))
+					{
+						barrier_contact->force_shape_derivative(state.diff_cached.collision_set(i), state.diff_cached.u(i), cur_p, contact_term);
+					}
+					else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm*>(state.solve_data.contact_form.get()))
+					{
+						smooth_contact->force_shape_derivative(state.diff_cached.smooth_collision_set(i), state.diff_cached.u(i), cur_p, contact_term);
+					}
 					contact_term = state.basis_nodes_to_gbasis_nodes * contact_term;
 					// contact_term /= beta_dt * beta_dt;
 				}

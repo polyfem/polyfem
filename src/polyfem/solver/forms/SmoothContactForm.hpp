@@ -7,7 +7,6 @@
 
 namespace polyfem::solver
 {
-	template <int _dim = 3>
     class SmoothContactForm : public ContactForm
     {
     public:
@@ -29,7 +28,7 @@ namespace polyfem::solver
 
         void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) override;
 
-		void force_shape_derivative(ipc::CollisionsBase *collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) override;
+		void force_shape_derivative(const ipc::SmoothCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const;
 
 		/// @brief Update fields after a step in the optimization
 		/// @param iter_num Optimization iteration number
@@ -38,9 +37,8 @@ namespace polyfem::solver
 
 		bool using_adaptive_dhat() const { return use_adaptive_dhat; }
 		const ipc::ParameterType &get_params() const { return params; }
-		ipc::SmoothCollisions<_dim> &get_smooth_collision_set() { return *std::dynamic_pointer_cast<ipc::SmoothCollisions<_dim>>(collision_set_); }
-		const ipc::SmoothCollisions<_dim> &get_smooth_collision_set() const { return *std::dynamic_pointer_cast<ipc::SmoothCollisions<_dim>>(collision_set_); }
-		const ipc::Potential<ipc::SmoothCollisions<_dim>> &get_potential() const { return *contact_potential_; }
+
+		const ipc::SmoothCollisions &collision_set() const { return collision_set_; }
 
 	protected:
 		/// @brief Compute the contact barrier potential value
@@ -67,11 +65,14 @@ namespace polyfem::solver
 
 		void update_collision_set(const Eigen::MatrixXd &displaced_surface) override;
 
-		/// @brief Contact potential
-		std::shared_ptr<ipc::SmoothContactPotential<ipc::SmoothCollisions<_dim>>> contact_potential_;
-
 	private:
 		ipc::ParameterType params;
 		const bool use_adaptive_dhat;
+
+		/// @brief Cached constraint set for the current solution
+		ipc::SmoothCollisions collision_set_;
+
+		/// @brief Contact potential
+		ipc::SmoothContactPotential barrier_potential_;
 	};
 }

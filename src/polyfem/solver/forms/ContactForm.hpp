@@ -113,13 +113,7 @@ namespace polyfem::solver
 
 		double dhat() const { return dhat_; }
 
-		int n_contact_pairs() const { if (!collision_set_) return 0; return collision_set_->size(); }
-
-		auto get_collision_set() const { return collision_set_; }
-
 		std::shared_ptr<ipc::BroadPhase> get_broad_phase() const { return broad_phase_; }
-
-		virtual void force_shape_derivative(ipc::CollisionsBase *collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) = 0;
 
 	protected:
 		/// @brief Update the cached candidate set for the current solution
@@ -166,8 +160,5 @@ namespace polyfem::solver
 		bool use_cached_candidates_ = false;
 		/// @brief Cached candidate set for the current solution
 		ipc::Candidates candidates_;
-
-		/// @brief Cached constraint set for the current solution
-		std::shared_ptr<ipc::CollisionsBase> collision_set_;
 	};
 } // namespace polyfem::solver

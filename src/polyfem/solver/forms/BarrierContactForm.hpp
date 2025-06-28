@@ -25,8 +25,6 @@ namespace polyfem::solver
 
         virtual void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) override;
 
-		const ipc::BarrierPotential &barrier_potential() const { return barrier_potential_; }
-
 		/// @brief Update fields after a step in the optimization
 		/// @param iter_num Optimization iteration number
 		/// @param x Current solution
@@ -35,19 +33,18 @@ namespace polyfem::solver
 		bool use_convergent_formulation() const override { return use_area_weighting() && use_improved_max_operator() && use_physical_barrier(); }
 
 		/// @brief Get use_area_weighting
-		bool use_area_weighting() const {return get_barrier_collision_set().use_area_weighting();}
+		bool use_area_weighting() const { return collision_set().use_area_weighting();}
 
 		/// @brief Get use_improved_max_operator
-		bool use_improved_max_operator() const {return get_barrier_collision_set().use_improved_max_approximator();}
+		bool use_improved_max_operator() const { return collision_set().use_improved_max_approximator();}
 
 		/// @brief Get use_physical_barrier
 		bool use_physical_barrier() const { return barrier_potential_.use_physical_barrier(); }
 		
-		void force_shape_derivative(ipc::CollisionsBase *collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) override;
+		void force_shape_derivative(const ipc::NormalCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const;
 
-		ipc::NormalCollisions &get_barrier_collision_set() { return *std::dynamic_pointer_cast<ipc::NormalCollisions>(collision_set_); }
-		const ipc::NormalCollisions &get_barrier_collision_set() const { return *std::dynamic_pointer_cast<ipc::NormalCollisions>(collision_set_); }
-		const ipc::BarrierPotential &get_potential() const { return barrier_potential_; }
+		const ipc::NormalCollisions &collision_set() const { return collision_set_; }
+		const ipc::BarrierPotential &barrier_potential() const { return barrier_potential_; }
 
 	protected:
 		/// @brief Compute the contact barrier potential value
@@ -71,6 +68,9 @@ namespace polyfem::solver
 		virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
 		void update_collision_set(const Eigen::MatrixXd &displaced_surface) override;
+
+		/// @brief Cached constraint set for the current solution
+		ipc::NormalCollisions collision_set_;
 
 		/// @brief Contact potential
 		const ipc::BarrierPotential barrier_potential_;

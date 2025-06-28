@@ -102,7 +102,6 @@ namespace polyfem::solver
 		const ipc::BarrierPotential barrier_potential_;
 	};
 
-	template <int dim>
 	class SmoothContactForceForm : public StaticForm
 	{
 	public:
@@ -119,17 +118,17 @@ namespace polyfem::solver
 
 	protected:
 		void build_collision_mesh();
-		ipc::SmoothCollisions<dim> get_smooth_collision_set(const Eigen::MatrixXd &displaced_surface);
+		ipc::SmoothCollisions get_smooth_collision_set(const Eigen::MatrixXd &displaced_surface);
 
 		const State &state_;
 		std::set<int> boundary_ids_;
 		std::map<int, std::set<int>> boundary_ids_to_dof_;
 
 		ipc::CollisionMesh collision_mesh_;
-		ipc::SmoothCollisions<dim> collisions_;
+		ipc::SmoothCollisions collisions_;
 		const ipc::ParameterType params_;
 		const double dmin_ = 0;
 
-		ipc::SmoothContactPotential<ipc::SmoothCollisions<dim>> potential_;
+		ipc::SmoothContactPotential potential_;
 	};
 } // namespace polyfem::solver

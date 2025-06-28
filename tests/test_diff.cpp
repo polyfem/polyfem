@@ -1265,6 +1265,7 @@ TEST_CASE("shape-contact-smooth", "[test_adjoint]")
 	for (auto &state : states)
 	{
 		state->args["contact"]["use_gcp_formulation"] = true;
+		state->args["contact"]["use_convergent_formulation"] = false;
 		state->args["contact"]["alpha_t"] = 0.95;
 	}
 
@@ -1300,6 +1301,7 @@ TEST_CASE("initial-contact-smooth", "[test_adjoint]")
 	for (auto &state : states)
 	{
 		state->args["contact"]["use_gcp_formulation"] = true;
+		state->args["contact"]["use_convergent_formulation"] = false;
 		state->args["contact"]["alpha_t"] = 0.95;
 		state->args["contact"]["friction_coefficient"] = 0;
 	}

@@ -124,31 +124,16 @@ namespace polyfem::solver
 				collision_mesh_, displaced_surface, collision_set,
 				barrier_contact->barrier_potential(), barrier_contact->barrier_stiffness(), Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_);
 		}
-		else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm<2>*>(&contact_form_))
+		else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm*>(&contact_form_))
 		{
-			ipc::SmoothCollisions<2> collision_set;
+			ipc::SmoothCollisions collision_set;
 			if (smooth_contact->using_adaptive_dhat())
 				collision_set.compute_adaptive_dhat(collision_mesh_, collision_mesh_.rest_positions(), smooth_contact->get_params(), broad_phase);
 			collision_set.build(
 				collision_mesh_, displaced_surface, smooth_contact->get_params(), 
 				smooth_contact->using_adaptive_dhat(), broad_phase);
 
-			collision_set.set_are_shape_derivatives_enabled(contact_form_.enable_shape_derivatives());
-			friction_collision_set_.build_for_smooth_contact<2>(   
-				collision_mesh_, displaced_surface, 
-				collision_set, smooth_contact->get_params(), contact_form_.barrier_stiffness(), Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_);
-		}
-		else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm<3>*>(&contact_form_))
-		{
-			ipc::SmoothCollisions<3> collision_set;
-			if (smooth_contact->using_adaptive_dhat())
-				collision_set.compute_adaptive_dhat(collision_mesh_, collision_mesh_.rest_positions(), smooth_contact->get_params(), broad_phase);
-			collision_set.build(
-				collision_mesh_, displaced_surface, smooth_contact->get_params(), 
-				smooth_contact->using_adaptive_dhat(), broad_phase);
-
-			collision_set.set_are_shape_derivatives_enabled(contact_form_.enable_shape_derivatives());
-			friction_collision_set_.build_for_smooth_contact<3>(
+			friction_collision_set_.build_for_smooth_contact(   
 				collision_mesh_, displaced_surface, 
 				collision_set, smooth_contact->get_params(), contact_form_.barrier_stiffness(), Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_);
 		}

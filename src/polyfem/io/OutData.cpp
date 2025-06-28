@@ -2044,11 +2044,12 @@ namespace polyfem::io
 
 		if (contact_form && state.args["contact"]["use_gcp_formulation"] && state.args["contact"]["use_adaptive_dhat"])
 		{
+			const auto form = std::dynamic_pointer_cast<solver::SmoothContactForm>(contact_form);
+			assert(form);
+			const auto &set = form->collision_set();
+
 			if (problem_dim == 2)
 			{
-				const auto form = std::dynamic_pointer_cast<solver::SmoothContactForm<2>>(contact_form);
-				assert(form);
-				const auto &set = form->get_smooth_collision_set();
 				Eigen::VectorXd dhats(collision_mesh.num_edges());
 				dhats.setConstant(dhat);
 				for (int e = 0; e < dhats.size(); e++)
@@ -2058,9 +2059,6 @@ namespace polyfem::io
 			}
 			else
 			{
-				const auto form = std::dynamic_pointer_cast<solver::SmoothContactForm<3>>(contact_form);
-				assert(form);
-				const auto &set = form->get_smooth_collision_set();
 				Eigen::VectorXd fdhats(collision_mesh.num_faces());
 				fdhats.setConstant(dhat);
 				for (int e = 0; e < fdhats.size(); e++)

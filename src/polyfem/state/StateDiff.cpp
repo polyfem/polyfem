@@ -15,6 +15,7 @@
 
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/BarrierContactForm.hpp>
+#include <polyfem/solver/forms/SmoothContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/NormalAdhesionForm.hpp>
@@ -105,7 +106,8 @@ namespace polyfem
 		if (current_step == 0)
 			diff_cached.init(mesh->dimension(), ndof(), problem->is_time_dependent() ? args["time"]["time_steps"].get<int>() : 0);
 
-		std::shared_ptr<ipc::CollisionsBase> cur_collision_set;
+		ipc::NormalCollisions cur_collision_set;
+		ipc::SmoothCollisions cur_smooth_collision_set;
 		ipc::TangentialCollisions cur_friction_set;
 		ipc::NormalCollisions cur_normal_adhesion_set;
 		ipc::TangentialCollisions cur_tangential_adhesion_set;
@@ -116,23 +118,22 @@ namespace polyfem
 				compute_force_jacobian(sol, disp_grad, gradu_h);
 
 			if (solve_data.contact_form)
-				cur_collision_set = solve_data.contact_form->get_collision_set()->deepcopy();
+			{
+				if (const auto barrier_contact = dynamic_cast<const solver::BarrierContactForm*>(solve_data.contact_form.get()))
+					cur_collision_set = barrier_contact->collision_set();
+				else if (const auto smooth_contact = dynamic_cast<const solver::SmoothContactForm*>(solve_data.contact_form.get()))
+					cur_smooth_collision_set = smooth_contact->collision_set();
+			}
 			cur_friction_set = solve_data.friction_form ? solve_data.friction_form->friction_collision_set() : ipc::TangentialCollisions();
 			cur_normal_adhesion_set = solve_data.normal_adhesion_form ? solve_data.normal_adhesion_form->collision_set() : ipc::NormalCollisions();
 			cur_tangential_adhesion_set = solve_data.tangential_adhesion_form ? solve_data.tangential_adhesion_form->tangential_collision_set() : ipc::TangentialCollisions();
-		}
-		else
-		{
-			cur_friction_set = ipc::TangentialCollisions();
-			cur_normal_adhesion_set = ipc::NormalCollisions();
-			cur_tangential_adhesion_set = ipc::TangentialCollisions();
 		}
 
 		if (problem->is_time_dependent())
 		{
 			if (args["time"]["quasistatic"].get<bool>())
 			{
-				diff_cached.cache_quantities_quasistatic(current_step, sol, gradu_h, cur_collision_set, cur_normal_adhesion_set, disp_grad);
+				diff_cached.cache_quantities_quasistatic(current_step, sol, gradu_h, cur_collision_set, cur_smooth_collision_set, cur_normal_adhesion_set, disp_grad);
 			}
 			else
 			{
@@ -160,12 +161,12 @@ namespace polyfem
 					acc = solve_data.time_integrator->compute_acceleration(vel);
 				}
 
-				diff_cached.cache_quantities_transient(current_step, solve_data.time_integrator->steps(), sol, vel, acc, gradu_h, cur_collision_set, cur_friction_set);
+				diff_cached.cache_quantities_transient(current_step, solve_data.time_integrator->steps(), sol, vel, acc, gradu_h, cur_collision_set, cur_smooth_collision_set, cur_friction_set);
 			}
 		}
 		else
 		{
-			diff_cached.cache_quantities_static(sol, gradu_h, cur_collision_set, cur_friction_set, cur_normal_adhesion_set, cur_tangential_adhesion_set, disp_grad);
+			diff_cached.cache_quantities_static(sol, gradu_h, cur_collision_set, cur_smooth_collision_set, cur_friction_set, cur_normal_adhesion_set, cur_tangential_adhesion_set, disp_grad);
 		}
 	}
 
@@ -287,7 +288,7 @@ namespace polyfem
 						// 			ipc::TangentialCollisions fd_friction_constraints;
 						// 			ipc::NormalCollisions fd_constraints;
 						// 			fd_constraints.set_use_convergent_formulation(solve_data.contact_form->use_convergent_formulation());
-						// 			fd_constraints.set_are_shape_derivatives_enabled(true);
+						// 			fd_constraints.set_enable_shape_derivatives(true);
 						// 			fd_constraints.build(collision_mesh, X + fd_Ut, dhat);
 
 						// 			fd_friction_constraints.build(

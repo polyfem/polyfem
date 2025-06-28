@@ -996,25 +996,16 @@ namespace polyfem
 		if (is_contact_enabled())
 		{
 			min_boundary_edge_length = std::numeric_limits<double>::max();
+			for (const auto &edge : collision_mesh.edges().rowwise())
+ 			{
+ 				const VectorNd v0 = collision_mesh.rest_positions().row(edge(0));
+ 				const VectorNd v1 = collision_mesh.rest_positions().row(edge(1));
+ 				min_boundary_edge_length = std::min(min_boundary_edge_length, (v1 - v0).norm());
+ 			}
 
 			double dhat = Units::convert(args["contact"]["dhat"], units.length());
 			args["contact"]["epsv"] = Units::convert(args["contact"]["epsv"], units.velocity());
 			args["contact"]["dhat"] = dhat;
-
-			// for (const auto &edge : collision_mesh.edges().rowwise())
-			// {
-			// 	const VectorNd v0 = collision_mesh.rest_positions().row(edge(0));
-			// 	const VectorNd v1 = collision_mesh.rest_positions().row(edge(1));
-			// 	min_boundary_edge_length = std::min(min_boundary_edge_length, (v1 - v0).norm());
-			// }
-
-			{
-				const Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(utils::unflatten(Eigen::VectorXd::Zero(collision_mesh.full_ndof()), collision_mesh.dim()));
-				auto collision_set = std::make_shared<ipc::NormalCollisions>();
-				collision_set->set_are_shape_derivatives_enabled(false);
-				collision_set->build(collision_mesh, displaced_surface, dhat, 0.);
-				min_boundary_edge_length = sqrt(collision_set->compute_minimum_distance(collision_mesh, displaced_surface));
-			}
 
 			if (!has_dhat && dhat > min_boundary_edge_length)
 			{

@@ -322,10 +322,7 @@ namespace polyfem::solver
 			else if (type == "smooth_contact_force_norm")
 			{
 				// assert(states[args["state"]]->args["contact"]["use_gcp_formulation"]);
-				if (states[args["state"]]->mesh->is_volume())
-					obj = std::make_shared<SmoothContactForceForm<3>>(var2sim, *(states[args["state"]]), args);
-				else
-					obj = std::make_shared<SmoothContactForceForm<2>>(var2sim, *(states[args["state"]]), args);
+				obj = std::make_shared<SmoothContactForceForm>(var2sim, *(states[args["state"]]), args);
 			}
 			else if (type == "volume")
 			{

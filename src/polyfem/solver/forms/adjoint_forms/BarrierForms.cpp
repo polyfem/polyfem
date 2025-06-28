@@ -372,8 +372,7 @@ namespace polyfem::solver
 		return AdjointTools::map_primitive_to_node_order(state_, X) + state_.diff_cached.u(0);
 	}
 
-	template <int dim>
-	SmoothContactForceForm<dim>::SmoothContactForceForm(
+	SmoothContactForceForm::SmoothContactForceForm(
 		const VariableToSimulationGroup &variable_to_simulations,
 		const State &state,
 		const json &args)
@@ -382,16 +381,13 @@ namespace polyfem::solver
 		  params_(state.args["contact"]["dhat"], state.args["contact"]["alpha_t"], 0, state.args["contact"]["alpha_n"], 0, state.mesh->is_volume() ? 2 : 1),
 		  potential_(params_)
 	{
-		assert(dim == state.mesh->dimension());
-
 		auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
 		boundary_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
 
 		build_collision_mesh();
 	}
 
-	template <int dim>
-	void SmoothContactForceForm<dim>::build_collision_mesh()
+	void SmoothContactForceForm::build_collision_mesh()
 	{
 		// Deep copy and change the can_collide() function
 		collision_mesh_ = state_.collision_mesh;
@@ -421,17 +417,15 @@ namespace polyfem::solver
 		};
 	}
 
-	template <int dim>
-	ipc::SmoothCollisions<dim> SmoothContactForceForm<dim>::get_smooth_collision_set(const Eigen::MatrixXd &displaced_surface)
+	ipc::SmoothCollisions SmoothContactForceForm::get_smooth_collision_set(const Eigen::MatrixXd &displaced_surface)
 	{
-		ipc::SmoothCollisions<dim> collisions;
-		const auto smooth_contact = dynamic_cast<const SmoothContactForm<dim>*>(state_.solve_data.contact_form.get());
+		ipc::SmoothCollisions collisions;
+		const auto smooth_contact = dynamic_cast<const SmoothContactForm*>(state_.solve_data.contact_form.get());
 		collisions.build(collision_mesh_, displaced_surface, smooth_contact->get_params(), smooth_contact->using_adaptive_dhat(), smooth_contact->get_broad_phase());
 		return collisions;
 	}
 
-	template <int dim>
-	double SmoothContactForceForm<dim>::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
+	double SmoothContactForceForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
 	{
 		assert(state_.solve_data.contact_form != nullptr);
 
@@ -447,8 +441,7 @@ namespace polyfem::solver
 		return (coeff.array() * forces.array()).matrix().squaredNorm() / 2;
 	}
 
-	template <int dim>
-	Eigen::VectorXd SmoothContactForceForm<dim>::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
+	Eigen::VectorXd SmoothContactForceForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
 	{
 		assert(state_.solve_data.contact_form != nullptr);
 
@@ -466,8 +459,7 @@ namespace polyfem::solver
 		return weight() * (hessian * (coeff.array() * forces.array()).matrix());
 	}
 
-	template <int dim>
-	void SmoothContactForceForm<dim>::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void SmoothContactForceForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		assert(state_.solve_data.contact_form != nullptr);
 
@@ -492,14 +484,10 @@ namespace polyfem::solver
 		});
 	}
 
-	template <int dim>
-	void SmoothContactForceForm<dim>::solution_changed_step(const int time_step, const Eigen::VectorXd &x)
+	void SmoothContactForceForm::solution_changed_step(const int time_step, const Eigen::VectorXd &x)
 	{
 		build_collision_mesh();
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh_.dim()));
 		collisions_ = get_smooth_collision_set(displaced_surface);
 	}
-
-	template class SmoothContactForceForm<2>;
-	template class SmoothContactForceForm<3>;
 } // namespace polyfem::solver

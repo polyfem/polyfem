@@ -168,7 +168,7 @@ namespace polyfem::solver
         BarrierContactForm::update_barrier_stiffness(single_to_tiled(x), single_to_tiled(grad_energy));
     }
 
-    void PeriodicContactForm::force_periodic_shape_derivative(const State& state, const PeriodicMeshToMesh &periodic_mesh_map, const Eigen::VectorXd &periodic_mesh_representation, const ipc::NormalCollisions &contact_set, const Eigen::VectorXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
+    void PeriodicContactForm::force_periodic_shape_derivative(const State& state, const PeriodicMeshToMesh &periodic_mesh_map, const Eigen::VectorXd &periodic_mesh_representation, const ipc::NormalCollisions &contact_set, const Eigen::VectorXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const
     {
         const int dim = collision_mesh_.dim();
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(single_to_tiled(solution));
@@ -176,13 +176,13 @@ namespace polyfem::solver
         Eigen::VectorXd tiled_term;
 
         {
-		    StiffnessMatrix dq_h = collision_mesh_.to_full_dof(get_potential().shape_derivative(contact_set, collision_mesh_, displaced_surface));
+		    StiffnessMatrix dq_h = collision_mesh_.to_full_dof(barrier_potential().shape_derivative(contact_set, collision_mesh_, displaced_surface));
             tiled_term = dq_h.transpose() * single_to_tiled(adjoint_sol);
         }
 
         {
             Eigen::VectorXd force;
-            force = get_potential().gradient(contact_set, collision_mesh_, displaced_surface);
+            force = barrier_potential().gradient(contact_set, collision_mesh_, displaced_surface);
             force = collision_mesh_.to_full_dof(force);
             Eigen::MatrixXd adjoint_affine = utils::unflatten(adjoint_sol.tail(dim * dim), dim);
             for (int k = 0; k < collision_mesh_.num_vertices(); k++)
