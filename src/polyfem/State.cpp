@@ -49,8 +49,6 @@
 #include <igl/edges.h>
 #include <igl/Timer.h>
 
-#include <ipc/collisions/normal/normal_collisions.hpp>
-
 #include <iostream>
 #include <algorithm>
 #include <memory>

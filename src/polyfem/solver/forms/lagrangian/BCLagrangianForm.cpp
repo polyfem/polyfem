@@ -1,7 +1,6 @@
 #include "BCLagrangianForm.hpp"
 
 #include <polyfem/utils/Logger.hpp>
-#include <unsupported/Eigen/SparseExtra>
 #include <igl/slice.h>
 
 namespace polyfem::solver
@@ -112,8 +111,6 @@ namespace polyfem::solver
 			for (StiffnessMatrix::InnerIterator it(masked_lumped_mass_, k); it; ++it)
 			{
 				assert(it.col() == k);
-				// if (it.value() <= 0)
-				// 	log_and_throw_error("Invalid lumped mass matrix!");
 				tmp_triplets.emplace_back(it.row(), it.col(), sqrt(it.value()));
 			}
 		}
