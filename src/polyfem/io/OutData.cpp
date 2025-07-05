@@ -1662,7 +1662,7 @@ namespace polyfem::io
 			writer.add_field("traction_force", traction_forces_fun);
 		}
 
-		if (fun.cols() != 1 && state.mixed_assembler == nullptr && opts.export_field("gradient_of_potential"))
+		if (fun.cols() != 1 && state.mixed_assembler == nullptr && opts.export_field("gradient_of_elastic_potential"))
 		{
 			try
 			{
@@ -1687,7 +1687,10 @@ namespace polyfem::io
 			catch (std::exception &)
 			{
 			}
+		}
 
+		if (fun.cols() != 1 && state.mixed_assembler == nullptr && opts.export_field("gradient_of_contact_potential"))
+		{
 			try
 			{
 				Eigen::VectorXd potential_grad;
@@ -2042,7 +2045,7 @@ namespace polyfem::io
 			writer.add_field("contact_forces", forces_reshaped);
 		}
 
-		if (contact_form && state.args["contact"]["use_gcp_formulation"] && state.args["contact"]["use_adaptive_dhat"])
+		if (contact_form && state.args["contact"]["use_gcp_formulation"] && state.args["contact"]["use_adaptive_dhat"] && opts.export_field("adaptive_dhat"))
 		{
 			const auto form = std::dynamic_pointer_cast<solver::SmoothContactForm>(contact_form);
 			assert(form);
