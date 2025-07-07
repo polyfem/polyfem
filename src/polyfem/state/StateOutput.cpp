@@ -3,6 +3,8 @@
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
 
+#include <polyfem/assembler/Electrostatics.hpp>
+
 #include <filesystem>
 
 namespace polyfem
@@ -173,6 +175,14 @@ namespace polyfem
 			stress_path,
 			mises_path,
 			is_contact_enabled(), solution_frames);
+
+		if (assembler->name() == "Electrostatics")
+		{
+			std::shared_ptr<assembler::Electrostatics> electrostatics_assembler = std::dynamic_pointer_cast<assembler::Electrostatics>(assembler);
+			double energy = electrostatics_assembler->compute_stored_energy(mesh->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, 0, sol);
+			double capacitance = 2 * energy;
+			logger().info("Capacitance computation: {}", capacitance);
+		}
 	}
 
 	void State::save_restart_json(const double t0, const double dt, const int t) const
@@ -180,87 +190,90 @@ namespace polyfem
 		const std::string restart_json_path = args["output"]["restart_json"];
 		if (restart_json_path.empty())
 			return;
+		if (!(t % args["output"]["paraview"]["skip_frame"].get<int>()))
+		{
+			json restart_json;
+			restart_json["root_path"] = root_path();
+			restart_json["common"] = root_path();
+			restart_json["time"] = {{"t0", t0 + dt * t}};
 
-		json restart_json;
-		restart_json["root_path"] = root_path();
-		restart_json["common"] = root_path();
-		restart_json["time"] = {{"t0", t0 + dt * t}};
-
-		restart_json["space"] = R"({
+			restart_json["space"] = R"({
 			"remesh": {
 				"collapse": {
 					"abs_max_edge_length": -1,
 					"rel_max_edge_length": -1
-				}
-			}
-		})"_json;
-		restart_json["space"]["remesh"]["collapse"]["abs_max_edge_length"] = std::min(
-			args["space"]["remesh"]["collapse"]["abs_max_edge_length"].get<double>(),
-			starting_min_edge_length * args["space"]["remesh"]["collapse"]["rel_max_edge_length"].get<double>());
-		restart_json["space"]["remesh"]["collapse"]["rel_max_edge_length"] = std::numeric_limits<float>::max();
-
-		std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
-		if (!rest_mesh_path.empty())
-		{
-			rest_mesh_path = resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], t));
-
-			std::vector<json> patch;
-			if (args["geometry"].is_array())
-			{
-				const std::vector<json> in_geometry = args["geometry"];
-				for (int i = 0; i < in_geometry.size(); ++i)
-				{
-					if (!in_geometry[i]["is_obstacle"].get<bool>())
-					{
-						patch.push_back({
-							{"op", "remove"},
-							{"path", fmt::format("/geometry/{}", i)},
-						});
 					}
 				}
+			})"_json;
+			restart_json["space"]["remesh"]["collapse"]["abs_max_edge_length"] = std::min(
+				args["space"]["remesh"]["collapse"]["abs_max_edge_length"].get<double>(),
+				starting_min_edge_length * args["space"]["remesh"]["collapse"]["rel_max_edge_length"].get<double>());
+			restart_json["space"]["remesh"]["collapse"]["rel_max_edge_length"] = std::numeric_limits<float>::max();
 
-				const int remaining_geometry = in_geometry.size() - patch.size();
-				assert(remaining_geometry >= 0);
-
-				patch.push_back({
-					{"op", "add"},
-					{"path", fmt::format("/geometry/{}", remaining_geometry > 0 ? "0" : "-")},
-					{"value",
-					 {
-						 // TODO: this does not set the surface selections
-						 {"mesh", rest_mesh_path},
-					 }},
-				});
-			}
-			else
+			std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
+			if (!rest_mesh_path.empty())
 			{
-				assert(args["geometry"].is_object());
-				patch.push_back({
-					{"op", "remove"},
-					{"path", "/geometry"},
-				});
-				patch.push_back({
-					{"op", "replace"},
-					{"path", "/geometry"},
-					{"value",
-					 {
-						 // TODO: this does not set the surface selections
-						 {"mesh", rest_mesh_path},
-					 }},
-				});
+				rest_mesh_path = resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], t));
+
+				std::vector<json> patch;
+				if (args["geometry"].is_array())
+				{
+					const std::vector<json> in_geometry = args["geometry"];
+					for (int i = 0; i < in_geometry.size(); ++i)
+					{
+						if (!in_geometry[i]["is_obstacle"].get<bool>())
+						{
+							patch.push_back({
+								{"op", "remove"},
+								{"path", fmt::format("/geometry/{}", i)},
+							});
+						}
+					}
+
+					const int remaining_geometry = in_geometry.size() - patch.size();
+					assert(remaining_geometry >= 0);
+
+					patch.push_back({
+						{"op", "add"},
+						{"path", fmt::format("/geometry/{}", remaining_geometry > 0 ? "0" : "-")},
+						{"value",
+						 {
+							 // TODO: this does not set the surface selections
+							 {"mesh", rest_mesh_path},
+						 }},
+					});
+				}
+				else
+				{
+					assert(args["geometry"].is_object());
+					patch.push_back({
+						{"op", "remove"},
+						{"path", "/geometry"},
+					});
+					patch.push_back({
+						{"op", "replace"},
+						{"path", "/geometry"},
+						{"value",
+						 {
+							 // TODO: this does not set the surface selections
+							 {"mesh", rest_mesh_path},
+						 }},
+					});
+				}
+
+				restart_json["patch"] = patch;
 			}
 
-			restart_json["patch"] = patch;
+			restart_json["input"] = {{
+				"data",
+				{
+					{"state", resolve_output_path(fmt::format(args["output"]["data"]["state"], t))},
+				},
+			}};
+
+			std::ofstream file(resolve_output_path(fmt::format(restart_json_path, t)));
+			file << restart_json;
 		}
-
-		restart_json["input"] = {{
-			"data",
-			{
-				{"state", resolve_output_path(fmt::format(args["output"]["data"]["state"], t))},
-			},
-		}};
-
-		std::ofstream file(resolve_output_path(fmt::format(restart_json_path, t)));
-		file << restart_json;
 	}
+
 } // namespace polyfem

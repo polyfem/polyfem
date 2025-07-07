@@ -33,6 +33,7 @@ namespace polyfem::solver
 		b_current_proj_.setZero();
 
 		update_target(t); // initialize b_
+		compute_dbcdist(3);//todo: fix this for dims other than 3
 	}
 
 	BCLagrangianForm::BCLagrangianForm(const int ndof,
@@ -234,15 +235,17 @@ namespace polyfem::solver
 		lagr_mults_ -= k_al * masked_lumped_mass_sqrt_ * (A_ * x - b_);
 	}
 
-	double BCLagrangianForm::compute_momentum(const double dt, const int dim) const
+	void BCLagrangianForm::compute_dbcdist(const int dim)
 	{
-		const Eigen::MatrixXd vel = (b_current_ - b_prev_) / dt;
-		assert(vel.size() % dim == 0);
+		Eigen::MatrixXd dist;
+		if (has_projection())
+			dist = b_current_proj_ - b_prev_proj_;
+		else dist  = b_current_ - b_prev_;
+		assert(dist.size() % dim == 0);
+		const Eigen::MatrixXd dist_reshaped = dist.reshaped(dist.size() / dim, dim);
+		const Eigen::VectorXd dist_norm = dist_reshaped.rowwise().norm();
+		assert(dist_norm.size() == dist_reshaped.rows());
 
-		const Eigen::MatrixXd vel_reshaped = vel.reshaped(vel.size() / dim, dim);
-		const Eigen::VectorXd vel_norm = vel.rowwise().norm();
-		assert(vel_norm.size() == vel_reshaped.rows());
-
-		return (vel_norm.maxCoeff() * actual_mass_mat_).eval().coeffs().maxCoeff();
+		dbc_dist_= dist_norm.maxCoeff();
 	}
 } // namespace polyfem::solver
