@@ -2,7 +2,7 @@
 
 #include "SpatialIntegralForms.hpp"
 
-#include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/BarrierContactForm.hpp>
 
 namespace polyfem::solver
 {
