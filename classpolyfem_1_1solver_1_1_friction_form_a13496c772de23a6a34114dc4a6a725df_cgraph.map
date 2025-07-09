@@ -1,23 +1,13 @@
 <map id="polyfem::solver::FrictionForm::init_lagging" name="polyfem::solver::FrictionForm::init_lagging">
-<area shape="rect" id="Node000001" title="Initialize lagged fields." alt="" coords="5,213,185,253"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_friction_form.html#a2d39d4abbf850fbe702a89befd07da70" title="Update lagged fields." alt="" coords="233,213,413,253"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="186,231,220,231,220,236,186,236"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_contact_form.html#a1e2b2e9c627dfca2a35522c31697b8d6" title=" " alt="" coords="487,5,669,45"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="332,212,352,178,380,135,416,92,460,55,473,47,476,52,463,60,420,96,384,138,356,180,337,214"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_contact_form.html#a41dcdd4761553a2e08ed5c44056d0440" title="Get the current barrier stiffness." alt="" coords="487,69,669,109"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="342,211,393,165,425,140,460,119,475,112,477,117,463,124,428,145,396,169,346,215"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_friction_form.html#a813fc2f87b22de23caf3d1cb850fdfac" title="Compute the displaced positions of the surface nodes." alt="" coords="483,134,673,189"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="394,211,470,189,471,194,396,216"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_contact_form.html#a891722aad2290a8a2684cadc742d6561" title=" " alt="" coords="487,213,669,253"/>
-<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="414,231,473,231,473,236,414,236"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_contact_form.html#a7aadb732b6df116dd2374bdb64d0826c" title=" " alt="" coords="461,277,695,317"/>
-<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="404,251,485,271,484,277,403,256"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_contact_form.html#a7b10e043e76486979c2c65716276b920" title="Get use_area_weighting." alt="" coords="481,341,675,381"/>
-<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="349,251,400,290,463,327,479,334,477,339,460,332,397,294,346,255"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1solver_1_1_contact_form.html#ab73e102ef3f36bfa74c6e3bef4b96c83" title="Get use_improved_max_operator." alt="" coords="483,406,673,461"/>
-<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="339,252,388,320,423,358,463,391,473,397,470,402,460,395,419,362,384,323,335,255"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_contact_form.html#a41111805fab863090ce87259bb024995" title="Compute the displaced positions of the surface nodes." alt="" coords="743,134,932,189"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="673,159,729,159,729,164,673,164"/>
-<area shape="rect" id="Node000007" href="$namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" title="Unflatten rowwises, so every dim elements in x become a row." alt="" coords="980,149,1159,174"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="933,159,966,159,966,164,933,164"/>
+<area shape="rect" id="Node000001" title="Initialize lagged fields." alt="" coords="5,41,185,81"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_friction_form.html#a2d39d4abbf850fbe702a89befd07da70" title="Update lagged fields." alt="" coords="233,41,413,81"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="186,59,220,59,220,64,186,64"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_contact_form.html#a41dcdd4761553a2e08ed5c44056d0440" title="Get the current barrier stiffness." alt="" coords="465,5,647,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="413,45,451,39,451,44,414,50"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_friction_form.html#a813fc2f87b22de23caf3d1cb850fdfac" title="Compute the displaced positions of the surface nodes." alt="" coords="461,70,651,125"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="414,73,448,78,447,83,413,78"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_contact_form.html#a41111805fab863090ce87259bb024995" title="Compute the displaced positions of the surface nodes." alt="" coords="699,70,888,125"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="651,95,685,95,685,100,651,100"/>
+<area shape="rect" id="Node000006" href="$namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" title="Unflatten rowwises, so every dim elements in x become a row." alt="" coords="936,85,1115,110"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="889,95,922,95,922,100,889,100"/>
 </map>

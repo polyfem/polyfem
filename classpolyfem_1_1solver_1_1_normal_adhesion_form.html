@@ -309,6 +309,8 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:ad632d5142f854427a54fd4d661f460be" id="r_ad632d5142f854427a54fd4d661f460be"><td class="memItemLeft" align="right" valign="top">const ipc::BroadPhaseMethod&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_normal_adhesion_form.html#ad632d5142f854427a54fd4d661f460be">broad_phase_method_</a></td></tr>
 <tr class="memdesc:ad632d5142f854427a54fd4d661f460be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Broad phase method to use for distance and CCD evaluations.  <br /></td></tr>
 <tr class="separator:ad632d5142f854427a54fd4d661f460be"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ff81cadda0d6a4b14f86fdb1da72c0d" id="r_a1ff81cadda0d6a4b14f86fdb1da72c0d"><td class="memItemLeft" align="right" valign="top">const std::shared_ptr&lt; ipc::BroadPhase &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_normal_adhesion_form.html#a1ff81cadda0d6a4b14f86fdb1da72c0d">broad_phase_</a></td></tr>
+<tr class="separator:a1ff81cadda0d6a4b14f86fdb1da72c0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a1722190cfcc2af49f08b7648725680" id="r_a0a1722190cfcc2af49f08b7648725680"><td class="memItemLeft" align="right" valign="top">const ipc::TightInclusionCCD&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_normal_adhesion_form.html#a0a1722190cfcc2af49f08b7648725680">tight_inclusion_ccd_</a></td></tr>
 <tr class="memdesc:a0a1722190cfcc2af49f08b7648725680"><td class="mdescLeft">&#160;</td><td class="mdescRight">Continuous collision detection specification object.  <br /></td></tr>
 <tr class="separator:a0a1722190cfcc2af49f08b7648725680"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -430,7 +432,7 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00020">20</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00145">collision_set_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00102">dhat_a()</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00103">dhat_p()</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00097">enable_shape_derivatives()</a>, and <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00140">prev_distance_</a>.</p>
+<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00146">collision_set_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00102">dhat_a()</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00103">dhat_p()</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00097">enable_shape_derivatives()</a>, and <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00141">prev_distance_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -490,9 +492,9 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00105">105</a> of file <a class="el" href="_normal_adhesion_form_8hpp_source.html">NormalAdhesionForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00145">collision_set_</a>.</p>
+<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00146">collision_set_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00052">force_shape_derivative()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00053">force_shape_derivative()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -519,11 +521,11 @@ Here is the caller graph for this function:</div>
 
 <p>Compute the displaced positions of the surface nodes. </p>
 
-<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00067">67</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00068">68</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00114">collision_mesh_</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_tangential_adhesion_form_8cpp_source.html#l00053">polyfem::solver::TangentialAdhesionForm::compute_displaced_surface()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00143">first_derivative_unweighted()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00052">force_shape_derivative()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00047">init()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00170">line_search_begin()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00188">post_step()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00149">second_derivative_unweighted()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00165">solution_changed()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00062">update_quantities()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00093">value_per_element_unweighted()</a>, and <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00088">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_tangential_adhesion_form_8cpp_source.html#l00054">polyfem::solver::TangentialAdhesionForm::compute_displaced_surface()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00144">first_derivative_unweighted()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00053">force_shape_derivative()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00048">init()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00171">line_search_begin()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00189">post_step()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00150">second_derivative_unweighted()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00166">solution_changed()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00063">update_quantities()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00094">value_per_element_unweighted()</a>, and <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00089">value_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -564,7 +566,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00120">dhat_a_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00020">NormalAdhesionForm()</a>, and <a class="el" href="_tangential_adhesion_form_8cpp_source.html#l00100">polyfem::solver::TangentialAdhesionForm::update_lagging()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00020">NormalAdhesionForm()</a>, and <a class="el" href="_tangential_adhesion_form_8cpp_source.html#l00101">polyfem::solver::TangentialAdhesionForm::update_lagging()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -690,9 +692,9 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a79c3d290522cc08bdb0a94196c5f669a">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00143">143</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00144">144</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00114">collision_mesh_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00145">collision_set_</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00067">compute_displaced_surface()</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00149">normal_adhesion_potential_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00114">collision_mesh_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00146">collision_set_</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00068">compute_displaced_surface()</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00150">normal_adhesion_potential_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -747,9 +749,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00052">52</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00053">53</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00114">collision_mesh_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00105">collision_set()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00067">compute_displaced_surface()</a>, and <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00149">normal_adhesion_potential_</a>.</p>
+<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00114">collision_mesh_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00105">collision_set()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00068">compute_displaced_surface()</a>, and <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00150">normal_adhesion_potential_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -792,9 +794,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a57af020e5b4adb1f79380daade52a514">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00047">47</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00048">48</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00067">compute_displaced_surface()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00072">update_collision_set()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00068">compute_displaced_surface()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00073">update_collision_set()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -848,9 +850,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#aa88b23bfc5c51229123b96514d822fa7">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00170">170</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00171">171</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00135">broad_phase_method_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00147">candidates_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00114">collision_mesh_</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00067">compute_displaced_surface()</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00120">dhat_a_</a>, and <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00143">use_cached_candidates_</a>.</p>
+<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00136">broad_phase_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00148">candidates_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00114">collision_mesh_</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00068">compute_displaced_surface()</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00120">dhat_a_</a>, and <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00144">use_cached_candidates_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -886,9 +888,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#ab7cf0e74998f574f9b51502cb3eae209">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00182">182</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00183">183</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00147">candidates_</a>, and <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00143">use_cached_candidates_</a>.</p>
+<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00148">candidates_</a>, and <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00144">use_cached_candidates_</a>.</p>
 
 </div>
 </div>
@@ -946,9 +948,9 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00106">106</a> of file <a class="el" href="_normal_adhesion_form_8hpp_source.html">NormalAdhesionForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00149">normal_adhesion_potential_</a>.</p>
+<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00150">normal_adhesion_potential_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_tangential_adhesion_form_8cpp_source.html#l00029">polyfem::solver::TangentialAdhesionForm::force_shape_derivative()</a>, and <a class="el" href="_tangential_adhesion_form_8cpp_source.html#l00100">polyfem::solver::TangentialAdhesionForm::update_lagging()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_tangential_adhesion_form_8cpp_source.html#l00030">polyfem::solver::TangentialAdhesionForm::force_shape_derivative()</a>, and <a class="el" href="_tangential_adhesion_form_8cpp_source.html#l00101">polyfem::solver::TangentialAdhesionForm::update_lagging()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -992,9 +994,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#ab29c045a12b7367c9b227f12767e20b4">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00188">188</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00189">189</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00114">collision_mesh_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00145">collision_set_</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00067">compute_displaced_surface()</a>, and <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00140">prev_distance_</a>.</p>
+<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00114">collision_mesh_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00146">collision_set_</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00068">compute_displaced_surface()</a>, and <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00141">prev_distance_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1048,9 +1050,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a4313c8af547f3c51a1c8cafd5071b44b">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00149">149</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00150">150</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00114">collision_mesh_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00145">collision_set_</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00067">compute_displaced_surface()</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00149">normal_adhesion_potential_</a>, <a class="el" href="_timer_8hpp_source.html#l00010">POLYFEM_SCOPED_TIMER</a>, <a class="el" href="_form_8hpp_source.html#l00147">polyfem::solver::Form::project_to_psd_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00114">collision_mesh_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00146">collision_set_</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00068">compute_displaced_surface()</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00150">normal_adhesion_potential_</a>, <a class="el" href="_timer_8hpp_source.html#l00010">POLYFEM_SCOPED_TIMER</a>, <a class="el" href="_form_8hpp_source.html#l00147">polyfem::solver::Form::project_to_psd_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1093,9 +1095,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a297e1bb86a754a8240e9c2ef67a169f7">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00165">165</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00166">166</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00067">compute_displaced_surface()</a>, and <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00072">update_collision_set()</a>.</p>
+<p class="reference">References <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00068">compute_displaced_surface()</a>, and <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00073">update_collision_set()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1136,11 +1138,11 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00072">72</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00073">73</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00135">broad_phase_method_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00147">candidates_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00114">collision_mesh_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00145">collision_set_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00120">dhat_a_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00126">dmin_</a>, and <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00143">use_cached_candidates_</a>.</p>
+<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00136">broad_phase_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00148">candidates_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00114">collision_mesh_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00146">collision_set_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00120">dhat_a_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00126">dmin_</a>, and <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00144">use_cached_candidates_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00047">init()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00165">solution_changed()</a>, and <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00062">update_quantities()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00048">init()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00166">solution_changed()</a>, and <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00063">update_quantities()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1194,9 +1196,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a36e58606b6cdc7b4bf16aa1bd7fd351c">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00062">62</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00063">63</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00067">compute_displaced_surface()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00072">update_collision_set()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00068">compute_displaced_surface()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00073">update_collision_set()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1240,9 +1242,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#ad416da938150c3c0920be0c16d21bbbd">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00093">93</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00094">94</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00114">collision_mesh_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00145">collision_set_</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00067">compute_displaced_surface()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00114">collision_mesh_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00146">collision_set_</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00068">compute_displaced_surface()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1286,9 +1288,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a464a37a939d522c672aed03d281a5a92">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00088">88</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00089">89</a> of file <a class="el" href="_normal_adhesion_form_8cpp_source.html">NormalAdhesionForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00114">collision_mesh_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00145">collision_set_</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00067">compute_displaced_surface()</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00149">normal_adhesion_potential_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00114">collision_mesh_</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00146">collision_set_</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00068">compute_displaced_surface()</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00150">normal_adhesion_potential_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1327,6 +1329,32 @@ Here is the call graph for this function:</div>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="a1ff81cadda0d6a4b14f86fdb1da72c0d" name="a1ff81cadda0d6a4b14f86fdb1da72c0d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ff81cadda0d6a4b14f86fdb1da72c0d">&#9670;&#160;</a></span>broad_phase_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::shared_ptr&lt;ipc::BroadPhase&gt; polyfem::solver::NormalAdhesionForm::broad_phase_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00136">136</a> of file <a class="el" href="_normal_adhesion_form_8hpp_source.html">NormalAdhesionForm.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00171">line_search_begin()</a>, and <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00073">update_collision_set()</a>.</p>
+
+</div>
+</div>
 <a id="ad632d5142f854427a54fd4d661f460be" name="ad632d5142f854427a54fd4d661f460be"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad632d5142f854427a54fd4d661f460be">&#9670;&#160;</a></span>broad_phase_method_</h2>
 
@@ -1350,8 +1378,6 @@ Here is the call graph for this function:</div>
 <p>Broad phase method to use for distance and CCD evaluations. </p>
 
 <p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00135">135</a> of file <a class="el" href="_normal_adhesion_form_8hpp_source.html">NormalAdhesionForm.hpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00170">line_search_begin()</a>, and <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00072">update_collision_set()</a>.</p>
 
 </div>
 </div>
@@ -1377,9 +1403,9 @@ Here is the call graph for this function:</div>
 
 <p>Cached candidate set for the current solution. </p>
 
-<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00147">147</a> of file <a class="el" href="_normal_adhesion_form_8hpp_source.html">NormalAdhesionForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00148">148</a> of file <a class="el" href="_normal_adhesion_form_8hpp_source.html">NormalAdhesionForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00170">line_search_begin()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00182">line_search_end()</a>, and <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00072">update_collision_set()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00171">line_search_begin()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00183">line_search_end()</a>, and <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00073">update_collision_set()</a>.</p>
 
 </div>
 </div>
@@ -1407,7 +1433,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00114">114</a> of file <a class="el" href="_normal_adhesion_form_8hpp_source.html">NormalAdhesionForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00067">compute_displaced_surface()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00143">first_derivative_unweighted()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00052">force_shape_derivative()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00170">line_search_begin()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00188">post_step()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00149">second_derivative_unweighted()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00072">update_collision_set()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00093">value_per_element_unweighted()</a>, and <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00088">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00068">compute_displaced_surface()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00144">first_derivative_unweighted()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00053">force_shape_derivative()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00171">line_search_begin()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00189">post_step()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00150">second_derivative_unweighted()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00073">update_collision_set()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00094">value_per_element_unweighted()</a>, and <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00089">value_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -1433,9 +1459,9 @@ Here is the call graph for this function:</div>
 
 <p>Cached constraint set for the current solution. </p>
 
-<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00145">145</a> of file <a class="el" href="_normal_adhesion_form_8hpp_source.html">NormalAdhesionForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00146">146</a> of file <a class="el" href="_normal_adhesion_form_8hpp_source.html">NormalAdhesionForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00105">collision_set()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00143">first_derivative_unweighted()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00020">NormalAdhesionForm()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00188">post_step()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00149">second_derivative_unweighted()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00072">update_collision_set()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00093">value_per_element_unweighted()</a>, and <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00088">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00105">collision_set()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00144">first_derivative_unweighted()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00020">NormalAdhesionForm()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00189">post_step()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00150">second_derivative_unweighted()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00073">update_collision_set()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00094">value_per_element_unweighted()</a>, and <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00089">value_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -1463,7 +1489,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00120">120</a> of file <a class="el" href="_normal_adhesion_form_8hpp_source.html">NormalAdhesionForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00102">dhat_a()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00170">line_search_begin()</a>, and <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00072">update_collision_set()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00102">dhat_a()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00171">line_search_begin()</a>, and <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00073">update_collision_set()</a>.</p>
 
 </div>
 </div>
@@ -1519,7 +1545,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00126">126</a> of file <a class="el" href="_normal_adhesion_form_8hpp_source.html">NormalAdhesionForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00072">update_collision_set()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00073">update_collision_set()</a>.</p>
 
 </div>
 </div>
@@ -1597,9 +1623,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00149">149</a> of file <a class="el" href="_normal_adhesion_form_8hpp_source.html">NormalAdhesionForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00150">150</a> of file <a class="el" href="_normal_adhesion_form_8hpp_source.html">NormalAdhesionForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00143">first_derivative_unweighted()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00052">force_shape_derivative()</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00106">normal_adhesion_potential()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00149">second_derivative_unweighted()</a>, and <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00088">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00144">first_derivative_unweighted()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00053">force_shape_derivative()</a>, <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00106">normal_adhesion_potential()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00150">second_derivative_unweighted()</a>, and <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00089">value_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -1625,9 +1651,9 @@ Here is the call graph for this function:</div>
 
 <p>Previous minimum distance between all elements. </p>
 
-<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00140">140</a> of file <a class="el" href="_normal_adhesion_form_8hpp_source.html">NormalAdhesionForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00141">141</a> of file <a class="el" href="_normal_adhesion_form_8hpp_source.html">NormalAdhesionForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00020">NormalAdhesionForm()</a>, and <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00188">post_step()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00020">NormalAdhesionForm()</a>, and <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00189">post_step()</a>.</p>
 
 </div>
 </div>
@@ -1671,7 +1697,7 @@ Here is the call graph for this function:</div>
 
 <p>Continuous collision detection specification object. </p>
 
-<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00137">137</a> of file <a class="el" href="_normal_adhesion_form_8hpp_source.html">NormalAdhesionForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00138">138</a> of file <a class="el" href="_normal_adhesion_form_8hpp_source.html">NormalAdhesionForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -1697,9 +1723,9 @@ Here is the call graph for this function:</div>
 
 <p>If true, use the cached candidate set for the current solution. </p>
 
-<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00143">143</a> of file <a class="el" href="_normal_adhesion_form_8hpp_source.html">NormalAdhesionForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_normal_adhesion_form_8hpp_source.html#l00144">144</a> of file <a class="el" href="_normal_adhesion_form_8hpp_source.html">NormalAdhesionForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00170">line_search_begin()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00182">line_search_end()</a>, and <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00072">update_collision_set()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00171">line_search_begin()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00183">line_search_end()</a>, and <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00073">update_collision_set()</a>.</p>
 
 </div>
 </div>

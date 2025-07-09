@@ -246,7 +246,7 @@ $(document).ready(function(){initNavTree('_l2_projection_8cpp_source.html',''); 
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keywordflow">if</span> (collision_mesh.num_vertices() != 0)</div>
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        {</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            forms.push_back(std::make_shared&lt;ContactForm&gt;(</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            forms.push_back(std::make_shared&lt;BarrierContactForm&gt;(</div>
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                collision_mesh, dhat, <span class="comment">/*avg_mass=*/</span>1.0, use_area_weighting, use_improved_max_operator,</div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                use_physical_barrier, <span class="comment">/*use_adaptive_barrier_stiffness=*/</span><span class="keyword">false</span>, <span class="comment">/*is_time_dependent=*/</span><span class="keyword">true</span>,</div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                <span class="comment">/*enable_shape_derivatives=*/</span><span class="keyword">false</span>, broad_phase_method, ccd_tolerance,</div>

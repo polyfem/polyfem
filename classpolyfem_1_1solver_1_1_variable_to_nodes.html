@@ -136,8 +136,8 @@ Inheritance diagram for polyfem::solver::VariableToNodes:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a97d2bc7b8b1d01f378b727eeb4dc0fc3" id="r_a97d2bc7b8b1d01f378b727eeb4dc0fc3"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_nodes.html#a97d2bc7b8b1d01f378b727eeb4dc0fc3">VariableToNodes</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state)</td></tr>
-<tr class="separator:a97d2bc7b8b1d01f378b727eeb4dc0fc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f2594a244d93264b589643172866cc4" id="r_a0f2594a244d93264b589643172866cc4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_nodes.html#a0f2594a244d93264b589643172866cc4">VariableToNodes</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const std::vector&lt; int &gt; &amp;active_dimensions)</td></tr>
+<tr class="separator:a0f2594a244d93264b589643172866cc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8168d71a02f471991185019f0e770141" id="r_a8168d71a02f471991185019f0e770141"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_nodes.html#a8168d71a02f471991185019f0e770141">~VariableToNodes</a> ()</td></tr>
 <tr class="separator:a8168d71a02f471991185019f0e770141"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a39ca460e7a381b3449e6ff6899d13ba5" id="r_a39ca460e7a381b3449e6ff6899d13ba5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_nodes.html#a39ca460e7a381b3449e6ff6899d13ba5">set_output_indexing</a> (const std::vector&lt; int &gt; &amp;node_ids) final</td></tr>
@@ -147,6 +147,8 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
+<tr class="memitem:ace3eb45b67d926a4e7293432010f237e" id="r_ace3eb45b67d926a4e7293432010f237e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_nodes.html#ace3eb45b67d926a4e7293432010f237e">active_dimensions_</a></td></tr>
+<tr class="separator:ace3eb45b67d926a4e7293432010f237e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a48ba912d7a3423cfaf513ec41c9641e0" id="r_a48ba912d7a3423cfaf513ec41c9641e0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_nodes.html#a48ba912d7a3423cfaf513ec41c9641e0">dim</a></td></tr>
 <tr class="separator:a48ba912d7a3423cfaf513ec41c9641e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac164dec4d47eee9e065e33a3b188d107" id="r_ac164dec4d47eee9e065e33a3b188d107"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_nodes.html#ac164dec4d47eee9e065e33a3b188d107">output_indexing_</a></td></tr>
@@ -156,8 +158,8 @@ Protected Attributes</h2></td></tr>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00013">13</a> of file <a class="el" href="_node_composite_parametrizations_8hpp_source.html">NodeCompositeParametrizations.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a97d2bc7b8b1d01f378b727eeb4dc0fc3" name="a97d2bc7b8b1d01f378b727eeb4dc0fc3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a97d2bc7b8b1d01f378b727eeb4dc0fc3">&#9670;&#160;</a></span>VariableToNodes()</h2>
+<a id="a0f2594a244d93264b589643172866cc4" name="a0f2594a244d93264b589643172866cc4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f2594a244d93264b589643172866cc4">&#9670;&#160;</a></span>VariableToNodes()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -166,15 +168,25 @@ Protected Attributes</h2></td></tr>
           <td class="memname">polyfem::solver::VariableToNodes::VariableToNodes </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;&#160;</td>
-          <td class="paramname"><em>state</em></td><td>)</td>
+          <td class="paramname"><em>state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
+          <td class="paramname"><em>active_dimensions</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p class="definition">Definition at line <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00009">9</a> of file <a class="el" href="_node_composite_parametrizations_8cpp_source.html">NodeCompositeParametrizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00022">dim</a>, and <a class="el" href="_state_8hpp_source.html#l00471">polyfem::State::mesh</a>.</p>
+<p class="reference">References <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00022">active_dimensions_</a>, <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00023">dim</a>, and <a class="el" href="_state_8hpp_source.html#l00471">polyfem::State::mesh</a>.</p>
 
 </div>
 </div>
@@ -231,9 +243,9 @@ Protected Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00019">19</a> of file <a class="el" href="_node_composite_parametrizations_8hpp_source.html">NodeCompositeParametrizations.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00024">output_indexing_</a>.</p>
+<p class="reference">References <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00025">output_indexing_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_variable_to_simulation_8cpp_source.html#l00204">polyfem::solver::ShapeVariableToSimulation::set_output_indexing()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_variable_to_simulation_8cpp_source.html#l00210">polyfem::solver::ShapeVariableToSimulation::set_output_indexing()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -266,11 +278,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00014">14</a> of file <a class="el" href="_node_composite_parametrizations_8cpp_source.html">NodeCompositeParametrizations.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00017">17</a> of file <a class="el" href="_node_composite_parametrizations_8cpp_source.html">NodeCompositeParametrizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00022">dim</a>, and <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00024">output_indexing_</a>.</p>
+<p class="reference">References <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00022">active_dimensions_</a>, <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00023">dim</a>, and <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00025">output_indexing_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00044">polyfem::solver::VariableToBoundaryNodes::VariableToBoundaryNodes()</a>, <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00068">polyfem::solver::VariableToBoundaryNodesExclusive::VariableToBoundaryNodesExclusive()</a>, and <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00022">polyfem::solver::VariableToInteriorNodes::VariableToInteriorNodes()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00047">polyfem::solver::VariableToBoundaryNodes::VariableToBoundaryNodes()</a>, <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00071">polyfem::solver::VariableToBoundaryNodesExclusive::VariableToBoundaryNodesExclusive()</a>, and <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00025">polyfem::solver::VariableToInteriorNodes::VariableToInteriorNodes()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -280,6 +292,32 @@ Here is the caller graph for this function:</div>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="ace3eb45b67d926a4e7293432010f237e" name="ace3eb45b67d926a4e7293432010f237e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace3eb45b67d926a4e7293432010f237e">&#9670;&#160;</a></span>active_dimensions_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int&gt; polyfem::solver::VariableToNodes::active_dimensions_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00022">22</a> of file <a class="el" href="_node_composite_parametrizations_8hpp_source.html">NodeCompositeParametrizations.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00017">set_output_indexing()</a>, and <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00009">VariableToNodes()</a>.</p>
+
+</div>
+</div>
 <a id="a48ba912d7a3423cfaf513ec41c9641e0" name="a48ba912d7a3423cfaf513ec41c9641e0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a48ba912d7a3423cfaf513ec41c9641e0">&#9670;&#160;</a></span>dim</h2>
 
@@ -300,9 +338,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00022">22</a> of file <a class="el" href="_node_composite_parametrizations_8hpp_source.html">NodeCompositeParametrizations.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00023">23</a> of file <a class="el" href="_node_composite_parametrizations_8hpp_source.html">NodeCompositeParametrizations.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00014">set_output_indexing()</a>, and <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00009">VariableToNodes()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00017">set_output_indexing()</a>, and <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00009">VariableToNodes()</a>.</p>
 
 </div>
 </div>
@@ -326,9 +364,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00024">24</a> of file <a class="el" href="_node_composite_parametrizations_8hpp_source.html">NodeCompositeParametrizations.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00025">25</a> of file <a class="el" href="_node_composite_parametrizations_8hpp_source.html">NodeCompositeParametrizations.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00019">get_output_indexing()</a>, and <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00014">set_output_indexing()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_node_composite_parametrizations_8hpp_source.html#l00019">get_output_indexing()</a>, and <a class="el" href="_node_composite_parametrizations_8cpp_source.html#l00017">set_output_indexing()</a>.</p>
 
 </div>
 </div>

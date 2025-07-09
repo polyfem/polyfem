@@ -22,5 +22,6 @@ var searchData=
   ['localboundary_19',['LocalBoundary',['../classpolyfem_1_1mesh_1_1_local_boundary.html',1,'polyfem::mesh']]],
   ['localmesh_20',['LocalMesh',['../classpolyfem_1_1mesh_1_1_local_mesh.html',1,'polyfem::mesh']]],
   ['localrelaxationdata_21',['LocalRelaxationData',['../classpolyfem_1_1mesh_1_1_local_relaxation_data.html',1,'polyfem::mesh']]],
-  ['lshape_22',['Lshape',['../classpolyfem_1_1problem_1_1_lshape.html',1,'polyfem::problem']]]
+  ['logcompositeform_22',['LogCompositeForm',['../classpolyfem_1_1solver_1_1_log_composite_form.html',1,'polyfem::solver']]],
+  ['lshape_23',['Lshape',['../classpolyfem_1_1problem_1_1_lshape.html',1,'polyfem::problem']]]
 ];

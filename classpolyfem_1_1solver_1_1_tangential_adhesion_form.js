@@ -18,6 +18,7 @@ var classpolyfem_1_1solver_1_1_tangential_adhesion_form =
     [ "update_lagging", "classpolyfem_1_1solver_1_1_tangential_adhesion_form.html#a853839e289cdfec601630222809bace8", null ],
     [ "uses_lagging", "classpolyfem_1_1solver_1_1_tangential_adhesion_form.html#a06b8442c6b30aeca9fdfeaeb989ef450", null ],
     [ "value_unweighted", "classpolyfem_1_1solver_1_1_tangential_adhesion_form.html#a59b14fec6bc7ba26b6a2a7297786915f", null ],
+    [ "broad_phase_", "classpolyfem_1_1solver_1_1_tangential_adhesion_form.html#a5ceae2073cf4050f85e104c761db9332", null ],
     [ "broad_phase_method_", "classpolyfem_1_1solver_1_1_tangential_adhesion_form.html#a01d70d460c1d88908bce337c97e3bd6f", null ],
     [ "collision_mesh_", "classpolyfem_1_1solver_1_1_tangential_adhesion_form.html#a7c9812229add09f9ad5f55ccad54e7fc", null ],
     [ "epsa_", "classpolyfem_1_1solver_1_1_tangential_adhesion_form.html#a87375e17c52882bd36afba7eef34f904", null ],

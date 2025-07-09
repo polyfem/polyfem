@@ -1,21 +1,23 @@
 <map id="polyfem::solver::ContactForm::barrier_stiffness" name="polyfem::solver::ContactForm::barrier_stiffness">
-<area shape="rect" id="Node000001" title="Get the current barrier stiffness." alt="" coords="529,165,712,205"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_friction_form.html#a4375e23a73236b928197ff3a09a97859" title=" " alt="" coords="264,5,479,45"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="592,156,543,107,513,81,480,60,454,48,457,43,483,55,516,77,547,103,596,153"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_contact_form.html#a6472da168dd9963461986603b8e19224" title=" " alt="" coords="264,69,479,109"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="567,162,480,124,445,112,447,107,482,119,569,157"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_contact_form.html#a452270c6eee7f24125879759cca9f760" title="Update fields after a step in the optimization." alt="" coords="280,133,463,173"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="516,175,463,168,463,162,516,169"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_contact_form.html#a44dd877b057218dfa5672095da50b24e" title="Get the current barrier stiffness." alt="" coords="274,197,469,237"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="516,201,469,208,468,202,515,196"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_contact_form.html#ab7f5b55a31f0829c3ae3002b1b1959a7" title="Update the barrier stiffness based on the current elasticity energy." alt="" coords="261,261,481,301"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="569,214,482,252,447,264,445,259,480,247,567,209"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_friction_form.html#a2d39d4abbf850fbe702a89befd07da70" title="Update lagged fields." alt="" coords="281,327,461,367"/>
-<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="596,218,546,268,516,293,483,316,454,329,452,324,480,311,513,289,543,264,592,214"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_periodic_contact_form.html#a3fb92cf33c43544ec3d89252409466fc" title="Update fields after a step in the optimization." alt="" coords="17,133,201,173"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="266,156,202,156,202,151,266,151"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_periodic_contact_form.html#aec8495c08075636045656651fc2ff96f" title="Update the barrier stiffness based on the current elasticity energy." alt="" coords="5,251,213,306"/>
-<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="248,283,213,282,213,277,248,277"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_friction_form.html#a13496c772de23a6a34114dc4a6a725df" title="Initialize lagged fields." alt="" coords="19,331,199,371"/>
-<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="267,351,199,352,199,347,267,346"/>
+<area shape="rect" id="Node000001" title="Get the current barrier stiffness." alt="" coords="541,213,724,253"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_barrier_contact_form.html#a57854bda1c33f4580273261a344532dc" title=" " alt="" coords="281,5,473,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="610,203,561,138,528,104,492,75,470,63,473,58,495,70,532,100,565,135,614,200"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_smooth_contact_form.html#ae89172bee9094d47f8e75c6982e1c3fa" title=" " alt="" coords="261,85,493,125"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="595,206,548,171,492,139,462,127,464,122,494,134,551,167,598,202"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_barrier_contact_form.html#ae51a823d944f3967789b1063877532c0" title="Update fields after a step in the optimization." alt="" coords="289,149,465,189"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="538,212,457,191,458,186,539,207"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_smooth_contact_form.html#a9cf19a87c2da19c62ef5a30305efc2ae" title="Update fields after a step in the optimization." alt="" coords="261,213,493,253"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="528,235,494,235,494,230,528,230"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_contact_form.html#a44dd877b057218dfa5672095da50b24e" title="Get the current barrier stiffness." alt="" coords="280,277,475,317"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="539,259,458,279,457,274,538,254"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_barrier_contact_form.html#ad76cf24b971189c7b9e1f1c967df599c" title="Update the barrier stiffness based on the current elasticity energy." alt="" coords="273,341,481,396"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="597,264,550,298,495,331,467,344,464,339,492,326,547,293,594,259"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_friction_form.html#a2d39d4abbf850fbe702a89befd07da70" title="Update lagged fields." alt="" coords="287,421,467,461"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="617,266,569,339,534,378,495,411,469,424,466,420,492,406,531,374,564,336,612,263"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_periodic_contact_form.html#a3fb92cf33c43544ec3d89252409466fc" title="Update fields after a step in the optimization." alt="" coords="17,149,201,189"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="276,171,201,171,201,166,276,166"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_periodic_contact_form.html#aec8495c08075636045656651fc2ff96f" title="Update the barrier stiffness based on the current elasticity energy." alt="" coords="5,341,213,396"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="260,371,214,371,214,366,260,366"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1solver_1_1_friction_form.html#a13496c772de23a6a34114dc4a6a725df" title="Initialize lagged fields." alt="" coords="19,421,199,461"/>
+<area shape="poly" id="edge10_Node000010_Node000011" title=" " alt="" coords="274,443,200,443,200,438,274,438"/>
 </map>

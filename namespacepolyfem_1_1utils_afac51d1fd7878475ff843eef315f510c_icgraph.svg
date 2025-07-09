@@ -458,11 +458,11 @@ var sectionId = 'dynsection-31';
 <!-- Node46 -->
 <g id="Node000046" class="node">
 <title>Node46</title>
-<g id="a_Node000046"><a xlink:href="classpolyfem_1_1solver_1_1_contact_form.html#a8edd8128512f3f5c54bd6fa79de8f979" target="_top" xlink:title="Compute the value of the form multiplied per element.">
-<polygon fill="white" stroke="#666666" points="1187,-185.5 1046,-185.5 1046,-144.5 1187,-144.5 1187,-185.5"/>
-<text text-anchor="start" x="1054" y="-173.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Contact</text>
-<text text-anchor="start" x="1054" y="-162.5" font-family="Helvetica,sans-Serif" font-size="10.00">Form::value_per_element</text>
-<text text-anchor="middle" x="1116.5" y="-151.5" font-family="Helvetica,sans-Serif" font-size="10.00">_unweighted</text>
+<g id="a_Node000046"><a xlink:href="classpolyfem_1_1solver_1_1_barrier_contact_form.html#a78bbdfdac89b8a6bea6f2f1437f6f005" target="_top" xlink:title="Compute the value of the form multiplied per element.">
+<polygon fill="white" stroke="#666666" points="1183,-185.5 1050,-185.5 1050,-144.5 1183,-144.5 1183,-185.5"/>
+<text text-anchor="start" x="1058" y="-173.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Barrier</text>
+<text text-anchor="start" x="1058" y="-162.5" font-family="Helvetica,sans-Serif" font-size="10.00">ContactForm::value_per</text>
+<text text-anchor="middle" x="1116.5" y="-151.5" font-family="Helvetica,sans-Serif" font-size="10.00">_element_unweighted</text>
 </a>
 </g>
 </g>
@@ -470,7 +470,7 @@ var sectionId = 'dynsection-31';
 <g id="edge57_Node000001_Node000046" class="edge">
 <title>Node1&#45;&gt;Node46</title>
 <g id="a_edge57_Node000001_Node000046"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1312.1,-565.84C1302.6,-487.45 1269.95,-249.61 1218,-195 1209.59,-186.16 1198.7,-179.89 1187.2,-175.46"/>
+<path fill="none" stroke="#63b8ff" d="M1312.1,-565.84C1302.6,-487.45 1269.95,-249.61 1218,-195 1208.59,-185.11 1196.06,-178.43 1183.06,-173.95"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="1308.63,-566.29 1313.29,-575.81 1315.58,-565.46 1308.63,-566.29"/>
 </a>
 </g>

@@ -22,6 +22,7 @@ var classpolyfem_1_1solver_1_1_normal_adhesion_form =
     [ "value_per_element_unweighted", "classpolyfem_1_1solver_1_1_normal_adhesion_form.html#ac9d4a700b2d0561eed05808cdd03a883", null ],
     [ "value_unweighted", "classpolyfem_1_1solver_1_1_normal_adhesion_form.html#ab3da5bb13c4844e68820cf711eef0153", null ],
     [ "Y", "classpolyfem_1_1solver_1_1_normal_adhesion_form.html#a2c30bf37e19a1bdc6f9f1310bc6d5fa1", null ],
+    [ "broad_phase_", "classpolyfem_1_1solver_1_1_normal_adhesion_form.html#a1ff81cadda0d6a4b14f86fdb1da72c0d", null ],
     [ "broad_phase_method_", "classpolyfem_1_1solver_1_1_normal_adhesion_form.html#ad632d5142f854427a54fd4d661f460be", null ],
     [ "candidates_", "classpolyfem_1_1solver_1_1_normal_adhesion_form.html#a6931069c1178dbaaf1698fb39cd9e9e9", null ],
     [ "collision_mesh_", "classpolyfem_1_1solver_1_1_normal_adhesion_form.html#a19522e811f85fb031089e943bf5350fa", null ],

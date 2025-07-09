@@ -134,6 +134,7 @@ var hierarchy =
           [ "polyfem::solver::DivideForm", "classpolyfem_1_1solver_1_1_divide_form.html", null ],
           [ "polyfem::solver::HomoCompositeForm", "classpolyfem_1_1solver_1_1_homo_composite_form.html", null ],
           [ "polyfem::solver::InequalityConstraintForm", "classpolyfem_1_1solver_1_1_inequality_constraint_form.html", null ],
+          [ "polyfem::solver::LogCompositeForm", "classpolyfem_1_1solver_1_1_log_composite_form.html", null ],
           [ "polyfem::solver::NegativeCompositeForm", "classpolyfem_1_1solver_1_1_negative_composite_form.html", null ],
           [ "polyfem::solver::PlusConstCompositeForm", "classpolyfem_1_1solver_1_1_plus_const_composite_form.html", null ],
           [ "polyfem::solver::PowerForm", "classpolyfem_1_1solver_1_1_power_form.html", null ],
@@ -151,6 +152,7 @@ var hierarchy =
           [ "polyfem::solver::MaxStressForm", "classpolyfem_1_1solver_1_1_max_stress_form.html", null ],
           [ "polyfem::solver::NodeTargetForm", "classpolyfem_1_1solver_1_1_node_target_form.html", null ],
           [ "polyfem::solver::ProxyContactForceForm", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html", null ],
+          [ "polyfem::solver::SmoothContactForceForm", "classpolyfem_1_1solver_1_1_smooth_contact_force_form.html", null ],
           [ "polyfem::solver::SpatialIntegralForm", "classpolyfem_1_1solver_1_1_spatial_integral_form.html", [
             [ "polyfem::solver::AccelerationForm", "classpolyfem_1_1solver_1_1_acceleration_form.html", null ],
             [ "polyfem::solver::ComplianceForm", "classpolyfem_1_1solver_1_1_compliance_form.html", null ],
@@ -178,7 +180,10 @@ var hierarchy =
       ] ],
       [ "polyfem::solver::BodyForm", "classpolyfem_1_1solver_1_1_body_form.html", null ],
       [ "polyfem::solver::ContactForm", "classpolyfem_1_1solver_1_1_contact_form.html", [
-        [ "polyfem::solver::PeriodicContactForm", "classpolyfem_1_1solver_1_1_periodic_contact_form.html", null ]
+        [ "polyfem::solver::BarrierContactForm", "classpolyfem_1_1solver_1_1_barrier_contact_form.html", [
+          [ "polyfem::solver::PeriodicContactForm", "classpolyfem_1_1solver_1_1_periodic_contact_form.html", null ]
+        ] ],
+        [ "polyfem::solver::SmoothContactForm", "classpolyfem_1_1solver_1_1_smooth_contact_form.html", null ]
       ] ],
       [ "polyfem::solver::FrictionForm", "classpolyfem_1_1solver_1_1_friction_form.html", null ],
       [ "polyfem::solver::InertiaForm", "classpolyfem_1_1solver_1_1_inertia_form.html", null ],
