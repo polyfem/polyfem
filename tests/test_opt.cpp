@@ -288,6 +288,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 
 		json composite_map_args = R"({
 			"composite_map_type": "boundary_excluding_surface",
+			"active_dimensions": [],
 			"surface_selection": [1]
 		})"_json;
 

@@ -1210,10 +1210,50 @@
             "use_improved_max_operator",
             "use_physical_barrier",
             "collision_mesh",
+            "use_gcp_formulation",
+            "alpha_n",
+            "alpha_t",
+            "min_distance_ratio",
+            "use_adaptive_dhat",
             "periodic",
             "adhesion"
         ],
         "doc": "Contact handling parameters."
+    },
+    {
+        "pointer": "/contact/use_adaptive_dhat",
+        "default": false,
+        "type": "bool",
+        "doc": "True if adaptive epsilon is used."
+    },
+    {
+        "pointer": "/contact/min_distance_ratio",
+        "default": 0.5,
+        "min": 0,
+        "type": "float",
+        "doc": "Ratio of the minimum distance to contact to define local epsilon."
+    },
+    {
+        "pointer": "/contact/use_gcp_formulation",
+        "default": false,
+        "type": "bool",
+        "doc": "True if the smooth contact formulation is used."
+    },
+    {
+        "pointer": "/contact/alpha_t",
+        "default": 0.5,
+        "max": 1,
+        "min": -1,
+        "type": "float",
+        "doc": "Control the smoothness of tangent angle contraints of contact pairs."
+    },
+    {
+        "pointer": "/contact/alpha_n",
+        "default": 0.5,
+        "max": 1,
+        "min": -1,
+        "type": "float",
+        "doc": "Control the smoothness of normal angle contraints of contact pairs."
     },
     {
         "pointer": "/contact/enabled",
@@ -1295,6 +1335,14 @@
             "enabled"
         ],
         "doc": "Construct a collision mesh with a maximum edge length."
+    },
+    {
+        "pointer": "/contact/collision_mesh",
+        "type": "object",
+        "optional": [
+            "enabled"
+        ],
+        "doc": "Construct a collision mesh."
     },
     {
         "pointer": "/contact/collision_mesh/mesh",
@@ -1480,9 +1528,16 @@
             "friction_iterations",
             "tangential_adhesion_iterations",
             "friction_convergence_tol",
-            "barrier_stiffness"
+            "barrier_stiffness",
+            "initial_barrier_stiffness"
         ],
         "doc": "Settings for contact handling in the solver."
+    },
+    {
+        "pointer": "/solver/contact/initial_barrier_stiffness",
+        "default": 1,
+        "type": "float",
+        "doc": "Initial barrier stiffness if adaptive barrier is used."
     },
     {
         "pointer": "/solver/contact/CCD",

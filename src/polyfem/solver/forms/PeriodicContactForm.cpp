@@ -21,7 +21,7 @@ namespace polyfem::solver
                         const bool enable_shape_derivatives,
                         const ipc::BroadPhaseMethod broad_phase_method,
                         const double ccd_tolerance,
-                        const int ccd_max_iterations) : ContactForm(periodic_collision_mesh, dhat, avg_mass, use_area_weighting, use_improved_max_operator, use_physical_barrier, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), tiled_to_single_(tiled_to_single), n_single_dof_(tiled_to_single_.maxCoeff() + 1)
+                        const int ccd_max_iterations) : BarrierContactForm(periodic_collision_mesh, dhat, avg_mass, use_area_weighting, use_improved_max_operator, use_physical_barrier, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), tiled_to_single_(tiled_to_single), n_single_dof_(tiled_to_single_.maxCoeff() + 1)
     {
         assert(tiled_to_single_.size() == collision_mesh_.full_num_vertices());
 
@@ -102,24 +102,24 @@ namespace polyfem::solver
 
     void PeriodicContactForm::init(const Eigen::VectorXd &x)
     {
-        ContactForm::init(single_to_tiled(x));
+        BarrierContactForm::init(single_to_tiled(x));
     }
 
     double PeriodicContactForm::value_unweighted(const Eigen::VectorXd &x) const
     {
-        return ContactForm::value_unweighted(single_to_tiled(x));
+        return BarrierContactForm::value_unweighted(single_to_tiled(x));
     }
 
     void PeriodicContactForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
     {
-        ContactForm::first_derivative_unweighted(single_to_tiled(x), gradv);
+        BarrierContactForm::first_derivative_unweighted(single_to_tiled(x), gradv);
         gradv = tiled_to_single_grad(gradv);
     }
 
     void PeriodicContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
     {
         StiffnessMatrix hessian_full;
-        ContactForm::second_derivative_unweighted(single_to_tiled(x), hessian_full);
+        BarrierContactForm::second_derivative_unweighted(single_to_tiled(x), hessian_full);
         
         update_projection();
         hessian = proj * hessian_full * proj.transpose();
@@ -133,42 +133,42 @@ namespace polyfem::solver
 
     void PeriodicContactForm::update_quantities(const double t, const Eigen::VectorXd &x) 
     {
-        ContactForm::update_quantities(t, single_to_tiled(x));
+        BarrierContactForm::update_quantities(t, single_to_tiled(x));
     }
 
     double PeriodicContactForm::max_step_size(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const 
     {
-        return ContactForm::max_step_size(single_to_tiled(x0), single_to_tiled(x1));
+        return BarrierContactForm::max_step_size(single_to_tiled(x0), single_to_tiled(x1));
     }
 
     void PeriodicContactForm::line_search_begin(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) 
     {
-        ContactForm::line_search_begin(single_to_tiled(x0), single_to_tiled(x1));
+        BarrierContactForm::line_search_begin(single_to_tiled(x0), single_to_tiled(x1));
     }
 
     void PeriodicContactForm::solution_changed(const Eigen::VectorXd &new_x) 
     {
-        ContactForm::solution_changed(single_to_tiled(new_x));
+        BarrierContactForm::solution_changed(single_to_tiled(new_x));
     }
 
     void PeriodicContactForm::post_step(const polysolve::nonlinear::PostStepData &data)
     {
-        ContactForm::post_step(
+        BarrierContactForm::post_step(
             polysolve::nonlinear::PostStepData(
                 data.iter_num, data.solver_info, single_to_tiled(data.x), single_to_tiled(data.grad)));
     }
 
     bool PeriodicContactForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const 
     {
-        return ContactForm::is_step_collision_free(single_to_tiled(x0), single_to_tiled(x1));
+        return BarrierContactForm::is_step_collision_free(single_to_tiled(x0), single_to_tiled(x1));
     }
 
     void PeriodicContactForm::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) 
     {
-        ContactForm::update_barrier_stiffness(single_to_tiled(x), single_to_tiled(grad_energy));
+        BarrierContactForm::update_barrier_stiffness(single_to_tiled(x), single_to_tiled(grad_energy));
     }
 
-    void PeriodicContactForm::force_periodic_shape_derivative(const State& state, const PeriodicMeshToMesh &periodic_mesh_map, const Eigen::VectorXd &periodic_mesh_representation, const ipc::NormalCollisions &contact_set, const Eigen::VectorXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term)
+    void PeriodicContactForm::force_periodic_shape_derivative(const State& state, const PeriodicMeshToMesh &periodic_mesh_map, const Eigen::VectorXd &periodic_mesh_representation, const ipc::NormalCollisions &contact_set, const Eigen::VectorXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const
     {
         const int dim = collision_mesh_.dim();
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(single_to_tiled(solution));
@@ -176,13 +176,13 @@ namespace polyfem::solver
         Eigen::VectorXd tiled_term;
 
         {
-		    StiffnessMatrix dq_h = collision_mesh_.to_full_dof(barrier_potential_.shape_derivative(contact_set, collision_mesh_, displaced_surface));
+		    StiffnessMatrix dq_h = collision_mesh_.to_full_dof(barrier_potential().shape_derivative(contact_set, collision_mesh_, displaced_surface));
             tiled_term = dq_h.transpose() * single_to_tiled(adjoint_sol);
         }
 
         {
             Eigen::VectorXd force;
-            force = barrier_potential_.gradient(contact_set, collision_mesh_, displaced_surface);
+            force = barrier_potential().gradient(contact_set, collision_mesh_, displaced_surface);
             force = collision_mesh_.to_full_dof(force);
             Eigen::MatrixXd adjoint_affine = utils::unflatten(adjoint_sol.tail(dim * dim), dim);
             for (int k = 0; k < collision_mesh_.num_vertices(); k++)
@@ -194,7 +194,7 @@ namespace polyfem::solver
 
         {
             StiffnessMatrix hessian_full;
-            ContactForm::second_derivative_unweighted(single_to_tiled(solution), hessian_full);
+            BarrierContactForm::second_derivative_unweighted(single_to_tiled(solution), hessian_full);
             Eigen::VectorXd tmp = single_to_tiled(adjoint_sol).transpose() * hessian_full;
             Eigen::MatrixXd sol_affine = utils::unflatten(solution.tail(dim * dim), dim);
             for (int k = 0; k < collision_mesh_.num_vertices(); k++)

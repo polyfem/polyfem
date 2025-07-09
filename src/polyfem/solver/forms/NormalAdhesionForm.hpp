@@ -133,6 +133,7 @@ namespace polyfem::solver
 
 		/// @brief Broad phase method to use for distance and CCD evaluations
 		const ipc::BroadPhaseMethod broad_phase_method_;
+		const std::shared_ptr<ipc::BroadPhase> broad_phase_;
 		/// @brief Continuous collision detection specification object
 		const ipc::TightInclusionCCD tight_inclusion_ccd_;
 
