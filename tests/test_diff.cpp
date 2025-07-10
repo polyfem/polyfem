@@ -215,7 +215,6 @@ TEST_CASE("linear_elasticity-surface-3d", "[test_adjoint]")
 	variable_to_simulations.push_back(AdjointOptUtils::create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
 
 	auto obj = std::make_shared<PositionForm>(variable_to_simulations, state, opt_args["functionals"][0]);
-	obj->set_integral_type(SpatialIntegralType::Surface);
 
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 
@@ -247,7 +246,6 @@ TEST_CASE("linear_elasticity-surface", "[test_adjoint]")
 	variable_to_simulations.push_back(AdjointOptUtils::create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
 
 	auto obj = std::make_shared<PositionForm>(variable_to_simulations, state, opt_args["functionals"][0]);
-	obj->set_integral_type(SpatialIntegralType::Surface);
 
 	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, variable_to_simulations, states, opt_args);
 
