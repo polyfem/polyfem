@@ -118,7 +118,7 @@ namespace polyfem::assembler
 	Eigen::VectorXd AMIPSEnergy::assemble_gradient(const NonLinearAssemblerData &data) const
 	{
 		const int n_bases = data.vals.basis_values.size();
-		return polyfem::gradient_from_energy(
+		auto gradad = polyfem::gradient_from_energy(
 			size(), n_bases, data,
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 6, 1>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 8, 1>>>(data); },
@@ -131,68 +131,73 @@ namespace polyfem::assembler
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, BIG_N, 1>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::VectorXd>>(data); });
+		Eigen::VectorXd gradient;
+		if (size() == 2)
+		{
+			switch (data.vals.basis_values.size())
+			{
+			case 3:
+			{
+				gradient.resize(6);
+				compute_energy_aux_gradient_fast<3, 2>(data, gradient);
+				break;
+			}
+			case 6:
+			{
+				gradient.resize(12);
+				compute_energy_aux_gradient_fast<6, 2>(data, gradient);
+				break;
+			}
+			case 10:
+			{
+				gradient.resize(20);
+				compute_energy_aux_gradient_fast<10, 2>(data, gradient);
+				break;
+			}
+			default:
+			{
+				gradient.resize(data.vals.basis_values.size() * 2);
+				compute_energy_aux_gradient_fast<Eigen::Dynamic, 2>(data, gradient);
+				break;
+			}
+			}
+		}
+		else // if (size() == 3)
+		{
+			assert(size() == 3);
+			switch (data.vals.basis_values.size())
+			{
+			case 4:
+			{
+				gradient.resize(12);
+				compute_energy_aux_gradient_fast<4, 3>(data, gradient);
+				break;
+			}
+			case 10:
+			{
+				gradient.resize(30);
+				compute_energy_aux_gradient_fast<10, 3>(data, gradient);
+				break;
+			}
+			case 20:
+			{
+				gradient.resize(60);
+				compute_energy_aux_gradient_fast<20, 3>(data, gradient);
+				break;
+			}
+			default:
+			{
+				gradient.resize(data.vals.basis_values.size() * 3);
+				compute_energy_aux_gradient_fast<Eigen::Dynamic, 3>(data, gradient);
+				break;
+			}
+			}
+		}
 
-		// if (size() == 2)
-		// {
-		// 	switch (data.vals.basis_values.size())
-		// 	{
-		// 	case 3:
-		// 	{
-		// 		gradient.resize(6);
-		// 		compute_energy_aux_gradient_fast<3, 2>(data, gradient);
-		// 		break;
-		// 	}
-		// 	case 6:
-		// 	{
-		// 		gradient.resize(12);
-		// 		compute_energy_aux_gradient_fast<6, 2>(data, gradient);
-		// 		break;
-		// 	}
-		// 	case 10:
-		// 	{
-		// 		gradient.resize(20);
-		// 		compute_energy_aux_gradient_fast<10, 2>(data, gradient);
-		// 		break;
-		// 	}
-		// 	default:
-		// 	{
-		// 		gradient.resize(data.vals.basis_values.size() * 2);
-		// 		compute_energy_aux_gradient_fast<Eigen::Dynamic, 2>(data, gradient);
-		// 		break;
-		// 	}
-		// 	}
-		// }
-		// else // if (size() == 3)
-		// {
-		// 	assert(size() == 3);
-		// 	switch (data.vals.basis_values.size())
-		// 	{
-		// 	case 4:
-		// 	{
-		// 		gradient.resize(12);
-		// 		compute_energy_aux_gradient_fast<4, 3>(data, gradient);
-		// 		break;
-		// 	}
-		// 	case 10:
-		// 	{
-		// 		gradient.resize(30);
-		// 		compute_energy_aux_gradient_fast<10, 3>(data, gradient);
-		// 		break;
-		// 	}
-		// 	case 20:
-		// 	{
-		// 		gradient.resize(60);
-		// 		compute_energy_aux_gradient_fast<20, 3>(data, gradient);
-		// 		break;
-		// 	}
-		// 	default:
-		// 	{
-		// 		gradient.resize(data.vals.basis_values.size() * 3);
-		// 		compute_energy_aux_gradient_fast<Eigen::Dynamic, 3>(data, gradient);
-		// 		break;
-		// 	}
-		// 	}
-		// }
+		const double asd = (gradient - gradad).norm();
+		if (asd > 1e-10)
+			std::cout << asd << std::endl;
+		return gradad;
 	}
 
 	// Compute ∫ tr(FᵀF) / J^(1+2/dim) dxdydz
@@ -212,6 +217,34 @@ namespace polyfem::assembler
 		AutoDiffVect local_disp;
 		get_local_disp(data, size(), local_disp);
 
+		// Eigen::MatrixXd local_dispd(data.vals.basis_values.size(), size());
+		// local_disp.setZero();
+		// for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
+		// {
+		// 	const auto &bs = data.vals.basis_values[i];
+		// 	for (size_t ii = 0; ii < bs.global.size(); ++ii)
+		// 	{
+		// 		for (int d = 0; d < size(); ++d)
+		// 		{
+		// 			local_dispd(i, d) += bs.global[ii].val * data.x(bs.global[ii].index * size() + d);
+		// 		}
+		// 	}
+		// }
+
+		Eigen::MatrixXd local_dispd(data.vals.basis_values.size(), size());
+		local_dispd.setZero();
+		for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
+		{
+			const auto &bs = data.vals.basis_values[i];
+			for (size_t ii = 0; ii < bs.global.size(); ++ii)
+			{
+				for (int d = 0; d < size(); ++d)
+				{
+					local_dispd(i, d) += bs.global[ii].val * data.x(bs.global[ii].index * size() + d);
+				}
+			}
+		}
+
 		AutoDiffGradMat standard;
 
 		if (size() == 2)
@@ -226,11 +259,27 @@ namespace polyfem::assembler
 		const int n_pts = data.da.size();
 		for (long p = 0; p < n_pts; ++p)
 		{
+			Eigen::Matrix<T, Eigen::Dynamic, 3> grad(data.vals.basis_values.size(), size());
+			Eigen::Matrix<double, Eigen::Dynamic, 3> gradd(data.vals.basis_values.size(), size());
+
+			for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
+			{
+				for (int d = 0; d < size(); ++d)
+				{
+					grad(i, d) = T(data.vals.basis_values[i].grad(p, d));
+					gradd(i, d) = data.vals.basis_values[i].grad(p, d);
+				}
+			}
+
+			Eigen::MatrixXd def_gradd = local_dispd.transpose() * gradd;
+			def_gradd = def_gradd * data.vals.jac_it[p];
 			compute_disp_grad_at_quad(data, local_disp, p, size(), def_grad);
 
 			// Id + grad d
 			for (int d = 0; d < size(); ++d)
 				def_grad(d, d) += T(1);
+			for (int d = 0; d < size(); ++d)
+				def_gradd(d, d) += 1;
 
 			if (!use_rest_pose_)
 			{
@@ -253,6 +302,61 @@ namespace polyfem::assembler
 			}
 
 			const T powJ = pow(det, power);
+			// if (!std::is_same<T, double>::value)
+			// {
+
+			// 	std::stringstream ss;
+			// 	ss << "LD" << std::endl;
+			// 	for (int i = 0; i < local_disp.rows(); ++i)
+			// 	{
+			// 		for (int j = 0; j < local_disp.cols(); ++j)
+			// 		{
+			// 			ss << local_disp(i, j) << "\n";
+			// 		}
+			// 		ss << std::endl;
+			// 	}
+
+			// 	ss << local_dispd.transpose() << std::endl
+			// 	   << std::endl;
+
+			// 	ss << "powj" << std::endl;
+			// 	ss << powJ << std::endl
+			// 	   << std::endl;
+			// 	ss << "det" << std::endl;
+			// 	ss << det << std::endl
+			// 	   << std::endl;
+
+			// 	ss << "trace" << std::endl;
+			// 	T sdf = (def_grad.transpose() * def_grad).trace();
+			// 	for (int i = 0; i < def_grad.rows(); ++i)
+			// 	{
+			// 		for (int j = 0; j < def_grad.cols(); ++j)
+			// 		{
+			// 			ss << def_grad(i, j) << "\n";
+			// 		}
+			// 		ss << std::endl;
+			// 	}
+			// 	ss << sdf << std::endl;
+
+			// 	ss << "trace1" << std::endl;
+			// 	ss << (def_gradd.transpose() * def_gradd).trace() << std::endl;
+			// 	ss << def_gradd << std::endl
+			// 	   << std::endl;
+			// 	ss << "--------------------------" << std::endl;
+			// 	ss << "trace" << std::endl;
+			// 	auto asd = (def_gradd * data.vals.jac_it[p].transpose() * gradd.transpose()).eval();
+			// 	for (int i = 0; i < asd.rows(); ++i)
+			// 	{
+			// 		for (int j = 0; j < asd.cols(); ++j)
+			// 		{
+			// 			ss << 2 * asd(i, j) << "\n";
+			// 		}
+			// 		ss << std::endl;
+			// 	}
+
+			// 	logger().error("\n{}", ss.str());
+			// 	exit(0);
+			// }
 			const T val = (def_grad.transpose() * def_grad).trace() / powJ; //+ barrier<T>::value(det);
 
 			energy += val * data.da(p);
@@ -281,62 +385,50 @@ namespace polyfem::assembler
 			}
 		}
 
+		const Eigen::Matrix<double, dim, dim> standard = get_standard<dim, double>(size(), use_rest_pose_);
 		Eigen::Matrix<double, dim, dim> def_grad(size(), size());
+
+		Eigen::Matrix<double, dim, dim> chain_rule;
 
 		Eigen::Matrix<double, n_basis, dim> G(data.vals.basis_values.size(), size());
 		G.setZero();
 
-		const Eigen::Matrix<double, dim, dim> standard = get_standard<dim, double>(size(), use_rest_pose_);
+		double power = -1;
+		if (use_rest_pose_)
+			power = size() == 2 ? 1. : (2. / 3.);
+		else
+			power = size() == 2 ? 2. : 5. / 3.;
 
 		for (long p = 0; p < n_pts; ++p)
 		{
 			Eigen::Matrix<double, n_basis, dim> grad(data.vals.basis_values.size(), size());
 
 			for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
-			{
 				grad.row(i) = data.vals.basis_values[i].grad.row(p);
+			def_grad = local_disp.transpose() * grad;
+			def_grad = def_grad * data.vals.jac_it[p];
+			chain_rule = data.vals.jac_it[p];
+
+			for (int d = 0; d < dim; ++d)
+				def_grad(d, d) += 1;
+
+			if (!use_rest_pose_)
+			{
+				Eigen::Matrix<double, dim, dim> jac_it = data.vals.jac_it[p].inverse();
+
+				def_grad *= jac_it;
+				def_grad = def_grad * standard;
+
+				chain_rule = standard;
 			}
 
-			Eigen::Matrix<double, dim, dim> jac_it = data.vals.jac_it[p];
-
-			// Id + grad d
-			def_grad = (local_disp.transpose() * grad + jac_it.inverse()) * standard;
-
-			double J = def_grad.determinant();
+			double J = polyfem::utils::determinant(def_grad);
 			if (J <= 0)
 				J = std::nan("");
 
-			Eigen::Matrix<double, dim, dim> delJ_delF(size(), size());
-			delJ_delF.setZero();
-
-			if (dim == 2)
-			{
-
-				delJ_delF(0, 0) = def_grad(1, 1);
-				delJ_delF(0, 1) = -def_grad(1, 0);
-				delJ_delF(1, 0) = -def_grad(0, 1);
-				delJ_delF(1, 1) = def_grad(0, 0);
-			}
-
-			else if (dim == 3)
-			{
-				Eigen::Matrix<double, dim, 1> u(def_grad.rows());
-				Eigen::Matrix<double, dim, 1> v(def_grad.rows());
-				Eigen::Matrix<double, dim, 1> w(def_grad.rows());
-
-				u = def_grad.col(0);
-				v = def_grad.col(1);
-				w = def_grad.col(2);
-
-				delJ_delF.col(0) = cross<dim>(v, w);
-				delJ_delF.col(1) = cross<dim>(w, u);
-				delJ_delF.col(2) = cross<dim>(u, v);
-			}
-
-			const double m = (dim == 2) ? 2. : 5. / 3.;
-			const double powJ = pow(J, m);
-			Eigen::Matrix<double, dim, dim> gradient_temp = (2 * def_grad - (def_grad.squaredNorm() * m) / J * delJ_delF) / powJ;
-			Eigen::Matrix<double, n_basis, dim> gradient = grad * standard * gradient_temp.transpose();
+			const double powJ = pow(J, power);
+			Eigen::Matrix<double, dim, dim> gradient_temp = (2 * def_grad - power * (def_grad.transpose() * def_grad).trace() * def_grad.inverse().transpose()) / powJ;
+			Eigen::Matrix<double, n_basis, dim> gradient = grad * chain_rule * gradient_temp.transpose();
 
 			G.noalias() += gradient * data.da(p);
 		}
@@ -600,32 +692,6 @@ namespace polyfem::assembler
 		if (params.contains("use_rest_pose"))
 		{
 			use_rest_pose_ = params["use_rest_pose"].get<bool>();
-		}
-	}
-
-	AMIPSEnergyAutodiff::AMIPSEnergyAutodiff()
-	{
-		canonical_transformation_.resize(0);
-	}
-
-	std::map<std::string, Assembler::ParamFunc> AMIPSEnergyAutodiff::parameters() const
-	{
-		return std::map<std::string, ParamFunc>();
-	}
-
-	void AMIPSEnergyAutodiff::add_multimaterial(const int index, const json &params, const Units &)
-	{
-		if (params.contains("canonical_transformation"))
-		{
-			canonical_transformation_.reserve(params["canonical_transformation"].size());
-			for (int i = 0; i < params["canonical_transformation"].size(); ++i)
-			{
-				Eigen::MatrixXd transform_matrix(size(), size());
-				for (int j = 0; j < size(); ++j)
-					for (int k = 0; k < size(); ++k)
-						transform_matrix(j, k) = params["canonical_transformation"][i][j][k];
-				canonical_transformation_.push_back(transform_matrix);
-			}
 		}
 	}
 
