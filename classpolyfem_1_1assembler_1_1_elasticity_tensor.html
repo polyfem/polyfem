@@ -147,14 +147,22 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa5e6bd2f36653155bb6bfdf87bdfa5ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b359bbbcc2fb27d6da470e18d9bbb03" id="r_a8b359bbbcc2fb27d6da470e18d9bbb03"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_tensor.html#a8b359bbbcc2fb27d6da470e18d9bbb03">set_orthotropic</a> (double Ex, double Ey, double nuXY, double muXY, const std::string &amp;stress_unit)</td></tr>
 <tr class="separator:a8b359bbbcc2fb27d6da470e18d9bbb03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac660f69c671de69abe86db5fa1644941" id="r_ac660f69c671de69abe86db5fa1644941"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_tensor.html#ac660f69c671de69abe86db5fa1644941">set_transversely_isotropic</a> (double Et, double Ea, double nu_t, double nu_a, double Ga, const std::string &amp;stress_units)</td></tr>
+<tr class="separator:ac660f69c671de69abe86db5fa1644941"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab90d3a2e3a93327c97737da44aaee9a9" id="r_ab90d3a2e3a93327c97737da44aaee9a9"><td class="memTemplParams" colspan="2">template&lt;int DIM&gt; </td></tr>
 <tr class="memitem:ab90d3a2e3a93327c97737da44aaee9a9"><td class="memTemplItemLeft" align="right" valign="top">double&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_tensor.html#ab90d3a2e3a93327c97737da44aaee9a9">compute_stress</a> (const std::array&lt; double, DIM &gt; &amp;strain, const int j) const</td></tr>
 <tr class="separator:ab90d3a2e3a93327c97737da44aaee9a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2632b008e7e3a4479460563f9acf8fd9" id="r_a2632b008e7e3a4479460563f9acf8fd9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_tensor.html#a2632b008e7e3a4479460563f9acf8fd9">rotate_stiffness</a> (const Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6 &gt; &amp;rotation_mtx_voigt)</td></tr>
+<tr class="separator:a2632b008e7e3a4479460563f9acf8fd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af731cbbc6be6b0642ef1d14daa73c6dc" id="r_af731cbbc6be6b0642ef1d14daa73c6dc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_tensor.html#af731cbbc6be6b0642ef1d14daa73c6dc">unrotate_stiffness</a> ()</td></tr>
+<tr class="separator:af731cbbc6be6b0642ef1d14daa73c6dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a7f0bbea9d26c229d860e62ecbe0de1b9" id="r_a7f0bbea9d26c229d860e62ecbe0de1b9"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_tensor.html#a7f0bbea9d26c229d860e62ecbe0de1b9">stifness_tensor_</a></td></tr>
-<tr class="separator:a7f0bbea9d26c229d860e62ecbe0de1b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e69b064e710c680f85fc8d4050ea8a1" id="r_a3e69b064e710c680f85fc8d4050ea8a1"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_tensor.html#a3e69b064e710c680f85fc8d4050ea8a1">stiffness_tensor_</a></td></tr>
+<tr class="separator:a3e69b064e710c680f85fc8d4050ea8a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8df738cf1b7267f964345e2c44320a5c" id="r_a8df738cf1b7267f964345e2c44320a5c"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_tensor.html#a8df738cf1b7267f964345e2c44320a5c">reference_stiffness_tensor_</a></td></tr>
+<tr class="separator:a8df738cf1b7267f964345e2c44320a5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a395444fa7f5aa81652fd2d2318b9181c" id="r_a395444fa7f5aa81652fd2d2318b9181c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_tensor.html#a395444fa7f5aa81652fd2d2318b9181c">size_</a></td></tr>
 <tr class="separator:a395444fa7f5aa81652fd2d2318b9181c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -190,9 +198,9 @@ template&lt;int DIM&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00303">303</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00336">336</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00084">polyfem::assembler::HookeLinearElasticity::assemble()</a>, and <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00197">polyfem::assembler::HookeLinearElasticity::assign_stress_tensor()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00090">polyfem::assembler::HookeLinearElasticity::assemble()</a>, and <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00216">polyfem::assembler::HookeLinearElasticity::assign_stress_tensor()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -227,9 +235,9 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00112">112</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00114">114</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00063">stifness_tensor_</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00070">stiffness_tensor_</a>.</p>
 
 </div>
 </div>
@@ -259,9 +267,9 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00101">101</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00103">103</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00063">stifness_tensor_</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00070">stiffness_tensor_</a>.</p>
 
 </div>
 </div>
@@ -281,15 +289,44 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00089">89</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00091">91</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00064">size_</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00063">stifness_tensor_</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00072">size_</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00070">stiffness_tensor_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="auto__elasticity__rhs_8cpp_source.html#l00292">polyfem::autogen::saint_venant_2d_function()</a>, <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00077">polyfem::assembler::HookeLinearElasticity::set_size()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00055">polyfem::assembler::SaintVenantElasticity::set_size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="auto__elasticity__rhs_8cpp_source.html#l00292">polyfem::autogen::saint_venant_2d_function()</a>, <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00082">polyfem::assembler::HookeLinearElasticity::set_size()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00057">polyfem::assembler::SaintVenantElasticity::set_size()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_elasticity_tensor_a2b736162c00a2972efe8faeca3055dc2_icgraph.svg" width="604" height="216"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="a2632b008e7e3a4479460563f9acf8fd9" name="a2632b008e7e3a4479460563f9acf8fd9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2632b008e7e3a4479460563f9acf8fd9">&#9670;&#160;</a></span>rotate_stiffness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::ElasticityTensor::rotate_stiffness </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::Matrix&lt; double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6 &gt; &amp;&#160;</td>
+          <td class="paramname"><em>rotation_mtx_voigt</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00346">346</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00071">reference_stiffness_tensor_</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00070">stiffness_tensor_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00090">polyfem::assembler::HookeLinearElasticity::assemble()</a>, <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00216">polyfem::assembler::HookeLinearElasticity::assign_stress_tensor()</a>, <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00133">polyfem::assembler::SaintVenantElasticity::assign_stress_tensor()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00225">polyfem::assembler::SaintVenantElasticity::compute_energy_aux()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_elasticity_tensor_a2632b008e7e3a4479460563f9acf8fd9_icgraph.svg" width="382" height="302"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -320,15 +357,15 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00123">123</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00125">125</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00025">entries</a>, <a class="el" href="_mat_params_8cpp_source.html#l00264">set_orthotropic()</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00064">size_</a>.</p>
+<p class="reference">References <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00025">entries</a>, <a class="el" href="_mat_params_8cpp_source.html#l00278">set_orthotropic()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00316">set_transversely_isotropic()</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00072">size_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00048">polyfem::assembler::HookeLinearElasticity::add_multimaterial()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00026">polyfem::assembler::SaintVenantElasticity::add_multimaterial()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00051">polyfem::assembler::HookeLinearElasticity::add_multimaterial()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00026">polyfem::assembler::SaintVenantElasticity::add_multimaterial()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_elasticity_tensor_a4608e7068f3674b79be160ab8710208a_cgraph.svg" width="363" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_elasticity_tensor_a4608e7068f3674b79be160ab8710208a_cgraph.svg" width="404" height="144"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
@@ -370,11 +407,11 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00197">197</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00211">211</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00064">size_</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00072">size_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00048">polyfem::assembler::HookeLinearElasticity::add_multimaterial()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00026">polyfem::assembler::SaintVenantElasticity::add_multimaterial()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00051">polyfem::assembler::HookeLinearElasticity::add_multimaterial()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00026">polyfem::assembler::SaintVenantElasticity::add_multimaterial()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -415,11 +452,11 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00241">241</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00255">255</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00064">size_</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00063">stifness_tensor_</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00072">size_</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00070">stiffness_tensor_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00048">polyfem::assembler::HookeLinearElasticity::add_multimaterial()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00026">polyfem::assembler::SaintVenantElasticity::add_multimaterial()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_hooke_linear_elasticity_8cpp_source.html#l00051">polyfem::assembler::HookeLinearElasticity::add_multimaterial()</a>, and <a class="el" href="_saint_venant_elasticity_8cpp_source.html#l00026">polyfem::assembler::SaintVenantElasticity::add_multimaterial()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -502,11 +539,11 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00264">264</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00278">278</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00064">size_</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00063">stifness_tensor_</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00072">size_</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00070">stiffness_tensor_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00123">set_from_entries()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00125">set_from_entries()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -559,13 +596,123 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00287">287</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00301">301</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00064">size_</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00063">stifness_tensor_</a>.</p>
+<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00072">size_</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00070">stiffness_tensor_</a>.</p>
+
+</div>
+</div>
+<a id="ac660f69c671de69abe86db5fa1644941" name="ac660f69c671de69abe86db5fa1644941"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac660f69c671de69abe86db5fa1644941">&#9670;&#160;</a></span>set_transversely_isotropic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::ElasticityTensor::set_transversely_isotropic </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>Et</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>Ea</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>nu_t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>nu_a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>Ga</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>stress_units</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00316">316</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00072">size_</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00070">stiffness_tensor_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00125">set_from_entries()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_elasticity_tensor_ac660f69c671de69abe86db5fa1644941_icgraph.svg" width="623" height="144"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="af731cbbc6be6b0642ef1d14daa73c6dc" name="af731cbbc6be6b0642ef1d14daa73c6dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af731cbbc6be6b0642ef1d14daa73c6dc">&#9670;&#160;</a></span>unrotate_stiffness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void polyfem::assembler::ElasticityTensor::unrotate_stiffness </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00352">352</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_mat_params_8hpp_source.html#l00071">reference_stiffness_tensor_</a>, and <a class="el" href="_mat_params_8hpp_source.html#l00070">stiffness_tensor_</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="a8df738cf1b7267f964345e2c44320a5c" name="a8df738cf1b7267f964345e2c44320a5c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8df738cf1b7267f964345e2c44320a5c">&#9670;&#160;</a></span>reference_stiffness_tensor_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::Matrix&lt;double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6&gt; polyfem::assembler::ElasticityTensor::reference_stiffness_tensor_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00071">71</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00346">rotate_stiffness()</a>, and <a class="el" href="_mat_params_8cpp_source.html#l00352">unrotate_stiffness()</a>.</p>
+
+</div>
+</div>
 <a id="a395444fa7f5aa81652fd2d2318b9181c" name="a395444fa7f5aa81652fd2d2318b9181c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a395444fa7f5aa81652fd2d2318b9181c">&#9670;&#160;</a></span>size_</h2>
 
@@ -586,14 +733,14 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00064">64</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00072">72</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00089">resize()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00123">set_from_entries()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00197">set_from_lambda_mu()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00241">set_from_young_poisson()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00264">set_orthotropic()</a>, and <a class="el" href="_mat_params_8cpp_source.html#l00287">set_orthotropic()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00091">resize()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00125">set_from_entries()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00211">set_from_lambda_mu()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00255">set_from_young_poisson()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00278">set_orthotropic()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00301">set_orthotropic()</a>, and <a class="el" href="_mat_params_8cpp_source.html#l00316">set_transversely_isotropic()</a>.</p>
 
 </div>
 </div>
-<a id="a7f0bbea9d26c229d860e62ecbe0de1b9" name="a7f0bbea9d26c229d860e62ecbe0de1b9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7f0bbea9d26c229d860e62ecbe0de1b9">&#9670;&#160;</a></span>stifness_tensor_</h2>
+<a id="a3e69b064e710c680f85fc8d4050ea8a1" name="a3e69b064e710c680f85fc8d4050ea8a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e69b064e710c680f85fc8d4050ea8a1">&#9670;&#160;</a></span>stiffness_tensor_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -602,7 +749,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Eigen::Matrix&lt;double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6&gt; polyfem::assembler::ElasticityTensor::stifness_tensor_</td>
+          <td class="memname">Eigen::Matrix&lt;double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6&gt; polyfem::assembler::ElasticityTensor::stiffness_tensor_</td>
         </tr>
       </table>
   </td>
@@ -612,9 +759,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00063">63</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00070">70</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00112">operator()()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00101">operator()()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00089">resize()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00241">set_from_young_poisson()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00264">set_orthotropic()</a>, and <a class="el" href="_mat_params_8cpp_source.html#l00287">set_orthotropic()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mat_params_8cpp_source.html#l00114">operator()()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00103">operator()()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00091">resize()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00346">rotate_stiffness()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00255">set_from_young_poisson()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00278">set_orthotropic()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00301">set_orthotropic()</a>, <a class="el" href="_mat_params_8cpp_source.html#l00316">set_transversely_isotropic()</a>, and <a class="el" href="_mat_params_8cpp_source.html#l00352">unrotate_stiffness()</a>.</p>
 
 </div>
 </div>

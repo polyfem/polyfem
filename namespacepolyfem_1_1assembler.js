@@ -16,6 +16,7 @@ var namespacepolyfem_1_1assembler =
     [ "ElasticityTensor", "classpolyfem_1_1assembler_1_1_elasticity_tensor.html", "classpolyfem_1_1assembler_1_1_elasticity_tensor" ],
     [ "Electrostatics", "classpolyfem_1_1assembler_1_1_electrostatics.html", "classpolyfem_1_1assembler_1_1_electrostatics" ],
     [ "ElementAssemblyValues", "classpolyfem_1_1assembler_1_1_element_assembly_values.html", "classpolyfem_1_1assembler_1_1_element_assembly_values" ],
+    [ "FiberDirection", "classpolyfem_1_1assembler_1_1_fiber_direction.html", "classpolyfem_1_1assembler_1_1_fiber_direction" ],
     [ "FixedCorotational", "classpolyfem_1_1assembler_1_1_fixed_corotational.html", "classpolyfem_1_1assembler_1_1_fixed_corotational" ],
     [ "GenericElastic", "classpolyfem_1_1assembler_1_1_generic_elastic.html", "classpolyfem_1_1assembler_1_1_generic_elastic" ],
     [ "GenericMatParam", "classpolyfem_1_1assembler_1_1_generic_mat_param.html", "classpolyfem_1_1assembler_1_1_generic_mat_param" ],

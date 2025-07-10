@@ -1,17 +1,23 @@
 <map id="polyfem::assembler::SaintVenantElasticity::assign_stress_tensor" name="polyfem::assembler::SaintVenantElasticity::assign_stress_tensor">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,306,173,361"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,409,173,463"/>
 <area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#a736c84178a9391358d50b1d984440538" title="computes the per element values at the local (ref el) points (pts) sets basis_values,..." alt="" coords="259,167,449,222"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="118,304,164,266,220,231,245,220,247,225,223,236,168,271,122,308"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="98,407,116,368,142,321,177,272,220,231,245,216,248,221,223,235,181,276,147,323,121,370,103,410"/>
 <area shape="rect" id="Node000011" href="$namespacepolyfem.html#a9c92d8a4b1a73baab24a2ecef44f9440" title=" " alt="" coords="221,246,487,271"/>
-<area shape="poly" id="edge12_Node000001_Node000011" title=" " alt="" coords="153,303,221,280,256,271,257,277,222,285,155,308"/>
-<area shape="rect" id="Node000012" href="$namespacepolyfem.html#aaf867383bfea72c587035f4e3346bb21" title=" " alt="" coords="255,295,453,321"/>
-<area shape="poly" id="edge13_Node000001_Node000012" title=" " alt="" coords="173,323,240,316,241,322,174,328"/>
-<area shape="rect" id="Node000013" href="$namespacepolyfem.html#a2e0e4c0eef41d449e66abee527fc8e13" title=" " alt="" coords="255,345,453,370"/>
-<area shape="poly" id="edge14_Node000001_Node000013" title=" " alt="" coords="174,338,241,344,240,350,173,344"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4" title=" " alt="" coords="278,395,430,435"/>
-<area shape="poly" id="edge15_Node000001_Node000014" title=" " alt="" coords="159,358,222,380,265,392,264,397,221,385,158,363"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a2e1414e348e0da2d29fc06aa1bbce39a" title=" " alt="" coords="270,459,438,514"/>
-<area shape="poly" id="edge16_Node000001_Node000015" title=" " alt="" coords="117,359,164,403,223,444,258,460,256,465,220,449,161,407,114,363"/>
+<area shape="poly" id="edge12_Node000001_Node000011" title=" " alt="" coords="104,407,150,342,182,308,220,280,233,274,235,279,223,285,186,312,154,345,108,410"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1assembler_1_1_fiber_direction.html#a60018e39a9e328c674160bd71a4f49eb" title=" " alt="" coords="278,295,430,350"/>
+<area shape="poly" id="edge13_Node000001_Node000012" title=" " alt="" coords="132,406,174,382,220,359,264,343,266,348,222,364,176,386,134,411"/>
+<area shape="rect" id="Node000013" href="$namespacepolyfem.html#aaf867383bfea72c587035f4e3346bb21" title=" " alt="" coords="255,374,453,399"/>
+<area shape="poly" id="edge14_Node000001_Node000013" title=" " alt="" coords="173,418,271,399,272,405,174,423"/>
+<area shape="rect" id="Node000014" href="$namespacepolyfem.html#a2e0e4c0eef41d449e66abee527fc8e13" title=" " alt="" coords="255,423,453,449"/>
+<area shape="poly" id="edge15_Node000001_Node000014" title=" " alt="" coords="174,433,240,433,240,439,174,439"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1assembler_1_1_elasticity_tensor.html#a2632b008e7e3a4479460563f9acf8fd9" title=" " alt="" coords="278,473,430,527"/>
+<area shape="poly" id="edge16_Node000001_Node000015" title=" " alt="" coords="174,454,265,476,264,481,173,459"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4" title=" " alt="" coords="278,552,430,592"/>
+<area shape="poly" id="edge17_Node000001_Node000016" title=" " alt="" coords="119,461,166,501,223,538,266,554,264,559,220,542,162,505,116,465"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1assembler_1_1_fiber_direction.html#a0f41bbb014522549636cb2b314fa47b0" title=" " alt="" coords="262,617,446,671"/>
+<area shape="poly" id="edge18_Node000001_Node000017" title=" " alt="" coords="107,462,153,532,185,570,223,602,250,617,248,622,220,606,181,574,149,535,103,465"/>
+<area shape="rect" id="Node000018" href="$classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a5c8b8b3379cba595c89f725d4d07c3e5" title=" " alt="" coords="270,695,438,750"/>
+<area shape="poly" id="edge19_Node000001_Node000018" title=" " alt="" coords="100,463,115,510,140,570,176,630,198,658,223,682,259,702,256,707,220,686,194,661,171,633,135,572,110,512,95,464"/>
 <area shape="rect" id="Node000003" href="$classpolyfem_1_1basis_1_1_element_bases.html#a6936d345f21ed506227618ef65dba6a6" title="evaluate stored bases at given points on the reference element saves results to basis_values" alt="" coords="535,5,753,45"/>
 <area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="382,165,448,110,490,80,533,55,548,48,551,53,536,60,493,85,452,114,386,169"/>
 <area shape="rect" id="Node000005" href="$classpolyfem_1_1basis_1_1_element_bases.html#a731d20029949bd0255c9af1f91dfa74c" title="evaluate gradient of stored bases at given points on the reference element saves results to basis_val..." alt="" coords="535,69,753,109"/>

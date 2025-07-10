@@ -22,5 +22,6 @@ var classpolyfem_1_1assembler_1_1_hooke_linear_elasticity =
     [ "name", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a1d5c736ea05565af6d74e1a7b5eff853", null ],
     [ "parameters", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a3c2315d542c3a3ac8bd54262fc1b30bc", null ],
     [ "set_size", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#ad10c78d2c69f442888669a934738893c", null ],
-    [ "elasticity_tensor_", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#ae4d01ae8d1716269195fd8ac604437da", null ]
+    [ "elasticity_tensor_", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#ae4d01ae8d1716269195fd8ac604437da", null ],
+    [ "fiber_direction_", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html#a45baef424b4a67e5664067fd5cc91c4e", null ]
 ];

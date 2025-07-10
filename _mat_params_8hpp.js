@@ -5,5 +5,6 @@ var _mat_params_8hpp =
     [ "polyfem::assembler::ElasticityTensor", "classpolyfem_1_1assembler_1_1_elasticity_tensor.html", "classpolyfem_1_1assembler_1_1_elasticity_tensor" ],
     [ "polyfem::assembler::LameParameters", "classpolyfem_1_1assembler_1_1_lame_parameters.html", "classpolyfem_1_1assembler_1_1_lame_parameters" ],
     [ "polyfem::assembler::Density", "classpolyfem_1_1assembler_1_1_density.html", "classpolyfem_1_1assembler_1_1_density" ],
-    [ "polyfem::assembler::NoDensity", "classpolyfem_1_1assembler_1_1_no_density.html", "classpolyfem_1_1assembler_1_1_no_density" ]
+    [ "polyfem::assembler::NoDensity", "classpolyfem_1_1assembler_1_1_no_density.html", "classpolyfem_1_1assembler_1_1_no_density" ],
+    [ "polyfem::assembler::FiberDirection", "classpolyfem_1_1assembler_1_1_fiber_direction.html", "classpolyfem_1_1assembler_1_1_fiber_direction" ]
 ];

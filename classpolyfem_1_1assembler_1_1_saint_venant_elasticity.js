@@ -19,6 +19,7 @@ var classpolyfem_1_1assembler_1_1_saint_venant_elasticity =
     [ "set_size", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a695ad0eaf03afb852f59cf4fcefa0a58", null ],
     [ "set_stiffness_tensor", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a4afb19bafa4b3a70152b0dcc533c1e62", null ],
     [ "stifness_tensor", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a85fe43d5ca9d029f06773c2f5e3132e4", null ],
-    [ "stress", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a2e1414e348e0da2d29fc06aa1bbce39a", null ],
-    [ "elasticity_tensor_", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#ae323dbb4530ee0cc952df28e92ddc8ab", null ]
+    [ "stress", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a5c8b8b3379cba595c89f725d4d07c3e5", null ],
+    [ "elasticity_tensor_", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#ae323dbb4530ee0cc952df28e92ddc8ab", null ],
+    [ "fiber_direction_", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a7d9c90d6fef337725aacd160064af87e", null ]
 ];

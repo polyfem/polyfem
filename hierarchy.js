@@ -119,6 +119,7 @@ var hierarchy =
     [ "polyfem::utils::ExpressionValue", "classpolyfem_1_1utils_1_1_expression_value.html", null ],
     [ "polyfem::mesh::Face", "structpolyfem_1_1mesh_1_1_face.html", null ],
     [ "polyfem::mesh::Mesh::FaceNodes", "classpolyfem_1_1mesh_1_1_mesh_1_1_face_nodes.html", null ],
+    [ "polyfem::assembler::FiberDirection", "classpolyfem_1_1assembler_1_1_fiber_direction.html", null ],
     [ "polyfem::mesh::NCMesh2D::follower_edge", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__edge.html", null ],
     [ "polyfem::mesh::NCMesh3D::follower_edge", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1follower__edge.html", null ],
     [ "polyfem::mesh::NCMesh2D::follower_face", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1follower__face.html", null ],
