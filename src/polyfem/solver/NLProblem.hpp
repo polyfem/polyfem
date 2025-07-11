@@ -67,6 +67,8 @@ namespace polyfem::solver
 
 		double normalize_forms() override;
 
+		void update_constraint_values();
+
 	protected:
 		const int full_size_; ///< Size of the full problem
 		int reduced_size_;    ///< Size of the reduced problem
@@ -99,6 +101,6 @@ namespace polyfem::solver
 		int num_penalty_constraints_;
 
 		void setup_constraints();
-		void update_constraint_values();
+
 	};
 } // namespace polyfem::solver
