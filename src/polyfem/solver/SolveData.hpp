@@ -115,7 +115,6 @@ namespace polyfem::solver
 			const bool use_improved_max_operator,
 			const bool use_physical_barrier,
 			const json &barrier_stiffness,
-			const double initial_barrier_stiffness,
 			const ipc::BroadPhaseMethod broad_phase,
 			const double ccd_tolerance,
 			const long ccd_max_iterations,
@@ -159,6 +158,18 @@ namespace polyfem::solver
 		/// @param x current solution
 		void update_barrier_stiffness(const Eigen::VectorXd &x);
 
+		/// @brief update the AL weight for the forms
+		/// @param x current solution
+		void update_al_weight(const Eigen::VectorXd &x);
+
+		void set_AL_initial_weight(const double weight)
+		{
+			AL_initial_weight_ = weight;
+		}
+		void set_initial_barrier_stiffness_multiplier(const double multipler)
+		{
+			initial_barrier_stiffness_multipler_ = multipler;
+		}
 		/// @brief updates the dt inside the different forms
 		void update_dt();
 
@@ -184,5 +195,11 @@ namespace polyfem::solver
 		std::shared_ptr<solver::PeriodicContactForm> periodic_contact_form;
 
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
+	private:
+		json barrier_stiffness_;
+		double dt_ = 0;
+		double AL_initial_weight_= 1.0;
+		double initial_barrier_stiffness_multipler_=1.0;
+		double avg_mass_ = 0;
 	};
 } // namespace polyfem::solver
