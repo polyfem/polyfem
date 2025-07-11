@@ -110,9 +110,9 @@ namespace
 		double former_functional_val = problem.value(x - theta * dt);
 
 		double finite_difference = (next_functional_val - former_functional_val) / dt / 2;
-		logger().trace("f(x) {.16} f(x-dt) {.16} f(x+dt) {.16}", functional_val, former_functional_val, next_functional_val);
-		logger().trace("derivative: {.12}, fd: {.12}", derivative, finite_difference);
-		logger().trace("relative error: {.12}", abs((finite_difference - derivative) / derivative));
+		logger().trace("f(x) {:.16f} f(x-dt) {:.16f} f(x+dt) {:.16f}", functional_val, former_functional_val, next_functional_val);
+		logger().trace("derivative: {:.12f}, fd: {:.12f}", derivative, finite_difference);
+		logger().trace("relative error: {:.12f}", abs((finite_difference - derivative) / derivative));
 		REQUIRE(derivative == Catch::Approx(finite_difference).epsilon(tol));
 	}
 
@@ -134,9 +134,9 @@ namespace
 		double former_functional_val = problem.value(x - theta * dt);
 
 		double finite_difference = (next_functional_val - former_functional_val) / dt / 2;
-		logger().trace("f(x) {.16} f(x-dt) {.16} f(x+dt) {.16}", functional_val, former_functional_val, next_functional_val);
-		logger().trace("derivative: {.12}, fd: {.12}", derivative, finite_difference);
-		logger().trace("relative error: {.12}", abs((finite_difference - derivative) / derivative));
+		logger().trace("f(x) {:.16f} f(x-dt) {:.16f} f(x+dt) {:.16f}", functional_val, former_functional_val, next_functional_val);
+		logger().trace("derivative: {:.12f}, fd: {:.12f}", derivative, finite_difference);
+		logger().trace("relative error: {:.12f}", abs((finite_difference - derivative) / derivative));
 		REQUIRE(derivative == Catch::Approx(finite_difference).epsilon(tol));
 	}
 } // namespace

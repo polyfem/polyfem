@@ -152,12 +152,18 @@ namespace polyfem::solver
 			const int dim = state->mesh->dimension();
 
 			// If indices include one vertex entry, we assume it include all entries of this vertex.
-			for (int i = 0; i < indices.size(); i += dim)
-				for (int j = 0; j < dim; j++)
-					assert(indices(i + j) == indices(i) + j);
+			// for (int i = 0; i < indices.size(); i += dim)
+			// 	for (int j = 0; j < dim; j++)
+			// 		assert(indices(i + j) == indices(i) + j);
 
-			for (int i = 0; i < indices.size(); i += dim)
-				state->set_mesh_vertex(indices(i) / dim, state_variable(Eigen::seqN(i, dim)));
+			for (int i = 0; i < indices.size(); ++i)
+			{
+				const int vid = indices(i) / dim;
+				Eigen::VectorXd p = state->mesh->point(vid);
+				p(indices(i) - vid * dim) = state_variable(i);
+				state->mesh->set_point(vid, p);
+				// state->set_mesh_vertex(indices(i) / dim, state_variable(Eigen::seqN(i, dim)));
+			}
 		}
 	}
 	Eigen::VectorXd ShapeVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
@@ -205,21 +211,30 @@ namespace polyfem::solver
 	{
 		const std::string composite_map_type = args["composite_map_type"];
 		const State &state = *(states_[0]);
-		if (composite_map_type == "interior")
+
+		if (composite_map_type == "interior" || composite_map_type == "boundary" || composite_map_type == "boundary_excluding_surface")
 		{
-			VariableToInteriorNodes variable_to_node(state, args["volume_selection"]);
-			output_indexing_ = variable_to_node.get_output_indexing();
-		}
-		else if (composite_map_type == "boundary")
-		{
-			VariableToBoundaryNodes variable_to_node(state, args["surface_selection"]);
-			output_indexing_ = variable_to_node.get_output_indexing();
-		}
-		else if (composite_map_type == "boundary_excluding_surface")
-		{
-			const std::vector<int> excluded_surfaces = args["surface_selection"];
-			VariableToBoundaryNodesExclusive variable_to_node(state, excluded_surfaces);
-			output_indexing_ = variable_to_node.get_output_indexing();
+			std::vector<int> active_dimensions = args["active_dimensions"];
+			if (active_dimensions.size() == 0)
+				for (int d = 0; d < state.mesh->dimension(); d++)
+					active_dimensions.push_back(d);
+
+			if (composite_map_type == "interior")
+			{
+				VariableToInteriorNodes variable_to_node(state, active_dimensions, args["volume_selection"]);
+				output_indexing_ = variable_to_node.get_output_indexing();
+			}
+			else if (composite_map_type == "boundary")
+			{
+				VariableToBoundaryNodes variable_to_node(state, active_dimensions, args["surface_selection"]);
+				output_indexing_ = variable_to_node.get_output_indexing();
+			}
+			else if (composite_map_type == "boundary_excluding_surface")
+			{
+				const std::vector<int> excluded_surfaces = args["surface_selection"];
+				VariableToBoundaryNodesExclusive variable_to_node(state, active_dimensions, excluded_surfaces);
+				output_indexing_ = variable_to_node.get_output_indexing();
+			}
 		}
 		else
 			VariableToSimulation::set_output_indexing(args);

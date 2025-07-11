@@ -13,7 +13,6 @@
 namespace polyfem::solver
 {
 	class ContactForm;
-
 	/// @brief Form of the lagged friction disapative potential and forces
 	class FrictionForm : public Form
 	{
