@@ -67,6 +67,7 @@ set(POLYFEM_SMALL_N  80 CACHE STRING "Maximum length for stack-allocated vectors
 set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vectors (gradient only).")
 
 # Polyfem options for enabling/disabling optional libraries
+option(POLYFEM_WITH_APP "Generate the application with gui" OFF)
 option(POLYFEM_WITH_TESTS     "Build tests"                                 ON)
 option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"  ON)
 option(POLYFEM_WITH_MMG       "Build MMG utils for remeshing"              OFF)
@@ -368,4 +369,9 @@ if(POLYFEM_TOPLEVEL_PROJECT AND POLYFEM_WITH_TESTS)
     include(CTest)
     enable_testing()
     add_subdirectory(tests)
+endif()
+
+
+if(POLYFEM_WITH_APP)
+    add_subdirectory(app)
 endif()
