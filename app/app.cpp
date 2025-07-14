@@ -112,9 +112,8 @@ void display_log(const std::string &title, const std::vector<std::string> &logs,
 }
 
 // Main code
-int main()
+int main(int argc, char **argv)
 {
-
 	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
 	{
 		log_and_throw_error(fmt::format("Error: SDL_Init(): {}n", SDL_GetError()));

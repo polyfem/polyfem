@@ -130,11 +130,17 @@ jobs:
       - name: Build
         run: cd build; make -j2; ccache --show-stats
 
+      - name: Copy App
+        run: |
+          cd build
+          mkdir polyfem
+          cp -R polyfem_app.app polyfem/polyfem_app.app
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: PolyFEM-${{ matrix.os }}
-          path: build/polyfem_app.app
+          path: build/polyfem
 
   ####################
   # Windows
