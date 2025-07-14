@@ -244,9 +244,11 @@ if(TARGET SuiteSparse::SPQR)
     target_link_libraries(polyfem PRIVATE SuiteSparse::SPQR)
 endif()
 
-include(armadillo)
-target_link_libraries(polyfem PRIVATE armadillo::armadillo)
-
+if(POLYFEM_WITH_ARMADILLO)
+    include(armadillo)
+    target_link_libraries(polyfem PRIVATE armadillo::armadillo)
+    target_compile_definitions(polyfem PRIVATE -DPOLYFEM_WITH_ARMADILLO)
+endif()
 
 # Nanospline
 include(nanospline)
