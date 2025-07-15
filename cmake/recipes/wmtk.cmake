@@ -31,9 +31,9 @@ if(POLYSOLVE_WITH_ACCELERATE)
 
     CPMAddPackage(
         NAME wildmeshing-toolkit
-        GITHUB_REPOSITORY "zfergus/wildmeshing-toolkit"
-        GIT_TAG "1ced6df948a29cd3f3028279c163ae582f44d37e"
+        GITHUB_REPOSITORY "polyfem/wildmeshing-toolkit"
+        GIT_TAG "b46f71ce476b739c881134ae1b29984545389f4a"
         PATCH_COMMAND ${PATCH_COMMAND_FOR_CPM})
 else()
-    CPMAddPackage("gh:zfergus/wildmeshing-toolkit#1ced6df948a29cd3f3028279c163ae582f44d37e")
+    CPMAddPackage("gh:polyfem/wildmeshing-toolkit#b46f71ce476b739c881134ae1b29984545389f4a")
 endif()
