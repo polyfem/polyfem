@@ -115,6 +115,10 @@ namespace polyfem::solver
 
 		std::shared_ptr<ipc::BroadPhase> get_broad_phase() const { return broad_phase_; }
 
+		void set_bs_multiplier(const double bs_multiplier){barrier_multiplier_ = bs_multiplier;}
+		double get_bs_multiplier() const {return barrier_multiplier_;}
+		virtual double get_prev_distance() const { return prev_distance_; }
+
 	protected:
 		/// @brief Update the cached candidate set for the current solution
 		/// @param displaced_surface Vertex positions displaced by the current solution
@@ -160,5 +164,7 @@ namespace polyfem::solver
 		bool use_cached_candidates_ = false;
 		/// @brief Cached candidate set for the current solution
 		ipc::Candidates candidates_;
+
+		double barrier_multiplier_ = 1;
 	};
 } // namespace polyfem::solver
