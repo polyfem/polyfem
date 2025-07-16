@@ -332,6 +332,7 @@ int main(int argc, char **argv)
 		if (running && worker && !worker->joinable())
 		{
 			running = false;
+			is_opt = false;
 		}
 
 		// Start the Dear ImGui frame
@@ -398,12 +399,13 @@ int main(int argc, char **argv)
 				if (ImGui::Button("Run"))
 				{
 					running = false;
+					is_opt = false;
 					try
 					{
 						if (in_args.contains("states"))
 						{
 							opt_state = std::make_shared<OptState>();
-							opt_state->init(in_args, true);
+							opt_state->init(in_args, false);
 
 							// opt_state->opt_callback =
 							// 	[&t, &time_steps, &tt, &tend](int tin, int time_stepsin, double ttin, double tendin) {
