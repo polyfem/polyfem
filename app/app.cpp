@@ -111,6 +111,8 @@ void display_log(const std::string &title, const std::vector<std::string> &logs,
 	ImGui::End();
 }
 
+int WinMain() { return 0; }
+
 // Main code
 int main(int argc, char **argv)
 {
