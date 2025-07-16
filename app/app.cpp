@@ -231,6 +231,16 @@ int main(int argc, char **argv)
 	int t, time_steps = 0;
 	double tt = 0.0, tend = 0.0;
 
+	static const char *log_levels[] = {
+		"Trace",
+		"Debug",
+		"Info",
+		"Warning",
+		"Error",
+		"Critical",
+		"Off"};
+	static int log_level = 1; // Default to Info level
+
 	while (!done)
 	{
 		SDL_Event event;
@@ -247,6 +257,11 @@ int main(int argc, char **argv)
 		{
 			SDL_Delay(10);
 			continue;
+		}
+
+		if (running && worker && !worker->joinable())
+		{
+			running = false;
 		}
 
 		// Start the Dear ImGui frame
@@ -302,6 +317,9 @@ int main(int argc, char **argv)
 				}
 
 				ImGui::SameLine();
+				ImGui::SetNextItemWidth(100);
+				ImGui::Combo("##", &log_level, log_levels, IM_ARRAYSIZE(log_levels));
+				ImGui::SameLine();
 				ImGui::BeginDisabled(!json_loaded);
 				if (ImGui::Button("Run"))
 				{
@@ -325,6 +343,7 @@ int main(int argc, char **argv)
 									tend = tendin;
 								};
 							set_logger(std::make_shared<spdlog::logger>(logger));
+							polyfem::logger().set_level(static_cast<spdlog::level::level_enum>(log_level));
 							running = true;
 
 							worker = std::make_shared<std::thread>(run_polyfem, state);
@@ -348,8 +367,8 @@ int main(int argc, char **argv)
 				if (running)
 				{
 					ImGui::Text("Running...");
-					ImGui::ProgressBar(float(t) / float(time_steps), ImVec2(-1, 0), fmt::format("{}/{}, {:.2}s/{:.2}s", t, time_steps, tt, tend).c_str());
 				}
+				ImGui::ProgressBar(float(t) / float(time_steps), ImVec2(-1, 0), fmt::format("{}/{}, {:.2}s/{:.2}s", t, time_steps, tt, tend).c_str());
 			}
 			ImGui::End();
 
