@@ -99,6 +99,25 @@ int run_polyfem(std::shared_ptr<State> state)
 	return EXIT_SUCCESS;
 }
 
+int run_opt(std::shared_ptr<OptState> opt_state)
+{
+	opt_state->create_states(opt_state->args["compute_objective"].get<bool>() ? polyfem::solver::CacheLevel::Solution : polyfem::solver::CacheLevel::Derivatives, opt_state->args["solver"]["max_threads"].get<int>());
+	opt_state->init_variables();
+	opt_state->create_problem();
+
+	Eigen::VectorXd x;
+	opt_state->initial_guess(x);
+
+	if (opt_state->args["compute_objective"].get<bool>())
+	{
+		logger().info("Objective is {}", opt_state->eval(x));
+		return EXIT_SUCCESS;
+	}
+
+	opt_state->solve(x);
+	return EXIT_SUCCESS;
+}
+
 void display_log(const std::string &title, const std::vector<std::string> &logs, int r, int g, int b)
 {
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(r, g, b, 255));
@@ -176,9 +195,6 @@ int main(int argc, char **argv)
 	init_info.MSAASamples = SDL_GPU_SAMPLECOUNT_1;
 	ImGui_ImplSDLGPU3_Init(&init_info);
 
-	// Our state
-	bool show_demo_window = true;
-	bool show_another_window = false;
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 	std::vector<std::string> info;
@@ -186,6 +202,26 @@ int main(int argc, char **argv)
 	std::vector<std::string> debug;
 	std::vector<std::string> error;
 	std::vector<std::string> trace;
+
+	std::vector<std::string> opt_info;
+	std::vector<std::string> opt_warning;
+	std::vector<std::string> opt_debug;
+	std::vector<std::string> opt_error;
+	std::vector<std::string> opt_trace;
+
+	auto clear_logs = [&]() {
+		info.clear();
+		warning.clear();
+		debug.clear();
+		error.clear();
+		trace.clear();
+
+		opt_info.clear();
+		opt_warning.clear();
+		opt_debug.clear();
+		opt_error.clear();
+		opt_trace.clear();
+	};
 
 	auto callback_sink = std::make_shared<spdlog::sinks::callback_sink_mt>(
 		[&info, &warning, &debug, &error, &trace](const spdlog::details::log_msg &msg) {
@@ -213,15 +249,47 @@ int main(int argc, char **argv)
 				break;
 			}
 		});
+
+	auto opt_callback_sink = std::make_shared<spdlog::sinks::callback_sink_mt>(
+		[&opt_info, &opt_warning, &opt_debug, &opt_error, &opt_trace](const spdlog::details::log_msg &msg) {
+			time_t time = std::chrono::system_clock::to_time_t(msg.time);
+			const auto str = fmt::format("[{}] {}",
+										 std::put_time(std::localtime(&time), "%F %T"), msg.payload);
+			switch (msg.level)
+			{
+			case spdlog::level::info:
+				opt_info.push_back(str);
+				break;
+			case spdlog::level::warn:
+				opt_warning.push_back(str);
+				break;
+			case spdlog::level::debug:
+				opt_debug.push_back(str);
+				break;
+			case spdlog::level::err:
+				opt_error.push_back(str);
+				break;
+			case spdlog::level::trace:
+				opt_trace.push_back(str);
+				break;
+			default:
+				break;
+			}
+		});
 	spdlog::logger logger("polyfem_app", {callback_sink});
+	spdlog::logger opt_logger("polyfem_opt_app", {opt_callback_sink});
+
 	set_logger(std::make_shared<spdlog::logger>(logger));
+	set_adjoint_logger(std::make_shared<spdlog::logger>(opt_logger));
 
 	std::shared_ptr<State> state;
+	std::shared_ptr<OptState> opt_state;
 	std::shared_ptr<std::thread> worker;
 
 	// Main loop
 	bool done = false;
 	bool running = false;
+	bool is_opt = false;
 	bool json_loaded = false;
 	std::string error_msg;
 	std::string json_file;
@@ -239,7 +307,9 @@ int main(int argc, char **argv)
 		"Error",
 		"Critical",
 		"Off"};
-	static int log_level = 1; // Default to Info level
+
+	static int log_level = 1;
+	static int opt_log_level = 1;
 
 	while (!done)
 	{
@@ -278,6 +348,7 @@ int main(int argc, char **argv)
 
 				if (ImGui::Button("Load JSON"))
 				{
+					clear_logs();
 					json_loaded = false;
 					json_file = openFileName("", {"*.json", "*.*"}, "JSON Files");
 					if (!json_file.empty())
@@ -318,20 +389,45 @@ int main(int argc, char **argv)
 
 				ImGui::SameLine();
 				ImGui::SetNextItemWidth(100);
-				ImGui::Combo("##", &log_level, log_levels, IM_ARRAYSIZE(log_levels));
+				ImGui::Combo("Main", &log_level, log_levels, IM_ARRAYSIZE(log_levels));
+				ImGui::SameLine();
+				ImGui::SetNextItemWidth(100);
+				ImGui::Combo("Opt", &opt_log_level, log_levels, IM_ARRAYSIZE(log_levels));
 				ImGui::SameLine();
 				ImGui::BeginDisabled(!json_loaded);
 				if (ImGui::Button("Run"))
 				{
 					running = false;
-					if (in_args.contains("states"))
+					try
 					{
-						// return optimization_simulation(command_line, max_threads, is_strict, log_level, in_args);
-					}
-					else
-					{
-						try
+						if (in_args.contains("states"))
 						{
+							opt_state = std::make_shared<OptState>();
+							opt_state->init(in_args, true);
+
+							// opt_state->opt_callback =
+							// 	[&t, &time_steps, &tt, &tend](int tin, int time_stepsin, double ttin, double tendin) {
+							// 		t = tin;
+							// 		time_steps = time_stepsin;
+							// 		tt = ttin;
+							// 		tend = tendin;
+							// 	};
+
+							set_logger(std::make_shared<spdlog::logger>(logger));
+							set_adjoint_logger(std::make_shared<spdlog::logger>(opt_logger));
+
+							polyfem::logger().set_level(static_cast<spdlog::level::level_enum>(log_level));
+							polyfem::adjoint_logger().set_level(static_cast<spdlog::level::level_enum>(log_level));
+
+							running = true;
+							is_opt = true;
+
+							worker = std::make_shared<std::thread>(run_opt, opt_state);
+							worker->detach();
+						}
+						else
+						{
+
 							state = std::make_shared<State>();
 							state->init(in_args, true);
 
@@ -349,12 +445,12 @@ int main(int argc, char **argv)
 							worker = std::make_shared<std::thread>(run_polyfem, state);
 							worker->detach();
 						}
-						catch (const std::exception &e)
-						{
-							error_msg = fmt::format("{}", e.what());
-							std::cout << error_msg << std::endl;
-							ImGui::OpenPopup("Error");
-						}
+					}
+					catch (const std::exception &e)
+					{
+						error_msg = fmt::format("{}", e.what());
+						std::cout << error_msg << std::endl;
+						ImGui::OpenPopup("Error");
 					}
 				}
 				ImGui::EndDisabled();
@@ -382,7 +478,19 @@ int main(int argc, char **argv)
 
 			ImGui::SetNextWindowSize(ImVec2(width / 2, height * 3. / 8));
 			ImGui::SetNextWindowPos(ImVec2(0, height / 4));
-			display_log("Info", info, 39, 174, 96);
+			if (is_opt)
+			{
+				ImGui::BeginTabBar("Info");
+				if (ImGui::BeginTabItem("Main"))
+					display_log("Info", info, 39, 174, 96);
+				ImGui::EndTabItem();
+				if (ImGui::BeginTabItem("Opt"))
+					display_log("Info", opt_info, 39, 174, 96);
+				ImGui::EndTabItem();
+				ImGui::EndTabBar();
+			}
+			else
+				display_log("Info", info, 39, 174, 96);
 
 			ImGui::SetNextWindowSize(ImVec2(width / 2, height * 3. / 8));
 			ImGui::SetNextWindowPos(ImVec2(width / 2, height / 4));
