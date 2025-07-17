@@ -30,7 +30,7 @@ namespace polyfem::solver
 
 		static std::shared_ptr<State> create_state(const json &args, CacheLevel level, const size_t max_threads);
 
-		static std::vector<std::shared_ptr<State>> create_states(const json &state_args, const CacheLevel &level, const size_t max_threads);
+		static std::vector<std::shared_ptr<State>> create_states(const std::string &root_path, const json &state_args, const CacheLevel &level, const size_t max_threads);
 
 		static Eigen::VectorXd inverse_evaluation(const json &args, const int ndof, const std::vector<int> &variable_sizes, VariableToSimulationGroup &var2sim);
 

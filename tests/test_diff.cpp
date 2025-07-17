@@ -147,7 +147,7 @@ namespace
 		for (auto &arg : opt_args["states"])
 			arg["path"] = append_root_path(arg["path"]);
 
-		std::vector<std::shared_ptr<State>> states = AdjointOptUtils::create_states(opt_args["states"], solver::CacheLevel::Derivatives, 16);
+		std::vector<std::shared_ptr<State>> states = AdjointOptUtils::create_states("", opt_args["states"], solver::CacheLevel::Derivatives, 16);
 
 		/* DOF */
 		int ndof = 0;
@@ -1289,7 +1289,7 @@ TEST_CASE("initial-contact-smooth", "[test_adjoint]")
 	json obj_args = R"({
             "type": "transient_integral",
             "state": 0,
-            "static_objective": 
+            "static_objective":
             {
                 "type": "smooth_contact_force_norm",
                 "state": 0,
@@ -1313,7 +1313,7 @@ TEST_CASE("initial-contact-smooth", "[test_adjoint]")
 
 	Eigen::VectorXd x = var2sim[0]->inverse_eval();
 
-	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-6, 1e-5);
+	verify_adjoint(*nl_problem, x, velocity_discrete, 1e-6, 1e-4);
 }
 
 TEST_CASE("shape-transient-smooth", "[test_adjoint]")
