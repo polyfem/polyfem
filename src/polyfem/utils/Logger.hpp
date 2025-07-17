@@ -6,6 +6,8 @@
 #include <spdlog/spdlog.h>
 #include <polyfem/utils/EnableWarnings.hpp>
 
+#include <polyfem/utils/Types.hpp>
+
 namespace polyfem
 {
 	///
@@ -52,3 +54,15 @@ namespace polyfem
 		log_and_throw_error(fmt::format(msg, args...));
 	}
 } // namespace polyfem
+
+template <>
+struct fmt::formatter<polyfem::StiffnessMatrix> : fmt::formatter<fmt::string_view>
+{
+	format_context::iterator format(const polyfem::StiffnessMatrix &mat, fmt::format_context &ctx) const;
+};
+
+template <>
+struct fmt::formatter<Eigen::MatrixXd> : fmt::formatter<fmt::string_view>
+{
+	format_context::iterator format(const Eigen::MatrixXd &mat, fmt::format_context &ctx) const;
+};

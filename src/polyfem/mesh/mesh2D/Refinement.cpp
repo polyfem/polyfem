@@ -236,8 +236,6 @@ namespace
 				Eigen::MatrixXd X(border[0].size(), 2);
 				X.col(0) = border[0].col(0);
 				X.col(1) = border[1].col(0);
-				//TODO
-				// std::cout << X << std::endl << std::endl;;
 			}
 			return PatternType::DOUBLE_PERIODIC;
 		}
@@ -301,7 +299,6 @@ bool polyfem::mesh::instantiate_pattern(
 		logger().error("Pattern simple periodic");
 		return false;
 	case PatternType::DOUBLE_PERIODIC:
-		// std::cout << "Pattern double periodic" << std::endl;
 		// Not implemented
 		break;
 	default:
@@ -384,8 +381,6 @@ bool polyfem::mesh::instantiate_pattern(
 					{
 						side2.reverseInPlace();
 					}
-					// std::cout << side1.transpose() << std::endl;
-					// std::cout << side2.transpose() << std::endl << std::endl;
 					for (int ii = 0; ii < (int)side1.size(); ++ii)
 					{
 						const int x1 = side1[ii];
@@ -524,7 +519,6 @@ void polyfem::mesh::refine_quad_mesh(
 		6, 2, 8, 7,
 		2, 1, 9, 8;
 	PF = PF.array() - 1;
-	// std::cout << PF << std::endl;
 	bool res = instantiate_pattern(IV, IF, PV, PF, OV, OF);
 	assert(res);
 }
@@ -583,7 +577,6 @@ void polyfem::mesh::Polygons::polar_split(const Eigen::MatrixXd &IV, Eigen::Matr
 void polyfem::mesh::Polygons::catmul_clark_split(const Eigen::MatrixXd &IV, Eigen::MatrixXd &OV, std::vector<std::vector<int>> &OF)
 {
 	assert(IV.cols() == 2 || IV.cols() == 3);
-	// std::cout << IV.rows() << std::endl;
 	assert(IV.rows() % 2 == 0);
 	Eigen::RowVector3d bary;
 	if (is_star_shaped(IV, bary))
@@ -723,9 +716,7 @@ void polyfem::mesh::refine_polygonal_mesh(const GEO::Mesh &M_in, GEO::Mesh &M_ou
 				{
 					vertices.push_back(remap[vk - n]);
 				}
-				// std::cout << vertices.back() << ',';
 			}
-			// std::cout << std::endl;
 			M_out.facets.create_polygon(vertices);
 		}
 	}

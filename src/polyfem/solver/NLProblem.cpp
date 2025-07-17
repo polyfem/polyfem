@@ -548,13 +548,16 @@ namespace polyfem::solver
 			penalty_problem_->post_step(data);
 
 		// TODO: add me back
-		// if (state_.args["output"]["advanced"]["save_nl_solve_sequence"])
+		static int nsolves = 0;
+		if (data.iter_num == 0)
+			nsolves++;
+		// if (state && state->args["output"]["advanced"]["save_nl_solve_sequence"])
 		// {
-		// 	const Eigen::MatrixXd displacements = utils::unflatten(reduced_to_full(x), state_.mesh->dimension());
+		// 	const Eigen::MatrixXd displacements = utils::unflatten(reduced_to_full(data.x), state->mesh->dimension());
 		// 	io::OBJWriter::write(
-		// 		state_.resolve_output_path(fmt::format("nonlinear_solve_iter{:03d}.obj", iter_num)),
-		// 		state_.collision_mesh.displace_vertices(displacements),
-		// 		state_.collision_mesh.edges(), state_.collision_mesh.faces());
+		// 		state->resolve_output_path(fmt::format("nonlinear_solve{:04d}_iter{:04d}.obj", nsolves, data.iter_num)),
+		// 		state->collision_mesh.displace_vertices(displacements),
+		// 		state->collision_mesh.edges(), state->collision_mesh.faces());
 		// }
 	}
 

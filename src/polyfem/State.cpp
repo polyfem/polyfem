@@ -57,7 +57,6 @@
 #include <polyfem/io/Evaluator.hpp>
 
 #include <polyfem/utils/autodiff.h>
-DECLARE_DIFFSCALAR_BASE();
 
 using namespace Eigen;
 
@@ -618,7 +617,11 @@ namespace polyfem
 		}
 		// TODO: same for pressure!
 
+#ifdef POLYFEM_WITH_BEZIER
 		if (!mesh->is_simplicial())
+#else
+		if constexpr (true)
+#endif
 		{
 			args["space"]["advanced"]["count_flipped_els_continuous"] = false;
 			args["output"]["paraview"]["options"]["jacobian_validity"] = false;
@@ -996,11 +999,11 @@ namespace polyfem
 		{
 			min_boundary_edge_length = std::numeric_limits<double>::max();
 			for (const auto &edge : collision_mesh.edges().rowwise())
-			{
-				const VectorNd v0 = collision_mesh.rest_positions().row(edge(0));
-				const VectorNd v1 = collision_mesh.rest_positions().row(edge(1));
-				min_boundary_edge_length = std::min(min_boundary_edge_length, (v1 - v0).norm());
-			}
+ 			{
+ 				const VectorNd v0 = collision_mesh.rest_positions().row(edge(0));
+ 				const VectorNd v1 = collision_mesh.rest_positions().row(edge(1));
+ 				min_boundary_edge_length = std::min(min_boundary_edge_length, (v1 - v0).norm());
+ 			}
 
 			double dhat = Units::convert(args["contact"]["dhat"], units.length());
 			args["contact"]["epsv"] = Units::convert(args["contact"]["epsv"], units.velocity());
@@ -1338,6 +1341,7 @@ namespace polyfem
 		Eigen::MatrixXi boundary_triangles;
 		Eigen::SparseMatrix<double> displacement_map;
 		periodic_collision_mesh = ipc::CollisionMesh(is_on_surface,
+													 std::vector<bool>(Vnew.rows(), false),
 													 Vnew,
 													 Enew,
 													 boundary_triangles,
@@ -1396,9 +1400,8 @@ namespace polyfem
 					in_node_to_node, transformation, collision_vertices, collision_codim_vids,
 					collision_edges, collision_triangles, displacement_map_entries);
 			}
-			else
+			else if (collision_mesh_args.contains("max_edge_length"))
 			{
-				assert(collision_mesh_args.contains("max_edge_length"));
 				logger().debug(
 					"Building collision proxy with max edge length={} ...",
 					collision_mesh_args["max_edge_length"].get<double>());
@@ -1418,6 +1421,12 @@ namespace polyfem
 					timer.getElapsedTime(),
 					collision_vertices.rows(), collision_triangles.rows()));
 			}
+			else
+			{
+				io::OutGeometryData::extract_boundary_mesh(
+					mesh, n_bases - obstacle.n_vertices(), bases, total_local_boundary,
+					collision_vertices, collision_edges, collision_triangles, displacement_map_entries);
+			}
 		}
 		else
 		{
@@ -1425,6 +1434,8 @@ namespace polyfem
 				mesh, n_bases - obstacle.n_vertices(), bases, total_local_boundary,
 				collision_vertices, collision_edges, collision_triangles, displacement_map_entries);
 		}
+
+		std::vector<bool> is_orientable_vertex(collision_vertices.rows(), true);
 
 		// n_bases already contains the obstacle vertices
 		const int num_fe_nodes = n_bases - obstacle.n_vertices();
@@ -1439,6 +1450,11 @@ namespace polyfem
 			append_rows(collision_codim_vids, obstacle.codim_v().array() + num_fe_collision_vertices);
 			append_rows(collision_edges, obstacle.e().array() + num_fe_collision_vertices);
 			append_rows(collision_triangles, obstacle.f().array() + num_fe_collision_vertices);
+
+			for (int i = 0; i < obstacle.n_vertices(); i++)
+			{
+				is_orientable_vertex.push_back(false);
+			}
 
 			if (!displacement_map_entries.empty())
 			{
@@ -1465,13 +1481,13 @@ namespace polyfem
 		}
 
 		collision_mesh = ipc::CollisionMesh(
-			is_on_surface, collision_vertices, collision_edges, collision_triangles,
+			is_on_surface, is_orientable_vertex, collision_vertices, collision_edges, collision_triangles,
 			displacement_map);
 
 		collision_mesh.can_collide = [&collision_mesh, num_fe_collision_vertices](size_t vi, size_t vj) {
 			// obstacles do not collide with other obstacles
 			return collision_mesh.to_full_vertex_id(vi) < num_fe_collision_vertices
-				   || collision_mesh.to_full_vertex_id(vj) < num_fe_collision_vertices;
+				|| collision_mesh.to_full_vertex_id(vj) < num_fe_collision_vertices;
 		};
 
 		collision_mesh.init_area_jacobians();

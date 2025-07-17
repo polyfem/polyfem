@@ -333,9 +333,6 @@ namespace polyfem
 			std::sort(boundary_ids_.begin(), boundary_ids_.end());
 			auto it = std::unique(boundary_ids_.begin(), boundary_ids_.end());
 			boundary_ids_.resize(std::distance(boundary_ids_.begin(), it));
-
-			// for(int i : boundary_ids_)
-			// 	std::cout<<"i "<<i<<std::endl;
 		}
 
 		FlowWithObstacle::FlowWithObstacle(const std::string &name)
@@ -647,9 +644,6 @@ namespace polyfem
 			std::sort(boundary_ids_.begin(), boundary_ids_.end());
 			auto it = std::unique(boundary_ids_.begin(), boundary_ids_.end());
 			boundary_ids_.resize(std::distance(boundary_ids_.begin(), it));
-
-			// for(int i : boundary_ids_)
-			// 	std::cout<<"i "<<i<<std::endl;
 		}
 
 		StokesLawProblem::StokesLawProblem(const std::string &name)

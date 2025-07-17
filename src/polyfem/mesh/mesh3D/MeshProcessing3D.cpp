@@ -576,7 +576,6 @@ void MeshProcessing3D::reorder_hex_mesh_propogation(Mesh3DStorage &hmi)
 		Groups.push_back(group);
 	}
 	// direction
-	//  cout << "correct orientation " << endl;
 	for (auto group : Groups)
 	{
 		Mesh_Quality mq1, mq2;
@@ -587,7 +586,6 @@ void MeshProcessing3D::reorder_hex_mesh_propogation(Mesh3DStorage &hmi)
 		for (auto hid : group)
 			m1.elements.push_back(hmi.elements[hid]);
 		scaled_jacobian(m1, mq1);
-		// cout << "m1 jacobian " << mq1.min_Jacobian << " " << mq1.ave_Jacobian << endl;
 		if (mq1.min_Jacobian > 0)
 			continue;
 		m2.elements = m1.elements;
@@ -597,7 +595,6 @@ void MeshProcessing3D::reorder_hex_mesh_propogation(Mesh3DStorage &hmi)
 			swap(h.vs[5], h.vs[7]);
 		}
 		scaled_jacobian(m2, mq2);
-		// cout << "m2 jacobian " << mq2.min_Jacobian << " " << mq2.ave_Jacobian << endl;
 		if (mq2.ave_Jacobian > mq1.ave_Jacobian)
 		{
 			for (auto &h : m2.elements)
@@ -669,7 +666,6 @@ double MeshProcessing3D::a_jacobian(Vector3d &v0, Vector3d &v1, Vector3d &v2, Ve
 	double scaled_jacobian = Jacobian.determinant();
 	if (std::abs(norm1) < Jacobian_Precision || std::abs(norm2) < Jacobian_Precision || std::abs(norm3) < Jacobian_Precision)
 	{
-		// std::cout << "Potential Bug, check!" << endl; //system("PAUSE");
 		return scaled_jacobian;
 	}
 	scaled_jacobian /= norm1 * norm2 * norm3;
@@ -921,12 +917,10 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 
 						for (int j = 0; j < 3; j++)
 							v_.v[j] = M_.vertices[vid].v[j] + (ele.v_in_Kernel[j] - M_.vertices[vid].v[j]) * (r + 1.0) / (double)(level + 1);
-						// cout << "before: "<<v_.v[0] << " " << v_.v[1] << " " << v_.v[2] << endl;
 						if (reverse)
 						{
 							for (int j = 0; j < 3; j++)
 								v_.v[j] = M_.vertices[vid].v[j] + (M_.vertices[vid].v[j] - ele.v_in_Kernel[j]) * (r + 1.0) / (double)(level + 1);
-							// cout << "after: " << v_.v[0] << " " << v_.v[1] << " " << v_.v[2] << endl;
 						}
 						M_.vertices.push_back(v_);
 						v2v.push_back(v_.id);
@@ -1121,18 +1115,6 @@ void MeshProcessing3D::refine_catmul_clark_polar(Mesh3DStorage &M, int iter, boo
 }
 void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter)
 {
-
-	// double hmin=10000, hmax=0, havg=0;
-	// for(const auto & e:M.edges){
-	// 	Eigen::Vector3d v0 = M.points.col(e.vs[0]), v1 = M.points.col(e.vs[1]);
-	// 	double len = (v0-v1).norm();
-	// 	if(len<hmin) hmin=len;
-	// 	if(len>hmax) hmax = len;
-	// 	havg+=len;
-	// }
-	// havg/=M.edges.size();
-	// std::cout<<"hmin, hmax, havg: "<<hmin<<" "<<hmax<<" "<<havg<<std::endl;
-
 	for (int i = 0; i < iter; i++)
 	{
 
@@ -1365,7 +1347,6 @@ void MeshProcessing3D::refine_red_refinement_tet(Mesh3DStorage &M, int iter)
 			havg += len;
 		}
 		havg /= M.edges.size();
-		// std::cout<<"hmin, hmax, havg: "<<hmin<<" "<<hmax<<" "<<havg<<std::endl;
 	}
 }
 void MeshProcessing3D::straight_sweeping(const Mesh3DStorage &Mi, int sweep_coord, double height, int nlayer, Mesh3DStorage &Mo)
