@@ -66,71 +66,104 @@ std::string openFileName(const std::string &defaultPath,
 
 int run_polyfem(std::shared_ptr<State> state)
 {
-	std::vector<std::string> names;
-	std::vector<Eigen::MatrixXi> cells;
-	std::vector<Eigen::MatrixXd> vertices;
-
-	state->load_mesh(/*non_conforming=*/false, names, cells, vertices);
-
-	if (state->mesh == nullptr)
+	try
 	{
-		// Cannot proceed without a mesh.
+		std::vector<std::string> names;
+		std::vector<Eigen::MatrixXi> cells;
+		std::vector<Eigen::MatrixXd> vertices;
+
+		state->load_mesh(/*non_conforming=*/false, names, cells, vertices);
+
+		if (state->mesh == nullptr)
+		{
+			// Cannot proceed without a mesh.
+			return EXIT_FAILURE;
+		}
+
+		state->stats.compute_mesh_stats(*state->mesh);
+
+		state->build_basis();
+
+		state->assemble_rhs();
+		state->assemble_mass_mat();
+
+		Eigen::MatrixXd sol;
+		Eigen::MatrixXd pressure;
+
+		state->solve_problem(sol, pressure);
+
+		state->compute_errors(sol);
+
+		logger().info("total time: {}s", state->timings.total_time());
+
+		state->save_json(sol);
+		state->export_data(sol, pressure);
+		return EXIT_SUCCESS;
+	}
+	catch (const std::exception &e)
+	{
+		logger().error("Exception: {}", e.what());
 		return EXIT_FAILURE;
 	}
-
-	state->stats.compute_mesh_stats(*state->mesh);
-
-	state->build_basis();
-
-	state->assemble_rhs();
-	state->assemble_mass_mat();
-
-	Eigen::MatrixXd sol;
-	Eigen::MatrixXd pressure;
-
-	state->solve_problem(sol, pressure);
-
-	state->compute_errors(sol);
-
-	logger().info("total time: {}s", state->timings.total_time());
-
-	state->save_json(sol);
-	state->export_data(sol, pressure);
-	return EXIT_SUCCESS;
 }
 
 int run_opt(std::shared_ptr<OptState> opt_state)
 {
-	opt_state->create_states(opt_state->args["compute_objective"].get<bool>() ? polyfem::solver::CacheLevel::Solution : polyfem::solver::CacheLevel::Derivatives, opt_state->args["solver"]["max_threads"].get<int>());
-	opt_state->init_variables();
-	opt_state->create_problem();
-
-	Eigen::VectorXd x;
-	opt_state->initial_guess(x);
-
-	if (opt_state->args["compute_objective"].get<bool>())
+	try
 	{
-		logger().info("Objective is {}", opt_state->eval(x));
+		opt_state->create_states(opt_state->args["compute_objective"].get<bool>() ? polyfem::solver::CacheLevel::Solution : polyfem::solver::CacheLevel::Derivatives, opt_state->args["solver"]["max_threads"].get<int>());
+		opt_state->init_variables();
+		opt_state->create_problem();
+
+		Eigen::VectorXd x;
+		opt_state->initial_guess(x);
+
+		if (opt_state->args["compute_objective"].get<bool>())
+		{
+			logger().info("Objective is {}", opt_state->eval(x));
+			return EXIT_SUCCESS;
+		}
+
+		opt_state->solve(x);
 		return EXIT_SUCCESS;
 	}
-
-	opt_state->solve(x);
-	return EXIT_SUCCESS;
+	catch (const std::exception &e)
+	{
+		adjoint_logger().error("Exception: {}", e.what());
+		return EXIT_FAILURE;
+	}
 }
 
-void display_log(const std::string &title, const std::vector<std::string> &logs, int r, int g, int b)
+void display_log(
+	bool is_opt,
+	const std::string &title,
+	const std::vector<std::string> &nlogs,
+	const std::vector<std::string> &adj_logs,
+	int r, int g, int b)
 {
 	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(r, g, b, 255));
 	ImGui::Begin(title.c_str());
 	ImGui::PopStyleColor();
+
+	static bool show_opt_logs = false;
+
+	if (is_opt)
+	{
+		if (ImGui::Button("Main"))
+			show_opt_logs = false;
+		ImGui::SameLine();
+		if (ImGui::Button("Opt"))
+			show_opt_logs = true;
+	}
+
+	const std::vector<std::string> logs =
+		(is_opt && show_opt_logs) ? adj_logs : nlogs;
 	ImGui::BeginChild("Scrolling");
 	for (const auto &log : logs)
 		ImGui::Text("%s", log.c_str());
 	ImGui::EndChild();
 	ImGui::End();
 }
-
-int WinMain() { return 0; }
 
 // Main code
 int main(int argc, char **argv)
@@ -332,7 +365,7 @@ int main(int argc, char **argv)
 		if (running && worker && !worker->joinable())
 		{
 			running = false;
-			is_opt = false;
+			// is_opt = false;
 		}
 
 		// Start the Dear ImGui frame
@@ -480,35 +513,23 @@ int main(int argc, char **argv)
 
 			ImGui::SetNextWindowSize(ImVec2(width / 2, height * 3. / 8));
 			ImGui::SetNextWindowPos(ImVec2(0, height / 4));
-			if (is_opt)
-			{
-				ImGui::BeginTabBar("Info");
-				if (ImGui::BeginTabItem("Main"))
-					display_log("Info", info, 39, 174, 96);
-				ImGui::EndTabItem();
-				if (ImGui::BeginTabItem("Opt"))
-					display_log("Info", opt_info, 39, 174, 96);
-				ImGui::EndTabItem();
-				ImGui::EndTabBar();
-			}
-			else
-				display_log("Info", info, 39, 174, 96);
+			display_log(is_opt, "Info", info, opt_info, 39, 174, 96);
 
 			ImGui::SetNextWindowSize(ImVec2(width / 2, height * 3. / 8));
 			ImGui::SetNextWindowPos(ImVec2(width / 2, height / 4));
-			display_log("Warning", warning, 230, 126, 34);
+			display_log(is_opt, "Warning", warning, opt_warning, 230, 126, 34);
 
 			ImGui::SetNextWindowSize(ImVec2(width / 2, height * 3. / 8));
 			ImGui::SetNextWindowPos(ImVec2(0, height / 4 + height * 3. / 8));
-			display_log("Error", error, 192, 57, 43);
+			display_log(is_opt, "Error", error, opt_error, 192, 57, 43);
 
 			ImGui::SetNextWindowSize(ImVec2(width / 2, height * 3. / 16));
 			ImGui::SetNextWindowPos(ImVec2(width / 2, height / 4 + height * 3. / 8));
-			display_log("Debug", debug, 52, 152, 219);
+			display_log(is_opt, "Debug", debug, opt_debug, 52, 152, 219);
 
 			ImGui::SetNextWindowSize(ImVec2(width / 2, height * 3. / 16));
 			ImGui::SetNextWindowPos(ImVec2(width / 2, height / 4 + height * 3. / 8 + height * 3. / 16));
-			display_log("Trace", trace, 155, 89, 182);
+			display_log(is_opt, "Trace", trace, opt_trace, 155, 89, 182);
 		}
 
 		// Rendering
