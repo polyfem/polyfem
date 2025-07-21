@@ -497,7 +497,7 @@ namespace polyfem::solver
 				contact_form->set_bs_multiplier(bs_multiplier);
 			}
 
-			barrier_stiffness = 1000*AL_grad_energy*initial_barrier_stiffness_multipler_ * bs_multiplier;
+			barrier_stiffness = 10*AL_grad_energy*initial_barrier_stiffness_multipler_ * bs_multiplier;
 			if (barrier_stiffness < 10*AL_grad_energy || prev_dist == INFINITY )
 				barrier_stiffness = 10*AL_grad_energy;
 		}
@@ -544,8 +544,15 @@ namespace polyfem::solver
 		}
 
 
+		int dbc_size = 0;
+		for (const auto &f : al_form)
+		{
+
+		dbc_size += f->get_dbc_size();
+		}
+
 		//Scales AL to max hessian * 1000; Al_initial_weight acts as a multiplier for users to make this more or less aggressive; scaling accounts for acceleration scaling
-		weight = 1000*max_stiffness/scaling*AL_initial_weight_;
+		weight = 10*max_stiffness/scaling*AL_initial_weight_;
 
 
 			/* still playing with this

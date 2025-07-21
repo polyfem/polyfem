@@ -2116,7 +2116,7 @@ namespace polyfem::io
 
 			ipc::NormalAdhesionPotential normal_adhesion_potential(dhat_p, dhat_a, Y, 1);
 
-			if (opts.normal_adhesion_forces || opts.export_field("normal_adhesion_forces"))
+			if (opts.normal_adhesion_forces && opts.export_field("normal_adhesion_forces"))
 			{
 				ipc::NormalCollisions adhesion_collision_set;
 				adhesion_collision_set.build(
@@ -2133,7 +2133,7 @@ namespace polyfem::io
 				writer.add_field("normal_adhesion_forces", forces_reshaped);
 			}
 
-			if (opts.tangential_adhesion_forces || opts.export_field("tangential_adhesion_forces"))
+			if (opts.tangential_adhesion_forces && opts.export_field("tangential_adhesion_forces"))
 			{
 				ipc::TangentialCollisions tangential_collision_set;
 				tangential_collision_set.build(
