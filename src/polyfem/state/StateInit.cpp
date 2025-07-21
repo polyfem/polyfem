@@ -26,6 +26,23 @@
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 
+#include <polyfem/autogen/json-specs/input-spec.cpp>
+#include <polyfem/autogen/json-specs/boundary-condition.cpp>
+#include <polyfem/autogen/json-specs/interpolation.cpp>
+#include <polyfem/autogen/json-specs/log.cpp>
+#include <polyfem/autogen/json-specs/material-parameters.cpp>
+#include <polyfem/autogen/json-specs/objective-spec.cpp>
+#include <polyfem/autogen/json-specs/opt-input-spec.cpp>
+#include <polyfem/autogen/json-specs/polysolve.cpp>
+#include <polyfem/autogen/json-specs/selection.cpp>
+#include <polyfem/autogen/json-specs/value-no.cpp>
+#include <polyfem/autogen/json-specs/value.cpp>
+#include <polyfem/autogen/json-specs/value0.cpp>
+#include <polyfem/autogen/json-specs/value1.cpp>
+
+#include <polysolve/autogen/linear-solver-spec.cpp>
+#include <polysolve/autogen/nonlinear-solver-spec.cpp>
+
 #include <sstream>
 
 namespace spdlog::level
@@ -143,19 +160,28 @@ namespace polyfem
 		jse::JSE jse;
 		{
 			jse.strict = strict_validation;
-			const std::string polyfem_input_spec = POLYFEM_INPUT_SPEC;
-			std::ifstream file(polyfem_input_spec);
+			rules = json::parse(INPUT_SPEC);
 
-			if (file.is_open())
-				file >> rules;
-			else
-			{
-				logger().error("unable to open {} rules", polyfem_input_spec);
-				throw std::runtime_error("Invald spec file");
-			}
+			jse.embedded_rules = {
+				// From PolyFEM
+				{"input-spec.json", json::parse(INPUT_SPEC)},
+				{"boundary-condition.json", json::parse(BOUNDARY_CONDITION)},
+				{"interpolation.json", json::parse(INTERPOLATION)},
+				{"log.json", json::parse(LOG)},
+				{"material-parameters.json", json::parse(MATERIAL_PARAMETERS)},
+				{"objective-spec.json", json::parse(OBJECTIVE_SPEC)},
+				{"opt-input-spec.json", json::parse(OPT_INPUT_SPEC)},
+				{"polysolve.json", json::parse(POLYSOLVE)},
+				{"selection.json", json::parse(SELECTION)},
+				{"value-no.json", json::parse(VALUE_NO)},
+				{"value.json", json::parse(VALUE)},
+				{"value0.json", json::parse(VALUE0)},
+				{"value1.json", json::parse(VALUE1)},
+				// From PolySolve
+				{"linear-solver-spec.json", json::parse(LINEAR_SOLVER_SPEC)},
+				{"nonlinear-solver-spec.json", json::parse(NONLINEAR_SOLVER_SPEC)},
+			};
 
-			jse.include_directories.push_back(POLYFEM_JSON_SPEC_DIR);
-			jse.include_directories.push_back(POLYSOLVE_JSON_SPEC_DIR);
 			rules = jse.inject_include(rules);
 
 			polysolve::linear::Solver::apply_default_solver(rules, "/solver/linear");
