@@ -329,7 +329,7 @@ int main(int argc, char **argv)
 	std::string output_dir;
 	json in_args = json({});
 
-	int t, time_steps = 0;
+	int t = 0, time_steps = 0;
 	double tt = 0.0, tend = 0.0;
 
 	static const char *log_levels[] = {
