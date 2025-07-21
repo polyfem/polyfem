@@ -10,7 +10,6 @@ endif()
 
 if(WIN32)
     add_executable(polyfem_app
-        WIN32
         app.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/resources/appicon.rc
     )
@@ -49,6 +48,11 @@ endif()
 
 set_target_properties(polyfem_app PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
 install(TARGETS polyfem_app DESTINATION .)
+
+if(NOT (${CMAKE_VERSION} VERSION_LESS "3.6.0"))
+    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT polyfem_app)
+endif()
+
 
 
 if(APPLE)
