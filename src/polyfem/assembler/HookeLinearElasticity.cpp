@@ -19,7 +19,10 @@ namespace polyfem::assembler
 		}
 
 		template <int dim>
-		Eigen::Matrix<double, dim, dim> strain(const Eigen::MatrixXd &grad, const Eigen::MatrixXd &jac_it, int k, int coo)
+		Eigen::Matrix<double, dim, dim> strain(
+			const Eigen::MatrixXd &grad,
+			const Eigen::MatrixXd &jac_it,
+			int k, int coo)
 		{
 			Eigen::Matrix<double, dim, dim> jac;
 			jac.setZero();
@@ -72,12 +75,15 @@ namespace polyfem::assembler
 			std::vector<double> entries = params["elasticity_tensor"];
 			elasticity_tensor_.set_from_entries(entries, units.stress());
 		}
+		if (params.contains("fiber_direction"))
+			fiber_direction_.add_multimaterial(index, params["fiber_direction"], units.length());
 	}
 
 	void HookeLinearElasticity::set_size(const int size)
 	{
 		Assembler::set_size(size);
 		elasticity_tensor_.resize(size);
+		fiber_direction_.resize(size);
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>
@@ -97,6 +103,19 @@ namespace polyfem::assembler
 		{
 			Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> res_k(size() * size());
 
+			ElasticityTensor elasticity_tensor;
+			if (fiber_direction_.has_rotation())
+			{
+				const auto fdir_mtx_voigt = fiber_direction_.stiffness_rotation_voigt(data.vals.quadrature.points.row(k), data.vals.val.row(k), data.t, data.vals.element_id);
+
+				elasticity_tensor = elasticity_tensor_;
+				elasticity_tensor.rotate_stiffness(fdir_mtx_voigt);
+			}
+			else
+			{
+				elasticity_tensor = elasticity_tensor_;
+			}
+
 			if (size() == 2)
 			{
 				const Eigen::Matrix2d eps_x_i = strain<2>(gradi, data.vals.jac_it[k], k, 0);
@@ -115,12 +134,12 @@ namespace polyfem::assembler
 				e_y[2] = 2 * eps_y_i(0, 1);
 
 				Eigen::Matrix2d sigma_x;
-				sigma_x << elasticity_tensor_.compute_stress<3>(e_x, 0), elasticity_tensor_.compute_stress<3>(e_x, 2),
-					elasticity_tensor_.compute_stress<3>(e_x, 2), elasticity_tensor_.compute_stress<3>(e_x, 1);
+				sigma_x << elasticity_tensor.compute_stress<3>(e_x, 0), elasticity_tensor.compute_stress<3>(e_x, 2),
+					elasticity_tensor.compute_stress<3>(e_x, 2), elasticity_tensor.compute_stress<3>(e_x, 1);
 
 				Eigen::Matrix2d sigma_y;
-				sigma_y << elasticity_tensor_.compute_stress<3>(e_y, 0), elasticity_tensor_.compute_stress<3>(e_y, 2),
-					elasticity_tensor_.compute_stress<3>(e_y, 2), elasticity_tensor_.compute_stress<3>(e_y, 1);
+				sigma_y << elasticity_tensor.compute_stress<3>(e_y, 0), elasticity_tensor.compute_stress<3>(e_y, 2),
+					elasticity_tensor.compute_stress<3>(e_y, 2), elasticity_tensor.compute_stress<3>(e_y, 1);
 
 				res_k(0) = (sigma_x * eps_x_j).trace();
 				res_k(2) = (sigma_x * eps_y_j).trace();
@@ -161,19 +180,19 @@ namespace polyfem::assembler
 				e_z[5] = 2 * eps_z_i(0, 1);
 
 				Eigen::Matrix3d sigma_x;
-				sigma_x << elasticity_tensor_.compute_stress<6>(e_x, 0), elasticity_tensor_.compute_stress<6>(e_x, 5), elasticity_tensor_.compute_stress<6>(e_x, 4),
-					elasticity_tensor_.compute_stress<6>(e_x, 5), elasticity_tensor_.compute_stress<6>(e_x, 1), elasticity_tensor_.compute_stress<6>(e_x, 3),
-					elasticity_tensor_.compute_stress<6>(e_x, 4), elasticity_tensor_.compute_stress<6>(e_x, 3), elasticity_tensor_.compute_stress<6>(e_x, 2);
+				sigma_x << elasticity_tensor.compute_stress<6>(e_x, 0), elasticity_tensor.compute_stress<6>(e_x, 5), elasticity_tensor.compute_stress<6>(e_x, 4),
+					elasticity_tensor.compute_stress<6>(e_x, 5), elasticity_tensor.compute_stress<6>(e_x, 1), elasticity_tensor.compute_stress<6>(e_x, 3),
+					elasticity_tensor.compute_stress<6>(e_x, 4), elasticity_tensor.compute_stress<6>(e_x, 3), elasticity_tensor.compute_stress<6>(e_x, 2);
 
 				Eigen::Matrix3d sigma_y;
-				sigma_y << elasticity_tensor_.compute_stress<6>(e_y, 0), elasticity_tensor_.compute_stress<6>(e_y, 5), elasticity_tensor_.compute_stress<6>(e_y, 4),
-					elasticity_tensor_.compute_stress<6>(e_y, 5), elasticity_tensor_.compute_stress<6>(e_y, 1), elasticity_tensor_.compute_stress<6>(e_y, 3),
-					elasticity_tensor_.compute_stress<6>(e_y, 4), elasticity_tensor_.compute_stress<6>(e_y, 3), elasticity_tensor_.compute_stress<6>(e_y, 2);
+				sigma_y << elasticity_tensor.compute_stress<6>(e_y, 0), elasticity_tensor.compute_stress<6>(e_y, 5), elasticity_tensor.compute_stress<6>(e_y, 4),
+					elasticity_tensor.compute_stress<6>(e_y, 5), elasticity_tensor.compute_stress<6>(e_y, 1), elasticity_tensor.compute_stress<6>(e_y, 3),
+					elasticity_tensor.compute_stress<6>(e_y, 4), elasticity_tensor.compute_stress<6>(e_y, 3), elasticity_tensor.compute_stress<6>(e_y, 2);
 
 				Eigen::Matrix3d sigma_z;
-				sigma_z << elasticity_tensor_.compute_stress<6>(e_z, 0), elasticity_tensor_.compute_stress<6>(e_z, 5), elasticity_tensor_.compute_stress<6>(e_z, 4),
-					elasticity_tensor_.compute_stress<6>(e_z, 5), elasticity_tensor_.compute_stress<6>(e_z, 1), elasticity_tensor_.compute_stress<6>(e_z, 3),
-					elasticity_tensor_.compute_stress<6>(e_z, 4), elasticity_tensor_.compute_stress<6>(e_z, 3), elasticity_tensor_.compute_stress<6>(e_z, 2);
+				sigma_z << elasticity_tensor.compute_stress<6>(e_z, 0), elasticity_tensor.compute_stress<6>(e_z, 5), elasticity_tensor.compute_stress<6>(e_z, 4),
+					elasticity_tensor.compute_stress<6>(e_z, 5), elasticity_tensor.compute_stress<6>(e_z, 1), elasticity_tensor.compute_stress<6>(e_z, 3),
+					elasticity_tensor.compute_stress<6>(e_z, 4), elasticity_tensor.compute_stress<6>(e_z, 3), elasticity_tensor.compute_stress<6>(e_z, 2);
 
 				res_k(0) = (sigma_x * eps_x_j).trace();
 				res_k(3) = (sigma_x * eps_y_j).trace();
@@ -220,6 +239,19 @@ namespace polyfem::assembler
 		{
 			compute_diplacement_grad(size(), bs, vals, local_pts, p, displacement, displacement_grad);
 
+			ElasticityTensor elasticity_tensor;
+			if (fiber_direction_.has_rotation())
+			{
+				const auto fdir_mtx_voigt = fiber_direction_.stiffness_rotation_voigt(local_pts.row(p), vals.val.row(p), data.t, el_id);
+
+				elasticity_tensor = elasticity_tensor_;
+				elasticity_tensor.rotate_stiffness(fdir_mtx_voigt);
+			}
+			else
+			{
+				elasticity_tensor = elasticity_tensor_;
+			}
+
 			if (type == ElasticityTensorType::F)
 			{
 				all.row(p) = fun(displacement_grad + Eigen::MatrixXd::Identity(size(), size()));
@@ -236,8 +268,8 @@ namespace polyfem::assembler
 				eps[1] = strain(1, 1);
 				eps[2] = 2 * strain(0, 1);
 
-				sigma << elasticity_tensor_.compute_stress<3>(eps, 0), elasticity_tensor_.compute_stress<3>(eps, 2),
-					elasticity_tensor_.compute_stress<3>(eps, 2), elasticity_tensor_.compute_stress<3>(eps, 1);
+				sigma << elasticity_tensor.compute_stress<3>(eps, 0), elasticity_tensor.compute_stress<3>(eps, 2),
+					elasticity_tensor.compute_stress<3>(eps, 2), elasticity_tensor.compute_stress<3>(eps, 1);
 			}
 			else
 			{
@@ -249,9 +281,9 @@ namespace polyfem::assembler
 				eps[4] = 2 * strain(0, 2);
 				eps[5] = 2 * strain(0, 1);
 
-				sigma << elasticity_tensor_.compute_stress<6>(eps, 0), elasticity_tensor_.compute_stress<6>(eps, 5), elasticity_tensor_.compute_stress<6>(eps, 4),
-					elasticity_tensor_.compute_stress<6>(eps, 5), elasticity_tensor_.compute_stress<6>(eps, 1), elasticity_tensor_.compute_stress<6>(eps, 3),
-					elasticity_tensor_.compute_stress<6>(eps, 4), elasticity_tensor_.compute_stress<6>(eps, 3), elasticity_tensor_.compute_stress<6>(eps, 2);
+				sigma << elasticity_tensor.compute_stress<6>(eps, 0), elasticity_tensor.compute_stress<6>(eps, 5), elasticity_tensor.compute_stress<6>(eps, 4),
+					elasticity_tensor.compute_stress<6>(eps, 5), elasticity_tensor.compute_stress<6>(eps, 1), elasticity_tensor.compute_stress<6>(eps, 3),
+					elasticity_tensor.compute_stress<6>(eps, 4), elasticity_tensor.compute_stress<6>(eps, 3), elasticity_tensor.compute_stress<6>(eps, 2);
 			}
 
 			if (type == ElasticityTensorType::PK1)
