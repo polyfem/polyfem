@@ -74,6 +74,23 @@ else()
     set(CPACK_SOURCE_GENERATOR "TGZ")
 endif()
 
+
+
+# Destination paths below are relative to ${CMAKE_INSTALL_PREFIX}
+install(TARGETS polyfem_app
+    BUNDLE DESTINATION . COMPONENT Runtime
+    RUNTIME DESTINATION bin COMPONENT Runtime
+    )
+
+# Note Mac specific extension .app
+set(APPS "\${CMAKE_INSTALL_PREFIX}/polyfem_app.app")
+
+# Directories to look for dependencies
+set(DIRS ${CMAKE_BINARY_DIR})
+
+install(CODE "include(BundleUtilities)
+    fixup_bundle(\"${APPS}\" \"\" \"${DIRS}\")")
+
 set(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_BINARY_DIR};polyfem_app;Unspecified;/")
 
 set(CPACK_PACKAGE_VENDOR "PolyFEM")
