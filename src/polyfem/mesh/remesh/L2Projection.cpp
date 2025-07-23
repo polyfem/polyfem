@@ -146,7 +146,8 @@ namespace polyfem::mesh
 		ALSolver al_solver(
 			bc_forms, al_initial_weight,
 			al_scaling, al_max_weight, al_eta_tol,
-			/*update_barrier_stiffness=*/[&](const Eigen::MatrixXd &x) {});
+			/*update_barrier_stiffness=*/[&](const Eigen::MatrixXd &x) {},
+			[&](const Eigen::MatrixXd &x) {});
 
 		Eigen::MatrixXd sol = x0;
 

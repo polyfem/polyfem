@@ -256,7 +256,6 @@ namespace polyfem
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_improved_max_operator"]) : false,
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_physical_barrier"]) : false,
 			args["solver"]["contact"]["barrier_stiffness"],
-			args["solver"]["contact"]["initial_barrier_stiffness"],
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
@@ -334,14 +333,22 @@ namespace polyfem
 
 		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(true);
 
+		double al_initial_weight = args["solver"]["augmented_lagrangian"]["initial_weight"];
+		solve_data.set_AL_initial_weight(al_initial_weight);
+		solve_data.set_initial_barrier_stiffness_multiplier(args["solver"]["contact"]["adaptive_barrier_stiffness_multiplier"]);
 		ALSolver al_solver(
 			solve_data.al_form,
-			args["solver"]["augmented_lagrangian"]["initial_weight"],
+			al_initial_weight,
 			args["solver"]["augmented_lagrangian"]["scaling"],
 			args["solver"]["augmented_lagrangian"]["max_weight"],
 			args["solver"]["augmented_lagrangian"]["eta"],
-			[&](const Eigen::VectorXd &x) {
+			[&](const Eigen::VectorXd &x)
+			{
 				this->solve_data.update_barrier_stiffness(sol);
+			},
+			[&](const Eigen::VectorXd &x)
+			{
+				this->solve_data.update_al_weight(sol);
 			});
 
 		al_solver.post_subsolve = [&](const double al_weight) {

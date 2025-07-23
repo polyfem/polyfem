@@ -1487,7 +1487,7 @@
     },
     {
         "pointer": "/solver/augmented_lagrangian/initial_weight",
-        "default": 1e6,
+        "default": 1,
         "min": 0,
         "type": "float",
         "doc": "Initial weight for AL"
@@ -1529,15 +1529,9 @@
             "tangential_adhesion_iterations",
             "friction_convergence_tol",
             "barrier_stiffness",
-            "initial_barrier_stiffness"
+            "adaptive_barrier_stiffness_multiplier"
         ],
         "doc": "Settings for contact handling in the solver."
-    },
-    {
-        "pointer": "/solver/contact/initial_barrier_stiffness",
-        "default": 1,
-        "type": "float",
-        "doc": "Initial barrier stiffness if adaptive barrier is used."
     },
     {
         "pointer": "/solver/contact/CCD",
@@ -1613,6 +1607,12 @@
         "pointer": "/solver/contact/barrier_stiffness",
         "type": "float",
         "doc": "The coefficient of clamped log-barrier function value when not adaptive"
+    },
+    {
+        "pointer": "/solver/contact/adaptive_barrier_stiffness_multiplier",
+        "type": "float",
+        "default": 1.0,
+        "doc": "Multiplier for the adaptive barrier stiffness to adjust the initial value of the barrier stiffness."
     },
     {
         "pointer": "/solver/rayleigh_damping",
