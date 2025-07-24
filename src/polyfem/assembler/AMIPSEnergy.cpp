@@ -217,34 +217,6 @@ namespace polyfem::assembler
 		AutoDiffVect local_disp;
 		get_local_disp(data, size(), local_disp);
 
-		// Eigen::MatrixXd local_dispd(data.vals.basis_values.size(), size());
-		// local_disp.setZero();
-		// for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
-		// {
-		// 	const auto &bs = data.vals.basis_values[i];
-		// 	for (size_t ii = 0; ii < bs.global.size(); ++ii)
-		// 	{
-		// 		for (int d = 0; d < size(); ++d)
-		// 		{
-		// 			local_dispd(i, d) += bs.global[ii].val * data.x(bs.global[ii].index * size() + d);
-		// 		}
-		// 	}
-		// }
-
-		Eigen::MatrixXd local_dispd(data.vals.basis_values.size(), size());
-		local_dispd.setZero();
-		for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
-		{
-			const auto &bs = data.vals.basis_values[i];
-			for (size_t ii = 0; ii < bs.global.size(); ++ii)
-			{
-				for (int d = 0; d < size(); ++d)
-				{
-					local_dispd(i, d) += bs.global[ii].val * data.x(bs.global[ii].index * size() + d);
-				}
-			}
-		}
-
 		AutoDiffGradMat standard;
 
 		if (size() == 2)
@@ -260,26 +232,20 @@ namespace polyfem::assembler
 		for (long p = 0; p < n_pts; ++p)
 		{
 			Eigen::Matrix<T, Eigen::Dynamic, 3> grad(data.vals.basis_values.size(), size());
-			Eigen::Matrix<double, Eigen::Dynamic, 3> gradd(data.vals.basis_values.size(), size());
 
 			for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
 			{
 				for (int d = 0; d < size(); ++d)
 				{
 					grad(i, d) = T(data.vals.basis_values[i].grad(p, d));
-					gradd(i, d) = data.vals.basis_values[i].grad(p, d);
 				}
 			}
 
-			Eigen::MatrixXd def_gradd = local_dispd.transpose() * gradd;
-			def_gradd = def_gradd * data.vals.jac_it[p];
 			compute_disp_grad_at_quad(data, local_disp, p, size(), def_grad);
 
 			// Id + grad d
 			for (int d = 0; d < size(); ++d)
 				def_grad(d, d) += T(1);
-			for (int d = 0; d < size(); ++d)
-				def_gradd(d, d) += 1;
 
 			if (!use_rest_pose_)
 			{
@@ -302,61 +268,6 @@ namespace polyfem::assembler
 			}
 
 			const T powJ = pow(det, power);
-			// if (!std::is_same<T, double>::value)
-			// {
-
-			// 	std::stringstream ss;
-			// 	ss << "LD" << std::endl;
-			// 	for (int i = 0; i < local_disp.rows(); ++i)
-			// 	{
-			// 		for (int j = 0; j < local_disp.cols(); ++j)
-			// 		{
-			// 			ss << local_disp(i, j) << "\n";
-			// 		}
-			// 		ss << std::endl;
-			// 	}
-
-			// 	ss << local_dispd.transpose() << std::endl
-			// 	   << std::endl;
-
-			// 	ss << "powj" << std::endl;
-			// 	ss << powJ << std::endl
-			// 	   << std::endl;
-			// 	ss << "det" << std::endl;
-			// 	ss << det << std::endl
-			// 	   << std::endl;
-
-			// 	ss << "trace" << std::endl;
-			// 	T sdf = (def_grad.transpose() * def_grad).trace();
-			// 	for (int i = 0; i < def_grad.rows(); ++i)
-			// 	{
-			// 		for (int j = 0; j < def_grad.cols(); ++j)
-			// 		{
-			// 			ss << def_grad(i, j) << "\n";
-			// 		}
-			// 		ss << std::endl;
-			// 	}
-			// 	ss << sdf << std::endl;
-
-			// 	ss << "trace1" << std::endl;
-			// 	ss << (def_gradd.transpose() * def_gradd).trace() << std::endl;
-			// 	ss << def_gradd << std::endl
-			// 	   << std::endl;
-			// 	ss << "--------------------------" << std::endl;
-			// 	ss << "trace" << std::endl;
-			// 	auto asd = (def_gradd * data.vals.jac_it[p].transpose() * gradd.transpose()).eval();
-			// 	for (int i = 0; i < asd.rows(); ++i)
-			// 	{
-			// 		for (int j = 0; j < asd.cols(); ++j)
-			// 		{
-			// 			ss << 2 * asd(i, j) << "\n";
-			// 		}
-			// 		ss << std::endl;
-			// 	}
-
-			// 	logger().error("\n{}", ss.str());
-			// 	exit(0);
-			// }
 			const T val = (def_grad.transpose() * def_grad).trace() / powJ; //+ barrier<T>::value(det);
 
 			energy += val * data.da(p);
