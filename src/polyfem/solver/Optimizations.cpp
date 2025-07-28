@@ -561,14 +561,14 @@ namespace polyfem::solver
 		return state;
 	}
 
-	std::vector<std::shared_ptr<State>> AdjointOptUtils::create_states(const json &state_args, const CacheLevel &level, const size_t max_threads)
+	std::vector<std::shared_ptr<State>> AdjointOptUtils::create_states(const std::string &root_path, const json &state_args, const CacheLevel &level, const size_t max_threads)
 	{
 		std::vector<std::shared_ptr<State>> states(state_args.size());
 		int i = 0;
 		for (const json &args : state_args)
 		{
 			json cur_args;
-			if (!load_json(args["path"], cur_args))
+			if (!load_json(utils::resolve_path(args["path"], root_path, false), cur_args))
 				log_and_throw_adjoint_error("Can't find json for State {}", i);
 
 			states[i++] = AdjointOptUtils::create_state(cur_args, level, max_threads);

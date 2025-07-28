@@ -12,9 +12,16 @@
             "solver",
             "stopping_conditions",
             "functionals",
-            "compute_objective"
+            "compute_objective",
+            "root_path"
         ],
         "doc": "Root of the configuration file."
+    },
+    {
+        "pointer": "/root_path",
+        "default": "",
+        "type": "string",
+        "doc": "Path for all relative paths, set automatically to the folder containing this JSON."
     },
     {
         "pointer": "/functionals",
