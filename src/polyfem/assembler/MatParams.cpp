@@ -1,6 +1,8 @@
 #include "MatParams.hpp"
 
 #include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <iostream>
 
 namespace polyfem::assembler
 {
@@ -89,11 +91,11 @@ namespace polyfem::assembler
 	void ElasticityTensor::resize(const int size)
 	{
 		if (size == 2)
-			stifness_tensor_.resize(3, 3);
+			stiffness_tensor_.resize(3, 3);
 		else
-			stifness_tensor_.resize(6, 6);
+			stiffness_tensor_.resize(6, 6);
 
-		stifness_tensor_.setZero();
+		stiffness_tensor_.setZero();
 
 		size_ = size;
 	}
@@ -106,7 +108,7 @@ namespace polyfem::assembler
 		}
 
 		assert(j >= i);
-		return stifness_tensor_(i, j);
+		return stiffness_tensor_(i, j);
 	}
 
 	double &ElasticityTensor::operator()(int i, int j)
@@ -117,7 +119,7 @@ namespace polyfem::assembler
 		}
 
 		assert(j >= i);
-		return stifness_tensor_(i, j);
+		return stiffness_tensor_(i, j);
 	}
 
 	void ElasticityTensor::set_from_entries(const std::vector<double> &entries, const std::string &stress_units)
@@ -148,7 +150,19 @@ namespace polyfem::assembler
 		}
 		else
 		{
-			if (entries.size() == 9)
+			if (entries.size() == 5)
+			{
+				set_transversely_isotropic(
+					entries[0],
+					entries[1],
+					entries[2],
+					entries[3],
+					entries[4],
+					stress_units);
+
+				return;
+			}
+			else if (entries.size() == 9)
 			{
 				set_orthotropic(
 					entries[0],
@@ -242,22 +256,22 @@ namespace polyfem::assembler
 	{
 		if (size_ == 2)
 		{
-			stifness_tensor_ << 1.0, nu, 0.0,
+			stiffness_tensor_ << 1.0, nu, 0.0,
 				nu, 1.0, 0.0,
 				0.0, 0.0, (1.0 - nu) / 2.0;
-			stifness_tensor_ *= young / (1.0 - nu * nu);
+			stiffness_tensor_ *= young / (1.0 - nu * nu);
 		}
 		else
 		{
 			assert(size_ == 3);
 			const double v = nu;
-			stifness_tensor_ << 1. - v, v, v, 0, 0, 0,
+			stiffness_tensor_ << 1. - v, v, v, 0, 0, 0,
 				v, 1. - v, v, 0, 0, 0,
 				v, v, 1. - v, 0, 0, 0,
 				0, 0, 0, (1. - 2. * v) / 2., 0, 0,
 				0, 0, 0, 0, (1. - 2. * v) / 2., 0,
 				0, 0, 0, 0, 0, (1. - 2. * v) / 2.;
-			stifness_tensor_ *= young / ((1. + v) * (1. - 2. * v));
+			stiffness_tensor_ *= young / ((1. + v) * (1. - 2. * v));
 		}
 	}
 
@@ -281,7 +295,7 @@ namespace polyfem::assembler
 			0, 0, 0, 1 / (2 * muYZ), 0, 0,
 			0, 0, 0, 0, 1 / (2 * muZX), 0,
 			0, 0, 0, 0, 0, 1 / (2 * muXY);
-		stifness_tensor_ = compliance.inverse();
+		stiffness_tensor_ = compliance.inverse();
 	}
 
 	void ElasticityTensor::set_orthotropic(double Ex, double Ey, double nuXY, double muXY, const std::string &stress_units)
@@ -296,7 +310,26 @@ namespace polyfem::assembler
 		compliance << 1.0 / Ex, -nuYX / Ey, 0.0,
 			-nuXY / Ex, 1.0 / Ey, 0.0,
 			0.0, 0.0, 1.0 / (2 * muXY);
-		stifness_tensor_ = compliance.inverse();
+		stiffness_tensor_ = compliance.inverse();
+	}
+
+	void ElasticityTensor::set_transversely_isotropic(
+		double Et, double Ea,
+		double nu_t, double nu_a,
+		double Ga, const std::string &stress_units)
+	{
+		assert(size_ == 3);
+
+		// from https://osupdocs.forestry.oregonstate.edu/index.php/Transversely_Isotropic_Material
+		Eigen::MatrixXd compliance;
+		compliance.setZero(6, 6);
+		compliance << 1 / Et, -nu_t / Et, -nu_a / Ea, 0, 0, 0,
+			-nu_t / Et, 1 / Et, -nu_a / Ea, 0, 0, 0,
+			-nu_a / Ea, -nu_a / Ea, 1 / Ea, 0, 0, 0,
+			0, 0, 0, 1 / Ga, 0, 0,
+			0, 0, 0, 0, 1 / Ga, 0,
+			0, 0, 0, 0, 0, (2 * (1 + nu_t)) / Et;
+		stiffness_tensor_ = compliance.inverse();
 	}
 
 	template <int DIM>
@@ -308,6 +341,17 @@ namespace polyfem::assembler
 			res += (*this)(j, k) * strain[k];
 
 		return res;
+	}
+
+	void ElasticityTensor::rotate_stiffness(const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 6, 6> &rotation_mtx_voigt)
+	{
+		reference_stiffness_tensor_ = stiffness_tensor_;
+		stiffness_tensor_ = rotation_mtx_voigt * stiffness_tensor_ * rotation_mtx_voigt.transpose();
+	}
+
+	void ElasticityTensor::unrotate_stiffness()
+	{
+		stiffness_tensor_ = reference_stiffness_tensor_;
 	}
 
 	LameParameters::LameParameters()
@@ -433,6 +477,139 @@ namespace polyfem::assembler
 		}
 
 		rho_[index].set_unit_type(density_unit);
+	}
+
+	FiberDirection::FiberDirection()
+	{
+	}
+
+	void FiberDirection::resize(const int size)
+	{
+		assert(size == 2 || size == 3);
+		size_ = size;
+		if (!dir_.empty())
+		{
+			for (const auto &m : dir_)
+			{
+				assert(m.rows() == size && m.cols() == size);
+			}
+		}
+	}
+
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 1, 3, 3> FiberDirection::operator()(double px, double py, double pz, double x, double y, double z, double t, int el_id) const
+	{
+		assert(dir_.size() == 1 || el_id < dir_.size());
+
+		const auto &tmp = dir_.size() == 1 ? dir_[0] : dir_[el_id];
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 1, 3, 3> res;
+		res.resize(tmp.rows(), tmp.cols());
+		for (int i = 0; i < tmp.rows(); ++i)
+		{
+			for (int j = 0; j < tmp.cols(); ++j)
+			{
+				res(i, j) = tmp(i, j)(x, y, z, t, el_id);
+
+				assert(!std::isnan(res(i, j)));
+				assert(!std::isinf(res(i, j)));
+			}
+		}
+		return res;
+	}
+
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 1, 6, 6> FiberDirection::stiffness_rotation_voigt(double px, double py, double pz, double x, double y, double z, double t, int el_id) const
+	{
+		// Rotate stiffness mtx in voigt notation according to:
+		// https://scicomp.stackexchange.com/questions/35600/4th-order-tensor-rotation-sources-to-refer
+
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 1, 3, 3> rot = (*this)(px, py, pz, x, y, z, t, el_id);
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 1, 6, 6> res;
+
+		int dim = rot.rows();
+
+		static const double sqrt2 = std::sqrt(2.0);
+
+		if (dim == 2)
+		{
+			res.resize(3, 3);
+			// Still need to compute for 2d
+			assert(false);
+			// res << rot(0, 0) * rot(0, 0), rot(0, 1) * rot(0, 1), 0,
+			// 	rot(1, 0) * rot(1, 0), rot(1, 1) * rot(1, 1), 0,
+			// 	0, 0, 1;
+		}
+		else
+		{
+			assert(dim == 3);
+			res.resize(6, 6);
+			res << rot(0, 0) * rot(0, 0), rot(0, 1) * rot(0, 1), rot(0, 2) * rot(0, 2), sqrt2 * rot(0, 1) * rot(0, 2), sqrt2 * rot(0, 0) * rot(0, 2), sqrt2 * rot(0, 0) * rot(0, 1),
+				rot(1, 0) * rot(1, 0), rot(1, 1) * rot(1, 1), rot(1, 2) * rot(1, 2), sqrt2 * rot(1, 1) * rot(1, 2), sqrt2 * rot(1, 0) * rot(1, 2), sqrt2 * rot(1, 0) * rot(1, 1),
+				rot(2, 0) * rot(2, 0), rot(2, 1) * rot(2, 1), rot(2, 2) * rot(2, 2), sqrt2 * rot(2, 1) * rot(2, 2), sqrt2 * rot(2, 0) * rot(2, 2), sqrt2 * rot(2, 0) * rot(2, 1),
+				sqrt2 * rot(1, 0) * rot(2, 0), sqrt2 * rot(1, 1) * rot(2, 1), sqrt2 * rot(1, 2) * rot(2, 2), rot(1, 1) * rot(2, 2) + rot(1, 2) * rot(2, 1), rot(1, 0) * rot(2, 2) + rot(1, 2) * rot(2, 0), rot(1, 0) * rot(2, 1) + rot(1, 1) * rot(2, 0),
+				sqrt2 * rot(0, 0) * rot(2, 0), sqrt2 * rot(0, 1) * rot(2, 1), sqrt2 * rot(0, 2) * rot(2, 2), rot(0, 1) * rot(2, 2) + rot(0, 2) * rot(2, 1), rot(0, 0) * rot(2, 2) + rot(0, 2) * rot(2, 0), rot(0, 0) * rot(2, 1) + rot(0, 1) * rot(2, 0),
+				sqrt2 * rot(0, 0) * rot(1, 0), sqrt2 * rot(0, 1) * rot(1, 1), sqrt2 * rot(0, 2) * rot(1, 2), rot(0, 1) * rot(1, 2) + rot(0, 2) * rot(1, 1), rot(0, 0) * rot(1, 2) + rot(0, 2) * rot(1, 0), rot(0, 0) * rot(1, 1) + rot(0, 1) * rot(1, 0);
+		}
+
+		return res;
+	}
+
+	void FiberDirection::add_multimaterial(const int index, const json &dir, const std::string &unit)
+	{
+		for (int i = dir_.size(); i <= index; ++i)
+		{
+			dir_.emplace_back();
+		}
+
+		if (dir.size() == 3 || dir.size() == 2)
+		{
+			const int size = dir.size();
+			assert(size == size_);
+			dir_[index].resize(size, size);
+			for (int i = 0; i < size; ++i)
+			{
+				if (!dir[i].is_array() || dir[i].size() != size)
+				{
+					log_and_throw_error(fmt::format("Fiber must be {}x{}, row {} is {}", size, size, i, dir[i].dump()));
+				}
+				for (int j = 0; j < size; ++j)
+				{
+					dir_[index](i, j).init(dir[i][j]);
+					dir_[index](i, j).set_unit_type(unit);
+				}
+			}
+			has_rotation_ = true;
+		}
+		else if (dir.size() == 9 || dir.size() == 4)
+		{
+			const int size = dir.size() == 9 ? 3 : 2;
+			assert(size == size_);
+			dir_[index].resize(size, size);
+			for (int i = 0; i < size; ++i)
+			{
+				for (int j = 0; j < size; ++j)
+				{
+					dir_[index](i, j).init(dir[i * size + j]);
+					dir_[index](i, j).set_unit_type(unit);
+				}
+			}
+			has_rotation_ = true;
+		}
+		else if (dir.empty())
+		{
+			dir_[index].resize(size_, size_);
+			for (int i = 0; i < size_; ++i)
+			{
+				for (int j = 0; j < size_; ++j)
+				{
+					dir_[index](i, j).init(i == j ? 1.0 : 0.0);
+					dir_[index](i, j).set_unit_type(unit);
+				}
+			}
+			has_rotation_ = false;
+		}
+		else
+		{
+			log_and_throw_error("Fiber direction must be a 3x3 or 2x2 matrix");
+		}
 	}
 
 	// template instantiation

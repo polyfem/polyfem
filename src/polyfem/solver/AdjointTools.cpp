@@ -12,6 +12,8 @@
 
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/BarrierContactForm.hpp>
+#include <polyfem/solver/forms/SmoothContactForm.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/forms/NormalAdhesionForm.hpp>
 #include <polyfem/solver/forms/TangentialAdhesionForm.hpp>
@@ -576,7 +578,15 @@ namespace polyfem::solver
 
 			if (state.is_contact_enabled())
 			{
-				state.solve_data.contact_form->force_shape_derivative(state.diff_cached.collision_set(0), sol, adjoint_zeroed, contact_term);
+				if (const auto barrier_contact = dynamic_cast<const BarrierContactForm*>(state.solve_data.contact_form.get()))
+				{
+					barrier_contact->force_shape_derivative(state.diff_cached.collision_set(0), sol, adjoint_zeroed, contact_term);
+				}
+				else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm*>(state.solve_data.contact_form.get()))
+				{
+					smooth_contact->force_shape_derivative(state.diff_cached.smooth_collision_set(0), sol, adjoint_zeroed, contact_term);
+				}
+
 				contact_term = state.basis_nodes_to_gbasis_nodes * contact_term;
 			}
 			else
@@ -618,7 +628,15 @@ namespace polyfem::solver
 
 		if (state.solve_data.contact_form)
 		{
-			state.solve_data.contact_form->force_shape_derivative(state.diff_cached.collision_set(0), sol, full_adjoint, contact_term);
+			if (const auto barrier_contact = dynamic_cast<const BarrierContactForm*>(state.solve_data.contact_form.get()))
+			{
+				barrier_contact->force_shape_derivative(state.diff_cached.collision_set(0), sol, full_adjoint, contact_term);
+			}
+			else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm*>(state.solve_data.contact_form.get()))
+			{
+				smooth_contact->force_shape_derivative(state.diff_cached.smooth_collision_set(0), sol, full_adjoint, contact_term);
+			}
+
 			contact_term = state.basis_nodes_to_gbasis_nodes * contact_term;
 		}
 		else
@@ -726,7 +744,14 @@ namespace polyfem::solver
 
 				if (state.is_contact_enabled())
 				{
-					state.solve_data.contact_form->force_shape_derivative(state.diff_cached.collision_set(i), state.diff_cached.u(i), cur_p, contact_term);
+					if (const auto barrier_contact = dynamic_cast<const BarrierContactForm*>(state.solve_data.contact_form.get()))
+					{
+						barrier_contact->force_shape_derivative(state.diff_cached.collision_set(i), state.diff_cached.u(i), cur_p, contact_term);
+					}
+					else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm*>(state.solve_data.contact_form.get()))
+					{
+						smooth_contact->force_shape_derivative(state.diff_cached.smooth_collision_set(i), state.diff_cached.u(i), cur_p, contact_term);
+					}
 					contact_term = state.basis_nodes_to_gbasis_nodes * contact_term;
 					// contact_term /= beta_dt * beta_dt;
 				}
@@ -869,21 +894,24 @@ namespace polyfem::solver
 			const Eigen::MatrixXd surface_velocities = state.collision_mesh.map_displacements(utils::unflatten(time_integrator->compute_velocity(state.diff_cached.u(t)), state.collision_mesh.dim()));
 			time_integrator->update_quantities(state.diff_cached.u(t));
 
-			Eigen::MatrixXd force = state.collision_mesh.to_full_dof(
-				-state.solve_data.friction_form->friction_potential().force(
-					state.diff_cached.friction_collision_set(t),
-					state.collision_mesh,
-					state.collision_mesh.rest_positions(),
-					/*lagged_displacements=*/surface_solution_prev,
-					surface_velocities,
-					state.solve_data.contact_form->barrier_potential(),
-					state.solve_data.contact_form->barrier_stiffness(),
-					0, true));
+			if (const auto barrier_contact = dynamic_cast<const BarrierContactForm*>(state.solve_data.contact_form.get()))
+			{
+				Eigen::MatrixXd force = state.collision_mesh.to_full_dof(
+						-state.solve_data.friction_form->friction_potential().force(
+							state.diff_cached.friction_collision_set(t),
+							state.collision_mesh,
+							state.collision_mesh.rest_positions(),
+							/*lagged_displacements=*/surface_solution_prev,
+							surface_velocities,
+							barrier_contact->barrier_potential(),
+							barrier_contact->barrier_stiffness(),
+							0., true));
 
-			Eigen::VectorXd cur_p = adjoint_p.col(t);
-			cur_p(state.boundary_nodes).setZero();
+					Eigen::VectorXd cur_p = adjoint_p.col(t);
+					cur_p(state.boundary_nodes).setZero();
 
-			one_form(0) += dot(cur_p, force) * beta * dt;
+					one_form(0) += dot(cur_p, force) * beta * dt;
+			}
 		}
 	}
 

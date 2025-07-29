@@ -12,9 +12,16 @@
             "solver",
             "stopping_conditions",
             "functionals",
-            "compute_objective"
+            "compute_objective",
+            "root_path"
         ],
         "doc": "Root of the configuration file."
+    },
+    {
+        "pointer": "/root_path",
+        "default": "",
+        "type": "string",
+        "doc": "Path for all relative paths, set automatically to the folder containing this JSON."
     },
     {
         "pointer": "/functionals",
@@ -152,6 +159,7 @@
         ],
         "optional": [
             "composite_map_type",
+            "active_dimensions",
             "composite_map_indices"
         ]
     },
@@ -262,6 +270,11 @@
     {
         "pointer": "/variable_to_simulation/*/mesh_id",
         "type": "int"
+    },
+    {
+        "pointer": "/variable_to_simulation/*/active_dimensions",
+        "type": "list",
+        "default": []
     },
     {
         "pointer": "/variable_to_simulation/*/state",

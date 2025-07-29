@@ -9,8 +9,9 @@ namespace polyfem::solver
 		const State &state, 
 		const bool scale_invariant, 
 		const int power, 
-		const std::vector<int> &surface_selections) : 
-		AdjointForm(variable_to_simulations), state_(state), scale_invariant_(scale_invariant), power_(power)
+		const std::vector<int> &surface_selections,
+			const std::vector<int> &active_dims) : 
+		AdjointForm(variable_to_simulations), state_(state), scale_invariant_(scale_invariant), power_(power), active_dims_(active_dims)
 	{
 		const auto &mesh = *(state_.mesh);
 		const int dim = mesh.dimension();
@@ -93,7 +94,7 @@ namespace polyfem::solver
 				for (Eigen::SparseMatrix<bool, Eigen::RowMajor>::InnerIterator it(adj, b); it; ++it)
 				{
 					assert(it.col() != b);
-					auto x = mesh.point(b) - mesh.point(it.col());
+					polyfem::RowVectorNd x = mesh.point(b) - mesh.point(it.col());
 					s += x;
 					sum_norm += x.norm();
 					valence += 1;
@@ -110,7 +111,7 @@ namespace polyfem::solver
 			Eigen::MatrixXd V;
 			state_.get_vertices(V);
 
-			val = (L * V).eval().squaredNorm();
+			val = (L * V(Eigen::all, active_dims_)).squaredNorm();
 		}
 
 		return val;
@@ -131,12 +132,12 @@ namespace polyfem::solver
 				polyfem::RowVectorNd s;
 				s.setZero(dim);
 				double sum_norm = 0;
-				auto sum_normalized = s;
+				polyfem::RowVectorNd sum_normalized = s;
 				int valence = 0;
 				for (Eigen::SparseMatrix<bool, Eigen::RowMajor>::InnerIterator it(adj, b); it; ++it)
 				{
 					assert(it.col() != b);
-					auto x = mesh.point(b) - mesh.point(it.col());
+					polyfem::RowVectorNd x = mesh.point(b) - mesh.point(it.col());
 					s += x;
 					sum_norm += x.norm();
 					sum_normalized += x.normalized();
@@ -158,7 +159,11 @@ namespace polyfem::solver
 			Eigen::MatrixXd V;
 			state_.get_vertices(V);
 			
-			grad = utils::flatten(2 * (L.transpose() * (L * V)));
+			Eigen::MatrixXd grad_mat = 2 * (L.transpose() * (L * V));
+			for (int d = 0; d < dim; d++)
+				if (std::find(active_dims_.begin(), active_dims_.end(), d) == active_dims_.end())
+					grad_mat.col(d).setZero();
+			grad = utils::flatten(grad_mat);
 		}
 
 		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, &state_, x, [&grad]() {

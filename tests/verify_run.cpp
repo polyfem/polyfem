@@ -228,6 +228,10 @@ void run_data(const std::string &test_file, const std::string &dir)
 	}
 }
 
+
+
+const std::string CONTACT_TEST_FOLDER = POLYFEM_TEST_DIR + std::string("/../contact-tests/");
+
 TEST_CASE("contact_2d", tagsrun)
 {
 	run_data("contact_2d", POLYFEM_DATA_DIR);

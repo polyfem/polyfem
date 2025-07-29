@@ -51,6 +51,7 @@ namespace polyfem::assembler
 
 	private:
 		ElasticityTensor elasticity_tensor_;
+		FiberDirection fiber_direction_;
 
 		// aux function that computes energy
 		// double compute_energy is the same with T=double

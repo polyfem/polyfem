@@ -58,10 +58,17 @@ namespace polyfem
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_improved_max_operator"]) : false,
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_physical_barrier"]) : false,
 			args["solver"]["contact"]["barrier_stiffness"],
+			args["solver"]["contact"]["initial_barrier_stiffness"],
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
 			optimization_enabled == solver::CacheLevel::Derivatives,
+			// Smooth Contact Form
+			args["contact"]["use_gcp_formulation"],
+			args["contact"]["alpha_t"],
+			args["contact"]["alpha_n"],
+			args["contact"]["use_adaptive_dhat"],
+			args["contact"]["min_distance_ratio"],
 			// Normal Adhesion Form
 			args["contact"]["adhesion"]["adhesion_enabled"],
 			args["contact"]["adhesion"]["dhat_p"],

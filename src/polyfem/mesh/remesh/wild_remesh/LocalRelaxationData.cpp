@@ -280,10 +280,17 @@ namespace polyfem::mesh
 				state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_improved_max_operator"]) : false,
 				state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_physical_barrier"]) : false,
 				contact_enabled ? state.solve_data.contact_form->barrier_stiffness() : 0,
+				state.args["solver"]["contact"]["initial_barrier_stiffness"],
 				state.args["solver"]["contact"]["CCD"]["broad_phase"],
 				state.args["solver"]["contact"]["CCD"]["tolerance"],
 				state.args["solver"]["contact"]["CCD"]["max_iterations"],
 				/*enable_shape_derivatives=*/false,
+				// Smooth Contact Form
+				state.args["contact"]["use_gcp_formulation"],
+				state.args["contact"]["alpha_t"],
+				state.args["contact"]["alpha_n"],
+				state.args["contact"]["use_adaptive_dhat"],
+				state.args["contact"]["min_distance_ratio"],
 				// Normal Adhesion Form
 				state.args["contact"]["adhesion"]["adhesion_enabled"],
 				state.args["contact"]["adhesion"]["dhat_p"],

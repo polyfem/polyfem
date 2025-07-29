@@ -19,6 +19,7 @@ namespace polyfem::solver
 		  epsa_(epsa),
 		  mu_(mu),
 		  broad_phase_method_(broad_phase_method),
+		  broad_phase_(ipc::build_broad_phase(broad_phase_method)),
 		  n_lagging_iters_(n_lagging_iters < 0 ? std::numeric_limits<int>::max() : n_lagging_iters),
 		  normal_adhesion_form_(normal_adhesion_form),
 		  tangential_adhesion_potential_(epsa)
@@ -104,7 +105,7 @@ namespace polyfem::solver
 		ipc::NormalCollisions collision_set;
 
 		collision_set.build(
-			collision_mesh_, displaced_surface, normal_adhesion_form_.dhat_a(), /*dmin=*/0, broad_phase_method_);
+			collision_mesh_, displaced_surface, normal_adhesion_form_.dhat_a(), /*dmin=*/0, broad_phase_);
 
 		tangential_collision_set_.build(
 			collision_mesh_, displaced_surface, collision_set,

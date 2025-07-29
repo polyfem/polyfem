@@ -206,6 +206,7 @@ namespace polyfem::solver
 
 		{
 			ipc::CollisionMesh collision_mesh = ipc::CollisionMesh(is_on_surface,
+																   std::vector<bool>(is_on_surface.size(), false),
 																   node_positions,
 																   boundary_edges,
 																   boundary_triangles,
@@ -221,7 +222,7 @@ namespace polyfem::solver
 			Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(utils::unflatten(u, collision_mesh.dim()));
 
 			ipc::NormalCollisions cs_ = cs_func(displaced_surface);
-			cs_.build(collision_mesh, displaced_surface, dhat, dmin, ipc::BroadPhaseMethod::HASH_GRID);
+			cs_.build(collision_mesh, displaced_surface, dhat, dmin, ipc::build_broad_phase(ipc::BroadPhaseMethod::HASH_GRID));
 
 			Eigen::MatrixXd forces = collision_mesh.to_full_dof(barrier_potential.gradient(cs_, collision_mesh, displaced_surface));
 
@@ -811,8 +812,8 @@ namespace polyfem::solver
 			{
 				collision_sets_.push_back(std::make_shared<ipc::NormalCollisions>());
 				// collision_sets_.back()->set_use_convergent_formulation(true);
-				collision_sets_.back()->set_use_improved_max_approximator(true);
 				collision_sets_.back()->set_use_area_weighting(true);
+				collision_sets_.back()->set_use_improved_max_approximator(true);
 				collision_sets_.back()->set_enable_shape_derivatives(true);
 			}
 		}
@@ -820,8 +821,8 @@ namespace polyfem::solver
 		{
 			collision_set_indicator_.setZero(1);
 			collision_sets_.push_back(std::make_shared<ipc::NormalCollisions>());
-			collision_sets_.back()->set_use_improved_max_approximator(true);
 			collision_sets_.back()->set_use_area_weighting(true);
+			collision_sets_.back()->set_use_improved_max_approximator(true);
 			collision_sets_.back()->set_enable_shape_derivatives(true);
 		}
 
@@ -922,6 +923,7 @@ namespace polyfem::solver
 		}
 
 		collision_mesh_ = ipc::CollisionMesh(is_on_surface,
+											 std::vector<bool>(is_on_surface.size(), false),
 											 node_positions_,
 											 boundary_edges_alt,
 											 boundary_triangles_alt,
@@ -960,7 +962,7 @@ namespace polyfem::solver
 		if (!collision_set_indicator_(time_step))
 		{
 			collision_sets_[time_step]->build(
-				collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_method_);
+				collision_mesh_, displaced_surface, dhat_, dmin_, ipc::build_broad_phase(broad_phase_method_));
 			collision_set_indicator_(time_step) = 1;
 		}
 		return *collision_sets_[time_step];
