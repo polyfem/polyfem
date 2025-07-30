@@ -118,7 +118,7 @@ namespace polyfem::assembler
 	Eigen::VectorXd AMIPSEnergy::assemble_gradient(const NonLinearAssemblerData &data) const
 	{
 		const int n_bases = data.vals.basis_values.size();
-		return polyfem::gradient_from_energy(
+		auto gradad = polyfem::gradient_from_energy(
 			size(), n_bases, data,
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 6, 1>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, 8, 1>>>(data); },
@@ -131,68 +131,73 @@ namespace polyfem::assembler
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, BIG_N, 1>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar1<double, Eigen::VectorXd>>(data); });
+		Eigen::VectorXd gradient;
+		if (size() == 2)
+		{
+			switch (data.vals.basis_values.size())
+			{
+			case 3:
+			{
+				gradient.resize(6);
+				compute_energy_aux_gradient_fast<3, 2>(data, gradient);
+				break;
+			}
+			case 6:
+			{
+				gradient.resize(12);
+				compute_energy_aux_gradient_fast<6, 2>(data, gradient);
+				break;
+			}
+			case 10:
+			{
+				gradient.resize(20);
+				compute_energy_aux_gradient_fast<10, 2>(data, gradient);
+				break;
+			}
+			default:
+			{
+				gradient.resize(data.vals.basis_values.size() * 2);
+				compute_energy_aux_gradient_fast<Eigen::Dynamic, 2>(data, gradient);
+				break;
+			}
+			}
+		}
+		else // if (size() == 3)
+		{
+			assert(size() == 3);
+			switch (data.vals.basis_values.size())
+			{
+			case 4:
+			{
+				gradient.resize(12);
+				compute_energy_aux_gradient_fast<4, 3>(data, gradient);
+				break;
+			}
+			case 10:
+			{
+				gradient.resize(30);
+				compute_energy_aux_gradient_fast<10, 3>(data, gradient);
+				break;
+			}
+			case 20:
+			{
+				gradient.resize(60);
+				compute_energy_aux_gradient_fast<20, 3>(data, gradient);
+				break;
+			}
+			default:
+			{
+				gradient.resize(data.vals.basis_values.size() * 3);
+				compute_energy_aux_gradient_fast<Eigen::Dynamic, 3>(data, gradient);
+				break;
+			}
+			}
+		}
 
-		// if (size() == 2)
-		// {
-		// 	switch (data.vals.basis_values.size())
-		// 	{
-		// 	case 3:
-		// 	{
-		// 		gradient.resize(6);
-		// 		compute_energy_aux_gradient_fast<3, 2>(data, gradient);
-		// 		break;
-		// 	}
-		// 	case 6:
-		// 	{
-		// 		gradient.resize(12);
-		// 		compute_energy_aux_gradient_fast<6, 2>(data, gradient);
-		// 		break;
-		// 	}
-		// 	case 10:
-		// 	{
-		// 		gradient.resize(20);
-		// 		compute_energy_aux_gradient_fast<10, 2>(data, gradient);
-		// 		break;
-		// 	}
-		// 	default:
-		// 	{
-		// 		gradient.resize(data.vals.basis_values.size() * 2);
-		// 		compute_energy_aux_gradient_fast<Eigen::Dynamic, 2>(data, gradient);
-		// 		break;
-		// 	}
-		// 	}
-		// }
-		// else // if (size() == 3)
-		// {
-		// 	assert(size() == 3);
-		// 	switch (data.vals.basis_values.size())
-		// 	{
-		// 	case 4:
-		// 	{
-		// 		gradient.resize(12);
-		// 		compute_energy_aux_gradient_fast<4, 3>(data, gradient);
-		// 		break;
-		// 	}
-		// 	case 10:
-		// 	{
-		// 		gradient.resize(30);
-		// 		compute_energy_aux_gradient_fast<10, 3>(data, gradient);
-		// 		break;
-		// 	}
-		// 	case 20:
-		// 	{
-		// 		gradient.resize(60);
-		// 		compute_energy_aux_gradient_fast<20, 3>(data, gradient);
-		// 		break;
-		// 	}
-		// 	default:
-		// 	{
-		// 		gradient.resize(data.vals.basis_values.size() * 3);
-		// 		compute_energy_aux_gradient_fast<Eigen::Dynamic, 3>(data, gradient);
-		// 		break;
-		// 	}
-		// 	}
-		// }
+		const double asd = (gradient - gradad).norm();
+		if (asd > 1e-10)
+			std::cout << asd << std::endl;
+		return gradad;
 	}
 
 	// Compute ∫ tr(FᵀF) / J^(1+2/dim) dxdydz
@@ -226,6 +231,16 @@ namespace polyfem::assembler
 		const int n_pts = data.da.size();
 		for (long p = 0; p < n_pts; ++p)
 		{
+			Eigen::Matrix<T, Eigen::Dynamic, 3> grad(data.vals.basis_values.size(), size());
+
+			for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
+			{
+				for (int d = 0; d < size(); ++d)
+				{
+					grad(i, d) = T(data.vals.basis_values[i].grad(p, d));
+				}
+			}
+
 			compute_disp_grad_at_quad(data, local_disp, p, size(), def_grad);
 
 			// Id + grad d
@@ -281,62 +296,50 @@ namespace polyfem::assembler
 			}
 		}
 
+		const Eigen::Matrix<double, dim, dim> standard = get_standard<dim, double>(size(), use_rest_pose_);
 		Eigen::Matrix<double, dim, dim> def_grad(size(), size());
+
+		Eigen::Matrix<double, dim, dim> chain_rule;
 
 		Eigen::Matrix<double, n_basis, dim> G(data.vals.basis_values.size(), size());
 		G.setZero();
 
-		const Eigen::Matrix<double, dim, dim> standard = get_standard<dim, double>(size(), use_rest_pose_);
+		double power = -1;
+		if (use_rest_pose_)
+			power = size() == 2 ? 1. : (2. / 3.);
+		else
+			power = size() == 2 ? 2. : 5. / 3.;
 
 		for (long p = 0; p < n_pts; ++p)
 		{
 			Eigen::Matrix<double, n_basis, dim> grad(data.vals.basis_values.size(), size());
 
 			for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
-			{
 				grad.row(i) = data.vals.basis_values[i].grad.row(p);
+			def_grad = local_disp.transpose() * grad;
+			def_grad = def_grad * data.vals.jac_it[p];
+			chain_rule = data.vals.jac_it[p];
+
+			for (int d = 0; d < dim; ++d)
+				def_grad(d, d) += 1;
+
+			if (!use_rest_pose_)
+			{
+				Eigen::Matrix<double, dim, dim> jac_it = data.vals.jac_it[p].inverse();
+
+				def_grad *= jac_it;
+				def_grad = def_grad * standard;
+
+				chain_rule = standard;
 			}
 
-			Eigen::Matrix<double, dim, dim> jac_it = data.vals.jac_it[p];
-
-			// Id + grad d
-			def_grad = (local_disp.transpose() * grad + jac_it.inverse()) * standard;
-
-			double J = def_grad.determinant();
+			double J = polyfem::utils::determinant(def_grad);
 			if (J <= 0)
 				J = std::nan("");
 
-			Eigen::Matrix<double, dim, dim> delJ_delF(size(), size());
-			delJ_delF.setZero();
-
-			if (dim == 2)
-			{
-
-				delJ_delF(0, 0) = def_grad(1, 1);
-				delJ_delF(0, 1) = -def_grad(1, 0);
-				delJ_delF(1, 0) = -def_grad(0, 1);
-				delJ_delF(1, 1) = def_grad(0, 0);
-			}
-
-			else if (dim == 3)
-			{
-				Eigen::Matrix<double, dim, 1> u(def_grad.rows());
-				Eigen::Matrix<double, dim, 1> v(def_grad.rows());
-				Eigen::Matrix<double, dim, 1> w(def_grad.rows());
-
-				u = def_grad.col(0);
-				v = def_grad.col(1);
-				w = def_grad.col(2);
-
-				delJ_delF.col(0) = cross<dim>(v, w);
-				delJ_delF.col(1) = cross<dim>(w, u);
-				delJ_delF.col(2) = cross<dim>(u, v);
-			}
-
-			const double m = (dim == 2) ? 2. : 5. / 3.;
-			const double powJ = pow(J, m);
-			Eigen::Matrix<double, dim, dim> gradient_temp = (2 * def_grad - (def_grad.squaredNorm() * m) / J * delJ_delF) / powJ;
-			Eigen::Matrix<double, n_basis, dim> gradient = grad * standard * gradient_temp.transpose();
+			const double powJ = pow(J, power);
+			Eigen::Matrix<double, dim, dim> gradient_temp = (2 * def_grad - power * (def_grad.transpose() * def_grad).trace() * def_grad.inverse().transpose()) / powJ;
+			Eigen::Matrix<double, n_basis, dim> gradient = grad * chain_rule * gradient_temp.transpose();
 
 			G.noalias() += gradient * data.da(p);
 		}
@@ -351,7 +354,7 @@ namespace polyfem::assembler
 	Eigen::MatrixXd AMIPSEnergy::assemble_hessian(const NonLinearAssemblerData &data) const
 	{
 		const int n_bases = data.vals.basis_values.size();
-		return polyfem::hessian_from_energy(
+		Eigen::MatrixXd hessianad = polyfem::hessian_from_energy(
 			size(), n_bases, data,
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 6, 1>, Eigen::Matrix<double, 6, 6>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 8, 1>, Eigen::Matrix<double, 8, 8>>>(data); },
@@ -364,79 +367,85 @@ namespace polyfem::assembler
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, SMALL_N, SMALL_N>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>>(data); });
 
-		// Eigen::MatrixXd hessian;
+		Eigen::MatrixXd hessian;
+		if (size() == 2)
+		{
+			switch (data.vals.basis_values.size())
+			{
+			case 3:
+			{
+				hessian.resize(6, 6);
+				hessian.setZero();
+				compute_energy_hessian_aux_fast<3, 2>(data, hessian);
+				break;
+			}
+			case 6:
+			{
+				hessian.resize(12, 12);
+				hessian.setZero();
+				compute_energy_hessian_aux_fast<6, 2>(data, hessian);
+				break;
+			}
+			case 10:
+			{
+				hessian.resize(20, 20);
+				hessian.setZero();
+				compute_energy_hessian_aux_fast<10, 2>(data, hessian);
+				break;
+			}
+			default:
+			{
+				hessian.resize(data.vals.basis_values.size() * 2, data.vals.basis_values.size() * 2);
+				hessian.setZero();
+				compute_energy_hessian_aux_fast<Eigen::Dynamic, 2>(data, hessian);
+				break;
+			}
+			}
+		}
+		else // if (size() == 3)
+		{
+			assert(size() == 3);
+			switch (data.vals.basis_values.size())
+			{
+			case 4:
+			{
+				hessian.resize(12, 12);
+				hessian.setZero();
+				compute_energy_hessian_aux_fast<4, 3>(data, hessian);
+				break;
+			}
+			case 10:
+			{
+				hessian.resize(30, 30);
+				hessian.setZero();
+				compute_energy_hessian_aux_fast<10, 3>(data, hessian);
+				break;
+			}
+			case 20:
+			{
+				hessian.resize(60, 60);
+				hessian.setZero();
+				compute_energy_hessian_aux_fast<20, 3>(data, hessian);
+				break;
+			}
+			default:
+			{
+				hessian.resize(data.vals.basis_values.size() * 3, data.vals.basis_values.size() * 3);
+				hessian.setZero();
+				compute_energy_hessian_aux_fast<Eigen::Dynamic, 3>(data, hessian);
+				break;
+			}
+			}
+		}
 
-		// if (size() == 2)
-		// {
-		// 	switch (data.vals.basis_values.size())
-		// 	{
-		// 	case 3:
-		// 	{
-		// 		hessian.resize(6, 6);
-		// 		hessian.setZero();
-		// 		compute_energy_hessian_aux_fast<3, 2>(data, hessian);
-		// 		break;
-		// 	}
-		// 	case 6:
-		// 	{
-		// 		hessian.resize(12, 12);
-		// 		hessian.setZero();
-		// 		compute_energy_hessian_aux_fast<6, 2>(data, hessian);
-		// 		break;
-		// 	}
-		// 	case 10:
-		// 	{
-		// 		hessian.resize(20, 20);
-		// 		hessian.setZero();
-		// 		compute_energy_hessian_aux_fast<10, 2>(data, hessian);
-		// 		break;
-		// 	}
-		// 	default:
-		// 	{
-		// 		hessian.resize(data.vals.basis_values.size() * 2, data.vals.basis_values.size() * 2);
-		// 		hessian.setZero();
-		// 		compute_energy_hessian_aux_fast<Eigen::Dynamic, 2>(data, hessian);
-		// 		break;
-		// 	}
-		// 	}
-		// }
-		// else // if (size() == 3)
-		// {
-		// 	assert(size() == 3);
-		// 	switch (data.vals.basis_values.size())
-		// 	{
-		// 	case 4:
-		// 	{
-		// 		hessian.resize(12, 12);
-		// 		hessian.setZero();
-		// 		compute_energy_hessian_aux_fast<4, 3>(data, hessian);
-		// 		break;
-		// 	}
-		// 	case 10:
-		// 	{
-		// 		hessian.resize(30, 30);
-		// 		hessian.setZero();
-		// 		compute_energy_hessian_aux_fast<10, 3>(data, hessian);
-		// 		break;
-		// 	}
-		// 	case 20:
-		// 	{
-		// 		hessian.resize(60, 60);
-		// 		hessian.setZero();
-		// 		compute_energy_hessian_aux_fast<20, 3>(data, hessian);
-		// 		break;
-		// 	}
-		// 	default:
-		// 	{
-		// 		hessian.resize(data.vals.basis_values.size() * 3, data.vals.basis_values.size() * 3);
-		// 		hessian.setZero();
-		// 		compute_energy_hessian_aux_fast<Eigen::Dynamic, 3>(data, hessian);
-		// 		break;
-		// 	}
-		// 	}
-		// }
+		const double asd = (hessianad - hessian).norm();
+		if (asd > 1e-10)
+		{
+			logger().error("Hessian mismatch: {}", asd);
+			exit(0);
+		}
 
-		// return hessian;
+		return hessian;
 	}
 
 	template <int n_basis, int dim>
@@ -460,97 +469,92 @@ namespace polyfem::assembler
 				}
 			}
 		}
-
-		Eigen::Matrix<double, dim, dim> def_grad(size(), size());
-
 		const Eigen::Matrix<double, dim, dim> standard = get_standard<dim, double>(size(), use_rest_pose_);
+		Eigen::Matrix<double, dim, dim> def_grad(size(), size());
+		Eigen::Matrix<double, dim, dim> chain_rule;
+
+		double power = -1;
+		if (use_rest_pose_)
+			power = size() == 2 ? 1. : (2. / 3.);
+		else
+			power = size() == 2 ? 2. : 5. / 3.;
 
 		for (long p = 0; p < n_pts; ++p)
 		{
 			Eigen::Matrix<double, n_basis, dim> grad(data.vals.basis_values.size(), size());
 
 			for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
-			{
 				grad.row(i) = data.vals.basis_values[i].grad.row(p);
-			}
 
 			Eigen::Matrix<double, dim, dim> jac_it = data.vals.jac_it[p];
 
-			// Id + grad d
-			if (use_rest_pose_)
+			def_grad = local_disp.transpose() * grad;
+			def_grad = def_grad * jac_it;
+			chain_rule = jac_it;
+
+			for (int d = 0; d < dim; ++d)
+				def_grad(d, d) += 1;
+
+			if (!use_rest_pose_)
 			{
-				def_grad = local_disp.transpose() * grad + Eigen::Matrix<double, dim, dim>::Identity(size(), size());
-			}
-			else
-			{
-				def_grad = (local_disp.transpose() * grad + jac_it.inverse()) * standard;
-			}
+				Eigen::Matrix<double, dim, dim> jac_it = data.vals.jac_it[p].inverse();
 
-			Eigen::Matrix<double, dim * dim, dim * dim> hessian_temp;
-			{
-				typedef DScalar2<double, Eigen::Matrix<double, dim * dim, 1>, Eigen::Matrix<double, dim * dim, dim * dim>> Diff;
-				DiffScalarBase::setVariableCount(dim * dim);
+				def_grad *= jac_it;
+				def_grad = def_grad * standard;
 
-				Eigen::Matrix<Diff, dim, dim> def_grad_ad(dim, dim);
-				for (int i = 0; i < def_grad.size(); i++)
-					def_grad_ad(i) = Diff(i, def_grad(i));
-
-				Diff val = pow(utils::determinant(def_grad_ad), -1. - 2. / dim) * def_grad_ad.squaredNorm();
-
-				hessian_temp = val.getHessian();
+				chain_rule = standard;
 			}
 
-			// const double J = def_grad.determinant();
-			// const double TrFFt = def_grad.squaredNorm();
+			double J = polyfem::utils::determinant(def_grad);
+			const double TrFFt = def_grad.squaredNorm();
 
-			// Eigen::Matrix<double, dim, dim> delJ_delF(size(), size());
-			// delJ_delF.setZero();
-			// Eigen::Matrix<double, dim * dim, dim * dim> del2J_delF2(size() * size(), size() * size());
-			// del2J_delF2.setZero();
+			Eigen::Matrix<double, dim, dim> delJ_delF(size(), size());
+			delJ_delF.setZero();
+			Eigen::Matrix<double, dim * dim, dim * dim> del2J_delF2(size() * size(), size() * size());
+			del2J_delF2.setZero();
 
-			// if (dim == 2)
-			// {
-			// 	delJ_delF(0, 0) = def_grad(1, 1);
-			// 	delJ_delF(0, 1) = -def_grad(1, 0);
-			// 	delJ_delF(1, 0) = -def_grad(0, 1);
-			// 	delJ_delF(1, 1) = def_grad(0, 0);
+			if (dim == 2)
+			{
+				delJ_delF(0, 0) = def_grad(1, 1);
+				delJ_delF(0, 1) = -def_grad(1, 0);
+				delJ_delF(1, 0) = -def_grad(0, 1);
+				delJ_delF(1, 1) = def_grad(0, 0);
 
-			// 	del2J_delF2(0, 3) = 1;
-			// 	del2J_delF2(1, 2) = -1;
-			// 	del2J_delF2(2, 1) = -1;
-			// 	del2J_delF2(3, 0) = 1;
-			// }
-			// else if (size() == 3)
-			// {
-			// 	Eigen::Matrix<double, dim, 1> u(def_grad.rows());
-			// 	Eigen::Matrix<double, dim, 1> v(def_grad.rows());
-			// 	Eigen::Matrix<double, dim, 1> w(def_grad.rows());
+				del2J_delF2(0, 3) = 1;
+				del2J_delF2(1, 2) = -1;
+				del2J_delF2(2, 1) = -1;
+				del2J_delF2(3, 0) = 1;
+			}
+			else if (size() == 3)
+			{
+				Eigen::Matrix<double, dim, 1> u(def_grad.rows());
+				Eigen::Matrix<double, dim, 1> v(def_grad.rows());
+				Eigen::Matrix<double, dim, 1> w(def_grad.rows());
 
-			// 	u = def_grad.col(0);
-			// 	v = def_grad.col(1);
-			// 	w = def_grad.col(2);
+				u = def_grad.col(0);
+				v = def_grad.col(1);
+				w = def_grad.col(2);
 
-			// 	delJ_delF.col(0) = cross<dim>(v, w);
-			// 	delJ_delF.col(1) = cross<dim>(w, u);
-			// 	delJ_delF.col(2) = cross<dim>(u, v);
+				delJ_delF.col(0) = cross<dim>(v, w);
+				delJ_delF.col(1) = cross<dim>(w, u);
+				delJ_delF.col(2) = cross<dim>(u, v);
 
-			// 	del2J_delF2.template block<dim, dim>(0, 6) = hat<dim>(v);
-			// 	del2J_delF2.template block<dim, dim>(6, 0) = -hat<dim>(v);
-			// 	del2J_delF2.template block<dim, dim>(0, 3) = -hat<dim>(w);
-			// 	del2J_delF2.template block<dim, dim>(3, 0) = hat<dim>(w);
-			// 	del2J_delF2.template block<dim, dim>(3, 6) = -hat<dim>(u);
-			// 	del2J_delF2.template block<dim, dim>(6, 3) = hat<dim>(u);
-			// }
+				del2J_delF2.template block<dim, dim>(0, 6) = hat<dim>(v);
+				del2J_delF2.template block<dim, dim>(6, 0) = -hat<dim>(v);
+				del2J_delF2.template block<dim, dim>(0, 3) = -hat<dim>(w);
+				del2J_delF2.template block<dim, dim>(3, 0) = hat<dim>(w);
+				del2J_delF2.template block<dim, dim>(3, 6) = -hat<dim>(u);
+				del2J_delF2.template block<dim, dim>(6, 3) = hat<dim>(u);
+			}
 
-			// Eigen::Matrix<double, dim * dim, dim * dim> id = Eigen::Matrix<double, dim * dim, dim * dim>::Identity(size() * size(), size() * size());
+			Eigen::Matrix<double, dim * dim, dim * dim> id = Eigen::Matrix<double, dim * dim, dim * dim>::Identity(size() * size(), size() * size());
 
-			// Eigen::Matrix<double, dim * dim, 1> g_j = Eigen::Map<const Eigen::Matrix<double, dim * dim, 1>>(delJ_delF.data(), delJ_delF.size());
-			// Eigen::Matrix<double, dim * dim, 1> F_flattened = Eigen::Map<const Eigen::Matrix<double, dim * dim, 1>>(def_grad.data(), def_grad.size());
+			Eigen::Matrix<double, dim * dim, 1> g_j = Eigen::Map<const Eigen::Matrix<double, dim * dim, 1>>(delJ_delF.data(), delJ_delF.size());
+			Eigen::Matrix<double, dim * dim, 1> F_flattened = Eigen::Map<const Eigen::Matrix<double, dim * dim, 1>>(def_grad.data(), def_grad.size());
 
-			// const double tmp = TrFFt / J / dim;
-			// const double Jpow = pow(J, 2. / dim);
-			// Eigen::Matrix<double, dim * dim, dim * dim> hessian_temp = -4. / dim / (Jpow * J) * (F_flattened - tmp * g_j) * g_j.transpose() +
-			// 															2. / Jpow * (id - ((2 / dim * F_flattened - tmp * g_j) / J * g_j.transpose() + tmp * del2J_delF2));
+			const double tmp = TrFFt / J / dim;
+			const double Jpow = pow(J, 2. / dim);
+			Eigen::Matrix<double, dim * dim, dim * dim> hessian_temp = -4. / dim / (Jpow * J) * (F_flattened - tmp * g_j) * g_j.transpose() + 2. / Jpow * (id - ((2 / dim * F_flattened - tmp * g_j) / J * g_j.transpose() + tmp * del2J_delF2));
 
 			Eigen::Matrix<double, dim * dim, N> delF_delU_tensor(jac_it.size(), grad.size());
 
@@ -561,7 +565,7 @@ namespace polyfem::assembler
 					Eigen::Matrix<double, dim, dim> temp(size(), size());
 					temp.setZero();
 					temp.row(j) = grad.row(i);
-					temp = temp * standard;
+					temp = temp * chain_rule;
 					Eigen::Matrix<double, dim * dim, 1> temp_flattened(Eigen::Map<Eigen::Matrix<double, dim * dim, 1>>(temp.data(), temp.size()));
 					delF_delU_tensor.col(i * size() + j) = temp_flattened;
 				}
@@ -600,32 +604,6 @@ namespace polyfem::assembler
 		if (params.contains("use_rest_pose"))
 		{
 			use_rest_pose_ = params["use_rest_pose"].get<bool>();
-		}
-	}
-
-	AMIPSEnergyAutodiff::AMIPSEnergyAutodiff()
-	{
-		canonical_transformation_.resize(0);
-	}
-
-	std::map<std::string, Assembler::ParamFunc> AMIPSEnergyAutodiff::parameters() const
-	{
-		return std::map<std::string, ParamFunc>();
-	}
-
-	void AMIPSEnergyAutodiff::add_multimaterial(const int index, const json &params, const Units &)
-	{
-		if (params.contains("canonical_transformation"))
-		{
-			canonical_transformation_.reserve(params["canonical_transformation"].size());
-			for (int i = 0; i < params["canonical_transformation"].size(); ++i)
-			{
-				Eigen::MatrixXd transform_matrix(size(), size());
-				for (int j = 0; j < size(); ++j)
-					for (int k = 0; k < size(); ++k)
-						transform_matrix(j, k) = params["canonical_transformation"][i][j][k];
-				canonical_transformation_.push_back(transform_matrix);
-			}
 		}
 	}
 
