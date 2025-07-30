@@ -94,7 +94,7 @@ namespace polyfem::solver
 				for (Eigen::SparseMatrix<bool, Eigen::RowMajor>::InnerIterator it(adj, b); it; ++it)
 				{
 					assert(it.col() != b);
-					auto x = mesh.point(b) - mesh.point(it.col());
+					polyfem::RowVectorNd x = mesh.point(b) - mesh.point(it.col());
 					s += x;
 					sum_norm += x.norm();
 					valence += 1;
@@ -132,12 +132,12 @@ namespace polyfem::solver
 				polyfem::RowVectorNd s;
 				s.setZero(dim);
 				double sum_norm = 0;
-				auto sum_normalized = s;
+				polyfem::RowVectorNd sum_normalized = s;
 				int valence = 0;
 				for (Eigen::SparseMatrix<bool, Eigen::RowMajor>::InnerIterator it(adj, b); it; ++it)
 				{
 					assert(it.col() != b);
-					auto x = mesh.point(b) - mesh.point(it.col());
+					polyfem::RowVectorNd x = mesh.point(b) - mesh.point(it.col());
 					s += x;
 					sum_norm += x.norm();
 					sum_normalized += x.normalized();
