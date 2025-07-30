@@ -125,6 +125,8 @@ namespace polyfem
 			}
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
+			if (time_callback)
+				time_callback(t, time_steps, t0 + dt * t, t0 + dt * time_steps);
 
 			const std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
 			if (!rest_mesh_path.empty())

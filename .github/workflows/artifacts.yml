@@ -1,0 +1,214 @@
+name: Artifacts
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+env:
+  CTEST_OUTPUT_ON_FAILURE: ON
+  CTEST_PARALLEL_LEVEL: 1
+
+jobs:
+  ####################
+  # Linux
+  ####################
+
+  Linux:
+    name: ${{ matrix.name }} (${{ matrix.config }}, ${{ matrix.threading }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        config: [Release]
+        threading: [TBB]
+        include:
+          - os: ubuntu-latest
+            name: Linux
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.6
+        with:
+          fetch-depth: 10
+
+      - name: Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get -o Acquire::Retries=3 install ccache \
+          libaudio-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
+          libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
+          libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
+          libegl1-mesa-dev libdbus-1-dev libibus-1.0-dev libudev-dev
+          echo 'CACHE_PATH=~/.cache/ccache' >> "$GITHUB_ENV"
+
+      - name: Cache Build
+        id: cache-build
+        uses: actions/cache@v4
+        if: matrix.config == 'Release' # debug cache is not working
+        with:
+          path: ${{ env.CACHE_PATH }}
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
+
+      - name: Prepare ccache
+        run: |
+          # ccache --max-size=1.0G
+          ccache -V && ccache --show-stats && ccache --zero-stats
+
+      - name: Configure
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
+            -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
+            -DPOLYFEM_THREADING=${{ matrix.threading }} \
+            -DPOLYFEM_WITH_APP=ON \
+            -DPOLYFEM_WITH_BEZIER=OFF
+
+      - name: Build
+        run: cd build; make -j2; ccache --show-stats
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PolyFEM-Linux
+          path: build/polyfem_app
+
+  ####################
+  # MacOS
+  ####################
+
+  MacOS:
+    name: ${{ matrix.os }} (${{ matrix.config }}, ${{ matrix.threading }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, macos-14]
+        config: [Release]
+        threading: [TBB]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.6
+        with:
+          fetch-depth: 10
+
+      - name: Dependencies
+        run: |
+          brew install ccache
+          echo 'CACHE_PATH=~/Library/Caches/ccache' >> "$GITHUB_ENV"
+
+      - name: Cache Build
+        id: cache-build
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CACHE_PATH }}
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
+
+      - name: Prepare ccache
+        run: |
+          ccache --max-size=1.0G
+          ccache -V && ccache --show-stats && ccache --zero-stats
+
+      - name: Configure
+        run: |
+          mkdir -p build
+          cd build
+          cmake .. \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
+            -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
+            -DPOLYFEM_THREADING=${{ matrix.threading }} \
+            -DPOLYFEM_WITH_APP=ON \
+            -DPOLYFEM_WITH_BEZIER=OFF
+
+      - name: Build
+        run: cd build; make -j2; ccache --show-stats
+
+      - name: Copy App
+        run: |
+          cd build
+          mkdir polyfem
+          cp -R polyfem_app.app polyfem/polyfem_app.app
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PolyFEM-${{ matrix.os }}
+          path: build/polyfem
+
+  ####################
+  # Windows
+  ####################
+
+  Windows:
+    runs-on: windows-2022
+    env:
+      SCCACHE_IDLE_TIMEOUT: "12000"
+    strategy:
+      fail-fast: false
+      matrix:
+        config: [MinSizeRel]
+        threading: [CPP]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.6
+        with:
+          fetch-depth: 10
+
+      - name: Install Ninja
+        uses: seanmiddleditch/gha-setup-ninja@master
+
+      - name: Dependencies
+        run: |
+          choco install ccache
+          "CACHE_PATH=${env:LOCALAPPDATA}\ccache" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Cache build
+        id: cache-build
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CACHE_PATH }}
+          key: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ matrix.config }}-${{ matrix.threading }}-cache
+
+      - name: Prepare ccache
+        run: |
+          ccache --max-size=1.0G
+          ccache -V && ccache --show-stats && ccache --zero-stats
+
+      - name: Configure
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
+          cmake -G Ninja ^
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache ^
+            -DCMAKE_CONFIGURATION_TYPES="Release;Debug;RelWithDebInfo;MinSizeRel;DebugNoSymbols" ^
+            -DCMAKE_BUILD_TYPE=${{ matrix.config }} ^
+            -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="/Od" -DCMAKE_EXE_LINKER_FLAGS_DEBUGNOSYMBOLS="" ^
+            -DPOLYFEM_WITH_BEZIER=OFF ^
+            -DPOLYFEM_WITH_CLIPPER=OFF ^
+            -DPOLYFEM_WITH_APP=ON ^
+            -DPOLYFEM_THREADING=${{ matrix.threading }} ^
+            -DPOLYSOLVE_WITH_CHOLMOD=OFF ^
+            -DPOLYSOLVE_WITH_AMGCL=OFF ^
+            -DPOLYSOLVE_WITH_MKL=ON ^
+            -B build ^
+            -S .
+
+      - name: Build
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
+          cmake --build build -j2 && ccache --show-stats
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PolyFEM-Windows
+          path: build/polyfem_app.exe
