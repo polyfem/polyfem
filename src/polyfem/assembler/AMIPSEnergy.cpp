@@ -7,11 +7,6 @@ namespace polyfem::assembler
 	namespace
 	{
 
-		bool delta(int i, int j)
-		{
-			return (i == j) ? true : false;
-		}
-
 		template <class T, int p = 3>
 		class barrier
 		{
@@ -46,37 +41,6 @@ namespace polyfem::assembler
 				return C * 4 * p * tmp2 / pow(tmp1, 2) * ((1 - p) + (1 + p) * tmp2) / pow(1 + tmp2, 3);
 			}
 		};
-
-		template <int dim>
-		Eigen::Matrix<double, dim, dim> hat(const Eigen::Matrix<double, dim, 1> &x)
-		{
-
-			Eigen::Matrix<double, dim, dim> prod;
-			prod.setZero();
-
-			prod(0, 1) = -x(2);
-			prod(0, 2) = x(1);
-			prod(1, 0) = x(2);
-			prod(1, 2) = -x(0);
-			prod(2, 0) = -x(1);
-			prod(2, 1) = x(0);
-
-			return prod;
-		}
-
-		template <int dim>
-		Eigen::Matrix<double, dim, 1> cross(const Eigen::Matrix<double, dim, 1> &x, const Eigen::Matrix<double, dim, 1> &y)
-		{
-
-			Eigen::Matrix<double, dim, 1> z;
-			z.setZero();
-
-			z(0) = x(1) * y(2) - x(2) * y(1);
-			z(1) = x(2) * y(0) - x(0) * y(2);
-			z(2) = x(0) * y(1) - x(1) * y(0);
-
-			return z;
-		}
 
 		template <int dimt, class T>
 		Eigen::Matrix<T, dimt, dimt> get_standard(const int dim, const bool use_rest_pose)
@@ -453,8 +417,15 @@ namespace polyfem::assembler
 	{
 		assert(data.x.cols() == 1);
 
-		constexpr int N = (n_basis == Eigen::Dynamic) ? Eigen::Dynamic : n_basis * dim;
 		const int n_pts = data.da.size();
+		const int nb = data.vals.basis_values.size();
+
+		constexpr int N = (n_basis == Eigen::Dynamic) ? Eigen::Dynamic : n_basis * dim;
+
+		assert(H.rows() == N);
+		assert(H.cols() == N);
+
+		H.setZero();
 
 		Eigen::Matrix<double, n_basis, dim> local_disp(data.vals.basis_values.size(), size());
 		local_disp.setZero();
@@ -469,9 +440,14 @@ namespace polyfem::assembler
 				}
 			}
 		}
+
 		const Eigen::Matrix<double, dim, dim> standard = get_standard<dim, double>(size(), use_rest_pose_);
 		Eigen::Matrix<double, dim, dim> def_grad(size(), size());
+
 		Eigen::Matrix<double, dim, dim> chain_rule;
+
+		Eigen::Matrix<double, n_basis, dim> G(data.vals.basis_values.size(), size());
+		G.setZero();
 
 		double power = -1;
 		if (use_rest_pose_)
@@ -485,12 +461,9 @@ namespace polyfem::assembler
 
 			for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
 				grad.row(i) = data.vals.basis_values[i].grad.row(p);
-
-			Eigen::Matrix<double, dim, dim> jac_it = data.vals.jac_it[p];
-
 			def_grad = local_disp.transpose() * grad;
-			def_grad = def_grad * jac_it;
-			chain_rule = jac_it;
+			def_grad = def_grad * data.vals.jac_it[p];
+			chain_rule = data.vals.jac_it[p];
 
 			for (int d = 0; d < dim; ++d)
 				def_grad(d, d) += 1;
@@ -506,74 +479,23 @@ namespace polyfem::assembler
 			}
 
 			double J = polyfem::utils::determinant(def_grad);
-			const double TrFFt = def_grad.squaredNorm();
+			if (J <= 0)
+				J = std::nan("");
 
-			Eigen::Matrix<double, dim, dim> delJ_delF(size(), size());
-			delJ_delF.setZero();
-			Eigen::Matrix<double, dim * dim, dim * dim> del2J_delF2(size() * size(), size() * size());
-			del2J_delF2.setZero();
+			const double powJ = pow(J, power);
+			const Eigen::Matrix<double, dim, dim> &F = def_grad;
+			const Eigen::Matrix<double, dim, dim> Fit = def_grad.inverse().transpose();
+			const double tr = (F.transpose() * F).trace();
+			const double m = power;
 
-			if (dim == 2)
-			{
-				delJ_delF(0, 0) = def_grad(1, 1);
-				delJ_delF(0, 1) = -def_grad(1, 0);
-				delJ_delF(1, 0) = -def_grad(0, 1);
-				delJ_delF(1, 1) = def_grad(0, 0);
+			const Eigen::Matrix<double, N, dim> temp = grad * chain_rule;
 
-				del2J_delF2(0, 3) = 1;
-				del2J_delF2(1, 2) = -1;
-				del2J_delF2(2, 1) = -1;
-				del2J_delF2(3, 0) = 1;
-			}
-			else if (size() == 3)
-			{
-				Eigen::Matrix<double, dim, 1> u(def_grad.rows());
-				Eigen::Matrix<double, dim, 1> v(def_grad.rows());
-				Eigen::Matrix<double, dim, 1> w(def_grad.rows());
-
-				u = def_grad.col(0);
-				v = def_grad.col(1);
-				w = def_grad.col(2);
-
-				delJ_delF.col(0) = cross<dim>(v, w);
-				delJ_delF.col(1) = cross<dim>(w, u);
-				delJ_delF.col(2) = cross<dim>(u, v);
-
-				del2J_delF2.template block<dim, dim>(0, 6) = hat<dim>(v);
-				del2J_delF2.template block<dim, dim>(6, 0) = -hat<dim>(v);
-				del2J_delF2.template block<dim, dim>(0, 3) = -hat<dim>(w);
-				del2J_delF2.template block<dim, dim>(3, 0) = hat<dim>(w);
-				del2J_delF2.template block<dim, dim>(3, 6) = -hat<dim>(u);
-				del2J_delF2.template block<dim, dim>(6, 3) = hat<dim>(u);
-			}
-
-			Eigen::Matrix<double, dim * dim, dim * dim> id = Eigen::Matrix<double, dim * dim, dim * dim>::Identity(size() * size(), size() * size());
-
-			Eigen::Matrix<double, dim * dim, 1> g_j = Eigen::Map<const Eigen::Matrix<double, dim * dim, 1>>(delJ_delF.data(), delJ_delF.size());
-			Eigen::Matrix<double, dim * dim, 1> F_flattened = Eigen::Map<const Eigen::Matrix<double, dim * dim, 1>>(def_grad.data(), def_grad.size());
-
-			const double tmp = TrFFt / J / dim;
-			const double Jpow = pow(J, 2. / dim);
-			Eigen::Matrix<double, dim * dim, dim * dim> hessian_temp = -4. / dim / (Jpow * J) * (F_flattened - tmp * g_j) * g_j.transpose() + 2. / Jpow * (id - ((2 / dim * F_flattened - tmp * g_j) / J * g_j.transpose() + tmp * del2J_delF2));
-
-			Eigen::Matrix<double, dim * dim, N> delF_delU_tensor(jac_it.size(), grad.size());
-
-			for (size_t i = 0; i < local_disp.rows(); ++i)
-			{
-				for (size_t j = 0; j < local_disp.cols(); ++j)
-				{
-					Eigen::Matrix<double, dim, dim> temp(size(), size());
-					temp.setZero();
-					temp.row(j) = grad.row(i);
-					temp = temp * chain_rule;
-					Eigen::Matrix<double, dim * dim, 1> temp_flattened(Eigen::Map<Eigen::Matrix<double, dim * dim, 1>>(temp.data(), temp.size()));
-					delF_delU_tensor.col(i * size() + j) = temp_flattened;
-				}
-			}
-
-			Eigen::Matrix<double, N, N> hessian = delF_delU_tensor.transpose() * hessian_temp * delF_delU_tensor;
-
-			H += hessian * data.da(p);
+			Eigen::Matrix<double, N, dim> hessian =
+				(2 * temp - 4 * m * temp * F * Fit
+				 + m * tr * Fit * temp * Fit
+				 + m * m * tr * temp * Fit * Fit)
+				/ powJ;
+			H += temp * hessian.transpose() * data.da(p);
 		}
 	}
 
