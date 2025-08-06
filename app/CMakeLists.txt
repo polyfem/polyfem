@@ -60,20 +60,35 @@ if(APPLE)
     set(CPACK_DMG_FORMAT "UDBZ")
     set(CPACK_DMG_VOLUME_NAME PolyFEM)
     set(CPACK_BUNDLE_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resources/Info.plist)
-    # set(CPACK_BUNDLE_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/resources/MacOSXBundleInfo.plist.in)
-    # set(CPACK_OSX_PACKAGE_VERSION "10.13")
 
     set(CPACK_SYSTEM_NAME "OSX")
 
-    # set(CPACK_DMG_DS_STORE "${CMAKE_CURRENT_SOURCE_DIR}/resources/DS_Store")
+    # For DragNDrop generator, you need to explicitly install the README
+    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../README.md"
+            DESTINATION .
+            RENAME "README.txt"
+            COMPONENT Runtime)
+
+    # Optionally install other documentation files
+    install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE"
+            DESTINATION .
+            COMPONENT Runtime
+            OPTIONAL)
+
+    # DMG background and layout
+    set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_CURRENT_SOURCE_DIR}/resources/splash.png")
 elseif(WIN32)
+    # For Windows, these resource files work as expected
     set(CPACK_GENERATOR "NSIS")
     set(CPACK_SOURCE_GENERATOR "ZIP")
+    set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/../README.md")
+    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE")
 else()
+    # For Linux packages, these resource files work as expected
     set(CPACK_GENERATOR "DEB")
     set(CPACK_SOURCE_GENERATOR "TGZ")
+    set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/../README.md")
 endif()
-
 
 
 # Destination paths below are relative to ${CMAKE_INSTALL_PREFIX}
@@ -96,12 +111,7 @@ set(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_BINARY_DIR};polyfem_app;Unspecified;/"
 set(CPACK_PACKAGE_VENDOR "PolyFEM")
 set(CPACK_PACKAGE_NAME "polyfem_app")
 set(CPACK_PACKAGE_FILE_NAME "PolyFEM")
-set(CPACK_PACKAGE_ICON "${EXTRA_SOURCE}")
-
-set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_CURRENT_SOURCE_DIR}/resources/splash.png")
-set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/../README.md")
-set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../README.md")
-set(CPACK_RESOURCE_FILE_WELCOME "${CMAKE_CURRENT_SOURCE_DIR}/../README.md")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "PolyFEM - A simple C++ and Python finite element library")
 
 
 include(CPack)
