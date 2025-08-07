@@ -63,6 +63,15 @@ if(APPLE)
 
     set(CPACK_SYSTEM_NAME "OSX")
 
+     # Add DMG volume icon
+    set(CPACK_DMG_VOLUME_ICON "${CMAKE_CURRENT_SOURCE_DIR}/resources/ico.icns")
+
+
+    # Only install the app bundle for macOS DMG
+    install(TARGETS polyfem_app
+        BUNDLE DESTINATION .
+        COMPONENT Runtime)
+
     # For DragNDrop generator, you need to explicitly install the README
     install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/../README.md"
             DESTINATION .
@@ -77,36 +86,59 @@ if(APPLE)
 
     # DMG background and layout
     set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_CURRENT_SOURCE_DIR}/resources/splash.png")
+
+
+    # Note Mac specific extension .app
+    set(APPS "\${CMAKE_INSTALL_PREFIX}/polyfem_app.app")
+
+    # Directories to look for dependencies
+    set(DIRS ${CMAKE_BINARY_DIR})
+
+    # Use fixup_bundle to include dependencies inside the app bundle
+    install(CODE "
+        include(BundleUtilities)
+        fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/polyfem_app.app\" \"\" \"${DIRS}\")
+        " COMPONENT Runtime)
+
+    # Only include Runtime component in the DMG
+    set(CPACK_COMPONENTS_ALL Runtime)
+
 elseif(WIN32)
     # For Windows, these resource files work as expected
     set(CPACK_GENERATOR "NSIS")
     set(CPACK_SOURCE_GENERATOR "ZIP")
     set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/../README.md")
     set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE")
+
+    # For Windows, install to bin directory
+    install(TARGETS polyfem_app
+        RUNTIME DESTINATION bin
+        COMPONENT Runtime)
+
 else()
     # For Linux packages, these resource files work as expected
     set(CPACK_GENERATOR "DEB")
     set(CPACK_SOURCE_GENERATOR "TGZ")
     set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/../README.md")
+
+    # For Linux, install to bin directory
+    install(TARGETS polyfem_app
+        RUNTIME DESTINATION bin
+        COMPONENT Runtime)
 endif()
 
+# Remove this duplicate install command that's causing issues
+# install(TARGETS polyfem_app DESTINATION .)
 
-# Destination paths below are relative to ${CMAKE_INSTALL_PREFIX}
-install(TARGETS polyfem_app
-    BUNDLE DESTINATION . COMPONENT Runtime
-    RUNTIME DESTINATION bin COMPONENT Runtime
-    )
+# Remove this duplicate install command as well
+# install(TARGETS polyfem_app
+#     BUNDLE DESTINATION . COMPONENT Runtime
+#     RUNTIME DESTINATION bin COMPONENT Runtime
+#     )
 
-# Note Mac specific extension .app
-set(APPS "\${CMAKE_INSTALL_PREFIX}/polyfem_app.app")
-
-# Directories to look for dependencies
-set(DIRS ${CMAKE_BINARY_DIR})
-
-install(CODE "include(BundleUtilities)
-    fixup_bundle(\"${APPS}\" \"\" \"${DIRS}\")")
-
-set(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_BINARY_DIR};polyfem_app;Unspecified;/")
+# Remove the manual fixup_bundle code since it's now inside the Apple block
+# install(CODE "include(BundleUtilities)
+#     fixup_bundle(\"${APPS}\" \"\" \"${DIRS}\")")
 
 set(CPACK_PACKAGE_VENDOR "PolyFEM")
 set(CPACK_PACKAGE_NAME "polyfem_app")
