@@ -2938,7 +2938,7 @@
         "pointer": "/output/paraview/vismesh_rel_area",
         "default": 1e-05,
         "type": "float",
-        "doc": "relative area for the upsampled visualisation mesh"
+        "doc": "Relative area for the upsampled visualisation mesh. If negative and high_order_mesh is false, high order FE nodes become mesh nodes in the output."
     },
     {
         "pointer": "/output/paraview/skip_frame",
