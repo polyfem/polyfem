@@ -520,8 +520,8 @@ namespace polyfem::solver
 		double max_stiffness = 0;
 		const double scaling = time_integrator->acceleration_scaling();
 
-		const std::array<std::shared_ptr<Form>, 4> energy_forms{
-					{elastic_form, inertia_form, body_form, pressure_form}};
+		const std::array<std::shared_ptr<Form>, 7> energy_forms{
+					{elastic_form, inertia_form, body_form, pressure_form, friction_form, normal_adhesion_form, tangential_adhesion_form}};
 
 		for (const std::shared_ptr<Form> &form : energy_forms)
 		{

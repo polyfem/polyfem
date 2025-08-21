@@ -181,29 +181,66 @@ namespace polyfem::solver
 			|| !nl_problem.is_step_valid(sol, tmp_sol)
 			|| !nl_problem.is_step_collision_free(sol, tmp_sol))
 			log_and_throw_error("Failed to apply constraints conditions; solve with augmented lagrangian first!");
-		nl_problem.line_search_end();
-		// --------------------------------------------------------------------
-		// Perform one final solve with the DBC projected out
 
-		logger().debug("Successfully applied constraints conditions; solving in reduced space");
-
-		nl_problem.init(sol);
-
-		try
+		bool not_done = true;
+		while (not_done)
 		{
-			const auto scale = nl_problem.normalize_forms();
-			auto nl_solver = nl_solverin == nullptr ? polysolve::nonlinear::Solver::create(
-														  nl_solver_params, linear_solver, characteristic_length * scale, logger())
-													: nl_solverin;
-			nl_solver->minimize(nl_problem, tmp_sol);
-			nl_problem.finish();
+
+			nl_problem.line_search_end();
+			// --------------------------------------------------------------------
+			// Perform one final solve with the DBC projected out
+
+			logger().debug("Successfully applied constraints conditions; solving in reduced space");
+
+			nl_problem.init(sol);
+			bool stopped = false;
+			try
+			{
+				auto iteration_cb = [&](const polysolve::nonlinear::Criteria &crit) -> bool
+				{
+					if (crit.alpha < 0.01 && crit.iterations>3)
+					{
+						logger().warn("Checking distances and updating Barrier Stiffness if needed.");
+						update_barrier_stiffness(tmp_sol);
+						stopped = true;
+						return true;
+					}
+					if (crit.iterations>20)
+					{
+						logger().warn("Checking distances and updating Barrier Stiffness if needed.");
+						update_barrier_stiffness(tmp_sol);
+						stopped = true;
+						return true;
+					}
+					return false;
+				};
+				const auto scale = nl_problem.normalize_forms();
+				auto nl_solver = nl_solverin == nullptr ? polysolve::nonlinear::Solver::create(
+															  nl_solver_params, linear_solver, characteristic_length * scale, logger())
+														: nl_solverin;
+				nl_solver->set_iteration_callback(iteration_cb);
+				nl_solver->minimize(nl_problem, tmp_sol);
+				nl_problem.finish();
+			}
+			catch (const std::runtime_error &e)
+			{
+				std::string err_msg = e.what();
+				logger().debug("Failed to solve; {}", err_msg);
+			}
+
+            sol = nl_problem.reduced_to_full(tmp_sol);
+
+			if (stopped)
+				not_done = true;
+			else
+				not_done = false;
+
+            if (not_done) {
+                nl_problem.use_reduced_size();
+                tmp_sol = nl_problem.full_to_reduced(sol);
+                nl_problem.line_search_begin(sol, tmp_sol);
+            }
 		}
-		catch (const std::runtime_error &e)
-		{
-			sol = nl_problem.reduced_to_full(tmp_sol);
-			throw e;
-		}
-		sol = nl_problem.reduced_to_full(tmp_sol);
 
 		post_subsolve(0);
 	}
