@@ -1198,6 +1198,7 @@ namespace polyfem::io
 		if (opts.points)
 			vtm.add_dataset("Points", "data", path_stem + "_points" + opts.file_extension());
 		vtm.save(base_path + ".vtm");
+
 	}
 
 	void OutGeometryData::save_volume(
@@ -1664,8 +1665,8 @@ namespace polyfem::io
 
 		if (fun.cols() != 1 && state.mixed_assembler == nullptr && opts.export_field("gradient_of_elastic_potential"))
 		{
-			try
-			{
+			//try
+			//{
 				Eigen::VectorXd potential_grad;
 				Eigen::MatrixXd potential_grad_fun;
 				if (state.solve_data.elastic_form)
@@ -1683,16 +1684,18 @@ namespace polyfem::io
 				}
 
 				writer.add_field("gradient_of_elastic_potential", potential_grad_fun);
-			}
-			catch (std::exception &)
-			{
-			}
+			//}
+			//catch (std::exception &)
+			//{
+			//}
+
 		}
 
 		if (fun.cols() != 1 && state.mixed_assembler == nullptr && opts.export_field("gradient_of_contact_potential"))
 		{
-			try
-			{
+
+			//try
+			//{
 				Eigen::VectorXd potential_grad;
 				Eigen::MatrixXd potential_grad_fun;
 				if (state.solve_data.contact_form && state.solve_data.contact_form->weight() > 0)
@@ -1713,10 +1716,11 @@ namespace polyfem::io
 
 					writer.add_field("gradient_of_contact_potential", potential_grad_fun);
 				}
-			}
-			catch (std::exception &)
-			{
-			}
+			//}
+			//catch (std::exception &)
+			//{
+			//}
+
 		}
 
 		// Write the solution last so it is the default for warp-by-vector
@@ -1758,7 +1762,6 @@ namespace polyfem::io
 				elements.back().push_back(obstacle.get_vertex_connectivity()(i) + orig_p);
 			}
 		}
-
 		if (elements.empty())
 			writer.write_mesh(path, points, tets);
 		else
@@ -2104,50 +2107,58 @@ namespace polyfem::io
 			writer.add_field("friction_forces", forces_reshaped);
 		}
 
-		ipc::NormalCollisions adhesion_collision_set;
-		adhesion_collision_set.build(
-			collision_mesh, displaced_surface, dhat_a,
-			/*dmin=*/0, ipc::build_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]));
-
-		ipc::NormalAdhesionPotential normal_adhesion_potential(dhat_p, dhat_a, Y, 1);
-
-		if (opts.normal_adhesion_forces || opts.export_field("normal_adhesion_forces"))
+		if ((opts.normal_adhesion_forces && opts.export_field("normal_adhesion_forces")) || (opts.tangential_adhesion_forces && opts.export_field("tangential_adhesion_forces")))
 		{
-			Eigen::MatrixXd forces = -1 * normal_adhesion_potential.gradient(adhesion_collision_set, collision_mesh, displaced_surface);
+			ipc::NormalCollisions adhesion_collision_set;
+			adhesion_collision_set.build(
+				collision_mesh, displaced_surface, dhat_a,
+				/*dmin=*/0, ipc::build_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]));
 
-			Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
+			ipc::NormalAdhesionPotential normal_adhesion_potential(dhat_p, dhat_a, Y, 1);
 
-			assert(forces_reshaped.rows() == surface_displacements.rows());
-			assert(forces_reshaped.cols() == surface_displacements.cols());
-			writer.add_field("normal_adhesion_forces", forces_reshaped);
+			if (opts.normal_adhesion_forces && opts.export_field("normal_adhesion_forces"))
+			{
+				ipc::NormalCollisions adhesion_collision_set;
+				adhesion_collision_set.build(
+					collision_mesh, displaced_surface, dhat_a,
+					/*dmin=*/0, ipc::build_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]));
+
+				ipc::NormalAdhesionPotential normal_adhesion_potential(dhat_p, dhat_a, Y, 1);
+				Eigen::MatrixXd forces = -1 * normal_adhesion_potential.gradient(adhesion_collision_set, collision_mesh, displaced_surface);
+
+				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
+
+				assert(forces_reshaped.rows() == surface_displacements.rows());
+				assert(forces_reshaped.cols() == surface_displacements.cols());
+				writer.add_field("normal_adhesion_forces", forces_reshaped);
+			}
+
+			if (opts.tangential_adhesion_forces && opts.export_field("tangential_adhesion_forces"))
+			{
+				ipc::TangentialCollisions tangential_collision_set;
+				tangential_collision_set.build(
+					collision_mesh, displaced_surface, adhesion_collision_set,
+					normal_adhesion_potential, 1, tangential_adhesion_coefficient);
+
+				ipc::TangentialAdhesionPotential tangential_adhesion_potential(epsa);
+
+				Eigen::MatrixXd velocities;
+				if (state.solve_data.time_integrator != nullptr)
+					velocities = state.solve_data.time_integrator->v_prev();
+				else
+					velocities = sol;
+				velocities = collision_mesh.map_displacements(utils::unflatten(velocities, collision_mesh.dim()));
+
+				Eigen::MatrixXd forces = -tangential_adhesion_potential.gradient(
+					tangential_collision_set, collision_mesh, velocities);
+
+				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
+
+				assert(forces_reshaped.rows() == surface_displacements.rows());
+				assert(forces_reshaped.cols() == surface_displacements.cols());
+				writer.add_field("tangential_adhesion_forces", forces_reshaped);
+			}
 		}
-
-		if (opts.tangential_adhesion_forces || opts.export_field("tangential_adhesion_forces"))
-		{
-			ipc::TangentialCollisions tangential_collision_set;
-			tangential_collision_set.build(
-				collision_mesh, displaced_surface, adhesion_collision_set,
-				normal_adhesion_potential, 1, tangential_adhesion_coefficient);
-
-			ipc::TangentialAdhesionPotential tangential_adhesion_potential(epsa);
-
-			Eigen::MatrixXd velocities;
-			if (state.solve_data.time_integrator != nullptr)
-				velocities = state.solve_data.time_integrator->v_prev();
-			else
-				velocities = sol;
-			velocities = collision_mesh.map_displacements(utils::unflatten(velocities, collision_mesh.dim()));
-
-			Eigen::MatrixXd forces = -tangential_adhesion_potential.gradient(
-				tangential_collision_set, collision_mesh, velocities);
-
-			Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
-
-			assert(forces_reshaped.rows() == surface_displacements.rows());
-			assert(forces_reshaped.cols() == surface_displacements.cols());
-			writer.add_field("tangential_adhesion_forces", forces_reshaped);
-		}
-
 		assert(collision_mesh.rest_positions().rows() == surface_displacements.rows());
 		assert(collision_mesh.rest_positions().cols() == surface_displacements.cols());
 

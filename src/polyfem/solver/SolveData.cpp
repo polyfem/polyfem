@@ -88,7 +88,6 @@ namespace polyfem::solver
 		const bool use_improved_max_operator,
 		const bool use_physical_barrier,
 		const json &barrier_stiffness,
-		const double initial_barrier_stiffness,
 		const ipc::BroadPhaseMethod broad_phase,
 		const double ccd_tolerance,
 		const long ccd_max_iterations,
@@ -128,6 +127,9 @@ namespace polyfem::solver
 		// Rayleigh damping form
 		const json &rayleigh_damping)
 	{
+		this->barrier_stiffness_ = barrier_stiffness;
+		this->avg_mass_ = avg_mass;
+
 		const bool is_time_dependent = time_integrator != nullptr;
 		assert(!is_time_dependent || time_integrator != nullptr);
 		const double dt = is_time_dependent ? time_integrator->dt() : 0.0;
@@ -390,15 +392,15 @@ namespace polyfem::solver
 
 				if (use_adaptive_barrier_stiffness)
 				{
-					contact_form->set_barrier_stiffness(initial_barrier_stiffness);
-					// logger().debug("Using adaptive barrier stiffness");
+					contact_form->set_barrier_stiffness(1);
+					logger().debug("Using adaptive barrier stiffness");
 				}
 				else
 				{
 					assert(barrier_stiffness.is_number());
 					assert(barrier_stiffness.get<double>() > 0);
 					contact_form->set_barrier_stiffness(barrier_stiffness);
-					// logger().debug("Using fixed barrier stiffness of {}", contact_form->barrier_stiffness());
+					logger().debug("Setting barrier stiffness to {}", contact_form->barrier_stiffness());
 				}
 
 				forms.push_back(contact_form);
@@ -456,30 +458,125 @@ namespace polyfem::solver
 		}
 
 		update_dt();
+		this->dt_ = dt;
 
 		return forms;
 	}
 
 	void SolveData::update_barrier_stiffness(const Eigen::VectorXd &x)
 	{
-		if (contact_form == nullptr || !contact_form->use_adaptive_barrier_stiffness())
+		if (contact_form == nullptr)
 			return;
 
-		Eigen::VectorXd grad_energy = Eigen::VectorXd::Zero(x.size());
-		const std::array<std::shared_ptr<Form>, 4> energy_forms{
-			{elastic_form, inertia_form, body_form, pressure_form}};
-		for (const std::shared_ptr<Form> &form : energy_forms)
+		double barrier_stiffness;
+		double AL_grad_energy = 0.0;
+		for (const auto &f : al_form)
 		{
-			if (form == nullptr || !form->enabled())
-				continue;
-
-			Eigen::VectorXd grad_form;
-			form->first_derivative(x, grad_form);
-			grad_energy += grad_form;
+			AL_grad_energy =  f->lagrangian_weight();
 		}
 
-		contact_form->update_barrier_stiffness(x, grad_energy);
+		if (contact_form->use_adaptive_barrier_stiffness())
+		{
+			logger().debug("You have set to scale the adaptive barrier stiffness by {}", initial_barrier_stiffness_multipler_);
+
+
+			double bs_multiplier = contact_form->get_bs_multiplier();
+			const double dhat = contact_form->dhat();
+			double prev_dist = contact_form->get_prev_distance();
+
+
+			logger().debug("Prev dist is {}", prev_dist);
+			if (prev_dist != -1 && prev_dist != INFINITY && prev_dist < .5*dhat*dhat)
+			{
+				bs_multiplier *= 2;
+				contact_form->set_bs_multiplier(bs_multiplier);
+			}
+			if (prev_dist != -1 && prev_dist != INFINITY && prev_dist > .9*dhat*dhat)
+			{
+				bs_multiplier /= 2;
+				contact_form->set_bs_multiplier(bs_multiplier);
+			}
+
+			barrier_stiffness = 10*AL_grad_energy*initial_barrier_stiffness_multipler_ * bs_multiplier;
+			if (barrier_stiffness < 10*AL_grad_energy || prev_dist == INFINITY )
+				barrier_stiffness = 10*AL_grad_energy;
+		}
+		else
+		{
+			barrier_stiffness = barrier_stiffness_;
+			if (barrier_stiffness<AL_grad_energy)
+				logger().warn("Your barrier stiffness is lower than your Gradient Energy {}. Likely to result in numerical instabilities!", AL_grad_energy);
+		}
+		contact_form->set_barrier_stiffness(barrier_stiffness);
+		logger().debug("Barrier Stiffness set to {}", contact_form->barrier_stiffness());
+
 	}
+
+	void SolveData::update_al_weight(const Eigen::VectorXd &x)
+	{
+		double weight;
+
+		StiffnessMatrix hessian_form;
+		double max_stiffness = 0;
+		const double scaling = time_integrator->acceleration_scaling();
+
+		const std::array<std::shared_ptr<Form>, 7> energy_forms{
+					{elastic_form, inertia_form, body_form, pressure_form, friction_form, normal_adhesion_form, tangential_adhesion_form}};
+
+		for (const std::shared_ptr<Form> &form : energy_forms)
+		{
+			if (form != nullptr){
+				double max_of_form = 0;
+				form->second_derivative(x, hessian_form);
+
+				for (int k = 0; k < hessian_form.outerSize(); ++k)
+				{
+					for (StiffnessMatrix::InnerIterator it(hessian_form, k); it; ++it)
+					{
+						max_stiffness = std::max(max_stiffness, std::abs(it.value()));
+					}
+				}
+				if (max_stiffness < max_of_form)
+				{
+					max_stiffness = max_of_form;
+				}
+			}
+		}
+
+
+		int dbc_size = 0;
+		for (const auto &f : al_form)
+		{
+
+		dbc_size += f->get_dbc_size();
+		}
+
+		//Scales AL to max hessian * 1000; Al_initial_weight acts as a multiplier for users to make this more or less aggressive; scaling accounts for acceleration scaling
+		weight = 10*max_stiffness/scaling*AL_initial_weight_;
+
+
+			/* still playing with this
+			double error = 0.0;
+			int dbc_size = 0;
+			for (const auto &f : al_form)
+			{
+			error += f->get_dbcerror();
+			dbc_size += f->get_dbc_size();
+			}
+			 if (error > 0)
+				weight = 1000*max_stiffness/scaling*AL_initial_weight_*error;
+			else if (dbc_size > 0)
+				weight =  max_stiffness/scaling*AL_initial_weight_* dbc_size;
+			else
+				weight =  max_stiffness/scaling*AL_initial_weight_;
+			*/
+
+		for (const auto &f : al_form)
+		{
+				f->set_al_weight(weight);
+		}
+
+}
 
 	void SolveData::update_dt()
 	{

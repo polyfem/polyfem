@@ -23,7 +23,8 @@ namespace polyfem::solver
 			const double scaling,
 			const double max_al_weight,
 			const double eta_tol,
-			const std::function<void(const Eigen::VectorXd &)> &update_barrier_stiffness);
+			const std::function<void(const Eigen::VectorXd &)> &update_barrier_stiffness,
+			const std::function<void(const Eigen::VectorXd &)> &update_al_weight);
 		virtual ~ALSolver() = default;
 
 		void solve_al(NLProblem &nl_problem, Eigen::MatrixXd &sol,
@@ -52,14 +53,16 @@ namespace polyfem::solver
 
 		std::function<void(const double)> post_subsolve = [](const double) {};
 
+
 	protected:
 		std::vector<std::shared_ptr<AugmentedLagrangianForm>> alagr_forms;
-		const double initial_al_weight;
+		double initial_al_weight;
 		const double scaling;
 		const double max_al_weight;
 		const double eta_tol;
 
 		// TODO: replace this with a member function
 		std::function<void(const Eigen::VectorXd &)> update_barrier_stiffness;
+		std::function<void(const Eigen::VectorXd &)> update_al_weight;
 	};
 } // namespace polyfem::solver
