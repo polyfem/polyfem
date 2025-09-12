@@ -13,6 +13,8 @@ set(SOURCES
 	ElementAssemblyValues.hpp
 	GenericElastic.cpp
 	GenericElastic.hpp
+	GenericFiber.cpp
+	GenericFiber.hpp
 	GenericProblem.cpp
 	GenericProblem.hpp
 	Helmholtz.cpp
