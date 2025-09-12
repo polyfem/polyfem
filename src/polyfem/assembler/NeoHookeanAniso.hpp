@@ -18,6 +18,8 @@ namespace polyfem::assembler
 		const GenericMatParam &k1() const { return k1_; }
 		const GenericMatParam &k2() const { return k2_; }
 		const GenericMatParam &d1() const { return d1_; }
+		const DirectionVector &a1() const { return a1_; }
+		const DirectionVector &a2() const { return a2_; }
 
 		std::string name() const override { return "NeoHookeanAnisotropic"; }
 		std::map<std::string, ParamFunc> parameters() const override;
@@ -36,16 +38,25 @@ namespace polyfem::assembler
 
 			const T J = polyfem::utils::determinant(def_grad);
 			const T logJ = log(J);
-			const auto right_cauchy_green = def_grad * def_grad.transpose();
-			const auto powJ = pow(J, -2. / 3);
-			const auto TrB = right_cauchy_green.trace();
-			const auto I1_tilde = powJ * (TrB + (3 - size())) - 3;
+			const auto right_cauchy_green = (def_grad * def_grad.transpose()).eval();
+			const T powJ = pow(J, -2. / 3);
+			const T TrB = right_cauchy_green.trace();
+			const T I1_tilde = powJ * (TrB + (3 - size())) - 3;
 
-			Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> A1;
-			Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> A2;
+			const auto a1 = a1_(p, t, el_id);
+			const auto a2 = a2_(p, t, el_id);
 
-			const T I4_tilde = powJ * (right_cauchy_green.array() * A1.array()).sum();
-			const T I6_tilde = powJ * (right_cauchy_green.array() * A2.array()).sum();
+			const auto A1 = (a1 * a1.transpose()).eval();
+			const auto A2 = (a2 * a2.transpose()).eval();
+
+			T I4_tilde = T(0);
+			T I6_tilde = T(0);
+			for (int i = 0; i < size(); ++i)
+				for (int j = 0; j < size(); ++j)
+				{
+					I4_tilde += powJ * right_cauchy_green(i, j) * A1(i, j);
+					I6_tilde += powJ * right_cauchy_green(i, j) * A2(i, j);
+				}
 
 			const T psi_iso = c * I1_tilde;
 			const T psi_aniso = (k1 / 2 / k2) * ((exp(k2 * pow(I4_tilde - 1, 2)) - 1) + (exp(k2 * pow(I6_tilde - 1, 2)) - 1));
@@ -59,5 +70,7 @@ namespace polyfem::assembler
 		GenericMatParam k1_;
 		GenericMatParam k2_;
 		GenericMatParam d1_;
+		DirectionVector a1_;
+		DirectionVector a2_;
 	};
 } // namespace polyfem::assembler

@@ -479,6 +479,77 @@ namespace polyfem::assembler
 		rho_[index].set_unit_type(density_unit);
 	}
 
+	DirectionVector::DirectionVector()
+	{
+	}
+
+	void DirectionVector::resize(const int size)
+	{
+		assert(size == 2 || size == 3);
+		size_ = size;
+		if (!dir_.empty())
+		{
+			for (const auto &m : dir_)
+			{
+				assert(m.rows() == size);
+			}
+		}
+	}
+
+	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> DirectionVector::operator()(double x, double y, double z, double t, int el_id) const
+	{
+		assert(dir_.size() == 1 || el_id < dir_.size());
+
+		const auto &tmp = dir_.size() == 1 ? dir_[0] : dir_[el_id];
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> res;
+		res.resize(tmp.rows(), tmp.cols());
+		for (int i = 0; i < tmp.rows(); ++i)
+		{
+			res(i) = tmp(i)(x, y, z, t, el_id);
+
+			assert(!std::isnan(res(i)));
+			assert(!std::isinf(res(i)));
+		}
+		return res;
+	}
+
+	void DirectionVector::add_multimaterial(const int index, const json &dir, const std::string &unit)
+	{
+		for (int i = dir_.size(); i <= index; ++i)
+		{
+			dir_.emplace_back();
+		}
+
+		if (dir.size() == 3 || dir.size() == 2)
+		{
+			const int size = dir.size();
+			assert(size == size_);
+			dir_[index].resize(size, 1);
+			for (int i = 0; i < size; ++i)
+			{
+				if (!dir[i].is_array())
+				{
+					log_and_throw_error("Fiber must be a vector, given as a matrix");
+				}
+				dir_[index](i).init(dir[i]);
+				dir_[index](i).set_unit_type(unit);
+			}
+		}
+		else if (dir.empty())
+		{
+			dir_[index].resize(size_, 1);
+			for (int i = 0; i < size_; ++i)
+			{
+				dir_[index](i).init(i == 0 ? 1.0 : 0.0);
+				dir_[index](i).set_unit_type(unit);
+			}
+		}
+		else
+		{
+			log_and_throw_error("Fiber direction must be a 3 or 2 vector");
+		}
+	}
+
 	FiberDirection::FiberDirection()
 	{
 	}

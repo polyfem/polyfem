@@ -141,6 +141,28 @@ namespace polyfem::assembler
 		}
 	};
 
+	class DirectionVector
+	{
+	public:
+		DirectionVector();
+		virtual ~DirectionVector() = default;
+
+		void resize(const int size);
+
+		void add_multimaterial(const int index, const json &params, const std::string &unit);
+
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> operator()(double x, double y, double z, double t, int el_id) const;
+
+		Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 3, 1> operator()(const Eigen::MatrixXd &p, double t, int el_id) const
+		{
+			return (*this)(p(0), p(1), p.size() == 3 ? p(2) : 0.0, t, el_id);
+		}
+
+	private:
+		std::vector<Eigen::Matrix<utils::ExpressionValue, Eigen::Dynamic, 1, 0, 3, 1>> dir_;
+		int size_;
+	};
+
 	class FiberDirection
 	{
 	public:
