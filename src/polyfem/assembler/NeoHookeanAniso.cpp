@@ -11,10 +11,10 @@ namespace polyfem::assembler
 	{
 		c_.add_multimaterial(index, params, units.stress());
 		k1_.add_multimaterial(index, params, units.stress());
-		k2_.add_multimaterial(index, params, units.stress());
+		k2_.add_multimaterial(index, params, "");
 		d1_.add_multimaterial(index, params, units.stress());
-		a1_.add_multimaterial(index, params, "");
-		a2_.add_multimaterial(index, params, "");
+		a1_.add_multimaterial(index, params["a1"], "");
+		a2_.add_multimaterial(index, params["a2"], "");
 	}
 
 	std::map<std::string, Assembler::ParamFunc> NeoHookeanAniso::parameters() const
