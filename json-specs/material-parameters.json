@@ -13,6 +13,7 @@
             "UnconstrainedOgden",
             "IncompressibleOgden",
             "Stokes",
+            "HGOFiber",
             "NavierStokes",
             "OperatorSplitting",
             "Electrostatics",
@@ -450,6 +451,22 @@
         "doc": "Material Parameters including ID"
     },
     {
+        "pointer": "/materials/*",
+        "type": "object",
+        "type_name": "HGOFiber",
+        "required": [
+            "type",
+            "k1",
+            "k2",
+            "fiber_direction"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters"
+    },
+    {
         "pointer": "/E",
         "type": "include",
         "spec_file": "value-no.json",
@@ -547,6 +564,18 @@
         "type": "include",
         "spec_file": "value-no.json",
         "doc": "Fourth Parameter for Mooney-Rivlin"
+    },
+    {
+        "pointer": "k1",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "First Parameter for HGOFiber"
+    },
+    {
+        "pointer": "k2",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Second Parameter for HGOFiber"
     },
     {
         "pointer": "/alphas",

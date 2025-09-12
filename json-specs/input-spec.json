@@ -1913,6 +1913,22 @@
     {
         "pointer": "/materials/*",
         "type": "object",
+        "type_name": "HGOFiber",
+        "required": [
+            "type",
+            "k1",
+            "k2",
+            "fiber_direction"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
         "type_name": "SaintVenant",
         "required": [
             "type",
@@ -1923,8 +1939,7 @@
             "id",
             "rho",
             "phi",
-            "psi",
-            "fiber_direction"
+            "psi"
         ],
         "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
     },
@@ -1940,8 +1955,7 @@
             "id",
             "rho",
             "phi",
-            "psi",
-            "fiber_direction"
+            "psi"
         ],
         "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
     },
@@ -2144,6 +2158,7 @@
             "MooneyRivlin3ParamSymbolic",
             "UnconstrainedOgden",
             "IncompressibleOgden",
+            "HGOFiber",
             "Stokes",
             "NavierStokes",
             "OperatorSplitting",
@@ -2298,6 +2313,18 @@
         "type": "include",
         "spec_file": "value-no.json",
         "doc": "Fourth Parameter for Mooney-Rivlin"
+    },
+    {
+        "pointer": "/materials/*/k1",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "First Parameter for HGOFiber"
+    },
+    {
+        "pointer": "/materials/*/k2",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Second Parameter for HGOFiber"
     },
     {
         "pointer": "/materials/*/alphas",
