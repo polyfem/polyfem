@@ -24,8 +24,6 @@ namespace polyfem::assembler
 		const auto &k1 = this->k1();
 		const auto &k2 = this->k2();
 		const auto &d1 = this->d1();
-		const auto &a1 = this->a1();
-		const auto &a2 = this->a2();
 
 		res["c"] = [&c](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
 			return c(p, t, e);

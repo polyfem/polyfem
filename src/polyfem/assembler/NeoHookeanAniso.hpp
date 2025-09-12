@@ -18,8 +18,6 @@ namespace polyfem::assembler
 		const GenericMatParam &k1() const { return k1_; }
 		const GenericMatParam &k2() const { return k2_; }
 		const GenericMatParam &d1() const { return d1_; }
-		const DirectionVector &a1() const { return a1_; }
-		const DirectionVector &a2() const { return a2_; }
 
 		std::string name() const override { return "NeoHookeanAnisotropic"; }
 		std::map<std::string, ParamFunc> parameters() const override;
