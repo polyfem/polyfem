@@ -1768,6 +1768,27 @@
     {
         "pointer": "/materials/*",
         "type": "object",
+        "type_name": "NeoHookeanAnisotropic",
+        "required": [
+            "type",
+            "c",
+            "k1",
+            "k2",
+            "d1",
+            "a1",
+            "a2"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "phi",
+            "psi"
+        ],
+        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/materials/*",
+        "type": "object",
         "type_name": "MooneyRivlin",
         "required": [
             "type",
@@ -2139,6 +2160,7 @@
             "HookeLinearElasticity",
             "SaintVenant",
             "NeoHookean",
+            "NeoHookeanAnisotropic",
             "MooneyRivlin",
             "MooneyRivlin3Param",
             "MooneyRivlin3ParamSymbolic",
@@ -2274,6 +2296,42 @@
         "type": "include",
         "spec_file": "value-no.json",
         "doc": "Second Lamé parameter"
+    },
+    {
+        "pointer": "/materials/*/k1",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "NeoHookean Anisotropic"
+    },
+    {
+        "pointer": "/materials/*/k2",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "NeoHookean Anisotropic"
+    },
+    {
+        "pointer": "/materials/*/a1",
+        "type": "list",
+        "doc": "NeoHookean Anisotropic"
+    },
+    {
+        "pointer": "/materials/*/a1/*",
+        "default": 0,
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "NeoHookean Anisotropic"
+    },
+    {
+        "pointer": "/materials/*/a2",
+        "type": "list",
+        "doc": "NeoHookean Anisotropic"
+    },
+    {
+        "pointer": "/materials/*/a2/*",
+        "default": 0,
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "NeoHookean Anisotropic"
     },
     {
         "pointer": "/materials/*/c1",

@@ -21,6 +21,7 @@ namespace polyfem::assembler
 
 		std::string name() const override { return "NeoHookeanAnisotropic"; }
 		std::map<std::string, ParamFunc> parameters() const override;
+		void set_size(const int size) override;
 
 		template <typename T>
 		T elastic_energy(

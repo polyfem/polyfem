@@ -43,4 +43,11 @@ namespace polyfem::assembler
 
 		return res;
 	}
+
+	void NeoHookeanAniso::set_size(const int size)
+	{
+		Assembler::set_size(size);
+		a1_.resize(size);
+		a2_.resize(size);
+	}
 } // namespace polyfem::assembler

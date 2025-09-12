@@ -510,6 +510,7 @@ namespace polyfem::assembler
 			assert(!std::isnan(res(i)));
 			assert(!std::isinf(res(i)));
 		}
+		assert(abs(res.norm() - 1.) < 1e-8);
 		return res;
 	}
 
@@ -527,7 +528,7 @@ namespace polyfem::assembler
 			dir_[index].resize(size, 1);
 			for (int i = 0; i < size; ++i)
 			{
-				if (!dir[i].is_array())
+				if (dir[i].is_array())
 				{
 					log_and_throw_error("Fiber must be a vector, given as a matrix");
 				}

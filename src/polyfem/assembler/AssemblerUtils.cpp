@@ -17,6 +17,7 @@
 #include <polyfem/assembler/MultiModel.hpp>
 #include <polyfem/assembler/NavierStokes.hpp>
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
+#include <polyfem/assembler/NeoHookeanAniso.hpp>
 #include <polyfem/assembler/OgdenElasticity.hpp>
 #include <polyfem/assembler/SaintVenantElasticity.hpp>
 #include <polyfem/assembler/Stokes.hpp>
@@ -75,6 +76,8 @@ namespace polyfem
 				return std::make_shared<SaintVenantElasticity>();
 			else if (formulation == "NeoHookean")
 				return std::make_shared<NeoHookeanElasticity>();
+			else if (formulation == "NeoHookeanAnisotropic")
+				return std::make_shared<NeoHookeanAniso>();
 			else if (formulation == "MooneyRivlin")
 				return std::make_shared<MooneyRivlinElasticity>();
 			else if (formulation == "MooneyRivlin3Param")
