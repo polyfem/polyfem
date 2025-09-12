@@ -5,21 +5,22 @@
 
 namespace polyfem::assembler
 {
-	class GenericFiber : public GenericElastic<GenericFiber>
+	class GenericFiber
 	{
 	public:
 		GenericFiber();
+		virtual ~GenericFiber() = default;
 
 		// sets material params
-		void add_multimaterial(const int index, const json &params, const Units &units) override;
-		void set_size(const int size) override;
+		virtual void add_multimaterial(const int index, const json &params, const Units &units);
+		virtual void set_size(const int size);
 
 	protected:
 		template <typename T>
-		DefGradMatrix<T> I4Bar(RowVectorNd &p,
-							   const double t,
-							   const int el_id,
-							   const DefGradMatrix<T> &def_grad)
+		T I4Bar(RowVectorNd &p,
+				const double t,
+				const int el_id,
+				const DefGradMatrix<T> &def_grad)
 		{
 			const T J = polyfem::utils::determinant(def_grad);
 			const auto Cbar = (def_grad.transpose() * def_grad / pow(J, 2.0 / 3.0)).eval();

@@ -29,6 +29,8 @@ set(SOURCES
 	Electrostatics.hpp
 	LinearElasticity.cpp
 	LinearElasticity.hpp
+	HGOFiber.cpp
+	HGOFiber.hpp
 	MacroStrain.hpp
 	Mass.cpp
 	Mass.hpp
