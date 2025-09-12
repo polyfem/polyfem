@@ -1,19 +1,26 @@
 #include "GenericFiber.hpp"
 
+#include <polyfem/assembler/HGOFiber.hpp>
+
 namespace polyfem::assembler
 {
-	GenericFiber::GenericFiber()
+	template <typename FiberModel>
+	GenericFiber<FiberModel>::GenericFiber()
 	{
 	}
 
-	void GenericFiber::add_multimaterial(const int index, const json &params, const Units &units)
+	template <typename FiberModel>
+	void GenericFiber<FiberModel>::add_multimaterial(const int index, const json &params, const Units &units)
 	{
 		if (params.contains("fiber_direction"))
 			fiber_direction_.add_multimaterial(index, params["fiber_direction"], units.length());
 	}
 
-	void GenericFiber::set_size(const int size)
+	template <typename FiberModel>
+	void GenericFiber<FiberModel>::set_size(const int size)
 	{
 		fiber_direction_.resize(size);
 	}
+
+	template class GenericFiber<HGOFiber>;
 } // namespace polyfem::assembler

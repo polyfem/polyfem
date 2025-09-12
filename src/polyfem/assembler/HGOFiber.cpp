@@ -11,16 +11,10 @@ namespace polyfem::assembler
 	{
 		assert(size() == 2 || size() == 3);
 
-		GenericFiber::add_multimaterial(index, params, units);
+		GenericFiber<HGOFiber>::add_multimaterial(index, params, units);
 
 		k1_.add_multimaterial(index, params, units.stress());
 		k2_.add_multimaterial(index, params, "");
-	}
-
-	void HGOFiber::set_size(const int size)
-	{
-		Assembler::set_size(size);
-		GenericFiber::set_size(size);
 	}
 
 	std::map<std::string, Assembler::ParamFunc> HGOFiber::parameters() const

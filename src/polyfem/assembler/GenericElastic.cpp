@@ -2,10 +2,11 @@
 
 #include <polyfem/assembler/MooneyRivlinElasticity.hpp>
 #include <polyfem/assembler/MooneyRivlin3ParamElasticity.hpp>
-#include <polyfem/assembler/HGOFiber.hpp>
 #include <polyfem/assembler/OgdenElasticity.hpp>
 #include <polyfem/assembler/NeoHookeanElasticityAutodiff.hpp>
 #include <polyfem/assembler/AMIPSEnergy.hpp>
+
+#include <polyfem/assembler/HGOFiber.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 
@@ -253,9 +254,11 @@ namespace polyfem::assembler
 	}
 	template class GenericElastic<MooneyRivlinElasticity>;
 	template class GenericElastic<MooneyRivlin3ParamElasticity>;
-	template class GenericElastic<HGOFiber>;
 	template class GenericElastic<AMIPSEnergyAutodiff>;
 	template class GenericElastic<UnconstrainedOgdenElasticity>;
 	template class GenericElastic<IncompressibleOgdenElasticity>;
 	template class GenericElastic<NeoHookeanAutodiff>;
+
+	template class GenericElastic<HGOFiber>;
+
 } // namespace polyfem::assembler
