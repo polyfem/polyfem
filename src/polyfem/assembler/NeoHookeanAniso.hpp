@@ -56,7 +56,7 @@ namespace polyfem::assembler
 					I6_tilde += powJ * right_cauchy_green(i, j) * A2(i, j);
 				}
 
-			const T psi_iso = c * I1_tilde;
+			const T psi_iso = (c / 2) * I1_tilde;
 			const T psi_aniso = (k1 / 2 / k2) * ((exp(k2 * pow(I4_tilde - 1, 2)) - 1) + (exp(k2 * pow(I6_tilde - 1, 2)) - 1));
 
 			const T val = psi_iso + psi_aniso + d1 * logJ * logJ;
