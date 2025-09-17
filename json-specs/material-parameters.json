@@ -24,7 +24,8 @@
             "Bilaplacian",
             "AMIPS",
             "AMIPSAutodiff",
-            "FixedCorotational"
+            "FixedCorotational",
+            "VolumePenalty"
         ],
         "doc": "Type of material"
     },
@@ -449,6 +450,20 @@
             "rho",
             "phi",
             "psi"
+        ],
+        "doc": "Material Parameters including ID"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "VolumePenalty",
+        "required": [
+            "type",
+            "k"
+        ],
+        "optional": [
+            "id",
+            "rho"
         ],
         "doc": "Material Parameters including ID"
     },

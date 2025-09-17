@@ -73,6 +73,8 @@ set(SOURCES
 	PeriodicBoundary.hpp
 	FixedCorotational.hpp
 	FixedCorotational.cpp
+	VolumePenalty.hpp
+	VolumePenalty.cpp
 	SumModel.hpp
 	SumModel.cpp
 )
