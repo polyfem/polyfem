@@ -18,13 +18,13 @@ namespace polyfem::solver
 
 		const State &get_state() { return state_; }
 
-		void set_integral_type(const SpatialIntegralType type) { spatial_integral_type_ = type; }
-
 		Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
 		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
 		void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	protected:
+		void set_integral_type(const SpatialIntegralType type) { spatial_integral_type_ = type; }
+
 		virtual IntegrableFunctional get_integral_functional() const = 0;
 
 		const State &state_;
