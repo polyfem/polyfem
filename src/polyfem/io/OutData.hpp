@@ -102,7 +102,13 @@ namespace polyfem::io
 		/// @brief unitalize the ref element sampler
 		/// @param[in] mesh mesh
 		/// @param[in] vismesh_rel_area relative sampling size
-		void init_sampler(const polyfem::mesh::Mesh &mesh, const double vismesh_rel_area);
+		/// @param[in] discr_order discretization order of the simulation
+		/// @param[in] high_order_output whether the output should be a high order mesh
+		void init_sampler(
+			const polyfem::mesh::Mesh &mesh,
+			const double vismesh_rel_area,
+			const int discr_order,
+			const bool high_order_export);
 
 		/// @brief builds the grid to export the solution
 		/// @param[in] mesh mesh

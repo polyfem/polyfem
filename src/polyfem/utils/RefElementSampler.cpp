@@ -199,7 +199,7 @@ namespace polyfem
 			F.block(3 * index, 2, index, 1) = T.col(3);
 		}
 
-		void RefElementSampler::init(const bool is_volume, const int n_elements, double target_rel_area)
+		void RefElementSampler::init(const bool is_volume, const int n_elements, double target_rel_area, const bool low_order_output, const int discr_order)
 		{
 			is_volume_ = is_volume;
 
@@ -207,6 +207,11 @@ namespace polyfem
 #ifndef NDEBUG
 			area_param_ *= 10.0;
 #endif
+
+			if (target_rel_area < 0 && low_order_output)
+				default_subdivision_ = low_order_output ? 2. + (discr_order - 1.) : 2.;
+			else
+				default_subdivision_ = 2;
 
 			build();
 		}
@@ -249,7 +254,7 @@ namespace polyfem
 						0, 3, 7,
 						0, 7, 4;
 
-					regular_3d_grid(std::max(2., round(1. / pow(area_param_, 1. / 3.) + 1) / 2.), false, cube_points_, cube_faces_, cube_tets_);
+					regular_3d_grid(std::max(default_subdivision_, round(1. / pow(area_param_, 1. / 3.) + 1) / 2.), false, cube_points_, cube_faces_, cube_tets_);
 
 					// Extract sampled edges matching the base element edges
 					Eigen::MatrixXi edges(12, 2);
@@ -295,7 +300,7 @@ namespace polyfem
 						2, 1, 3,
 						0, 2, 3;
 
-					regular_3d_grid(std::max(2., round(1. / pow(area_param_, 1. / 3.) + 1)), true, simplex_points_, simplex_faces_, simplex_tets_);
+					regular_3d_grid(std::max(default_subdivision_, round(1. / pow(area_param_, 1. / 3.) + 1)), true, simplex_points_, simplex_faces_, simplex_tets_);
 
 					// Extract sampled edges matching the base element edges
 					Eigen::MatrixXi edges;
@@ -326,7 +331,7 @@ namespace polyfem
 						2, 3,
 						3, 0;
 
-					regular_2d_grid(std::max(2., round(1. / sqrt(area_param_) + 1)), false, cube_points_, cube_faces_);
+					regular_2d_grid(std::max(default_subdivision_, round(1. / sqrt(area_param_) + 1)), false, cube_points_, cube_faces_);
 
 					// Extract sampled edges matching the base element edges
 					igl::edges(cube_faces_, cube_edges_);
@@ -350,7 +355,7 @@ namespace polyfem
 						1, 2,
 						2, 0;
 
-					regular_2d_grid(std::max(2., round(1. / sqrt(area_param_) + 1)), true, simplex_points_, simplex_faces_);
+					regular_2d_grid(std::max(default_subdivision_, round(1. / sqrt(area_param_) + 1)), true, simplex_points_, simplex_faces_);
 
 					// Extract sampled edges matching the base element edges
 					igl::edges(simplex_faces_, simplex_edges_);
