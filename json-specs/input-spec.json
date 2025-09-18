@@ -1737,6 +1737,17 @@
         "spec_file": "material-parameters.json"
     },
     {
+        "pointer": "/materials/*/models",
+        "type": "list",
+        "default": [],
+        "doc": "List of models"
+    },
+    {
+        "pointer": "/materials/*/models/*",
+        "type": "include",
+        "spec_file": "material-parameters.json"
+    },
+    {
         "pointer": "/boundary_conditions",
         "default": null,
         "type": "object",

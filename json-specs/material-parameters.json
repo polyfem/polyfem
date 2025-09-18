@@ -333,6 +333,10 @@
         "type": "object",
         "type_name": "MaterialSum",
         "required": [
+            "type"
+        ],
+        "optional": [
+            "id",
             "models"
         ],
         "doc": "Model that is a sum of other models"
@@ -474,12 +478,12 @@
         "required": [
             "type",
             "k1",
-            "k2",
-            "fiber_direction"
+            "k2"
         ],
         "optional": [
             "id",
-            "rho"
+            "rho",
+            "fiber_direction"
         ],
         "doc": "Material Parameters"
     },
@@ -609,13 +613,13 @@
         "doc": "Fourth Parameter for Mooney-Rivlin"
     },
     {
-        "pointer": "k1",
+        "pointer": "/k1",
         "type": "include",
         "spec_file": "value-no.json",
         "doc": "First Parameter for HGOFiber"
     },
     {
-        "pointer": "k2",
+        "pointer": "/k2",
         "type": "include",
         "spec_file": "value-no.json",
         "doc": "Second Parameter for HGOFiber"
@@ -690,16 +694,5 @@
         "type": "bool",
         "default": false,
         "doc": "Use amips wrt to rest pose or the regular element"
-    },
-    {
-        "pointer": "/models",
-        "type": "list",
-        "default": [],
-        "doc": "List of models"
-    },
-    {
-        "pointer": "/models/*",
-        "type": "object",
-        "doc": "Material model"
     }
 ]
