@@ -491,7 +491,7 @@ namespace polyfem::assembler
 		{
 			for (const auto &m : dir_)
 			{
-				assert(m.rows() == size && m.cols() == size);
+				assert((m.rows() == size && m.cols() == size) || (m.rows() == size && m.cols() == 1));
 			}
 		}
 	}
@@ -562,13 +562,25 @@ namespace polyfem::assembler
 		if (dir.size() == 3 || dir.size() == 2)
 		{
 			const int size = dir.size();
+			const int other_size = dir[0].is_array() ? size : 1;
+
 			assert(size == size_);
-			dir_[index].resize(size, size);
+			dir_[index].resize(size, other_size);
 			for (int i = 0; i < size; ++i)
 			{
-				if (!dir[i].is_array() || dir[i].size() != size)
+				if (other_size == 1)
 				{
-					log_and_throw_error(fmt::format("Fiber must be {}x{}, row {} is {}", size, size, i, dir[i].dump()));
+					if (!dir[i].is_array())
+					{
+						log_and_throw_error(fmt::format("Fiber must be a {} vector, row {} is {}", size, i, dir[i].dump()));
+					}
+					dir_[index](i, 0).init(dir[i]);
+					dir_[index](i, 0).set_unit_type(unit);
+					continue;
+				}
+				if (dir[i].size() != size)
+				{
+					log_and_throw_error(fmt::format("Fiber must be {}x{}, row {} is {}", size, other_size, i, dir[i].dump()));
 				}
 				for (int j = 0; j < size; ++j)
 				{
