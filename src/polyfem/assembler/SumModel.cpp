@@ -17,26 +17,8 @@ namespace polyfem::assembler
 
 		auto models = params["models"];
 
-		json rules;
-		jse::JSE jse;
-		jse.strict = true;
-		const std::string mat_spec = POLYFEM_MATERIAL_INPUT_SPEC;
-		std::ifstream file(mat_spec);
-
-		if (file.is_open())
-			file >> rules;
-		else
-			log_and_throw_error(fmt::format("unable to open {} rules", mat_spec));
-
-		rules = jse.inject_include(rules);
-
 		for (const auto &model : models)
 		{
-			const bool valid_input = jse.verify_json(model, rules);
-			if (!valid_input)
-				log_and_throw_error(fmt::format("invalid material json:\n{}", jse.log2str()));
-			jse.inject_defaults(model, rules);
-
 			const std::string model_name = model["type"];
 
 			const auto assembler = AssemblerUtils::make_assembler(model_name);
