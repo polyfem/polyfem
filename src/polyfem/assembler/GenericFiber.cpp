@@ -19,6 +19,8 @@ namespace polyfem::assembler
 	template <typename FiberModel>
 	void GenericFiber<FiberModel>::set_size(const int size)
 	{
+		GenericElastic<FiberModel>::set_size(size);
+
 		fiber_direction_.resize(size);
 	}
 
