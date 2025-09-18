@@ -570,7 +570,7 @@ namespace polyfem::assembler
 			{
 				if (other_size == 1)
 				{
-					if (!dir[i].is_array())
+					if (dir[i].is_array())
 					{
 						log_and_throw_error(fmt::format("Fiber must be a {} vector, row {} is {}", size, i, dir[i].dump()));
 					}
