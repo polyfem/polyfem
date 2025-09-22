@@ -82,9 +82,15 @@ namespace polyfem::assembler
 		Eigen::MatrixXd &all,
 		const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
+		all.resize(data.local_pts.rows(), all_size);
+		all.setZero();
+
+		Eigen::MatrixXd tmp;
+
 		for (const auto &assembler : assemblers_)
 		{
-			std::dynamic_pointer_cast<assembler::ElasticityAssembler>(assembler)->assign_stress_tensor(data, all_size, type, all, fun);
+			std::dynamic_pointer_cast<assembler::ElasticityAssembler>(assembler)->assign_stress_tensor(data, all_size, type, tmp, fun);
+			all += tmp;
 		}
 	}
 
