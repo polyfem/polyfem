@@ -6,6 +6,11 @@
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 
+namespace polyfem::utils
+{
+	class PeriodicBoundary;
+} // namespace polyfem::utils
+
 namespace polyfem::solver
 {
 	/// @brief Form of the augmented lagrangian for bc constraints
@@ -23,6 +28,7 @@ namespace polyfem::solver
 		/// @param obstacle_ndof Obstacle's number of DOF
 		/// @param is_time_dependent Whether the problem is time dependent
 		/// @param t Current time
+		/// @param periodic_bc Periodic boundary conditions
 		BCLagrangianForm(const int ndof,
 						 const std::vector<int> &boundary_nodes,
 						 const std::vector<mesh::LocalBoundary> &local_boundary,
@@ -32,7 +38,8 @@ namespace polyfem::solver
 						 const assembler::RhsAssembler &rhs_assembler,
 						 const size_t obstacle_ndof,
 						 const bool is_time_dependent,
-						 const double t);
+						 const double t,
+						 const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc = nullptr);
 
 		std::string name() const override
 		{
@@ -76,9 +83,11 @@ namespace polyfem::solver
 
 		double compute_error(const Eigen::VectorXd &x) const override;
 
-		virtual bool can_project() const override;
-		virtual void project_gradient(Eigen::VectorXd &grad) const override;
-		virtual void project_hessian(StiffnessMatrix &hessian) const override;
+		bool can_project() const override;
+		void project_gradient(Eigen::VectorXd &grad) const override;
+		void project_hessian(StiffnessMatrix &hessian) const override;
+
+		void compute_initial_error(const int dim);
 
 	private:
 		const std::vector<int> &boundary_nodes_;
@@ -91,6 +100,8 @@ namespace polyfem::solver
 
 		const assembler::RhsAssembler *rhs_assembler_; ///< Reference to the RHS assembler
 		const bool is_time_dependent_;
+
+		StiffnessMatrix actual_mass_mat_; ///< actual mass matrix
 
 		StiffnessMatrix masked_lumped_mass_sqrt_; ///< sqrt mass matrix masked by the AL dofs
 		StiffnessMatrix masked_lumped_mass_;      ///< mass matrix masked by the AL dofs

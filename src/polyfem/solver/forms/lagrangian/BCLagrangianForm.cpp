@@ -1,6 +1,7 @@
 #include "BCLagrangianForm.hpp"
 
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/assembler/PeriodicBoundary.hpp>
 #include <igl/slice.h>
 
 namespace polyfem::solver
@@ -14,7 +15,8 @@ namespace polyfem::solver
 									   const assembler::RhsAssembler &rhs_assembler,
 									   const size_t obstacle_ndof,
 									   const bool is_time_dependent,
-									   const double t)
+									   const double t,
+									   const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc)
 		: boundary_nodes_(boundary_nodes),
 		  local_boundary_(&local_boundary),
 		  local_neumann_boundary_(&local_neumann_boundary),
@@ -24,7 +26,14 @@ namespace polyfem::solver
 		  n_dofs_(ndof)
 	{
 		init_masked_lumped_mass(mass, obstacle_ndof);
+		b_current_.resize(constraints_.size(), 1);
+		b_current_.setZero();
+
+		b_current_proj_.resize(ndof, 1);
+		b_current_proj_.setZero();
+
 		update_target(t); // initialize b_
+		compute_initial_error(3);//todo: fix this for dims other than 3
 	}
 
 	BCLagrangianForm::BCLagrangianForm(const int ndof,
@@ -42,9 +51,17 @@ namespace polyfem::solver
 	{
 		init_masked_lumped_mass(mass, obstacle_ndof);
 
-		b_ = target_x;
-		b_proj_ = b_;
-		igl::slice(b_, constraints_, 1, b_);
+		b_current_ = target_x;
+		igl::slice(b_current_, constraints_, 1, b_current_);
+
+		b_prev_ = b_current_;
+		b_prev_.setZero();
+
+		b_current_proj_ = target_x;
+		b_prev_proj_ = b_current_proj_;
+		b_prev_proj_.setZero();
+
+		set_incr_load(incr_load_);
 	}
 
 	void BCLagrangianForm::init_masked_lumped_mass(
@@ -65,27 +82,8 @@ namespace polyfem::solver
 		A_.setFromTriplets(A_triplets.begin(), A_triplets.end());
 		A_.makeCompressed();
 
-		masked_lumped_mass_ = mass.size() == 0 ? polyfem::utils::sparse_identity(n_dofs_, n_dofs_) : polyfem::utils::lump_matrix(mass);
-		{
-			double min_diag = std::numeric_limits<double>::max();
-			double max_diag = 0;
-			for (int k = 0; k < masked_lumped_mass_.outerSize(); ++k)
-			{
-				for (StiffnessMatrix::InnerIterator it(masked_lumped_mass_, k); it; ++it)
-				{
-					if (it.col() == it.row())
-					{
-						min_diag = std::min(min_diag, it.value());
-						max_diag = std::max(max_diag, it.value());
-					}
-				}
-			}
-			if (max_diag <= 0 || min_diag <= 0 || min_diag / max_diag < 1e-16)
-			{
-				logger().warn("Lumped mass matrix ill-conditioned. Setting lumped mass matrix to identity.");
-				masked_lumped_mass_ = polyfem::utils::sparse_identity(n_dofs_, n_dofs_);
-			}
-		}
+		actual_mass_mat_ = mass.size() == 0 ? polyfem::utils::sparse_identity(n_dofs_, n_dofs_) : mass;
+		masked_lumped_mass_ = polyfem::utils::sparse_identity(n_dofs_, n_dofs_);
 
 		assert(n_dofs_ == masked_lumped_mass_.rows() && n_dofs_ == masked_lumped_mass_.cols());
 		// Give the collision obstacles a entry in the lumped mass matrix
@@ -185,27 +183,46 @@ namespace polyfem::solver
 
 	double BCLagrangianForm::compute_error(const Eigen::VectorXd &x) const
 	{
-		// return (b_ - x).transpose() * A_ * (b_ - x);
 		const Eigen::VectorXd res = A_ * x - b_;
 		return res.squaredNorm();
 	}
 
 	void BCLagrangianForm::update_target(const double t)
 	{
+		b_prev_ = b_current_;
+		b_prev_proj_ = b_current_proj_;
+
 		assert(rhs_assembler_ != nullptr);
 		assert(local_boundary_ != nullptr);
 		assert(local_neumann_boundary_ != nullptr);
-		b_.setZero(n_dofs_, 1);
+		b_current_.setZero(n_dofs_, 1);
 		rhs_assembler_->set_bc(
 			*local_boundary_, boundary_nodes_, n_boundary_samples_,
-			*local_neumann_boundary_, b_, Eigen::MatrixXd(), t);
-		b_proj_ = b_;
-		b_ = igl::slice(b_, constraints_, 1);
+			*local_neumann_boundary_, b_current_, Eigen::MatrixXd(), t);
+
+		b_current_proj_ = b_current_;
+		b_current_ = igl::slice(b_current_, constraints_, 1);
+
+		set_incr_load(incr_load_);
 	}
 
 	void BCLagrangianForm::update_lagrangian(const Eigen::VectorXd &x, const double k_al)
 	{
 		k_al_ = k_al;
 		lagr_mults_ -= k_al * masked_lumped_mass_sqrt_ * (A_ * x - b_);
+	}
+
+	void BCLagrangianForm::compute_initial_error(const int dim)
+	{
+		Eigen::MatrixXd error;
+		if (has_projection())
+			error = b_current_proj_ - b_prev_proj_;
+		else error  = b_current_ - b_prev_;
+		assert(error.size() % dim == 0);
+		const Eigen::MatrixXd error_reshaped = error.reshaped(error.size() / dim, dim);
+		const Eigen::VectorXd error_norm = error_reshaped.rowwise().norm();
+		assert(errort_norm.size() == error_reshaped.rows());
+		dbc_size_ = error_norm.size();
+		error_= error_norm.transpose() * error_norm;
 	}
 } // namespace polyfem::solver
