@@ -2,6 +2,7 @@
 
 #include <polyfem/assembler/MooneyRivlinElasticity.hpp>
 #include <polyfem/assembler/MooneyRivlin3ParamElasticity.hpp>
+#include <polyfem/assembler/IsochoricNeoHookean.hpp>
 #include <polyfem/assembler/OgdenElasticity.hpp>
 #include <polyfem/assembler/NeoHookeanElasticityAutodiff.hpp>
 #include <polyfem/assembler/VolumePenalty.hpp>
@@ -259,6 +260,7 @@ namespace polyfem::assembler
 	template class GenericElastic<UnconstrainedOgdenElasticity>;
 	template class GenericElastic<IncompressibleOgdenElasticity>;
 	template class GenericElastic<NeoHookeanAutodiff>;
+	template class GenericElastic<IsochoricNeoHookean>;
 	template class GenericElastic<VolumePenalty>;
 
 	template class GenericElastic<HGOFiber>;

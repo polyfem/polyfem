@@ -67,6 +67,8 @@ set(SOURCES
 	ViscousDamping.hpp
 	AMIPSEnergy.cpp
 	AMIPSEnergy.hpp
+	IsochoricNeoHookean.cpp
+	IsochoricNeoHookean.hpp
 	PressureAssembler.cpp
 	PressureAssembler.hpp
 	PeriodicBoundary.cpp
