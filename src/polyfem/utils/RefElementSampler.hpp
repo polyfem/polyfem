@@ -31,7 +31,7 @@ namespace polyfem
 		{
 		public:
 			RefElementSampler() {}
-			void init(const bool is_volume, const int n_elements, const double target_rel_area);
+			void init(const bool is_volume, const int n_elements, const double target_rel_area, const bool low_order_output, const int discr_order);
 
 			const Eigen::MatrixXd &cube_corners() const { return cube_corners_; }
 			const Eigen::MatrixXd &cube_points() const { return cube_points_; }
@@ -50,7 +50,7 @@ namespace polyfem
 
 			inline int num_samples() const
 			{
-				return is_volume_ ? std::max(2., round(1. / pow(area_param_, 1. / 3.) + 1)) : std::max(2., round(1. / sqrt(area_param_) + 1));
+				return is_volume_ ? std::max(default_subdivision_, round(1. / pow(area_param_, 1. / 3.) + 1)) : std::max(default_subdivision_, round(1. / sqrt(area_param_) + 1));
 			}
 
 		private:
@@ -71,6 +71,7 @@ namespace polyfem
 
 			double area_param_;
 			double is_volume_;
+			double default_subdivision_;
 		};
 	} // namespace utils
 } // namespace polyfem

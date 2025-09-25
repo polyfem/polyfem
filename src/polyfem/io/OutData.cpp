@@ -2057,7 +2057,7 @@ namespace polyfem::io
 				dhats.setConstant(dhat);
 				for (int e = 0; e < dhats.size(); e++)
 					dhats(e) = set.get_edge_dhat(e);
-				
+
 				writer.add_cell_field("dhat", dhats);
 			}
 			else
@@ -2066,14 +2066,14 @@ namespace polyfem::io
 				fdhats.setConstant(dhat);
 				for (int e = 0; e < fdhats.size(); e++)
 					fdhats(e) = set.get_face_dhat(e);
-				
+
 				writer.add_cell_field("dhat_face", fdhats);
-				
+
 				Eigen::VectorXd vdhats(collision_mesh.num_vertices());
 				vdhats.setConstant(dhat);
 				for (int i = 0; i < vdhats.size(); i++)
 					vdhats(i) = set.get_vert_dhat(i);
-				
+
 				writer.add_field("dhat_vert", vdhats);
 			}
 		}
@@ -2411,9 +2411,9 @@ namespace polyfem::io
 		paraviewo::PVDWriter::save_pvd(name, vtu_names, time_steps, t0, dt, skip_frame);
 	}
 
-	void OutGeometryData::init_sampler(const polyfem::mesh::Mesh &mesh, const double vismesh_rel_area)
+	void OutGeometryData::init_sampler(const polyfem::mesh::Mesh &mesh, const double vismesh_rel_area, const int discr_order, const bool high_order_export)
 	{
-		ref_element_sampler.init(mesh.is_volume(), mesh.n_elements(), vismesh_rel_area);
+		ref_element_sampler.init(mesh.is_volume(), mesh.n_elements(), vismesh_rel_area, !high_order_export, discr_order);
 	}
 
 	void OutGeometryData::build_grid(const polyfem::mesh::Mesh &mesh, const double spacing)

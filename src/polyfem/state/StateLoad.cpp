@@ -85,7 +85,11 @@ namespace polyfem
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
-		out_geom.init_sampler(*mesh, args["output"]["paraview"]["vismesh_rel_area"]);
+		const int gdiscr_order = mesh->orders().size() <= 0 ? 1 : mesh->orders().maxCoeff();
+		int discr_order = gdiscr_order;
+		if (args["space"]["discr_order"].is_number_integer())
+			discr_order = std::max(args["space"]["discr_order"].get<int>(), discr_order);
+		out_geom.init_sampler(*mesh, args["output"]["paraview"]["vismesh_rel_area"], discr_order, args["output"]["paraview"]["high_order_mesh"]);
 	}
 
 	void State::load_mesh(bool non_conforming,
@@ -141,7 +145,11 @@ namespace polyfem
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
-		out_geom.init_sampler(*mesh, args["output"]["paraview"]["vismesh_rel_area"]);
+		const int gdiscr_order = mesh->orders().size() <= 0 ? 1 : mesh->orders().maxCoeff();
+		int discr_order = gdiscr_order;
+		if (args["space"]["discr_order"].is_number_integer())
+			discr_order = std::max(args["space"]["discr_order"].get<int>(), discr_order);
+		out_geom.init_sampler(*mesh, args["output"]["paraview"]["vismesh_rel_area"], discr_order, args["output"]["paraview"]["high_order_mesh"]);
 
 		timer.start();
 		logger().info("Loading obstacles...");
