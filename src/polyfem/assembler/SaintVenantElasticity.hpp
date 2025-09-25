@@ -42,7 +42,6 @@ namespace polyfem::assembler
 
 	private:
 		ElasticityTensor elasticity_tensor_;
-		FiberDirection fiber_direction_;
 
 		template <typename T, unsigned long N>
 		T stress(const ElasticityTensor &elasticity_tensor, const std::array<T, N> &strain, const int j) const;
