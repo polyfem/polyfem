@@ -22,7 +22,6 @@
             "Helmholtz",
             "Bilaplacian",
             "AMIPS",
-            "AMIPSAutodiff",
             "FixedCorotational"
         ],
         "doc": "Type of material"
@@ -401,19 +400,6 @@
         ],
         "optional": [
             "use_rest_pose",
-            "id",
-            "rho"
-        ],
-        "doc": "Material Parameters including ID"
-    },
-    {
-        "pointer": "/",
-        "type": "object",
-        "type_name": "AMIPSAutodiff",
-        "required": [
-            "type"
-        ],
-        "optional": [
             "id",
             "rho"
         ],
