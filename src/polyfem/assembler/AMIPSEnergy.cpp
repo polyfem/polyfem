@@ -417,15 +417,8 @@ namespace polyfem::assembler
 	{
 		assert(data.x.cols() == 1);
 
-		const int n_pts = data.da.size();
-		const int nb = data.vals.basis_values.size();
-
 		constexpr int N = (n_basis == Eigen::Dynamic) ? Eigen::Dynamic : n_basis * dim;
-
-		assert(H.rows() == N);
-		assert(H.cols() == N);
-
-		H.setZero();
+		const int n_pts = data.da.size();
 
 		Eigen::Matrix<double, n_basis, dim> local_disp(data.vals.basis_values.size(), size());
 		local_disp.setZero();
@@ -441,61 +434,70 @@ namespace polyfem::assembler
 			}
 		}
 
+		const double power = (dim == 2) ? 2. : 5. / 3.;
+
+		Eigen::Matrix<double, dim, dim> F(size(), size());
+		Eigen::Matrix<double, dim, dim> Fi(size(), size());
+		Eigen::Matrix<double, dim, dim> FiT(size(), size());
+		Eigen::Matrix<double, dim, dim> G(size(), size());
+		const auto Id = Eigen::Matrix<double, dim, dim>::Identity(size(), size());
+
+		const int nb = data.vals.basis_values.size();
+
 		const Eigen::Matrix<double, dim, dim> standard = get_standard<dim, double>(size(), use_rest_pose_);
-		Eigen::Matrix<double, dim, dim> def_grad(size(), size());
-
-		Eigen::Matrix<double, dim, dim> chain_rule;
-
-		Eigen::Matrix<double, n_basis, dim> G(data.vals.basis_values.size(), size());
-		G.setZero();
-
-		double power = -1;
-		if (use_rest_pose_)
-			power = size() == 2 ? 1. : (2. / 3.);
-		else
-			power = size() == 2 ? 2. : 5. / 3.;
 
 		for (long p = 0; p < n_pts; ++p)
 		{
-			Eigen::Matrix<double, n_basis, dim> grad(data.vals.basis_values.size(), size());
+			Eigen::Matrix<double, n_basis, dim> s(nb, size());
+			Eigen::Matrix<double, n_basis, dim> g(nb, size());
 
-			for (size_t i = 0; i < data.vals.basis_values.size(); ++i)
-				grad.row(i) = data.vals.basis_values[i].grad.row(p);
-			def_grad = local_disp.transpose() * grad;
-			def_grad = def_grad * data.vals.jac_it[p];
-			chain_rule = data.vals.jac_it[p];
+			const Eigen::Matrix<double, dim, dim> jac_it = data.vals.jac_it[p];
+			Eigen::Matrix<double, dim, dim> K;
+			if (use_rest_pose_)
+				K = jac_it * standard;
+			else
+				K.setIdentity();
 
-			for (int d = 0; d < dim; ++d)
-				def_grad(d, d) += 1;
-
-			if (!use_rest_pose_)
+			for (size_t i = 0; i < nb; ++i)
 			{
-				Eigen::Matrix<double, dim, dim> jac_it = data.vals.jac_it[p].inverse();
-
-				def_grad *= jac_it;
-				def_grad = def_grad * standard;
-
-				chain_rule = standard;
+				g.row(i) = data.vals.basis_values[i].grad.row(p);
+				s.row(i) = g.row(i) * K;
 			}
 
-			double J = polyfem::utils::determinant(def_grad);
+			F = (local_disp.transpose() * g + Id) * K;
+			Fi = F.inverse();
+			FiT = Fi.transpose();
+
+			double J = F.determinant();
 			if (J <= 0)
 				J = std::nan("");
+			const double C = (F.transpose() * F).trace();
+			G = 2 * F - power * C * Fi;
+			const double Jmp = pow(J, -power);
 
-			const double powJ = pow(J, power);
-			const Eigen::Matrix<double, dim, dim> &F = def_grad;
-			const Eigen::Matrix<double, dim, dim> Fit = def_grad.inverse().transpose();
-			const double tr = (F.transpose() * F).trace();
-			const double m = power;
+			Eigen::Matrix<double, N, N> hessian(nb * dim, nb * dim);
+			hessian.setZero();
 
-			const Eigen::Matrix<double, N, dim> temp = grad * chain_rule;
+			for (size_t i = 0; i < nb; ++i)
+			{
+				for (size_t j = 0; j < nb; ++j)
+				{
+					const Eigen::Matrix<double, dim, 1> si = s.row(i);
+					const Eigen::Matrix<double, dim, 1> sj = s.row(j);
 
-			Eigen::Matrix<double, N, dim> hessian =
-				(2 * temp - 4 * m * temp * F * Fit
-				 + m * tr * Fit * temp * Fit
-				 + m * m * tr * temp * Fit * Fit)
-				/ powJ;
-			H += temp * hessian.transpose() * data.da(p);
+					const double alpha = si.dot(sj);
+					const double beta = (FiT * sj).dot(si);
+
+					const Eigen::Matrix<double, dim, dim> t1 = 2 * alpha * Id;
+					const Eigen::Matrix<double, dim, dim> t2 = power * C * beta * Fi;
+					const Eigen::Matrix<double, dim, dim> t3 = 2 * power * (Fi * si) * (F * sj).transpose();
+					const Eigen::Matrix<double, dim, dim> t4 = power * (G * si) * (sj.transpose() * Fi);
+
+					hessian.template block<dim, dim>(i * dim, j * dim) = Jmp * (t1 + t2 - t3 - t4);
+				}
+			}
+
+			H += hessian * data.da(p);
 		}
 	}
 
