@@ -405,7 +405,8 @@ namespace polyfem::assembler
 		const double asd = (hessianad - hessian).norm();
 		if (asd > 1e-10)
 		{
-			logger().error("Hessian mismatch: {}", asd);
+			Eigen::MatrixXd diff = hessianad - hessian;
+			logger().error("Hessian mismatch {}:\n{}\nad:\n{}\nnormal:\n{}", asd, diff, hessianad, hessian);
 			exit(0);
 		}
 
@@ -434,64 +435,102 @@ namespace polyfem::assembler
 			}
 		}
 
-		const double power = (dim == 2) ? 2. : 5. / 3.;
+		double power = -1;
+		if (use_rest_pose_)
+			power = size() == 2 ? 1. : (2. / 3.);
+		else
+			power = size() == 2 ? 2. : 5. / 3.;
+
+		const int nb = data.vals.basis_values.size();
 
 		Eigen::Matrix<double, dim, dim> F(size(), size());
 		Eigen::Matrix<double, dim, dim> Fi(size(), size());
 		Eigen::Matrix<double, dim, dim> FiT(size(), size());
 		Eigen::Matrix<double, dim, dim> G(size(), size());
-		const auto Id = Eigen::Matrix<double, dim, dim>::Identity(size(), size());
+		Eigen::Matrix<double, dim, dim> grad_u; // == ∇u that energy uses
+		Eigen::Matrix<double, n_basis, dim> s(nb, size());
 
-		const int nb = data.vals.basis_values.size();
+		const auto Id = Eigen::Matrix<double, dim, dim>::Identity(size(), size());
 
 		const Eigen::Matrix<double, dim, dim> standard = get_standard<dim, double>(size(), use_rest_pose_);
 
 		for (long p = 0; p < n_pts; ++p)
 		{
-			Eigen::Matrix<double, n_basis, dim> s(nb, size());
-			Eigen::Matrix<double, n_basis, dim> g(nb, size());
+			// Eigen::Matrix<double, n_basis, dim> g(nb, size());
+
+			compute_disp_grad_at_quad(data, local_disp, p, size(), grad_u);
 
 			const Eigen::Matrix<double, dim, dim> jac_it = data.vals.jac_it[p];
 			Eigen::Matrix<double, dim, dim> K;
 			if (use_rest_pose_)
-				K = jac_it * standard;
-			else
 				K.setIdentity();
+			else
+				K = jac_it.inverse() * standard; // match energy
+
+			// const Eigen::Matrix<double, dim, dim> M = jac_it * K;
 
 			for (size_t i = 0; i < nb; ++i)
 			{
-				g.row(i) = data.vals.basis_values[i].grad.row(p);
-				s.row(i) = g.row(i) * K;
+				Eigen::Matrix<double, dim, 1> gi = data.vals.basis_values[i].grad.row(p).transpose();
+				Eigen::Matrix<double, dim, 1> si_col;
+				if (use_rest_pose_)
+					si_col = jac_it.transpose() * gi; // s_i = jac_it^T * g_i
+				else
+					si_col = standard.transpose() * gi; // s_i = standard^T * g_i
+
+				s.row(i) = si_col.transpose();
 			}
 
-			F = (local_disp.transpose() * g + Id) * K;
+			F = (grad_u + Id) * K;
 			Fi = F.inverse();
 			FiT = Fi.transpose();
 
-			double J = F.determinant();
-			if (J <= 0)
-				J = std::nan("");
+			const double J = F.determinant();
+			if (J <= 0.0)
+			{
+				H.setConstant(std::nan(""));
+				return;
+			}
+
 			const double C = (F.transpose() * F).trace();
-			G = 2 * F - power * C * Fi;
-			const double Jmp = pow(J, -power);
+			G = 2 * F - power * C * FiT; // use F^{-T}
+			const double Jmp = std::pow(J, -power);
 
 			Eigen::Matrix<double, N, N> hessian(nb * dim, nb * dim);
 			hessian.setZero();
 
-			for (size_t i = 0; i < nb; ++i)
+			Eigen::Matrix<double, dim, 1> du = Eigen::Matrix<double, dim, 1>::Unit(0); // or random unit
+			double eps = 1e-7;
+
+			for (int i = 0; i < nb; ++i)
 			{
-				for (size_t j = 0; j < nb; ++j)
+				const Eigen::Matrix<double, dim, 1> si = s.row(i).transpose();
+				const Eigen::Matrix<double, dim, 1> b_i = FiT * si; // b_i = F^{-T} s_i
+				const Eigen::Matrix<double, dim, 1> G_si = G * si;
+
+				auto local_disp_eps = local_disp;
+				local_disp_eps.row(i) += (eps * du).transpose();
+
+				Eigen::Matrix<double, dim, dim> grad_u_eps;
+				compute_disp_grad_at_quad(data, local_disp_eps, p, size(), grad_u_eps);
+				Eigen::Matrix<double, dim, dim> F_eps = (grad_u_eps + Id) * K;
+
+				Eigen::Matrix<double, dim, dim> dF_num = (F_eps - F) / eps;
+				Eigen::Matrix<double, dim, dim> dF_pred = du * si.transpose(); // δu ⊗ s_i^T
+
+				assert((dF_num - dF_pred).norm() < 1e-6); // must pass
+
+				for (int j = 0; j < nb; ++j)
 				{
-					const Eigen::Matrix<double, dim, 1> si = s.row(i);
-					const Eigen::Matrix<double, dim, 1> sj = s.row(j);
-
+					const Eigen::Matrix<double, dim, 1> sj = s.row(j).transpose();
 					const double alpha = si.dot(sj);
-					const double beta = (FiT * sj).dot(si);
+					const Eigen::Matrix<double, dim, 1> a_j = F * sj;   // a_j = F s_j
+					const Eigen::Matrix<double, dim, 1> c_j = FiT * sj; // c_j = F^{-T} s_j
 
-					const Eigen::Matrix<double, dim, dim> t1 = 2 * alpha * Id;
-					const Eigen::Matrix<double, dim, dim> t2 = power * C * beta * Fi;
-					const Eigen::Matrix<double, dim, dim> t3 = 2 * power * (Fi * si) * (F * sj).transpose();
-					const Eigen::Matrix<double, dim, dim> t4 = power * (G * si) * (sj.transpose() * Fi);
+					const Eigen::Matrix<double, dim, dim> t1 = 2.0 * alpha * Id;
+					const Eigen::Matrix<double, dim, dim> t2 = power * C * (c_j * b_i.transpose());
+					const Eigen::Matrix<double, dim, dim> t3 = 2.0 * power * (b_i * a_j.transpose());
+					const Eigen::Matrix<double, dim, dim> t4 = power * (G_si * c_j.transpose());
 
 					hessian.template block<dim, dim>(i * dim, j * dim) = Jmp * (t1 + t2 - t3 - t4);
 				}
