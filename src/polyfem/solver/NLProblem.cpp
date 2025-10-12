@@ -163,6 +163,8 @@ namespace polyfem::solver
 			Q2t_ = Q2_.transpose();
 
 			reduced_size_ = Q2_.cols();
+			if (reduced_size_ == 0)
+				return;
 			num_penalty_constraints_ = full_size_ - reduced_size_;
 
 			timer.start();
