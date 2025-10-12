@@ -170,7 +170,7 @@ int main(int argc, char **argv)
 {
 	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD))
 	{
-		log_and_throw_error(fmt::format("Error: SDL_Init(): {}n", SDL_GetError()));
+		log_and_throw_error(fmt::format("Error: SDL_Init(): {}\n", SDL_GetError()));
 		return EXIT_FAILURE;
 	}
 
@@ -183,7 +183,7 @@ int main(int argc, char **argv)
 	SDL_Window *window = SDL_CreateWindow("PolyFEM", width, height, window_flags);
 	if (window == nullptr)
 	{
-		log_and_throw_error(fmt::format("Error: SDL_CreateWindow(): {}n", SDL_GetError()));
+		log_and_throw_error(fmt::format("Error: SDL_CreateWindow(): {}\n", SDL_GetError()));
 		return EXIT_FAILURE;
 	}
 	SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
@@ -193,14 +193,14 @@ int main(int argc, char **argv)
 	SDL_GPUDevice *gpu_device = SDL_CreateGPUDevice(SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_DXIL | SDL_GPU_SHADERFORMAT_METALLIB, true, nullptr);
 	if (gpu_device == nullptr)
 	{
-		log_and_throw_error(fmt::format("Error: SDL_CreateGPUDevice(): {}n", SDL_GetError()));
+		log_and_throw_error(fmt::format("Error: SDL_CreateGPUDevice(): {}\n", SDL_GetError()));
 		return EXIT_FAILURE;
 	}
 
 	// Claim window for GPU Device
 	if (!SDL_ClaimWindowForGPUDevice(gpu_device, window))
 	{
-		log_and_throw_error(fmt::format("Error: SDL_ClaimWindowForGPUDevice(): {}n", SDL_GetError()));
+		log_and_throw_error(fmt::format("Error: SDL_ClaimWindowForGPUDevice(): {}\n", SDL_GetError()));
 		return EXIT_FAILURE;
 	}
 	SDL_SetGPUSwapchainParameters(gpu_device, window, SDL_GPU_SWAPCHAINCOMPOSITION_SDR, SDL_GPU_PRESENTMODE_MAILBOX);
