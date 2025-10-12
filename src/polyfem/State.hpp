@@ -594,6 +594,8 @@ namespace polyfem
 		double starting_max_edge_length = -1;
 		double min_boundary_edge_length = -1;
 
+		std::function<void(int, int, double, double)> time_callback = nullptr;
+
 		/// saves all data on the disk according to the input params
 		/// @param[in] sol solution
 		/// @param[in] pressure pressure
