@@ -254,7 +254,7 @@ namespace polyfem::mesh
 			POLYFEM_REMESHER_SCOPED_TIMER("LocalRelaxationData::init_solve_data -> init forms");
 			forms = solve_data.init_forms(
 				// General
-				state.units, dim(), current_time,
+				state.units, dim(), current_time, state.in_node_to_node,
 				// Elastic form
 				n_bases(), bases, /*geom_bases=*/bases, *assembler,
 				assembly_vals_cache, assembly_vals_cache, state.args["solver"]["advanced"]["jacobian_threshold"], state.args["solver"]["advanced"]["check_inversion"],
@@ -272,16 +272,25 @@ namespace polyfem::mesh
 				state.args["solver"]["advanced"]["lagged_regularization_iterations"],
 				// Augmented lagrangian form
 				/*obstacle_ndof=*/0,
+				/*hard_constraint_files=*/std::vector<std::string>(),
+				/*soft_constraint_files=*/std::vector<json>(),
 				// Contact form
 				contact_enabled, collision_mesh, state.args["contact"]["dhat"],
 				state.avg_mass, state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_area_weighting"]) : false,
 				state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_improved_max_operator"]) : false,
 				state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_physical_barrier"]) : false,
 				contact_enabled ? state.solve_data.contact_form->barrier_stiffness() : 0,
+				state.args["solver"]["contact"]["initial_barrier_stiffness"],
 				state.args["solver"]["contact"]["CCD"]["broad_phase"],
 				state.args["solver"]["contact"]["CCD"]["tolerance"],
 				state.args["solver"]["contact"]["CCD"]["max_iterations"],
 				/*enable_shape_derivatives=*/false,
+				// Smooth Contact Form
+				state.args["contact"]["use_gcp_formulation"],
+				state.args["contact"]["alpha_t"],
+				state.args["contact"]["alpha_n"],
+				state.args["contact"]["use_adaptive_dhat"],
+				state.args["contact"]["min_distance_ratio"],
 				// Normal Adhesion Form
 				state.args["contact"]["adhesion"]["adhesion_enabled"],
 				state.args["contact"]["adhesion"]["dhat_p"],

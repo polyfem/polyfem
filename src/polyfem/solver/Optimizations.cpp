@@ -121,9 +121,9 @@ namespace polyfem::solver
 		else if (obj_type == "boundary_smoothing")
 		{
 			if (args["surface_selection"].is_array())
-				obj = std::make_shared<BoundarySmoothingForm>(var2sim, *state, args["scale_invariant"], args["power"], args["surface_selection"].get<std::vector<int>>());
+				obj = std::make_shared<BoundarySmoothingForm>(var2sim, *state, args["scale_invariant"], args["power"], args["surface_selection"].get<std::vector<int>>(), args["dimensions"].get<std::vector<int>>());
 			else
-				obj = std::make_shared<BoundarySmoothingForm>(var2sim, *state, args["scale_invariant"], args["power"], std::vector<int>{args["surface_selection"].get<int>()});
+				obj = std::make_shared<BoundarySmoothingForm>(var2sim, *state, args["scale_invariant"], args["power"], std::vector<int>{args["surface_selection"].get<int>()}, args["dimensions"].get<std::vector<int>>());
 		}
 		else
 			log_and_throw_adjoint_error("Invalid simple form type {}!", obj_type);
@@ -178,6 +178,10 @@ namespace polyfem::solver
 			else if (type == "plus-const")
 			{
 				obj = std::make_shared<PlusConstCompositeForm>(create_form(args["objective"], var2sim, states), args["value"]);
+			}
+			else if (type == "log")
+			{
+				obj = std::make_shared<LogCompositeForm>(create_form(args["objective"], var2sim, states));
 			}
 			else if (type == "compliance")
 			{
@@ -315,6 +319,11 @@ namespace polyfem::solver
 			{
 				obj = std::make_shared<MaxStressForm>(var2sim, *(states[args["state"]]), args);
 			}
+			else if (type == "smooth_contact_force_norm")
+			{
+				// assert(states[args["state"]]->args["contact"]["use_gcp_formulation"]);
+				obj = std::make_shared<SmoothContactForceForm>(var2sim, *(states[args["state"]]), args);
+			}
 			else if (type == "volume")
 			{
 				obj = std::make_shared<VolumeForm>(var2sim, *(states[args["state"]]), args);
@@ -336,9 +345,9 @@ namespace polyfem::solver
 			else if (type == "boundary_smoothing")
 			{
 				if (args["surface_selection"].is_array())
-					obj = std::make_shared<BoundarySmoothingForm>(var2sim, *(states[args["state"]]), args["scale_invariant"], args["power"], args["surface_selection"].get<std::vector<int>>());
+					obj = std::make_shared<BoundarySmoothingForm>(var2sim, *(states[args["state"]]), args["scale_invariant"], args["power"], args["surface_selection"].get<std::vector<int>>(), args["dimensions"].get<std::vector<int>>());
 				else
-					obj = std::make_shared<BoundarySmoothingForm>(var2sim, *(states[args["state"]]), args["scale_invariant"], args["power"], std::vector<int>{args["surface_selection"].get<int>()});
+					obj = std::make_shared<BoundarySmoothingForm>(var2sim, *(states[args["state"]]), args["scale_invariant"], args["power"], std::vector<int>{args["surface_selection"].get<int>()}, args["dimensions"].get<std::vector<int>>());
 			}
 			else if (type == "collision_barrier")
 			{
@@ -535,14 +544,14 @@ namespace polyfem::solver
 		return state;
 	}
 
-	std::vector<std::shared_ptr<State>> AdjointOptUtils::create_states(const json &state_args, const CacheLevel &level, const size_t max_threads)
+	std::vector<std::shared_ptr<State>> AdjointOptUtils::create_states(const std::string &root_path, const json &state_args, const CacheLevel &level, const size_t max_threads)
 	{
 		std::vector<std::shared_ptr<State>> states(state_args.size());
 		int i = 0;
 		for (const json &args : state_args)
 		{
 			json cur_args;
-			if (!load_json(args["path"], cur_args))
+			if (!load_json(utils::resolve_path(args["path"], root_path, false), cur_args))
 				log_and_throw_adjoint_error("Can't find json for State {}", i);
 
 			states[i++] = AdjointOptUtils::create_state(cur_args, level, max_threads);

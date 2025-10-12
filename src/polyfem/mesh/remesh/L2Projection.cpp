@@ -112,7 +112,7 @@ namespace polyfem::mesh
 
 		if (collision_mesh.num_vertices() != 0)
 		{
-			forms.push_back(std::make_shared<ContactForm>(
+			forms.push_back(std::make_shared<BarrierContactForm>(
 				collision_mesh, dhat, /*avg_mass=*/1.0, use_area_weighting, use_improved_max_operator,
 				use_physical_barrier, /*use_adaptive_barrier_stiffness=*/false, /*is_time_dependent=*/true,
 				/*enable_shape_derivatives=*/false, broad_phase_method, ccd_tolerance,
@@ -152,10 +152,10 @@ namespace polyfem::mesh
 
 		const size_t default_max_iterations = nl_solver->stop_criteria().iterations;
 		nl_solver->stop_criteria().iterations = al_max_solver_iter;
-		al_solver.solve_al(nl_solver, problem, sol);
+		al_solver.solve_al(problem, sol, nl_solver);
 
 		nl_solver->stop_criteria().iterations = default_max_iterations;
-		al_solver.solve_reduced(nl_solver, problem, sol);
+		al_solver.solve_reduced(problem, sol, nl_solver);
 
 #ifndef NDEBUG
 		assert(forms[1]->is_step_valid(sol, sol)); // inversion-free

@@ -254,7 +254,6 @@ void polyfem::mesh::compute_element_tags(const GEO::Mesh &M, std::vector<Element
 				if (boundary_vertices[M.facets.vertex(f, lv)])
 				{
 					tag = ElementType::BOUNDARY_POLYTOPE;
-					// std::cout << "foo" << std::endl;
 					break;
 				}
 			}

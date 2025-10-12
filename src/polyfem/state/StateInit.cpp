@@ -134,6 +134,8 @@ namespace polyfem
 	{
 		json args_in = p_args_in; // mutable copy
 
+		has_constraints_ = p_args_in.contains("constraints");
+
 		apply_common_params(args_in);
 
 		// CHECK validity json
@@ -214,6 +216,15 @@ namespace polyfem
 		if (!out_path_log.empty())
 		{
 			out_path_log = resolve_output_path(out_path_log);
+		}
+
+		for (auto &path : this->args["constraints"]["hard"])
+		{
+			path = resolve_input_path(path);
+		}
+		for (auto &path : this->args["constraints"]["soft"])
+		{
+			path["data"] = resolve_input_path(path["data"]);
 		}
 
 		init_logger(
@@ -317,7 +328,7 @@ namespace polyfem
 		{
 			if (is_contact_enabled())
 			{
-				if (!args["contact"]["use_convergent_formulation"])
+				if (!args["contact"]["use_gcp_formulation"] && !args["contact"]["use_convergent_formulation"])
 				{
 					args["contact"]["use_convergent_formulation"] = true;
 					logger().info("Use convergent formulation for differentiable contact...");

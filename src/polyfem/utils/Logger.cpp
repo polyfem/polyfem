@@ -3,6 +3,8 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <polyfem/utils/EnableWarnings.hpp>
 
+#include <sstream>
+
 namespace polyfem
 {
 	namespace
@@ -80,3 +82,17 @@ namespace polyfem
 		throw std::runtime_error(msg);
 	}
 } // namespace polyfem
+
+fmt::format_context::iterator fmt::formatter<polyfem::StiffnessMatrix>::format(polyfem::StiffnessMatrix const &mat, fmt::format_context &ctx) const
+{
+	std::stringstream ss;
+	ss << mat;
+	return formatter<fmt::string_view>::format(ss.str(), ctx);
+}
+
+fmt::format_context::iterator fmt::formatter<Eigen::MatrixXd>::format(const Eigen::MatrixXd &mat, fmt::format_context &ctx) const
+{
+	std::stringstream ss;
+	ss << mat;
+	return formatter<fmt::string_view>::format(ss.str(), ctx);
+}

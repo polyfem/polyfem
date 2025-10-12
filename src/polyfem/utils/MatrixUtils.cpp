@@ -75,7 +75,7 @@ void polyfem::utils::vector2matrix(const Eigen::VectorXd &vec, Eigen::MatrixXd &
 		size = 2;
 	else
 		throw std::runtime_error("Invalid size in vector2matrix!");
-	
+
 	assert(size * size == vec.size());
 
 	mat = unflatten(vec, size);
@@ -233,4 +233,270 @@ Eigen::MatrixXi polyfem::utils::map_index_matrix(
 		}
 	}
 	return out;
+}
+
+void polyfem::utils::scatter_matrix(const int n_dofs,
+									const int dim,
+									const Eigen::MatrixXd &A,
+									const Eigen::MatrixXd &b,
+									const std::vector<int> &local_to_global,
+									StiffnessMatrix &Aout,
+									Eigen::MatrixXd &bout)
+{
+	assert(A.rows() == b.rows());
+	std::vector<Eigen::Triplet<double>> Ae;
+
+	if (b.cols() == dim)
+	{
+		for (int i = 0; i < A.rows(); ++i)
+		{
+			for (int j = 0; j < A.cols(); ++j)
+			{
+				const auto global_j = (local_to_global.empty() ? j : local_to_global[j]) * dim;
+
+				if (A(i, j) != 0)
+				{
+					for (int d = 0; d < dim; ++d)
+					{
+						Ae.push_back(Eigen::Triplet<double>(
+							i * dim + d,
+							global_j + d,
+							A(i, j)));
+					}
+				}
+			}
+		}
+
+		bout.resize(b.rows() * dim, 1);
+		for (int i = 0; i < b.rows(); ++i)
+		{
+			for (int d = 0; d < dim; ++d)
+			{
+				bout(i * dim + d) = b(i, d);
+			}
+		}
+	}
+	else
+	{
+		assert(b.cols() == 1);
+		assert(b.size() % dim == 0);
+
+		for (int i = 0; i < A.rows(); ++i)
+		{
+			for (int j = 0; j < A.cols(); ++j)
+			{
+				if (A(i, j) != 0)
+				{
+					const auto nid = j / dim;
+					const auto noffset = j % dim;
+
+					const auto global_j = (local_to_global.empty() ? nid : local_to_global[nid]) * dim;
+
+					Ae.push_back(Eigen::Triplet<double>(
+						i,
+						global_j + noffset,
+						A(i, j)));
+				}
+			}
+		}
+
+		bout = b;
+	}
+
+	Aout.resize(bout.size(), n_dofs);
+	Aout.setFromTriplets(Ae.begin(), Ae.end());
+	Aout.makeCompressed();
+}
+
+void polyfem::utils::scatter_matrix_col(const int n_dofs,
+										const int dim,
+										const Eigen::MatrixXd &A,
+										const Eigen::MatrixXd &b,
+										const std::vector<int> &local_to_global,
+										StiffnessMatrix &Aout,
+										Eigen::MatrixXd &bout)
+{
+	log_and_throw_error("Not implemented");
+}
+
+void polyfem::utils::scatter_matrix(const int n_dofs,
+									const int dim,
+									const std::vector<long> &shape,
+									const std::vector<int> &rows,
+									const std::vector<int> &cols,
+									const std::vector<double> &vals,
+									const Eigen::MatrixXd &b,
+									const std::vector<int> &local_to_global,
+									StiffnessMatrix &Aout,
+									Eigen::MatrixXd &bout)
+{
+	assert(shape.size() == 2);
+	assert(rows.size() == cols.size());
+	assert(rows.size() == vals.size());
+
+	std::vector<Eigen::Triplet<double>> Ae;
+	if (b.cols() == dim)
+	{
+		for (int k = 0; k < rows.size(); ++k)
+		{
+			const auto i = rows[k];
+			const auto j = cols[k];
+			const auto val = vals[k];
+
+			const auto global_j = (local_to_global.empty() ? j : local_to_global[j]) * dim;
+
+			if (val != 0)
+			{
+				for (int d = 0; d < dim; ++d)
+				{
+					Ae.push_back(Eigen::Triplet<double>(
+						i * dim + d,
+						global_j + d,
+						val));
+				}
+			}
+		}
+
+		bout.resize(b.rows() * dim, 1);
+		for (int i = 0; i < b.rows(); ++i)
+		{
+			for (int d = 0; d < dim; ++d)
+			{
+				bout(i * dim + d) = b(i, d);
+			}
+		}
+	}
+	else
+	{
+		assert(b.cols() == 1);
+		assert(b.size() % dim == 0);
+
+		for (int k = 0; k < rows.size(); ++k)
+		{
+			const auto i = rows[k];
+			const auto j = cols[k];
+			const auto val = vals[k];
+
+			if (val != 0)
+			{
+				const auto nid = j / dim;
+				const auto noffset = j % dim;
+
+				const auto global_j = (local_to_global.empty() ? nid : local_to_global[nid]) * dim;
+
+				Ae.push_back(Eigen::Triplet<double>(
+					i,
+					global_j + noffset,
+					val));
+			}
+		}
+
+		bout = b;
+	}
+
+	Aout.resize(bout.size(), n_dofs);
+	Aout.setFromTriplets(Ae.begin(), Ae.end());
+	Aout.makeCompressed();
+}
+
+void polyfem::utils::scatter_matrix_col(const int n_dofs,
+										const int dim,
+										const std::vector<long> &shape,
+										const std::vector<int> &rows,
+										const std::vector<int> &cols,
+										const std::vector<double> &vals,
+										const Eigen::MatrixXd &b,
+										const std::vector<int> &local_to_global,
+										StiffnessMatrix &Aout,
+										Eigen::MatrixXd &bout)
+{
+	assert(shape.size() == 2);
+	assert(rows.size() == cols.size());
+	assert(rows.size() == vals.size());
+
+	std::vector<Eigen::Triplet<double>> Ae;
+
+	int A_cols = -1;
+
+	if (b.cols() == dim)
+	{
+		assert(n_dofs == b.rows() * dim);
+
+		for (int k = 0; k < rows.size(); ++k)
+		{
+			const auto i = rows[k];
+			const auto j = cols[k];
+			const auto val = vals[k];
+
+			const auto global_i = (local_to_global.empty() ? i : local_to_global[i]) * dim;
+
+			if (val != 0)
+			{
+				for (int d = 0; d < dim; ++d)
+				{
+					Ae.push_back(Eigen::Triplet<double>(
+						global_i + d,
+						j * dim + d,
+						val));
+				}
+			}
+		}
+
+		bout.resize(b.rows() * dim, 1);
+		for (int i = 0; i < b.rows(); ++i)
+		{
+			const auto global_i = (local_to_global.empty() ? i : local_to_global[i]) * dim;
+
+			for (int d = 0; d < dim; ++d)
+			{
+				bout(global_i + d) = b(i, d);
+			}
+		}
+
+		A_cols = shape[1] * dim;
+		assert(shape[0] * dim == n_dofs);
+	}
+	else
+	{
+		assert(b.cols() == 1);
+		assert(b.size() % dim == 0);
+		assert(n_dofs == b.size());
+
+		for (int k = 0; k < rows.size(); ++k)
+		{
+			const auto i = rows[k];
+			const auto j = cols[k];
+			const auto val = vals[k];
+
+			if (val != 0)
+			{
+				const auto nid = i / dim;
+				const auto noffset = i % dim;
+
+				const auto global_i = (local_to_global.empty() ? nid : local_to_global[nid]) * dim;
+
+				Ae.push_back(Eigen::Triplet<double>(
+					global_i + noffset,
+					j,
+					val));
+			}
+		}
+		bout.resize(b.size(), 1);
+		for (int i = 0; i < b.size(); ++i)
+		{
+			const auto nid = i / dim;
+			const auto noffset = i % dim;
+
+			const auto global_i = (local_to_global.empty() ? nid : local_to_global[nid]) * dim;
+
+			bout(global_i + noffset) = b(i);
+		}
+
+		assert(shape[0] == n_dofs);
+		A_cols = shape[1];
+	}
+
+	Aout.resize(n_dofs, A_cols);
+	Aout.setFromTriplets(Ae.begin(), Ae.end());
+	Aout.makeCompressed();
 }

@@ -9,7 +9,7 @@
 #include <polyfem/utils/JSONUtils.hpp>
 
 #include <ipc/collision_mesh.hpp>
-#include <ipc/broad_phase/broad_phase.hpp>
+#include <polyfem/solver/forms/ContactForm.hpp>
 
 #include <Eigen/Core>
 
@@ -65,6 +65,7 @@ namespace polyfem::solver
 			const Units &units,
 			const int dim,
 			const double t,
+			const Eigen::VectorXi &in_node_to_node,
 
 			// Elastic form
 			const int n_bases,
@@ -100,13 +101,10 @@ namespace polyfem::solver
 			const double lagged_regularization_weight,
 			const int lagged_regularization_iterations,
 
-			// Augemented lagrangian form
-			// const std::vector<int> &boundary_nodes,
-			// const std::vector<mesh::LocalBoundary> &local_boundary,
-			// const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
-			// const int n_boundary_samples,
-			// const StiffnessMatrix &mass,
+			// Constraint forms
 			const size_t obstacle_ndof,
+			const std::vector<std::string> &hard_constraint_files,
+			const std::vector<json> &soft_constraint_files,
 
 			// Contact form
 			const bool contact_enabled,
@@ -117,10 +115,18 @@ namespace polyfem::solver
 			const bool use_improved_max_operator,
 			const bool use_physical_barrier,
 			const json &barrier_stiffness,
+			const double initial_barrier_stiffness,
 			const ipc::BroadPhaseMethod broad_phase,
 			const double ccd_tolerance,
 			const long ccd_max_iterations,
 			const bool enable_shape_derivatives,
+			
+			// Smooth Contact Form
+			const bool use_gcp_formulation,
+			const double alpha_t,
+			const double alpha_n,
+			const bool use_adaptive_dhat,
+			const double min_distance_ratio,
 
 			// Normal Adhesion Form
 			const bool adhesion_enabled,

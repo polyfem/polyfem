@@ -110,9 +110,9 @@ namespace
 		double former_functional_val = problem.value(x - theta * dt);
 
 		double finite_difference = (next_functional_val - former_functional_val) / dt / 2;
-		std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
-		std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
-		std::cout << std::setprecision(12) << "relative error: " << abs((finite_difference - derivative) / derivative) << "\n";
+		logger().trace("f(x) {:.16f} f(x-dt) {:.16f} f(x+dt) {:.16f}", functional_val, former_functional_val, next_functional_val);
+		logger().trace("derivative: {:.12f}, fd: {:.12f}", derivative, finite_difference);
+		logger().trace("relative error: {:.12f}", abs((finite_difference - derivative) / derivative));
 		REQUIRE(derivative == Catch::Approx(finite_difference).epsilon(tol));
 	}
 
@@ -134,15 +134,18 @@ namespace
 		double former_functional_val = problem.value(x - theta * dt);
 
 		double finite_difference = (next_functional_val - former_functional_val) / dt / 2;
-		std::cout << std::setprecision(16) << "f(x) " << functional_val << " f(x-dt) " << former_functional_val << " f(x+dt) " << next_functional_val << "\n";
-		std::cout << std::setprecision(12) << "derivative: " << derivative << ", fd: " << finite_difference << "\n";
-		std::cout << std::setprecision(12) << "relative error: " << abs((finite_difference - derivative) / derivative) << "\n";
+		logger().trace("f(x) {:.16f} f(x-dt) {:.16f} f(x+dt) {:.16f}", functional_val, former_functional_val, next_functional_val);
+		logger().trace("derivative: {:.12f}, fd: {:.12f}", derivative, finite_difference);
+		logger().trace("relative error: {:.12f}", abs((finite_difference - derivative) / derivative));
 		REQUIRE(derivative == Catch::Approx(finite_difference).epsilon(tol));
 	}
 } // namespace
 
 TEST_CASE("homogenize-stress-periodic", "[test_adjoint]")
 {
+#ifdef WIN32
+	return; // Skip this test on Windows due cholmod problem
+#endif
 	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "homogenize-stress-periodic.json", in_args);
@@ -176,6 +179,9 @@ TEST_CASE("homogenize-stress-periodic", "[test_adjoint]")
 
 TEST_CASE("homogenize-stress", "[test_adjoint]")
 {
+#ifdef WIN32
+	return; // Skip this test on Windows due cholmod problem
+#endif
 	const std::string path = POLYFEM_DIFF_DIR + std::string("/input/");
 	json in_args;
 	load_json(path + "homogenize-stress.json", in_args);

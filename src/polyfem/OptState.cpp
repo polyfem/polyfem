@@ -38,7 +38,6 @@ namespace polyfem
 {
 	OptState::~OptState()
 	{
-
 	}
 
 	OptState::OptState()
@@ -131,6 +130,7 @@ namespace polyfem
 	void OptState::create_states(const polyfem::solver::CacheLevel level, const int max_threads)
 	{
 		states = solver::AdjointOptUtils::create_states(
+			root_path(),
 			args["states"],
 			level,
 			max_threads <= 0 ? std::numeric_limits<unsigned int>::max() : max_threads);
@@ -188,6 +188,7 @@ namespace polyfem
 			args["solver"]["nonlinear"],
 			args["solver"]["linear"],
 			args["solver"]["advanced"]["characteristic_length"]);
+		nl_problem->normalize_forms();
 		nl_solver->minimize(*nl_problem, x);
 	}
 } // namespace polyfem

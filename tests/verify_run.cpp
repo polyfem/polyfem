@@ -219,11 +219,18 @@ void run_data(const std::string &test_file, const std::string &dir)
 	}
 	if (failing_tests.size() > 0)
 	{
-		std::cout << "Failing tests:" << std::endl;
+		std::stringstream ss;
+		ss << "Failing tests:" << std::endl;
 		for (auto &t : failing_tests)
-			std::cout << t << std::endl;
+			ss << t << std::endl;
+
+		logger().error(ss.str());
 	}
 }
+
+
+
+const std::string CONTACT_TEST_FOLDER = POLYFEM_TEST_DIR + std::string("/../contact-tests/");
 
 TEST_CASE("contact_2d", tagsrun)
 {

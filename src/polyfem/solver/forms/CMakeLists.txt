@@ -22,8 +22,14 @@ set(SOURCES
 	NormalAdhesionForm.hpp
 	TangentialAdhesionForm.cpp
 	TangentialAdhesionForm.hpp
+	BarrierContactForm.cpp
+	BarrierContactForm.hpp
+	SmoothContactForm.cpp
+	SmoothContactForm.hpp
 	PeriodicContactForm.cpp
 	PeriodicContactForm.hpp
+	QuadraticPenaltyForm.cpp
+	QuadraticPenaltyForm.hpp
 	RayleighDampingForm.cpp
 	RayleighDampingForm.hpp
 	PressureForm.cpp

@@ -17,12 +17,12 @@
 
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
-#include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/SmoothContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
-#include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/BarrierContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
@@ -480,6 +480,7 @@ namespace polyfem::io
 
 						if (prev_node >= 0)
 							edges.emplace_back(prev_node, gindex);
+
 						prev_node = gindex;
 					}
 				}
@@ -918,7 +919,7 @@ namespace polyfem::io
 		// 	logger().error("Build the bases first!");
 		// 	return;
 		// }
-		assert(mesh.is_linear());
+		// assert(mesh.is_linear());
 
 		std::vector<RowVectorNd> nodes;
 		int pts_total_size = 0;
@@ -1215,9 +1216,13 @@ namespace polyfem::io
 		normal_adhesion_forces = args["output"]["paraview"]["options"]["normal_adhesion_forces"] && !is_problem_scalar;
 		tangential_adhesion_forces = args["output"]["paraview"]["options"]["tangential_adhesion_forces"] && !is_problem_scalar;
 
-		use_sampler = !(is_mesh_linear && args["output"]["paraview"]["high_order_mesh"]);
+		if (args["output"]["paraview"]["options"]["force_high_order"])
+			use_sampler = false;
+		else
+			use_sampler = !(is_mesh_linear && args["output"]["paraview"]["high_order_mesh"]);
 		if (mesh_has_prisms)
 			use_sampler = true;
+
 		boundary_only = use_sampler && args["output"]["advanced"]["vis_boundary_only"];
 		material_params = args["output"]["paraview"]["options"]["material"];
 		body_ids = args["output"]["paraview"]["options"]["body_ids"];
@@ -1790,12 +1795,14 @@ namespace polyfem::io
 			writer.add_field("traction_force", traction_forces_fun);
 		}
 
-		if (fun.cols() != 1 && state.mixed_assembler == nullptr && opts.export_field("gradient_of_potential"))
+		if (fun.cols() != 1 && state.mixed_assembler == nullptr && opts.export_field("gradient_of_elastic_potential"))
 		{
 			try
 			{
-				Eigen::MatrixXd potential_grad, potential_grad_fun;
-				state.assembler->assemble_gradient(mesh.is_volume(), state.n_bases, bases, gbases, state.ass_vals_cache, t, dt, sol, sol, potential_grad);
+				Eigen::VectorXd potential_grad;
+				Eigen::MatrixXd potential_grad_fun;
+				if (state.solve_data.elastic_form)
+					state.solve_data.elastic_form->first_derivative(sol, potential_grad);
 
 				Evaluator::interpolate_function(
 					mesh, problem.is_scalar(), bases, disc_orders, disc_ordersq,
@@ -1807,7 +1814,38 @@ namespace polyfem::io
 					potential_grad_fun.conservativeResize(potential_grad_fun.rows() + obstacle.n_vertices(), potential_grad_fun.cols());
 					potential_grad_fun.bottomRows(obstacle.n_vertices()).setZero();
 				}
-				writer.add_field("gradient_of_potential", potential_grad_fun);
+
+				writer.add_field("gradient_of_elastic_potential", potential_grad_fun);
+			}
+			catch (std::exception &)
+			{
+			}
+		}
+
+		if (fun.cols() != 1 && state.mixed_assembler == nullptr && opts.export_field("gradient_of_contact_potential"))
+		{
+			try
+			{
+				Eigen::VectorXd potential_grad;
+				Eigen::MatrixXd potential_grad_fun;
+				if (state.solve_data.contact_form && state.solve_data.contact_form->weight() > 0)
+				{
+					state.solve_data.contact_form->first_derivative(sol, potential_grad);
+					potential_grad *= -state.solve_data.contact_form->barrier_stiffness() / state.solve_data.contact_form->weight();
+
+					Evaluator::interpolate_function(
+						mesh, problem.is_scalar(), bases, state.disc_orders, state.disc_ordersq,
+						state.polys, state.polys_3d, ref_element_sampler,
+						points.rows(), potential_grad, potential_grad_fun, opts.use_sampler, opts.boundary_only);
+
+					if (obstacle.n_vertices() > 0)
+					{
+						potential_grad_fun.conservativeResize(potential_grad_fun.rows() + obstacle.n_vertices(), potential_grad_fun.cols());
+						potential_grad_fun.bottomRows(obstacle.n_vertices()).setZero();
+					}
+
+					writer.add_field("gradient_of_contact_potential", potential_grad_fun);
+				}
 			}
 			catch (std::exception &)
 			{
@@ -2118,13 +2156,13 @@ namespace polyfem::io
 		// collision_set.set_use_convergent_formulation(state.args["contact"]["use_convergent_formulation"]);
 		if (state.args["contact"]["use_convergent_formulation"])
 		{
-			collision_set.set_use_improved_max_approximator(state.args["contact"]["use_improved_max_operator"]);
 			collision_set.set_use_area_weighting(state.args["contact"]["use_area_weighting"]);
+			collision_set.set_use_improved_max_approximator(state.args["contact"]["use_improved_max_operator"]);
 		}
 
 		collision_set.build(
 			collision_mesh, displaced_surface, dhat,
-			/*dmin=*/0, state.args["solver"]["contact"]["CCD"]["broad_phase"]);
+			/*dmin=*/0, ipc::build_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]));
 
 		ipc::BarrierPotential barrier_potential(dhat);
 		if (state.args["contact"]["use_convergent_formulation"])
@@ -2143,6 +2181,39 @@ namespace polyfem::io
 			assert(forces_reshaped.rows() == surface_displacements.rows());
 			assert(forces_reshaped.cols() == surface_displacements.cols());
 			writer.add_field("contact_forces", forces_reshaped);
+		}
+
+		if (contact_form && state.args["contact"]["use_gcp_formulation"] && state.args["contact"]["use_adaptive_dhat"] && opts.export_field("adaptive_dhat"))
+		{
+			const auto form = std::dynamic_pointer_cast<solver::SmoothContactForm>(contact_form);
+			assert(form);
+			const auto &set = form->collision_set();
+
+			if (problem_dim == 2)
+			{
+				Eigen::VectorXd dhats(collision_mesh.num_edges());
+				dhats.setConstant(dhat);
+				for (int e = 0; e < dhats.size(); e++)
+					dhats(e) = set.get_edge_dhat(e);
+
+				writer.add_cell_field("dhat", dhats);
+			}
+			else
+			{
+				Eigen::VectorXd fdhats(collision_mesh.num_faces());
+				fdhats.setConstant(dhat);
+				for (int e = 0; e < fdhats.size(); e++)
+					fdhats(e) = set.get_face_dhat(e);
+
+				writer.add_cell_field("dhat_face", fdhats);
+
+				Eigen::VectorXd vdhats(collision_mesh.num_vertices());
+				vdhats.setConstant(dhat);
+				for (int i = 0; i < vdhats.size(); i++)
+					vdhats(i) = set.get_vert_dhat(i);
+
+				writer.add_field("dhat_vert", vdhats);
+			}
 		}
 
 		if (opts.friction_forces || opts.export_field("friction_forces"))
@@ -2174,7 +2245,7 @@ namespace polyfem::io
 		ipc::NormalCollisions adhesion_collision_set;
 		adhesion_collision_set.build(
 			collision_mesh, displaced_surface, dhat_a,
-			/*dmin=*/0, state.args["solver"]["contact"]["CCD"]["broad_phase"]);
+			/*dmin=*/0, ipc::build_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]));
 
 		ipc::NormalAdhesionPotential normal_adhesion_potential(dhat_p, dhat_a, Y, 1);
 
