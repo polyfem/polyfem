@@ -155,6 +155,7 @@ var classpolyfem_1_1_state =
     [ "starting_max_edge_length", "classpolyfem_1_1_state.html#a11878ff7cdbb97a893bb5ecea5b7836a", null ],
     [ "starting_min_edge_length", "classpolyfem_1_1_state.html#a5744fd79a7aebd12daf2e62c76fa364d", null ],
     [ "stats", "classpolyfem_1_1_state.html#a8ed2ea7be90ae8d0385ac4a22042e4c4", null ],
+    [ "time_callback", "classpolyfem_1_1_state.html#ab894f5360079da15fa796a75f5b355ea", null ],
     [ "timings", "classpolyfem_1_1_state.html#a0181690b83435d59481076329edec8bc", null ],
     [ "total_local_boundary", "classpolyfem_1_1_state.html#abf09081852101c2cdef90ae1aeff500e", null ],
     [ "units", "classpolyfem_1_1_state.html#a584dbcabc47bd61bf6ba831f3645cec6", null ],
