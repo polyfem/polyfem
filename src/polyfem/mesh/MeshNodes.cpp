@@ -4,6 +4,8 @@
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
+
+#include <polyfem/utils/Logger.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace polyfem::mesh
