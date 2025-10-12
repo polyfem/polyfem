@@ -525,7 +525,8 @@ namespace polyfem::mesh
 		}
 		else if (mesh3d->is_prism(index.element))
 		{
-			// todo implement me
+			// TODO: implement me internal prism nodes
+			log_and_throw_error("Prism internal nodes not implemented yet");
 			assert(false);
 		}
 

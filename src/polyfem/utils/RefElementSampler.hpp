@@ -21,7 +21,7 @@ namespace polyfem
 		///
 		/// @param[in]  n  			  n grid quads
 		/// @param[in]  tet			  is a tet
-		/// @param[in]  tet			  is a prism
+		/// @param[in]  prism		  is a prism
 		/// @param[out] V             #V x 3 output vertices positions
 		/// @param[out] F             #F x 3 output triangle indices
 		/// @param[out] T             #F x 4 output tet indices

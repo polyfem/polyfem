@@ -663,7 +663,9 @@ namespace
 		// cells
 		if (n_cell_nodes > 0)
 		{
-			throw "not implemented";
+			// TODO: implement me internal prism nodes
+			log_and_throw_error("Prism internal nodes not implemented yet");
+
 			const auto index = f[0];
 
 			auto node_ids = nodes.node_ids_from_cell(index, q - 1);

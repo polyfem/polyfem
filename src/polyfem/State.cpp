@@ -644,7 +644,7 @@ namespace polyfem
 				geom_disc_orders = mesh->orders();
 		}
 
-		// todo prism
+		// TODO: implement prism geometric order
 		Eigen::MatrixXi geom_disc_ordersq = geom_disc_orders;
 		disc_ordersq = disc_orders;
 		// disc_ordersq.setConstant(2);
@@ -1008,11 +1008,11 @@ namespace polyfem
 		{
 			min_boundary_edge_length = std::numeric_limits<double>::max();
 			for (const auto &edge : collision_mesh.edges().rowwise())
- 			{
- 				const VectorNd v0 = collision_mesh.rest_positions().row(edge(0));
- 				const VectorNd v1 = collision_mesh.rest_positions().row(edge(1));
- 				min_boundary_edge_length = std::min(min_boundary_edge_length, (v1 - v0).norm());
- 			}
+			{
+				const VectorNd v0 = collision_mesh.rest_positions().row(edge(0));
+				const VectorNd v1 = collision_mesh.rest_positions().row(edge(1));
+				min_boundary_edge_length = std::min(min_boundary_edge_length, (v1 - v0).norm());
+			}
 
 			double dhat = Units::convert(args["contact"]["dhat"], units.length());
 			args["contact"]["epsv"] = Units::convert(args["contact"]["epsv"], units.velocity());
@@ -1496,7 +1496,7 @@ namespace polyfem
 		collision_mesh.can_collide = [&collision_mesh, num_fe_collision_vertices](size_t vi, size_t vj) {
 			// obstacles do not collide with other obstacles
 			return collision_mesh.to_full_vertex_id(vi) < num_fe_collision_vertices
-				|| collision_mesh.to_full_vertex_id(vj) < num_fe_collision_vertices;
+				   || collision_mesh.to_full_vertex_id(vj) < num_fe_collision_vertices;
 		};
 
 		collision_mesh.init_area_jacobians();
