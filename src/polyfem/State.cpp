@@ -644,6 +644,11 @@ namespace polyfem
 				geom_disc_orders = mesh->orders();
 		}
 
+		// TODO: implement prism geometric order
+		Eigen::MatrixXi geom_disc_ordersq = geom_disc_orders;
+		disc_ordersq = disc_orders;
+		// disc_ordersq.setConstant(2);
+
 		igl::Timer timer;
 		timer.start();
 		if (args["space"]["use_p_ref"])
@@ -697,15 +702,19 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					n_geom_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, false, has_polys, !use_continuous_gbasis, use_corner_quadrature, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
+					n_geom_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geom_disc_orders, geom_disc_ordersq, false, false, has_polys, !use_continuous_gbasis, use_corner_quadrature, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
 
-				n_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["basis_type"] == "Bernstein", args["space"]["basis_type"] == "Serendipity", has_polys, false, use_corner_quadrature, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+				n_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, disc_orders, disc_ordersq, args["space"]["basis_type"] == "Bernstein", args["space"]["basis_type"] == "Serendipity", has_polys, false, use_corner_quadrature, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
 
 			// if(problem->is_mixed())
 			if (mixed_assembler != nullptr)
 			{
-				n_pressure_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), args["space"]["basis_type"] == "Bernstein", false, has_polys, false, use_corner_quadrature, pressure_bases, local_boundary, poly_edge_to_data_geom, pressure_mesh_nodes);
+				const int order = args["space"]["pressure_discr_order"];
+				// todo prism
+				const int orderq = order;
+
+				n_pressure_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, order, orderq, args["space"]["basis_type"] == "Bernstein", false, has_polys, false, use_corner_quadrature, pressure_bases, local_boundary, poly_edge_to_data_geom, pressure_mesh_nodes);
 			}
 		}
 		else
@@ -999,11 +1008,11 @@ namespace polyfem
 		{
 			min_boundary_edge_length = std::numeric_limits<double>::max();
 			for (const auto &edge : collision_mesh.edges().rowwise())
- 			{
- 				const VectorNd v0 = collision_mesh.rest_positions().row(edge(0));
- 				const VectorNd v1 = collision_mesh.rest_positions().row(edge(1));
- 				min_boundary_edge_length = std::min(min_boundary_edge_length, (v1 - v0).norm());
- 			}
+			{
+				const VectorNd v0 = collision_mesh.rest_positions().row(edge(0));
+				const VectorNd v1 = collision_mesh.rest_positions().row(edge(1));
+				min_boundary_edge_length = std::min(min_boundary_edge_length, (v1 - v0).norm());
+			}
 
 			double dhat = Units::convert(args["contact"]["dhat"], units.length());
 			args["contact"]["epsv"] = Units::convert(args["contact"]["epsv"], units.velocity());
@@ -1487,7 +1496,7 @@ namespace polyfem
 		collision_mesh.can_collide = [&collision_mesh, num_fe_collision_vertices](size_t vi, size_t vj) {
 			// obstacles do not collide with other obstacles
 			return collision_mesh.to_full_vertex_id(vi) < num_fe_collision_vertices
-				|| collision_mesh.to_full_vertex_id(vj) < num_fe_collision_vertices;
+				   || collision_mesh.to_full_vertex_id(vj) < num_fe_collision_vertices;
 		};
 
 		collision_mesh.init_area_jacobians();

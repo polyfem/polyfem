@@ -31,6 +31,7 @@ namespace polyfem
 			INTERFACE_CUBE,                /// Quad/hex that is at the interface with a polytope (if a cube has both external boundary and and interface with a polytope, it is marked as interface)
 			INTERIOR_POLYTOPE,             /// Interior polytope
 			BOUNDARY_POLYTOPE,             /// Boundary polytope
+			PRISM,                         /// Prism
 			UNDEFINED,                     /// For invalid configurations
 		};
 
@@ -403,11 +404,16 @@ namespace polyfem
 			/// @param[in] el_id element id
 			/// @return is polygon compatible
 			bool is_polytope(const int el_id) const;
-			/// @brief checks if element is simples compatible
+			/// @brief checks if element is simplex
 			///
 			/// @param[in] el_id element id
-			/// @return is simples compatible
+			/// @return is simplex
 			bool is_simplex(const int el_id) const;
+			/// @brief checks if element is a prism
+			///
+			/// @param[in] el_id element id
+			/// @return is a prism
+			bool is_prism(const int el_id) const;
 
 			/// @brief Returns the elements types
 			///
@@ -565,6 +571,20 @@ namespace polyfem
 				for (int i = 0; i < n_elements(); ++i)
 				{
 					if (is_polytope(i))
+						return true;
+				}
+
+				return false;
+			}
+
+			/// @brief checks if the mesh has prisms
+			///
+			/// @return if the mesh has prisms
+			bool has_prism() const
+			{
+				for (int i = 0; i < n_elements(); ++i)
+				{
+					if (is_prism(i))
 						return true;
 				}
 

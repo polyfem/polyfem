@@ -15,7 +15,7 @@ namespace polyfem
 		{
 		public:
 			ThermodynamicProcess() {}
-			virtual ~ThermodynamicProcess(){};
+			virtual ~ThermodynamicProcess() {};
 			virtual double pressure(const double start_pressure, const double v0, const double v1) const { return 0; }
 			virtual double first_derivative(const double start_pressure, const double v0, const double v1) const { return 0; }
 			virtual double second_derivative(const double start_pressure, const double v0, const double v1) const { return 0; }
@@ -88,20 +88,20 @@ namespace polyfem
 			double compute_energy(
 				const Eigen::MatrixXd &displacement,
 				const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
-				const int resolution,
+				const QuadratureOrders &resolution,
 				const double t) const;
 			void compute_energy_grad(
 				const Eigen::MatrixXd &displacement,
 				const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
 				const std::vector<int> &dirichlet_nodes,
-				const int resolution,
+				const QuadratureOrders &resolution,
 				const double t,
 				Eigen::VectorXd &grad) const;
 			void compute_energy_hess(
 				const Eigen::MatrixXd &displacement,
 				const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
 				const std::vector<int> &dirichlet_nodes,
-				const int resolution,
+				const QuadratureOrders &resolution,
 				const double t,
 				const bool project_to_psd,
 				StiffnessMatrix &hess) const;
@@ -109,20 +109,20 @@ namespace polyfem
 			double compute_cavity_energy(
 				const Eigen::MatrixXd &displacement,
 				const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity,
-				const int resolution,
+				const QuadratureOrders &resolution,
 				const double t) const;
 			void compute_cavity_energy_grad(
 				const Eigen::MatrixXd &displacement,
 				const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity,
 				const std::vector<int> &dirichlet_nodes,
-				const int resolution,
+				const QuadratureOrders &resolution,
 				const double t,
 				Eigen::VectorXd &grad) const;
 			void compute_cavity_energy_hess(
 				const Eigen::MatrixXd &displacement,
 				const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity,
 				const std::vector<int> &dirichlet_nodes,
-				const int resolution,
+				const QuadratureOrders &resolution,
 				const double t,
 				const bool project_to_psd,
 				StiffnessMatrix &hess) const;
@@ -131,7 +131,7 @@ namespace polyfem
 				const Eigen::MatrixXd &displacement,
 				const std::vector<mesh::LocalBoundary> &local_pressure_boundary,
 				const std::vector<int> &dirichlet_nodes,
-				const int resolution,
+				const QuadratureOrders &resolution,
 				const double t,
 				const int n_vertices,
 				StiffnessMatrix &hess) const;
@@ -146,7 +146,7 @@ namespace polyfem
 										const int boundary_id,
 										const std::vector<mesh::LocalBoundary> &local_boundary,
 										const std::vector<int> &dirichlet_nodes,
-										const int resolution,
+										const QuadratureOrders &resolution,
 										Eigen::VectorXd &grad,
 										const double t = 0,
 										const bool multiply_pressure = false) const;
@@ -155,13 +155,13 @@ namespace polyfem
 			double compute_volume(
 				const Eigen::MatrixXd &displacement,
 				const std::vector<mesh::LocalBoundary> &local_boundary,
-				const int resolution,
+				const QuadratureOrders &resolution,
 				const double t = 0,
 				const bool multiply_pressure = false) const;
 			void compute_grad_volume(const Eigen::MatrixXd &displacement,
 									 const std::vector<mesh::LocalBoundary> &local_boundary,
 									 const std::vector<int> &dirichlet_nodes,
-									 const int resolution,
+									 const QuadratureOrders &resolution,
 									 Eigen::VectorXd &grad,
 									 const double t = 0,
 									 const bool multiply_pressure = false) const;
@@ -169,7 +169,7 @@ namespace polyfem
 				const Eigen::MatrixXd &displacement,
 				const std::vector<mesh::LocalBoundary> &local_boundary,
 				const std::vector<int> &dirichlet_nodes,
-				const int resolution,
+				const QuadratureOrders &resolution,
 				StiffnessMatrix &hess,
 				const double t = 0,
 				const bool multiply_pressure = false) const;
@@ -177,7 +177,7 @@ namespace polyfem
 				const Eigen::MatrixXd &displacement,
 				const std::vector<mesh::LocalBoundary> &local_boundary,
 				const std::vector<int> &dirichlet_nodes,
-				const int resolution,
+				const QuadratureOrders &resolution,
 				StiffnessMatrix &hess,
 				const double t = 0,
 				const bool multiply_pressure = false) const;

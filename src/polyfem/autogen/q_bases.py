@@ -39,6 +39,11 @@ def create_point_set(order, nsd):
     h = Rational(1, order)
     set = []
 
+    if nsd == 1:
+        for i in range(0, order + 1):
+            x = i * h
+            set.append([x])
+
     if nsd == 2:
         for i in range(0, order + 1):
             x = i * h
@@ -74,7 +79,24 @@ class Lagrange:
         N = []
         self.points = create_point_set(order, nsd)
 
-        if nsd == 2:
+        if nsd == 1:
+            Ntmpx = []
+
+            for j in range(order + 1):
+                vx = 1
+                xj = j/(order)
+                for m in range(order+1):
+                    if m == j:
+                        continue
+                    xm = m/(order)
+                    vx *= (x - xm)/(xj - xm)
+
+                Ntmpx.append(vx)
+
+            for i in range(order + 1):
+                N.append(Ntmpx[i])
+
+        elif nsd == 2:
             Ntmpx = []
             Ntmpy = []
 
@@ -137,7 +159,7 @@ if __name__ == "__main__":
     args = parse_args()
     path = os.path.abspath(args.output)
 
-    dims = [2, 3]
+    dims = [1, 2, 3]
     orders = [0, 1, 2, 3, -2]
 
     for dim in dims:
@@ -171,7 +193,7 @@ if __name__ == "__main__":
         hppg = hppg + "namespace polyfem {\nnamespace autogen " + "{\n"
 
         print(str(dim) + "D")
-        suffix = "_2d" if dim == 2 else "_3d"
+        suffix = "_2d" if dim == 2 else ("_3d" if dim == 3 else "_1d")
 
         unique_nodes = "void q_nodes" + suffix + \
             "(const int q, Eigen::MatrixXd &val)"
@@ -191,13 +213,19 @@ if __name__ == "__main__":
         unique_fun = unique_fun + "{\nswitch(q)" + "{\n"
         dunique_fun = dunique_fun + "{\nswitch(q)" + "{\n"
 
-        if dim == 2:
+        if dim == 1:
+            vertices = [[0], [1]]
+        elif dim == 2:
             vertices = [[0, 0], [1, 0], [1, 1], [0, 1]]
         elif dim == 3:
             vertices = [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0],
                         [0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]]
 
-        for order in orders:
+        if dim == 1:
+            orderss = orders + [4, 5, 6]
+        else:
+            orderss = orders
+        for order in orderss:
             print("\t-processing " + str(order))
 
             if order == 0:
@@ -206,13 +234,17 @@ if __name__ == "__main__":
 
                 fe.N = [1]
 
-                if dim == 2:
+                if dim == 1:
+                    fe.points = [[1./2]]
+                elif dim == 2:
                     fe.points = [[1./2., 1./2.]]
                 else:
                     fe.points = [[1./2., 1./2., 1./2.]]
             elif order == -2:
                 def fe(): return None
-                if dim == 2:
+                if dim == 1:  # no serendipity in 1d
+                    fe = Lagrange(dim, 2)
+                elif dim == 2:
                     fe.points = []
                     fe.N = []
                     fe.nbf = lambda: 8
@@ -276,119 +308,31 @@ if __name__ == "__main__":
                     assert (len(fe.N) == 20)
                 else:
                     assert (False)
-
             else:
                 fe = Lagrange(dim, order)
 
             current_indices = list(range(0, len(fe.points)))
             indices = []
 
-            # vertex coordinate
-            for i in range(0, 4*(dim-1)):
-                vv = vertices[i]
-                for ii in current_indices:
-                    norm = 0
-                    for dd in range(0, dim):
-                        norm = norm + (vv[dd] - fe.points[ii][dd]) ** 2
+            if dim > 1:
+                # vertex coordinate
+                for i in range(0, 2**dim):
+                    vv = vertices[i]
 
-                    if norm < 1e-10:
-                        indices.append(ii)
-                        current_indices.remove(ii)
-                        break
-
-            # edge 0 coordinate
-            for i in range(0, abs(order) - 1):
-                for ii in current_indices:
-                    if fe.points[ii][1] != 0 or (dim == 3 and fe.points[ii][2] != 0):
-                        continue
-
-                    if abs(fe.points[ii][0] - (i + 1) / abs(order)) < 1e-10:
-                        indices.append(ii)
-                        current_indices.remove(ii)
-                        break
-
-            # edge 1 coordinate
-            for i in range(0, abs(order) - 1):
-                for ii in current_indices:
-                    if fe.points[ii][0] != 1 or (dim == 3 and fe.points[ii][2] != 0):
-                        continue
-
-                    if abs(fe.points[ii][1] - (i + 1) / abs(order)) < 1e-10:
-                        indices.append(ii)
-                        current_indices.remove(ii)
-                        break
-
-            # edge 2 coordinate
-            for i in range(0, abs(order) - 1):
-                for ii in current_indices:
-                    if fe.points[ii][1] != 1 or (dim == 3 and fe.points[ii][2] != 0):
-                        continue
-
-                    if abs(fe.points[ii][0] - (1 - (i + 1) / abs(order))) < 1e-10:
-                        indices.append(ii)
-                        current_indices.remove(ii)
-                        break
-
-            # edge 3 coordinate
-            for i in range(0, abs(order) - 1):
-                for ii in current_indices:
-                    if fe.points[ii][0] != 0 or (dim == 3 and fe.points[ii][2] != 0):
-                        continue
-
-                    if abs(fe.points[ii][1] - (1 - (i + 1) / abs(order))) < 1e-10:
-                        indices.append(ii)
-                        current_indices.remove(ii)
-                        break
-
-            if dim == 3:
-                # edge 4 coordinate
-                for i in range(0, abs(order) - 1):
                     for ii in current_indices:
-                        if fe.points[ii][0] != 0 or fe.points[ii][1] != 0:
-                            continue
+                        norm = 0
+                        for dd in range(0, dim):
+                            norm = norm + (vv[dd] - fe.points[ii][dd]) ** 2
 
-                        if abs(fe.points[ii][2] - (i + 1) / abs(order)) < 1e-10:
+                        if norm < 1e-10:
                             indices.append(ii)
                             current_indices.remove(ii)
                             break
 
-                # edge 5 coordinate
+                # edge 0 coordinate
                 for i in range(0, abs(order) - 1):
                     for ii in current_indices:
-                        if fe.points[ii][0] != 1 or fe.points[ii][1] != 0:
-                            continue
-
-                        if abs(fe.points[ii][2] - (1 - (i + 1) / abs(order))) < 1e-10:
-                            indices.append(ii)
-                            current_indices.remove(ii)
-                            break
-
-                # edge 6 coordinate
-                for i in range(0, abs(order) - 1):
-                    for ii in current_indices:
-                        if fe.points[ii][0] != 1 or fe.points[ii][1] != 1:
-                            continue
-
-                        if abs(fe.points[ii][2] - (1 - (i + 1) / abs(order))) < 1e-10:
-                            indices.append(ii)
-                            current_indices.remove(ii)
-                            break
-
-                # edge 7 coordinate
-                for i in range(0, abs(order) - 1):
-                    for ii in current_indices:
-                        if fe.points[ii][0] != 0 or fe.points[ii][1] != 1:
-                            continue
-
-                        if abs(fe.points[ii][2] - (1 - (i + 1) / abs(order))) < 1e-10:
-                            indices.append(ii)
-                            current_indices.remove(ii)
-                            break
-
-                # edge 8 coordinate
-                for i in range(0, abs(order) - 1):
-                    for ii in current_indices:
-                        if fe.points[ii][1] != 0 or fe.points[ii][2] != 1:
+                        if fe.points[ii][1] != 0 or (dim == 3 and fe.points[ii][2] != 0):
                             continue
 
                         if abs(fe.points[ii][0] - (i + 1) / abs(order)) < 1e-10:
@@ -396,10 +340,10 @@ if __name__ == "__main__":
                             current_indices.remove(ii)
                             break
 
-                # edge 9 coordinate
+                # edge 1 coordinate
                 for i in range(0, abs(order) - 1):
                     for ii in current_indices:
-                        if fe.points[ii][0] != 1 or fe.points[ii][2] != 1:
+                        if fe.points[ii][0] != 1 or (dim == 3 and fe.points[ii][2] != 0):
                             continue
 
                         if abs(fe.points[ii][1] - (i + 1) / abs(order)) < 1e-10:
@@ -407,10 +351,10 @@ if __name__ == "__main__":
                             current_indices.remove(ii)
                             break
 
-                # edge 10 coordinate
+                # edge 2 coordinate
                 for i in range(0, abs(order) - 1):
                     for ii in current_indices:
-                        if fe.points[ii][1] != 1 or fe.points[ii][2] != 1:
+                        if fe.points[ii][1] != 1 or (dim == 3 and fe.points[ii][2] != 0):
                             continue
 
                         if abs(fe.points[ii][0] - (1 - (i + 1) / abs(order))) < 1e-10:
@@ -418,10 +362,10 @@ if __name__ == "__main__":
                             current_indices.remove(ii)
                             break
 
-                # edge 11 coordinate
+                # edge 3 coordinate
                 for i in range(0, abs(order) - 1):
                     for ii in current_indices:
-                        if fe.points[ii][0] != 0 or fe.points[ii][2] != 1:
+                        if fe.points[ii][0] != 0 or (dim == 3 and fe.points[ii][2] != 0):
                             continue
 
                         if abs(fe.points[ii][1] - (1 - (i + 1) / abs(order))) < 1e-10:
@@ -429,74 +373,170 @@ if __name__ == "__main__":
                             current_indices.remove(ii)
                             break
 
-            if dim == 3:
-                nn = max(0, abs(order) - 1)
-                npts = int(nn * nn)
+                if dim == 3:
+                    # edge 4 coordinate
+                    for i in range(0, abs(order) - 1):
+                        for ii in current_indices:
+                            if fe.points[ii][0] != 0 or fe.points[ii][1] != 0:
+                                continue
 
-                # side: x = 0
-                tmp = []
-                for i in range(0, npts):
+                            if abs(fe.points[ii][2] - (i + 1) / abs(order)) < 1e-10:
+                                indices.append(ii)
+                                current_indices.remove(ii)
+                                break
+
+                    # edge 5 coordinate
+                    for i in range(0, abs(order) - 1):
+                        for ii in current_indices:
+                            if fe.points[ii][0] != 1 or fe.points[ii][1] != 0:
+                                continue
+
+                            if abs(fe.points[ii][2] - (1 - (i + 1) / abs(order))) < 1e-10:
+                                indices.append(ii)
+                                current_indices.remove(ii)
+                                break
+
+                    # edge 6 coordinate
+                    for i in range(0, abs(order) - 1):
+                        for ii in current_indices:
+                            if fe.points[ii][0] != 1 or fe.points[ii][1] != 1:
+                                continue
+
+                            if abs(fe.points[ii][2] - (1 - (i + 1) / abs(order))) < 1e-10:
+                                indices.append(ii)
+                                current_indices.remove(ii)
+                                break
+
+                    # edge 7 coordinate
+                    for i in range(0, abs(order) - 1):
+                        for ii in current_indices:
+                            if fe.points[ii][0] != 0 or fe.points[ii][1] != 1:
+                                continue
+
+                            if abs(fe.points[ii][2] - (1 - (i + 1) / abs(order))) < 1e-10:
+                                indices.append(ii)
+                                current_indices.remove(ii)
+                                break
+
+                    # edge 8 coordinate
+                    for i in range(0, abs(order) - 1):
+                        for ii in current_indices:
+                            if fe.points[ii][1] != 0 or fe.points[ii][2] != 1:
+                                continue
+
+                            if abs(fe.points[ii][0] - (i + 1) / abs(order)) < 1e-10:
+                                indices.append(ii)
+                                current_indices.remove(ii)
+                                break
+
+                    # edge 9 coordinate
+                    for i in range(0, abs(order) - 1):
+                        for ii in current_indices:
+                            if fe.points[ii][0] != 1 or fe.points[ii][2] != 1:
+                                continue
+
+                            if abs(fe.points[ii][1] - (i + 1) / abs(order)) < 1e-10:
+                                indices.append(ii)
+                                current_indices.remove(ii)
+                                break
+
+                    # edge 10 coordinate
+                    for i in range(0, abs(order) - 1):
+                        for ii in current_indices:
+                            if fe.points[ii][1] != 1 or fe.points[ii][2] != 1:
+                                continue
+
+                            if abs(fe.points[ii][0] - (1 - (i + 1) / abs(order))) < 1e-10:
+                                indices.append(ii)
+                                current_indices.remove(ii)
+                                break
+
+                    # edge 11 coordinate
+                    for i in range(0, abs(order) - 1):
+                        for ii in current_indices:
+                            if fe.points[ii][0] != 0 or fe.points[ii][2] != 1:
+                                continue
+
+                            if abs(fe.points[ii][1] - (1 - (i + 1) / abs(order))) < 1e-10:
+                                indices.append(ii)
+                                current_indices.remove(ii)
+                                break
+
+                if dim == 3:
+                    nn = max(0, abs(order) - 1)
+                    npts = int(nn * nn)
+
+                    # side: x = 0
+                    tmp = []
+                    for i in range(0, npts):
+                        for ii in current_indices:
+                            if abs(fe.points[ii][0]) > 1e-10:
+                                continue
+
+                            tmp.append(ii)
+                            current_indices.remove(ii)
+                            break
+                    tmp.sort(reverse=True)
+                    indices.extend(tmp)
+
+                    # side: x = 1
+                    tmp = []
+                    for i in range(0, npts):
+                        for ii in current_indices:
+                            if abs(fe.points[ii][0] - 1) > 1e-10:
+                                continue
+
+                            tmp.append(ii)
+                            current_indices.remove(ii)
+                            break
+                    indices.extend(tmp)
+
+                    # front: y = 0
+                    for i in range(0, npts):
+                        for ii in current_indices:
+                            if abs(fe.points[ii][1]) > 1e-10:
+                                continue
+
+                            indices.append(ii)
+                            current_indices.remove(ii)
+                            break
+
+                    # back: y = 1
+                    for i in range(0, npts):
+                        for ii in current_indices:
+                            if abs(fe.points[ii][1]-1) > 1e-10:
+                                continue
+
+                            indices.append(ii)
+                            current_indices.remove(ii)
+                            break
+
+                    # bottom: z = 0
+                    for i in range(0, npts):
+                        for ii in current_indices:
+                            if abs(fe.points[ii][2]) > 1e-10:
+                                continue
+
+                            indices.append(ii)
+                            current_indices.remove(ii)
+                            break
+
+                    # top: z = 1
+                    for i in range(0, npts):
+                        for ii in current_indices:
+                            if abs(fe.points[ii][2]-1) > 1e-10:
+                                continue
+
+                            indices.append(ii)
+                            current_indices.remove(ii)
+                            break
+            else:
+                for i in range(0, abs(order)):
                     for ii in current_indices:
-                        if abs(fe.points[ii][0]) > 1e-10:
-                            continue
-
-                        tmp.append(ii)
-                        current_indices.remove(ii)
-                        break
-                tmp.sort(reverse=True)
-                indices.extend(tmp)
-
-                # side: x = 1
-                tmp = []
-                for i in range(0, npts):
-                    for ii in current_indices:
-                        if abs(fe.points[ii][0] - 1) > 1e-10:
-                            continue
-
-                        tmp.append(ii)
-                        current_indices.remove(ii)
-                        break
-                indices.extend(tmp)
-
-                # front: y = 0
-                for i in range(0, npts):
-                    for ii in current_indices:
-                        if abs(fe.points[ii][1]) > 1e-10:
-                            continue
-
-                        indices.append(ii)
-                        current_indices.remove(ii)
-                        break
-
-                # back: y = 1
-                for i in range(0, npts):
-                    for ii in current_indices:
-                        if abs(fe.points[ii][1]-1) > 1e-10:
-                            continue
-
-                        indices.append(ii)
-                        current_indices.remove(ii)
-                        break
-
-                # bottom: z = 0
-                for i in range(0, npts):
-                    for ii in current_indices:
-                        if abs(fe.points[ii][2]) > 1e-10:
-                            continue
-
-                        indices.append(ii)
-                        current_indices.remove(ii)
-                        break
-
-                # top: z = 1
-                for i in range(0, npts):
-                    for ii in current_indices:
-                        if abs(fe.points[ii][2]-1) > 1e-10:
-                            continue
-
-                        indices.append(ii)
-                        current_indices.remove(ii)
-                        break
+                        if abs(fe.points[ii][0] - (i / abs(order))) < 1e-10:
+                            indices.append(ii)
+                            current_indices.remove(ii)
+                            break
 
             # either face or volume indices, order do not matter
             for ii in current_indices:
@@ -515,8 +555,8 @@ if __name__ == "__main__":
                 f"extern \"C++\" void q_{orderN}_basis_grad_value_3d(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val);\n"
 
             for ii in indices:
-                nodes = nodes + ccode(fe.points[ii][0]) + ", " + ccode(fe.points[ii][1]) + (
-                    (", " + ccode(fe.points[ii][2])) if dim == 3 else "") + ",\n"
+                nodes = nodes + ccode(fe.points[ii][0]) + ("" if dim == 1 else (", " + ccode(fe.points[ii][1]) + (
+                    (", " + ccode(fe.points[ii][2])) if dim == 3 else ""))) + ",\n"
             nodes = nodes[:-2]
             nodes = nodes + ";\n}"
 
@@ -536,7 +576,9 @@ if __name__ == "__main__":
             # hpp = hpp + func + ";\n"
             # hpp = hpp + dfunc + ";\n"
 
-            base = "auto x=uv.col(0).array();\nauto y=uv.col(1).array();"
+            base = "auto x=uv.col(0).array();"
+            if dim > 1:
+                base = base + "\nauto y=uv.col(1).array();"
             if dim == 3:
                 base = base + "\nauto z=uv.col(2).array();"
             base = base + "\n\n"
@@ -563,13 +605,19 @@ if __name__ == "__main__":
                             " = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(1) = result_0; }"
                     dbase = dbase + "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], z))).replace(" = 0;", ".setZero();").replace(
                         " = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(2) = result_0; }"
-                else:
+                elif dim == 2:
                     base = base + "\tcase " + str(i) + ": {" + pretty_print.C99_print(
                         simplify(fe.N[real_index])).replace(" = 1;", ".setOnes();") + "} break;\n"
                     dbase = dbase + "\tcase " + str(i) + ": {" + \
                         "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], x))).replace(" = 0;", ".setZero();").replace(" = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(0) = result_0; }" \
                         "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], y))).replace(" = 0;", ".setZero();").replace(
                             " = 1;", ".setOnes();").replace(" = -1;", ".setConstant(-1);") + "val.col(1) = result_0; }"
+                else:
+                    base = base + "\tcase " + str(i) + ": {" + pretty_print.C99_print(
+                        simplify(fe.N[real_index])).replace(" = 1;", ".setOnes();") + "} break;\n"
+                    dbase = dbase + "\tcase " + str(i) + ": {" + \
+                        "{" + pretty_print.C99_print(simplify(diff(fe.N[real_index], x))).replace(" = 0;", ".setZero();").replace(
+                            " = 1.0;", ".setOnes();").replace(" = -1.0;", ".setConstant(-1);") + "val.col(0) = result_0; }"
 
                 dbase = dbase + "} break;\n"
 

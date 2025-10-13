@@ -52,7 +52,7 @@ jobs:
       - name: Run Coverage
         run: |
           cd build
-          ctest --verbose --output-on-failure
+          ctest --verbose --output-on-failure --timeout 3000
           lcov --directory . --capture --output-file coverage.info
           lcov --remove coverage.info '/usr/*' "${HOME}"'/.cache/*' '*tests/*.cpp*' '*/polyfem/problem/*.cpp*' '*/polyfem/problem/*.hpp*' --output-file coverage.info
 

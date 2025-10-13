@@ -3,6 +3,7 @@
 #include <polyfem/quadrature/LineQuadrature.hpp>
 #include <polyfem/quadrature/TriQuadrature.hpp>
 #include <polyfem/quadrature/TetQuadrature.hpp>
+#include <polyfem/quadrature/PrismQuadrature.hpp>
 #include <iostream>
 #include <cmath>
 #include <Eigen/Dense>
@@ -260,14 +261,15 @@ TEST_CASE("weights", "[quadrature]")
 		REQUIRE(quadr.points.minCoeff() >= 0.0);
 		REQUIRE(quadr.points.maxCoeff() <= 1.0);
 	}
-}
 
-// TEST_CASE("triangle", "[quadrature]") {
-//	for (int order = 1; order < 10; ++order) {
-//		Quadrature quadr;
-//		TriQuadrature tri;
-//		tri.get_quadrature(order, quadr);
-//	}
-//
-//	// REQUIRE(poly_fem::determinant(mat) == Catch::Approx(mat.determinant()).margin(1e-12));
-// }
+	// Prism
+	for (int order = 1; order < 16; ++order)
+	{
+		PrismQuadrature pri;
+		Quadrature quadr;
+		pri.get_quadrature(order, order + 1, quadr);
+		REQUIRE(quadr.weights.sum() == Catch::Approx(1.0 / 2.0).margin(1e-12));
+		REQUIRE(quadr.points.minCoeff() >= 0.0);
+		REQUIRE(quadr.points.maxCoeff() <= 1.0);
+	}
+}

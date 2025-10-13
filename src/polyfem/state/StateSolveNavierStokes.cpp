@@ -120,7 +120,7 @@ namespace polyfem
 		/* initialize solution */
 		pressure = Eigen::MatrixXd::Zero(n_pressure_bases, 1);
 
-		const int n_b_samples = n_boundary_samples();
+		const QuadratureOrders &n_b_samples = n_boundary_samples();
 		for (int t = 1; t <= time_steps; t++)
 		{
 			double time = t * dt;
@@ -197,7 +197,7 @@ namespace polyfem
 		solver::TransientNavierStokesSolver ns_solver(args["solver"]);
 		const int n_larger = n_pressure_bases + (use_avg_pressure ? 1 : 0);
 
-		const int n_b_samples = n_boundary_samples();
+		const QuadratureOrders &n_b_samples = n_boundary_samples();
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
