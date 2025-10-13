@@ -40,6 +40,7 @@
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
+#include <polyfem/autogen/prism_bases.hpp>
 
 #include <paraviewo/VTMWriter.hpp>
 #include <paraviewo/PVDWriter.hpp>
@@ -228,6 +229,105 @@ namespace polyfem::io
 
 							visited_node[loc_nodes[q]] = true;
 							displacement_map_entries.emplace_back(new_node, loc_nodes[q], 0.25);
+						}
+
+						continue;
+					}
+					else if (mesh.is_prism(lb.element_id()))
+					{
+						assert(!is_simplicial);
+						assert(!mesh.has_poly());
+						std::vector<int> loc_nodes;
+						RowVectorNd bary = RowVectorNd::Zero(3);
+
+						for (long n = 0; n < nodes.size(); ++n)
+						{
+							auto &bs = b.bases[nodes(n)];
+							const auto &glob = bs.global();
+							if (glob.size() != 1)
+								continue;
+
+							int gindex = glob.front().index;
+							node_positions.row(gindex) = glob.front().node;
+							bary += glob.front().node;
+							loc_nodes.push_back(gindex);
+						}
+
+						auto update_mapping = [&displacement_map_entries, &visited_node](const std::vector<int> &loc_nodes) {
+							for (int k = 0; k < loc_nodes.size(); ++k)
+							{
+								if (!visited_node[loc_nodes[k]])
+									displacement_map_entries.emplace_back(loc_nodes[k], loc_nodes[k], 1);
+
+								visited_node[loc_nodes[k]] = true;
+							}
+						};
+
+						if (loc_nodes.size() == 3)
+						{
+							tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
+
+							update_mapping(loc_nodes);
+						}
+						else if (loc_nodes.size() == 6)
+						{
+							tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[5]);
+							tris.emplace_back(loc_nodes[3], loc_nodes[1], loc_nodes[4]);
+							tris.emplace_back(loc_nodes[4], loc_nodes[2], loc_nodes[5]);
+							tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[5]);
+
+							update_mapping(loc_nodes);
+						}
+						else if (loc_nodes.size() == 10)
+						{
+							tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[8]);
+							tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[9]);
+							tris.emplace_back(loc_nodes[4], loc_nodes[1], loc_nodes[5]);
+							tris.emplace_back(loc_nodes[5], loc_nodes[6], loc_nodes[9]);
+							tris.emplace_back(loc_nodes[6], loc_nodes[2], loc_nodes[7]);
+							tris.emplace_back(loc_nodes[7], loc_nodes[8], loc_nodes[9]);
+							tris.emplace_back(loc_nodes[8], loc_nodes[3], loc_nodes[9]);
+							tris.emplace_back(loc_nodes[9], loc_nodes[4], loc_nodes[5]);
+							tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[9]);
+							update_mapping(loc_nodes);
+						}
+						else if (loc_nodes.size() == 15)
+						{
+							tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[11]);
+							tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[12]);
+							tris.emplace_back(loc_nodes[3], loc_nodes[12], loc_nodes[11]);
+							tris.emplace_back(loc_nodes[12], loc_nodes[10], loc_nodes[11]);
+							tris.emplace_back(loc_nodes[4], loc_nodes[5], loc_nodes[13]);
+							tris.emplace_back(loc_nodes[4], loc_nodes[13], loc_nodes[12]);
+							tris.emplace_back(loc_nodes[12], loc_nodes[13], loc_nodes[14]);
+							tris.emplace_back(loc_nodes[12], loc_nodes[14], loc_nodes[10]);
+							tris.emplace_back(loc_nodes[14], loc_nodes[9], loc_nodes[10]);
+							tris.emplace_back(loc_nodes[5], loc_nodes[1], loc_nodes[6]);
+							tris.emplace_back(loc_nodes[5], loc_nodes[6], loc_nodes[13]);
+							tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[13]);
+							tris.emplace_back(loc_nodes[13], loc_nodes[7], loc_nodes[14]);
+							tris.emplace_back(loc_nodes[7], loc_nodes[8], loc_nodes[14]);
+							tris.emplace_back(loc_nodes[14], loc_nodes[8], loc_nodes[9]);
+							tris.emplace_back(loc_nodes[8], loc_nodes[2], loc_nodes[9]);
+							update_mapping(loc_nodes);
+						}
+						else if (loc_nodes.size() == 4)
+						{
+							bary /= 4;
+
+							const int new_node = n_bases + eid;
+							node_positions.row(new_node) = bary;
+							tris.emplace_back(loc_nodes[1], loc_nodes[0], new_node);
+							tris.emplace_back(loc_nodes[2], loc_nodes[1], new_node);
+							tris.emplace_back(loc_nodes[3], loc_nodes[2], new_node);
+							tris.emplace_back(loc_nodes[0], loc_nodes[3], new_node);
+
+							update_mapping(loc_nodes);
+						}
+						else
+						{
+							logger().trace("skipping element {} since it is not linear, it has {} nodes", eid, loc_nodes.size());
+							continue;
 						}
 
 						continue;
@@ -449,6 +549,10 @@ namespace polyfem::io
 					utils::BoundarySampler::normal_for_tri_face(lb[k], tmp_n);
 					utils::BoundarySampler::sample_parametric_tri_face(lb[k], n_samples, uv, local_pts);
 					break;
+				case BoundaryType::PRISM:
+					utils::BoundarySampler::normal_for_prism_face(lb[k], tmp_n);
+					utils::BoundarySampler::sample_parametric_prism_face(lb[k], n_samples, uv, local_pts);
+					break;
 				case BoundaryType::POLYGON:
 					utils::BoundarySampler::normal_for_polygon_edge(lb.element_id(), lb.global_primitive_id(k), mesh, tmp_n);
 					utils::BoundarySampler::sample_polygon_edge(lb.element_id(), lb.global_primitive_id(k), n_samples, mesh, uv, local_pts);
@@ -473,7 +577,10 @@ namespace polyfem::io
 
 				if (mesh.is_volume())
 				{
-					if (lb.type() == BoundaryType::QUAD)
+					const bool prism_quad = lb.type() == BoundaryType::PRISM && lb[k] >= 2;
+					const bool prism_tri = lb.type() == BoundaryType::PRISM && lb[k] < 2;
+
+					if (lb.type() == BoundaryType::QUAD || prism_quad)
 					{
 						const auto map = [n_samples, size](int i, int j) { return j * n_samples + i + size; };
 
@@ -486,7 +593,7 @@ namespace polyfem::io
 							}
 						}
 					}
-					else if (lb.type() == BoundaryType::TRI)
+					else if (lb.type() == BoundaryType::TRI || prism_tri)
 					{
 						int index = 0;
 						std::vector<int> mapp(n_samples * n_samples, -1);
@@ -655,17 +762,6 @@ namespace polyfem::io
 		Eigen::MatrixXi &el_id,
 		Eigen::MatrixXd &discr) const
 	{
-		// if (!mesh)
-		// {
-		// 	logger().error("Load the mesh first!");
-		// 	return;
-		// }
-		// if (n_bases <= 0)
-		// {
-		// 	logger().error("Build the bases first!");
-		// 	return;
-		// }
-
 		const auto &sampler = ref_element_sampler;
 
 		const auto &current_bases = gbases;
@@ -691,6 +787,11 @@ namespace polyfem::io
 			{
 				tet_total_size += sampler.cube_volume().rows();
 				pts_total_size += sampler.cube_points().rows();
+			}
+			else if (mesh.is_prism(i))
+			{
+				tet_total_size += sampler.prism_volume().rows();
+				pts_total_size += sampler.prism_points().rows();
 			}
 			else
 			{
@@ -751,6 +852,18 @@ namespace polyfem::io
 				el_id.block(pts_index, 0, mapped.rows(), 1).setConstant(i);
 				pts_index += mapped.rows();
 			}
+			else if (mesh.is_prism(i))
+			{
+				bs.eval_geom_mapping(sampler.prism_points(), mapped);
+
+				tets.block(tet_index, 0, sampler.prism_volume().rows(), tets.cols()) = sampler.prism_volume().array() + pts_index;
+				tet_index += sampler.prism_volume().rows();
+
+				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
+				discr.block(pts_index, 0, mapped.rows(), 1).setConstant(disc_orders(i));
+				el_id.block(pts_index, 0, mapped.rows(), 1).setConstant(i);
+				pts_index += mapped.rows();
+			}
 			else
 			{
 				if (mesh.is_volume())
@@ -789,6 +902,7 @@ namespace polyfem::io
 	void OutGeometryData::build_high_order_vis_mesh(
 		const mesh::Mesh &mesh,
 		const Eigen::VectorXi &disc_orders,
+		const Eigen::VectorXi &disc_ordersq,
 		const std::vector<basis::ElementBases> &bases,
 		Eigen::MatrixXd &points,
 		std::vector<std::vector<int>> &elements,
@@ -821,6 +935,8 @@ namespace polyfem::io
 					autogen::p_nodes_3d(disc_orders(i), ref_pts);
 				else if (mesh.is_cube(i))
 					autogen::q_nodes_3d(disc_orders(i), ref_pts);
+				else if (mesh.is_prism(i))
+					autogen::prism_nodes_3d(disc_orders(i), disc_ordersq(i), ref_pts);
 				else
 					continue;
 			}
@@ -859,6 +975,8 @@ namespace polyfem::io
 					autogen::p_nodes_3d(disc_orders(i), ref_pts);
 				else if (mesh.is_cube(i))
 					autogen::q_nodes_3d(disc_orders(i), ref_pts);
+				else if (mesh.is_prism(i))
+					autogen::prism_nodes_3d(disc_orders(i), disc_ordersq(i), ref_pts);
 				else
 					continue;
 			}
@@ -984,6 +1102,8 @@ namespace polyfem::io
 
 		if (!solution_path.empty())
 		{
+			logger().info("Saving solution to {}", solution_path);
+
 			std::ofstream out(solution_path);
 			out.precision(100);
 			out << std::scientific;
@@ -1058,7 +1178,7 @@ namespace polyfem::io
 			Eigen::VectorXd mises;
 			Evaluator::compute_stress_at_quadrature_points(
 				mesh, problem.is_scalar(),
-				bases, gbases, state.disc_orders, *state.assembler,
+				bases, gbases, state.disc_orders, state.disc_ordersq, *state.assembler,
 				sol, tend, result, mises);
 			std::ofstream out(stress_path);
 			out.precision(20);
@@ -1070,7 +1190,7 @@ namespace polyfem::io
 			Eigen::VectorXd mises;
 			Evaluator::compute_stress_at_quadrature_points(
 				mesh, problem.is_scalar(),
-				bases, gbases, state.disc_orders, *state.assembler,
+				bases, gbases, state.disc_orders, state.disc_ordersq, *state.assembler,
 				sol, tend, result, mises);
 			std::ofstream out(mises_path);
 			out.precision(20);
@@ -1083,7 +1203,7 @@ namespace polyfem::io
 		return fields.empty() || std::find(fields.begin(), fields.end(), field) != fields.end();
 	}
 
-	OutGeometryData::ExportOptions::ExportOptions(const json &args, const bool is_mesh_linear, const bool is_problem_scalar)
+	OutGeometryData::ExportOptions::ExportOptions(const json &args, const bool is_mesh_linear, const bool mesh_has_prisms, const bool is_problem_scalar)
 	{
 		fields = args["output"]["paraview"]["fields"];
 
@@ -1100,6 +1220,9 @@ namespace polyfem::io
 			use_sampler = false;
 		else
 			use_sampler = !(is_mesh_linear && args["output"]["paraview"]["high_order_mesh"]);
+		if (mesh_has_prisms)
+			use_sampler = true;
+
 		boundary_only = use_sampler && args["output"]["advanced"]["vis_boundary_only"];
 		material_params = args["output"]["paraview"]["options"]["material"];
 		body_ids = args["output"]["paraview"]["options"]["body_ids"];
@@ -1154,6 +1277,11 @@ namespace polyfem::io
 			logger().error("Solve the problem first!");
 			return;
 		}
+
+		const bool save_contact = is_contact_enabled && (opts.contact_forces || opts.friction_forces);
+
+		logger().info("Saving vtu to {}; volume={}, surface={}, contact={}, points={}, wireframe={}",
+					  path, opts.volume, opts.surface, save_contact, opts.points, opts.wire);
 
 		const std::filesystem::path fs_path(path);
 		const std::string path_stem = fs_path.stem().string();
@@ -1210,6 +1338,7 @@ namespace polyfem::io
 		const ExportOptions &opts) const
 	{
 		const Eigen::VectorXi &disc_orders = state.disc_orders;
+		const Eigen::VectorXi &disc_ordersq = state.disc_ordersq;
 		const auto &density = state.mass_matrix_assembler->density();
 		const std::vector<basis::ElementBases> &bases = state.bases;
 		const std::vector<basis::ElementBases> &pressure_bases = state.pressure_bases;
@@ -1233,7 +1362,7 @@ namespace polyfem::io
 						   state.polys, state.polys_3d, opts.boundary_only,
 						   points, tets, el_id, discr);
 		else
-			build_high_order_vis_mesh(mesh, disc_orders, bases,
+			build_high_order_vis_mesh(mesh, disc_orders, disc_ordersq, bases,
 									  points, elements, el_id, discr);
 
 		Eigen::MatrixXd fun, exact_fun, err, node_fun;
@@ -1307,7 +1436,7 @@ namespace polyfem::io
 				points.rows(), sol, validity, opts.use_sampler, opts.boundary_only);
 
 		Evaluator::interpolate_function(
-			mesh, problem.is_scalar(), bases, state.disc_orders,
+			mesh, problem.is_scalar(), bases, disc_orders, disc_ordersq,
 			state.polys, state.polys_3d, ref_element_sampler,
 			points.rows(), sol, fun, opts.use_sampler, opts.boundary_only);
 
@@ -1315,7 +1444,7 @@ namespace polyfem::io
 			Eigen::MatrixXd tmp = Eigen::VectorXd::LinSpaced(sol.size(), 0, sol.size() - 1);
 
 			Evaluator::interpolate_function(
-				mesh, problem.is_scalar(), bases, state.disc_orders,
+				mesh, problem.is_scalar(), bases, disc_orders, disc_ordersq,
 				state.polys, state.polys_3d, ref_element_sampler,
 				points.rows(), tmp, node_fun, opts.use_sampler, opts.boundary_only);
 		}
@@ -1410,8 +1539,8 @@ namespace polyfem::io
 		{
 			Eigen::MatrixXd interp_p;
 			Evaluator::interpolate_function(
-				mesh, 1, // FIXME: state.disc_orders should use pressure discr orders, works only with sampler
-				pressure_bases, state.disc_orders, state.polys, state.polys_3d, ref_element_sampler,
+				mesh, 1, // FIXME: disc_orders should use pressure discr orders, works only with sampler
+				pressure_bases, disc_orders, disc_ordersq, state.polys, state.polys_3d, ref_element_sampler,
 				points.rows(), pressure, interp_p, opts.use_sampler, opts.boundary_only);
 
 			if (obstacle.n_vertices() > 0)
@@ -1445,7 +1574,7 @@ namespace polyfem::io
 			std::vector<assembler::Assembler::NamedMatrix> vals, tvals;
 			Evaluator::compute_scalar_value(
 				mesh, problem.is_scalar(), bases, gbases,
-				state.disc_orders, state.polys, state.polys_3d,
+				disc_orders, disc_ordersq, state.polys, state.polys_3d,
 				*state.assembler,
 				ref_element_sampler, points.rows(), sol, t, vals, opts.use_sampler, opts.boundary_only);
 
@@ -1464,7 +1593,7 @@ namespace polyfem::io
 			if (opts.tensor_values)
 			{
 				Evaluator::compute_tensor_value(
-					mesh, problem.is_scalar(), bases, gbases, state.disc_orders,
+					mesh, problem.is_scalar(), bases, gbases, disc_orders, disc_ordersq,
 					state.polys, state.polys_3d, *state.assembler, ref_element_sampler,
 					points.rows(), sol, t, tvals, opts.use_sampler, opts.boundary_only);
 
@@ -1494,7 +1623,7 @@ namespace polyfem::io
 			{
 				Evaluator::average_grad_based_function(
 					mesh, problem.is_scalar(), state.n_bases, bases, gbases,
-					state.disc_orders, state.polys, state.polys_3d, *state.assembler,
+					disc_orders, disc_ordersq, state.polys, state.polys_3d, *state.assembler,
 					ref_element_sampler, t, points.rows(), sol, vals, tvals,
 					opts.use_sampler, opts.boundary_only);
 
@@ -1543,6 +1672,8 @@ namespace polyfem::io
 						local_pts = sampler.simplex_points();
 					else if (mesh.is_cube(e))
 						local_pts = sampler.cube_points();
+					else if (mesh.is_prism(e))
+						local_pts = sampler.prism_points();
 					else
 					{
 						if (mesh.is_volume())
@@ -1559,6 +1690,8 @@ namespace polyfem::io
 							autogen::p_nodes_3d(disc_orders(e), local_pts);
 						else if (mesh.is_cube(e))
 							autogen::q_nodes_3d(disc_orders(e), local_pts);
+						else if (mesh.is_prism(e))
+							autogen::prism_nodes_3d(disc_orders(e), disc_ordersq(e), local_pts);
 						else
 							continue;
 					}
@@ -1649,7 +1782,7 @@ namespace polyfem::io
 			compute_traction_forces(state, sol, t, traction_forces, false);
 
 			Evaluator::interpolate_function(
-				mesh, problem.is_scalar(), bases, state.disc_orders,
+				mesh, problem.is_scalar(), bases, disc_orders, disc_ordersq,
 				state.polys, state.polys_3d, ref_element_sampler,
 				points.rows(), traction_forces, traction_forces_fun, opts.use_sampler, opts.boundary_only);
 
@@ -1672,7 +1805,7 @@ namespace polyfem::io
 					state.solve_data.elastic_form->first_derivative(sol, potential_grad);
 
 				Evaluator::interpolate_function(
-					mesh, problem.is_scalar(), bases, state.disc_orders,
+					mesh, problem.is_scalar(), bases, disc_orders, disc_ordersq,
 					state.polys, state.polys_3d, ref_element_sampler,
 					points.rows(), potential_grad, potential_grad_fun, opts.use_sampler, opts.boundary_only);
 
@@ -1701,7 +1834,7 @@ namespace polyfem::io
 					potential_grad *= -state.solve_data.contact_form->barrier_stiffness() / state.solve_data.contact_form->weight();
 
 					Evaluator::interpolate_function(
-						mesh, problem.is_scalar(), bases, state.disc_orders,
+						mesh, problem.is_scalar(), bases, state.disc_orders, state.disc_ordersq,
 						state.polys, state.polys_3d, ref_element_sampler,
 						points.rows(), potential_grad, potential_grad_fun, opts.use_sampler, opts.boundary_only);
 
@@ -1775,7 +1908,7 @@ namespace polyfem::io
 	{
 		Eigen::MatrixXd inerpolated_field;
 		Evaluator::interpolate_function(
-			*state.mesh, state.problem->is_scalar(), state.bases, state.disc_orders,
+			*state.mesh, state.problem->is_scalar(), state.bases, state.disc_orders, state.disc_ordersq,
 			state.polys, state.polys_3d, ref_element_sampler,
 			points.rows(), field, inerpolated_field, opts.use_sampler, opts.boundary_only);
 
@@ -1897,6 +2030,11 @@ namespace polyfem::io
 						area = mesh.tri_area(boundary_vis_primitive_ids(i));
 					else if (mesh.is_cube(el_index))
 						area = mesh.quad_area(boundary_vis_primitive_ids(i));
+					else if (mesh.is_prism(el_index))
+					{
+						const int tmp = boundary_vis_primitive_ids(i);
+						area = mesh.n_face_vertices(tmp) == 4 ? mesh.quad_area(tmp) : mesh.tri_area(tmp);
+					}
 				}
 				else
 					area = mesh.edge_length(boundary_vis_primitive_ids(i));
@@ -2057,7 +2195,7 @@ namespace polyfem::io
 				dhats.setConstant(dhat);
 				for (int e = 0; e < dhats.size(); e++)
 					dhats(e) = set.get_edge_dhat(e);
-				
+
 				writer.add_cell_field("dhat", dhats);
 			}
 			else
@@ -2066,14 +2204,14 @@ namespace polyfem::io
 				fdhats.setConstant(dhat);
 				for (int e = 0; e < fdhats.size(); e++)
 					fdhats(e) = set.get_face_dhat(e);
-				
+
 				writer.add_cell_field("dhat_face", fdhats);
-				
+
 				Eigen::VectorXd vdhats(collision_mesh.num_vertices());
 				vdhats.setConstant(dhat);
 				for (int i = 0; i < vdhats.size(); i++)
 					vdhats(i) = set.get_vert_dhat(i);
-				
+
 				writer.add_field("dhat_vert", vdhats);
 			}
 		}
@@ -2197,6 +2335,12 @@ namespace polyfem::io
 				seg_total_size += sampler.cube_edges().rows();
 				faces_total_size += sampler.cube_faces().rows();
 			}
+			else if (mesh.is_prism(i))
+			{
+				pts_total_size += sampler.prism_points().rows();
+				seg_total_size += sampler.prism_edges().rows();
+				faces_total_size += sampler.prism_faces().rows();
+			}
 			else
 			{
 				if (mesh.is_volume())
@@ -2241,6 +2385,18 @@ namespace polyfem::io
 
 				faces.block(face_index, 0, sampler.cube_faces().rows(), 3) = sampler.cube_faces().array() + pts_index;
 				face_index += sampler.cube_faces().rows();
+
+				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
+				pts_index += mapped.rows();
+			}
+			else if (mesh.is_prism(i))
+			{
+				bs.eval_geom_mapping(sampler.prism_points(), mapped);
+				edges.block(seg_index, 0, sampler.prism_edges().rows(), edges.cols()) = sampler.prism_edges().array() + pts_index;
+				seg_index += sampler.prism_edges().rows();
+
+				faces.block(face_index, 0, sampler.prism_faces().rows(), 3) = sampler.prism_faces().array() + pts_index;
+				face_index += sampler.prism_faces().rows();
 
 				points.block(pts_index, 0, mapped.rows(), points.cols()) = mapped;
 				pts_index += mapped.rows();
@@ -2303,7 +2459,7 @@ namespace polyfem::io
 
 		Eigen::MatrixXd fun;
 		Evaluator::interpolate_function(
-			mesh, problem.is_scalar(), state.bases, state.disc_orders,
+			mesh, problem.is_scalar(), state.bases, state.disc_orders, state.disc_ordersq,
 			state.polys, state.polys_3d, ref_element_sampler,
 			pts_index, sol, fun, /*use_sampler*/ true, false);
 
@@ -2335,7 +2491,7 @@ namespace polyfem::io
 			std::vector<assembler::Assembler::NamedMatrix> scalar_val;
 			Evaluator::compute_scalar_value(
 				mesh, problem.is_scalar(), state.bases, gbases,
-				state.disc_orders, state.polys, state.polys_3d,
+				state.disc_orders, state.disc_ordersq, state.polys, state.polys_3d,
 				*state.assembler,
 				ref_element_sampler, pts_index, sol, t, scalar_val, /*use_sampler*/ true, false);
 			for (const auto &v : scalar_val)
@@ -2812,6 +2968,7 @@ namespace polyfem::io
 		using namespace polyfem::mesh;
 
 		simplex_count = 0;
+		prism_count = 0;
 		regular_count = 0;
 		regular_boundary_count = 0;
 		simple_singular_count = 0;
@@ -2832,6 +2989,9 @@ namespace polyfem::io
 			{
 			case ElementType::SIMPLEX:
 				simplex_count++;
+				break;
+			case ElementType::PRISM:
+				prism_count++;
 				break;
 			case ElementType::REGULAR_INTERIOR_CUBE:
 				regular_count++;
@@ -2867,6 +3027,7 @@ namespace polyfem::io
 		}
 
 		logger().info("simplex_count: \t{}", simplex_count);
+		logger().info("prism_count: \t{}", prism_count);
 		logger().info("regular_count: \t{}", regular_count);
 		logger().info("regular_boundary_count: \t{}", regular_boundary_count);
 		logger().info("simple_singular_count: \t{}", simple_singular_count);
@@ -2885,6 +3046,7 @@ namespace polyfem::io
 		const Eigen::MatrixXd &sol,
 		const mesh::Mesh &mesh,
 		const Eigen::VectorXi &disc_orders,
+		const Eigen::VectorXi &disc_ordersq,
 		const assembler::Problem &problem,
 		const OutRuntimeData &runtime,
 		const std::string &formulation,
@@ -2899,6 +3061,8 @@ namespace polyfem::io
 		j["geom_order_min"] = mesh.orders().size() > 0 ? mesh.orders().minCoeff() : 1;
 		j["discr_order_min"] = disc_orders.minCoeff();
 		j["discr_order_max"] = disc_orders.maxCoeff();
+		j["discr_orderq_min"] = disc_ordersq.minCoeff();
+		j["discr_orderq_max"] = disc_ordersq.maxCoeff();
 		j["iso_parametric"] = isoparametric;
 		j["problem"] = problem.name();
 		j["mat_size"] = mat_size;
@@ -2950,6 +3114,7 @@ namespace polyfem::io
 		j["solver_info"] = solver_info;
 
 		j["count_simplex"] = simplex_count;
+		j["count_prism"] = prism_count;
 		j["count_regular"] = regular_count;
 		j["count_regular_boundary"] = regular_boundary_count;
 		j["count_simple_singular"] = simple_singular_count;
