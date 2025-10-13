@@ -87,6 +87,13 @@ namespace polyfem::assembler
 
 		Eigen::MatrixXd tmp;
 
+		if (type == ElasticityTensorType::F)
+		{
+			std::dynamic_pointer_cast<assembler::ElasticityAssembler>(assembler_.front())
+				->assign_stress_tensor(data, all_size, type, all, fun);
+			return;
+		}
+
 		for (const auto &assembler : assemblers_)
 		{
 			std::dynamic_pointer_cast<assembler::ElasticityAssembler>(assembler)->assign_stress_tensor(data, all_size, type, tmp, fun);
