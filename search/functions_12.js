@@ -41,7 +41,7 @@ var searchData=
   ['refine_5ftriangle_5fedges_38',['refine_triangle_edges',['../namespacepolyfem_1_1mesh.html#acf01f1cc1cd8d1c23d270e5c1471c091',1,'polyfem::mesh']]],
   ['refine_5ftriangle_5fmesh_39',['refine_triangle_mesh',['../namespacepolyfem_1_1mesh.html#a1ba258a79feeaaadcd741cd4fa889ca9',1,'polyfem::mesh']]],
   ['regular_5f2d_5fgrid_40',['regular_2d_grid',['../namespacepolyfem_1_1utils.html#a7c9c5e9f9e93fd2d77c1f5ce6e1ad854',1,'polyfem::utils']]],
-  ['regular_5f3d_5fgrid_41',['regular_3d_grid',['../namespacepolyfem_1_1utils.html#a1cdf057fa8c31024c63a2104c61ae16e',1,'polyfem::utils']]],
+  ['regular_5f3d_5fgrid_41',['regular_3d_grid',['../namespacepolyfem_1_1utils.html#aa41b9b231a205b7c9bf1af98b1cee9ac',1,'polyfem::utils']]],
   ['regular_5fgrid_5ftessellation_42',['regular_grid_tessellation',['../namespacepolyfem_1_1mesh.html#acb91ccfdf02a3bf57424c46c4834402a',1,'polyfem::mesh']]],
   ['regular_5fgrid_5ftriangle_5fbarycentric_5fcoordinates_43',['regular_grid_triangle_barycentric_coordinates',['../namespacepolyfem_1_1mesh.html#a9d79697c151a12917ccb7a8b871fe7b7',1,'polyfem::mesh']]],
   ['remesh_44',['remesh',['../classpolyfem_1_1_state.html#a5ddafd77c68a90e74e41d4591f387f75',1,'polyfem::State']]],

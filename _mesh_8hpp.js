@@ -15,6 +15,7 @@ var _mesh_8hpp =
       [ "INTERFACE_CUBE", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2aaf859843410667079f8725931ab577a1", null ],
       [ "INTERIOR_POLYTOPE", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2abe438b942e9f64180537be34d731916a", null ],
       [ "BOUNDARY_POLYTOPE", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2ae4a2dc79092444d9c45c456835af0965", null ],
+      [ "PRISM", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2a25608df56c02f9fc6854a3de6a51822a", null ],
       [ "UNDEFINED", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2a0db45d2a4141101bdfe48e3314cfbca3", null ]
     ] ]
 ];

@@ -1,6 +1,6 @@
 var classpolyfem_1_1solver_1_1_body_form =
 [
-    [ "BodyForm", "classpolyfem_1_1solver_1_1_body_form.html#a6ede04e8a86c665e65035ec1a447fa39", null ],
+    [ "BodyForm", "classpolyfem_1_1solver_1_1_body_form.html#a8ead493fb06ca41c1bf2d13026cf46ac", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_body_form.html#a65c2eb2d991ce8c46a32b25656a14db1", null ],
     [ "force_shape_derivative", "classpolyfem_1_1solver_1_1_body_form.html#a5dd3812e581ac1ca48508abd65fe6c07", null ],
     [ "hessian_wrt_u_prev", "classpolyfem_1_1solver_1_1_body_form.html#ae0566a90f9083afa1ed76557c05151a9", null ],
@@ -15,7 +15,7 @@ var classpolyfem_1_1solver_1_1_body_form =
     [ "is_formulation_mixed_", "classpolyfem_1_1solver_1_1_body_form.html#a2989697b8d56eefed718250b3ee2a3bd", null ],
     [ "local_boundary_", "classpolyfem_1_1solver_1_1_body_form.html#aab65645ca441d8e4ee9a8a565407a948", null ],
     [ "local_neumann_boundary_", "classpolyfem_1_1solver_1_1_body_form.html#a677914744dd2df3685e3399582fe7e3d", null ],
-    [ "n_boundary_samples_", "classpolyfem_1_1solver_1_1_body_form.html#af7b653c66f0ea7cf803f6b0dde28f442", null ],
+    [ "n_boundary_samples_", "classpolyfem_1_1solver_1_1_body_form.html#a84ccf641fe8fe6abfcd5ca9959e76808", null ],
     [ "n_pressure_bases_", "classpolyfem_1_1solver_1_1_body_form.html#ac1b7fe42c6d0fce4f934e6ef05b6174e", null ],
     [ "ndof_", "classpolyfem_1_1solver_1_1_body_form.html#a67899b2ba62bba2f0131d96517dc42fa", null ],
     [ "rhs_", "classpolyfem_1_1solver_1_1_body_form.html#acc5c8b2edd158433721b03bc17be901f", null ],

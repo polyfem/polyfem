@@ -324,6 +324,7 @@ var hierarchy =
     [ "polyfem::quadrature::PolygonQuadrature", "classpolyfem_1_1quadrature_1_1_polygon_quadrature.html", null ],
     [ "polyfem::quadrature::PolyhedronQuadrature", "classpolyfem_1_1quadrature_1_1_polyhedron_quadrature.html", null ],
     [ "polyfem::assembler::PressureAssembler", "classpolyfem_1_1assembler_1_1_pressure_assembler.html", null ],
+    [ "polyfem::quadrature::PrismQuadrature", "classpolyfem_1_1quadrature_1_1_prism_quadrature.html", null ],
     [ "polyfem::assembler::Problem", "classpolyfem_1_1assembler_1_1_problem.html", [
       [ "polyfem::assembler::GenericScalarProblem", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html", null ],
       [ "polyfem::assembler::GenericTensorProblem", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html", null ],

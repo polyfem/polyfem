@@ -82,7 +82,7 @@ var namespacepolyfem_1_1utils =
     [ "NLOHMANN_JSON_SERIALIZE_ENUM", "namespacepolyfem_1_1utils.html#a3d5616d7cdc82efc086156a883922bbf", null ],
     [ "par_for", "namespacepolyfem_1_1utils.html#a38b2b0564e236864bbac36467f5502bf", null ],
     [ "regular_2d_grid", "namespacepolyfem_1_1utils.html#a7c9c5e9f9e93fd2d77c1f5ce6e1ad854", null ],
-    [ "regular_3d_grid", "namespacepolyfem_1_1utils.html#a1cdf057fa8c31024c63a2104c61ae16e", null ],
+    [ "regular_3d_grid", "namespacepolyfem_1_1utils.html#aa41b9b231a205b7c9bf1af98b1cee9ac", null ],
     [ "reorder_matrix", "namespacepolyfem_1_1utils.html#a4d994983e63be19cec7d739baba363a1", null ],
     [ "resolve_path", "namespacepolyfem_1_1utils.html#a4dc2e59d21d66809d2273ae115be0b73", null ],
     [ "robust_evaluate_jacobian", "namespacepolyfem_1_1utils.html#a6b3ac3aeef82b3785b1425af8a1899b3", null ],

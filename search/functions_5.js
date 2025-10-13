@@ -83,7 +83,7 @@ var searchData=
   ['exponentialmap_80',['ExponentialMap',['../classpolyfem_1_1solver_1_1_exponential_map.html#a1619d192eafb4d4325e4ce99b00530bc',1,'polyfem::solver::ExponentialMap']]],
   ['export_5fdata_81',['export_data',['../classpolyfem_1_1_state.html#acc61dcd623eec2308480c5c082da3d9e',1,'polyfem::State::export_data()'],['../classpolyfem_1_1io_1_1_out_geometry_data.html#ae5fdb256636278dc9d47358e202aba22',1,'polyfem::io::OutGeometryData::export_data()']]],
   ['export_5ffield_82',['export_field',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#ac995bec4d81820e8c1145a53dafe04b5',1,'polyfem::io::OutGeometryData::ExportOptions']]],
-  ['exportoptions_83',['ExportOptions',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#aa47ad94592ab65d262243401b86cfea2',1,'polyfem::io::OutGeometryData::ExportOptions']]],
+  ['exportoptions_83',['ExportOptions',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a62be47115d1ce6f1d0cbe5216f2eea5e',1,'polyfem::io::OutGeometryData::ExportOptions']]],
   ['expressionvalue_84',['ExpressionValue',['../classpolyfem_1_1utils_1_1_expression_value.html#a76dc675f0165ead06fae6a1b4cd3510f',1,'polyfem::utils::ExpressionValue']]],
   ['extend_85',['extend',['../classpolyfem_1_1utils_1_1_piecewise_interpolation.html#a594261dc63b365d258c363d365fa1d2d',1,'polyfem::utils::PiecewiseInterpolation']]],
   ['extend_5flocal_5fpatch_86',['extend_local_patch',['../classpolyfem_1_1mesh_1_1_wild_remesher.html#acdd36beb9d790cf9e543a7f52722c362',1,'polyfem::mesh::WildRemesher']]],

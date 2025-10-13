@@ -149,9 +149,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a59e33cd83c220e21830ee199e2ce68b2" id="r_a59e33cd83c220e21830ee199e2ce68b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a59e33cd83c220e21830ee199e2ce68b2">count_flipped_elements</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">polyfem::mesh::Mesh</a> &amp;mesh, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">polyfem::basis::ElementBases</a> &gt; &amp;gbases)</td></tr>
 <tr class="memdesc:a59e33cd83c220e21830ee199e2ce68b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">counts the number of flipped elements  <br /></td></tr>
 <tr class="separator:a59e33cd83c220e21830ee199e2ce68b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d254feaf1956524ab954de0fef7860b" id="r_a0d254feaf1956524ab954de0fef7860b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a0d254feaf1956524ab954de0fef7860b">save_json</a> (const nlohmann::json &amp;args, const int n_bases, const int n_pressure_bases, const Eigen::MatrixXd &amp;sol, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::VectorXi &amp;disc_orders, const <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html">assembler::Problem</a> &amp;problem, const <a class="el" href="classpolyfem_1_1io_1_1_out_runtime_data.html">OutRuntimeData</a> &amp;runtime, const std::string &amp;formulation, const bool isoparametric, const int sol_at_node_id, nlohmann::json &amp;j)</td></tr>
-<tr class="memdesc:a0d254feaf1956524ab954de0fef7860b"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the output statistic to a json object  <br /></td></tr>
-<tr class="separator:a0d254feaf1956524ab954de0fef7860b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b41f990731f99eddc33467a1bbb3f1c" id="r_a6b41f990731f99eddc33467a1bbb3f1c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a6b41f990731f99eddc33467a1bbb3f1c">save_json</a> (const nlohmann::json &amp;args, const int n_bases, const int n_pressure_bases, const Eigen::MatrixXd &amp;sol, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::VectorXi &amp;disc_orders, const Eigen::VectorXi &amp;disc_ordersq, const <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html">assembler::Problem</a> &amp;problem, const <a class="el" href="classpolyfem_1_1io_1_1_out_runtime_data.html">OutRuntimeData</a> &amp;runtime, const std::string &amp;formulation, const bool isoparametric, const int sol_at_node_id, nlohmann::json &amp;j)</td></tr>
+<tr class="memdesc:a6b41f990731f99eddc33467a1bbb3f1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">saves the output statistic to a json object  <br /></td></tr>
+<tr class="separator:a6b41f990731f99eddc33467a1bbb3f1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -206,6 +206,9 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a1939a9de1a9595b88b5b718641500ff4" id="r_a1939a9de1a9595b88b5b718641500ff4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a1939a9de1a9595b88b5b718641500ff4">simplex_count</a></td></tr>
 <tr class="memdesc:a1939a9de1a9595b88b5b718641500ff4"><td class="mdescLeft">&#160;</td><td class="mdescRight">statiscs on the mesh (simplices)  <br /></td></tr>
 <tr class="separator:a1939a9de1a9595b88b5b718641500ff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a590b8ef7d3fe8db07267309acc807257" id="r_a590b8ef7d3fe8db07267309acc807257"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#a590b8ef7d3fe8db07267309acc807257">prism_count</a></td></tr>
+<tr class="memdesc:a590b8ef7d3fe8db07267309acc807257"><td class="mdescLeft">&#160;</td><td class="mdescRight">statiscs on the mesh (simplices)  <br /></td></tr>
+<tr class="separator:a590b8ef7d3fe8db07267309acc807257"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeb88cadda41136be2639d35b7f2707fe" id="r_aeb88cadda41136be2639d35b7f2707fe"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1io_1_1_out_stats_data.html#aeb88cadda41136be2639d35b7f2707fe">regular_count</a></td></tr>
 <tr class="memdesc:aeb88cadda41136be2639d35b7f2707fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">statiscs on the mesh (regular quad/hex part of the mesh), see Polyspline paper for desciption  <br /></td></tr>
 <tr class="separator:aeb88cadda41136be2639d35b7f2707fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -237,7 +240,7 @@ Public Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>all stats from polyfem </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00367">367</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00374">374</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a82dd3ebdfe11404430cc1beb193abe79" name="a82dd3ebdfe11404430cc1beb193abe79"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a82dd3ebdfe11404430cc1beb193abe79">&#9670;&#160;</a></span>compute_errors()</h2>
@@ -309,9 +312,9 @@ Public Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l02649">2649</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l02805">2805</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_element_assembly_values_8cpp_source.html#l00164">polyfem::assembler::ElementAssemblyValues::compute()</a>, <a class="el" href="_mesh_8hpp_source.html#l00151">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_problem_8hpp_source.html#l00045">polyfem::assembler::Problem::exact()</a>, <a class="el" href="_problem_8hpp_source.html#l00046">polyfem::assembler::Problem::exact_grad()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9a5c59f709e69a5c183a6ea30e3448a9">polyfem::assembler::Problem::has_exact_sol()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem::is_scalar()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
+<p class="reference">References <a class="el" href="_element_assembly_values_8cpp_source.html#l00164">polyfem::assembler::ElementAssemblyValues::compute()</a>, <a class="el" href="_mesh_8hpp_source.html#l00152">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="_problem_8hpp_source.html#l00045">polyfem::assembler::Problem::exact()</a>, <a class="el" href="_problem_8hpp_source.html#l00046">polyfem::assembler::Problem::exact_grad()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a9a5c59f709e69a5c183a6ea30e3448a9">polyfem::assembler::Problem::has_exact_sol()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem::is_scalar()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_assembler_8cpp_source.html#l00086">val</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_output_8cpp_source.html#l00012">polyfem::State::compute_errors()</a>.</p>
 <div class="dynheader">
@@ -376,7 +379,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l02517">2517</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l02673">2673</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a1bbd6a108623834041041c6278c49a92">polyfem::mesh::Mesh::get_edges()</a>, <a class="el" href="_mesh_8cpp_source.html#l00365">polyfem::mesh::Mesh::is_polytope()</a>, <a class="el" href="_mesh_8cpp_source.html#l00422">polyfem::mesh::Mesh::is_simplex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_edge_sampler_8cpp_source.html#l00009">polyfem::utils::EdgeSampler::sample_2d_cube()</a>, <a class="el" href="_edge_sampler_8cpp_source.html#l00038">polyfem::utils::EdgeSampler::sample_2d_simplex()</a>, <a class="el" href="_edge_sampler_8cpp_source.html#l00103">polyfem::utils::EdgeSampler::sample_3d_cube()</a>, and <a class="el" href="_edge_sampler_8cpp_source.html#l00063">polyfem::utils::EdgeSampler::sample_3d_simplex()</a>.</p>
 
@@ -418,9 +421,9 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l02810">2810</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l02966">2966</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00415">polyfem::mesh::Mesh::elements_tag()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00161">polyfem::mesh::Mesh::n_elements()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00421">polyfem::mesh::Mesh::elements_tag()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_mesh_8hpp_source.html#l00162">polyfem::mesh::Mesh::n_elements()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00141">forward_simulation()</a>, and <a class="el" href="_state_8hpp_source.html#l00303">polyfem::State::solve()</a>.</p>
 <div class="dynheader">
@@ -471,9 +474,9 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l02604">2604</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l02760">2760</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00415">polyfem::mesh::Mesh::elements_tag()</a>, <a class="el" href="_mesh_8cpp_source.html#l00365">polyfem::mesh::Mesh::is_polytope()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_8hpp_source.html#l00421">polyfem::mesh::Mesh::elements_tag()</a>, <a class="el" href="_mesh_8cpp_source.html#l00365">polyfem::mesh::Mesh::is_polytope()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9">polyfem::mesh::Mesh::is_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_assembler_8cpp_source.html#l00022">vals</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00505">polyfem::State::build_basis()</a>.</p>
 <div class="dynheader">
@@ -506,7 +509,7 @@ Here is the caller graph for this function:</div>
 
 <p>clears all stats </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l02595">2595</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l02751">2751</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00505">polyfem::State::build_basis()</a>.</p>
 <div class="dynheader">
@@ -517,8 +520,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a0d254feaf1956524ab954de0fef7860b" name="a0d254feaf1956524ab954de0fef7860b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0d254feaf1956524ab954de0fef7860b">&#9670;&#160;</a></span>save_json()</h2>
+<a id="a6b41f990731f99eddc33467a1bbb3f1c" name="a6b41f990731f99eddc33467a1bbb3f1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b41f990731f99eddc33467a1bbb3f1c">&#9670;&#160;</a></span>save_json()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -558,6 +561,12 @@ Here is the caller graph for this function:</div>
           <td></td>
           <td class="paramtype">const Eigen::VectorXi &amp;&#160;</td>
           <td class="paramname"><em>disc_orders</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::VectorXi &amp;&#160;</td>
+          <td class="paramname"><em>disc_ordersq</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -618,6 +627,7 @@ Here is the caller graph for this function:</div>
     <tr><td class="paramdir">[in]</td><td class="paramname">sol</td><td>solution </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">mesh</td><td>mesh </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">disc_orders</td><td>discretization order </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">disc_ordersq</td><td>discretization order </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">problem</td><td>problem </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">runtime</td><td>rumtime </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">formulation</td><td>formulation </td></tr>
@@ -628,20 +638,20 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l02882">2882</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8cpp_source.html#l03043">3043</a> of file <a class="el" href="_out_data_8cpp_source.html">OutData.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_out_data_8hpp_source.html#l00352">polyfem::io::OutRuntimeData::assembling_mass_mat_time</a>, <a class="el" href="_out_data_8hpp_source.html#l00350">polyfem::io::OutRuntimeData::assembling_stiffness_mat_time</a>, <a class="el" href="_out_data_8hpp_source.html#l00354">polyfem::io::OutRuntimeData::assigning_rhs_time</a>, <a class="el" href="_out_data_8hpp_source.html#l00344">polyfem::io::OutRuntimeData::building_basis_time</a>, <a class="el" href="_out_data_8hpp_source.html#l00348">polyfem::io::OutRuntimeData::computing_poly_basis_time</a>, <a class="el" href="_mesh_8hpp_source.html#l00151">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="par__for_8hpp_source.html#l00051">polyfem::utils::get_n_threads()</a>, <a class="el" href="get_r_s_s_8c_source.html#l00037">getPeakRSS()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem::is_scalar()</a>, <a class="el" href="_out_data_8hpp_source.html#l00346">polyfem::io::OutRuntimeData::loading_mesh_time</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_mesh_8hpp_source.html#l00161">polyfem::mesh::Mesh::n_elements()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a02b042ba86d0a7667c5da252af75b99e">polyfem::mesh::Mesh::n_vertices()</a>, <a class="el" href="_problem_8hpp_source.html#l00023">polyfem::assembler::Problem::name()</a>, <a class="el" href="_mesh_8hpp_source.html#l00283">polyfem::mesh::Mesh::orders()</a>, and <a class="el" href="_out_data_8hpp_source.html#l00356">polyfem::io::OutRuntimeData::solving_time</a>.</p>
+<p class="reference">References <a class="el" href="_out_data_8hpp_source.html#l00359">polyfem::io::OutRuntimeData::assembling_mass_mat_time</a>, <a class="el" href="_out_data_8hpp_source.html#l00357">polyfem::io::OutRuntimeData::assembling_stiffness_mat_time</a>, <a class="el" href="_out_data_8hpp_source.html#l00361">polyfem::io::OutRuntimeData::assigning_rhs_time</a>, <a class="el" href="_out_data_8hpp_source.html#l00351">polyfem::io::OutRuntimeData::building_basis_time</a>, <a class="el" href="_out_data_8hpp_source.html#l00355">polyfem::io::OutRuntimeData::computing_poly_basis_time</a>, <a class="el" href="_mesh_8hpp_source.html#l00152">polyfem::mesh::Mesh::dimension()</a>, <a class="el" href="par__for_8hpp_source.html#l00051">polyfem::utils::get_n_threads()</a>, <a class="el" href="get_r_s_s_8c_source.html#l00037">getPeakRSS()</a>, <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec">polyfem::assembler::Problem::is_scalar()</a>, <a class="el" href="_out_data_8hpp_source.html#l00353">polyfem::io::OutRuntimeData::loading_mesh_time</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_mesh_8hpp_source.html#l00162">polyfem::mesh::Mesh::n_elements()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a02b042ba86d0a7667c5da252af75b99e">polyfem::mesh::Mesh::n_vertices()</a>, <a class="el" href="_problem_8hpp_source.html#l00023">polyfem::assembler::Problem::name()</a>, <a class="el" href="_mesh_8hpp_source.html#l00284">polyfem::mesh::Mesh::orders()</a>, and <a class="el" href="_out_data_8hpp_source.html#l00363">polyfem::io::OutRuntimeData::solving_time</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_output_8cpp_source.html#l00084">polyfem::State::save_json()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_output_8cpp_source.html#l00088">polyfem::State::save_json()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_stats_data_a0d254feaf1956524ab954de0fef7860b_cgraph.svg" width="664" height="564"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_stats_data_a6b41f990731f99eddc33467a1bbb3f1c_cgraph.svg" width="664" height="564"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_stats_data_a0d254feaf1956524ab954de0fef7860b_icgraph.svg" width="100%" height="401"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1io_1_1_out_stats_data_a6b41f990731f99eddc33467a1bbb3f1c_icgraph.svg" width="100%" height="401"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -661,7 +671,7 @@ Here is the caller graph for this function:</div>
 
 <p>avg edge lenght </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00382">382</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00389">389</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 </div>
 </div>
@@ -679,7 +689,7 @@ Here is the caller graph for this function:</div>
 
 <p>statiscs on the mesh (boundary quads/hexs), see Polyspline paper for desciption </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00410">410</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00419">419</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 </div>
 </div>
@@ -695,7 +705,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00385">385</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00392">392</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 </div>
 </div>
@@ -711,7 +721,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00385">385</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00392">392</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 </div>
 </div>
@@ -727,7 +737,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00385">385</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00392">392</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 </div>
 </div>
@@ -745,7 +755,7 @@ Here is the caller graph for this function:</div>
 
 <p>errors, lp_err is in fact an L8 error </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00385">385</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00392">392</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 </div>
 </div>
@@ -761,7 +771,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00385">385</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00392">392</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 </div>
 </div>
@@ -777,7 +787,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00385">385</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00392">392</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 </div>
 </div>
@@ -793,9 +803,9 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00389">389</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00396">396</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01496">polyfem::State::assemble_mass_mat()</a>, and <a class="el" href="_state_solve_linear_8cpp_source.html#l00027">polyfem::State::build_stiffness_mat()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01505">polyfem::State::assemble_mass_mat()</a>, and <a class="el" href="_state_solve_linear_8cpp_source.html#l00027">polyfem::State::build_stiffness_mat()</a>.</p>
 
 </div>
 </div>
@@ -813,7 +823,7 @@ Here is the caller graph for this function:</div>
 
 <p>statiscs on angle, compute only when using p_ref (false by default) </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00392">392</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00399">399</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_a_priori_8cpp_source.html#l00047">polyfem::refinement::APriori::p_refine()</a>, and <a class="el" href="_a_priori_8cpp_source.html#l00141">polyfem::refinement::APriori::p_refine()</a>.</p>
 
@@ -833,7 +843,7 @@ Here is the caller graph for this function:</div>
 
 <p>max edge lenght </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00378">378</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00385">385</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00505">polyfem::State::build_basis()</a>.</p>
 
@@ -853,7 +863,7 @@ Here is the caller graph for this function:</div>
 
 <p>min edge lenght </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00380">380</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00387">387</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00505">polyfem::State::build_basis()</a>.</p>
 
@@ -873,7 +883,7 @@ Here is the caller graph for this function:</div>
 
 <p>statiscs on the mesh (irregular boundary quad/hex part of the mesh), see Polyspline paper for desciption </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00418">418</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00427">427</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 </div>
 </div>
@@ -891,7 +901,7 @@ Here is the caller graph for this function:</div>
 
 <p>statiscs on the mesh (irregular quad/hex part of the mesh), see Polyspline paper for desciption </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00408">408</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00417">417</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 </div>
 </div>
@@ -909,7 +919,7 @@ Here is the caller graph for this function:</div>
 
 <p>number of flipped elements, compute only when using count_flipped_els (false by default) </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00397">397</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00404">404</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l00505">polyfem::State::build_basis()</a>.</p>
 
@@ -929,9 +939,9 @@ Here is the caller graph for this function:</div>
 
 <p>non zeros and sytem matrix size num dof is the total dof in the system </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00389">389</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00396">396</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01496">polyfem::State::assemble_mass_mat()</a>, and <a class="el" href="_state_solve_linear_8cpp_source.html#l00027">polyfem::State::build_stiffness_mat()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01505">polyfem::State::assemble_mass_mat()</a>, and <a class="el" href="_state_solve_linear_8cpp_source.html#l00027">polyfem::State::build_stiffness_mat()</a>.</p>
 
 </div>
 </div>
@@ -949,7 +959,7 @@ Here is the caller graph for this function:</div>
 
 <p>statiscs on the mesh (irregular boundary quad/hex part of the mesh), see Polyspline paper for desciption </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00412">412</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00421">421</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 </div>
 </div>
@@ -967,7 +977,7 @@ Here is the caller graph for this function:</div>
 
 <p>statiscs on the mesh (irregular quad/hex part of the mesh), see Polyspline paper for desciption </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00414">414</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00423">423</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 </div>
 </div>
@@ -983,9 +993,27 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00389">389</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00396">396</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01496">polyfem::State::assemble_mass_mat()</a>, and <a class="el" href="_state_solve_linear_8cpp_source.html#l00027">polyfem::State::build_stiffness_mat()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01505">polyfem::State::assemble_mass_mat()</a>, and <a class="el" href="_state_solve_linear_8cpp_source.html#l00027">polyfem::State::build_stiffness_mat()</a>.</p>
+
+</div>
+</div>
+<a id="a590b8ef7d3fe8db07267309acc807257" name="a590b8ef7d3fe8db07267309acc807257"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a590b8ef7d3fe8db07267309acc807257">&#9670;&#160;</a></span>prism_count</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int polyfem::io::OutStatsData::prism_count</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>statiscs on the mesh (simplices) </p>
+
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00409">409</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 </div>
 </div>
@@ -1003,7 +1031,7 @@ Here is the caller graph for this function:</div>
 
 <p>statiscs on the mesh (regular quad/hex boundary part of the mesh), see Polyspline paper for desciption </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00404">404</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00413">413</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 </div>
 </div>
@@ -1021,7 +1049,7 @@ Here is the caller graph for this function:</div>
 
 <p>statiscs on the mesh (regular quad/hex part of the mesh), see Polyspline paper for desciption </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00402">402</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00411">411</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 </div>
 </div>
@@ -1037,7 +1065,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00394">394</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00401">401</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_a_priori_8cpp_source.html#l00047">polyfem::refinement::APriori::p_refine()</a>, and <a class="el" href="_a_priori_8cpp_source.html#l00141">polyfem::refinement::APriori::p_refine()</a>.</p>
 
@@ -1057,7 +1085,7 @@ Here is the caller graph for this function:</div>
 
 <p>statiscs on tri/tet quality, compute only when using p_ref (false by default) </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00394">394</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00401">401</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_a_priori_8cpp_source.html#l00047">polyfem::refinement::APriori::p_refine()</a>, and <a class="el" href="_a_priori_8cpp_source.html#l00141">polyfem::refinement::APriori::p_refine()</a>.</p>
 
@@ -1075,7 +1103,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00394">394</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00401">401</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_a_priori_8cpp_source.html#l00047">polyfem::refinement::APriori::p_refine()</a>, and <a class="el" href="_a_priori_8cpp_source.html#l00141">polyfem::refinement::APriori::p_refine()</a>.</p>
 
@@ -1095,7 +1123,7 @@ Here is the caller graph for this function:</div>
 
 <p>statiscs on the mesh (irregular quad/hex part of the mesh), see Polyspline paper for desciption </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00406">406</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00415">415</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 </div>
 </div>
@@ -1113,7 +1141,7 @@ Here is the caller graph for this function:</div>
 
 <p>statiscs on the mesh (simplices) </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00400">400</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00407">407</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 </div>
 </div>
@@ -1131,7 +1159,7 @@ Here is the caller graph for this function:</div>
 
 <p>information of the solver, eg num iteration, time, errors, etc the informations varies depending on the solver </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00375">375</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00382">382</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00153">polyfem::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_state_solve_linear_8cpp_source.html#l00069">polyfem::State::solve_linear()</a>, and <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00312">polyfem::State::solve_tensor_nonlinear()</a>.</p>
 
@@ -1151,9 +1179,9 @@ Here is the caller graph for this function:</div>
 
 <p>spectrum of the stiffness matrix, enable only if POLYSOLVE_WITH_SPECTRA is ON (off by default) </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00371">371</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00378">378</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_solve_linear_8cpp_source.html#l00069">polyfem::State::solve_linear()</a>, and <a class="el" href="_state_8cpp_source.html#l01692">polyfem::State::solve_problem()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_solve_linear_8cpp_source.html#l00069">polyfem::State::solve_linear()</a>, and <a class="el" href="_state_8cpp_source.html#l01701">polyfem::State::solve_problem()</a>.</p>
 
 </div>
 </div>
@@ -1171,7 +1199,7 @@ Here is the caller graph for this function:</div>
 
 <p>statiscs on the mesh (not quad/hex simplex), see Polyspline paper for desciption </p>
 
-<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00416">416</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_out_data_8hpp_source.html#l00425">425</a> of file <a class="el" href="_out_data_8hpp_source.html">OutData.hpp</a>.</p>
 
 </div>
 </div>

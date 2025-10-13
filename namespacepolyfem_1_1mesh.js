@@ -67,6 +67,7 @@ var namespacepolyfem_1_1mesh =
     [ "BoundaryType", "namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826", [
       [ "TRI_LINE", "namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826ad1ad1999414f3d1964884f9d0f81f976", null ],
       [ "QUAD_LINE", "namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826ac4de65de70929441c563707dc06dbe58", null ],
+      [ "PRISM", "namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826a25608df56c02f9fc6854a3de6a51822a", null ],
       [ "TRI", "namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826a38b464161bf5019798797584babd0433", null ],
       [ "QUAD", "namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826ac88da92039291f825814816096db2ea2", null ],
       [ "POLYGON", "namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826aecdc92bf56d960b73b02ee40125758bc", null ],
@@ -94,6 +95,7 @@ var namespacepolyfem_1_1mesh =
       [ "INTERFACE_CUBE", "namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2aaf859843410667079f8725931ab577a1", null ],
       [ "INTERIOR_POLYTOPE", "namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abe438b942e9f64180537be34d731916a", null ],
       [ "BOUNDARY_POLYTOPE", "namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2ae4a2dc79092444d9c45c456835af0965", null ],
+      [ "PRISM", "namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a25608df56c02f9fc6854a3de6a51822a", null ],
       [ "UNDEFINED", "namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a0db45d2a4141101bdfe48e3314cfbca3", null ]
     ] ],
     [ "MeshType", "namespacepolyfem_1_1mesh.html#a1786d2b6b9b3bda8c6667456f9b1f5ca", [

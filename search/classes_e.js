@@ -36,10 +36,11 @@ var searchData=
   ['pressureassembler_33',['PressureAssembler',['../classpolyfem_1_1assembler_1_1_pressure_assembler.html',1,'polyfem::assembler']]],
   ['pressureform_34',['PressureForm',['../classpolyfem_1_1solver_1_1_pressure_form.html',1,'polyfem::solver']]],
   ['pressurevariabletosimulation_35',['PressureVariableToSimulation',['../classpolyfem_1_1solver_1_1_pressure_variable_to_simulation.html',1,'polyfem::solver']]],
-  ['problem_36',['Problem',['../classpolyfem_1_1assembler_1_1_problem.html',1,'polyfem::assembler']]],
-  ['problemfactory_37',['ProblemFactory',['../classpolyfem_1_1problem_1_1_problem_factory.html',1,'polyfem::problem']]],
-  ['problemwithsolution_38',['ProblemWithSolution',['../classpolyfem_1_1problem_1_1_problem_with_solution.html',1,'polyfem::problem']]],
-  ['program_39',['Program',['../classpolyfem_1_1renderer_1_1_program.html',1,'polyfem::renderer']]],
-  ['proxycontactforceform_40',['ProxyContactForceForm',['../classpolyfem_1_1solver_1_1_proxy_contact_force_form.html',1,'polyfem::solver']]],
-  ['proxytransientform_41',['ProxyTransientForm',['../classpolyfem_1_1solver_1_1_proxy_transient_form.html',1,'polyfem::solver']]]
+  ['prismquadrature_36',['PrismQuadrature',['../classpolyfem_1_1quadrature_1_1_prism_quadrature.html',1,'polyfem::quadrature']]],
+  ['problem_37',['Problem',['../classpolyfem_1_1assembler_1_1_problem.html',1,'polyfem::assembler']]],
+  ['problemfactory_38',['ProblemFactory',['../classpolyfem_1_1problem_1_1_problem_factory.html',1,'polyfem::problem']]],
+  ['problemwithsolution_39',['ProblemWithSolution',['../classpolyfem_1_1problem_1_1_problem_with_solution.html',1,'polyfem::problem']]],
+  ['program_40',['Program',['../classpolyfem_1_1renderer_1_1_program.html',1,'polyfem::renderer']]],
+  ['proxycontactforceform_41',['ProxyContactForceForm',['../classpolyfem_1_1solver_1_1_proxy_contact_force_form.html',1,'polyfem::solver']]],
+  ['proxytransientform_42',['ProxyTransientForm',['../classpolyfem_1_1solver_1_1_proxy_transient_form.html',1,'polyfem::solver']]]
 ];

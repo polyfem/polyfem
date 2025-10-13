@@ -2,7 +2,7 @@ var classpolyfem_1_1io_1_1_out_geometry_data =
 [
     [ "ExportOptions", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html", "structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options" ],
     [ "build_grid", "classpolyfem_1_1io_1_1_out_geometry_data.html#a72f26a24843b7e470674f13241a8bc05", null ],
-    [ "build_high_order_vis_mesh", "classpolyfem_1_1io_1_1_out_geometry_data.html#a0973670568a6c11dca7ae90d0024395e", null ],
+    [ "build_high_order_vis_mesh", "classpolyfem_1_1io_1_1_out_geometry_data.html#aa328df12b5db0bd55db9a1fba50cd34a", null ],
     [ "build_vis_boundary_mesh", "classpolyfem_1_1io_1_1_out_geometry_data.html#a64a28ee005ac8965605f23b42b311e84", null ],
     [ "build_vis_mesh", "classpolyfem_1_1io_1_1_out_geometry_data.html#a00efe14eb0828837150f06a2ddb20c9c", null ],
     [ "export_data", "classpolyfem_1_1io_1_1_out_geometry_data.html#ae5fdb256636278dc9d47358e202aba22", null ],

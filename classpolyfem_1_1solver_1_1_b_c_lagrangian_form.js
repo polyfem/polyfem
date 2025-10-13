@@ -1,6 +1,6 @@
 var classpolyfem_1_1solver_1_1_b_c_lagrangian_form =
 [
-    [ "BCLagrangianForm", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a87d4f1fecb6ab044377c40c02e1a5e51", null ],
+    [ "BCLagrangianForm", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#ac0e6c05d0715af9acf4fb42f8dfc1f44", null ],
     [ "BCLagrangianForm", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#aeac1d30b26004b2fc555f02c14cdbe9c", null ],
     [ "can_project", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a41c901694173a434fab40bc0b23429d2", null ],
     [ "compute_error", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a57397617a93315d2edea537903d3d380", null ],
@@ -21,7 +21,7 @@ var classpolyfem_1_1solver_1_1_b_c_lagrangian_form =
     [ "local_neumann_boundary_", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a888a625b7c984285bb32f327105847c7", null ],
     [ "masked_lumped_mass_", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#ad474099be0da9cb3ba745ec5e3ecec0d", null ],
     [ "masked_lumped_mass_sqrt_", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a90bbdbe15bdc616d9678bdf03a906e51", null ],
-    [ "n_boundary_samples_", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#af5fa63be7c2aa2d23962094b525b737e", null ],
+    [ "n_boundary_samples_", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a271f8f7c6bd47b21f0e8afee665131ae", null ],
     [ "n_dofs_", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a4c4161dd649e28f2154257580bed8f7a", null ],
     [ "not_constraints_", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a06bedc2464814145093f082367c468db", null ],
     [ "rhs_assembler_", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a57b99f4668154684b7810b7285841892", null ]

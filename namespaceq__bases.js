@@ -33,6 +33,7 @@ var namespaceq__bases =
     [ "npts", "namespaceq__bases.html#af0fe99b4361a802ac7ae1d0d9a9daed0", null ],
     [ "orderN", "namespaceq__bases.html#aefd408e88c0ce2b95ed824841f6cb539", null ],
     [ "orders", "namespaceq__bases.html#ab2f254a6c65a88e651f3163c68327535", null ],
+    [ "orderss", "namespaceq__bases.html#ad0517a8233c2354a34b40290b139a27c", null ],
     [ "path", "namespaceq__bases.html#aaacd5e190b3a6acc6d7d2cd743b49524", null ],
     [ "points", "namespaceq__bases.html#a8347075cc386d129336560acaf4bc017", null ],
     [ "real_index", "namespaceq__bases.html#a828481552cc7bd78335c5b519f7fed46", null ],

@@ -33,6 +33,7 @@ var q__bases_8py =
     [ "npts", "q__bases_8py.html#af0fe99b4361a802ac7ae1d0d9a9daed0", null ],
     [ "orderN", "q__bases_8py.html#aefd408e88c0ce2b95ed824841f6cb539", null ],
     [ "orders", "q__bases_8py.html#ab2f254a6c65a88e651f3163c68327535", null ],
+    [ "orderss", "q__bases_8py.html#ad0517a8233c2354a34b40290b139a27c", null ],
     [ "path", "q__bases_8py.html#aaacd5e190b3a6acc6d7d2cd743b49524", null ],
     [ "points", "q__bases_8py.html#a8347075cc386d129336560acaf4bc017", null ],
     [ "real_index", "q__bases_8py.html#a828481552cc7bd78335c5b519f7fed46", null ],

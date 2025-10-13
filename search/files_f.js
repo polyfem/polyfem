@@ -39,10 +39,14 @@ var searchData=
   ['pressureform_2ecpp_36',['PressureForm.cpp',['../_pressure_form_8cpp.html',1,'']]],
   ['pressureform_2ehpp_37',['PressureForm.hpp',['../_pressure_form_8hpp.html',1,'']]],
   ['pretty_5fprint_2epy_38',['pretty_print.py',['../pretty__print_8py.html',1,'']]],
-  ['problem_2ecpp_39',['Problem.cpp',['../_problem_8cpp.html',1,'']]],
-  ['problem_2ehpp_40',['Problem.hpp',['../_problem_8hpp.html',1,'']]],
-  ['problemfactory_2ecpp_41',['ProblemFactory.cpp',['../_problem_factory_8cpp.html',1,'']]],
-  ['problemfactory_2ehpp_42',['ProblemFactory.hpp',['../_problem_factory_8hpp.html',1,'']]],
-  ['problemwithsolution_2ecpp_43',['ProblemWithSolution.cpp',['../_problem_with_solution_8cpp.html',1,'']]],
-  ['problemwithsolution_2ehpp_44',['ProblemWithSolution.hpp',['../_problem_with_solution_8hpp.html',1,'']]]
+  ['prism_5fbases_2ecpp_39',['prism_bases.cpp',['../prism__bases_8cpp.html',1,'']]],
+  ['prism_5fbases_2ehpp_40',['prism_bases.hpp',['../prism__bases_8hpp.html',1,'']]],
+  ['prismquadrature_2ecpp_41',['PrismQuadrature.cpp',['../_prism_quadrature_8cpp.html',1,'']]],
+  ['prismquadrature_2ehpp_42',['PrismQuadrature.hpp',['../_prism_quadrature_8hpp.html',1,'']]],
+  ['problem_2ecpp_43',['Problem.cpp',['../_problem_8cpp.html',1,'']]],
+  ['problem_2ehpp_44',['Problem.hpp',['../_problem_8hpp.html',1,'']]],
+  ['problemfactory_2ecpp_45',['ProblemFactory.cpp',['../_problem_factory_8cpp.html',1,'']]],
+  ['problemfactory_2ehpp_46',['ProblemFactory.hpp',['../_problem_factory_8hpp.html',1,'']]],
+  ['problemwithsolution_2ecpp_47',['ProblemWithSolution.cpp',['../_problem_with_solution_8cpp.html',1,'']]],
+  ['problemwithsolution_2ehpp_48',['ProblemWithSolution.hpp',['../_problem_with_solution_8hpp.html',1,'']]]
 ];

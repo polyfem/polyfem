@@ -139,20 +139,20 @@ Collaboration diagram for polyfem::assembler::PressureAssembler:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aa5c7bd3c71e2ad2ae7a8772d77f906df" id="r_aa5c7bd3c71e2ad2ae7a8772d77f906df"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#aa5c7bd3c71e2ad2ae7a8772d77f906df">PressureAssembler</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">Assembler</a> &amp;<a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#aa3386a0a3650090018d8183e34f71562">assembler</a>, const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;<a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#ad6102621f0d00a3329283fd1f67d0b8f">mesh</a>, const <a class="el" href="classpolyfem_1_1mesh_1_1_obstacle.html">mesh::Obstacle</a> &amp;obstacle, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_pressure_boundary, const std::unordered_map&lt; int, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &gt; &amp;local_pressure_cavity, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const std::vector&lt; int &gt; &amp;primitive_to_nodes, const std::vector&lt; int &gt; &amp;node_to_primitives, const int n_basis, const int size, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;<a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#a8f28285059e976211a923f59898d0bad">bases</a>, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;<a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#aaae7a9356cdd6fff90fc0b2e5a65d34b">gbases</a>, const <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html">Problem</a> &amp;<a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#ac65c911077e0d7cd9a1e8de7a1a671df">problem</a>)</td></tr>
 <tr class="separator:aa5c7bd3c71e2ad2ae7a8772d77f906df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a051086e39136b3809d8d5d79b3dab80d" id="r_a051086e39136b3809d8d5d79b3dab80d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#a051086e39136b3809d8d5d79b3dab80d">compute_energy</a> (const Eigen::MatrixXd &amp;displacement, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_pressure_boundary, const int resolution, const double t) const</td></tr>
-<tr class="separator:a051086e39136b3809d8d5d79b3dab80d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88ea774bf8265e8c0f532a7162c77b9d" id="r_a88ea774bf8265e8c0f532a7162c77b9d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#a88ea774bf8265e8c0f532a7162c77b9d">compute_energy_grad</a> (const Eigen::MatrixXd &amp;displacement, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_pressure_boundary, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const int resolution, const double t, Eigen::VectorXd &amp;grad) const</td></tr>
-<tr class="separator:a88ea774bf8265e8c0f532a7162c77b9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e88cf7febfb307f2b87a71b2b8927b3" id="r_a4e88cf7febfb307f2b87a71b2b8927b3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#a4e88cf7febfb307f2b87a71b2b8927b3">compute_energy_hess</a> (const Eigen::MatrixXd &amp;displacement, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_pressure_boundary, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const int resolution, const double t, const bool project_to_psd, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hess) const</td></tr>
-<tr class="separator:a4e88cf7febfb307f2b87a71b2b8927b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9bd0601cc1e35f938259897cfd012ad" id="r_ae9bd0601cc1e35f938259897cfd012ad"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#ae9bd0601cc1e35f938259897cfd012ad">compute_cavity_energy</a> (const Eigen::MatrixXd &amp;displacement, const std::unordered_map&lt; int, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &gt; &amp;local_pressure_cavity, const int resolution, const double t) const</td></tr>
-<tr class="separator:ae9bd0601cc1e35f938259897cfd012ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf0b922f45dd69ba3e7d7d4f8ec50e64" id="r_acf0b922f45dd69ba3e7d7d4f8ec50e64"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#acf0b922f45dd69ba3e7d7d4f8ec50e64">compute_cavity_energy_grad</a> (const Eigen::MatrixXd &amp;displacement, const std::unordered_map&lt; int, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &gt; &amp;local_pressure_cavity, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const int resolution, const double t, Eigen::VectorXd &amp;grad) const</td></tr>
-<tr class="separator:acf0b922f45dd69ba3e7d7d4f8ec50e64"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae3087c93dff07509dd6e9eb7d1495b85" id="r_ae3087c93dff07509dd6e9eb7d1495b85"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#ae3087c93dff07509dd6e9eb7d1495b85">compute_cavity_energy_hess</a> (const Eigen::MatrixXd &amp;displacement, const std::unordered_map&lt; int, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &gt; &amp;local_pressure_cavity, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const int resolution, const double t, const bool project_to_psd, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hess) const</td></tr>
-<tr class="separator:ae3087c93dff07509dd6e9eb7d1495b85"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96e1942f6f5262a054f3d1f40f8b18e0" id="r_a96e1942f6f5262a054f3d1f40f8b18e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#a96e1942f6f5262a054f3d1f40f8b18e0">compute_force_jacobian</a> (const Eigen::MatrixXd &amp;displacement, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_pressure_boundary, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const int resolution, const double t, const int n_vertices, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hess) const</td></tr>
-<tr class="separator:a96e1942f6f5262a054f3d1f40f8b18e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0dc5399dc925e49f06a3f0a83c6c51da" id="r_a0dc5399dc925e49f06a3f0a83c6c51da"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#a0dc5399dc925e49f06a3f0a83c6c51da">compute_energy</a> (const Eigen::MatrixXd &amp;displacement, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_pressure_boundary, const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;resolution, const double t) const</td></tr>
+<tr class="separator:a0dc5399dc925e49f06a3f0a83c6c51da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed848c517feaf6fba3ee8f149bc6cdcf" id="r_aed848c517feaf6fba3ee8f149bc6cdcf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#aed848c517feaf6fba3ee8f149bc6cdcf">compute_energy_grad</a> (const Eigen::MatrixXd &amp;displacement, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_pressure_boundary, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;resolution, const double t, Eigen::VectorXd &amp;grad) const</td></tr>
+<tr class="separator:aed848c517feaf6fba3ee8f149bc6cdcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97f14eb157e86719bf97450403cb903f" id="r_a97f14eb157e86719bf97450403cb903f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#a97f14eb157e86719bf97450403cb903f">compute_energy_hess</a> (const Eigen::MatrixXd &amp;displacement, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_pressure_boundary, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;resolution, const double t, const bool project_to_psd, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hess) const</td></tr>
+<tr class="separator:a97f14eb157e86719bf97450403cb903f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add6ee85ac36987752cd77faf1e17a89d" id="r_add6ee85ac36987752cd77faf1e17a89d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#add6ee85ac36987752cd77faf1e17a89d">compute_cavity_energy</a> (const Eigen::MatrixXd &amp;displacement, const std::unordered_map&lt; int, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &gt; &amp;local_pressure_cavity, const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;resolution, const double t) const</td></tr>
+<tr class="separator:add6ee85ac36987752cd77faf1e17a89d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1577e6c388d9dc658784a9ae61cab4c" id="r_ad1577e6c388d9dc658784a9ae61cab4c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#ad1577e6c388d9dc658784a9ae61cab4c">compute_cavity_energy_grad</a> (const Eigen::MatrixXd &amp;displacement, const std::unordered_map&lt; int, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &gt; &amp;local_pressure_cavity, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;resolution, const double t, Eigen::VectorXd &amp;grad) const</td></tr>
+<tr class="separator:ad1577e6c388d9dc658784a9ae61cab4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0228832a3282530fa47ee1f4f96a55d7" id="r_a0228832a3282530fa47ee1f4f96a55d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#a0228832a3282530fa47ee1f4f96a55d7">compute_cavity_energy_hess</a> (const Eigen::MatrixXd &amp;displacement, const std::unordered_map&lt; int, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &gt; &amp;local_pressure_cavity, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;resolution, const double t, const bool project_to_psd, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hess) const</td></tr>
+<tr class="separator:a0228832a3282530fa47ee1f4f96a55d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4f2c7629354c375b465f62305335fc8" id="r_af4f2c7629354c375b465f62305335fc8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#af4f2c7629354c375b465f62305335fc8">compute_force_jacobian</a> (const Eigen::MatrixXd &amp;displacement, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_pressure_boundary, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;resolution, const double t, const int n_vertices, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hess) const</td></tr>
+<tr class="separator:af4f2c7629354c375b465f62305335fc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac65c911077e0d7cd9a1e8de7a1a671df" id="r_ac65c911077e0d7cd9a1e8de7a1a671df"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html">Problem</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#ac65c911077e0d7cd9a1e8de7a1a671df">problem</a> () const</td></tr>
 <tr class="separator:ac65c911077e0d7cd9a1e8de7a1a671df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad6102621f0d00a3329283fd1f67d0b8f" id="r_ad6102621f0d00a3329283fd1f67d0b8f"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#ad6102621f0d00a3329283fd1f67d0b8f">mesh</a> () const</td></tr>
@@ -163,19 +163,19 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aaae7a9356cdd6fff90fc0b2e5a65d34b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3386a0a3650090018d8183e34f71562" id="r_aa3386a0a3650090018d8183e34f71562"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">Assembler</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#aa3386a0a3650090018d8183e34f71562">assembler</a> () const</td></tr>
 <tr class="separator:aa3386a0a3650090018d8183e34f71562"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2be016da1df0b4f4945313d20de5cc13" id="r_a2be016da1df0b4f4945313d20de5cc13"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#a2be016da1df0b4f4945313d20de5cc13">compute_grad_volume_id</a> (const Eigen::MatrixXd &amp;displacement, const int boundary_id, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const int resolution, Eigen::VectorXd &amp;grad, const double t=0, const bool multiply_pressure=false) const</td></tr>
-<tr class="separator:a2be016da1df0b4f4945313d20de5cc13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b8ad9ac7161a856c4ad300edd66d9d9" id="r_a2b8ad9ac7161a856c4ad300edd66d9d9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#a2b8ad9ac7161a856c4ad300edd66d9d9">compute_grad_volume_id</a> (const Eigen::MatrixXd &amp;displacement, const int boundary_id, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;resolution, Eigen::VectorXd &amp;grad, const double t=0, const bool multiply_pressure=false) const</td></tr>
+<tr class="separator:a2b8ad9ac7161a856c4ad300edd66d9d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:a7eccb04026b1e9380dd4dc629987fe4b" id="r_a7eccb04026b1e9380dd4dc629987fe4b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#a7eccb04026b1e9380dd4dc629987fe4b">compute_volume</a> (const Eigen::MatrixXd &amp;displacement, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const int resolution, const double t=0, const bool multiply_pressure=false) const</td></tr>
-<tr class="separator:a7eccb04026b1e9380dd4dc629987fe4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a81cda3766f8cc44d9d507f298d523458" id="r_a81cda3766f8cc44d9d507f298d523458"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#a81cda3766f8cc44d9d507f298d523458">compute_grad_volume</a> (const Eigen::MatrixXd &amp;displacement, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const int resolution, Eigen::VectorXd &amp;grad, const double t=0, const bool multiply_pressure=false) const</td></tr>
-<tr class="separator:a81cda3766f8cc44d9d507f298d523458"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2fd8e0683734a7af8f6721473581d991" id="r_a2fd8e0683734a7af8f6721473581d991"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#a2fd8e0683734a7af8f6721473581d991">compute_hess_volume_3d</a> (const Eigen::MatrixXd &amp;displacement, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const int resolution, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hess, const double t=0, const bool multiply_pressure=false) const</td></tr>
-<tr class="separator:a2fd8e0683734a7af8f6721473581d991"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a468c678a958a1cfff6a563328a0c1b21" id="r_a468c678a958a1cfff6a563328a0c1b21"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#a468c678a958a1cfff6a563328a0c1b21">compute_hess_volume_2d</a> (const Eigen::MatrixXd &amp;displacement, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const int resolution, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hess, const double t=0, const bool multiply_pressure=false) const</td></tr>
-<tr class="separator:a468c678a958a1cfff6a563328a0c1b21"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19d971e3b4d8b1c4a22522d613b3eee5" id="r_a19d971e3b4d8b1c4a22522d613b3eee5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#a19d971e3b4d8b1c4a22522d613b3eee5">compute_volume</a> (const Eigen::MatrixXd &amp;displacement, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;resolution, const double t=0, const bool multiply_pressure=false) const</td></tr>
+<tr class="separator:a19d971e3b4d8b1c4a22522d613b3eee5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a29c63c2bfeaa4ab1f7850ed085b6bd56" id="r_a29c63c2bfeaa4ab1f7850ed085b6bd56"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#a29c63c2bfeaa4ab1f7850ed085b6bd56">compute_grad_volume</a> (const Eigen::MatrixXd &amp;displacement, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;resolution, Eigen::VectorXd &amp;grad, const double t=0, const bool multiply_pressure=false) const</td></tr>
+<tr class="separator:a29c63c2bfeaa4ab1f7850ed085b6bd56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af19887f95fa4ab65a079a6281794c285" id="r_af19887f95fa4ab65a079a6281794c285"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#af19887f95fa4ab65a079a6281794c285">compute_hess_volume_3d</a> (const Eigen::MatrixXd &amp;displacement, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;resolution, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hess, const double t=0, const bool multiply_pressure=false) const</td></tr>
+<tr class="separator:af19887f95fa4ab65a079a6281794c285"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5db700b7c7b9a09edc4e290262db6ed8" id="r_a5db700b7c7b9a09edc4e290262db6ed8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#a5db700b7c7b9a09edc4e290262db6ed8">compute_hess_volume_2d</a> (const Eigen::MatrixXd &amp;displacement, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;resolution, <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hess, const double t=0, const bool multiply_pressure=false) const</td></tr>
+<tr class="separator:a5db700b7c7b9a09edc4e290262db6ed8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a06b51296c61069f06839d67b800a10fa" id="r_a06b51296c61069f06839d67b800a10fa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html#a06b51296c61069f06839d67b800a10fa">is_closed_or_boundary_fixed</a> (const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_boundary, const std::vector&lt; int &gt; &amp;dirichlet_nodes) const</td></tr>
 <tr class="separator:a06b51296c61069f06839d67b800a10fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -374,8 +374,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="ae9bd0601cc1e35f938259897cfd012ad" name="ae9bd0601cc1e35f938259897cfd012ad"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae9bd0601cc1e35f938259897cfd012ad">&#9670;&#160;</a></span>compute_cavity_energy()</h2>
+<a id="add6ee85ac36987752cd77faf1e17a89d" name="add6ee85ac36987752cd77faf1e17a89d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add6ee85ac36987752cd77faf1e17a89d">&#9670;&#160;</a></span>compute_cavity_energy()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -395,7 +395,7 @@ Here is the call graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const int&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;&#160;</td>
           <td class="paramname"><em>resolution</em>, </td>
         </tr>
         <tr>
@@ -412,7 +412,7 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_pressure_assembler_8cpp_source.html#l00930">930</a> of file <a class="el" href="_pressure_assembler_8cpp_source.html">PressureAssembler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_pressure_assembler_8cpp_source.html#l00932">932</a> of file <a class="el" href="_pressure_assembler_8cpp_source.html">PressureAssembler.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_pressure_assembler_8hpp_source.html#l00200">cavity_thermodynamics_</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00090">compute_volume()</a>, <a class="el" href="_problem_8hpp_source.html#l00033">polyfem::assembler::Problem::pressure_cavity_bc()</a>, <a class="el" href="_pressure_assembler_8hpp_source.html#l00197">problem_</a>, and <a class="el" href="_pressure_assembler_8hpp_source.html#l00199">starting_volumes_</a>.</p>
 
@@ -420,18 +420,18 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_ae9bd0601cc1e35f938259897cfd012ad_cgraph.svg" width="614" height="170"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_add6ee85ac36987752cd77faf1e17a89d_cgraph.svg" width="614" height="170"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_ae9bd0601cc1e35f938259897cfd012ad_icgraph.svg" width="434" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_add6ee85ac36987752cd77faf1e17a89d_icgraph.svg" width="434" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="acf0b922f45dd69ba3e7d7d4f8ec50e64" name="acf0b922f45dd69ba3e7d7d4f8ec50e64"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acf0b922f45dd69ba3e7d7d4f8ec50e64">&#9670;&#160;</a></span>compute_cavity_energy_grad()</h2>
+<a id="ad1577e6c388d9dc658784a9ae61cab4c" name="ad1577e6c388d9dc658784a9ae61cab4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1577e6c388d9dc658784a9ae61cab4c">&#9670;&#160;</a></span>compute_cavity_energy_grad()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -457,7 +457,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const int&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;&#160;</td>
           <td class="paramname"><em>resolution</em>, </td>
         </tr>
         <tr>
@@ -480,7 +480,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_pressure_assembler_8cpp_source.html#l00948">948</a> of file <a class="el" href="_pressure_assembler_8cpp_source.html">PressureAssembler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_pressure_assembler_8cpp_source.html#l00950">950</a> of file <a class="el" href="_pressure_assembler_8cpp_source.html">PressureAssembler.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_pressure_assembler_8hpp_source.html#l00200">cavity_thermodynamics_</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00210">compute_grad_volume()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00090">compute_volume()</a>, <a class="el" href="_problem_8hpp_source.html#l00033">polyfem::assembler::Problem::pressure_cavity_bc()</a>, <a class="el" href="_pressure_assembler_8hpp_source.html#l00197">problem_</a>, and <a class="el" href="_pressure_assembler_8hpp_source.html#l00199">starting_volumes_</a>.</p>
 
@@ -488,18 +488,18 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_acf0b922f45dd69ba3e7d7d4f8ec50e64_cgraph.svg" width="100%" height="467"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_ad1577e6c388d9dc658784a9ae61cab4c_cgraph.svg" width="100%" height="467"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_acf0b922f45dd69ba3e7d7d4f8ec50e64_icgraph.svg" width="470" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_ad1577e6c388d9dc658784a9ae61cab4c_icgraph.svg" width="470" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="ae3087c93dff07509dd6e9eb7d1495b85" name="ae3087c93dff07509dd6e9eb7d1495b85"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae3087c93dff07509dd6e9eb7d1495b85">&#9670;&#160;</a></span>compute_cavity_energy_hess()</h2>
+<a id="a0228832a3282530fa47ee1f4f96a55d7" name="a0228832a3282530fa47ee1f4f96a55d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0228832a3282530fa47ee1f4f96a55d7">&#9670;&#160;</a></span>compute_cavity_energy_hess()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -525,7 +525,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const int&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;&#160;</td>
           <td class="paramname"><em>resolution</em>, </td>
         </tr>
         <tr>
@@ -554,7 +554,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_pressure_assembler_8cpp_source.html#l00973">973</a> of file <a class="el" href="_pressure_assembler_8cpp_source.html">PressureAssembler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_pressure_assembler_8cpp_source.html#l00975">975</a> of file <a class="el" href="_pressure_assembler_8cpp_source.html">PressureAssembler.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_pressure_assembler_8hpp_source.html#l00200">cavity_thermodynamics_</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00210">compute_grad_volume()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00652">compute_hess_volume_2d()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00465">compute_hess_volume_3d()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00090">compute_volume()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_problem_8hpp_source.html#l00033">polyfem::assembler::Problem::pressure_cavity_bc()</a>, <a class="el" href="_pressure_assembler_8hpp_source.html#l00197">problem_</a>, <a class="el" href="_pressure_assembler_8hpp_source.html#l00194">size_</a>, and <a class="el" href="_pressure_assembler_8hpp_source.html#l00199">starting_volumes_</a>.</p>
 
@@ -562,18 +562,18 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_ae3087c93dff07509dd6e9eb7d1495b85_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a0228832a3282530fa47ee1f4f96a55d7_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_ae3087c93dff07509dd6e9eb7d1495b85_icgraph.svg" width="470" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a0228832a3282530fa47ee1f4f96a55d7_icgraph.svg" width="470" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="a051086e39136b3809d8d5d79b3dab80d" name="a051086e39136b3809d8d5d79b3dab80d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a051086e39136b3809d8d5d79b3dab80d">&#9670;&#160;</a></span>compute_energy()</h2>
+<a id="a0dc5399dc925e49f06a3f0a83c6c51da" name="a0dc5399dc925e49f06a3f0a83c6c51da"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0dc5399dc925e49f06a3f0a83c6c51da">&#9670;&#160;</a></span>compute_energy()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -593,7 +593,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const int&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;&#160;</td>
           <td class="paramname"><em>resolution</em>, </td>
         </tr>
         <tr>
@@ -610,7 +610,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_pressure_assembler_8cpp_source.html#l01012">1012</a> of file <a class="el" href="_pressure_assembler_8cpp_source.html">PressureAssembler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_pressure_assembler_8cpp_source.html#l01014">1014</a> of file <a class="el" href="_pressure_assembler_8cpp_source.html">PressureAssembler.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_pressure_assembler_8cpp_source.html#l00090">compute_volume()</a>.</p>
 
@@ -618,18 +618,18 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a051086e39136b3809d8d5d79b3dab80d_cgraph.svg" width="582" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a0dc5399dc925e49f06a3f0a83c6c51da_cgraph.svg" width="582" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a051086e39136b3809d8d5d79b3dab80d_icgraph.svg" width="402" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a0dc5399dc925e49f06a3f0a83c6c51da_icgraph.svg" width="402" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="a88ea774bf8265e8c0f532a7162c77b9d" name="a88ea774bf8265e8c0f532a7162c77b9d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a88ea774bf8265e8c0f532a7162c77b9d">&#9670;&#160;</a></span>compute_energy_grad()</h2>
+<a id="aed848c517feaf6fba3ee8f149bc6cdcf" name="aed848c517feaf6fba3ee8f149bc6cdcf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed848c517feaf6fba3ee8f149bc6cdcf">&#9670;&#160;</a></span>compute_energy_grad()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -655,7 +655,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const int&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;&#160;</td>
           <td class="paramname"><em>resolution</em>, </td>
         </tr>
         <tr>
@@ -678,7 +678,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_pressure_assembler_8cpp_source.html#l01021">1021</a> of file <a class="el" href="_pressure_assembler_8cpp_source.html">PressureAssembler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_pressure_assembler_8cpp_source.html#l01023">1023</a> of file <a class="el" href="_pressure_assembler_8cpp_source.html">PressureAssembler.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_pressure_assembler_8cpp_source.html#l00210">compute_grad_volume()</a>.</p>
 
@@ -686,18 +686,18 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a88ea774bf8265e8c0f532a7162c77b9d_cgraph.svg" width="626" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_aed848c517feaf6fba3ee8f149bc6cdcf_cgraph.svg" width="626" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a88ea774bf8265e8c0f532a7162c77b9d_icgraph.svg" width="422" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_aed848c517feaf6fba3ee8f149bc6cdcf_icgraph.svg" width="422" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="a4e88cf7febfb307f2b87a71b2b8927b3" name="a4e88cf7febfb307f2b87a71b2b8927b3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4e88cf7febfb307f2b87a71b2b8927b3">&#9670;&#160;</a></span>compute_energy_hess()</h2>
+<a id="a97f14eb157e86719bf97450403cb903f" name="a97f14eb157e86719bf97450403cb903f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97f14eb157e86719bf97450403cb903f">&#9670;&#160;</a></span>compute_energy_hess()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -723,7 +723,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const int&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;&#160;</td>
           <td class="paramname"><em>resolution</em>, </td>
         </tr>
         <tr>
@@ -752,26 +752,26 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_pressure_assembler_8cpp_source.html#l01032">1032</a> of file <a class="el" href="_pressure_assembler_8cpp_source.html">PressureAssembler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_pressure_assembler_8cpp_source.html#l01034">1034</a> of file <a class="el" href="_pressure_assembler_8cpp_source.html">PressureAssembler.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_pressure_assembler_8cpp_source.html#l00652">compute_hess_volume_2d()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00465">compute_hess_volume_3d()</a>, and <a class="el" href="_pressure_assembler_8hpp_source.html#l00194">size_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_pressure_assembler_8cpp_source.html#l01047">compute_force_jacobian()</a>, and <a class="el" href="_pressure_form_8cpp_source.html#l00053">polyfem::solver::PressureForm::second_derivative_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_pressure_assembler_8cpp_source.html#l01049">compute_force_jacobian()</a>, and <a class="el" href="_pressure_form_8cpp_source.html#l00053">polyfem::solver::PressureForm::second_derivative_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a4e88cf7febfb307f2b87a71b2b8927b3_cgraph.svg" width="651" height="144"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a97f14eb157e86719bf97450403cb903f_cgraph.svg" width="651" height="144"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a4e88cf7febfb307f2b87a71b2b8927b3_icgraph.svg" width="100%" height="408"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a97f14eb157e86719bf97450403cb903f_icgraph.svg" width="100%" height="408"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a96e1942f6f5262a054f3d1f40f8b18e0" name="a96e1942f6f5262a054f3d1f40f8b18e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a96e1942f6f5262a054f3d1f40f8b18e0">&#9670;&#160;</a></span>compute_force_jacobian()</h2>
+<a id="af4f2c7629354c375b465f62305335fc8" name="af4f2c7629354c375b465f62305335fc8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4f2c7629354c375b465f62305335fc8">&#9670;&#160;</a></span>compute_force_jacobian()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -797,7 +797,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const int&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;&#160;</td>
           <td class="paramname"><em>resolution</em>, </td>
         </tr>
         <tr>
@@ -826,26 +826,26 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_pressure_assembler_8cpp_source.html#l01047">1047</a> of file <a class="el" href="_pressure_assembler_8cpp_source.html">PressureAssembler.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_pressure_assembler_8cpp_source.html#l01049">1049</a> of file <a class="el" href="_pressure_assembler_8cpp_source.html">PressureAssembler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_pressure_assembler_8cpp_source.html#l01032">compute_energy_hess()</a>.</p>
+<p class="reference">References <a class="el" href="_pressure_assembler_8cpp_source.html#l01034">compute_energy_hess()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_pressure_form_8cpp_source.html#l00067">polyfem::solver::PressureForm::force_shape_derivative()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a96e1942f6f5262a054f3d1f40f8b18e0_cgraph.svg" width="100%" height="408"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_af4f2c7629354c375b465f62305335fc8_cgraph.svg" width="100%" height="408"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a96e1942f6f5262a054f3d1f40f8b18e0_icgraph.svg" width="463" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_af4f2c7629354c375b465f62305335fc8_icgraph.svg" width="463" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="a81cda3766f8cc44d9d507f298d523458" name="a81cda3766f8cc44d9d507f298d523458"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a81cda3766f8cc44d9d507f298d523458">&#9670;&#160;</a></span>compute_grad_volume()</h2>
+<a id="a29c63c2bfeaa4ab1f7850ed085b6bd56" name="a29c63c2bfeaa4ab1f7850ed085b6bd56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a29c63c2bfeaa4ab1f7850ed085b6bd56">&#9670;&#160;</a></span>compute_grad_volume()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -874,7 +874,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const int&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;&#160;</td>
           <td class="paramname"><em>resolution</em>, </td>
         </tr>
         <tr>
@@ -912,22 +912,22 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_pressure_assembler_8hpp_source.html#l00193">n_basis_</a>, and <a class="el" href="_pressure_assembler_8hpp_source.html#l00194">size_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_pressure_assembler_8cpp_source.html#l00948">compute_cavity_energy_grad()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00973">compute_cavity_energy_hess()</a>, and <a class="el" href="_pressure_assembler_8cpp_source.html#l01021">compute_energy_grad()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_pressure_assembler_8cpp_source.html#l00950">compute_cavity_energy_grad()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00975">compute_cavity_energy_hess()</a>, and <a class="el" href="_pressure_assembler_8cpp_source.html#l01023">compute_energy_grad()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a81cda3766f8cc44d9d507f298d523458_cgraph.svg" width="403" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a29c63c2bfeaa4ab1f7850ed085b6bd56_cgraph.svg" width="403" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a81cda3766f8cc44d9d507f298d523458_icgraph.svg" width="100%" height="467"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a29c63c2bfeaa4ab1f7850ed085b6bd56_icgraph.svg" width="100%" height="467"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a2be016da1df0b4f4945313d20de5cc13" name="a2be016da1df0b4f4945313d20de5cc13"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2be016da1df0b4f4945313d20de5cc13">&#9670;&#160;</a></span>compute_grad_volume_id()</h2>
+<a id="a2b8ad9ac7161a856c4ad300edd66d9d9" name="a2b8ad9ac7161a856c4ad300edd66d9d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b8ad9ac7161a856c4ad300edd66d9d9">&#9670;&#160;</a></span>compute_grad_volume_id()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -959,7 +959,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const int&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;&#160;</td>
           <td class="paramname"><em>resolution</em>, </td>
         </tr>
         <tr>
@@ -996,18 +996,18 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a2be016da1df0b4f4945313d20de5cc13_cgraph.svg" width="423" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a2b8ad9ac7161a856c4ad300edd66d9d9_cgraph.svg" width="423" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a2be016da1df0b4f4945313d20de5cc13_icgraph.svg" width="490" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a2b8ad9ac7161a856c4ad300edd66d9d9_icgraph.svg" width="490" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
 </div>
-<a id="a468c678a958a1cfff6a563328a0c1b21" name="a468c678a958a1cfff6a563328a0c1b21"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a468c678a958a1cfff6a563328a0c1b21">&#9670;&#160;</a></span>compute_hess_volume_2d()</h2>
+<a id="a5db700b7c7b9a09edc4e290262db6ed8" name="a5db700b7c7b9a09edc4e290262db6ed8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5db700b7c7b9a09edc4e290262db6ed8">&#9670;&#160;</a></span>compute_hess_volume_2d()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1036,7 +1036,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const int&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;&#160;</td>
           <td class="paramname"><em>resolution</em>, </td>
         </tr>
         <tr>
@@ -1074,22 +1074,22 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_pressure_assembler_8hpp_source.html#l00193">n_basis_</a>, and <a class="el" href="_pressure_assembler_8hpp_source.html#l00194">size_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_pressure_assembler_8cpp_source.html#l00973">compute_cavity_energy_hess()</a>, and <a class="el" href="_pressure_assembler_8cpp_source.html#l01032">compute_energy_hess()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_pressure_assembler_8cpp_source.html#l00975">compute_cavity_energy_hess()</a>, and <a class="el" href="_pressure_assembler_8cpp_source.html#l01034">compute_energy_hess()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a468c678a958a1cfff6a563328a0c1b21_cgraph.svg" width="427" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a5db700b7c7b9a09edc4e290262db6ed8_cgraph.svg" width="427" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a468c678a958a1cfff6a563328a0c1b21_icgraph.svg" width="100%" height="408"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a5db700b7c7b9a09edc4e290262db6ed8_icgraph.svg" width="100%" height="408"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a2fd8e0683734a7af8f6721473581d991" name="a2fd8e0683734a7af8f6721473581d991"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2fd8e0683734a7af8f6721473581d991">&#9670;&#160;</a></span>compute_hess_volume_3d()</h2>
+<a id="af19887f95fa4ab65a079a6281794c285" name="af19887f95fa4ab65a079a6281794c285"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af19887f95fa4ab65a079a6281794c285">&#9670;&#160;</a></span>compute_hess_volume_3d()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1118,7 +1118,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const int&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;&#160;</td>
           <td class="paramname"><em>resolution</em>, </td>
         </tr>
         <tr>
@@ -1156,22 +1156,22 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>, <a class="el" href="_pressure_assembler_8hpp_source.html#l00193">n_basis_</a>, and <a class="el" href="_pressure_assembler_8hpp_source.html#l00194">size_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_pressure_assembler_8cpp_source.html#l00973">compute_cavity_energy_hess()</a>, and <a class="el" href="_pressure_assembler_8cpp_source.html#l01032">compute_energy_hess()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_pressure_assembler_8cpp_source.html#l00975">compute_cavity_energy_hess()</a>, and <a class="el" href="_pressure_assembler_8cpp_source.html#l01034">compute_energy_hess()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a2fd8e0683734a7af8f6721473581d991_cgraph.svg" width="427" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_af19887f95fa4ab65a079a6281794c285_cgraph.svg" width="427" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a2fd8e0683734a7af8f6721473581d991_icgraph.svg" width="100%" height="408"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_af19887f95fa4ab65a079a6281794c285_icgraph.svg" width="100%" height="408"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
 </div>
-<a id="a7eccb04026b1e9380dd4dc629987fe4b" name="a7eccb04026b1e9380dd4dc629987fe4b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7eccb04026b1e9380dd4dc629987fe4b">&#9670;&#160;</a></span>compute_volume()</h2>
+<a id="a19d971e3b4d8b1c4a22522d613b3eee5" name="a19d971e3b4d8b1c4a22522d613b3eee5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a19d971e3b4d8b1c4a22522d613b3eee5">&#9670;&#160;</a></span>compute_volume()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1194,7 +1194,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const int&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;&#160;</td>
           <td class="paramname"><em>resolution</em>, </td>
         </tr>
         <tr>
@@ -1226,16 +1226,16 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="namespacepolyfem_1_1utils.html#ad20302c105652db61d40fbfcb81847ae">polyfem::utils::create_thread_storage()</a>, and <a class="el" href="namespacepolyfem_1_1utils.html#afac51d1fd7878475ff843eef315f510c">polyfem::utils::maybe_parallel_for()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_pressure_assembler_8cpp_source.html#l00930">compute_cavity_energy()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00948">compute_cavity_energy_grad()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00973">compute_cavity_energy_hess()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l01012">compute_energy()</a>, and <a class="el" href="_pressure_assembler_8cpp_source.html#l00896">PressureAssembler()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_pressure_assembler_8cpp_source.html#l00932">compute_cavity_energy()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00950">compute_cavity_energy_grad()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00975">compute_cavity_energy_hess()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l01014">compute_energy()</a>, and <a class="el" href="_pressure_assembler_8cpp_source.html#l00896">PressureAssembler()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a7eccb04026b1e9380dd4dc629987fe4b_cgraph.svg" width="379" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a19d971e3b4d8b1c4a22522d613b3eee5_cgraph.svg" width="379" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a7eccb04026b1e9380dd4dc629987fe4b_icgraph.svg" width="100%" height="585"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_pressure_assembler_a19d971e3b4d8b1c4a22522d613b3eee5_icgraph.svg" width="100%" height="585"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -1454,7 +1454,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_pressure_assembler_8hpp_source.html#l00200">200</a> of file <a class="el" href="_pressure_assembler_8hpp_source.html">PressureAssembler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_pressure_assembler_8cpp_source.html#l00930">compute_cavity_energy()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00948">compute_cavity_energy_grad()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00973">compute_cavity_energy_hess()</a>, and <a class="el" href="_pressure_assembler_8cpp_source.html#l00896">PressureAssembler()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_pressure_assembler_8cpp_source.html#l00932">compute_cavity_energy()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00950">compute_cavity_energy_grad()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00975">compute_cavity_energy_hess()</a>, and <a class="el" href="_pressure_assembler_8cpp_source.html#l00896">PressureAssembler()</a>.</p>
 
 </div>
 </div>
@@ -1630,7 +1630,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_pressure_assembler_8hpp_source.html#l00197">197</a> of file <a class="el" href="_pressure_assembler_8hpp_source.html">PressureAssembler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_pressure_assembler_8cpp_source.html#l00930">compute_cavity_energy()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00948">compute_cavity_energy_grad()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00973">compute_cavity_energy_hess()</a>, and <a class="el" href="_pressure_assembler_8hpp_source.html#l00139">problem()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_pressure_assembler_8cpp_source.html#l00932">compute_cavity_energy()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00950">compute_cavity_energy_grad()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00975">compute_cavity_energy_hess()</a>, and <a class="el" href="_pressure_assembler_8hpp_source.html#l00139">problem()</a>.</p>
 
 </div>
 </div>
@@ -1680,7 +1680,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_pressure_assembler_8hpp_source.html#l00194">194</a> of file <a class="el" href="_pressure_assembler_8hpp_source.html">PressureAssembler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_pressure_assembler_8cpp_source.html#l00973">compute_cavity_energy_hess()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l01032">compute_energy_hess()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00210">compute_grad_volume()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00335">compute_grad_volume_id()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00652">compute_hess_volume_2d()</a>, and <a class="el" href="_pressure_assembler_8cpp_source.html#l00465">compute_hess_volume_3d()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_pressure_assembler_8cpp_source.html#l00975">compute_cavity_energy_hess()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l01034">compute_energy_hess()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00210">compute_grad_volume()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00335">compute_grad_volume_id()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00652">compute_hess_volume_2d()</a>, and <a class="el" href="_pressure_assembler_8cpp_source.html#l00465">compute_hess_volume_3d()</a>.</p>
 
 </div>
 </div>
@@ -1706,7 +1706,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_pressure_assembler_8hpp_source.html#l00199">199</a> of file <a class="el" href="_pressure_assembler_8hpp_source.html">PressureAssembler.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_pressure_assembler_8cpp_source.html#l00930">compute_cavity_energy()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00948">compute_cavity_energy_grad()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00973">compute_cavity_energy_hess()</a>, and <a class="el" href="_pressure_assembler_8cpp_source.html#l00896">PressureAssembler()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_pressure_assembler_8cpp_source.html#l00932">compute_cavity_energy()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00950">compute_cavity_energy_grad()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00975">compute_cavity_energy_hess()</a>, and <a class="el" href="_pressure_assembler_8cpp_source.html#l00896">PressureAssembler()</a>.</p>
 
 </div>
 </div>

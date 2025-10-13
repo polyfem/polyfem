@@ -74,7 +74,7 @@ var searchData=
   ['refinement_2ehpp_71',['Refinement.hpp',['../_refinement_8hpp.html',1,'']]],
   ['regular_72',['REGULAR',['../namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989eca820ead78f0fa32544c7ba38fe7ff53d9',1,'polyfem::mesh']]],
   ['regular_5f2d_5fgrid_73',['regular_2d_grid',['../namespacepolyfem_1_1utils.html#a7c9c5e9f9e93fd2d77c1f5ce6e1ad854',1,'polyfem::utils']]],
-  ['regular_5f3d_5fgrid_74',['regular_3d_grid',['../namespacepolyfem_1_1utils.html#a1cdf057fa8c31024c63a2104c61ae16e',1,'polyfem::utils']]],
+  ['regular_5f3d_5fgrid_74',['regular_3d_grid',['../namespacepolyfem_1_1utils.html#aa41b9b231a205b7c9bf1af98b1cee9ac',1,'polyfem::utils']]],
   ['regular_5fboundary_5fcount_75',['regular_boundary_count',['../classpolyfem_1_1io_1_1_out_stats_data.html#aa1d68060344b0c353d6adf0a023e2234',1,'polyfem::io::OutStatsData']]],
   ['regular_5fboundary_5fcube_76',['REGULAR_BOUNDARY_CUBE',['../namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a15d5722ae72faa6e963405389543bafa',1,'polyfem::mesh']]],
   ['regular_5fcount_77',['regular_count',['../classpolyfem_1_1io_1_1_out_stats_data.html#aeb88cadda41136be2639d35b7f2707fe',1,'polyfem::io::OutStatsData']]],

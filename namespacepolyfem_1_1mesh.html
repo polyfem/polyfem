@@ -227,10 +227,11 @@ Enumerations</h2></td></tr>
 <tr class="memitem:ac25a28c10b676e06e484d9e1f496f826" id="r_ac25a28c10b676e06e484d9e1f496f826"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826">BoundaryType</a> { <br />
 &#160;&#160;<a class="el" href="namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826ad1ad1999414f3d1964884f9d0f81f976">TRI_LINE</a>
 , <a class="el" href="namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826ac4de65de70929441c563707dc06dbe58">QUAD_LINE</a>
+, <a class="el" href="namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826a25608df56c02f9fc6854a3de6a51822a">PRISM</a>
 , <a class="el" href="namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826a38b464161bf5019798797584babd0433">TRI</a>
-, <a class="el" href="namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826ac88da92039291f825814816096db2ea2">QUAD</a>
 , <br />
-&#160;&#160;<a class="el" href="namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826aecdc92bf56d960b73b02ee40125758bc">POLYGON</a>
+&#160;&#160;<a class="el" href="namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826ac88da92039291f825814816096db2ea2">QUAD</a>
+, <a class="el" href="namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826aecdc92bf56d960b73b02ee40125758bc">POLYGON</a>
 , <a class="el" href="namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826a0fc6833ef0fef62f1b80d37303f6dd74">POLYHEDRON</a>
 , <a class="el" href="namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826accc0377a8afbf50e7094f5c23a8af223">INVALID</a>
 <br />
@@ -249,6 +250,7 @@ Enumerations</h2></td></tr>
 , <br />
 &#160;&#160;<a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2abe438b942e9f64180537be34d731916a">INTERIOR_POLYTOPE</a>
 , <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2ae4a2dc79092444d9c45c456835af0965">BOUNDARY_POLYTOPE</a>
+, <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a25608df56c02f9fc6854a3de6a51822a">PRISM</a>
 , <a class="el" href="namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2a0db45d2a4141101bdfe48e3314cfbca3">UNDEFINED</a>
 <br />
  }</td></tr>
@@ -643,6 +645,7 @@ Functions</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="ac25a28c10b676e06e484d9e1f496f826ac4de65de70929441c563707dc06dbe58" name="ac25a28c10b676e06e484d9e1f496f826ac4de65de70929441c563707dc06dbe58"></a>QUAD_LINE&#160;</td><td class="fielddoc"><p>Boundary of a quad in 2D. </p>
 </td></tr>
+<tr><td class="fieldname"><a id="ac25a28c10b676e06e484d9e1f496f826a25608df56c02f9fc6854a3de6a51822a" name="ac25a28c10b676e06e484d9e1f496f826a25608df56c02f9fc6854a3de6a51822a"></a>PRISM&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ac25a28c10b676e06e484d9e1f496f826a38b464161bf5019798797584babd0433" name="ac25a28c10b676e06e484d9e1f496f826a38b464161bf5019798797584babd0433"></a>TRI&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ac25a28c10b676e06e484d9e1f496f826ac88da92039291f825814816096db2ea2" name="ac25a28c10b676e06e484d9e1f496f826ac88da92039291f825814816096db2ea2"></a>QUAD&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="ac25a28c10b676e06e484d9e1f496f826aecdc92bf56d960b73b02ee40125758bc" name="ac25a28c10b676e06e484d9e1f496f826aecdc92bf56d960b73b02ee40125758bc"></a>POLYGON&#160;</td><td class="fielddoc"></td></tr>
@@ -756,7 +759,9 @@ Functions</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2ae4a2dc79092444d9c45c456835af0965" name="a52d29c294eac8e3515c8c721ac4879c2ae4a2dc79092444d9c45c456835af0965"></a>BOUNDARY_POLYTOPE&#160;</td><td class="fielddoc"><p>Interior polytope. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2a0db45d2a4141101bdfe48e3314cfbca3" name="a52d29c294eac8e3515c8c721ac4879c2a0db45d2a4141101bdfe48e3314cfbca3"></a>UNDEFINED&#160;</td><td class="fielddoc"><p>Boundary polytope. </p>
+<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2a25608df56c02f9fc6854a3de6a51822a" name="a52d29c294eac8e3515c8c721ac4879c2a25608df56c02f9fc6854a3de6a51822a"></a>PRISM&#160;</td><td class="fielddoc"><p>Boundary polytope. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a52d29c294eac8e3515c8c721ac4879c2a0db45d2a4141101bdfe48e3314cfbca3" name="a52d29c294eac8e3515c8c721ac4879c2a0db45d2a4141101bdfe48e3314cfbca3"></a>UNDEFINED&#160;</td><td class="fielddoc"><p>Prism. </p>
 </td></tr>
 </table>
 
@@ -882,7 +887,7 @@ Here is the call graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00030">polyfem::adjoint_logger()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l01463">polyfem::solver::AdjointTools::is_flipped()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00377">polyfem::solver::AdjointNLProblem::after_line_search_custom_operation()</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00217">polyfem::solver::AdjointNLProblem::is_step_valid()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00381">polyfem::solver::AdjointNLProblem::after_line_search_custom_operation()</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00217">polyfem::solver::AdjointNLProblem::is_step_valid()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -974,7 +979,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_element_bases_8hpp_source.html#l00027">polyfem::basis::ElementBases::bases</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989eca575415ac246c79db92133fba5023b6df">IRREGULAR</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00266">irregular_triangle_barycentric_coordinates()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00087">max_edge_length()</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#abfa6495ef3f63356d2bf5153d37989eca820ead78f0fa32544c7ba38fe7ff53d9">REGULAR</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00104">regular_grid_triangle_barycentric_coordinates()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00035">stitch_mesh()</a>, <a class="el" href="namespacepolyfem_1_1mesh.html#ac25a28c10b676e06e484d9e1f496f826a38b464161bf5019798797584babd0433">TRI</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01369">polyfem::State::build_collision_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01378">polyfem::State::build_collision_mesh()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1849,7 +1854,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00945">945</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00214">polyfem::utils::RefElementSampler::build()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00222">polyfem::utils::RefElementSampler::build()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -2777,7 +2782,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_pressure_assembler_8cpp_source.html#l00052">faces</a>, <a class="el" href="_collision_proxy_8cpp_source.html#l00315">load_collision_proxy()</a>, <a class="el" href="_collision_proxy_8cpp_source.html#l00368">load_collision_proxy_displacement_map()</a>, and <a class="el" href="_collision_proxy_8cpp_source.html#l00330">load_collision_proxy_mesh()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01369">polyfem::State::build_collision_mesh()</a>, and <a class="el" href="_collision_proxy_8cpp_source.html#l00315">load_collision_proxy()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_state_8cpp_source.html#l01378">polyfem::State::build_collision_mesh()</a>, and <a class="el" href="_collision_proxy_8cpp_source.html#l00315">load_collision_proxy()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -4995,7 +5000,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_polyhedron_quadrature_8cpp_source.html#l00095">polyfem::quadrature::PolyhedronQuadrature::get_quadrature()</a>, and <a class="el" href="_ref_element_sampler_8cpp_source.html#l00409">polyfem::utils::RefElementSampler::sample_polyhedron()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_polyhedron_quadrature_8cpp_source.html#l00095">polyfem::quadrature::PolyhedronQuadrature::get_quadrature()</a>, and <a class="el" href="_ref_element_sampler_8cpp_source.html#l00460">polyfem::utils::RefElementSampler::sample_polyhedron()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -5096,7 +5101,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00810">810</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#afc363c4657ddfe525fbd9d1702b78399">polyfem::mesh::Mesh::face_vertex()</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00322">polyfem::mesh::Mesh3D::get_ordered_vertices_from_hex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a57691e050de1b8142a237ffa388117e4">polyfem::mesh::Mesh::is_boundary_face()</a>, <a class="el" href="_mesh_8cpp_source.html#l00352">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aaf5c9547e7891266b92e6f1a2ac5d697">polyfem::mesh::Mesh::n_cells()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af0bb67d434e9836f4981657827cf4e39">polyfem::mesh::Mesh::n_face_vertices()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#abf0f721370d6dc7401113e92fe94f4e2">polyfem::mesh::Mesh::n_faces()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a02b042ba86d0a7667c5da252af75b99e">polyfem::mesh::Mesh::n_vertices()</a>, and <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366">polyfem::mesh::Mesh::point()</a>.</p>
+<p class="reference">References <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#afc363c4657ddfe525fbd9d1702b78399">polyfem::mesh::Mesh::face_vertex()</a>, <a class="el" href="_mesh3_d_8cpp_source.html#l00326">polyfem::mesh::Mesh3D::get_ordered_vertices_from_hex()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a57691e050de1b8142a237ffa388117e4">polyfem::mesh::Mesh::is_boundary_face()</a>, <a class="el" href="_mesh_8cpp_source.html#l00352">polyfem::mesh::Mesh::is_cube()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#aaf5c9547e7891266b92e6f1a2ac5d697">polyfem::mesh::Mesh::n_cells()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#af0bb67d434e9836f4981657827cf4e39">polyfem::mesh::Mesh::n_face_vertices()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#abf0f721370d6dc7401113e92fe94f4e2">polyfem::mesh::Mesh::n_faces()</a>, <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a02b042ba86d0a7667c5da252af75b99e">polyfem::mesh::Mesh::n_vertices()</a>, and <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html#a564e7b06452fbb2d2abd6c1dd0bc0366">polyfem::mesh::Mesh::point()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">

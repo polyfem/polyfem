@@ -48,7 +48,7 @@
 <script type="application/ecmascript">
 var viewWidth = 2150;
 var viewHeight = 850;
-var sectionId = 'dynsection-31';
+var sectionId = 'dynsection-33';
 </script>
 <script type="application/ecmascript" xlink:href="svg.min.js"/>
 <svg id="graph" class="graph">
@@ -67,7 +67,7 @@ var sectionId = 'dynsection-31';
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#ae1843061a7016148173bc74a448ca5b1" target="_top" xlink:title="computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid) the ...">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#a389e8aabdd8fe99956da896b5b149a55" target="_top" xlink:title="computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid) the ...">
 <polygon fill="white" stroke="#666666" points="1791,-723.73 1622,-723.73 1622,-693.73 1791,-693.73 1791,-723.73"/>
 <text text-anchor="start" x="1630" y="-711.73" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::Evaluator</text>
 <text text-anchor="middle" x="1706.5" y="-700.73" font-family="Helvetica,sans-Serif" font-size="10.00">::average_grad_based_function</text>
@@ -143,7 +143,7 @@ var sectionId = 'dynsection-31';
 <!-- Node23 -->
 <g id="Node000023" class="node">
 <title>Node23</title>
-<g id="a_Node000023"><a xlink:href="classpolyfem_1_1io_1_1_out_geometry_data.html#a0973670568a6c11dca7ae90d0024395e" target="_top" xlink:title="builds high&#45;der visualzation mesh per element all disconnected it also retuns the mapping to element ...">
+<g id="a_Node000023"><a xlink:href="classpolyfem_1_1io_1_1_out_geometry_data.html#aa328df12b5db0bd55db9a1fba50cd34a" target="_top" xlink:title="builds high&#45;der visualzation mesh per element all disconnected it also retuns the mapping to element ...">
 <polygon fill="white" stroke="#666666" points="1778.5,-675.23 1634.5,-675.23 1634.5,-634.23 1778.5,-634.23 1778.5,-675.23"/>
 <text text-anchor="start" x="1642.5" y="-663.23" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::OutGeometry</text>
 <text text-anchor="start" x="1642.5" y="-652.23" font-family="Helvetica,sans-Serif" font-size="10.00">Data::build_high_order</text>
@@ -163,7 +163,7 @@ var sectionId = 'dynsection-31';
 <!-- Node24 -->
 <g id="Node000024" class="node">
 <title>Node24</title>
-<g id="a_Node000024"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#a32408ad8cbc3e257df64752790620bad" target="_top" xlink:title="checks if mises are not nan">
+<g id="a_Node000024"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#a82b538dc2e93a9f6f0ad6bc8477efe3b" target="_top" xlink:title="checks if mises are not nan">
 <polygon fill="white" stroke="#666666" points="1971.5,-405.73 1846.5,-405.73 1846.5,-375.73 1971.5,-375.73 1971.5,-405.73"/>
 <text text-anchor="start" x="1854.5" y="-393.73" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::Evaluator</text>
 <text text-anchor="middle" x="1909" y="-382.73" font-family="Helvetica,sans-Serif" font-size="10.00">::check_scalar_value</text>
@@ -182,7 +182,7 @@ var sectionId = 'dynsection-31';
 <!-- Node25 -->
 <g id="Node000025" class="node">
 <title>Node25</title>
-<g id="a_Node000025"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#af94f92b585b4e1848e0e28a427f86397" target="_top" xlink:title="computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)">
+<g id="a_Node000025"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#a55939ec4dd2d7b4b7a662409962219f6" target="_top" xlink:title="computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)">
 <polygon fill="white" stroke="#666666" points="1553.5,-801.73 1421.5,-801.73 1421.5,-771.73 1553.5,-771.73 1553.5,-801.73"/>
 <text text-anchor="start" x="1429.5" y="-789.73" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::Evaluator</text>
 <text text-anchor="middle" x="1487.5" y="-778.73" font-family="Helvetica,sans-Serif" font-size="10.00">::compute_scalar_value</text>
@@ -201,7 +201,7 @@ var sectionId = 'dynsection-31';
 <!-- Node27 -->
 <g id="Node000027" class="node">
 <title>Node27</title>
-<g id="a_Node000027"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#afb6d4e8481e4f6fc71d314a5b1a7f831" target="_top" xlink:title="compute tensor quantity (ie stress tensor or velocy)">
+<g id="a_Node000027"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#a6e5d9a97c8247fc720c85232a7d60682" target="_top" xlink:title="compute tensor quantity (ie stress tensor or velocy)">
 <polygon fill="white" stroke="#666666" points="1976,-625.73 1842,-625.73 1842,-595.73 1976,-595.73 1976,-625.73"/>
 <text text-anchor="start" x="1850" y="-613.73" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::Evaluator</text>
 <text text-anchor="middle" x="1909" y="-602.73" font-family="Helvetica,sans-Serif" font-size="10.00">::compute_tensor_value</text>
@@ -277,7 +277,7 @@ var sectionId = 'dynsection-31';
 <!-- Node46 -->
 <g id="Node000046" class="node">
 <title>Node46</title>
-<g id="a_Node000046"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#a4462bc654fb511f3cff3c2e90158bf5d" target="_top" xlink:title="interpolate the function fun.">
+<g id="a_Node000046"><a xlink:href="classpolyfem_1_1io_1_1_evaluator.html#a9796be452325fff18047042e2a9cbca4" target="_top" xlink:title="interpolate the function fun.">
 <polygon fill="white" stroke="#666666" points="1971.5,-309.73 1846.5,-309.73 1846.5,-279.73 1971.5,-279.73 1971.5,-309.73"/>
 <text text-anchor="start" x="1854.5" y="-297.73" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::Evaluator</text>
 <text text-anchor="middle" x="1909" y="-286.73" font-family="Helvetica,sans-Serif" font-size="10.00">::interpolate_function</text>

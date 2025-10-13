@@ -1,28 +1,26 @@
 <map id="polyfem::utils::lump_matrix" name="polyfem::utils::lump_matrix">
-<area shape="rect" id="Node000001" title="Lump each row of a matrix into the diagonal." alt="" coords="1353,157,1507,197"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1_state.html#a1ccc0343cb326880d9d241517170efb0" title="assemble mass, step 4 of solve build mass matrix based on defined basis modifies mass (and maybe more..." alt="" coords="1091,99,1280,139"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1339,158,1271,142,1272,137,1340,153"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a7bf0862201f0ac167ab6199bd7b85187" title="Initialize the masked lumped mass matrix." alt="" coords="1065,214,1305,254"/>
-<area shape="poly" id="edge12_Node000001_Node000010" title=" " alt="" coords="1340,200,1272,217,1271,211,1339,195"/>
-<area shape="rect" id="Node000003" href="$main_8cpp.html#aec889c702a246ad7f332c75ab7adb438" title=" " alt="" coords="123,139,271,164"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1077,140,1018,147,805,160,595,163,410,161,272,157,272,152,410,156,595,158,805,155,1017,142,1077,135"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1_state.html#a5ddafd77c68a90e74e41d4591f387f75" title="Remesh the FE space and update solution(s)." alt="" coords="819,107,993,132"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="1077,122,993,122,993,117,1077,117"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="117,5,278,31"/>
-<area shape="poly" id="edge10_Node000002_Node000008" title=" " alt="" coords="1114,98,1017,73,914,57,809,44,602,28,418,21,278,20,278,14,418,16,603,23,810,39,915,51,1018,67,1116,93"/>
-<area shape="rect" id="Node000009" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acac3e8ce8646ddd1544ed034c71bec96" title=" " alt="" coords="108,62,287,102"/>
-<area shape="poly" id="edge11_Node000002_Node000009" title=" " alt="" coords="1077,104,1017,97,812,84,609,79,287,82,287,76,609,74,813,79,1018,91,1077,98"/>
-<area shape="rect" id="Node000004" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,139,60,164"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="109,154,60,154,60,149,109,149"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1_state.html#a4d91e8c971fc121b0cff2f0c02ca79e7" title="solves transient tensor nonlinear problem" alt="" coords="544,99,747,139"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="805,122,747,122,747,117,805,117"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="335,99,496,139"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="530,122,496,122,496,117,530,117"/>
-<area shape="poly" id="edge7_Node000007_Node000003" title=" " alt="" coords="322,136,272,143,271,138,321,130"/>
-<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="367,95,286,52,237,33,239,28,288,48,369,90"/>
-<area shape="poly" id="edge9_Node000007_Node000009" title=" " alt="" coords="321,106,287,100,287,95,322,101"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a87d4f1fecb6ab044377c40c02e1a5e51" title="Construct a new BCLagrangianForm object with a time dependent Dirichlet boundary." alt="" coords="795,214,1017,254"/>
-<area shape="poly" id="edge13_Node000010_Node000011" title=" " alt="" coords="1052,237,1017,237,1017,231,1052,231"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#aeac1d30b26004b2fc555f02c14cdbe9c" title="Construct a new BCLagrangianForm object with a fixed Dirichlet boundary." alt="" coords="795,278,1017,318"/>
-<area shape="poly" id="edge14_Node000010_Node000012" title=" " alt="" coords="1084,260,994,281,993,275,1083,255"/>
+<area shape="rect" id="Node000001" title="Lump each row of a matrix into the diagonal." alt="" coords="1353,155,1507,195"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1_state.html#a1ccc0343cb326880d9d241517170efb0" title="assemble mass, step 4 of solve build mass matrix based on defined basis modifies mass (and maybe more..." alt="" coords="1091,98,1280,138"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1339,157,1271,141,1272,135,1340,152"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a7bf0862201f0ac167ab6199bd7b85187" title="Initialize the masked lumped mass matrix." alt="" coords="1065,187,1305,227"/>
+<area shape="poly" id="edge12_Node000001_Node000010" title=" " alt="" coords="1340,190,1306,194,1305,189,1339,184"/>
+<area shape="rect" id="Node000003" href="$main_8cpp.html#aec889c702a246ad7f332c75ab7adb438" title=" " alt="" coords="123,5,271,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1116,96,1068,82,1017,70,913,54,806,41,596,26,411,20,272,19,272,14,411,15,597,21,807,36,913,48,1018,65,1069,76,1117,91"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1_state.html#a5ddafd77c68a90e74e41d4591f387f75" title="Remesh the FE space and update solution(s)." alt="" coords="819,105,993,131"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="1077,121,993,121,993,115,1077,115"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" title="solves the problem, call other methods" alt="" coords="117,63,278,88"/>
+<area shape="poly" id="edge10_Node000002_Node000008" title=" " alt="" coords="1077,102,1017,95,808,82,602,76,278,76,278,71,602,71,809,77,1018,90,1077,97"/>
+<area shape="rect" id="Node000009" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acac3e8ce8646ddd1544ed034c71bec96" title=" " alt="" coords="108,127,287,167"/>
+<area shape="poly" id="edge11_Node000002_Node000009" title=" " alt="" coords="1077,139,1018,146,813,158,609,161,427,159,287,154,287,149,427,154,609,156,812,153,1017,141,1077,134"/>
+<area shape="rect" id="Node000004" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,5,60,31"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="109,21,60,21,60,15,109,15"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1_state.html#a4d91e8c971fc121b0cff2f0c02ca79e7" title="solves transient tensor nonlinear problem" alt="" coords="544,98,747,138"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="805,121,747,121,747,115,805,115"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" title="solves the problems" alt="" coords="335,98,496,138"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="530,121,496,121,496,115,530,115"/>
+<area shape="poly" id="edge7_Node000007_Node000003" title=" " alt="" coords="366,94,286,52,236,33,238,28,288,48,369,89"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="320,102,262,91,263,85,322,97"/>
+<area shape="poly" id="edge9_Node000007_Node000009" title=" " alt="" coords="321,133,287,138,287,133,320,128"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#ac0e6c05d0715af9acf4fb42f8dfc1f44" title="Construct a new BCLagrangianForm object with a time dependent Dirichlet boundary." alt="" coords="795,213,1017,253"/>
+<area shape="poly" id="edge13_Node000010_Node000011" title=" " alt="" coords="1052,222,1018,225,1017,220,1051,217"/>
 </map>

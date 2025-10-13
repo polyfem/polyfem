@@ -145,9 +145,9 @@ Collaboration diagram for polyfem::solver::PressureForm:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5cb94f423b268a3dfa2d2ef6299aed32" id="r_a5cb94f423b268a3dfa2d2ef6299aed32"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_pressure_form.html#a5cb94f423b268a3dfa2d2ef6299aed32">PressureForm</a> (const int ndof, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_pressure_boundary, const std::unordered_map&lt; int, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &gt; &amp;local_pressure_cavity, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const int n_boundary_samples, const <a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html">assembler::PressureAssembler</a> &amp;pressure_assembler, const bool is_time_dependent)</td></tr>
-<tr class="memdesc:a5cb94f423b268a3dfa2d2ef6299aed32"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new Body <a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> object.  <br /></td></tr>
-<tr class="separator:a5cb94f423b268a3dfa2d2ef6299aed32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a340b0f123d079ffe725b021ca7cf48a9" id="r_a340b0f123d079ffe725b021ca7cf48a9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_pressure_form.html#a340b0f123d079ffe725b021ca7cf48a9">PressureForm</a> (const int ndof, const std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &amp;local_pressure_boundary, const std::unordered_map&lt; int, std::vector&lt; <a class="el" href="classpolyfem_1_1mesh_1_1_local_boundary.html">mesh::LocalBoundary</a> &gt; &gt; &amp;local_pressure_cavity, const std::vector&lt; int &gt; &amp;dirichlet_nodes, const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;n_boundary_samples, const <a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html">assembler::PressureAssembler</a> &amp;pressure_assembler, const bool is_time_dependent)</td></tr>
+<tr class="memdesc:a340b0f123d079ffe725b021ca7cf48a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new Body <a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> object.  <br /></td></tr>
+<tr class="separator:a340b0f123d079ffe725b021ca7cf48a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab2949043486e19bac0dd291cc313a1ec" id="r_ab2949043486e19bac0dd291cc313a1ec"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_pressure_form.html#ab2949043486e19bac0dd291cc313a1ec">name</a> () const override</td></tr>
 <tr class="separator:ab2949043486e19bac0dd291cc313a1ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0cf06756c078bf982bac42a4f6c4a41a" id="r_a0cf06756c078bf982bac42a4f6c4a41a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_pressure_form.html#a0cf06756c078bf982bac42a4f6c4a41a">update_quantities</a> (const double t, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
@@ -274,8 +274,8 @@ Private Attributes</h2></td></tr>
 <tr class="separator:aabc8237379edefe58267958b7d9cacdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a754e96860903df4f270967e4fad2810c" id="r_a754e96860903df4f270967e4fad2810c"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; int &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_pressure_form.html#a754e96860903df4f270967e4fad2810c">dirichlet_nodes_</a></td></tr>
 <tr class="separator:a754e96860903df4f270967e4fad2810c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a407fb55bc62745fb944873065ae1324c" id="r_a407fb55bc62745fb944873065ae1324c"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_pressure_form.html#a407fb55bc62745fb944873065ae1324c">n_boundary_samples_</a></td></tr>
-<tr class="separator:a407fb55bc62745fb944873065ae1324c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c347ff449b7c0019c01eaccb640e925" id="r_a3c347ff449b7c0019c01eaccb640e925"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_pressure_form.html#a3c347ff449b7c0019c01eaccb640e925">n_boundary_samples_</a></td></tr>
+<tr class="separator:a3c347ff449b7c0019c01eaccb640e925"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1aaf715d57b7f879dec30672ed5c27f0" id="r_a1aaf715d57b7f879dec30672ed5c27f0"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1assembler_1_1_pressure_assembler.html">assembler::PressureAssembler</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_pressure_form.html#a1aaf715d57b7f879dec30672ed5c27f0">pressure_assembler_</a></td></tr>
 <tr class="memdesc:a1aaf715d57b7f879dec30672ed5c27f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference to the pressure assembler.  <br /></td></tr>
 <tr class="separator:a1aaf715d57b7f879dec30672ed5c27f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -300,8 +300,8 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_pressure_form_8hpp_source.html#l00014">14</a> of file <a class="el" href="_pressure_form_8hpp_source.html">PressureForm.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a5cb94f423b268a3dfa2d2ef6299aed32" name="a5cb94f423b268a3dfa2d2ef6299aed32"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5cb94f423b268a3dfa2d2ef6299aed32">&#9670;&#160;</a></span>PressureForm()</h2>
+<a id="a340b0f123d079ffe725b021ca7cf48a9" name="a340b0f123d079ffe725b021ca7cf48a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a340b0f123d079ffe725b021ca7cf48a9">&#9670;&#160;</a></span>PressureForm()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -333,7 +333,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const int&#160;</td>
+          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> &amp;&#160;</td>
           <td class="paramname"><em>n_boundary_samples</em>, </td>
         </tr>
         <tr>
@@ -419,7 +419,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_pressure_form_8cpp_source.html#l00043">43</a> of file <a class="el" href="_pressure_form_8cpp_source.html">PressureForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_pressure_assembler_8cpp_source.html#l00948">polyfem::assembler::PressureAssembler::compute_cavity_energy_grad()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l01021">polyfem::assembler::PressureAssembler::compute_energy_grad()</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00082">dirichlet_nodes_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00080">local_pressure_boundary_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00081">local_pressure_cavity_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00083">n_boundary_samples_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00085">pressure_assembler_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00077">t_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_pressure_assembler_8cpp_source.html#l00950">polyfem::assembler::PressureAssembler::compute_cavity_energy_grad()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l01023">polyfem::assembler::PressureAssembler::compute_energy_grad()</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00082">dirichlet_nodes_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00080">local_pressure_boundary_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00081">local_pressure_cavity_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00083">n_boundary_samples_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00085">pressure_assembler_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00077">t_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -551,7 +551,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_pressure_form_8cpp_source.html#l00067">67</a> of file <a class="el" href="_pressure_form_8cpp_source.html">PressureForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_pressure_assembler_8cpp_source.html#l01047">polyfem::assembler::PressureAssembler::compute_force_jacobian()</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00082">dirichlet_nodes_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00080">local_pressure_boundary_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00083">n_boundary_samples_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00085">pressure_assembler_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_pressure_assembler_8cpp_source.html#l01049">polyfem::assembler::PressureAssembler::compute_force_jacobian()</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00082">dirichlet_nodes_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00080">local_pressure_boundary_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00083">n_boundary_samples_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00085">pressure_assembler_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -636,7 +636,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_pressure_form_8cpp_source.html#l00053">53</a> of file <a class="el" href="_pressure_form_8cpp_source.html">PressureForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_pressure_assembler_8cpp_source.html#l00973">polyfem::assembler::PressureAssembler::compute_cavity_energy_hess()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l01032">polyfem::assembler::PressureAssembler::compute_energy_hess()</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00082">dirichlet_nodes_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00080">local_pressure_boundary_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00081">local_pressure_cavity_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00083">n_boundary_samples_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00085">pressure_assembler_</a>, <a class="el" href="_form_8hpp_source.html#l00147">polyfem::solver::Form::project_to_psd_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00077">t_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_pressure_assembler_8cpp_source.html#l00975">polyfem::assembler::PressureAssembler::compute_cavity_energy_hess()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l01034">polyfem::assembler::PressureAssembler::compute_energy_hess()</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00082">dirichlet_nodes_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00080">local_pressure_boundary_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00081">local_pressure_cavity_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00083">n_boundary_samples_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00085">pressure_assembler_</a>, <a class="el" href="_form_8hpp_source.html#l00147">polyfem::solver::Form::project_to_psd_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00077">t_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -733,7 +733,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_pressure_form_8cpp_source.html#l00036">36</a> of file <a class="el" href="_pressure_form_8cpp_source.html">PressureForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_pressure_assembler_8cpp_source.html#l00930">polyfem::assembler::PressureAssembler::compute_cavity_energy()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l01012">polyfem::assembler::PressureAssembler::compute_energy()</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00080">local_pressure_boundary_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00081">local_pressure_cavity_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00083">n_boundary_samples_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00085">pressure_assembler_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00077">t_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_pressure_assembler_8cpp_source.html#l00932">polyfem::assembler::PressureAssembler::compute_cavity_energy()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l01014">polyfem::assembler::PressureAssembler::compute_energy()</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00080">local_pressure_boundary_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00081">local_pressure_cavity_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00083">n_boundary_samples_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00085">pressure_assembler_</a>, <a class="el" href="_pressure_form_8hpp_source.html#l00077">t_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -821,8 +821,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="a407fb55bc62745fb944873065ae1324c" name="a407fb55bc62745fb944873065ae1324c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a407fb55bc62745fb944873065ae1324c">&#9670;&#160;</a></span>n_boundary_samples_</h2>
+<a id="a3c347ff449b7c0019c01eaccb640e925" name="a3c347ff449b7c0019c01eaccb640e925"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c347ff449b7c0019c01eaccb640e925">&#9670;&#160;</a></span>n_boundary_samples_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -831,7 +831,7 @@ Here is the call graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const int polyfem::solver::PressureForm::n_boundary_samples_</td>
+          <td class="memname">const <a class="el" href="namespacepolyfem.html#a3d583f853f8257fa45dfbe008081bf2d">QuadratureOrders</a> polyfem::solver::PressureForm::n_boundary_samples_</td>
         </tr>
       </table>
   </td>
