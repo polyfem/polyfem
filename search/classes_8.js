@@ -17,5 +17,6 @@ var searchData=
   ['interpolatedfunction2d_14',['InterpolatedFunction2d',['../classpolyfem_1_1utils_1_1_interpolated_function2d.html',1,'polyfem::utils']]],
   ['interpolation_15',['Interpolation',['../classpolyfem_1_1utils_1_1_interpolation.html',1,'polyfem::utils']]],
   ['inversionbarrierform_16',['InversionBarrierForm',['../classpolyfem_1_1solver_1_1_inversion_barrier_form.html',1,'polyfem::solver']]],
-  ['isothermalprocess_17',['IsothermalProcess',['../classpolyfem_1_1assembler_1_1_isothermal_process.html',1,'polyfem::assembler']]]
+  ['isochoricneohookean_17',['IsochoricNeoHookean',['../classpolyfem_1_1assembler_1_1_isochoric_neo_hookean.html',1,'polyfem::assembler']]],
+  ['isothermalprocess_18',['IsothermalProcess',['../classpolyfem_1_1assembler_1_1_isothermal_process.html',1,'polyfem::assembler']]]
 ];

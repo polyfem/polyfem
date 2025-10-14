@@ -10,5 +10,6 @@ var searchData=
   ['vertexattributes_7',['vertexattributes',['../structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html',1,'polyfem::mesh::WildRemesher&lt; WMTKMesh &gt;::VertexAttributes'],['../classpolyfem_1_1renderer_1_1_vertex_attributes.html',1,'polyfem::renderer::VertexAttributes']]],
   ['viscousdamping_8',['ViscousDamping',['../classpolyfem_1_1assembler_1_1_viscous_damping.html',1,'polyfem::assembler']]],
   ['viscousdampingprev_9',['ViscousDampingPrev',['../classpolyfem_1_1assembler_1_1_viscous_damping_prev.html',1,'polyfem::assembler']]],
-  ['volumeform_10',['VolumeForm',['../classpolyfem_1_1solver_1_1_volume_form.html',1,'polyfem::solver']]]
+  ['volumeform_10',['VolumeForm',['../classpolyfem_1_1solver_1_1_volume_form.html',1,'polyfem::solver']]],
+  ['volumepenalty_11',['VolumePenalty',['../classpolyfem_1_1assembler_1_1_volume_penalty.html',1,'polyfem::assembler']]]
 ];

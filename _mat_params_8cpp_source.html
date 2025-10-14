@@ -673,7 +673,7 @@ $(document).ready(function(){initNavTree('_mat_params_8cpp_source.html',''); ini
 <div class="line"><a id="l00491" name="l00491"></a><span class="lineno">  491</span>        {</div>
 <div class="line"><a id="l00492" name="l00492"></a><span class="lineno">  492</span>            <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;m : <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a1c71d2c8aaee09cd58db446fc2c2d189">dir_</a>)</div>
 <div class="line"><a id="l00493" name="l00493"></a><span class="lineno">  493</span>            {</div>
-<div class="line"><a id="l00494" name="l00494"></a><span class="lineno">  494</span>                assert(m.rows() == size &amp;&amp; m.cols() == size);</div>
+<div class="line"><a id="l00494" name="l00494"></a><span class="lineno">  494</span>                assert((m.rows() == size &amp;&amp; m.cols() == size) || (m.rows() == size &amp;&amp; m.cols() == 1));</div>
 <div class="line"><a id="l00495" name="l00495"></a><span class="lineno">  495</span>            }</div>
 <div class="line"><a id="l00496" name="l00496"></a><span class="lineno">  496</span>        }</div>
 <div class="line"><a id="l00497" name="l00497"></a><span class="lineno">  497</span>    }</div>
@@ -750,62 +750,74 @@ $(document).ready(function(){initNavTree('_mat_params_8cpp_source.html',''); ini
 <div class="line"><a id="l00562" name="l00562"></a><span class="lineno">  562</span>        <span class="keywordflow">if</span> (dir.size() == 3 || dir.size() == 2)</div>
 <div class="line"><a id="l00563" name="l00563"></a><span class="lineno">  563</span>        {</div>
 <div class="line"><a id="l00564" name="l00564"></a><span class="lineno">  564</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> size = dir.size();</div>
-<div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span>            assert(size == <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a199f614e42818c11fa2b75fd353d2d59">size_</a>);</div>
-<div class="line"><a id="l00566" name="l00566"></a><span class="lineno">  566</span>            <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a1c71d2c8aaee09cd58db446fc2c2d189">dir_</a>[index].resize(size, size);</div>
-<div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; size; ++i)</div>
-<div class="line"><a id="l00568" name="l00568"></a><span class="lineno">  568</span>            {</div>
-<div class="line"><a id="l00569" name="l00569"></a><span class="lineno">  569</span>                <span class="keywordflow">if</span> (!dir[i].is_array() || dir[i].size() != size)</div>
-<div class="line"><a id="l00570" name="l00570"></a><span class="lineno">  570</span>                {</div>
-<div class="line"><a id="l00571" name="l00571"></a><span class="lineno">  571</span>                    <a class="code hl_function" href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391">log_and_throw_error</a>(fmt::format(<span class="stringliteral">&quot;Fiber must be {}x{}, row {} is {}&quot;</span>, size, size, i, dir[i].dump()));</div>
-<div class="line"><a id="l00572" name="l00572"></a><span class="lineno">  572</span>                }</div>
-<div class="line"><a id="l00573" name="l00573"></a><span class="lineno">  573</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; size; ++j)</div>
-<div class="line"><a id="l00574" name="l00574"></a><span class="lineno">  574</span>                {</div>
-<div class="line"><a id="l00575" name="l00575"></a><span class="lineno">  575</span>                    <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a1c71d2c8aaee09cd58db446fc2c2d189">dir_</a>[index](i, j).init(dir[i][j]);</div>
-<div class="line"><a id="l00576" name="l00576"></a><span class="lineno">  576</span>                    <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a1c71d2c8aaee09cd58db446fc2c2d189">dir_</a>[index](i, j).set_unit_type(unit);</div>
-<div class="line"><a id="l00577" name="l00577"></a><span class="lineno">  577</span>                }</div>
-<div class="line"><a id="l00578" name="l00578"></a><span class="lineno">  578</span>            }</div>
-<div class="line"><a id="l00579" name="l00579"></a><span class="lineno">  579</span>            <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a456b4d071056ca373393ea8476ccaf55">has_rotation_</a> = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00580" name="l00580"></a><span class="lineno">  580</span>        }</div>
-<div class="line"><a id="l00581" name="l00581"></a><span class="lineno">  581</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (dir.size() == 9 || dir.size() == 4)</div>
-<div class="line"><a id="l00582" name="l00582"></a><span class="lineno">  582</span>        {</div>
-<div class="line"><a id="l00583" name="l00583"></a><span class="lineno">  583</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> size = dir.size() == 9 ? 3 : 2;</div>
-<div class="line"><a id="l00584" name="l00584"></a><span class="lineno">  584</span>            assert(size == <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a199f614e42818c11fa2b75fd353d2d59">size_</a>);</div>
-<div class="line"><a id="l00585" name="l00585"></a><span class="lineno">  585</span>            <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a1c71d2c8aaee09cd58db446fc2c2d189">dir_</a>[index].resize(size, size);</div>
-<div class="line"><a id="l00586" name="l00586"></a><span class="lineno">  586</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; size; ++i)</div>
-<div class="line"><a id="l00587" name="l00587"></a><span class="lineno">  587</span>            {</div>
-<div class="line"><a id="l00588" name="l00588"></a><span class="lineno">  588</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; size; ++j)</div>
-<div class="line"><a id="l00589" name="l00589"></a><span class="lineno">  589</span>                {</div>
-<div class="line"><a id="l00590" name="l00590"></a><span class="lineno">  590</span>                    <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a1c71d2c8aaee09cd58db446fc2c2d189">dir_</a>[index](i, j).init(dir[i * size + j]);</div>
-<div class="line"><a id="l00591" name="l00591"></a><span class="lineno">  591</span>                    <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a1c71d2c8aaee09cd58db446fc2c2d189">dir_</a>[index](i, j).set_unit_type(unit);</div>
-<div class="line"><a id="l00592" name="l00592"></a><span class="lineno">  592</span>                }</div>
-<div class="line"><a id="l00593" name="l00593"></a><span class="lineno">  593</span>            }</div>
-<div class="line"><a id="l00594" name="l00594"></a><span class="lineno">  594</span>            <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a456b4d071056ca373393ea8476ccaf55">has_rotation_</a> = <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00595" name="l00595"></a><span class="lineno">  595</span>        }</div>
-<div class="line"><a id="l00596" name="l00596"></a><span class="lineno">  596</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (dir.empty())</div>
-<div class="line"><a id="l00597" name="l00597"></a><span class="lineno">  597</span>        {</div>
-<div class="line"><a id="l00598" name="l00598"></a><span class="lineno">  598</span>            <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a1c71d2c8aaee09cd58db446fc2c2d189">dir_</a>[index].resize(<a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a199f614e42818c11fa2b75fd353d2d59">size_</a>, <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a199f614e42818c11fa2b75fd353d2d59">size_</a>);</div>
-<div class="line"><a id="l00599" name="l00599"></a><span class="lineno">  599</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a199f614e42818c11fa2b75fd353d2d59">size_</a>; ++i)</div>
-<div class="line"><a id="l00600" name="l00600"></a><span class="lineno">  600</span>            {</div>
-<div class="line"><a id="l00601" name="l00601"></a><span class="lineno">  601</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a199f614e42818c11fa2b75fd353d2d59">size_</a>; ++j)</div>
-<div class="line"><a id="l00602" name="l00602"></a><span class="lineno">  602</span>                {</div>
-<div class="line"><a id="l00603" name="l00603"></a><span class="lineno">  603</span>                    <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a1c71d2c8aaee09cd58db446fc2c2d189">dir_</a>[index](i, j).init(i == j ? 1.0 : 0.0);</div>
-<div class="line"><a id="l00604" name="l00604"></a><span class="lineno">  604</span>                    <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a1c71d2c8aaee09cd58db446fc2c2d189">dir_</a>[index](i, j).set_unit_type(unit);</div>
-<div class="line"><a id="l00605" name="l00605"></a><span class="lineno">  605</span>                }</div>
-<div class="line"><a id="l00606" name="l00606"></a><span class="lineno">  606</span>            }</div>
-<div class="line"><a id="l00607" name="l00607"></a><span class="lineno">  607</span>            <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a456b4d071056ca373393ea8476ccaf55">has_rotation_</a> = <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00608" name="l00608"></a><span class="lineno">  608</span>        }</div>
-<div class="line"><a id="l00609" name="l00609"></a><span class="lineno">  609</span>        <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00610" name="l00610"></a><span class="lineno">  610</span>        {</div>
-<div class="line"><a id="l00611" name="l00611"></a><span class="lineno">  611</span>            <a class="code hl_function" href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391">log_and_throw_error</a>(<span class="stringliteral">&quot;Fiber direction must be a 3x3 or 2x2 matrix&quot;</span>);</div>
-<div class="line"><a id="l00612" name="l00612"></a><span class="lineno">  612</span>        }</div>
-<div class="line"><a id="l00613" name="l00613"></a><span class="lineno">  613</span>    }</div>
+<div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> other_size = dir[0].is_array() ? size : 1;</div>
+<div class="line"><a id="l00566" name="l00566"></a><span class="lineno">  566</span> </div>
+<div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span>            assert(size == <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a199f614e42818c11fa2b75fd353d2d59">size_</a>);</div>
+<div class="line"><a id="l00568" name="l00568"></a><span class="lineno">  568</span>            <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a1c71d2c8aaee09cd58db446fc2c2d189">dir_</a>[index].resize(size, other_size);</div>
+<div class="line"><a id="l00569" name="l00569"></a><span class="lineno">  569</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; size; ++i)</div>
+<div class="line"><a id="l00570" name="l00570"></a><span class="lineno">  570</span>            {</div>
+<div class="line"><a id="l00571" name="l00571"></a><span class="lineno">  571</span>                <span class="keywordflow">if</span> (other_size == 1)</div>
+<div class="line"><a id="l00572" name="l00572"></a><span class="lineno">  572</span>                {</div>
+<div class="line"><a id="l00573" name="l00573"></a><span class="lineno">  573</span>                    <span class="keywordflow">if</span> (dir[i].is_array())</div>
+<div class="line"><a id="l00574" name="l00574"></a><span class="lineno">  574</span>                    {</div>
+<div class="line"><a id="l00575" name="l00575"></a><span class="lineno">  575</span>                        <a class="code hl_function" href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391">log_and_throw_error</a>(fmt::format(<span class="stringliteral">&quot;Fiber must be a {} vector, row {} is {}&quot;</span>, size, i, dir[i].dump()));</div>
+<div class="line"><a id="l00576" name="l00576"></a><span class="lineno">  576</span>                    }</div>
+<div class="line"><a id="l00577" name="l00577"></a><span class="lineno">  577</span>                    <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a1c71d2c8aaee09cd58db446fc2c2d189">dir_</a>[index](i, 0).init(dir[i]);</div>
+<div class="line"><a id="l00578" name="l00578"></a><span class="lineno">  578</span>                    <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a1c71d2c8aaee09cd58db446fc2c2d189">dir_</a>[index](i, 0).set_unit_type(unit);</div>
+<div class="line"><a id="l00579" name="l00579"></a><span class="lineno">  579</span>                    <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00580" name="l00580"></a><span class="lineno">  580</span>                }</div>
+<div class="line"><a id="l00581" name="l00581"></a><span class="lineno">  581</span>                <span class="keywordflow">if</span> (dir[i].size() != size)</div>
+<div class="line"><a id="l00582" name="l00582"></a><span class="lineno">  582</span>                {</div>
+<div class="line"><a id="l00583" name="l00583"></a><span class="lineno">  583</span>                    <a class="code hl_function" href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391">log_and_throw_error</a>(fmt::format(<span class="stringliteral">&quot;Fiber must be {}x{}, row {} is {}&quot;</span>, size, other_size, i, dir[i].dump()));</div>
+<div class="line"><a id="l00584" name="l00584"></a><span class="lineno">  584</span>                }</div>
+<div class="line"><a id="l00585" name="l00585"></a><span class="lineno">  585</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; size; ++j)</div>
+<div class="line"><a id="l00586" name="l00586"></a><span class="lineno">  586</span>                {</div>
+<div class="line"><a id="l00587" name="l00587"></a><span class="lineno">  587</span>                    <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a1c71d2c8aaee09cd58db446fc2c2d189">dir_</a>[index](i, j).init(dir[i][j]);</div>
+<div class="line"><a id="l00588" name="l00588"></a><span class="lineno">  588</span>                    <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a1c71d2c8aaee09cd58db446fc2c2d189">dir_</a>[index](i, j).set_unit_type(unit);</div>
+<div class="line"><a id="l00589" name="l00589"></a><span class="lineno">  589</span>                }</div>
+<div class="line"><a id="l00590" name="l00590"></a><span class="lineno">  590</span>            }</div>
+<div class="line"><a id="l00591" name="l00591"></a><span class="lineno">  591</span>            <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a456b4d071056ca373393ea8476ccaf55">has_rotation_</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00592" name="l00592"></a><span class="lineno">  592</span>        }</div>
+<div class="line"><a id="l00593" name="l00593"></a><span class="lineno">  593</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (dir.size() == 9 || dir.size() == 4)</div>
+<div class="line"><a id="l00594" name="l00594"></a><span class="lineno">  594</span>        {</div>
+<div class="line"><a id="l00595" name="l00595"></a><span class="lineno">  595</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> size = dir.size() == 9 ? 3 : 2;</div>
+<div class="line"><a id="l00596" name="l00596"></a><span class="lineno">  596</span>            assert(size == <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a199f614e42818c11fa2b75fd353d2d59">size_</a>);</div>
+<div class="line"><a id="l00597" name="l00597"></a><span class="lineno">  597</span>            <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a1c71d2c8aaee09cd58db446fc2c2d189">dir_</a>[index].resize(size, size);</div>
+<div class="line"><a id="l00598" name="l00598"></a><span class="lineno">  598</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; size; ++i)</div>
+<div class="line"><a id="l00599" name="l00599"></a><span class="lineno">  599</span>            {</div>
+<div class="line"><a id="l00600" name="l00600"></a><span class="lineno">  600</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; size; ++j)</div>
+<div class="line"><a id="l00601" name="l00601"></a><span class="lineno">  601</span>                {</div>
+<div class="line"><a id="l00602" name="l00602"></a><span class="lineno">  602</span>                    <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a1c71d2c8aaee09cd58db446fc2c2d189">dir_</a>[index](i, j).init(dir[i * size + j]);</div>
+<div class="line"><a id="l00603" name="l00603"></a><span class="lineno">  603</span>                    <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a1c71d2c8aaee09cd58db446fc2c2d189">dir_</a>[index](i, j).set_unit_type(unit);</div>
+<div class="line"><a id="l00604" name="l00604"></a><span class="lineno">  604</span>                }</div>
+<div class="line"><a id="l00605" name="l00605"></a><span class="lineno">  605</span>            }</div>
+<div class="line"><a id="l00606" name="l00606"></a><span class="lineno">  606</span>            <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a456b4d071056ca373393ea8476ccaf55">has_rotation_</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00607" name="l00607"></a><span class="lineno">  607</span>        }</div>
+<div class="line"><a id="l00608" name="l00608"></a><span class="lineno">  608</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (dir.empty())</div>
+<div class="line"><a id="l00609" name="l00609"></a><span class="lineno">  609</span>        {</div>
+<div class="line"><a id="l00610" name="l00610"></a><span class="lineno">  610</span>            <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a1c71d2c8aaee09cd58db446fc2c2d189">dir_</a>[index].resize(<a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a199f614e42818c11fa2b75fd353d2d59">size_</a>, <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a199f614e42818c11fa2b75fd353d2d59">size_</a>);</div>
+<div class="line"><a id="l00611" name="l00611"></a><span class="lineno">  611</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a199f614e42818c11fa2b75fd353d2d59">size_</a>; ++i)</div>
+<div class="line"><a id="l00612" name="l00612"></a><span class="lineno">  612</span>            {</div>
+<div class="line"><a id="l00613" name="l00613"></a><span class="lineno">  613</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a199f614e42818c11fa2b75fd353d2d59">size_</a>; ++j)</div>
+<div class="line"><a id="l00614" name="l00614"></a><span class="lineno">  614</span>                {</div>
+<div class="line"><a id="l00615" name="l00615"></a><span class="lineno">  615</span>                    <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a1c71d2c8aaee09cd58db446fc2c2d189">dir_</a>[index](i, j).init(i == j ? 1.0 : 0.0);</div>
+<div class="line"><a id="l00616" name="l00616"></a><span class="lineno">  616</span>                    <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a1c71d2c8aaee09cd58db446fc2c2d189">dir_</a>[index](i, j).set_unit_type(unit);</div>
+<div class="line"><a id="l00617" name="l00617"></a><span class="lineno">  617</span>                }</div>
+<div class="line"><a id="l00618" name="l00618"></a><span class="lineno">  618</span>            }</div>
+<div class="line"><a id="l00619" name="l00619"></a><span class="lineno">  619</span>            <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_fiber_direction.html#a456b4d071056ca373393ea8476ccaf55">has_rotation_</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00620" name="l00620"></a><span class="lineno">  620</span>        }</div>
+<div class="line"><a id="l00621" name="l00621"></a><span class="lineno">  621</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00622" name="l00622"></a><span class="lineno">  622</span>        {</div>
+<div class="line"><a id="l00623" name="l00623"></a><span class="lineno">  623</span>            <a class="code hl_function" href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391">log_and_throw_error</a>(<span class="stringliteral">&quot;Fiber direction must be a 3x3 or 2x2 matrix&quot;</span>);</div>
+<div class="line"><a id="l00624" name="l00624"></a><span class="lineno">  624</span>        }</div>
+<div class="line"><a id="l00625" name="l00625"></a><span class="lineno">  625</span>    }</div>
 </div>
-<div class="line"><a id="l00614" name="l00614"></a><span class="lineno">  614</span> </div>
-<div class="line"><a id="l00615" name="l00615"></a><span class="lineno">  615</span>    <span class="comment">// template instantiation</span></div>
-<div class="line"><a id="l00616" name="l00616"></a><span class="lineno">  616</span>    <span class="keyword">template</span> <span class="keywordtype">double</span> ElasticityTensor::compute_stress&lt;3&gt;(<span class="keyword">const</span> std::array&lt;double, 3&gt; &amp;strain, <span class="keyword">const</span> <span class="keywordtype">int</span> j) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00617" name="l00617"></a><span class="lineno">  617</span>    <span class="keyword">template</span> <span class="keywordtype">double</span> ElasticityTensor::compute_stress&lt;6&gt;(<span class="keyword">const</span> std::array&lt;double, 6&gt; &amp;strain, <span class="keyword">const</span> <span class="keywordtype">int</span> j) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00618" name="l00618"></a><span class="lineno">  618</span> </div>
-<div class="line"><a id="l00619" name="l00619"></a><span class="lineno">  619</span>} <span class="comment">// namespace polyfem::assembler</span></div>
+<div class="line"><a id="l00626" name="l00626"></a><span class="lineno">  626</span> </div>
+<div class="line"><a id="l00627" name="l00627"></a><span class="lineno">  627</span>    <span class="comment">// template instantiation</span></div>
+<div class="line"><a id="l00628" name="l00628"></a><span class="lineno">  628</span>    <span class="keyword">template</span> <span class="keywordtype">double</span> ElasticityTensor::compute_stress&lt;3&gt;(<span class="keyword">const</span> std::array&lt;double, 3&gt; &amp;strain, <span class="keyword">const</span> <span class="keywordtype">int</span> j) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00629" name="l00629"></a><span class="lineno">  629</span>    <span class="keyword">template</span> <span class="keywordtype">double</span> ElasticityTensor::compute_stress&lt;6&gt;(<span class="keyword">const</span> std::array&lt;double, 6&gt; &amp;strain, <span class="keyword">const</span> <span class="keywordtype">int</span> j) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00630" name="l00630"></a><span class="lineno">  630</span> </div>
+<div class="line"><a id="l00631" name="l00631"></a><span class="lineno">  631</span>} <span class="comment">// namespace polyfem::assembler</span></div>
 <div class="ttc" id="a_j_s_o_n_utils_8hpp_html"><div class="ttname"><a href="_j_s_o_n_utils_8hpp.html">JSONUtils.hpp</a></div></div>
 <div class="ttc" id="a_logger_8hpp_html"><div class="ttname"><a href="_logger_8hpp.html">Logger.hpp</a></div></div>
 <div class="ttc" id="a_mass_matrix_assembler_8cpp_html_ab74b878e460e8e6616a56665c01d7ab2"><div class="ttname"><a href="_mass_matrix_assembler_8cpp.html#ab74b878e460e8e6616a56665c01d7ab2">entries</a></div><div class="ttdeci">std::vector&lt; Eigen::Triplet&lt; double &gt; &gt; entries</div><div class="ttdef"><b>Definition</b> <a href="_mass_matrix_assembler_8cpp_source.html#l00025">MassMatrixAssembler.cpp:25</a></div></div>
