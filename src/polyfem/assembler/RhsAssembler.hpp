@@ -52,7 +52,7 @@ namespace polyfem
 			void set_bc(
 				const std::vector<mesh::LocalBoundary> &local_boundary,
 				const std::vector<int> &bounday_nodes,
-				const int resolution,
+				const QuadratureOrders &resolution,
 				const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
 				Eigen::MatrixXd &rhs,
 				const Eigen::MatrixXd &displacement = Eigen::MatrixXd(),
@@ -64,21 +64,27 @@ namespace polyfem
 				const Eigen::MatrixXd &displacement_prev,
 				const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
 				const Density &density,
-				const int resolution,
+				const QuadratureOrders &resolution,
 				const double t) const;
 			// compute body energy gradient, hessian is zero, rhs is a linear function
 			void compute_energy_grad(
 				const std::vector<mesh::LocalBoundary> &local_boundary,
 				const std::vector<int> &bounday_nodes,
 				const Density &density,
-				const int resolution,
+				const QuadratureOrders &resolution,
 				const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
 				const Eigen::MatrixXd &final_rhs,
 				const double t,
 				Eigen::MatrixXd &rhs) const;
 
 			// compute body hessian wrt to previous solution
-			void compute_energy_hess(const std::vector<int> &bounday_nodes, const int resolution, const std::vector<mesh::LocalBoundary> &local_neumann_boundary, const Eigen::MatrixXd &displacement, const double t, const bool project_to_psd, StiffnessMatrix &hess) const;
+			void compute_energy_hess(const std::vector<int> &bounday_nodes,
+									 const QuadratureOrders &resolution,
+									 const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
+									 const Eigen::MatrixXd &displacement,
+									 const double t,
+									 const bool project_to_psd,
+									 StiffnessMatrix &hess) const;
 
 			inline const Problem &problem() const { return problem_; }
 			inline const mesh::Mesh &mesh() const { return mesh_; }
@@ -90,11 +96,16 @@ namespace polyfem
 		private:
 			// leastsquares fit bc
 			void lsq_bc(const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &df,
-						const std::vector<mesh::LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, Eigen::MatrixXd &rhs) const;
+						const std::vector<mesh::LocalBoundary> &local_boundary,
+						const std::vector<int> &bounday_nodes,
+						const int resolution,
+						Eigen::MatrixXd &rhs) const;
 
 			// sample bc at nodes
 			void sample_bc(const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &df,
-						   const std::vector<mesh::LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, Eigen::MatrixXd &rhs) const;
+						   const std::vector<mesh::LocalBoundary> &local_boundary,
+						   const std::vector<int> &bounday_nodes,
+						   Eigen::MatrixXd &rhs) const;
 
 			// set boundary condition
 			// the 2 lambdas are callback to dirichlet df and neumann nf
@@ -102,8 +113,13 @@ namespace polyfem
 			void set_bc(
 				const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &df,
 				const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &nf,
-				const std::vector<mesh::LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
-				const Eigen::MatrixXd &displacement, const double t, Eigen::MatrixXd &rhs) const;
+				const std::vector<mesh::LocalBoundary> &local_boundary,
+				const std::vector<int> &bounday_nodes,
+				const QuadratureOrders &resolution,
+				const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
+				const Eigen::MatrixXd &displacement,
+				const double t,
+				Eigen::MatrixXd &rhs) const;
 
 			// sets the time (initial) boundary condition
 			// the lambda depeneds if soltuion, velocity, or acceleration

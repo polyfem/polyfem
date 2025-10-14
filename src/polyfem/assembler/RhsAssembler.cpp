@@ -233,7 +233,10 @@ namespace polyfem
 		}
 
 		void RhsAssembler::lsq_bc(const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &df,
-								  const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, Eigen::MatrixXd &rhs) const
+								  const std::vector<LocalBoundary> &local_boundary,
+								  const std::vector<int> &bounday_nodes,
+								  const int resolution,
+								  Eigen::MatrixXd &rhs) const
 		{
 			const int n_el = int(bases_.size());
 
@@ -490,15 +493,18 @@ namespace polyfem
 		void RhsAssembler::set_bc(
 			const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &df,
 			const std::function<void(const Eigen::MatrixXi &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, const Eigen::MatrixXd &, Eigen::MatrixXd &)> &nf,
-			const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes,
-			const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary,
-			const Eigen::MatrixXd &displacement, const double t,
+			const std::vector<LocalBoundary> &local_boundary,
+			const std::vector<int> &bounday_nodes,
+			const QuadratureOrders &resolution,
+			const std::vector<LocalBoundary> &local_neumann_boundary,
+			const Eigen::MatrixXd &displacement,
+			const double t,
 			Eigen::MatrixXd &rhs) const
 		{
 			if (bc_method_ == "sample")
 				sample_bc(df, local_boundary, bounday_nodes, rhs);
 			else
-				lsq_bc(df, local_boundary, bounday_nodes, resolution, rhs);
+				lsq_bc(df, local_boundary, bounday_nodes, resolution[0], rhs);
 
 			if (bounday_nodes.size() > 0)
 			{
@@ -539,7 +545,6 @@ namespace polyfem
 				for (int i = 0; i < lb.size(); ++i)
 				{
 					const int primitive_global_id = lb.global_primitive_id(i);
-
 					bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, i, false, uv, points, normals, weights);
 					global_primitive_ids.setConstant(weights.size(), primitive_global_id);
 
@@ -608,7 +613,13 @@ namespace polyfem
 			// TODO add nodal neumann
 		}
 
-		void RhsAssembler::set_bc(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, Eigen::MatrixXd &rhs, const Eigen::MatrixXd &displacement, const double t) const
+		void RhsAssembler::set_bc(const std::vector<LocalBoundary> &local_boundary,
+								  const std::vector<int> &bounday_nodes,
+								  const QuadratureOrders &resolution,
+								  const std::vector<LocalBoundary> &local_neumann_boundary,
+								  Eigen::MatrixXd &rhs,
+								  const Eigen::MatrixXd &displacement,
+								  const double t) const
 		{
 			set_bc(
 				[&](const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &uv, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) {
@@ -622,7 +633,14 @@ namespace polyfem
 			obstacle_.update_displacement(t, rhs);
 		}
 
-		void RhsAssembler::compute_energy_grad(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const Density &density, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, const Eigen::MatrixXd &final_rhs, const double t, Eigen::MatrixXd &rhs) const
+		void RhsAssembler::compute_energy_grad(const std::vector<LocalBoundary> &local_boundary,
+											   const std::vector<int> &bounday_nodes,
+											   const Density &density,
+											   const QuadratureOrders &resolution,
+											   const std::vector<LocalBoundary> &local_neumann_boundary,
+											   const Eigen::MatrixXd &final_rhs,
+											   const double t,
+											   Eigen::MatrixXd &rhs) const
 		{
 			if (problem_.is_constant_in_time())
 			{
@@ -650,7 +668,7 @@ namespace polyfem
 											const Eigen::MatrixXd &displacement_prev,
 											const std::vector<LocalBoundary> &local_neumann_boundary,
 											const Density &density,
-											const int resolution,
+											const QuadratureOrders &resolution,
 											const double t) const
 		{
 
@@ -803,7 +821,7 @@ namespace polyfem
 
 		void RhsAssembler::compute_energy_hess(
 			const std::vector<int> &bounday_nodes,
-			const int resolution,
+			const QuadratureOrders &resolution,
 			const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
 			const Eigen::MatrixXd &displacement,
 			const double t,
@@ -832,7 +850,6 @@ namespace polyfem
 				for (int i = 0; i < lb.size(); ++i)
 				{
 					const int primitive_global_id = lb.global_primitive_id(i);
-
 					bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, resolution, mesh_, i, false, uv, points, normals, weights);
 					global_primitive_ids.setConstant(weights.size(), primitive_global_id);
 

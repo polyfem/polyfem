@@ -3,15 +3,20 @@
 #include <polyfem/quadrature/TriQuadrature.hpp>
 #include <polyfem/quadrature/TetQuadrature.hpp>
 
+#include <polyfem/quadrature/LineQuadrature.hpp>
 #include <polyfem/quadrature/QuadQuadrature.hpp>
 #include <polyfem/quadrature/HexQuadrature.hpp>
+#include <polyfem/quadrature/PrismQuadrature.hpp>
 
 #include <polyfem/basis/LagrangeBasis3d.hpp>
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
+#include <polyfem/autogen/prism_bases.hpp>
 
 #include <polyfem/basis/barycentric/MVPolygonalBasis2d.hpp>
 #include <polyfem/basis/barycentric/WSPolygonalBasis2d.hpp>
+
+#include <finitediff.hpp>
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
@@ -46,7 +51,6 @@ constexpr std::array<std::array<int, 3>, 4> linear_tet_local_node = {{
 	{{0, 1, 0}}, // v2  = (0, 1, 0)
 	{{0, 0, 1}}, // v3  = (0, 0, 1)
 }};
-
 constexpr std::array<std::array<int, 3>, 10> quadr_tet_local_node = {{
 	{{0, 0, 0}}, // v0  = (  0,   0,   0)
 	{{2, 0, 0}}, // v1  = (  1,   0,   0)
@@ -348,13 +352,22 @@ void quadr_tet_basis_grad(const int local_index, const Eigen::MatrixXd &xne, Eig
 /////////////////////////////////////////
 /////////////////////////////////////////
 
+constexpr std::array<std::array<int, 1>, 2> linear_lin_local_node = {{
+	{{0}}, // v0  = (0)
+	{{1}}, // v1  = (1)
+}};
+constexpr std::array<std::array<int, 1>, 3> quadr_lin_local_node = {{
+	{{0}}, // v0  = (0)
+	{{1}}, // v1  = (1/2)
+	{{2}}, // v1  = (1)
+}};
+
 constexpr std::array<std::array<int, 2>, 4> linear_quad_local_node = {{
 	{{0, 0}}, // v0  = (0, 0)
 	{{1, 0}}, // v1  = (1, 0)
 	{{1, 1}}, // v2  = (1, 1)
 	{{0, 1}}, // v3  = (0, 1)
 }};
-
 constexpr std::array<std::array<int, 2>, 9> quadr_quad_local_node = {{
 	{{0, 0}}, // v0  = (  0,   0)
 	{{2, 0}}, // v1  = (  1,   0)
@@ -377,7 +390,6 @@ constexpr std::array<std::array<int, 3>, 8> linear_hex_local_node = {{
 	{{1, 1, 1}}, // v6  = (1, 1, 1)
 	{{0, 1, 1}}, // v7  = (0, 1, 1)
 }};
-
 constexpr std::array<std::array<int, 3>, 27> quadr_hex_local_node = {{
 	{{0, 0, 0}}, // v0  = (  0,   0,   0)
 	{{2, 0, 0}}, // v1  = (  1,   0,   0)
@@ -432,7 +444,6 @@ Eigen::MatrixXd dalpha2d(int i, T &t)
 		return -1 + 0 * t;
 	case 1:
 		return 1 + 0 * t;
-		;
 	default:
 		assert(false);
 	}
@@ -536,6 +547,38 @@ Eigen::MatrixXd dtheta3d(int i, T &t)
 		assert(false);
 	}
 	throw std::runtime_error("Invalid index");
+}
+
+void linear_lin_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+{
+	auto u = uv.col(0).array();
+
+	std::array<int, 1> idx = linear_lin_local_node[local_index];
+	val = alpha2d(idx[0], u);
+}
+
+void linear_lin_basis_grad(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+{
+	auto u = uv.col(0).array();
+
+	std::array<int, 1> idx = linear_lin_local_node[local_index];
+	val = dalpha2d(idx[0], u);
+}
+
+void quadr_lin_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+{
+	auto u = uv.col(0).array();
+
+	std::array<int, 1> idx = quadr_lin_local_node[local_index];
+	val = theta2d(idx[0], u);
+}
+
+void quadr_lin_basis_grad(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
+{
+	auto u = uv.col(0).array();
+
+	std::array<int, 1> idx = quadr_lin_local_node[local_index];
+	val = dtheta2d(idx[0], u);
 }
 
 void linear_quad_basis_value(const int local_index, const Eigen::MatrixXd &uv, Eigen::MatrixXd &val)
@@ -826,6 +869,68 @@ TEST_CASE("Pk_3d", "[bases]")
 					REQUIRE(val(j) == Catch::Approx(0).margin(1e-10));
 			}
 		}
+	}
+}
+
+TEST_CASE("Q1_1d", "[bases]")
+{
+	LineQuadrature rule;
+	Quadrature quad;
+	rule.get_quadrature(12, quad);
+
+	Eigen::MatrixXd expected, val;
+	for (int i = 0; i < 2; ++i)
+	{
+		linear_lin_basis_value(i, quad.points, expected);
+		polyfem::autogen::q_basis_value_1d(1, i, quad.points, val);
+
+		for (int j = 0; j < val.size(); ++j)
+			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
+
+		linear_lin_basis_grad(i, quad.points, expected);
+		polyfem::autogen::q_grad_basis_value_1d(1, i, quad.points, val);
+
+		for (int j = 0; j < val.size(); ++j)
+			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
+	}
+
+	// Check nodes
+	polyfem::autogen::q_nodes_1d(1, val);
+	for (int i = 0; i < 2; ++i)
+	{
+		for (int d = 0; d < 1; ++d)
+			REQUIRE(linear_quad_local_node[i][d] == Catch::Approx(val(i, d)).margin(1e-10));
+	}
+}
+
+TEST_CASE("Q2_1d", "[bases]")
+{
+	LineQuadrature rule;
+	Quadrature quad;
+	rule.get_quadrature(12, quad);
+
+	Eigen::MatrixXd expected, val;
+	for (int i = 0; i < 3; ++i)
+	{
+		quadr_lin_basis_value(i, quad.points, expected);
+		polyfem::autogen::q_basis_value_1d(2, i, quad.points, val);
+
+		for (int j = 0; j < val.size(); ++j)
+			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
+
+		quadr_lin_basis_grad(i, quad.points, expected);
+		polyfem::autogen::q_grad_basis_value_1d(2, i, quad.points, val);
+
+		for (int j = 0; j < val.size(); ++j)
+			REQUIRE(expected(j) == Catch::Approx(val(j)).margin(1e-10));
+	}
+
+	// Check nodes
+	polyfem::autogen::q_nodes_1d(2, val);
+	for (int i = 0; i < 3; ++i)
+	{
+		for (int d = 0; d < 1; ++d)
+			REQUIRE(quadr_lin_local_node[i][d] / 2. == Catch::Approx(val(i, d)).margin(1e-10));
 	}
 }
 
@@ -1159,6 +1264,65 @@ TEST_CASE("WS_2d", "[bases]")
 
 			REQUIRE(b_prime(j, 0) == Catch::Approx(dx).margin(delta * 10));
 			REQUIRE(b_prime(j, 1) == Catch::Approx(dy).margin(delta * 10));
+		}
+	}
+}
+
+TEST_CASE("Prism", "[bases]")
+{
+	const int max_p_deg = 4;
+	const int max_q_deg = 5;
+
+	Eigen::MatrixXd nodes, val, grad, pts;
+	Eigen::VectorXd fgrad;
+
+	for (int p = 1; p <= max_p_deg; ++p)
+	{
+		for (int q = 1; q <= max_q_deg; ++q)
+		{
+			PrismQuadrature rule;
+			Quadrature quad;
+			rule.get_quadrature(p + 1, q + 1, quad);
+			pts = quad.points;
+
+			polyfem::autogen::prism_nodes_3d(p, q, nodes);
+			for (int i = 0; i < nodes.rows(); ++i)
+			{
+				// interpolation
+				polyfem::autogen::prism_basis_value_3d(p, q, i, nodes, val);
+				for (int j = 0; j < val.size(); ++j)
+				{
+					if (j == i)
+						REQUIRE(val(j) == Catch::Approx(1).margin(1e-10));
+					else
+						REQUIRE(val(j) == Catch::Approx(0).margin(1e-10));
+				}
+
+				// gradients
+				polyfem::autogen::prism_grad_basis_value_3d(p, q, i, pts, grad);
+
+				for (int j = 0; j < pts.rows(); ++j)
+				{
+
+					fd::finite_gradient(
+						pts.row(j), [p, q, i](const Eigen::VectorXd &x) -> double {
+							Eigen::MatrixXd tmp;
+							polyfem::autogen::prism_basis_value_3d(p, q, i, x.transpose(), tmp);
+							assert(tmp.size() == 1);
+							return tmp(0);
+						},
+						fgrad);
+
+					if (!fd::compare_gradient(grad.row(j), fgrad))
+					{
+						std::cout << "Gradient mismatch" << std::endl;
+						std::cout << "Gradient: " << grad.row(j) << std::endl;
+						std::cout << "Finite gradient: " << fgrad.transpose() << std::endl;
+					}
+
+					CHECK(fd::compare_gradient(grad.row(j), fgrad));
+				}
+			}
 		}
 	}
 }

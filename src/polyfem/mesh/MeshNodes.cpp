@@ -4,6 +4,8 @@
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
+
+#include <polyfem/utils/Logger.hpp>
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace polyfem::mesh
@@ -316,7 +318,6 @@ namespace polyfem::mesh
 		if (n_new_nodes <= 0)
 			return res;
 
-		// assert(mesh_.is_simplex(index.face));
 		const int start = face_offset_ + index.face * max_nodes_per_face_;
 		const int start_node_id = primitive_to_node_[start];
 
@@ -369,9 +370,9 @@ namespace polyfem::mesh
 		if (n_new_nodes <= 0)
 			return res;
 
-		// assert(mesh_.is_simplex(index.element));
 		const Mesh3D *mesh3d = dynamic_cast<const Mesh3D *>(&mesh_);
 		int start;
+		const bool is_tri = mesh3d->is_simplex(index.element) || (mesh3d->is_prism(index.element) && mesh3d->n_face_vertices(index.face) == 3);
 
 		if (connect_nodes_)
 			start = face_offset_ + index.face * max_nodes_per_face_;
@@ -397,7 +398,7 @@ namespace polyfem::mesh
 			int loc_index = 0;
 			for (int i = 1; i <= n_new_nodes; ++i)
 			{
-				const int end = mesh3d->is_simplex(index.element) ? (n_new_nodes - i + 1) : n_new_nodes;
+				const int end = is_tri ? (n_new_nodes - i + 1) : n_new_nodes;
 				for (int j = 1; j <= end; ++j)
 				{
 					const int primitive_id = start + loc_index;
@@ -426,10 +427,10 @@ namespace polyfem::mesh
 			}
 			else
 			{
-				const int total_nodes = mesh3d->is_simplex(index.element) ? (n_new_nodes * (n_new_nodes + 1) / 2) : (n_new_nodes * n_new_nodes);
+				const int total_nodes = is_tri ? (n_new_nodes * (n_new_nodes + 1) / 2) : (n_new_nodes * n_new_nodes);
 				for (int i = 1; i <= n_new_nodes; ++i)
 				{
-					const int end = mesh3d->is_simplex(index.element) ? (n_new_nodes - i + 1) : n_new_nodes;
+					const int end = is_tri ? (n_new_nodes - i + 1) : n_new_nodes;
 					for (int j = 1; j <= end; ++j)
 					{
 						const auto [p, _] = mesh3d->face_node(index, n_new_nodes, i, j);
@@ -453,7 +454,7 @@ namespace polyfem::mesh
 		}
 
 #ifndef NDEBUG
-		if (mesh3d->is_simplex(index.element))
+		if (is_tri)
 			assert(res.size() == size_t(n_new_nodes * (n_new_nodes + 1) / 2));
 		else
 			assert(res.size() == size_t(n_new_nodes * n_new_nodes));
@@ -497,7 +498,7 @@ namespace polyfem::mesh
 				}
 			}
 		}
-		else
+		else if (mesh3d->is_cube(index.element))
 		{
 			int loc_index = 0;
 			for (int i = 1; i <= n_new_nodes; ++i)
@@ -524,6 +525,12 @@ namespace polyfem::mesh
 				}
 			}
 		}
+		else if (mesh3d->is_prism(index.element))
+		{
+			// TODO: implement me internal prism nodes
+			log_and_throw_error("Prism internal nodes not implemented yet");
+			assert(false);
+		}
 
 #ifndef NDEBUG
 		if (res.size() == 1 && connect_nodes_)
@@ -541,7 +548,7 @@ namespace polyfem::mesh
 				n_cell_nodes += (pp * (pp + 1) / 2);
 			assert(res.size() == size_t(n_cell_nodes));
 		}
-		else
+		else if (mesh3d->is_cube(index.element))
 			assert(res.size() == size_t(n_new_nodes * n_new_nodes * n_new_nodes));
 #endif
 

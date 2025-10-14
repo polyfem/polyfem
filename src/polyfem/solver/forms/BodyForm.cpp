@@ -37,7 +37,7 @@ namespace polyfem::solver
 					   const std::vector<int> &boundary_nodes,
 					   const std::vector<mesh::LocalBoundary> &local_boundary,
 					   const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
-					   const int n_boundary_samples,
+					   const QuadratureOrders &n_boundary_samples,
 					   const Eigen::MatrixXd &rhs,
 					   const assembler::RhsAssembler &rhs_assembler,
 					   const assembler::Density &density,
@@ -172,7 +172,6 @@ namespace polyfem::solver
 				for (int i = 0; i < lb.size(); i++)
 				{
 					const int global_primitive_id = lb.global_primitive_id(i);
-
 					utils::BoundarySampler::boundary_quadrature(lb, n_boundary_samples_, rhs_assembler_.mesh(), i, false, uv, points, normals, weights);
 					global_ids.setConstant(points.rows(), global_primitive_id);
 

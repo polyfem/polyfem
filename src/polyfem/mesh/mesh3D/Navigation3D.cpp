@@ -259,11 +259,13 @@ polyfem::mesh::Navigation3D::Index polyfem::mesh::Navigation3D::get_index_from_e
 	}
 	else
 	{
-		assert(M.elements[idx.element].fs.size() == 4);
-		for (int i = 0; i < 4; i++)
+		assert(M.elements[idx.element].fs.size() == 4 || M.elements[idx.element].fs.size() == 5);
+		for (int i = 0; i < M.elements[idx.element].fs.size(); i++)
 		{
 			const auto fid = M.elements[idx.element].fs[i];
 			const auto &fvid = M.faces[fid].vs;
+			if (fvid.size() != 3)
+				continue;
 			int fv0 = fvid[0], fv1 = fvid[1], fv2 = fvid[2];
 			if (fv0 > fv2)
 				swap(fv0, fv2);
