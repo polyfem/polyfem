@@ -2,7 +2,7 @@
 
 #include <polyfem/mesh/remesh/Remesher.hpp>
 #include <polyfem/mesh/remesh/WildRemesher.hpp>
-#include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/local/Mass.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>

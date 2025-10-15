@@ -1,8 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <polyfem/assembler/Mass.hpp>
-#include <polyfem/assembler/ViscousDamping.hpp>
-#include <polyfem/assembler/FixedCorotational.hpp>
+#include <polyfem/assembler/local/Mass.hpp>
+#include <polyfem/assembler/local/ViscousDamping.hpp>
+#include <polyfem/assembler/local/FixedCorotational.hpp>
 
 #include <polyfem/solver/forms/lagrangian/BCLagrangianForm.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>

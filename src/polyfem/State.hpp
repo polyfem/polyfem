@@ -10,7 +10,7 @@
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
-#include <polyfem/assembler/PressureAssembler.hpp>
+#include <polyfem/assembler/local/PressureAssembler.hpp>
 #include <polyfem/assembler/MacroStrain.hpp>
 #include <polyfem/assembler/Problem.hpp>
 #include <polyfem/assembler/Assembler.hpp>

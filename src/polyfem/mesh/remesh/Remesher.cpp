@@ -2,7 +2,7 @@
 
 #include <polyfem/mesh/remesh/L2Projection.hpp>
 
-#include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/local/Mass.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
 #include <polyfem/basis/LagrangeBasis2d.hpp>

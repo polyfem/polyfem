@@ -1,7 +1,7 @@
 #include "VariableToSimulation.hpp"
 #include <polyfem/State.hpp>
 #include <polyfem/io/MatrixIO.hpp>
-#include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/assembler/local/ViscousDamping.hpp>
 #include <polyfem/solver/Optimizations.hpp>
 
 #include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>

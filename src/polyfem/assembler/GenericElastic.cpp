@@ -1,14 +1,14 @@
 #include "GenericElastic.hpp"
 
-#include <polyfem/assembler/MooneyRivlinElasticity.hpp>
-#include <polyfem/assembler/MooneyRivlin3ParamElasticity.hpp>
-#include <polyfem/assembler/IsochoricNeoHookean.hpp>
-#include <polyfem/assembler/OgdenElasticity.hpp>
-#include <polyfem/assembler/NeoHookeanElasticityAutodiff.hpp>
-#include <polyfem/assembler/VolumePenalty.hpp>
-#include <polyfem/assembler/AMIPSEnergy.hpp>
+#include <polyfem/assembler/local/MooneyRivlinElasticity.hpp>
+#include <polyfem/assembler/local/MooneyRivlin3ParamElasticity.hpp>
+#include <polyfem/assembler/local/IsochoricNeoHookean.hpp>
+#include <polyfem/assembler/local/OgdenElasticity.hpp>
+#include <polyfem/assembler/local/NeoHookeanElasticityAutodiff.hpp>
+#include <polyfem/assembler/local/VolumePenalty.hpp>
+#include <polyfem/assembler/local/AMIPSEnergy.hpp>
 
-#include <polyfem/assembler/HGOFiber.hpp>
+#include <polyfem/assembler/local/HGOFiber.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 

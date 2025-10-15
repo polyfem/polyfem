@@ -7,8 +7,6 @@ set(SOURCES
 	AssemblyValsCache.cpp
 	AssemblyValsCache.hpp
 	AssemblyValues.hpp
-	Bilaplacian.cpp
-	Bilaplacian.hpp
 	ElementAssemblyValues.cpp
 	ElementAssemblyValues.hpp
 	GenericElastic.cpp
@@ -17,69 +15,17 @@ set(SOURCES
 	GenericFiber.hpp
 	GenericProblem.cpp
 	GenericProblem.hpp
-	Helmholtz.cpp
-	Helmholtz.hpp
-	HookeLinearElasticity.cpp
-	HookeLinearElasticity.hpp
-	IncompressibleLinElast.cpp
-	IncompressibleLinElast.hpp
-	Laplacian.cpp
-	Laplacian.hpp
-	Electrostatics.cpp
-	Electrostatics.hpp
-	LinearElasticity.cpp
-	LinearElasticity.hpp
-	HGOFiber.cpp
-	HGOFiber.hpp
 	MacroStrain.hpp
-	Mass.cpp
-	Mass.hpp
-	MassMatrixAssembler.cpp
-	MassMatrixAssembler.hpp
 	MatParams.cpp
 	MatParams.hpp
-	MooneyRivlinElasticity.cpp
-	MooneyRivlinElasticity.hpp
-	MooneyRivlin3ParamElasticity.cpp
-	MooneyRivlin3ParamElasticity.hpp
-	MooneyRivlin3ParamSymbolic.cpp
-	MooneyRivlin3ParamSymbolic.hpp
-	MultiModel.cpp
-	MultiModel.hpp
-	NavierStokes.cpp
-	NavierStokes.hpp
-	NeoHookeanElasticity.cpp
-	NeoHookeanElasticity.hpp
-	NeoHookeanElasticityAutodiff.cpp
-	NeoHookeanElasticityAutodiff.hpp
-	OgdenElasticity.cpp
-	OgdenElasticity.hpp
-	OgdenElasticity.tpp
 	Problem.cpp
 	Problem.hpp
 	RhsAssembler.cpp
 	RhsAssembler.hpp
-	SaintVenantElasticity.cpp
-	SaintVenantElasticity.hpp
-	Stokes.cpp
-	Stokes.hpp
-	ViscousDamping.cpp
-	ViscousDamping.hpp
-	AMIPSEnergy.cpp
-	AMIPSEnergy.hpp
-	IsochoricNeoHookean.cpp
-	IsochoricNeoHookean.hpp
-	PressureAssembler.cpp
-	PressureAssembler.hpp
 	PeriodicBoundary.cpp
 	PeriodicBoundary.hpp
-	FixedCorotational.hpp
-	FixedCorotational.cpp
-	VolumePenalty.hpp
-	VolumePenalty.cpp
-	SumModel.hpp
-	SumModel.cpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
 target_sources(polyfem PRIVATE ${SOURCES})
+add_subdirectory(local)

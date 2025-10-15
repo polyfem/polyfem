@@ -1,11 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/assembler/Problem.hpp>
-#include <polyfem/assembler/Laplacian.hpp>
-#include <polyfem/assembler/Helmholtz.hpp>
-#include <polyfem/assembler/LinearElasticity.hpp>
-#include <polyfem/assembler/HookeLinearElasticity.hpp>
-#include <polyfem/assembler/SaintVenantElasticity.hpp>
-#include <polyfem/assembler/NeoHookeanElasticity.hpp>
+#include <polyfem/assembler/local/Laplacian.hpp>
+#include <polyfem/assembler/local/Helmholtz.hpp>
+#include <polyfem/assembler/local/LinearElasticity.hpp>
+#include <polyfem/assembler/local/HookeLinearElasticity.hpp>
+#include <polyfem/assembler/local/SaintVenantElasticity.hpp>
+#include <polyfem/assembler/local/NeoHookeanElasticity.hpp>
 
 #include <polyfem/problem/ProblemFactory.hpp>
 #include <polyfem/Common.hpp>

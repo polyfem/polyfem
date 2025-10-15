@@ -1,0 +1,60 @@
+set(SOURCES
+	Bilaplacian.cpp
+	Bilaplacian.hpp
+	Helmholtz.cpp
+	Helmholtz.hpp
+	HookeLinearElasticity.cpp
+	HookeLinearElasticity.hpp
+	IncompressibleLinElast.cpp
+	IncompressibleLinElast.hpp
+	Laplacian.cpp
+	Laplacian.hpp
+	Electrostatics.cpp
+	Electrostatics.hpp
+	LinearElasticity.cpp
+	LinearElasticity.hpp
+	HGOFiber.cpp
+	HGOFiber.hpp
+	Mass.cpp
+	Mass.hpp
+	MassMatrixAssembler.cpp
+	MassMatrixAssembler.hpp
+	MooneyRivlinElasticity.cpp
+	MooneyRivlinElasticity.hpp
+	MooneyRivlin3ParamElasticity.cpp
+	MooneyRivlin3ParamElasticity.hpp
+	MooneyRivlin3ParamSymbolic.cpp
+	MooneyRivlin3ParamSymbolic.hpp
+	MultiModel.cpp
+	MultiModel.hpp
+	NavierStokes.cpp
+	NavierStokes.hpp
+	NeoHookeanElasticity.cpp
+	NeoHookeanElasticity.hpp
+	NeoHookeanElasticityAutodiff.cpp
+	NeoHookeanElasticityAutodiff.hpp
+	OgdenElasticity.cpp
+	OgdenElasticity.hpp
+	OgdenElasticity.tpp
+	SaintVenantElasticity.cpp
+	SaintVenantElasticity.hpp
+	Stokes.cpp
+	Stokes.hpp
+	ViscousDamping.cpp
+	ViscousDamping.hpp
+	AMIPSEnergy.cpp
+	AMIPSEnergy.hpp
+	IsochoricNeoHookean.cpp
+	IsochoricNeoHookean.hpp
+	PressureAssembler.cpp
+	PressureAssembler.hpp
+	FixedCorotational.hpp
+	FixedCorotational.cpp
+	VolumePenalty.hpp
+	VolumePenalty.cpp
+	SumModel.hpp
+	SumModel.cpp
+)
+
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})
+target_sources(polyfem PRIVATE ${SOURCES})

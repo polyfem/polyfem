@@ -6,7 +6,7 @@
 #include <polyfem/io/Evaluator.hpp>
 
 #include <polyfem/basis/ElementBases.hpp>
-#include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/local/Mass.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 
 namespace polyfem::solver

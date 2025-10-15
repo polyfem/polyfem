@@ -3,7 +3,7 @@
 #include <polyfem/utils/MaybeParallelFor.hpp>
 
 #include <polyfem/State.hpp>
-#include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/local/Mass.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/NLHomoProblem.hpp>

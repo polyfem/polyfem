@@ -1,9 +1,9 @@
 #include <polyfem/State.hpp>
 
-#include <polyfem/assembler/Laplacian.hpp>
-#include <polyfem/assembler/Mass.hpp>
-#include <polyfem/assembler/Stokes.hpp>
-#include <polyfem/assembler/NavierStokes.hpp>
+#include <polyfem/assembler/local/Laplacian.hpp>
+#include <polyfem/assembler/local/Mass.hpp>
+#include <polyfem/assembler/local/Stokes.hpp>
+#include <polyfem/assembler/local/NavierStokes.hpp>
 
 #include <polyfem/solver/NavierStokesSolver.hpp>
 #include <polyfem/solver/OperatorSplittingSolver.hpp>

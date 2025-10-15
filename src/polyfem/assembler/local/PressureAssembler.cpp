@@ -1,6 +1,5 @@
 #include "PressureAssembler.hpp"
 
-#include <polyfem/assembler/Mass.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>

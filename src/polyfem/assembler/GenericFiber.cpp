@@ -1,6 +1,6 @@
 #include "GenericFiber.hpp"
 
-#include <polyfem/assembler/HGOFiber.hpp>
+#include <polyfem/assembler/local/HGOFiber.hpp>
 
 namespace polyfem::assembler
 {

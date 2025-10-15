@@ -1,13 +1,13 @@
 #include <polyfem/State.hpp>
 #include <polyfem/solver/NLHomoProblem.hpp>
-#include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/local/Mass.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polysolve/linear/FEMSolver.hpp>
 #include <polysolve/nonlinear/Solver.hpp>
 
-#include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/assembler/local/ViscousDamping.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/forms/lagrangian/MacroStrainLagrangianForm.hpp>
 

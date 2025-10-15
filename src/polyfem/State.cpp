@@ -5,8 +5,8 @@
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/io/Evaluator.hpp>
 
-#include <polyfem/assembler/Mass.hpp>
-#include <polyfem/assembler/MultiModel.hpp>
+#include <polyfem/assembler/local/Mass.hpp>
+#include <polyfem/assembler/local/MultiModel.hpp>
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>

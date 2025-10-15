@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/assembler/MassMatrixAssembler.hpp>
+#include <polyfem/assembler/local/MassMatrixAssembler.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/BarrierContactForm.hpp>
 

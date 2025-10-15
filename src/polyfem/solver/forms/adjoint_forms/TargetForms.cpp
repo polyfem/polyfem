@@ -6,7 +6,7 @@
 #include <polyfem/State.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
-#include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/local/Mass.hpp>
 
 #include <polyfem/utils/IntegrableFunctional.hpp>
 
@@ -603,7 +603,7 @@ namespace polyfem::solver
 	}
 
 	MinTargetDistForm::MinTargetDistForm(const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &steps, const Eigen::VectorXd &target, const json &args, const std::shared_ptr<State> &state)
-	 : AdjointForm(variable_to_simulations), steps_(steps), target_(target) 
+		: AdjointForm(variable_to_simulations), steps_(steps), target_(target)
 	{
 		dim = state->mesh->dimension();
 		json tmp_args = args;
@@ -641,7 +641,7 @@ namespace polyfem::solver
 			terms.col(s) += g1(i) * grads[i] * g2.row(i).transpose();
 			i++;
 		}
-		
+
 		return terms * weight();
 	}
 	void MinTargetDistForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const

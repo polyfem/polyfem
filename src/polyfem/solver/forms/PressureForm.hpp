@@ -2,7 +2,7 @@
 
 #include "Form.hpp"
 
-#include <polyfem/assembler/PressureAssembler.hpp>
+#include <polyfem/assembler/local/PressureAssembler.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
 

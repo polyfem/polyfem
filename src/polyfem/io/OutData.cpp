@@ -7,7 +7,7 @@
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/assembler/AssemblyValues.hpp>
 #include <polyfem/assembler/MatParams.hpp>
-#include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/local/Mass.hpp>
 
 #include <polyfem/basis/ElementBases.hpp>
 
