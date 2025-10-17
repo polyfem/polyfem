@@ -97,7 +97,7 @@ namespace polyfem::solver
 			collision_mesh_.vertices(V0),
 			collision_mesh_.vertices(V1),
 			dmin_,
-			ipc::build_broad_phase(broad_phase_method_),
+			ipc::create_broad_phase(broad_phase_method_),
 			tight_inclusion_ccd);
 
 		return is_valid;
@@ -114,7 +114,7 @@ namespace polyfem::solver
 			collision_mesh_.vertices(V0),
 			collision_mesh_.vertices(V1),
 			dmin_,
-			ipc::build_broad_phase(broad_phase_method_), 
+			ipc::create_broad_phase(broad_phase_method_), 
 			tight_inclusion_ccd);
 
 		adjoint_logger().info("Objective {}: max step size is {}.", name(), max_step);
@@ -128,7 +128,7 @@ namespace polyfem::solver
 		if (cached_displaced_surface.size() == displaced_surface.size() && cached_displaced_surface == displaced_surface)
 			return;
 
-		collision_set.build(collision_mesh_, displaced_surface, dhat_, dmin_, ipc::build_broad_phase(broad_phase_method_));
+		collision_set.build(collision_mesh_, displaced_surface, dhat_, dmin_, ipc::create_broad_phase(broad_phase_method_));
 
 		cached_displaced_surface = displaced_surface;
 	}
@@ -360,7 +360,7 @@ namespace polyfem::solver
 		if (cached_displaced_surface.size() == displaced_surface.size() && cached_displaced_surface == displaced_surface)
 			return;
 
-		collision_set.build(collision_mesh_, displaced_surface, dhat_, 0, ipc::build_broad_phase(broad_phase_method_));
+		collision_set.build(collision_mesh_, displaced_surface, dhat_, 0, ipc::create_broad_phase(broad_phase_method_));
 
 		cached_displaced_surface = displaced_surface;
 	}

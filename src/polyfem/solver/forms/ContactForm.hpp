@@ -25,7 +25,8 @@ namespace ipc
 			{ipc::BroadPhaseMethod::BVH, "bvh"},
 			{ipc::BroadPhaseMethod::BVH, "BVH"},
 			{ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
-			{ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"}})
+			{ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"}
+			})
 }
 
 namespace polyfem::solver
