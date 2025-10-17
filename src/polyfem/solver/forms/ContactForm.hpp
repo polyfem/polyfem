@@ -7,7 +7,7 @@
 
 #include <ipc/collisions/normal/normal_collisions.hpp>
 #include <ipc/collision_mesh.hpp>
-#include <ipc/broad_phase/broad_phase.hpp>
+#include <ipc/broad_phase/create_broad_phase.hpp>
 #include <ipc/potentials/potential.hpp>
 
 // map BroadPhaseMethod values to JSON as strings
