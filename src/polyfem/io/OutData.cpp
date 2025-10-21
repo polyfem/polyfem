@@ -1220,9 +1220,6 @@ namespace polyfem::io
 			use_sampler = false;
 		else
 			use_sampler = !(is_mesh_linear && args["output"]["paraview"]["high_order_mesh"]);
-		if (mesh_has_prisms)
-			use_sampler = true;
-
 		boundary_only = use_sampler && args["output"]["advanced"]["vis_boundary_only"];
 		material_params = args["output"]["paraview"]["options"]["material"];
 		body_ids = args["output"]["paraview"]["options"]["body_ids"];
