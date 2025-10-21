@@ -74,6 +74,8 @@ namespace polyfem
 		Derivatives
 	};
 
+	class VariationalForm;
+
 	/// main class that contains the polyfem solver and all its state
 	class State
 	{
@@ -143,219 +145,29 @@ namespace polyfem
 		spdlog::sink_ptr file_sink_ = nullptr;
 
 	public:
-		//---------------------------------------------------
-		//-----------------assembly--------------------------
-		//---------------------------------------------------
-
 		Units units;
 
-		/// assemblers
-
-		/// assembler corresponding to governing physical equations
-		std::shared_ptr<assembler::Assembler> assembler = nullptr;
-
-		std::shared_ptr<assembler::Mass> mass_matrix_assembler = nullptr;
-
-		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
-		std::shared_ptr<assembler::Assembler> pressure_assembler = nullptr;
-
-		std::shared_ptr<assembler::PressureAssembler> elasticity_pressure_assembler = nullptr;
-
-		std::shared_ptr<assembler::ViscousDamping> damping_assembler = nullptr;
-		std::shared_ptr<assembler::ViscousDampingPrev> damping_prev_assembler = nullptr;
-
-		/// current problem, it contains rhs and bc
-		std::shared_ptr<assembler::Problem> problem;
-
-		/// FE bases, the size is #elements
-		std::vector<basis::ElementBases> bases;
-		/// FE pressure bases for mixed elements, the size is #elements
-		std::vector<basis::ElementBases> pressure_bases;
-		/// Geometric mapping bases, if the elements are isoparametric, this list is empty
-		std::vector<basis::ElementBases> geom_bases_;
-
-		/// number of bases
-		int n_bases;
-		/// number of pressure bases
-		int n_pressure_bases;
-		/// number of geometric bases
-		int n_geom_bases;
-
-		/// polygons, used since poly have no geom mapping
-		std::map<int, Eigen::MatrixXd> polys;
-		/// polyhedra, used since poly have no geom mapping
-		std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> polys_3d;
-
-		/// vector of discretization orders, used when not all elements have the same degree, one per element
-		Eigen::VectorXi disc_orders, disc_ordersq;
-
-		/// Mapping from input nodes to FE nodes
-		std::shared_ptr<polyfem::mesh::MeshNodes> mesh_nodes, geom_mesh_nodes, pressure_mesh_nodes;
-
-		/// used to store assembly values for small problems
-		assembler::AssemblyValsCache ass_vals_cache;
-		assembler::AssemblyValsCache mass_ass_vals_cache;
-		/// used to store assembly values for pressure for small problems
-		assembler::AssemblyValsCache pressure_ass_vals_cache;
-
-		/// Mass matrix, it is computed only for time dependent problems
-		StiffnessMatrix mass;
-		/// average system mass, used for contact with IPC
-		double avg_mass;
-
-		/// System right-hand side.
-		Eigen::MatrixXd rhs;
-
-		/// use average pressure for stokes problem to fix the additional dofs, true by default
-		/// if false, it will fix one pressure node to zero
-		bool use_avg_pressure;
-
-		/// return the formulation (checks if the problem is scalar or not and deals with multiphysics)
-		/// @return formulation
-		std::string formulation() const;
-
-		/// check if using iso parametric bases
-		/// @return if basis are isoparametric
-		bool iso_parametric() const;
-
-		/// @brief Get a constant reference to the geometry mapping bases.
-		/// @return A constant reference to the geometry mapping bases.
-		const std::vector<basis::ElementBases> &geom_bases() const
-		{
-			return iso_parametric() ? bases : geom_bases_;
-		}
-
-		/// builds the bases step 2 of solve
-		/// modifies bases, pressure_bases, geom_bases_, boundary_nodes,
-		/// dirichlet_nodes, neumann_nodes, local_boundary, total_local_boundary
-		/// local_neumann_boundary, polys, poly_edge_to_data, rhs
-		void build_basis();
-		/// compute rhs, step 3 of solve
-		/// build rhs vector based on defined basis and given rhs of the problem
-		/// modifies rhs (and maybe more?)
-		void assemble_rhs();
-		/// assemble mass, step 4 of solve
-		/// build mass matrix based on defined basis
-		/// modifies mass (and maybe more?)
-		void assemble_mass_mat();
-
-		/// build a RhsAssembler for the problem
-		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler(
-			const int n_bases,
-			const std::vector<basis::ElementBases> &bases,
-			const assembler::AssemblyValsCache &ass_vals_cache) const;
-		/// build a RhsAssembler for the problem
-		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler() const
-		{
-			return build_rhs_assembler(n_bases, bases, mass_ass_vals_cache);
-		}
-
-		std::shared_ptr<assembler::PressureAssembler> build_pressure_assembler(
-			const int n_bases_,
-			const std::vector<basis::ElementBases> &bases_) const;
-		std::shared_ptr<assembler::PressureAssembler> build_pressure_assembler() const
-		{
-			return build_pressure_assembler(n_bases, bases);
-		}
-
-		/// quadrature used for projecting boundary conditions
-		/// @return the quadrature used for projecting boundary conditions
-		QuadratureOrders n_boundary_samples() const
-		{
-			using assembler::AssemblerUtils;
-			const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
-			const int gdiscr_order = mesh->orders().size() <= 0 ? 1 : mesh->orders().maxCoeff();
-			const int discr_order = std::max(disc_orders.maxCoeff(), gdiscr_order);
-
-			const int n_b_samples = std::max(n_b_samples_j, AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::POLY, mesh->dimension()));
-			// todo prism
-			return {{n_b_samples, n_b_samples}};
-		}
-
-	private:
-		/// splits the solution in solution and pressure for mixed problems
-		/// @param[in/out] sol solution
-		/// @param[out] pressure pressure
-		void sol_to_pressure(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
-		/// builds bases for polygons, called inside build_basis
-		void build_polygonal_basis();
-
-	public:
-		/// set the material and the problem dimension
-		/// @param[in/out] list of assembler to set
-		void set_materials(std::vector<std::shared_ptr<assembler::Assembler>> &assemblers) const;
-		/// utility to set the material and the problem dimension to only 1 assembler
-		/// @param[in/out] assembler to set
-		void set_materials(assembler::Assembler &assembler) const;
-
-		//---------------------------------------------------
-		//-----------------solver----------------------------
-		//---------------------------------------------------
+		std::shared_ptr<VariationalForm> variational_form;
 
 	public:
 		/// solves the problems
 		/// @param[out] sol solution
-		/// @param[out] pressure pressure
-		void solve_problem(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
+		void solve_problem(Eigen::MatrixXd &sol);
 		/// solves the problem, call other methods
 		/// @param[out] sol solution
-		/// @param[out] pressure pressure
-		void solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
-		{
-			if (!mesh)
-			{
-				logger().error("Load the mesh first!");
-				return;
-			}
-			stats.compute_mesh_stats(*mesh);
+		void solve(Eigen::MatrixXd &sol);
 
-			build_basis();
-
-			assemble_rhs();
-			assemble_mass_mat();
-
-			solve_problem(sol, pressure);
-		}
-
-		/// timedependent stuff cached
-		solver::SolveData solve_data;
-		/// initialize solver
-		/// @param[out] sol solution
-		/// @param[out] pressure pressure
-		void init_solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
-		/// solves transient navier stokes with operator splitting
-		/// @param[in] time_steps number of time steps
-		/// @param[in] dt timestep size
-		/// @param[out] sol solution
-		/// @param[out] pressure pressure
-		void solve_transient_navier_stokes_split(const int time_steps, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
-		/// solves transient navier stokes with FEM
+		/// solves transient problem
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
 		/// @param[out] sol solution
-		/// @param[out] pressure pressure
-		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
-		/// solves transient linear problem
-		/// @param[in] time_steps number of time steps
-		/// @param[in] t0 initial times
-		/// @param[in] dt timestep size
+		void solve_transient(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol);
+
+		/// solves a linear problem
 		/// @param[out] sol solution
-		/// @param[out] pressure pressure
-		void solve_transient_linear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
-		/// solves transient tensor nonlinear problem
-		/// @param[in] time_steps number of time steps
-		/// @param[in] t0 initial times
-		/// @param[in] dt timestep size
-		/// @param[out] sol solution
-		void solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol);
-		/// initialize the nonlinear solver
-		/// @param[out] sol solution
-		/// @param[in] t (optional) initial time
-		void init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t = 1.0, const bool init_time_integrator = true);
-		/// initialize the linear solve
-		/// @param[in] t (optional) initial time
-		void init_linear_solve(Eigen::MatrixXd &sol, const double t = 1.0);
+		void solve_static(Eigen::MatrixXd &sol);
+
 		/// @brief Load or compute the initial solution.
 		/// @param[out] solution Output solution variable.
 		void initial_solution(Eigen::MatrixXd &solution) const;
@@ -365,103 +177,10 @@ namespace polyfem
 		/// @brief Load or compute the initial acceleration.
 		/// @param[out] solution Output acceleration variable.
 		void initial_acceleration(Eigen::MatrixXd &acceleration) const;
-		/// solves a linear problem
-		/// @param[out] sol solution
-		/// @param[out] pressure pressure
-		void solve_linear(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
-		/// solves a navier stokes
-		/// @param[out] sol solution
-		/// @param[out] pressure pressure
-		void solve_navier_stokes(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
-		/// solves nonlinear problems
-		/// @param[out] sol solution
-		/// @param[in] t (optional) time step id
-		void solve_tensor_nonlinear(Eigen::MatrixXd &sol, const int t = 0, const bool init_lagging = true);
 
 		/// factory to create the nl solver depending on input
 		/// @return nonlinear solver (eg newton or LBFGS)
 		std::shared_ptr<polysolve::nonlinear::Solver> make_nl_solver(bool for_al) const;
-
-		/// periodic BC and periodic mesh utils
-		std::shared_ptr<utils::PeriodicBoundary> periodic_bc;
-		bool has_periodic_bc() const
-		{
-			return args["boundary_conditions"]["periodic_boundary"]["enabled"].get<bool>();
-		}
-
-		/// @brief Solve the linear problem with the given solver and system.
-		/// @param solver Linear solver.
-		/// @param A Linear system matrix.
-		/// @param b Right-hand side.
-		/// @param compute_spectrum If true, compute the spectrum.
-		/// @param[out] sol solution
-		/// @param[out] pressure pressure
-		void solve_linear(
-			const std::unique_ptr<polysolve::linear::Solver> &solver,
-			StiffnessMatrix &A,
-			Eigen::VectorXd &b,
-			const bool compute_spectrum,
-			Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
-
-		/// @brief Returns whether the system is linear. Collisions and pressure add nonlinearity to the problem.
-		bool is_problem_linear() const { return assembler->is_linear() && !is_contact_enabled() && !is_pressure_enabled() && !has_constraints(); }
-
-		bool has_constraints() const
-		{
-			return has_constraints_;
-		}
-
-	private:
-		bool has_constraints_;
-
-	public:
-		/// @brief utility that builds the stiffness matrix and collects stats, used only for linear problems
-		/// @param[out] stiffness matrix
-		void build_stiffness_mat(StiffnessMatrix &stiffness);
-
-		//---------------------------------------------------
-		//-----------------nodes flags-----------------------
-		//---------------------------------------------------
-
-	public:
-		/// Construct a vector of boundary conditions ids with their dimension flags.
-		std::unordered_map<int, std::array<bool, 3>>
-		boundary_conditions_ids(const std::string &bc_type) const;
-
-		/// list of boundary nodes
-		std::vector<int> boundary_nodes;
-		/// list of neumann boundary nodes
-		std::vector<int> pressure_boundary_nodes;
-		/// mapping from elements to nodes for all mesh
-		std::vector<mesh::LocalBoundary> total_local_boundary;
-		/// mapping from elements to nodes for dirichlet boundary conditions
-		std::vector<mesh::LocalBoundary> local_boundary;
-		/// mapping from elements to nodes for neumann boundary conditions
-		std::vector<mesh::LocalBoundary> local_neumann_boundary;
-		/// mapping from elements to nodes for pressure boundary conditions
-		std::vector<mesh::LocalBoundary> local_pressure_boundary;
-		/// mapping from elements to nodes for pressure boundary conditions
-		std::unordered_map<int, std::vector<mesh::LocalBoundary>> local_pressure_cavity;
-		/// nodes on the boundary of polygonal elements, used for harmonic bases
-		std::map<int, basis::InterfaceData> poly_edge_to_data;
-		/// per node dirichlet
-		std::vector<int> dirichlet_nodes;
-		std::vector<RowVectorNd> dirichlet_nodes_position;
-		/// per node neumann
-		std::vector<int> neumann_nodes;
-		std::vector<RowVectorNd> neumann_nodes_position;
-
-		/// Inpute nodes (including high-order) to polyfem nodes, only for isoparametric
-		Eigen::VectorXi in_node_to_node;
-		/// maps in vertices/edges/faces/cells to polyfem vertices/edges/faces/cells
-		Eigen::VectorXi in_primitive_to_primitive;
-
-		std::vector<int> primitive_to_node() const;
-		std::vector<int> node_to_primitive() const;
-
-	private:
-		/// build the mapping from input nodes to polyfem nodes
-		void build_node_mapping();
 
 		//---------------------------------------------------
 		//-----------------Geometry--------------------------
@@ -598,8 +317,7 @@ namespace polyfem
 
 		/// saves all data on the disk according to the input params
 		/// @param[in] sol solution
-		/// @param[in] pressure pressure
-		void export_data(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure);
+		void export_data(const Eigen::MatrixXd &sol);
 
 		/// saves a timestep
 		/// @param[in] time time in secs
@@ -607,15 +325,13 @@ namespace polyfem
 		/// @param[in] t0 initial time
 		/// @param[in] dt delta t
 		/// @param[in] sol solution
-		/// @param[in] pressure pressure
-		void save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure);
+		void save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &sol);
 
 		/// saves a subsolve when save_solve_sequence_debug is true
 		/// @param[in] i sub solve index
 		/// @param[in] t time index
 		/// @param[in] sol solution
-		/// @param[in] pressure pressure
-		void save_subsolve(const int i, const int t, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure);
+		void save_subsolve(const int i, const int t, const Eigen::MatrixXd &sol);
 
 		/// saves the output statistic to a stream
 		/// @param[in] sol solution
@@ -659,15 +375,6 @@ namespace polyfem
 
 		std::unique_ptr<polysolve::linear::Solver> lin_solver_cached; // matrix factorization of last linear solve
 
-		int ndof() const
-		{
-			const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
-			if (mixed_assembler == nullptr)
-				return actual_dim * n_bases;
-			else
-				return actual_dim * n_bases + n_pressure_bases;
-		}
-
 		// Aux functions for setting up adjoint equations
 		void compute_force_jacobian(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, StiffnessMatrix &hessian);
 		void compute_force_jacobian_prev(const int force_step, const int sol_step, StiffnessMatrix &hessian_prev) const;
@@ -675,21 +382,7 @@ namespace polyfem
 		void solve_adjoint_cached(const Eigen::MatrixXd &rhs);
 		Eigen::MatrixXd solve_adjoint(const Eigen::MatrixXd &rhs) const;
 		// Returns cached adjoint solve
-		Eigen::MatrixXd get_adjoint_mat(int type) const
-		{
-			assert(diff_cached.adjoint_mat().size() > 0);
-			if (problem->is_time_dependent())
-			{
-				if (type == 0)
-					return diff_cached.adjoint_mat().leftCols(diff_cached.adjoint_mat().cols() / 2);
-				else if (type == 1)
-					return diff_cached.adjoint_mat().middleCols(diff_cached.adjoint_mat().cols() / 2, diff_cached.adjoint_mat().cols() / 2);
-				else
-					log_and_throw_adjoint_error("Invalid adjoint type!");
-			}
-
-			return diff_cached.adjoint_mat();
-		}
+		Eigen::MatrixXd get_adjoint_mat(int type) const;
 		Eigen::MatrixXd solve_static_adjoint(const Eigen::MatrixXd &adjoint_rhs) const;
 		Eigen::MatrixXd solve_transient_adjoint(const Eigen::MatrixXd &adjoint_rhs) const;
 		// Change geometric node positions
