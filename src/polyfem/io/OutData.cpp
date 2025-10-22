@@ -905,7 +905,7 @@ namespace polyfem::io
 		const Eigen::VectorXi &disc_ordersq,
 		const std::vector<basis::ElementBases> &bases,
 		Eigen::MatrixXd &points,
-		std::vector<std::vector<int>> &elements,
+		std::vector<CellElement> &elements,
 		Eigen::MatrixXi &el_id,
 		Eigen::MatrixXd &discr) const
 	{
@@ -997,7 +997,7 @@ namespace polyfem::io
 				points.row(pts_index) = mapped.row(j);
 				el_id(pts_index) = i;
 				discr(pts_index) = disc_orders(i);
-				elements[i].push_back(pts_index);
+				elements[i].vertices.push_back(pts_index);
 
 				pts_index++;
 			}
@@ -1006,12 +1006,12 @@ namespace polyfem::io
 			{
 				if (mesh.is_volume())
 				{
-					const int n_nodes = elements[i].size();
+					const int n_nodes = elements[i].vertices.size();
 					if (disc_orders(i) >= 3)
 					{
-						std::swap(elements[i][16], elements[i][17]);
-						std::swap(elements[i][17], elements[i][18]);
-						std::swap(elements[i][18], elements[i][19]);
+						std::swap(elements[i].vertices[16], elements[i].vertices[17]);
+						std::swap(elements[i].vertices[17], elements[i].vertices[18]);
+						std::swap(elements[i].vertices[18], elements[i].vertices[19]);
 					}
 					if (disc_orders(i) > 4)
 						error_msg = "Saving high-order meshes not implemented for P5+ elements!";
@@ -1020,8 +1020,8 @@ namespace polyfem::io
 				{
 					if (disc_orders(i) == 4)
 					{
-						const int n_nodes = elements[i].size();
-						std::swap(elements[i][n_nodes - 1], elements[i][n_nodes - 2]);
+						const int n_nodes = elements[i].vertices.size();
+						std::swap(elements[i].vertices[n_nodes - 1], elements[i].vertices[n_nodes - 2]);
 					}
 					if (disc_orders(i) > 4)
 						error_msg = "Saving high-order meshes not implemented for P5+ elements!";
@@ -1047,9 +1047,65 @@ namespace polyfem::io
 				points.row(pts_index) = mesh2d.point(mesh2d.face_vertex(i, j));
 				el_id(pts_index) = i;
 				discr(pts_index) = disc_orders(i);
-				elements[i].push_back(pts_index);
+				elements[i].vertices.push_back(pts_index);
 
 				pts_index++;
+			}
+		}
+
+		for (size_t i = 0; i < bases.size(); ++i)
+		{
+			int n = elements[i].vertices.size();
+			if (!mesh.is_volume())
+			{
+				if (mesh.is_simplex(i))
+				{
+					if (disc_orders(i)==1)
+						elements[i].ctype = CellType::Triangle;
+					else 
+						elements[i].ctype = CellType::LagrangeTriangle;
+				}
+				else if (mesh.is_cube(i))
+				{
+					if (disc_orders(i)==1)
+						elements[i].ctype = CellType::Quadrilateral;
+					else 
+						elements[i].ctype = CellType::LagrangeQuadrilateral;					
+				}
+				else
+				{
+					if (disc_orders(i)==1)
+						elements[i].ctype = CellType::Polygon;
+					// else?
+				}
+			}
+			else
+			{
+				if (mesh.is_simplex(i))
+				{
+					if (disc_orders(i)==1)
+						elements[i].ctype = CellType::Tetrahedron;
+					else 
+						elements[i].ctype = CellType::LagrangeTetrahedron;					
+				}
+				else if (mesh.is_cube(i))
+				{
+					if (disc_orders(i)==1)
+						elements[i].ctype = CellType::Hexahedron;
+					else 
+						elements[i].ctype = CellType::LagrangeHexahedron;					
+				}
+				else if (mesh.is_prism(i))
+				{
+					if (disc_orders(i)==1)
+						elements[i].ctype = CellType::Wedge;
+					else if (disc_orders(i)==2)
+						elements[i].ctype = CellType::BiquadraticWedge;
+					else 
+						elements[i].ctype = CellType::LagrangeWedge;					
+				}	
+				else 			
+					elements[i].ctype = CellType::Tetrahedron;	// default
 			}
 		}
 
@@ -1352,7 +1408,7 @@ namespace polyfem::io
 		Eigen::MatrixXi tets;
 		Eigen::MatrixXi el_id;
 		Eigen::MatrixXd discr;
-		std::vector<std::vector<int>> elements;
+		std::vector<CellElement> elements;
 
 		if (opts.use_sampler)
 			build_vis_mesh(mesh, disc_orders, gbases,
@@ -1863,36 +1919,40 @@ namespace polyfem::io
 				for (int i = 0; i < tets.rows(); ++i)
 				{
 					elements.emplace_back();
+					elements.back().ctype = CellType::Tetrahedron;
 					for (int j = 0; j < tets.cols(); ++j)
-						elements.back().push_back(tets(i, j));
+						elements.back().vertices.push_back(tets(i, j));
 				}
 			}
 
 			for (int i = 0; i < obstacle.get_face_connectivity().rows(); ++i)
 			{
 				elements.emplace_back();
+				elements.back().ctype = CellType::Tetrahedron;
 				for (int j = 0; j < obstacle.get_face_connectivity().cols(); ++j)
-					elements.back().push_back(obstacle.get_face_connectivity()(i, j) + orig_p);
+					elements.back().vertices.push_back(obstacle.get_face_connectivity()(i, j) + orig_p);
 			}
 
 			for (int i = 0; i < obstacle.get_edge_connectivity().rows(); ++i)
 			{
 				elements.emplace_back();
+				elements.back().ctype = CellType::Tetrahedron;
 				for (int j = 0; j < obstacle.get_edge_connectivity().cols(); ++j)
-					elements.back().push_back(obstacle.get_edge_connectivity()(i, j) + orig_p);
+					elements.back().vertices.push_back(obstacle.get_edge_connectivity()(i, j) + orig_p);
 			}
 
 			for (int i = 0; i < obstacle.get_vertex_connectivity().size(); ++i)
 			{
 				elements.emplace_back();
-				elements.back().push_back(obstacle.get_vertex_connectivity()(i) + orig_p);
+				elements.back().ctype = CellType::Tetrahedron;
+				elements.back().vertices.push_back(obstacle.get_vertex_connectivity()(i) + orig_p);
 			}
 		}
 
 		if (elements.empty())
 			writer.write_mesh(path, points, tets);
 		else
-			writer.write_mesh(path, points, elements, true, disc_orders.maxCoeff() == 1);
+			writer.write_mesh(path, points, elements);
 	}
 
 	void OutGeometryData::save_volume_vector_field(
@@ -2522,7 +2582,7 @@ namespace polyfem::io
 		Eigen::MatrixXd b_sidesets(dirichlet_nodes_position.size(), 1);
 		b_sidesets.setZero();
 		Eigen::MatrixXd points(dirichlet_nodes_position.size(), mesh.dimension());
-		std::vector<std::vector<int>> cells(dirichlet_nodes_position.size());
+		std::vector<CellElement> cells(dirichlet_nodes_position.size());
 
 		for (int i = 0; i < dirichlet_nodes_position.size(); ++i)
 		{
@@ -2539,7 +2599,8 @@ namespace polyfem::io
 			}
 
 			points.row(i) = dirichlet_nodes_position[i];
-			cells[i].push_back(i);
+			cells[i].vertices.push_back(i);
+			cells[i].ctype = CellType::Vertex;
 		}
 
 		std::shared_ptr<paraviewo::ParaviewWriter> tmpw;
@@ -2553,7 +2614,7 @@ namespace polyfem::io
 			writer.add_field("sidesets", b_sidesets);
 		// Write the solution last so it is the default for warp-by-vector
 		writer.add_field("solution", fun);
-		writer.write_mesh(path, points, cells, false, false);
+		writer.write_mesh(path, points, cells);
 	}
 
 	void OutGeometryData::save_pvd(
