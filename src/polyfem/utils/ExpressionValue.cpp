@@ -72,7 +72,7 @@ namespace polyfem
 			mat_expr_ = {};
 			sfunc_ = nullptr;
 			tfunc_ = nullptr;
-			value_ = 0;
+			value_ = std::numeric_limits<double>::quiet_NaN();
 		}
 
 		void ExpressionValue::init(const double val)

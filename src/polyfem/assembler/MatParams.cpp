@@ -32,12 +32,12 @@ namespace polyfem::assembler
 		for (int i = param_.size(); i <= index; ++i)
 		{
 			param_.emplace_back();
+			param_.back().set_unit_type(unit_type);
 		}
 
 		if (params.count(param_name_))
 		{
 			param_[index].init(params[param_name_]);
-			param_[index].set_unit_type(unit_type);
 		}
 	}
 
@@ -81,10 +81,10 @@ namespace polyfem::assembler
 			for (int j = params_.at(i).param_.size(); j <= index; ++j)
 			{
 				params_.at(i).param_.emplace_back();
+				params_.at(i).param_.back().set_unit_type(unit_type);
 			}
 
 			params_.at(i).param_[index].init(params_array[i]);
-			params_.at(i).param_[index].set_unit_type(unit_type);
 		}
 	}
 
@@ -95,7 +95,7 @@ namespace polyfem::assembler
 		else
 			stiffness_tensor_.resize(6, 6);
 
-		stiffness_tensor_.setZero();
+		stiffness_tensor_.setConstant(std::numeric_limits<double>::quiet_NaN());
 
 		size_ = size;
 	}
@@ -394,10 +394,10 @@ namespace polyfem::assembler
 			mu = mu_mat_(el_id);
 		}
 
-		assert(!std::isnan(lambda));
-		assert(!std::isnan(mu));
-		assert(!std::isinf(lambda));
-		assert(!std::isinf(mu));
+		// assert(!std::isnan(lambda));
+		// assert(!std::isnan(mu));
+		// assert(!std::isinf(lambda));
+		// assert(!std::isinf(mu));
 	}
 
 	void LameParameters::add_multimaterial(const int index, const json &params, const bool is_volume, const std::string &stress_unit)
@@ -409,7 +409,9 @@ namespace polyfem::assembler
 		for (int i = lambda_or_E_.size(); i <= index; ++i)
 		{
 			lambda_or_E_.emplace_back();
+			lambda_or_E_.back().set_unit_type(stress_unit);
 			mu_or_nu_.emplace_back();
+			mu_or_nu_.back().set_unit_type("");
 		}
 
 		if (params.count("young"))

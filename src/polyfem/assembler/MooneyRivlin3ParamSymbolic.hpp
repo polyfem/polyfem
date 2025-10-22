@@ -13,14 +13,14 @@ namespace polyfem::assembler
 	template <typename T>
 	using AutoDiffVect = Eigen::Matrix<T, Eigen::Dynamic, 1>;
 
-	class MooneyRivlin3ParamSymbolic : public NLAssembler, public ElasticityAssembler
+	class MooneyRivlin3ParamSymbolic : public ElasticityNLAssembler
 	{
 	public:
 		MooneyRivlin3ParamSymbolic();
 
-		using NLAssembler::assemble_energy;
-		using NLAssembler::assemble_gradient;
-		using NLAssembler::assemble_hessian;
+		using ElasticityNLAssembler::assemble_energy;
+		using ElasticityNLAssembler::assemble_gradient;
+		using ElasticityNLAssembler::assemble_hessian;
 
 		const GenericMatParam &c1() const { return c1_; }
 		const GenericMatParam &c2() const { return c2_; }
