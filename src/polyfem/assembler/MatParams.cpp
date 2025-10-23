@@ -95,7 +95,7 @@ namespace polyfem::assembler
 		else
 			stiffness_tensor_.resize(6, 6);
 
-		stiffness_tensor_.setConstant(std::numeric_limits<double>::quiet_NaN());
+		stiffness_tensor_.setZero();
 
 		size_ = size;
 	}
@@ -394,10 +394,10 @@ namespace polyfem::assembler
 			mu = mu_mat_(el_id);
 		}
 
-		// assert(!std::isnan(lambda));
-		// assert(!std::isnan(mu));
-		// assert(!std::isinf(lambda));
-		// assert(!std::isinf(mu));
+		assert(!std::isnan(lambda));
+		assert(!std::isnan(mu));
+		assert(!std::isinf(lambda));
+		assert(!std::isinf(mu));
 	}
 
 	void LameParameters::add_multimaterial(const int index, const json &params, const bool is_volume, const std::string &stress_unit)
