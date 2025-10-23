@@ -30,6 +30,7 @@ var annotated_dup =
         [ "BilaplacianMixed", "classpolyfem_1_1assembler_1_1_bilaplacian_mixed.html", "classpolyfem_1_1assembler_1_1_bilaplacian_mixed" ],
         [ "Density", "classpolyfem_1_1assembler_1_1_density.html", "classpolyfem_1_1assembler_1_1_density" ],
         [ "ElasticityAssembler", "classpolyfem_1_1assembler_1_1_elasticity_assembler.html", "classpolyfem_1_1assembler_1_1_elasticity_assembler" ],
+        [ "ElasticityNLAssembler", "classpolyfem_1_1assembler_1_1_elasticity_n_l_assembler.html", null ],
         [ "ElasticityTensor", "classpolyfem_1_1assembler_1_1_elasticity_tensor.html", "classpolyfem_1_1assembler_1_1_elasticity_tensor" ],
         [ "Electrostatics", "classpolyfem_1_1assembler_1_1_electrostatics.html", "classpolyfem_1_1assembler_1_1_electrostatics" ],
         [ "ElementAssemblyValues", "classpolyfem_1_1assembler_1_1_element_assembly_values.html", "classpolyfem_1_1assembler_1_1_element_assembly_values" ],

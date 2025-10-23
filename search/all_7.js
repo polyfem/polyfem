@@ -61,7 +61,7 @@ var searchData=
   ['get_58',['get',['../classpolyfem_1_1utils_1_1_n_thread.html#a450e08589b053f6b1420f9f9eee0cf8b',1,'polyfem::utils::NThread']]],
   ['get_5fadjoint_5fmat_59',['get_adjoint_mat',['../classpolyfem_1_1_state.html#a4a048d59f545f17bf6ce77e1437ee131',1,'polyfem::State']]],
   ['get_5faffine_5fmatrix_60',['get_affine_matrix',['../classpolyfem_1_1utils_1_1_periodic_boundary.html#a4c482f06c83cbbde9d5ab4ae9c385c30',1,'polyfem::utils::PeriodicBoundary']]],
-  ['get_5fassembler_61',['get_assembler',['../classpolyfem_1_1assembler_1_1_all_elastic_materials.html#afab6f6652ebea8fb0effe9a3dad340b0',1,'polyfem::assembler::AllElasticMaterials']]],
+  ['get_5fassembler_61',['get_assembler',['../classpolyfem_1_1assembler_1_1_all_elastic_materials.html#a51319d77b2ae1767aba5c80ad8e0b88d',1,'polyfem::assembler::AllElasticMaterials']]],
   ['get_5fbases_5fposition_62',['get_bases_position',['../classpolyfem_1_1io_1_1_evaluator.html#a453d2d3b31e7bfd76037ab9e17777f0e',1,'polyfem::io::Evaluator']]],
   ['get_5fbbw_5fweights_63',['get_bbw_weights',['../classpolyfem_1_1solver_1_1_bounded_biharmonic_weights2_dto3_d.html#a9ea9f37ade5529391089c199613a9d69',1,'polyfem::solver::BoundedBiharmonicWeights2Dto3D']]],
   ['get_5fbody_5fid_64',['get_body_id',['../classpolyfem_1_1mesh_1_1_n_c_mesh3_d.html#aa8c6a21c65b6349593bf99cf62aab832',1,'polyfem::mesh::NCMesh3D::get_body_id()'],['../classpolyfem_1_1mesh_1_1_mesh.html#a0417a588019e24120727a6667d0cfcef',1,'polyfem::mesh::Mesh::get_body_id()'],['../classpolyfem_1_1mesh_1_1_n_c_mesh2_d.html#a975f80041acb4be829792ac2ff84ea3b',1,'polyfem::mesh::NCMesh2D::get_body_id()']]],

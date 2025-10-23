@@ -229,7 +229,7 @@ $(document).ready(function(){initNavTree('_sum_model_8cpp_source.html',''); init
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;assembler : <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_sum_model.html#a894406ab0e7b109641dd6b6637cf04ea">assemblers_</a>)</div>
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        {</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            std::dynamic_pointer_cast&lt;assembler::ElasticityAssembler&gt;(assembler)-&gt;assign_stress_tensor(data, all_size, type, tmp, fun);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            std::dynamic_pointer_cast&lt;assembler::ElasticityNLAssembler&gt;(assembler)-&gt;assign_stress_tensor(data, all_size, type, tmp, fun);</div>
 <div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            all += tmp;</div>
 <div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        }</div>
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    }</div>

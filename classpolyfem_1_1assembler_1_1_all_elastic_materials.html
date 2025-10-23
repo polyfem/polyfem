@@ -140,15 +140,15 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a31eb4bd0755f25c7bb4a9a514dd4e067"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1925293a7f796e9e4b773795a797a1e0" id="r_a1925293a7f796e9e4b773795a797a1e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_all_elastic_materials.html#a1925293a7f796e9e4b773795a797a1e0">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;units)</td></tr>
 <tr class="separator:a1925293a7f796e9e4b773795a797a1e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afab6f6652ebea8fb0effe9a3dad340b0" id="r_afab6f6652ebea8fb0effe9a3dad340b0"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html">assembler::NLAssembler</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_all_elastic_materials.html#afab6f6652ebea8fb0effe9a3dad340b0">get_assembler</a> (const std::string &amp;name) const</td></tr>
-<tr class="separator:afab6f6652ebea8fb0effe9a3dad340b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51319d77b2ae1767aba5c80ad8e0b88d" id="r_a51319d77b2ae1767aba5c80ad8e0b88d"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_n_l_assembler.html">assembler::ElasticityNLAssembler</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_all_elastic_materials.html#a51319d77b2ae1767aba5c80ad8e0b88d">get_assembler</a> (const std::string &amp;name) const</td></tr>
+<tr class="separator:a51319d77b2ae1767aba5c80ad8e0b88d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a89708719e1044f80a23e5c8428fd6313" id="r_a89708719e1044f80a23e5c8428fd6313"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">Assembler::ParamFunc</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_all_elastic_materials.html#a89708719e1044f80a23e5c8428fd6313">parameters</a> () const</td></tr>
 <tr class="separator:a89708719e1044f80a23e5c8428fd6313"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a86b0b2d08cf57e418e691a1cc50bc9df" id="r_a86b0b2d08cf57e418e691a1cc50bc9df"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html">assembler::NLAssembler</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_all_elastic_materials.html#a86b0b2d08cf57e418e691a1cc50bc9df">elastic_material_map_</a></td></tr>
-<tr class="separator:a86b0b2d08cf57e418e691a1cc50bc9df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad00c65d138d1f6ee4f7646406c384409" id="r_ad00c65d138d1f6ee4f7646406c384409"><td class="memItemLeft" align="right" valign="top">std::unordered_map&lt; std::string, std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_n_l_assembler.html">assembler::ElasticityNLAssembler</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_all_elastic_materials.html#ad00c65d138d1f6ee4f7646406c384409">elastic_material_map_</a></td></tr>
+<tr class="separator:ad00c65d138d1f6ee4f7646406c384409"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>utility to create a map of all elastic materials </p>
@@ -227,14 +227,14 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="afab6f6652ebea8fb0effe9a3dad340b0" name="afab6f6652ebea8fb0effe9a3dad340b0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afab6f6652ebea8fb0effe9a3dad340b0">&#9670;&#160;</a></span>get_assembler()</h2>
+<a id="a51319d77b2ae1767aba5c80ad8e0b88d" name="a51319d77b2ae1767aba5c80ad8e0b88d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51319d77b2ae1767aba5c80ad8e0b88d">&#9670;&#160;</a></span>get_assembler()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html">assembler::NLAssembler</a> &gt; polyfem::assembler::AllElasticMaterials::get_assembler </td>
+          <td class="memname">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_n_l_assembler.html">assembler::ElasticityNLAssembler</a> &gt; polyfem::assembler::AllElasticMaterials::get_assembler </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>name</em></td><td>)</td>
@@ -251,7 +251,7 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_all_elastic_materials_afab6f6652ebea8fb0effe9a3dad340b0_icgraph.svg" width="386" height="302"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_all_elastic_materials_a51319d77b2ae1767aba5c80ad8e0b88d_icgraph.svg" width="386" height="302"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -314,8 +314,8 @@ Here is the caller graph for this function:</div>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a86b0b2d08cf57e418e691a1cc50bc9df" name="a86b0b2d08cf57e418e691a1cc50bc9df"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a86b0b2d08cf57e418e691a1cc50bc9df">&#9670;&#160;</a></span>elastic_material_map_</h2>
+<a id="ad00c65d138d1f6ee4f7646406c384409" name="ad00c65d138d1f6ee4f7646406c384409"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad00c65d138d1f6ee4f7646406c384409">&#9670;&#160;</a></span>elastic_material_map_</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -324,7 +324,7 @@ Here is the caller graph for this function:</div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::unordered_map&lt;std::string, std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1assembler_1_1_n_l_assembler.html">assembler::NLAssembler</a>&gt; &gt; polyfem::assembler::AllElasticMaterials::elastic_material_map_</td>
+          <td class="memname">std::unordered_map&lt;std::string, std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_n_l_assembler.html">assembler::ElasticityNLAssembler</a>&gt; &gt; polyfem::assembler::AllElasticMaterials::elastic_material_map_</td>
         </tr>
       </table>
   </td>
