@@ -304,7 +304,6 @@ namespace polyfem::assembler
 		ElasticityAssembler() {}
 		virtual ~ElasticityAssembler() = default;
 
-
 		void set_use_robust_jacobian();
 
 		// plotting (eg von mises), assembler is the name of the formulation
@@ -371,4 +370,9 @@ namespace polyfem::assembler
 	protected:
 		bool use_robust_jacobian = false;
 	};
+
+	class ElasticityNLAssembler : virtual public ElasticityAssembler, virtual public NLAssembler
+	{
+	};
+
 } // namespace polyfem::assembler
