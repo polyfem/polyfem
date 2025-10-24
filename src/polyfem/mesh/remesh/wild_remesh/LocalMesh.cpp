@@ -613,7 +613,7 @@ namespace polyfem::mesh
 		paraviewo::VTUWriter writer;
 		writer.add_field("is_free", is_free);
 		writer.add_field("displacement", utils::unflatten(sol, M::DIM));
-		writer.write_mesh(path, rest_positions(), elements());
+		writer.write_mesh(path, rest_positions(), elements(), m_elements.cols()==3 ? paraviewo::CellType::Tetrahedron : paraviewo::CellType::Triangle);
 	}
 
 	// -------------------------------------------------------------------------

@@ -936,7 +936,10 @@ namespace polyfem::io
 				else if (mesh.is_cube(i))
 					autogen::q_nodes_3d(disc_orders(i), ref_pts);
 				else if (mesh.is_prism(i))
-					autogen::prism_nodes_3d(disc_orders(i), disc_ordersq(i), ref_pts);
+				{
+					int max_order = std::max(disc_orders(i), disc_ordersq(i));
+					autogen::prism_nodes_3d(max_order, max_order, ref_pts);
+				}
 				else
 					continue;
 			}
@@ -976,7 +979,10 @@ namespace polyfem::io
 				else if (mesh.is_cube(i))
 					autogen::q_nodes_3d(disc_orders(i), ref_pts);
 				else if (mesh.is_prism(i))
-					autogen::prism_nodes_3d(disc_orders(i), disc_ordersq(i), ref_pts);
+				{
+					int max_order = std::max(disc_orders(i), disc_ordersq(i));
+					autogen::prism_nodes_3d(max_order, max_order, ref_pts);
+				}
 				else
 					continue;
 			}
@@ -1055,57 +1061,27 @@ namespace polyfem::io
 
 		for (size_t i = 0; i < bases.size(); ++i)
 		{
-			int n = elements[i].vertices.size();
 			if (!mesh.is_volume())
 			{
-				if (mesh.is_simplex(i))
-				{
-					if (disc_orders(i)==1)
-						elements[i].ctype = CellType::Triangle;
-					else 
-						elements[i].ctype = CellType::LagrangeTriangle;
-				}
+				if (elements[i].vertices.size()==1)
+					elements[i].ctype = CellType::Vertex;
+				else if (elements[i].vertices.size()==2)
+					elements[i].ctype = CellType::Line;		
+				else if (mesh.is_simplex(i))
+					elements[i].ctype = CellType::Triangle;
 				else if (mesh.is_cube(i))
-				{
-					if (disc_orders(i)==1)
-						elements[i].ctype = CellType::Quadrilateral;
-					else 
-						elements[i].ctype = CellType::LagrangeQuadrilateral;					
-				}
-				else
-				{
-					if (disc_orders(i)==1)
-						elements[i].ctype = CellType::Polygon;
-					// else?
-				}
-			}
+					elements[i].ctype = CellType::Quadrilateral;			
+				else 
+					elements[i].ctype = CellType::Polygon;
+	}
 			else
 			{
 				if (mesh.is_simplex(i))
-				{
-					if (disc_orders(i)==1)
-						elements[i].ctype = CellType::Tetrahedron;
-					else 
-						elements[i].ctype = CellType::LagrangeTetrahedron;					
-				}
+					elements[i].ctype = CellType::Tetrahedron;		
 				else if (mesh.is_cube(i))
-				{
-					if (disc_orders(i)==1)
-						elements[i].ctype = CellType::Hexahedron;
-					else 
-						elements[i].ctype = CellType::LagrangeHexahedron;					
-				}
+					elements[i].ctype = CellType::Hexahedron;		
 				else if (mesh.is_prism(i))
-				{
-					if (disc_orders(i)==1)
-						elements[i].ctype = CellType::Wedge;
-					else if (disc_orders(i)==2)
-						elements[i].ctype = CellType::BiquadraticWedge;
-					else 
-						elements[i].ctype = CellType::LagrangeWedge;					
-				}	
-				else 			
-					elements[i].ctype = CellType::Tetrahedron;	// default
+					elements[i].ctype = CellType::Wedge;
 			}
 		}
 
@@ -1950,7 +1926,7 @@ namespace polyfem::io
 		}
 
 		if (elements.empty())
-			writer.write_mesh(path, points, tets);
+			writer.write_mesh(path, points, tets, mesh.is_volume() ? CellType::Tetrahedron : CellType::Triangle);
 		else
 			writer.write_mesh(path, points, elements);
 	}
@@ -2168,7 +2144,7 @@ namespace polyfem::io
 
 		// Write the solution last so it is the default for warp-by-vector
 		writer.add_field("solution", fun);
-		writer.write_mesh(export_surface, boundary_vis_vertices, boundary_vis_elements);
+		writer.write_mesh(export_surface, boundary_vis_vertices, boundary_vis_elements, mesh.is_volume() ? CellType::Triangle : CellType::Line);
 	}
 
 	void OutGeometryData::save_contact_surface(
@@ -2352,7 +2328,8 @@ namespace polyfem::io
 		writer.write_mesh(
 			export_surface.substr(0, export_surface.length() - 4) + "_contact.vtu",
 			collision_mesh.rest_positions(),
-			problem_dim == 3 ? collision_mesh.faces() : collision_mesh.edges());
+			problem_dim == 3 ? collision_mesh.faces() : collision_mesh.edges(),
+			problem_dim == 3 ? CellType::Triangle: CellType::Line);
 	}
 
 	void OutGeometryData::save_wire(
@@ -2560,7 +2537,7 @@ namespace polyfem::io
 		// Write the solution last so it is the default for warp-by-vector
 		writer.add_field("solution", fun);
 
-		writer.write_mesh(name, points, edges);
+		writer.write_mesh(name, points, edges, CellType::Line);
 	}
 
 	void OutGeometryData::save_points(
