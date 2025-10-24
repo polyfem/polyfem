@@ -89,7 +89,7 @@ namespace polyfem::assembler
 
 		if (type == ElasticityTensorType::F)
 		{
-			std::dynamic_pointer_cast<assembler::ElasticityAssembler>(assembler_.front())
+			std::dynamic_pointer_cast<assembler::ElasticityAssembler>(assemblers_.front())
 				->assign_stress_tensor(data, all_size, type, all, fun);
 			return;
 		}
