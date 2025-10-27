@@ -187,7 +187,7 @@ namespace polyfem
 		std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> polys_3d;
 
 		/// vector of discretization orders, used when not all elements have the same degree, one per element
-		Eigen::VectorXi disc_orders;
+		Eigen::VectorXi disc_orders, disc_ordersq;
 
 		/// Mapping from input nodes to FE nodes
 		std::shared_ptr<polyfem::mesh::MeshNodes> mesh_nodes, geom_mesh_nodes, pressure_mesh_nodes;
@@ -260,7 +260,7 @@ namespace polyfem
 
 		/// quadrature used for projecting boundary conditions
 		/// @return the quadrature used for projecting boundary conditions
-		int n_boundary_samples() const
+		QuadratureOrders n_boundary_samples() const
 		{
 			using assembler::AssemblerUtils;
 			const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
@@ -268,8 +268,8 @@ namespace polyfem
 			const int discr_order = std::max(disc_orders.maxCoeff(), gdiscr_order);
 
 			const int n_b_samples = std::max(n_b_samples_j, AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::POLY, mesh->dimension()));
-
-			return n_b_samples;
+			// todo prism
+			return {{n_b_samples, n_b_samples}};
 		}
 
 	private:
@@ -593,6 +593,8 @@ namespace polyfem
 		double starting_min_edge_length = -1;
 		double starting_max_edge_length = -1;
 		double min_boundary_edge_length = -1;
+
+		std::function<void(int, int, double, double)> time_callback = nullptr;
 
 		/// saves all data on the disk according to the input params
 		/// @param[in] sol solution

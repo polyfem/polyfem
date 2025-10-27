@@ -3,6 +3,9 @@
 #include <Eigen/Dense>
 #include <cassert>
 
+#include "auto_q_bases_1d_val.hpp"
+#include "auto_q_bases_1d_nodes.hpp"
+#include "auto_q_bases_1d_grad.hpp"
 #include "auto_q_bases_2d_val.hpp"
 #include "auto_q_bases_2d_nodes.hpp"
 #include "auto_q_bases_2d_grad.hpp"

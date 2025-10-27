@@ -19,6 +19,7 @@ namespace polyfem::assembler
 		{
 			SIMPLEX_LAGRANGE,
 			CUBE_LAGRANGE,
+			PRISM_LAGRANGE,
 			SPLINE,
 			POLY
 		};
@@ -51,11 +52,11 @@ namespace polyfem::assembler
 
 		void set_size(const int size);
 		void add_multimaterial(const int index, const json &params, const Units &units);
-		std::shared_ptr<assembler::NLAssembler> get_assembler(const std::string &name) const;
+		std::shared_ptr<assembler::ElasticityNLAssembler> get_assembler(const std::string &name) const;
 
 		std::map<std::string, Assembler::ParamFunc> parameters() const;
 
 	private:
-		std::unordered_map<std::string, std::shared_ptr<assembler::NLAssembler>> elastic_material_map_;
+		std::unordered_map<std::string, std::shared_ptr<assembler::ElasticityNLAssembler>> elastic_material_map_;
 	};
 } // namespace polyfem::assembler

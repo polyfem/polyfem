@@ -17,7 +17,10 @@
 #include <polyfem/assembler/MultiModel.hpp>
 #include <polyfem/assembler/NavierStokes.hpp>
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
+#include <polyfem/assembler/IsochoricNeoHookean.hpp>
+#include <polyfem/assembler/HGOFiber.hpp>
 #include <polyfem/assembler/OgdenElasticity.hpp>
+#include <polyfem/assembler/VolumePenalty.hpp>
 #include <polyfem/assembler/SaintVenantElasticity.hpp>
 #include <polyfem/assembler/Stokes.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
@@ -75,6 +78,8 @@ namespace polyfem
 				return std::make_shared<SaintVenantElasticity>();
 			else if (formulation == "NeoHookean")
 				return std::make_shared<NeoHookeanElasticity>();
+			else if (formulation == "IsochoricNeoHookean")
+				return std::make_shared<IsochoricNeoHookean>();
 			else if (formulation == "MooneyRivlin")
 				return std::make_shared<MooneyRivlinElasticity>();
 			else if (formulation == "MooneyRivlin3Param")
@@ -89,6 +94,11 @@ namespace polyfem
 				return std::make_shared<UnconstrainedOgdenElasticity>();
 			else if (formulation == "IncompressibleOgden")
 				return std::make_shared<IncompressibleOgdenElasticity>();
+			else if (formulation == "VolumePenalty")
+				return std::make_shared<VolumePenalty>();
+
+			else if (formulation == "HGOFiber")
+				return std::make_shared<HGOFiber>();
 
 			else if (formulation == "Stokes")
 				return std::make_shared<StokesVelocity>();
@@ -214,7 +224,7 @@ namespace polyfem
 				{
 					return std::max((basis_degree - 1) * 2, 1);
 				}
-				else if (b_type == BasisType::CUBE_LAGRANGE)
+				else if (b_type == BasisType::CUBE_LAGRANGE || b_type == BasisType::PRISM_LAGRANGE)
 				{
 					// in this case we have a tensor product basis
 					// this computes the quadrature order along a single axis
@@ -273,7 +283,7 @@ namespace polyfem
 					continue;
 				const auto assembler = AssemblerUtils::make_assembler(m);
 				// cast assembler to elasticity assembler
-				elastic_material_map_[m] = std::dynamic_pointer_cast<NLAssembler>(assembler);
+				elastic_material_map_[m] = std::dynamic_pointer_cast<ElasticityNLAssembler>(assembler);
 				assert(elastic_material_map_[m] != nullptr);
 			}
 		}
@@ -294,7 +304,7 @@ namespace polyfem
 			}
 		}
 
-		std::shared_ptr<assembler::NLAssembler> AllElasticMaterials::get_assembler(const std::string &name) const
+		std::shared_ptr<assembler::ElasticityNLAssembler> AllElasticMaterials::get_assembler(const std::string &name) const
 		{
 			return elastic_material_map_.at(name);
 		}

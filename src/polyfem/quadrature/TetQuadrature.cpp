@@ -1,5 +1,4 @@
 #include "TetQuadrature.hpp"
-#include "LineQuadrature.hpp"
 
 #include <vector>
 #include <cassert>

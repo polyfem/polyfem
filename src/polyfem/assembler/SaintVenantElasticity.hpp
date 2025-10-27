@@ -8,14 +8,14 @@
 namespace polyfem::assembler
 {
 	// Similar to HookeLinear but with non-linear stress strain: C:½(F+Fᵀ+FᵀF)
-	class SaintVenantElasticity : public NLAssembler, ElasticityAssembler
+	class SaintVenantElasticity : public ElasticityNLAssembler
 	{
 	public:
 		SaintVenantElasticity();
 
-		using NLAssembler::assemble_energy;
-		using NLAssembler::assemble_gradient;
-		using NLAssembler::assemble_hessian;
+		using ElasticityNLAssembler::assemble_energy;
+		using ElasticityNLAssembler::assemble_gradient;
+		using ElasticityNLAssembler::assemble_hessian;
 
 		double compute_energy(const NonLinearAssemblerData &data) const override;
 		Eigen::VectorXd assemble_gradient(const NonLinearAssemblerData &data) const override;
