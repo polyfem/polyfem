@@ -108,12 +108,18 @@ namespace polyfem
 		/// Generate a canonical tet/hex subdivided from a regular grid
 		///
 		/// @param[in]  n  			  n grid quads
-		/// @param[in]  tet			  is a tet or a hex
+		/// @param[in]  tet			  is a tet
+		/// @param[in]  prism			  is a prism
 		/// @param[out] V             #V x 3 output vertices positions
 		/// @param[out] F             #F x 3 output triangle indices
 		/// @param[out] T             #F x 4 output tet indices
 		///
-		void regular_3d_grid(const int nn, bool tet, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXi &T)
+		void regular_3d_grid(const int nn,
+							 bool tet,
+							 bool prism,
+							 Eigen::MatrixXd &V,
+							 Eigen::MatrixXi &F,
+							 Eigen::MatrixXi &T)
 		{
 			const int n = nn;
 			const double delta = 1. / (n - 1.);
@@ -129,6 +135,8 @@ namespace polyfem
 					for (int k = 0; k < n; ++k)
 					{
 						if (tet && i + j + k >= n)
+							continue;
+						if (prism && i + j >= n)
 							continue;
 						map[(i + j * n) * n + k] = index;
 						V.row(index) << i * delta, j * delta, k * delta;
@@ -217,6 +225,7 @@ namespace polyfem
 
 			if (is_volume_)
 			{
+				// cube
 				{
 					MatrixXd pts(8, 3);
 					pts << 0, 0, 0,
@@ -249,7 +258,7 @@ namespace polyfem
 						0, 3, 7,
 						0, 7, 4;
 
-					regular_3d_grid(std::max(2., round(1. / pow(area_param_, 1. / 3.) + 1) / 2.), false, cube_points_, cube_faces_, cube_tets_);
+					regular_3d_grid(std::max(2., round(1. / pow(area_param_, 1. / 3.) + 1) / 2.), false, false, cube_points_, cube_faces_, cube_tets_);
 
 					// Extract sampled edges matching the base element edges
 					Eigen::MatrixXi edges(12, 2);
@@ -281,6 +290,8 @@ namespace polyfem
 						1, 1, 1,
 						0, 1, 1;
 				}
+
+				// tet
 				{
 					MatrixXd pts(4, 3);
 					pts << 0, 0, 0,
@@ -295,7 +306,7 @@ namespace polyfem
 						2, 1, 3,
 						0, 2, 3;
 
-					regular_3d_grid(std::max(2., round(1. / pow(area_param_, 1. / 3.) + 1)), true, simplex_points_, simplex_faces_, simplex_tets_);
+					regular_3d_grid(std::max(2., round(1. / pow(area_param_, 1. / 3.) + 1)), true, false, simplex_points_, simplex_faces_, simplex_tets_);
 
 					// Extract sampled edges matching the base element edges
 					Eigen::MatrixXi edges;
@@ -309,6 +320,46 @@ namespace polyfem
 						1, 0, 0,
 						0, 1, 0,
 						0, 0, 1;
+				}
+
+				// prism
+				{
+					MatrixXd pts(6, 3);
+					pts << 0, 0, 0,
+						0, 1, 0,
+						1, 0, 0,
+						0, 0, 1,
+						0, 1, 1,
+						1, 0, 1;
+
+					regular_3d_grid(std::max(2., round(1. / pow(area_param_, 1. / 3.) + 1) / 2.),
+									false, true, prism_points_, prism_faces_, prism_tets_);
+
+					// Extract sampled edges matching the base element edges
+					Eigen::MatrixXi edges(9, 2);
+					edges << 0, 1,
+						1, 2,
+						2, 0,
+
+						3, 4,
+						4, 5,
+						5, 3,
+
+						0, 3,
+						1, 4,
+						2, 5;
+
+					igl::edges(prism_faces_, prism_edges_);
+					extract_parent_edges(prism_points_, prism_edges_, pts, edges, prism_edges_);
+
+					// Same local order as in FEMBasis3d
+					prism_corners_.resize(6, 3);
+					prism_corners_ << 0, 0, 0,
+						0, 1, 0,
+						1, 0, 0,
+						0, 0, 1,
+						0, 1, 1,
+						1, 0, 1;
 				}
 			}
 			else
