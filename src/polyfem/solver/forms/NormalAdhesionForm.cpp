@@ -33,7 +33,7 @@ namespace polyfem::solver
 		  is_time_dependent_(is_time_dependent),
 		  enable_shape_derivatives_(enable_shape_derivatives),
 		  broad_phase_method_(broad_phase_method),
-		  broad_phase_(ipc::build_broad_phase(broad_phase_method)),
+		  broad_phase_(ipc::create_broad_phase(broad_phase_method)),
 		  tight_inclusion_ccd_(ccd_tolerance, ccd_max_iterations),
 		  normal_adhesion_potential_(dhat_p, dhat_a, Y, 1)
 	{

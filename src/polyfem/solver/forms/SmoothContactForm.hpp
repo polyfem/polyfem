@@ -36,7 +36,7 @@ namespace polyfem::solver
 		void post_step(const polysolve::nonlinear::PostStepData &data) override;
 
 		bool using_adaptive_dhat() const { return use_adaptive_dhat; }
-		const ipc::ParameterType &get_params() const { return params; }
+		const ipc::SmoothContactParameters &get_params() const { return params; }
 
 		const ipc::SmoothCollisions &collision_set() const { return collision_set_; }
 
@@ -66,7 +66,7 @@ namespace polyfem::solver
 		void update_collision_set(const Eigen::MatrixXd &displaced_surface) override;
 
 	private:
-		ipc::ParameterType params;
+		ipc::SmoothContactParameters params;
 		const bool use_adaptive_dhat;
 
 		/// @brief Cached constraint set for the current solution

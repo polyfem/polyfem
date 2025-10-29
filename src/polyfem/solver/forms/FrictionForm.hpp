@@ -9,6 +9,7 @@
 #include <ipc/collision_mesh.hpp>
 #include <ipc/collisions/tangential/tangential_collisions.hpp>
 #include <ipc/potentials/friction_potential.hpp>
+#include <ipc/broad_phase/create_broad_phase.hpp>
 
 namespace polyfem::solver
 {

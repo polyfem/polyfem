@@ -19,7 +19,7 @@ namespace polyfem::solver
 		  epsa_(epsa),
 		  mu_(mu),
 		  broad_phase_method_(broad_phase_method),
-		  broad_phase_(ipc::build_broad_phase(broad_phase_method)),
+		  broad_phase_(ipc::create_broad_phase(broad_phase_method)),
 		  n_lagging_iters_(n_lagging_iters < 0 ? std::numeric_limits<int>::max() : n_lagging_iters),
 		  normal_adhesion_form_(normal_adhesion_form),
 		  tangential_adhesion_potential_(epsa)

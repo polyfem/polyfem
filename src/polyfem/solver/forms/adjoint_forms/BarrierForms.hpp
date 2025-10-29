@@ -126,7 +126,7 @@ namespace polyfem::solver
 
 		ipc::CollisionMesh collision_mesh_;
 		ipc::SmoothCollisions collisions_;
-		const ipc::ParameterType params_;
+		const ipc::SmoothContactParameters params_;
 		const double dmin_ = 0;
 
 		ipc::SmoothContactPotential potential_;
