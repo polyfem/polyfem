@@ -1,5 +1,6 @@
 var NAVTREEINDEX49 =
 {
+"namespacepolyfem_1_1utils_1_1_string_utils.html#a9425d6e696ee910680614d0439ba3fbe":[6,0,7,11,0,3],
 "namespacepolyfem_1_1utils_1_1_string_utils.html#ac716d9eff97c92c06c752fe151a714ae":[6,0,7,11,0,0],
 "namespacepolyfem_1_1utils_1_1_string_utils.html#af73165b653d0e64acc1e8b888fe93bca":[6,0,7,11,0,1],
 "namespacepolysolve.html":[6,0,8],
@@ -248,6 +249,5 @@ var NAVTREEINDEX49 =
 "struct_d_scalar1.html#a9d28b87b57ddcdb65f76e642d70d2d8b":[7,0,6,0],
 "struct_d_scalar1.html#a9f9cfb277fee8614350c78413a0a9fa6":[7,0,6,26],
 "struct_d_scalar1.html#aa174edadf3bd1c695d16ab9ab23b8bc2":[7,0,6,29],
-"struct_d_scalar1.html#aa3217d7532ece795a9878305fd696eeb":[7,0,6,39],
-"struct_d_scalar1.html#aa3c20db00704f0f1124beefcd34bbf86":[7,0,6,5]
+"struct_d_scalar1.html#aa3217d7532ece795a9878305fd696eeb":[7,0,6,39]
 };

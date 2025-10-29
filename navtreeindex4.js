@@ -1,5 +1,6 @@
 var NAVTREEINDEX4 =
 {
+"_polygonal_basis3d_8hpp.html":[8,0,1,0,2,14],
 "_polygonal_basis3d_8hpp_source.html":[8,0,1,0,2,14],
 "_polyhedron_quadrature_8cpp.html":[8,0,1,0,6,6],
 "_polyhedron_quadrature_8cpp_source.html":[8,0,1,0,6,6],
@@ -248,6 +249,5 @@ var NAVTREEINDEX4 =
 "_sum_composite_form_8hpp.html":[8,0,1,0,8,0,0,17],
 "_sum_composite_form_8hpp_source.html":[8,0,1,0,8,0,0,17],
 "_sum_model_8cpp.html":[8,0,1,0,0,74],
-"_sum_model_8cpp_source.html":[8,0,1,0,0,74],
-"_sum_model_8hpp.html":[8,0,1,0,0,75]
+"_sum_model_8cpp_source.html":[8,0,1,0,0,74]
 };

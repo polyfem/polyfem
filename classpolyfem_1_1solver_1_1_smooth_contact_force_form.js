@@ -13,7 +13,7 @@ var classpolyfem_1_1solver_1_1_smooth_contact_force_form =
     [ "collision_mesh_", "classpolyfem_1_1solver_1_1_smooth_contact_force_form.html#a80a72fdb625d063a83339cd88378f655", null ],
     [ "collisions_", "classpolyfem_1_1solver_1_1_smooth_contact_force_form.html#aec5d29c85e5bb9576442d77240783fad", null ],
     [ "dmin_", "classpolyfem_1_1solver_1_1_smooth_contact_force_form.html#ace37eae85bdc8fc8e8f076d6b422522a", null ],
-    [ "params_", "classpolyfem_1_1solver_1_1_smooth_contact_force_form.html#ac6fa39beeb34cec11b9cebfb0ebcdab1", null ],
+    [ "params_", "classpolyfem_1_1solver_1_1_smooth_contact_force_form.html#abeb442afa9b6e79adca693268e709836", null ],
     [ "potential_", "classpolyfem_1_1solver_1_1_smooth_contact_force_form.html#affbd7556966f69a476b4635ba19aa240", null ],
     [ "state_", "classpolyfem_1_1solver_1_1_smooth_contact_force_form.html#ae091d2dd68f3ae5dbb9c4a0d7c1a96aa", null ]
 ];

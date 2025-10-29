@@ -1,5 +1,6 @@
 var NAVTREEINDEX48 =
 {
+"namespacepolyfem_1_1mesh.html#a614178cdb624f2eff9500fabb9a4f432":[6,0,7,4,61],
 "namespacepolyfem_1_1mesh.html#a656d6973425b6f2809fc3523be8a08c2":[6,0,7,4,110],
 "namespacepolyfem_1_1mesh.html#a679b727e7e467d38ebf4af60e8b600c3":[6,0,7,4,68],
 "namespacepolyfem_1_1mesh.html#a6c2f88605218d9c84cb80764dd0887db":[6,0,7,4,57],
@@ -248,6 +249,5 @@ var NAVTREEINDEX48 =
 "namespacepolyfem_1_1utils_1_1_string_utils.html":[6,0,7,11,0],
 "namespacepolyfem_1_1utils_1_1_string_utils.html#a4d5b5bc40fafe3b42a347ff1a55013ca":[6,0,7,11,0,2],
 "namespacepolyfem_1_1utils_1_1_string_utils.html#a5ea2c1e360cb00a431694ced69344bea":[6,0,7,11,0,5],
-"namespacepolyfem_1_1utils_1_1_string_utils.html#a8df4a1f29bc95ee539adb419f19b83b7":[6,0,7,11,0,4],
-"namespacepolyfem_1_1utils_1_1_string_utils.html#a9425d6e696ee910680614d0439ba3fbe":[6,0,7,11,0,3]
+"namespacepolyfem_1_1utils_1_1_string_utils.html#a8df4a1f29bc95ee539adb419f19b83b7":[6,0,7,11,0,4]
 };
