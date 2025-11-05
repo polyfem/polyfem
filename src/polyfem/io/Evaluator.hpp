@@ -289,6 +289,24 @@ namespace polyfem::io
 			const bool use_sampler,
 			const bool boundary_only);
 
+		/// computes tensor quantities per material component (for SumModel/MaterialSum only)
+		static void compute_tensor_value_per_component(
+			const mesh::Mesh &mesh,
+			const bool is_problem_scalar,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const Eigen::VectorXi &disc_orders,
+			const std::map<int, Eigen::MatrixXd> &polys,
+			const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
+			const assembler::Assembler &assembler,
+			const utils::RefElementSampler &sampler,
+			const int n_points,
+			const Eigen::MatrixXd &fun,
+			const double t,
+			std::vector<assembler::Assembler::NamedMatrix> &result,
+			const bool use_sampler,
+			const bool boundary_only);
+
 		/// computes integrated solution (fun) per surface face. pts and faces are the boundary are the boundary on the rest configuration
 		/// @param[in] mesh mesh
 		/// @param[in] is_problem_scalar if problem is scalar

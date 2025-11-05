@@ -101,6 +101,35 @@ namespace polyfem::assembler
 		}
 	}
 
+	void SumModel::assign_stress_tensor_per_component(
+		const OutputData &data,
+		const int all_size,
+		const ElasticityTensorType &type,
+		std::vector<std::pair<std::string, Eigen::MatrixXd>> &all,
+		const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+	{
+		all.clear();
+
+		// Skip if requesting deformation gradient (F) - not meaningful per component
+		if (type == ElasticityTensorType::F)
+		{
+			return;
+		}
+
+		// Loop through each component assembler
+		for (const auto &assembler : assemblers_)
+		{
+			Eigen::MatrixXd component_stress;
+			
+			// Compute stress for this component
+			std::dynamic_pointer_cast<assembler::ElasticityAssembler>(assembler)
+				->assign_stress_tensor(data, all_size, type, component_stress, fun);
+			
+			// Store with the assembler's name as the label
+			all.push_back({assembler->name(), component_stress});
+		}
+	}
+
 	std::map<std::string, Assembler::ParamFunc> SumModel::parameters() const
 	{
 		std::map<std::string, Assembler::ParamFunc> params;

@@ -1468,6 +1468,20 @@ namespace polyfem::io
 					state.polys, state.polys_3d, *state.assembler, ref_element_sampler,
 					points.rows(), sol, t, tvals, opts.use_sampler, opts.boundary_only);
 
+				// Also get per-component stresses (for SumModel only)
+				logger().info("About to call compute_tensor_value_per_component with assembler: {}", state.assembler->name());
+				std::vector<assembler::Assembler::NamedMatrix> component_tvals;
+				Evaluator::compute_tensor_value_per_component(
+					mesh, problem.is_scalar(), bases, gbases, state.disc_orders,
+					state.polys, state.polys_3d, *state.assembler, ref_element_sampler,
+					points.rows(), sol, t, component_tvals, opts.use_sampler, opts.boundary_only);
+
+				logger().info("compute_tensor_value_per_component returned {} components", component_tvals.size());
+				
+				// Append component stresses to tvals
+				for (const auto &component : component_tvals)
+					tvals.push_back(component);
+
 				for (auto &[_, v] : tvals)
 					utils::append_rows_of_zeros(v, obstacle.n_vertices());
 

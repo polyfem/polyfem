@@ -10,9 +10,12 @@
 
 #include <polyfem/utils/BoundarySampler.hpp>
 #include <polyfem/utils/Jacobian.hpp>
+#include <polyfem/utils/ElasticityUtils.hpp>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
+
+#include <polyfem/assembler/SumModel.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 
@@ -966,6 +969,137 @@ namespace polyfem::io
 		const Eigen::MatrixXd &grad)
 	{
 		return utils::flatten(get_bases_position(n_bases, mesh_nodes) * grad.transpose());
+	}
+
+	void Evaluator::compute_tensor_value_per_component(
+		const mesh::Mesh &mesh,
+		const bool is_problem_scalar,
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<basis::ElementBases> &gbases,
+		const Eigen::VectorXi &disc_orders,
+		const std::map<int, Eigen::MatrixXd> &polys,
+		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
+		const assembler::Assembler &assembler,
+		const utils::RefElementSampler &sampler,
+		const int n_points,
+		const Eigen::MatrixXd &fun,
+		const double t,
+		std::vector<assembler::Assembler::NamedMatrix> &result,
+		const bool use_sampler,
+		const bool boundary_only)
+	{
+		logger().info("compute_tensor_value_per_component CALLED with assembler type: {}", assembler.name());
+		
+		if (fun.size() <= 0)
+		{
+			logger().error("Solve the problem first!");
+			return;
+		}
+
+		result.clear();
+
+		const int actual_dim = mesh.dimension();
+		assert(!is_problem_scalar);
+
+		// Try to cast directly to SumModel
+		const auto *sum_model = dynamic_cast<const assembler::SumModel *>(&assembler);
+		if (!sum_model)
+		{
+			// Not a SumModel, silently return (no per-component data available)
+			logger().debug("Assembler is not a SumModel (type: {}), skipping per-component export", assembler.name());
+			return;
+		}
+
+		logger().info("Exporting individual stress components from SumModel");
+
+		int index = 0;
+
+		Eigen::MatrixXi vis_faces_poly, vis_edges_poly;
+		std::vector<std::pair<std::string, Eigen::MatrixXd>> tmp_components;
+
+		for (int i = 0; i < int(bases.size()); ++i)
+		{
+			if (boundary_only && mesh.is_volume() && !mesh.is_boundary_element(i))
+				continue;
+
+			const ElementBases &bs = bases[i];
+			const ElementBases &gbs = gbases[i];
+			Eigen::MatrixXd local_pts;
+
+			if (use_sampler)
+			{
+				if (mesh.is_simplex(i))
+					local_pts = sampler.simplex_points();
+				else if (mesh.is_cube(i))
+					local_pts = sampler.cube_points();
+				else
+				{
+					if (mesh.is_volume())
+						sampler.sample_polyhedron(polys_3d.at(i).first, polys_3d.at(i).second, local_pts, vis_faces_poly, vis_edges_poly);
+					else
+						sampler.sample_polygon(polys.at(i), local_pts, vis_faces_poly, vis_edges_poly);
+				}
+			}
+			else
+			{
+				if (mesh.is_volume())
+				{
+					if (mesh.is_simplex(i))
+						autogen::p_nodes_3d(disc_orders(i), local_pts);
+					else if (mesh.is_cube(i))
+						autogen::q_nodes_3d(disc_orders(i), local_pts);
+					else
+						continue;
+				}
+				else
+				{
+					if (mesh.is_simplex(i))
+						autogen::p_nodes_2d(disc_orders(i), local_pts);
+					else if (mesh.is_cube(i))
+						autogen::q_nodes_2d(disc_orders(i), local_pts);
+					else
+						continue;
+				}
+			}
+
+			// Call SumModel's per-component stress method
+			sum_model->assign_stress_tensor_per_component(
+				assembler::OutputData(t, i, bs, gbs, local_pts, fun),
+				actual_dim * actual_dim,
+				ElasticityTensorType::CAUCHY,
+				tmp_components,
+				[](const Eigen::MatrixXd &S) -> Eigen::MatrixXd
+				{
+					// Flatten 3x3 tensor to row vector [S11, S12, S13, S21, S22, S23, S31, S32, S33]
+					Eigen::MatrixXd flattened(1, S.size());
+					int idx = 0;
+					for (int i = 0; i < S.rows(); ++i)
+						for (int j = 0; j < S.cols(); ++j)
+							flattened(0, idx++) = S(i, j);
+					return flattened;
+				});
+
+			// Initialize result structure on first element
+			if (result.empty())
+			{
+				result.resize(tmp_components.size());
+				for (int k = 0; k < tmp_components.size(); ++k)
+				{
+					result[k].first = tmp_components[k].first;
+					result[k].second.resize(n_points, actual_dim * actual_dim);
+				}
+			}
+
+			// Accumulate component stresses
+			for (int k = 0; k < tmp_components.size(); ++k)
+			{
+				assert(local_pts.rows() == tmp_components[k].second.rows());
+				result[k].second.block(index, 0, tmp_components[k].second.rows(), tmp_components[k].second.cols()) =
+					tmp_components[k].second;
+			}
+
+			index += local_pts.rows();
+		}
 	}
 
 	Eigen::VectorXd Evaluator::integrate_function(
