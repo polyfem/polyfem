@@ -126,6 +126,15 @@ namespace polyfem
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);
 
+		if (args["solver"]["advanced"]["L"] > 0)
+		{
+			characteristic_length = args["solver"]["advanced"]["L"];
+		} 
+		else 
+		{
+			characteristic_length = (max - min).norm();
+		}
+
 		logger().info("mesh bb min [{}], max [{}]", min, max);
 
 		std::vector<std::shared_ptr<assembler::Assembler>> assemblers;

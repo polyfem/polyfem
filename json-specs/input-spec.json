@@ -1698,9 +1698,23 @@
             "lagged_regularization_weight",
             "lagged_regularization_iterations",
             "check_inversion",
-            "jacobian_threshold"
+            "jacobian_threshold",
+            "L",
+            "F0"
         ],
         "doc": "Advanced settings for the solver"
+    },
+    {
+        "pointer": "/solver/advanced/L",
+        "default": -1,
+        "type": "float",
+        "doc": "Characteristic length, used for tolerances."
+    },
+    {
+        "pointer": "/solver/advanced/F0",
+        "default": -1,
+        "type": "float",
+        "doc": "Characteristic force, used for tolerances."
     },
     {
         "pointer": "/solver/advanced/cache_size",

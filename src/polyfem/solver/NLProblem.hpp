@@ -31,7 +31,10 @@ namespace polyfem::solver
 				  const double t,
 				  const std::vector<std::shared_ptr<Form>> &forms,
 				  const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
-				  const std::shared_ptr<polysolve::linear::Solver> &solver);
+				  const std::shared_ptr<polysolve::linear::Solver> &solver,
+				  const double char_length,
+				  const double char_force,
+				  StiffnessMatrix lumped_mass);
 		virtual ~NLProblem() = default;
 
 		virtual double value(const TVector &x) override;
@@ -67,6 +70,64 @@ namespace polyfem::solver
 
 		double normalize_forms() override;
 
+		virtual double grad_norm_rescaling(const std::string &norm_type) const override 
+		{
+			if (norm_type == "L2")
+			{
+				return F0 * std::pow(L, 3/2);
+			} 
+			else if (norm_type == "Linf")
+			{
+				return F0;
+			}
+			return 1;
+		}
+        virtual double step_norm_rescaling(const std::string &norm_type) const override 
+		{
+			if (norm_type == "L2")
+			{
+				return std::pow(L, 5/2);
+			} 
+			else if (norm_type == "Linf")
+			{
+				return L;
+			}
+			return 1;
+		}
+        virtual double energy_norm_rescaling(const std::string &norm_type) const override 
+		{
+			return F0 * L;
+		}
+        virtual double newton_dec_norm_rescaling(const std::string &norm_type) const override 
+		{
+			return F0 * L * L * L * L;
+		}
+
+        virtual double grad_norm(const TVector &x, const std::string &norm_type) const override 
+		{
+			if (norm_type == "L2")
+			{
+				return sqrt(x.transpose() * lumped_mass_.inverse() * x);
+			}
+			else if (norm_type == "Linf")
+			{
+				return (lumped_mass_.inverse() * x).cwiseAbs().maxCoeff();
+			}
+			return 1;
+		}
+        virtual double step_norm(const TVector &x, const std::string &norm_type) const override 
+		{
+			if (norm_type == "L2")
+			{
+				return sqrt(x.transpose() * lumped_mass_ * x);
+			}
+			else if (norm_type == "Linf")
+			{
+				return x.cwiseAbs().maxCoeff();
+			}
+			return 1;
+		}
+
 	protected:
 		const int full_size_; ///< Size of the full problem
 		int reduced_size_;    ///< Size of the reduced problem
@@ -83,6 +144,9 @@ namespace polyfem::solver
 		}
 
 		double t_;
+		double F0;
+		double L;
+		Eigen::DiagonalMatrix<double, Eigen::Dynamic> lumped_mass_;
 
 	protected:
 		std::vector<std::shared_ptr<AugmentedLagrangianForm>> penalty_forms_;

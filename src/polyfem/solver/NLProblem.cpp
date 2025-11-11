@@ -114,12 +114,18 @@ namespace polyfem::solver
 		const double t,
 		const std::vector<std::shared_ptr<Form>> &forms,
 		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
-		const std::shared_ptr<polysolve::linear::Solver> &solver)
+		const std::shared_ptr<polysolve::linear::Solver> &solver,
+		const double char_length,
+		const double char_force,
+		StiffnessMatrix lumped_mass)
 		: FullNLProblem(forms),
 		  full_size_(full_size),
 		  t_(t),
 		  penalty_forms_(penalty_forms),
-		  solver_(solver)
+		  solver_(solver),
+		  L(char_length),
+		  F0(char_force),
+		  lumped_mass_(lumped_mass.diagonal().asDiagonal())
 	{
 		setup_constraints();
 		use_reduced_size();
