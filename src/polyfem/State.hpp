@@ -219,7 +219,7 @@ namespace polyfem
 		double avg_mass;
 
 		double characteristic_length;
-		double characteristic_force;
+		double characteristic_force_density;
 
 		/// System right-hand side.
 		Eigen::MatrixXd rhs;

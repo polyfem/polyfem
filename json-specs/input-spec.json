@@ -1699,22 +1699,22 @@
             "lagged_regularization_iterations",
             "check_inversion",
             "jacobian_threshold",
-            "L",
-            "F0"
+            "characteristic_length",
+            "characteristic_force_density"
         ],
         "doc": "Advanced settings for the solver"
     },
     {
-        "pointer": "/solver/advanced/L",
+        "pointer": "/solver/advanced/characteristic_length",
         "default": -1,
         "type": "float",
         "doc": "Characteristic length, used for tolerances."
     },
     {
-        "pointer": "/solver/advanced/F0",
+        "pointer": "/solver/advanced/characteristic_force_density",
         "default": -1,
         "type": "float",
-        "doc": "Characteristic force, used for tolerances."
+        "doc": "Characteristic force density, used for tolerances."
     },
     {
         "pointer": "/solver/advanced/cache_size",

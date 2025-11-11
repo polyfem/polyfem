@@ -313,10 +313,16 @@ namespace polyfem
 		// --------------------------------------------------------------------
 		// Initialize nonlinear problems
 
+		if (args["solver"]["advanced"]["characteristic_force_density"] <= 0)
+		{
+			log_and_throw_error("User-specified force density is required for now.");
+		}
+		characteristic_force_density = args["solver"]["advanced"]["characteristic_force_density"];
+
 		const int ndof = n_bases * mesh->dimension();
 		solve_data.nl_problem = std::make_shared<NLProblem>(
 			ndof, periodic_bc, t, forms, solve_data.al_form,
-			polysolve::linear::Solver::create(args["solver"]["linear"], logger()), characteristic_length, args["solver"]["advanced"]["F0"], pure_mass);
+			polysolve::linear::Solver::create(args["solver"]["linear"], logger()), characteristic_length, characteristic_force_density, pure_mass);
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
 		// --------------------------------------------------------------------
