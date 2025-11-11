@@ -96,10 +96,6 @@ namespace polyfem::solver
 		}
         virtual double energy_norm_rescaling(const std::string &norm_type) const override 
 		{
-			return F0 * L;
-		}
-        virtual double newton_dec_norm_rescaling(const std::string &norm_type) const override 
-		{
 			return F0 * L * L * L * L;
 		}
 
