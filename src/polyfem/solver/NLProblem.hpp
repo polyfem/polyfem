@@ -103,11 +103,11 @@ namespace polyfem::solver
 		{
 			if (norm_type == "L2")
 			{
-				return sqrt(x.transpose() * lumped_mass_.inverse() * x);
+				return sqrt(x.transpose() * current_lumped_mass().inverse() * x);
 			}
 			else if (norm_type == "Linf")
 			{
-				return (lumped_mass_.inverse() * x).cwiseAbs().maxCoeff();
+				return (current_lumped_mass().inverse() * x).cwiseAbs().maxCoeff();
 			}
 			return 1;
 		}
@@ -115,7 +115,7 @@ namespace polyfem::solver
 		{
 			if (norm_type == "L2")
 			{
-				return sqrt(x.transpose() * lumped_mass_ * x);
+				return sqrt(x.transpose() * current_lumped_mass() * x);
 			}
 			else if (norm_type == "Linf")
 			{
@@ -137,6 +137,11 @@ namespace polyfem::solver
 		int current_size() const
 		{
 			return current_size_ == CurrentSize::FULL_SIZE ? full_size() : reduced_size();
+		}
+
+		Eigen::DiagonalMatrix<double, Eigen::Dynamic> current_lumped_mass() const
+		{
+			return full_to_reduced(lumped_mass_.diagonal()).asDiagonal();
 		}
 
 		double t_;
