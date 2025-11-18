@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.4
 
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Base build dependencies
@@ -12,7 +12,6 @@ RUN apt-get update && \
     python3 \
     python3-pip \
     zenity \
-    libcgal-dev \
     libgl1-mesa-dev \
     libx11-dev \
     wget \
@@ -47,5 +46,4 @@ RUN --mount=type=cache,target=/root/.ccache \
 # Runtime working directory
 WORKDIR /data
 
-# Adjust this if your binary has a different name/path
 ENTRYPOINT ["/app/polyfem/build/PolyFEM_bin"]
