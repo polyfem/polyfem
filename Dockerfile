@@ -10,6 +10,7 @@ RUN apt-get update && \
     cmake \
     git \
     libmpfr-dev \
+    libssl-dev \
     ccache \
     && rm -rf /var/lib/apt/lists/*
 
