@@ -7,6 +7,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+    ca-certificates \
     build-essential \
     cmake \
     git \
@@ -24,9 +25,6 @@ COPY . .
 
 # If .git is present, update submodules; otherwise just skip
 RUN if [ -d .git ]; then git submodule update --init --recursive; fi
-
-# Build PolyFEM
-WORKDIR /app/polyfem/build
 
 # Configure PolyFEM with ccache enabled
 # (BuildKit cache mount for ccache)
