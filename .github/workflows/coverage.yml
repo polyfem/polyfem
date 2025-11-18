@@ -62,6 +62,10 @@ jobs:
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_CODE_COVERAGE=ON \
+            -DPOLYFEM_WITH_BEZIER=OFF \
+            -DPOLYFEM_WITH_CLIPPER=OFF \
+            -DPOLYSOLVE_WITH_CHOLMOD=OFF \
+            -DPOLYSOLVE_WITH_AMGCL=OFF \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
       - name: Build
