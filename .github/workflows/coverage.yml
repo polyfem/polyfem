@@ -94,7 +94,7 @@ jobs:
       - name: Create Coverage
         run: |
           cd build
-          lcov --directory . --capture --no-external --output-file coverage.info --source-directory ../src --exclude '/usr/*' "${HOME}"'/.cache/*' '*tests/*.cpp*' '*/polyfem/problem/*.cpp*' '*/polyfem/problem/*.hpp*'
+          lcov --directory . --capture --no-external --output-file coverage.info
           lcov --remove coverage.info '/usr/*' "${HOME}"'/.cache/*' '*tests/*.cpp*' '*/polyfem/problem/*.cpp*' '*/polyfem/problem/*.hpp*' --output-file coverage.info
 
       - name: Upload Coverage
