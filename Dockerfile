@@ -3,8 +3,9 @@
 FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install dependencies
-RUN apt-get update && apt-get install -y \
+# Base build dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     git \
     g++ \
     cmake \
@@ -21,29 +22,19 @@ RUN apt-get update && apt-get install -y \
     ccache \
     && rm -rf /var/lib/apt/lists/*
 
-# Install CMake
-RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc | \
-    gpg --dearmor - | \
-    tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null && \
-    apt-add-repository 'deb https://apt.kitware.com/ubuntu/ focal main' && \
-    apt-get update && \
-    apt-get install -y cmake
-
 # Set workdir
 WORKDIR /app/polyfem
 
 # Copy source code into the container
 COPY . .
 
-# Update submodules
-RUN git submodule update --init --recursive
-
-# Build PolyFEM
-WORKDIR /app/polyfem/build
+# If .git is present, update submodules; otherwise just skip
+RUN if [ -d .git ]; then git submodule update --init --recursive; fi
 
 # Configure PolyFEM with ccache enabled
+# (BuildKit cache mount for ccache)
 RUN --mount=type=cache,target=/root/.ccache \
-    cmake .. \
+    cmake -S . -B build \
     -DPOLYFEM_WITH_TESTS=OFF \
     -DPOLYFEM_WITH_CCACHE=ON \
     -DCMAKE_BUILD_TYPE=Release \
@@ -51,7 +42,10 @@ RUN --mount=type=cache,target=/root/.ccache \
 
 # Build PolyFEM using ccache
 RUN --mount=type=cache,target=/root/.ccache \
-    make -j $(nproc)
+    cmake --build build -j"$(nproc)"
 
+# Runtime working directory
 WORKDIR /data
+
+# Adjust this if your binary has a different name/path
 ENTRYPOINT ["/app/polyfem/build/PolyFEM_bin"]
