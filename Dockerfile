@@ -6,6 +6,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Base build dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+    build-essential \
     git \
     g++ \
     cmake \
