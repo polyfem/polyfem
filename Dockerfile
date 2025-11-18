@@ -10,9 +10,8 @@ RUN apt-get update && \
     git \
     g++ \
     cmake \
-    python3 \
-    python3-pip \
     zenity \
+    libmpfr-dev \
     libgl1-mesa-dev \
     libx11-dev \
     wget \
