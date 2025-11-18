@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.4
 
 # CUDA 12.x, cuDNN, Ubuntu 24.04, *devel* image (has nvcc, headers, etc.)
-FROM nvidia/cuda:12.4.1-cudnn-devel-ubuntu24.04
+FROM nvidia/cuda:13.0.2-cudnn-devel-ubuntu24.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install dependencies
