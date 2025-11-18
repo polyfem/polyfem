@@ -7,17 +7,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
-    git \
-    g++ \
     cmake \
-    zenity \
+    git \
     libmpfr-dev \
-    libgl1-mesa-dev \
-    libx11-dev \
-    wget \
-    gnupg \
-    software-properties-common \
-    libssl-dev \
     ccache \
     && rm -rf /var/lib/apt/lists/*
 

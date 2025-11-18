@@ -10,14 +10,7 @@ RUN apt-get update && \
     build-essential \
     cmake \
     git \
-    g++ \
-    cmake \
-    zenity \
     libmpfr-dev \
-    libgl1-mesa-dev \
-    libx11-dev \
-    wget \
-    libssl-dev \
     ccache \
     && rm -rf /var/lib/apt/lists/*
 
