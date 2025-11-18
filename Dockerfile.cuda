@@ -33,9 +33,7 @@ RUN --mount=type=cache,target=/root/.ccache \
     -DPOLYFEM_WITH_TESTS=OFF \
     -DPOLYFEM_WITH_CCACHE=ON \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
-    -DIPC_TOOLKIT_WITH_CUDA=ON  \
-    -DPOLYSOLVE_WITH_CUSOLVER=ON
+    -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS=""
 
 # Build PolyFEM using ccache
 RUN --mount=type=cache,target=/root/.ccache \
