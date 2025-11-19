@@ -89,7 +89,7 @@ namespace polyfem::assembler
 
 		for (const auto &assembler : assemblers_)
 		{
-			std::dynamic_pointer_cast<assembler::ElasticityAssembler>(assembler)->assign_stress_tensor(data, all_size, type, tmp, fun);
+			std::dynamic_pointer_cast<assembler::ElasticityNLAssembler>(assembler)->assign_stress_tensor(data, all_size, type, tmp, fun);
 			all += tmp;
 		}
 	}

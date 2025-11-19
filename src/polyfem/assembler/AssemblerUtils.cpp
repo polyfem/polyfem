@@ -283,7 +283,7 @@ namespace polyfem
 					continue;
 				const auto assembler = AssemblerUtils::make_assembler(m);
 				// cast assembler to elasticity assembler
-				elastic_material_map_[m] = std::dynamic_pointer_cast<NLAssembler>(assembler);
+				elastic_material_map_[m] = std::dynamic_pointer_cast<ElasticityNLAssembler>(assembler);
 				assert(elastic_material_map_[m] != nullptr);
 			}
 		}
@@ -304,7 +304,7 @@ namespace polyfem
 			}
 		}
 
-		std::shared_ptr<assembler::NLAssembler> AllElasticMaterials::get_assembler(const std::string &name) const
+		std::shared_ptr<assembler::ElasticityNLAssembler> AllElasticMaterials::get_assembler(const std::string &name) const
 		{
 			return elastic_material_map_.at(name);
 		}

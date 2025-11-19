@@ -8,13 +8,13 @@
 // local assembler for HookeLinearElasticity C : (F+F^T)/2, see linear elasticity
 namespace polyfem::assembler
 {
-	class HookeLinearElasticity : public LinearAssembler, NLAssembler, ElasticityAssembler
+	class HookeLinearElasticity : public LinearAssembler, public ElasticityNLAssembler
 	{
 	public:
+		using ElasticityNLAssembler::assemble_energy;
+		using ElasticityNLAssembler::assemble_gradient;
+		using ElasticityNLAssembler::assemble_hessian;
 		using LinearAssembler::assemble;
-		using NLAssembler::assemble_energy;
-		using NLAssembler::assemble_gradient;
-		using NLAssembler::assemble_hessian;
 
 		HookeLinearElasticity();
 

@@ -2162,7 +2162,7 @@ namespace polyfem::io
 
 		collision_set.build(
 			collision_mesh, displaced_surface, dhat,
-			/*dmin=*/0, ipc::build_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]));
+			/*dmin=*/0, ipc::create_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]));
 
 		ipc::BarrierPotential barrier_potential(dhat);
 		if (state.args["contact"]["use_convergent_formulation"])
@@ -2245,7 +2245,7 @@ namespace polyfem::io
 		ipc::NormalCollisions adhesion_collision_set;
 		adhesion_collision_set.build(
 			collision_mesh, displaced_surface, dhat_a,
-			/*dmin=*/0, ipc::build_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]));
+			/*dmin=*/0, ipc::create_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]));
 
 		ipc::NormalAdhesionPotential normal_adhesion_potential(dhat_p, dhat_a, Y, 1);
 

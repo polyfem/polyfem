@@ -1,6 +1,8 @@
 #include "RefElementSampler.hpp"
 #include <polyfem/mesh/MeshUtils.hpp>
 
+#include <polyfem/quadrature/PolyhedronQuadrature.hpp>
+
 #include <igl/predicates/ear_clipping.h>
 
 #include <igl/edges.h>
@@ -461,7 +463,7 @@ namespace polyfem
 		{
 			const Eigen::MatrixXd kernel = vertices.colwise().mean();
 
-			polyfem::mesh::tertrahedralize_star_shaped_surface(vertices, f, kernel, pts, faces, tets);
+			polyfem::tertrahedralize_star_shaped_surface(vertices, f, kernel, pts, faces, tets);
 		}
 	} // namespace utils
 } // namespace polyfem

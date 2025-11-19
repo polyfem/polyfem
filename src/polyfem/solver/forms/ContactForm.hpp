@@ -7,7 +7,7 @@
 
 #include <ipc/collisions/normal/normal_collisions.hpp>
 #include <ipc/collision_mesh.hpp>
-#include <ipc/broad_phase/broad_phase.hpp>
+#include <ipc/broad_phase/create_broad_phase.hpp>
 #include <ipc/potentials/potential.hpp>
 
 // map BroadPhaseMethod values to JSON as strings
@@ -25,7 +25,8 @@ namespace ipc
 			{ipc::BroadPhaseMethod::BVH, "bvh"},
 			{ipc::BroadPhaseMethod::BVH, "BVH"},
 			{ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
-			{ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"}})
+			{ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"}
+			})
 }
 
 namespace polyfem::solver
