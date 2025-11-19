@@ -4,6 +4,7 @@
 #include <polyfem/quadrature/TriQuadrature.hpp>
 #include <polyfem/quadrature/TetQuadrature.hpp>
 #include <polyfem/quadrature/PrismQuadrature.hpp>
+#include <polyfem/quadrature/PyramidQuadrature.hpp>
 #include <iostream>
 #include <cmath>
 #include <Eigen/Dense>
@@ -269,6 +270,17 @@ TEST_CASE("weights", "[quadrature]")
 		Quadrature quadr;
 		pri.get_quadrature(order, order + 1, quadr);
 		REQUIRE(quadr.weights.sum() == Catch::Approx(1.0 / 2.0).margin(1e-12));
+		REQUIRE(quadr.points.minCoeff() >= 0.0);
+		REQUIRE(quadr.points.maxCoeff() <= 1.0);
+	}
+
+	// Pyramid
+	for (int order : std::vector<int>{1, 2, 3, 5})
+	{
+		PyramidQuadrature pyr;
+		Quadrature quadr;
+		pyr.get_quadrature(order, quadr);
+		REQUIRE(quadr.weights.sum() == Catch::Approx(1.0 / 3.0).margin(1e-12));
 		REQUIRE(quadr.points.minCoeff() >= 0.0);
 		REQUIRE(quadr.points.maxCoeff() <= 1.0);
 	}
