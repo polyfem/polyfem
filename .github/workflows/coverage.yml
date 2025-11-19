@@ -22,6 +22,24 @@ jobs:
           - os: ubuntu-22.04
             name: Linux
     steps:
+      - name: Free disk space
+        run: |
+          echo "Before cleanup:"
+          df -h
+
+          # Remove big toolchains we don't need
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/lib/android
+
+          # Clean apt caches
+          sudo apt-get clean
+          sudo rm -rf /var/lib/apt/lists/*
+
+          echo "After cleanup:"
+          df -h
+
+
       - name: Checkout repository
         uses: actions/checkout@v4.1.6
         with:
@@ -34,25 +52,48 @@ jobs:
           libblas-dev \
           libglu1-mesa-dev \
           xorg-dev \
+          ccache \
           lcov
+          echo 'CACHE_PATH=~/.cache/ccache' >> "$GITHUB_ENV"
+
+      - name: Cache Build
+        id: cache-build
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CACHE_PATH }}
+          key: ${{ runner.os }}-cov-${{ matrix.threading }}-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-cov-${{ matrix.threading }}-cache
+
+      - name: Prepare ccache
+        run: |
+          # ccache --max-size=1.0G
+          ccache -V && ccache --show-stats && ccache --zero-stats
 
       - name: Configure
         run: |
           mkdir -p build
           cd build
           cmake .. \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_CODE_COVERAGE=ON \
+            -DPOLYFEM_WITH_BEZIER=OFF \
+            -DPOLYSOLVE_WITH_CHOLMOD=OFF \
+            -DPOLYSOLVE_WITH_AMGCL=OFF \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
       - name: Build
-        run: cd build; make -j2
+        run: cd build; make -j2; ccache --show-stats
 
-      - name: Run Coverage
+      - name: Run Tests
         run: |
           cd build
-          ctest --verbose --output-on-failure --timeout 3000
+          ctest --timeout 3000
+
+      - name: Create Coverage
+        run: |
+          cd build
           lcov --directory . --capture --output-file coverage.info
           lcov --remove coverage.info '/usr/*' "${HOME}"'/.cache/*' '*tests/*.cpp*' '*/polyfem/problem/*.cpp*' '*/polyfem/problem/*.hpp*' --output-file coverage.info
 
