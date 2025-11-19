@@ -35,16 +35,25 @@ def get_old_characteristic_length(sim_config):
     
 
 def get_old_tol(sim_config, tol_name, in_json_directory):
+
+    in_advanced = tol_name == "derivative_along_delta_x"
+
     if "solver" in sim_config.keys() and \
-    "nonlinear" in sim_config["solver"].keys() and \
-    tol_name in sim_config["solver"]["nonlinear"].keys():
-        return sim_config["solver"]["nonlinear"][tol_name]
+    "nonlinear" in sim_config["solver"].keys():
+        if in_advanced and "advanced" in sim_config["solver"]["nonlinear"].keys() \
+        and tol_name in sim_config["solver"]["nonlinear"]["advanced"].keys():
+            return sim_config["solver"]["nonlinear"]["advanced"][tol_name]
+        elif tol_name in sim_config["solver"]["nonlinear"].keys():
+            return sim_config["solver"]["nonlinear"][tol_name]
     
     common_path = sim_config["common"]
     with open(os.path.join(in_json_directory, common_path), "r") as f:
         common_config = json.load(f)
 
-    return common_config["solver"]["nonlinear"][tol_name]
+    if in_advanced:
+        return common_config["solver"]["nonlinear"]["advanced"][tol_name]
+    else:
+        return common_config["solver"]["nonlinear"][tol_name]
 
 
 def update_json(in_json_path, out_json_path, is_common_file, in_json_directory):
@@ -63,9 +72,11 @@ def update_json(in_json_path, out_json_path, is_common_file, in_json_directory):
         
         update_field(sim_config, ["solver", "nonlinear", "grad_norm_tol"], get_old_tol(sim_config, "grad_norm", in_json_directory) * old_scale, create_new=True)
         update_field(sim_config, ["solver", "nonlinear", "x_delta_tol"], get_old_tol(sim_config, "x_delta", in_json_directory) * old_scale, create_new=True)
+        update_field(sim_config, ["solver", "nonlinear", "advanced", "derivative_along_delta_x_tol"], get_old_tol(sim_config, "derivative_along_delta_x", in_json_directory) * old_scale, create_new=True)
 
     sim_config["solver"]["nonlinear"].pop("grad_norm", None)
     sim_config["solver"]["nonlinear"].pop("x_delta", None)
+    sim_config["solver"]["nonlinear"]["advanced"].pop("derivative_along_delta_x", None)
 
     with open(out_json_path, 'w') as f:
         json.dump(sim_config, f, indent=4)
