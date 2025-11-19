@@ -552,6 +552,7 @@ namespace polyfem
 		stats.reset();
 
 		disc_orders.resize(mesh->n_elements());
+		disc_ordersq.resize(mesh->n_elements());
 
 		problem->init(*mesh);
 		logger().info("Building {} basis...", (iso_parametric() ? "isoparametric" : "not isoparametric"));
@@ -646,8 +647,12 @@ namespace polyfem
 
 		// TODO: implement prism geometric order
 		Eigen::MatrixXi geom_disc_ordersq = geom_disc_orders;
-		disc_ordersq = disc_orders;
-		// disc_ordersq.setConstant(2);
+		const auto &tmp_json2 = args["space"]["discr_orderq"];
+		if (tmp_json2.is_number_integer())
+		{
+			// tmp fix for n-m order prism
+			disc_ordersq.setConstant(tmp_json2);
+		}
 
 		igl::Timer timer;
 		timer.start();
