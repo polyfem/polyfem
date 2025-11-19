@@ -23,5 +23,6 @@ var searchData=
   ['polysolve_20',['polysolve',['../namespacepolysolve.html',1,'']]],
   ['polysolve_3a_3alinear_21',['linear',['../namespacepolysolve_1_1linear.html',1,'polysolve']]],
   ['polysolve_3a_3anonlinear_22',['nonlinear',['../namespacepolysolve_1_1nonlinear.html',1,'polysolve']]],
-  ['pretty_5fprint_23',['pretty_print',['../namespacepretty__print.html',1,'']]]
+  ['pretty_5fprint_23',['pretty_print',['../namespacepretty__print.html',1,'']]],
+  ['pyramid_24',['pyramid',['../namespacepyramid.html',1,'']]]
 ];

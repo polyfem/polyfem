@@ -147,8 +147,8 @@ $(document).ready(function(){initNavTree('_expression_value_8cpp_source.html',''
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keyword">namespace </span>utils</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    {</div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="keyword">static</span> <span class="keywordtype">double</span> min(<span class="keywordtype">double</span> a, <span class="keywordtype">double</span> b) { <span class="keywordflow">return</span> a &lt; b ? a : b; }</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keyword">static</span> <span class="keywordtype">double</span> max(<span class="keywordtype">double</span> a, <span class="keywordtype">double</span> b) { <span class="keywordflow">return</span> a &gt; b ? a : b; }</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="keyword">static</span> <span class="keywordtype">double</span> min(<span class="keywordtype">double</span> a, <span class="keywordtype">double</span> b) { <span class="keywordflow">return</span> a &lt; <a class="code hl_variable" href="namespacepyramid.html#a1aba94803ba199f9b2d1b4a25105f26a">b</a> ? a : <a class="code hl_variable" href="namespacepyramid.html#a1aba94803ba199f9b2d1b4a25105f26a">b</a>; }</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keyword">static</span> <span class="keywordtype">double</span> max(<span class="keywordtype">double</span> a, <span class="keywordtype">double</span> b) { <span class="keywordflow">return</span> a &gt; <a class="code hl_variable" href="namespacepyramid.html#a1aba94803ba199f9b2d1b4a25105f26a">b</a> ? a : <a class="code hl_variable" href="namespacepyramid.html#a1aba94803ba199f9b2d1b4a25105f26a">b</a>; }</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <span class="keyword">static</span> <span class="keywordtype">double</span> smoothstep(<span class="keywordtype">double</span> a)</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        {</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>            <span class="keywordflow">if</span> (a &lt; 0)</div>
@@ -160,7 +160,7 @@ $(document).ready(function(){initNavTree('_expression_value_8cpp_source.html',''
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        }</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keyword">static</span> <span class="keywordtype">double</span> half_smoothstep(<span class="keywordtype">double</span> a)</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        {</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            <span class="keywordtype">double</span> b = (a + 1.) / 2.;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            <span class="keywordtype">double</span> <a class="code hl_variable" href="namespacepyramid.html#a1aba94803ba199f9b2d1b4a25105f26a">b</a> = (a + 1.) / 2.;</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            <span class="keywordflow">return</span> 2. * smoothstep(b) - 1.;</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        }</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keyword">static</span> <span class="keywordtype">double</span> deg2rad(<span class="keywordtype">double</span> d) { <span class="keywordflow">return</span> d * igl::PI / 180.0; }</div>
@@ -186,7 +186,7 @@ $(document).ready(function(){initNavTree('_expression_value_8cpp_source.html',''
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        }</div>
 <div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keyword">static</span> <span class="keywordtype">double</span> compare(<span class="keywordtype">double</span> a, <span class="keywordtype">double</span> b)</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        {</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            <span class="keywordflow">return</span> a &lt; b ? 1.0 : 0.0;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>            <span class="keywordflow">return</span> a &lt; <a class="code hl_variable" href="namespacepyramid.html#a1aba94803ba199f9b2d1b4a25105f26a">b</a> ? 1.0 : 0.0;</div>
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        }</div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
 <div class="foldopen" id="foldopen00063" data-start="{" data-end="}">
@@ -498,6 +498,7 @@ $(document).ready(function(){initNavTree('_expression_value_8cpp_source.html',''
 <div class="ttc" id="anamespacepolyfem_html_a03f3d75072d2fd19f70cd886a51d10dd"><div class="ttname"><a href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">polyfem::logger</a></div><div class="ttdeci">spdlog::logger &amp; logger()</div><div class="ttdoc">Retrieves the current logger.</div><div class="ttdef"><b>Definition</b> <a href="_logger_8cpp_source.html#l00044">Logger.cpp:44</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_a77fa8fe96825827f2af726fcf6405d15"><div class="ttname"><a href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">polyfem::json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition</b> <a href="_common_8hpp_source.html#l00009">Common.hpp:9</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_adc7e749e0c40939b7323961c6a41e391"><div class="ttname"><a href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391">polyfem::log_and_throw_error</a></div><div class="ttdeci">void log_and_throw_error(const std::string &amp;msg)</div><div class="ttdef"><b>Definition</b> <a href="_logger_8cpp_source.html#l00073">Logger.cpp:73</a></div></div>
+<div class="ttc" id="anamespacepyramid_html_a1aba94803ba199f9b2d1b4a25105f26a"><div class="ttname"><a href="namespacepyramid.html#a1aba94803ba199f9b2d1b4a25105f26a">pyramid.b</a></div><div class="ttdeci">b</div><div class="ttdef"><b>Definition</b> <a href="pyramid_8py_source.html#l00009">pyramid.py:9</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

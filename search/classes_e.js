@@ -42,5 +42,6 @@ var searchData=
   ['problemwithsolution_39',['ProblemWithSolution',['../classpolyfem_1_1problem_1_1_problem_with_solution.html',1,'polyfem::problem']]],
   ['program_40',['Program',['../classpolyfem_1_1renderer_1_1_program.html',1,'polyfem::renderer']]],
   ['proxycontactforceform_41',['ProxyContactForceForm',['../classpolyfem_1_1solver_1_1_proxy_contact_force_form.html',1,'polyfem::solver']]],
-  ['proxytransientform_42',['ProxyTransientForm',['../classpolyfem_1_1solver_1_1_proxy_transient_form.html',1,'polyfem::solver']]]
+  ['proxytransientform_42',['ProxyTransientForm',['../classpolyfem_1_1solver_1_1_proxy_transient_form.html',1,'polyfem::solver']]],
+  ['pyramidquadrature_43',['PyramidQuadrature',['../classpolyfem_1_1quadrature_1_1_pyramid_quadrature.html',1,'polyfem::quadrature']]]
 ];

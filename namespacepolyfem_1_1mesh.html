@@ -423,9 +423,6 @@ Functions</h2></td></tr>
 <tr class="memitem:ad5d500b681dc6c18ea395e2a4424dff8" id="r_ad5d500b681dc6c18ea395e2a4424dff8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#ad5d500b681dc6c18ea395e2a4424dff8">extract_polyhedra</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh3_d.html">Mesh3D</a> &amp;mesh, std::vector&lt; std::unique_ptr&lt; GEO::Mesh &gt; &gt; &amp;polys, bool triangulated=false)</td></tr>
 <tr class="memdesc:ad5d500b681dc6c18ea395e2a4424dff8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extract polyhedra from a 3D volumetric mesh.  <br /></td></tr>
 <tr class="separator:ad5d500b681dc6c18ea395e2a4424dff8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae095321d3a795a54c96f6c93ed66583" id="r_aae095321d3a795a54c96f6c93ed66583"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#aae095321d3a795a54c96f6c93ed66583">tertrahedralize_star_shaped_surface</a> (const Eigen::MatrixXd &amp;<a class="el" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, const Eigen::MatrixXi &amp;<a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>, const Eigen::RowVector3d &amp;kernel, Eigen::MatrixXd &amp;OV, Eigen::MatrixXi &amp;OF, Eigen::MatrixXi &amp;OT)</td></tr>
-<tr class="memdesc:aae095321d3a795a54c96f6c93ed66583"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tetrahedralize a star-shaped mesh, with a given point in its kernel.  <br /></td></tr>
-<tr class="separator:aae095321d3a795a54c96f6c93ed66583"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a103b61095d51f0f6fb355c436dfc6d5d" id="r_a103b61095d51f0f6fb355c436dfc6d5d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1mesh.html#a103b61095d51f0f6fb355c436dfc6d5d">sample_surface</a> (const Eigen::MatrixXd &amp;<a class="el" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, const Eigen::MatrixXi &amp;<a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>, int num_samples, Eigen::MatrixXd &amp;P, Eigen::MatrixXd *N=nullptr, int num_lloyd=10, int num_newton=10)</td></tr>
 <tr class="memdesc:a103b61095d51f0f6fb355c436dfc6d5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Samples points on a surface.  <br /></td></tr>
 <tr class="separator:a103b61095d51f0f6fb355c436dfc6d5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -1680,7 +1677,7 @@ Here is the caller graph for this function:</div>
 
 <p>Count the number of boundary elements (triangles for tetmesh and edges for triangle mesh) </p>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l01193">1193</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l01178">1178</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
 
 </div>
 </div>
@@ -1852,9 +1849,9 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00945">945</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00930">930</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00222">polyfem::utils::RefElementSampler::build()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00224">polyfem::utils::RefElementSampler::build()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1962,11 +1959,11 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l01051">1051</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l01036">1036</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_mesh_utils_8cpp_source.html#l01017">find_triangle_surface_from_tets()</a>.</p>
+<p class="reference">References <a class="el" href="_mesh_utils_8cpp_source.html#l01002">find_triangle_surface_from_tets()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mesh_utils_8cpp_source.html#l01090">read_surface_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mesh_utils_8cpp_source.html#l01075">read_surface_mesh()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2142,7 +2139,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l01243">1243</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l01228">1228</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00098">polyfem::mesh::Mesh::create()</a>, and <a class="el" href="_c_mesh2_d_8cpp_source.html#l00025">polyfem::mesh::CMesh2D::refine()</a>.</p>
 <div class="dynheader">
@@ -2594,7 +2591,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00031">31</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00098">polyfem::mesh::Mesh::create()</a>, and <a class="el" href="_mesh_utils_8cpp_source.html#l01090">read_surface_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mesh_8cpp_source.html#l00098">polyfem::mesh::Mesh::create()</a>, and <a class="el" href="_mesh_utils_8cpp_source.html#l01075">read_surface_mesh()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -2927,7 +2924,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_collision_proxy_8cpp_source.html#l00330">330</a> of file <a class="el" href="_collision_proxy_8cpp_source.html">CollisionProxy.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_geometry_reader_8cpp_source.html#l00688">construct_affine_transformation()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00052">faces</a>, <a class="el" href="_collision_proxy_8cpp_source.html#l00330">load_collision_proxy_mesh()</a>, and <a class="el" href="_mesh_utils_8cpp_source.html#l01090">read_surface_mesh()</a>.</p>
+<p class="reference">References <a class="el" href="_geometry_reader_8cpp_source.html#l00688">construct_affine_transformation()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00052">faces</a>, <a class="el" href="_collision_proxy_8cpp_source.html#l00330">load_collision_proxy_mesh()</a>, and <a class="el" href="_mesh_utils_8cpp_source.html#l01075">read_surface_mesh()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_collision_proxy_8cpp_source.html#l00315">load_collision_proxy()</a>, and <a class="el" href="_collision_proxy_8cpp_source.html#l00330">load_collision_proxy_mesh()</a>.</p>
 <div class="dynheader">
@@ -3701,7 +3698,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_geometry_reader_8cpp_source.html#l00327">327</a> of file <a class="el" href="_geometry_reader_8cpp_source.html">GeometryReader.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_geometry_reader_8cpp_source.html#l00688">construct_affine_transformation()</a>, <a class="el" href="_units_8cpp_source.html#l00031">polyfem::Units::convert()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00052">faces</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00131">polyfem::utils::is_param_valid()</a>, <a class="el" href="_units_8hpp_source.html#l00019">polyfem::Units::length()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l01090">read_surface_mesh()</a>, and <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>.</p>
+<p class="reference">References <a class="el" href="_geometry_reader_8cpp_source.html#l00688">construct_affine_transformation()</a>, <a class="el" href="_units_8cpp_source.html#l00031">polyfem::Units::convert()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00052">faces</a>, <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00131">polyfem::utils::is_param_valid()</a>, <a class="el" href="_units_8hpp_source.html#l00019">polyfem::Units::length()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l01075">read_surface_mesh()</a>, and <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_geometry_reader_8cpp_source.html#l00438">read_obstacle_geometry()</a>.</p>
 <div class="dynheader">
@@ -3773,9 +3770,9 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l01090">1090</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l01075">1075</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_string_utils_8cpp_source.html#l00048">polyfem::utils::StringUtils::endswith()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l01051">extract_triangle_surface_from_tets()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00052">faces</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00985">find_codim_vertices()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00031">is_planar()</a>, <a class="el" href="_msh_reader_8cpp_source.html#l00029">polyfem::io::MshReader::load()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_o_b_j_reader_8cpp_source.html#l00032">polyfem::io::OBJReader::read()</a>.</p>
+<p class="reference">References <a class="el" href="_string_utils_8cpp_source.html#l00048">polyfem::utils::StringUtils::endswith()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l01036">extract_triangle_surface_from_tets()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00052">faces</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00970">find_codim_vertices()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00031">is_planar()</a>, <a class="el" href="_msh_reader_8cpp_source.html#l00029">polyfem::io::MshReader::load()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, and <a class="el" href="_o_b_j_reader_8cpp_source.html#l00032">polyfem::io::OBJReader::read()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_collision_proxy_8cpp_source.html#l00330">load_collision_proxy_mesh()</a>, and <a class="el" href="_geometry_reader_8cpp_source.html#l00327">read_obstacle_mesh()</a>.</p>
 <div class="dynheader">
@@ -4504,7 +4501,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00883">883</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00868">868</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_mesh_utils_8cpp_source.html#l00574">to_geogram_mesh()</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>.</p>
 <div class="dynheader">
@@ -4933,82 +4930,6 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="aae095321d3a795a54c96f6c93ed66583" name="aae095321d3a795a54c96f6c93ed66583"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aae095321d3a795a54c96f6c93ed66583">&#9670;&#160;</a></span>tertrahedralize_star_shaped_surface()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::mesh::tertrahedralize_star_shaped_surface </td>
-          <td>(</td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>V</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXi &amp;&#160;</td>
-          <td class="paramname"><em>F</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::RowVector3d &amp;&#160;</td>
-          <td class="paramname"><em>kernel</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>OV</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
-          <td class="paramname"><em>OF</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Eigen::MatrixXi &amp;&#160;</td>
-          <td class="paramname"><em>OT</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Tetrahedralize a star-shaped mesh, with a given point in its kernel. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">V</td><td><a class="el" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a> x 3 input mesh vertices </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">F</td><td><a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a> x 3 input mesh triangles </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">kernel</td><td>A point in the kernel </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">OV</td><td>#OV x 3 output mesh vertices </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">OF</td><td>#OF x 3 output mesh surface triangles </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">OT</td><td>#OT x 4 output mesh tetrahedra </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="_mesh_utils_8cpp_source.html#l00868">868</a> of file <a class="el" href="_mesh_utils_8cpp_source.html">MeshUtils.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_polyhedron_quadrature_8cpp_source.html#l00095">polyfem::quadrature::PolyhedronQuadrature::get_quadrature()</a>, and <a class="el" href="_ref_element_sampler_8cpp_source.html#l00460">polyfem::utils::RefElementSampler::sample_polyhedron()</a>.</p>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1mesh_aae095321d3a795a54c96f6c93ed66583_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
-</div>
-
-</div>
-</div>
 <a id="a7da2ae1a2cf19143192bb198c5ebb5b0" name="a7da2ae1a2cf19143192bb198c5ebb5b0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7da2ae1a2cf19143192bb198c5ebb5b0">&#9670;&#160;</a></span>to_geogram_mesh() <span class="overload">[1/2]</span></h2>
 
@@ -5055,7 +4976,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00173">polyfem::mesh::CMesh2D::build_from_matrices()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00039">polyfem::mesh::NCMesh2D::build_from_matrices()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00883">sample_surface()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00411">polyfem::mesh::CMesh3D::save()</a>, and <a class="el" href="_mesh_utils_8cpp_source.html#l00668">signed_squared_distances()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_c_mesh2_d_8cpp_source.html#l00173">polyfem::mesh::CMesh2D::build_from_matrices()</a>, <a class="el" href="_n_c_mesh2_d_8cpp_source.html#l00039">polyfem::mesh::NCMesh2D::build_from_matrices()</a>, <a class="el" href="_mesh_utils_8cpp_source.html#l00868">sample_surface()</a>, <a class="el" href="_c_mesh3_d_8cpp_source.html#l00411">polyfem::mesh::CMesh3D::save()</a>, and <a class="el" href="_mesh_utils_8cpp_source.html#l00668">signed_squared_distances()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">

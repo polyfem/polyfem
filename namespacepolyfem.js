@@ -133,6 +133,7 @@ var namespacepolyfem =
     [ "second_invariant", "namespacepolyfem.html#a9845e724ca91d9f20e3ac9bc558c1176", null ],
     [ "set_adjoint_logger", "namespacepolyfem.html#a85a916e211055cb036123120e33fd971", null ],
     [ "set_logger", "namespacepolyfem.html#ac64c417f742692869f9528d2cd10d569", null ],
+    [ "tertrahedralize_star_shaped_surface", "namespacepolyfem.html#ac611f09144ce9acf9f55c714b4dad9b8", null ],
     [ "third_invariant", "namespacepolyfem.html#a4d8e2f58cbf23bf646a53391b4fddf57", null ],
     [ "von_mises_stress_for_stress_tensor", "namespacepolyfem.html#a99d54b5136c9fd5b53151e3ae47bad34", null ],
     [ "BIG_N", "namespacepolyfem.html#a7e39c0bd50dd86944f79d8ddcad979a4", null ],

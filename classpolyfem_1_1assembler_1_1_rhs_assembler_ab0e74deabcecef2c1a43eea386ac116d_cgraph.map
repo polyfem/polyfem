@@ -1,46 +1,43 @@
 <map id="polyfem::assembler::RhsAssembler::lsq_bc" name="polyfem::assembler::RhsAssembler::lsq_bc">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,293,177,333"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,250,177,290"/>
 <area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_problem.html#a7a6babbba43f88cfb5a966ff68593fab" title=" " alt="" coords="239,5,430,60"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="96,292,112,247,138,188,175,125,198,96,224,71,230,66,233,70,227,75,202,100,179,128,142,190,117,249,101,293"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1mesh_1_1_mesh.html#aadc9bb68805f0a4c0209bee9160c9fc6" title="utily for dimension" alt="" coords="253,85,416,125"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="100,291,119,257,146,215,181,172,224,135,239,126,242,130,227,139,185,175,150,218,123,260,105,294"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1basis_1_1_element_bases.html#a47d52083f050e4cb34eeab5656a86523" title="Map the sample positions in the parametric domain to the object domain (if the element has no paramet..." alt="" coords="225,263,444,303"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="177,300,211,296,212,301,178,305"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1basis_1_1_element_bases.html#a6936d345f21ed506227618ef65dba6a6" title="evaluate stored bases at given points on the reference element saves results to basis_values" alt="" coords="495,257,713,297"/>
-<area shape="poly" id="edge8_Node000001_Node000006" title=" " alt="" coords="124,290,171,267,225,249,296,239,368,238,438,243,500,252,499,257,437,248,368,243,296,244,226,254,173,272,127,295"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1basis_1_1_basis.html#a88b90af0c63d52f2c91fe97a63c540ce" title=" " alt="" coords="523,321,685,361"/>
-<area shape="poly" id="edge15_Node000001_Node000008" title=" " alt="" coords="178,315,510,333,509,338,177,320"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1mesh_1_1_mesh.html#a5e569bdb72d6c480fe1f27ee4acda141" title="Get the boundary selection of an element (face in 3d, edge in 2d)" alt="" coords="253,149,416,189"/>
-<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="112,290,161,248,224,205,253,191,255,196,227,210,164,252,115,294"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1assembler_1_1_problem.html#a58751552ead1c373f759824138efcbb9" title=" " alt="" coords="245,379,424,433"/>
-<area shape="poly" id="edge16_Node000001_Node000014" title=" " alt="" coords="145,330,251,371,249,376,143,335"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec" title=" " alt="" coords="259,458,411,498"/>
-<area shape="poly" id="edge17_Node000001_Node000015" title=" " alt="" coords="109,331,158,387,190,418,227,444,247,454,245,459,224,448,187,422,154,391,105,335"/>
-<area shape="rect" id="Node000016" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="272,523,397,548"/>
-<area shape="poly" id="edge18_Node000001_Node000016" title=" " alt="" coords="103,332,120,370,146,418,182,467,203,489,227,508,260,523,258,528,224,512,200,493,178,470,142,421,115,373,98,334"/>
-<area shape="rect" id="Node000017" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#a21ae5defcab5faf5539c6d776f5c10b8" title=" " alt="" coords="235,573,435,613"/>
-<area shape="poly" id="edge19_Node000001_Node000017" title=" " alt="" coords="100,332,115,379,140,440,177,504,200,533,227,559,233,563,230,568,224,563,196,537,173,507,135,442,110,380,95,334"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="792,65,955,105"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="416,99,778,86,778,91,416,104"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="444,278,481,277,481,282,444,283"/>
-<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="430,301,511,318,510,323,429,306"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1basis_1_1_element_bases.html#a9d6e4fd2a6d6491fed600c2a26680d89" title="default to simply calling the Basis evaluation functions" alt="" coords="764,257,983,297"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="713,274,750,274,750,279,713,279"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1mesh_1_1_mesh.html#aad8b1ae368d562f132f816906d01de17" title="Get the default boundary selection of an element (face in 3d, edge in 2d)" alt="" coords="509,129,699,169"/>
-<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="416,160,495,154,495,159,416,165"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1mesh_1_1_mesh.html#a2a0448ef817e94ed705e39ac818bf9e1" title="checks if surface selections are available" alt="" coords="523,193,685,233"/>
-<area shape="poly" id="edge14_Node000009_Node000013" title=" " alt="" coords="416,179,509,195,509,200,416,184"/>
-<area shape="poly" id="edge13_Node000010_Node000004" title=" " alt="" coords="688,126,778,104,779,110,690,131"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1mesh_1_1_mesh.html#aa91ff468411251e60dd0bec73654b0fb" title="is edge boundary" alt="" coords="792,129,955,169"/>
-<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="699,146,778,146,778,151,699,151"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1mesh_1_1_mesh.html#a57691e050de1b8142a237ffa388117e4" title="is face boundary" alt="" coords="792,193,955,233"/>
-<area shape="poly" id="edge12_Node000010_Node000012" title=" " alt="" coords="690,166,779,188,778,193,688,171"/>
-<area shape="rect" id="Node000018" href="$classpolyfem_1_1mesh_1_1_local_boundary.html#a626a35ec8d903d5f0862ee38f53b1508" title="Get the element&#39;s ID." alt="" coords="492,477,716,517"/>
-<area shape="poly" id="edge20_Node000017_Node000018" title=" " alt="" coords="413,570,443,558,467,542,491,526,509,519,511,524,493,531,469,547,445,563,415,575"/>
-<area shape="rect" id="Node000019" href="$classpolyfem_1_1mesh_1_1_local_boundary.html#aa832a6de9bb5d595c5af621c1a7aca88" title="Get the i&#45;th boundary primitive&#39;s global ID." alt="" coords="492,541,716,581"/>
-<area shape="poly" id="edge21_Node000017_Node000019" title=" " alt="" coords="435,578,478,573,479,578,435,583"/>
-<area shape="rect" id="Node000020" href="$classpolyfem_1_1mesh_1_1_local_boundary.html#a958c24908487b959468e380dccb42644" title="Number of boundary primitives for the element." alt="" coords="492,605,716,645"/>
-<area shape="poly" id="edge22_Node000017_Node000020" title=" " alt="" coords="435,602,479,607,478,612,435,607"/>
-<area shape="rect" id="Node000021" href="$classpolyfem_1_1mesh_1_1_local_boundary.html#aa8a84d69ace838297dcca7bd12e6d34b" title="Get the type of boundary for the element." alt="" coords="492,669,716,709"/>
-<area shape="poly" id="edge23_Node000017_Node000021" title=" " alt="" coords="382,610,493,654,517,662,515,667,491,659,380,615"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="100,249,146,167,181,120,224,77,242,64,245,69,227,81,185,123,150,170,104,251"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1mesh_1_1_mesh.html#aadc9bb68805f0a4c0209bee9160c9fc6" title="utily for dimension" alt="" coords="523,186,685,226"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="166,247,225,235,374,217,509,207,509,213,375,222,226,241,168,253"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1basis_1_1_element_bases.html#a47d52083f050e4cb34eeab5656a86523" title="Map the sample positions in the parametric domain to the object domain (if the element has no paramet..." alt="" coords="225,135,444,175"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="123,248,170,220,224,192,258,178,260,183,226,196,172,224,125,252"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1basis_1_1_element_bases.html#a6936d345f21ed506227618ef65dba6a6" title="evaluate stored bases at given points on the reference element saves results to basis_values" alt="" coords="495,99,713,139"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="101,248,120,218,148,182,183,147,224,121,290,100,359,90,427,90,490,95,490,100,427,95,360,96,291,105,226,126,186,152,152,185,125,221,106,251"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1mesh_1_1_mesh.html#a5e569bdb72d6c480fe1f27ee4acda141" title="Get the boundary selection of an element (face in 3d, edge in 2d)" alt="" coords="253,250,416,290"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="178,267,239,267,239,273,178,273"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1assembler_1_1_problem.html#a58751552ead1c373f759824138efcbb9" title=" " alt="" coords="245,315,424,369"/>
+<area shape="poly" id="edge14_Node000001_Node000013" title=" " alt="" coords="160,288,233,309,231,314,159,293"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1assembler_1_1_problem.html#a90c406c9ef70aebd6b8d595c61d051ec" title=" " alt="" coords="259,394,411,434"/>
+<area shape="poly" id="edge15_Node000001_Node000014" title=" " alt="" coords="113,288,162,334,193,359,227,380,247,389,245,394,224,384,190,363,159,338,110,292"/>
+<area shape="rect" id="Node000015" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="272,459,397,484"/>
+<area shape="poly" id="edge16_Node000001_Node000015" title=" " alt="" coords="104,289,123,324,150,366,185,408,227,444,259,458,257,463,224,448,181,412,145,369,118,326,100,292"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#a21ae5defcab5faf5539c6d776f5c10b8" title=" " alt="" coords="235,509,435,549"/>
+<area shape="poly" id="edge17_Node000001_Node000016" title=" " alt="" coords="101,289,117,332,143,388,180,445,202,472,227,495,234,500,231,504,224,499,198,475,175,449,138,390,112,334,96,291"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="792,186,955,226"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="685,203,778,203,778,209,685,209"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="444,138,481,133,481,138,444,143"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1basis_1_1_element_bases.html#a9d6e4fd2a6d6491fed600c2a26680d89" title="default to simply calling the Basis evaluation functions" alt="" coords="764,99,983,139"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="713,117,750,117,750,122,713,122"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1mesh_1_1_mesh.html#aad8b1ae368d562f132f816906d01de17" title="Get the default boundary selection of an element (face in 3d, edge in 2d)" alt="" coords="509,250,699,290"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="416,267,495,267,495,273,416,273"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1mesh_1_1_mesh.html#a2a0448ef817e94ed705e39ac818bf9e1" title="checks if surface selections are available" alt="" coords="523,314,685,354"/>
+<area shape="poly" id="edge13_Node000008_Node000012" title=" " alt="" coords="417,287,510,309,508,314,415,292"/>
+<area shape="poly" id="edge12_Node000009_Node000004" title=" " alt="" coords="688,247,778,226,779,231,690,253"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1mesh_1_1_mesh.html#aa91ff468411251e60dd0bec73654b0fb" title="is edge boundary" alt="" coords="792,250,955,290"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="699,267,778,267,778,273,699,273"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1mesh_1_1_mesh.html#a57691e050de1b8142a237ffa388117e4" title="is face boundary" alt="" coords="792,314,955,354"/>
+<area shape="poly" id="edge11_Node000009_Node000011" title=" " alt="" coords="690,287,779,309,778,314,688,293"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1mesh_1_1_local_boundary.html#a626a35ec8d903d5f0862ee38f53b1508" title="Get the element&#39;s ID." alt="" coords="492,413,716,453"/>
+<area shape="poly" id="edge18_Node000016_Node000017" title=" " alt="" coords="413,506,443,494,467,478,491,462,509,455,511,460,493,467,469,483,445,499,415,511"/>
+<area shape="rect" id="Node000018" href="$classpolyfem_1_1mesh_1_1_local_boundary.html#aa832a6de9bb5d595c5af621c1a7aca88" title="Get the i&#45;th boundary primitive&#39;s global ID." alt="" coords="492,477,716,517"/>
+<area shape="poly" id="edge19_Node000016_Node000018" title=" " alt="" coords="435,514,478,509,479,514,435,519"/>
+<area shape="rect" id="Node000019" href="$classpolyfem_1_1mesh_1_1_local_boundary.html#a958c24908487b959468e380dccb42644" title="Number of boundary primitives for the element." alt="" coords="492,541,716,581"/>
+<area shape="poly" id="edge20_Node000016_Node000019" title=" " alt="" coords="435,538,479,543,478,548,435,543"/>
+<area shape="rect" id="Node000020" href="$classpolyfem_1_1mesh_1_1_local_boundary.html#aa8a84d69ace838297dcca7bd12e6d34b" title="Get the type of boundary for the element." alt="" coords="492,605,716,645"/>
+<area shape="poly" id="edge21_Node000016_Node000020" title=" " alt="" coords="382,546,493,590,517,598,515,603,491,595,380,551"/>
 </map>

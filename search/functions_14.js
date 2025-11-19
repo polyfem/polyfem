@@ -6,7 +6,7 @@ var searchData=
   ['tangentialadhesionform_3',['TangentialAdhesionForm',['../classpolyfem_1_1solver_1_1_tangential_adhesion_form.html#ab9c2ba501de20d527fd20506f408c660',1,'polyfem::solver::TangentialAdhesionForm']]],
   ['targetform_4',['TargetForm',['../classpolyfem_1_1solver_1_1_target_form.html#a2777ffe093d17a70b8038c1ec665916f',1,'polyfem::solver::TargetForm']]],
   ['taylorgreenvortexproblem_5',['TaylorGreenVortexProblem',['../classpolyfem_1_1problem_1_1_taylor_green_vortex_problem.html#a3614e15446131f68e9c657b73010e5f6',1,'polyfem::problem::TaylorGreenVortexProblem']]],
-  ['tertrahedralize_5fstar_5fshaped_5fsurface_6',['tertrahedralize_star_shaped_surface',['../namespacepolyfem_1_1mesh.html#aae095321d3a795a54c96f6c93ed66583',1,'polyfem::mesh']]],
+  ['tertrahedralize_5fstar_5fshaped_5fsurface_6',['tertrahedralize_star_shaped_surface',['../namespacepolyfem.html#ac611f09144ce9acf9f55c714b4dad9b8',1,'polyfem']]],
   ['testproblem_7',['TestProblem',['../classpolyfem_1_1problem_1_1_test_problem.html#a972665b55983e0e6efba57c3aea49a94',1,'polyfem::problem::TestProblem']]],
   ['tet_5fdeterminant_8',['tet_determinant',['../namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a02d0d3d2eac060807c163fce8ddb5422',1,'polyfem::solver::AdjointTools']]],
   ['tet_5fface_5flocal_5fnodes_9',['tet_face_local_nodes',['../classpolyfem_1_1basis_1_1_lagrange_basis3d.html#ae21671a6156e9de430f8b9c11749781f',1,'polyfem::basis::LagrangeBasis3d']]],

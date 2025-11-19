@@ -388,6 +388,7 @@ var hierarchy =
     ] ],
     [ "polyfem::problem::ProblemFactory", "classpolyfem_1_1problem_1_1_problem_factory.html", null ],
     [ "polyfem::renderer::Program", "classpolyfem_1_1renderer_1_1_program.html", null ],
+    [ "polyfem::quadrature::PyramidQuadrature", "classpolyfem_1_1quadrature_1_1_pyramid_quadrature.html", null ],
     [ "polyfem::quadrature::QuadQuadrature", "classpolyfem_1_1quadrature_1_1_quad_quadrature.html", null ],
     [ "polyfem::basis::QuadraticBSpline", "classpolyfem_1_1basis_1_1_quadratic_b_spline.html", null ],
     [ "polyfem::basis::QuadraticBSpline2d", "classpolyfem_1_1basis_1_1_quadratic_b_spline2d.html", null ],

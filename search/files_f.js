@@ -48,5 +48,8 @@ var searchData=
   ['problemfactory_2ecpp_45',['ProblemFactory.cpp',['../_problem_factory_8cpp.html',1,'']]],
   ['problemfactory_2ehpp_46',['ProblemFactory.hpp',['../_problem_factory_8hpp.html',1,'']]],
   ['problemwithsolution_2ecpp_47',['ProblemWithSolution.cpp',['../_problem_with_solution_8cpp.html',1,'']]],
-  ['problemwithsolution_2ehpp_48',['ProblemWithSolution.hpp',['../_problem_with_solution_8hpp.html',1,'']]]
+  ['problemwithsolution_2ehpp_48',['ProblemWithSolution.hpp',['../_problem_with_solution_8hpp.html',1,'']]],
+  ['pyramid_2epy_49',['pyramid.py',['../pyramid_8py.html',1,'']]],
+  ['pyramidquadrature_2ecpp_50',['PyramidQuadrature.cpp',['../_pyramid_quadrature_8cpp.html',1,'']]],
+  ['pyramidquadrature_2ehpp_51',['PyramidQuadrature.hpp',['../_pyramid_quadrature_8hpp.html',1,'']]]
 ];

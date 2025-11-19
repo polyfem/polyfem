@@ -143,7 +143,7 @@ $(document).ready(function(){initNavTree('_yaml_to_json_8cpp_source.html',''); i
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        {</div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>            <span class="keywordtype">int</span> i;</div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>            <span class="keywordtype">double</span> d;</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>            <span class="keywordtype">bool</span> b;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>            <span class="keywordtype">bool</span> <a class="code hl_variable" href="namespacepyramid.html#a1aba94803ba199f9b2d1b4a25105f26a">b</a>;</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>            std::string s;</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>            <span class="comment">// handle special bool values in YAML: y, yes, on, n, no, off</span></div>
@@ -155,7 +155,7 @@ $(document).ready(function(){initNavTree('_yaml_to_json_8cpp_source.html',''); i
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>            <span class="keywordflow">if</span> (YAML::convert&lt;double&gt;::decode(node, d))</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                <span class="keywordflow">return</span> d;</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>            <span class="keywordflow">if</span> (YAML::convert&lt;bool&gt;::decode(node, b))</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>                <span class="keywordflow">return</span> b;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>                <span class="keywordflow">return</span> <a class="code hl_variable" href="namespacepyramid.html#a1aba94803ba199f9b2d1b4a25105f26a">b</a>;</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            <span class="keywordflow">if</span> (YAML::convert&lt;std::string&gt;::decode(node, s))</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                <span class="keywordflow">return</span> s;</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
@@ -210,6 +210,7 @@ $(document).ready(function(){initNavTree('_yaml_to_json_8cpp_source.html',''); i
 <div class="ttc" id="anamespacepolyfem_1_1io_html_afce66cf52f99324ef3572c6a3d0f8fe4"><div class="ttname"><a href="namespacepolyfem_1_1io.html#afce66cf52f99324ef3572c6a3d0f8fe4">polyfem::io::yaml_string_to_json</a></div><div class="ttdeci">json yaml_string_to_json(const std::string &amp;yaml_str)</div><div class="ttdoc">Convert YAML string to JSON.</div><div class="ttdef"><b>Definition</b> <a href="_yaml_to_json_8cpp_source.html#l00062">YamlToJson.cpp:62</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_a77fa8fe96825827f2af726fcf6405d15"><div class="ttname"><a href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">polyfem::json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition</b> <a href="_common_8hpp_source.html#l00009">Common.hpp:9</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_adc7e749e0c40939b7323961c6a41e391"><div class="ttname"><a href="namespacepolyfem.html#adc7e749e0c40939b7323961c6a41e391">polyfem::log_and_throw_error</a></div><div class="ttdeci">void log_and_throw_error(const std::string &amp;msg)</div><div class="ttdef"><b>Definition</b> <a href="_logger_8cpp_source.html#l00073">Logger.cpp:73</a></div></div>
+<div class="ttc" id="anamespacepyramid_html_a1aba94803ba199f9b2d1b4a25105f26a"><div class="ttname"><a href="namespacepyramid.html#a1aba94803ba199f9b2d1b4a25105f26a">pyramid.b</a></div><div class="ttdeci">b</div><div class="ttdef"><b>Definition</b> <a href="pyramid_8py_source.html#l00009">pyramid.py:9</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

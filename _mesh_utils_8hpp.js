@@ -18,7 +18,6 @@ var _mesh_utils_8hpp =
     [ "sample_surface", "_mesh_utils_8hpp.html#a103b61095d51f0f6fb355c436dfc6d5d", null ],
     [ "signed_squared_distances", "_mesh_utils_8hpp.html#a816bc73f845b5cd77603ab5804e15356", null ],
     [ "signed_volume", "_mesh_utils_8hpp.html#a3366f41b53c326c7a196eea55d0c5c13", null ],
-    [ "tertrahedralize_star_shaped_surface", "_mesh_utils_8hpp.html#aae095321d3a795a54c96f6c93ed66583", null ],
     [ "to_geogram_mesh", "_mesh_utils_8hpp.html#a7da2ae1a2cf19143192bb198c5ebb5b0", null ],
     [ "to_geogram_mesh", "_mesh_utils_8hpp.html#ad071b94c821ca0409fc672bd5c520bda", null ]
 ];

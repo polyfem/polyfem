@@ -174,7 +174,6 @@ var namespacepolyfem_1_1mesh =
     [ "singularity_graph", "namespacepolyfem_1_1mesh.html#a78a20bc192a325efd376142bae8605c0", null ],
     [ "stitch_mesh", "namespacepolyfem_1_1mesh.html#a656d6973425b6f2809fc3523be8a08c2", null ],
     [ "stitch_mesh", "namespacepolyfem_1_1mesh.html#ad36edbb969d1772884b1a67bb4037510", null ],
-    [ "tertrahedralize_star_shaped_surface", "namespacepolyfem_1_1mesh.html#aae095321d3a795a54c96f6c93ed66583", null ],
     [ "to_geogram_mesh", "namespacepolyfem_1_1mesh.html#a7da2ae1a2cf19143192bb198c5ebb5b0", null ],
     [ "to_geogram_mesh", "namespacepolyfem_1_1mesh.html#ad071b94c821ca0409fc672bd5c520bda", null ],
     [ "unconstrained_L2_projection", "namespacepolyfem_1_1mesh.html#a0547de920dbbdd2a54bce6c80b346318", null ],
