@@ -126,9 +126,9 @@ namespace polyfem
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);
 
-		if (args["solver"]["advanced"]["L"] > 0)
+		if (args["solver"]["advanced"]["characteristic_length"] > 0)
 		{
-			characteristic_length = args["solver"]["advanced"]["L"];
+			characteristic_length = args["solver"]["advanced"]["characteristic_length"];
 		} 
 		else 
 		{

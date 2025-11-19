@@ -109,6 +109,10 @@ namespace polyfem::solver
 			{
 				return (current_lumped_mass().inverse() * x).cwiseAbs().maxCoeff();
 			}
+			else if (norm_type == "Euclidean")
+			{
+				return x.norm();
+			}
 			return 1;
 		}
         virtual double step_norm(const TVector &x, const std::string &norm_type) const override 
@@ -120,6 +124,10 @@ namespace polyfem::solver
 			else if (norm_type == "Linf")
 			{
 				return x.cwiseAbs().maxCoeff();
+			}
+			else if (norm_type == "Euclidean")
+			{
+				return x.norm();
 			}
 			return 1;
 		}
