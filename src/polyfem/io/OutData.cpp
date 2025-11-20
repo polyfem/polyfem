@@ -18,6 +18,7 @@
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
 #include <polyfem/solver/forms/SmoothContactForm.hpp>
+#include <polyfem/solver/forms/HighOrderContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>

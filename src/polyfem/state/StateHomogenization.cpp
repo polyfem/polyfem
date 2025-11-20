@@ -69,6 +69,9 @@ namespace polyfem
 			args["contact"]["alpha_n"],
 			args["contact"]["use_adaptive_dhat"],
 			args["contact"]["min_distance_ratio"],
+			// High Order Contact Form
+			args["contact"]["use_high_order_formulation"],
+			args["contact"]["high_order_contact_params"],
 			// Normal Adhesion Form
 			args["contact"]["adhesion"]["adhesion_enabled"],
 			args["contact"]["adhesion"]["dhat_p"],

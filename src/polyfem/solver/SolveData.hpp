@@ -128,6 +128,10 @@ namespace polyfem::solver
 			const bool use_adaptive_dhat,
 			const double min_distance_ratio,
 
+			// High Order Contact Form
+			const bool use_high_order_formulation,
+			json high_order_contact_params,
+
 			// Normal Adhesion Form
 			const bool adhesion_enabled,
 			const double dhat_p,
