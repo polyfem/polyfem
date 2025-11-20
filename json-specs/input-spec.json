@@ -1205,12 +1205,14 @@
             "dhat_percentage",
             "epsv",
             "friction_coefficient",
+            "use_high_order_formulation",
             "use_convergent_formulation",
             "use_area_weighting",
             "use_improved_max_operator",
             "use_physical_barrier",
             "collision_mesh",
             "use_gcp_formulation",
+            "high_order_contact_params",
             "alpha_n",
             "alpha_t",
             "min_distance_ratio",
@@ -1219,6 +1221,24 @@
             "adhesion"
         ],
         "doc": "Contact handling parameters."
+    },
+    {
+        "pointer": "/contact/high_order_contact_params",
+        "type": "object",
+        "default": null,
+        "optional": [
+            "alpha"
+        ]
+    },
+    {
+        "pointer": "/contact/high_order_contact_params/alpha",
+        "type": "bool",
+        "default": 1
+    },
+    {
+        "pointer": "/contact/use_high_order_formulation",
+        "default": false,
+        "type": "bool"
     },
     {
         "pointer": "/contact/use_adaptive_dhat",
