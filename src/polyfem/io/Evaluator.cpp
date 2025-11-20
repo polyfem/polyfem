@@ -191,12 +191,12 @@ namespace polyfem::io
 		assert(!is_problem_scalar);
 		const int actual_dim = mesh.dimension();
 
-		std::vector<Eigen::MatrixXd> avg_scalar;
+		std::vector<Eigen::MatrixXd> avg_scalar, avg_tensor;
 
 		Eigen::MatrixXd areas(n_bases, 1);
 		areas.setZero();
 
-		std::vector<std::pair<std::string, Eigen::MatrixXd>> tmp_s;
+		std::vector<std::pair<std::string, Eigen::MatrixXd>> tmp_s, tmp_t;
 		Eigen::MatrixXd local_val;
 
 		ElementAssemblyValues vals;
@@ -236,10 +236,8 @@ namespace polyfem::io
 			const double area = (vals.det.array() * quadrature.weights.array()).sum();
 
 			assembler.compute_scalar_value(OutputData(t, i, bs, gbs, local_pts, fun), tmp_s);
-
-			// assembler.compute_tensor_value(i, bs, gbs, local_pts, fun, local_val);
-			// MatrixXd avg_tensor(n_points * actual_dim*actual_dim, 1);
-
+			assembler.compute_tensor_value(OutputData(t, i, bs, gbs, local_pts, fun), tmp_t);
+			
 			for (size_t j = 0; j < bs.bases.size(); ++j)
 			{
 				const Basis &b = bs.bases[j];
@@ -259,6 +257,16 @@ namespace polyfem::io
 					m.setZero();
 				}
 			}
+			
+			if (avg_tensor.empty())
+			{
+				avg_tensor.resize(tmp_t.size());
+				for (auto &m : avg_tensor)
+				{
+					m.resize(n_bases, actual_dim * actual_dim);
+					m.setZero();
+				}
+			}
 
 			for (int k = 0; k < tmp_s.size(); ++k)
 			{
@@ -274,6 +282,21 @@ namespace polyfem::io
 					avg_scalar[k](global.index) += local_val(j) * area;
 				}
 			}
+
+			for (int k = 0; k < tmp_t.size(); ++k)
+			{
+				local_val = tmp_t[k].second;
+
+				for (size_t j = 0; j < bs.bases.size(); ++j)
+				{
+					const Basis &b = bs.bases[j];
+					if (b.global().size() > 1)
+						continue;
+
+					auto &global = b.global().front();
+					avg_tensor[k].row(global.index) += local_val.row(j) * area;
+				}
+			}
 		}
 
 		for (auto &m : avg_scalar)
@@ -281,6 +304,14 @@ namespace polyfem::io
 			m.array() /= areas.array();
 		}
 
+		for (auto &m : avg_tensor)
+		{
+			for (int i = 0; i < m.rows(); ++i)
+			{
+				m.row(i).array() /= areas(i);
+			}
+		}
+		
 		result_scalar.resize(tmp_s.size());
 		for (int k = 0; k < tmp_s.size(); ++k)
 		{
@@ -288,7 +319,15 @@ namespace polyfem::io
 			interpolate_function(mesh, 1, bases, disc_orders, disc_ordersq, polys, polys_3d, sampler, n_points,
 								 avg_scalar[k], result_scalar[k].second, use_sampler, boundary_only);
 		}
-		// interpolate_function(n_points, actual_dim*actual_dim, bases, avg_tensor, result_tensor, boundary_only);
+
+		
+		result_tensor.resize(tmp_t.size());
+		for (int k = 0; k < tmp_t.size(); ++k)
+		{
+			result_tensor[k].first = tmp_t[k].first;
+			interpolate_function(mesh, actual_dim*actual_dim, bases, disc_orders, disc_ordersq, polys, polys_3d, sampler, n_points,
+								 utils::flatten(avg_tensor[k]), result_tensor[k].second, use_sampler, boundary_only);
+		}
 	}
 
 	void Evaluator::compute_stress_at_quadrature_points(
@@ -517,6 +556,7 @@ namespace polyfem::io
 			logger().error("Solve the problem first!");
 			return;
 		}
+		assert(fun.cols() == 1);
 
 		std::vector<AssemblyValues> tmp;
 

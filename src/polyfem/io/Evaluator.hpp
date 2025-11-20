@@ -229,9 +229,10 @@ namespace polyfem::io
 			std::vector<assembler::Assembler::NamedMatrix> &result,
 			const bool use_sampler,
 			const bool boundary_only);
-
-		/// computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)
-		/// the scalar value is averaged around every node to make it continuos
+ 
+		/// calls compute_scalar_value (i.e von mises for elasticity and norm of velocity for fluid) and compute_tensor_value of funtion using the assembler
+		/// the values are averaged around every node and interpolated using the bases to make them continuous.
+		/// the averaging is done over the full volume of the neighborhood elements and not just the voronoi/barycentric cell around the node.
 		/// @param[in] mesh mesh
 		/// @param[in] is_problem_scalar if problem is scalar
 		/// @param[in] n_bases number of bases
@@ -244,7 +245,7 @@ namespace polyfem::io
 		/// @param[in] assembler assembler
 		/// @param[in] sampler sampler for the local element
 		/// @param[in] n_points is the size of the output.
-		/// @param[in] fun function to used
+		/// @param[in] fun function to be used
 		/// @param[out] result_scalar scalar value
 		/// @param[out] result_tensor tensor value
 		/// @param[in] use_sampler uses the sampler or not
@@ -269,7 +270,7 @@ namespace polyfem::io
 			const bool use_sampler,
 			const bool boundary_only);
 
-		/// compute tensor quantity (ie stress tensor or velocy)
+		/// compute tensor quantity (ie stress tensor or velocity)
 		/// @param[in] mesh mesh
 		/// @param[in] is_problem_scalar if problem is scalar
 		/// @param[in] bases bases
