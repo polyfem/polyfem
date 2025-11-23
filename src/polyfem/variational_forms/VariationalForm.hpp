@@ -1,5 +1,10 @@
 #pragma once
 
+#include <polyfem/Common.hpp>
+
+#include <memory>
+#include <vector>
+
 namespace polyfem
 {
 	class VariationalForm
@@ -37,9 +42,9 @@ namespace polyfem
 		/// modifies bases, pressure_bases, geom_bases_, boundary_nodes,
 		/// dirichlet_nodes, neumann_nodes, local_boundary, total_local_boundary
 		/// local_neumann_boundary, polys, poly_edge_to_data, rhs
-		void build_basis() = 0;
+		virtual void build_basis() = 0;
 		/// builds bases for polygons, called inside build_basis
-		void build_polygonal_basis() = 0;
+		virtual void build_polygonal_basis() = 0;
 
 		/// compute rhs, step 3 of solve
 		/// build rhs vector based on defined basis and given rhs of the problem
@@ -49,6 +54,8 @@ namespace polyfem
 		/// build mass matrix based on defined basis
 		/// modifies mass (and maybe more?)
 		void assemble_mass_mat();
+
+		virtual void clear() = 0;
 
 		/// return the formulation (checks if the problem is scalar or not and deals with multiphysics)
 		/// @return formulation
@@ -74,6 +81,8 @@ namespace polyfem
 		/// utility to set the material and the problem dimension to only 1 assembler
 		/// @param[in/out] assembler to set
 		void set_materials(assembler::Assembler &assembler) const;
+		/// @param[in/out] assembler to set
+		void set_materials() const;
 
 		/// initialize solver
 		/// @param[out] sol solution
@@ -129,6 +138,8 @@ namespace polyfem
 			else
 				return actual_dim * n_bases + n_pressure_bases;
 		}
+
+		void compute_errors(const Eigen::MatrixXd &sol);
 
 	protected:
 		/// current problem, it contains rhs and bc

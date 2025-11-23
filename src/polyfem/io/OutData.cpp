@@ -63,83 +63,84 @@ namespace polyfem::io
 		void compute_traction_forces(const State &state, const Eigen::MatrixXd &solution, const double t, Eigen::MatrixXd &traction_forces, bool skip_dirichlet = true)
 		{
 			int actual_dim = 1;
-			if (!state.problem->is_scalar())
-				actual_dim = state.mesh->dimension();
-			else
-				return;
+			// TODO varform
+			//  if (!state.problem->is_scalar())
+			//  	actual_dim = state.mesh->dimension();
+			//  else
+			return;
 
-			const std::vector<basis::ElementBases> &bases = state.bases;
-			const std::vector<basis::ElementBases> &gbases = state.geom_bases();
+			// const std::vector<basis::ElementBases> &bases = state.bases;
+			// const std::vector<basis::ElementBases> &gbases = state.geom_bases();
 
-			Eigen::MatrixXd uv, samples, gtmp, rhs_fun, deform_mat, trafo;
-			Eigen::VectorXi global_primitive_ids;
-			Eigen::MatrixXd points, normals;
-			Eigen::VectorXd weights;
-			polyfem::assembler::ElementAssemblyValues vals;
+			// Eigen::MatrixXd uv, samples, gtmp, rhs_fun, deform_mat, trafo;
+			// Eigen::VectorXi global_primitive_ids;
+			// Eigen::MatrixXd points, normals;
+			// Eigen::VectorXd weights;
+			// polyfem::assembler::ElementAssemblyValues vals;
 
-			traction_forces.setZero(state.n_bases * actual_dim, 1);
+			// traction_forces.setZero(state.n_bases * actual_dim, 1);
 
-			for (const auto &lb : state.total_local_boundary)
-			{
-				const int e = lb.element_id();
-				bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, state.n_boundary_samples(), *state.mesh, false, uv, points, normals, weights, global_primitive_ids);
+			// for (const auto &lb : state.total_local_boundary)
+			// {
+			// 	const int e = lb.element_id();
+			// 	bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, state.n_boundary_samples(), *state.mesh, false, uv, points, normals, weights, global_primitive_ids);
 
-				if (!has_samples)
-					continue;
+			// 	if (!has_samples)
+			// 		continue;
 
-				const basis::ElementBases &gbs = gbases[e];
-				const basis::ElementBases &bs = bases[e];
+			// 	const basis::ElementBases &gbs = gbases[e];
+			// 	const basis::ElementBases &bs = bases[e];
 
-				vals.compute(e, state.mesh->is_volume(), points, bs, gbs);
+			// 	vals.compute(e, state.mesh->is_volume(), points, bs, gbs);
 
-				for (int n = 0; n < normals.rows(); ++n)
-				{
-					trafo = vals.jac_it[n].inverse();
+			// 	for (int n = 0; n < normals.rows(); ++n)
+			// 	{
+			// 		trafo = vals.jac_it[n].inverse();
 
-					if (solution.size() > 0)
-					{
-						assert(actual_dim == 2 || actual_dim == 3);
-						deform_mat.resize(actual_dim, actual_dim);
-						deform_mat.setZero();
-						for (const auto &b : vals.basis_values)
-						{
-							for (const auto &g : b.global)
-							{
-								for (int d = 0; d < actual_dim; ++d)
-								{
-									deform_mat.row(d) += solution(g.index * actual_dim + d) * b.grad.row(n);
-								}
-							}
-						}
+			// 		if (solution.size() > 0)
+			// 		{
+			// 			assert(actual_dim == 2 || actual_dim == 3);
+			// 			deform_mat.resize(actual_dim, actual_dim);
+			// 			deform_mat.setZero();
+			// 			for (const auto &b : vals.basis_values)
+			// 			{
+			// 				for (const auto &g : b.global)
+			// 				{
+			// 					for (int d = 0; d < actual_dim; ++d)
+			// 					{
+			// 						deform_mat.row(d) += solution(g.index * actual_dim + d) * b.grad.row(n);
+			// 					}
+			// 				}
+			// 			}
 
-						trafo += deform_mat;
-					}
+			// 			trafo += deform_mat;
+			// 		}
 
-					normals.row(n) = normals.row(n) * trafo.inverse();
-					normals.row(n).normalize();
-				}
+			// 		normals.row(n) = normals.row(n) * trafo.inverse();
+			// 		normals.row(n).normalize();
+			// 	}
 
-				std::vector<assembler::Assembler::NamedMatrix> tensor_flat;
-				state.assembler->compute_tensor_value(assembler::OutputData(t, e, bs, gbs, points, solution), tensor_flat);
+			// 	std::vector<assembler::Assembler::NamedMatrix> tensor_flat;
+			// 	state.assembler->compute_tensor_value(assembler::OutputData(t, e, bs, gbs, points, solution), tensor_flat);
 
-				for (long n = 0; n < vals.basis_values.size(); ++n)
-				{
-					const polyfem::assembler::AssemblyValues &v = vals.basis_values[n];
+			// 	for (long n = 0; n < vals.basis_values.size(); ++n)
+			// 	{
+			// 		const polyfem::assembler::AssemblyValues &v = vals.basis_values[n];
 
-					const int g_index = v.global[0].index * actual_dim;
+			// 		const int g_index = v.global[0].index * actual_dim;
 
-					for (int q = 0; q < points.rows(); ++q)
-					{
-						// TF computed only from cauchy stress
-						assert(tensor_flat[0].first == "cauchy_stess");
-						assert(tensor_flat[0].second.row(q).size() == actual_dim * actual_dim);
+			// 		for (int q = 0; q < points.rows(); ++q)
+			// 		{
+			// 			// TF computed only from cauchy stress
+			// 			assert(tensor_flat[0].first == "cauchy_stess");
+			// 			assert(tensor_flat[0].second.row(q).size() == actual_dim * actual_dim);
 
-						Eigen::MatrixXd stress_tensor = utils::unflatten(tensor_flat[0].second.row(q), actual_dim);
+			// 			Eigen::MatrixXd stress_tensor = utils::unflatten(tensor_flat[0].second.row(q), actual_dim);
 
-						traction_forces.block(g_index, 0, actual_dim, 1) += stress_tensor * normals.row(q).transpose() * v.val(q) * weights(q);
-					}
-				}
-			}
+			// 			traction_forces.block(g_index, 0, actual_dim, 1) += stress_tensor * normals.row(q).transpose() * v.val(q) * weights(q);
+			// 		}
+			// 	}
+			// }
 		}
 	} // namespace
 

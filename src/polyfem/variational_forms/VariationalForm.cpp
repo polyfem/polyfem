@@ -2,14 +2,61 @@
 
 namespace polyfem
 {
-	std::vector<int> State::primitive_to_node() const
+	// TODO varform
+	/*
+	bases.clear();
+		pressure_bases.clear();
+		geom_bases_.clear();
+		boundary_nodes.clear();
+		local_boundary.clear();
+		local_neumann_boundary.clear();
+		polys.clear();
+		poly_edge_to_data.clear();
+		obstacle.clear();
+
+		mass.resize(0, 0);
+		rhs.resize(0, 0);
+
+		n_bases = 0;
+		n_pressure_bases = 0;
+
+
+		//set materials
+		std::vector<std::shared_ptr<assembler::Assembler>> assemblers;
+		assemblers.push_back(assembler);
+		assemblers.push_back(mass_matrix_assembler);
+		if (mixed_assembler != nullptr)
+			// TODO: assemblers.push_back(mixed_assembler);
+			mixed_assembler->set_size(mesh->dimension());
+		if (pressure_assembler != nullptr)
+			assemblers.push_back(pressure_assembler);
+		set_materials(assemblers);
+
+	*/
+
+	void VariationalForm::compute_errors(const Eigen::MatrixXd &sol)
+	{
+		if (!args["output"]["advanced"]["compute_error"])
+			return;
+
+		double tend = 0;
+
+		if (!args["time"].is_null())
+		{
+			tend = args["time"]["tend"];
+		}
+
+		stats.compute_errors(n_bases, bases, geom_bases(), *mesh, *problem, tend, sol);
+	}
+
+	std::vector<int> VariationalForm::primitive_to_node() const
 	{
 		auto indices = iso_parametric() ? mesh_nodes->primitive_to_node() : geom_mesh_nodes->primitive_to_node();
 		indices.resize(mesh->n_vertices());
 		return indices;
 	}
 
-	std::vector<int> State::node_to_primitive() const
+	std::vector<int> VariationalForm::node_to_primitive() const
 	{
 		auto p2n = primitive_to_node();
 		std::vector<int> indices;
@@ -19,7 +66,7 @@ namespace polyfem
 		return indices;
 	}
 
-	void State::build_node_mapping()
+	void VariationalForm::build_node_mapping()
 	{
 		if (args["space"]["basis_type"] == "Spline")
 		{
@@ -102,7 +149,7 @@ namespace polyfem
 		}
 	}
 
-	std::string State::formulation() const
+	std::string VariationalForm::formulation() const
 	{
 		if (args["materials"].is_null())
 		{
@@ -145,7 +192,7 @@ namespace polyfem
 			return args["materials"]["type"];
 	}
 
-	bool State::iso_parametric() const
+	bool VariationalForm::iso_parametric() const
 	{
 		if (mesh->has_poly())
 			return true;
@@ -189,7 +236,7 @@ namespace polyfem
 		return args["space"]["advanced"]["isoparametric"];
 	}
 
-	void State::build_basis()
+	void VariationalForm::build_basis()
 	{
 		if (!mesh)
 		{
@@ -757,7 +804,7 @@ namespace polyfem
 		}
 	}
 
-	void State::build_polygonal_basis()
+	void VariationalForm::build_polygonal_basis()
 	{
 		if (!mesh)
 		{
@@ -920,7 +967,7 @@ namespace polyfem
 		n_bases += new_bases;
 	}
 
-	void State::build_periodic_collision_mesh()
+	void VariationalForm::build_periodic_collision_mesh()
 	{
 		assert(!mesh->is_volume());
 		const int dim = mesh->dimension();
@@ -1054,7 +1101,7 @@ namespace polyfem
 			log_and_throw_error("Failed to tile mesh!");
 	}
 
-	void State::build_collision_mesh()
+	void VariationalForm::build_collision_mesh()
 	{
 		build_collision_mesh(
 			*mesh, n_bases, bases, geom_bases(), total_local_boundary, obstacle,
@@ -1062,7 +1109,7 @@ namespace polyfem
 			in_node_to_node, collision_mesh);
 	}
 
-	void State::build_collision_mesh(
+	void VariationalForm::build_collision_mesh(
 		const mesh::Mesh &mesh,
 		const int n_bases,
 		const std::vector<basis::ElementBases> &bases,
@@ -1189,7 +1236,7 @@ namespace polyfem
 		collision_mesh.init_area_jacobians();
 	}
 
-	void State::assemble_mass_mat()
+	void VariationalForm::assemble_mass_mat()
 	{
 		if (!mesh)
 		{
@@ -1277,7 +1324,7 @@ namespace polyfem
 		logger().info("sparsity: {}/{}", stats.nn_zero, stats.mat_size);
 	}
 
-	std::shared_ptr<RhsAssembler> State::build_rhs_assembler(
+	std::shared_ptr<RhsAssembler> VariationalForm::build_rhs_assembler(
 		const int n_bases_,
 		const std::vector<basis::ElementBases> &bases_,
 		const assembler::AssemblyValsCache &ass_vals_cache_) const
@@ -1298,7 +1345,7 @@ namespace polyfem
 			rhs_solver_params);
 	}
 
-	std::shared_ptr<PressureAssembler> State::build_pressure_assembler(
+	std::shared_ptr<PressureAssembler> VariationalForm::build_pressure_assembler(
 		const int n_bases_,
 		const std::vector<basis::ElementBases> &bases_) const
 	{
@@ -1313,7 +1360,7 @@ namespace polyfem
 			n_bases_, size, bases_, geom_bases(), *problem);
 	}
 
-	void State::assemble_rhs()
+	void VariationalForm::assemble_rhs()
 	{
 		if (!mesh)
 		{
@@ -1385,7 +1432,7 @@ namespace polyfem
 		logger().info(" took {}s", timings.assigning_rhs_time);
 	}
 
-	void State::solve_problem(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
+	void VariationalForm::solve_problem(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		if (!mesh)
 		{

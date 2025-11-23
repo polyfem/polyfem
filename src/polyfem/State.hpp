@@ -343,7 +343,6 @@ namespace polyfem
 		void save_json(const Eigen::MatrixXd &sol);
 
 		/// @brief computes all errors
-		void compute_errors(const Eigen::MatrixXd &sol);
 
 		/// @brief Save a JSON sim file for restarting the simulation at time t
 		/// @param t current time to restart at

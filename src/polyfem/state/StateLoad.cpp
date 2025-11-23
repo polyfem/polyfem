@@ -2,6 +2,7 @@
 
 #include <polyfem/assembler/local/Mass.hpp>
 
+#include <polyfem/variational_forms/VariationalForm.hpp>
 #include <polyfem/mesh/GeometryReader.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
@@ -13,6 +14,7 @@
 #include <polyfem/utils/JSONUtils.hpp>
 
 #include <igl/Timer.h>
+
 namespace polyfem
 {
 	using namespace basis;
@@ -21,21 +23,7 @@ namespace polyfem
 
 	void State::reset_mesh()
 	{
-		bases.clear();
-		pressure_bases.clear();
-		geom_bases_.clear();
-		boundary_nodes.clear();
-		local_boundary.clear();
-		local_neumann_boundary.clear();
-		polys.clear();
-		poly_edge_to_data.clear();
-		obstacle.clear();
-
-		mass.resize(0, 0);
-		rhs.resize(0, 0);
-
-		n_bases = 0;
-		n_pressure_bases = 0;
+		variational_form->clear();
 	}
 
 	void State::load_mesh(GEO::Mesh &meshin, const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &boundary_marker, bool non_conforming, bool skip_boundary_sideset)
@@ -60,15 +48,7 @@ namespace polyfem
 		if (!skip_boundary_sideset)
 			mesh->compute_boundary_ids(boundary_marker);
 
-		std::vector<std::shared_ptr<assembler::Assembler>> assemblers;
-		assemblers.push_back(assembler);
-		assemblers.push_back(mass_matrix_assembler);
-		if (mixed_assembler != nullptr)
-			// TODO: assemblers.push_back(mixed_assembler);
-			mixed_assembler->set_size(mesh->dimension());
-		if (pressure_assembler != nullptr)
-			assemblers.push_back(pressure_assembler);
-		set_materials(assemblers);
+		variational_form->set_materials();
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
@@ -128,15 +108,7 @@ namespace polyfem
 
 		logger().info("mesh bb min [{}], max [{}]", min, max);
 
-		std::vector<std::shared_ptr<assembler::Assembler>> assemblers;
-		assemblers.push_back(assembler);
-		assemblers.push_back(mass_matrix_assembler);
-		if (mixed_assembler != nullptr)
-			// TODO: assemblers.push_back(mixed_assembler);
-			mixed_assembler->set_size(mesh->dimension());
-		if (pressure_assembler != nullptr)
-			assemblers.push_back(pressure_assembler);
-		set_materials(assemblers);
+		variational_form->set_materials();
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());

@@ -11,8 +11,9 @@ set(SOURCES
 	OBJReader.hpp
 	OBJWriter.cpp
 	OBJWriter.hpp
-	OutData.cpp
-	OutData.hpp
+	# TODO varform
+	# OutData.cpp
+	# OutData.hpp
 	YamlToJson.cpp
 	YamlToJson.hpp
 )

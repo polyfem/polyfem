@@ -9,20 +9,6 @@
 
 namespace polyfem
 {
-	void State::compute_errors(const Eigen::MatrixXd &sol)
-	{
-		if (!args["output"]["advanced"]["compute_error"])
-			return;
-
-		double tend = 0;
-
-		if (!args["time"].is_null())
-		{
-			tend = args["time"]["tend"];
-		}
-
-		stats.compute_errors(n_bases, bases, geom_bases(), *mesh, *problem, tend, sol);
-	}
 
 	std::string State::root_path() const
 	{

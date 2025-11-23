@@ -59,7 +59,8 @@ namespace polyfem
 
 		GeogramUtils::instance().initialize();
 
-		problem = ProblemFactory::factory().get_problem("Linear");
+		// TODO varform
+		//  problem = ProblemFactory::factory().get_problem("Linear");
 	}
 
 	void State::init_logger(
