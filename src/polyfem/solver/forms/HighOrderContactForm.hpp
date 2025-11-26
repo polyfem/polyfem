@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ContactForm.hpp"
-#include <ipc/smooth_contact/smooth_collisions.hpp>
-#include <ipc/smooth_contact/smooth_contact_potential.hpp>
+#include <ipc/smooth_contact/high_order_collisions.hpp>
+#include <ipc/smooth_contact/high_order_contact_potential.hpp>
 #include <cmath>
 
 namespace polyfem::solver
@@ -25,7 +25,7 @@ namespace polyfem::solver
 
         void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) override;
 
-		void force_shape_derivative(const ipc::SmoothCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const;
+		void force_shape_derivative(const ipc::HighOrderCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const;
 
 		/// @brief Update fields after a step in the optimization
 		/// @param iter_num Optimization iteration number
@@ -34,7 +34,7 @@ namespace polyfem::solver
 
 		const ipc::SmoothContactParameters &get_params() const { return params; }
 
-		const ipc::SmoothCollisions &collision_set() const { return collision_set_; }
+		const ipc::HighOrderCollisions &collision_set() const { return collision_set_; }
 
 	protected:
 		/// @brief Compute the contact barrier potential value
@@ -66,9 +66,9 @@ namespace polyfem::solver
 		ipc::SmoothContactParameters params;
 
 		/// @brief Cached constraint set for the current solution
-		ipc::SmoothCollisions collision_set_;
+		ipc::HighOrderCollisions collision_set_;
 
 		/// @brief Contact potential
-		ipc::SmoothContactPotential barrier_potential_;
+		ipc::HighOrderContactPotential barrier_potential_;
 	};
 }

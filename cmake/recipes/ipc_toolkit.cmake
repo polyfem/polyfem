@@ -8,4 +8,8 @@ endif()
 message(STATUS "Third-party: creating target 'ipc::toolkit'")
 
 include(CPM)
-CPMAddPackage("gh:fsichetti/ipc-toolkit#9fcf7ce")
+CPMAddPackage(
+	NAME "ipc-toolkit"
+	GIT_REPOSITORY git@github.com:fsichetti/ipc-toolkit.git
+	GIT_TAG "863f788"
+)

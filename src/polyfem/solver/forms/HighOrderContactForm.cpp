@@ -36,7 +36,7 @@ namespace polyfem::solver
 		log_and_throw_error("Adaptive barrier stiffness not implemented for HighOrderContactForm!");
 	}
 
-	void HighOrderContactForm::force_shape_derivative(const ipc::SmoothCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const
+	void HighOrderContactForm::force_shape_derivative(const ipc::HighOrderCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const
 	{
 		StiffnessMatrix hessian = barrier_potential_.hessian(collision_set, collision_mesh_, compute_displaced_surface(solution), ipc::PSDProjectionMethod::NONE);
 		term = barrier_stiffness() * collision_mesh_.to_full_dof(hessian) * adjoint_sol;
