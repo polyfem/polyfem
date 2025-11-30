@@ -12,6 +12,11 @@
 
 namespace polyfem::solver
 {
+	ipc::SmoothContactParameters init_params(const double dhat, const json &high_order_contact_params, const int power) {
+		const double alpha = high_order_contact_params["alpha"];
+		return ipc::SmoothContactParameters(dhat, alpha, 0, alpha, 0, power);
+	}
+
 	HighOrderContactForm::HighOrderContactForm(const ipc::CollisionMesh &collision_mesh,
 											   const double dhat,
 											   const double avg_mass,
@@ -21,11 +26,10 @@ namespace polyfem::solver
 											   const bool enable_shape_derivatives,
 											   const ipc::BroadPhaseMethod broad_phase_method,
 											   const double ccd_tolerance,
-											   const int ccd_max_iterations) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), barrier_potential_(params)
+											   const int ccd_max_iterations) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(init_params(dhat, high_order_contact_params, collision_mesh.dim() - 1)),
+											   barrier_potential_(params)
 	{
 		// TODO: @federico change SmoothContactParameters to your own param class
-		const double alpha = high_order_contact_params["alpha"];
-		params = ipc::SmoothContactParameters(dhat_, alpha, 0, alpha, 0, collision_mesh.dim() - 1);
 	}
 
 	void HighOrderContactForm::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)

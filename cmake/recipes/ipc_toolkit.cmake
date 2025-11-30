@@ -11,5 +11,5 @@ include(CPM)
 CPMAddPackage(
 	NAME "ipc-toolkit"
 	GIT_REPOSITORY git@github.com:fsichetti/ipc-toolkit.git
-	GIT_TAG "863f788"
+	GIT_TAG "2b18ecb"
 )
