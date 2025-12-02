@@ -92,6 +92,68 @@ namespace polyfem
 		/// @param[out] sol solution
 		void solve_static(Eigen::MatrixXd &sol);
 
+		virtual void set_parameters(const json &args, bool has_constraints) = 0;
+		/*
+		const std::string formulation = this->formulation();
+		assembler = assembler::AssemblerUtils::make_assembler(formulation);
+		assert(assembler->name() == formulation);
+		mass_matrix_assembler = std::make_shared<assembler::Mass>();
+		const auto other_name = assembler::AssemblerUtils::other_assembler_name(formulation);
+
+		if (!other_name.empty())
+		{
+			mixed_assembler = assembler::AssemblerUtils::make_mixed_assembler(formulation);
+			pressure_assembler = assembler::AssemblerUtils::make_assembler(other_name);
+		}
+
+		if (args["solver"]["advanced"]["check_inversion"] == "Conservative")
+		{
+			if (auto elastic_assembler = std::dynamic_pointer_cast<assembler::ElasticityAssembler>(assembler))
+				elastic_assembler->set_use_robust_jacobian();
+		}
+
+		if (!args.contains("preset_problem"))
+		{
+			if (!assembler->is_tensor())
+				problem = std::make_shared<assembler::GenericScalarProblem>("GenericScalar");
+			else
+				problem = std::make_shared<assembler::GenericTensorProblem>("GenericTensor");
+
+			problem->clear();
+			if (!args["time"].is_null())
+			{
+				const auto tmp = R"({"is_time_dependent": true})"_json;
+				problem->set_parameters(tmp);
+			}
+			// important for the BC
+
+			auto bc = args["boundary_conditions"];
+			bc["root_path"] = root_path();
+			problem->set_parameters(bc);
+			problem->set_parameters(args["initial_conditions"]);
+
+			problem->set_parameters(args["output"]);
+		}
+		else
+		{
+			if (args["preset_problem"]["type"] == "Kernel")
+			{
+				problem = std::make_shared<KernelProblem>("Kernel", *assembler);
+				problem->clear();
+				KernelProblem &kprob = *dynamic_cast<KernelProblem *>(problem.get());
+			}
+			else
+			{
+				problem = ProblemFactory::factory().get_problem(args["preset_problem"]["type"]);
+				problem->clear();
+			}
+			// important for the BC
+			problem->set_parameters(args["preset_problem"]);
+		}
+
+		problem->set_units(*assembler, units);
+			*/
+
 		// 	/// @brief Solve the linear problem with the given solver and system.
 		// /// @param solver Linear solver.
 		// /// @param A Linear system matrix.

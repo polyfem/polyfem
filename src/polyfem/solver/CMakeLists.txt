@@ -7,21 +7,25 @@ set(SOURCES
 	# NavierStokesSolver.hpp
 	NLProblem.cpp
 	NLProblem.hpp
-	NLHomoProblem.cpp
-	NLHomoProblem.hpp
+	# TODO varform
+	# NLHomoProblem.cpp
+	# NLHomoProblem.hpp
 	# OperatorSplittingSolver.hpp
 	# OperatorSplittingSolver.cpp
-	Optimizations.hpp
-	Optimizations.cpp
+	# TODO varform
+	# Optimizations.hpp
+	# Optimizations.cpp
 	SolveData.cpp
 	SolveData.hpp
 	DiffCache.hpp
 	# TransientNavierStokesSolver.cpp
 	# TransientNavierStokesSolver.hpp
-	AdjointTools.cpp
-	AdjointTools.hpp
-	AdjointNLProblem.hpp
-	AdjointNLProblem.cpp
+
+	# TODO varform
+	# AdjointTools.cpp
+	# AdjointTools.hpp
+	# AdjointNLProblem.hpp
+	# AdjointNLProblem.cpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})

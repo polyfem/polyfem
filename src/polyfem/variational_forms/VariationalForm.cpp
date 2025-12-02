@@ -1520,3 +1520,35 @@ namespace polyfem
 		logger().info(" took {}s", timings.solving_time);
 	}
 } // namespace polyfem
+
+void State::set_materials(std::vector<std::shared_ptr<assembler::Assembler>> &assemblers) const
+{
+	const int size = (assembler->is_tensor() || assembler->is_fluid()) ? mesh->dimension() : 1;
+	for (auto &a : assemblers)
+		a->set_size(size);
+
+	if (!utils::is_param_valid(args, "materials"))
+		return;
+
+	std::vector<int> body_ids(mesh->n_elements());
+	for (int i = 0; i < mesh->n_elements(); ++i)
+		body_ids[i] = mesh->get_body_id(i);
+
+	for (auto &a : assemblers)
+		a->set_materials(body_ids, args["materials"], units);
+}
+
+void State::set_materials(assembler::Assembler &assembler) const
+{
+	const int size = (this->assembler->is_tensor() || this->assembler->is_fluid()) ? this->mesh->dimension() : 1;
+	assembler.set_size(size);
+
+	if (!utils::is_param_valid(args, "materials"))
+		return;
+
+	std::vector<int> body_ids(mesh->n_elements());
+	for (int i = 0; i < mesh->n_elements(); ++i)
+		body_ids[i] = mesh->get_body_id(i);
+
+	assembler.set_materials(body_ids, args["materials"], units);
+}

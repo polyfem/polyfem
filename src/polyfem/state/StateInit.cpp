@@ -135,7 +135,7 @@ namespace polyfem
 	{
 		json args_in = p_args_in; // mutable copy
 
-		has_constraints_ = p_args_in.contains("constraints");
+		bool has_constraints = p_args_in.contains("constraints");
 
 		apply_common_params(args_in);
 
@@ -266,64 +266,9 @@ namespace polyfem
 			args["contact"]["periodic"] = false;
 		}
 
-		const std::string formulation = this->formulation();
-		assembler = assembler::AssemblerUtils::make_assembler(formulation);
-		assert(assembler->name() == formulation);
-		mass_matrix_assembler = std::make_shared<assembler::Mass>();
-		const auto other_name = assembler::AssemblerUtils::other_assembler_name(formulation);
+		// TODO varform
 
-		if (!other_name.empty())
-		{
-			mixed_assembler = assembler::AssemblerUtils::make_mixed_assembler(formulation);
-			pressure_assembler = assembler::AssemblerUtils::make_assembler(other_name);
-		}
-
-		if (args["solver"]["advanced"]["check_inversion"] == "Conservative")
-		{
-			if (auto elastic_assembler = std::dynamic_pointer_cast<assembler::ElasticityAssembler>(assembler))
-				elastic_assembler->set_use_robust_jacobian();
-		}
-
-		if (!args.contains("preset_problem"))
-		{
-			if (!assembler->is_tensor())
-				problem = std::make_shared<assembler::GenericScalarProblem>("GenericScalar");
-			else
-				problem = std::make_shared<assembler::GenericTensorProblem>("GenericTensor");
-
-			problem->clear();
-			if (!args["time"].is_null())
-			{
-				const auto tmp = R"({"is_time_dependent": true})"_json;
-				problem->set_parameters(tmp);
-			}
-			// important for the BC
-
-			auto bc = args["boundary_conditions"];
-			bc["root_path"] = root_path();
-			problem->set_parameters(bc);
-			problem->set_parameters(args["initial_conditions"]);
-
-			problem->set_parameters(args["output"]);
-		}
-		else
-		{
-			if (args["preset_problem"]["type"] == "Kernel")
-			{
-				problem = std::make_shared<KernelProblem>("Kernel", *assembler);
-				problem->clear();
-				KernelProblem &kprob = *dynamic_cast<KernelProblem *>(problem.get());
-			}
-			else
-			{
-				problem = ProblemFactory::factory().get_problem(args["preset_problem"]["type"]);
-				problem->clear();
-			}
-			// important for the BC
-			problem->set_parameters(args["preset_problem"]);
-		}
-
-		problem->set_units(*assembler, units);
+		variational_form->set_parameters(args, has_constraints);
 
 		if (optimization_enabled == solver::CacheLevel::Derivatives)
 		{
@@ -436,108 +381,6 @@ namespace polyfem
 		units.characteristic_length() *= dt;
 
 		logger().info("t0={}, dt={}, tend={}", t0, dt, tend);
-	}
-
-	void State::set_materials(std::vector<std::shared_ptr<assembler::Assembler>> &assemblers) const
-	{
-		const int size = (assembler->is_tensor() || assembler->is_fluid()) ? mesh->dimension() : 1;
-		for (auto &a : assemblers)
-			a->set_size(size);
-
-		if (!utils::is_param_valid(args, "materials"))
-			return;
-
-		if (!args["materials"].is_array() && args["materials"]["type"] == "AMIPSAutodiff")
-		{
-			json transform_params = {};
-			transform_params["canonical_transformation"] = json::array();
-			if (!mesh->is_volume())
-			{
-				Eigen::MatrixXd regular_tri(3, 3);
-				regular_tri << 0, 0, 1,
-					1, 0, 1,
-					1. / 2., std::sqrt(3) / 2., 1;
-				regular_tri.transposeInPlace();
-				Eigen::MatrixXd regular_tri_inv = regular_tri.inverse();
-
-				const auto &mesh2d = *dynamic_cast<mesh::Mesh2D *>(mesh.get());
-				for (int e = 0; e < mesh->n_elements(); e++)
-				{
-					Eigen::MatrixXd transform;
-					mesh2d.compute_face_jacobian(e, regular_tri_inv, transform);
-					transform_params["canonical_transformation"].push_back(json({
-						{
-							transform(0, 0),
-							transform(0, 1),
-						},
-						{
-							transform(1, 0),
-							transform(1, 1),
-						},
-					}));
-				}
-			}
-			else
-			{
-				Eigen::MatrixXd regular_tet(4, 4);
-				regular_tet << 0, 0, 0, 1,
-					1, 0, 0, 1,
-					1. / 2., std::sqrt(3) / 2., 0, 1,
-					1. / 2., 1. / 2. / std::sqrt(3), std::sqrt(3) / 2., 1;
-				regular_tet.transposeInPlace();
-				Eigen::MatrixXd regular_tet_inv = regular_tet.inverse();
-
-				const auto &mesh3d = *dynamic_cast<mesh::Mesh3D *>(mesh.get());
-				for (int e = 0; e < mesh->n_elements(); e++)
-				{
-					Eigen::MatrixXd transform;
-					mesh3d.compute_cell_jacobian(e, regular_tet_inv, transform);
-					transform_params["canonical_transformation"].push_back(json({
-						{
-							transform(0, 0),
-							transform(0, 1),
-							transform(0, 2),
-						},
-						{
-							transform(1, 0),
-							transform(1, 1),
-							transform(1, 2),
-						},
-						{
-							transform(2, 0),
-							transform(2, 1),
-							transform(2, 2),
-						},
-					}));
-				}
-			}
-			transform_params["solve_displacement"] = true;
-			assembler->set_materials({}, transform_params, units);
-
-			return;
-		}
-
-		std::vector<int> body_ids(mesh->n_elements());
-		for (int i = 0; i < mesh->n_elements(); ++i)
-			body_ids[i] = mesh->get_body_id(i);
-
-		for (auto &a : assemblers)
-			a->set_materials(body_ids, args["materials"], units);
-	}
-
-	void State::set_materials(assembler::Assembler &assembler) const
-	{
-		const int size = (this->assembler->is_tensor() || this->assembler->is_fluid()) ? this->mesh->dimension() : 1;
-		assembler.set_size(size);
-
-		if (!utils::is_param_valid(args, "materials"))
-			return;
-
-		std::vector<int> body_ids(mesh->n_elements());
-		for (int i = 0; i < mesh->n_elements(); ++i)
-			body_ids[i] = mesh->get_body_id(i);
-
-		assembler.set_materials(body_ids, args["materials"], units);
 	}
 
 } // namespace polyfem
