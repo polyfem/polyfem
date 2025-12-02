@@ -2641,7 +2641,8 @@
             "save_ccd_debug_meshes",
             "save_time_sequence",
             "save_nl_solve_sequence",
-            "spectrum"
+            "spectrum",
+            "contact_potential"
         ],
         "doc": "Additional output options"
     },
@@ -2710,6 +2711,12 @@
         "default": false,
         "type": "bool",
         "doc": "exports the spectrum of the matrix in the output JSON. Works only if POLYSOLVE_WITH_SPECTRA is enabled"
+    },
+    {
+        "pointer": "/output/advanced/contact_potential",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out contact potential to a csv file."
     },
     {
         "pointer": "/input",
