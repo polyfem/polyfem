@@ -32,7 +32,7 @@ namespace polyfem::solver
 		/// @param x Current solution
 		void post_step(const polysolve::nonlinear::PostStepData &data) override;
 
-		const ipc::SmoothContactParameters &get_params() const { return params; }
+		const ipc::HighOrderContactParameters &get_params() const { return params; }
 
 		const ipc::HighOrderCollisions &collision_set() const { return collision_set_; }
 
@@ -62,8 +62,7 @@ namespace polyfem::solver
 		void update_collision_set(const Eigen::MatrixXd &displaced_surface) override;
 
 	private:
-    	// TODO: @federico change SmoothContactParameters to your own param class
-		ipc::SmoothContactParameters params;
+		ipc::HighOrderContactParameters params;
 
 		/// @brief Cached constraint set for the current solution
 		ipc::HighOrderCollisions collision_set_;

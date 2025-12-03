@@ -1227,13 +1227,21 @@
         "type": "object",
         "default": null,
         "optional": [
-            "alpha"
+            "alpha",
+            "quadrature_order"
         ]
     },
     {
         "pointer": "/contact/high_order_contact_params/alpha",
         "type": "float",
         "default": 1
+    },
+    {
+        "pointer": "/contact/high_order_contact_params/quadrature_order",
+        "type": "int",
+        "default": 16,
+        "min": 1,
+        "doc": "Quadrature order for high-order contact."
     },
     {
         "pointer": "/contact/use_high_order_formulation",
