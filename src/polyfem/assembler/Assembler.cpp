@@ -7,6 +7,9 @@
 
 #include <ipc/utils/eigen_ext.hpp>
 
+#include <MeshFEM/newton_optimizer/NewtonHessian.hh>
+#include <unsupported/Eigen/SparseExtra>
+
 #include <algorithm>
 #include <cmath>
 
@@ -1107,16 +1110,102 @@ namespace polyfem::assembler
 		// hess.resize(n_basis * size(), n_basis * size());
 		// hess.setZero();
 
+		size_t n_elems = bases.size();
+		const size_t N = size(); // Dimension of the problem
+
+		igl::Timer timer;
+		timer.start();
+
+#if 1
+		auto start = std::chrono::steady_clock::now();
+		
+		auto stencil = [&](size_t e) { 
+			std::vector<int> nodesIndices; 
+			const int n_loc_bases = int(bases[e].bases.size());		
+			for (int i = 0; i < n_loc_bases; ++i)
+			{
+				const auto global_i = bases[e].bases[i].global();
+				for (size_t ii = 0; ii < global_i.size(); ++ii)
+				{
+					nodesIndices.push_back(global_i[ii].index);
+				} // size of global_i is mostly 1
+			}
+			return nodesIndices; };
+
+		auto eval_H_e = [&](size_t e) -> Eigen::MatrixXd {
+			ElementAssemblyValues vals;
+			cache.compute(e, is_volume, bases[e], gbases[e], vals);
+
+			const Quadrature &quadrature = vals.quadrature;
+
+			assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+			QuadratureVector qVec = vals.det.array() * quadrature.weights.array();
+			const int n_loc_bases = int(vals.basis_values.size());
+
+			auto stiffness_val = assemble_hessian(NonLinearAssemblerData(vals, t, dt, displacement, displacement_prev, qVec));
+			assert(stiffness_val.rows() == n_loc_bases * size());
+			assert(stiffness_val.cols() == n_loc_bases * size());
+			
+			if (project_to_psd)
+				stiffness_val = ipc::project_to_psd(stiffness_val);
+
+			return stiffness_val;
+		};
+
+		NewtonHessian H;
+		if (N == 2)
+		{
+			m_assembler2D = std::make_unique<SystemAssembler<2>>(n_basis);
+			// sparsity pattern call
+			H = m_assembler2D->sparsityPattern(n_elems, stencil);
+			std::cout << "SystemAssembler::buildSparsity pattern took " << std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() << std::endl;
+			
+			start = std::chrono::steady_clock::now();
+			// assembly call
+			m_assembler2D->assembleHessian(H, n_elems, eval_H_e, stencil);
+			std::cout << "SystemAssembler::assemble hessian took " << std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() << std::endl;
+
+		}
+		else if (N == 3)
+		{
+			m_assembler3D = std::make_unique<SystemAssembler<3>>(n_basis);
+			// sparsity pattern call
+			H = m_assembler3D->sparsityPattern(n_elems, stencil);
+			std::cout << "SystemAssembler::buildSparsity pattern took " << std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() << std::endl;
+			
+			start = std::chrono::steady_clock::now();
+			
+			m_assembler3D->assembleHessian(H, n_elems, eval_H_e, stencil);
+			std::cout << "SystemAssembler::assemble hessian took " << std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() << std::endl;
+
+		}
+		else
+			throw std::runtime_error("Unsupported dimension for NLAssembler Hessian assembly.");
+		
+		start = std::chrono::steady_clock::now();
+		auto H_scalar = H.toScalar().toSymmetryMode(SuiteSparseMatrix::SymmetryMode::NONE);
+#ifdef POLYSOLVE_LARGE_INDEX
+		Eigen::Map<StiffnessMatrix> H_eigen(H_scalar.m, H_scalar.n, H_scalar.nz, H_scalar.Ap.data(), H_scalar.Ai.data(), H_scalar.Ax.data());
+#else
+		std::vector<int> Ap_int(H_scalar.Ap.begin(), H_scalar.Ap.end());
+		std::vector<int> Ai_int(H_scalar.Ai.begin(), H_scalar.Ai.end());
+		Eigen::Map<StiffnessMatrix> H_eigen(H_scalar.m, H_scalar.n, H_scalar.nz, Ap_int.data(), Ai_int.data(), H_scalar.Ax.data());
+#endif
+		hess = H_eigen;
+		std::cout << "Hessian conversion took " << std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() << std::endl;
+
+		std::string filepath = "/Users/halehm/repos/MESHFEM2POLYFEM/hessian_meshfem.mtx";
+		Eigen::saveMarket(hess, filepath);
+#else
+		
+		auto start = std::chrono::steady_clock::now();
+		
 		mat_cache.init(n_basis * size());
 		mat_cache.set_zero();
 
 		auto storage = create_thread_storage(LocalThreadMatStorage(buffer_size, mat_cache));
 
-		const int n_bases = int(bases.size());
-		igl::Timer timer;
-		timer.start();
-
-		maybe_parallel_for(n_bases, [&](int start, int end, int thread_id) {
+		maybe_parallel_for(n_elems, [&](int start, int end, int thread_id) {
 			LocalThreadMatStorage &local_storage = get_local_thread_storage(storage, thread_id);
 
 			for (int e = start; e < end; ++e)
@@ -1196,11 +1285,13 @@ namespace polyfem::assembler
 				}
 			}
 		});
+		std::cout << "Hessian separate assembly took " << std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() << std::endl;
 
-		timer.stop();
-		logger().trace("done separate assembly {}s...", timer.getElapsedTime());
+		start = std::chrono::steady_clock::now();
 
-		timer.start();
+		// logger().trace("done separate assembly {}s...", timer.getElapsedTime());
+
+		// timer.start();
 
 		// Serially merge local storages
 		for (LocalThreadMatStorage &local_storage : storage)
@@ -1210,6 +1301,13 @@ namespace polyfem::assembler
 		}
 		hess = mat_cache.get_matrix();
 
+		std::cout << "Merge Hessian assembly took " << std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() << std::endl;
+
+		std::string filepath = "/Users/halehm/repos/MESHFEM2POLYFEM/hessian_polyfem.mtx";
+		Eigen::saveMarket(hess, filepath);
+		// timer.stop();
+
+#endif
 		timer.stop();
 		logger().trace("done merge assembly {}s...", timer.getElapsedTime());
 	}

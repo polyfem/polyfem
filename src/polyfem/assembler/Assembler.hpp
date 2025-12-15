@@ -9,6 +9,7 @@
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <MeshFEM/SystemAssembler.hh>
 
 #include <functional>
 
@@ -201,8 +202,11 @@ namespace polyfem::assembler
 		virtual bool is_fluid() const { return false; }
 		virtual bool is_tensor() const { return false; }
 
+		mutable std::unique_ptr<SystemAssembler<2>> m_assembler2D;
+		mutable std::unique_ptr<SystemAssembler<3>> m_assembler3D;
 	protected:
 		int size_ = -1;
+		
 	};
 
 	class MixedNLAssembler : virtual public Assembler
