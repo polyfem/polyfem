@@ -865,21 +865,6 @@ void polyfem::mesh::to_geogram_mesh(const Mesh3D &mesh, GEO::Mesh &M)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void polyfem::mesh::tertrahedralize_star_shaped_surface(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F,
-														const Eigen::RowVector3d &kernel, Eigen::MatrixXd &OV, Eigen::MatrixXi &OF, Eigen::MatrixXi &OT)
-{
-	assert(V.cols() == 3);
-	OV.resize(V.rows() + 1, V.cols());
-	OV.topRows(V.rows()) = V;
-	OV.bottomRows(1) = kernel;
-	OF = F;
-	OT.resize(OF.rows(), 4);
-	OT.col(0).setConstant(V.rows());
-	OT.rightCols(3) = F;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
 void polyfem::mesh::sample_surface(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, int num_samples,
 								   Eigen::MatrixXd &P, Eigen::MatrixXd *N, int num_lloyd, int num_newton)
 {

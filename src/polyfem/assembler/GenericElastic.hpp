@@ -10,12 +10,12 @@ namespace polyfem::assembler
 	using DefGradMatrix = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>;
 
 	template <typename Derived>
-	class GenericElastic : public NLAssembler, public ElasticityAssembler
+	class GenericElastic : public ElasticityNLAssembler
 	{
 	public:
-		using NLAssembler::assemble_energy;
-		using NLAssembler::assemble_gradient;
-		using NLAssembler::assemble_hessian;
+		using ElasticityNLAssembler::assemble_energy;
+		using ElasticityNLAssembler::assemble_gradient;
+		using ElasticityNLAssembler::assemble_hessian;
 
 		GenericElastic();
 		virtual ~GenericElastic() = default;

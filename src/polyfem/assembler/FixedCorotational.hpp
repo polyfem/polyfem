@@ -8,14 +8,14 @@
 // non linear NeoHookean material model
 namespace polyfem::assembler
 {
-	class FixedCorotational : public NLAssembler, public ElasticityAssembler
+	class FixedCorotational : public ElasticityNLAssembler
 	{
 	public:
 		FixedCorotational();
 
-		using NLAssembler::assemble_energy;
-		using NLAssembler::assemble_gradient;
-		using NLAssembler::assemble_hessian;
+		using ElasticityNLAssembler::assemble_energy;
+		using ElasticityNLAssembler::assemble_gradient;
+		using ElasticityNLAssembler::assemble_hessian;
 
 		// energy, gradient, and hessian used in newton method
 		double compute_energy(const NonLinearAssemblerData &data) const override;
@@ -67,7 +67,7 @@ namespace polyfem::assembler
 		void compute_energy_hessian_aux_fast(const NonLinearAssemblerData &data, Eigen::MatrixXd &H) const;
 		template <int n_basis, int dim>
 		void compute_energy_aux_gradient_fast(const NonLinearAssemblerData &data, Eigen::VectorXd &G_flattened) const;
-	
+
 		template <int dim>
 		static double compute_energy_from_singular_values(const Eigen::Vector<double, dim> &sigmas, const double lambda, const double mu);
 		template <int dim>
@@ -80,6 +80,6 @@ namespace polyfem::assembler
 		template <int dim>
 		static Eigen::Matrix<double, dim, dim> compute_stress_from_def_grad(const Eigen::Matrix<double, dim, dim> &F, const double lambda, const double mu);
 		template <int dim>
-		static Eigen::Matrix<double, dim*dim, dim*dim> compute_stiffness_from_def_grad(const Eigen::Matrix<double, dim, dim> &F, const double lambda, const double mu);
+		static Eigen::Matrix<double, dim * dim, dim * dim> compute_stiffness_from_def_grad(const Eigen::Matrix<double, dim, dim> &F, const double lambda, const double mu);
 	};
 } // namespace polyfem::assembler

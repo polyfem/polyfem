@@ -32,12 +32,12 @@ namespace polyfem::assembler
 		for (int i = param_.size(); i <= index; ++i)
 		{
 			param_.emplace_back();
+			param_.back().set_unit_type(unit_type);
 		}
 
 		if (params.count(param_name_))
 		{
 			param_[index].init(params[param_name_]);
-			param_[index].set_unit_type(unit_type);
 		}
 	}
 
@@ -81,10 +81,10 @@ namespace polyfem::assembler
 			for (int j = params_.at(i).param_.size(); j <= index; ++j)
 			{
 				params_.at(i).param_.emplace_back();
+				params_.at(i).param_.back().set_unit_type(unit_type);
 			}
 
 			params_.at(i).param_[index].init(params_array[i]);
-			params_.at(i).param_[index].set_unit_type(unit_type);
 		}
 	}
 
@@ -409,7 +409,9 @@ namespace polyfem::assembler
 		for (int i = lambda_or_E_.size(); i <= index; ++i)
 		{
 			lambda_or_E_.emplace_back();
+			lambda_or_E_.back().set_unit_type(stress_unit);
 			mu_or_nu_.emplace_back();
+			mu_or_nu_.back().set_unit_type("");
 		}
 
 		if (params.count("young"))
@@ -491,7 +493,7 @@ namespace polyfem::assembler
 		{
 			for (const auto &m : dir_)
 			{
-				assert(m.rows() == size && m.cols() == size);
+				assert((m.rows() == size && m.cols() == size) || (m.rows() == size && m.cols() == 1));
 			}
 		}
 	}
@@ -562,13 +564,25 @@ namespace polyfem::assembler
 		if (dir.size() == 3 || dir.size() == 2)
 		{
 			const int size = dir.size();
+			const int other_size = dir[0].is_array() ? size : 1;
+
 			assert(size == size_);
-			dir_[index].resize(size, size);
+			dir_[index].resize(size, other_size);
 			for (int i = 0; i < size; ++i)
 			{
-				if (!dir[i].is_array() || dir[i].size() != size)
+				if (other_size == 1)
 				{
-					log_and_throw_error(fmt::format("Fiber must be {}x{}, row {} is {}", size, size, i, dir[i].dump()));
+					if (dir[i].is_array())
+					{
+						log_and_throw_error(fmt::format("Fiber must be a {} vector, row {} is {}", size, i, dir[i].dump()));
+					}
+					dir_[index](i, 0).init(dir[i]);
+					dir_[index](i, 0).set_unit_type(unit);
+					continue;
+				}
+				if (dir[i].size() != size)
+				{
+					log_and_throw_error(fmt::format("Fiber must be {}x{}, row {} is {}", size, other_size, i, dir[i].dump()));
 				}
 				for (int j = 0; j < size; ++j)
 				{

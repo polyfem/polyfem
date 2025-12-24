@@ -13,6 +13,8 @@
             "UnconstrainedOgden",
             "IncompressibleOgden",
             "Stokes",
+            "HGOFiber",
+            "IsochoricNeoHookean",
             "NavierStokes",
             "OperatorSplitting",
             "Electrostatics",
@@ -23,7 +25,8 @@
             "Bilaplacian",
             "AMIPS",
             "AMIPSAutodiff",
-            "FixedCorotational"
+            "FixedCorotational",
+            "VolumePenalty"
         ],
         "doc": "Type of material"
     },
@@ -64,6 +67,40 @@
         "pointer": "/",
         "type": "object",
         "type_name": "NeoHookean",
+        "required": [
+            "type",
+            "lambda",
+            "mu"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "phi",
+            "psi"
+        ],
+        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "IsochoricNeoHookean",
+        "required": [
+            "type",
+            "E",
+            "nu"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "phi",
+            "psi"
+        ],
+        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "IsochoricNeoHookean",
         "required": [
             "type",
             "lambda",
@@ -235,8 +272,8 @@
             "id",
             "rho",
             "phi",
-            "psi",
-            "fiber_direction"
+            "fiber_direction",
+            "psi"
         ],
         "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
     },
@@ -252,8 +289,8 @@
             "id",
             "rho",
             "phi",
-            "psi",
-            "fiber_direction"
+            "fiber_direction",
+            "psi"
         ],
         "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
     },
@@ -333,6 +370,10 @@
         "type": "object",
         "type_name": "MaterialSum",
         "required": [
+            "type"
+        ],
+        "optional": [
+            "id",
             "models"
         ],
         "doc": "Model that is a sum of other models"
@@ -452,6 +493,36 @@
             "psi"
         ],
         "doc": "Material Parameters including ID"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "VolumePenalty",
+        "required": [
+            "type",
+            "k"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "HGOFiber",
+        "required": [
+            "type",
+            "k1",
+            "k2"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "fiber_direction"
+        ],
+        "doc": "Material Parameters"
     },
     {
         "pointer": "/E",
@@ -579,6 +650,18 @@
         "doc": "Fourth Parameter for Mooney-Rivlin"
     },
     {
+        "pointer": "/k1",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "First Parameter for HGOFiber"
+    },
+    {
+        "pointer": "/k2",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Second Parameter for HGOFiber"
+    },
+    {
         "pointer": "/alphas",
         "type": "include",
         "spec_file": "value-no.json",
@@ -648,16 +731,5 @@
         "type": "bool",
         "default": false,
         "doc": "Use amips wrt to rest pose or the regular element"
-    },
-    {
-        "pointer": "/models",
-        "type": "list",
-        "default": [],
-        "doc": "List of models"
-    },
-    {
-        "pointer": "/models/*",
-        "type": "object",
-        "doc": "Material model"
     }
 ]
