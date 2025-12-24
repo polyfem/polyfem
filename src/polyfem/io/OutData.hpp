@@ -28,9 +28,6 @@ namespace polyfem
 
 namespace polyfem::io
 {
-	using CellType = paraviewo::CellType;
-	using CellElement = paraviewo::CellElement;
-
 	/// Utilies related to export of geometry
 	class OutGeometryData
 	{
@@ -333,7 +330,7 @@ namespace polyfem::io
 			const Eigen::VectorXi &disc_ordersq,
 			const std::vector<basis::ElementBases> &bases,
 			Eigen::MatrixXd &points,
-			std::vector<CellElement> &elements,
+			std::vector<paraviewo::CellElement> &elements,
 			Eigen::MatrixXi &el_id,
 			Eigen::MatrixXd &discr) const;
 

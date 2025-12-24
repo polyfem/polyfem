@@ -58,6 +58,9 @@
 
 namespace polyfem::io
 {
+	using CellType = paraviewo::CellType;
+	using CellElement = paraviewo::CellElement;
+
 	namespace
 	{
 		void compute_traction_forces(const State &state, const Eigen::MatrixXd &solution, const double t, Eigen::MatrixXd &traction_forces, bool skip_dirichlet = true)
