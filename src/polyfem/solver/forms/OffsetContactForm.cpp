@@ -1,4 +1,4 @@
-#include "HighOrderContactForm.hpp"
+#include "OffsetContactForm.hpp"
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/Timer.hpp>
@@ -12,41 +12,34 @@
 
 namespace polyfem::solver
 {
-	ipc::HighOrderContactParameters init_params(const double dhat, const json &high_order_contact_params, const int power) {
-		const double alpha = high_order_contact_params["alpha"];
-		const int quadrature_order = high_order_contact_params["quadrature_order"];
-		return ipc::HighOrderContactParameters(dhat, alpha, power, quadrature_order);
-	}
-
-	HighOrderContactForm::HighOrderContactForm(const ipc::CollisionMesh &collision_mesh,
+	OffsetContactForm::OffsetContactForm(const ipc::CollisionMesh &collision_mesh,
 											   const double dhat,
 											   const double avg_mass,
-											   const json high_order_contact_params,
 											   const bool use_adaptive_barrier_stiffness,
 											   const bool is_time_dependent,
 											   const bool enable_shape_derivatives,
 											   const ipc::BroadPhaseMethod broad_phase_method,
 											   const double ccd_tolerance,
-											   const int ccd_max_iterations) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(init_params(dhat, high_order_contact_params, collision_mesh.dim() - 1)),
+											   const int ccd_max_iterations) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(dhat),
 											   barrier_potential_(params)
 	{
 	}
 
-	void HighOrderContactForm::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
+	void OffsetContactForm::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
 	{
 		if (!use_adaptive_barrier_stiffness())
 			return;
 
-		log_and_throw_error("Adaptive barrier stiffness not implemented for HighOrderContactForm!");
+		log_and_throw_error("Adaptive barrier stiffness not implemented for OffsetContactForm!");
 	}
 
-	void HighOrderContactForm::force_shape_derivative(const ipc::HighOrderCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const
+	void OffsetContactForm::force_shape_derivative(const ipc::OffsetCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const
 	{
 		StiffnessMatrix hessian = barrier_potential_.hessian(collision_set, collision_mesh_, compute_displaced_surface(solution), ipc::PSDProjectionMethod::NONE);
 		term = barrier_stiffness() * collision_mesh_.to_full_dof(hessian) * adjoint_sol;
 	}
 
-	void HighOrderContactForm::update_collision_set(const Eigen::MatrixXd &displaced_surface)
+	void OffsetContactForm::update_collision_set(const Eigen::MatrixXd &displaced_surface)
 	{
 		// Store the previous value used to compute the constraint set to avoid duplicate computation.
 		static Eigen::MatrixXd cached_displaced_surface;
@@ -62,23 +55,23 @@ namespace polyfem::solver
 		cached_displaced_surface = displaced_surface;
 	}
 
-	double HighOrderContactForm::value_unweighted(const Eigen::VectorXd &x) const
+	double OffsetContactForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
 		return barrier_potential_(collision_set_, collision_mesh_, compute_displaced_surface(x));
 	}
 
-	Eigen::VectorXd HighOrderContactForm::value_per_element_unweighted(const Eigen::VectorXd &x) const
+	Eigen::VectorXd OffsetContactForm::value_per_element_unweighted(const Eigen::VectorXd &x) const
 	{
 		log_and_throw_error("value_per_element_unweighted not implemented!");
 	}
 
-	void HighOrderContactForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	void OffsetContactForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv = barrier_potential_.gradient(collision_set_, collision_mesh_, compute_displaced_surface(x));
 		gradv = collision_mesh_.to_full_dof(gradv);
 	}
 
-	void HighOrderContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
+	void OffsetContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		// {
 		// 	io::OBJWriter::write(
@@ -91,7 +84,7 @@ namespace polyfem::solver
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
 
-	void HighOrderContactForm::post_step(const polysolve::nonlinear::PostStepData &data)
+	void OffsetContactForm::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(data.x);
 

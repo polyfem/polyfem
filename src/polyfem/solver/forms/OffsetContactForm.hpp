@@ -1,19 +1,18 @@
 #pragma once
 
 #include "ContactForm.hpp"
-#include <ipc/high_order_contact/high_order_collisions.hpp>
-#include <ipc/high_order_contact/high_order_contact_potential.hpp>
+#include <ipc/offset_contact/offset_collisions.hpp>
+#include <ipc/offset_contact/offset_contact_potential.hpp>
 #include <cmath>
 
 namespace polyfem::solver
 {
-    class HighOrderContactForm : public ContactForm
+    class OffsetContactForm : public ContactForm
     {
     public:
-		HighOrderContactForm(const ipc::CollisionMesh &collision_mesh,
+		OffsetContactForm(const ipc::CollisionMesh &collision_mesh,
 					const double dhat,
 					const double avg_mass,
-					const json high_order_contact_params,
 					const bool use_adaptive_barrier_stiffness,
 					const bool is_time_dependent,
 					const bool enable_shape_derivatives,
@@ -25,16 +24,16 @@ namespace polyfem::solver
 
         void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) override;
 
-		void force_shape_derivative(const ipc::HighOrderCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const;
+		void force_shape_derivative(const ipc::OffsetCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const;
 
 		/// @brief Update fields after a step in the optimization
 		/// @param iter_num Optimization iteration number
 		/// @param x Current solution
 		void post_step(const polysolve::nonlinear::PostStepData &data) override;
 
-		const ipc::HighOrderContactParameters &get_params() const { return params; }
+		const ipc::OffsetContactParameters &get_params() const { return params; }
 
-		const ipc::HighOrderCollisions &collision_set() const { return collision_set_; }
+		const ipc::OffsetCollisions &collision_set() const { return collision_set_; }
 
 	protected:
 		/// @brief Compute the contact barrier potential value
@@ -62,12 +61,12 @@ namespace polyfem::solver
 		void update_collision_set(const Eigen::MatrixXd &displaced_surface) override;
 
 	private:
-		ipc::HighOrderContactParameters params;
+		ipc::OffsetContactParameters params;
 
 		/// @brief Cached constraint set for the current solution
-		ipc::HighOrderCollisions collision_set_;
+		ipc::OffsetCollisions collision_set_;
 
 		/// @brief Contact potential
-		ipc::HighOrderContactPotential barrier_potential_;
+		ipc::OffsetContactPotential barrier_potential_;
 	};
 }

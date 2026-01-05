@@ -26,6 +26,8 @@ set(SOURCES
 	BarrierContactForm.hpp
 	HighOrderContactForm.cpp
 	HighOrderContactForm.hpp
+	OffsetContactForm.cpp
+	OffsetContactForm.hpp
 	SmoothContactForm.cpp
 	SmoothContactForm.hpp
 	PeriodicContactForm.cpp
