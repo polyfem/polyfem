@@ -1351,6 +1351,7 @@ namespace polyfem
 		Eigen::SparseMatrix<double> displacement_map;
 		periodic_collision_mesh = ipc::CollisionMesh(is_on_surface,
 													 std::vector<bool>(Vnew.rows(), false),
+													 std::vector<bool>(Vnew.rows(), false),
 													 Vnew,
 													 Enew,
 													 boundary_triangles,
@@ -1445,6 +1446,7 @@ namespace polyfem
 		}
 
 		std::vector<bool> is_orientable_vertex(collision_vertices.rows(), true);
+		std::vector<bool> is_fixed_vertex(collision_vertices.rows(), false);
 
 		// n_bases already contains the obstacle vertices
 		const int num_fe_nodes = n_bases - obstacle.n_vertices();
@@ -1463,6 +1465,7 @@ namespace polyfem
 			for (int i = 0; i < obstacle.n_vertices(); i++)
 			{
 				is_orientable_vertex.push_back(false);
+				is_fixed_vertex.push_back(true);
 			}
 
 			if (!displacement_map_entries.empty())
@@ -1490,7 +1493,7 @@ namespace polyfem
 		}
 
 		collision_mesh = ipc::CollisionMesh(
-			is_on_surface, is_orientable_vertex, collision_vertices, collision_edges, collision_triangles,
+			is_on_surface, is_orientable_vertex, is_fixed_vertex, collision_vertices, collision_edges, collision_triangles,
 			displacement_map);
 
 		collision_mesh.can_collide = [&collision_mesh, num_fe_collision_vertices](size_t vi, size_t vj) {

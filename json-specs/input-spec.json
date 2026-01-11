@@ -1229,7 +1229,9 @@
         "default": null,
         "optional": [
             "alpha",
-            "quadrature_order"
+            "quadrature_order",
+            "exponent",
+            "skip_obstacles"
         ]
     },
     {
@@ -1243,6 +1245,19 @@
         "default": 16,
         "min": 0,
         "doc": "Quadrature order for high-order contact."
+    },
+    {
+        "pointer": "/contact/high_order_contact_params/exponent",
+        "type": "int",
+        "default": 0,
+        "min": 0,
+        "doc": "Exponent for high-order contact. Default is 0, which sets it to dimension-1."
+    },
+    {
+        "pointer": "/contact/high_order_contact_params/skip_obstacles",
+        "default": true,
+        "type": "bool",
+        "doc": "Do integration only on non-fixed primitives."
     },
     {
         "pointer": "/contact/use_high_order_formulation",
