@@ -52,22 +52,21 @@ namespace polyfem::solver
 	void HighOrderContactForm::update_collision_set(const Eigen::MatrixXd &displaced_surface)
 	{
 		// Store the previous value used to compute the constraint set to avoid duplicate computation.
-		static Eigen::MatrixXd cached_displaced_surface;
 		if (cached_displaced_surface.size() == displaced_surface.size() && cached_displaced_surface == displaced_surface)
 			return;
 
-		if (use_cached_candidates_)
-			collision_set_.build(
-				candidates_, collision_mesh_, displaced_surface, params, /*use_adaptive_dhat*/ false);
-		else
-			collision_set_.build(
-				collision_mesh_, displaced_surface, params, /*use_adaptive_dhat*/ false, broad_phase_);
+		collision_set_.build(
+			collision_mesh_, displaced_surface, params, /*use_adaptive_dhat*/ false, broad_phase_);
 		cached_displaced_surface = displaced_surface;
 	}
 
 	double HighOrderContactForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		return barrier_potential_(collision_set_, collision_mesh_, compute_displaced_surface(x));
+		const Eigen::MatrixXd displaced = compute_displaced_surface(x);
+		if (cached_displaced_surface != displaced) {
+			return 0.;
+		}
+		return barrier_potential_(collision_set_, collision_mesh_, displaced);
 	}
 
 	Eigen::VectorXd HighOrderContactForm::value_per_element_unweighted(const Eigen::VectorXd &x) const
@@ -77,7 +76,12 @@ namespace polyfem::solver
 
 	void HighOrderContactForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = barrier_potential_.gradient(collision_set_, collision_mesh_, compute_displaced_surface(x));
+		const Eigen::MatrixXd displaced = compute_displaced_surface(x);
+		if (cached_displaced_surface != displaced) {
+			gradv.setZero(x.size());
+			return;
+		}
+		gradv = barrier_potential_.gradient(collision_set_, collision_mesh_, displaced);
 		gradv = collision_mesh_.to_full_dof(gradv);
 	}
 
@@ -97,6 +101,9 @@ namespace polyfem::solver
 	void HighOrderContactForm::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(data.x);
+
+		// Always requires update_collision_set
+		update_collision_set(displaced_surface);
 
 		const double curr_distance = collision_set_.compute_minimum_distance(collision_mesh_, displaced_surface);
 		const double curr_active_distance = collision_set_.compute_active_minimum_distance(collision_mesh_, displaced_surface);

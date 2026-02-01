@@ -69,5 +69,7 @@ namespace polyfem::solver
 
 		/// @brief Contact potential
 		ipc::HighOrderContactPotential barrier_potential_;
+
+    	Eigen::MatrixXd cached_displaced_surface;
 	};
 }
