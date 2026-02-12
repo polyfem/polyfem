@@ -2,7 +2,7 @@
 
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/io/OBJWriter.hpp>
-#include <polyfem/solver/forms/parametrization/PeriodicMeshToMesh.hpp>
+#include <polyfem/optimization/parametrization/PeriodicMeshToMesh.hpp>
 #include <polyfem/State.hpp>
 
 #include <iostream>

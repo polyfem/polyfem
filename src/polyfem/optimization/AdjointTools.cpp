@@ -21,7 +21,7 @@
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/PressureForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
-#include <polyfem/solver/forms/parametrization/PeriodicMeshToMesh.hpp>
+#include <polyfem/optimization/parametrization/PeriodicMeshToMesh.hpp>
 
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/NLHomoProblem.hpp>

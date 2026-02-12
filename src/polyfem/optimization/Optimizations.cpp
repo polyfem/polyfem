@@ -6,20 +6,20 @@
 #include "AdjointNLProblem.hpp"
 
 #include <polyfem/State.hpp>
-#include <polyfem/solver/forms/adjoint_forms/SpatialIntegralForms.hpp>
-#include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
-#include <polyfem/solver/forms/adjoint_forms/CompositeForms.hpp>
-#include <polyfem/solver/forms/adjoint_forms/TransientForm.hpp>
-#include <polyfem/solver/forms/adjoint_forms/SmoothingForms.hpp>
-#include <polyfem/solver/forms/adjoint_forms/AMIPSForm.hpp>
-#include <polyfem/solver/forms/adjoint_forms/BarrierForms.hpp>
-#include <polyfem/solver/forms/adjoint_forms/SurfaceTractionForms.hpp>
-#include <polyfem/solver/forms/adjoint_forms/TargetForms.hpp>
+#include <polyfem/optimization/forms/SpatialIntegralForms.hpp>
+#include <polyfem/optimization/forms/SumCompositeForm.hpp>
+#include <polyfem/optimization/forms/CompositeForms.hpp>
+#include <polyfem/optimization/forms/TransientForm.hpp>
+#include <polyfem/optimization/forms/SmoothingForms.hpp>
+#include <polyfem/optimization/forms/AMIPSForm.hpp>
+#include <polyfem/optimization/forms/BarrierForms.hpp>
+#include <polyfem/optimization/forms/SurfaceTractionForms.hpp>
+#include <polyfem/optimization/forms/TargetForms.hpp>
 
-#include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
-#include <polyfem/solver/forms/parametrization/SplineParametrizations.hpp>
+#include <polyfem/optimization/parametrization/Parametrizations.hpp>
+#include <polyfem/optimization/parametrization/SplineParametrizations.hpp>
 
-#include <polyfem/solver/forms/adjoint_forms/ParametrizedProductForm.hpp>
+#include <polyfem/optimization/forms/ParametrizedProductForm.hpp>
 
 #include <polyfem/io/OBJReader.hpp>
 #include <polyfem/utils/JSONUtils.hpp>

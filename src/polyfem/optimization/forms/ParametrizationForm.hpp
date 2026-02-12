@@ -1,8 +1,8 @@
 #pragma once
 
 #include <polyfem/utils/Types.hpp>
-#include <polyfem/solver/forms/parametrization/Parametrization.hpp>
-#include <polyfem/solver/forms/adjoint_forms/AdjointForm.hpp>
+#include <polyfem/optimization/parametrization/Parametrization.hpp>
+#include <polyfem/optimization/forms/AdjointForm.hpp>
 
 namespace polyfem
 {

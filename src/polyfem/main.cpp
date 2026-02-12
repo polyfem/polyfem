@@ -5,7 +5,7 @@
 #include <h5pp/h5pp.h>
 
 #include <polyfem/State.hpp>
-#include <polyfem/OptState.hpp>
+#include <polyfem/optimization/OptState.hpp>
 
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>

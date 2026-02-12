@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/solver/forms/adjoint_forms/ParametrizationForm.hpp>
+#include <polyfem/optimization/forms/ParametrizationForm.hpp>
 #include "VariableToSimulation.hpp"
 
 namespace polyfem::solver

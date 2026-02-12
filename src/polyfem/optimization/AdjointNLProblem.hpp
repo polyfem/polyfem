@@ -2,8 +2,8 @@
 
 #include <memory>
 #include <polyfem/Common.hpp>
-#include "FullNLProblem.hpp"
-#include <polyfem/solver/forms/adjoint_forms/VariableToSimulation.hpp>
+#include <polyfem/solver/FullNLProblem.hpp>
+#include <polyfem/optimization/forms/VariableToSimulation.hpp>
 #include <fstream>
 
 namespace polyfem

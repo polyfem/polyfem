@@ -1,8 +1,8 @@
 #pragma once
 
-#include <polyfem/solver/forms/parametrization/Parametrization.hpp>
-#include <polyfem/solver/AdjointTools.hpp>
-#include <polyfem/solver/forms/parametrization/PeriodicMeshToMesh.hpp>
+#include <polyfem/optimization/parametrization/Parametrization.hpp>
+#include <polyfem/optimization/AdjointTools.hpp>
+#include <polyfem/optimization/parametrization/PeriodicMeshToMesh.hpp>
 
 #include <iostream>
 
