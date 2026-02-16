@@ -4,6 +4,8 @@
 #include <polyfem/assembler/PeriodicBoundary.hpp>
 #include <polyfem/solver/forms/lagrangian/AugmentedLagrangianForm.hpp>
 
+#include <polyfem/utils/Logger.hpp>
+
 namespace polysolve::linear
 {
 	class Solver;
@@ -80,7 +82,11 @@ namespace polyfem::solver
 			{
 				return F0;
 			}
-			return 1;
+			else if (norm_type == "Euclidean")
+			{
+				return 1;
+			}
+			log_and_throw_error("Unrecognized norm_type: {}", norm_type);
 		}
         virtual double step_norm_rescaling(const std::string &norm_type) const override 
 		{
@@ -92,7 +98,11 @@ namespace polyfem::solver
 			{
 				return L;
 			}
-			return 1;
+			else if (norm_type == "Euclidean")
+			{
+				return 1;
+			}
+			log_and_throw_error("Unrecognized norm_type: {}", norm_type);
 		}
         virtual double energy_norm_rescaling(const std::string &norm_type) const override 
 		{
@@ -113,7 +123,7 @@ namespace polyfem::solver
 			{
 				return x.norm();
 			}
-			return 1;
+			log_and_throw_error("Unrecognized norm_type: {}", norm_type);
 		}
         virtual double step_norm(const TVector &x, const std::string &norm_type) const override 
 		{
@@ -129,7 +139,7 @@ namespace polyfem::solver
 			{
 				return x.norm();
 			}
-			return 1;
+			log_and_throw_error("Unrecognized norm_type: {}", norm_type);
 		}
 
 	protected:

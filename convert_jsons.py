@@ -46,14 +46,37 @@ def get_old_tol(sim_config, tol_name, in_json_directory):
         elif tol_name in sim_config["solver"]["nonlinear"].keys():
             return sim_config["solver"]["nonlinear"][tol_name]
     
-    common_path = sim_config["common"]
-    with open(os.path.join(in_json_directory, common_path), "r") as f:
-        common_config = json.load(f)
+    current_config = sim_config
+    current_dir = "/".join(in_json_directory.split("/")[:-1])
+    while True:
+        if "solver" in current_config and "nonlinear" in current_config["solver"]:
+            nl_solver = current_config["solver"]["nonlinear"]
+            
+            if in_advanced:
+                if "advanced" in nl_solver and tol_name in nl_solver["advanced"]:
+                    return nl_solver["advanced"][tol_name]
+            elif tol_name in nl_solver:
+                return nl_solver[tol_name]
+        
+        if "common" in current_config:
+            new_common_path = os.path.join(current_dir, current_config["common"])
+            with open(new_common_path, "r") as f:
+                current_config = json.load(f)
+            current_dir = "/".join(new_common_path.split("/")[:-1])
+        else:
+            break 
 
+    # 3. If the loop finishes without returning, apply the defaults
     if in_advanced:
-        return common_config["solver"]["nonlinear"]["advanced"][tol_name]
+        return 0
+    elif tol_name == "f_delta":
+        return 0
+    elif tol_name == "x_delta":
+        return 0
+    elif tol_name == "grad_norm":
+        return 1e-8
     else:
-        return common_config["solver"]["nonlinear"][tol_name]
+        assert False
 
 
 def update_json(in_json_path, out_json_path, is_common_file, in_json_directory):
@@ -70,13 +93,16 @@ def update_json(in_json_path, out_json_path, is_common_file, in_json_directory):
         old_characteristic_length = get_old_characteristic_length(sim_config)
         old_scale = dt * old_characteristic_length
         
-        update_field(sim_config, ["solver", "nonlinear", "grad_norm_tol"], get_old_tol(sim_config, "grad_norm", in_json_directory) * old_scale, create_new=True)
-        update_field(sim_config, ["solver", "nonlinear", "x_delta_tol"], get_old_tol(sim_config, "x_delta", in_json_directory) * old_scale, create_new=True)
-        update_field(sim_config, ["solver", "nonlinear", "advanced", "derivative_along_delta_x_tol"], get_old_tol(sim_config, "derivative_along_delta_x", in_json_directory) * old_scale, create_new=True)
+        update_field(sim_config, ["solver", "nonlinear", "grad_norm_tol"], get_old_tol(sim_config, "grad_norm", in_json_path) * old_scale, create_new=True)
+        update_field(sim_config, ["solver", "nonlinear", "x_delta_tol"], get_old_tol(sim_config, "x_delta", in_json_path) * old_scale, create_new=True)
+        update_field(sim_config, ["solver", "nonlinear", "advanced", "f_delta_tol"], get_old_tol(sim_config, "f_delta", in_json_path) * old_scale, create_new=True)
+        update_field(sim_config, ["solver", "nonlinear", "newton_decrement_tol"], get_old_tol(sim_config, "derivative_along_delta_x", in_json_path) * old_scale, create_new=True)
 
     sim_config["solver"]["nonlinear"].pop("grad_norm", None)
     sim_config["solver"]["nonlinear"].pop("x_delta", None)
-    sim_config["solver"]["nonlinear"]["advanced"].pop("derivative_along_delta_x", None)
+    sim_config["solver"]["nonlinear"].pop("f_delta", None)
+    if "advanced" in sim_config["solver"]["nonlinear"].keys():
+        sim_config["solver"]["nonlinear"]["advanced"].pop("derivative_along_delta_x", None)
 
     with open(out_json_path, 'w') as f:
         json.dump(sim_config, f, indent=4)
@@ -89,15 +115,36 @@ def main():
     parser.add_argument("-c", "--common_file", help="common json file (if it exists)", required=False)
     args = parser.parse_args()
 
-    for file_name in os.listdir(args.input_directory):
-        if file_name.endswith(".json"):
-            print(f"Updating file {file_name}")
-            update_json(
-                os.path.join(args.input_directory, file_name), 
-                os.path.join(args.output_directory, file_name),
-                file_name == args.common_file, 
-                args.input_directory
-            )
+    common_files = []
+    for root, dirs, files in os.walk(args.input_directory):
+        for file_name in files:
+            if file_name.endswith(".json"):
+                input_path = os.path.join(root, file_name)
+                relative_path = os.path.relpath(root, args.input_directory)
+
+                output_dir_path = os.path.join(args.output_directory, relative_path)
+                os.makedirs(output_dir_path, exist_ok=True)
+                output_path = os.path.join(output_dir_path, file_name)
+                
+                if args.common_file == file_name:
+                    common_files.append((input_path, output_path))
+                    continue
+
+                print(f"Updating file {file_name} in {relative_path}")
+                update_json(
+                    input_path, 
+                    output_path,
+                    False, 
+                    args.input_directory
+                )
+
+    for (input_path, output_path) in common_files:
+        update_json(
+            input_path,
+            output_path,
+            True,
+            args.input_directory
+        )
 
 
 if __name__ == "__main__":
