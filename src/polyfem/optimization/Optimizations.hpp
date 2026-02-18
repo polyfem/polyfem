@@ -2,7 +2,7 @@
 
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/Logger.hpp>
-#include <polyfem/solver/DiffCache.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
 
 namespace polyfem
 {

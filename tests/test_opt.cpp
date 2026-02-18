@@ -2,21 +2,21 @@
 #include <polyfem/State.hpp>
 
 #include <polyfem/utils/StringUtils.hpp>
-#include <polyfem/solver/Optimizations.hpp>
-#include <polyfem/solver/AdjointNLProblem.hpp>
+#include <polyfem/optimization/Optimizations.hpp>
+#include <polyfem/optimization/AdjointNLProblem.hpp>
 
-#include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
-#include <polyfem/solver/forms/adjoint_forms/CompositeForms.hpp>
-#include <polyfem/solver/forms/adjoint_forms/TargetForms.hpp>
-#include <polyfem/solver/forms/adjoint_forms/AMIPSForm.hpp>
-#include <polyfem/solver/forms/adjoint_forms/WeightedVolumeForm.hpp>
-#include <polyfem/solver/forms/adjoint_forms/TransientForm.hpp>
-#include <polyfem/solver/forms/adjoint_forms/BarrierForms.hpp>
-#include <polyfem/solver/forms/adjoint_forms/SmoothingForms.hpp>
+#include <polyfem/optimization/forms/SumCompositeForm.hpp>
+#include <polyfem/optimization/forms/CompositeForms.hpp>
+#include <polyfem/optimization/forms/TargetForms.hpp>
+#include <polyfem/optimization/forms/AMIPSForm.hpp>
+#include <polyfem/optimization/forms/WeightedVolumeForm.hpp>
+#include <polyfem/optimization/forms/TransientForm.hpp>
+#include <polyfem/optimization/forms/BarrierForms.hpp>
+#include <polyfem/optimization/forms/SmoothingForms.hpp>
 
-#include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
-#include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
-#include <polyfem/OptState.hpp>
+#include <polyfem/optimization/parametrization/Parametrizations.hpp>
+#include <polyfem/optimization/parametrization/NodeCompositeParametrizations.hpp>
+#include <polyfem/optimization/OptState.hpp>
 
 #include <polysolve/nonlinear/BoxConstraintSolver.hpp>
 

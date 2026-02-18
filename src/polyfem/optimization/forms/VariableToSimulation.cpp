@@ -2,9 +2,9 @@
 #include <polyfem/State.hpp>
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
-#include <polyfem/solver/Optimizations.hpp>
+#include <polyfem/optimization/Optimizations.hpp>
 
-#include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
+#include <polyfem/optimization/parametrization/NodeCompositeParametrizations.hpp>
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>

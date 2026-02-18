@@ -1,5 +1,4 @@
 set(SOURCES
-	StateDiff.cpp
 	StateInit.cpp
 	StateLoad.cpp
 	StateHomogenization.cpp

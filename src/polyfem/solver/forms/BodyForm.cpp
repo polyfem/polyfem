@@ -10,7 +10,7 @@
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 
-#include <polyfem/solver/AdjointTools.hpp>
+#include <polyfem/optimization/AdjointTools.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 

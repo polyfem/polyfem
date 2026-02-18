@@ -5,8 +5,8 @@
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
-#include <polyfem/solver/DiffCache.hpp>
-#include <polyfem/solver/forms/adjoint_forms/VariableToSimulation.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
+#include <polyfem/optimization/forms/VariableToSimulation.hpp>
 
 namespace polyfem
 {

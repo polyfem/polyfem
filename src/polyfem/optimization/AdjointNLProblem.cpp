@@ -1,6 +1,6 @@
 #include "AdjointNLProblem.hpp"
 
-#include <polyfem/solver/forms/adjoint_forms/AdjointForm.hpp>
+#include <polyfem/optimization/forms/AdjointForm.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/Timer.hpp>

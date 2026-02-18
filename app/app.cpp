@@ -18,7 +18,7 @@
 #include <spdlog/sinks/callback_sink.h>
 
 #include <polyfem/State.hpp>
-#include <polyfem/OptState.hpp>
+#include <polyfem/optimization/OptState.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/JSONUtils.hpp>

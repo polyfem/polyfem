@@ -4,7 +4,7 @@
 #include <igl/boundary_facets.h>
 #include <polyfem/utils/Logger.hpp>
 #include <igl/slim.h>
-#include <polyfem/solver/AdjointTools.hpp>
+#include <polyfem/optimization/AdjointTools.hpp>
 
 namespace polyfem::mesh
 {
