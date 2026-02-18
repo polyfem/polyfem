@@ -57,7 +57,7 @@ var sectionId = 'dynsection-1';
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:title="computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid) the ...">
+<g id="a_Node000001"><a xlink:title="calls compute_scalar_value (i.e von mises for elasticity and norm of velocity for fluid) and compute_...">
 <polygon fill="#999999" stroke="#666666" points="1502,-278 1333,-278 1333,-248 1502,-248 1502,-278"/>
 <text text-anchor="start" x="1341" y="-266" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::io::Evaluator</text>
 <text text-anchor="middle" x="1417.5" y="-255" font-family="Helvetica,sans-Serif" font-size="10.00">::average_grad_based_function</text>

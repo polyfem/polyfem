@@ -1,6 +1,6 @@
 <map id="polyfem::mesh::Mesh::is_prism" name="polyfem::mesh::Mesh::is_prism">
 <area shape="rect" id="Node000001" title="checks if element is a prism" alt="" coords="2172,555,2335,595"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1io_1_1_evaluator.html#a389e8aabdd8fe99956da896b5b149a55" title="computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid) the ..." alt="" coords="1893,303,2118,343"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1io_1_1_evaluator.html#a389e8aabdd8fe99956da896b5b149a55" title="calls compute_scalar_value (i.e von mises for elasticity and norm of velocity for fluid) and compute_..." alt="" coords="1893,303,2118,343"/>
 <area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="2238,543,2221,502,2196,454,2163,405,2122,364,2091,345,2094,341,2126,359,2167,402,2201,451,2226,500,2243,541"/>
 <area shape="rect" id="Node000003" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a938439e2cebaf08e7d5e0437c603164e" title="saves the volume vtu file" alt="" coords="1625,303,1817,343"/>
 <area shape="poly" id="edge59_Node000001_Node000003" title=" " alt="" coords="2234,543,2216,510,2191,473,2159,437,2123,408,2012,383,1817,344,1818,339,2013,378,2125,403,2163,434,2195,470,2220,508,2239,541"/>
@@ -16,7 +16,7 @@
 <area shape="poly" id="edge60_Node000001_Node000025" title=" " alt="" coords="2245,541,2231,437,2206,303,2189,237,2169,178,2147,131,2122,101,2080,77,2034,64,1984,60,1934,64,1886,73,1840,85,1766,113,1764,108,1839,80,1885,68,1934,58,1984,55,2034,59,2082,72,2126,97,2152,128,2174,176,2194,236,2211,302,2236,437,2251,540"/>
 <area shape="rect" id="Node000026" href="$classpolyfem_1_1io_1_1_evaluator.html#a9f004e5694e148d32aeceb7e64cf7e39" title="compute von mises stress at quadrature points for the function fun, also compute the interpolated fun..." alt="" coords="1314,514,1545,569"/>
 <area shape="poly" id="edge37_Node000001_Node000026" title=" " alt="" coords="2158,574,1545,549,1545,543,2158,568"/>
-<area shape="rect" id="Node000027" href="$classpolyfem_1_1io_1_1_evaluator.html#a6e5d9a97c8247fc720c85232a7d60682" title="compute tensor quantity (ie stress tensor or velocy)" alt="" coords="1916,175,2095,215"/>
+<area shape="rect" id="Node000027" href="$classpolyfem_1_1io_1_1_evaluator.html#a6e5d9a97c8247fc720c85232a7d60682" title="compute tensor quantity (ie stress tensor or velocity)" alt="" coords="1916,175,2095,215"/>
 <area shape="poly" id="edge39_Node000001_Node000027" title=" " alt="" coords="2247,541,2238,475,2217,391,2200,347,2180,304,2154,264,2122,229,2093,211,2096,206,2126,225,2158,260,2184,301,2205,344,2222,389,2243,474,2252,541"/>
 <area shape="rect" id="Node000028" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a7b3e2f650cb68b596b8b67ef6702f3b1" title="extracts the boundary mesh" alt="" coords="1896,612,2115,652"/>
 <area shape="poly" id="edge41_Node000001_Node000028" title=" " alt="" coords="2159,599,2093,615,2092,609,2158,594"/>
