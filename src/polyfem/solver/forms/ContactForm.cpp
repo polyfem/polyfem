@@ -82,9 +82,9 @@ namespace polyfem::solver
 				collision_mesh_, V0, V1, dmin_, tight_inclusion_ccd_);
 		else
 			max_step = ipc::compute_collision_free_stepsize(
-				collision_mesh_, V0, V1, dmin_, broad_phase_, tight_inclusion_ccd_);
+				collision_mesh_, V0, V1, dmin_, broad_phase_.get(), tight_inclusion_ccd_);
 
-		if (save_ccd_debug_meshes && ipc::has_intersections(collision_mesh_, (V1 - V0) * max_step + V0, broad_phase_))
+		if (save_ccd_debug_meshes && ipc::has_intersections(collision_mesh_, (V1 - V0) * max_step + V0, broad_phase_.get()))
 		{
 			log_and_throw_error("Taking max_step results in intersections (max_step={})", max_step);
 		}
@@ -116,7 +116,7 @@ namespace polyfem::solver
 			compute_displaced_surface(x0),
 			compute_displaced_surface(x1),
 			/*inflation_radius=*/barrier_support_size() / 2,
-			broad_phase_);
+			broad_phase_.get());
 
 		use_cached_candidates_ = true;
 	}
@@ -146,7 +146,7 @@ namespace polyfem::solver
 				tight_inclusion_ccd_);
 		else
 			is_valid = ipc::is_step_collision_free(
-				collision_mesh_, displaced0, displaced1, dmin_, broad_phase_,
+				collision_mesh_, displaced0, displaced1, dmin_, broad_phase_.get(),
 				tight_inclusion_ccd_);
 
 		return is_valid;

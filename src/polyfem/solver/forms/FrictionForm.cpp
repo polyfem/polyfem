@@ -109,7 +109,7 @@ namespace polyfem::solver
 	{
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
-		auto broad_phase = ipc::create_broad_phase(broad_phase_method_);
+		auto broad_phase = ipc::create_broad_phase(broad_phase_method_).get();
 		if (const auto barrier_contact = dynamic_cast<const BarrierContactForm*>(&contact_form_))
 		{
 			ipc::NormalCollisions collision_set;

@@ -54,7 +54,7 @@ namespace polyfem::solver
 		nonconvergent_constraints.set_use_area_weighting(false);
 		nonconvergent_constraints.set_use_improved_max_approximator(false);
 		nonconvergent_constraints.build(
-			collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_);
+			collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_.get());
 		Eigen::VectorXd grad_barrier = barrier_potential_.gradient(
 			nonconvergent_constraints, collision_mesh_, displaced_surface);
 		grad_barrier = collision_mesh_.to_full_dof(grad_barrier);
@@ -108,7 +108,7 @@ namespace polyfem::solver
 				candidates_, collision_mesh_, displaced_surface, dhat_);
 		else
 			collision_set_.build(
-				collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_);
+				collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_.get());
 		cached_displaced_surface = displaced_surface;
 	}
 
