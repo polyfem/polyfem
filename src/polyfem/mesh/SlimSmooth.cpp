@@ -3,8 +3,8 @@
 #include <ipc/utils/eigen_ext.hpp>
 #include <igl/boundary_facets.h>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/GeometryUtils.hpp>
 #include <igl/slim.h>
-#include <polyfem/optimization/AdjointTools.hpp>
 
 namespace polyfem::mesh
 {
@@ -12,7 +12,7 @@ namespace polyfem::mesh
 	{
 		const int dim = F.cols() - 1;
 
-        if (solver::AdjointTools::is_flipped(V_new, F))
+        if (utils::is_flipped(V_new, F))
         {
             adjoint_logger().warn("Mesh is flipped before SLIM!");
             return false;
