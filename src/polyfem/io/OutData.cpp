@@ -18,6 +18,7 @@
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
 #include <polyfem/solver/forms/SmoothContactForm.hpp>
+#include <polyfem/solver/forms/HighOrderContactForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/forms/BodyForm.hpp>
@@ -1214,6 +1215,7 @@ namespace polyfem::io
 		contact_forces = args["output"]["paraview"]["options"]["contact_forces"] && !is_problem_scalar;
 		friction_forces = args["output"]["paraview"]["options"]["friction_forces"] && !is_problem_scalar;
 		normal_adhesion_forces = args["output"]["paraview"]["options"]["normal_adhesion_forces"] && !is_problem_scalar;
+		contact_potential = args["output"]["advanced"]["contact_potential"];
 		tangential_adhesion_forces = args["output"]["paraview"]["options"]["tangential_adhesion_forces"] && !is_problem_scalar;
 
 		if (args["output"]["paraview"]["options"]["force_high_order"])
@@ -1768,6 +1770,21 @@ namespace polyfem::io
 			}
 
 			writer.add_field("body_ids", ids);
+		}
+
+		if (opts.contact_potential)
+		{
+			static std::unique_ptr<ContactPotentialCSVWriter> writer;
+			if (t == state.args["time"]["t0"].get<double>() + state.args["time"]["dt"].get<double>())
+			{
+				writer = std::make_unique<ContactPotentialCSVWriter>(
+					state.resolve_output_path("contact_potential.csv"),
+					state.solve_data);
+			}
+			if (writer)
+			{
+				writer->write(t, sol);
+			}
 		}
 
 		// if (opts.export_field("rhs"))
@@ -3206,6 +3223,34 @@ namespace polyfem::io
 			file << ((form && form->enabled()) ? form->value(sol) : 0) / s << ",";
 		}
 		file << solve_data.nl_problem->value(sol) / s << "\n";
+		file.flush();
+	}
+
+	ContactPotentialCSVWriter::ContactPotentialCSVWriter(const std::string &path, const solver::SolveData &solve_data)
+		: file(path), solve_data(solve_data)
+	{
+		file << "time,solver_potential,physical_potential,scale_factor" << std::endl;
+	}
+
+	ContactPotentialCSVWriter::~ContactPotentialCSVWriter()
+	{
+		file.close();
+	}
+
+	void ContactPotentialCSVWriter::write(const double t, const Eigen::MatrixXd &sol)
+	{
+		double solver_potential = 0;
+		if (solve_data.contact_form && solve_data.contact_form->enabled())
+		{
+			solver_potential = solve_data.contact_form->value(sol);
+		}
+
+		const double scale_factor = solve_data.time_integrator
+									? solve_data.time_integrator->acceleration_scaling()
+									: 1;
+		const double physical_potential = solver_potential / scale_factor;
+
+		file << t << "," << solver_potential << "," << physical_potential << "," << scale_factor << "\n";
 		file.flush();
 	}
 

@@ -291,6 +291,10 @@ namespace polyfem::mesh
 				state.args["contact"]["alpha_n"],
 				state.args["contact"]["use_adaptive_dhat"],
 				state.args["contact"]["min_distance_ratio"],
+				// High Order Contact Form
+				state.args["contact"]["use_high_order_formulation"],
+				state.args["contact"]["use_offset_formulation"],
+				state.args["contact"]["high_order_contact_params"],
 				// Normal Adhesion Form
 				state.args["contact"]["adhesion"]["adhesion_enabled"],
 				state.args["contact"]["adhesion"]["dhat_p"],

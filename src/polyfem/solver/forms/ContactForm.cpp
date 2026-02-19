@@ -93,7 +93,7 @@ namespace polyfem::solver
 		// This will check for static intersections as a failsafe. Not needed if we use our conservative CCD.
 		Eigen::MatrixXd V_toi = (V1 - V0) * max_step + V0;
 
-		while (ipc::has_intersections(collision_mesh_, V_toi, broad_phase_))
+		while (ipc::has_intersections(collision_mesh_, V_toi, broad_phase_.get()))
 		{
 			logger().error("Taking max_step results in intersections (max_step={:g})", max_step);
 			max_step /= 2.0;

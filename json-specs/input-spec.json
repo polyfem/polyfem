@@ -1205,12 +1205,15 @@
             "dhat_percentage",
             "epsv",
             "friction_coefficient",
+            "use_high_order_formulation",
+            "use_offset_formulation",
             "use_convergent_formulation",
             "use_area_weighting",
             "use_improved_max_operator",
             "use_physical_barrier",
             "collision_mesh",
             "use_gcp_formulation",
+            "high_order_contact_params",
             "alpha_n",
             "alpha_t",
             "min_distance_ratio",
@@ -1219,6 +1222,53 @@
             "adhesion"
         ],
         "doc": "Contact handling parameters."
+    },
+    {
+        "pointer": "/contact/high_order_contact_params",
+        "type": "object",
+        "default": null,
+        "optional": [
+            "alpha",
+            "quadrature_order",
+            "exponent",
+            "skip_obstacles"
+        ]
+    },
+    {
+        "pointer": "/contact/high_order_contact_params/alpha",
+        "type": "float",
+        "default": 1
+    },
+    {
+        "pointer": "/contact/high_order_contact_params/quadrature_order",
+        "type": "int",
+        "default": 16,
+        "min": 0,
+        "doc": "Quadrature order for high-order contact."
+    },
+    {
+        "pointer": "/contact/high_order_contact_params/exponent",
+        "type": "int",
+        "default": 0,
+        "min": 0,
+        "doc": "Exponent for high-order contact. Default is 0, which sets it to dimension-1."
+    },
+    {
+        "pointer": "/contact/high_order_contact_params/skip_obstacles",
+        "default": true,
+        "type": "bool",
+        "doc": "Do integration only on non-fixed primitives."
+    },
+    {
+        "pointer": "/contact/use_high_order_formulation",
+        "default": false,
+        "type": "bool"
+    },
+    {
+        "pointer": "/contact/use_offset_formulation",
+        "default": false,
+        "type": "bool",
+        "doc": "True if the offset contact formulation is used."
     },
     {
         "pointer": "/contact/use_adaptive_dhat",
@@ -2621,7 +2671,8 @@
             "save_ccd_debug_meshes",
             "save_time_sequence",
             "save_nl_solve_sequence",
-            "spectrum"
+            "spectrum",
+            "contact_potential"
         ],
         "doc": "Additional output options"
     },
@@ -2690,6 +2741,12 @@
         "default": false,
         "type": "bool",
         "doc": "exports the spectrum of the matrix in the output JSON. Works only if POLYSOLVE_WITH_SPECTRA is enabled"
+    },
+    {
+        "pointer": "/output/advanced/contact_potential",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out contact potential to a csv file."
     },
     {
         "pointer": "/input",

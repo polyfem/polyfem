@@ -4,6 +4,7 @@
 #include "VariableToSimulation.hpp"
 
 #include <polyfem/solver/forms/SmoothContactForm.hpp>
+#include <polyfem/solver/forms/HighOrderContactForm.hpp>
 #include <ipc/potentials/barrier_potential.hpp>
 #include <ipc/smooth_contact/smooth_collisions.hpp>
 #include <ipc/smooth_contact/smooth_contact_potential.hpp>

@@ -44,6 +44,7 @@ namespace polyfem::io
 			bool contact_forces;
 			bool friction_forces;
 			bool normal_adhesion_forces;
+			bool contact_potential;
 			bool tangential_adhesion_forces;
 			bool forces;
 			bool jacobian_validity;
@@ -501,6 +502,19 @@ namespace polyfem::io
 		~EnergyCSVWriter();
 
 		void write(const int i, const Eigen::MatrixXd &sol);
+
+	protected:
+		std::ofstream file;
+		const solver::SolveData &solve_data;
+	};
+
+	class ContactPotentialCSVWriter
+	{
+	public:
+		ContactPotentialCSVWriter(const std::string &path, const solver::SolveData &solve_data);
+		~ContactPotentialCSVWriter();
+
+		void write(const double t, const Eigen::MatrixXd &sol);
 
 	protected:
 		std::ofstream file;
