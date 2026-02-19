@@ -1,12 +1,12 @@
 #include "OptState.hpp"
 
-#include <polyfem/solver/Optimizations.hpp>
+#include <polyfem/optimization/Optimizations.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/par_for.hpp>
 #include <polyfem/utils/GeogramUtils.hpp>
 
-#include <polyfem/solver/AdjointNLProblem.hpp>
-#include <polyfem/solver/forms/adjoint_forms/VariableToSimulation.hpp>
+#include <polyfem/optimization/AdjointNLProblem.hpp>
+#include <polyfem/optimization/forms/VariableToSimulation.hpp>
 
 #include <polysolve/nonlinear/Solver.hpp>
 

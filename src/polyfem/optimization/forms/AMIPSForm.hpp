@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/solver/forms/adjoint_forms/VariableToSimulation.hpp>
+#include <polyfem/optimization/forms/VariableToSimulation.hpp>
 #include "VariableToSimulation.hpp"
 #include "AdjointForm.hpp"
 #include <polyfem/assembler/AssemblyValsCache.hpp>

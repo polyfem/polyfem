@@ -1644,6 +1644,27 @@ namespace polyfem::io
 							writer.add_field(fmt::format("{:s}_avg", v.first), v.second);
 					}
 				}
+				if (opts.tensor_values)
+				{
+					for (const auto &v : tvals)
+					{
+						const int stride = mesh.dimension();
+						assert(v.second.cols() % stride == 0);
+
+						if (!opts.export_field(fmt::format("{:s}_avg", v.first)))
+							continue;
+
+						for (int i = 0; i < v.second.cols(); i += stride)
+						{
+							const Eigen::MatrixXd tmp = v.second.middleCols(i, stride);
+							assert(tmp.cols() == stride);
+
+							const int ii = (i / stride) + 1;
+							writer.add_field(
+								fmt::format("{:s}_avg_{:d}", v.first, ii), tmp);
+						}
+					}
+				}
 			}
 		}
 
