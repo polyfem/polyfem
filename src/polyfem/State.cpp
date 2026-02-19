@@ -1040,8 +1040,6 @@ namespace polyfem
 		logger().info("n bases: {}", n_bases);
 		logger().info("n pressure bases: {}", n_pressure_bases);
 
-		ass_vals_cache.clear();
-		mass_ass_vals_cache.clear();
 		if (n_bases <= args["solver"]["advanced"]["cache_size"])
 		{
 			timer.start();
@@ -1052,6 +1050,13 @@ namespace polyfem
 				pressure_ass_vals_cache.init(mesh->is_volume(), pressure_bases, curret_bases);
 
 			logger().info(" took {}s", timer.getElapsedTime());
+		}
+		else
+		{
+			ass_vals_cache.init_empty();
+			mass_ass_vals_cache.init_empty(true);
+			if (mixed_assembler != nullptr)
+				pressure_ass_vals_cache.init_empty();
 		}
 
 		out_geom.build_grid(*mesh, args["output"]["advanced"]["sol_on_grid"]);
