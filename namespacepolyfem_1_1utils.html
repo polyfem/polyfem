@@ -274,6 +274,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a864ce51c3548eaa0b8123e3df4e8e83e" id="r_a864ce51c3548eaa0b8123e3df4e8e83e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a864ce51c3548eaa0b8123e3df4e8e83e">tetrahedron_volume_hessian</a> (double ax, double ay, double az, double bx, double by, double bz, double cx, double cy, double cz, double dx, double dy, double dz, double H[144])</td></tr>
 <tr class="memdesc:a864ce51c3548eaa0b8123e3df4e8e83e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the gradient of the signed area of a 2D triangle defined by three points.  <br /></td></tr>
 <tr class="separator:a864ce51c3548eaa0b8123e3df4e8e83e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61c2ed59ec36469fc091dc685362bffa" id="r_a61c2ed59ec36469fc091dc685362bffa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a61c2ed59ec36469fc091dc685362bffa">is_flipped</a> (const Eigen::MatrixXd &amp;<a class="el" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, const Eigen::MatrixXi &amp;<a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>)</td></tr>
+<tr class="memdesc:a61c2ed59ec36469fc091dc685362bffa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if any simplex is inverted or collapses.  <br /></td></tr>
+<tr class="separator:a61c2ed59ec36469fc091dc685362bffa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3d5616d7cdc82efc086156a883922bbf" id="r_a3d5616d7cdc82efc086156a883922bbf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a3d5616d7cdc82efc086156a883922bbf">NLOHMANN_JSON_SERIALIZE_ENUM</a> (<a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6d">PiecewiseInterpolation::Extend</a>, {{<a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6da8d6b5cada83510220f59e00ce86d4d92">PiecewiseInterpolation::Extend::CONSTANT</a>, &quot;constant&quot;}, {<a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6da5765f108b8ee77f8e20d0c4815f8a65e">PiecewiseInterpolation::Extend::EXTRAPOLATE</a>, &quot;extrapolate&quot;}, {<a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6da5be68175be14dfaa080165456c2e9555">PiecewiseInterpolation::Extend::REPEAT</a>, &quot;repeat&quot;}, {<a class="el" href="classpolyfem_1_1utils_1_1_piecewise_interpolation.html#afdd63b345ffd575ef4019232fe83ee6da2ac9d585f564e0ca1ca98bc5f878742c">PiecewiseInterpolation::Extend::REPEAT_OFFSET</a>, &quot;repeat_offset&quot;}})</td></tr>
 <tr class="separator:a3d5616d7cdc82efc086156a883922bbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae60d5a3e782afc99c0c595421a870c1a" id="r_ae60d5a3e782afc99c0c595421a870c1a"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#ae60d5a3e782afc99c0c595421a870c1a">extract_nodes</a> (const int dim, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;bases, const std::vector&lt; <a class="el" href="classpolyfem_1_1basis_1_1_element_bases.html">basis::ElementBases</a> &gt; &amp;gbases, const Eigen::VectorXd &amp;u, int order, int n_elem)</td></tr>
@@ -547,7 +550,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if the AABBs intersect, false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00196">196</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00207">207</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_local_mesh_8cpp_source.html#l00331">polyfem::mesh::LocalMesh&lt; M &gt;::ball_selection()</a>.</p>
 <div class="dynheader">
@@ -615,7 +618,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if the edges are collinear, false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00169">169</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00180">180</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
 
 </div>
 </div>
@@ -690,7 +693,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if the triangles are coplanar, false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00182">182</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00193">193</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00439">polyfem::assembler::cross()</a>.</p>
 <div class="dynheader">
@@ -737,9 +740,9 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The barycentric coordinates for point p with respect to the simplex. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00088">88</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00099">99</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>.</p>
+<p class="reference">References <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00047">V</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00083">polyfem::assembler::MassMatrixAssembler::assemble_cross()</a>.</p>
 <div class="dynheader">
@@ -1059,7 +1062,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_a_m_i_p_s_form_8cpp_source.html#l00179">polyfem::solver::AMIPSForm::AMIPSForm()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00137">polyfem::solver::PeriodicMeshToMesh::apply_jacobian()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00157">polyfem::io::Evaluator::average_grad_based_function()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00046">polyfem::solver::CollisionBarrierForm::CollisionBarrierForm()</a>, <a class="el" href="_smoothing_forms_8cpp_source.html#l00120">polyfem::solver::BoundarySmoothingForm::compute_partial_gradient()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00060">polyfem::solver::SpatialIntegralForm::compute_partial_gradient_step()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00119">polyfem::assembler::NeoHookeanElasticity::compute_stiffness_value()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00281">polyfem::solver::DeformedCollisionBarrierForm::DeformedCollisionBarrierForm()</a>, <a class="el" href="_spline_parametrizations_8cpp_source.html#l00107">polyfem::solver::BSplineParametrization1DTo2D::eval()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00171">polyfem::solver::PeriodicContactForm::force_periodic_shape_derivative()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00329">polyfem::solver::NLHomoProblem::full_to_reduced()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01042">polyfem::io::Evaluator::generate_linear_field()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00095">polyfem::solver::ElasticEnergyForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00158">polyfem::solver::StressNormForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00287">polyfem::solver::ComplianceForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00440">polyfem::solver::StressForm::get_integral_functional()</a>, <a class="el" href="_variable_to_simulation_8cpp_source.html#l00191">polyfem::solver::ShapeVariableToSimulation::inverse_eval()</a>, <a class="el" href="_variable_to_simulation_8cpp_source.html#l00700">polyfem::solver::PeriodicShapeVariableToSimulation::inverse_eval()</a>, <a class="el" href="_spline_parametrizations_8cpp_source.html#l00096">polyfem::solver::BSplineParametrization1DTo2D::inverse_eval()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00378">polyfem::solver::NLHomoProblem::macro_reduced_to_full()</a>, <a class="el" href="_state_remesh_8cpp_source.html#l00159">polyfem::State::remesh()</a>, <a class="el" href="_local_relaxation_data_8hpp_source.html#l00021">polyfem::mesh::LocalRelaxationData&lt; M &gt;::sol()</a>, <a class="el" href="_state_homogenization_8cpp_source.html#l00134">polyfem::State::solve_homogenization_step()</a>, and <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00037">polyfem::solver::MacroStrainLagrangianForm::update_quantities()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_a_m_i_p_s_form_8cpp_source.html#l00143">polyfem::solver::AMIPSForm::AMIPSForm()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00137">polyfem::solver::PeriodicMeshToMesh::apply_jacobian()</a>, <a class="el" href="_evaluator_8cpp_source.html#l00157">polyfem::io::Evaluator::average_grad_based_function()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00046">polyfem::solver::CollisionBarrierForm::CollisionBarrierForm()</a>, <a class="el" href="_smoothing_forms_8cpp_source.html#l00120">polyfem::solver::BoundarySmoothingForm::compute_partial_gradient()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00060">polyfem::solver::SpatialIntegralForm::compute_partial_gradient_step()</a>, <a class="el" href="_neo_hookean_elasticity_8cpp_source.html#l00119">polyfem::assembler::NeoHookeanElasticity::compute_stiffness_value()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00281">polyfem::solver::DeformedCollisionBarrierForm::DeformedCollisionBarrierForm()</a>, <a class="el" href="_spline_parametrizations_8cpp_source.html#l00107">polyfem::solver::BSplineParametrization1DTo2D::eval()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00171">polyfem::solver::PeriodicContactForm::force_periodic_shape_derivative()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00329">polyfem::solver::NLHomoProblem::full_to_reduced()</a>, <a class="el" href="_evaluator_8cpp_source.html#l01042">polyfem::io::Evaluator::generate_linear_field()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00095">polyfem::solver::ElasticEnergyForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00158">polyfem::solver::StressNormForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00287">polyfem::solver::ComplianceForm::get_integral_functional()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00440">polyfem::solver::StressForm::get_integral_functional()</a>, <a class="el" href="_variable_to_simulation_8cpp_source.html#l00191">polyfem::solver::ShapeVariableToSimulation::inverse_eval()</a>, <a class="el" href="_variable_to_simulation_8cpp_source.html#l00700">polyfem::solver::PeriodicShapeVariableToSimulation::inverse_eval()</a>, <a class="el" href="_spline_parametrizations_8cpp_source.html#l00096">polyfem::solver::BSplineParametrization1DTo2D::inverse_eval()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00378">polyfem::solver::NLHomoProblem::macro_reduced_to_full()</a>, <a class="el" href="_state_remesh_8cpp_source.html#l00159">polyfem::State::remesh()</a>, <a class="el" href="_local_relaxation_data_8hpp_source.html#l00021">polyfem::mesh::LocalRelaxationData&lt; M &gt;::sol()</a>, <a class="el" href="_state_homogenization_8cpp_source.html#l00134">polyfem::State::solve_homogenization_step()</a>, and <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00037">polyfem::solver::MacroStrainLagrangianForm::update_quantities()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1248,6 +1251,61 @@ Here is the call graph for this function:</div>
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_a81d53daf4d77bf87d802589c5ec3c1c4_icgraph.svg" width="434" height="36"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+
+</div>
+</div>
+<a id="a61c2ed59ec36469fc091dc685362bffa" name="a61c2ed59ec36469fc091dc685362bffa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a61c2ed59ec36469fc091dc685362bffa">&#9670;&#160;</a></span>is_flipped()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool polyfem::utils::is_flipped </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
+          <td class="paramname"><em>V</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Eigen::MatrixXi &amp;&#160;</td>
+          <td class="paramname"><em>F</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Determine if any simplex is inverted or collapses. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">V</td><td>Vertex positions as a <a class="el" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>-by-dim matrix (one vertex per row). </td></tr>
+    <tr><td class="paramname">F</td><td>Simplex indices as a <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>-by-(dim+1) matrix (one simplex per row). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if any simplex is inverted or collapses, false otherwise. </dd></dl>
+<dl class="section warning"><dt>Warning</dt><dd>Only triangle and tetrahedron are supported. Always return true otherwise. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00514">514</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_geometry_utils_8cpp_source.html#l00054">tetrahedron_volume()</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00047">V</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_slim_smooth_8cpp_source.html#l00011">polyfem::mesh::apply_slim()</a>, <a class="el" href="_a_m_i_p_s_form_8cpp_source.html#l00239">polyfem::solver::AMIPSForm::is_step_valid()</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00218">polyfem::solver::AdjointNLProblem::is_step_valid()</a>.</p>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_a61c2ed59ec36469fc091dc685362bffa_cgraph.svg" width="386" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_a61c2ed59ec36469fc091dc685362bffa_icgraph.svg" width="640" height="188"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -1754,7 +1812,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="reference">Referenced by <a class="el" href="_assembler_8cpp_source.html#l00495">polyfem::assembler::NLAssembler::assemble_energy()</a>, <a class="el" href="_assembler_8cpp_source.html#l00533">polyfem::assembler::NLAssembler::assemble_energy_per_element()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00667">polyfem::assembler::RhsAssembler::compute_energy()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00210">polyfem::assembler::PressureAssembler::compute_grad_volume()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00335">polyfem::assembler::PressureAssembler::compute_grad_volume_id()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00652">polyfem::assembler::PressureAssembler::compute_hess_volume_2d()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00465">polyfem::assembler::PressureAssembler::compute_hess_volume_3d()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00090">polyfem::assembler::PressureAssembler::compute_volume()</a>, <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00044">polyfem::solver::InversionBarrierForm::first_derivative_unweighted()</a>, <a class="el" href="_inertia_form_8cpp_source.html#l00060">polyfem::solver::InertiaForm::force_shape_derivative()</a>, <a class="el" href="_body_form_8cpp_source.html#l00106">polyfem::solver::BodyForm::force_shape_derivative()</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00011">polyfem::assembler::AssemblyValsCache::init()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00182">polyfem::solver::AdjointTools::integrate_objective()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00821">polyfem::assembler::PressureAssembler::is_closed_or_boundary_fixed()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00237">polyfem::utils::SparseMatrixCache::operator+()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00290">polyfem::utils::SparseMatrixCache::operator+=()</a>, <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00072">polyfem::solver::InversionBarrierForm::second_derivative_unweighted()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00189">polyfem::solver::SDFTargetForm::solution_changed_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00392">polyfem::solver::MeshTargetForm::solution_changed_step()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00422">polyfem::solver::AdjointNLProblem::solve_pde()</a>, <a class="el" href="_barrier_contact_form_8cpp_source.html#l00120">polyfem::solver::BarrierContactForm::value_per_element_unweighted()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00094">polyfem::solver::NormalAdhesionForm::value_per_element_unweighted()</a>, <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00020">polyfem::solver::InversionBarrierForm::value_unweighted()</a>, and <a class="el" href="_adjoint_form_8cpp_source.html#l00120">polyfem::solver::MaxStressForm::value_unweighted_step()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_assembler_8cpp_source.html#l00495">polyfem::assembler::NLAssembler::assemble_energy()</a>, <a class="el" href="_assembler_8cpp_source.html#l00533">polyfem::assembler::NLAssembler::assemble_energy_per_element()</a>, <a class="el" href="_rhs_assembler_8cpp_source.html#l00667">polyfem::assembler::RhsAssembler::compute_energy()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00210">polyfem::assembler::PressureAssembler::compute_grad_volume()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00335">polyfem::assembler::PressureAssembler::compute_grad_volume_id()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00652">polyfem::assembler::PressureAssembler::compute_hess_volume_2d()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00465">polyfem::assembler::PressureAssembler::compute_hess_volume_3d()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00090">polyfem::assembler::PressureAssembler::compute_volume()</a>, <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00044">polyfem::solver::InversionBarrierForm::first_derivative_unweighted()</a>, <a class="el" href="_inertia_form_8cpp_source.html#l00060">polyfem::solver::InertiaForm::force_shape_derivative()</a>, <a class="el" href="_body_form_8cpp_source.html#l00106">polyfem::solver::BodyForm::force_shape_derivative()</a>, <a class="el" href="_assembly_vals_cache_8cpp_source.html#l00011">polyfem::assembler::AssemblyValsCache::init()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00182">polyfem::solver::AdjointTools::integrate_objective()</a>, <a class="el" href="_pressure_assembler_8cpp_source.html#l00821">polyfem::assembler::PressureAssembler::is_closed_or_boundary_fixed()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00237">polyfem::utils::SparseMatrixCache::operator+()</a>, <a class="el" href="_matrix_cache_8cpp_source.html#l00290">polyfem::utils::SparseMatrixCache::operator+=()</a>, <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00072">polyfem::solver::InversionBarrierForm::second_derivative_unweighted()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00189">polyfem::solver::SDFTargetForm::solution_changed_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00392">polyfem::solver::MeshTargetForm::solution_changed_step()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00423">polyfem::solver::AdjointNLProblem::solve_pde()</a>, <a class="el" href="_barrier_contact_form_8cpp_source.html#l00120">polyfem::solver::BarrierContactForm::value_per_element_unweighted()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00094">polyfem::solver::NormalAdhesionForm::value_per_element_unweighted()</a>, <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00020">polyfem::solver::InversionBarrierForm::value_unweighted()</a>, and <a class="el" href="_adjoint_form_8cpp_source.html#l00120">polyfem::solver::MaxStressForm::value_unweighted_step()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1881,7 +1939,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8cpp_source.html#l00033">33</a> of file <a class="el" href="_ref_element_sampler_8cpp_source.html">RefElementSampler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>.</p>
+<p class="reference">References <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00047">V</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00224">polyfem::utils::RefElementSampler::build()</a>.</p>
 <div class="dynheader">
@@ -1957,7 +2015,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_ref_element_sampler_8cpp_source.html#l00119">119</a> of file <a class="el" href="_ref_element_sampler_8cpp_source.html">RefElementSampler.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>.</p>
+<p class="reference">References <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00047">V</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_ref_element_sampler_8cpp_source.html#l00224">polyfem::utils::RefElementSampler::build()</a>.</p>
 <div class="dynheader">
@@ -2602,7 +2660,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if the tetrahedron intersects the ball, false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00137">137</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00148">148</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_local_mesh_8cpp_source.html#l00331">polyfem::mesh::LocalMesh&lt; M &gt;::ball_selection()</a>.</p>
 <div class="dynheader">
@@ -2638,9 +2696,9 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The signed volume of the tetrahedron. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00052">52</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00063">63</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_geometry_utils_8cpp_source.html#l00043">tetrahedron_volume()</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>.</p>
+<p class="reference">References <a class="el" href="_geometry_utils_8cpp_source.html#l00054">tetrahedron_volume()</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00047">V</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -2699,13 +2757,13 @@ Here is the call graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The signed volume of the tetrahedron. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00043">43</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00054">54</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00083">polyfem::assembler::MassMatrixAssembler::assemble_cross()</a>, <a class="el" href="_clipper_utils_8cpp_source.html#l00119">polyfem::utils::TetrahedronClipping::clip()</a>, <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00114">polyfem::solver::InversionBarrierForm::element_volume()</a>, and <a class="el" href="_geometry_utils_8cpp_source.html#l00052">tetrahedron_volume()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00083">polyfem::assembler::MassMatrixAssembler::assemble_cross()</a>, <a class="el" href="_clipper_utils_8cpp_source.html#l00119">polyfem::utils::TetrahedronClipping::clip()</a>, <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00114">polyfem::solver::InversionBarrierForm::element_volume()</a>, <a class="el" href="_geometry_utils_8cpp_source.html#l00514">is_flipped()</a>, and <a class="el" href="_geometry_utils_8cpp_source.html#l00063">tetrahedron_volume()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_a8a72689f8c34fff6ce44d8568d3a5c1e_icgraph.svg" width="100%" height="482"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1utils_a8a72689f8c34fff6ce44d8568d3a5c1e_icgraph.svg" width="100%" height="552"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -2822,7 +2880,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00261">261</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00272">272</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00123">polyfem::solver::InversionBarrierForm::element_volume_gradient()</a>.</p>
 <div class="dynheader">
@@ -2945,7 +3003,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00295">295</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00306">306</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00148">polyfem::solver::InversionBarrierForm::element_volume_hessian()</a>.</p>
 <div class="dynheader">
@@ -3025,11 +3083,11 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The signed area of the triangle. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00030">30</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00041">41</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_geometry_utils_8cpp_source.html#l00014">triangle_area_2D()</a>, <a class="el" href="_geometry_utils_8cpp_source.html#l00022">triangle_area_3D()</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>.</p>
+<p class="reference">References <a class="el" href="_geometry_utils_8cpp_source.html#l00025">triangle_area_2D()</a>, <a class="el" href="_geometry_utils_8cpp_source.html#l00033">triangle_area_3D()</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00047">V</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00083">polyfem::assembler::MassMatrixAssembler::assemble_cross()</a>, <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00114">polyfem::solver::InversionBarrierForm::element_volume()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00217">polyfem::mesh::irregular_triangle()</a>, and <a class="el" href="_geometry_utils_8cpp_source.html#l00058">triangle_to_clockwise_order()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00083">polyfem::assembler::MassMatrixAssembler::assemble_cross()</a>, <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00114">polyfem::solver::InversionBarrierForm::element_volume()</a>, <a class="el" href="_upsample_mesh_8cpp_source.html#l00217">polyfem::mesh::irregular_triangle()</a>, and <a class="el" href="_geometry_utils_8cpp_source.html#l00069">triangle_to_clockwise_order()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -3086,9 +3144,9 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The signed area of the triangle. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00014">14</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00025">25</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_swap_8cpp_source.html#l00017">polyfem::mesh::WildRemesher&lt; WMTKMesh &gt;::swap_edge_before()</a>, and <a class="el" href="_geometry_utils_8cpp_source.html#l00030">triangle_area()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_swap_8cpp_source.html#l00017">polyfem::mesh::WildRemesher&lt; WMTKMesh &gt;::swap_edge_before()</a>, and <a class="el" href="_geometry_utils_8cpp_source.html#l00041">triangle_area()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -3167,7 +3225,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00209">209</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00220">220</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00123">polyfem::solver::InversionBarrierForm::element_volume_gradient()</a>.</p>
 <div class="dynheader">
@@ -3248,7 +3306,7 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00221">221</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00232">232</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00148">polyfem::solver::InversionBarrierForm::element_volume_hessian()</a>.</p>
 <div class="dynheader">
@@ -3302,9 +3360,9 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The signed area of the triangle. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00022">22</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00033">33</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_geometry_utils_8cpp_source.html#l00030">triangle_area()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_geometry_utils_8cpp_source.html#l00041">triangle_area()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -3338,7 +3396,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The list of triangles as matrices of rows. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00074">74</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00085">85</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_clipper_utils_8cpp_source.html#l00103">polyfem::utils::TriangleClipping::clip()</a>.</p>
 <div class="dynheader">
@@ -3406,7 +3464,7 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if the triangle intersects the disk, false otherwise. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00107">107</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00118">118</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_local_mesh_8cpp_source.html#l00331">polyfem::mesh::LocalMesh&lt; M &gt;::ball_selection()</a>.</p>
 <div class="dynheader">
@@ -3442,9 +3500,9 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The vertices of the triangle in clockwise order as rows of a matrix. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00058">58</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_geometry_utils_8cpp_source.html#l00069">69</a> of file <a class="el" href="_geometry_utils_8cpp_source.html">GeometryUtils.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_geometry_utils_8cpp_source.html#l00030">triangle_area()</a>.</p>
+<p class="reference">References <a class="el" href="_geometry_utils_8cpp_source.html#l00041">triangle_area()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_clipper_utils_8cpp_source.html#l00103">polyfem::utils::TriangleClipping::clip()</a>.</p>
 <div class="dynheader">
@@ -3492,7 +3550,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00137">polyfem::solver::PeriodicMeshToMesh::apply_jacobian()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00444">polyfem::solver::SmoothContactForceForm::compute_adjoint_rhs_step()</a>, <a class="el" href="_surface_traction_forms_8cpp_source.html#l00986">polyfem::solver::ProxyContactForceForm::compute_adjoint_rhs_step()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00055">polyfem::solver::ContactForm::compute_displaced_surface()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00068">polyfem::solver::NormalAdhesionForm::compute_displaced_surface()</a>, <a class="el" href="_state_diff_8cpp_source.html#l00219">polyfem::State::compute_force_jacobian_prev()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00068">polyfem::solver::CollisionBarrierForm::compute_partial_gradient()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00307">polyfem::solver::DeformedCollisionBarrierForm::compute_partial_gradient()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00462">polyfem::solver::SmoothContactForceForm::compute_partial_gradient_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00060">polyfem::solver::SpatialIntegralForm::compute_partial_gradient_step()</a>, <a class="el" href="_surface_traction_forms_8cpp_source.html#l01022">polyfem::solver::ProxyContactForceForm::compute_partial_gradient_step()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00063">polyfem::solver::FrictionForm::compute_surface_velocities()</a>, <a class="el" href="_tangential_adhesion_form_8cpp_source.html#l00059">polyfem::solver::TangentialAdhesionForm::compute_surface_velocities()</a>, <a class="el" href="_l2_projection_8cpp_source.html#l00070">polyfem::mesh::constrained_L2_projection()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00087">polyfem::solver::PeriodicMeshToMesh::eval()</a>, <a class="el" href="_spline_parametrizations_8cpp_source.html#l00107">polyfem::solver::BSplineParametrization1DTo2D::eval()</a>, <a class="el" href="_out_data_8cpp_source.html#l01059">polyfem::io::OutGeometryData::export_data()</a>, <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00044">polyfem::solver::InversionBarrierForm::first_derivative_unweighted()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00171">polyfem::solver::PeriodicContactForm::force_periodic_shape_derivative()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00030">polyfem::solver::FrictionForm::force_shape_derivative()</a>, <a class="el" href="_tangential_adhesion_form_8cpp_source.html#l00030">polyfem::solver::TangentialAdhesionForm::force_shape_derivative()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00095">polyfem::solver::ElasticEnergyForm::get_integral_functional()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00156">polyfem::utils::PiecewiseCubicInterpolation::init()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00153">polyfem::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00107">polyfem::solver::PeriodicMeshToMesh::inverse_eval()</a>, <a class="el" href="_spline_parametrizations_8cpp_source.html#l00096">polyfem::solver::BSplineParametrization1DTo2D::inverse_eval()</a>, <a class="el" href="_spline_parametrizations_8cpp_source.html#l00236">polyfem::solver::BoundedBiharmonicWeights2Dto3D::inverse_eval()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00085">polyfem::solver::CollisionBarrierForm::is_step_collision_free()</a>, <a class="el" href="_a_m_i_p_s_form_8cpp_source.html#l00275">polyfem::solver::AMIPSForm::is_step_valid()</a>, <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00173">polyfem::solver::InversionBarrierForm::is_step_valid()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00217">polyfem::solver::AdjointNLProblem::is_step_valid()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00106">polyfem::solver::CollisionBarrierForm::max_step_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00214">polyfem::solver::NLHomoProblem::reduced_to_disp_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00356">polyfem::solver::NLHomoProblem::reduced_to_full()</a>, <a class="el" href="_state_remesh_8cpp_source.html#l00159">polyfem::State::remesh()</a>, <a class="el" href="_out_data_8cpp_source.html#l02138">polyfem::io::OutGeometryData::save_contact_surface()</a>, <a class="el" href="_out_data_8cpp_source.html#l01331">polyfem::io::OutGeometryData::save_volume()</a>, <a class="el" href="_out_data_8cpp_source.html#l01922">polyfem::io::OutGeometryData::save_volume_vector_field()</a>, <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00072">polyfem::solver::InversionBarrierForm::second_derivative_unweighted()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00077">polyfem::solver::CollisionBarrierForm::solution_changed()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00316">polyfem::solver::DeformedCollisionBarrierForm::solution_changed()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00487">polyfem::solver::SmoothContactForceForm::solution_changed_step()</a>, <a class="el" href="_state_homogenization_8cpp_source.html#l00288">polyfem::State::solve_homogenization()</a>, <a class="el" href="_state_homogenization_8cpp_source.html#l00134">polyfem::State::solve_homogenization_step()</a>, <a class="el" href="_variable_to_simulation_8cpp_source.html#l00686">polyfem::solver::PeriodicShapeVariableToSimulation::update()</a>, <a class="el" href="_variable_to_simulation_8cpp_source.html#l00518">polyfem::solver::DirichletNodesVariableToSimulation::update_state()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00062">polyfem::solver::CollisionBarrierForm::value_unweighted()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00300">polyfem::solver::DeformedCollisionBarrierForm::value_unweighted()</a>, <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00020">polyfem::solver::InversionBarrierForm::value_unweighted()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00428">polyfem::solver::SmoothContactForceForm::value_unweighted_step()</a>, <a class="el" href="_surface_traction_forms_8cpp_source.html#l00971">polyfem::solver::ProxyContactForceForm::value_unweighted_step()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00069">vector2matrix()</a>, <a class="el" href="_remesher_8cpp_source.html#l00316">polyfem::mesh::Remesher::write_mesh()</a>, and <a class="el" href="_local_mesh_8cpp_source.html#l00607">polyfem::mesh::LocalMesh&lt; M &gt;::write_mesh()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00137">polyfem::solver::PeriodicMeshToMesh::apply_jacobian()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00444">polyfem::solver::SmoothContactForceForm::compute_adjoint_rhs_step()</a>, <a class="el" href="_surface_traction_forms_8cpp_source.html#l00986">polyfem::solver::ProxyContactForceForm::compute_adjoint_rhs_step()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00055">polyfem::solver::ContactForm::compute_displaced_surface()</a>, <a class="el" href="_normal_adhesion_form_8cpp_source.html#l00068">polyfem::solver::NormalAdhesionForm::compute_displaced_surface()</a>, <a class="el" href="_state_diff_8cpp_source.html#l00219">polyfem::State::compute_force_jacobian_prev()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00068">polyfem::solver::CollisionBarrierForm::compute_partial_gradient()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00307">polyfem::solver::DeformedCollisionBarrierForm::compute_partial_gradient()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00462">polyfem::solver::SmoothContactForceForm::compute_partial_gradient_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00060">polyfem::solver::SpatialIntegralForm::compute_partial_gradient_step()</a>, <a class="el" href="_surface_traction_forms_8cpp_source.html#l01022">polyfem::solver::ProxyContactForceForm::compute_partial_gradient_step()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00063">polyfem::solver::FrictionForm::compute_surface_velocities()</a>, <a class="el" href="_tangential_adhesion_form_8cpp_source.html#l00059">polyfem::solver::TangentialAdhesionForm::compute_surface_velocities()</a>, <a class="el" href="_l2_projection_8cpp_source.html#l00070">polyfem::mesh::constrained_L2_projection()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00087">polyfem::solver::PeriodicMeshToMesh::eval()</a>, <a class="el" href="_spline_parametrizations_8cpp_source.html#l00107">polyfem::solver::BSplineParametrization1DTo2D::eval()</a>, <a class="el" href="_out_data_8cpp_source.html#l01059">polyfem::io::OutGeometryData::export_data()</a>, <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00044">polyfem::solver::InversionBarrierForm::first_derivative_unweighted()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00171">polyfem::solver::PeriodicContactForm::force_periodic_shape_derivative()</a>, <a class="el" href="_friction_form_8cpp_source.html#l00030">polyfem::solver::FrictionForm::force_shape_derivative()</a>, <a class="el" href="_tangential_adhesion_form_8cpp_source.html#l00030">polyfem::solver::TangentialAdhesionForm::force_shape_derivative()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00095">polyfem::solver::ElasticEnergyForm::get_integral_functional()</a>, <a class="el" href="_interpolation_8cpp_source.html#l00156">polyfem::utils::PiecewiseCubicInterpolation::init()</a>, <a class="el" href="_state_solve_nonlinear_8cpp_source.html#l00153">polyfem::State::init_nonlinear_tensor_solve()</a>, <a class="el" href="_periodic_mesh_to_mesh_8cpp_source.html#l00107">polyfem::solver::PeriodicMeshToMesh::inverse_eval()</a>, <a class="el" href="_spline_parametrizations_8cpp_source.html#l00096">polyfem::solver::BSplineParametrization1DTo2D::inverse_eval()</a>, <a class="el" href="_spline_parametrizations_8cpp_source.html#l00236">polyfem::solver::BoundedBiharmonicWeights2Dto3D::inverse_eval()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00085">polyfem::solver::CollisionBarrierForm::is_step_collision_free()</a>, <a class="el" href="_a_m_i_p_s_form_8cpp_source.html#l00239">polyfem::solver::AMIPSForm::is_step_valid()</a>, <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00173">polyfem::solver::InversionBarrierForm::is_step_valid()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00218">polyfem::solver::AdjointNLProblem::is_step_valid()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00106">polyfem::solver::CollisionBarrierForm::max_step_size()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00214">polyfem::solver::NLHomoProblem::reduced_to_disp_grad()</a>, <a class="el" href="_n_l_homo_problem_8cpp_source.html#l00356">polyfem::solver::NLHomoProblem::reduced_to_full()</a>, <a class="el" href="_state_remesh_8cpp_source.html#l00159">polyfem::State::remesh()</a>, <a class="el" href="_out_data_8cpp_source.html#l02138">polyfem::io::OutGeometryData::save_contact_surface()</a>, <a class="el" href="_out_data_8cpp_source.html#l01331">polyfem::io::OutGeometryData::save_volume()</a>, <a class="el" href="_out_data_8cpp_source.html#l01922">polyfem::io::OutGeometryData::save_volume_vector_field()</a>, <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00072">polyfem::solver::InversionBarrierForm::second_derivative_unweighted()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00077">polyfem::solver::CollisionBarrierForm::solution_changed()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00316">polyfem::solver::DeformedCollisionBarrierForm::solution_changed()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00487">polyfem::solver::SmoothContactForceForm::solution_changed_step()</a>, <a class="el" href="_state_homogenization_8cpp_source.html#l00288">polyfem::State::solve_homogenization()</a>, <a class="el" href="_state_homogenization_8cpp_source.html#l00134">polyfem::State::solve_homogenization_step()</a>, <a class="el" href="_variable_to_simulation_8cpp_source.html#l00686">polyfem::solver::PeriodicShapeVariableToSimulation::update()</a>, <a class="el" href="_variable_to_simulation_8cpp_source.html#l00518">polyfem::solver::DirichletNodesVariableToSimulation::update_state()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00062">polyfem::solver::CollisionBarrierForm::value_unweighted()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00300">polyfem::solver::DeformedCollisionBarrierForm::value_unweighted()</a>, <a class="el" href="_inversion_barrier_form_8cpp_source.html#l00020">polyfem::solver::InversionBarrierForm::value_unweighted()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00428">polyfem::solver::SmoothContactForceForm::value_unweighted_step()</a>, <a class="el" href="_surface_traction_forms_8cpp_source.html#l00971">polyfem::solver::ProxyContactForceForm::value_unweighted_step()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00069">vector2matrix()</a>, <a class="el" href="_remesher_8cpp_source.html#l00316">polyfem::mesh::Remesher::write_mesh()</a>, and <a class="el" href="_local_mesh_8cpp_source.html#l00607">polyfem::mesh::LocalMesh&lt; M &gt;::write_mesh()</a>.</p>
 
 </div>
 </div>

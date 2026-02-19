@@ -93,12 +93,12 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "_a_l_solver_8cpp.html",
-"_elasticity_utils_8hpp.html#a9845e724ca91d9f20e3ac9bc558c1176",
-"_l2_projection_8cpp_source.html",
-"_mesh_processing3_d_8hpp.html#a25bdd715e037020898a20361e0a8e5cc",
-"_polygonal_basis3d_8hpp_source.html",
-"_string_utils_8hpp_source.html",
-"auto__q__bases__2d__nodes_8hpp.html",
+"_elasticity_utils_8hpp.html#a9c92d8a4b1a73baab24a2ecef44f9440",
+"_l2_projection_8hpp.html",
+"_mesh_processing3_d_8hpp.html#a3ee92094bd01f05b924e0409e88f7342",
+"_polyhedron_quadrature_8cpp.html",
+"_sum_composite_form_8hpp.html",
+"auto__q__bases__2d__nodes_8hpp.html#a18ee2912d770a6bc9cfe2a485a9ecb25",
 "classpolyfem_1_1_integrable_functional.html#a8e61f2f179fe169a42362de10f03c0d9",
 "classpolyfem_1_1_state.html#a6d904b274f338bfa96d3110531cc0aa7",
 "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#adff098d24c145623f17bcf60b45b93a3",
@@ -138,13 +138,13 @@ var NAVTREEINDEX =
 "classpolyfem_1_1utils_1_1_edge_sampler.html",
 "classpolyfem_1_1utils_1_1_piecewise_interpolation.html#a594261dc63b365d258c363d365fa1d2d",
 "classpolyfem_1_1utils_1_1_specified_selection.html#a707920405e3936d3f09e6dab592cd09e",
-"functions_type.html",
-"namespacemembers_n.html",
-"namespacepolyfem_1_1mesh.html#a4a98f8d68f49e3a96c2948a812d03521",
-"namespacepolyfem_1_1utils.html#abfd143acb03ac1513784509e3185b980",
-"q__bases_8py.html#af9ee1db492ab9311fe8a9a6e72eb862a",
-"structpolyfem_1_1mesh_1_1_element.html#a78f75d8cecb95439a1558eaabb395635",
-"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_vert.html"
+"functions_u.html",
+"namespacemembers_o.html",
+"namespacepolyfem_1_1mesh.html#a4cf65a44948a6042699876449b0eddab",
+"namespacepolyfem_1_1utils.html#acb3cbd0548c52a428f73cc4405ed0d22",
+"raster_8cpp.html#a30b9d8b7f7d2f4cd16cc4bb5a3926499",
+"structpolyfem_1_1mesh_1_1_element.html#a882eaf58173331ee7d70349e6183a93a",
+"structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_vert.html#a067cb5bd4f27d333d2df6ca0fbb3f330"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -1,18 +1,29 @@
 <map id="polyfem::utils::tetrahedron_volume" name="polyfem::utils::tetrahedron_volume">
-<area shape="rect" id="Node000001" title="Compute the signed volume of a tetrahedron defined by four points." alt="" coords="804,101,1000,141"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html#a46a5d0af0ac8125650fe418548274ae6" title="Assembles the cross mass matrix between to function spaces." alt="" coords="307,30,482,85"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="853,97,807,76,755,60,684,49,612,45,482,50,482,45,612,40,685,44,757,55,809,71,855,92"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#a958cdc8b9491451ca9621bd910650ec3" title="Clip a tetrahedron using tetrahedron." alt="" coords="549,69,746,109"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="790,110,746,104,747,99,791,105"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_inversion_barrier_form.html#a99350043c4c953c27b539e95779a48cc" title=" " alt="" coords="539,133,756,173"/>
-<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="791,138,756,142,756,137,790,133"/>
-<area shape="rect" id="Node000008" href="$namespacepolyfem_1_1utils.html#ac722675794eb1f2ef7ea016c9aceb846" title="Compute the signed volume of a tetrahedron defined by four points." alt="" coords="549,197,745,237"/>
-<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="848,150,757,188,722,200,720,195,755,183,846,145"/>
+<area shape="rect" id="Node000001" title="Compute the signed volume of a tetrahedron defined by four points." alt="" coords="819,148,1015,188"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1assembler_1_1_mass_matrix_assembler.html#a46a5d0af0ac8125650fe418548274ae6" title="Assembles the cross mass matrix between to function spaces." alt="" coords="315,22,489,77"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="881,141,831,105,801,88,770,75,698,56,624,47,553,44,490,45,490,40,553,38,624,42,699,51,772,69,804,83,834,100,885,137"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1utils_1_1_tetrahedron_clipping.html#a958cdc8b9491451ca9621bd910650ec3" title="Clip a tetrahedron using tetrahedron." alt="" coords="563,84,761,124"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="822,147,741,127,743,121,824,142"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1solver_1_1_inversion_barrier_form.html#a99350043c4c953c27b539e95779a48cc" title=" " alt="" coords="553,148,771,188"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="805,171,771,171,771,165,805,165"/>
+<area shape="rect" id="Node000008" href="$namespacepolyfem_1_1utils.html#a61c2ed59ec36469fc091dc685362bffa" title="Determine if any simplex is inverted or collapses." alt="" coords="597,212,727,252"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="824,194,728,218,727,213,823,189"/>
+<area shape="rect" id="Node000013" href="$namespacepolyfem_1_1utils.html#ac722675794eb1f2ef7ea016c9aceb846" title="Compute the signed volume of a tetrahedron defined by four points." alt="" coords="564,276,760,316"/>
+<area shape="poly" id="edge14_Node000001_Node000013" title=" " alt="" coords="881,199,830,233,772,266,742,278,740,274,770,262,828,229,878,194"/>
 <area shape="rect" id="Node000003" href="$classpolyfem_1_1mesh_1_1_remesher.html#a60ab7872593bdf1951408bbd870526e4" title="Update the mesh positions and other projection quantities." alt="" coords="31,5,225,45"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="293,48,225,40,226,34,294,43"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="301,43,225,37,226,31,301,38"/>
 <area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_physics_remesher.html#a831328a90694d3a8971428bdffd70653" title=" " alt="" coords="5,69,251,109"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="294,72,251,77,250,72,294,67"/>
-<area shape="poly" id="edge5_Node000005_Node000002" title=" " alt="" coords="535,78,482,71,482,66,535,72"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_inversion_barrier_form.html#a3a3687d5e8161e7ecc465ab192dec649" title="Determine if a step from solution x0 to solution x1 is allowed." alt="" coords="299,133,491,173"/>
-<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="525,156,491,156,491,151,525,151"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="301,67,251,74,251,69,301,61"/>
+<area shape="poly" id="edge5_Node000005_Node000002" title=" " alt="" coords="553,84,489,70,490,65,554,79"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_inversion_barrier_form.html#a3a3687d5e8161e7ecc465ab192dec649" title="Determine if a step from solution x0 to solution x1 is allowed." alt="" coords="306,125,498,165"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="540,160,498,156,498,151,540,155"/>
+<area shape="rect" id="Node000009" href="$namespacepolyfem_1_1mesh.html#a8afa0d7d4eea0a8a77b59df01f204ca3" title=" " alt="" coords="303,190,501,215"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="583,226,502,217,502,211,583,220"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a530a168baf67f1c2f3cc21d36153dc19" title=" " alt="" coords="35,233,221,273"/>
+<area shape="poly" id="edge13_Node000008_Node000011" title=" " alt="" coords="583,238,222,252,222,247,583,232"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1solver_1_1_a_m_i_p_s_form.html#a359ec0ff883060c1f2c97868bfbfb174" title="Determine if a step from solution x0 to solution x1 is allowed." alt="" coords="299,291,505,331"/>
+<area shape="poly" id="edge12_Node000008_Node000012" title=" " alt="" coords="584,257,554,267,468,293,466,288,553,261,583,252"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#a042858ef53f3f410cc827236c7d5ead4" title=" " alt="" coords="30,154,226,209"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="289,197,226,192,227,186,289,191"/>
+<area shape="poly" id="edge11_Node000009_Node000011" title=" " alt="" coords="320,220,222,239,221,233,319,215"/>
 </map>

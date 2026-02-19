@@ -68,6 +68,7 @@ var namespacepolyfem_1_1utils =
     [ "get_local_thread_storage", "namespacepolyfem_1_1utils.html#a7ac07413a97692d41b88a610b9727b9b", null ],
     [ "get_n_threads", "namespacepolyfem_1_1utils.html#a3b3a8934d13e48dc3a51ed8efe25e11e", null ],
     [ "inverse", "namespacepolyfem_1_1utils.html#a81d53daf4d77bf87d802589c5ec3c1c4", null ],
+    [ "is_flipped", "namespacepolyfem_1_1utils.html#a61c2ed59ec36469fc091dc685362bffa", null ],
     [ "is_param_valid", "namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a", null ],
     [ "is_valid", "namespacepolyfem_1_1utils.html#a08175843f4d83a5b314e0f58fb2e9b4d", null ],
     [ "is_valid", "namespacepolyfem_1_1utils.html#a9283eee6b5b857fec557ebd308c6cbb5", null ],

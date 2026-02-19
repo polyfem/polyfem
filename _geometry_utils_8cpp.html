@@ -126,6 +126,7 @@ $(document).ready(function(){initNavTree('_geometry_utils_8cpp.html',''); initRe
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="_geometry_utils_8hpp_source.html">GeometryUtils.hpp</a>&quot;</code><br />
+<code>#include &lt;cassert&gt;</code><br />
 <code>#include &lt;<a class="el" href="_logger_8hpp_source.html">polyfem/utils/Logger.hpp</a>&gt;</code><br />
 <code>#include &lt;Eigen/Geometry&gt;</code><br />
 <code>#include &lt;igl/barycentric_coordinates.h&gt;</code><br />
@@ -199,6 +200,9 @@ Functions</h2></td></tr>
 <tr class="memitem:a864ce51c3548eaa0b8123e3df4e8e83e" id="r_a864ce51c3548eaa0b8123e3df4e8e83e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a864ce51c3548eaa0b8123e3df4e8e83e">polyfem::utils::tetrahedron_volume_hessian</a> (double ax, double ay, double az, double bx, double by, double bz, double cx, double cy, double cz, double dx, double dy, double dz, double H[144])</td></tr>
 <tr class="memdesc:a864ce51c3548eaa0b8123e3df4e8e83e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the gradient of the signed area of a 2D triangle defined by three points.  <br /></td></tr>
 <tr class="separator:a864ce51c3548eaa0b8123e3df4e8e83e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61c2ed59ec36469fc091dc685362bffa" id="r_a61c2ed59ec36469fc091dc685362bffa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1utils.html#a61c2ed59ec36469fc091dc685362bffa">polyfem::utils::is_flipped</a> (const Eigen::MatrixXd &amp;<a class="el" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, const Eigen::MatrixXi &amp;<a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>)</td></tr>
+<tr class="memdesc:a61c2ed59ec36469fc091dc685362bffa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine if any simplex is inverted or collapses.  <br /></td></tr>
+<tr class="separator:a61c2ed59ec36469fc091dc685362bffa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

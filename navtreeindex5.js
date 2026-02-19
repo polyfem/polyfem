@@ -1,6 +1,5 @@
 var NAVTREEINDEX5 =
 {
-"_string_utils_8hpp_source.html":[8,0,1,0,12,57],
 "_sum_composite_form_8hpp.html":[8,0,1,0,5,0,17],
 "_sum_composite_form_8hpp_source.html":[8,0,1,0,5,0,17],
 "_sum_model_8cpp.html":[8,0,1,0,0,74],
@@ -249,5 +248,6 @@ var NAVTREEINDEX5 =
 "auto__q__bases__2d__grad_8hpp_source.html":[8,0,1,0,1,20],
 "auto__q__bases__2d__nodes_8cpp.html":[8,0,1,0,1,21],
 "auto__q__bases__2d__nodes_8cpp.html#a18ee2912d770a6bc9cfe2a485a9ecb25":[8,0,1,0,1,21,0],
-"auto__q__bases__2d__nodes_8cpp_source.html":[8,0,1,0,1,21]
+"auto__q__bases__2d__nodes_8cpp_source.html":[8,0,1,0,1,21],
+"auto__q__bases__2d__nodes_8hpp.html":[8,0,1,0,1,22]
 };

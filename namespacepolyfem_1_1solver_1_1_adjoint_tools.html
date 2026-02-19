@@ -171,14 +171,8 @@ Functions</h2></td></tr>
 <tr class="separator:a8ef244a2d9d1d64b9ee8c7d876f3b4e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1bd6a5b37bca39571bb8232619a490da" id="r_a1bd6a5b37bca39571bb8232619a490da"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a1bd6a5b37bca39571bb8232619a490da">face_velocity_divergence</a> (const Eigen::MatrixXd &amp;<a class="el" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>)</td></tr>
 <tr class="separator:a1bd6a5b37bca39571bb8232619a490da"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac247fac09d44fb8145e00cc6f9d4b0db" id="r_ac247fac09d44fb8145e00cc6f9d4b0db"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver_1_1_adjoint_tools.html#ac247fac09d44fb8145e00cc6f9d4b0db">triangle_jacobian</a> (const Eigen::VectorXd &amp;v1, const Eigen::VectorXd &amp;v2, const Eigen::VectorXd &amp;v3)</td></tr>
-<tr class="separator:ac247fac09d44fb8145e00cc6f9d4b0db"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a02d0d3d2eac060807c163fce8ddb5422" id="r_a02d0d3d2eac060807c163fce8ddb5422"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a02d0d3d2eac060807c163fce8ddb5422">tet_determinant</a> (const Eigen::VectorXd &amp;v1, const Eigen::VectorXd &amp;v2, const Eigen::VectorXd &amp;v3, const Eigen::VectorXd &amp;v4)</td></tr>
-<tr class="separator:a02d0d3d2eac060807c163fce8ddb5422"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33b920ae29e72a1b27a62e059acf0a5e" id="r_a33b920ae29e72a1b27a62e059acf0a5e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a33b920ae29e72a1b27a62e059acf0a5e">scaled_jacobian</a> (const Eigen::MatrixXd &amp;<a class="el" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, const Eigen::MatrixXi &amp;<a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>, Eigen::VectorXd &amp;quality)</td></tr>
 <tr class="separator:a33b920ae29e72a1b27a62e059acf0a5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aef63c67d63c752e30a1b040950f7b1d0" id="r_aef63c67d63c752e30a1b040950f7b1d0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1solver_1_1_adjoint_tools.html#aef63c67d63c752e30a1b040950f7b1d0">is_flipped</a> (const Eigen::MatrixXd &amp;<a class="el" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>, const Eigen::MatrixXi &amp;<a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">F</a>)</td></tr>
-<tr class="separator:aef63c67d63c752e30a1b040950f7b1d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="aa650adfcea9ae851fdf1642e5171b29b" name="aa650adfcea9ae851fdf1642e5171b29b"></a>
@@ -1078,7 +1072,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_adjoint_tools_8cpp_source.html#l01346">1346</a> of file <a class="el" href="_adjoint_tools_8cpp_source.html">AdjointTools.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>.</p>
+<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00047">V</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1105,7 +1099,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_adjoint_tools_8cpp_source.html#l01378">1378</a> of file <a class="el" href="_adjoint_tools_8cpp_source.html">AdjointTools.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>.</p>
+<p class="reference">References <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00047">V</a>.</p>
 
 </div>
 </div>
@@ -1127,7 +1121,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_adjoint_tools_8cpp_source.html#l01362">1362</a> of file <a class="el" href="_adjoint_tools_8cpp_source.html">AdjointTools.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>.</p>
+<p class="reference">References <a class="el" href="autodiff_8h_source.html#l00054">DiffScalarBase::setVariableCount()</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00047">V</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1154,7 +1148,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_adjoint_tools_8cpp_source.html#l01383">1383</a> of file <a class="el" href="_adjoint_tools_8cpp_source.html">AdjointTools.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>.</p>
+<p class="reference">References <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00047">V</a>.</p>
 
 </div>
 </div>
@@ -1226,50 +1220,6 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="aef63c67d63c752e30a1b040950f7b1d0" name="aef63c67d63c752e30a1b040950f7b1d0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aef63c67d63c752e30a1b040950f7b1d0">&#9670;&#160;</a></span>is_flipped()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool polyfem::solver::AdjointTools::is_flipped </td>
-          <td>(</td>
-          <td class="paramtype">const Eigen::MatrixXd &amp;&#160;</td>
-          <td class="paramname"><em>V</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::MatrixXi &amp;&#160;</td>
-          <td class="paramname"><em>F</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_adjoint_tools_8cpp_source.html#l01463">1463</a> of file <a class="el" href="_adjoint_tools_8cpp_source.html">AdjointTools.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_adjoint_tools_8cpp_source.html#l01394">tet_determinant()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l01388">triangle_jacobian()</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_slim_smooth_8cpp_source.html#l00011">polyfem::mesh::apply_slim()</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00217">polyfem::solver::AdjointNLProblem::is_step_valid()</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_1_1_adjoint_tools_aef63c67d63c752e30a1b040950f7b1d0_cgraph.svg" width="416" height="115"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
-</div>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_1_1_adjoint_tools_aef63c67d63c752e30a1b040950f7b1d0_icgraph.svg" width="100%" height="398"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
-</div>
-
-</div>
-</div>
 <a id="af8e122cc77e54fe557a75e10bb5d6f2c" name="af8e122cc77e54fe557a75e10bb5d6f2c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af8e122cc77e54fe557a75e10bb5d6f2c">&#9670;&#160;</a></span>map_node_to_primitive_order()</h2>
 
@@ -1300,7 +1250,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_state_8hpp_source.html#l00471">polyfem::State::mesh</a>, <a class="el" href="_state_8hpp_source.html#l00182">polyfem::State::n_geom_bases</a>, and <a class="el" href="_state_8cpp_source.html#l00234">polyfem::State::node_to_primitive()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_a_m_i_p_s_form_8cpp_source.html#l00265">polyfem::solver::AMIPSForm::compute_partial_gradient()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00068">polyfem::solver::CollisionBarrierForm::compute_partial_gradient()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00307">polyfem::solver::DeformedCollisionBarrierForm::compute_partial_gradient()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00462">polyfem::solver::SmoothContactForceForm::compute_partial_gradient_step()</a>, and <a class="el" href="_surface_traction_forms_8cpp_source.html#l01022">polyfem::solver::ProxyContactForceForm::compute_partial_gradient_step()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_a_m_i_p_s_form_8cpp_source.html#l00229">polyfem::solver::AMIPSForm::compute_partial_gradient()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00068">polyfem::solver::CollisionBarrierForm::compute_partial_gradient()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00307">polyfem::solver::DeformedCollisionBarrierForm::compute_partial_gradient()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00462">polyfem::solver::SmoothContactForceForm::compute_partial_gradient_step()</a>, and <a class="el" href="_surface_traction_forms_8cpp_source.html#l01022">polyfem::solver::ProxyContactForceForm::compute_partial_gradient_step()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1344,7 +1294,7 @@ Here is the caller graph for this function:</div>
 
 <p class="reference">References <a class="el" href="_state_8hpp_source.html#l00471">polyfem::State::mesh</a>, <a class="el" href="_state_8hpp_source.html#l00182">polyfem::State::n_geom_bases</a>, and <a class="el" href="_state_8cpp_source.html#l00227">polyfem::State::primitive_to_node()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_a_m_i_p_s_form_8cpp_source.html#l00265">polyfem::solver::AMIPSForm::compute_partial_gradient()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00136">polyfem::solver::CollisionBarrierForm::get_updated_mesh_nodes()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00368">polyfem::solver::DeformedCollisionBarrierForm::get_updated_mesh_nodes()</a>, and <a class="el" href="_a_m_i_p_s_form_8cpp_source.html#l00258">polyfem::solver::AMIPSForm::value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_a_m_i_p_s_form_8cpp_source.html#l00229">polyfem::solver::AMIPSForm::compute_partial_gradient()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00136">polyfem::solver::CollisionBarrierForm::get_updated_mesh_nodes()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00368">polyfem::solver::DeformedCollisionBarrierForm::get_updated_mesh_nodes()</a>, and <a class="el" href="_a_m_i_p_s_form_8cpp_source.html#l00222">polyfem::solver::AMIPSForm::value_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1390,101 +1340,9 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_adjoint_tools_8cpp_source.html#l01403">1403</a> of file <a class="el" href="_adjoint_tools_8cpp_source.html">AdjointTools.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00046">V</a>.</p>
-
-</div>
-</div>
-<a id="a02d0d3d2eac060807c163fce8ddb5422" name="a02d0d3d2eac060807c163fce8ddb5422"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a02d0d3d2eac060807c163fce8ddb5422">&#9670;&#160;</a></span>tet_determinant()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">double polyfem::solver::AdjointTools::tet_determinant </td>
-          <td>(</td>
-          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>v1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>v2</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>v3</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>v4</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_adjoint_tools_8cpp_source.html#l01394">1394</a> of file <a class="el" href="_adjoint_tools_8cpp_source.html">AdjointTools.cpp</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l01463">is_flipped()</a>.</p>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_1_1_adjoint_tools_a02d0d3d2eac060807c163fce8ddb5422_icgraph.svg" width="100%" height="398"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
-</div>
-
-</div>
-</div>
-<a id="ac247fac09d44fb8145e00cc6f9d4b0db" name="ac247fac09d44fb8145e00cc6f9d4b0db"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac247fac09d44fb8145e00cc6f9d4b0db">&#9670;&#160;</a></span>triangle_jacobian()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">double polyfem::solver::AdjointTools::triangle_jacobian </td>
-          <td>(</td>
-          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>v1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>v2</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>v3</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
 <p class="definition">Definition at line <a class="el" href="_adjoint_tools_8cpp_source.html#l01388">1388</a> of file <a class="el" href="_adjoint_tools_8cpp_source.html">AdjointTools.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l01463">is_flipped()</a>.</p>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="namespacepolyfem_1_1solver_1_1_adjoint_tools_ac247fac09d44fb8145e00cc6f9d4b0db_icgraph.svg" width="100%" height="398"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
-</div>
+<p class="reference">References <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00047">V</a>.</p>
 
 </div>
 </div>

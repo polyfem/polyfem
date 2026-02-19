@@ -21,12 +21,9 @@ var namespacepolyfem_1_1solver =
       [ "face_normal_gradient", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a51c3e2db128d7b83f6461cff5aa17610", null ],
       [ "face_velocity_divergence", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a1bd6a5b37bca39571bb8232619a490da", null ],
       [ "integrate_objective", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a4c93693417aa7c2cf7f03e5bd0ac03dd", null ],
-      [ "is_flipped", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#aef63c67d63c752e30a1b040950f7b1d0", null ],
       [ "map_node_to_primitive_order", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#af8e122cc77e54fe557a75e10bb5d6f2c", null ],
       [ "map_primitive_to_node_order", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#aa7f73a425012498c55fca81fd8a24ca5", null ],
-      [ "scaled_jacobian", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a33b920ae29e72a1b27a62e059acf0a5e", null ],
-      [ "tet_determinant", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a02d0d3d2eac060807c163fce8ddb5422", null ],
-      [ "triangle_jacobian", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#ac247fac09d44fb8145e00cc6f9d4b0db", null ]
+      [ "scaled_jacobian", "namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a33b920ae29e72a1b27a62e059acf0a5e", null ]
     ] ],
     [ "AccelerationForm", "classpolyfem_1_1solver_1_1_acceleration_form.html", "classpolyfem_1_1solver_1_1_acceleration_form" ],
     [ "AdjointForm", "classpolyfem_1_1solver_1_1_adjoint_form.html", "classpolyfem_1_1solver_1_1_adjoint_form" ],

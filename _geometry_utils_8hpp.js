@@ -4,6 +4,7 @@ var _geometry_utils_8hpp =
     [ "are_edges_collinear", "_geometry_utils_8hpp.html#a9a79c23ef96d817db692158bbcfde49a", null ],
     [ "are_triangles_coplanar", "_geometry_utils_8hpp.html#ab7792e275b464e2ea5fad474fa7d9c0b", null ],
     [ "barycentric_coordinates", "_geometry_utils_8hpp.html#ac7587aa934754541bace662011fd3064", null ],
+    [ "is_flipped", "_geometry_utils_8hpp.html#a61c2ed59ec36469fc091dc685362bffa", null ],
     [ "tetrahedron_intersects_ball", "_geometry_utils_8hpp.html#a0e076b0bb2f5dba6104e2977df78e127", null ],
     [ "tetrahedron_volume", "_geometry_utils_8hpp.html#ac722675794eb1f2ef7ea016c9aceb846", null ],
     [ "tetrahedron_volume", "_geometry_utils_8hpp.html#a8a72689f8c34fff6ce44d8568d3a5c1e", null ],
