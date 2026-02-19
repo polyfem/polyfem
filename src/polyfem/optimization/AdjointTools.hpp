@@ -156,9 +156,6 @@ namespace polyfem::solver
 		Eigen::MatrixXd face_velocity_divergence(
 			const Eigen::MatrixXd &V);
 
-		double triangle_jacobian(const Eigen::VectorXd &v1, const Eigen::VectorXd &v2, const Eigen::VectorXd &v3);
-		double tet_determinant(const Eigen::VectorXd &v1, const Eigen::VectorXd &v2, const Eigen::VectorXd &v3, const Eigen::VectorXd &v4);
 		void scaled_jacobian(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, Eigen::VectorXd &quality);
-		bool is_flipped(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F);
 	}; // namespace AdjointTools
 } // namespace polyfem::solver

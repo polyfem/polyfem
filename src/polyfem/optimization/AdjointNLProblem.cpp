@@ -4,6 +4,7 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/Timer.hpp>
+#include <polyfem/utils/GeometryUtils.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/io/MshWriter.hpp>
 #include <polyfem/State.hpp>
@@ -248,7 +249,7 @@ namespace polyfem::solver
 
 				V1 = V_smooth;
 
-				bool flipped = AdjointTools::is_flipped(V1, F);
+				bool flipped = utils::is_flipped(V1, F);
 				if (flipped)
 				{
 					adjoint_logger().info("Found flipped element in LS, step not valid!");
