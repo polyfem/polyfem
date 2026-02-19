@@ -109,7 +109,7 @@ namespace polyfem::solver
 	{
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
-		auto broad_phase = ipc::create_broad_phase(broad_phase_method_).get();
+		auto broad_phase = ipc::create_broad_phase(broad_phase_method_);
 		if (const auto barrier_contact = dynamic_cast<const BarrierContactForm*>(&contact_form_))
 		{
 			ipc::NormalCollisions collision_set;
@@ -118,7 +118,7 @@ namespace polyfem::solver
 
 			collision_set.set_enable_shape_derivatives(barrier_contact->enable_shape_derivatives());
 			collision_set.build(
-				collision_mesh_, displaced_surface, barrier_contact->dhat(), /*dmin=*/0, broad_phase);
+				collision_mesh_, displaced_surface, barrier_contact->dhat(), /*dmin=*/0, broad_phase.get());
 			
 			friction_collision_set_.build(
 				collision_mesh_, displaced_surface, collision_set,
@@ -128,10 +128,10 @@ namespace polyfem::solver
 		{
 			ipc::SmoothCollisions collision_set;
 			if (smooth_contact->using_adaptive_dhat())
-				collision_set.compute_adaptive_dhat(collision_mesh_, collision_mesh_.rest_positions(), smooth_contact->get_params(), broad_phase);
+				collision_set.compute_adaptive_dhat(collision_mesh_, collision_mesh_.rest_positions(), smooth_contact->get_params(), broad_phase.get());
 			collision_set.build(
 				collision_mesh_, displaced_surface, smooth_contact->get_params(), 
-				smooth_contact->using_adaptive_dhat(), broad_phase);
+				smooth_contact->using_adaptive_dhat(), broad_phase.get());
 
 			friction_collision_set_.build(   
 				collision_mesh_, displaced_surface, 
