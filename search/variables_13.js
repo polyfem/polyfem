@@ -6,7 +6,7 @@ var searchData=
   ['save_5ffreq_3',['save_freq',['../classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#aacecbd532ec78e70b03c76daa28b5815',1,'polyfem::solver::AdjointNLProblem']]],
   ['save_5fiter_4',['save_iter',['../classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#aba97a50b0012266602dc92f25b72cfd7',1,'polyfem::solver::AdjointNLProblem']]],
   ['scalar_5fvalues_5',['scalar_values',['../structpolyfem_1_1io_1_1_out_geometry_data_1_1_export_options.html#a699858662df1d64ef45221e33298aa15',1,'polyfem::io::OutGeometryData::ExportOptions']]],
-  ['scale_5f_6',['scale_',['../classpolyfem_1_1solver_1_1_form.html#a8ef862ca4b811cb8953c05a169ede1e4',1,'polyfem::solver::Form::scale_'],['../classpolyfem_1_1solver_1_1_scaling.html#a13f638f434fafdd3fa6727e55a5545ce',1,'polyfem::solver::Scaling::scale_']]],
+  ['scale_5f_6',['scale_',['../classpolyfem_1_1solver_1_1_scaling.html#a13f638f434fafdd3fa6727e55a5545ce',1,'polyfem::solver::Scaling::scale_'],['../classpolyfem_1_1solver_1_1_form.html#a8ef862ca4b811cb8953c05a169ede1e4',1,'polyfem::solver::Form::scale_']]],
   ['scale_5finvariant_5f_7',['scale_invariant_',['../classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#a501b369f0575d34a5469bf46f18f1e46',1,'polyfem::solver::BoundarySmoothingForm']]],
   ['scaling_8',['scaling',['../classpolyfem_1_1solver_1_1_a_l_solver.html#aee4e6ac07542450d67239fd9a1667301',1,'polyfem::solver::ALSolver']]],
   ['scaling_5f_9',['scaling_',['../classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#a1ba494ea763c1e6407e03fe91b76c223',1,'polyfem::problem::PointBasedTensorProblem']]],

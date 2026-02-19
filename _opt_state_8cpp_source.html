@@ -10,7 +10,7 @@
 <meta property="og:description" content="A polyvalent C++ FEM library." />
 <meta property="og:url" content="https://polyfem.github.io/polyfem/" />
 <!-- END opengraph metadata -->
-<title>PolyFEM: src/polyfem/OptState.cpp Source File</title>
+<title>PolyFEM: src/polyfem/optimization/OptState.cpp Source File</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -129,13 +129,13 @@ $(document).ready(function(){initNavTree('_opt_state_8cpp_source.html',''); init
 <div class="contents">
 <a href="_opt_state_8cpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="_opt_state_8hpp.html">OptState.hpp</a>&quot;</span></div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;<a class="code" href="_optimizations_8hpp.html">polyfem/solver/Optimizations.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;<a class="code" href="_optimizations_8hpp.html">polyfem/optimization/Optimizations.hpp</a>&gt;</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;<a class="code" href="_string_utils_8hpp.html">polyfem/utils/StringUtils.hpp</a>&gt;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;<a class="code" href="par__for_8hpp.html">polyfem/utils/par_for.hpp</a>&gt;</span></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;<a class="code" href="_geogram_utils_8hpp.html">polyfem/utils/GeogramUtils.hpp</a>&gt;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;<a class="code" href="_adjoint_n_l_problem_8hpp.html">polyfem/solver/AdjointNLProblem.hpp</a>&gt;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;<a class="code" href="_variable_to_simulation_8hpp.html">polyfem/solver/forms/adjoint_forms/VariableToSimulation.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;<a class="code" href="_adjoint_n_l_problem_8hpp.html">polyfem/optimization/AdjointNLProblem.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;<a class="code" href="_variable_to_simulation_8hpp.html">polyfem/optimization/forms/VariableToSimulation.hpp</a>&gt;</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;polysolve/nonlinear/Solver.hpp&gt;</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
@@ -143,10 +143,9 @@ $(document).ready(function(){initNavTree('_opt_state_8cpp_source.html',''); init
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;spdlog/sinks/basic_file_sink.h&gt;</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#include &lt;spdlog/sinks/ostream_sink.h&gt;</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
-<div class="foldopen" id="foldopen00017" data-start="{" data-end="}">
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="namespacespdlog.html">   17</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacespdlog_1_1level.html">spdlog::level</a></div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacespdlog_1_1level.html">spdlog::level</a></div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>{</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    NLOHMANN_JSON_SERIALIZE_ENUM(</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a4840c076c8975d60f888fd87763daebb">NLOHMANN_JSON_SERIALIZE_ENUM</a>(</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        spdlog::level::level_enum,</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        {{spdlog::level::level_enum::trace, <span class="stringliteral">&quot;trace&quot;</span>},</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>         {spdlog::level::level_enum::debug, <span class="stringliteral">&quot;debug&quot;</span>},</div>
@@ -163,7 +162,6 @@ $(document).ready(function(){initNavTree('_opt_state_8cpp_source.html',''); init
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>         {spdlog::level::level_enum::critical, 4},</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>         {spdlog::level::level_enum::off, 5}})</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>}</div>
-</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span> </div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacepolyfem.html">polyfem</a></div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>{</div>
@@ -384,13 +382,14 @@ $(document).ready(function(){initNavTree('_opt_state_8cpp_source.html',''); init
 <div class="ttc" id="aclasspolyfem_1_1utils_1_1_geogram_utils_html_a5363fc591cc7295f177057bcbe48ec39"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_geogram_utils.html#a5363fc591cc7295f177057bcbe48ec39">polyfem::utils::GeogramUtils::initialize</a></div><div class="ttdeci">void initialize()</div><div class="ttdef"><b>Definition</b> <a href="_geogram_utils_8cpp_source.html#l00057">GeogramUtils.cpp:57</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1utils_1_1_n_thread_html_a450e08589b053f6b1420f9f9eee0cf8b"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_n_thread.html#a450e08589b053f6b1420f9f9eee0cf8b">polyfem::utils::NThread::get</a></div><div class="ttdeci">static NThread &amp; get()</div><div class="ttdef"><b>Definition</b> <a href="par__for_8hpp_source.html#l00019">par_for.hpp:19</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1utils_1_1_n_thread_html_ae8b361561f7cdb675bc69991af706d85"><div class="ttname"><a href="classpolyfem_1_1utils_1_1_n_thread.html#ae8b361561f7cdb675bc69991af706d85">polyfem::utils::NThread::set_num_threads</a></div><div class="ttdeci">void set_num_threads(const int max_threads)</div><div class="ttdef"><b>Definition</b> <a href="par__for_8hpp_source.html#l00027">par_for.hpp:27</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1mesh_html_a4840c076c8975d60f888fd87763daebb"><div class="ttname"><a href="namespacepolyfem_1_1mesh.html#a4840c076c8975d60f888fd87763daebb">polyfem::mesh::NLOHMANN_JSON_SERIALIZE_ENUM</a></div><div class="ttdeci">NLOHMANN_JSON_SERIALIZE_ENUM(CollisionProxyTessellation, {{CollisionProxyTessellation::REGULAR, &quot;regular&quot;}, {CollisionProxyTessellation::IRREGULAR, &quot;irregular&quot;}})</div></div>
 <div class="ttc" id="anamespacepolyfem_1_1solver_html_aff8f99461509f079bd5ac2a9817dbef8"><div class="ttname"><a href="namespacepolyfem_1_1solver.html#aff8f99461509f079bd5ac2a9817dbef8">polyfem::solver::CacheLevel</a></div><div class="ttdeci">CacheLevel</div><div class="ttdef"><b>Definition</b> <a href="_diff_cache_8hpp_source.html#l00011">DiffCache.hpp:12</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1utils_html_a4dc2e59d21d66809d2273ae115be0b73"><div class="ttname"><a href="namespacepolyfem_1_1utils.html#a4dc2e59d21d66809d2273ae115be0b73">polyfem::utils::resolve_path</a></div><div class="ttdeci">std::string resolve_path(const std::string &amp;path, const std::string &amp;input_file_path, const bool only_if_exists=false)</div><div class="ttdef"><b>Definition</b> <a href="_string_utils_8cpp_source.html#l00103">StringUtils.cpp:103</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition</b> <a href="_a_m_i_p_s_energy_8cpp_source.html#l00005">AMIPSEnergy.cpp:6</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_a4d64be939c7759c782fff98ed87f3399"><div class="ttname"><a href="namespacepolyfem.html#a4d64be939c7759c782fff98ed87f3399">polyfem::adjoint_logger</a></div><div class="ttdeci">spdlog::logger &amp; adjoint_logger()</div><div class="ttdoc">Retrieves the current logger for adjoint.</div><div class="ttdef"><b>Definition</b> <a href="_logger_8cpp_source.html#l00030">Logger.cpp:30</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_a77fa8fe96825827f2af726fcf6405d15"><div class="ttname"><a href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">polyfem::json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition</b> <a href="_common_8hpp_source.html#l00009">Common.hpp:9</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_a85a916e211055cb036123120e33fd971"><div class="ttname"><a href="namespacepolyfem.html#a85a916e211055cb036123120e33fd971">polyfem::set_adjoint_logger</a></div><div class="ttdeci">void set_adjoint_logger(std::shared_ptr&lt; spdlog::logger &gt; p_logger)</div><div class="ttdoc">Setup a logger object to be used by adjoint Polyfem.</div><div class="ttdef"><b>Definition</b> <a href="_logger_8cpp_source.html#l00068">Logger.cpp:68</a></div></div>
-<div class="ttc" id="anamespacespdlog_1_1level_html"><div class="ttname"><a href="namespacespdlog_1_1level.html">spdlog::level</a></div><div class="ttdef"><b>Definition</b> <a href="_opt_state_8cpp_source.html#l00017">OptState.cpp:18</a></div></div>
+<div class="ttc" id="anamespacespdlog_1_1level_html"><div class="ttname"><a href="namespacespdlog_1_1level.html">spdlog::level</a></div><div class="ttdef"><b>Definition</b> <a href="_optimizations_8cpp_source.html#l00030">Optimizations.cpp:31</a></div></div>
 <div class="ttc" id="apar__for_8hpp_html"><div class="ttname"><a href="par__for_8hpp.html">par_for.hpp</a></div></div>
 <div class="ttc" id="astructpolyfem_1_1solver_1_1_adjoint_opt_utils_html_a0f92c47aec3d6056c351b8f79a97bb69"><div class="ttname"><a href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#a0f92c47aec3d6056c351b8f79a97bb69">polyfem::solver::AdjointOptUtils::create_form</a></div><div class="ttdeci">static std::shared_ptr&lt; AdjointForm &gt; create_form(const json &amp;args, const VariableToSimulationGroup &amp;var2sim, const std::vector&lt; std::shared_ptr&lt; State &gt; &gt; &amp;states)</div><div class="ttdef"><b>Definition</b> <a href="_optimizations_8cpp_source.html#l00134">Optimizations.cpp:134</a></div></div>
 <div class="ttc" id="astructpolyfem_1_1solver_1_1_adjoint_opt_utils_html_a522e38998a46be499ac7d7d1b28e0fd9"><div class="ttname"><a href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#a522e38998a46be499ac7d7d1b28e0fd9">polyfem::solver::AdjointOptUtils::make_nl_solver</a></div><div class="ttdeci">static std::shared_ptr&lt; polysolve::nonlinear::Solver &gt; make_nl_solver(const json &amp;solver_params, const json &amp;linear_solver_params, const double characteristic_length)</div><div class="ttdef"><b>Definition</b> <a href="_optimizations_8cpp_source.html#l00069">Optimizations.cpp:69</a></div></div>
@@ -404,7 +403,7 @@ $(document).ready(function(){initNavTree('_opt_state_8cpp_source.html',''); init
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="_opt_state_8cpp.html">OptState.cpp</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_5da2a33dc2e1a94e890bf1b87e3a1bf1.html">optimization</a></li><li class="navelem"><a class="el" href="_opt_state_8cpp.html">OptState.cpp</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>

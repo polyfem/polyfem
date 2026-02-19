@@ -10,7 +10,7 @@
 <meta property="og:description" content="A polyvalent C++ FEM library." />
 <meta property="og:url" content="https://polyfem.github.io/polyfem/" />
 <!-- END opengraph metadata -->
-<title>PolyFEM: src/polyfem/solver/AdjointNLProblem.hpp Source File</title>
+<title>PolyFEM: src/polyfem/optimization/AdjointNLProblem.hpp Source File</title>
 <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
@@ -131,8 +131,8 @@ $(document).ready(function(){initNavTree('_adjoint_n_l_problem_8hpp_source.html'
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;<a class="code" href="_common_8hpp.html">polyfem/Common.hpp</a>&gt;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="_full_n_l_problem_8hpp.html">FullNLProblem.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;<a class="code" href="_variable_to_simulation_8hpp.html">polyfem/solver/forms/adjoint_forms/VariableToSimulation.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;<a class="code" href="_full_n_l_problem_8hpp.html">polyfem/solver/FullNLProblem.hpp</a>&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;<a class="code" href="_variable_to_simulation_8hpp.html">polyfem/optimization/forms/VariableToSimulation.hpp</a>&gt;</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;fstream&gt;</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacepolyfem.html">polyfem</a></div>
@@ -229,7 +229,7 @@ $(document).ready(function(){initNavTree('_adjoint_n_l_problem_8hpp_source.html'
 <div class="ttc" id="aclasspolyfem_1_1solver_1_1_adjoint_n_l_problem_html_afe950f67bec760262590e323e4fa15e8"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_adjoint_n_l_problem.html#afe950f67bec760262590e323e4fa15e8">polyfem::solver::AdjointNLProblem::~AdjointNLProblem</a></div><div class="ttdeci">virtual ~AdjointNLProblem()=default</div></div>
 <div class="ttc" id="aclasspolyfem_1_1solver_1_1_full_n_l_problem_html"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_full_n_l_problem.html">polyfem::solver::FullNLProblem</a></div><div class="ttdef"><b>Definition</b> <a href="_full_n_l_problem_8hpp_source.html#l00011">FullNLProblem.hpp:12</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1solver_1_1_variable_to_simulation_group_html"><div class="ttname"><a href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html">polyfem::solver::VariableToSimulationGroup</a></div><div class="ttdoc">A collection of VariableToSimulation.</div><div class="ttdef"><b>Definition</b> <a href="_variable_to_simulation_8hpp_source.html#l00050">VariableToSimulation.hpp:51</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1solver_html"><div class="ttname"><a href="namespacepolyfem_1_1solver.html">polyfem::solver</a></div><div class="ttdef"><b>Definition</b> <a href="_opt_state_8hpp_source.html#l00015">OptState.hpp:16</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1solver_html"><div class="ttname"><a href="namespacepolyfem_1_1solver.html">polyfem::solver</a></div><div class="ttdef"><b>Definition</b> <a href="_adjoint_n_l_problem_8cpp_source.html#l00015">AdjointNLProblem.cpp:16</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html"><div class="ttname"><a href="namespacepolyfem.html">polyfem</a></div><div class="ttdef"><b>Definition</b> <a href="_a_m_i_p_s_energy_8cpp_source.html#l00005">AMIPSEnergy.cpp:6</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_a77fa8fe96825827f2af726fcf6405d15"><div class="ttname"><a href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">polyfem::json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition</b> <a href="_common_8hpp_source.html#l00009">Common.hpp:9</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_af952b2322cc7cfb3abcca5212e2f16d4"><div class="ttname"><a href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">polyfem::StiffnessMatrix</a></div><div class="ttdeci">Eigen::SparseMatrix&lt; double, Eigen::ColMajor &gt; StiffnessMatrix</div><div class="ttdef"><b>Definition</b> <a href="_types_8hpp_source.html#l00024">Types.hpp:24</a></div></div>
@@ -239,7 +239,7 @@ $(document).ready(function(){initNavTree('_adjoint_n_l_problem_8hpp_source.html'
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_10fb13321304f63ea5f7ee0a82e63ce8.html">solver</a></li><li class="navelem"><a class="el" href="_adjoint_n_l_problem_8hpp.html">AdjointNLProblem.hpp</a></li>
+    <li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2dc3e3ac563c5097fbf94f8f985cc10c.html">polyfem</a></li><li class="navelem"><a class="el" href="dir_5da2a33dc2e1a94e890bf1b87e3a1bf1.html">optimization</a></li><li class="navelem"><a class="el" href="_adjoint_n_l_problem_8hpp.html">AdjointNLProblem.hpp</a></li>
     <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.8 </li>
   </ul>
 </div>

@@ -138,11 +138,11 @@ var NAVTREEINDEX =
 "classpolyfem_1_1utils_1_1_expression_value.html",
 "classpolyfem_1_1utils_1_1_piecewise_interpolation.html#ab2f5044529d58b015d155d9884200158",
 "classpolyfem_1_1utils_1_1_specified_selection.html#ac9a3788cc0d97f863705f26226704edf",
-"functions_vars.html",
-"namespacemembers_q.html",
-"namespacepolyfem_1_1mesh.html#a52d29c294eac8e3515c8c721ac4879c2",
-"namespacepolyfem_1_1utils.html#acb3cbd0548c52a428f73cc4405ed0d22",
-"raster_8cpp.html#a30b9d8b7f7d2f4cd16cc4bb5a3926499",
+"functions_v.html",
+"namespacemembers_p.html",
+"namespacepolyfem_1_1mesh.html#a521aec8d19df9ccbe3493d7d6d97c451",
+"namespacepolyfem_1_1utils.html#ac7587aa934754541bace662011fd3064",
+"raster_8cpp.html",
 "structpolyfem_1_1mesh_1_1_element.html#a882eaf58173331ee7d70349e6183a93a",
 "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1nc_vert.html#a067cb5bd4f27d333d2df6ca0fbb3f330"
 ];
