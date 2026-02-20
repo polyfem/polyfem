@@ -556,21 +556,21 @@ namespace polyfem::mesh
 		if (!contact_ranks.empty())
 			writer.add_field("contact_energy_rank", contact_energy_ranks);
 		writer.add_field("energy_rank", energy_ranks);
-		writer.write_mesh(vtu_name(time_steps - 3), rest_positions, elements, /*is_simplicial=*/true, /*has_poly=*/false);
+		writer.write_mesh(vtu_name(time_steps - 3), rest_positions, elements, state.mesh->is_volume() ? paraviewo::CellType::Tetrahedron : paraviewo::CellType::Triangle);
 
 		writer.add_field("displacement", displacements);
 		writer.add_field("elastic_energy_rank", elastic_energy_ranks);
 		if (!contact_ranks.empty())
 			writer.add_field("contact_energy_rank", contact_energy_ranks);
 		writer.add_field("energy_rank", energy_ranks);
-		writer.write_mesh(vtu_name(time_steps - 2), rest_positions, elements, /*is_simplicial=*/true, /*has_poly=*/false);
+		writer.write_mesh(vtu_name(time_steps - 2), rest_positions, elements, state.mesh->is_volume() ? paraviewo::CellType::Tetrahedron : paraviewo::CellType::Triangle);
 
 		writer.add_field("displacement", displacements);
 		writer.add_field("elastic_energy_rank", elastic_energy_ranks);
 		if (!contact_ranks.empty())
 			writer.add_field("contact_energy_rank", contact_energy_ranks);
 		writer.add_field("energy_rank", energy_ranks);
-		writer.write_mesh(vtu_name(time_steps - 1), rest_positions, elements, /*is_simplicial=*/true, /*has_poly=*/false);
+		writer.write_mesh(vtu_name(time_steps - 1), rest_positions, elements, state.mesh->is_volume() ? paraviewo::CellType::Tetrahedron : paraviewo::CellType::Triangle);
 
 		state.out_geom.save_pvd(
 			state.resolve_output_path("edge_ranks.pvd"), vtu_name,

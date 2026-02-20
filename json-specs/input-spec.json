@@ -601,6 +601,7 @@
         "type": "object",
         "optional": [
             "discr_order",
+            "discr_orderq",
             "pressure_discr_order",
             "basis_type",
             "poly_basis_type",
@@ -609,6 +610,12 @@
             "advanced"
         ],
         "doc": "Options related to the FE space."
+    },
+    {
+        "pointer": "/space/discr_orderq",
+        "default": 1,
+        "type": "int",
+        "doc": "Lagrange element order at height dimension for the space for the main unknown, for prism."
     },
     {
         "pointer": "/space/discr_order",

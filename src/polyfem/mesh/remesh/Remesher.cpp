@@ -371,7 +371,7 @@ namespace polyfem::mesh
 		for (int i = 0; i < unflattened_projection_quantities.size(); ++i)
 			writer.add_field(fmt::format("projection_quantity_{:d}", i), unflattened_projection_quantities[i]);
 		writer.add_field("displacement", displacements);
-		writer.write_mesh(path, rest_positions, all_elements, /*is_simplicial=*/true, /*has_poly=*/false);
+		writer.write_mesh(path, rest_positions, all_elements, state.mesh->is_volume() ? paraviewo::CellType::Tetrahedron : paraviewo::CellType::Triangle);  // ?
 	}
 
 	Eigen::MatrixXd Remesher::combine_time_integrator_quantities(

@@ -223,7 +223,8 @@ namespace polyfem::io
 			else if (mesh.is_prism(i))
 			{
 				assert(mesh.dimension() == 3);
-				autogen::prism_nodes_3d(disc_orders(i), disc_ordersq(i), local_pts);
+				int max_order = std::max(disc_orders(i), disc_ordersq(i));
+				autogen::prism_nodes_3d(max_order, max_order, local_pts);
 			}
 			else
 			{
@@ -599,7 +600,10 @@ namespace polyfem::io
 					else if (mesh.is_cube(i))
 						autogen::q_nodes_3d(disc_orders(i), local_pts);
 					else if (mesh.is_prism(i))
-						autogen::prism_nodes_3d(disc_orders(i), disc_ordersq(i), local_pts);
+					{
+						int max_order = std::max(disc_orders(i), disc_ordersq(i));
+						autogen::prism_nodes_3d(max_order, max_order, local_pts);
+					}
 					else
 						continue;
 				}
@@ -794,7 +798,10 @@ namespace polyfem::io
 					else if (mesh.is_cube(i))
 						autogen::q_nodes_3d(disc_orders(i), local_pts);
 					else if (mesh.is_prism(i))
-						autogen::prism_nodes_3d(disc_orders(i), disc_ordersq(i), local_pts);
+					{
+						int max_order = std::max(disc_orders(i), disc_ordersq(i));
+						autogen::prism_nodes_3d(max_order, max_order, local_pts);
+					}
 					else
 						continue;
 				}
@@ -886,7 +893,10 @@ namespace polyfem::io
 					else if (mesh.is_cube(i))
 						autogen::q_nodes_3d(disc_orders(i), local_pts);
 					else if (mesh.is_prism(i))
-						autogen::prism_nodes_3d(disc_orders(i), disc_ordersq(i), local_pts);
+					{
+						int max_order = std::max(disc_orders(i), disc_ordersq(i));
+						autogen::prism_nodes_3d(max_order, max_order, local_pts);
+					}
 					else
 						continue;
 				}
@@ -990,7 +1000,10 @@ namespace polyfem::io
 					else if (mesh.is_cube(i))
 						autogen::q_nodes_3d(disc_orders(i), local_pts);
 					else if (mesh.is_prism(i))
-						autogen::prism_nodes_3d(disc_orders(i), disc_ordersq(i), local_pts);
+					{
+						int max_order = std::max(disc_orders(i), disc_ordersq(i));
+						autogen::prism_nodes_3d(max_order, max_order, local_pts);
+					}
 					else
 						continue;
 				}
