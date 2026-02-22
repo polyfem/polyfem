@@ -1,0 +1,58 @@
+{
+    "contact": {
+        "enabled": true,
+        "dhat": 0.001,
+        "use_high_order_formulation": true
+    },
+    "solver": {
+        "linear": {
+            "solver": [
+                "Eigen::PardisoLLT",
+                "Eigen::AccelerateLDLT",
+                "Eigen::CholmodSupernodalLLT",
+                "Eigen::SimplicialLDLT"
+            ]
+        },
+        "nonlinear": {
+            "iterations_per_strategy": 1,
+            "line_search": {
+                "method": "Backtracking",
+                "use_grad_norm_tol": 500,
+                "min_step_size": 0,
+                "max_step_size_iter": 100
+            },
+            "solver": "Newton",
+            "grad_norm": 1e-4,
+            "Newton": {
+                "use_psd_projection": false
+            }
+        },
+        "advanced": {
+            "lump_mass_matrix": false
+        },
+        "contact": {
+            "barrier_stiffness": 1e3,
+            "CCD": {
+                "max_iterations": 200
+            }
+        }
+    },
+    "output": {
+        "json": "sim.json",
+        "paraview": {
+            "file_name": "sim.pvd",
+            "options": {
+                "material": true,
+                "body_ids": true,
+                "tensor_values": false,
+                "discretization_order": false,
+                "nodes": false
+            },
+            "vismesh_rel_area": 10000000
+        },
+        "advanced": {
+            "save_solve_sequence_debug": false,
+            "save_time_sequence": true
+        }
+    }
+}

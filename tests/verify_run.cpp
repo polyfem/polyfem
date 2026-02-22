@@ -271,3 +271,8 @@ TEST_CASE("runners-polyspline", tagsrun)
 {
 	run_data("polyspline_test_list", POLYFEM_POLYSPLINE_DIR);
 }
+
+TEST_CASE("high_order_contact", tagsrun)
+{
+	run_data("high_order_contact", POLYFEM_DATA_DIR "/../high_order_contact_data/");
+}
