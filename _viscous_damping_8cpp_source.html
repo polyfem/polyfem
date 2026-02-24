@@ -426,7 +426,7 @@ $(document).ready(function(){initNavTree('_viscous_damping_8cpp_source.html','')
 <div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>                <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; <a class="code hl_function" href="classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4">size</a>(); ++j)</div>
 <div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>                    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> d = 0; d &lt; <a class="code hl_function" href="classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4">size</a>(); d++)</div>
 <div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>                        delF_delU_tensor(<a class="code hl_function" href="classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4">size</a>() * j + d, i * <a class="code hl_function" href="classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4">size</a>() + j) = delF_delU(i, d);</div>
-<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>            </div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span> </div>
 <div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>            stress_grad_Ut += delF_delU_tensor.transpose() * stress_grad_Ut_temp * delF_delU_tensor * data.<a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html#aab2642c1102194c41884c54e0f0453cd">da</a>(p);</div>
 <div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>        }</div>
 <div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span> </div>
@@ -454,7 +454,7 @@ $(document).ready(function(){initNavTree('_viscous_damping_8cpp_source.html','')
 <div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>        }</div>
 <div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span> </div>
 <div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>        Eigen::MatrixXd local_vel = (local_disp - local_prev_disp) / data.<a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html#aac0994460793ddaffc2d255f34d52a33">dt</a>;</div>
-<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>    </div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span> </div>
 <div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>        <span class="keywordtype">double</span> energy = 0;</div>
 <div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>        <span class="keyword">const</span> <span class="keywordtype">int</span> n_pts = data.<a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html#aab2642c1102194c41884c54e0f0453cd">da</a>.size();</div>
 <div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span> </div>
@@ -471,7 +471,7 @@ $(document).ready(function(){initNavTree('_viscous_damping_8cpp_source.html','')
 <div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>            <span class="keyword">const</span> Eigen::MatrixXd delF_delU = grad * data.<a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html#a915d5adac2028fed9feb9c0de864edec">vals</a>.<a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_element_assembly_values.html#a818b1accc498b39a9793408497b6ea06">jac_it</a>[p];</div>
 <div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>            def_grad = local_disp.transpose() * delF_delU + Eigen::MatrixXd::Identity(<a class="code hl_function" href="classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4">size</a>(), <a class="code hl_function" href="classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4">size</a>());</div>
 <div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>            dFdt = local_vel.transpose() * delF_delU;</div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>            </div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span> </div>
 <div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>            dEdt = dFdt.transpose() * def_grad;</div>
 <div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>            dEdt = (dEdt + dEdt.transpose()).eval() / 2.;</div>
 <div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span> </div>
