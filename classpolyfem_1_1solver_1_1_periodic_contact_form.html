@@ -124,6 +124,7 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1solver_1_1_periodic_co
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="#friends">Friends</a> &#124;
 <a href="classpolyfem_1_1solver_1_1_periodic_contact_form-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">polyfem::solver::PeriodicContactForm Class Reference</div></div>
 </div><!--header-->
@@ -152,8 +153,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ab837609140f985bf4875b12679d17d7f" id="r_ab837609140f985bf4875b12679d17d7f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#ab837609140f985bf4875b12679d17d7f">init</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) override</td></tr>
 <tr class="memdesc:ab837609140f985bf4875b12679d17d7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the form.  <br /></td></tr>
 <tr class="separator:ab837609140f985bf4875b12679d17d7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa06f6bccf228d960f29a429dc534112a" id="r_aa06f6bccf228d960f29a429dc534112a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#aa06f6bccf228d960f29a429dc534112a">force_periodic_shape_derivative</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const <a class="el" href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html">PeriodicMeshToMesh</a> &amp;periodic_mesh_map, const Eigen::VectorXd &amp;periodic_mesh_representation, const ipc::NormalCollisions &amp;contact_set, const Eigen::VectorXd &amp;solution, const Eigen::VectorXd &amp;adjoint_sol, Eigen::VectorXd &amp;term) const</td></tr>
-<tr class="separator:aa06f6bccf228d960f29a429dc534112a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5b9b21aa68c20cc0695f9d02b7b1719b" id="r_a5b9b21aa68c20cc0695f9d02b7b1719b"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#a5b9b21aa68c20cc0695f9d02b7b1719b">single_to_tiled</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const</td></tr>
 <tr class="separator:a5b9b21aa68c20cc0695f9d02b7b1719b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae08616b583fc61e2fcb50373605ae22f" id="r_ae08616b583fc61e2fcb50373605ae22f"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#ae08616b583fc61e2fcb50373605ae22f">tiled_to_single_grad</a> (const Eigen::VectorXd &amp;grad) const</td></tr>
@@ -196,8 +195,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae84c35d545e46f50fa9b410c2c1d9df9 inherit pub_methods_classpolyfem_1_1solver_1_1_barrier_contact_form" id="r_ae84c35d545e46f50fa9b410c2c1d9df9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_barrier_contact_form.html#ae84c35d545e46f50fa9b410c2c1d9df9">use_physical_barrier</a> () const</td></tr>
 <tr class="memdesc:ae84c35d545e46f50fa9b410c2c1d9df9 inherit pub_methods_classpolyfem_1_1solver_1_1_barrier_contact_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get use_physical_barrier.  <br /></td></tr>
 <tr class="separator:ae84c35d545e46f50fa9b410c2c1d9df9 inherit pub_methods_classpolyfem_1_1solver_1_1_barrier_contact_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57854bda1c33f4580273261a344532dc inherit pub_methods_classpolyfem_1_1solver_1_1_barrier_contact_form" id="r_a57854bda1c33f4580273261a344532dc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_barrier_contact_form.html#a57854bda1c33f4580273261a344532dc">force_shape_derivative</a> (const ipc::NormalCollisions &amp;<a class="el" href="classpolyfem_1_1solver_1_1_barrier_contact_form.html#aa7fc50a04a7d499cdb525b26e41e19e6">collision_set</a>, const Eigen::MatrixXd &amp;solution, const Eigen::VectorXd &amp;adjoint_sol, Eigen::VectorXd &amp;term) const</td></tr>
-<tr class="separator:a57854bda1c33f4580273261a344532dc inherit pub_methods_classpolyfem_1_1solver_1_1_barrier_contact_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa7fc50a04a7d499cdb525b26e41e19e6 inherit pub_methods_classpolyfem_1_1solver_1_1_barrier_contact_form" id="r_aa7fc50a04a7d499cdb525b26e41e19e6"><td class="memItemLeft" align="right" valign="top">const ipc::NormalCollisions &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_barrier_contact_form.html#aa7fc50a04a7d499cdb525b26e41e19e6">collision_set</a> () const</td></tr>
 <tr class="separator:aa7fc50a04a7d499cdb525b26e41e19e6 inherit pub_methods_classpolyfem_1_1solver_1_1_barrier_contact_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5985007152c78163f48893d7e4f89a4b inherit pub_methods_classpolyfem_1_1solver_1_1_barrier_contact_form" id="r_a5985007152c78163f48893d7e4f89a4b"><td class="memItemLeft" align="right" valign="top">const ipc::BarrierPotential &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_barrier_contact_form.html#a5985007152c78163f48893d7e4f89a4b">barrier_potential</a> () const</td></tr>
@@ -330,6 +327,11 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:aa75dc37c7f1d68850f9826c286eade9d" id="r_aa75dc37c7f1d68850f9826c286eade9d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#aa75dc37c7f1d68850f9826c286eade9d">proj</a></td></tr>
 <tr class="separator:aa75dc37c7f1d68850f9826c286eade9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="friends" name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:ade5b1c0cd09c66c73593d4f51137c3d3" id="r_ade5b1c0cd09c66c73593d4f51137c3d3"><td class="memItemLeft" align="right" valign="top">class&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#ade5b1c0cd09c66c73593d4f51137c3d3">PeriodicContactForceDerivative</a></td></tr>
+<tr class="separator:ade5b1c0cd09c66c73593d4f51137c3d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_attribs_classpolyfem_1_1solver_1_1_contact_form"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_classpolyfem_1_1solver_1_1_contact_form')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html">polyfem::solver::ContactForm</a></td></tr>
@@ -404,7 +406,7 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="classpolyfem_1_1solver_1_1_form.html">Form</a> representing the contact potential and forces on a periodic mesh This form has a different input format of [fluctuation, affine], only can be used in <a class="el" href="classpolyfem_1_1solver_1_1_n_l_homo_problem.html">NLHomoProblem</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8hpp_source.html#l00018">18</a> of file <a class="el" href="_periodic_contact_form_8hpp_source.html">PeriodicContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8hpp_source.html#l00015">15</a> of file <a class="el" href="_periodic_contact_form_8hpp_source.html">PeriodicContactForm.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ad47eff5d566ff18a2acd5b082787f062" name="ad47eff5d566ff18a2acd5b082787f062"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad47eff5d566ff18a2acd5b082787f062">&#9670;&#160;</a></span>PeriodicContactForm()</h2>
@@ -507,9 +509,9 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00012">12</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00014">14</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00127">polyfem::solver::ContactForm::collision_mesh_</a>, <a class="el" href="_periodic_contact_form_8hpp_source.html#l00098">tiled_to_single_</a>, and <a class="el" href="_periodic_contact_form_8cpp_source.html#l00038">update_projection()</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00127">polyfem::solver::ContactForm::collision_mesh_</a>, <a class="el" href="_periodic_contact_form_8hpp_source.html#l00095">tiled_to_single_</a>, and <a class="el" href="_periodic_contact_form_8cpp_source.html#l00040">update_projection()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -564,80 +566,13 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_barrier_contact_form.html#a034b828224878e611e7422965003971b">polyfem::solver::BarrierContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00113">113</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00115">115</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_barrier_contact_form_8cpp_source.html#l00170">polyfem::solver::BarrierContactForm::first_derivative_unweighted()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00060">single_to_tiled()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00081">tiled_to_single_grad()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_barrier_contact_form_8cpp_source.html#l00164">polyfem::solver::BarrierContactForm::first_derivative_unweighted()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00062">single_to_tiled()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00083">tiled_to_single_grad()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_periodic_contact_form_ab6cf8377941c01db7e0e0b4a4c7f4198_cgraph.svg" width="100%" height="446"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
-</div>
-
-</div>
-</div>
-<a id="aa06f6bccf228d960f29a429dc534112a" name="aa06f6bccf228d960f29a429dc534112a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa06f6bccf228d960f29a429dc534112a">&#9670;&#160;</a></span>force_periodic_shape_derivative()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::solver::PeriodicContactForm::force_periodic_shape_derivative </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;&#160;</td>
-          <td class="paramname"><em>state</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html">PeriodicMeshToMesh</a> &amp;&#160;</td>
-          <td class="paramname"><em>periodic_mesh_map</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>periodic_mesh_representation</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const ipc::NormalCollisions &amp;&#160;</td>
-          <td class="paramname"><em>contact_set</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>solution</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>adjoint_sol</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>term</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00171">171</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_barrier_contact_form_8hpp_source.html#l00047">polyfem::solver::BarrierContactForm::barrier_potential()</a>, <a class="el" href="_state_8hpp_source.html#l00708">polyfem::State::basis_nodes_to_gbasis_nodes</a>, <a class="el" href="_contact_form_8hpp_source.html#l00127">polyfem::solver::ContactForm::collision_mesh_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00055">polyfem::solver::ContactForm::compute_displaced_surface()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00034">polyfem::utils::flatten()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00025">polyfem::solver::PeriodicMeshToMesh::full_to_periodic()</a>, <a class="el" href="_state_8hpp_source.html#l00182">polyfem::State::n_geom_bases</a>, <a class="el" href="_periodic_contact_form_8hpp_source.html#l00099">n_single_dof_</a>, <a class="el" href="_state_8cpp_source.html#l00227">polyfem::State::primitive_to_node()</a>, <a class="el" href="_periodic_contact_form_8hpp_source.html#l00100">proj</a>, <a class="el" href="_barrier_contact_form_8cpp_source.html#l00176">polyfem::solver::BarrierContactForm::second_derivative_unweighted()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00060">single_to_tiled()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00110">polyfem::solver::ContactForm::weight()</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_periodic_contact_form_aa06f6bccf228d960f29a429dc534112a_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -676,9 +611,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a2a11c35e1a44e6f8ad2ca4602ab158bb">polyfem::solver::ContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00103">103</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00105">105</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8cpp_source.html#l00045">polyfem::solver::ContactForm::init()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00060">single_to_tiled()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8cpp_source.html#l00045">polyfem::solver::ContactForm::init()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00062">single_to_tiled()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -726,9 +661,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#aee65aa9ea94cac5dea17f77b65ef2006">polyfem::solver::ContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00161">161</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00163">163</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8cpp_source.html#l00130">polyfem::solver::ContactForm::is_step_collision_free()</a>, and <a class="el" href="_periodic_contact_form_8cpp_source.html#l00060">single_to_tiled()</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8cpp_source.html#l00130">polyfem::solver::ContactForm::is_step_collision_free()</a>, and <a class="el" href="_periodic_contact_form_8cpp_source.html#l00062">single_to_tiled()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -782,9 +717,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#ab011ec40a36b9125803eb58bbfae853c">polyfem::solver::ContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00144">144</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00146">146</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8cpp_source.html#l00112">polyfem::solver::ContactForm::line_search_begin()</a>, and <a class="el" href="_periodic_contact_form_8cpp_source.html#l00060">single_to_tiled()</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8cpp_source.html#l00112">polyfem::solver::ContactForm::line_search_begin()</a>, and <a class="el" href="_periodic_contact_form_8cpp_source.html#l00062">single_to_tiled()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -839,9 +774,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a510cabb33d8e00c2fa8dac68f36a2820">polyfem::solver::ContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00139">139</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00141">141</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8cpp_source.html#l00065">polyfem::solver::ContactForm::max_step_size()</a>, and <a class="el" href="_periodic_contact_form_8cpp_source.html#l00060">single_to_tiled()</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8cpp_source.html#l00065">polyfem::solver::ContactForm::max_step_size()</a>, and <a class="el" href="_periodic_contact_form_8cpp_source.html#l00062">single_to_tiled()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -885,9 +820,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_barrier_contact_form.html#ae51a823d944f3967789b1063877532c0">polyfem::solver::BarrierContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00154">154</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00156">156</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_barrier_contact_form_8cpp_source.html#l00192">polyfem::solver::BarrierContactForm::post_step()</a>, and <a class="el" href="_periodic_contact_form_8cpp_source.html#l00060">single_to_tiled()</a>.</p>
+<p class="reference">References <a class="el" href="_barrier_contact_form_8cpp_source.html#l00186">polyfem::solver::BarrierContactForm::post_step()</a>, and <a class="el" href="_periodic_contact_form_8cpp_source.html#l00062">single_to_tiled()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -941,9 +876,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_barrier_contact_form.html#a1e777797edf8bcb45893c036c7b2fc96">polyfem::solver::BarrierContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00119">119</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00121">121</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_contact_form_8hpp_source.html#l00100">proj</a>, <a class="el" href="_barrier_contact_form_8cpp_source.html#l00176">polyfem::solver::BarrierContactForm::second_derivative_unweighted()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00060">single_to_tiled()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00038">update_projection()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_contact_form_8hpp_source.html#l00097">proj</a>, <a class="el" href="_barrier_contact_form_8cpp_source.html#l00170">polyfem::solver::BarrierContactForm::second_derivative_unweighted()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00062">single_to_tiled()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00040">update_projection()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -968,11 +903,11 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00060">60</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00062">62</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00127">polyfem::solver::ContactForm::collision_mesh_</a>, <a class="el" href="_periodic_contact_form_8hpp_source.html#l00099">n_single_dof_</a>, <a class="el" href="_periodic_contact_form_8hpp_source.html#l00098">tiled_to_single_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00127">polyfem::solver::ContactForm::collision_mesh_</a>, <a class="el" href="_periodic_contact_form_8hpp_source.html#l00096">n_single_dof_</a>, <a class="el" href="_periodic_contact_form_8hpp_source.html#l00095">tiled_to_single_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00113">first_derivative_unweighted()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00171">force_periodic_shape_derivative()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00103">init()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00161">is_step_collision_free()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00144">line_search_begin()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00139">max_step_size()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00154">post_step()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00119">second_derivative_unweighted()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00149">solution_changed()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00166">update_barrier_stiffness()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00134">update_quantities()</a>, and <a class="el" href="_periodic_contact_form_8cpp_source.html#l00108">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00115">first_derivative_unweighted()</a>, <a class="el" href="_periodic_contact_force_derivative_8cpp_source.html#l00013">polyfem::solver::PeriodicContactForceDerivative::force_shape_derivative()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00105">init()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00163">is_step_collision_free()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00146">line_search_begin()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00141">max_step_size()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00156">post_step()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00121">second_derivative_unweighted()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00151">solution_changed()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00168">update_barrier_stiffness()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00136">update_quantities()</a>, and <a class="el" href="_periodic_contact_form_8cpp_source.html#l00110">value_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1015,9 +950,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#a70e5349c72c5d268ba2d98753865ab4e">polyfem::solver::ContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00149">149</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00151">151</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_contact_form_8cpp_source.html#l00060">single_to_tiled()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00060">polyfem::solver::ContactForm::solution_changed()</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_contact_form_8cpp_source.html#l00062">single_to_tiled()</a>, and <a class="el" href="_contact_form_8cpp_source.html#l00060">polyfem::solver::ContactForm::solution_changed()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1042,11 +977,11 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00081">81</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00083">83</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00127">polyfem::solver::ContactForm::collision_mesh_</a>, <a class="el" href="_periodic_contact_form_8hpp_source.html#l00099">n_single_dof_</a>, and <a class="el" href="_periodic_contact_form_8hpp_source.html#l00098">tiled_to_single_</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00127">polyfem::solver::ContactForm::collision_mesh_</a>, <a class="el" href="_periodic_contact_form_8hpp_source.html#l00096">n_single_dof_</a>, and <a class="el" href="_periodic_contact_form_8hpp_source.html#l00095">tiled_to_single_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00113">first_derivative_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00115">first_derivative_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1099,9 +1034,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_barrier_contact_form.html#ad76cf24b971189c7b9e1f1c967df599c">polyfem::solver::BarrierContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00166">166</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00168">168</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_contact_form_8cpp_source.html#l00060">single_to_tiled()</a>, <a class="el" href="_barrier_contact_form_8cpp_source.html#l00042">polyfem::solver::BarrierContactForm::update_barrier_stiffness()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_contact_form_8cpp_source.html#l00062">single_to_tiled()</a>, <a class="el" href="_barrier_contact_form_8cpp_source.html#l00036">polyfem::solver::BarrierContactForm::update_barrier_stiffness()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1133,11 +1068,11 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00038">38</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00040">40</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00127">polyfem::solver::ContactForm::collision_mesh_</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00025">entries</a>, <a class="el" href="_periodic_contact_form_8hpp_source.html#l00099">n_single_dof_</a>, <a class="el" href="_periodic_contact_form_8hpp_source.html#l00100">proj</a>, and <a class="el" href="_periodic_contact_form_8hpp_source.html#l00098">tiled_to_single_</a>.</p>
+<p class="reference">References <a class="el" href="_contact_form_8hpp_source.html#l00127">polyfem::solver::ContactForm::collision_mesh_</a>, <a class="el" href="_mass_matrix_assembler_8cpp_source.html#l00025">entries</a>, <a class="el" href="_periodic_contact_form_8hpp_source.html#l00096">n_single_dof_</a>, <a class="el" href="_periodic_contact_form_8hpp_source.html#l00097">proj</a>, and <a class="el" href="_periodic_contact_form_8hpp_source.html#l00095">tiled_to_single_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00012">PeriodicContactForm()</a>, and <a class="el" href="_periodic_contact_form_8cpp_source.html#l00119">second_derivative_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00014">PeriodicContactForm()</a>, and <a class="el" href="_periodic_contact_form_8cpp_source.html#l00121">second_derivative_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1191,9 +1126,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_contact_form.html#ae4b7ce02d0f40d3bfef34c5106e22f4e">polyfem::solver::ContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00134">134</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00136">136</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_contact_form_8cpp_source.html#l00060">single_to_tiled()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00050">polyfem::solver::ContactForm::update_quantities()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_contact_form_8cpp_source.html#l00062">single_to_tiled()</a>, <a class="el" href="_contact_form_8cpp_source.html#l00050">polyfem::solver::ContactForm::update_quantities()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1237,14 +1172,39 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_barrier_contact_form.html#a726f81b480a520b450059eaa2864ff1b">polyfem::solver::BarrierContactForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00108">108</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8cpp_source.html#l00110">110</a> of file <a class="el" href="_periodic_contact_form_8cpp_source.html">PeriodicContactForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_periodic_contact_form_8cpp_source.html#l00060">single_to_tiled()</a>, <a class="el" href="_barrier_contact_form_8cpp_source.html#l00115">polyfem::solver::BarrierContactForm::value_unweighted()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_periodic_contact_form_8cpp_source.html#l00062">single_to_tiled()</a>, <a class="el" href="_barrier_contact_form_8cpp_source.html#l00109">polyfem::solver::BarrierContactForm::value_unweighted()</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_periodic_contact_form_a758c8d8023ad0bb8d0b9aca28f5a9123_cgraph.svg" width="100%" height="392"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
+
+</div>
+</div>
+<h2 class="groupheader">Friends And Related Symbol Documentation</h2>
+<a id="ade5b1c0cd09c66c73593d4f51137c3d3" name="ade5b1c0cd09c66c73593d4f51137c3d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade5b1c0cd09c66c73593d4f51137c3d3">&#9670;&#160;</a></span>PeriodicContactForceDerivative</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">friend class <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_force_derivative.html">PeriodicContactForceDerivative</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">friend</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8hpp_source.html#l00017">17</a> of file <a class="el" href="_periodic_contact_form_8hpp_source.html">PeriodicContactForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -1269,9 +1229,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8hpp_source.html#l00099">99</a> of file <a class="el" href="_periodic_contact_form_8hpp_source.html">PeriodicContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8hpp_source.html#l00096">96</a> of file <a class="el" href="_periodic_contact_form_8hpp_source.html">PeriodicContactForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00171">force_periodic_shape_derivative()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00060">single_to_tiled()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00081">tiled_to_single_grad()</a>, and <a class="el" href="_periodic_contact_form_8cpp_source.html#l00038">update_projection()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_contact_force_derivative_8cpp_source.html#l00013">polyfem::solver::PeriodicContactForceDerivative::force_shape_derivative()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00062">single_to_tiled()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00083">tiled_to_single_grad()</a>, and <a class="el" href="_periodic_contact_form_8cpp_source.html#l00040">update_projection()</a>.</p>
 
 </div>
 </div>
@@ -1295,9 +1255,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8hpp_source.html#l00100">100</a> of file <a class="el" href="_periodic_contact_form_8hpp_source.html">PeriodicContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8hpp_source.html#l00097">97</a> of file <a class="el" href="_periodic_contact_form_8hpp_source.html">PeriodicContactForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00171">force_periodic_shape_derivative()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00119">second_derivative_unweighted()</a>, and <a class="el" href="_periodic_contact_form_8cpp_source.html#l00038">update_projection()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_contact_force_derivative_8cpp_source.html#l00013">polyfem::solver::PeriodicContactForceDerivative::force_shape_derivative()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00121">second_derivative_unweighted()</a>, and <a class="el" href="_periodic_contact_form_8cpp_source.html#l00040">update_projection()</a>.</p>
 
 </div>
 </div>
@@ -1321,9 +1281,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8hpp_source.html#l00098">98</a> of file <a class="el" href="_periodic_contact_form_8hpp_source.html">PeriodicContactForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_contact_form_8hpp_source.html#l00095">95</a> of file <a class="el" href="_periodic_contact_form_8hpp_source.html">PeriodicContactForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00012">PeriodicContactForm()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00060">single_to_tiled()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00081">tiled_to_single_grad()</a>, and <a class="el" href="_periodic_contact_form_8cpp_source.html#l00038">update_projection()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_periodic_contact_form_8cpp_source.html#l00014">PeriodicContactForm()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00062">single_to_tiled()</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00083">tiled_to_single_grad()</a>, and <a class="el" href="_periodic_contact_form_8cpp_source.html#l00040">update_projection()</a>.</p>
 
 </div>
 </div>

@@ -48,7 +48,7 @@
 <script type="application/ecmascript">
 var viewWidth = 390;
 var viewHeight = 613;
-var sectionId = 'dynsection-11';
+var sectionId = 'dynsection-10';
 </script>
 <script type="application/ecmascript" xlink:href="svg.min.js"/>
 <svg id="graph" class="graph">
@@ -87,11 +87,11 @@ var sectionId = 'dynsection-11';
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_periodic_contact_form.html#aa06f6bccf228d960f29a429dc534112a" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="172,-545.5 18,-545.5 18,-504.5 172,-504.5 172,-545.5"/>
-<text text-anchor="start" x="26" y="-533.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Periodic</text>
-<text text-anchor="start" x="26" y="-522.5" font-family="Helvetica,sans-Serif" font-size="10.00">ContactForm::force_periodic</text>
-<text text-anchor="middle" x="95" y="-511.5" font-family="Helvetica,sans-Serif" font-size="10.00">_shape_derivative</text>
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_periodic_contact_force_derivative.html#aa2d9070bcf94fef00485d656058be0ba" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="164,-545.5 26,-545.5 26,-504.5 164,-504.5 164,-545.5"/>
+<text text-anchor="start" x="34" y="-533.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Periodic</text>
+<text text-anchor="start" x="34" y="-522.5" font-family="Helvetica,sans-Serif" font-size="10.00">ContactForceDerivative</text>
+<text text-anchor="middle" x="95" y="-511.5" font-family="Helvetica,sans-Serif" font-size="10.00">::force_shape_derivative</text>
 </a>
 </g>
 </g>
@@ -99,7 +99,7 @@ var sectionId = 'dynsection-11';
 <g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
 <g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M294.95,-327.96C280.5,-368.85 246.3,-450.04 190,-495 184.65,-499.28 178.67,-502.95 172.4,-506.1"/>
+<path fill="none" stroke="#63b8ff" d="M294.95,-327.96C280.5,-368.85 246.3,-450.04 190,-495 182.37,-501.09 173.48,-505.96 164.26,-509.85"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="298.35,-328.84 298.28,-318.25 291.72,-326.57 298.35,-328.84"/>
 </a>
 </g>

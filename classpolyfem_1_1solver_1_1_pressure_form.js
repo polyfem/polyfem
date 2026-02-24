@@ -2,12 +2,11 @@ var classpolyfem_1_1solver_1_1_pressure_form =
 [
     [ "PressureForm", "classpolyfem_1_1solver_1_1_pressure_form.html#a340b0f123d079ffe725b021ca7cf48a9", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_pressure_form.html#a998d09b08c68cea34112ad8641e99f3a", null ],
-    [ "force_pressure_derivative", "classpolyfem_1_1solver_1_1_pressure_form.html#a498de82498e47d8aaced1878f2a80115", null ],
-    [ "force_shape_derivative", "classpolyfem_1_1solver_1_1_pressure_form.html#a936c1c85f6b99837abd1eb99796563c6", null ],
     [ "name", "classpolyfem_1_1solver_1_1_pressure_form.html#ab2949043486e19bac0dd291cc313a1ec", null ],
     [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_pressure_form.html#a00fc36b1e4b245b528f0fcce59deb6c2", null ],
     [ "update_quantities", "classpolyfem_1_1solver_1_1_pressure_form.html#a0cf06756c078bf982bac42a4f6c4a41a", null ],
     [ "value_unweighted", "classpolyfem_1_1solver_1_1_pressure_form.html#a138290771ec70ff05ca74dc7bc113d62", null ],
+    [ "PressureForceDerivative", "classpolyfem_1_1solver_1_1_pressure_form.html#a2ec7eaa8438402bc13c8ec089f67aef5", null ],
     [ "dirichlet_nodes_", "classpolyfem_1_1solver_1_1_pressure_form.html#a754e96860903df4f270967e4fad2810c", null ],
     [ "local_pressure_boundary_", "classpolyfem_1_1solver_1_1_pressure_form.html#a5a8ef44831431dddb5838dce566296ca", null ],
     [ "local_pressure_cavity_", "classpolyfem_1_1solver_1_1_pressure_form.html#aabc8237379edefe58267958b7d9cacdc", null ],

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['cos_0',['cos',['../struct_d_scalar1.html#a1df44cebe596309535d03dfc2530ecc8',1,'DScalar1::cos'],['../struct_d_scalar2.html#a60f1e4e2c029f87b8e10b83ec4867d4d',1,'DScalar2::cos']]]
+  ['barriercontactforcederivative_0',['BarrierContactForceDerivative',['../classpolyfem_1_1solver_1_1_barrier_contact_form.html#a9a99f6000c6753a4914c9ebafb33ded7',1,'polyfem::solver::BarrierContactForm']]],
+  ['bodyforcederivative_1',['BodyForceDerivative',['../classpolyfem_1_1solver_1_1_body_form.html#aca86d18b1f9e131a955bbc56d2a101bb',1,'polyfem::solver::BodyForm']]]
 ];

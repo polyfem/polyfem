@@ -2,7 +2,6 @@ var classpolyfem_1_1solver_1_1_periodic_contact_form =
 [
     [ "PeriodicContactForm", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#ad47eff5d566ff18a2acd5b082787f062", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#ab6cf8377941c01db7e0e0b4a4c7f4198", null ],
-    [ "force_periodic_shape_derivative", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#aa06f6bccf228d960f29a429dc534112a", null ],
     [ "init", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#ab837609140f985bf4875b12679d17d7f", null ],
     [ "is_step_collision_free", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#a689d6b0539ce769e1711530f2c1205e4", null ],
     [ "line_search_begin", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#a8bd3eb02a37ff7f0366b35dd125c5de8", null ],
@@ -16,6 +15,7 @@ var classpolyfem_1_1solver_1_1_periodic_contact_form =
     [ "update_projection", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#a277763e990d02797e12fbc5e376d60e0", null ],
     [ "update_quantities", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#ae09f4300b333c2244492986af01cc21d", null ],
     [ "value_unweighted", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#a758c8d8023ad0bb8d0b9aca28f5a9123", null ],
+    [ "PeriodicContactForceDerivative", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#ade5b1c0cd09c66c73593d4f51137c3d3", null ],
     [ "n_single_dof_", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#ab246ae160c4b9549fc9721ddfdaa4fc9", null ],
     [ "proj", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#aa75dc37c7f1d68850f9826c286eade9d", null ],
     [ "tiled_to_single_", "classpolyfem_1_1solver_1_1_periodic_contact_form.html#abb1502d6978fc3e0bcc4c1b14429f449", null ]
