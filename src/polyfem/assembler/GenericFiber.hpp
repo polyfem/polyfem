@@ -16,6 +16,8 @@ namespace polyfem::assembler
 		virtual void add_multimaterial(const int index, const json &params, const Units &units) override;
 		virtual void set_size(const int size) override;
 
+		std::map<std::string, Assembler::ParamFunc> parameters() const override;
+
 	protected:
 		template <typename T>
 		T I4Bar(const RowVectorNd &p,
@@ -31,6 +33,29 @@ namespace polyfem::assembler
 			Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> a(a_tmp.rows(), a_tmp.cols());
 			for (int i = 0; i < a.size(); ++i)
 				a(i) = T(a_tmp(i));
+
+			const Eigen::Matrix<T, 1, 1> tmp = a.transpose() * Cbar * a;
+			assert(tmp.rows() == 1 && tmp.cols() == 1);
+			return tmp(0, 0);
+		}
+
+		template <typename T>
+		T I4Bar_with_norm(const RowVectorNd &p,
+						  const double t,
+						  const int el_id,
+						  const DefGradMatrix<T> &def_grad) const
+		{
+			const T J = polyfem::utils::determinant(def_grad);
+			const auto Cbar = 1 / pow(J, 2.0 / 3.0);
+
+			const auto a_tmp = fiber_direction_(p, p, t, el_id);
+			assert(a_tmp.rows() == this->size() && a_tmp.cols() == 1);
+			Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> a(a_tmp.rows(), a_tmp.cols());
+			for (int i = 0; i < a.size(); ++i)
+				a(i) = T(a_tmp(i));
+
+			a = def_grad * a;
+			a = a / a.norm();
 
 			const Eigen::Matrix<T, 1, 1> tmp = a.transpose() * Cbar * a;
 			assert(tmp.rows() == 1 && tmp.cols() == 1);

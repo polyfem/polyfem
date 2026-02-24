@@ -40,7 +40,8 @@ namespace polyfem::assembler
 			// const double lr = 2.04;
 
 			// // invariant (isochoric like HGO)
-			const T I4bar = I4Bar(p, t, el_id, def_grad);
+			// const T I4bar = I4Bar(p, t, el_id, def_grad);
+			const T I4bar = I4Bar_with_norm(p, t, el_id, def_grad);
 			// const T lambda = sqrt(I4bar); // if you can compute non-isochoric I4, use that here instead
 			// const T l = lambda * T(lr);
 

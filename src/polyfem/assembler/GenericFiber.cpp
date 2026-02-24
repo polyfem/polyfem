@@ -25,6 +25,34 @@ namespace polyfem::assembler
 		fiber_direction_.resize(size);
 	}
 
+	template <typename FiberModel>
+	std::map<std::string, Assembler::ParamFunc> GenericFiber<FiberModel>::parameters() const
+	{
+		std::map<std::string, Assembler::ParamFunc> res;
+
+		const auto &fiber_direction = this->fiber_direction_;
+
+		res["fiber_direction_x"] = [&fiber_direction](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+			Eigen::Vector3d tmp = fiber_direction(p, p, t, e);
+			return tmp[0];
+		};
+
+		res["fiber_direction_y"] = [&fiber_direction](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+			Eigen::Vector3d tmp = fiber_direction(p, p, t, e);
+			return tmp[1];
+		};
+
+		if (this->size() == 3)
+		{
+			res["fiber_direction_z"] = [&fiber_direction](const RowVectorNd &, const RowVectorNd &p, double t, int e) {
+				Eigen::Vector3d tmp = fiber_direction(p, p, t, e);
+				return tmp[2];
+			};
+		}
+
+		return res;
+	}
+
 	template class GenericFiber<HGOFiber>;
 	template class GenericFiber<ActiveFiber>;
 } // namespace polyfem::assembler

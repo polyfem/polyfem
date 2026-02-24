@@ -18,7 +18,7 @@ namespace polyfem::assembler
 
 	std::map<std::string, Assembler::ParamFunc> ActiveFiber::parameters() const
 	{
-		std::map<std::string, ParamFunc> res;
+		std::map<std::string, ParamFunc> res = GenericFiber<ActiveFiber>::parameters();
 
 		const auto &Tmax = this->Tmax_;
 		const auto &activation = this->activation_;
