@@ -13,6 +13,7 @@
             "UnconstrainedOgden",
             "IncompressibleOgden",
             "Stokes",
+            "ActiveFiber",
             "HGOFiber",
             "IsochoricNeoHookean",
             "NavierStokes",
@@ -374,7 +375,8 @@
         ],
         "optional": [
             "id",
-            "models"
+            "models",
+            "rho"
         ],
         "doc": "Model that is a sum of other models"
     },
@@ -520,6 +522,22 @@
         "optional": [
             "id",
             "rho",
+            "fiber_direction"
+        ],
+        "doc": "Material Parameters"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "ActiveFiber",
+        "required": [
+            "type",
+            "activation"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "Tmax",
             "fiber_direction"
         ],
         "doc": "Material Parameters"
@@ -725,6 +743,19 @@
         "type": "include",
         "spec_file": "value-no.json",
         "doc": "Exponent(s) of Incompressible Ogden"
+    },
+    {
+        "pointer": "/activation",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Activation parameter for ActiveFiber"
+    },
+    {
+        "pointer": "/Tmax",
+        "type": "include",
+        "spec_file": "value1.json",
+        "default": 1,
+        "doc": "Maximum tension for ActiveFiber"
     },
     {
         "pointer": "/use_rest_pose",

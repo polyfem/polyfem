@@ -1,6 +1,7 @@
 #include "GenericFiber.hpp"
 
 #include <polyfem/assembler/HGOFiber.hpp>
+#include <polyfem/assembler/ActiveFiber.hpp>
 
 namespace polyfem::assembler
 {
@@ -25,4 +26,5 @@ namespace polyfem::assembler
 	}
 
 	template class GenericFiber<HGOFiber>;
+	template class GenericFiber<ActiveFiber>;
 } // namespace polyfem::assembler
