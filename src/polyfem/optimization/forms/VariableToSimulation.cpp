@@ -3,7 +3,7 @@
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/optimization/Optimizations.hpp>
-
+#include <polyfem/optimization/StateDiff.hpp>
 #include <polyfem/optimization/parametrization/NodeCompositeParametrizations.hpp>
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
@@ -172,13 +172,13 @@ namespace polyfem::solver
 		for (auto state : states_)
 		{
 			if (state->problem->is_time_dependent())
-				AdjointTools::dJ_shape_transient_adjoint_term(*state, state->get_adjoint_mat(1), state->get_adjoint_mat(0), cur_term);
+				AdjointTools::dJ_shape_transient_adjoint_term(*state, get_adjoint_mat(*state, 1), get_adjoint_mat(*state, 0), cur_term);
 			else
 			{
 				if (!state->is_homogenization())
-					AdjointTools::dJ_shape_static_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
+					AdjointTools::dJ_shape_static_adjoint_term(*state, state->diff_cached.u(0), get_adjoint_mat(*state, 0), cur_term);
 				else
-					AdjointTools::dJ_shape_homogenization_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
+					AdjointTools::dJ_shape_homogenization_adjoint_term(*state, state->diff_cached.u(0), get_adjoint_mat(*state, 0), cur_term);
 			}
 
 			if (term.size() != cur_term.size())
@@ -255,9 +255,9 @@ namespace polyfem::solver
 		for (auto state : states_)
 		{
 			if (state->problem->is_time_dependent())
-				AdjointTools::dJ_material_transient_adjoint_term(*state, state->get_adjoint_mat(1), state->get_adjoint_mat(0), cur_term);
+				AdjointTools::dJ_material_transient_adjoint_term(*state, get_adjoint_mat(*state, 1), get_adjoint_mat(*state, 0), cur_term);
 			else
-				AdjointTools::dJ_material_static_adjoint_term(*state, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
+				AdjointTools::dJ_material_static_adjoint_term(*state, state->diff_cached.u(0), get_adjoint_mat(*state, 0), cur_term);
 
 			if (term.size() != cur_term.size())
 				term = cur_term;
@@ -318,7 +318,7 @@ namespace polyfem::solver
 		for (auto state : states_)
 		{
 			if (state->problem->is_time_dependent())
-				AdjointTools::dJ_friction_transient_adjoint_term(*state, state->get_adjoint_mat(1), state->get_adjoint_mat(0), cur_term);
+				AdjointTools::dJ_friction_transient_adjoint_term(*state, get_adjoint_mat(*state, 1), get_adjoint_mat(*state, 0), cur_term);
 			else
 				log_and_throw_adjoint_error("[{}] Gradient in static simulations not implemented!", name());
 
@@ -369,7 +369,7 @@ namespace polyfem::solver
 		for (auto state : states_)
 		{
 			if (state->problem->is_time_dependent())
-				AdjointTools::dJ_damping_transient_adjoint_term(*state, state->get_adjoint_mat(1), state->get_adjoint_mat(0), cur_term);
+				AdjointTools::dJ_damping_transient_adjoint_term(*state, get_adjoint_mat(*state, 1), get_adjoint_mat(*state, 0), cur_term);
 			else
 				log_and_throw_adjoint_error("[{}] Static simulation not supported!", name());
 
@@ -404,7 +404,7 @@ namespace polyfem::solver
 		for (auto state : states_)
 		{
 			if (state->problem->is_time_dependent())
-				AdjointTools::dJ_initial_condition_adjoint_term(*state, state->get_adjoint_mat(1), state->get_adjoint_mat(0), cur_term);
+				AdjointTools::dJ_initial_condition_adjoint_term(*state, get_adjoint_mat(*state, 1), get_adjoint_mat(*state, 0), cur_term);
 			else
 				log_and_throw_adjoint_error("[{}] Static simulation not supported!", name());
 
@@ -446,7 +446,7 @@ namespace polyfem::solver
 		for (auto state : states_)
 		{
 			if (state->problem->is_time_dependent())
-				AdjointTools::dJ_dirichlet_transient_adjoint_term(*state, state->get_adjoint_mat(1), state->get_adjoint_mat(0), cur_term);
+				AdjointTools::dJ_dirichlet_transient_adjoint_term(*state, get_adjoint_mat(*state, 1), get_adjoint_mat(*state, 0), cur_term);
 			else
 				log_and_throw_adjoint_error("[{}] Static dirichlet boundary optimization not supported!", name());
 
@@ -536,7 +536,7 @@ namespace polyfem::solver
 			if (state->problem->is_time_dependent())
 				log_and_throw_adjoint_error("[{}] Transient dirichlet node optimization not supported!", name());
 			else
-				AdjointTools::dJ_dirichlet_static_adjoint_term(*state, state->get_adjoint_mat(0), cur_term);
+				AdjointTools::dJ_dirichlet_static_adjoint_term(*state, get_adjoint_mat(*state, 0), cur_term);
 
 			if (term.size() != cur_term.size())
 				term = cur_term;
@@ -593,13 +593,13 @@ namespace polyfem::solver
 			if (state->problem->is_time_dependent())
 			{
 				Eigen::MatrixXd adjoint_nu, adjoint_p;
-				adjoint_nu = state->get_adjoint_mat(1);
-				adjoint_p = state->get_adjoint_mat(0);
+				adjoint_nu = get_adjoint_mat(*state, 1);
+				adjoint_p = get_adjoint_mat(*state, 0);
 				AdjointTools::dJ_pressure_transient_adjoint_term(*state, pressure_boundaries_, adjoint_nu, adjoint_p, cur_term);
 			}
 			else
 			{
-				AdjointTools::dJ_pressure_static_adjoint_term(*state, pressure_boundaries_, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
+				AdjointTools::dJ_pressure_static_adjoint_term(*state, pressure_boundaries_, state->diff_cached.u(0), get_adjoint_mat(*state, 0), cur_term);
 			}
 			if (term.size() != cur_term.size())
 				term = cur_term;
@@ -674,7 +674,7 @@ namespace polyfem::solver
 			}
 			else
 			{
-				AdjointTools::dJ_periodic_shape_adjoint_term(*state, *periodic_mesh_map, periodic_mesh_representation, state->diff_cached.u(0), state->get_adjoint_mat(0), cur_term);
+				AdjointTools::dJ_periodic_shape_adjoint_term(*state, *periodic_mesh_map, periodic_mesh_representation, state->diff_cached.u(0), get_adjoint_mat(*state, 0), cur_term);
 			}
 			if (term.size() != cur_term.size())
 				term = cur_term;

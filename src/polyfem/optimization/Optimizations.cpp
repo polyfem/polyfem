@@ -6,6 +6,8 @@
 #include "AdjointNLProblem.hpp"
 
 #include <polyfem/State.hpp>
+
+#include <polyfem/optimization/StateDiff.hpp>
 #include <polyfem/optimization/forms/SpatialIntegralForms.hpp>
 #include <polyfem/optimization/forms/SumCompositeForm.hpp>
 #include <polyfem/optimization/forms/CompositeForms.hpp>
@@ -15,11 +17,9 @@
 #include <polyfem/optimization/forms/BarrierForms.hpp>
 #include <polyfem/optimization/forms/SurfaceTractionForms.hpp>
 #include <polyfem/optimization/forms/TargetForms.hpp>
-
+#include <polyfem/optimization/forms/ParametrizedProductForm.hpp>
 #include <polyfem/optimization/parametrization/Parametrizations.hpp>
 #include <polyfem/optimization/parametrization/SplineParametrizations.hpp>
-
-#include <polyfem/optimization/forms/ParametrizedProductForm.hpp>
 
 #include <polyfem/io/OBJReader.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
@@ -675,7 +675,7 @@ namespace polyfem::solver
 				for (const auto &surface : surface_selection)
 				{
 					std::vector<int> ids;
-					states[state_id]->compute_surface_node_ids(surface, ids);
+					compute_surface_node_ids(*states[state_id], surface, ids);
 					for (const auto &i : ids)
 						node_ids.insert(i);
 				}
@@ -689,7 +689,7 @@ namespace polyfem::solver
 				for (const auto &volume : volume_selection)
 				{
 					std::vector<int> ids;
-					states[state_id]->compute_volume_node_ids(volume, ids);
+					compute_volume_node_ids(*states[state_id], volume, ids);
 					for (const auto &i : ids)
 						node_ids.insert(i);
 				}
@@ -697,7 +697,7 @@ namespace polyfem::solver
 				if (selection["exclude_boundary_nodes"])
 				{
 					std::vector<int> ids;
-					states[state_id]->compute_total_surface_node_ids(ids);
+					compute_total_surface_node_ids(*states[state_id], ids);
 					for (const auto &i : ids)
 						node_ids.erase(i);
 				}

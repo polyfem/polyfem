@@ -1,5 +1,6 @@
 #include "AdjointNLProblem.hpp"
 
+#include <polyfem/optimization/StateDiff.hpp>
 #include <polyfem/optimization/forms/AdjointForm.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
@@ -198,7 +199,7 @@ namespace polyfem::solver
 			{
 				POLYFEM_SCOPED_TIMER("adjoint solve");
 				for (int i = 0; i < all_states_.size(); i++)
-					all_states_[i]->solve_adjoint_cached(form_->compute_reduced_adjoint_rhs(x, *all_states_[i])); // caches inside state
+					solve_adjoint_cached(*all_states_[i], form_->compute_reduced_adjoint_rhs(x, *all_states_[i])); // caches inside state
 			}
 
 			{
