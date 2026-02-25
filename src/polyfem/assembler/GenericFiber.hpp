@@ -46,16 +46,15 @@ namespace polyfem::assembler
 						  const DefGradMatrix<T> &def_grad) const
 		{
 			const T J = polyfem::utils::determinant(def_grad);
-			const auto Cbar = 1 / pow(J, 2.0 / 3.0);
+			const auto Cbar = (def_grad.transpose() * def_grad / pow(J, 2.0 / 3.0)).eval();
 
-			const auto a_tmp = fiber_direction_(p, p, t, el_id);
+			auto a_tmp = fiber_direction_(p, p, t, el_id);
+			a_tmp.normalize();
+
 			assert(a_tmp.rows() == this->size() && a_tmp.cols() == 1);
 			Eigen::Matrix<T, Eigen::Dynamic, 1, 0, 3, 1> a(a_tmp.rows(), a_tmp.cols());
 			for (int i = 0; i < a.size(); ++i)
 				a(i) = T(a_tmp(i));
-
-			a = def_grad * a;
-			a = a / a.norm();
 
 			const Eigen::Matrix<T, 1, 1> tmp = a.transpose() * Cbar * a;
 			assert(tmp.rows() == 1 && tmp.cols() == 1);
