@@ -41,6 +41,7 @@
 #include <string>
 #include <unordered_map>
 #include <functional>
+#include <cassert>
 
 #include <spdlog/sinks/basic_file_sink.h>
 
@@ -679,9 +680,7 @@ namespace polyfem
 		//---------------------------------------------------
 	public:
 		solver::CacheLevel optimization_enabled = solver::CacheLevel::None;
-		void cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad);
 		solver::DiffCache diff_cached;
-
 		std::unique_ptr<polysolve::linear::Solver> lin_solver_cached; // matrix factorization of last linear solve
 
 		int ndof() const
@@ -693,39 +692,37 @@ namespace polyfem
 				return actual_dim * n_bases + n_pressure_bases;
 		}
 
-		// Aux functions for setting up adjoint equations
-		void compute_force_jacobian(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, StiffnessMatrix &hessian);
-		void compute_force_jacobian_prev(const int force_step, const int sol_step, StiffnessMatrix &hessian_prev) const;
-		// Solves the adjoint PDE for derivatives and caches
-		void solve_adjoint_cached(const Eigen::MatrixXd &rhs);
-		Eigen::MatrixXd solve_adjoint(const Eigen::MatrixXd &rhs) const;
-		// Returns cached adjoint solve
-		Eigen::MatrixXd get_adjoint_mat(int type) const
-		{
-			assert(diff_cached.adjoint_mat().size() > 0);
-			if (problem->is_time_dependent())
-			{
-				if (type == 0)
-					return diff_cached.adjoint_mat().leftCols(diff_cached.adjoint_mat().cols() / 2);
-				else if (type == 1)
-					return diff_cached.adjoint_mat().middleCols(diff_cached.adjoint_mat().cols() / 2, diff_cached.adjoint_mat().cols() / 2);
-				else
-					log_and_throw_adjoint_error("Invalid adjoint type!");
-			}
-
-			return diff_cached.adjoint_mat();
-		}
-		Eigen::MatrixXd solve_static_adjoint(const Eigen::MatrixXd &adjoint_rhs) const;
-		Eigen::MatrixXd solve_transient_adjoint(const Eigen::MatrixXd &adjoint_rhs) const;
 		// Change geometric node positions
-		void set_mesh_vertex(int v_id, const Eigen::VectorXd &vertex);
-		void get_vertices(Eigen::MatrixXd &vertices) const;
-		void get_elements(Eigen::MatrixXi &elements) const;
+		void set_mesh_vertex(int v_id, const Eigen::VectorXd &vertex)
+		{
+			assert(vertex.size() == mesh->dimension());
+			mesh->set_point(v_id, vertex);
+		}
 
-		// Get geometric node indices for surface/volume
-		void compute_surface_node_ids(const int surface_selection, std::vector<int> &node_ids) const;
-		void compute_total_surface_node_ids(std::vector<int> &node_ids) const;
-		void compute_volume_node_ids(const int volume_selection, std::vector<int> &node_ids) const;
+		void get_vertices(Eigen::MatrixXd &vertices) const
+		{
+			vertices.setZero(mesh->n_vertices(), mesh->dimension());
+
+			for (int v = 0; v < mesh->n_vertices(); v++)
+				vertices.row(v) = mesh->point(v);
+		}
+
+		void get_elements(Eigen::MatrixXi &elements) const
+		{
+			assert(mesh->is_simplicial());
+
+			auto node_to_primitive_map = node_to_primitive();
+
+			const auto &gbases = geom_bases();
+			int dim = mesh->dimension();
+			elements.setZero(gbases.size(), dim + 1);
+			for (int e = 0; e < gbases.size(); e++)
+			{
+				int i = 0;
+				for (const auto &gbs : gbases[e].bases)
+					elements(e, i++) = node_to_primitive_map[gbs.global()[0].index];
+			}
+		}
 
 		// to replace the initial condition in json during initial condition optimization
 		Eigen::MatrixXd initial_sol_update, initial_vel_update;
