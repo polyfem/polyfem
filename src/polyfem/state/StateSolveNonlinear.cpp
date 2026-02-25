@@ -38,7 +38,7 @@ namespace polyfem
 		return polysolve::nonlinear::Solver::create(for_al ? args["solver"]["augmented_lagrangian"]["nonlinear"] : args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger());
 	}
 
-	void State::solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol)
+	void State::solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, UserPostStepCallback user_post_step)
 	{
 		init_nonlinear_tensor_solve(sol, t0 + dt);
 
@@ -63,8 +63,11 @@ namespace polyfem
 		save_timestep(t0, save_i, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 		save_i++;
 
-		if (optimization_enabled != solver::CacheLevel::None)
-			cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
+		// Step 0.
+		if (user_post_step)
+		{
+			user_post_step(0, *this, sol, nullptr, nullptr);
+		}
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
@@ -72,7 +75,7 @@ namespace polyfem
 
 			{
 				POLYFEM_SCOPED_TIMER(forward_solve_time);
-				solve_tensor_nonlinear(sol, t);
+				solve_tensor_nonlinear(t, sol, true);
 			}
 
 			if (remesh_enabled)
@@ -98,7 +101,7 @@ namespace polyfem
 				if (remesh_success)
 				{
 					POLYFEM_SCOPED_TIMER(global_relaxation_time);
-					solve_tensor_nonlinear(sol, t, false); // solve the scene again after remeshing
+					solve_tensor_nonlinear(t, sol, false); // solve the scene again after remeshing
 				}
 			}
 
@@ -108,9 +111,9 @@ namespace polyfem
 			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 			save_i++;
 
-			if (optimization_enabled != solver::CacheLevel::None)
+			if (user_post_step)
 			{
-				cache_transient_adjoint_quantities(t, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
+				user_post_step(t, *this, sol, nullptr, nullptr);
 			}
 
 			{
@@ -309,7 +312,7 @@ namespace polyfem
 		stats.solver_info = json::array();
 	}
 
-	void State::solve_tensor_nonlinear(Eigen::MatrixXd &sol, const int t, const bool init_lagging)
+	void State::solve_tensor_nonlinear(int step, Eigen::MatrixXd &sol, const bool init_lagging, UserPostStepCallback user_post_step)
 	{
 		assert(solve_data.nl_problem != nullptr);
 		NLProblem &nl_problem = *(solve_data.nl_problem);
@@ -330,7 +333,7 @@ namespace polyfem
 
 		// Save the subsolve sequence for debugging
 		int subsolve_count = 0;
-		save_subsolve(subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
+		save_subsolve(subsolve_count, step, sol, Eigen::MatrixXd()); // no pressure
 
 		// ---------------------------------------------------------------------
 
@@ -349,11 +352,11 @@ namespace polyfem
 		al_solver.post_subsolve = [&](const double al_weight) {
 			stats.solver_info.push_back(
 				{{"type", al_weight > 0 ? "al" : "rc"},
-				 {"t", t}, // TODO: null if static?
+				 {"t", step}, // TODO: null if static?
 				 {"info", nl_solver->info()}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
-			save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
+			save_subsolve(++subsolve_count, step, sol, Eigen::MatrixXd()); // no pressure
 		};
 
 		Eigen::MatrixXd prev_sol = sol;
@@ -431,11 +434,16 @@ namespace polyfem
 				// Save the subsolve sequence for debugging and info
 				stats.solver_info.push_back(
 					{{"type", "rc"},
-					 {"t", t}, // TODO: null if static?
+					 {"t", step}, // TODO: null if static?
 					 {"lag_i", lag_i},
 					 {"info", nl_solver->info()}});
-				save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
+				save_subsolve(++subsolve_count, step, sol, Eigen::MatrixXd()); // no pressure
 			}
+		}
+
+		if (user_post_step)
+		{
+			user_post_step(step, *this, sol, nullptr, nullptr);
 		}
 	}
 } // namespace polyfem

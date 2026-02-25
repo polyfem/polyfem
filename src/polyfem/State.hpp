@@ -40,6 +40,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <functional>
 
 #include <spdlog/sinks/basic_file_sink.h>
 
@@ -73,6 +74,16 @@ namespace polyfem
 		Solution,
 		Derivatives
 	};
+
+	class State;
+
+	/// @brief User callback at the end of every solver step.
+	/// @param step[in] The current step.
+	/// @param state[in] The state of current step.
+	/// @param sol[in] The solution of current step.
+	/// @param disp_grad[in] du/dX where u is the displacement and X is the material coordinate. Optional, pass nullptr if not applicable.
+	/// @param pressure[in] Optional. The pressure of current step. Optional, pass nullptr if not applicable.
+	using UserPostStepCallback = std::function<void(int step, const State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd *disp_grad, const Eigen::MatrixXd *pressure)>;
 
 	/// main class that contains the polyfem solver and all its state
 	class State
@@ -296,11 +307,13 @@ namespace polyfem
 		/// solves the problems
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
-		void solve_problem(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
+		/// @param[in] user_post_step optional post step user callback. Empty by default.
+		void solve_problem(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
 		/// solves the problem, call other methods
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
-		void solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
+		/// @param[in] user_post_step optional post step user callback. Empty by default.
+		void solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {})
 		{
 			if (!mesh)
 			{
@@ -314,7 +327,7 @@ namespace polyfem
 			assemble_rhs();
 			assemble_mass_mat();
 
-			solve_problem(sol, pressure);
+			solve_problem(sol, pressure, user_post_step);
 		}
 
 		/// timedependent stuff cached
@@ -328,27 +341,31 @@ namespace polyfem
 		/// @param[in] dt timestep size
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
-		void solve_transient_navier_stokes_split(const int time_steps, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
+		/// @param[in] user_post_step optional post step user callback. Empty by default.
+		void solve_transient_navier_stokes_split(const int time_steps, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
 		/// solves transient navier stokes with FEM
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
-		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
+		/// @param[in] user_post_step optional post step user callback. Empty by default.
+		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
 		/// solves transient linear problem
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
-		void solve_transient_linear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
+		/// @param[in] user_post_step optional post step user callback. Empty by default.
+		void solve_transient_linear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
 		/// solves transient tensor nonlinear problem
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
 		/// @param[out] sol solution
-		void solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol);
+		/// @param[in] user_post_step optional post step user callback. Empty by default.
+		void solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, UserPostStepCallback user_post_step = {});
 		/// initialize the nonlinear solver
 		/// @param[out] sol solution
 		/// @param[in] t (optional) initial time
@@ -366,17 +383,22 @@ namespace polyfem
 		/// @param[out] solution Output acceleration variable.
 		void initial_acceleration(Eigen::MatrixXd &acceleration) const;
 		/// solves a linear problem
+		/// @param[in] step current step
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
-		void solve_linear(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
+		/// @param[in] user_post_step optional post step user callback. Empty by default.
+		void solve_linear(int step, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
 		/// solves a navier stokes
+		/// @param[in] step current step
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
-		void solve_navier_stokes(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
+		/// @param[in] user_post_step optional post step user callback. Empty by default.
+		void solve_navier_stokes(int step, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
 		/// solves nonlinear problems
+		/// @param[in] step current step
 		/// @param[out] sol solution
-		/// @param[in] t (optional) time step id
-		void solve_tensor_nonlinear(Eigen::MatrixXd &sol, const int t = 0, const bool init_lagging = true);
+		/// @param[in] user_post_step optional post step user callback. Empty by default.
+		void solve_tensor_nonlinear(int step, Eigen::MatrixXd &sol, const bool init_lagging = true, UserPostStepCallback user_post_step = {});
 
 		/// factory to create the nl solver depending on input
 		/// @return nonlinear solver (eg newton or LBFGS)
@@ -390,18 +412,21 @@ namespace polyfem
 		}
 
 		/// @brief Solve the linear problem with the given solver and system.
+		/// @param[in] step current step.
 		/// @param solver Linear solver.
 		/// @param A Linear system matrix.
 		/// @param b Right-hand side.
 		/// @param compute_spectrum If true, compute the spectrum.
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
+		/// @param[in] user_post_step optional post step user callback. Empty by default.
 		void solve_linear(
+			int step,
 			const std::unique_ptr<polysolve::linear::Solver> &solver,
 			StiffnessMatrix &A,
 			Eigen::VectorXd &b,
 			const bool compute_spectrum,
-			Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
+			Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
 
 		/// @brief Returns whether the system is linear. Collisions and pressure add nonlinearity to the problem.
 		bool is_problem_linear() const { return assembler->is_linear() && !is_contact_enabled() && !is_pressure_enabled() && !has_constraints(); }
@@ -714,9 +739,9 @@ namespace polyfem
 		assembler::MacroStrainValue macro_strain_constraint;
 
 		/// In Elasticity PDE, solve for "min W(disp_grad + \grad u)" instead of "min W(\grad u)"
-		void solve_homogenization_step(Eigen::MatrixXd &sol, const int t = 0, bool adaptive_initial_weight = false); // sol is the extended solution, i.e. [periodic fluctuation, macro strain]
+		void solve_homogenization_step(int step, Eigen::MatrixXd &sol, bool adaptive_initial_weight = false, UserPostStepCallback user_post_step = {}); // sol is the extended solution, i.e. [periodic fluctuation, macro strain]
 		void init_homogenization_solve(const double t);
-		void solve_homogenization(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol);
+		void solve_homogenization(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, UserPostStepCallback user_post_step = {});
 		bool is_homogenization() const
 		{
 			return args["boundary_conditions"]["periodic_boundary"]["linear_displacement_offset"].size() > 0;
