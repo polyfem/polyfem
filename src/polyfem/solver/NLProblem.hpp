@@ -72,12 +72,12 @@ namespace polyfem::solver
 
 		double normalize_forms() override;
 
-		virtual double grad_norm_rescaling(const std::string &norm_type) const override 
+		virtual double grad_norm_rescaling(const std::string &norm_type) const override
 		{
 			if (norm_type == "L2")
 			{
 				return F0 * std::pow(L, 1.5);
-			} 
+			}
 			else if (norm_type == "Linf")
 			{
 				return F0;
@@ -89,12 +89,12 @@ namespace polyfem::solver
 			log_and_throw_error("Unrecognized norm_type: {}", norm_type);
 		}
 
-        virtual double step_norm_rescaling(const std::string &norm_type) const override 
+		virtual double step_norm_rescaling(const std::string &norm_type) const override
 		{
 			if (norm_type == "L2")
 			{
 				return std::pow(L, 2.5);
-			} 
+			}
 			else if (norm_type == "Linf")
 			{
 				return L;
@@ -106,12 +106,12 @@ namespace polyfem::solver
 			log_and_throw_error("Unrecognized norm_type: {}", norm_type);
 		}
 
-        virtual double energy_norm_rescaling(const std::string &norm_type) const override 
+		virtual double energy_norm_rescaling(const std::string &norm_type) const override
 		{
 			return F0 * L * L * L * L;
 		}
 
-        virtual double grad_norm(const TVector &x, const std::string &norm_type) const override 
+		virtual double grad_norm(const TVector &x, const std::string &norm_type) const override
 		{
 			if (norm_type == "L2")
 			{
@@ -127,8 +127,8 @@ namespace polyfem::solver
 			}
 			log_and_throw_error("Unrecognized norm_type: {}", norm_type);
 		}
-		
-        virtual double step_norm(const TVector &x, const std::string &norm_type) const override 
+
+		virtual double step_norm(const TVector &x, const std::string &norm_type) const override
 		{
 			if (norm_type == "L2")
 			{
