@@ -5,14 +5,14 @@
 #include <cmath>
 
 #include <polyfem/State.hpp>
-#include <polyfem/solver/Optimizations.hpp>
-#include <polyfem/solver/AdjointTools.hpp>
+#include <polyfem/optimization/Optimizations.hpp>
+#include <polyfem/optimization/AdjointTools.hpp>
 
-#include <polyfem/solver/forms/adjoint_forms/SmoothingForms.hpp>
-#include <polyfem/solver/forms/adjoint_forms/TargetForms.hpp>
-#include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
-#include <polyfem/solver/forms/parametrization/NodeCompositeParametrizations.hpp>
-#include <polyfem/solver/AdjointNLProblem.hpp>
+#include <polyfem/optimization/forms/SmoothingForms.hpp>
+#include <polyfem/optimization/forms/TargetForms.hpp>
+#include <polyfem/optimization/parametrization/Parametrizations.hpp>
+#include <polyfem/optimization/parametrization/NodeCompositeParametrizations.hpp>
+#include <polyfem/optimization/AdjointNLProblem.hpp>
 
 #include <finitediff.hpp>
 

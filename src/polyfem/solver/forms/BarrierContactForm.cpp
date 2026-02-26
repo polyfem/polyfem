@@ -1,42 +1,36 @@
 #include "BarrierContactForm.hpp"
-#include <ipc/potentials/barrier_potential.hpp>
+
 #include <polyfem/utils/Logger.hpp>
-#include <polyfem/utils/Types.hpp>
-#include <polyfem/utils/Timer.hpp>
-#include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/utils/Timer.hpp>
+#include <polyfem/utils/Types.hpp>
 
 #include <ipc/barrier/adaptive_stiffness.hpp>
 #include <ipc/utils/world_bbox_diagonal_length.hpp>
 
+#include <algorithm>
+#include <cassert>
+#include <cmath>
+
 namespace polyfem::solver
 {
-    BarrierContactForm::BarrierContactForm(const ipc::CollisionMesh &collision_mesh,
-					const double dhat,
-					const double avg_mass,
-					const bool use_area_weighting,
-					const bool use_improved_max_operator,
-					const bool use_physical_barrier,
-					const bool use_adaptive_barrier_stiffness,
-					const bool is_time_dependent,
-					const bool enable_shape_derivatives,
-					const ipc::BroadPhaseMethod broad_phase_method,
-					const double ccd_tolerance,
-					const int ccd_max_iterations): ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), barrier_potential_(dhat, use_physical_barrier)
-    {
+	BarrierContactForm::BarrierContactForm(const ipc::CollisionMesh &collision_mesh,
+										   const double dhat,
+										   const double avg_mass,
+										   const bool use_area_weighting,
+										   const bool use_improved_max_operator,
+										   const bool use_physical_barrier,
+										   const bool use_adaptive_barrier_stiffness,
+										   const bool is_time_dependent,
+										   const bool enable_shape_derivatives,
+										   const ipc::BroadPhaseMethod broad_phase_method,
+										   const double ccd_tolerance,
+										   const int ccd_max_iterations) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), barrier_potential_(dhat, use_physical_barrier)
+	{
 		// collision_set_.set_use_convergent_formulation(use_convergent_formulation);
 		collision_set_.set_use_area_weighting(use_area_weighting);
 		collision_set_.set_use_improved_max_approximator(use_improved_max_operator);
 		collision_set_.set_enable_shape_derivatives(enable_shape_derivatives);
-    }
-	void BarrierContactForm::force_shape_derivative(const ipc::NormalCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const
-	{
-		// Eigen::MatrixXd U = collision_mesh_.vertices(utils::unflatten(solution, collision_mesh_.dim()));
-		// Eigen::MatrixXd X = collision_mesh_.vertices(boundary_nodes_pos_);
-		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(solution);
-
-		StiffnessMatrix dq_h = collision_mesh_.to_full_dof(barrier_potential_.shape_derivative(collision_set, collision_mesh_, displaced_surface));
-		term = barrier_stiffness() * dq_h.transpose() * adjoint_sol;
 	}
 
 	void BarrierContactForm::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
@@ -50,7 +44,7 @@ namespace polyfem::solver
 		// so we need to compute the gradient of the non-convergent barrier.
 		// After we can map it to a good value for the convergent formulation.
 		ipc::NormalCollisions nonconvergent_constraints;
-		//nonconvergent_constraints.set_use_convergent_formulation(false);
+		// nonconvergent_constraints.set_use_convergent_formulation(false);
 		nonconvergent_constraints.set_use_area_weighting(false);
 		nonconvergent_constraints.set_use_improved_max_approximator(false);
 		nonconvergent_constraints.build(
@@ -179,9 +173,12 @@ namespace polyfem::solver
 
 		ipc::PSDProjectionMethod psd_projection_method;
 
-		if (project_to_psd_) {
+		if (project_to_psd_)
+		{
 			psd_projection_method = ipc::PSDProjectionMethod::CLAMP;
-		} else {
+		}
+		else
+		{
 			psd_projection_method = ipc::PSDProjectionMethod::NONE;
 		}
 
@@ -200,7 +197,7 @@ namespace polyfem::solver
 			const auto log_level = (ratio < 1e-6) ? spdlog::level::err : ((ratio < 1e-4) ? spdlog::level::warn : spdlog::level::debug);
 			polyfem::logger().log(log_level, "Minimum distance during solve: {}, dhat: {}", sqrt(curr_distance), dhat());
 		}
-		
+
 		if (data.iter_num == 0)
 			return;
 
@@ -230,4 +227,4 @@ namespace polyfem::solver
 
 		prev_distance_ = curr_distance;
 	}
-}
+} // namespace polyfem::solver

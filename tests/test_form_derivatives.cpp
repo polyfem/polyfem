@@ -16,7 +16,7 @@
 #include <polyfem/solver/forms/L2ProjectionForm.hpp>
 #include <polyfem/solver/forms/LaggedRegForm.hpp>
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
-#include <polyfem/solver/forms/adjoint_forms/AMIPSForm.hpp>
+#include <polyfem/optimization/forms/AMIPSForm.hpp>
 
 #include <polyfem/time_integrator/ImplicitEuler.hpp>
 

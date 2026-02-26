@@ -22,7 +22,7 @@
 #include <polyfem/mesh/LocalBoundary.hpp>
 
 #include <polyfem/solver/SolveData.hpp>
-#include <polyfem/solver/DiffCache.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
 
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>

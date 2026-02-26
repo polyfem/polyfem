@@ -1,0 +1,8 @@
+repos:
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: v21.1.8
+    hooks:
+      - id: clang-format
+        # The default formats a bunch of languages. Narrow it down to C-like family.
+        types_or: [c++, c, cuda]
+        # Excludes are handled in .clang-format-ignore.

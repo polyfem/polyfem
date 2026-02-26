@@ -185,11 +185,11 @@ namespace polyfem::io
 		{
 			for (const auto &str : data.header.string_tags)
 				node_data_name.push_back(str);
-			
+
 			for (const auto &entry : data.entries)
 				for (const auto &d : entry.data)
 					node_data[i].push_back(d);
-			
+
 			i++;
 		}
 

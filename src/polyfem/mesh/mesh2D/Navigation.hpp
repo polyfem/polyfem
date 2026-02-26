@@ -36,5 +36,5 @@ namespace polyfem
 			inline Index next_around_vertex(const GEO::Mesh &M, const GEO::Attribute<GEO::index_t> &c2e, Index idx) { return switch_face(M, c2e, switch_edge(M, c2e, idx)); }
 
 		} // namespace Navigation
-	}     // namespace mesh
+	} // namespace mesh
 } // namespace polyfem

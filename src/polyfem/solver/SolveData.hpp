@@ -120,7 +120,7 @@ namespace polyfem::solver
 			const double ccd_tolerance,
 			const long ccd_max_iterations,
 			const bool enable_shape_derivatives,
-			
+
 			// Smooth Contact Form
 			const bool use_gcp_formulation,
 			const double alpha_t,

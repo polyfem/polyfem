@@ -33,7 +33,7 @@ namespace polyfem::mesh
 		{
 		}
 
-		virtual ~SizingFieldRemesher(){};
+		virtual ~SizingFieldRemesher() {};
 
 		// Edge splitting
 		void split_edges() override;
