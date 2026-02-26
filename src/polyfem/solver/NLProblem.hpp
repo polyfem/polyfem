@@ -113,6 +113,10 @@ namespace polyfem::solver
 		{
 			if (norm_type == "L2")
 			{
+				std::cout << x.size() << std::endl;
+				std::cout << current_lumped_mass().rows() << std::endl;
+				std::cout << x.transpose() * current_lumped_mass().inverse() * x << std::endl;
+				std::cout << current_lumped_mass() << std::endl;
 				return sqrt(x.transpose() * current_lumped_mass().inverse() * x);
 			}
 			else if (norm_type == "Linf")
