@@ -1483,6 +1483,10 @@ namespace polyfem
 		{
 			avg_mass = 1;
 			timings.assembling_mass_mat_time = 0;
+			mass_matrix_assembler->use_density = false;
+			mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
+			pure_mass = lump_matrix(pure_mass);
+			mass_matrix_assembler->use_density = true;
 			return;
 		}
 

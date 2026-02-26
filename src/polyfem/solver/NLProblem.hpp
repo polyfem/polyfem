@@ -76,7 +76,7 @@ namespace polyfem::solver
 		{
 			if (norm_type == "L2")
 			{
-				return F0 * std::pow(L, 3/2);
+				return F0 * std::pow(L, 1.5);
 			} 
 			else if (norm_type == "Linf")
 			{
@@ -92,7 +92,7 @@ namespace polyfem::solver
 		{
 			if (norm_type == "L2")
 			{
-				return std::pow(L, 5/2);
+				return std::pow(L, 2.5);
 			} 
 			else if (norm_type == "Linf")
 			{

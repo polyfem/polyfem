@@ -34,23 +34,23 @@ def get_old_characteristic_length(sim_config):
         return 1  
     
 
-def get_old_tol(sim_config, tol_name, in_json_directory):
+def get_old_tol(sim_config, tol_name, in_json_directory, solver_type):
 
     in_advanced = tol_name == "derivative_along_delta_x"
 
     if "solver" in sim_config.keys() and \
-    "nonlinear" in sim_config["solver"].keys():
-        if in_advanced and "advanced" in sim_config["solver"]["nonlinear"].keys() \
-        and tol_name in sim_config["solver"]["nonlinear"]["advanced"].keys():
-            return sim_config["solver"]["nonlinear"]["advanced"][tol_name]
-        elif tol_name in sim_config["solver"]["nonlinear"].keys():
-            return sim_config["solver"]["nonlinear"][tol_name]
+    solver_type in sim_config["solver"].keys():
+        if in_advanced and "advanced" in sim_config["solver"][solver_type].keys() \
+        and tol_name in sim_config["solver"][solver_type]["advanced"].keys():
+            return sim_config["solver"][solver_type]["advanced"][tol_name]
+        elif tol_name in sim_config["solver"][solver_type].keys():
+            return sim_config["solver"][solver_type][tol_name]
     
     current_config = sim_config
     current_dir = "/".join(in_json_directory.split("/")[:-1])
     while True:
-        if "solver" in current_config and "nonlinear" in current_config["solver"]:
-            nl_solver = current_config["solver"]["nonlinear"]
+        if "solver" in current_config and solver_type in current_config["solver"]:
+            nl_solver = current_config["solver"][solver_type]
             
             if in_advanced:
                 if "advanced" in nl_solver and tol_name in nl_solver["advanced"]:
@@ -79,6 +79,10 @@ def get_old_tol(sim_config, tol_name, in_json_directory):
         assert False
 
 
+def get_old_use_grad_norm_tol(sim_config, in_json_path, solver_type):
+    assert False
+
+
 def update_json(in_json_path, out_json_path, is_common_file, in_json_directory):
 
     with open(in_json_path, "r") as f:
@@ -93,16 +97,28 @@ def update_json(in_json_path, out_json_path, is_common_file, in_json_directory):
         old_characteristic_length = get_old_characteristic_length(sim_config)
         old_scale = dt * old_characteristic_length
         
-        update_field(sim_config, ["solver", "nonlinear", "grad_norm_tol"], get_old_tol(sim_config, "grad_norm", in_json_path) * old_scale, create_new=True)
-        update_field(sim_config, ["solver", "nonlinear", "x_delta_tol"], get_old_tol(sim_config, "x_delta", in_json_path) * old_scale, create_new=True)
-        update_field(sim_config, ["solver", "nonlinear", "advanced", "f_delta_tol"], get_old_tol(sim_config, "f_delta", in_json_path) * old_scale, create_new=True)
-        update_field(sim_config, ["solver", "nonlinear", "newton_decrement_tol"], get_old_tol(sim_config, "derivative_along_delta_x", in_json_path) * old_scale, create_new=True)
+        update_field(sim_config, ["solver", "nonlinear", "grad_norm_tol"], get_old_tol(sim_config, "grad_norm", in_json_path, "nonlinear") * old_scale, create_new=True)
+        update_field(sim_config, ["solver", "nonlinear", "x_delta_tol"], get_old_tol(sim_config, "x_delta", in_json_path, "nonlinear") * old_scale, create_new=True)
+        update_field(sim_config, ["solver", "nonlinear", "advanced", "f_delta_tol"], get_old_tol(sim_config, "f_delta", in_json_path, "nonlinear") * old_scale, create_new=True)
+        update_field(sim_config, ["solver", "nonlinear", "newton_decrement_tol"], get_old_tol(sim_config, "derivative_along_delta_x", in_json_path, "nonlinear") * old_scale, create_new=True)
+        update_field(sim_config, ["solver", "nonlinear", "line_search", "use_grad_norm_tol"], get_old_use_grad_norm_tol(sim_config, in_json_path, "nonlinear") * old_characteristic_length, create_new=True)
+        
+        update_field(sim_config, ["solver", "augmented_lagrangian", "grad_norm_tol"], get_old_tol(sim_config, "grad_norm", in_json_path, "augmented_lagrangian") * old_scale, create_new=True)
+        update_field(sim_config, ["solver", "augmented_lagrangian", "x_delta_tol"], get_old_tol(sim_config, "x_delta", in_json_path, "augmented_lagrangian") * old_scale, create_new=True)
+        update_field(sim_config, ["solver", "augmented_lagrangian", "advanced", "f_delta_tol"], get_old_tol(sim_config, "f_delta", in_json_path, "augmented_lagrangian") * old_scale, create_new=True)
+        update_field(sim_config, ["solver", "augmented_lagrangian", "newton_decrement_tol"], get_old_tol(sim_config, "derivative_along_delta_x", in_json_path, "augmented_lagrangian") * old_scale, create_new=True)
+        update_field(sim_config, ["solver", "augmented_lagrangian", "line_search", "use_grad_norm_tol"], get_old_use_grad_norm_tol(sim_config, in_json_path, "augmented_lagrangian") * old_characteristic_length, create_new=True)
 
     sim_config["solver"]["nonlinear"].pop("grad_norm", None)
     sim_config["solver"]["nonlinear"].pop("x_delta", None)
     sim_config["solver"]["nonlinear"].pop("f_delta", None)
+    sim_config["solver"]["augmented_lagrangian"].pop("grad_norm", None)
+    sim_config["solver"]["augmented_lagrangian"].pop("x_delta", None)
+    sim_config["solver"]["augmented_lagrangian"].pop("f_delta", None)
     if "advanced" in sim_config["solver"]["nonlinear"].keys():
         sim_config["solver"]["nonlinear"]["advanced"].pop("derivative_along_delta_x", None)
+    if "advanced" in sim_config["solver"]["augmented_lagrangian"].keys():
+        sim_config["solver"]["augmented_lagrangian"]["advanced"].pop("derivative_along_delta_x", None)
 
     with open(out_json_path, 'w') as f:
         json.dump(sim_config, f, indent=4)
