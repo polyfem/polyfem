@@ -129,8 +129,8 @@ namespace polyfem
 		if (args["solver"]["advanced"]["characteristic_length"] > 0)
 		{
 			characteristic_length = args["solver"]["advanced"]["characteristic_length"];
-		} 
-		else 
+		}
+		else
 		{
 			characteristic_length = (max - min).norm();
 		}

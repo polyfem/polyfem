@@ -118,7 +118,6 @@ namespace polyfem::solver
 			TVector tmp;
 			f->first_derivative(x, tmp);
 			grad += tmp;
-			//std::cout << f->name() << ": " << tmp.norm() << std::endl;
 		}
 	}
 

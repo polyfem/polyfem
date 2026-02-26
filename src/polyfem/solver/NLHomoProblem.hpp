@@ -28,7 +28,7 @@ namespace polyfem::solver
 					  const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
 					  const bool solve_symmetric_macro_strain,
 					  const std::shared_ptr<polysolve::linear::Solver> &solver,
-	    			  const double char_length,
+					  const double char_length,
 					  const double char_force,
 					  StiffnessMatrix lumped_mass);
 		virtual ~NLHomoProblem() = default;
