@@ -88,6 +88,7 @@ namespace polyfem::solver
 			}
 			log_and_throw_error("Unrecognized norm_type: {}", norm_type);
 		}
+
         virtual double step_norm_rescaling(const std::string &norm_type) const override 
 		{
 			if (norm_type == "L2")
@@ -104,6 +105,7 @@ namespace polyfem::solver
 			}
 			log_and_throw_error("Unrecognized norm_type: {}", norm_type);
 		}
+
         virtual double energy_norm_rescaling(const std::string &norm_type) const override 
 		{
 			return F0 * L * L * L * L;
@@ -113,10 +115,6 @@ namespace polyfem::solver
 		{
 			if (norm_type == "L2")
 			{
-				std::cout << x.size() << std::endl;
-				std::cout << current_lumped_mass().rows() << std::endl;
-				std::cout << x.transpose() * current_lumped_mass().inverse() * x << std::endl;
-				std::cout << current_lumped_mass() << std::endl;
 				return sqrt(x.transpose() * current_lumped_mass().inverse() * x);
 			}
 			else if (norm_type == "Linf")
@@ -129,6 +127,7 @@ namespace polyfem::solver
 			}
 			log_and_throw_error("Unrecognized norm_type: {}", norm_type);
 		}
+		
         virtual double step_norm(const TVector &x, const std::string &norm_type) const override 
 		{
 			if (norm_type == "L2")
