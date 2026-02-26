@@ -520,7 +520,7 @@ TEST_CASE("shape-transient-smooth", "[test_adjoint]")
 		state->args["contact"]["use_gcp_formulation"] = true;
 		state->args["contact"]["alpha_t"] = 0.95;
 		state->args["contact"]["friction_coefficient"] = 0;
-		state->args["solver"]["nonlinear"]["grad_norm"] = 1e-6;
+		state->args["solver"]["nonlinear"]["grad_norm_tol"] = 1e-6;
 	}
 
 	std::srand(Catch::rngSeed());

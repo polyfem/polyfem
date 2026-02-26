@@ -1,0 +1,22 @@
+cp -r data old-data
+cp -r diff-data old-diff-data
+cp -r pref-data old-pref-data
+
+python convert_jsons.py -i old-data/adhesion -o data/adhesion -c common.json
+python convert_jsons.py -i old-data/contact/examples -o data/contact/examples -c common.json
+python convert_jsons.py -i old-data/gcp-contact -o data/gcp-contact -c common.json
+python convert_jsons.py -i old-data/interpolation -o data/interpolation -c main.json
+python convert_jsons.py -i old-data/multi-material -o data/multi-material -c main.json
+python convert_jsons.py -i old-data/selection -o data/selection -c main.json
+python convert_jsons.py -i old-data/standard -o data/standard -c common.json
+python convert_jsons.py -i old-data/time-bc -o data/time-bc -c main.json
+python convert_jsons.py -i old-data/time-int -o data/time-int -c main.json
+python convert_jsons.py -i old-data/units -o data/units -c common.json
+
+python convert_jsons.py -i old-diff-data -o diff-data -c common.json
+
+python convert_jsons.py -i old-pref-data -o pref-data -c common.json
+
+rm -rf old-data
+rm -rf old-diff-data
+rm -rf old-pref-data
