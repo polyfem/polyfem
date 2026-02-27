@@ -1569,7 +1569,7 @@ namespace polyfem::io
 				writer.add_field("error", err);
 		}
 
-		if (fun.cols() != 1)
+		if (fun.cols() != 1 && (opts.scalar_values || opts.tensor_values || (!opts.use_spline && (opts.scalar_values || opts.tensor_values))))
 		{
 			std::vector<assembler::Assembler::NamedMatrix> vals, tvals;
 			Evaluator::compute_scalar_value(
@@ -1619,7 +1619,7 @@ namespace polyfem::io
 				}
 			}
 
-			if (!opts.use_spline)
+			if (!opts.use_spline && (opts.scalar_values || opts.tensor_values))
 			{
 				Evaluator::average_grad_based_function(
 					mesh, problem.is_scalar(), state.n_bases, bases, gbases,
