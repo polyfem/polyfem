@@ -1,9 +1,12 @@
 #pragma once
 
 #include <memory>
+
 #include <polyfem/Common.hpp>
 #include <polyfem/solver/FullNLProblem.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/forms/VariableToSimulation.hpp>
+
 #include <fstream>
 
 namespace polyfem
@@ -18,8 +21,19 @@ namespace polyfem::solver
 	class AdjointNLProblem : public FullNLProblem
 	{
 	public:
-		AdjointNLProblem(std::shared_ptr<AdjointForm> form, const VariableToSimulationGroup &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args);
-		AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<AdjointForm>> &stopping_conditions, const VariableToSimulationGroup &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args);
+		AdjointNLProblem(std::shared_ptr<AdjointForm> form,
+						 const VariableToSimulationGroup &variables_to_simulation,
+						 const std::vector<std::shared_ptr<State>> &all_states,
+						 const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
+						 const json &args);
+
+		AdjointNLProblem(std::shared_ptr<AdjointForm> form,
+						 const std::vector<std::shared_ptr<AdjointForm>> &stopping_conditions,
+						 const VariableToSimulationGroup &variables_to_simulation,
+						 const std::vector<std::shared_ptr<State>> &all_states,
+						 const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
+						 const json &args);
+
 		virtual ~AdjointNLProblem() = default;
 
 		double value(const Eigen::VectorXd &x) override;
@@ -44,6 +58,7 @@ namespace polyfem::solver
 		std::shared_ptr<AdjointForm> form_;
 		const VariableToSimulationGroup variables_to_simulation_;
 		std::vector<std::shared_ptr<State>> all_states_;
+		std::vector<std::shared_ptr<DiffCache>> all_diff_caches_;
 		std::vector<bool> active_state_mask;
 		Eigen::VectorXd cur_grad;
 		Eigen::VectorXd curr_x;

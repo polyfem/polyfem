@@ -118,11 +118,16 @@ namespace polyfem::solver
 		}
 	} // namespace
 
-	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form, const VariableToSimulationGroup &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args)
+	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form,
+									   const VariableToSimulationGroup &variables_to_simulation,
+									   const std::vector<std::shared_ptr<State>> &all_states,
+									   const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
+									   const json &args)
 		: FullNLProblem({form}),
 		  form_(form),
 		  variables_to_simulation_(variables_to_simulation),
 		  all_states_(all_states),
+		  all_diff_caches_(all_diff_caches),
 		  save_freq(args["output"]["save_frequency"]),
 		  enable_slim(args["solver"]["advanced"]["enable_slim"]),
 		  smooth_line_search(args["solver"]["advanced"]["smooth_line_search"]),
@@ -173,7 +178,12 @@ namespace polyfem::solver
 		}
 	}
 
-	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<AdjointForm>> &stopping_conditions, const VariableToSimulationGroup &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args) : AdjointNLProblem(form, variables_to_simulation, all_states, args)
+	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form,
+									   const std::vector<std::shared_ptr<AdjointForm>> &stopping_conditions,
+									   const VariableToSimulationGroup &variables_to_simulation,
+									   const std::vector<std::shared_ptr<State>> &all_states,
+									   const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
+									   const json &args) : AdjointNLProblem(form, variables_to_simulation, all_states, all_diff_caches, args)
 	{
 		stopping_conditions_ = stopping_conditions;
 	}
@@ -305,8 +315,11 @@ namespace polyfem::solver
 		if (iter_num % save_freq != 0)
 			return;
 		adjoint_logger().info("Saving iteration {}", iter_num);
-		for (const auto &state : all_states_)
+		for (int i = 0; i < all_states_.size(); ++i)
 		{
+			auto &state = all_states_[i];
+			auto &diff_cache = all_diff_caches_[i];
+
 			bool save_vtu = true;
 			bool save_rest_mesh = true;
 
@@ -324,7 +337,7 @@ namespace polyfem::solver
 			if (!state->args["time"].is_null())
 				dt = state->args["time"]["dt"];
 
-			Eigen::MatrixXd sol = state->diff_cached.u(-1);
+			Eigen::MatrixXd sol = diff_cache->u(-1);
 
 			state->out_geom.save_vtu(
 				vis_mesh_path,
@@ -430,8 +443,9 @@ namespace polyfem::solver
 			utils::maybe_parallel_for(all_states_.size(), [&](int start, int end, int thread_id) {
 				for (int i = start; i < end; i++)
 				{
-					auto state = all_states_[i];
-					if (active_state_mask[i] || state->diff_cached.size() == 0)
+					auto &state = all_states_[i];
+					auto &diff_cache = all_diff_caches_[i];
+					if (active_state_mask[i] || diff_cache.size() == 0)
 					{
 						state->assemble_rhs();
 						state->assemble_mass_mat();
@@ -448,8 +462,9 @@ namespace polyfem::solver
 			Eigen::MatrixXd sol, pressure; // solution is also cached in state
 			for (int i : solve_in_order)
 			{
-				auto state = all_states_[i];
-				if (active_state_mask[i] || state->diff_cached.size() == 0)
+				auto &state = all_states_[i];
+				auto &diff_cache = all_diff_caches_[i];
+				if (active_state_mask[i] || diff_cache.size() == 0)
 				{
 					state->assemble_rhs();
 					state->assemble_mass_mat();
