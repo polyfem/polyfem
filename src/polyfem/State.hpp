@@ -22,13 +22,13 @@
 #include <polyfem/mesh/LocalBoundary.hpp>
 
 #include <polyfem/solver/SolveData.hpp>
-#include <polyfem/optimization/DiffCache.hpp>
 
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/assembler/PeriodicBoundary.hpp>
+#include <polyfem/optimization/CacheLevel.hpp>
 
 #include <polyfem/io/OutData.hpp>
 
@@ -680,7 +680,6 @@ namespace polyfem
 		//---------------------------------------------------
 	public:
 		solver::CacheLevel optimization_enabled = solver::CacheLevel::None;
-		solver::DiffCache diff_cached;
 		std::unique_ptr<polysolve::linear::Solver> lin_solver_cached; // matrix factorization of last linear solve
 
 		int ndof() const

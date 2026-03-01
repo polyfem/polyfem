@@ -42,6 +42,8 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Timer.hpp>
 
+#include <polyfem/optimization/CacheLevel.hpp>
+
 #include <polysolve/linear/FEMSolver.hpp>
 
 #include <polyfem/io/OBJWriter.hpp>
