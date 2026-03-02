@@ -11,7 +11,7 @@ namespace polyfem::solver
 	class VariableToSimulation
 	{
 	public:
-		VariableToSimulation(std::vector<std::shared_ptr<State>> &states,
+		VariableToSimulation(std::vector<std::shared_ptr<State>> states,
 							 std::vector<std::shared_ptr<DiffCache>> diff_caches,
 							 CompositeParametrization parametrization) : states_(std::move(states)),
 																		 diff_caches_(std::move(diff_caches)),

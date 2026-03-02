@@ -6,6 +6,7 @@
 #include <polyfem/utils/GeogramUtils.hpp>
 
 #include <polyfem/optimization/AdjointNLProblem.hpp>
+#include <polyfem/optimization/BuildFromJson.hpp>
 #include <polyfem/optimization/forms/VariableToSimulation.hpp>
 
 #include <polysolve/nonlinear/Solver.hpp>
@@ -129,11 +130,17 @@ namespace polyfem
 
 	void OptState::create_states(const polyfem::solver::CacheLevel level, const int max_threads)
 	{
-		states = solver::AdjointOptUtils::create_states(
+		states = from_json::build_states(
 			root_path(),
 			args["states"],
 			level,
 			max_threads <= 0 ? std::numeric_limits<unsigned int>::max() : max_threads);
+
+		diff_caches.resize(states.size());
+		for (auto &diff_cache : diff_caches)
+		{
+			diff_cache = std::make_shared<DiffCache>();
+		}
 
 		utils::GeogramUtils::instance().set_logger(adjoint_logger());
 	}
@@ -150,23 +157,24 @@ namespace polyfem
 		}
 
 		/* variable to simulations */
-		variable_to_simulations.init(args["variable_to_simulation"], states, variable_sizes);
+		variable_to_simulations = from_json::build_variable_to_simulation_group(
+			args["variable_to_simulation"], states, diff_caches, variable_sizes);
 	}
 
 	void OptState::create_problem()
 	{
 		/* forms */
-		std::shared_ptr<solver::AdjointForm> obj = solver::AdjointOptUtils::create_form(
-			args["functionals"], variable_to_simulations, states);
+		std::shared_ptr<solver::AdjointForm> obj = from_json::build_form(
+			args["functionals"], variable_to_simulations, states, diff_caches);
 
 		/* stopping conditions */
 		std::vector<std::shared_ptr<solver::AdjointForm>> stopping_conditions;
 		for (const auto &arg : args["stopping_conditions"])
 			stopping_conditions.push_back(
-				solver::AdjointOptUtils::create_form(arg, variable_to_simulations, states));
+				from_json::build_form(arg, variable_to_simulations, states, diff_caches));
 
 		nl_problem = std::make_unique<solver::AdjointNLProblem>(
-			obj, stopping_conditions, variable_to_simulations, states, args);
+			obj, stopping_conditions, variable_to_simulations, states, diff_caches, args);
 	}
 
 	void OptState::initial_guess(Eigen::VectorXd &x)

@@ -92,6 +92,7 @@ namespace polyfem
 
 		/// State used in the opt
 		std::vector<std::shared_ptr<State>> states;
+		std::vector<std::shared_ptr<DiffCache>> diff_caches;
 
 		/// @brief variables
 		std::vector<int> variable_sizes;

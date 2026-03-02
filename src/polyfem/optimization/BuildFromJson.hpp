@@ -29,7 +29,7 @@ namespace polyfem::from_json
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
 		const std::vector<int> &variable_sizes);
 
-	std::unique_ptr<solver::VariableToSimulation> build_variable_to_simulation_group(
+	solver::VariableToSimulationGroup build_variable_to_simulation_group(
 		const json &args,
 		const std::vector<std::shared_ptr<State>> &states,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
@@ -40,13 +40,5 @@ namespace polyfem::from_json
 		const solver::VariableToSimulationGroup &var2sim,
 		const std::vector<std::shared_ptr<State>> &states,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches);
-
-	// forms that only depends on one simulator
-	std::shared_ptr<solver::AdjointForm> build_simple_form(
-		const std::string &obj_type,
-		const std::string &param_type,
-		const std::shared_ptr<State> &state,
-		const std::shared_ptr<DiffCache> &diff_cache,
-		const json &args);
 
 } // namespace polyfem::from_json

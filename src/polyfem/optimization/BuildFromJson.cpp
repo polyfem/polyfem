@@ -186,16 +186,20 @@ namespace polyfem::from_json
 
 		// Collect relevant states from state index json.
 		std::vector<std::shared_ptr<State>> rel_states;
+		std::vector<std::shared_ptr<DiffCache>> rel_diff_caches;
 		if (args["state"].is_array())
 		{
 			for (int i : args["state"])
 			{
 				rel_states.push_back(states[i]);
+				rel_diff_caches.push_back(diff_caches[i]);
 			}
 		}
 		else
 		{
-			rel_states.push_back(states[args["state"]]);
+			const int state_id = args["state"];
+			rel_states.push_back(states[state_id]);
+			rel_diff_caches.push_back(diff_caches[state_id]);
 		}
 
 		// Build all parametrizations.
@@ -211,39 +215,39 @@ namespace polyfem::from_json
 		std::unique_ptr<VariableToSimulation> var2sim;
 		if (type == "shape")
 		{
-			var2sim = std::make_unique<ShapeVariableToSimulation>(std::move(states), std::move(diff_caches), std::move(compo));
+			var2sim = std::make_unique<ShapeVariableToSimulation>(std::move(rel_states), std::move(rel_diff_caches), std::move(compo));
 		}
 		else if (type == "elastic")
 		{
-			var2sim = std::make_unique<ElasticVariableToSimulation>(std::move(states), std::move(diff_caches), std::move(compo));
+			var2sim = std::make_unique<ElasticVariableToSimulation>(std::move(rel_states), std::move(rel_diff_caches), std::move(compo));
 		}
 		else if (type == "friction")
 		{
-			var2sim = std::make_unique<FrictionCoeffientVariableToSimulation>(std::move(states), std::move(diff_caches), std::move(compo));
+			var2sim = std::make_unique<FrictionCoeffientVariableToSimulation>(std::move(rel_states), std::move(rel_diff_caches), std::move(compo));
 		}
 		else if (type == "damping")
 		{
-			var2sim = std::make_unique<DampingCoeffientVariableToSimulation>(std::move(states), std::move(diff_caches), std::move(compo));
+			var2sim = std::make_unique<DampingCoeffientVariableToSimulation>(std::move(rel_states), std::move(rel_diff_caches), std::move(compo));
 		}
 		else if (type == "initial")
 		{
-			var2sim = std::make_unique<InitialConditionVariableToSimulation>(std::move(states), std::move(diff_caches), std::move(compo));
+			var2sim = std::make_unique<InitialConditionVariableToSimulation>(std::move(rel_states), std::move(rel_diff_caches), std::move(compo));
 		}
 		else if (type == "dirichlet")
 		{
-			var2sim = std::make_unique<DirichletVariableToSimulation>(std::move(states), std::move(diff_caches), std::move(compo));
+			var2sim = std::make_unique<DirichletVariableToSimulation>(std::move(rel_states), std::move(rel_diff_caches), std::move(compo));
 		}
 		else if (type == "dirichlet-nodes")
 		{
-			var2sim = std::make_unique<DirichletNodesVariableToSimulation>(std::move(states), std::move(diff_caches), std::move(compo));
+			var2sim = std::make_unique<DirichletNodesVariableToSimulation>(std::move(rel_states), std::move(rel_diff_caches), std::move(compo));
 		}
 		else if (type == "pressure")
 		{
-			var2sim = std::make_unique<PressureVariableToSimulation>(std::move(states), std::move(diff_caches), std::move(compo));
+			var2sim = std::make_unique<PressureVariableToSimulation>(std::move(rel_states), std::move(rel_diff_caches), std::move(compo));
 		}
 		else if (type == "periodic-shape")
 		{
-			var2sim = std::make_unique<PeriodicShapeVariableToSimulation>(std::move(states), std::move(diff_caches), std::move(compo));
+			var2sim = std::make_unique<PeriodicShapeVariableToSimulation>(std::move(rel_states), std::move(rel_diff_caches), std::move(compo));
 		}
 		else
 		{
@@ -255,7 +259,7 @@ namespace polyfem::from_json
 		return var2sim;
 	}
 
-	std::unique_ptr<solver::VariableToSimulation> build_variable_to_simulation_group(
+	solver::VariableToSimulationGroup build_variable_to_simulation_group(
 		const json &args,
 		const std::vector<std::shared_ptr<State>> &states,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
@@ -267,107 +271,7 @@ namespace polyfem::from_json
 			v2s_group.data.push_back(
 				build_variable_to_simulation(arg, states, diff_caches, variable_sizes));
 		}
-	}
-
-	std::shared_ptr<solver::AdjointForm> build_simple_form(
-		const std::string &obj_type,
-		const std::string &param_type,
-		const std::shared_ptr<State> &state,
-		const std::shared_ptr<DiffCache> &diff_cache,
-		const json &args)
-	{
-		std::shared_ptr<solver::AdjointForm> obj;
-		solver::VariableToSimulationGroup var2sim;
-		var2sim.push_back(VariableToSimulation::create(param_type, {state},
-													   CompositeParametrization()));
-		if (obj_type == "compliance")
-		{
-			obj = std::make_shared<ComplianceForm>(var2sim, state, diff_cache, args);
-		}
-		else if (obj_type == "acceleration")
-		{
-			obj = std::make_shared<AccelerationForm>(var2sim, state, diff_cache, args);
-		}
-		else if (obj_type == "kinetic")
-		{
-			obj = std::make_shared<AccelerationForm>(var2sim, state, diff_cache, args);
-		}
-		else if (obj_type == "position")
-		{
-			obj = std::make_shared<PositionForm>(var2sim, state, diff_cache, args);
-		}
-		else if (obj_type == "stress")
-		{
-			obj = std::make_shared<StressForm>(var2sim, state, diff_cache, args);
-		}
-		else if (obj_type == "stress_norm")
-		{
-			obj = std::make_shared<StressNormForm>(var2sim, state, diff_cache, args);
-		}
-		else if (obj_type == "dirichlet_energy")
-		{
-			obj = std::make_shared<DirichletEnergyForm>(var2sim, state, diff_cache, args);
-		}
-		else if (obj_type == "elastic_energy")
-		{
-			obj = std::make_shared<ElasticEnergyForm>(var2sim, state, diff_cache, args);
-		}
-		else if (obj_type == "max_stress")
-		{
-			obj = std::make_shared<MaxStressForm>(var2sim, state, diff_cache, args);
-		}
-		else if (obj_type == "volume")
-		{
-			obj = std::make_shared<VolumeForm>(var2sim, state, diff_cache, args);
-		}
-		else if (obj_type == "min_jacobian")
-		{
-			obj = std::make_shared<MinJacobianForm>(var2sim, *state);
-		}
-		else if (obj_type == "AMIPS")
-		{
-			obj = std::make_shared<AMIPSForm>(var2sim, *state);
-		}
-		else if (obj_type == "layer_thickness")
-		{
-			obj = std::make_shared<LayerThicknessForm>(
-				var2sim, *state, args["boundary_ids"].get<std::vector<int>>(), args["dhat"]);
-		}
-		else if (obj_type == "layer_thickness_log")
-		{
-			obj = std::make_shared<LayerThicknessForm>(
-				var2sim, *state, args["boundary_ids"].get<std::vector<int>>(),
-				args["dhat"], true, args["dmin"]);
-		}
-		else if (obj_type == "function-target")
-		{
-			std::shared_ptr<TargetForm> tmp = std::make_shared<TargetForm>(var2sim, state, diff_cache, args);
-			tmp->set_reference(args["target_function"], args["target_function_gradient"]);
-			obj = tmp;
-		}
-		else if (obj_type == "boundary_smoothing")
-		{
-			if (args["surface_selection"].is_array())
-			{
-				obj = std::make_shared<BoundarySmoothingForm>(
-					var2sim, *state, args["scale_invariant"], args["power"],
-					args["surface_selection"].get<std::vector<int>>(),
-					args["dimensions"].get<std::vector<int>>());
-			}
-			else
-			{
-				obj = std::make_shared<BoundarySmoothingForm>(
-					var2sim, *state, args["scale_invariant"], args["power"],
-					std::vector<int>{args["surface_selection"].get<int>()},
-					args["dimensions"].get<std::vector<int>>());
-			}
-		}
-		else
-		{
-			log_and_throw_adjoint_error("Invalid simple form type {}!", obj_type);
-		}
-
-		return obj;
+		return v2s_group;
 	}
 
 	std::shared_ptr<solver::AdjointForm> build_form(
@@ -693,7 +597,7 @@ namespace polyfem::from_json
 				std::vector<std::shared_ptr<Parametrization>> map_list;
 				for (const auto &arg : args["parametrization"])
 				{
-					map_list.push_back(create_parametrization(arg, states, {}));
+					map_list.push_back(build_parametrization(arg, states, {}));
 				}
 				obj = std::make_shared<ParametrizedProductForm>(
 					CompositeParametrization(std::move(map_list)));
