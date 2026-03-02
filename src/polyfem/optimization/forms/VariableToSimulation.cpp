@@ -11,30 +11,6 @@
 
 namespace polyfem::solver
 {
-	std::unique_ptr<VariableToSimulation> VariableToSimulation::create(const std::string &type, const std::vector<std::shared_ptr<State>> &states, CompositeParametrization &&parametrization)
-	{
-		if (type == "shape")
-			return std::make_unique<ShapeVariableToSimulation>(states, parametrization);
-		else if (type == "elastic")
-			return std::make_unique<ElasticVariableToSimulation>(states, parametrization);
-		else if (type == "friction")
-			return std::make_unique<FrictionCoeffientVariableToSimulation>(states, parametrization);
-		else if (type == "damping")
-			return std::make_unique<DampingCoeffientVariableToSimulation>(states, parametrization);
-		else if (type == "initial")
-			return std::make_unique<InitialConditionVariableToSimulation>(states, parametrization);
-		else if (type == "dirichlet")
-			return std::make_unique<DirichletVariableToSimulation>(states, parametrization);
-		else if (type == "dirichlet-nodes")
-			return std::make_unique<DirichletNodesVariableToSimulation>(states, parametrization);
-		else if (type == "pressure")
-			return std::make_unique<PressureVariableToSimulation>(states, parametrization);
-		else if (type == "periodic-shape")
-			return std::make_unique<PeriodicShapeVariableToSimulation>(states, parametrization);
-
-		log_and_throw_adjoint_error("Invalid type of VariableToSimulation!");
-		return std::unique_ptr<VariableToSimulation>();
-	}
 
 	void VariableToSimulation::set_output_indexing(const json &args)
 	{
@@ -93,24 +69,17 @@ namespace polyfem::solver
 		log_and_throw_adjoint_error("[{}] update_state not implemented!", name());
 	}
 
-	void VariableToSimulationGroup::init(const json &args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes)
-	{
-		std::vector<ValueType>().swap(L);
-		for (const auto &arg : args)
-			L.push_back(AdjointOptUtils::create_variable_to_simulation(arg, states, variable_sizes));
-	}
-
 	Eigen::VectorXd VariableToSimulationGroup::compute_adjoint_term(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd adjoint_term = Eigen::VectorXd::Zero(x.size());
-		for (const auto &v2s : L)
+		for (const auto &v2s : data)
 			adjoint_term += v2s->compute_adjoint_term(x);
 		return adjoint_term;
 	}
 
 	void VariableToSimulationGroup::compute_state_variable(const ParameterType type, const State *state_ptr, const Eigen::VectorXd &x, Eigen::VectorXd &state_variable) const
 	{
-		for (const auto &v2s : L)
+		for (const auto &v2s : data)
 		{
 			if (v2s->get_parameter_type() != type)
 				continue;
@@ -129,7 +98,7 @@ namespace polyfem::solver
 	Eigen::VectorXd VariableToSimulationGroup::apply_parametrization_jacobian(const ParameterType type, const State *state_ptr, const Eigen::VectorXd &x, const std::function<Eigen::VectorXd()> &grad) const
 	{
 		Eigen::VectorXd gradv = Eigen::VectorXd::Zero(x.size());
-		for (const auto &v2s : L)
+		for (const auto &v2s : data)
 		{
 			if (v2s->get_parameter_type() != type)
 				continue;
@@ -169,16 +138,19 @@ namespace polyfem::solver
 	Eigen::VectorXd ShapeVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd term, cur_term;
-		for (auto state : states_)
+		for (int i = 0; i < states_.size(); ++i)
 		{
+			auto &state = states_[i];
+			auto &diff_cache = diff_caches_[i];
+
 			if (state->problem->is_time_dependent())
 				AdjointTools::dJ_shape_transient_adjoint_term(*state, get_adjoint_mat(*state, 1), get_adjoint_mat(*state, 0), cur_term);
 			else
 			{
 				if (!state->is_homogenization())
-					AdjointTools::dJ_shape_static_adjoint_term(*state, state->diff_cached.u(0), get_adjoint_mat(*state, 0), cur_term);
+					AdjointTools::dJ_shape_static_adjoint_term(*state, diff_cache->u(0), get_adjoint_mat(*state, 0), cur_term);
 				else
-					AdjointTools::dJ_shape_homogenization_adjoint_term(*state, state->diff_cached.u(0), get_adjoint_mat(*state, 0), cur_term);
+					AdjointTools::dJ_shape_homogenization_adjoint_term(*state, diff_cache->u(0), get_adjoint_mat(*state, 0), cur_term);
 			}
 
 			if (term.size() != cur_term.size())
@@ -252,12 +224,15 @@ namespace polyfem::solver
 	Eigen::VectorXd ElasticVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd term, cur_term;
-		for (auto state : states_)
+		for (int i = 0; i < states_.size(); ++i)
 		{
+			auto &state = states_[i];
+			auto &diff_cache = diff_caches_[i];
+
 			if (state->problem->is_time_dependent())
 				AdjointTools::dJ_material_transient_adjoint_term(*state, get_adjoint_mat(*state, 1), get_adjoint_mat(*state, 0), cur_term);
 			else
-				AdjointTools::dJ_material_static_adjoint_term(*state, state->diff_cached.u(0), get_adjoint_mat(*state, 0), cur_term);
+				AdjointTools::dJ_material_static_adjoint_term(*state, diff_cache->u(0), get_adjoint_mat(*state, 0), cur_term);
 
 			if (term.size() != cur_term.size())
 				term = cur_term;
@@ -588,8 +563,11 @@ namespace polyfem::solver
 	Eigen::VectorXd PressureVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd term, cur_term;
-		for (auto state : states_)
+		for (int i = 0; i < states_.size(); ++i)
 		{
+			auto &state = states_[i];
+			auto &diff_cache = diff_caches_[i];
+
 			if (state->problem->is_time_dependent())
 			{
 				Eigen::MatrixXd adjoint_nu, adjoint_p;
@@ -599,7 +577,7 @@ namespace polyfem::solver
 			}
 			else
 			{
-				AdjointTools::dJ_pressure_static_adjoint_term(*state, pressure_boundaries_, state->diff_cached.u(0), get_adjoint_mat(*state, 0), cur_term);
+				AdjointTools::dJ_pressure_static_adjoint_term(*state, pressure_boundaries_, state->diff_cache->u(0), get_adjoint_mat(*state, 0), cur_term);
 			}
 			if (term.size() != cur_term.size())
 				term = cur_term;
@@ -666,15 +644,19 @@ namespace polyfem::solver
 	Eigen::VectorXd PeriodicShapeVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd term, cur_term;
-		for (auto state : states_)
+
+		for (int i = 0; i < states_.size(); ++i)
 		{
+			auto &state = states_[i];
+			auto &diff_cache = diff_caches_[i];
+
 			if (state->problem->is_time_dependent())
 			{
 				log_and_throw_error("Not implemented!");
 			}
 			else
 			{
-				AdjointTools::dJ_periodic_shape_adjoint_term(*state, *periodic_mesh_map, periodic_mesh_representation, state->diff_cached.u(0), get_adjoint_mat(*state, 0), cur_term);
+				AdjointTools::dJ_periodic_shape_adjoint_term(*state, *periodic_mesh_map, periodic_mesh_representation, diff_cache->u(0), get_adjoint_mat(*state, 0), cur_term);
 			}
 			if (term.size() != cur_term.size())
 				term = cur_term;
