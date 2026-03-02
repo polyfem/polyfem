@@ -51,7 +51,7 @@ namespace polyfem
 
 		if (user_post_step)
 		{
-			user_post_step(0, *this, sol, nullptr, &pressure);
+			user_post_step(step, *this, sol, nullptr, &pressure);
 		}
 	}
 
@@ -177,7 +177,7 @@ namespace polyfem
 
 			if (user_post_step)
 			{
-				user_post_step(0, *this, sol, nullptr, &pressure);
+				user_post_step(t, *this, sol, nullptr, &pressure);
 			}
 		}
 	}
@@ -265,7 +265,7 @@ namespace polyfem
 
 			if (user_post_step)
 			{
-				user_post_step(0, *this, sol, nullptr, &pressure);
+				user_post_step(t, *this, sol, nullptr, &pressure);
 			}
 		}
 	}

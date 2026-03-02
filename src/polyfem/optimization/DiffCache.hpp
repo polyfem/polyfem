@@ -18,7 +18,20 @@ namespace polyfem
 	public:
 		void cache_adjoints(const Eigen::MatrixXd &adjoint_mat);
 
-		void cache_transient(State &state, const int current_step, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad);
+		/// @brief Cache time-dependent adjoint optimization data.
+		/// @param[in] step Current time step.
+		/// @param[in] state Current forward simulation state. Will mutate it to get latest value.
+		/// @param[in] sol Current solution.
+		/// @param[in] disp_grad Pointer to displacement gradient matrix. Assumes zero if nullptr.
+		/// @param[in] pressure Pointer to pressure matrix. PASS nullptr ONLY.
+		///
+		/// @warning We DO NOT support navier stoke problem yet!! Passing non-null pressure triggers exception.
+		void cache_transient(
+			int step,
+			State &state,
+			const Eigen::MatrixXd &sol,
+			const Eigen::MatrixXd *disp_grad,
+			const Eigen::MatrixXd *pressure);
 
 		const Eigen::MatrixXd &adjoint_mat() const { return adjoint_mat_; }
 

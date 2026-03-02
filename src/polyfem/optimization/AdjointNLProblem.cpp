@@ -209,7 +209,7 @@ namespace polyfem::solver
 			{
 				POLYFEM_SCOPED_TIMER("adjoint solve");
 				for (int i = 0; i < all_states_.size(); i++)
-					solve_adjoint_cached(*all_states_[i], form_->compute_reduced_adjoint_rhs(x, *all_states_[i], *all_diff_caches_[i])); // caches inside state
+					solve_adjoint_cached(*all_states_[i], *all_diff_caches_[i], form_->compute_reduced_adjoint_rhs(x, *all_states_[i], *all_diff_caches_[i]));
 			}
 
 			{
@@ -445,12 +445,15 @@ namespace polyfem::solver
 				{
 					auto &state = all_states_[i];
 					auto &diff_cache = all_diff_caches_[i];
-					if (active_state_mask[i] || diff_cache.size() == 0)
+					if (active_state_mask[i] || diff_cache->size() == 0)
 					{
 						state->assemble_rhs();
 						state->assemble_mass_mat();
 						Eigen::MatrixXd sol, pressure; // solution is also cached in state
-						state->solve_problem(sol, pressure);
+						auto cache_post_step = [&](const int step, State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd *disp_grad, const Eigen::MatrixXd *pressure) {
+							diff_cache->cache_transient(step, state, sol, disp_grad, pressure);
+						};
+						state->solve_problem(sol, pressure, cache_post_step);
 					}
 				}
 			});
@@ -464,12 +467,15 @@ namespace polyfem::solver
 			{
 				auto &state = all_states_[i];
 				auto &diff_cache = all_diff_caches_[i];
-				if (active_state_mask[i] || diff_cache.size() == 0)
+				if (active_state_mask[i] || diff_cache->size() == 0)
 				{
 					state->assemble_rhs();
 					state->assemble_mass_mat();
 
-					state->solve_problem(sol, pressure);
+					auto cache_post_step = [&](const int step, State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd *disp_grad, const Eigen::MatrixXd *pressure) {
+						diff_cache->cache_transient(step, state, sol, disp_grad, pressure);
+					};
+					state->solve_problem(sol, pressure, cache_post_step);
 				}
 			}
 		}

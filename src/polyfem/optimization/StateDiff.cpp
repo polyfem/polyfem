@@ -418,11 +418,18 @@ namespace polyfem
 		}
 	} // namespace
 
-	void solve_adjoint_cached(State state, DiffCache &diff_cache, const Eigen::MatrixXd &rhs)
+	void solve_adjoint_cached(const State &state, DiffCache &diff_cache, const Eigen::MatrixXd &rhs)
 	{
 		diff_cache.cache_adjoints(solve_adjoint(state, diff_cache, rhs));
 	}
 
+	/// @brief Get adjoint parameter nu or p.
+	///
+	/// See Eq.12 in arXiv:2205.13643.
+	///
+	/// @param[in] state Forward simulation state.
+	/// @param[in] diff_cache Cache for differential specific data.
+	/// @param[in] type Return adjoint parameter p if type == 0. Return nu if type == 1.
 	Eigen::MatrixXd get_adjoint_mat(const State &state, const DiffCache &diff_cache, int type)
 	{
 		assert(diff_cache.adjoint_mat().size() > 0);

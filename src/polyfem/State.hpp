@@ -77,7 +77,7 @@ namespace polyfem
 	/// @param sol[in] The solution of current step.
 	/// @param disp_grad[in] du/dX where u is the displacement and X is the material coordinate. Optional, pass nullptr if not applicable.
 	/// @param pressure[in] Optional. The pressure of current step. Optional, pass nullptr if not applicable.
-	using UserPostStepCallback = std::function<void(int step, const State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd *disp_grad, const Eigen::MatrixXd *pressure)>;
+	using UserPostStepCallback = std::function<void(int step, State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd *disp_grad, const Eigen::MatrixXd *pressure)>;
 
 	/// main class that contains the polyfem solver and all its state
 	class State

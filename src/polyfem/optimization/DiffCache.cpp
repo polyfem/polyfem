@@ -190,13 +190,35 @@ namespace polyfem
 
 	void DiffCache::cache_adjoints(const Eigen::MatrixXd &adjoint_mat) { adjoint_mat_ = adjoint_mat; }
 
-	void DiffCache::cache_transient(State &state, const int current_step, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad)
+	void DiffCache::cache_transient(
+		int step,
+		State &state,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd *disp_grad,
+		const Eigen::MatrixXd *pressure)
 	{
 		auto &s = state;
+		if (pressure)
+		{
+			log_and_throw_adjoint_error("Navier stoke problem is not supported in adjoint optimization.");
+		}
+
+		Eigen::MatrixXd disp_grad_final;
+		if (disp_grad)
+		{
+			disp_grad_final = *disp_grad;
+		}
+		else
+		{
+			int mesh_dim = s.mesh->dimension();
+			disp_grad_final = Eigen::MatrixXd::Zero(mesh_dim, mesh_dim);
+		}
 
 		StiffnessMatrix gradu_h(sol.size(), sol.size());
-		if (current_step == 0)
+		if (step == 0)
+		{
 			init(s.mesh->dimension(), s.ndof(), s.problem->is_time_dependent() ? s.args["time"]["time_steps"].get<int>() : 0);
+		}
 
 		ipc::NormalCollisions cur_collision_set;
 		ipc::SmoothCollisions cur_smooth_collision_set;
@@ -206,8 +228,8 @@ namespace polyfem
 
 		if (s.optimization_enabled == solver::CacheLevel::Derivatives)
 		{
-			if (!s.problem->is_time_dependent() || current_step > 0)
-				compute_force_jacobian(s, sol, disp_grad, gradu_h);
+			if (!s.problem->is_time_dependent() || step > 0)
+				compute_force_jacobian(s, sol, disp_grad_final, gradu_h);
 
 			if (s.solve_data.contact_form)
 			{
@@ -225,12 +247,12 @@ namespace polyfem
 		{
 			if (s.args["time"]["quasistatic"].get<bool>())
 			{
-				cache_quantities_quasistatic(current_step, sol, gradu_h, cur_collision_set, cur_smooth_collision_set, cur_normal_adhesion_set, disp_grad);
+				cache_quantities_quasistatic(step, sol, gradu_h, cur_collision_set, cur_smooth_collision_set, cur_normal_adhesion_set, disp_grad_final);
 			}
 			else
 			{
 				Eigen::MatrixXd vel, acc;
-				if (current_step == 0)
+				if (step == 0)
 				{
 					if (dynamic_cast<time_integrator::BDF *>(s.solve_data.time_integrator.get()))
 					{
@@ -253,12 +275,12 @@ namespace polyfem
 					acc = s.solve_data.time_integrator->compute_acceleration(vel);
 				}
 
-				cache_quantities_transient(current_step, s.solve_data.time_integrator->steps(), sol, vel, acc, gradu_h, cur_collision_set, cur_smooth_collision_set, cur_friction_set);
+				cache_quantities_transient(step, s.solve_data.time_integrator->steps(), sol, vel, acc, gradu_h, cur_collision_set, cur_smooth_collision_set, cur_friction_set);
 			}
 		}
 		else
 		{
-			cache_quantities_static(sol, gradu_h, cur_collision_set, cur_smooth_collision_set, cur_friction_set, cur_normal_adhesion_set, cur_tangential_adhesion_set, disp_grad);
+			cache_quantities_static(sol, gradu_h, cur_collision_set, cur_smooth_collision_set, cur_friction_set, cur_normal_adhesion_set, cur_tangential_adhesion_set, disp_grad_final);
 		}
 	}
 
