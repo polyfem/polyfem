@@ -25,14 +25,14 @@ namespace polyfem::solver
 			curr_state->get_vertices(V);
 			Eigen::VectorXd X = utils::flatten(V);
 
-			for (auto &p : variables_to_simulation)
+			for (auto &p : variables_to_simulation.data)
 			{
-				for (const auto &state : p->get_states())
+				for (const auto &state : p->states)
 					if (state.get() != curr_state.get())
 						continue;
 				if (p->get_parameter_type() != ParameterType::Shape)
 					continue;
-				auto state_variable = p->get_parametrization().eval(x);
+				auto state_variable = p->parametrization.eval(x);
 				auto output_indexing = p->get_output_indexing(x);
 				for (int i = 0; i < output_indexing.size(); ++i)
 					X(output_indexing(i)) = state_variable(i);
@@ -41,17 +41,16 @@ namespace polyfem::solver
 			return X;
 		}
 
-		using namespace std;
 		// Class to represent a graph
 		class Graph
 		{
 			int V; // No. of vertices'
 
 			// adjacency lists
-			vector<list<int>> adj;
+			std::vector<std::list<int>> adj;
 
 			// A function used by topologicalSort
-			void topologicalSortUtil(int v, vector<bool> &visited, stack<int> &Stack);
+			void topologicalSortUtil(int v, std::vector<bool> &visited, std::stack<int> &Stack);
 
 		public:
 			Graph(int V); // Constructor
@@ -60,7 +59,7 @@ namespace polyfem::solver
 			void addEdge(int v, int w);
 
 			// prints a Topological Sort of the complete graph
-			vector<int> topologicalSort();
+			std::vector<int> topologicalSort();
 		};
 
 		Graph::Graph(int V)
@@ -75,14 +74,14 @@ namespace polyfem::solver
 		}
 
 		// A recursive function used by topologicalSort
-		void Graph::topologicalSortUtil(int v, vector<bool> &visited,
-										stack<int> &Stack)
+		void Graph::topologicalSortUtil(int v, std::vector<bool> &visited,
+										std::stack<int> &Stack)
 		{
 			// Mark the current node as visited.
 			visited[v] = true;
 
 			// Recur for all the vertices adjacent to this vertex
-			list<int>::iterator i;
+			std::list<int>::iterator i;
 			for (i = adj[v].begin(); i != adj[v].end(); ++i)
 				if (!visited[*i])
 					topologicalSortUtil(*i, visited, Stack);
@@ -93,12 +92,12 @@ namespace polyfem::solver
 
 		// The function to do Topological Sort. It uses recursive
 		// topologicalSortUtil()
-		vector<int> Graph::topologicalSort()
+		std::vector<int> Graph::topologicalSort()
 		{
-			stack<int> Stack;
+			std::stack<int> Stack;
 
 			// Mark all the vertices as not visited
-			vector<bool> visited(V, false);
+			std::vector<bool> visited(V, false);
 
 			// Call the recursive helper function to store Topological
 			// Sort starting from all vertices one by one
@@ -107,7 +106,7 @@ namespace polyfem::solver
 					topologicalSortUtil(i, visited, Stack);
 
 			// Print contents of stack
-			vector<int> sorted;
+			std::vector<int> sorted;
 			while (Stack.empty() == false)
 			{
 				sorted.push_back(Stack.top());
@@ -164,9 +163,9 @@ namespace polyfem::solver
 		active_state_mask.assign(all_states_.size(), false);
 		for (int i = 0; i < all_states_.size(); i++)
 		{
-			for (const auto &v2sim : variables_to_simulation_)
+			for (const auto &v2sim : variables_to_simulation_.data)
 			{
-				for (const auto &state : v2sim->get_states())
+				for (const auto &state : v2sim->states)
 				{
 					if (all_states_[i].get() == state.get())
 					{
@@ -231,7 +230,7 @@ namespace polyfem::solver
 		bool need_rebuild_basis = false;
 
 		// update to new parameter and check if the new parameter is valid to solve
-		for (const auto &v : variables_to_simulation_)
+		for (const auto &v : variables_to_simulation_.data)
 			if (v->get_parameter_type() == ParameterType::Shape || v->get_parameter_type() == ParameterType::PeriodicShape)
 				need_rebuild_basis = true;
 
@@ -372,7 +371,7 @@ namespace polyfem::solver
 		bool need_rebuild_basis = false;
 
 		// update to new parameter and check if the new parameter is valid to solve
-		for (const auto &v : variables_to_simulation_)
+		for (const auto &v : variables_to_simulation_.data)
 		{
 			v->update(newX);
 			if (v->get_parameter_type() == ParameterType::Shape || v->get_parameter_type() == ParameterType::PeriodicShape)
@@ -398,7 +397,7 @@ namespace polyfem::solver
 		if (!enable_slim)
 			return false;
 
-		for (const auto &v : variables_to_simulation_)
+		for (const auto &v : variables_to_simulation_.data)
 			v->update(x0);
 
 		std::vector<Eigen::MatrixXd> V_old_list;
@@ -409,7 +408,7 @@ namespace polyfem::solver
 			V_old_list.push_back(V);
 		}
 
-		for (const auto &v : variables_to_simulation_)
+		for (const auto &v : variables_to_simulation_.data)
 			v->update(x1);
 
 		// Apply slim to all states on a frequency

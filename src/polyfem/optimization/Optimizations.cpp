@@ -84,7 +84,7 @@ namespace polyfem::solver
 				x.segment(accumulative, tmp.size()) = tmp;
 			}
 			else // arg["initial"] is empty array
-				x += var2sim[var]->inverse_eval();
+				x += var2sim.data[var]->inverse_eval();
 
 			accumulative += tmp.size();
 			var++;

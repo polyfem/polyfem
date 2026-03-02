@@ -13,18 +13,18 @@ namespace polyfem::solver
 	public:
 		VariableToSimulation(std::vector<std::shared_ptr<State>> states,
 							 std::vector<std::shared_ptr<DiffCache>> diff_caches,
-							 CompositeParametrization parametrization) : states_(std::move(states)),
-																		 diff_caches_(std::move(diff_caches)),
-																		 parametrization_(std::move(parametrization))
+							 CompositeParametrization parametrization) : states(std::move(states)),
+																		 diff_caches(std::move(diff_caches)),
+																		 parametrization(std::move(parametrization))
 		{
-			assert(states.size() > 0);
+			assert(this->states.size() > 0);
 		}
 
 		virtual ~VariableToSimulation() = default;
 
 		inline virtual void update(const Eigen::VectorXd &x)
 		{
-			update_state(parametrization_.eval(x), get_output_indexing(x));
+			update_state(parametrization.eval(x), get_output_indexing(x));
 		}
 
 		virtual std::string name() const = 0;
@@ -38,9 +38,9 @@ namespace polyfem::solver
 
 		virtual Eigen::VectorXd apply_parametrization_jacobian(const Eigen::VectorXd &term, const Eigen::VectorXd &x) const;
 
-		const std::vector<std::shared_ptr<State>> states_;
-		const std::vector<std::shared_ptr<DiffCache>> diff_caches_;
-		CompositeParametrization parametrization_;
+		const std::vector<std::shared_ptr<State>> states;
+		const std::vector<std::shared_ptr<DiffCache>> diff_caches;
+		CompositeParametrization parametrization;
 
 	protected:
 		virtual void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices);

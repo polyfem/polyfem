@@ -545,11 +545,11 @@ namespace polyfem::from_json
 			}
 			else if (type == "min_jacobian")
 			{
-				obj = std::make_shared<MinJacobianForm>(var2sim, *(states[args["state"]]));
+				obj = std::make_shared<MinJacobianForm>(var2sim, states[args["state"]]);
 			}
 			else if (type == "AMIPS")
 			{
-				obj = std::make_shared<AMIPSForm>(var2sim, *(states[args["state"]]));
+				obj = std::make_shared<AMIPSForm>(var2sim, states[args["state"]]);
 			}
 			else if (type == "boundary_smoothing")
 			{
