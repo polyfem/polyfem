@@ -69,13 +69,6 @@ namespace polyfem
 		class Mesh3D;
 	} // namespace mesh
 
-	enum class CacheLevel
-	{
-		None,
-		Solution,
-		Derivatives
-	};
-
 	class State;
 
 	/// @brief User callback at the end of every solver step.
