@@ -209,7 +209,7 @@ namespace polyfem::solver
 			{
 				POLYFEM_SCOPED_TIMER("adjoint solve");
 				for (int i = 0; i < all_states_.size(); i++)
-					solve_adjoint_cached(*all_states_[i], form_->compute_reduced_adjoint_rhs(x, *all_states_[i])); // caches inside state
+					solve_adjoint_cached(*all_states_[i], form_->compute_reduced_adjoint_rhs(x, *all_states_[i], *all_diff_caches_[i])); // caches inside state
 			}
 
 			{

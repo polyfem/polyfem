@@ -1,0 +1,52 @@
+#pragma once
+
+#include <memory>
+#include <nlohmann/json.hpp>
+#include <polyfem/State.hpp>
+#include <polyfem/optimization/CacheLevel.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
+#include <polyfem/optimization/forms/AdjointForm.hpp>
+#include <polyfem/optimization/forms/VariableToSimulation.hpp>
+#include <polyfem/optimization/parametrization/Parametrization.hpp>
+#include <string>
+
+namespace polyfem::from_json
+{
+	std::vector<std::shared_ptr<State>> build_states(
+		const std::string &root_path,
+		const json &args,
+		const solver::CacheLevel &level,
+		const size_t max_threads);
+
+	std::shared_ptr<solver::Parametrization> build_parametrization(
+		const json &args,
+		const std::vector<std::shared_ptr<State>> &states,
+		const std::vector<int> &variable_sizes);
+
+	std::unique_ptr<solver::VariableToSimulation> build_variable_to_simulation(
+		const json &args,
+		const std::vector<std::shared_ptr<State>> &states,
+		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
+		const std::vector<int> &variable_sizes);
+
+	std::unique_ptr<solver::VariableToSimulation> build_variable_to_simulation_group(
+		const json &args,
+		const std::vector<std::shared_ptr<State>> &states,
+		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
+		const std::vector<int> &variable_sizes);
+
+	std::shared_ptr<solver::AdjointForm> build_form(
+		const json &args,
+		const solver::VariableToSimulationGroup &var2sim,
+		const std::vector<std::shared_ptr<State>> &states,
+		const std::vector<std::shared_ptr<DiffCache>> &diff_caches);
+
+	// forms that only depends on one simulator
+	std::shared_ptr<solver::AdjointForm> build_simple_form(
+		const std::string &obj_type,
+		const std::string &param_type,
+		const std::shared_ptr<State> &state,
+		const std::shared_ptr<DiffCache> &diff_cache,
+		const json &args);
+
+} // namespace polyfem::from_json
