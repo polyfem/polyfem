@@ -17,7 +17,7 @@ namespace polyfem::solver
 
 		virtual int n_objs() const final { return forms_.size(); }
 
-		virtual Eigen::MatrixXd compute_reduced_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const override final;
+		virtual Eigen::MatrixXd compute_reduced_adjoint_rhs(const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const override final;
 		virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override final;
 
 		virtual double compose(const Eigen::VectorXd &inputs) const = 0;

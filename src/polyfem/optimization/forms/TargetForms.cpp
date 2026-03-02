@@ -34,7 +34,7 @@ namespace polyfem::solver
 		IntegrableFunctional j;
 		if (target_state_)
 		{
-			assert(target_state_->diff_cached.size() > 0);
+			assert(target_diff_cache_->size() > 0);
 
 			auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const IntegrableFunctional::ParameterType &params, Eigen::MatrixXd &val) {
 				int e_ref = params.elem;
@@ -45,7 +45,7 @@ namespace polyfem::solver
 				target_state_->geom_bases()[e_ref].eval_geom_mapping(local_pts, pts_ref);
 
 				Eigen::MatrixXd u_ref, grad_u_ref;
-				const Eigen::VectorXd &sol_ref = target_state_->diff_cached.u(target_state_->problem->is_time_dependent() ? params.step : 0);
+				const Eigen::VectorXd &sol_ref = target_diff_cache_->u(target_state_->problem->is_time_dependent() ? params.step : 0);
 				io::Evaluator::interpolate_at_local_vals(*(target_state_->mesh), target_state_->problem->is_scalar(), target_state_->bases, target_state_->geom_bases(), e_ref, local_pts, sol_ref, u_ref, grad_u_ref);
 
 				val = (u_ref + pts_ref - u - pts).rowwise().squaredNorm();
@@ -60,7 +60,7 @@ namespace polyfem::solver
 				target_state_->geom_bases()[e_ref].eval_geom_mapping(local_pts, pts_ref);
 
 				Eigen::MatrixXd u_ref, grad_u_ref;
-				const Eigen::VectorXd &sol_ref = target_state_->diff_cached.u(target_state_->problem->is_time_dependent() ? params.step : 0);
+				const Eigen::VectorXd &sol_ref = target_diff_cache_->u(target_state_->problem->is_time_dependent() ? params.step : 0);
 				io::Evaluator::interpolate_at_local_vals(*(target_state_->mesh), target_state_->problem->is_scalar(), target_state_->bases, target_state_->geom_bases(), e_ref, local_pts, sol_ref, u_ref, grad_u_ref);
 
 				val = 2 * (u + pts - u_ref - pts_ref);
@@ -132,9 +132,10 @@ namespace polyfem::solver
 		return j;
 	}
 
-	void TargetForm::set_reference(const std::shared_ptr<const State> &target_state, const std::set<int> &reference_cached_body_ids)
+	void TargetForm::set_reference(const std::shared_ptr<const State> &target_state, std::shared_ptr<const DiffCache> target_diff_cache, const std::set<int> &reference_cached_body_ids)
 	{
 		target_state_ = target_state;
+		target_diff_cache_ = std::move(target_diff_cache);
 
 		std::map<int, std::vector<int>> ref_interested_body_id_to_e;
 		int ref_count = 0;
@@ -217,7 +218,7 @@ namespace polyfem::solver
 
 					assembler::ElementAssemblyValues &vals = local_storage.vals;
 					vals.compute(e, state_->mesh->is_volume(), points, bases[e], gbases[e]);
-					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, state_->diff_cached.u(time_step), u, grad_u);
+					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, diff_cache_->u(time_step), u, grad_u);
 
 					normal = normal * vals.jac_it[0]; // assuming linear geometry
 
@@ -420,7 +421,7 @@ namespace polyfem::solver
 
 					assembler::ElementAssemblyValues &vals = local_storage.vals;
 					vals.compute(e, state_->mesh->is_volume(), points, bases[e], gbases[e]);
-					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, state_->diff_cached.u(time_step), u, grad_u);
+					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, diff_cache_->u(time_step), u, grad_u);
 
 					normal = normal * vals.jac_it[0]; // assuming linear geometry
 
@@ -470,7 +471,8 @@ namespace polyfem::solver
 		return j;
 	}
 
-	NodeTargetForm::NodeTargetForm(std::shared_ptr<const State> state, const VariableToSimulationGroup &variable_to_simulations, const json &args) : StaticForm(variable_to_simulations), state_(std::move(state))
+	NodeTargetForm::NodeTargetForm(std::shared_ptr<const State> state, std::shared_ptr<const DiffCache> diff_cache, const VariableToSimulationGroup &variable_to_simulations, const json &args)
+		: StaticForm(variable_to_simulations), state_(std::move(state)), diff_cache_(std::move(diff_cache))
 	{
 		const int dim = state_->mesh->dimension();
 		const std::string target_data_path = args["target_data_path"];
@@ -507,22 +509,23 @@ namespace polyfem::solver
 		}
 	}
 
-	NodeTargetForm::NodeTargetForm(std::shared_ptr<const State> state, const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_) : StaticForm(variable_to_simulations), state_(std::move(state)), target_vertex_positions(target_vertex_positions_), active_nodes(active_nodes_)
+	NodeTargetForm::NodeTargetForm(std::shared_ptr<const State> state, std::shared_ptr<const DiffCache> diff_cache, const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_)
+		: StaticForm(variable_to_simulations), state_(std::move(state)), diff_cache_(std::move(diff_cache)), target_vertex_positions(target_vertex_positions_), active_nodes(active_nodes_)
 	{
 		// log_and_throw_adjoint_error("[{}] Constructor not implemented!", name());
 	}
 
-	Eigen::VectorXd NodeTargetForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
+	Eigen::VectorXd NodeTargetForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const
 	{
 		Eigen::VectorXd rhs;
-		rhs.setZero(state.diff_cached.u(0).size());
+		rhs.setZero(diff_cache.u(0).size());
 
 		const int dim = state_->mesh->dimension();
 
 		if (&state == state_.get())
 		{
 			int i = 0;
-			const Eigen::VectorXd disp = state_->diff_cached.u(time_step);
+			const Eigen::VectorXd disp = diff_cache_->u(time_step);
 			for (int v : active_nodes)
 			{
 				const RowVectorNd cur_pos = state_->mesh_nodes->node_position(v) + disp.segment(v * dim, dim).transpose();
@@ -539,7 +542,7 @@ namespace polyfem::solver
 		const int dim = state_->mesh->dimension();
 		double val = 0;
 		int i = 0;
-		const Eigen::VectorXd disp = state_->diff_cached.u(time_step);
+		const Eigen::VectorXd disp = diff_cache_->u(time_step);
 		for (int v : active_nodes)
 		{
 			const RowVectorNd cur_pos = state_->mesh_nodes->node_position(v) + disp.segment(v * dim, dim).transpose();
@@ -557,26 +560,27 @@ namespace polyfem::solver
 		});
 	}
 
-	BarycenterTargetForm::BarycenterTargetForm(const VariableToSimulationGroup &variable_to_simulations, const json &args, const std::shared_ptr<State> &state1, const std::shared_ptr<State> &state2) : StaticForm(variable_to_simulations)
+	BarycenterTargetForm::BarycenterTargetForm(const VariableToSimulationGroup &variable_to_simulations, const json &args, const std::shared_ptr<State> &state1, std::shared_ptr<const DiffCache> diff_cache1, const std::shared_ptr<State> &state2, std::shared_ptr<const DiffCache> diff_cache2)
+		: StaticForm(variable_to_simulations)
 	{
 		dim = state1->mesh->dimension();
 		json tmp_args = args;
 		for (int d = 0; d < dim; d++)
 		{
 			tmp_args["dim"] = d;
-			center1.push_back(std::make_unique<PositionForm>(variable_to_simulations, state1, tmp_args));
-			center2.push_back(std::make_unique<PositionForm>(variable_to_simulations, state2, tmp_args));
+			center1.push_back(std::make_unique<PositionForm>(variable_to_simulations, state1, diff_cache1, tmp_args));
+			center2.push_back(std::make_unique<PositionForm>(variable_to_simulations, state2, diff_cache2, tmp_args));
 		}
 	}
 
-	Eigen::VectorXd BarycenterTargetForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
+	Eigen::VectorXd BarycenterTargetForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const
 	{
 		Eigen::VectorXd term;
 		term.setZero(state.ndof());
 		for (int d = 0; d < dim; d++)
 		{
 			double value = center1[d]->value_unweighted_step(time_step, x) - center2[d]->value_unweighted_step(time_step, x);
-			term += (2 * value) * (center1[d]->compute_adjoint_rhs_step(time_step, x, state) - center2[d]->compute_adjoint_rhs_step(time_step, x, state));
+			term += (2 * value) * (center1[d]->compute_adjoint_rhs_step(time_step, x, state, diff_cache) - center2[d]->compute_adjoint_rhs_step(time_step, x, state, diff_cache));
 		}
 		return term * weight();
 	}
@@ -602,7 +606,7 @@ namespace polyfem::solver
 		return dist;
 	}
 
-	MinTargetDistForm::MinTargetDistForm(const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &steps, const Eigen::VectorXd &target, const json &args, const std::shared_ptr<State> &state)
+	MinTargetDistForm::MinTargetDistForm(const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &steps, const Eigen::VectorXd &target, const json &args, const std::shared_ptr<State> &state, std::shared_ptr<const DiffCache> diff_cache)
 		: AdjointForm(variable_to_simulations), steps_(steps), target_(target)
 	{
 		dim = state->mesh->dimension();
@@ -610,11 +614,11 @@ namespace polyfem::solver
 		for (int d = 0; d < dim; d++)
 		{
 			tmp_args["dim"] = d;
-			objs.push_back(std::make_unique<PositionForm>(variable_to_simulations, state, tmp_args));
+			objs.push_back(std::make_unique<PositionForm>(variable_to_simulations, state, diff_cache, tmp_args));
 		}
-		objs.push_back(std::make_unique<VolumeForm>(variable_to_simulations, state, args));
+		objs.push_back(std::make_unique<VolumeForm>(variable_to_simulations, state, diff_cache, args));
 	}
-	Eigen::MatrixXd MinTargetDistForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const
+	Eigen::MatrixXd MinTargetDistForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const
 	{
 		Eigen::VectorXd values(steps_.size());
 		std::vector<Eigen::MatrixXd> grads(steps_.size(), Eigen::MatrixXd::Zero(state.ndof(), objs.size()));
@@ -627,14 +631,14 @@ namespace polyfem::solver
 			for (int d = 0; d < objs.size(); d++)
 			{
 				input(d) = objs[d]->value_unweighted_step(s, x);
-				grads[i].col(d) = objs[d]->compute_adjoint_rhs_step(s, x, state);
+				grads[i].col(d) = objs[d]->compute_adjoint_rhs_step(s, x, state, diff_cache);
 			}
 			values[i] = eval2(input);
 			g2.row(i++) = eval2_grad(input);
 		}
 
 		Eigen::VectorXd g1 = eval1_grad(values);
-		Eigen::MatrixXd terms = Eigen::MatrixXd::Zero(state.ndof(), state.diff_cached.size());
+		Eigen::MatrixXd terms = Eigen::MatrixXd::Zero(state.ndof(), diff_cache.size());
 		i = 0;
 		for (int s : steps_)
 		{

@@ -12,13 +12,14 @@ namespace polyfem::solver
 	class SpatialIntegralForm : public StaticForm
 	{
 	public:
-		SpatialIntegralForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, const json &args) : StaticForm(variable_to_simulations), state_(std::move(state))
+		SpatialIntegralForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, std::shared_ptr<const DiffCache> diff_cache, const json &args)
+			: StaticForm(variable_to_simulations), state_(std::move(state)), diff_cache_(std::move(diff_cache))
 		{
 		}
 
 		std::string name() const override { return "spatial_integral"; }
 
-		Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
+		Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const override;
 		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
 		void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
@@ -28,6 +29,7 @@ namespace polyfem::solver
 		virtual IntegrableFunctional get_integral_functional() const = 0;
 
 		std::shared_ptr<const State> state_;
+		std::shared_ptr<const DiffCache> diff_cache_;
 		SpatialIntegralType spatial_integral_type_;
 		std::set<int> ids_;
 	};
@@ -35,7 +37,8 @@ namespace polyfem::solver
 	class ElasticEnergyForm : public SpatialIntegralForm
 	{
 	public:
-		ElasticEnergyForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, const json &args) : SpatialIntegralForm(variable_to_simulations, std::move(state), args)
+		ElasticEnergyForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, std::shared_ptr<const DiffCache> diff_cache, const json &args)
+			: SpatialIntegralForm(variable_to_simulations, std::move(state), std::move(diff_cache), args)
 		{
 			set_integral_type(SpatialIntegralType::Volume);
 
@@ -54,7 +57,8 @@ namespace polyfem::solver
 	class StressNormForm : public SpatialIntegralForm
 	{
 	public:
-		StressNormForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, const json &args) : SpatialIntegralForm(variable_to_simulations, std::move(state), args)
+		StressNormForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, std::shared_ptr<const DiffCache> diff_cache, const json &args)
+			: SpatialIntegralForm(variable_to_simulations, std::move(state), std::move(diff_cache), args)
 		{
 			set_integral_type(SpatialIntegralType::Volume);
 
@@ -79,7 +83,8 @@ namespace polyfem::solver
 	class DirichletEnergyForm : public SpatialIntegralForm
 	{
 	public:
-		DirichletEnergyForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, const json &args) : SpatialIntegralForm(variable_to_simulations, std::move(state), args)
+		DirichletEnergyForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, std::shared_ptr<const DiffCache> diff_cache, const json &args)
+			: SpatialIntegralForm(variable_to_simulations, std::move(state), std::move(diff_cache), args)
 
 		{
 			std::string formulation = state_->formulation();
@@ -103,7 +108,8 @@ namespace polyfem::solver
 	class ComplianceForm : public SpatialIntegralForm
 	{
 	public:
-		ComplianceForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, const json &args) : SpatialIntegralForm(variable_to_simulations, std::move(state), args)
+		ComplianceForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, std::shared_ptr<const DiffCache> diff_cache, const json &args)
+			: SpatialIntegralForm(variable_to_simulations, std::move(state), std::move(diff_cache), args)
 		{
 			set_integral_type(SpatialIntegralType::Volume);
 
@@ -122,7 +128,8 @@ namespace polyfem::solver
 	class PositionForm : public SpatialIntegralForm
 	{
 	public:
-		PositionForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, const json &args) : SpatialIntegralForm(variable_to_simulations, std::move(state), args)
+		PositionForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, std::shared_ptr<const DiffCache> diff_cache, const json &args)
+			: SpatialIntegralForm(variable_to_simulations, std::move(state), std::move(diff_cache), args)
 		{
 			set_integral_type(SpatialIntegralType::Volume);
 
@@ -144,7 +151,8 @@ namespace polyfem::solver
 	class AccelerationForm : public SpatialIntegralForm
 	{
 	public:
-		AccelerationForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, const json &args) : SpatialIntegralForm(variable_to_simulations, std::move(state), args)
+		AccelerationForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, std::shared_ptr<const DiffCache> diff_cache, const json &args)
+			: SpatialIntegralForm(variable_to_simulations, std::move(state), std::move(diff_cache), args)
 		{
 			set_integral_type(SpatialIntegralType::Volume);
 
@@ -166,7 +174,8 @@ namespace polyfem::solver
 	class KineticForm : public SpatialIntegralForm
 	{
 	public:
-		KineticForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, const json &args) : SpatialIntegralForm(variable_to_simulations, std::move(state), args)
+		KineticForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, std::shared_ptr<const DiffCache> diff_cache, const json &args)
+			: SpatialIntegralForm(variable_to_simulations, std::move(state), std::move(diff_cache), args)
 		{
 			set_integral_type(SpatialIntegralType::Volume);
 
@@ -181,7 +190,8 @@ namespace polyfem::solver
 	class StressForm : public SpatialIntegralForm
 	{
 	public:
-		StressForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, const json &args) : SpatialIntegralForm(variable_to_simulations, std::move(state), args)
+		StressForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, std::shared_ptr<const DiffCache> diff_cache, const json &args)
+			: SpatialIntegralForm(variable_to_simulations, std::move(state), std::move(diff_cache), args)
 		{
 			set_integral_type(SpatialIntegralType::Volume);
 
@@ -204,7 +214,8 @@ namespace polyfem::solver
 	class VolumeForm : public SpatialIntegralForm
 	{
 	public:
-		VolumeForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, const json &args) : SpatialIntegralForm(variable_to_simulations, std::move(state), args)
+		VolumeForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, std::shared_ptr<const DiffCache> diff_cache, const json &args)
+			: SpatialIntegralForm(variable_to_simulations, std::move(state), std::move(diff_cache), args)
 		{
 			set_integral_type(SpatialIntegralType::Volume);
 

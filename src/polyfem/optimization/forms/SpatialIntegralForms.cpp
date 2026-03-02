@@ -53,41 +53,41 @@ namespace polyfem::solver
 
 	double SpatialIntegralForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
 	{
-		assert(time_step < state_->diff_cached.size());
-		return AdjointTools::integrate_objective(*state_, get_integral_functional(), state_->diff_cached.u(time_step), ids_, spatial_integral_type_, time_step);
+		assert(time_step < diff_cache_->size());
+		return AdjointTools::integrate_objective(*state_, get_integral_functional(), diff_cache_->u(time_step), ids_, spatial_integral_type_, time_step);
 	}
 
 	void SpatialIntegralForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		assert(time_step < state_->diff_cached.size());
+		assert(time_step < diff_cache_->size());
 		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, state_.get(), x, [this, time_step, &x]() {
 			Eigen::VectorXd term;
-			AdjointTools::compute_shape_derivative_functional_term(*this->state_, this->state_->diff_cached.u(time_step), this->get_integral_functional(), this->ids_, this->spatial_integral_type_, term, time_step);
+			AdjointTools::compute_shape_derivative_functional_term(*this->state_, this->diff_cache_->u(time_step), this->get_integral_functional(), this->ids_, this->spatial_integral_type_, term, time_step);
 			return term;
 		});
 		gradv += variable_to_simulations_.apply_parametrization_jacobian(ParameterType::PeriodicShape, state_.get(), x, [this, time_step, &x]() {
 			Eigen::VectorXd term;
-			AdjointTools::compute_shape_derivative_functional_term(*this->state_, this->state_->diff_cached.u(time_step), this->get_integral_functional(), this->ids_, this->spatial_integral_type_, term, time_step);
+			AdjointTools::compute_shape_derivative_functional_term(*this->state_, this->diff_cache_->u(time_step), this->get_integral_functional(), this->ids_, this->spatial_integral_type_, term, time_step);
 			term *= this->weight();
 
-			const Eigen::VectorXd adjoint_rhs = this->compute_adjoint_rhs_step(time_step, x, *state_);
+			const Eigen::VectorXd adjoint_rhs = this->compute_adjoint_rhs_step(time_step, x, *state_, *diff_cache_);
 			const NLHomoProblem &homo_problem = *std::dynamic_pointer_cast<NLHomoProblem>(state_->solve_data.nl_problem);
-			const Eigen::VectorXd full_shape_deriv = homo_problem.reduced_to_full_shape_derivative(state_->diff_cached.disp_grad(), adjoint_rhs);
+			const Eigen::VectorXd full_shape_deriv = homo_problem.reduced_to_full_shape_derivative(diff_cache_->disp_grad(), adjoint_rhs);
 			term += utils::flatten(utils::unflatten(full_shape_deriv, state_->mesh->dimension())(state_->primitive_to_node(), Eigen::all));
 
 			return term;
 		});
 	}
 
-	Eigen::VectorXd SpatialIntegralForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
+	Eigen::VectorXd SpatialIntegralForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const
 	{
 		if (&state != state_.get())
 			return Eigen::VectorXd::Zero(state.ndof());
 
-		assert(time_step < state_->diff_cached.size());
+		assert(time_step < diff_cache.size());
 
 		Eigen::VectorXd rhs;
-		AdjointTools::dJ_du_step(state, get_integral_functional(), state.diff_cached.u(time_step), ids_, spatial_integral_type_, time_step, rhs);
+		AdjointTools::dJ_du_step(state, get_integral_functional(), diff_cache.u(time_step), ids_, spatial_integral_type_, time_step, rhs);
 
 		return rhs * weight();
 	}
@@ -339,7 +339,7 @@ namespace polyfem::solver
 				Eigen::VectorXd da = vals.det.array() * quadrature.weights.array();
 
 				Eigen::MatrixXd u, grad_u;
-				io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, state_->diff_cached.u(time_step), u, grad_u);
+				io::Evaluator::interpolate_at_local_vals(e, dim, dim, vals, diff_cache_->u(time_step), u, grad_u);
 
 				Eigen::MatrixXd grad_u_q;
 				for (int q = 0; q < quadrature.weights.size(); q++)
@@ -388,9 +388,9 @@ namespace polyfem::solver
 		IntegrableFunctional j;
 		const int dim = this->dim_;
 
-		j.set_j([dim, state = this->state_.get()](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const IntegrableFunctional::ParameterType &params, Eigen::MatrixXd &val) {
+		j.set_j([dim, state = this->state_.get(), diff_cache = this->diff_cache_.get()](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const IntegrableFunctional::ParameterType &params, Eigen::MatrixXd &val) {
 			Eigen::MatrixXd acc, grad_acc;
-			io::Evaluator::interpolate_at_local_vals(*(state->mesh), state->problem->is_scalar(), state->bases, state->geom_bases(), params.elem, local_pts, state->diff_cached.acc(params.step), acc, grad_acc);
+			io::Evaluator::interpolate_at_local_vals(*(state->mesh), state->problem->is_scalar(), state->bases, state->geom_bases(), params.elem, local_pts, diff_cache->acc(params.step), acc, grad_acc);
 
 			val = acc.col(dim);
 		});
@@ -409,7 +409,7 @@ namespace polyfem::solver
 
 		j.set_j([this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const IntegrableFunctional::ParameterType &params, Eigen::MatrixXd &val) {
 			Eigen::MatrixXd v, grad_v;
-			io::Evaluator::interpolate_at_local_vals(*(state_->mesh), state_->problem->is_scalar(), state_->bases, state_->geom_bases(), params.elem, local_pts, state_->diff_cached.v(params.step), v, grad_v);
+			io::Evaluator::interpolate_at_local_vals(*(state_->mesh), state_->problem->is_scalar(), state_->bases, state_->geom_bases(), params.elem, local_pts, diff_cache_->v(params.step), v, grad_v);
 
 			val.setZero(u.rows(), 1);
 			for (int q = 0; q < v.rows(); q++)

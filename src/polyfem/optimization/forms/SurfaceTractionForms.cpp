@@ -788,11 +788,13 @@ namespace polyfem::solver
 	ProxyContactForceForm::ProxyContactForceForm(
 		const VariableToSimulationGroup &variable_to_simulations,
 		std::shared_ptr<const State> state,
+		std::shared_ptr<const DiffCache> diff_cache,
 		const double dhat,
 		const bool quadratic_potential,
 		const json &args)
 		: StaticForm(variable_to_simulations),
 		  state_(std::move(state)),
+		  diff_cache_(std::move(diff_cache)),
 		  dhat_(dhat),
 		  dmin_(0),
 		  barrier_potential_(dhat, true)
@@ -973,7 +975,7 @@ namespace polyfem::solver
 		assert(state_->solve_data.time_integrator != nullptr);
 		assert(state_->solve_data.contact_form != nullptr);
 
-		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(state_->diff_cached.u(time_step), collision_mesh_.dim()));
+		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(diff_cache_->u(time_step), collision_mesh_.dim()));
 		auto collision_set = get_or_compute_collision_set(time_step, displaced_surface);
 
 		Eigen::MatrixXd forces = collision_mesh_.to_full_dof(barrier_potential_.gradient(collision_set, collision_mesh_, displaced_surface));
@@ -983,12 +985,12 @@ namespace polyfem::solver
 		return sum;
 	}
 
-	Eigen::VectorXd ProxyContactForceForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
+	Eigen::VectorXd ProxyContactForceForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const
 	{
 		assert(state_->solve_data.time_integrator != nullptr);
 		assert(state_->solve_data.contact_form != nullptr);
 
-		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(state_->diff_cached.u(time_step), collision_mesh_.dim()));
+		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(diff_cache_->u(time_step), collision_mesh_.dim()));
 		auto collision_set = get_or_compute_collision_set(time_step, displaced_surface);
 
 		Eigen::MatrixXd forces = collision_mesh_.to_full_dof(barrier_potential_.gradient(collision_set, collision_mesh_, displaced_surface));
@@ -1025,7 +1027,7 @@ namespace polyfem::solver
 		assert(state_->solve_data.contact_form != nullptr);
 
 		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, state_.get(), x, [this, time_step, &x]() {
-			const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(state_->diff_cached.u(time_step), collision_mesh_.dim()));
+			const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(diff_cache_->u(time_step), collision_mesh_.dim()));
 
 			auto collision_set = get_or_compute_collision_set(time_step, displaced_surface);
 

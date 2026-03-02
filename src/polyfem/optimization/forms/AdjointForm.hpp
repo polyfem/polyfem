@@ -21,10 +21,10 @@ namespace polyfem::solver
 
 		const VariableToSimulationGroup &get_variable_to_simulations() const { return variable_to_simulations_; }
 
-		virtual Eigen::MatrixXd compute_reduced_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const;
+		virtual Eigen::MatrixXd compute_reduced_adjoint_rhs(const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const;
 		virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const;
 		virtual void first_derivative(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final override;
-		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const;
+		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const;
 
 		// not used functions from base class
 		virtual void update_quantities(const double t, const Eigen::VectorXd &x) final override;
@@ -56,12 +56,12 @@ namespace polyfem::solver
 
 		virtual std::string name() const override { return "static"; }
 
-		Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const final override;
+		Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const final override;
 		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const final override;
 		double value_unweighted(const Eigen::VectorXd &x) const final override;
 
-		virtual Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const = 0;
-		virtual Eigen::VectorXd compute_adjoint_rhs_step_prev(const int time_step, const Eigen::VectorXd &x, const State &state) const;
+		virtual Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const = 0;
+		virtual Eigen::VectorXd compute_adjoint_rhs_step_prev(const int time_step, const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const;
 		virtual void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const = 0;
 		virtual double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const = 0;
 		virtual void solution_changed(const Eigen::VectorXd &new_x) final override;
@@ -75,7 +75,8 @@ namespace polyfem::solver
 	class MaxStressForm : public StaticForm
 	{
 	public:
-		MaxStressForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, const json &args) : StaticForm(variable_to_simulations), state_(std::move(state))
+		MaxStressForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, std::shared_ptr<const DiffCache> diff_cache, const json &args)
+			: StaticForm(variable_to_simulations), state_(std::move(state)), diff_cache_(std::move(diff_cache))
 		{
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -83,12 +84,13 @@ namespace polyfem::solver
 
 		std::string name() const override { return "max_stress"; }
 
-		Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
+		Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const override;
 		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
 		void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	private:
 		std::set<int> interested_ids_;
 		std::shared_ptr<const State> state_;
+		std::shared_ptr<const DiffCache> diff_cache_;
 	};
 } // namespace polyfem::solver

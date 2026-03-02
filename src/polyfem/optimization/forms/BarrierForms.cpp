@@ -278,8 +278,8 @@ namespace polyfem::solver
 		collision_mesh_.init_area_jacobians();
 	}
 
-	DeformedCollisionBarrierForm::DeformedCollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const State> state, const double dhat)
-		: AdjointForm(variable_to_simulation), state_(std::move(state)), dhat_(dhat), barrier_potential_(dhat)
+	DeformedCollisionBarrierForm::DeformedCollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const State> state, std::shared_ptr<const DiffCache> diff_cache, const double dhat)
+		: AdjointForm(variable_to_simulation), state_(std::move(state)), diff_cache_(std::move(diff_cache)), dhat_(dhat), barrier_potential_(dhat)
 	{
 		if (state_->n_bases != state_->n_geom_bases)
 			log_and_throw_adjoint_error("[{}] Should use linear FE basis!", name());
@@ -369,15 +369,17 @@ namespace polyfem::solver
 	{
 		Eigen::VectorXd X = X_init;
 		variable_to_simulations_.compute_state_variable(ParameterType::Shape, state_.get(), x, X);
-		return AdjointTools::map_primitive_to_node_order(*state_, X) + state_->diff_cached.u(0);
+		return AdjointTools::map_primitive_to_node_order(*state_, X) + diff_cache_->u(0);
 	}
 
 	SmoothContactForceForm::SmoothContactForceForm(
 		const VariableToSimulationGroup &variable_to_simulations,
 		std::shared_ptr<const State> state,
+		std::shared_ptr<const DiffCache> diff_cache,
 		const json &args)
 		: StaticForm(variable_to_simulations),
 		  state_(std::move(state)),
+		  diff_cache_(std::move(diff_cache)),
 		  params_(state_->args["contact"]["dhat"], state_->args["contact"]["alpha_t"], 0, state_->args["contact"]["alpha_n"], 0, state_->mesh->is_volume() ? 2 : 1),
 		  potential_(params_)
 	{
@@ -429,7 +431,7 @@ namespace polyfem::solver
 	{
 		assert(state_->solve_data.contact_form != nullptr);
 
-		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(state_->diff_cached.u(time_step), collision_mesh_.dim()));
+		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(diff_cache_->u(time_step), collision_mesh_.dim()));
 
 		Eigen::VectorXd forces = collision_mesh_.to_full_dof(potential_.gradient(collisions_, collision_mesh_, displaced_surface));
 
@@ -441,11 +443,11 @@ namespace polyfem::solver
 		return (coeff.array() * forces.array()).matrix().squaredNorm() / 2;
 	}
 
-	Eigen::VectorXd SmoothContactForceForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
+	Eigen::VectorXd SmoothContactForceForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const
 	{
 		assert(state_->solve_data.contact_form != nullptr);
 
-		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(state_->diff_cached.u(time_step), collision_mesh_.dim()));
+		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(diff_cache_->u(time_step), collision_mesh_.dim()));
 
 		Eigen::VectorXd forces = potential_.gradient(collisions_, collision_mesh_, displaced_surface);
 		forces = collision_mesh_.to_full_dof(forces);
@@ -463,7 +465,7 @@ namespace polyfem::solver
 	{
 		assert(state_->solve_data.contact_form != nullptr);
 
-		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(state_->diff_cached.u(time_step), collision_mesh_.dim()));
+		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(diff_cache_->u(time_step), collision_mesh_.dim()));
 
 		Eigen::VectorXd forces = potential_.gradient(collisions_, collision_mesh_, displaced_surface);
 		forces = collision_mesh_.to_full_dof(forces);
@@ -487,7 +489,7 @@ namespace polyfem::solver
 	void SmoothContactForceForm::solution_changed_step(const int time_step, const Eigen::VectorXd &x)
 	{
 		build_collision_mesh();
-		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(state_->diff_cached.u(time_step), collision_mesh_.dim()));
+		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(diff_cache_->u(time_step), collision_mesh_.dim()));
 		collisions_ = get_smooth_collision_set(displaced_surface);
 	}
 } // namespace polyfem::solver
