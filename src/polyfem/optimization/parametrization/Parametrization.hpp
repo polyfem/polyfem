@@ -13,8 +13,7 @@ namespace polyfem::solver
 	class Parametrization
 	{
 	public:
-		Parametrization() {}
-		virtual ~Parametrization() {}
+		virtual ~Parametrization() = default;
 
 		virtual Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y);
 
@@ -26,9 +25,8 @@ namespace polyfem::solver
 	class CompositeParametrization : public Parametrization
 	{
 	public:
-		CompositeParametrization() : parametrizations_(std::vector<std::shared_ptr<Parametrization>>()) {}
-		CompositeParametrization(std::vector<std::shared_ptr<Parametrization>> &&parametrizations) : parametrizations_(parametrizations) {}
-		virtual ~CompositeParametrization() {}
+		CompositeParametrization() = default;
+		CompositeParametrization(std::vector<std::shared_ptr<Parametrization>> parametrizations) : parametrizations_(std::move(parametrizations)) {}
 
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
 
