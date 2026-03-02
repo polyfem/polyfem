@@ -1,4 +1,4 @@
-#include "VariableToSimulation.hpp"
+#include <polyfem/optimization/forms/VariableToSimulation.hpp>
 #include <polyfem/State.hpp>
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>

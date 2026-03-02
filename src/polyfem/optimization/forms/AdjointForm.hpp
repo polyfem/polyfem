@@ -1,7 +1,9 @@
 #pragma once
 
 #include <polyfem/solver/forms/Form.hpp>
-#include "VariableToSimulation.hpp"
+#include <polyfem/optimization/forms/VariableToSimulation.hpp>
+#include <memory>
+#include <utility>
 
 namespace polyfem::solver
 {
@@ -73,7 +75,7 @@ namespace polyfem::solver
 	class MaxStressForm : public StaticForm
 	{
 	public:
-		MaxStressForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : StaticForm(variable_to_simulations), state_(state)
+		MaxStressForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, const json &args) : StaticForm(variable_to_simulations), state_(std::move(state))
 		{
 			auto tmp_ids = args["volume_selection"].get<std::vector<int>>();
 			interested_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -87,6 +89,6 @@ namespace polyfem::solver
 
 	private:
 		std::set<int> interested_ids_;
-		const State &state_;
+		std::shared_ptr<const State> state_;
 	};
 } // namespace polyfem::solver

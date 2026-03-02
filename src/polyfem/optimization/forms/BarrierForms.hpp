@@ -1,20 +1,22 @@
 #pragma once
 
 #include <polyfem/optimization/forms/ParametrizationForm.hpp>
-#include "VariableToSimulation.hpp"
+#include <polyfem/optimization/forms/VariableToSimulation.hpp>
 
 #include <polyfem/solver/forms/SmoothContactForm.hpp>
 #include <ipc/potentials/barrier_potential.hpp>
 #include <ipc/smooth_contact/smooth_collisions.hpp>
 #include <ipc/smooth_contact/smooth_contact_potential.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
+#include <memory>
+#include <utility>
 
 namespace polyfem::solver
 {
 	class CollisionBarrierForm : public AdjointForm
 	{
 	public:
-		CollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, const State &state, const double dhat, const double dmin = 0);
+		CollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const State> state, const double dhat, const double dmin = 0);
 
 		double value_unweighted(const Eigen::VectorXd &x) const override;
 
@@ -33,7 +35,7 @@ namespace polyfem::solver
 
 		Eigen::VectorXd get_updated_mesh_nodes(const Eigen::VectorXd &x) const;
 
-		const State &state_;
+		std::shared_ptr<const State> state_;
 
 		Eigen::VectorXd X_init;
 
@@ -50,7 +52,7 @@ namespace polyfem::solver
 	{
 	public:
 		LayerThicknessForm(const VariableToSimulationGroup &variable_to_simulations,
-						   const State &state,
+						   std::shared_ptr<const State> state,
 						   const std::vector<int> &boundary_ids,
 						   const double dhat,
 						   const bool use_log_barrier = false,
@@ -71,7 +73,7 @@ namespace polyfem::solver
 	class DeformedCollisionBarrierForm : public AdjointForm
 	{
 	public:
-		DeformedCollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, const State &state, const double dhat);
+		DeformedCollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const State> state, const double dhat);
 
 		std::string name() const override { return "deformed_collision_barrier"; }
 
@@ -90,7 +92,7 @@ namespace polyfem::solver
 
 		Eigen::VectorXd get_updated_mesh_nodes(const Eigen::VectorXd &x) const;
 
-		const State &state_;
+		std::shared_ptr<const State> state_;
 
 		Eigen::VectorXd X_init;
 
@@ -107,7 +109,7 @@ namespace polyfem::solver
 	public:
 		SmoothContactForceForm(
 			const VariableToSimulationGroup &variable_to_simulations,
-			const State &state,
+			std::shared_ptr<const State> state,
 			const json &args);
 		~SmoothContactForceForm() = default;
 
@@ -120,7 +122,7 @@ namespace polyfem::solver
 		void build_collision_mesh();
 		ipc::SmoothCollisions get_smooth_collision_set(const Eigen::MatrixXd &displaced_surface);
 
-		const State &state_;
+		std::shared_ptr<const State> state_;
 		std::set<int> boundary_ids_;
 		std::map<int, std::set<int>> boundary_ids_to_dof_;
 

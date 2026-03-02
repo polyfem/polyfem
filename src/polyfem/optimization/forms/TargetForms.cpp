@@ -1,4 +1,4 @@
-#include "TargetForms.hpp"
+#include <polyfem/optimization/forms/TargetForms.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/io/MatrixIO.hpp>
@@ -95,7 +95,7 @@ namespace polyfem::solver
 		}
 		else // error wrt. a constant displacement
 		{
-			if (target_disp.size() == state_.mesh->dimension())
+			if (target_disp.size() == state_->mesh->dimension())
 			{
 				auto j_func = [this](const Eigen::MatrixXd &local_pts, const Eigen::MatrixXd &pts, const Eigen::MatrixXd &u, const Eigen::MatrixXd &grad_u, const Eigen::VectorXd &lambda, const Eigen::VectorXd &mu, const Eigen::MatrixXd &reference_normals, const assembler::ElementAssemblyValues &vals, const IntegrableFunctional::ParameterType &params, Eigen::MatrixXd &val) {
 					val.setZero(u.rows(), 1);
@@ -152,9 +152,9 @@ namespace polyfem::solver
 
 		std::map<int, std::vector<int>> interested_body_id_to_e;
 		int count = 0;
-		for (int e = 0; e < state_.bases.size(); ++e)
+		for (int e = 0; e < state_->bases.size(); ++e)
 		{
-			int body_id = state_.mesh->get_body_id(e);
+			int body_id = state_->mesh->get_body_id(e);
 			if (reference_cached_body_ids.size() > 0 && reference_cached_body_ids.count(body_id) == 0)
 				continue;
 			if (interested_body_id_to_e.find(body_id) != interested_body_id_to_e.end())
@@ -188,12 +188,12 @@ namespace polyfem::solver
 
 	void SDFTargetForm::solution_changed_step(const int time_step, const Eigen::VectorXd &x)
 	{
-		const auto &bases = state_.bases;
-		const auto &gbases = state_.geom_bases();
-		const int actual_dim = state_.problem->is_scalar() ? 1 : dim;
+		const auto &bases = state_->bases;
+		const auto &gbases = state_->geom_bases();
+		const int actual_dim = state_->problem->is_scalar() ? 1 : dim;
 
 		auto storage = utils::create_thread_storage(LocalThreadScalarStorage());
-		utils::maybe_parallel_for(state_.total_local_boundary.size(), [&](int start, int end, int thread_id) {
+		utils::maybe_parallel_for(state_->total_local_boundary.size(), [&](int start, int end, int thread_id) {
 			LocalThreadScalarStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
 			Eigen::MatrixXd uv, samples, gtmp;
@@ -204,20 +204,20 @@ namespace polyfem::solver
 
 			for (int lb_id = start; lb_id < end; ++lb_id)
 			{
-				const auto &lb = state_.total_local_boundary[lb_id];
+				const auto &lb = state_->total_local_boundary[lb_id];
 				const int e = lb.element_id();
 
 				for (int i = 0; i < lb.size(); i++)
 				{
 					const int global_primitive_id = lb.global_primitive_id(i);
-					if (ids_.size() != 0 && ids_.find(state_.mesh->get_boundary_id(global_primitive_id)) == ids_.end())
+					if (ids_.size() != 0 && ids_.find(state_->mesh->get_boundary_id(global_primitive_id)) == ids_.end())
 						continue;
 
-					utils::BoundarySampler::boundary_quadrature(lb, state_.n_boundary_samples(), *state_.mesh, i, false, uv, points, normal, weights);
+					utils::BoundarySampler::boundary_quadrature(lb, state_->n_boundary_samples(), *state_->mesh, i, false, uv, points, normal, weights);
 
 					assembler::ElementAssemblyValues &vals = local_storage.vals;
-					vals.compute(e, state_.mesh->is_volume(), points, bases[e], gbases[e]);
-					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, state_.diff_cached.u(time_step), u, grad_u);
+					vals.compute(e, state_->mesh->is_volume(), points, bases[e], gbases[e]);
+					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, state_->diff_cached.u(time_step), u, grad_u);
 
 					normal = normal * vals.jac_it[0]; // assuming linear geometry
 
@@ -232,7 +232,7 @@ namespace polyfem::solver
 	{
 		dim = control_points.cols();
 		delta_ = delta;
-		if ((dim != 2) || (state_.mesh->dimension() != 2))
+		if ((dim != 2) || (state_->mesh->dimension() != 2))
 			log_and_throw_error("SDFTargetForm specified for 2d.");
 
 		samples = 100;
@@ -261,7 +261,7 @@ namespace polyfem::solver
 
 		dim = control_points.cols();
 		delta_ = delta;
-		if ((dim != 3) || (state_.mesh->dimension() != 3))
+		if ((dim != 3) || (state_->mesh->dimension() != 3))
 			log_and_throw_error("SDFTargetForm specified for 3d.");
 
 		samples = 100;
@@ -379,7 +379,7 @@ namespace polyfem::solver
 	{
 		dim = V.cols();
 		delta_ = delta;
-		if ((dim != 3) || (state_.mesh->dimension() != 3))
+		if ((dim != 3) || (state_->mesh->dimension() != 3))
 			log_and_throw_error("MeshTargetForm is only available for 3d scenes.");
 
 		tree_.init(V, F);
@@ -391,12 +391,12 @@ namespace polyfem::solver
 
 	void MeshTargetForm::solution_changed_step(const int time_step, const Eigen::VectorXd &x)
 	{
-		const auto &bases = state_.bases;
-		const auto &gbases = state_.geom_bases();
-		const int actual_dim = state_.problem->is_scalar() ? 1 : dim;
+		const auto &bases = state_->bases;
+		const auto &gbases = state_->geom_bases();
+		const int actual_dim = state_->problem->is_scalar() ? 1 : dim;
 
 		auto storage = utils::create_thread_storage(LocalThreadScalarStorage());
-		utils::maybe_parallel_for(state_.total_local_boundary.size(), [&](int start, int end, int thread_id) {
+		utils::maybe_parallel_for(state_->total_local_boundary.size(), [&](int start, int end, int thread_id) {
 			LocalThreadScalarStorage &local_storage = utils::get_local_thread_storage(storage, thread_id);
 
 			Eigen::MatrixXd uv, samples, gtmp;
@@ -407,20 +407,20 @@ namespace polyfem::solver
 
 			for (int lb_id = start; lb_id < end; ++lb_id)
 			{
-				const auto &lb = state_.total_local_boundary[lb_id];
+				const auto &lb = state_->total_local_boundary[lb_id];
 				const int e = lb.element_id();
 
 				for (int i = 0; i < lb.size(); i++)
 				{
 					const int global_primitive_id = lb.global_primitive_id(i);
-					if (ids_.size() != 0 && ids_.find(state_.mesh->get_boundary_id(global_primitive_id)) == ids_.end())
+					if (ids_.size() != 0 && ids_.find(state_->mesh->get_boundary_id(global_primitive_id)) == ids_.end())
 						continue;
 
-					utils::BoundarySampler::boundary_quadrature(lb, state_.n_boundary_samples(), *state_.mesh, i, false, uv, points, normal, weights);
+					utils::BoundarySampler::boundary_quadrature(lb, state_->n_boundary_samples(), *state_->mesh, i, false, uv, points, normal, weights);
 
 					assembler::ElementAssemblyValues &vals = local_storage.vals;
-					vals.compute(e, state_.mesh->is_volume(), points, bases[e], gbases[e]);
-					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, state_.diff_cached.u(time_step), u, grad_u);
+					vals.compute(e, state_->mesh->is_volume(), points, bases[e], gbases[e]);
+					io::Evaluator::interpolate_at_local_vals(e, dim, actual_dim, vals, state_->diff_cached.u(time_step), u, grad_u);
 
 					normal = normal * vals.jac_it[0]; // assuming linear geometry
 
@@ -470,9 +470,9 @@ namespace polyfem::solver
 		return j;
 	}
 
-	NodeTargetForm::NodeTargetForm(const State &state, const VariableToSimulationGroup &variable_to_simulations, const json &args) : StaticForm(variable_to_simulations), state_(state)
+	NodeTargetForm::NodeTargetForm(std::shared_ptr<const State> state, const VariableToSimulationGroup &variable_to_simulations, const json &args) : StaticForm(variable_to_simulations), state_(std::move(state))
 	{
-		const int dim = state.mesh->dimension();
+		const int dim = state_->mesh->dimension();
 		const std::string target_data_path = args["target_data_path"];
 		if (!std::filesystem::is_regular_file(target_data_path))
 		{
@@ -492,10 +492,10 @@ namespace polyfem::solver
 			const RowVectorNd node = data.block(s, 0, 1, dim);
 			bool not_found = true;
 			double min_dist = std::numeric_limits<double>::max();
-			for (int v = 0; v < state_.mesh_nodes->n_nodes(); v++)
+			for (int v = 0; v < state_->mesh_nodes->n_nodes(); v++)
 			{
-				min_dist = std::min(min_dist, (state_.mesh_nodes->node_position(v) - node).norm());
-				if ((state_.mesh_nodes->node_position(v) - node).norm() < args["tolerance"])
+				min_dist = std::min(min_dist, (state_->mesh_nodes->node_position(v) - node).norm());
+				if ((state_->mesh_nodes->node_position(v) - node).norm() < args["tolerance"])
 				{
 					active_nodes.push_back(v);
 					not_found = false;
@@ -507,7 +507,7 @@ namespace polyfem::solver
 		}
 	}
 
-	NodeTargetForm::NodeTargetForm(const State &state, const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_) : StaticForm(variable_to_simulations), state_(state), target_vertex_positions(target_vertex_positions_), active_nodes(active_nodes_)
+	NodeTargetForm::NodeTargetForm(std::shared_ptr<const State> state, const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_) : StaticForm(variable_to_simulations), state_(std::move(state)), target_vertex_positions(target_vertex_positions_), active_nodes(active_nodes_)
 	{
 		// log_and_throw_adjoint_error("[{}] Constructor not implemented!", name());
 	}
@@ -517,15 +517,15 @@ namespace polyfem::solver
 		Eigen::VectorXd rhs;
 		rhs.setZero(state.diff_cached.u(0).size());
 
-		const int dim = state_.mesh->dimension();
+		const int dim = state_->mesh->dimension();
 
-		if (&state == &state_)
+		if (&state == state_.get())
 		{
 			int i = 0;
-			const Eigen::VectorXd disp = state_.diff_cached.u(time_step);
+			const Eigen::VectorXd disp = state_->diff_cached.u(time_step);
 			for (int v : active_nodes)
 			{
-				const RowVectorNd cur_pos = state_.mesh_nodes->node_position(v) + disp.segment(v * dim, dim).transpose();
+				const RowVectorNd cur_pos = state_->mesh_nodes->node_position(v) + disp.segment(v * dim, dim).transpose();
 
 				rhs.segment(v * dim, dim) = 2 * (cur_pos - target_vertex_positions.row(i++));
 			}
@@ -536,13 +536,13 @@ namespace polyfem::solver
 
 	double NodeTargetForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
 	{
-		const int dim = state_.mesh->dimension();
+		const int dim = state_->mesh->dimension();
 		double val = 0;
 		int i = 0;
-		const Eigen::VectorXd disp = state_.diff_cached.u(time_step);
+		const Eigen::VectorXd disp = state_->diff_cached.u(time_step);
 		for (int v : active_nodes)
 		{
-			const RowVectorNd cur_pos = state_.mesh_nodes->node_position(v) + disp.segment(v * dim, dim).transpose();
+			const RowVectorNd cur_pos = state_->mesh_nodes->node_position(v) + disp.segment(v * dim, dim).transpose();
 			val += (cur_pos - target_vertex_positions.row(i++)).squaredNorm();
 		}
 		return val;
@@ -551,7 +551,7 @@ namespace polyfem::solver
 	void NodeTargetForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv.setZero(x.size());
-		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, &state_, x, [this]() {
+		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, state_.get(), x, [this]() {
 			log_and_throw_adjoint_error("[{}] Doesn't support derivatives wrt. shape!", name());
 			return Eigen::VectorXd::Zero(0).eval();
 		});
@@ -564,8 +564,8 @@ namespace polyfem::solver
 		for (int d = 0; d < dim; d++)
 		{
 			tmp_args["dim"] = d;
-			center1.push_back(std::make_unique<PositionForm>(variable_to_simulations, *state1, tmp_args));
-			center2.push_back(std::make_unique<PositionForm>(variable_to_simulations, *state2, tmp_args));
+			center1.push_back(std::make_unique<PositionForm>(variable_to_simulations, state1, tmp_args));
+			center2.push_back(std::make_unique<PositionForm>(variable_to_simulations, state2, tmp_args));
 		}
 	}
 
@@ -610,9 +610,9 @@ namespace polyfem::solver
 		for (int d = 0; d < dim; d++)
 		{
 			tmp_args["dim"] = d;
-			objs.push_back(std::make_unique<PositionForm>(variable_to_simulations, *state, tmp_args));
+			objs.push_back(std::make_unique<PositionForm>(variable_to_simulations, state, tmp_args));
 		}
-		objs.push_back(std::make_unique<VolumeForm>(variable_to_simulations, *state, args));
+		objs.push_back(std::make_unique<VolumeForm>(variable_to_simulations, state, args));
 	}
 	Eigen::MatrixXd MinTargetDistForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const
 	{

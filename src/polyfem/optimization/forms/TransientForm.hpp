@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AdjointForm.hpp"
+#include <polyfem/optimization/forms/AdjointForm.hpp>
 
 namespace polyfem::solver
 {

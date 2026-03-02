@@ -1,17 +1,19 @@
 #pragma once
 
-#include "SpatialIntegralForms.hpp"
+#include <polyfem/optimization/forms/SpatialIntegralForms.hpp>
 
 #include <igl/AABB.h>
 #include <polyfem/utils/ExpressionValue.hpp>
 #include <polyfem/utils/LazyCubicInterpolator.hpp>
+#include <memory>
+#include <utility>
 
 namespace polyfem::solver
 {
 	class TargetForm : public SpatialIntegralForm
 	{
 	public:
-		TargetForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
+		TargetForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, const json &args) : SpatialIntegralForm(variable_to_simulations, std::move(state), args)
 		{
 			set_integral_type(SpatialIntegralType::Surface);
 
@@ -44,7 +46,7 @@ namespace polyfem::solver
 	class SDFTargetForm : public SpatialIntegralForm
 	{
 	public:
-		SDFTargetForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
+		SDFTargetForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, const json &args) : SpatialIntegralForm(variable_to_simulations, std::move(state), args)
 		{
 			set_integral_type(SpatialIntegralType::Surface);
 
@@ -77,7 +79,7 @@ namespace polyfem::solver
 	class MeshTargetForm : public SpatialIntegralForm
 	{
 	public:
-		MeshTargetForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
+		MeshTargetForm(const VariableToSimulationGroup &variable_to_simulations, std::shared_ptr<const State> state, const json &args) : SpatialIntegralForm(variable_to_simulations, std::move(state), args)
 		{
 			set_integral_type(SpatialIntegralType::Surface);
 
@@ -107,8 +109,8 @@ namespace polyfem::solver
 	class NodeTargetForm : public StaticForm
 	{
 	public:
-		NodeTargetForm(const State &state, const VariableToSimulationGroup &variable_to_simulations, const json &args);
-		NodeTargetForm(const State &state, const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_);
+		NodeTargetForm(std::shared_ptr<const State> state, const VariableToSimulationGroup &variable_to_simulations, const json &args);
+		NodeTargetForm(std::shared_ptr<const State> state, const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_);
 		~NodeTargetForm() = default;
 
 		std::string name() const override { return "node-target"; }
@@ -118,7 +120,7 @@ namespace polyfem::solver
 		void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	protected:
-		const State &state_;
+		std::shared_ptr<const State> state_;
 
 		Eigen::MatrixXd target_vertex_positions;
 		std::vector<int> active_nodes;

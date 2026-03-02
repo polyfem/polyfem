@@ -1,8 +1,10 @@
 #pragma once
 
-#include "SpatialIntegralForms.hpp"
+#include <polyfem/optimization/forms/SpatialIntegralForms.hpp>
 
 #include <polyfem/solver/forms/BarrierContactForm.hpp>
+#include <memory>
+#include <utility>
 
 namespace polyfem::solver
 {
@@ -63,7 +65,7 @@ namespace polyfem::solver
 	public:
 		ProxyContactForceForm(
 			const VariableToSimulationGroup &variable_to_simulations,
-			const State &state,
+			std::shared_ptr<const State> state,
 			const double dhat,
 			const bool quadratic_potential,
 			const json &args);
@@ -87,7 +89,7 @@ namespace polyfem::solver
 		void build_forward_collision_mesh();
 		const ipc::NormalCollisions &get_or_compute_collision_set(const int time_step, const Eigen::MatrixXd &displaced_surface) const;
 
-		const State &state_;
+		std::shared_ptr<const State> state_;
 		std::set<int> boundary_ids_;
 		std::map<int, std::set<int>> boundary_ids_to_dof_;
 		Eigen::MatrixXi can_collide_cache_;

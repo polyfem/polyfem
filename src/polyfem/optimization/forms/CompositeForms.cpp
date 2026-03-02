@@ -1,4 +1,4 @@
-#include "CompositeForms.hpp"
+#include <polyfem/optimization/forms/CompositeForms.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
 
 namespace polyfem::solver

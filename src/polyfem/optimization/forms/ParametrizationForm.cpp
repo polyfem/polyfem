@@ -1,4 +1,4 @@
-#include "ParametrizationForm.hpp"
+#include <polyfem/optimization/forms/ParametrizationForm.hpp>
 #include <polyfem/State.hpp>
 
 namespace polyfem::solver
