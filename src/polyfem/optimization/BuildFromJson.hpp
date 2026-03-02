@@ -12,6 +12,13 @@
 
 namespace polyfem::from_json
 {
+	// Build a single State from an in-memory JSON configuration.
+	// This mirrors the initialization done by build_states(), but does not load JSON from disk.
+	std::shared_ptr<State> build_state(
+		const json &args,
+		const solver::CacheLevel &level,
+		const size_t max_threads);
+
 	std::vector<std::shared_ptr<State>> build_states(
 		const std::string &root_path,
 		const json &args,

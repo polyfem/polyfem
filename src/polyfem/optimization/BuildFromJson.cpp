@@ -26,19 +26,21 @@ namespace polyfem::from_json
 
 			return true;
 		}
+	} // namespace
 
-		std::shared_ptr<State> build_state(const json &args,
-										   solver::CacheLevel level,
-										   const size_t max_threads)
+	std::shared_ptr<State> build_state(
+		const json &args,
+		const solver::CacheLevel &level,
+		const size_t max_threads)
+	{
+		std::shared_ptr<State> state = std::make_shared<State>();
+		state->set_max_threads(max_threads);
+
+		json in_args = args;
+		in_args["solver"]["max_threads"] = max_threads;
+		if (!args.contains("output") || !args["output"].contains("log") || !args["output"]["log"].contains("level"))
 		{
-			std::shared_ptr<State> state = std::make_shared<State>();
-			state->set_max_threads(max_threads);
-
-			json in_args = args;
-			in_args["solver"]["max_threads"] = max_threads;
-			if (!args.contains("output") || !args["output"].contains("log") || !args["output"]["log"].contains("level"))
-			{
-				const json tmp = R"({
+			const json tmp = R"({
 					"output": {
 						"log": {
 							"level": "error"
@@ -46,20 +48,18 @@ namespace polyfem::from_json
 					}
 				})"_json;
 
-				in_args.merge_patch(tmp);
-			}
-
-			state->optimization_enabled = level;
-			state->init(in_args, true);
-			state->load_mesh();
-			Eigen::MatrixXd sol, pressure;
-			state->build_basis();
-			state->assemble_rhs();
-			state->assemble_mass_mat();
-
-			return state;
+			in_args.merge_patch(tmp);
 		}
-	} // namespace
+
+		state->optimization_enabled = level;
+		state->init(in_args, true);
+		state->load_mesh();
+		state->build_basis();
+		state->assemble_rhs();
+		state->assemble_mass_mat();
+
+		return state;
+	}
 
 	std::vector<std::shared_ptr<State>> build_states(
 		const std::string &root_path,
