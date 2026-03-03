@@ -2,21 +2,20 @@
 
 #include "BarrierContactForm.hpp"
 
-namespace polyfem
-{
-	class State;
-
-	namespace solver {
-		class PeriodicMeshToMesh;
-	}
-}
+#include <Eigen/Core>
+#include <polyfem/utils/Types.hpp>
+#include <polysolve/nonlinear/PostStepData.hpp>
 
 namespace polyfem::solver
 {
+  class PeriodicContactForceDerivative;
+
 	/// @brief Form representing the contact potential and forces on a periodic mesh
 	/// This form has a different input format of [fluctuation, affine], only can be used in NLHomoProblem
     class PeriodicContactForm : public BarrierContactForm
     {
+    friend class PeriodicContactForceDerivative;
+
     public:
 		/// @brief Construct a new Contact Form object
 		/// @param periodic_collision_mesh 3x3 tiling of a periodic mesh
@@ -36,8 +35,6 @@ namespace polyfem::solver
                         const int ccd_max_iterations);
 
         void init(const Eigen::VectorXd &x) override;
-
-		void force_periodic_shape_derivative(const State& state, const PeriodicMeshToMesh &periodic_mesh_map, const Eigen::VectorXd &periodic_mesh_representation, const ipc::NormalCollisions &contact_set, const Eigen::VectorXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const;
 
         Eigen::VectorXd single_to_tiled(const Eigen::VectorXd &x) const;
         Eigen::VectorXd tiled_to_single_grad(const Eigen::VectorXd &grad) const;

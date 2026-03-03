@@ -1,13 +1,16 @@
 #include "BarrierContactForm.hpp"
-#include <ipc/potentials/barrier_potential.hpp>
+
 #include <polyfem/utils/Logger.hpp>
-#include <polyfem/utils/Types.hpp>
-#include <polyfem/utils/Timer.hpp>
-#include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/utils/Timer.hpp>
+#include <polyfem/utils/Types.hpp>
 
 #include <ipc/barrier/adaptive_stiffness.hpp>
 #include <ipc/utils/world_bbox_diagonal_length.hpp>
+
+#include <algorithm>
+#include <cassert>
+#include <cmath>
 
 namespace polyfem::solver
 {
@@ -29,15 +32,6 @@ namespace polyfem::solver
 		collision_set_.set_use_improved_max_approximator(use_improved_max_operator);
 		collision_set_.set_enable_shape_derivatives(enable_shape_derivatives);
     }
-	void BarrierContactForm::force_shape_derivative(const ipc::NormalCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const
-	{
-		// Eigen::MatrixXd U = collision_mesh_.vertices(utils::unflatten(solution, collision_mesh_.dim()));
-		// Eigen::MatrixXd X = collision_mesh_.vertices(boundary_nodes_pos_);
-		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(solution);
-
-		StiffnessMatrix dq_h = collision_mesh_.to_full_dof(barrier_potential_.shape_derivative(collision_set, collision_mesh_, displaced_surface));
-		term = barrier_stiffness() * dq_h.transpose() * adjoint_sol;
-	}
 
 	void BarrierContactForm::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
 	{

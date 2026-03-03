@@ -7,7 +7,11 @@
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 
 #include <polyfem/utils/Jacobian.hpp>
+#include <polyfem/utils/MatrixCache.hpp>
 #include <polyfem/utils/Types.hpp>
+
+#include <memory>
+#include <vector>
 
 namespace polyfem::solver
 {
@@ -20,6 +24,8 @@ namespace polyfem::solver
 	/// @brief Form of the elasticity potential and forces
 	class ElasticForm : public Form
 	{
+		friend class ElasticForceDerivative;
+
 	public:
 		/// @brief Construct a new Elastic Form object
 		/// @param state Reference to the simulation state
@@ -85,21 +91,6 @@ namespace polyfem::solver
 		/// @brief Update cached fields upon a change in the solution
 		/// @param new_x New solution
 		void solution_changed(const Eigen::VectorXd &new_x) override;
-
-		/// @brief Compute the derivative of the force wrt lame/damping parameters, then multiply the resulting matrix with adjoint_sol.
-		/// @param t Current time
-		/// @param[in] x Current solution
-		/// @param[in] adjoint Current adjoint solution
-		/// @param[out] term Derivative of force multiplied by the adjoint
-		void force_material_derivative(const double t, const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term);
-
-		/// @brief Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adjoint_sol.
-		/// @param t Current time
-		/// @param[in] n_verts Number of vertices
-		/// @param[in] x Current solution
-		/// @param[in] adjoint Current adjoint solution
-		/// @param[out] term Derivative of force multiplied by the adjoint
-		void force_shape_derivative(const double t, const int n_verts, const Eigen::MatrixXd &x, const Eigen::MatrixXd &x_prev, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term);
 
 		/// @brief Reset adaptive quadrature refinement after each complete nonlinear solve.
 		void finish() override;

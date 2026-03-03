@@ -1,22 +1,27 @@
 #pragma once
 
 #include "Form.hpp"
-#include "ContactForm.hpp"
 
-#include <polyfem/Common.hpp>
 #include <polyfem/utils/Types.hpp>
+#include <polysolve/nonlinear/PostStepData.hpp>
 
+#include <ipc/broad_phase/broad_phase.hpp>
+#include <ipc/broad_phase/create_broad_phase.hpp>
+#include <ipc/candidates/candidates.hpp>
+#include <ipc/ccd/tight_inclusion_ccd.hpp>
 #include <ipc/collisions/normal/normal_collisions.hpp>
 #include <ipc/collision_mesh.hpp>
-#include <ipc/broad_phase/broad_phase.hpp>
 #include <ipc/potentials/normal_adhesion_potential.hpp>
 
+#include <memory>
 
 namespace polyfem::solver
 {
 	/// @brief Form representing the contact potential and forces
 	class NormalAdhesionForm : public Form
 	{
+		friend class NormalAdhesionForceDerivative;
+
 	public:
 		/// @brief Construct a new NormalAdhesion Form object
 		/// @param collision_mesh Reference to the collision mesh
@@ -44,8 +49,6 @@ namespace polyfem::solver
 		/// @brief Initialize the form
 		/// @param x Current solution
 		void init(const Eigen::VectorXd &x) override;
-
-		virtual void force_shape_derivative(const ipc::NormalCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term);
 
 	protected:
 		/// @brief Compute the normal adhesion potential value

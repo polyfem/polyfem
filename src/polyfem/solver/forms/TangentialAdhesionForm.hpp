@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Form.hpp"
+#include "NormalAdhesionForm.hpp"
 
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/utils/Types.hpp>
@@ -13,11 +14,11 @@
 
 namespace polyfem::solver
 {
-	class NormalAdhesionForm;
-
 	/// @brief Form of the lagged tangential adhesion disapative potential and forces
 	class TangentialAdhesionForm : public Form
 	{
+		friend class TangentialAdhesionForceDerivative;
+
 	public:
 		/// @brief Construct a new Tangential Adhesion Form object
 		/// @param collision_mesh Reference to the collision mesh
@@ -38,8 +39,6 @@ namespace polyfem::solver
 			const int n_lagging_iters);
 
 		std::string name() const override { return "tangential adhesion"; }
-
-		void force_shape_derivative(const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint, const ipc::TangentialCollisions &tangential_constraints_set, Eigen::VectorXd &term);
 
 	protected:
 		/// @brief Compute the value of the form

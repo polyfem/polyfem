@@ -15,4 +15,5 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SO
 target_sources(polyfem PRIVATE ${SOURCES})
 
 add_subdirectory(forms)
+add_subdirectory(force_derivatives)
 add_subdirectory(parametrization)

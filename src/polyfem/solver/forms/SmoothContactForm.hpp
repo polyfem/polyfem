@@ -1,14 +1,19 @@
 #pragma once
 
 #include "ContactForm.hpp"
+
+#include <polyfem/utils/Types.hpp>
+#include <polysolve/nonlinear/PostStepData.hpp>
+
 #include <ipc/smooth_contact/smooth_collisions.hpp>
 #include <ipc/smooth_contact/smooth_contact_potential.hpp>
-#include <cmath>
 
 namespace polyfem::solver
 {
     class SmoothContactForm : public ContactForm
     {
+		friend class SmoothContactForceDerivative;
+
     public:
 		SmoothContactForm(const ipc::CollisionMesh &collision_mesh,
 					const double dhat,
@@ -27,8 +32,6 @@ namespace polyfem::solver
 		virtual std::string name() const override { return "smooth-contact"; }
 
         void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) override;
-
-		void force_shape_derivative(const ipc::SmoothCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const;
 
 		/// @brief Update fields after a step in the optimization
 		/// @param iter_num Optimization iteration number

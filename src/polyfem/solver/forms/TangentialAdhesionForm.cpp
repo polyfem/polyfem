@@ -27,30 +27,6 @@ namespace polyfem::solver
 		assert(epsa_ > 0);
 	}
 
-	void TangentialAdhesionForm::force_shape_derivative(
-		const Eigen::MatrixXd &prev_solution,
-		const Eigen::MatrixXd &solution,
-		const Eigen::MatrixXd &adjoint,
-		const ipc::TangentialCollisions &tangential_constraints_set,
-		Eigen::VectorXd &term)
-	{
-		Eigen::MatrixXd U = collision_mesh_.vertices(utils::unflatten(solution, collision_mesh_.dim()));
-		Eigen::MatrixXd U_prev = collision_mesh_.vertices(utils::unflatten(prev_solution, collision_mesh_.dim()));
-
-		// TODO: use the time integration to compute the velocity
-		const Eigen::MatrixXd velocities = (U - U_prev) / time_integrator_->dt();
-
-		StiffnessMatrix hess = -tangential_adhesion_potential_.force_jacobian(
-			tangential_constraints_set,
-			collision_mesh_, collision_mesh_.rest_positions(),
-			/*lagged_displacements=*/U_prev, velocities,
-			normal_adhesion_form_.normal_adhesion_potential(),
-			1,
-			ipc::TangentialPotential::DiffWRT::REST_POSITIONS);
-
-		term = collision_mesh_.to_full_dof(hess).transpose() * adjoint;
-	}
-
 	Eigen::MatrixXd TangentialAdhesionForm::compute_displaced_surface(const Eigen::VectorXd &x) const
 	{
 		return normal_adhesion_form_.compute_displaced_surface(x);

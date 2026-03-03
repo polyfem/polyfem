@@ -1,12 +1,19 @@
 #pragma once
 
 #include "ContactForm.hpp"
+
+#include <polyfem/utils/Types.hpp>
+#include <polysolve/nonlinear/PostStepData.hpp>
+
+#include <ipc/collisions/normal/normal_collisions.hpp>
 #include <ipc/potentials/barrier_potential.hpp>
 
 namespace polyfem::solver
 {
     class BarrierContactForm : public ContactForm
     {
+		friend class BarrierContactForceDerivative;
+
     public:
 		BarrierContactForm(const ipc::CollisionMesh &collision_mesh,
 					const double dhat,
@@ -41,8 +48,6 @@ namespace polyfem::solver
 		/// @brief Get use_physical_barrier
 		bool use_physical_barrier() const { return barrier_potential_.use_physical_barrier(); }
 		
-		void force_shape_derivative(const ipc::NormalCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const;
-
 		const ipc::NormalCollisions &collision_set() const { return collision_set_; }
 		const ipc::BarrierPotential &barrier_potential() const { return barrier_potential_; }
 

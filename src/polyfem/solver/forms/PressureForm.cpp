@@ -1,16 +1,7 @@
 #include "PressureForm.hpp"
 
-#include <polyfem/io/Evaluator.hpp>
-#include <polyfem/utils/MaybeParallelFor.hpp>
-#include <polyfem/utils/BoundarySampler.hpp>
-
-#include <polyfem/basis/ElementBases.hpp>
-#include <polyfem/assembler/AssemblerUtils.hpp>
-#include <polyfem/assembler/AssemblyValsCache.hpp>
-
-#include <polyfem/autogen/auto_p_bases.hpp>
-
-#include <polyfem/utils/Logger.hpp>
+#include <unordered_map>
+#include <vector>
 
 namespace polyfem::solver
 {
@@ -61,38 +52,4 @@ namespace polyfem::solver
 	{
 		this->t_ = t;
 	}
-
-	void PressureForm::force_shape_derivative(const int n_verts, const double t, const Eigen::MatrixXd &x, const Eigen::MatrixXd &adjoint, Eigen::VectorXd &term)
-	{
-		Eigen::MatrixXd adjoint_zeroed = adjoint;
-		adjoint_zeroed(dirichlet_nodes_, Eigen::all).setZero();
-
-		StiffnessMatrix hessian;
-		pressure_assembler_.compute_force_jacobian(x, local_pressure_boundary_, dirichlet_nodes_, n_boundary_samples_, t, n_verts, hessian);
-
-		term = -hessian.transpose() * adjoint_zeroed;
-	}
-
-	double PressureForm::force_pressure_derivative(
-		const int n_verts,
-		const double t,
-		const int pressure_boundary_id,
-		const Eigen::MatrixXd &x,
-		const Eigen::MatrixXd &adjoint)
-	{
-		Eigen::MatrixXd adjoint_zeroed = adjoint;
-		adjoint_zeroed(dirichlet_nodes_, Eigen::all).setZero();
-
-		Eigen::VectorXd pressure_gradv;
-		pressure_assembler_.compute_grad_volume_id(x, pressure_boundary_id, local_pressure_boundary_, dirichlet_nodes_, n_boundary_samples_, pressure_gradv, t, false);
-		pressure_gradv *= -1;
-
-		Eigen::MatrixXd term;
-		term = pressure_gradv.transpose() * adjoint_zeroed;
-		term *= -1;
-
-		assert(term.size() == 1);
-		return term(0);
-	}
-
 } // namespace polyfem::solver
