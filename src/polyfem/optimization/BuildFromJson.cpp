@@ -9,9 +9,21 @@
 #include <polyfem/utils/StringUtils.hpp>
 
 #include <polyfem/optimization/CacheLevel.hpp>
+#include <polyfem/optimization/forms/AMIPSForm.hpp>
 #include <polyfem/optimization/forms/AdjointForm.hpp>
+#include <polyfem/optimization/forms/BarrierForms.hpp>
+#include <polyfem/optimization/forms/CompositeForms.hpp>
+#include <polyfem/optimization/forms/ParametrizedProductForm.hpp>
+#include <polyfem/optimization/forms/SmoothingForms.hpp>
+#include <polyfem/optimization/forms/SpatialIntegralForms.hpp>
+#include <polyfem/optimization/forms/SumCompositeForm.hpp>
+#include <polyfem/optimization/forms/SurfaceTractionForms.hpp>
+#include <polyfem/optimization/forms/TargetForms.hpp>
+#include <polyfem/optimization/forms/TransientForm.hpp>
 #include <polyfem/optimization/forms/VariableToSimulation.hpp>
 #include <polyfem/optimization/parametrization/Parametrization.hpp>
+#include <polyfem/optimization/parametrization/Parametrizations.hpp>
+#include <polyfem/optimization/parametrization/SplineParametrizations.hpp>
 
 #include <Eigen/Core>
 #include <spdlog/fmt/fmt.h>
@@ -282,7 +294,7 @@ namespace polyfem::from_json
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,
 		const std::vector<int> &variable_sizes)
 	{
-		VariableToSimulationGroup v2s_group;
+		solver::VariableToSimulationGroup v2s_group;
 		for (const auto &arg : args)
 		{
 			v2s_group.data.push_back(
@@ -297,6 +309,8 @@ namespace polyfem::from_json
 		const std::vector<std::shared_ptr<State>> &states,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches)
 	{
+		using namespace polyfem::solver;
+
 		std::shared_ptr<AdjointForm> obj;
 		if (args.is_array())
 		{
@@ -573,14 +587,14 @@ namespace polyfem::from_json
 				if (args["surface_selection"].is_array())
 				{
 					obj = std::make_shared<BoundarySmoothingForm>(
-						var2sim, *(states[args["state"]]), args["scale_invariant"],
+						var2sim, states[args["state"]], args["scale_invariant"],
 						args["power"], args["surface_selection"].get<std::vector<int>>(),
 						args["dimensions"].get<std::vector<int>>());
 				}
 				else
 				{
 					obj = std::make_shared<BoundarySmoothingForm>(
-						var2sim, *(states[args["state"]]), args["scale_invariant"],
+						var2sim, states[args["state"]], args["scale_invariant"],
 						args["power"],
 						std::vector<int>{args["surface_selection"].get<int>()},
 						args["dimensions"].get<std::vector<int>>());
@@ -589,18 +603,18 @@ namespace polyfem::from_json
 			else if (type == "collision_barrier")
 			{
 				obj = std::make_shared<CollisionBarrierForm>(
-					var2sim, *(states[args["state"]]), args["dhat"]);
+					var2sim, states[args["state"]], args["dhat"]);
 			}
 			else if (type == "layer_thickness")
 			{
 				obj = std::make_shared<LayerThicknessForm>(
-					var2sim, *(states[args["state"]]),
+					var2sim, states[args["state"]],
 					args["boundary_ids"].get<std::vector<int>>(), args["dhat"]);
 			}
 			else if (type == "layer_thickness_log")
 			{
 				obj = std::make_shared<LayerThicknessForm>(
-					var2sim, *(states[args["state"]]),
+					var2sim, states[args["state"]],
 					args["boundary_ids"].get<std::vector<int>>(), args["dhat"], true,
 					args["dmin"]);
 			}
