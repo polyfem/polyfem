@@ -2,13 +2,18 @@
 
 #include <polyfem/Common.hpp>
 #include <polyfem/State.hpp>
+
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/optimization/CacheLevel.hpp>
+
 #include <ipc/ipc.hpp>
 #include <ipc/collisions/normal/normal_collisions.hpp>
 #include <ipc/collisions/tangential/tangential_collisions.hpp>
 
 #include <Eigen/Core>
+
+#include <cassert>
+#include <vector>
 
 namespace polyfem
 {

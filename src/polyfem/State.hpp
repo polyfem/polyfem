@@ -27,6 +27,7 @@
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/Types.hpp>
 #include <polyfem/assembler/PeriodicBoundary.hpp>
 #include <polyfem/optimization/CacheLevel.hpp>
 
@@ -37,16 +38,23 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
+#include <spdlog/sinks/basic_file_sink.h>
+
+#include <ipc/collision_mesh.hpp>
+#include <ipc/utils/logger.hpp>
+
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <functional>
 #include <cassert>
-
-#include <spdlog/sinks/basic_file_sink.h>
-
-#include <ipc/collision_mesh.hpp>
-#include <ipc/utils/logger.hpp>
+#include <map>
+#include <utility>
+#include <vector>
+#include <sstream>
+#include <utility>
+#include <algorithm>
+#include <cstddef>
 
 // Forward declaration
 namespace polysolve::nonlinear

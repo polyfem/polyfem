@@ -4,6 +4,10 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
 
+#include <Eigen/Core>
+#include <memory>
+#include <vector>
+
 namespace polyfem
 {
 	class State;

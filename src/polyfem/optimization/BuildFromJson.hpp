@@ -1,14 +1,18 @@
 #pragma once
 
-#include <memory>
-#include <nlohmann/json.hpp>
 #include <polyfem/State.hpp>
+#include <polyfem/Common.hpp>
+
 #include <polyfem/optimization/CacheLevel.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/forms/AdjointForm.hpp>
 #include <polyfem/optimization/forms/VariableToSimulation.hpp>
 #include <polyfem/optimization/parametrization/Parametrization.hpp>
+
 #include <string>
+#include <memory>
+#include <vector>
+#include <cstddef>
 
 namespace polyfem::from_json
 {

@@ -1,6 +1,7 @@
-#include "polyfem/optimization/StateDiff.hpp"
+#include <polyfem/optimization/StateDiff.hpp>
 
 #include <polyfem/State.hpp>
+
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Types.hpp>
@@ -14,7 +15,7 @@
 #include <polyfem/solver/NLHomoProblem.hpp>
 #include <polyfem/solver/forms/BarrierContactForm.hpp>
 #include <polyfem/solver/forms/SmoothContactForm.hpp>
-// Because below types in SolverData are forward declared, we need to include them explicitly.
+// Below types in SolverData are forward declared, include them explicitly.
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/NormalAdhesionForm.hpp>
@@ -27,7 +28,11 @@
 #include <ipc/potentials/friction_potential.hpp>
 
 #include <Eigen/Dense>
+
 #include <algorithm>
+#include <vector>
+#include <cassert>
+#include <vector>
 
 using namespace polyfem::basis;
 

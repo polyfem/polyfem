@@ -1,12 +1,29 @@
-#include <memory>
-#include <nlohmann/json.hpp>
-#include <polyfem/State.hpp>
 #include <polyfem/optimization/BuildFromJson.hpp>
+
+#include <polyfem/State.hpp>
+#include <polyfem/Common.hpp>
+
+#include <polyfem/io/OBJReader.hpp>
+
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/StringUtils.hpp>
+
 #include <polyfem/optimization/CacheLevel.hpp>
 #include <polyfem/optimization/forms/AdjointForm.hpp>
 #include <polyfem/optimization/forms/VariableToSimulation.hpp>
 #include <polyfem/optimization/parametrization/Parametrization.hpp>
+
+#include <Eigen/Core>
+#include <spdlog/fmt/fmt.h>
+
 #include <string>
+#include <memory>
+#include <cassert>
+#include <cstddef>
+#include <fstream>
+#include <set>
+#include <utility>
+#include <vector>
 
 namespace polyfem::from_json
 {

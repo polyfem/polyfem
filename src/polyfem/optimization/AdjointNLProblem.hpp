@@ -1,12 +1,15 @@
 #pragma once
 
-#include <memory>
-
 #include <polyfem/Common.hpp>
 #include <polyfem/solver/FullNLProblem.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/forms/VariableToSimulation.hpp>
+#include <polyfem/utils/Types.hpp>
 
+#include <Eigen/Core>
+
+#include <memory>
+#include <vector>
 #include <fstream>
 
 namespace polyfem

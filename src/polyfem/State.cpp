@@ -4,6 +4,7 @@
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/io/Evaluator.hpp>
+#include <polyfem/io/OBJWriter.hpp>
 
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/MultiModel.hpp>
@@ -41,24 +42,28 @@
 
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Timer.hpp>
+#include <polyfem/utils/autodiff.h>
 
 #include <polyfem/optimization/CacheLevel.hpp>
 
 #include <polysolve/linear/FEMSolver.hpp>
 
-#include <polyfem/io/OBJWriter.hpp>
-
 #include <igl/edges.h>
 #include <igl/Timer.h>
 
-#include <iostream>
+#include <Eigen/Core>
+
+#include <spdlog/fmt/fmt.h>
+
 #include <algorithm>
 #include <memory>
-#include <filesystem>
-
-#include <polyfem/io/Evaluator.hpp>
-
-#include <polyfem/utils/autodiff.h>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
+#include <cassert>
+#include <cmath>
+#include <cstddef>
 
 using namespace Eigen;
 

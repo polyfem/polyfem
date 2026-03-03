@@ -3,6 +3,9 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
 
+#include <Eigen/Core>
+
+#include <vector>
 #include <set>
 
 namespace polyfem

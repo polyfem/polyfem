@@ -1,8 +1,10 @@
-#include "polyfem/optimization/DiffCache.hpp"
+#include <polyfem/optimization/DiffCache.hpp>
 
 #include <polyfem/State.hpp>
+
 #include <polyfem/time_integrator/BDF.hpp>
 #include <polyfem/time_integrator/ImplicitEuler.hpp>
+
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/NLHomoProblem.hpp>
 #include <polyfem/solver/forms/BarrierContactForm.hpp>
@@ -11,12 +13,19 @@
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/NormalAdhesionForm.hpp>
 #include <polyfem/solver/forms/TangentialAdhesionForm.hpp>
+
 #include <polyfem/assembler/ViscousDamping.hpp>
+
 #include <polyfem/utils/Types.hpp>
+#include <polyfem/utils/Logger.hpp>
+
+#include <polyfem/optimization/CacheLevel.hpp>
 
 #include <ipc/ipc.hpp>
-
 #include <Eigen/Core>
+
+#include <memory>
+#include <vector>
 
 namespace polyfem
 {

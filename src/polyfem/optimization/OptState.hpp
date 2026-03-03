@@ -6,7 +6,14 @@
 #include <polyfem/utils/Logger.hpp>
 
 #include <polyfem/optimization/DiffCache.hpp>
+#include <polyfem/optimization/CacheLevel.hpp>
 #include <polyfem/optimization/forms/VariableToSimulation.hpp>
+
+#include <Eigen/Core>
+
+#include <string>
+#include <vector>
+#include <memory>
 
 namespace polyfem
 {

@@ -1,10 +1,15 @@
 #include "OptState.hpp"
 
-#include <polyfem/optimization/Optimizations.hpp>
+#include <polyfem/Common.hpp>
+
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/par_for.hpp>
 #include <polyfem/utils/GeogramUtils.hpp>
+#include <polyfem/utils/Logger.hpp>
 
+#include <polyfem/optimization/Optimizations.hpp>
+#include <polyfem/optimization/CacheLevel.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/AdjointNLProblem.hpp>
 #include <polyfem/optimization/BuildFromJson.hpp>
 #include <polyfem/optimization/forms/VariableToSimulation.hpp>
@@ -14,6 +19,12 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/ostream_sink.h>
+
+#include <Eigen/Core>
+
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace spdlog::level
 {

@@ -1,13 +1,11 @@
-#include "Optimizations.hpp"
-
-#include <polyfem/mesh/GeometryReader.hpp>
-#include <jse/jse.h>
-
-#include "AdjointNLProblem.hpp"
+#include <polyfem/optimization/Optimizations.hpp>
 
 #include <polyfem/State.hpp>
+#include <polyfem/Common.hpp>
 
 #include <polyfem/optimization/StateDiff.hpp>
+#include <polyfem/optimization/CacheLevel.hpp>
+#include <polyfem/optimization/AdjointNLProblem.hpp>
 #include <polyfem/optimization/forms/SpatialIntegralForms.hpp>
 #include <polyfem/optimization/forms/SumCompositeForm.hpp>
 #include <polyfem/optimization/forms/CompositeForms.hpp>
@@ -21,11 +19,27 @@
 #include <polyfem/optimization/parametrization/Parametrizations.hpp>
 #include <polyfem/optimization/parametrization/SplineParametrizations.hpp>
 
-#include <polyfem/io/OBJReader.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/utils/Logger.hpp>
+
+#include <polyfem/mesh/GeometryReader.hpp>
+
+#include <polyfem/io/OBJReader.hpp>
 #include <polyfem/io/MatrixIO.hpp>
 
 #include <polysolve/nonlinear/BoxConstraintSolver.hpp>
+
+#include <jse/jse.h>
+
+#include <Eigen/Core>
+
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <vector>
+#include <string>
+#include <set>
+#include <stdexcept>
 
 namespace spdlog::level
 {

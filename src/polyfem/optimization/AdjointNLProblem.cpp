@@ -1,18 +1,29 @@
 #include "AdjointNLProblem.hpp"
 
+#include <polyfem/State.hpp>
+#include <polyfem/Common.hpp>
 #include <polyfem/optimization/StateDiff.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/forms/AdjointForm.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
+#include <polyfem/utils/Types.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/io/MshWriter.hpp>
-#include <polyfem/State.hpp>
 #include <polyfem/mesh/SlimSmooth.hpp>
+
+#include <Eigen/Core>
+#include <spdlog/fmt/fmt.h>
 
 #include <list>
 #include <stack>
+#include <fstream>
+#include <iomanip>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace polyfem::solver
 {

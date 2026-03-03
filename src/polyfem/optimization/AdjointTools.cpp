@@ -1,15 +1,22 @@
 #include "AdjointTools.hpp"
 
-#include <polyfem/utils/MaybeParallelFor.hpp>
-#include <polyfem/utils/Timer.hpp>
-#include <polyfem/io/Evaluator.hpp>
-#include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/State.hpp>
 
+#include <polyfem/io/Evaluator.hpp>
+
+#include <polyfem/utils/AutodiffTypes.hpp>
+#include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/IntegrableFunctional.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
-#include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/Types.hpp>
 
+#include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
+#include <polyfem/time_integrator/BDF.hpp>
+
+#include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/NLHomoProblem.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/BarrierContactForm.hpp>
@@ -21,6 +28,7 @@
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/PressureForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
+
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/force_derivatives/ElasticForceDerivative.hpp>
 #include <polyfem/optimization/force_derivatives/BodyForceDerivative.hpp>
@@ -34,10 +42,16 @@
 #include <polyfem/optimization/force_derivatives/TangentialAdhesionForceDerivative.hpp>
 #include <polyfem/optimization/parametrization/PeriodicMeshToMesh.hpp>
 
-#include <polyfem/solver/NLProblem.hpp>
-#include <polyfem/solver/NLHomoProblem.hpp>
+#include <Eigen/Core>
 
-#include <polyfem/time_integrator/BDF.hpp>
+#include <algorithm>
+#include <cassert>
+#include <cmath>
+#include <map>
+#include <set>
+#include <string>
+#include <vector>
+#include <memory>
 
 /*
 Reminders:
