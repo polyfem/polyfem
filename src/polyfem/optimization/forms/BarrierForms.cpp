@@ -114,7 +114,7 @@ namespace polyfem::solver
 			collision_mesh_.vertices(V0),
 			collision_mesh_.vertices(V1),
 			dmin_,
-			ipc::create_broad_phase(broad_phase_method_), 
+			ipc::create_broad_phase(broad_phase_method_),
 			tight_inclusion_ccd);
 
 		adjoint_logger().info("Objective {}: max step size is {}.", name(), max_step);
@@ -420,7 +420,7 @@ namespace polyfem::solver
 	ipc::SmoothCollisions SmoothContactForceForm::get_smooth_collision_set(const Eigen::MatrixXd &displaced_surface)
 	{
 		ipc::SmoothCollisions collisions;
-		const auto smooth_contact = dynamic_cast<const SmoothContactForm*>(state_.solve_data.contact_form.get());
+		const auto smooth_contact = dynamic_cast<const SmoothContactForm *>(state_.solve_data.contact_form.get());
 		collisions.build(collision_mesh_, displaced_surface, smooth_contact->get_params(), smooth_contact->using_adaptive_dhat(), smooth_contact->get_broad_phase());
 		return collisions;
 	}
@@ -432,7 +432,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh_.dim()));
 
 		Eigen::VectorXd forces = collision_mesh_.to_full_dof(potential_.gradient(collisions_, collision_mesh_, displaced_surface));
-		
+
 		// return forces.squaredNorm();
 
 		Eigen::VectorXd coeff(forces.size());

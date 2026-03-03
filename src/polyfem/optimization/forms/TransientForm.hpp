@@ -29,7 +29,7 @@ namespace polyfem::solver
 		double dt_;
 		std::vector<int> steps_;
 		std::shared_ptr<StaticForm> obj_;
-	
+
 	private:
 		std::vector<double> get_transient_quadrature_weights() const;
 		std::string transient_integral_type_;
@@ -51,4 +51,4 @@ namespace polyfem::solver
 		double eval(const Eigen::VectorXd &y) const;
 		Eigen::VectorXd eval_grad(const Eigen::VectorXd &y) const;
 	};
-}
+} // namespace polyfem::solver

@@ -15,14 +15,14 @@
 namespace polyfem::solver
 {
 	NormalAdhesionForm::NormalAdhesionForm(const ipc::CollisionMesh &collision_mesh,
-							const double dhat_p,
-							const double dhat_a,
-							const double Y,
-							const bool is_time_dependent,
-							const bool enable_shape_derivatives,
-							const ipc::BroadPhaseMethod broad_phase_method,
-							const double ccd_tolerance,
-							const int ccd_max_iterations)
+										   const double dhat_p,
+										   const double dhat_a,
+										   const double Y,
+										   const bool is_time_dependent,
+										   const bool enable_shape_derivatives,
+										   const ipc::BroadPhaseMethod broad_phase_method,
+										   const double ccd_tolerance,
+										   const int ccd_max_iterations)
 		: collision_mesh_(collision_mesh),
 		  dhat_p_(dhat_p),
 		  dhat_a_(dhat_a),
@@ -140,9 +140,12 @@ namespace polyfem::solver
 
 		ipc::PSDProjectionMethod psd_projection_method;
 
-		if (project_to_psd_) {
+		if (project_to_psd_)
+		{
 			psd_projection_method = ipc::PSDProjectionMethod::CLAMP;
-		} else {
+		}
+		else
+		{
 			psd_projection_method = ipc::PSDProjectionMethod::NONE;
 		}
 
@@ -185,5 +188,4 @@ namespace polyfem::solver
 		prev_distance_ = curr_distance;
 	}
 
-	
 } // namespace polyfem::solver

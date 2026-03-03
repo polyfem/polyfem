@@ -229,7 +229,7 @@ namespace polyfem::io
 			std::vector<assembler::Assembler::NamedMatrix> &result,
 			const bool use_sampler,
 			const bool boundary_only);
- 
+
 		/// calls compute_scalar_value (i.e von mises for elasticity and norm of velocity for fluid) and compute_tensor_value of funtion using the assembler
 		/// the values are averaged around every node and interpolated using the bases to make them continuous.
 		/// the averaging is done over the full volume of the neighborhood elements and not just the voronoi/barycentric cell around the node.

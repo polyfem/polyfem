@@ -5,13 +5,12 @@
 namespace polyfem::solver
 {
 	BoundarySmoothingForm::BoundarySmoothingForm(
-		const VariableToSimulationGroup &variable_to_simulations, 
-		const State &state, 
-		const bool scale_invariant, 
-		const int power, 
+		const VariableToSimulationGroup &variable_to_simulations,
+		const State &state,
+		const bool scale_invariant,
+		const int power,
 		const std::vector<int> &surface_selections,
-			const std::vector<int> &active_dims) : 
-		AdjointForm(variable_to_simulations), state_(state), scale_invariant_(scale_invariant), power_(power), active_dims_(active_dims)
+		const std::vector<int> &active_dims) : AdjointForm(variable_to_simulations), state_(state), scale_invariant_(scale_invariant), power_(power), active_dims_(active_dims)
 	{
 		const auto &mesh = *(state_.mesh);
 		const int dim = mesh.dimension();
@@ -30,7 +29,7 @@ namespace polyfem::solver
 			const int boundary_id = mesh.get_boundary_id(b);
 			if (!surface_ids_.empty() && surface_ids_.find(boundary_id) == surface_ids_.end())
 				continue;
-			
+
 			for (int lv = 0; lv < dim; lv++)
 			{
 				active_mask[mesh.boundary_element_vertex(b, lv)] = true;
@@ -158,7 +157,7 @@ namespace polyfem::solver
 		{
 			Eigen::MatrixXd V;
 			state_.get_vertices(V);
-			
+
 			Eigen::MatrixXd grad_mat = 2 * (L.transpose() * (L * V));
 			for (int d = 0; d < dim; d++)
 				if (std::find(active_dims_.begin(), active_dims_.end(), d) == active_dims_.end())

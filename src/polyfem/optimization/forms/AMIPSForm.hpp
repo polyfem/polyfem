@@ -13,7 +13,7 @@ namespace polyfem
 	{
 		class Assembler;
 	}
-}
+} // namespace polyfem
 
 namespace polyfem::solver
 {
@@ -22,13 +22,12 @@ namespace polyfem::solver
 	class MinJacobianForm : public AdjointForm
 	{
 	public:
-		MinJacobianForm(const VariableToSimulationGroup& variable_to_simulation, const State &state)
+		MinJacobianForm(const VariableToSimulationGroup &variable_to_simulation, const State &state)
 			: AdjointForm(variable_to_simulation),
 			  state_(state)
 		{
-
 		}
-		
+
 		virtual std::string name() const override { return "min-jacobian"; }
 
 		double value_unweighted(const Eigen::VectorXd &x) const override;
@@ -41,7 +40,7 @@ namespace polyfem::solver
 	class AMIPSForm : public AdjointForm
 	{
 	public:
-		AMIPSForm(const VariableToSimulationGroup& variable_to_simulation, const State &state);
+		AMIPSForm(const VariableToSimulationGroup &variable_to_simulation, const State &state);
 
 		virtual std::string name() const override { return "AMIPS"; }
 

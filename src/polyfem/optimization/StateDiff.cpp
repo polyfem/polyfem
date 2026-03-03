@@ -119,9 +119,9 @@ namespace polyfem
 
 			if (solve_data.contact_form)
 			{
-				if (const auto barrier_contact = dynamic_cast<const solver::BarrierContactForm*>(solve_data.contact_form.get()))
+				if (const auto barrier_contact = dynamic_cast<const solver::BarrierContactForm *>(solve_data.contact_form.get()))
 					cur_collision_set = barrier_contact->collision_set();
-				else if (const auto smooth_contact = dynamic_cast<const solver::SmoothContactForm*>(solve_data.contact_form.get()))
+				else if (const auto smooth_contact = dynamic_cast<const solver::SmoothContactForm *>(solve_data.contact_form.get()))
 					cur_smooth_collision_set = smooth_contact->collision_set();
 			}
 			cur_friction_set = solve_data.friction_form ? solve_data.friction_form->friction_collision_set() : ipc::TangentialCollisions();
@@ -245,7 +245,7 @@ namespace polyfem
 						const Eigen::MatrixXd surface_velocities = (surface_solution - surface_solution_prev) / dt;
 						const double dv_dut = -1 / dt;
 
-						if (const auto barrier_contact = dynamic_cast<const solver::BarrierContactForm*>(solve_data.contact_form.get()))
+						if (const auto barrier_contact = dynamic_cast<const solver::BarrierContactForm *>(solve_data.contact_form.get()))
 						{
 							hessian_prev =
 								solve_data.friction_form->friction_potential().force_jacobian(
@@ -258,15 +258,15 @@ namespace polyfem
 									barrier_contact->barrier_stiffness(),
 									ipc::FrictionPotential::DiffWRT::LAGGED_DISPLACEMENTS)
 								+ solve_data.friction_form->friction_potential().force_jacobian(
-									diff_cached.friction_collision_set(force_step),
-									collision_mesh,
-									collision_mesh.rest_positions(),
-									/*lagged_displacements=*/surface_solution_prev,
-									surface_velocities,
-									barrier_contact->barrier_potential(),
-									barrier_contact->barrier_stiffness(),
-									ipc::FrictionPotential::DiffWRT::VELOCITIES)
-									* dv_dut;
+									  diff_cached.friction_collision_set(force_step),
+									  collision_mesh,
+									  collision_mesh.rest_positions(),
+									  /*lagged_displacements=*/surface_solution_prev,
+									  surface_velocities,
+									  barrier_contact->barrier_potential(),
+									  barrier_contact->barrier_stiffness(),
+									  ipc::FrictionPotential::DiffWRT::VELOCITIES)
+									  * dv_dut;
 						}
 
 						hessian_prev *= -1;

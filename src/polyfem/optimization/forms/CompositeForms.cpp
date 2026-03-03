@@ -3,7 +3,8 @@
 
 namespace polyfem::solver
 {
-    namespace {
+	namespace
+	{
 		bool delta(int i, int j)
 		{
 			return (i == j) ? true : false;
@@ -36,37 +37,37 @@ namespace polyfem::solver
 
 			return grad;
 		}
-    }
+	} // namespace
 
-    double HomoCompositeForm::compose(const Eigen::VectorXd &inputs) const
-    {
-        if (inputs.size() != 4)
-            throw std::runtime_error("Invalid input size for HomoCompositeForm!");
-        return homo_stress_aux(inputs);
-    }
+	double HomoCompositeForm::compose(const Eigen::VectorXd &inputs) const
+	{
+		if (inputs.size() != 4)
+			throw std::runtime_error("Invalid input size for HomoCompositeForm!");
+		return homo_stress_aux(inputs);
+	}
 
-    Eigen::VectorXd HomoCompositeForm::compose_grad(const Eigen::VectorXd &inputs) const
-    {
-        return homo_stress_aux_grad(inputs);
-    }
+	Eigen::VectorXd HomoCompositeForm::compose_grad(const Eigen::VectorXd &inputs) const
+	{
+		return homo_stress_aux_grad(inputs);
+	}
 
 	InequalityConstraintForm::InequalityConstraintForm(const std::vector<std::shared_ptr<AdjointForm>> &forms, const Eigen::Vector2d &bounds, const double power) : CompositeForm(forms), power_(power), bounds_(bounds)
 	{
 		assert(bounds_(1) >= bounds_(0));
 	}
 
-    double InequalityConstraintForm::compose(const Eigen::VectorXd &inputs) const
-    {
-        if (inputs.size() != 1)
-            throw std::runtime_error("Invalid input size for InequalityConstraintForm!");
-        
-		return pow(std::max(bounds_(0) - inputs(0), 0.0), power_) + pow(std::max(inputs(0) - bounds_(1), 0.0), power_);
-    }
+	double InequalityConstraintForm::compose(const Eigen::VectorXd &inputs) const
+	{
+		if (inputs.size() != 1)
+			throw std::runtime_error("Invalid input size for InequalityConstraintForm!");
 
-    Eigen::VectorXd InequalityConstraintForm::compose_grad(const Eigen::VectorXd &inputs) const
-    {
-        Eigen::VectorXd grad(1);
+		return pow(std::max(bounds_(0) - inputs(0), 0.0), power_) + pow(std::max(inputs(0) - bounds_(1), 0.0), power_);
+	}
+
+	Eigen::VectorXd InequalityConstraintForm::compose_grad(const Eigen::VectorXd &inputs) const
+	{
+		Eigen::VectorXd grad(1);
 		grad(0) = -power_ * pow(std::max(bounds_(0) - inputs(0), 0.0), power_ - 1) + power_ * pow(std::max(inputs(0) - bounds_(1), 0.0), power_ - 1);
 		return grad;
-    }
-}
+	}
+} // namespace polyfem::solver

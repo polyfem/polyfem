@@ -162,7 +162,7 @@ namespace polyfem::solver
 
 		double eval2(Eigen::VectorXd &x) const
 		{
-			assert(x.size() == dim+1);
+			assert(x.size() == dim + 1);
 			double out = 0;
 			for (int d = 0; d < dim; d++)
 				out += pow(x(d) / x(dim) - target_(d), 2);

@@ -15,7 +15,7 @@ namespace polyfem::solver
 		/// @param n_boundary_samples
 		/// @param periodic_bc Periodic boundary conditions
 		PeriodicLagrangianForm(const int ndof,
-						 const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc);
+							   const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc);
 
 		std::string name() const override
 		{
@@ -52,7 +52,7 @@ namespace polyfem::solver
 		virtual void project_hessian(StiffnessMatrix &hessian) const override;
 
 	private:
-        const std::shared_ptr<utils::PeriodicBoundary> periodic_bc_;
+		const std::shared_ptr<utils::PeriodicBoundary> periodic_bc_;
 		const int n_dofs_;
 		Eigen::VectorXi constraints_;     ///< Constraints
 		Eigen::VectorXi not_constraints_; ///< Not Constraints

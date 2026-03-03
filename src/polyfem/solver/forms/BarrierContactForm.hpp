@@ -10,27 +10,27 @@
 
 namespace polyfem::solver
 {
-    class BarrierContactForm : public ContactForm
-    {
+	class BarrierContactForm : public ContactForm
+	{
 		friend class BarrierContactForceDerivative;
 
-    public:
+	public:
 		BarrierContactForm(const ipc::CollisionMesh &collision_mesh,
-					const double dhat,
-					const double avg_mass,
-					const bool use_area_weighting,
-					const bool use_improved_max_operator,
-					const bool use_physical_barrier,
-					const bool use_adaptive_barrier_stiffness,
-					const bool is_time_dependent,
-					const bool enable_shape_derivatives,
-					const ipc::BroadPhaseMethod broad_phase_method,
-					const double ccd_tolerance,
-					const int ccd_max_iterations);
+						   const double dhat,
+						   const double avg_mass,
+						   const bool use_area_weighting,
+						   const bool use_improved_max_operator,
+						   const bool use_physical_barrier,
+						   const bool use_adaptive_barrier_stiffness,
+						   const bool is_time_dependent,
+						   const bool enable_shape_derivatives,
+						   const ipc::BroadPhaseMethod broad_phase_method,
+						   const double ccd_tolerance,
+						   const int ccd_max_iterations);
 
 		virtual std::string name() const override { return "barrier-contact"; }
 
-        virtual void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) override;
+		virtual void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) override;
 
 		/// @brief Update fields after a step in the optimization
 		/// @param iter_num Optimization iteration number
@@ -40,14 +40,14 @@ namespace polyfem::solver
 		bool use_convergent_formulation() const override { return use_area_weighting() && use_improved_max_operator() && use_physical_barrier(); }
 
 		/// @brief Get use_area_weighting
-		bool use_area_weighting() const { return collision_set().use_area_weighting();}
+		bool use_area_weighting() const { return collision_set().use_area_weighting(); }
 
 		/// @brief Get use_improved_max_operator
-		bool use_improved_max_operator() const { return collision_set().use_improved_max_approximator();}
+		bool use_improved_max_operator() const { return collision_set().use_improved_max_approximator(); }
 
 		/// @brief Get use_physical_barrier
 		bool use_physical_barrier() const { return barrier_potential_.use_physical_barrier(); }
-		
+
 		const ipc::NormalCollisions &collision_set() const { return collision_set_; }
 		const ipc::BarrierPotential &barrier_potential() const { return barrier_potential_; }
 
@@ -79,5 +79,5 @@ namespace polyfem::solver
 
 		/// @brief Contact potential
 		const ipc::BarrierPotential barrier_potential_;
-    };
-}
+	};
+} // namespace polyfem::solver

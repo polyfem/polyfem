@@ -77,174 +77,174 @@ namespace polyfem::solver
 		}
 	} // namespace
 
-    double MinJacobianForm::value_unweighted(const Eigen::VectorXd &x) const
-    {
-        const bool is_volume = state_.mesh->is_volume();
-        double min_jacs = std::numeric_limits<double>::max();
-        for (size_t e = 0; e < state_.geom_bases().size(); ++e)
-        {
-            if (state_.mesh->is_polytope(e))
-                continue;
-            
-            const auto &gbasis = state_.geom_bases()[e];
-            const int n_local_bases = int(gbasis.bases.size());
+	double MinJacobianForm::value_unweighted(const Eigen::VectorXd &x) const
+	{
+		const bool is_volume = state_.mesh->is_volume();
+		double min_jacs = std::numeric_limits<double>::max();
+		for (size_t e = 0; e < state_.geom_bases().size(); ++e)
+		{
+			if (state_.mesh->is_polytope(e))
+				continue;
 
-            quadrature::Quadrature quad;
-            gbasis.compute_quadrature(quad);
+			const auto &gbasis = state_.geom_bases()[e];
+			const int n_local_bases = int(gbasis.bases.size());
 
-            std::vector<assembler::AssemblyValues> tmp;
+			quadrature::Quadrature quad;
+			gbasis.compute_quadrature(quad);
 
-            Eigen::MatrixXd dx = Eigen::MatrixXd::Zero(quad.points.rows(), quad.points.cols());
-            Eigen::MatrixXd dy = Eigen::MatrixXd::Zero(quad.points.rows(), quad.points.cols());
-            Eigen::MatrixXd dz;
-            if (is_volume)
-                dz = Eigen::MatrixXd::Zero(quad.points.rows(), quad.points.cols());
+			std::vector<assembler::AssemblyValues> tmp;
 
-            gbasis.evaluate_grads(quad.points, tmp);
+			Eigen::MatrixXd dx = Eigen::MatrixXd::Zero(quad.points.rows(), quad.points.cols());
+			Eigen::MatrixXd dy = Eigen::MatrixXd::Zero(quad.points.rows(), quad.points.cols());
+			Eigen::MatrixXd dz;
+			if (is_volume)
+				dz = Eigen::MatrixXd::Zero(quad.points.rows(), quad.points.cols());
 
-            for (int j = 0; j < n_local_bases; ++j)
-            {
-                const basis::Basis &b = gbasis.bases[j];
+			gbasis.evaluate_grads(quad.points, tmp);
 
-                for (std::size_t ii = 0; ii < b.global().size(); ++ii)
-                {
-                    dx += tmp[j].grad.col(0) * b.global()[ii].node * b.global()[ii].val;
-                    dy += tmp[j].grad.col(1) * b.global()[ii].node * b.global()[ii].val;
-                    if (is_volume)
-                        dz += tmp[j].grad.col(2) * b.global()[ii].node * b.global()[ii].val;
-                }
-            }
+			for (int j = 0; j < n_local_bases; ++j)
+			{
+				const basis::Basis &b = gbasis.bases[j];
 
-            for (long i = 0; i < dx.rows(); ++i)
-            {
-                if (is_volume)
-                {
-                    Eigen::Matrix3d tmp;
-                    tmp << dx.row(i), dy.row(i), dz.row(i);
-                    min_jacs = std::min(min_jacs, tmp.determinant());
-                }
-                else
-                {
-                    Eigen::Matrix2d tmp;
-                    tmp << dx.row(i), dy.row(i);
-                    min_jacs = std::min(min_jacs, tmp.determinant());
-                }
-            }
-        }
+				for (std::size_t ii = 0; ii < b.global().size(); ++ii)
+				{
+					dx += tmp[j].grad.col(0) * b.global()[ii].node * b.global()[ii].val;
+					dy += tmp[j].grad.col(1) * b.global()[ii].node * b.global()[ii].val;
+					if (is_volume)
+						dz += tmp[j].grad.col(2) * b.global()[ii].node * b.global()[ii].val;
+				}
+			}
 
-        return min_jacs;
-    }
+			for (long i = 0; i < dx.rows(); ++i)
+			{
+				if (is_volume)
+				{
+					Eigen::Matrix3d tmp;
+					tmp << dx.row(i), dy.row(i), dz.row(i);
+					min_jacs = std::min(min_jacs, tmp.determinant());
+				}
+				else
+				{
+					Eigen::Matrix2d tmp;
+					tmp << dx.row(i), dy.row(i);
+					min_jacs = std::min(min_jacs, tmp.determinant());
+				}
+			}
+		}
 
-    void MinJacobianForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
-    {
-        log_and_throw_adjoint_error("{} is not differentiable!", name());
-    }
+		return min_jacs;
+	}
 
-    AMIPSForm::AMIPSForm(const VariableToSimulationGroup& variable_to_simulation, const State &state)
-        : AdjointForm(variable_to_simulation),
-            state_(state)
-    {
-        amips_energy_ = assembler::AssemblerUtils::make_assembler("AMIPSAutodiff");
-        amips_energy_->set_size(state.mesh->dimension());
+	void MinJacobianForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	{
+		log_and_throw_adjoint_error("{} is not differentiable!", name());
+	}
 
-        json transform_params = {};
-        transform_params["canonical_transformation"] = json::array();
-        if (!state.mesh->is_volume())
-        {
-            Eigen::MatrixXd regular_tri(3, 3);
-            regular_tri << 0, 0, 1,
-                1, 0, 1,
-                1. / 2., std::sqrt(3) / 2., 1;
-            regular_tri.transposeInPlace();
-            Eigen::MatrixXd regular_tri_inv = regular_tri.inverse();
+	AMIPSForm::AMIPSForm(const VariableToSimulationGroup &variable_to_simulation, const State &state)
+		: AdjointForm(variable_to_simulation),
+		  state_(state)
+	{
+		amips_energy_ = assembler::AssemblerUtils::make_assembler("AMIPSAutodiff");
+		amips_energy_->set_size(state.mesh->dimension());
 
-            const auto &mesh2d = *dynamic_cast<mesh::Mesh2D *>(state.mesh.get());
-            for (int e = 0; e < state.mesh->n_elements(); e++)
-            {
-                Eigen::MatrixXd transform;
-                mesh2d.compute_face_jacobian(e, regular_tri_inv, transform);
-                transform_params["canonical_transformation"].push_back(json({
-                    {
-                        transform(0, 0),
-                        transform(0, 1),
-                    },
-                    {
-                        transform(1, 0),
-                        transform(1, 1),
-                    },
-                }));
-            }
-        }
-        else
-        {
-            Eigen::MatrixXd regular_tet(4, 4);
-            regular_tet << 0, 0, 0, 1,
-                1, 0, 0, 1,
-                1. / 2., std::sqrt(3) / 2., 0, 1,
-                1. / 2., 1. / 2. / std::sqrt(3), std::sqrt(3) / 2., 1;
-            regular_tet.transposeInPlace();
-            Eigen::MatrixXd regular_tet_inv = regular_tet.inverse();
+		json transform_params = {};
+		transform_params["canonical_transformation"] = json::array();
+		if (!state.mesh->is_volume())
+		{
+			Eigen::MatrixXd regular_tri(3, 3);
+			regular_tri << 0, 0, 1,
+				1, 0, 1,
+				1. / 2., std::sqrt(3) / 2., 1;
+			regular_tri.transposeInPlace();
+			Eigen::MatrixXd regular_tri_inv = regular_tri.inverse();
 
-            const auto &mesh3d = *dynamic_cast<mesh::Mesh3D *>(state.mesh.get());
-            for (int e = 0; e < state.mesh->n_elements(); e++)
-            {
-                Eigen::MatrixXd transform;
-                mesh3d.compute_cell_jacobian(e, regular_tet_inv, transform);
-                transform_params["canonical_transformation"].push_back(json({
-                    {
-                        transform(0, 0),
-                        transform(0, 1),
-                        transform(0, 2),
-                    },
-                    {
-                        transform(1, 0),
-                        transform(1, 1),
-                        transform(1, 2),
-                    },
-                    {
-                        transform(2, 0),
-                        transform(2, 1),
-                        transform(2, 2),
-                    },
-                }));
-            }
-        }
-        transform_params["solve_displacement"] = true;
-        amips_energy_->add_multimaterial(0, transform_params, state.units);
+			const auto &mesh2d = *dynamic_cast<mesh::Mesh2D *>(state.mesh.get());
+			for (int e = 0; e < state.mesh->n_elements(); e++)
+			{
+				Eigen::MatrixXd transform;
+				mesh2d.compute_face_jacobian(e, regular_tri_inv, transform);
+				transform_params["canonical_transformation"].push_back(json({
+					{
+						transform(0, 0),
+						transform(0, 1),
+					},
+					{
+						transform(1, 0),
+						transform(1, 1),
+					},
+				}));
+			}
+		}
+		else
+		{
+			Eigen::MatrixXd regular_tet(4, 4);
+			regular_tet << 0, 0, 0, 1,
+				1, 0, 0, 1,
+				1. / 2., std::sqrt(3) / 2., 0, 1,
+				1. / 2., 1. / 2. / std::sqrt(3), std::sqrt(3) / 2., 1;
+			regular_tet.transposeInPlace();
+			Eigen::MatrixXd regular_tet_inv = regular_tet.inverse();
 
-        Eigen::MatrixXd V;
-        state_.get_vertices(V);
-        state_.get_elements(F);
-        X_rest = utils::flatten(V);
-        init_geom_bases_ = state_.geom_bases();
-    }
+			const auto &mesh3d = *dynamic_cast<mesh::Mesh3D *>(state.mesh.get());
+			for (int e = 0; e < state.mesh->n_elements(); e++)
+			{
+				Eigen::MatrixXd transform;
+				mesh3d.compute_cell_jacobian(e, regular_tet_inv, transform);
+				transform_params["canonical_transformation"].push_back(json({
+					{
+						transform(0, 0),
+						transform(0, 1),
+						transform(0, 2),
+					},
+					{
+						transform(1, 0),
+						transform(1, 1),
+						transform(1, 2),
+					},
+					{
+						transform(2, 0),
+						transform(2, 1),
+						transform(2, 2),
+					},
+				}));
+			}
+		}
+		transform_params["solve_displacement"] = true;
+		amips_energy_->add_multimaterial(0, transform_params, state.units);
 
-    double AMIPSForm::value_unweighted(const Eigen::VectorXd &x) const
-    {
-        Eigen::VectorXd X = get_updated_mesh_nodes(x);
+		Eigen::MatrixXd V;
+		state_.get_vertices(V);
+		state_.get_elements(F);
+		X_rest = utils::flatten(V);
+		init_geom_bases_ = state_.geom_bases();
+	}
 
-        return amips_energy_->assemble_energy(state_.mesh->is_volume(), init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_rest), Eigen::VectorXd());
-    }
+	double AMIPSForm::value_unweighted(const Eigen::VectorXd &x) const
+	{
+		Eigen::VectorXd X = get_updated_mesh_nodes(x);
 
-    void AMIPSForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
-    {
-        gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, &state_, x, [this, &x]() {
-            const Eigen::VectorXd X = get_updated_mesh_nodes(x);
-            Eigen::MatrixXd grad;
-            amips_energy_->assemble_gradient(state_.mesh->is_volume(), state_.n_geom_bases, init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_rest), Eigen::VectorXd(), grad); // grad wrt. gbases
-            return AdjointTools::map_node_to_primitive_order(state_, grad);
-        });
-    }
+		return amips_energy_->assemble_energy(state_.mesh->is_volume(), init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_rest), Eigen::VectorXd());
+	}
 
-    bool AMIPSForm::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
-    {
-        Eigen::VectorXd X = get_updated_mesh_nodes(x1);
-        Eigen::MatrixXd V1 = utils::unflatten(X, state_.mesh->dimension());
-        bool flipped = utils::is_flipped(V1, F);
+	void AMIPSForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
+	{
+		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, &state_, x, [this, &x]() {
+			const Eigen::VectorXd X = get_updated_mesh_nodes(x);
+			Eigen::MatrixXd grad;
+			amips_energy_->assemble_gradient(state_.mesh->is_volume(), state_.n_geom_bases, init_geom_bases_, init_geom_bases_, init_ass_vals_cache_, 0, 0, AdjointTools::map_primitive_to_node_order(state_, X - X_rest), Eigen::VectorXd(), grad); // grad wrt. gbases
+			return AdjointTools::map_node_to_primitive_order(state_, grad);
+		});
+	}
 
-        if (flipped)
-            adjoint_logger().trace("[{}] Step flips elements.", name());
+	bool AMIPSForm::is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
+	{
+		Eigen::VectorXd X = get_updated_mesh_nodes(x1);
+		Eigen::MatrixXd V1 = utils::unflatten(X, state_.mesh->dimension());
+		bool flipped = utils::is_flipped(V1, F);
 
-        return !flipped;
-    }
-}
+		if (flipped)
+			adjoint_logger().trace("[{}] Step flips elements.", name());
+
+		return !flipped;
+	}
+} // namespace polyfem::solver
