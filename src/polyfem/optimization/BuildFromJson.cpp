@@ -499,12 +499,15 @@ namespace polyfem::from_json
 				std::shared_ptr<MeshTargetForm> tmp = std::make_shared<MeshTargetForm>(
 					var2sim, states[args["state"]], diff_caches[args["state"]], args);
 				double delta = args["delta"].get<double>();
+
+				std::string mesh_path =
+					states[args["state"]]->resolve_input_path(args["mesh_path"].get<std::string>());
 				Eigen::MatrixXd V;
 				Eigen::MatrixXi E, F;
-				bool read = polyfem::io::OBJReader::read(args["mesh_path"], V, E, F);
+				bool read = polyfem::io::OBJReader::read(mesh_path, V, E, F);
 				if (!read)
 				{
-					log_and_throw_error(fmt::format("Could not read mesh! {}", args["mesh"]));
+					log_and_throw_error(fmt::format("Could not read mesh! {}", mesh_path));
 				}
 				tmp->set_surface_mesh_target(V, F, delta);
 				obj = tmp;

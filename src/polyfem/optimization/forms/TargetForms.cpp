@@ -475,7 +475,9 @@ namespace polyfem::solver
 		: StaticForm(variable_to_simulations), state_(std::move(state)), diff_cache_(std::move(diff_cache))
 	{
 		const int dim = state_->mesh->dimension();
-		const std::string target_data_path = args["target_data_path"];
+
+		std::string target_data_path =
+			state_->resolve_input_path(args["target_data_path"].get<std::string>());
 		if (!std::filesystem::is_regular_file(target_data_path))
 		{
 			throw std::runtime_error("Marker path invalid!");
