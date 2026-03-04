@@ -388,7 +388,7 @@ TEST_CASE("shape-contact-force-norm-adhesion", "[test_adjoint]")
 
 TEST_CASE("shape-contact-force-norm-3d", "[test_adjoint]")
 {
-	run_test2("shape-contact-force-norm-3d-opt.json", 1e-6, 1e-3, 0.0, 1.0);
+	run_test1("shape-contact-force-norm-3d-opt.json", 1e-6, 1e-3, 0.0, 1.0);
 }
 
 TEST_CASE("shape-contact", "[test_adjoint]")
