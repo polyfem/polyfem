@@ -457,13 +457,7 @@ TEST_CASE("damping-transient", "[test_adjoint]")
 
 TEST_CASE("material-transient", "[test_adjoint]")
 {
-	TestContext ctx{"material-transient-opt.json"};
-
-	Eigen::VectorXd velocity =
-		1e3f * Eigen::VectorXd::Ones(ctx.states[0]->bases.size() * 2);
-	Eigen::VectorXd x = ctx.var2sim.data[0]->inverse_eval();
-
-	verify_adjoint(*ctx.problem, x, velocity, ctx.args["solver"]["nonlinear"]["debug_fd_eps"], 1e-4);
+	run_test1("material-transient-opt.json", 1e-5, 1e-4, 1e3, 1e3);
 }
 
 TEST_CASE("shape-transient-friction", "[test_adjoint]")
