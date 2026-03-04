@@ -131,8 +131,8 @@ namespace
 			args = AdjointOptUtils::apply_opt_json_spec(args, false);
 
 			// Build states.
-			// load_json already inject root_path.
-			states = from_json::build_states("", args["states"], solver::CacheLevel::Derivatives, 16);
+			std::string root = POLYFEM_DIFF_DIR + std::string("/input/");
+			states = from_json::build_states(root, args["states"], solver::CacheLevel::Derivatives, 16);
 
 			// Build diff_caches.
 			diff_caches.resize(states.size());
@@ -300,8 +300,9 @@ TEST_CASE("topology-compliance", "[test_adjoint]")
 	load_json(append_root_path("topology-compliance-opt.json"), args);
 	args = AdjointOptUtils::apply_opt_json_spec(args, false);
 
+	std::string root = POLYFEM_DIFF_DIR + std::string("/input/");
 	auto states =
-		from_json::build_states("", args["states"], solver::CacheLevel::Derivatives, 16);
+		from_json::build_states(root, args["states"], solver::CacheLevel::Derivatives, 16);
 
 	std::vector<std::shared_ptr<DiffCache>> diff_caches{states.size()};
 	for (auto &cache : diff_caches)
@@ -410,8 +411,9 @@ TEST_CASE("node-trajectory", "[test_adjoint]")
 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
 	// One state only.
+	std::string root = POLYFEM_DIFF_DIR + std::string("/input/");
 	auto states =
-		from_json::build_states("", opt_args["states"], solver::CacheLevel::Derivatives, 16);
+		from_json::build_states(root, opt_args["states"], solver::CacheLevel::Derivatives, 16);
 	std::vector<std::shared_ptr<DiffCache>> diff_caches = {std::make_shared<DiffCache>()};
 
 	auto elastic_var2sim =
