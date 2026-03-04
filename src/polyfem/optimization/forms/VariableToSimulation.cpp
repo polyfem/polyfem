@@ -425,7 +425,7 @@ namespace polyfem::solver
 			{
 				Eigen::MatrixXd adjoint_p = get_adjoint_mat(*state, *diff_cache, 0);
 				Eigen::MatrixXd adjoint_nu = get_adjoint_mat(*state, *diff_cache, 1);
-				AdjointTools::dJ_initial_condition_adjoint_term(*state, adjoint_p, adjoint_nu, cur_term);
+				AdjointTools::dJ_initial_condition_adjoint_term(*state, adjoint_nu, adjoint_p, cur_term);
 			}
 			else
 			{
