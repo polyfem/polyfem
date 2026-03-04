@@ -7,11 +7,6 @@
 
 namespace polyfem::solver
 {
-	std::vector<std::shared_ptr<Parametrization>> ParametrizationFactory::build(const json &params, const int full_size)
-	{
-		return std::vector<std::shared_ptr<Parametrization>>();
-	}
-
 	ExponentialMap::ExponentialMap(const int from, const int to)
 		: from_(from), to_(to)
 	{
