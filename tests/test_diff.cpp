@@ -467,13 +467,11 @@ TEST_CASE("material-transient", "[test_adjoint]")
 	verify_adjoint(*ctx.problem, x, velocity, ctx.args["solver"]["nonlinear"]["debug_fd_eps"], 1e-4);
 }
 
-// TODO: need rand norm
 TEST_CASE("shape-transient-friction", "[test_adjoint]")
 {
-	run_test2("shape-transient-friction-opt.json", 1e-6, 1e-5, 0.0, 1000.0);
+	run_test2("shape-transient-friction-opt.json", 1e-6, 1e-5, 0.0, 1.0);
 }
 
-// TODO: need rand norm
 TEST_CASE("shape-transient-friction-sdf", "[test_adjoint]")
 {
 	run_test2("shape-transient-friction-sdf-opt.json", 1e-7, 1e-5, 0.0, 1.0);
@@ -481,12 +479,12 @@ TEST_CASE("shape-transient-friction-sdf", "[test_adjoint]")
 
 TEST_CASE("3d-shape-mesh-target", "[.][test_adjoint]")
 {
-	run_test1("3d-shape-mesh-target-opt.json", 1e-7, 1e-5, 0.0, 1000.0);
+	run_test1("3d-shape-mesh-target-opt.json", 1e-7, 1e-5, 0.0, 1.0);
 }
 
 TEST_CASE("initial-contact-min-dist", "[test_adjoint]")
 {
-	run_test2("initial-contact-min-dist-opt.json", 1e-5, 1e-5, -1.0, 1.0);
+	run_test1("initial-contact-min-dist-opt.json", 1e-5, 1e-5, -1.0, 1.0);
 }
 
 TEST_CASE("friction-contact", "[test_adjoint]")
