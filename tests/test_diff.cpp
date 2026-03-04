@@ -358,7 +358,7 @@ TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 
 TEST_CASE("shape-pressure-nodes-2d", "[test_adjoint]")
 {
-	run_test2("shape-pressure-nodes-2d-opt.json", 1e-7, 1e-2, 0.0, 1.0);
+	run_test1("shape-pressure-nodes-2d-opt.json", 1e-7, 1e-2, 0.0, 1.0);
 }
 
 TEST_CASE("static-control-pressure-nodes-3d", "[.][test_adjoint]")
