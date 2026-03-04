@@ -476,7 +476,7 @@ TEST_CASE("shape-transient-friction", "[test_adjoint]")
 // TODO: need rand norm
 TEST_CASE("shape-transient-friction-sdf", "[test_adjoint]")
 {
-	run_test2("shape-transient-friction-sdf-opt.json", 1e-7, 1e-5, 0.0, 1000.0);
+	run_test2("shape-transient-friction-sdf-opt.json", 1e-7, 1e-5, 0.0, 1.0);
 }
 
 TEST_CASE("3d-shape-mesh-target", "[.][test_adjoint]")
