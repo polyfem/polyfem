@@ -297,7 +297,7 @@ TEST_CASE("topology-compliance", "[test_adjoint]")
 	// on the number of Element basis.
 
 	json args;
-	load_json(append_root_path("topology-compliance-opt"), args);
+	load_json(append_root_path("topology-compliance-opt.json"), args);
 	args = AdjointOptUtils::apply_opt_json_spec(args, false);
 
 	auto states =
@@ -323,16 +323,18 @@ TEST_CASE("topology-compliance", "[test_adjoint]")
 		 std::make_shared<InsertConstantMap>(states[0]->bases.size(), states[0]->args["materials"]["nu"]),
 		 std::make_shared<ENu2LambdaMu>(states[0]->mesh->is_volume())}};
 
-	auto var2sim =
-		from_json::build_variable_to_simulation_group(args["variable_to_simulation"], states, diff_caches, var_sizes);
-	auto form = from_json::build_form(args["functionals"], var2sim, states, diff_caches);
-	AdjointNLProblem problem{form, var2sim, states, diff_caches, args};
+	auto var2sim = std::make_shared<ElasticVariableToSimulation>(states, diff_caches, std::move(comp_para));
+	VariableToSimulationGroup var2sim_group;
+	var2sim_group.data.push_back(var2sim);
+
+	auto form = from_json::build_form(args["functionals"], var2sim_group, states, diff_caches);
+	AdjointNLProblem problem{form, var2sim_group, states, diff_caches, args};
 
 	std::srand(Catch::rngSeed());
 	Eigen::MatrixXd theta =
 		Eigen::MatrixXd::Random(states[0]->bases.size(), 1);
 
-	Eigen::VectorXd x = var2sim.data[0]->inverse_eval();
+	Eigen::VectorXd x = var2sim_group.data[0]->inverse_eval();
 
 	verify_adjoint(problem, x, theta, 1e-2, 1e-4);
 }
@@ -350,37 +352,37 @@ TEST_CASE("neohookean-stress-3d", tagsdiff)
 
 TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 {
-	run_test2("shape-neumann-nodes.json", 1e-7, 1e-3, 0.0, 1.0);
+	run_test1("shape-neumann-nodes-opt.json", 1e-7, 1e-3, 0.0, 1.0);
 }
 
 TEST_CASE("shape-pressure-nodes-2d", "[test_adjoint]")
 {
-	run_test2("shape-pressure-nodes-2d.json", 1e-7, 1e-2, 0.0, 1.0);
+	run_test2("shape-pressure-nodes-2d-opt.json", 1e-7, 1e-2, 0.0, 1.0);
 }
 
 TEST_CASE("static-control-pressure-nodes-3d", "[.][test_adjoint]")
 {
-	run_test2("static-control-pressure-nodes-3d.json", 1e-7, 1e-2, 0.0, 1.0);
+	run_test2("static-control-pressure-nodes-3d-opt.json", 1e-3, 1e-3, 0.0, 1.0);
 }
 
 TEST_CASE("control-pressure-walker-2d", "[test_adjoint]")
 {
-	run_test2("walker-opt.json", 1e-4, 1e-3, 0.0, 1.0);
+	run_test1("walker-opt.json", 1e-4, 1e-3, 0.0, 1.0);
 }
 
 TEST_CASE("shape-walker-2d", "[test_adjoint]")
 {
-	run_test2("walker-shape-opt.json", 1e-7, 1e-3, 0.0, 1.0);
+	run_test1("walker-shape-opt.json", 1e-7, 1e-3, 0.0, 1.0);
 }
 
 TEST_CASE("shape-contact-force-norm", "[test_adjoint]")
 {
-	run_test2("shape-contact-force-norm-opt.json", 1e-7, 1e-3, 0.0, 1.0);
+	run_test1("shape-contact-force-norm-opt.json", 1e-7, 1e-3, 0.0, 1.0);
 }
 
 TEST_CASE("shape-contact-force-norm-adhesion", "[test_adjoint]")
 {
-	run_test2("shape-contact-force-norm-adhesion-opt.json", 1e-7, 1e-2, 0.0, 1.0);
+	run_test2("shape-contact-force-norm-opt-adhesion.json", 1e-7, 1e-2, 0.0, 1.0);
 }
 
 TEST_CASE("shape-contact-force-norm-3d", "[test_adjoint]")
@@ -419,7 +421,8 @@ TEST_CASE("node-trajectory", "[test_adjoint]")
 
 	std::srand(Catch::rngSeed());
 	Eigen::MatrixXd targets =
-		10.0f * Eigen::MatrixXd::Random(states[0]->n_bases, states[0]->mesh->dimension());
+		Eigen::MatrixXd::Random(states[0]->n_bases, states[0]->mesh->dimension());
+	targets = (targets.array() + 1.0f) * 0.5f * 10.0f;
 
 	// All actice.
 	std::vector<int> actives(targets.rows());
@@ -439,9 +442,7 @@ TEST_CASE("node-trajectory", "[test_adjoint]")
 
 TEST_CASE("damping-transient", "[test_adjoint]")
 {
-	json opt_args;
-	load_json(append_root_path("damping-transient-opt.json"), opt_args);
-	TestContext ctx{opt_args};
+	TestContext ctx{"damping-transient-opt.json"};
 
 	Eigen::VectorXd velocity = Eigen::VectorXd::Ones(2);
 
@@ -450,30 +451,30 @@ TEST_CASE("damping-transient", "[test_adjoint]")
 	x[0] = ctx.states[0]->args["materials"]["psi"],
 	x[1] = ctx.states[0]->args["materials"]["phi"],
 
-	verify_adjoint(*ctx.problem, x, velocity, opt_args["solver"]["nonlinear"]["debug_fd_eps"], 1e-4);
+	verify_adjoint(*ctx.problem, x, velocity, ctx.args["solver"]["nonlinear"]["debug_fd_eps"], 1e-4);
 }
 
 TEST_CASE("material-transient", "[test_adjoint]")
 {
-	json opt_args;
-	load_json(append_root_path("material-transient-opt.json"), opt_args);
-	TestContext ctx{opt_args};
+	TestContext ctx{"material-transient-opt.json"};
 
 	Eigen::VectorXd velocity =
 		1e3f * Eigen::VectorXd::Ones(ctx.states[0]->bases.size() * 2);
 	Eigen::VectorXd x = ctx.var2sim.data[0]->inverse_eval();
 
-	verify_adjoint(*ctx.problem, x, velocity, opt_args["solver"]["nonlinear"]["debug_fd_eps"], 1e-4);
+	verify_adjoint(*ctx.problem, x, velocity, ctx.args["solver"]["nonlinear"]["debug_fd_eps"], 1e-4);
 }
 
+// TODO: need rand norm
 TEST_CASE("shape-transient-friction", "[test_adjoint]")
 {
-	run_test1("shape-transient-friction-opt.json", 1e-6, 1e-5, 0.0, 1000.0);
+	run_test2("shape-transient-friction-opt.json", 1e-6, 1e-5, 0.0, 1000.0);
 }
 
+// TODO: need rand norm
 TEST_CASE("shape-transient-friction-sdf", "[test_adjoint]")
 {
-	run_test1("shape-transient-friction-sdf-opt.json", 1e-7, 1e-5, 0.0, 1000.0);
+	run_test2("shape-transient-friction-sdf-opt.json", 1e-7, 1e-5, 0.0, 1000.0);
 }
 
 TEST_CASE("3d-shape-mesh-target", "[.][test_adjoint]")
@@ -545,6 +546,7 @@ TEST_CASE("initial-contact-smooth", "[test_adjoint]")
 		state->args["contact"]["use_gcp_formulation"] = true;
 		state->args["contact"]["use_convergent_formulation"] = false;
 		state->args["contact"]["alpha_t"] = 0.95;
+		state->args["contact"]["friction_coefficient"] = 0;
 	}
 
 	std::srand(Catch::rngSeed());
@@ -580,17 +582,17 @@ TEST_CASE("shape-transient-smooth", "[test_adjoint]")
 
 TEST_CASE("shape-pressure-nodes-3d", "[.][test_adjoint]")
 {
-	run_test1("shape-pressure-nodes-3d.json", 1e-7, 1e-3, 0.0, 1.0);
+	run_test1("shape-pressure-nodes-3d-opt.json", 1e-7, 1e-3, 0.0, 1.0);
 }
 
 TEST_CASE("control-pressure-nodes-3d", "[.][test_adjoint]")
 {
-	run_test1("control-pressure-nodes-3d.json", 1e-8, 1e-3, 0.0, 1.0);
+	run_test1("control-pressure-nodes-3d-opt.json", 1e-8, 1e-3, 0.0, 1.0);
 }
 
 TEST_CASE("dirichlet-nodes-3d", "[.][test_adjoint]")
 {
-	TestContext ctx{"dirichlet-nodes-3d.json"};
+	TestContext ctx{"dirichlet-nodes-3d-opt.json"};
 
 	Eigen::VectorXd x(12);
 	// clang-format off
