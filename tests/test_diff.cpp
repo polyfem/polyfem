@@ -443,16 +443,7 @@ TEST_CASE("node-trajectory", "[test_adjoint]")
 
 TEST_CASE("damping-transient", "[test_adjoint]")
 {
-	TestContext ctx{"damping-transient-opt.json"};
-
-	Eigen::VectorXd velocity = Eigen::VectorXd::Ones(2);
-
-	// Hardcode initial sol since damping var2sim does not impl inverse_eval.
-	Eigen::VectorXd x{2};
-	x[0] = ctx.states[0]->args["materials"]["psi"],
-	x[1] = ctx.states[0]->args["materials"]["phi"],
-
-	verify_adjoint(*ctx.problem, x, velocity, ctx.args["solver"]["nonlinear"]["debug_fd_eps"], 1e-4);
+	run_test1("damping-transient-opt.json", 1e-3, 1e-4, 1.0, 1.0);
 }
 
 TEST_CASE("material-transient", "[test_adjoint]")
