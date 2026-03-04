@@ -1,15 +1,22 @@
 #pragma once
 
+#include <polyfem/Common.hpp>
+#include <polyfem/solver/forms/SmoothContactForm.hpp>
+#include <polyfem/utils/BoundarySampler.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/forms/ParametrizationForm.hpp>
 #include <polyfem/optimization/forms/VariableToSimulation.hpp>
 
-#include <polyfem/solver/forms/SmoothContactForm.hpp>
+#include <Eigen/Core>
 #include <ipc/potentials/barrier_potential.hpp>
 #include <ipc/smooth_contact/smooth_collisions.hpp>
 #include <ipc/smooth_contact/smooth_contact_potential.hpp>
-#include <polyfem/utils/BoundarySampler.hpp>
+
 #include <memory>
-#include <utility>
+#include <map>
+#include <set>
+#include <string>
+#include <vector>
 
 namespace polyfem::solver
 {

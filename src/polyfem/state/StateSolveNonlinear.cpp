@@ -2,6 +2,7 @@
 
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/Common.hpp>
 
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
@@ -18,12 +19,23 @@
 #include <polyfem/io/MshWriter.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/io/OutData.hpp>
+#include <polyfem/optimization/CacheLevel.hpp>
+#include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
 
+#include <Eigen/Core>
+
 #include <ipc/ipc.hpp>
+
+#include <spdlog/fmt/fmt.h>
+
+#include <cassert>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace polyfem
 {

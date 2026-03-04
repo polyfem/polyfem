@@ -1,22 +1,33 @@
 #include <polyfem/State.hpp>
-#include <polyfem/solver/NLHomoProblem.hpp>
+#include <polyfem/Common.hpp>
 #include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/optimization/CacheLevel.hpp>
+#include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/Timer.hpp>
-#include <polysolve/linear/FEMSolver.hpp>
-#include <polysolve/nonlinear/Solver.hpp>
-
-#include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/utils/Types.hpp>
+#include <polyfem/solver/NLHomoProblem.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/forms/lagrangian/MacroStrainLagrangianForm.hpp>
 
-#include <unsupported/Eigen/SparseExtra>
-
+#include <polyfem/io/MshWriter.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/io/Evaluator.hpp>
 
+#include <Eigen/Core>
+#include <unsupported/Eigen/SparseExtra>
+#include <polysolve/linear/FEMSolver.hpp>
+#include <polysolve/nonlinear/Solver.hpp>
 #include <ipc/ipc.hpp>
+#include <spdlog/fmt/fmt.h>
+
+#include <algorithm>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
 namespace polyfem
 {

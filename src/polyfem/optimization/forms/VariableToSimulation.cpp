@@ -1,13 +1,25 @@
 #include <polyfem/optimization/forms/VariableToSimulation.hpp>
+
 #include <polyfem/State.hpp>
+#include <polyfem/Common.hpp>
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
 #include <polyfem/optimization/Optimizations.hpp>
 #include <polyfem/optimization/StateDiff.hpp>
 #include <polyfem/optimization/parametrization/NodeCompositeParametrizations.hpp>
-
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/Types.hpp>
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
+
+#include <Eigen/Core>
+#include <spdlog/fmt/fmt.h>
+
+#include <cassert>
+#include <functional>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace polyfem::solver
 {

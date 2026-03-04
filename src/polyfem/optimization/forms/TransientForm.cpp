@@ -1,6 +1,13 @@
 #include <polyfem/optimization/forms/TransientForm.hpp>
+
 #include <polyfem/State.hpp>
 #include <polyfem/io/MatrixIO.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
+
+#include <Eigen/Core>
+
+#include <cassert>
+#include <vector>
 
 namespace polyfem::solver
 {

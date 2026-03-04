@@ -1,5 +1,11 @@
 #include <polyfem/optimization/forms/CompositeForm.hpp>
+
 #include <polyfem/State.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
+
+#include <Eigen/Core>
+
+#include <algorithm>
 
 namespace polyfem::solver
 {

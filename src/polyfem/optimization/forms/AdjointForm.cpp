@@ -1,9 +1,20 @@
 #include <polyfem/optimization/forms/AdjointForm.hpp>
+
+#include <polyfem/State.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/Types.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/NLHomoProblem.hpp>
-#include <polyfem/State.hpp>
 #include <polyfem/assembler/Assembler.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
+
+#include <Eigen/Core>
+
+#include <algorithm>
+#include <cassert>
+#include <memory>
+#include <string>
 
 namespace polyfem::solver
 {

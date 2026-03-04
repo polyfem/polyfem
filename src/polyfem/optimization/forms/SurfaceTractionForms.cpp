@@ -1,12 +1,26 @@
 #include <polyfem/optimization/forms/SurfaceTractionForms.hpp>
 
+#include <polyfem/State.hpp>
+#include <polyfem/Common.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
-#include <polyfem/solver/forms/ContactForm.hpp>
-#include <polyfem/solver/forms/FrictionForm.hpp>
-
 #include <polyfem/utils/IntegrableFunctional.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
-#include <polyfem/State.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/Types.hpp>
+#include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/FrictionForm.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
+
+#include <Eigen/Core>
+
+#include <cassert>
+#include <cstddef>
+#include <functional>
+#include <map>
+#include <memory>
+#include <set>
+#include <utility>
+#include <vector>
 
 // #include <finitediff.hpp>
 

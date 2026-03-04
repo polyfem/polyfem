@@ -1,4 +1,6 @@
 #include <polyfem/State.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/Types.hpp>
 
 #include <polyfem/assembler/Laplacian.hpp>
 #include <polyfem/assembler/Mass.hpp>
@@ -11,6 +13,12 @@
 #include <polyfem/time_integrator/BDF.hpp>
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
+
+#include <Eigen/Core>
+
+#include <cassert>
+#include <memory>
+#include <vector>
 
 namespace polyfem
 {

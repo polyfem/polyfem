@@ -2,6 +2,12 @@
 
 #include <polyfem/optimization/forms/CompositeForm.hpp>
 
+#include <Eigen/Core>
+
+#include <cassert>
+#include <memory>
+#include <vector>
+
 namespace polyfem::solver
 {
 	class HomoCompositeForm : public CompositeForm

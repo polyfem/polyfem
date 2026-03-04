@@ -1,8 +1,12 @@
 #pragma once
 
 #include <polyfem/optimization/forms/AdjointForm.hpp>
+
+#include <Eigen/Core>
+
 #include <memory>
-#include <utility>
+#include <set>
+#include <vector>
 
 namespace polyfem
 {

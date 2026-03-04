@@ -1,9 +1,16 @@
 #pragma once
 
+#include <polyfem/Common.hpp>
+#include <polyfem/utils/Types.hpp>
 #include <polyfem/solver/forms/Form.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/forms/VariableToSimulation.hpp>
+
 #include <memory>
 #include <utility>
+#include <set>
+#include <string>
+#include <vector>
 
 namespace polyfem::solver
 {

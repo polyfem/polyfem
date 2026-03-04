@@ -1,14 +1,33 @@
 #include <polyfem/optimization/forms/TargetForms.hpp>
+
+#include <polyfem/State.hpp>
+#include <polyfem/Common.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/io/MatrixIO.hpp>
-
-#include <polyfem/State.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
 #include <polyfem/assembler/Mass.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
 
 #include <polyfem/utils/IntegrableFunctional.hpp>
+
+#include <Eigen/Core>
+#include <spdlog/fmt/fmt.h>
+
+#include <algorithm>
+#include <cassert>
+#include <cmath>
+#include <cstddef>
+#include <map>
+#include <memory>
+#include <set>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
 
 using namespace polyfem::utils;
 

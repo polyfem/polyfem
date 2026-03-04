@@ -1,9 +1,16 @@
 #pragma once
 
+#include <polyfem/State.hpp>
+#include <polyfem/Common.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/forms/AdjointForm.hpp>
 
-#include <polyfem/utils/Logger.hpp>
-#include <polyfem/State.hpp>
+#include <Eigen/Core>
+
+#include <set>
+#include <string>
+#include <vector>
 #include <memory>
 #include <utility>
 

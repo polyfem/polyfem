@@ -1,9 +1,19 @@
 #pragma once
 
+#include <polyfem/Common.hpp>
 #include <polyfem/optimization/parametrization/Parametrization.hpp>
 #include <polyfem/optimization/AdjointTools.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/parametrization/PeriodicMeshToMesh.hpp>
+
+#include <Eigen/Core>
+
+#include <cassert>
+#include <functional>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace polyfem::solver
 {

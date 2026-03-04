@@ -1,8 +1,14 @@
 #pragma once
 
-#include <polyfem/optimization/forms/AdjointForm.hpp>
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/optimization/forms/AdjointForm.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
+
+#include <Eigen/Core>
+
+#include <memory>
+#include <vector>
 
 namespace polyfem::solver
 {

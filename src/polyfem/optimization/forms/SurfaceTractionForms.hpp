@@ -1,9 +1,16 @@
 #pragma once
 
+#include <polyfem/utils/Types.hpp>
+#include <polyfem/solver/forms/BarrierContactForm.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/forms/SpatialIntegralForms.hpp>
 
-#include <polyfem/solver/forms/BarrierContactForm.hpp>
+#include <Eigen/Core>
+
 #include <memory>
+#include <map>
+#include <set>
+#include <vector>
 #include <utility>
 
 namespace polyfem::solver

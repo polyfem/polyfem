@@ -1,6 +1,16 @@
 #include <polyfem/optimization/forms/SmoothingForms.hpp>
+
 #include <polyfem/State.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/Types.hpp>
+
+#include <Eigen/Core>
+
+#include <cassert>
+#include <memory>
+#include <set>
+#include <utility>
+#include <vector>
 
 namespace polyfem::solver
 {

@@ -1,5 +1,10 @@
 #include <polyfem/optimization/forms/WeightedVolumeForm.hpp>
+
 #include <polyfem/State.hpp>
+
+#include <Eigen/Core>
+
+#include <cassert>
 
 namespace polyfem::solver
 {

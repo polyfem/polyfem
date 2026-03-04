@@ -2,6 +2,8 @@
 
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/optimization/CacheLevel.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/time_integrator/BDF.hpp>
@@ -9,12 +11,21 @@
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
-#include <polysolve/linear/FEMSolver.hpp>
 
+#include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/Timer.hpp>
 
-#include <unsupported/Eigen/SparseExtra>
 #include <polyfem/io/Evaluator.hpp>
+
+#include <Eigen/Core>
+#include <unsupported/Eigen/SparseExtra>
+#include <spdlog/fmt/fmt.h>
+#include <polysolve/linear/FEMSolver.hpp>
+
+#include <cassert>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace polyfem
 {
