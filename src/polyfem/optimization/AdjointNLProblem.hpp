@@ -37,8 +37,6 @@ namespace polyfem::solver
 						 const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
 						 const json &args);
 
-		virtual ~AdjointNLProblem() = default;
-
 		double value(const Eigen::VectorXd &x) override;
 
 		void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
@@ -59,20 +57,20 @@ namespace polyfem::solver
 
 	private:
 		std::shared_ptr<AdjointForm> form_;
-		const VariableToSimulationGroup variables_to_simulation_;
+		VariableToSimulationGroup variables_to_simulation_;
 		std::vector<std::shared_ptr<State>> all_states_;
 		std::vector<std::shared_ptr<DiffCache>> all_diff_caches_;
 		std::vector<bool> active_state_mask;
 		Eigen::VectorXd cur_grad;
 		Eigen::VectorXd curr_x;
 
-		const int save_freq;
+		int save_freq;
 		std::ofstream solution_ostream;
 
-		const bool enable_slim;
-		const bool smooth_line_search;
+		bool enable_slim;
+		bool smooth_line_search;
 
-		const bool solve_in_parallel;
+		bool solve_in_parallel;
 		std::vector<int> solve_in_order;
 
 		int save_iter = 0;
