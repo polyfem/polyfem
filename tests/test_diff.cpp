@@ -173,7 +173,14 @@ namespace
 	/// @param[in] json Filename of the input json config.
 	/// @param[in] dt Time step.
 	/// @param[in] tol Convergence check tolerance.
-	void run_test1(const std::string &json_name, float dt, float tol)
+	/// @param[in] rand_min Minimum random value.
+	/// @param[in] rand_max Maximum random value.
+	void run_test1(
+		const std::string &json_name,
+		float dt,
+		float tol,
+		double rand_min = -1.0,
+		double rand_max = 1.0)
 	{
 		TestContext ctx{json_name};
 
@@ -181,9 +188,10 @@ namespace
 		Eigen::VectorXd x =
 			AdjointOptUtils::inverse_evaluation(ctx.args["parameters"], ctx.ndof, ctx.var_sizes, ctx.var2sim);
 
-		// Gen random velocity between 0-1 using reproducible Catch2 seed.
+		// Gen random velocity using reproducible Catch2 seed.
 		std::srand(Catch::rngSeed());
-		Eigen::MatrixXd velocity = Eigen::MatrixXd::Random(x.size(), 1);
+		Eigen::MatrixXd velocity =
+			((Eigen::MatrixXd::Random(x.size(), 1).array() + 1.0) * 0.5) * (rand_max - rand_min) + rand_min;
 
 		verify_adjoint(*ctx.problem, x, velocity, dt, tol);
 	}
@@ -199,7 +207,14 @@ namespace
 	/// @param[in] json Filename of the input json config.
 	/// @param[in] dt Time step.
 	/// @param[in] tol Convergence check tolerance.
-	void run_test2(const std::string &json_name, float dt, float tol)
+	/// @param[in] rand_min Minimum random value.
+	/// @param[in] rand_max Maximum random value.
+	void run_test2(
+		const std::string &json_name,
+		float dt,
+		float tol,
+		double rand_min = -1.0,
+		double rand_max = 1.0)
 	{
 		TestContext ctx{json_name};
 
@@ -208,9 +223,10 @@ namespace
 		ctx.states[0]->get_vertices(V);
 		Eigen::VectorXd x = utils::flatten(V);
 
-		// Gen random velocity between 0-1 using reproducible Catch2 seed.
+		// Gen random velocity using reproducible Catch2 seed.
 		std::srand(Catch::rngSeed());
-		Eigen::MatrixXd velocity = Eigen::MatrixXd::Random(x.size(), 1);
+		Eigen::MatrixXd velocity =
+			((Eigen::MatrixXd::Random(x.size(), 1).array() + 1.0) * 0.5) * (rand_max - rand_min) + rand_min;
 
 		verify_adjoint(*ctx.problem, x, velocity, dt, tol);
 	}
@@ -267,12 +283,12 @@ TEST_CASE("laplacian", "[test_adjoint]")
 
 TEST_CASE("linear_elasticity-surface-3d", "[test_adjoint]")
 {
-	run_test2("linear_elasticity-surface-3d-opt.json", 1e-7, 1e-5);
+	run_test2("linear_elasticity-surface-3d-opt.json", 1e-7, 1e-5, -1.0, 1.0);
 }
 
 TEST_CASE("linear_elasticity-surface", "[test_adjoint]")
 {
-	run_test2("linear_elasticity-surface-opt.json", 1e-6, 1e-5);
+	run_test2("linear_elasticity-surface-opt.json", 1e-6, 1e-5, -1.0, 1.0);
 }
 
 TEST_CASE("topology-compliance", "[test_adjoint]")
@@ -329,47 +345,47 @@ std::string tagsdiff = "[.][test_adjoint]";
 
 TEST_CASE("neohookean-stress-3d", tagsdiff)
 {
-	run_test2("neohookean-stress-3d-opt.json", 1e-7, 1e-5);
+	run_test2("neohookean-stress-3d-opt.json", 1e-7, 1e-5, -1.0, 1.0);
 }
 
 TEST_CASE("shape-neumann-nodes", "[test_adjoint]")
 {
-	run_test2("shape-neumann-nodes.json", 1e-7, 1e-3);
+	run_test2("shape-neumann-nodes.json", 1e-7, 1e-3, 0.0, 1.0);
 }
 
 TEST_CASE("shape-pressure-nodes-2d", "[test_adjoint]")
 {
-	run_test2("shape-pressure-nodes-2d.json", 1e-7, 1e-2);
+	run_test2("shape-pressure-nodes-2d.json", 1e-7, 1e-2, 0.0, 1.0);
 }
 
 TEST_CASE("static-control-pressure-nodes-3d", "[.][test_adjoint]")
 {
-	run_test2("static-control-pressure-nodes-3d.json", 1e-7, 1e-2);
+	run_test2("static-control-pressure-nodes-3d.json", 1e-7, 1e-2, 0.0, 1.0);
 }
 
 TEST_CASE("control-pressure-walker-2d", "[test_adjoint]")
 {
-	run_test2("walker-opt.json", 1e-4, 1e-3);
+	run_test2("walker-opt.json", 1e-4, 1e-3, 0.0, 1.0);
 }
 
 TEST_CASE("shape-walker-2d", "[test_adjoint]")
 {
-	run_test2("walker-shape-opt.json", 1e-7, 1e-3);
+	run_test2("walker-shape-opt.json", 1e-7, 1e-3, 0.0, 1.0);
 }
 
 TEST_CASE("shape-contact-force-norm", "[test_adjoint]")
 {
-	run_test2("shape-contact-force-norm-opt.json", 1e-7, 1e-3);
+	run_test2("shape-contact-force-norm-opt.json", 1e-7, 1e-3, 0.0, 1.0);
 }
 
 TEST_CASE("shape-contact-force-norm-adhesion", "[test_adjoint]")
 {
-	run_test2("shape-contact-force-norm-adhesion-opt.json", 1e-7, 1e-2);
+	run_test2("shape-contact-force-norm-adhesion-opt.json", 1e-7, 1e-2, 0.0, 1.0);
 }
 
 TEST_CASE("shape-contact-force-norm-3d", "[test_adjoint]")
 {
-	run_test2("shape-contact-force-norm-3d-opt.json", 1e-6, 1e-3);
+	run_test2("shape-contact-force-norm-3d-opt.json", 1e-6, 1e-3, 0.0, 1.0);
 }
 
 TEST_CASE("shape-contact", "[test_adjoint]")
@@ -452,22 +468,22 @@ TEST_CASE("material-transient", "[test_adjoint]")
 
 TEST_CASE("shape-transient-friction", "[test_adjoint]")
 {
-	run_test1("shape-transient-friction-opt.json", 1e-6, 1e-5);
+	run_test1("shape-transient-friction-opt.json", 1e-6, 1e-5, 0.0, 1000.0);
 }
 
 TEST_CASE("shape-transient-friction-sdf", "[test_adjoint]")
 {
-	run_test1("shape-transient-friction-sdf-opt.json", 1e-7, 1e-5);
+	run_test1("shape-transient-friction-sdf-opt.json", 1e-7, 1e-5, 0.0, 1000.0);
 }
 
 TEST_CASE("3d-shape-mesh-target", "[.][test_adjoint]")
 {
-	run_test1("3d-shape-mesh-target-opt.json", 1e-7, 1e-5);
+	run_test1("3d-shape-mesh-target-opt.json", 1e-7, 1e-5, 0.0, 1000.0);
 }
 
 TEST_CASE("initial-contact-min-dist", "[test_adjoint]")
 {
-	run_test2("initial-contact-min-dist-opt.json", 1e-5, 1e-5);
+	run_test2("initial-contact-min-dist-opt.json", 1e-5, 1e-5, -1.0, 1.0);
 }
 
 TEST_CASE("friction-contact", "[test_adjoint]")
@@ -564,12 +580,12 @@ TEST_CASE("shape-transient-smooth", "[test_adjoint]")
 
 TEST_CASE("shape-pressure-nodes-3d", "[.][test_adjoint]")
 {
-	run_test1("shape-pressure-nodes-3d.json", 1e-7, 1e-3);
+	run_test1("shape-pressure-nodes-3d.json", 1e-7, 1e-3, 0.0, 1.0);
 }
 
 TEST_CASE("control-pressure-nodes-3d", "[.][test_adjoint]")
 {
-	run_test1("control-pressure-nodes-3d.json", 1e-8, 1e-3);
+	run_test1("control-pressure-nodes-3d.json", 1e-8, 1e-3, 0.0, 1.0);
 }
 
 TEST_CASE("dirichlet-nodes-3d", "[.][test_adjoint]")
