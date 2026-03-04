@@ -292,51 +292,7 @@ TEST_CASE("linear_elasticity-surface", "[test_adjoint]")
 
 TEST_CASE("topology-compliance", "[test_adjoint]")
 {
-	// Prepare test manually here because Parametrization depends
-	// on the number of Element basis.
-
-	json args;
-	load_json(append_root_path("topology-compliance-opt.json"), args);
-	args = AdjointOptUtils::apply_opt_json_spec(args, false);
-
-	std::string root = POLYFEM_DIFF_DIR + std::string("/input/");
-	auto states =
-		from_json::build_states(root, args["states"], solver::CacheLevel::Derivatives, 16);
-
-	std::vector<std::shared_ptr<DiffCache>> diff_caches{states.size()};
-	for (auto &cache : diff_caches)
-	{
-		cache = std::make_shared<DiffCache>();
-	}
-
-	int ndof = 0;
-	std::vector<int> var_sizes;
-	for (const auto &arg : args["parameters"])
-	{
-		int size = AdjointOptUtils::compute_variable_size(arg, states);
-		ndof += size;
-		var_sizes.push_back(size);
-	}
-
-	CompositeParametrization comp_para{
-		{std::make_shared<PowerMap>(5),
-		 std::make_shared<InsertConstantMap>(states[0]->bases.size(), states[0]->args["materials"]["nu"]),
-		 std::make_shared<ENu2LambdaMu>(states[0]->mesh->is_volume())}};
-
-	auto var2sim = std::make_shared<ElasticVariableToSimulation>(states, diff_caches, std::move(comp_para));
-	VariableToSimulationGroup var2sim_group;
-	var2sim_group.data.push_back(var2sim);
-
-	auto form = from_json::build_form(args["functionals"], var2sim_group, states, diff_caches);
-	AdjointNLProblem problem{form, var2sim_group, states, diff_caches, args};
-
-	std::srand(Catch::rngSeed());
-	Eigen::MatrixXd theta =
-		Eigen::MatrixXd::Random(states[0]->bases.size(), 1);
-
-	Eigen::VectorXd x = var2sim_group.data[0]->inverse_eval();
-
-	verify_adjoint(problem, x, theta, 1e-2, 1e-4);
+	run_test1("topology-compliance-opt.json", 1e-2, 1e-4);
 }
 
 #if defined(NDEBUG) && !defined(WIN32)
