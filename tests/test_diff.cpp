@@ -1,4 +1,3 @@
-
 #include <polyfem/State.hpp>
 
 #include <polyfem/assembler/AssemblerUtils.hpp>
@@ -198,7 +197,7 @@ namespace
 
 	/// @brief Run optimization test variant 2.
 	///
-	/// Assumes only a single state exists.
+	/// Assume only a single state exists.
 	/// 1. Build test context.
 	/// 2. Use vertex position as initial guess.
 	/// 3. Gen random velocity.
@@ -233,7 +232,7 @@ namespace
 
 	/// @brief Run optimization test variant 3.
 	///
-	/// Assumes only a single state exists.
+	/// Assume only a single state exists.
 	/// 1. Build test context.
 	/// 2. Use vertex position as initial guess.
 	/// 3. Set gradient as velocity.
@@ -404,7 +403,7 @@ TEST_CASE("shape-contact-adhesion", "[test_adjoint]")
 TEST_CASE("node-trajectory", "[test_adjoint]")
 {
 	// Prepare test manually because we need random target form.
-	// The opt json is mostly a dummy json containing nothing.
+	// The opt json is mostly a dummy json.
 
 	json opt_args;
 	load_json(append_root_path("node-trajectory-opt.json"), opt_args);
