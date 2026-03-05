@@ -178,8 +178,8 @@ namespace
 		const std::string &json_name,
 		float dt,
 		float tol,
-		double rand_min = -1.0,
-		double rand_max = 1.0)
+		double rand_min,
+		double rand_max)
 	{
 		TestContext ctx{json_name};
 
@@ -212,8 +212,8 @@ namespace
 		const std::string &json_name,
 		float dt,
 		float tol,
-		double rand_min = -1.0,
-		double rand_max = 1.0)
+		double rand_min,
+		double rand_max)
 	{
 		TestContext ctx{json_name};
 
@@ -292,7 +292,7 @@ TEST_CASE("linear_elasticity-surface", "[test_adjoint]")
 
 TEST_CASE("topology-compliance", "[test_adjoint]")
 {
-	run_test1("topology-compliance-opt.json", 1e-2, 1e-4);
+	run_test1("topology-compliance-opt.json", 1e-2, 1e-4, 0.0, 1.0);
 }
 
 #if defined(NDEBUG) && !defined(WIN32)
