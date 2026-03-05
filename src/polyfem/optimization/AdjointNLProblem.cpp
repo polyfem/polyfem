@@ -460,7 +460,7 @@ namespace polyfem::solver
 						state->assemble_rhs();
 						state->assemble_mass_mat();
 						Eigen::MatrixXd sol, pressure; // solution is also cached in state
-						auto cache_post_step = [&](const int step, State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd *disp_grad, const Eigen::MatrixXd *pressure) {
+						auto cache_post_step = [&diff_cache](const int step, State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd *disp_grad, const Eigen::MatrixXd *pressure) {
 							diff_cache->cache_transient(step, state, sol, disp_grad, pressure);
 						};
 						state->solve_problem(sol, pressure, cache_post_step);
