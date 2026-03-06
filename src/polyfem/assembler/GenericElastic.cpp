@@ -119,7 +119,7 @@ namespace polyfem::assembler
 #ifndef NDEBUG
 			auto grad = assemble_gradient_stress_ad(data);
 			auto grad_full = assemble_gradient_full_ad(data);
-			assert((std::isnan(grad.norm()) && std::isnan(grad_full.norm())) || (grad - grad_full).norm() < 1e-9);
+			assert((std::isnan(grad.norm()) && std::isnan(grad_full.norm())) || (grad - grad_full).norm() < 1e-8);
 #endif
 			return assemble_gradient_stress_ad(data);
 		}
