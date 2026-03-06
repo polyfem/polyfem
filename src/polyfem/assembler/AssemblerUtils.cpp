@@ -19,6 +19,7 @@
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
 #include <polyfem/assembler/IsochoricNeoHookean.hpp>
 #include <polyfem/assembler/HGOFiber.hpp>
+#include <polyfem/assembler/ActiveFiber.hpp>
 #include <polyfem/assembler/OgdenElasticity.hpp>
 #include <polyfem/assembler/VolumePenalty.hpp>
 #include <polyfem/assembler/SaintVenantElasticity.hpp>
@@ -99,6 +100,9 @@ namespace polyfem
 
 			else if (formulation == "HGOFiber")
 				return std::make_shared<HGOFiber>();
+
+			else if (formulation == "ActiveFiber")
+				return std::make_shared<ActiveFiber>();
 
 			else if (formulation == "Stokes")
 				return std::make_shared<StokesVelocity>();
