@@ -27,6 +27,9 @@ namespace polyfem::assembler
 			const double k2 = k2_(p, t, el_id);
 			const T i4Bar = I4Bar(p, t, el_id, def_grad);
 
+			if (i4Bar <= T(1.0))
+				return T(0.0);
+
 			const T temp = i4Bar - T(1.0);
 
 			return (k1 / (2.0 * k2)) * (exp(k2 * temp * temp) - 1.0);
