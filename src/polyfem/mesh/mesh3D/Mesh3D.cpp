@@ -266,6 +266,26 @@ namespace polyfem
 
 				return std::make_pair((1 - b3) * blin1 + b3 * blin2, -1);
 			}
+			else if (is_pyramid(index.element))
+			{
+				// n_new_nodes = p-1, k = z-level (1..n-1), i,j = grid indices
+				const double n  = n_new_nodes;
+				const double zv = 1.0 - k / n;                  // z coordinate
+
+				double xv, yv;
+				if (k == 1)                                       // single node at centroid of slice
+				{
+					xv = 0.5 * (1.0 - zv);
+					yv = 0.5 * (1.0 - zv);
+				}
+				else                                              // k×k grid
+				{
+					const double hk = 1.0 / (k + 1);
+					xv = i * hk * (1.0 - zv);
+					yv = j * hk * (1.0 - zv);
+				}
+				return std::make_pair(RowVectorNd{{xv, yv, zv}}, -1);
+			}
 
 			assert(false);
 			return std::make_pair(RowVectorNd(3, 1), -1);

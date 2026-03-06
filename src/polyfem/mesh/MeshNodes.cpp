@@ -372,7 +372,7 @@ namespace polyfem::mesh
 
 		const Mesh3D *mesh3d = dynamic_cast<const Mesh3D *>(&mesh_);
 		int start;
-		const bool is_tri = mesh3d->is_simplex(index.element) || (mesh3d->is_prism(index.element) && mesh3d->n_face_vertices(index.face) == 3);
+		const bool is_tri = mesh3d->is_simplex(index.element) || (mesh3d->is_prism(index.element) && mesh3d->n_face_vertices(index.face) == 3) || (mesh3d->is_pyramid(index.element) && mesh3d->n_face_vertices(index.face) == 3);
 
 		if (connect_nodes_)
 			start = face_offset_ + index.face * max_nodes_per_face_;
@@ -530,6 +530,33 @@ namespace polyfem::mesh
 			// TODO: implement me internal prism nodes
 			log_and_throw_error("Prism internal nodes not implemented yet");
 			assert(false);
+		}
+		else if (mesh3d->is_pyramid(index.element))
+		{
+			// n_new_nodes = p-1, mirrors create_point_set interior loop in pyramid_bases.py
+			int loc_index = 0;
+			for (int k = 1; k < n_new_nodes; ++k)
+			{
+				const int grid = (k == 1) ? 1 : k;   // 1 node for k=1, k×k for k>1
+				for (int i = 1; i <= grid; ++i)
+				{
+					for (int j = 1; j <= grid; ++j)
+					{
+						const int primitive_id = start + loc_index;
+						const auto [node, node_id] = mesh3d->cell_node(index, n_new_nodes, i, j, k);
+
+						primitive_to_node_[primitive_id] = n_nodes();
+						in_ordered_vertices_.push_back(node_id);
+						node_to_primitive_.push_back(primitive_id);
+						node_to_primitive_gid_.push_back(index.element);
+						nodes_.row(primitive_id) = node;
+
+						res.push_back(primitive_to_node_[primitive_id]);
+						assert(in_ordered_vertices_.size() == n_nodes());
+						++loc_index;
+					}
+				}
+			}
 		}
 
 #ifndef NDEBUG

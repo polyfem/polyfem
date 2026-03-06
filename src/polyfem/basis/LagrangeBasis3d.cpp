@@ -695,18 +695,27 @@ namespace
 	void pyramid_local_to_global(const int p, const Mesh3D &mesh, int c, const Eigen::VectorXi &discr_order, std::vector<int> &res, MeshNodes &nodes)
 	{
 		assert(mesh.is_pyramid(c));
-		assert(p == 1 || p == 2);
 
-		const int n_edge_nodes = (p == 1) ? 0 : 8;
-		const int n_face_nodes = (p == 1) ? 0 : 1;
-
-		if (p == 0) // for fluid, constant for cell
+		if (p == 0)
 		{
 			res.push_back(nodes.node_id_from_cell(c));
 			return;
 		}
 
-		res.reserve(5 + n_edge_nodes + n_face_nodes);
+		// 8 edges × (p-1) interior nodes each
+		const int n_edge_nodes    = 8 * (p - 1);
+		// 4 tri faces × (p-1)(p-2)/2 interior nodes each
+		const int n_tri_face_nodes = 4 * (p - 1) * (p - 2) / 2;
+		// 1 quad base face × (p-1)^2 interior nodes
+		const int n_quad_face_nodes = (p - 1) * (p - 1);
+		const int n_face_nodes    = n_tri_face_nodes + n_quad_face_nodes;
+		// total pyramid space dim = (p+1)(p+2)(2p+3)/6
+		const int total           = (p + 1) * (p + 2) * (2 * p + 3) / 6;
+		const int n_cell_nodes    = (p - 1) * (p - 2) * (2 * p - 3) / 6;
+
+		assert(total == 5 + n_edge_nodes + n_face_nodes + n_cell_nodes);
+
+		res.reserve(5 + n_edge_nodes + n_face_nodes + n_cell_nodes);
 
 		// Vertex nodes
 		auto v = pyramid_vertices_local_to_global(mesh, c);
@@ -741,13 +750,26 @@ namespace
 			f[lf] = index;
 		}
 
-		Eigen::Matrix<int, 1, 4> fvq; // base face
-		fvq.row(0) << v[0], v[1], v[2], v[3];
+		// Eigen::Matrix<int, 1, 4> fvq; // base face
+		// fvq.row(0) << v[0], v[1], v[2], v[3];
 
-		for (int lf = 0; lf < fvq.rows(); ++lf)
+		// for (int lf = 0; lf < fvq.rows(); ++lf)
+		// {
+		// 	const auto index = find_quad_face(mesh, c, fvq(lf, 0), fvq(lf, 1), fvq(lf, 2), fvq(lf, 3));
+		// 	f[lf + 4] = index;
+		// }
+
+		// base quad face — pin index.vertex to v[0] so face_node starts at reference corner (0,0,0)
 		{
-			const auto index = find_quad_face(mesh, c, fvq(lf, 0), fvq(lf, 1), fvq(lf, 2), fvq(lf, 3));
-			f[lf + 4] = index;
+			auto base_idx = find_quad_face(mesh, c, v[0], v[1], v[2], v[3]);
+			for (int rv = 0; rv < 4; ++rv)
+			{
+				if (base_idx.vertex == v[0])
+					break;
+				base_idx = mesh.next_around_face(base_idx);
+			}
+			assert(base_idx.vertex == v[0]);
+			f[4] = base_idx;
 		}
 
 		// vertices
@@ -771,19 +793,19 @@ namespace
 		{
 			const auto index = f[lf];
 
-			int n_loc_face = 0;
-			if (lf == 4)
-			{
-				// quad interior nodes: (p-1)^2  (Qp face)
-				n_loc_face = (p == 1) ? 0 : 1;
-			}
-
+			int n_loc_face = (lf < 4) ? (p - 2) : (p - 1);
 			auto node_ids = nodes.node_ids_from_face(index, n_loc_face);
 			res.insert(res.end(), node_ids.begin(), node_ids.end());
 		}
 		assert(res.size() == size_t(5 + n_edge_nodes + n_face_nodes));
 
-		// no cell nodes
+		// cells
+		if (n_cell_nodes > 0)
+		{
+			auto node_ids = nodes.node_ids_from_cell(f[0], p - 1);
+			res.insert(res.end(), node_ids.begin(), node_ids.end());
+		}
+		assert(res.size() == size_t(5 + n_edge_nodes + n_face_nodes + n_cell_nodes));
 	}
 	// -----------------------------------------------------------------------------
 
@@ -2213,14 +2235,12 @@ Eigen::VectorXi LagrangeBasis3d::pyramid_face_local_nodes(const int p, const Mes
 {
 	const int c = index.element;
 	assert(mesh.is_pyramid(c));
-	assert(p == 1 || p == 2);
 
 	// local-to-global vertex map (5 vertices)
 	const auto l2g = pyramid_vertices_local_to_global(mesh, c);
-	// shorthand: v[0..3]=base, v[4]=apex
 	const auto &v = l2g;
 
-	// build the 8 pyramid edges in a fixed local order
+	// build the 8 pyramid edges in a fixed local order (matches pyramid_local_to_global ev)
 	Eigen::Matrix<int, 8, 2> ev;
 	ev.row(0) << v[0], v[1];
 	ev.row(1) << v[1], v[2];
@@ -2235,44 +2255,53 @@ Eigen::VectorXi LagrangeBasis3d::pyramid_face_local_nodes(const int p, const Mes
 	for (int le = 0; le < 8; ++le)
 		e[le] = mesh.get_index_from_element_edge(c, ev(le, 0), ev(le, 1));
 
-	const int n_edge_inner = p - 1; // p=1 ->0, p=2 ->1
-	const int global_n_edge_nodes = 8 * n_edge_inner;
-	const int n_face_inner = (p == 2) ? 1 : 0;
-	const int base_face_center = 5 + global_n_edge_nodes; // only used when p=2 and face is quad
+	const int nei      = p - 1;                      // interior nodes per edge
+	const int nfi_tri  = (p - 1) * (p - 2) / 2;     // interior nodes per tri face
+	const int nfi_quad = (p - 1) * (p - 1);          // interior nodes on quad face
 
-	auto append_edge_dofs = [&](Eigen::VectorXi &result, int &ii, const Navigation3D::Index &tmp_edge_on_face) {
-		// p==1: no edge interior nodes
-		if (p <= 1)
+	// offsets into the local DOF array (matches pyramid_local_to_global ordering):
+	//   [0..4]               : vertices
+	//   [5 .. 5+8*nei-1]     : edge interiors (le=0..7, nei each)
+	//   [edge_end .. +4*nfi_tri-1] : 4 tri face interiors (lf=0..3)
+	//   [tri_end  .. +nfi_quad-1]  : quad face interiors
+	const int edge_start      = 5;
+	const int tri_face_start  = edge_start + 8 * nei;
+	const int quad_face_start = tri_face_start + 4 * nfi_tri;
+
+	// Append nei interior nodes for the edge currently pointed to by edge_idx,
+	// respecting traversal direction vs. canonical edge direction.
+	auto append_edge_dofs = [&](Eigen::VectorXi &result, int &ii, const Navigation3D::Index &edge_idx) {
+		if (nei <= 0)
 			return;
-
-		// find which local edge this is (match by edge id)
 		int le = 0;
 		for (; le < 8; ++le)
 		{
-			if (e[le].edge == tmp_edge_on_face.edge)
+			if (e[le].edge == edge_idx.edge)
 				break;
 		}
 		assert(le < 8);
-
-		// p==2: exactly one interior node per edge
-		// local numbering: vertices 0..4, then edge nodes start at 5
-		result[ii++] = 5 + le; // since (p-1)==1
+		const bool forward = (edge_idx.vertex == ev(le, 0));
+		for (int q = 0; q < nei; ++q)
+		{
+			const int local_q  = forward ? q : (nei - 1 - q);
+			result[ii++] = edge_start + le * nei + local_q;
+		}
 	};
 
 	assert(mesh.n_face_vertices(index.face) == 3 || mesh.n_face_vertices(index.face) == 4);
 
-	// TRI face: (vi, vj, apex), no face-interior node for p<=2
+	// ---- TRI face ----
 	if (mesh.n_face_vertices(index.face) == 3)
 	{
-		Eigen::VectorXi result(3 + 3 * n_edge_inner);
+		Eigen::VectorXi result(3 + 3 * nei + nfi_tri);
 		int ii = 0;
 
-		// vertices (in the current face traversal order)
+		// vertices in face traversal order
 		result[ii++] = find_index(l2g.begin(), l2g.end(), index.vertex);
 		result[ii++] = find_index(l2g.begin(), l2g.end(), mesh.next_around_face(index).vertex);
 		result[ii++] = find_index(l2g.begin(), l2g.end(), mesh.next_around_face(mesh.next_around_face(index)).vertex);
 
-		// edges along the face boundary, in traversal order
+		// edge interiors in traversal order
 		Navigation3D::Index tmp = index;
 		for (int k = 0; k < 3; ++k)
 		{
@@ -2280,23 +2309,47 @@ Eigen::VectorXi LagrangeBasis3d::pyramid_face_local_nodes(const int p, const Mes
 			tmp = mesh.next_around_face(tmp);
 		}
 
+		// tri face interior nodes: find lf by matching the set of face vertices
+		if (nfi_tri > 0)
+		{
+			static const int tri_fv[4][3] = {{0, 1, 4}, {1, 2, 4}, {2, 3, 4}, {3, 0, 4}};
+			const int fv0 = index.vertex;
+			const int fv1 = mesh.next_around_face(index).vertex;
+			const int fv2 = mesh.next_around_face(mesh.next_around_face(index)).vertex;
+			int lf = -1;
+			for (int f = 0; f < 4; ++f)
+			{
+				const int gv0 = v[tri_fv[f][0]], gv1 = v[tri_fv[f][1]], gv2 = v[tri_fv[f][2]];
+				if ((fv0 == gv0 || fv0 == gv1 || fv0 == gv2) &&
+				    (fv1 == gv0 || fv1 == gv1 || fv1 == gv2) &&
+				    (fv2 == gv0 || fv2 == gv1 || fv2 == gv2))
+				{
+					lf = f;
+					break;
+				}
+			}
+			assert(lf >= 0);
+			for (int q = 0; q < nfi_tri; ++q)
+				result[ii++] = tri_face_start + lf * nfi_tri + q;
+		}
+
 		assert(ii == result.size());
 		return result;
 	}
 
-	// QUAD face: base (v0,v1,v2,v3), p=2 has one face-interior node (center)
-	else // if (mesh.n_face_vertices(index.face) == 4)
+	// ---- QUAD face ----
+	else
 	{
-		Eigen::VectorXi result(4 + 4 * n_edge_inner + n_face_inner);
+		Eigen::VectorXi result(4 + 4 * nei + nfi_quad);
 		int ii = 0;
 
-		// vertices (in face traversal order)
+		// vertices in face traversal order
 		result[ii++] = find_index(l2g.begin(), l2g.end(), index.vertex);
 		result[ii++] = find_index(l2g.begin(), l2g.end(), mesh.next_around_face(index).vertex);
 		result[ii++] = find_index(l2g.begin(), l2g.end(), mesh.next_around_face(mesh.next_around_face(index)).vertex);
 		result[ii++] = find_index(l2g.begin(), l2g.end(), mesh.next_around_face(mesh.next_around_face(mesh.next_around_face(index))).vertex);
 
-		// edges along the quad boundary
+		// edge interiors in traversal order
 		Navigation3D::Index tmp = index;
 		for (int k = 0; k < 4; ++k)
 		{
@@ -2304,9 +2357,9 @@ Eigen::VectorXi LagrangeBasis3d::pyramid_face_local_nodes(const int p, const Mes
 			tmp = mesh.next_around_face(tmp);
 		}
 
-		// base face interior (Q2 center) if p==2
-		if (n_face_inner == 1)
-			result[ii++] = base_face_center;
+		// quad face interior nodes (all belong to the single quad face)
+		for (int q = 0; q < nfi_quad; ++q)
+			result[ii++] = quad_face_start + q;
 
 		assert(ii == result.size());
 		return result;
