@@ -236,7 +236,7 @@ namespace polyfem
 			Eigen::MatrixXd b = adjoint_rhs;
 
 			Eigen::MatrixXd adjoint;
-			if (s.lin_solver_cached)
+			if (s.static_linear_solver_cache)
 			{
 				b(s.boundary_nodes, Eigen::all).setZero();
 
@@ -262,7 +262,7 @@ namespace polyfem
 				{
 					Eigen::VectorXd x, tmp;
 					tmp = b.col(i);
-					dirichlet_solve_prefactorized(*s.lin_solver_cached, A, tmp, boundary_nodes_tmp, x);
+					dirichlet_solve_prefactorized(*s.static_linear_solver_cache, A, tmp, boundary_nodes_tmp, x);
 
 					if (s.has_periodic_bc())
 						adjoint.col(i) = s.periodic_bc->periodic_to_full(full_size, x);
