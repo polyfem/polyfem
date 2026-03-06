@@ -13,10 +13,10 @@ namespace polyfem::solver
 	{
 	public:
 		BoundarySmoothingForm(
-			const VariableToSimulationGroup &variable_to_simulations, 
-			const State &state, 
-			const bool scale_invariant, 
-			const int power, 
+			const VariableToSimulationGroup &variable_to_simulations,
+			const State &state,
+			const bool scale_invariant,
+			const int power,
 			const std::vector<int> &surface_selections,
 			const std::vector<int> &active_dims);
 

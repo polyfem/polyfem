@@ -161,7 +161,7 @@ namespace polyfem::solver
 		Eigen::VectorXd vals(steps_.size());
 		Eigen::MatrixXd terms;
 		terms.setZero(state.ndof(), steps_.size());
-		
+
 		int j = 0;
 		for (int i : steps_)
 		{
@@ -186,7 +186,7 @@ namespace polyfem::solver
 		Eigen::VectorXd vals(steps_.size());
 		Eigen::MatrixXd terms;
 		terms.setZero(x.size(), steps_.size());
-		
+
 		int j = 0;
 		Eigen::VectorXd tmp;
 		for (int i : steps_)

@@ -29,8 +29,8 @@ namespace polyfem::solver
 			Eigen::MatrixXd A(dim + 1, dim);
 			if (dim == 2)
 			{
-				A << 0., 0., 
-					1., 0., 
+				A << 0., 0.,
+					1., 0.,
 					0., 1.;
 				switch (i)
 				{
@@ -52,9 +52,9 @@ namespace polyfem::solver
 			}
 			else
 			{
-				A << 0, 0, 0, 
-					1, 0, 0, 
-					0, 1, 0, 
+				A << 0, 0, 0,
+					1, 0, 0,
+					0, 1, 0,
 					0, 0, 1;
 				switch (i)
 				{
@@ -120,13 +120,13 @@ namespace polyfem::solver
 			for (int i = 0; i < tree.n_children(); i++)
 			{
 				Eigen::MatrixXd uv;
-				uv.setZero(dim+1, dim+1);
+				uv.setZero(dim + 1, dim + 1);
 				uv.rightCols(dim) = refined_nodes(dim, i);
 				if (dim == 2)
 					uv.col(0) = 1. - uv.col(2).array() - uv.col(1).array();
 				else
 					uv.col(0) = 1. - uv.col(3).array() - uv.col(1).array() - uv.col(2).array();
-				
+
 				Eigen::MatrixXd pts_ = uv * pts;
 
 				auto [tmp, L] = extract_subelement(pts_, tree.child(i));
@@ -143,7 +143,7 @@ namespace polyfem::solver
 			}
 			return {out, levels};
 		}
-	
+
 		quadrature::Quadrature refine_quadrature(const Tree &tree, const int dim, const int order)
 		{
 			Eigen::MatrixXd pts(dim + 1, dim);
@@ -182,7 +182,7 @@ namespace polyfem::solver
 				quad.points.middleRows(i * tmp.size(), tmp.size()) = tmp.points * quad_points.middleRows(i * (dim + 1), dim + 1);
 				quad.weights.segment(i * tmp.size(), tmp.size()) = tmp.weights / pow(2, dim * levels[i]);
 			}
-			assert (fabs(quad.weights.sum() - tmp.weights.sum()) < 1e-8);
+			assert(fabs(quad.weights.sum() - tmp.weights.sum()) < 1e-8);
 
 			return quad;
 		}
@@ -260,14 +260,14 @@ namespace polyfem::solver
 		quadrature_hierarchy_.resize(bases_.size());
 
 		quadrature_order_ = AssemblerUtils::quadrature_order(assembler_.name(), bases_[0].bases[0].order(), AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, is_volume_ ? 3 : 2);
-	
+
 		if (check_inversion_ != ElementInversionCheck::Discrete)
 		{
 			Eigen::VectorXd x0;
 			x0.setZero(n_bases_ * (is_volume_ ? 3 : 2));
 			if (!is_step_collision_free(x0, x0))
 				log_and_throw_error("Initial state has inverted elements!");
-				
+
 			int basis_order = 0;
 			int gbasis_order = 0;
 			for (int e = 0; e < bases_.size(); e++)
@@ -350,14 +350,14 @@ namespace polyfem::solver
 				std::tie(step, invalidID, invalidStep, subdivision_tree) = max_time_step(dim, bases_, geom_bases_, x0, x1);
 			}
 
-			logger().log(step == 0 ? spdlog::level::warn : (step == 1. ? spdlog::level::trace : spdlog::level::debug), 
-				"Jacobian max step size: {} at element {}, invalid step size: {}, tree depth {}, runtime {} sec", step, invalidID, invalidStep, subdivision_tree.depth(), transient_check_time);
+			logger().log(step == 0 ? spdlog::level::warn : (step == 1. ? spdlog::level::trace : spdlog::level::debug),
+						 "Jacobian max step size: {} at element {}, invalid step size: {}, tree depth {}, runtime {} sec", step, invalidID, invalidStep, subdivision_tree.depth(), transient_check_time);
 		}
 
 		if (invalidID >= 0 && step <= 0.5)
 		{
-			auto& bs = bases_[invalidID];
-			auto& gbs = geom_bases_[invalidID];
+			auto &bs = bases_[invalidID];
+			auto &gbs = geom_bases_[invalidID];
 			if (quadrature_hierarchy_[invalidID].merge(subdivision_tree)) // if the tree is refined
 				update_quadrature(invalidID, dim, quadrature_hierarchy_[invalidID], quadrature_order_, bs, gbs, ass_vals_cache_);
 
@@ -377,7 +377,7 @@ namespace polyfem::solver
 	}
 
 	bool ElasticForm::is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) const
-	{		
+	{
 		if (check_inversion_ == ElementInversionCheck::Discrete)
 			return true;
 

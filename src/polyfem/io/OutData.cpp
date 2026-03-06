@@ -337,6 +337,54 @@ namespace polyfem::io
 						continue;
 					}
 
+					else if (mesh.is_pyramid(lb.element_id()))
+                    {
+                        assert(!is_simplicial);
+                        assert(!mesh.has_poly());
+                        std::vector<int> loc_nodes;
+
+                        for (long n = 0; n < nodes.size(); ++n)
+                        {
+                            auto &bs = b.bases[nodes(n)];
+                            const auto &glob = bs.global();
+                            if (glob.size() != 1)
+                                continue;
+
+                            int gindex = glob.front().index;
+                            node_positions.row(gindex) = glob.front().node;
+                            loc_nodes.push_back(gindex);
+                        }
+
+                        auto update_mapping = [&displacement_map_entries, &visited_node](const std::vector<int> &loc_nodes) {
+                            for (int k = 0; k < loc_nodes.size(); ++k)
+                            {
+                                if (!visited_node[loc_nodes[k]])
+                                    displacement_map_entries.emplace_back(loc_nodes[k], loc_nodes[k], 1);
+
+                                visited_node[loc_nodes[k]] = true;
+                            }
+                        };
+
+                        if (loc_nodes.size() == 3)
+                        {
+                            tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
+                            update_mapping(loc_nodes);
+                        }
+                        else if (loc_nodes.size() == 4)
+                        {
+                            tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
+                            tris.emplace_back(loc_nodes[0], loc_nodes[2], loc_nodes[3]);
+                            update_mapping(loc_nodes);
+                        }
+                        else
+                        {
+                            logger().trace("skipping element {} since it is not linear, it has {} nodes", eid, loc_nodes.size());
+                            continue;
+                        }
+
+                        continue;
+                    }
+
 					if (!mesh.is_simplex(lb.element_id()))
 					{
 						logger().trace("skipping element {} since it is not a simplex or hex", eid);

@@ -7,7 +7,7 @@ namespace polyfem::solver
 	public:
 		using CompositeForm::CompositeForm;
 		~SumCompositeForm() {}
-	
+
 	private:
 		inline double compose(const Eigen::VectorXd &inputs) const override
 		{

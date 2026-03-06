@@ -93,7 +93,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
 		auto broad_phase = ipc::create_broad_phase(broad_phase_method_);
-		if (const auto barrier_contact = dynamic_cast<const BarrierContactForm*>(&contact_form_))
+		if (const auto barrier_contact = dynamic_cast<const BarrierContactForm *>(&contact_form_))
 		{
 			ipc::NormalCollisions collision_set;
 			collision_set.set_use_area_weighting(barrier_contact->use_area_weighting());
@@ -102,22 +102,22 @@ namespace polyfem::solver
 			collision_set.set_enable_shape_derivatives(barrier_contact->enable_shape_derivatives());
 			collision_set.build(
 				collision_mesh_, displaced_surface, barrier_contact->dhat(), /*dmin=*/0, broad_phase);
-			
+
 			friction_collision_set_.build(
 				collision_mesh_, displaced_surface, collision_set,
 				barrier_contact->barrier_potential(), barrier_contact->barrier_stiffness(), Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_, Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_);
 		}
-		else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm*>(&contact_form_))
+		else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm *>(&contact_form_))
 		{
 			ipc::SmoothCollisions collision_set;
 			if (smooth_contact->using_adaptive_dhat())
 				collision_set.compute_adaptive_dhat(collision_mesh_, collision_mesh_.rest_positions(), smooth_contact->get_params(), broad_phase);
 			collision_set.build(
-				collision_mesh_, displaced_surface, smooth_contact->get_params(), 
+				collision_mesh_, displaced_surface, smooth_contact->get_params(),
 				smooth_contact->using_adaptive_dhat(), broad_phase);
 
-			friction_collision_set_.build(   
-				collision_mesh_, displaced_surface, 
+			friction_collision_set_.build(
+				collision_mesh_, displaced_surface,
 				collision_set, smooth_contact->get_params(), contact_form_.barrier_stiffness(), Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_, Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_);
 		}
 		else

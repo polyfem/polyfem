@@ -34,14 +34,14 @@ namespace polyfem::solver
 		/// @param ccd_tolerance Continuous collision detection tolerance
 		/// @param ccd_max_iterations Continuous collision detection maximum iterations
 		NormalAdhesionForm(const ipc::CollisionMesh &collision_mesh,
-					const double dhat_p,
-					const double dhat_a,
-					const double Y,
-					const bool is_time_dependent,
-					const bool enable_shape_derivatives,
-					const ipc::BroadPhaseMethod broad_phase_method,
-					const double ccd_tolerance,
-					const int ccd_max_iterations);
+						   const double dhat_p,
+						   const double dhat_a,
+						   const double Y,
+						   const bool is_time_dependent,
+						   const bool enable_shape_derivatives,
+						   const ipc::BroadPhaseMethod broad_phase_method,
+						   const double ccd_tolerance,
+						   const int ccd_max_iterations);
 		virtual ~NormalAdhesionForm() = default;
 
 		std::string name() const override { return "normal adhesion"; }

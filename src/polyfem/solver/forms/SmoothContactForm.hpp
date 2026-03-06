@@ -10,28 +10,28 @@
 
 namespace polyfem::solver
 {
-    class SmoothContactForm : public ContactForm
-    {
+	class SmoothContactForm : public ContactForm
+	{
 		friend class SmoothContactForceDerivative;
 
-    public:
+	public:
 		SmoothContactForm(const ipc::CollisionMesh &collision_mesh,
-					const double dhat,
-					const double avg_mass,
-					const double alpha_t,
-					const double alpha_n,
-					const bool use_adaptive_dhat,
-					const double min_distance_ratio,
-					const bool use_adaptive_barrier_stiffness,
-					const bool is_time_dependent,
-					const bool enable_shape_derivatives,
-					const ipc::BroadPhaseMethod broad_phase_method,
-					const double ccd_tolerance,
-					const int ccd_max_iterations);
+						  const double dhat,
+						  const double avg_mass,
+						  const double alpha_t,
+						  const double alpha_n,
+						  const bool use_adaptive_dhat,
+						  const double min_distance_ratio,
+						  const bool use_adaptive_barrier_stiffness,
+						  const bool is_time_dependent,
+						  const bool enable_shape_derivatives,
+						  const ipc::BroadPhaseMethod broad_phase_method,
+						  const double ccd_tolerance,
+						  const int ccd_max_iterations);
 
 		virtual std::string name() const override { return "smooth-contact"; }
 
-        void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) override;
+		void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) override;
 
 		/// @brief Update fields after a step in the optimization
 		/// @param iter_num Optimization iteration number
@@ -78,4 +78,4 @@ namespace polyfem::solver
 		/// @brief Contact potential
 		ipc::SmoothContactPotential barrier_potential_;
 	};
-}
+} // namespace polyfem::solver
