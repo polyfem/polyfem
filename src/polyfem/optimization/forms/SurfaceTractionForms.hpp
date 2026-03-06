@@ -1,8 +1,17 @@
 #pragma once
 
-#include "SpatialIntegralForms.hpp"
-
+#include <polyfem/utils/Types.hpp>
 #include <polyfem/solver/forms/BarrierContactForm.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
+#include <polyfem/optimization/forms/SpatialIntegralForms.hpp>
+
+#include <Eigen/Core>
+
+#include <memory>
+#include <map>
+#include <set>
+#include <vector>
+#include <utility>
 
 namespace polyfem::solver
 {
@@ -63,14 +72,15 @@ namespace polyfem::solver
 	public:
 		ProxyContactForceForm(
 			const VariableToSimulationGroup &variable_to_simulations,
-			const State &state,
+			std::shared_ptr<const State> state,
+			std::shared_ptr<const DiffCache> diff_cache,
 			const double dhat,
 			const bool quadratic_potential,
 			const json &args);
 		~ProxyContactForceForm() = default;
 
 		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
-		Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
+		Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const override;
 		void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 		void solution_changed_step(const int time_step, const Eigen::VectorXd &x) override
 		{
@@ -87,7 +97,8 @@ namespace polyfem::solver
 		void build_forward_collision_mesh();
 		const ipc::NormalCollisions &get_or_compute_collision_set(const int time_step, const Eigen::MatrixXd &displaced_surface) const;
 
-		const State &state_;
+		std::shared_ptr<const State> state_;
+		std::shared_ptr<const DiffCache> diff_cache_;
 		std::set<int> boundary_ids_;
 		std::map<int, std::set<int>> boundary_ids_to_dof_;
 		Eigen::MatrixXi can_collide_cache_;

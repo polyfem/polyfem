@@ -1,7 +1,12 @@
 #pragma once
 
 #include <polyfem/optimization/forms/ParametrizationForm.hpp>
-#include "VariableToSimulation.hpp"
+#include <polyfem/optimization/forms/VariableToSimulation.hpp>
+
+#include <Eigen/Core>
+
+#include <memory>
+#include <utility>
 
 namespace polyfem::solver
 {
@@ -9,8 +14,8 @@ namespace polyfem::solver
 	class WeightedVolumeForm : public ParametrizationForm
 	{
 	public:
-		WeightedVolumeForm(CompositeParametrization &&parametrizations, const State &state)
-			: ParametrizationForm(std::move(parametrizations)), state_(state)
+		WeightedVolumeForm(CompositeParametrization &&parametrizations, std::shared_ptr<const State> state)
+			: ParametrizationForm(std::move(parametrizations)), state_(std::move(state))
 		{
 		}
 
@@ -22,6 +27,6 @@ namespace polyfem::solver
 		void compute_partial_gradient_with_param(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	private:
-		const State &state_;
+		std::shared_ptr<const State> state_;
 	};
 } // namespace polyfem::solver

@@ -1,4 +1,6 @@
 #include <polyfem/State.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/Types.hpp>
 
 #include <polyfem/assembler/Laplacian.hpp>
 #include <polyfem/assembler/Mass.hpp>
@@ -12,12 +14,18 @@
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
 
+#include <Eigen/Core>
+
+#include <cassert>
+#include <memory>
+#include <vector>
+
 namespace polyfem
 {
 	using namespace solver;
 	using namespace time_integrator;
 
-	void State::solve_navier_stokes(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
+	void State::solve_navier_stokes(int step, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step)
 	{
 		assert(!problem->is_time_dependent());
 		assert(assembler->name() == "NavierStokes");
@@ -48,9 +56,14 @@ namespace polyfem
 
 		sol = x;
 		sol_to_pressure(sol, pressure);
+
+		if (user_post_step)
+		{
+			user_post_step(step, *this, sol, nullptr, &pressure);
+		}
 	}
 
-	void State::solve_transient_navier_stokes_split(const int time_steps, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
+	void State::solve_transient_navier_stokes_split(const int time_steps, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step)
 	{
 		assert(assembler->name() == "OperatorSplitting" && problem->is_time_dependent());
 
@@ -120,6 +133,12 @@ namespace polyfem
 		/* initialize solution */
 		pressure = Eigen::MatrixXd::Zero(n_pressure_bases, 1);
 
+		// Step 0.
+		if (user_post_step)
+		{
+			user_post_step(0, *this, sol, nullptr, &pressure);
+		}
+
 		const QuadratureOrders &n_b_samples = n_boundary_samples();
 		for (int t = 1; t <= time_steps; t++)
 		{
@@ -163,10 +182,15 @@ namespace polyfem
 
 			/* export to vtu */
 			save_timestep(time, t, 0, dt, sol, pressure);
+
+			if (user_post_step)
+			{
+				user_post_step(t, *this, sol, nullptr, &pressure);
+			}
 		}
 	}
 
-	void State::solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
+	void State::solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step)
 	{
 		assert(assembler->name() == "NavierStokes" && problem->is_time_dependent());
 
@@ -198,6 +222,13 @@ namespace polyfem
 		const int n_larger = n_pressure_bases + (use_avg_pressure ? 1 : 0);
 
 		const QuadratureOrders &n_b_samples = n_boundary_samples();
+
+		// Step 0.
+		if (user_post_step)
+		{
+			sol_to_pressure(sol, pressure);
+			user_post_step(0, *this, sol, nullptr, &pressure);
+		}
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
@@ -239,6 +270,11 @@ namespace polyfem
 			sol_to_pressure(sol, pressure);
 
 			save_timestep(time, t, t0, dt, sol, pressure);
+
+			if (user_post_step)
+			{
+				user_post_step(t, *this, sol, nullptr, &pressure);
+			}
 		}
 	}
 } // namespace polyfem

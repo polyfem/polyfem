@@ -1,6 +1,13 @@
-#include "TransientForm.hpp"
+#include <polyfem/optimization/forms/TransientForm.hpp>
+
 #include <polyfem/State.hpp>
 #include <polyfem/io/MatrixIO.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
+
+#include <Eigen/Core>
+
+#include <cassert>
+#include <vector>
 
 namespace polyfem::solver
 {
@@ -64,7 +71,7 @@ namespace polyfem::solver
 
 		return value;
 	}
-	Eigen::MatrixXd TransientForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const
+	Eigen::MatrixXd TransientForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const
 	{
 		Eigen::MatrixXd terms;
 		terms.setZero(state.ndof(), time_steps_ + 1);
@@ -74,9 +81,9 @@ namespace polyfem::solver
 		{
 			if (weights[i] == 0)
 				continue;
-			terms.col(i) = weights[i] * obj_->compute_adjoint_rhs_step(i, x, state);
+			terms.col(i) = weights[i] * obj_->compute_adjoint_rhs_step(i, x, state, diff_cache);
 			if (obj_->depends_on_step_prev() && i > 0)
-				terms.col(i - 1) = weights[i] * obj_->compute_adjoint_rhs_step_prev(i, x, state);
+				terms.col(i - 1) = weights[i] * obj_->compute_adjoint_rhs_step_prev(i, x, state, diff_cache);
 		}
 
 		return terms * weight();
@@ -156,7 +163,7 @@ namespace polyfem::solver
 
 		return eval(vals);
 	}
-	Eigen::MatrixXd ProxyTransientForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const
+	Eigen::MatrixXd ProxyTransientForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const
 	{
 		Eigen::VectorXd vals(steps_.size());
 		Eigen::MatrixXd terms;
@@ -166,7 +173,7 @@ namespace polyfem::solver
 		for (int i : steps_)
 		{
 			vals(j) = obj_->value_unweighted_step(i, x);
-			terms.col(j++) = obj_->compute_adjoint_rhs_step(i, x, state);
+			terms.col(j++) = obj_->compute_adjoint_rhs_step(i, x, state, diff_cache);
 		}
 
 		const Eigen::VectorXd g = eval_grad(vals);
