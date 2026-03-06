@@ -129,6 +129,7 @@ $(document).ready(function(){initNavTree('_state_8cpp.html',''); initResizable()
 <code>#include &lt;<a class="el" href="_common_8hpp_source.html">polyfem/Common.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_matrix_i_o_8hpp_source.html">polyfem/io/MatrixIO.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_evaluator_8hpp_source.html">polyfem/io/Evaluator.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_o_b_j_writer_8hpp_source.html">polyfem/io/OBJWriter.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_mass_8hpp_source.html">polyfem/assembler/Mass.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_multi_model_8hpp_source.html">polyfem/assembler/MultiModel.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_mesh2_d_8hpp_source.html">polyfem/mesh/mesh2D/Mesh2D.hpp</a>&gt;</code><br />
@@ -156,19 +157,26 @@ $(document).ready(function(){initNavTree('_state_8cpp.html',''); initResizable()
 <code>#include &lt;<a class="el" href="_tri_quadrature_8hpp_source.html">polyfem/quadrature/TriQuadrature.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_logger_8hpp_source.html">polyfem/utils/Logger.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_timer_8hpp_source.html">polyfem/utils/Timer.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="autodiff_8h_source.html">polyfem/utils/autodiff.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_cache_level_8hpp_source.html">polyfem/optimization/CacheLevel.hpp</a>&gt;</code><br />
 <code>#include &lt;polysolve/linear/FEMSolver.hpp&gt;</code><br />
-<code>#include &lt;<a class="el" href="_o_b_j_writer_8hpp_source.html">polyfem/io/OBJWriter.hpp</a>&gt;</code><br />
 <code>#include &lt;igl/edges.h&gt;</code><br />
 <code>#include &lt;igl/Timer.h&gt;</code><br />
-<code>#include &lt;iostream&gt;</code><br />
+<code>#include &lt;Eigen/Core&gt;</code><br />
+<code>#include &lt;spdlog/fmt/fmt.h&gt;</code><br />
 <code>#include &lt;algorithm&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
-<code>#include &lt;filesystem&gt;</code><br />
-<code>#include &lt;<a class="el" href="autodiff_8h_source.html">polyfem/utils/autodiff.h</a>&gt;</code><br />
+<code>#include &lt;stdexcept&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+<code>#include &lt;cassert&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;cstddef&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for State.cpp:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="_state_8cpp__incl.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="_state_8cpp__incl.svg" width="100%" height="580"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 </div>
 <p><a href="_state_8cpp_source.html">Go to the source code of this file.</a></p>

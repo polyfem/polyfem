@@ -9,7 +9,6 @@ var classpolyfem_1_1solver_1_1_pressure_variable_to_simulation =
     [ "set_pressure_boundaries", "classpolyfem_1_1solver_1_1_pressure_variable_to_simulation.html#a17782c83c61a1e142bb277ad05172756", null ],
     [ "update_state", "classpolyfem_1_1solver_1_1_pressure_variable_to_simulation.html#ad50dc9033d79735e398f6cb07bd0ba98", null ],
     [ "variable_to_string", "classpolyfem_1_1solver_1_1_pressure_variable_to_simulation.html#ab10f580c918567c52d9d53d4ca1c8bbd", null ],
-    [ "VariableToSimulation", "classpolyfem_1_1solver_1_1_pressure_variable_to_simulation.html#a4b57aba08ca748956469e52d2cbc620a", null ],
-    [ "VariableToSimulation", "classpolyfem_1_1solver_1_1_pressure_variable_to_simulation.html#a2da865600df57c21155dd001b1868e35", null ],
+    [ "VariableToSimulation", "classpolyfem_1_1solver_1_1_pressure_variable_to_simulation.html#a4b838fdacd0cbcf4018b26613c31cddd", null ],
     [ "pressure_boundaries_", "classpolyfem_1_1solver_1_1_pressure_variable_to_simulation.html#a08117f0af0dcef8b007563ae66be1074", null ]
 ];

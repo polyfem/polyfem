@@ -1,26 +1,31 @@
 <map id="polyfem::solver::ElasticVariableToSimulation::compute_adjoint_term" name="polyfem::solver::ElasticVariableToSimulation::compute_adjoint_term">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,172,180,227"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_variable_to_simulation.html#a1468ee2e131cb52898bae709938cc9e0" title=" " alt="" coords="228,93,489,148"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="179,171,252,149,253,155,181,176"/>
-<area shape="rect" id="Node000009" href="$namespacepolyfem_1_1solver_1_1_adjoint_tools.html#ac2d6e588ea62390fae16da18ec65c996" title=" " alt="" coords="269,172,449,227"/>
-<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="180,197,255,197,255,202,180,202"/>
-<area shape="rect" id="Node000010" href="$namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a8c5bd48aac94f33974b81900015f979b" title=" " alt="" coords="257,251,460,305"/>
-<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="181,223,253,244,252,249,179,228"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_composite_parametrization.html#a34d19dcd05175faa19ced87215c969be" title=" " alt="" coords="541,29,744,84"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="480,91,527,80,528,85,481,96"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_variable_to_simulation.html#add1131a5cecca74b48bf4d0a0fa9cddb" title=" " alt="" coords="550,108,735,163"/>
-<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="490,125,536,127,536,133,489,130"/>
-<area shape="poly" id="edge3_Node000003_Node000003" title=" " alt="" coords="593,29,594,19,603,10,619,5,643,3,671,6,687,14,685,18,670,11,643,8,620,10,605,15,599,21,599,29"/>
-<area shape="rect" id="Node000005" href="$namespacepolyfem.html#a8d6eb2c01f97c327e382b6dcda332777" title=" " alt="" coords="808,51,987,91"/>
-<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="735,110,803,92,805,97,736,115"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_variable_to_simulation.html#adb558dcc6027a3fda5f8cb0ca8c43df8" title=" " alt="" coords="805,115,990,155"/>
-<area shape="poly" id="edge7_Node000004_Node000007" title=" " alt="" coords="735,133,791,133,791,138,735,138"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_composite_parametrization.html#a0444e6671378eaf12bc3c0e2a4601aa2" title=" " alt="" coords="796,179,999,219"/>
-<area shape="poly" id="edge8_Node000004_Node000008" title=" " alt="" coords="736,156,805,173,803,179,735,161"/>
-<area shape="rect" id="Node000006" href="$namespacepolyfem.html#a4d64be939c7759c782fff98ed87f3399" title="Retrieves the current logger for adjoint." alt="" coords="1047,59,1224,84"/>
-<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="987,69,1033,69,1033,74,987,74"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1solver_1_1_diff_cache.html#aef49f8d41ce8d8665737f8bc381f94c6" title=" " alt="" coords="537,265,748,291"/>
-<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="460,275,524,275,524,281,460,281"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1solver_1_1_diff_cache.html#aa58b56179289dbd2980ff06dfd8b2c0d" title=" " alt="" coords="800,258,995,298"/>
-<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="748,275,786,275,786,281,748,281"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,219,180,274"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_variable_to_simulation.html#a1468ee2e131cb52898bae709938cc9e0" title=" " alt="" coords="228,109,489,163"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="138,217,227,172,244,166,246,170,229,177,141,222"/>
+<area shape="rect" id="Node000009" href="$namespacepolyfem_1_1solver_1_1_adjoint_tools.html#ac2d6e588ea62390fae16da18ec65c996" title=" " alt="" coords="269,187,449,242"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="180,234,255,224,255,230,181,239"/>
+<area shape="rect" id="Node000010" href="$namespacepolyfem_1_1solver_1_1_adjoint_tools.html#abc1e523c8ecb2be621698fa3ae9bd0d0" title=" " alt="" coords="257,315,460,370"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="155,272,229,302,249,308,247,313,227,306,153,277"/>
+<area shape="rect" id="Node000013" href="$namespacepolyfem.html#a92bdeb618e4a9d898e4787139b82fe3b" title="Get adjoint parameter nu or p." alt="" coords="263,266,454,291"/>
+<area shape="poly" id="edge13_Node000001_Node000013" title=" " alt="" coords="181,254,250,263,249,268,180,260"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1solver_1_1_composite_parametrization.html#a34d19dcd05175faa19ced87215c969be" title="Apply jacobian for chain rule." alt="" coords="537,133,740,187"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="490,145,524,148,523,153,490,150"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_variable_to_simulation.html#add1131a5cecca74b48bf4d0a0fa9cddb" title=" " alt="" coords="546,30,731,85"/>
+<area shape="poly" id="edge4_Node000002_Node000004" title=" " alt="" coords="456,106,532,84,534,90,457,111"/>
+<area shape="poly" id="edge3_Node000003_Node000003" title=" " alt="" coords="590,133,590,122,599,114,615,108,639,106,667,109,683,117,681,122,665,114,639,111,616,113,602,118,595,124,595,133"/>
+<area shape="rect" id="Node000005" href="$namespacepolyfem.html#a8d6eb2c01f97c327e382b6dcda332777" title=" " alt="" coords="800,169,979,209"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="717,82,741,94,799,126,850,159,847,163,796,131,739,98,714,87"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1solver_1_1_variable_to_simulation.html#adb558dcc6027a3fda5f8cb0ca8c43df8" title=" " alt="" coords="797,5,982,45"/>
+<area shape="poly" id="edge7_Node000004_Node000007" title=" " alt="" coords="731,43,782,36,783,42,732,48"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1solver_1_1_composite_parametrization.html#a0444e6671378eaf12bc3c0e2a4601aa2" title="Compute DOF of y given DOF of x." alt="" coords="788,69,991,109"/>
+<area shape="poly" id="edge8_Node000004_Node000008" title=" " alt="" coords="732,67,775,72,774,77,731,72"/>
+<area shape="rect" id="Node000006" href="$namespacepolyfem.html#a4d64be939c7759c782fff98ed87f3399" title="Retrieves the current logger for adjoint." alt="" coords="1039,177,1216,202"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="979,187,1025,187,1025,192,979,192"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1_diff_cache.html#ae435a8a411044eed52863349c48200c6" title=" " alt="" coords="557,330,720,355"/>
+<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="460,340,544,340,544,345,460,345"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1_diff_cache.html#a1e6bc7e6f43aa2345c444fd4cd69865f" title=" " alt="" coords="816,323,963,363"/>
+<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="720,340,802,340,802,345,720,345"/>
+<area shape="poly" id="edge15_Node000013_Node000005" title=" " alt="" coords="435,263,786,204,787,209,436,269"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1_diff_cache.html#a77ea382b8c9e2d37150e221f755e6ed5" title=" " alt="" coords="565,263,712,303"/>
+<area shape="poly" id="edge14_Node000013_Node000014" title=" " alt="" coords="454,277,552,279,552,284,454,283"/>
 </map>

@@ -67,7 +67,7 @@ var sectionId = 'dynsection-8';
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a3de7ef85bccf3ba04b44f720fbd3d3b8" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a3de7ef85bccf3ba04b44f720fbd3d3b8" target="_top" xlink:title="Apply jacobian for chain rule.">
 <polygon fill="white" stroke="#666666" points="518,-142.15 359,-142.15 359,-112.15 518,-112.15 518,-142.15"/>
 <text text-anchor="start" x="367" y="-130.15" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Periodic</text>
 <text text-anchor="middle" x="438.5" y="-119.15" font-family="Helvetica,sans-Serif" font-size="10.00">MeshToMesh::apply_jacobian</text>
@@ -86,7 +86,7 @@ var sectionId = 'dynsection-8';
 <!-- Node5 -->
 <g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_Node000005"><a xlink:href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a36d2f3ac2f82f026eab73420680868d8" target="_top" xlink:title=" ">
+<g id="a_Node000005"><a xlink:href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a36d2f3ac2f82f026eab73420680868d8" target="_top" xlink:title="Eval y = f(x).">
 <polygon fill="white" stroke="#666666" points="323,-56.15 185,-56.15 185,-26.15 323,-26.15 323,-56.15"/>
 <text text-anchor="start" x="193" y="-44.15" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Periodic</text>
 <text text-anchor="middle" x="254" y="-33.15" font-family="Helvetica,sans-Serif" font-size="10.00">MeshToMesh::eval</text>
@@ -105,7 +105,7 @@ var sectionId = 'dynsection-8';
 <!-- Node6 -->
 <g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_Node000006"><a xlink:href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a0829584cf4782cc4229063b49d1a8b3b" target="_top" xlink:title=" ">
+<g id="a_Node000006"><a xlink:href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a0829584cf4782cc4229063b49d1a8b3b" target="_top" xlink:title="Eval x = f^&#45;1 (y).">
 <polygon fill="white" stroke="#666666" points="148.5,-35.15 0.5,-35.15 0.5,-5.15 148.5,-5.15 148.5,-35.15"/>
 <text text-anchor="start" x="8.5" y="-23.15" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Periodic</text>
 <text text-anchor="middle" x="74.5" y="-12.15" font-family="Helvetica,sans-Serif" font-size="10.00">MeshToMesh::inverse_eval</text>
@@ -124,7 +124,7 @@ var sectionId = 'dynsection-8';
 <!-- Node7 -->
 <g id="Node000007" class="node">
 <title>Node7</title>
-<g id="a_Node000007"><a xlink:href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a428eaea284ac0e53b2ea4a648167571a" target="_top" xlink:title=" ">
+<g id="a_Node000007"><a xlink:href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a428eaea284ac0e53b2ea4a648167571a" target="_top" xlink:title="Compute DOF of y given DOF of x.">
 <polygon fill="white" stroke="#666666" points="507.5,-56.15 369.5,-56.15 369.5,-26.15 507.5,-26.15 507.5,-56.15"/>
 <text text-anchor="start" x="377.5" y="-44.15" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Periodic</text>
 <text text-anchor="middle" x="438.5" y="-33.15" font-family="Helvetica,sans-Serif" font-size="10.00">MeshToMesh::size</text>
@@ -143,7 +143,7 @@ var sectionId = 'dynsection-8';
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a081d2c0a4ab511232e3cd662e5d07233" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="namespacepolyfem_1_1solver_1_1_adjoint_tools.html#acca34657c92e6d98e9bf30914f8adfa5" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="321.5,-147.65 186.5,-147.65 186.5,-106.65 321.5,-106.65 321.5,-147.65"/>
 <text text-anchor="start" x="194.5" y="-135.65" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Adjoint</text>
 <text text-anchor="start" x="194.5" y="-124.65" font-family="Helvetica,sans-Serif" font-size="10.00">Tools::dJ_periodic_shape</text>

@@ -120,9 +120,8 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1solver_1_1_variable_to
 
 <div class="header">
   <div class="summary">
-<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classpolyfem_1_1solver_1_1_variable_to_simulation_group-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">polyfem::solver::VariableToSimulationGroup Class Reference</div></div>
 </div><!--header-->
@@ -133,21 +132,10 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1solver_1_1_variable_to
 
 <p><code>#include &lt;<a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>&gt;</code></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
-Public Types</h2></td></tr>
-<tr class="memitem:a16c4d838c8f4149b787b515fca0a7afe" id="r_a16c4d838c8f4149b787b515fca0a7afe"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a16c4d838c8f4149b787b515fca0a7afe">ValueType</a> = std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html">VariableToSimulation</a> &gt;</td></tr>
-<tr class="separator:a16c4d838c8f4149b787b515fca0a7afe"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9c33fc937cb4a3130fdb1735f943377" id="r_ad9c33fc937cb4a3130fdb1735f943377"><td class="memItemLeft" align="right" valign="top">typedef std::vector&lt; <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a16c4d838c8f4149b787b515fca0a7afe">ValueType</a> &gt;::const_iterator&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#ad9c33fc937cb4a3130fdb1735f943377">const_iterator</a></td></tr>
-<tr class="separator:ad9c33fc937cb4a3130fdb1735f943377"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a61a6b1086f34ba40413abab1a66f4439" id="r_a61a6b1086f34ba40413abab1a66f4439"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a61a6b1086f34ba40413abab1a66f4439">VariableToSimulationGroup</a> ()=default</td></tr>
-<tr class="separator:a61a6b1086f34ba40413abab1a66f4439"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b8f7f8f4669153d07c953990a133375" id="r_a3b8f7f8f4669153d07c953990a133375"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a3b8f7f8f4669153d07c953990a133375">~VariableToSimulationGroup</a> ()=default</td></tr>
 <tr class="separator:a3b8f7f8f4669153d07c953990a133375"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a92ff8d986371aac8de8e22e09b32aac7" id="r_a92ff8d986371aac8de8e22e09b32aac7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a92ff8d986371aac8de8e22e09b32aac7">init</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;args, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt; &gt; &amp;states, const std::vector&lt; int &gt; &amp;variable_sizes)</td></tr>
-<tr class="separator:a92ff8d986371aac8de8e22e09b32aac7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9e6f96ff30c1de1a1b483354dd74001d" id="r_a9e6f96ff30c1de1a1b483354dd74001d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a9e6f96ff30c1de1a1b483354dd74001d">update</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>)</td></tr>
 <tr class="memdesc:a9e6f96ff30c1de1a1b483354dd74001d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update parameters in simulators.  <br /></td></tr>
 <tr class="separator:a9e6f96ff30c1de1a1b483354dd74001d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -160,87 +148,17 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a71f9cd6e77341a258d6a22b93b195dd1" id="r_a71f9cd6e77341a258d6a22b93b195dd1"><td class="memItemLeft" align="right" valign="top">virtual Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a71f9cd6e77341a258d6a22b93b195dd1">apply_parametrization_jacobian</a> (const <a class="el" href="namespacepolyfem_1_1solver.html#a1c9e86081b90c3ab43c4d722f65d3c59">ParameterType</a> type, const <a class="el" href="classpolyfem_1_1_state.html">State</a> *state_ptr, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, const std::function&lt; Eigen::VectorXd()&gt; &amp;grad) const</td></tr>
 <tr class="memdesc:a71f9cd6e77341a258d6a22b93b195dd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Maps the partial gradient wrt.  <br /></td></tr>
 <tr class="separator:a71f9cd6e77341a258d6a22b93b195dd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aed59b0624731869521acf56338740fd9" id="r_aed59b0624731869521acf56338740fd9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a16c4d838c8f4149b787b515fca0a7afe">ValueType</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#aed59b0624731869521acf56338740fd9">operator[]</a> (size_t i)</td></tr>
-<tr class="separator:aed59b0624731869521acf56338740fd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a800fcd767e62840224de504ede2d617b" id="r_a800fcd767e62840224de504ede2d617b"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a16c4d838c8f4149b787b515fca0a7afe">ValueType</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a800fcd767e62840224de504ede2d617b">operator[]</a> (size_t i) const</td></tr>
-<tr class="separator:a800fcd767e62840224de504ede2d617b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a67525619b8ef96e21274fd80795c4ee5" id="r_a67525619b8ef96e21274fd80795c4ee5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#ad9c33fc937cb4a3130fdb1735f943377">const_iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a67525619b8ef96e21274fd80795c4ee5">begin</a> () const</td></tr>
-<tr class="separator:a67525619b8ef96e21274fd80795c4ee5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8dc2e0eb62702ef63c7f4eae34b8b2a6" id="r_a8dc2e0eb62702ef63c7f4eae34b8b2a6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#ad9c33fc937cb4a3130fdb1735f943377">const_iterator</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a8dc2e0eb62702ef63c7f4eae34b8b2a6">end</a> () const</td></tr>
-<tr class="separator:a8dc2e0eb62702ef63c7f4eae34b8b2a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a32fbc7b2ad07ddc21e8e683dc7dd53de" id="r_a32fbc7b2ad07ddc21e8e683dc7dd53de"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a32fbc7b2ad07ddc21e8e683dc7dd53de">push_back</a> (const <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a16c4d838c8f4149b787b515fca0a7afe">ValueType</a> &amp;v2s)</td></tr>
-<tr class="separator:a32fbc7b2ad07ddc21e8e683dc7dd53de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad15717c1bf42ecb186446752ddb667ca" id="r_ad15717c1bf42ecb186446752ddb667ca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#ad15717c1bf42ecb186446752ddb667ca">clear</a> ()</td></tr>
-<tr class="separator:ad15717c1bf42ecb186446752ddb667ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
-Private Attributes</h2></td></tr>
-<tr class="memitem:af266275737562749d48c06de25c4afe0" id="r_af266275737562749d48c06de25c4afe0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a16c4d838c8f4149b787b515fca0a7afe">ValueType</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#af266275737562749d48c06de25c4afe0">L</a></td></tr>
-<tr class="separator:af266275737562749d48c06de25c4afe0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:ad8915e8244a04255096e60b5e4886792" id="r_ad8915e8244a04255096e60b5e4886792"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html">VariableToSimulation</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#ad8915e8244a04255096e60b5e4886792">data</a></td></tr>
+<tr class="separator:ad8915e8244a04255096e60b5e4886792"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A collection of <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html" title="Maps the optimization variable to the state variable.">VariableToSimulation</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00050">50</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
-</div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="ad9c33fc937cb4a3130fdb1735f943377" name="ad9c33fc937cb4a3130fdb1735f943377"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad9c33fc937cb4a3130fdb1735f943377">&#9670;&#160;</a></span>const_iterator</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">typedef std::vector&lt;<a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a16c4d838c8f4149b787b515fca0a7afe">ValueType</a>&gt;::const_iterator <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#ad9c33fc937cb4a3130fdb1735f943377">polyfem::solver::VariableToSimulationGroup::const_iterator</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00086">86</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
-
-</div>
-</div>
-<a id="a16c4d838c8f4149b787b515fca0a7afe" name="a16c4d838c8f4149b787b515fca0a7afe"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a16c4d838c8f4149b787b515fca0a7afe">&#9670;&#160;</a></span>ValueType</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a16c4d838c8f4149b787b515fca0a7afe">polyfem::solver::VariableToSimulationGroup::ValueType</a> =  std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html">VariableToSimulation</a>&gt;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00053">53</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
-
-</div>
-</div>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a61a6b1086f34ba40413abab1a66f4439" name="a61a6b1086f34ba40413abab1a66f4439"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a61a6b1086f34ba40413abab1a66f4439">&#9670;&#160;</a></span>VariableToSimulationGroup()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">polyfem::solver::VariableToSimulationGroup::VariableToSimulationGroup </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">default</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
+<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00062">62</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a3b8f7f8f4669153d07c953990a133375" name="a3b8f7f8f4669153d07c953990a133375"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a3b8f7f8f4669153d07c953990a133375">&#9670;&#160;</a></span>~VariableToSimulationGroup()</h2>
 
@@ -325,74 +243,16 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Partial gradient wrt. the optimization variable </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8cpp_source.html#l00129">129</a> of file <a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8cpp_source.html#l00110">110</a> of file <a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_variable_to_simulation_8hpp_source.html#l00096">L</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_variable_to_simulation_8hpp_source.html#l00093">data</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_a_m_i_p_s_form_8cpp_source.html#l00229">polyfem::solver::AMIPSForm::compute_partial_gradient()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00068">polyfem::solver::CollisionBarrierForm::compute_partial_gradient()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00307">polyfem::solver::DeformedCollisionBarrierForm::compute_partial_gradient()</a>, <a class="el" href="_smoothing_forms_8cpp_source.html#l00119">polyfem::solver::BoundarySmoothingForm::compute_partial_gradient()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00462">polyfem::solver::SmoothContactForceForm::compute_partial_gradient_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00060">polyfem::solver::SpatialIntegralForm::compute_partial_gradient_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00149">polyfem::solver::ElasticEnergyForm::compute_partial_gradient_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00230">polyfem::solver::StressNormForm::compute_partial_gradient_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00278">polyfem::solver::DirichletEnergyForm::compute_partial_gradient_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00322">polyfem::solver::ComplianceForm::compute_partial_gradient_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00431">polyfem::solver::StressForm::compute_partial_gradient_step()</a>, <a class="el" href="_surface_traction_forms_8cpp_source.html#l01022">polyfem::solver::ProxyContactForceForm::compute_partial_gradient_step()</a>, and <a class="el" href="_target_forms_8cpp_source.html#l00551">polyfem::solver::NodeTargetForm::compute_partial_gradient_step()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_a_m_i_p_s_form_8cpp_source.html#l00229">polyfem::solver::AMIPSForm::compute_partial_gradient()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00082">polyfem::solver::CollisionBarrierForm::compute_partial_gradient()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00321">polyfem::solver::DeformedCollisionBarrierForm::compute_partial_gradient()</a>, <a class="el" href="_smoothing_forms_8cpp_source.html#l00129">polyfem::solver::BoundarySmoothingForm::compute_partial_gradient()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00478">polyfem::solver::SmoothContactForceForm::compute_partial_gradient_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00066">polyfem::solver::SpatialIntegralForm::compute_partial_gradient_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00155">polyfem::solver::ElasticEnergyForm::compute_partial_gradient_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00236">polyfem::solver::StressNormForm::compute_partial_gradient_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00284">polyfem::solver::DirichletEnergyForm::compute_partial_gradient_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00328">polyfem::solver::ComplianceForm::compute_partial_gradient_step()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00437">polyfem::solver::StressForm::compute_partial_gradient_step()</a>, <a class="el" href="_surface_traction_forms_8cpp_source.html#l01038">polyfem::solver::ProxyContactForceForm::compute_partial_gradient_step()</a>, and <a class="el" href="_target_forms_8cpp_source.html#l00575">polyfem::solver::NodeTargetForm::compute_partial_gradient_step()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_variable_to_simulation_group_a71f9cd6e77341a258d6a22b93b195dd1_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
-
-</div>
-</div>
-<a id="a67525619b8ef96e21274fd80795c4ee5" name="a67525619b8ef96e21274fd80795c4ee5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a67525619b8ef96e21274fd80795c4ee5">&#9670;&#160;</a></span>begin()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#ad9c33fc937cb4a3130fdb1735f943377">const_iterator</a> polyfem::solver::VariableToSimulationGroup::begin </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00090">90</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_variable_to_simulation_8hpp_source.html#l00096">L</a>.</p>
-
-</div>
-</div>
-<a id="ad15717c1bf42ecb186446752ddb667ca" name="ad15717c1bf42ecb186446752ddb667ca"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad15717c1bf42ecb186446752ddb667ca">&#9670;&#160;</a></span>clear()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::solver::VariableToSimulationGroup::clear </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00093">93</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_variable_to_simulation_8hpp_source.html#l00096">L</a>.</p>
 
 </div>
 </div>
@@ -421,11 +281,11 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Sum of adjoint terms </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8cpp_source.html#l00103">103</a> of file <a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8cpp_source.html#l00084">84</a> of file <a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_variable_to_simulation_8hpp_source.html#l00096">L</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_variable_to_simulation_8hpp_source.html#l00093">data</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_adjoint_form_8cpp_source.html#l00058">polyfem::solver::AdjointForm::first_derivative()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_adjoint_form_8cpp_source.html#l00069">polyfem::solver::AdjointForm::first_derivative()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -481,191 +341,15 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8cpp_source.html#l00111">111</a> of file <a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8cpp_source.html#l00092">92</a> of file <a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_variable_to_simulation_8hpp_source.html#l00096">L</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_variable_to_simulation_8hpp_source.html#l00093">data</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_a_m_i_p_s_form_8hpp_source.html#l00052">polyfem::solver::AMIPSForm::get_updated_mesh_nodes()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00136">polyfem::solver::CollisionBarrierForm::get_updated_mesh_nodes()</a>, and <a class="el" href="_barrier_forms_8cpp_source.html#l00368">polyfem::solver::DeformedCollisionBarrierForm::get_updated_mesh_nodes()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_a_m_i_p_s_form_8hpp_source.html#l00053">polyfem::solver::AMIPSForm::get_updated_mesh_nodes()</a>, <a class="el" href="_barrier_forms_8cpp_source.html#l00150">polyfem::solver::CollisionBarrierForm::get_updated_mesh_nodes()</a>, and <a class="el" href="_barrier_forms_8cpp_source.html#l00382">polyfem::solver::DeformedCollisionBarrierForm::get_updated_mesh_nodes()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_variable_to_simulation_group_a36c5b79bafc0937f2a180f3066acbef2_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
-</div>
-
-</div>
-</div>
-<a id="a8dc2e0eb62702ef63c7f4eae34b8b2a6" name="a8dc2e0eb62702ef63c7f4eae34b8b2a6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8dc2e0eb62702ef63c7f4eae34b8b2a6">&#9670;&#160;</a></span>end()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#ad9c33fc937cb4a3130fdb1735f943377">const_iterator</a> polyfem::solver::VariableToSimulationGroup::end </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00091">91</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_variable_to_simulation_8hpp_source.html#l00096">L</a>.</p>
-
-</div>
-</div>
-<a id="a92ff8d986371aac8de8e22e09b32aac7" name="a92ff8d986371aac8de8e22e09b32aac7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a92ff8d986371aac8de8e22e09b32aac7">&#9670;&#160;</a></span>init()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::solver::VariableToSimulationGroup::init </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>args</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt; &gt; &amp;&#160;</td>
-          <td class="paramname"><em>states</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
-          <td class="paramname"><em>variable_sizes</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8cpp_source.html#l00096">96</a> of file <a class="el" href="_variable_to_simulation_8cpp_source.html">VariableToSimulation.cpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_optimizations_8cpp_source.html#l00465">polyfem::solver::AdjointOptUtils::create_variable_to_simulation()</a>, and <a class="el" href="_variable_to_simulation_8hpp_source.html#l00096">L</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00141">polyfem::OptState::init_variables()</a>.</p>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_variable_to_simulation_group_a92ff8d986371aac8de8e22e09b32aac7_cgraph.svg" width="100%" height="386"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
-</div>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_variable_to_simulation_group_a92ff8d986371aac8de8e22e09b32aac7_icgraph.svg" width="100%" height="300"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
-</div>
-
-</div>
-</div>
-<a id="aed59b0624731869521acf56338740fd9" name="aed59b0624731869521acf56338740fd9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aed59b0624731869521acf56338740fd9">&#9670;&#160;</a></span>operator[]() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a16c4d838c8f4149b787b515fca0a7afe">ValueType</a> &amp; polyfem::solver::VariableToSimulationGroup::operator[] </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>i</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00088">88</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_variable_to_simulation_8hpp_source.html#l00096">L</a>.</p>
-
-</div>
-</div>
-<a id="a800fcd767e62840224de504ede2d617b" name="a800fcd767e62840224de504ede2d617b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a800fcd767e62840224de504ede2d617b">&#9670;&#160;</a></span>operator[]() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a16c4d838c8f4149b787b515fca0a7afe">ValueType</a> &amp; polyfem::solver::VariableToSimulationGroup::operator[] </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>i</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00089">89</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_variable_to_simulation_8hpp_source.html#l00096">L</a>.</p>
-
-</div>
-</div>
-<a id="a32fbc7b2ad07ddc21e8e683dc7dd53de" name="a32fbc7b2ad07ddc21e8e683dc7dd53de"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a32fbc7b2ad07ddc21e8e683dc7dd53de">&#9670;&#160;</a></span>push_back()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void polyfem::solver::VariableToSimulationGroup::push_back </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a16c4d838c8f4149b787b515fca0a7afe">ValueType</a> &amp;&#160;</td>
-          <td class="paramname"><em>v2s</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00092">92</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
-
-<p class="reference">References <a class="el" href="_variable_to_simulation_8hpp_source.html#l00096">L</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="_optimizations_8cpp_source.html#l00082">polyfem::solver::AdjointOptUtils::create_simple_form()</a>.</p>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_variable_to_simulation_group_a32fbc7b2ad07ddc21e8e683dc7dd53de_icgraph.svg" width="495" height="51"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>
@@ -702,11 +386,11 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00062">62</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00069">69</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_variable_to_simulation_8hpp_source.html#l00096">L</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_variable_to_simulation_8hpp_source.html#l00093">data</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00172">polyfem::OptState::initial_guess()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00191">polyfem::OptState::initial_guess()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -716,29 +400,21 @@ Here is the caller graph for this function:</div>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="af266275737562749d48c06de25c4afe0" name="af266275737562749d48c06de25c4afe0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af266275737562749d48c06de25c4afe0">&#9670;&#160;</a></span>L</h2>
+<a id="ad8915e8244a04255096e60b5e4886792" name="ad8915e8244a04255096e60b5e4886792"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8915e8244a04255096e60b5e4886792">&#9670;&#160;</a></span>data</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#a16c4d838c8f4149b787b515fca0a7afe">ValueType</a>&gt; polyfem::solver::VariableToSimulationGroup::L</td>
+          <td class="memname">std::vector&lt;std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1solver_1_1_variable_to_simulation.html">VariableToSimulation</a>&gt; &gt; polyfem::solver::VariableToSimulationGroup::data</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00096">96</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_variable_to_simulation_8hpp_source.html#l00093">93</a> of file <a class="el" href="_variable_to_simulation_8hpp_source.html">VariableToSimulation.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_variable_to_simulation_8cpp_source.html#l00129">apply_parametrization_jacobian()</a>, <a class="el" href="_variable_to_simulation_8hpp_source.html#l00090">begin()</a>, <a class="el" href="_variable_to_simulation_8hpp_source.html#l00093">clear()</a>, <a class="el" href="_variable_to_simulation_8cpp_source.html#l00103">compute_adjoint_term()</a>, <a class="el" href="_variable_to_simulation_8cpp_source.html#l00111">compute_state_variable()</a>, <a class="el" href="_variable_to_simulation_8hpp_source.html#l00091">end()</a>, <a class="el" href="_variable_to_simulation_8cpp_source.html#l00096">init()</a>, <a class="el" href="_variable_to_simulation_8hpp_source.html#l00088">operator[]()</a>, <a class="el" href="_variable_to_simulation_8hpp_source.html#l00089">operator[]()</a>, <a class="el" href="_variable_to_simulation_8hpp_source.html#l00092">push_back()</a>, and <a class="el" href="_variable_to_simulation_8hpp_source.html#l00062">update()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00406">polyfem::solver::AdjointNLProblem::after_line_search_custom_operation()</a>, <a class="el" href="_variable_to_simulation_8cpp_source.html#l00110">apply_parametrization_jacobian()</a>, <a class="el" href="_build_from_json_8cpp_source.html#l00291">polyfem::from_json::build_variable_to_simulation_group()</a>, <a class="el" href="_variable_to_simulation_8cpp_source.html#l00084">compute_adjoint_term()</a>, <a class="el" href="_variable_to_simulation_8cpp_source.html#l00092">compute_state_variable()</a>, <a class="el" href="_optimizations_8cpp_source.html#l00080">polyfem::solver::AdjointOptUtils::inverse_evaluation()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00239">polyfem::solver::AdjointNLProblem::is_step_valid()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00380">polyfem::solver::AdjointNLProblem::solution_changed()</a>, and <a class="el" href="_variable_to_simulation_8hpp_source.html#l00069">update()</a>.</p>
 
 </div>
 </div>

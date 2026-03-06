@@ -1,6 +1,5 @@
 var _parametrizations_8hpp =
 [
-    [ "polyfem::solver::ParametrizationFactory", "classpolyfem_1_1solver_1_1_parametrization_factory.html", "classpolyfem_1_1solver_1_1_parametrization_factory" ],
     [ "polyfem::solver::ExponentialMap", "classpolyfem_1_1solver_1_1_exponential_map.html", "classpolyfem_1_1solver_1_1_exponential_map" ],
     [ "polyfem::solver::Scaling", "classpolyfem_1_1solver_1_1_scaling.html", "classpolyfem_1_1solver_1_1_scaling" ],
     [ "polyfem::solver::PowerMap", "classpolyfem_1_1solver_1_1_power_map.html", "classpolyfem_1_1solver_1_1_power_map" ],

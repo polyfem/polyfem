@@ -6,7 +6,7 @@ var classpolyfem_1_1solver_1_1_composite_form =
     [ "compose", "classpolyfem_1_1solver_1_1_composite_form.html#a4855bcc563e712b0e30f928125b9fd52", null ],
     [ "compose_grad", "classpolyfem_1_1solver_1_1_composite_form.html#adc4cf9f9837d196a046b06d5cc1f593d", null ],
     [ "compute_partial_gradient", "classpolyfem_1_1solver_1_1_composite_form.html#a2e4dbadf2f59cea7f99c5f63f3e258e0", null ],
-    [ "compute_reduced_adjoint_rhs", "classpolyfem_1_1solver_1_1_composite_form.html#aa0fa875e1a9915f37bc4f69216ccde28", null ],
+    [ "compute_reduced_adjoint_rhs", "classpolyfem_1_1solver_1_1_composite_form.html#a4b7cdb6703afe8f2388584bd4d8cbe3b", null ],
     [ "get_inputs", "classpolyfem_1_1solver_1_1_composite_form.html#a83dcc0404ab0e91209535e05f9c570cc", null ],
     [ "init", "classpolyfem_1_1solver_1_1_composite_form.html#a4bbf84bce1e0d472e123437e06c615ca", null ],
     [ "is_step_collision_free", "classpolyfem_1_1solver_1_1_composite_form.html#ae3d3c62f4a65dd8bbe984bfaa23a89d4", null ],

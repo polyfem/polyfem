@@ -144,7 +144,7 @@ $(document).ready(function(){initNavTree('_refinement_8cpp_source.html',''); ini
 <div class="foldopen" id="foldopen00016" data-start="{" data-end="}">
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1mesh.html#a9ad4233b995aa8aba9440009505693d0">   16</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a9ad4233b995aa8aba9440009505693d0">polyfem::mesh::edge_adjacency_graph</a>(</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keyword">const</span> Eigen::MatrixXi &amp;Q, Eigen::MatrixXi &amp;edge_index,</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    std::vector&lt;std::vector&lt;int&gt;&gt; &amp;<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a2903a4010c2f22d07c5df8d437d79cc5">adj</a>,</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    std::vector&lt;std::vector&lt;int&gt;&gt; &amp;<a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a1bbbbffc7778fc39eaf0695513ef1ce4">adj</a>,</div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    std::vector&lt;std::pair&lt;int, int&gt;&gt; *pairs_of_edges,</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    std::vector&lt;std::pair&lt;int, int&gt;&gt; *pairs_of_quads,</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    Eigen::MatrixXi *quad_index)</div>
@@ -155,7 +155,7 @@ $(document).ready(function(){initNavTree('_refinement_8cpp_source.html',''); ini
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    std::vector&lt;std::pair&lt;int, int&gt;&gt; edges;</div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    edge_index.resizeLike(Q); <span class="comment">// (f, lv) -&gt; edge id</span></div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a2903a4010c2f22d07c5df8d437d79cc5">adj</a>.clear();</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a1bbbbffc7778fc39eaf0695513ef1ce4">adj</a>.clear();</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    edges.clear();</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">if</span> (pairs_of_quads)</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    {</div>
@@ -214,7 +214,7 @@ $(document).ready(function(){initNavTree('_refinement_8cpp_source.html',''); ini
 <div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        prev_quad = f;</div>
 <div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        prev_lv = lv;</div>
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    }</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a2903a4010c2f22d07c5df8d437d79cc5">adj</a>.resize(edges.size());</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a1bbbbffc7778fc39eaf0695513ef1ce4">adj</a>.resize(edges.size());</div>
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> f = 0; f &lt; Q.rows(); ++f)</div>
 <div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    {</div>
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> lv = 0; lv &lt; 4; ++lv)</div>
@@ -224,8 +224,8 @@ $(document).ready(function(){initNavTree('_refinement_8cpp_source.html',''); ini
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            assert(e1 != -1);</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <span class="keywordflow">if</span> (e1 &lt; e2)</div>
 <div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            {</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a2903a4010c2f22d07c5df8d437d79cc5">adj</a>[e1].push_back(e2);</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a2903a4010c2f22d07c5df8d437d79cc5">adj</a>[e2].push_back(e1);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a1bbbbffc7778fc39eaf0695513ef1ce4">adj</a>[e1].push_back(e2);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a1bbbbffc7778fc39eaf0695513ef1ce4">adj</a>[e2].push_back(e1);</div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            }</div>
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        }</div>
 <div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    }</div>
@@ -535,9 +535,9 @@ $(document).ready(function(){initNavTree('_refinement_8cpp_source.html',''); ini
 <div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>    {</div>
 <div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>        <span class="comment">// Compute adjacency info on the quad mesh</span></div>
 <div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>        Eigen::MatrixXi edge_index;</div>
-<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>        std::vector&lt;std::vector&lt;int&gt;&gt; <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a2903a4010c2f22d07c5df8d437d79cc5">adj</a>;</div>
+<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>        std::vector&lt;std::vector&lt;int&gt;&gt; <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a1bbbbffc7778fc39eaf0695513ef1ce4">adj</a>;</div>
 <div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>        std::vector&lt;std::pair&lt;int, int&gt;&gt; pairs_of_quads;</div>
-<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>        <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a9ad4233b995aa8aba9440009505693d0">edge_adjacency_graph</a>(IQ, edge_index, <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a2903a4010c2f22d07c5df8d437d79cc5">adj</a>, <span class="keyword">nullptr</span>, &amp;pairs_of_quads);</div>
+<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>        <a class="code hl_function" href="namespacepolyfem_1_1mesh.html#a9ad4233b995aa8aba9440009505693d0">edge_adjacency_graph</a>(IQ, edge_index, <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a1bbbbffc7778fc39eaf0695513ef1ce4">adj</a>, <span class="keyword">nullptr</span>, &amp;pairs_of_quads);</div>
 <div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>        <span class="comment">// Stitch vertices from adjacent quads</span></div>
 <div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;qq : pairs_of_quads)</div>
 <div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span>        {</div>
@@ -911,8 +911,8 @@ $(document).ready(function(){initNavTree('_refinement_8cpp_source.html',''); ini
 <div class="line"><a id="l00774" name="l00774"></a><span class="lineno">  774</span>    }</div>
 <div class="line"><a id="l00775" name="l00775"></a><span class="lineno">  775</span>}</div>
 </div>
-<div class="ttc" id="a_adjoint_n_l_problem_8cpp_html_a2903a4010c2f22d07c5df8d437d79cc5"><div class="ttname"><a href="_adjoint_n_l_problem_8cpp.html#a2903a4010c2f22d07c5df8d437d79cc5">adj</a></div><div class="ttdeci">vector&lt; list&lt; int &gt; &gt; adj</div><div class="ttdef"><b>Definition</b> <a href="_adjoint_n_l_problem_8cpp_source.html#l00050">AdjointNLProblem.cpp:50</a></div></div>
-<div class="ttc" id="a_adjoint_n_l_problem_8cpp_html_a91e334f289dc11ba09da0df4a9c72123"><div class="ttname"><a href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a></div><div class="ttdeci">int V</div><div class="ttdef"><b>Definition</b> <a href="_adjoint_n_l_problem_8cpp_source.html#l00047">AdjointNLProblem.cpp:47</a></div></div>
+<div class="ttc" id="a_adjoint_n_l_problem_8cpp_html_a1bbbbffc7778fc39eaf0695513ef1ce4"><div class="ttname"><a href="_adjoint_n_l_problem_8cpp.html#a1bbbbffc7778fc39eaf0695513ef1ce4">adj</a></div><div class="ttdeci">std::vector&lt; std::list&lt; int &gt; &gt; adj</div><div class="ttdef"><b>Definition</b> <a href="_adjoint_n_l_problem_8cpp_source.html#l00061">AdjointNLProblem.cpp:61</a></div></div>
+<div class="ttc" id="a_adjoint_n_l_problem_8cpp_html_a91e334f289dc11ba09da0df4a9c72123"><div class="ttname"><a href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a></div><div class="ttdeci">int V</div><div class="ttdef"><b>Definition</b> <a href="_adjoint_n_l_problem_8cpp_source.html#l00058">AdjointNLProblem.cpp:58</a></div></div>
 <div class="ttc" id="a_logger_8hpp_html"><div class="ttname"><a href="_logger_8hpp.html">Logger.hpp</a></div></div>
 <div class="ttc" id="a_mesh_utils_8hpp_html"><div class="ttname"><a href="_mesh_utils_8hpp.html">MeshUtils.hpp</a></div></div>
 <div class="ttc" id="a_navigation_8hpp_html"><div class="ttname"><a href="_navigation_8hpp.html">Navigation.hpp</a></div></div>

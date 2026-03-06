@@ -46,7 +46,7 @@
   </g>
 </defs>
 <script type="application/ecmascript">
-var viewWidth = 759;
+var viewWidth = 916;
 var viewHeight = 192;
 var sectionId = 'dynsection-1';
 </script>
@@ -58,9 +58,9 @@ var sectionId = 'dynsection-1';
 <g id="Node000001" class="node">
 <title>Node1</title>
 <g id="a_Node000001"><a xlink:title=" ">
-<polygon fill="#999999" stroke="#666666" points="437.04,-184 245.04,-184 245.04,-154 437.04,-154 437.04,-184"/>
-<text text-anchor="start" x="253.04" y="-172" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="middle" x="341.04" y="-161" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/TangentialAdhesionForm.hpp</text>
+<polygon fill="#999999" stroke="#666666" points="529.66,-184 337.66,-184 337.66,-154 529.66,-154 529.66,-184"/>
+<text text-anchor="start" x="345.66" y="-172" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="middle" x="433.66" y="-161" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/TangentialAdhesionForm.hpp</text>
 </a>
 </g>
 </g>
@@ -68,9 +68,9 @@ var sectionId = 'dynsection-1';
 <g id="Node000002" class="node">
 <title>Node2</title>
 <g id="a_Node000002"><a xlink:href="_adjoint_tools_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="172.54,-35.5 33.54,-35.5 33.54,-5.5 172.54,-5.5 172.54,-35.5"/>
-<text text-anchor="start" x="41.54" y="-23.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/optimization</text>
-<text text-anchor="middle" x="103.04" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">/AdjointTools.cpp</text>
+<polygon fill="white" stroke="#666666" points="252.16,-35.5 113.16,-35.5 113.16,-5.5 252.16,-5.5 252.16,-35.5"/>
+<text text-anchor="start" x="121.16" y="-23.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/optimization</text>
+<text text-anchor="middle" x="182.66" y="-12.5" font-family="Helvetica,sans-Serif" font-size="10.00">/AdjointTools.cpp</text>
 </a>
 </g>
 </g>
@@ -78,18 +78,18 @@ var sectionId = 'dynsection-1';
 <g id="edge1_Node000001_Node000002" class="edge">
 <title>Node1&#45;&gt;Node2</title>
 <g id="a_edge1_Node000001_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M234.73,-166.6C148.61,-162.94 36.98,-151.61 8.04,-118 -3.85,-104.19 -1.03,-92.8 8.04,-77 19.16,-57.62 39.96,-44.36 59.27,-35.68"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="234.7,-170.1 244.83,-167 234.98,-163.11 234.7,-170.1"/>
+<path fill="none" stroke="#63b8ff" d="M327.4,-162.75C208.46,-155.77 29.54,-141.48 8.66,-118 -3.45,-104.38 -2.09,-91.71 8.66,-77 32.41,-44.49 75.42,-30.57 112.74,-24.81"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="327.46,-166.26 337.64,-163.34 327.86,-159.27 327.46,-166.26"/>
 </a>
 </g>
 </g>
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="_state_diff_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="156.54,-112.5 17.54,-112.5 17.54,-82.5 156.54,-82.5 156.54,-112.5"/>
-<text text-anchor="start" x="25.54" y="-100.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/optimization</text>
-<text text-anchor="middle" x="87.04" y="-89.5" font-family="Helvetica,sans-Serif" font-size="10.00">/StateDiff.cpp</text>
+<g id="a_Node000003"><a xlink:href="_diff_cache_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="157.16,-112.5 18.16,-112.5 18.16,-82.5 157.16,-82.5 157.16,-112.5"/>
+<text text-anchor="start" x="26.16" y="-100.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/optimization</text>
+<text text-anchor="middle" x="87.66" y="-89.5" font-family="Helvetica,sans-Serif" font-size="10.00">/DiffCache.cpp</text>
 </a>
 </g>
 </g>
@@ -97,19 +97,18 @@ var sectionId = 'dynsection-1';
 <g id="edge2_Node000001_Node000003" class="edge">
 <title>Node1&#45;&gt;Node3</title>
 <g id="a_edge2_Node000001_Node000003"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M279.8,-151.24C236.54,-139.41 179.22,-123.72 138.36,-112.54"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="279.07,-154.67 289.64,-153.94 280.91,-147.92 279.07,-154.67"/>
+<path fill="none" stroke="#63b8ff" d="M341.13,-152.16C289.37,-142.94 223.75,-130.67 165.66,-118 158.02,-116.33 149.99,-114.46 142.11,-112.56"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="340.83,-155.66 351.29,-153.96 342.06,-148.77 340.83,-155.66"/>
 </a>
 </g>
 </g>
 <!-- Node4 -->
 <g id="Node000004" class="node">
 <title>Node4</title>
-<g id="a_Node000004"><a xlink:href="_tangential_adhesion_force_derivative_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="442.54,-41 239.54,-41 239.54,0 442.54,0 442.54,-41"/>
-<text text-anchor="start" x="247.54" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/optimization</text>
-<text text-anchor="start" x="247.54" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">/force_derivatives/TangentialAdhesion</text>
-<text text-anchor="middle" x="341.04" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">ForceDerivative.cpp</text>
+<g id="a_Node000004"><a xlink:href="_state_diff_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="314.16,-112.5 175.16,-112.5 175.16,-82.5 314.16,-82.5 314.16,-112.5"/>
+<text text-anchor="start" x="183.16" y="-100.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/optimization</text>
+<text text-anchor="middle" x="244.66" y="-89.5" font-family="Helvetica,sans-Serif" font-size="10.00">/StateDiff.cpp</text>
 </a>
 </g>
 </g>
@@ -117,19 +116,19 @@ var sectionId = 'dynsection-1';
 <g id="edge3_Node000001_Node000004" class="edge">
 <title>Node1&#45;&gt;Node4</title>
 <g id="a_edge3_Node000001_Node000004"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M366.73,-146.46C374.46,-138.42 381.96,-128.63 386.04,-118 392.56,-100.99 392.12,-94.18 386.04,-77 381.27,-63.55 371.71,-50.99 362.61,-41.23"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="363.81,-144.42 359.06,-153.89 368.68,-149.45 363.81,-144.42"/>
+<path fill="none" stroke="#63b8ff" d="M385.84,-150.42C353.93,-138.68 312.55,-123.47 282.85,-112.54"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="384.82,-153.77 395.41,-153.94 387.23,-147.2 384.82,-153.77"/>
 </a>
 </g>
 </g>
 <!-- Node5 -->
 <g id="Node000005" class="node">
 <title>Node5</title>
-<g id="a_Node000005"><a xlink:href="_tangential_adhesion_force_derivative_8hpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="377.54,-118 174.54,-118 174.54,-77 377.54,-77 377.54,-118"/>
-<text text-anchor="start" x="182.54" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/optimization</text>
-<text text-anchor="start" x="182.54" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/force_derivatives/TangentialAdhesion</text>
-<text text-anchor="middle" x="276.04" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">ForceDerivative.hpp</text>
+<g id="a_Node000005"><a xlink:href="_tangential_adhesion_force_derivative_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="600.16,-41 397.16,-41 397.16,0 600.16,0 600.16,-41"/>
+<text text-anchor="start" x="405.16" y="-29" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/optimization</text>
+<text text-anchor="start" x="405.16" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">/force_derivatives/TangentialAdhesion</text>
+<text text-anchor="middle" x="498.66" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">ForceDerivative.cpp</text>
 </a>
 </g>
 </g>
@@ -137,37 +136,38 @@ var sectionId = 'dynsection-1';
 <g id="edge4_Node000001_Node000005" class="edge">
 <title>Node1&#45;&gt;Node5</title>
 <g id="a_edge4_Node000001_Node000005"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M320.85,-146.41C312.38,-137.36 302.6,-126.9 294.34,-118.07"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="318.5,-149.02 327.88,-153.94 323.61,-144.24 318.5,-149.02"/>
+<path fill="none" stroke="#63b8ff" d="M505.07,-149.69C520.31,-142.37 534.53,-132.17 543.66,-118 559.77,-92.98 537.82,-61.26 519.31,-41.17"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="503.25,-146.67 495.5,-153.89 506.06,-153.08 503.25,-146.67"/>
 </a>
 </g>
 </g>
 <!-- Node6 -->
 <g id="Node000006" class="node">
 <title>Node6</title>
-<g id="a_Node000006"><a xlink:href="_solve_data_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="541.54,-112.5 434.54,-112.5 434.54,-82.5 541.54,-82.5 541.54,-112.5"/>
-<text text-anchor="start" x="442.54" y="-100.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="middle" x="488.04" y="-89.5" font-family="Helvetica,sans-Serif" font-size="10.00">/SolveData.cpp</text>
+<g id="a_Node000006"><a xlink:href="_tangential_adhesion_force_derivative_8hpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="535.16,-118 332.16,-118 332.16,-77 535.16,-77 535.16,-118"/>
+<text text-anchor="start" x="340.16" y="-106" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/optimization</text>
+<text text-anchor="start" x="340.16" y="-95" font-family="Helvetica,sans-Serif" font-size="10.00">/force_derivatives/TangentialAdhesion</text>
+<text text-anchor="middle" x="433.66" y="-84" font-family="Helvetica,sans-Serif" font-size="10.00">ForceDerivative.hpp</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node6 -->
-<g id="edge7_Node000001_Node000006" class="edge">
+<g id="edge5_Node000001_Node000006" class="edge">
 <title>Node1&#45;&gt;Node6</title>
-<g id="a_edge7_Node000001_Node000006"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M379.84,-149.65C404.43,-138.03 435.73,-123.23 458.33,-112.54"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="378.33,-146.5 370.78,-153.94 381.32,-152.83 378.33,-146.5"/>
+<g id="a_edge5_Node000001_Node000006"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M433.66,-143.91C433.66,-135.47 433.66,-126.1 433.66,-118.07"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="430.16,-143.94 433.66,-153.94 437.16,-143.94 430.16,-143.94"/>
 </a>
 </g>
 </g>
 <!-- Node7 -->
 <g id="Node000007" class="node">
 <title>Node7</title>
-<g id="a_Node000007"><a xlink:href="_tangential_adhesion_form_8cpp.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="750.54,-112.5 559.54,-112.5 559.54,-82.5 750.54,-82.5 750.54,-112.5"/>
-<text text-anchor="start" x="567.54" y="-100.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
-<text text-anchor="middle" x="655.04" y="-89.5" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/TangentialAdhesionForm.cpp</text>
+<g id="a_Node000007"><a xlink:href="_solve_data_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="699.16,-112.5 592.16,-112.5 592.16,-82.5 699.16,-82.5 699.16,-112.5"/>
+<text text-anchor="start" x="600.16" y="-100.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="middle" x="645.66" y="-89.5" font-family="Helvetica,sans-Serif" font-size="10.00">/SolveData.cpp</text>
 </a>
 </g>
 </g>
@@ -175,26 +175,45 @@ var sectionId = 'dynsection-1';
 <g id="edge8_Node000001_Node000007" class="edge">
 <title>Node1&#45;&gt;Node7</title>
 <g id="a_edge8_Node000001_Node000007"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M414.39,-151.76C468.13,-139.87 540.33,-123.89 591.59,-112.54"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="413.59,-148.36 404.58,-153.94 415.1,-155.19 413.59,-148.36"/>
+<path fill="none" stroke="#63b8ff" d="M486.37,-150.72C522.28,-138.95 569.22,-123.56 602.82,-112.54"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="484.97,-147.49 476.56,-153.94 487.15,-154.15 484.97,-147.49"/>
 </a>
 </g>
 </g>
-<!-- Node5&#45;&gt;Node2 -->
-<g id="edge5_Node000005_Node000002" class="edge">
-<title>Node5&#45;&gt;Node2</title>
-<g id="a_edge5_Node000005_Node000002"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M221.67,-72.93C193.37,-60.66 159.74,-46.08 135.52,-35.58"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="220.47,-76.22 231.03,-76.99 223.25,-69.8 220.47,-76.22"/>
+<!-- Node8 -->
+<g id="Node000008" class="node">
+<title>Node8</title>
+<g id="a_Node000008"><a xlink:href="_tangential_adhesion_form_8cpp.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="908.16,-112.5 717.16,-112.5 717.16,-82.5 908.16,-82.5 908.16,-112.5"/>
+<text text-anchor="start" x="725.16" y="-100.5" font-family="Helvetica,sans-Serif" font-size="10.00">src/polyfem/solver</text>
+<text text-anchor="middle" x="812.66" y="-89.5" font-family="Helvetica,sans-Serif" font-size="10.00">/forms/TangentialAdhesionForm.cpp</text>
 </a>
 </g>
 </g>
-<!-- Node5&#45;&gt;Node4 -->
-<g id="edge6_Node000005_Node000004" class="edge">
-<title>Node5&#45;&gt;Node4</title>
-<g id="a_edge6_Node000005_Node000004"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M299.67,-69.23C307.75,-59.91 316.62,-49.67 324.07,-41.07"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="297.02,-66.95 293.11,-76.79 302.31,-71.53 297.02,-66.95"/>
+<!-- Node1&#45;&gt;Node8 -->
+<g id="edge9_Node000001_Node000008" class="edge">
+<title>Node1&#45;&gt;Node8</title>
+<g id="a_edge9_Node000001_Node000008"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M521.21,-152.21C575.25,-142.43 645.99,-129.57 708.66,-118 718.23,-116.23 728.3,-114.36 738.25,-112.5"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="520.54,-148.77 511.32,-154 521.78,-155.66 520.54,-148.77"/>
+</a>
+</g>
+</g>
+<!-- Node6&#45;&gt;Node2 -->
+<g id="edge6_Node000006_Node000002" class="edge">
+<title>Node6&#45;&gt;Node2</title>
+<g id="a_edge6_Node000006_Node000002"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M358.76,-74.12C316.92,-61.62 266.07,-46.42 229.79,-35.58"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="357.78,-77.48 368.37,-76.99 359.79,-70.77 357.78,-77.48"/>
+</a>
+</g>
+</g>
+<!-- Node6&#45;&gt;Node5 -->
+<g id="edge7_Node000006_Node000005" class="edge">
+<title>Node6&#45;&gt;Node5</title>
+<g id="a_edge7_Node000006_Node000005"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M457.29,-69.23C465.37,-59.91 474.24,-49.67 481.69,-41.07"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="454.64,-66.95 450.74,-76.79 459.93,-71.53 454.64,-66.95"/>
 </a>
 </g>
 </g>

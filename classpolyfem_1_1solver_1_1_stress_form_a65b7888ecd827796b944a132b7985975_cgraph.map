@@ -1,30 +1,21 @@
 <map id="polyfem::solver::StressForm::get_integral_functional" name="polyfem::solver::StressForm::get_integral_functional">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,218,211,258"/>
-<area shape="rect" id="Node000002" href="$namespacepolyfem_1_1utils.html#adac090350174847f46edfd397abd4ab4" title="Flatten rowwises." alt="" coords="286,55,449,80"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="122,216,176,153,214,118,257,89,272,82,274,87,260,94,218,122,180,156,126,220"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1_state.html#a0acd0b93140ea778ac836ee0a1a29dfd" title="return the formulation (checks if the problem is scalar or not and deals with multiphysics)" alt="" coords="266,104,469,129"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="133,216,188,177,258,140,282,131,284,136,260,144,191,181,136,220"/>
-<area shape="rect" id="Node000007" href="$namespacepolyfem.html#a8d6eb2c01f97c327e382b6dcda332777" title=" " alt="" coords="278,154,457,194"/>
-<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="189,215,272,195,273,200,190,221"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1solver_1_1_stress_form.html#a6601281256aacff3fac19b7c8dc5f021" title=" " alt="" coords="265,218,470,258"/>
-<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="211,235,251,235,251,241,211,241"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1_integrable_functional.html#a484ec7771dba4c13e08d640c36b96f70" title=" " alt="" coords="259,282,476,322"/>
-<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="190,255,273,276,272,281,189,261"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1_integrable_functional.html#a8e61f2f179fe169a42362de10f03c0d9" title=" " alt="" coords="259,346,476,386"/>
-<area shape="poly" id="edge12_Node000001_Node000012" title=" " alt="" coords="137,256,192,294,260,332,277,339,275,344,258,336,189,298,134,260"/>
-<area shape="rect" id="Node000013" href="$namespacepolyfem_1_1utils.html#a75043e8afe913f3bc6279fd5349a4fd4" title=" " alt="" coords="261,411,473,436"/>
-<area shape="poly" id="edge13_Node000001_Node000013" title=" " alt="" coords="124,257,178,326,216,364,260,396,276,404,274,408,257,400,213,368,174,329,120,260"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#ab029826bf8d30ad65253a2afd31cc496" title="utility to check if material is one of the elastic materials" alt="" coords="557,29,709,84"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="424,101,543,74,544,79,425,107"/>
-<area shape="rect" id="Node000006" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="570,108,695,133"/>
-<area shape="poly" id="edge6_Node000003_Node000006" title=" " alt="" coords="469,116,557,117,556,122,469,121"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#ad8fe633ff3cb68e2ae4fe8314d835e01" title="list of all elastic materials" alt="" coords="789,29,969,84"/>
-<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="709,54,775,54,775,59,709,59"/>
-<area shape="poly" id="edge5_Node000005_Node000005" title=" " alt="" coords="832,29,832,19,840,10,856,5,879,3,907,6,923,14,920,18,906,11,879,8,857,10,843,15,837,21,837,29"/>
-<area shape="rect" id="Node000008" href="$namespacepolyfem.html#a4d64be939c7759c782fff98ed87f3399" title="Retrieves the current logger for adjoint." alt="" coords="544,161,721,187"/>
-<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="457,171,530,171,530,177,457,177"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1_integrable_functional.html#a87ed851b104868cbbea8c4e09abee313" title=" " alt="" coords="524,282,741,322"/>
-<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="476,299,511,299,511,305,476,305"/>
-<area shape="rect" id="Node000014" href="$namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" title="Unflatten rowwises, so every dim elements in x become a row." alt="" coords="543,411,722,436"/>
-<area shape="poly" id="edge14_Node000013_Node000014" title=" " alt="" coords="474,421,529,421,529,426,474,426"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,151,211,191"/>
+<area shape="rect" id="Node000002" href="$namespacepolyfem_1_1utils.html#adac090350174847f46edfd397abd4ab4" title="Flatten rowwises." alt="" coords="286,5,449,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="125,149,180,95,217,66,257,41,277,33,279,38,260,46,220,70,184,99,129,153"/>
+<area shape="rect" id="Node000003" href="$namespacepolyfem.html#a8d6eb2c01f97c327e382b6dcda332777" title=" " alt="" coords="278,55,457,95"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="152,149,258,105,281,97,282,102,260,110,154,154"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1solver_1_1_stress_form.html#a6601281256aacff3fac19b7c8dc5f021" title=" " alt="" coords="265,119,470,159"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="210,156,251,151,251,156,211,161"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1_integrable_functional.html#a484ec7771dba4c13e08d640c36b96f70" title=" " alt="" coords="259,183,476,223"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="211,181,245,186,245,191,210,187"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1_integrable_functional.html#a8e61f2f179fe169a42362de10f03c0d9" title=" " alt="" coords="259,247,476,287"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="154,189,260,233,282,241,281,246,258,238,152,194"/>
+<area shape="rect" id="Node000009" href="$namespacepolyfem_1_1utils.html#a75043e8afe913f3bc6279fd5349a4fd4" title=" " alt="" coords="261,312,473,337"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="129,190,184,244,220,273,260,297,279,305,277,310,257,302,217,277,180,248,125,193"/>
+<area shape="rect" id="Node000004" href="$namespacepolyfem.html#a4d64be939c7759c782fff98ed87f3399" title="Retrieves the current logger for adjoint." alt="" coords="544,63,721,88"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="457,73,530,73,530,78,457,78"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1_integrable_functional.html#a87ed851b104868cbbea8c4e09abee313" title=" " alt="" coords="524,183,741,223"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="476,201,511,201,511,206,476,206"/>
+<area shape="rect" id="Node000010" href="$namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" title="Unflatten rowwises, so every dim elements in x become a row." alt="" coords="543,312,722,337"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="474,322,529,322,529,327,474,327"/>
 </map>

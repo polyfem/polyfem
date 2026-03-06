@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['l_0',['l',['../classpolyfem_1_1solver_1_1_variable_to_simulation_group.html#af266275737562749d48c06de25c4afe0',1,'polyfem::solver::VariableToSimulationGroup::L'],['../classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#add36149bb9e25d11991306e000dbbe39',1,'polyfem::solver::BoundarySmoothingForm::L']]],
+  ['l_0',['L',['../classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#add36149bb9e25d11991306e000dbbe39',1,'polyfem::solver::BoundarySmoothingForm']]],
   ['l2_5ferr_1',['l2_err',['../classpolyfem_1_1io_1_1_out_stats_data.html#a659f5cbff15c4381abbdb3c353b6dc26',1,'polyfem::io::OutStatsData']]],
   ['lagged_5fstiffness_5fmatrix_5f_2',['lagged_stiffness_matrix_',['../classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#ad73bdbed06b8c9fa49695b2910046e0b',1,'polyfem::solver::RayleighDampingForm']]],
   ['lagr_5fmults_5f_3',['lagr_mults_',['../classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a748a82c3c2749065c28c204390f64bb2',1,'polyfem::solver::AugmentedLagrangianForm']]],
@@ -18,7 +18,7 @@ var searchData=
   ['loading_5fmesh_5ftime_15',['loading_mesh_time',['../classpolyfem_1_1io_1_1_out_runtime_data.html#a23a352c172b1bc7a573e0c15fa6abbf0',1,'polyfem::io::OutRuntimeData']]],
   ['local_5fboundary_16',['local_boundary',['../classpolyfem_1_1_state.html#aafae62c42880f4d00b0ed6046f4eb820',1,'polyfem::State::local_boundary'],['../classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a7b640497f320c5f7239286efe4fc796c',1,'polyfem::mesh::LocalRelaxationData::local_boundary']]],
   ['local_5fboundary_5f_17',['local_boundary_',['../classpolyfem_1_1solver_1_1_body_form.html#aab65645ca441d8e4ee9a8a565407a948',1,'polyfem::solver::BodyForm::local_boundary_'],['../classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a8cf513aeddaf152701e13ff399614763',1,'polyfem::solver::BCLagrangianForm::local_boundary_']]],
-  ['local_5fenergy_18',['local_energy',['../classpolyfem_1_1mesh_1_1_tri_operation_cache.html#a6fac2a4a5a984424550b97cfe8c8275e',1,'polyfem::mesh::TriOperationCache::local_energy'],['../classpolyfem_1_1mesh_1_1_tet_operation_cache.html#a6427dec71b79ecce57866b84a0b69408',1,'polyfem::mesh::TetOperationCache::local_energy']]],
+  ['local_5fenergy_18',['local_energy',['../classpolyfem_1_1mesh_1_1_tet_operation_cache.html#a6427dec71b79ecce57866b84a0b69408',1,'polyfem::mesh::TetOperationCache::local_energy'],['../classpolyfem_1_1mesh_1_1_tri_operation_cache.html#a6fac2a4a5a984424550b97cfe8c8275e',1,'polyfem::mesh::TriOperationCache::local_energy']]],
   ['local_5findex_5f_19',['local_index_',['../classpolyfem_1_1basis_1_1_basis.html#afe218649534756d6c0d5853bd94ff8d1',1,'polyfem::basis::Basis']]],
   ['local_5findices_20',['local_indices',['../structpolyfem_1_1basis_1_1_interface_data.html#a27d8681b82abf210b42122a404671d8a',1,'polyfem::basis::InterfaceData']]],
   ['local_5fmesh_21',['local_mesh',['../classpolyfem_1_1mesh_1_1_local_relaxation_data.html#a6eaec5c0b53fe0ac47987e9ecb7d8021',1,'polyfem::mesh::LocalRelaxationData']]],

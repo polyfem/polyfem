@@ -58,13 +58,32 @@
 </a>
 </g>
 </g>
-<!-- Node20 -->
-<g id="Node000020" class="node">
-<title>Node20</title>
-<g id="a_Node000020"><a xlink:href="namespacepolyfem_1_1utils.html#ab984fbb966c452b34d3a3a3ab929e34e" target="_top" xlink:title=" ">
+<!-- Node19 -->
+<g id="Node000019" class="node">
+<title>Node19</title>
+<g id="a_Node000019"><a xlink:href="namespacepolyfem_1_1utils.html#ab984fbb966c452b34d3a3a3ab929e34e" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="1530.5,-78 1405.5,-78 1405.5,-48 1530.5,-48 1530.5,-78"/>
 <text text-anchor="start" x="1413.5" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::utils::extract</text>
 <text text-anchor="middle" x="1468" y="-55" font-family="Helvetica,sans-Serif" font-size="10.00">_nodes</text>
+</a>
+</g>
+</g>
+<!-- Node1&#45;&gt;Node19 -->
+<g id="edge21_Node000001_Node000019" class="edge">
+<title>Node1&#45;&gt;Node19</title>
+<g id="a_edge21_Node000001_Node000019"><a xlink:title=" ">
+<path fill="none" stroke="#63b8ff" d="M1564.7,-76.82C1553.18,-75.15 1541.61,-73.48 1530.7,-71.91"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="1564.4,-80.31 1574.79,-78.28 1565.4,-73.38 1564.4,-80.31"/>
+</a>
+</g>
+</g>
+<!-- Node20 -->
+<g id="Node000020" class="node">
+<title>Node20</title>
+<g id="a_Node000020"><a xlink:href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#ab0e74deabcecef2c1a43eea386ac116d" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="1532.5,-30 1403.5,-30 1403.5,0 1532.5,0 1532.5,-30"/>
+<text text-anchor="start" x="1411.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
+<text text-anchor="middle" x="1468" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::RhsAssembler::lsq_bc</text>
 </a>
 </g>
 </g>
@@ -72,25 +91,6 @@
 <g id="edge22_Node000001_Node000020" class="edge">
 <title>Node1&#45;&gt;Node20</title>
 <g id="a_edge22_Node000001_Node000020"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M1564.7,-76.82C1553.18,-75.15 1541.61,-73.48 1530.7,-71.91"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="1564.4,-80.31 1574.79,-78.28 1565.4,-73.38 1564.4,-80.31"/>
-</a>
-</g>
-</g>
-<!-- Node21 -->
-<g id="Node000021" class="node">
-<title>Node21</title>
-<g id="a_Node000021"><a xlink:href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#ab0e74deabcecef2c1a43eea386ac116d" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="1532.5,-30 1403.5,-30 1403.5,0 1532.5,0 1532.5,-30"/>
-<text text-anchor="start" x="1411.5" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::assembler</text>
-<text text-anchor="middle" x="1468" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">::RhsAssembler::lsq_bc</text>
-</a>
-</g>
-</g>
-<!-- Node1&#45;&gt;Node21 -->
-<g id="edge23_Node000001_Node000021" class="edge">
-<title>Node1&#45;&gt;Node21</title>
-<g id="a_edge23_Node000001_Node000021"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M1614.37,-70.88C1592.18,-60.93 1564.3,-48.83 1539,-39 1531.22,-35.97 1522.87,-32.94 1514.76,-30.09"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="1612.96,-74.08 1623.51,-75 1615.83,-67.7 1612.96,-74.08"/>
 </a>
@@ -153,39 +153,39 @@
 </a>
 </g>
 </g>
-<!-- Node13 -->
-<g id="Node000013" class="node">
-<title>Node13</title>
-<g id="a_Node000013"><a xlink:href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a42e37560b90067a4248d4398218fb982" target="_top" xlink:title=" ">
+<!-- Node12 -->
+<g id="Node000012" class="node">
+<title>Node12</title>
+<g id="a_Node000012"><a xlink:href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a42e37560b90067a4248d4398218fb982" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="1141,-159 990,-159 990,-129 1141,-129 1141,-159"/>
 <text text-anchor="start" x="998" y="-147" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Operator</text>
 <text text-anchor="middle" x="1065.5" y="-136" font-family="Helvetica,sans-Serif" font-size="10.00">SplittingSolver::interpolator</text>
 </a>
 </g>
 </g>
-<!-- Node5&#45;&gt;Node13 -->
-<g id="edge12_Node000005_Node000013" class="edge">
-<title>Node5&#45;&gt;Node13</title>
-<g id="a_edge12_Node000005_Node000013"><a xlink:title=" ">
+<!-- Node5&#45;&gt;Node12 -->
+<g id="edge11_Node000005_Node000012" class="edge">
+<title>Node5&#45;&gt;Node12</title>
+<g id="a_edge11_Node000005_Node000012"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M1386.47,-113.46C1328.12,-111.95 1247.45,-112.07 1177,-120 1159.93,-121.92 1141.62,-125.33 1124.91,-128.99"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="1386.64,-116.96 1396.73,-113.74 1386.83,-109.97 1386.64,-116.96"/>
 </a>
 </g>
 </g>
-<!-- Node19 -->
-<g id="Node000019" class="node">
-<title>Node19</title>
-<g id="a_Node000019"><a xlink:href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a7bb48a9ac9ec047080babfc71238c5c8" target="_top" xlink:title=" ">
+<!-- Node18 -->
+<g id="Node000018" class="node">
+<title>Node18</title>
+<g id="a_Node000018"><a xlink:href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a7bb48a9ac9ec047080babfc71238c5c8" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="1343.5,-159 1194.5,-159 1194.5,-129 1343.5,-129 1343.5,-159"/>
 <text text-anchor="start" x="1202.5" y="-147" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Operator</text>
 <text text-anchor="middle" x="1269" y="-136" font-family="Helvetica,sans-Serif" font-size="10.00">SplittingSolver::search_cell</text>
 </a>
 </g>
 </g>
-<!-- Node5&#45;&gt;Node19 -->
-<g id="edge20_Node000005_Node000019" class="edge">
-<title>Node5&#45;&gt;Node19</title>
-<g id="a_edge20_Node000005_Node000019"><a xlink:title=" ">
+<!-- Node5&#45;&gt;Node18 -->
+<g id="edge19_Node000005_Node000018" class="edge">
+<title>Node5&#45;&gt;Node18</title>
+<g id="a_edge19_Node000005_Node000018"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M1386.75,-128C1372.54,-129.95 1357.81,-131.97 1343.78,-133.89"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="1387.56,-131.42 1396.99,-126.6 1386.61,-124.49 1387.56,-131.42"/>
 </a>
@@ -194,7 +194,7 @@
 <!-- Node7 -->
 <g id="Node000007" class="node">
 <title>Node7</title>
-<g id="a_Node000007"><a xlink:href="classpolyfem_1_1_state.html#a9fa28a682c746974ee171d8cfa6a8558" target="_top" xlink:title="solves transient navier stokes with operator splitting">
+<g id="a_Node000007"><a xlink:href="classpolyfem_1_1_state.html#aa708cfe19c264bb75b86dead580bb593" target="_top" xlink:title="solves transient navier stokes with operator splitting">
 <polygon fill="white" stroke="#666666" points="568,-131 404,-131 404,-101 568,-101 568,-131"/>
 <text text-anchor="start" x="412" y="-119" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
 <text text-anchor="middle" x="486" y="-108" font-family="Helvetica,sans-Serif" font-size="10.00">_transient_navier_stokes_split</text>
@@ -213,7 +213,7 @@
 <!-- Node8 -->
 <g id="Node000008" class="node">
 <title>Node8</title>
-<g id="a_Node000008"><a xlink:href="classpolyfem_1_1_state.html#a7450ef7c42dd9c523e1be73a5819117d" target="_top" xlink:title="solves the problems">
+<g id="a_Node000008"><a xlink:href="classpolyfem_1_1_state.html#a8f5a3b6048c0620357b96daeea7270d5" target="_top" xlink:title="solves the problems">
 <polygon fill="white" stroke="#666666" points="368,-131 247,-131 247,-101 368,-101 368,-131"/>
 <text text-anchor="start" x="255" y="-119" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
 <text text-anchor="middle" x="307.5" y="-108" font-family="Helvetica,sans-Serif" font-size="10.00">_problem</text>
@@ -233,8 +233,8 @@
 <g id="Node000009" class="node">
 <title>Node9</title>
 <g id="a_Node000009"><a xlink:href="main_8cpp.html#aec889c702a246ad7f332c75ab7adb438" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="199.5,-162.5 88.5,-162.5 88.5,-143.5 199.5,-143.5 199.5,-162.5"/>
-<text text-anchor="middle" x="144" y="-150.5" font-family="Helvetica,sans-Serif" font-size="10.00">forward_simulation</text>
+<polygon fill="white" stroke="#666666" points="199.5,-147.5 88.5,-147.5 88.5,-128.5 199.5,-128.5 199.5,-147.5"/>
+<text text-anchor="middle" x="144" y="-135.5" font-family="Helvetica,sans-Serif" font-size="10.00">forward_simulation</text>
 </a>
 </g>
 </g>
@@ -242,17 +242,18 @@
 <g id="edge8_Node000008_Node000009" class="edge">
 <title>Node8&#45;&gt;Node9</title>
 <g id="a_edge8_Node000008_Node000009"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M236.88,-131.95C219.82,-135.86 202.08,-139.92 186.8,-143.42"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="237.86,-135.32 246.82,-129.67 236.29,-128.49 237.86,-135.32"/>
+<path fill="none" stroke="#63b8ff" d="M236.55,-125.53C224.19,-127.21 211.48,-128.94 199.62,-130.56"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="237.39,-128.95 246.82,-124.13 236.44,-122.01 237.39,-128.95"/>
 </a>
 </g>
 </g>
 <!-- Node11 -->
 <g id="Node000011" class="node">
 <title>Node11</title>
-<g id="a_Node000011"><a xlink:href="classpolyfem_1_1_state.html#a219f9935d918f739d82488449bd4cbf4" target="_top" xlink:title="solves the problem, call other methods">
-<polygon fill="white" stroke="#666666" points="204.5,-125.5 83.5,-125.5 83.5,-106.5 204.5,-106.5 204.5,-125.5"/>
-<text text-anchor="middle" x="144" y="-113.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::State::solve</text>
+<g id="a_Node000011"><a xlink:href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acac3e8ce8646ddd1544ed034c71bec96" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="#666666" points="211,-110 77,-110 77,-80 211,-80 211,-110"/>
+<text text-anchor="start" x="85" y="-98" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Adjoint</text>
+<text text-anchor="middle" x="144" y="-87" font-family="Helvetica,sans-Serif" font-size="10.00">OptUtils::solve_pde</text>
 </a>
 </g>
 </g>
@@ -260,27 +261,8 @@
 <g id="edge10_Node000008_Node000011" class="edge">
 <title>Node8&#45;&gt;Node11</title>
 <g id="a_edge10_Node000008_Node000011"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M236.7,-116C226.04,-116 215.12,-116 204.7,-116"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="236.82,-119.5 246.82,-116 236.82,-112.5 236.82,-119.5"/>
-</a>
-</g>
-</g>
-<!-- Node12 -->
-<g id="Node000012" class="node">
-<title>Node12</title>
-<g id="a_Node000012"><a xlink:href="structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acac3e8ce8646ddd1544ed034c71bec96" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="211,-88 77,-88 77,-58 211,-58 211,-88"/>
-<text text-anchor="start" x="85" y="-76" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Adjoint</text>
-<text text-anchor="middle" x="144" y="-65" font-family="Helvetica,sans-Serif" font-size="10.00">OptUtils::solve_pde</text>
-</a>
-</g>
-</g>
-<!-- Node8&#45;&gt;Node12 -->
-<g id="edge11_Node000008_Node000012" class="edge">
-<title>Node8&#45;&gt;Node12</title>
-<g id="a_edge11_Node000008_Node000012"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M240.28,-98.37C227.39,-94.94 213.99,-91.37 201.45,-88.03"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="239.45,-101.77 250.02,-100.96 241.25,-95.01 239.45,-101.77"/>
+<path fill="none" stroke="#63b8ff" d="M236.64,-106.92C228.21,-105.82 219.61,-104.7 211.23,-103.61"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="236.45,-110.42 246.82,-108.24 237.36,-103.48 236.45,-110.42"/>
 </a>
 </g>
 </g>
@@ -288,8 +270,8 @@
 <g id="Node000010" class="node">
 <title>Node10</title>
 <g id="a_Node000010"><a xlink:href="main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="#666666" points="41,-162.5 0,-162.5 0,-143.5 41,-143.5 41,-162.5"/>
-<text text-anchor="middle" x="20.5" y="-150.5" font-family="Helvetica,sans-Serif" font-size="10.00">main</text>
+<polygon fill="white" stroke="#666666" points="41,-147.5 0,-147.5 0,-128.5 41,-128.5 41,-147.5"/>
+<text text-anchor="middle" x="20.5" y="-135.5" font-family="Helvetica,sans-Serif" font-size="10.00">main</text>
 </a>
 </g>
 </g>
@@ -297,15 +279,15 @@
 <g id="edge9_Node000009_Node000010" class="edge">
 <title>Node9&#45;&gt;Node10</title>
 <g id="a_edge9_Node000009_Node000010"><a xlink:title=" ">
-<path fill="none" stroke="#63b8ff" d="M77.97,-153C64.49,-153 51.29,-153 41.05,-153"/>
-<polygon fill="#63b8ff" stroke="#63b8ff" points="78.29,-156.5 88.29,-153 78.29,-149.5 78.29,-156.5"/>
+<path fill="none" stroke="#63b8ff" d="M77.97,-138C64.49,-138 51.29,-138 41.05,-138"/>
+<polygon fill="#63b8ff" stroke="#63b8ff" points="78.29,-141.5 88.29,-138 78.29,-134.5 78.29,-141.5"/>
 </a>
 </g>
 </g>
-<!-- Node14 -->
-<g id="Node000014" class="node">
-<title>Node14</title>
-<g id="a_Node000014"><a xlink:href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#aa138ceb773286dcfb3134ea0397c29a4" target="_top" xlink:title=" ">
+<!-- Node13 -->
+<g id="Node000013" class="node">
+<title>Node13</title>
+<g id="a_Node000013"><a xlink:href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#aa138ceb773286dcfb3134ea0397c29a4" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="951.5,-223.5 809.5,-223.5 809.5,-182.5 951.5,-182.5 951.5,-223.5"/>
 <text text-anchor="start" x="817.5" y="-211.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Operator</text>
 <text text-anchor="start" x="817.5" y="-200.5" font-family="Helvetica,sans-Serif" font-size="10.00">SplittingSolver::advect</text>
@@ -313,19 +295,19 @@
 </a>
 </g>
 </g>
-<!-- Node13&#45;&gt;Node14 -->
-<g id="edge13_Node000013_Node000014" class="edge">
-<title>Node13&#45;&gt;Node14</title>
-<g id="a_edge13_Node000013_Node000014"><a xlink:title=" ">
+<!-- Node12&#45;&gt;Node13 -->
+<g id="edge12_Node000012_Node000013" class="edge">
+<title>Node12&#45;&gt;Node13</title>
+<g id="a_edge12_Node000012_Node000013"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M1008.3,-162.12C988.39,-168.54 965.83,-175.81 945.33,-182.42"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="1009.4,-165.44 1017.85,-159.04 1007.26,-158.78 1009.4,-165.44"/>
 </a>
 </g>
 </g>
-<!-- Node15 -->
-<g id="Node000015" class="node">
-<title>Node15</title>
-<g id="a_Node000015"><a xlink:href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#aeb96f4c6c88d09107eadec54275b4564" target="_top" xlink:title=" ">
+<!-- Node14 -->
+<g id="Node000014" class="node">
+<title>Node14</title>
+<g id="a_Node000014"><a xlink:href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#aeb96f4c6c88d09107eadec54275b4564" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="951.5,-164.5 809.5,-164.5 809.5,-123.5 951.5,-123.5 951.5,-164.5"/>
 <text text-anchor="start" x="817.5" y="-152.5" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Operator</text>
 <text text-anchor="start" x="817.5" y="-141.5" font-family="Helvetica,sans-Serif" font-size="10.00">SplittingSolver::advect</text>
@@ -333,94 +315,94 @@
 </a>
 </g>
 </g>
-<!-- Node13&#45;&gt;Node15 -->
-<g id="edge14_Node000013_Node000015" class="edge">
-<title>Node13&#45;&gt;Node15</title>
-<g id="a_edge14_Node000013_Node000015"><a xlink:title=" ">
+<!-- Node12&#45;&gt;Node14 -->
+<g id="edge13_Node000012_Node000014" class="edge">
+<title>Node12&#45;&gt;Node14</title>
+<g id="a_edge13_Node000012_Node000014"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M979.65,-144C970.24,-144 960.73,-144 951.53,-144"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="979.8,-147.5 989.8,-144 979.8,-140.5 979.8,-147.5"/>
 </a>
 </g>
 </g>
-<!-- Node16 -->
-<g id="Node000016" class="node">
-<title>Node16</title>
-<g id="a_Node000016"><a xlink:href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a64a74b23993d4d656930c2919f31abdd" target="_top" xlink:title=" ">
+<!-- Node15 -->
+<g id="Node000015" class="node">
+<title>Node15</title>
+<g id="a_Node000015"><a xlink:href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a64a74b23993d4d656930c2919f31abdd" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="758.5,-223 616.5,-223 616.5,-193 758.5,-193 758.5,-223"/>
 <text text-anchor="start" x="624.5" y="-211" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Operator</text>
 <text text-anchor="middle" x="687.5" y="-200" font-family="Helvetica,sans-Serif" font-size="10.00">SplittingSolver::advection</text>
 </a>
 </g>
 </g>
-<!-- Node13&#45;&gt;Node16 -->
-<g id="edge15_Node000013_Node000016" class="edge">
-<title>Node13&#45;&gt;Node16</title>
-<g id="a_edge15_Node000013_Node000016"><a xlink:title=" ">
+<!-- Node12&#45;&gt;Node15 -->
+<g id="edge14_Node000012_Node000015" class="edge">
+<title>Node12&#45;&gt;Node15</title>
+<g id="a_edge14_Node000012_Node000015"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M1045,-166.87C1024.8,-188.63 991.03,-219.94 954,-233 879.12,-259.41 785.41,-239.21 731.71,-223"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="1047.7,-169.1 1051.81,-159.33 1042.51,-164.4 1047.7,-169.1"/>
 </a>
 </g>
 </g>
-<!-- Node17 -->
-<g id="Node000017" class="node">
-<title>Node17</title>
-<g id="a_Node000017"><a xlink:href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a9f658978496f29a7c323ea19e8740dcc" target="_top" xlink:title=" ">
+<!-- Node16 -->
+<g id="Node000016" class="node">
+<title>Node16</title>
+<g id="a_Node000016"><a xlink:href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a9f658978496f29a7c323ea19e8740dcc" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="954,-105 807,-105 807,-75 954,-75 954,-105"/>
 <text text-anchor="start" x="815" y="-93" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Operator</text>
 <text text-anchor="middle" x="880.5" y="-82" font-family="Helvetica,sans-Serif" font-size="10.00">SplittingSolver::trace_back</text>
 </a>
 </g>
 </g>
-<!-- Node13&#45;&gt;Node17 -->
-<g id="edge17_Node000013_Node000017" class="edge">
-<title>Node13&#45;&gt;Node17</title>
-<g id="a_edge17_Node000013_Node000017"><a xlink:title=" ">
+<!-- Node12&#45;&gt;Node16 -->
+<g id="edge16_Node000012_Node000016" class="edge">
+<title>Node12&#45;&gt;Node16</title>
+<g id="a_edge16_Node000012_Node000016"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M1003.82,-126.1C980.72,-119.28 954.64,-111.58 932.52,-105.05"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="1002.94,-129.48 1013.52,-128.96 1004.92,-122.77 1002.94,-129.48"/>
 </a>
 </g>
 </g>
-<!-- Node16&#45;&gt;Node7 -->
-<g id="edge16_Node000016_Node000007" class="edge">
-<title>Node16&#45;&gt;Node7</title>
-<g id="a_edge16_Node000016_Node000007"><a xlink:title=" ">
+<!-- Node15&#45;&gt;Node7 -->
+<g id="edge15_Node000015_Node000007" class="edge">
+<title>Node15&#45;&gt;Node7</title>
+<g id="a_edge15_Node000015_Node000007"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M644.47,-188.62C607.27,-171.46 553.73,-146.77 519.66,-131.06"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="643.01,-191.8 653.56,-192.81 645.94,-185.44 643.01,-191.8"/>
 </a>
 </g>
 </g>
-<!-- Node17&#45;&gt;Node6 -->
-<g id="edge18_Node000017_Node000006" class="edge">
-<title>Node17&#45;&gt;Node6</title>
-<g id="a_edge18_Node000017_Node000006"><a xlink:title=" ">
+<!-- Node16&#45;&gt;Node6 -->
+<g id="edge17_Node000016_Node000006" class="edge">
+<title>Node16&#45;&gt;Node6</title>
+<g id="a_edge17_Node000016_Node000006"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M796.59,-80.45C788.19,-79.48 779.67,-78.5 771.27,-77.53"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="796.41,-83.95 806.75,-81.62 797.21,-77 796.41,-83.95"/>
 </a>
 </g>
 </g>
-<!-- Node18 -->
-<g id="Node000018" class="node">
-<title>Node18</title>
-<g id="a_Node000018"><a xlink:href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a71d25220cfe9747e5a2f970587df6d99" target="_top" xlink:title=" ">
+<!-- Node17 -->
+<g id="Node000017" class="node">
+<title>Node17</title>
+<g id="a_Node000017"><a xlink:href="classpolyfem_1_1solver_1_1_operator_splitting_solver.html#a71d25220cfe9747e5a2f970587df6d99" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="#666666" points="769,-131 606,-131 606,-101 769,-101 769,-131"/>
 <text text-anchor="start" x="614" y="-119" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Operator</text>
 <text text-anchor="middle" x="687.5" y="-108" font-family="Helvetica,sans-Serif" font-size="10.00">SplittingSolver::advection_PIC</text>
 </a>
 </g>
 </g>
-<!-- Node17&#45;&gt;Node18 -->
-<g id="edge19_Node000017_Node000018" class="edge">
-<title>Node17&#45;&gt;Node18</title>
-<g id="a_edge19_Node000017_Node000018"><a xlink:title=" ">
+<!-- Node16&#45;&gt;Node17 -->
+<g id="edge18_Node000016_Node000017" class="edge">
+<title>Node16&#45;&gt;Node17</title>
+<g id="a_edge18_Node000016_Node000017"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M796.82,-101.25C787.6,-102.51 778.21,-103.79 769.02,-105.04"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="797.31,-104.72 806.75,-99.9 796.37,-97.78 797.31,-104.72"/>
 </a>
 </g>
 </g>
-<!-- Node19&#45;&gt;Node13 -->
-<g id="edge21_Node000019_Node000013" class="edge">
-<title>Node19&#45;&gt;Node13</title>
-<g id="a_edge21_Node000019_Node000013"><a xlink:title=" ">
+<!-- Node18&#45;&gt;Node12 -->
+<g id="edge20_Node000018_Node000012" class="edge">
+<title>Node18&#45;&gt;Node12</title>
+<g id="a_edge20_Node000018_Node000012"><a xlink:title=" ">
 <path fill="none" stroke="#63b8ff" d="M1184.14,-144C1169.91,-144 1155.22,-144 1141.25,-144"/>
 <polygon fill="#63b8ff" stroke="#63b8ff" points="1184.4,-147.5 1194.4,-144 1184.4,-140.5 1184.4,-147.5"/>
 </a>

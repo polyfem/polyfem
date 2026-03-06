@@ -11,7 +11,7 @@
 <!-- Node1 -->
 <g id="Node000001" class="node">
 <title>Node1</title>
-<g id="a_Node000001"><a xlink:title=" ">
+<g id="a_Node000001"><a xlink:title="Compute DOF of y given DOF of x.">
 <polygon fill="#999999" stroke="#666666" points="496,-30 358,-30 358,0 496,0 496,-30"/>
 <text text-anchor="start" x="366" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Periodic</text>
 <text text-anchor="middle" x="427" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">MeshToMesh::size</text>
@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="Node000002" class="node">
 <title>Node2</title>
-<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a36d2f3ac2f82f026eab73420680868d8" target="_top" xlink:title=" ">
+<g id="a_Node000002"><a xlink:href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a36d2f3ac2f82f026eab73420680868d8" target="_top" xlink:title="Eval y = f(x).">
 <polygon fill="white" stroke="#666666" points="322,-30 184,-30 184,0 322,0 322,-30"/>
 <text text-anchor="start" x="192" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Periodic</text>
 <text text-anchor="middle" x="253" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">MeshToMesh::eval</text>
@@ -40,7 +40,7 @@
 <!-- Node3 -->
 <g id="Node000003" class="node">
 <title>Node3</title>
-<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a0829584cf4782cc4229063b49d1a8b3b" target="_top" xlink:title=" ">
+<g id="a_Node000003"><a xlink:href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a0829584cf4782cc4229063b49d1a8b3b" target="_top" xlink:title="Eval x = f^&#45;1 (y).">
 <polygon fill="white" stroke="#666666" points="148,-30 0,-30 0,0 148,0 148,-30"/>
 <text text-anchor="start" x="8" y="-18" font-family="Helvetica,sans-Serif" font-size="10.00">polyfem::solver::Periodic</text>
 <text text-anchor="middle" x="74" y="-7" font-family="Helvetica,sans-Serif" font-size="10.00">MeshToMesh::inverse_eval</text>

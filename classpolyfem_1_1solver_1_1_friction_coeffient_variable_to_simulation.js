@@ -6,6 +6,5 @@ var classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation =
     [ "inverse_eval", "classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html#ae4b1d5d13d7a521d9493b8b2580551fc", null ],
     [ "name", "classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html#a49fbaa5a7464e215c440c126235e624a", null ],
     [ "update_state", "classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html#aebb5cc71363ecf7a04a2e2dcf8b64853", null ],
-    [ "VariableToSimulation", "classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html#a4b57aba08ca748956469e52d2cbc620a", null ],
-    [ "VariableToSimulation", "classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html#a2da865600df57c21155dd001b1868e35", null ]
+    [ "VariableToSimulation", "classpolyfem_1_1solver_1_1_friction_coeffient_variable_to_simulation.html#a4b838fdacd0cbcf4018b26613c31cddd", null ]
 ];

@@ -147,20 +147,22 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:acd76ff43b35af0e45e6b568381fa9cd9" id="r_acd76ff43b35af0e45e6b568381fa9cd9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_bounded_biharmonic_weights2_dto3_d.html#acd76ff43b35af0e45e6b568381fa9cd9">BoundedBiharmonicWeights2Dto3D</a> (const int num_control_vertices, const int num_vertices, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const bool allow_rotations)</td></tr>
 <tr class="separator:acd76ff43b35af0e45e6b568381fa9cd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a644112621f85be428daf6c3c44592f10" id="r_a644112621f85be428daf6c3c44592f10"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_bounded_biharmonic_weights2_dto3_d.html#a644112621f85be428daf6c3c44592f10">inverse_eval</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>) override</td></tr>
+<tr class="memdesc:a644112621f85be428daf6c3c44592f10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Eval x = f^-1 (y).  <br /></td></tr>
 <tr class="separator:a644112621f85be428daf6c3c44592f10"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf1e29bd1bb9a01548cf9a5d0117d8c4" id="r_abf1e29bd1bb9a01548cf9a5d0117d8c4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_bounded_biharmonic_weights2_dto3_d.html#abf1e29bd1bb9a01548cf9a5d0117d8c4">size</a> (const int x_size) const override</td></tr>
+<tr class="memdesc:abf1e29bd1bb9a01548cf9a5d0117d8c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute DOF of y given DOF of x.  <br /></td></tr>
 <tr class="separator:abf1e29bd1bb9a01548cf9a5d0117d8c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b4b0398c8bb707631024ec079eca992" id="r_a2b4b0398c8bb707631024ec079eca992"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_bounded_biharmonic_weights2_dto3_d.html#a2b4b0398c8bb707631024ec079eca992">eval</a> (const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const override</td></tr>
+<tr class="memdesc:a2b4b0398c8bb707631024ec079eca992"><td class="mdescLeft">&#160;</td><td class="mdescRight">Eval y = f(x).  <br /></td></tr>
 <tr class="separator:a2b4b0398c8bb707631024ec079eca992"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5386b4a50e566cb0061dd4a05e0e62a0" id="r_a5386b4a50e566cb0061dd4a05e0e62a0"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_bounded_biharmonic_weights2_dto3_d.html#a5386b4a50e566cb0061dd4a05e0e62a0">apply_jacobian</a> (const Eigen::VectorXd &amp;grad_full, const Eigen::VectorXd &amp;<a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>) const override</td></tr>
+<tr class="memdesc:a5386b4a50e566cb0061dd4a05e0e62a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply jacobian for chain rule.  <br /></td></tr>
 <tr class="separator:a5386b4a50e566cb0061dd4a05e0e62a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ea9f37ade5529391089c199613a9d69" id="r_a9ea9f37ade5529391089c199613a9d69"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_bounded_biharmonic_weights2_dto3_d.html#a9ea9f37ade5529391089c199613a9d69">get_bbw_weights</a> ()</td></tr>
 <tr class="separator:a9ea9f37ade5529391089c199613a9d69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classpolyfem_1_1solver_1_1_parametrization"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpolyfem_1_1solver_1_1_parametrization')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html">polyfem::solver::Parametrization</a></td></tr>
-<tr class="memitem:afb784d6964d824c613514a986a75c70d inherit pub_methods_classpolyfem_1_1solver_1_1_parametrization" id="r_afb784d6964d824c613514a986a75c70d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#afb784d6964d824c613514a986a75c70d">Parametrization</a> ()</td></tr>
-<tr class="separator:afb784d6964d824c613514a986a75c70d inherit pub_methods_classpolyfem_1_1solver_1_1_parametrization"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab8823686ddb2ecac9353fda2731aadbf inherit pub_methods_classpolyfem_1_1solver_1_1_parametrization" id="r_ab8823686ddb2ecac9353fda2731aadbf"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#ab8823686ddb2ecac9353fda2731aadbf">~Parametrization</a> ()</td></tr>
-<tr class="separator:ab8823686ddb2ecac9353fda2731aadbf inherit pub_methods_classpolyfem_1_1solver_1_1_parametrization"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad85dc942f14295721a5bf7ce8e9d6c00 inherit pub_methods_classpolyfem_1_1solver_1_1_parametrization" id="r_ad85dc942f14295721a5bf7ce8e9d6c00"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#ad85dc942f14295721a5bf7ce8e9d6c00">~Parametrization</a> ()=default</td></tr>
+<tr class="separator:ad85dc942f14295721a5bf7ce8e9d6c00 inherit pub_methods_classpolyfem_1_1solver_1_1_parametrization"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -286,7 +288,7 @@ Private Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_spline_parametrizations_8cpp_source.html#l00157">157</a> of file <a class="el" href="_spline_parametrizations_8cpp_source.html">SplineParametrizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00171">polyfem::State::bases</a>, <a class="el" href="_spline_parametrizations_8hpp_source.html#l00096">F_surface_</a>, <a class="el" href="_state_8hpp_source.html#l00223">polyfem::State::geom_bases()</a>, <a class="el" href="_state_diff_8cpp_source.html#l00072">polyfem::State::get_vertices()</a>, <a class="el" href="_state_8hpp_source.html#l00471">polyfem::State::mesh</a>, <a class="el" href="_state_8cpp_source.html#l00234">polyfem::State::node_to_primitive()</a>, <a class="el" href="_state_8hpp_source.html#l00436">polyfem::State::total_local_boundary</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00047">V</a>, and <a class="el" href="_spline_parametrizations_8hpp_source.html#l00095">V_surface_</a>.</p>
+<p class="reference">References <a class="el" href="_state_8hpp_source.html#l00184">polyfem::State::bases</a>, <a class="el" href="_spline_parametrizations_8hpp_source.html#l00096">F_surface_</a>, <a class="el" href="_state_8hpp_source.html#l00236">polyfem::State::geom_bases()</a>, <a class="el" href="_state_8hpp_source.html#l00702">polyfem::State::get_vertices()</a>, <a class="el" href="_state_8hpp_source.html#l00498">polyfem::State::mesh</a>, <a class="el" href="_state_8cpp_source.html#l00241">polyfem::State::node_to_primitive()</a>, <a class="el" href="_state_8hpp_source.html#l00463">polyfem::State::total_local_boundary</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00058">V</a>, and <a class="el" href="_spline_parametrizations_8hpp_source.html#l00095">V_surface_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -329,6 +331,17 @@ Here is the call graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Apply jacobian for chain rule. </p>
+<p>Let g(y) = g(f(x)). Given ∂g/∂y, compute ∂g/∂x = ∂g/∂y * ∂y/∂x.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">grad_full</td><td>∂g/∂y. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">x</td><td>Where ∂g/∂x is evaluated. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>∂g/∂x. </dd></dl>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#ab9ba31549e419d2122ae648954f265f3">polyfem::solver::Parametrization</a>.</p>
 
@@ -374,7 +387,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_spline_parametrizations_8cpp_source.html#l00379">379</a> of file <a class="el" href="_spline_parametrizations_8cpp_source.html">SplineParametrizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_spline_parametrizations_8hpp_source.html#l00096">F_surface_</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00047">V</a>, <a class="el" href="_spline_parametrizations_8hpp_source.html#l00095">V_surface_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_spline_parametrizations_8hpp_source.html#l00096">F_surface_</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00058">V</a>, <a class="el" href="_spline_parametrizations_8hpp_source.html#l00095">V_surface_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_spline_parametrizations_8cpp_source.html#l00236">inverse_eval()</a>.</p>
 <div class="dynheader">
@@ -408,6 +421,15 @@ Here is the caller graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Eval y = f(x). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">x</td><td>x. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>y. </dd></dl>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#a13746ef77cadd36b2a4844cc9e812d45">polyfem::solver::Parametrization</a>.</p>
 
@@ -482,11 +504,27 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
+<p>Eval x = f^-1 (y). </p>
+<p>This is not a strict inverse in mathematical sense, one may choose "reasonable" x even if f is not one-to-one.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">y</td><td>y. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>x. </dd></dl>
+<dl class="exception"><dt>Exceptions</dt><dd>
+  <table class="exception">
+    <tr><td class="paramname">std::runtime_error</td><td>Throw if not implemented. </td></tr>
+  </table>
+  </dd>
+</dl>
+
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#a1442cd89d8ca4ed607b5caff20effd1d">polyfem::solver::Parametrization</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_spline_parametrizations_8cpp_source.html#l00236">236</a> of file <a class="el" href="_spline_parametrizations_8cpp_source.html">SplineParametrizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_spline_parametrizations_8hpp_source.html#l00102">allow_rotations_</a>, <a class="el" href="_spline_parametrizations_8hpp_source.html#l00092">bbw_weights_</a>, <a class="el" href="_spline_parametrizations_8hpp_source.html#l00093">boundary_bbw_weights_</a>, <a class="el" href="_spline_parametrizations_8cpp_source.html#l00379">compute_faces_for_partial_vertices()</a>, <a class="el" href="_spline_parametrizations_8hpp_source.html#l00091">control_points_</a>, <a class="el" href="_spline_parametrizations_8cpp_source.html#l00333">eval()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_spline_parametrizations_8hpp_source.html#l00100">invoked_inverse_eval_</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_spline_parametrizations_8hpp_source.html#l00089">num_control_vertices_</a>, <a class="el" href="_spline_parametrizations_8cpp_source.html#l00192">optimal_new_control_point_idx()</a>, <a class="el" href="_spline_parametrizations_8hpp_source.html#l00078">size()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00047">V</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_parametrizations_8hpp_source.html#l00098">y_start</a>.</p>
+<p class="reference">References <a class="el" href="_spline_parametrizations_8hpp_source.html#l00102">allow_rotations_</a>, <a class="el" href="_spline_parametrizations_8hpp_source.html#l00092">bbw_weights_</a>, <a class="el" href="_spline_parametrizations_8hpp_source.html#l00093">boundary_bbw_weights_</a>, <a class="el" href="_spline_parametrizations_8cpp_source.html#l00379">compute_faces_for_partial_vertices()</a>, <a class="el" href="_spline_parametrizations_8hpp_source.html#l00091">control_points_</a>, <a class="el" href="_spline_parametrizations_8cpp_source.html#l00333">eval()</a>, <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, <a class="el" href="_spline_parametrizations_8hpp_source.html#l00100">invoked_inverse_eval_</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_spline_parametrizations_8hpp_source.html#l00089">num_control_vertices_</a>, <a class="el" href="_spline_parametrizations_8cpp_source.html#l00192">optimal_new_control_point_idx()</a>, <a class="el" href="_spline_parametrizations_8hpp_source.html#l00078">size()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00058">V</a>, <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">y</a>, and <a class="el" href="_spline_parametrizations_8hpp_source.html#l00098">y_start</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -543,7 +581,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_spline_parametrizations_8cpp_source.html#l00192">192</a> of file <a class="el" href="_spline_parametrizations_8cpp_source.html">SplineParametrizations.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00047">V</a>.</p>
+<p class="reference">References <a class="el" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::F</a>, and <a class="el" href="_adjoint_n_l_problem_8cpp_source.html#l00058">V</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_spline_parametrizations_8cpp_source.html#l00236">inverse_eval()</a>.</p>
 <div class="dynheader">
@@ -577,6 +615,15 @@ Here is the caller graph for this function:</div>
   </tr>
 </table>
 </div><div class="memdoc">
+
+<p>Compute DOF of y given DOF of x. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">x_size</td><td>The DOF of x. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>DOF of y. </dd></dl>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_parametrization.html#a0b68baa55dfbd76f3fc41b47d48aff82">polyfem::solver::Parametrization</a>.</p>
 

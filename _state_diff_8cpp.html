@@ -120,41 +120,35 @@ $(document).ready(function(){initNavTree('_state_diff_8cpp.html',''); initResiza
 
 <div class="header">
   <div class="summary">
-<a href="#namespaces">Namespaces</a>  </div>
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">StateDiff.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;<a class="el" href="_state_8hpp_source.html">polyfem/State.hpp</a>&gt;</code><br />
+<div class="textblock"><code>#include &lt;<a class="el" href="_state_diff_8hpp_source.html">polyfem/optimization/StateDiff.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_state_8hpp_source.html">polyfem/State.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_logger_8hpp_source.html">polyfem/utils/Logger.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_matrix_utils_8hpp_source.html">polyfem/utils/MatrixUtils.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_types_8hpp_source.html">polyfem/utils/Types.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_b_d_f_8hpp_source.html">polyfem/time_integrator/BDF.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_implicit_euler_8hpp_source.html">polyfem/time_integrator/ImplicitEuler.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_boundary_sampler_8hpp_source.html">polyfem/utils/BoundarySampler.hpp</a>&gt;</code><br />
 <code>#include &lt;polysolve/linear/FEMSolver.hpp&gt;</code><br />
-<code>#include &lt;<a class="el" href="_maybe_parallel_for_8hpp_source.html">polyfem/utils/MaybeParallelFor.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_string_utils_8hpp_source.html">polyfem/utils/StringUtils.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_evaluator_8hpp_source.html">polyfem/io/Evaluator.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_n_l_problem_8hpp_source.html">polyfem/solver/NLProblem.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_n_l_homo_problem_8hpp_source.html">polyfem/solver/NLHomoProblem.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_body_form_8hpp_source.html">polyfem/solver/forms/BodyForm.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_barrier_contact_form_8hpp_source.html">polyfem/solver/forms/BarrierContactForm.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_smooth_contact_form_8hpp_source.html">polyfem/solver/forms/SmoothContactForm.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_elastic_form_8hpp_source.html">polyfem/solver/forms/ElasticForm.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_body_form_8hpp_source.html">polyfem/solver/forms/BodyForm.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_friction_form_8hpp_source.html">polyfem/solver/forms/FrictionForm.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_normal_adhesion_form_8hpp_source.html">polyfem/solver/forms/NormalAdhesionForm.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_tangential_adhesion_form_8hpp_source.html">polyfem/solver/forms/TangentialAdhesionForm.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_inertia_form_8hpp_source.html">polyfem/solver/forms/InertiaForm.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_lagged_reg_form_8hpp_source.html">polyfem/solver/forms/LaggedRegForm.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_viscous_damping_8hpp_source.html">polyfem/assembler/ViscousDamping.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_diff_cache_8hpp_source.html">polyfem/optimization/DiffCache.hpp</a>&gt;</code><br />
 <code>#include &lt;ipc/ipc.hpp&gt;</code><br />
-<code>#include &lt;ipc/barrier/barrier.hpp&gt;</code><br />
-<code>#include &lt;ipc/utils/local_to_global.hpp&gt;</code><br />
 <code>#include &lt;ipc/potentials/friction_potential.hpp&gt;</code><br />
 <code>#include &lt;Eigen/Dense&gt;</code><br />
-<code>#include &lt;unsupported/Eigen/SparseExtra&gt;</code><br />
-<code>#include &lt;deque&gt;</code><br />
-<code>#include &lt;map&gt;</code><br />
 <code>#include &lt;algorithm&gt;</code><br />
-<code>#include &lt;fstream&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+<code>#include &lt;cassert&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for StateDiff.cpp:</div>
 <div class="dyncontent">
@@ -167,6 +161,20 @@ Include dependency graph for StateDiff.cpp:</div>
 Namespaces</h2></td></tr>
 <tr class="memitem:namespacepolyfem" id="r_namespacepolyfem"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html">polyfem</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a957918a4bafd3f507b383d1209de1a27" id="r_a957918a4bafd3f507b383d1209de1a27"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a957918a4bafd3f507b383d1209de1a27">polyfem::solve_adjoint_cached</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &amp;diff_cache, const Eigen::MatrixXd &amp;rhs)</td></tr>
+<tr class="separator:a957918a4bafd3f507b383d1209de1a27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92bdeb618e4a9d898e4787139b82fe3b" id="r_a92bdeb618e4a9d898e4787139b82fe3b"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a92bdeb618e4a9d898e4787139b82fe3b">polyfem::get_adjoint_mat</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &amp;diff_cache, int type)</td></tr>
+<tr class="memdesc:a92bdeb618e4a9d898e4787139b82fe3b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get adjoint parameter nu or p.  <br /></td></tr>
+<tr class="separator:a92bdeb618e4a9d898e4787139b82fe3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e9f6b8e014f2509e8406e1d1ab79b62" id="r_a1e9f6b8e014f2509e8406e1d1ab79b62"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a1e9f6b8e014f2509e8406e1d1ab79b62">polyfem::compute_surface_node_ids</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const int surface_selection, std::vector&lt; int &gt; &amp;node_ids)</td></tr>
+<tr class="separator:a1e9f6b8e014f2509e8406e1d1ab79b62"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93c1ff67321ecba37e24d73bb1a74d64" id="r_a93c1ff67321ecba37e24d73bb1a74d64"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a93c1ff67321ecba37e24d73bb1a74d64">polyfem::compute_total_surface_node_ids</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, std::vector&lt; int &gt; &amp;node_ids)</td></tr>
+<tr class="separator:a93c1ff67321ecba37e24d73bb1a74d64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16520f8a00832be325bdb7c7521a8b5e" id="r_a16520f8a00832be325bdb7c7521a8b5e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem.html#a16520f8a00832be325bdb7c7521a8b5e">polyfem::compute_volume_node_ids</a> (const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const int volume_selection, std::vector&lt; int &gt; &amp;node_ids)</td></tr>
+<tr class="separator:a16520f8a00832be325bdb7c7521a8b5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

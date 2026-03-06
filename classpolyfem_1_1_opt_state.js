@@ -16,6 +16,7 @@ var classpolyfem_1_1_opt_state =
     [ "solve", "classpolyfem_1_1_opt_state.html#a146051c929a4ea6da9fc24fc2fadc39f", null ],
     [ "args", "classpolyfem_1_1_opt_state.html#a3a0a2a1c5f70dc1d7f1a8e06a2bb0860", null ],
     [ "console_sink_", "classpolyfem_1_1_opt_state.html#ac02e4821c706dd375552aaa47e48f720", null ],
+    [ "diff_caches", "classpolyfem_1_1_opt_state.html#a573923d2a6ad18b7325d70902dc41591", null ],
     [ "file_sink_", "classpolyfem_1_1_opt_state.html#a63c46c8dd629f4604866fa476f730e5e", null ],
     [ "ndof", "classpolyfem_1_1_opt_state.html#aa601accd4d2967809ac165aedc3b45a8", null ],
     [ "nl_problem", "classpolyfem_1_1_opt_state.html#a9d787809d949294df9be646375e2d9fa", null ],

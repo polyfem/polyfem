@@ -24,5 +24,7 @@ var searchData=
   ['boundarysampler_2ecpp_21',['BoundarySampler.cpp',['../_boundary_sampler_8cpp.html',1,'']]],
   ['boundarysampler_2ehpp_22',['BoundarySampler.hpp',['../_boundary_sampler_8hpp.html',1,'']]],
   ['bsplineparametrization_2ecpp_23',['BSplineParametrization.cpp',['../_b_spline_parametrization_8cpp.html',1,'']]],
-  ['bsplineparametrization_2ehpp_24',['BSplineParametrization.hpp',['../_b_spline_parametrization_8hpp.html',1,'']]]
+  ['bsplineparametrization_2ehpp_24',['BSplineParametrization.hpp',['../_b_spline_parametrization_8hpp.html',1,'']]],
+  ['buildfromjson_2ecpp_25',['BuildFromJson.cpp',['../_build_from_json_8cpp.html',1,'']]],
+  ['buildfromjson_2ehpp_26',['BuildFromJson.hpp',['../_build_from_json_8hpp.html',1,'']]]
 ];

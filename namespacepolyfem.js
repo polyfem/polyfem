@@ -63,6 +63,14 @@ var namespacepolyfem =
       [ "saint_venant_3d_function", "namespacepolyfem_1_1autogen.html#a7c66d23f184776c923f8a0e89615a324", null ]
     ] ],
     [ "basis", "namespacepolyfem_1_1basis.html", "namespacepolyfem_1_1basis" ],
+    [ "from_json", "namespacepolyfem_1_1from__json.html", [
+      [ "build_form", "namespacepolyfem_1_1from__json.html#acc06afc508462946dcc607b4adc1e85c", null ],
+      [ "build_parametrization", "namespacepolyfem_1_1from__json.html#ab0e091fce89cd79e120154b877711f49", null ],
+      [ "build_state", "namespacepolyfem_1_1from__json.html#a9a8b510fa2ad737beccc2ee1a1e3dfa9", null ],
+      [ "build_states", "namespacepolyfem_1_1from__json.html#a72c688b736d73e3abb1c2f01fa49dcf7", null ],
+      [ "build_variable_to_simulation", "namespacepolyfem_1_1from__json.html#a68307d6cb8d6854897f1d8d48554b4fe", null ],
+      [ "build_variable_to_simulation_group", "namespacepolyfem_1_1from__json.html#a4527b60c9b05724f41b4f1493cfbbae9", null ]
+    ] ],
     [ "io", "namespacepolyfem_1_1io.html", "namespacepolyfem_1_1io" ],
     [ "mesh", "namespacepolyfem_1_1mesh.html", "namespacepolyfem_1_1mesh" ],
     [ "problem", "namespacepolyfem_1_1problem.html", "namespacepolyfem_1_1problem" ],
@@ -78,6 +86,7 @@ var namespacepolyfem =
     [ "BSplineParametrization2D", "classpolyfem_1_1_b_spline_parametrization2_d.html", "classpolyfem_1_1_b_spline_parametrization2_d" ],
     [ "BSplineParametrization3D", "classpolyfem_1_1_b_spline_parametrization3_d.html", "classpolyfem_1_1_b_spline_parametrization3_d" ],
     [ "CubicHermiteSplineParametrization", "classpolyfem_1_1_cubic_hermite_spline_parametrization.html", "classpolyfem_1_1_cubic_hermite_spline_parametrization" ],
+    [ "DiffCache", "classpolyfem_1_1_diff_cache.html", "classpolyfem_1_1_diff_cache" ],
     [ "IntegrableFunctional", "classpolyfem_1_1_integrable_functional.html", "classpolyfem_1_1_integrable_functional" ],
     [ "LazyCubicInterpolator", "classpolyfem_1_1_lazy_cubic_interpolator.html", "classpolyfem_1_1_lazy_cubic_interpolator" ],
     [ "OptState", "classpolyfem_1_1_opt_state.html", "classpolyfem_1_1_opt_state" ],
@@ -94,13 +103,9 @@ var namespacepolyfem =
     [ "QuadratureVector", "namespacepolyfem.html#a6fa9b5aafa6c994633a25aa454efc18f", null ],
     [ "RowVectorNd", "namespacepolyfem.html#abe6f92d10f655cb8c4ded3f58a6dc321", null ],
     [ "StiffnessMatrix", "namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4", null ],
+    [ "UserPostStepCallback", "namespacepolyfem.html#a910b3dbb6b070be9a2e1f4ebf3f1551a", null ],
     [ "VectorNd", "namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c", null ],
     [ "VectorNi", "namespacepolyfem.html#ab97febca5b8b70517cc760a5409fa522", null ],
-    [ "CacheLevel", "namespacepolyfem.html#a346219dfb830a5a1bcc0f368fc8a9e6e", [
-      [ "None", "namespacepolyfem.html#a346219dfb830a5a1bcc0f368fc8a9e6ea6adf97f83acf6453d4a6a4b1070f3754", null ],
-      [ "Solution", "namespacepolyfem.html#a346219dfb830a5a1bcc0f368fc8a9e6ea49b21ad0d38942f635877e7bbc5d7a1e", null ],
-      [ "Derivatives", "namespacepolyfem.html#a346219dfb830a5a1bcc0f368fc8a9e6ea2a7f1476b6ddab6d53b03d77dacdbd1e", null ]
-    ] ],
     [ "ElasticityTensorType", "namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1", [
       [ "CAUCHY", "namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a9d0e3157464d10e95bff71bbcf0001ad", null ],
       [ "PK1", "namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ac34dd77ffb9238275b93ea1897664a7e", null ],
@@ -112,6 +117,9 @@ var namespacepolyfem =
     [ "compute_diplacement_grad", "namespacepolyfem.html#afe7d5ac326e47bbc47caa5539c4f8172", null ],
     [ "compute_disp_grad_at_quad", "namespacepolyfem.html#a4c7c05580a3be89a6cc9482963513a46", null ],
     [ "compute_integral_constraints", "namespacepolyfem.html#a066ceec9d3e84702a92a3c8d53b5a8ce", null ],
+    [ "compute_surface_node_ids", "namespacepolyfem.html#a1e9f6b8e014f2509e8406e1d1ab79b62", null ],
+    [ "compute_total_surface_node_ids", "namespacepolyfem.html#a93c1ff67321ecba37e24d73bb1a74d64", null ],
+    [ "compute_volume_node_ids", "namespacepolyfem.html#a16520f8a00832be325bdb7c7521a8b5e", null ],
     [ "convert_to_E", "namespacepolyfem.html#a689385e4e09ee320a80a0c35b78c7e7b", null ],
     [ "convert_to_lambda", "namespacepolyfem.html#ad7d5a2d4407b8790621fdba815de479e", null ],
     [ "convert_to_mu", "namespacepolyfem.html#a869023aefa896d263b89a68a7f24c4c1", null ],
@@ -119,6 +127,7 @@ var namespacepolyfem =
     [ "d_E_nu_d_lambda_mu", "namespacepolyfem.html#ae2ee1fd43a8bc67f783f3caeae1ab194", null ],
     [ "d_lambda_mu_d_E_nu", "namespacepolyfem.html#af50dca98c7a28e276c5b3cc9ab6c622e", null ],
     [ "first_invariant", "namespacepolyfem.html#aa181bc58c3a1b62840a1af8c8c651142", null ],
+    [ "get_adjoint_mat", "namespacepolyfem.html#a92bdeb618e4a9d898e4787139b82fe3b", null ],
     [ "get_local_disp", "namespacepolyfem.html#aa3c7c48e526af400b4beb3738e168c35", null ],
     [ "gradient_from_energy", "namespacepolyfem.html#af67ac2f505cacb0b0f006754bf981929", null ],
     [ "gradient_from_energy", "namespacepolyfem.html#acf04b657153af8a5f4d2269617e8555c", null ],
@@ -133,6 +142,7 @@ var namespacepolyfem =
     [ "second_invariant", "namespacepolyfem.html#a9845e724ca91d9f20e3ac9bc558c1176", null ],
     [ "set_adjoint_logger", "namespacepolyfem.html#a85a916e211055cb036123120e33fd971", null ],
     [ "set_logger", "namespacepolyfem.html#ac64c417f742692869f9528d2cd10d569", null ],
+    [ "solve_adjoint_cached", "namespacepolyfem.html#a957918a4bafd3f507b383d1209de1a27", null ],
     [ "tertrahedralize_star_shaped_surface", "namespacepolyfem.html#ac611f09144ce9acf9f55c714b4dad9b8", null ],
     [ "third_invariant", "namespacepolyfem.html#a4d8e2f58cbf23bf646a53391b4fddf57", null ],
     [ "von_mises_stress_for_stress_tensor", "namespacepolyfem.html#a99d54b5136c9fd5b53151e3ae47bad34", null ],

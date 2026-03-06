@@ -1,79 +1,69 @@
 <map id="polyfem::solver::ProxyContactForceForm::solution_changed_step" name="polyfem::solver::ProxyContactForceForm::solution_changed_step">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,1004,252,1044"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#ab7fb0453693274d35caf72b36e229b95" title=" " alt="" coords="300,1004,535,1044"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="252,1021,286,1021,286,1027,252,1027"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,865,252,905"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#ab7fb0453693274d35caf72b36e229b95" title=" " alt="" coords="300,865,535,905"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="252,883,286,883,286,888,252,888"/>
 <area shape="rect" id="Node000003" href="$classpolyfem_1_1utils_1_1_boundary_sampler.html#a78db6a08b1deb5628dac7845fe58bebc" title=" " alt="" coords="583,133,805,173"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="421,1003,480,772,527,603,580,431,631,293,676,185,681,187,636,295,585,433,532,605,485,773,426,1004"/>
-<area shape="rect" id="Node000008" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#a736c84178a9391358d50b1d984440538" title="computes the per element values at the local (ref el) points (pts) sets basis_values,..." alt="" coords="599,445,789,499"/>
-<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="426,1003,671,511,675,513,431,1005"/>
-<area shape="rect" id="Node000016" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a7b3e2f650cb68b596b8b67ef6702f3b1" title="extracts the boundary mesh" alt="" coords="585,921,803,961"/>
-<area shape="poly" id="edge15_Node000002_Node000016" title=" " alt="" coords="484,1001,612,963,614,968,486,1007"/>
-<area shape="rect" id="Node000030" href="$classpolyfem_1_1_state.html#a106191fffa5a7be86713ae76fb6d5053" title="Get a constant reference to the geometry mapping bases." alt="" coords="613,1004,775,1044"/>
-<area shape="poly" id="edge33_Node000002_Node000030" title=" " alt="" coords="535,1021,599,1021,599,1027,535,1027"/>
-<area shape="rect" id="Node000033" href="$classpolyfem_1_1basis_1_1_element_bases.html#a9fde226f98331cb0c54e13baa95d5a98" title=" " alt="" coords="585,1068,803,1108"/>
-<area shape="poly" id="edge36_Node000002_Node000033" title=" " alt="" coords="505,1041,594,1062,593,1068,504,1047"/>
-<area shape="rect" id="Node000034" href="$namespacepolyfem.html#a8d6eb2c01f97c327e382b6dcda332777" title=" " alt="" coords="605,1169,783,1209"/>
-<area shape="poly" id="edge37_Node000002_Node000034" title=" " alt="" coords="454,1042,649,1160,646,1165,451,1047"/>
-<area shape="rect" id="Node000036" href="$classpolyfem_1_1_state.html#ac30f9dbdd4c0cd6c6004639877bdac01" title="quadrature used for projecting boundary conditions" alt="" coords="593,1309,795,1349"/>
-<area shape="poly" id="edge39_Node000002_Node000036" title=" " alt="" coords="436,1042,500,1121,585,1220,663,1298,659,1301,581,1223,496,1125,432,1046"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_local_boundary.html#a626a35ec8d903d5f0862ee38f53b1508" title="Get the element&#39;s ID." alt="" coords="866,133,1090,173"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="806,151,852,151,852,156,806,156"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_local_boundary.html#aa832a6de9bb5d595c5af621c1a7aca88" title="Get the i&#45;th boundary primitive&#39;s global ID." alt="" coords="866,197,1090,237"/>
-<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="784,171,876,192,875,197,783,176"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1mesh_1_1_local_boundary.html#a958c24908487b959468e380dccb42644" title="Number of boundary primitives for the element." alt="" coords="866,5,1090,45"/>
-<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="722,131,780,92,852,55,873,47,875,52,854,60,783,97,725,135"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1mesh_1_1_local_boundary.html#aa8a84d69ace838297dcca7bd12e6d34b" title="Get the type of boundary for the element." alt="" coords="866,69,1090,109"/>
-<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="783,131,875,110,876,115,784,136"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1basis_1_1_element_bases.html#a6936d345f21ed506227618ef65dba6a6" title="evaluate stored bases at given points on the reference element saves results to basis_values" alt="" coords="869,420,1087,460"/>
-<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="789,459,855,451,855,456,790,464"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1basis_1_1_element_bases.html#a731d20029949bd0255c9af1f91dfa74c" title="evaluate gradient of stored bases at given points on the reference element saves results to basis_val..." alt="" coords="869,484,1087,524"/>
-<area shape="poly" id="edge10_Node000008_Node000011" title=" " alt="" coords="790,480,855,488,855,493,789,485"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#a7ce3e8b5fceffa5bdde29ca3ac79459b" title="void finalize(const Eigen::MatrixXd &amp;v, const Eigen::MatrixXd &amp;dx, const Eigen::MatrixXd &amp;dy); void f..." alt="" coords="883,549,1073,603"/>
-<area shape="poly" id="edge12_Node000008_Node000013" title=" " alt="" coords="761,497,854,534,877,542,875,547,852,538,759,502"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#af2830b447f50401acd4e69a57a4b235b" title=" " alt="" coords="883,262,1073,317"/>
-<area shape="poly" id="edge13_Node000008_Node000014" title=" " alt="" coords="717,442,775,384,812,353,852,326,869,317,871,322,855,330,815,357,778,388,721,446"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#abfc70df83b8de385510064a839273131" title=" " alt="" coords="883,341,1073,395"/>
-<area shape="poly" id="edge14_Node000008_Node000015" title=" " alt="" coords="759,442,852,406,875,397,877,402,854,410,761,447"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1basis_1_1_element_bases.html#a9d6e4fd2a6d6491fed600c2a26680d89" title="default to simply calling the Basis evaluation functions" alt="" coords="1151,420,1369,460"/>
-<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="1088,437,1137,437,1137,443,1088,443"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1basis_1_1_element_bases.html#aae3b739e75920739799e866e4b0c448c" title=" " alt="" coords="1151,484,1369,524"/>
-<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="1088,501,1137,501,1137,507,1088,507"/>
-<area shape="rect" id="Node000017" href="$classpolyfem_1_1basis_1_1_basis.html#a88b90af0c63d52f2c91fe97a63c540ce" title=" " alt="" coords="897,743,1059,783"/>
-<area shape="poly" id="edge16_Node000016_Node000017" title=" " alt="" coords="711,919,770,860,809,828,852,799,883,784,885,789,855,804,812,832,773,864,715,923"/>
-<area shape="rect" id="Node000018" href="$classpolyfem_1_1mesh_1_1_mesh.html#aa9e6bd69e6a7dff10d11a335390c1062" title="checks if the mesh has polytopes" alt="" coords="897,857,1059,897"/>
-<area shape="poly" id="edge17_Node000016_Node000018" title=" " alt="" coords="783,919,883,896,884,901,784,924"/>
-<area shape="rect" id="Node000021" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="1417,823,1580,863"/>
-<area shape="poly" id="edge30_Node000016_Node000021" title=" " alt="" coords="718,919,776,878,813,858,853,843,925,825,1001,814,1077,808,1151,806,1291,812,1404,824,1403,830,1290,817,1151,812,1077,813,1001,819,927,831,854,848,816,863,779,883,721,923"/>
-<area shape="rect" id="Node000023" href="$classpolyfem_1_1mesh_1_1_mesh.html#abf0f721370d6dc7401113e92fe94f4e2" title="number of faces" alt="" coords="1417,1007,1580,1047"/>
-<area shape="poly" id="edge32_Node000016_Node000023" title=" " alt="" coords="741,959,794,980,854,997,927,1012,1003,1022,1153,1034,1291,1035,1404,1031,1404,1036,1291,1040,1153,1039,1002,1028,926,1017,853,1003,793,985,739,964"/>
-<area shape="rect" id="Node000024" href="$classpolyfem_1_1mesh_1_1_mesh.html#a361e99b40e151869564304da752e4ea4" title="if the mesh is conforming" alt="" coords="897,1087,1059,1127"/>
-<area shape="poly" id="edge23_Node000016_Node000024" title=" " alt="" coords="756,959,783,973,807,990,823,1010,831,1030,839,1048,855,1066,885,1083,883,1088,852,1070,834,1051,826,1032,819,1013,804,994,780,977,754,964"/>
-<area shape="rect" id="Node000025" href="$classpolyfem_1_1mesh_1_1_mesh.html#a4ac6c05b7775df67b96087dc9721ee0a" title="checks if element is cube compatible" alt="" coords="897,1151,1059,1191"/>
-<area shape="poly" id="edge24_Node000016_Node000025" title=" " alt="" coords="763,959,787,972,807,990,821,1010,828,1029,830,1067,834,1102,841,1120,855,1137,885,1155,882,1160,852,1141,837,1122,829,1104,825,1067,822,1030,816,1012,803,994,784,977,760,964"/>
-<area shape="rect" id="Node000026" href="$classpolyfem_1_1mesh_1_1_mesh.html#a7c0554e28a4b3dd8ded2835e6ecece2d" title="checks if element is a prism" alt="" coords="897,628,1059,668"/>
-<area shape="poly" id="edge25_Node000016_Node000026" title=" " alt="" coords="699,920,718,871,749,805,793,736,821,705,852,678,882,661,885,666,855,682,825,709,798,740,754,807,723,873,704,922"/>
-<area shape="rect" id="Node000027" href="$classpolyfem_1_1mesh_1_1_mesh.html#a62e57386728f26b8feafea1043b65c21" title="checks if element is simplex" alt="" coords="1179,979,1341,1019"/>
-<area shape="poly" id="edge26_Node000016_Node000027" title=" " alt="" coords="784,959,854,971,1018,986,1165,994,1165,999,1018,992,853,976,783,964"/>
-<area shape="rect" id="Node000028" href="$classpolyfem_1_1mesh_1_1_mesh.html#a344f3d37fa834c16ad395adce5c9e154" title="checks if the mesh is simplicial" alt="" coords="897,921,1059,961"/>
-<area shape="poly" id="edge27_Node000016_Node000028" title=" " alt="" coords="804,939,883,939,883,944,804,944"/>
-<area shape="rect" id="Node000029" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="915,693,1041,718"/>
-<area shape="poly" id="edge31_Node000016_Node000029" title=" " alt="" coords="702,920,723,879,755,827,799,773,824,749,852,728,876,717,901,709,902,714,878,722,855,733,828,753,803,777,760,830,728,882,707,922"/>
-<area shape="rect" id="Node000019" href="$classpolyfem_1_1mesh_1_1_mesh.html#a11e698a1c82ee90edab1e7a607808779" title="checks if element is polygon compatible" alt="" coords="1179,851,1341,891"/>
-<area shape="poly" id="edge18_Node000018_Node000019" title=" " alt="" coords="1059,873,1165,870,1165,876,1059,878"/>
-<area shape="rect" id="Node000020" href="$classpolyfem_1_1mesh_1_1_mesh.html#a0140181b551c7bf0c162d6898155f294" title="utitlity to return the number of elements, cells or faces in 3d and 2d" alt="" coords="1179,915,1341,955"/>
-<area shape="poly" id="edge19_Node000018_Node000020" title=" " alt="" coords="1060,891,1166,913,1165,918,1059,896"/>
-<area shape="poly" id="edge20_Node000020_Node000021" title=" " alt="" coords="1334,912,1368,900,1445,866,1447,871,1370,905,1335,917"/>
-<area shape="rect" id="Node000022" href="$classpolyfem_1_1mesh_1_1_mesh.html#aaf5c9547e7891266b92e6f1a2ac5d697" title="number of cells" alt="" coords="1417,915,1580,955"/>
-<area shape="poly" id="edge21_Node000020_Node000022" title=" " alt="" coords="1342,932,1403,932,1403,937,1342,937"/>
-<area shape="poly" id="edge22_Node000020_Node000023" title=" " alt="" coords="1335,952,1370,964,1447,998,1445,1003,1368,969,1334,957"/>
-<area shape="poly" id="edge29_Node000028_Node000020" title=" " alt="" coords="1059,937,1165,934,1165,940,1059,942"/>
-<area shape="poly" id="edge28_Node000028_Node000027" title=" " alt="" coords="1060,955,1166,977,1165,982,1059,960"/>
-<area shape="rect" id="Node000031" href="$classpolyfem_1_1_state.html#ab956f7e3ad92b7ffc1ca1a45ee47903f" title="check if using iso parametric bases" alt="" coords="905,1215,1051,1255"/>
-<area shape="poly" id="edge34_Node000030_Node000031" title=" " alt="" coords="777,1035,807,1054,822,1073,829,1092,832,1129,834,1166,841,1183,855,1201,873,1213,893,1222,891,1227,870,1218,851,1205,837,1186,829,1167,826,1130,824,1093,817,1075,804,1058,774,1039"/>
-<area shape="rect" id="Node000032" href="$classpolyfem_1_1_state.html#a7447e954de5980b45223f7cf49738073" title=" " alt="" coords="1185,1215,1335,1255"/>
-<area shape="poly" id="edge35_Node000031_Node000032" title=" " alt="" coords="1051,1232,1171,1232,1171,1237,1051,1237"/>
-<area shape="rect" id="Node000035" href="$namespacepolyfem.html#a4d64be939c7759c782fff98ed87f3399" title="Retrieves the current logger for adjoint." alt="" coords="889,1279,1067,1305"/>
-<area shape="poly" id="edge38_Node000034_Node000035" title=" " alt="" coords="731,1207,788,1237,854,1264,887,1274,886,1279,852,1269,786,1241,729,1212"/>
-<area shape="rect" id="Node000037" href="$classpolyfem_1_1assembler_1_1_assembler_utils.html#a80818109ce6766a1fae1733a0b2e87dc" title="utility for retrieving the needed quadrature order to precisely integrate the given form on the given..." alt="" coords="853,1329,1103,1369"/>
-<area shape="poly" id="edge40_Node000036_Node000037" title=" " alt="" coords="796,1334,840,1337,839,1342,796,1339"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="423,864,485,680,580,416,676,185,681,187,585,418,490,682,428,866"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#a736c84178a9391358d50b1d984440538" title="computes the per element values at the local (ref el) points (pts) sets basis_values,..." alt="" coords="599,430,789,485"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="429,864,665,495,670,498,434,867"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1io_1_1_out_geometry_data.html#a7b3e2f650cb68b596b8b67ef6702f3b1" title="extracts the boundary mesh" alt="" coords="585,865,803,905"/>
+<area shape="poly" id="edge15_Node000002_Node000016" title=" " alt="" coords="535,883,571,883,571,888,535,888"/>
+<area shape="rect" id="Node000030" href="$classpolyfem_1_1basis_1_1_element_bases.html#a9fde226f98331cb0c54e13baa95d5a98" title=" " alt="" coords="585,929,803,969"/>
+<area shape="poly" id="edge33_Node000002_Node000030" title=" " alt="" coords="505,903,594,924,593,929,504,908"/>
+<area shape="rect" id="Node000031" href="$namespacepolyfem.html#a8d6eb2c01f97c327e382b6dcda332777" title=" " alt="" coords="605,1100,783,1140"/>
+<area shape="poly" id="edge34_Node000002_Node000031" title=" " alt="" coords="444,903,661,1089,657,1093,440,907"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1mesh_1_1_local_boundary.html#a626a35ec8d903d5f0862ee38f53b1508" title="Get the element&#39;s ID." alt="" coords="853,5,1077,45"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="722,131,780,93,852,55,871,47,873,52,854,60,783,98,725,135"/>
+<area shape="rect" id="Node000005" href="$classpolyfem_1_1mesh_1_1_local_boundary.html#aa832a6de9bb5d595c5af621c1a7aca88" title="Get the i&#45;th boundary primitive&#39;s global ID." alt="" coords="853,69,1077,109"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="779,131,866,110,867,115,780,136"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1mesh_1_1_local_boundary.html#a958c24908487b959468e380dccb42644" title="Number of boundary primitives for the element." alt="" coords="853,133,1077,173"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="805,151,840,151,840,156,805,156"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1mesh_1_1_local_boundary.html#aa8a84d69ace838297dcca7bd12e6d34b" title="Get the type of boundary for the element." alt="" coords="853,197,1077,237"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="780,171,867,192,866,197,779,176"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1basis_1_1_element_bases.html#a6936d345f21ed506227618ef65dba6a6" title="evaluate stored bases at given points on the reference element saves results to basis_values" alt="" coords="856,261,1075,301"/>
+<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="716,428,774,369,811,338,852,311,865,304,868,309,855,316,815,342,778,373,720,432"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1basis_1_1_element_bases.html#a731d20029949bd0255c9af1f91dfa74c" title="evaluate gradient of stored bases at given points on the reference element saves results to basis_val..." alt="" coords="856,325,1075,365"/>
+<area shape="poly" id="edge10_Node000008_Node000011" title=" " alt="" coords="742,427,795,401,852,375,874,367,876,372,854,380,797,405,745,432"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#a7ce3e8b5fceffa5bdde29ca3ac79459b" title="void finalize(const Eigen::MatrixXd &amp;v, const Eigen::MatrixXd &amp;dx, const Eigen::MatrixXd &amp;dy); void f..." alt="" coords="870,390,1061,445"/>
+<area shape="poly" id="edge12_Node000008_Node000013" title=" " alt="" coords="789,441,856,431,857,436,790,446"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#af2830b447f50401acd4e69a57a4b235b" title=" " alt="" coords="870,469,1061,523"/>
+<area shape="poly" id="edge13_Node000008_Node000014" title=" " alt="" coords="790,468,857,478,856,483,789,474"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1assembler_1_1_element_assembly_values.html#abfc70df83b8de385510064a839273131" title=" " alt="" coords="870,547,1061,602"/>
+<area shape="poly" id="edge14_Node000008_Node000015" title=" " alt="" coords="749,482,854,532,873,540,871,545,852,537,747,487"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1basis_1_1_element_bases.html#a9d6e4fd2a6d6491fed600c2a26680d89" title="default to simply calling the Basis evaluation functions" alt="" coords="1125,261,1344,301"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="1075,279,1111,279,1111,284,1075,284"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1basis_1_1_element_bases.html#aae3b739e75920739799e866e4b0c448c" title=" " alt="" coords="1125,325,1344,365"/>
+<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="1075,343,1111,343,1111,348,1075,348"/>
+<area shape="rect" id="Node000017" href="$classpolyfem_1_1basis_1_1_basis.html#a88b90af0c63d52f2c91fe97a63c540ce" title=" " alt="" coords="885,627,1046,667"/>
+<area shape="poly" id="edge16_Node000016_Node000017" title=" " alt="" coords="704,864,726,826,760,777,802,727,852,683,874,670,877,675,855,687,806,731,764,781,731,829,708,867"/>
+<area shape="rect" id="Node000018" href="$classpolyfem_1_1mesh_1_1_mesh.html#aa9e6bd69e6a7dff10d11a335390c1062" title="checks if the mesh has polytopes" alt="" coords="884,744,1047,784"/>
+<area shape="poly" id="edge17_Node000016_Node000018" title=" " alt="" coords="724,863,782,828,852,794,872,786,874,791,854,798,785,833,727,868"/>
+<area shape="rect" id="Node000021" href="$classpolyfem_1_1mesh_1_1_mesh.html#a93c9ea4759ded33a8f25ff157033cfd9" title="checks if mesh is volume" alt="" coords="1392,709,1555,749"/>
+<area shape="poly" id="edge30_Node000016_Node000021" title=" " alt="" coords="706,863,730,832,763,794,804,758,852,730,920,706,991,692,1063,684,1134,681,1269,689,1379,706,1378,711,1268,695,1134,687,1063,689,992,697,921,712,854,734,808,762,767,798,734,835,711,867"/>
+<area shape="rect" id="Node000023" href="$classpolyfem_1_1mesh_1_1_mesh.html#abf0f721370d6dc7401113e92fe94f4e2" title="number of faces" alt="" coords="1392,893,1555,933"/>
+<area shape="poly" id="edge32_Node000016_Node000023" title=" " alt="" coords="804,893,956,905,1125,915,1235,917,1344,915,1378,914,1378,919,1344,920,1235,922,1125,920,956,911,803,898"/>
+<area shape="rect" id="Node000024" href="$classpolyfem_1_1mesh_1_1_mesh.html#a361e99b40e151869564304da752e4ea4" title="if the mesh is conforming" alt="" coords="884,973,1047,1013"/>
+<area shape="poly" id="edge23_Node000016_Node000024" title=" " alt="" coords="778,903,807,915,831,934,855,952,884,966,881,971,852,957,828,938,804,920,776,908"/>
+<area shape="rect" id="Node000025" href="$classpolyfem_1_1mesh_1_1_mesh.html#a4ac6c05b7775df67b96087dc9721ee0a" title="checks if element is cube compatible" alt="" coords="884,1037,1047,1077"/>
+<area shape="poly" id="edge24_Node000016_Node000025" title=" " alt="" coords="790,903,807,915,819,929,826,943,832,971,837,998,844,1011,855,1023,872,1035,869,1040,852,1027,839,1014,832,1000,827,972,821,945,815,932,804,919,786,908"/>
+<area shape="rect" id="Node000026" href="$classpolyfem_1_1mesh_1_1_mesh.html#a7c0554e28a4b3dd8ded2835e6ecece2d" title="checks if element is a prism" alt="" coords="884,1101,1047,1141"/>
+<area shape="poly" id="edge25_Node000016_Node000026" title=" " alt="" coords="792,903,807,915,823,937,831,960,832,1003,833,1046,840,1067,855,1087,873,1101,870,1105,851,1091,835,1069,827,1047,827,1003,826,961,819,940,803,919,789,908"/>
+<area shape="rect" id="Node000027" href="$classpolyfem_1_1mesh_1_1_mesh.html#a62e57386728f26b8feafea1043b65c21" title="checks if element is simplex" alt="" coords="1153,865,1316,905"/>
+<area shape="poly" id="edge26_Node000016_Node000027" title=" " alt="" coords="804,883,1140,883,1140,888,804,888"/>
+<area shape="rect" id="Node000028" href="$classpolyfem_1_1mesh_1_1_mesh.html#a344f3d37fa834c16ad395adce5c9e154" title="checks if the mesh is simplicial" alt="" coords="884,808,1047,848"/>
+<area shape="poly" id="edge27_Node000016_Node000028" title=" " alt="" coords="789,863,870,845,871,851,790,868"/>
+<area shape="rect" id="Node000029" href="$namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd" title="Retrieves the current logger." alt="" coords="903,1166,1028,1191"/>
+<area shape="poly" id="edge31_Node000016_Node000029" title=" " alt="" coords="793,903,807,916,828,946,836,976,835,1007,831,1037,827,1066,827,1095,835,1123,855,1151,871,1163,890,1171,888,1176,868,1168,851,1155,830,1126,822,1096,822,1066,826,1036,830,1006,830,977,823,948,803,919,789,908"/>
+<area shape="rect" id="Node000019" href="$classpolyfem_1_1mesh_1_1_mesh.html#a11e698a1c82ee90edab1e7a607808779" title="checks if element is polygon compatible" alt="" coords="1153,737,1316,777"/>
+<area shape="poly" id="edge18_Node000018_Node000019" title=" " alt="" coords="1047,759,1139,757,1139,762,1047,765"/>
+<area shape="rect" id="Node000020" href="$classpolyfem_1_1mesh_1_1_mesh.html#a0140181b551c7bf0c162d6898155f294" title="utitlity to return the number of elements, cells or faces in 3d and 2d" alt="" coords="1153,801,1316,841"/>
+<area shape="poly" id="edge19_Node000018_Node000020" title=" " alt="" coords="1047,779,1140,799,1139,804,1046,784"/>
+<area shape="poly" id="edge20_Node000020_Node000021" title=" " alt="" coords="1308,799,1343,787,1420,753,1422,758,1345,792,1310,804"/>
+<area shape="rect" id="Node000022" href="$classpolyfem_1_1mesh_1_1_mesh.html#aaf5c9547e7891266b92e6f1a2ac5d697" title="number of cells" alt="" coords="1392,801,1555,841"/>
+<area shape="poly" id="edge21_Node000020_Node000022" title=" " alt="" coords="1317,819,1378,819,1378,824,1317,824"/>
+<area shape="poly" id="edge22_Node000020_Node000023" title=" " alt="" coords="1310,839,1345,851,1422,885,1420,890,1343,856,1308,844"/>
+<area shape="poly" id="edge29_Node000028_Node000020" title=" " alt="" coords="1047,823,1139,821,1139,826,1047,829"/>
+<area shape="poly" id="edge28_Node000028_Node000027" title=" " alt="" coords="1047,843,1140,863,1139,868,1046,848"/>
+<area shape="rect" id="Node000032" href="$namespacepolyfem.html#a4d64be939c7759c782fff98ed87f3399" title="Retrieves the current logger for adjoint." alt="" coords="877,1215,1054,1241"/>
+<area shape="poly" id="edge35_Node000031_Node000032" title=" " alt="" coords="728,1138,786,1170,854,1202,879,1209,877,1214,852,1206,783,1175,725,1142"/>
 </map>

@@ -125,14 +125,19 @@ $(document).ready(function(){initNavTree('_adjoint_tools_8cpp.html',''); initRes
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="_adjoint_tools_8hpp_source.html">AdjointTools.hpp</a>&quot;</code><br />
-<code>#include &lt;<a class="el" href="_maybe_parallel_for_8hpp_source.html">polyfem/utils/MaybeParallelFor.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_timer_8hpp_source.html">polyfem/utils/Timer.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_state_8hpp_source.html">polyfem/State.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_evaluator_8hpp_source.html">polyfem/io/Evaluator.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_autodiff_types_8hpp_source.html">polyfem/utils/AutodiffTypes.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_state_8hpp_source.html">polyfem/State.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_maybe_parallel_for_8hpp_source.html">polyfem/utils/MaybeParallelFor.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_timer_8hpp_source.html">polyfem/utils/Timer.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_integrable_functional_8hpp_source.html">polyfem/utils/IntegrableFunctional.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_boundary_sampler_8hpp_source.html">polyfem/utils/BoundarySampler.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_logger_8hpp_source.html">polyfem/utils/Logger.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_types_8hpp_source.html">polyfem/utils/Types.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_implicit_time_integrator_8hpp_source.html">polyfem/time_integrator/ImplicitTimeIntegrator.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_b_d_f_8hpp_source.html">polyfem/time_integrator/BDF.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_n_l_problem_8hpp_source.html">polyfem/solver/NLProblem.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_n_l_homo_problem_8hpp_source.html">polyfem/solver/NLHomoProblem.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_elastic_form_8hpp_source.html">polyfem/solver/forms/ElasticForm.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_contact_form_8hpp_source.html">polyfem/solver/forms/ContactForm.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_barrier_contact_form_8hpp_source.html">polyfem/solver/forms/BarrierContactForm.hpp</a>&gt;</code><br />
@@ -144,6 +149,7 @@ $(document).ready(function(){initNavTree('_adjoint_tools_8cpp.html',''); initRes
 <code>#include &lt;<a class="el" href="_body_form_8hpp_source.html">polyfem/solver/forms/BodyForm.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_pressure_form_8hpp_source.html">polyfem/solver/forms/PressureForm.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_inertia_form_8hpp_source.html">polyfem/solver/forms/InertiaForm.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_diff_cache_8hpp_source.html">polyfem/optimization/DiffCache.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_elastic_force_derivative_8hpp_source.html">polyfem/optimization/force_derivatives/ElasticForceDerivative.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_body_force_derivative_8hpp_source.html">polyfem/optimization/force_derivatives/BodyForceDerivative.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_pressure_force_derivative_8hpp_source.html">polyfem/optimization/force_derivatives/PressureForceDerivative.hpp</a>&gt;</code><br />
@@ -155,9 +161,15 @@ $(document).ready(function(){initNavTree('_adjoint_tools_8cpp.html',''); initRes
 <code>#include &lt;<a class="el" href="_friction_force_derivative_8hpp_source.html">polyfem/optimization/force_derivatives/FrictionForceDerivative.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_tangential_adhesion_force_derivative_8hpp_source.html">polyfem/optimization/force_derivatives/TangentialAdhesionForceDerivative.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html">polyfem/optimization/parametrization/PeriodicMeshToMesh.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_n_l_problem_8hpp_source.html">polyfem/solver/NLProblem.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_n_l_homo_problem_8hpp_source.html">polyfem/solver/NLHomoProblem.hpp</a>&gt;</code><br />
-<code>#include &lt;<a class="el" href="_b_d_f_8hpp_source.html">polyfem/time_integrator/BDF.hpp</a>&gt;</code><br />
+<code>#include &lt;Eigen/Core&gt;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cassert&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;map&gt;</code><br />
+<code>#include &lt;set&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for AdjointTools.cpp:</div>
 <div class="dyncontent">
@@ -186,7 +198,7 @@ Namespaces</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_adjoint_tools_8cpp_source.html#l00075">75</a> of file <a class="el" href="_adjoint_tools_8cpp_source.html">AdjointTools.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_adjoint_tools_8cpp_source.html#l00090">90</a> of file <a class="el" href="_adjoint_tools_8cpp_source.html">AdjointTools.cpp</a>.</p>
 
 </div>
 </div>
@@ -202,9 +214,9 @@ Namespaces</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_adjoint_tools_8cpp_source.html#l00073">73</a> of file <a class="el" href="_adjoint_tools_8cpp_source.html">AdjointTools.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_adjoint_tools_8cpp_source.html#l00088">88</a> of file <a class="el" href="_adjoint_tools_8cpp_source.html">AdjointTools.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l01094">polyfem::solver::AdjointTools::dJ_du_step()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l01118">polyfem::solver::AdjointTools::dJ_du_step()</a>.</p>
 
 </div>
 </div>
@@ -220,9 +232,9 @@ Namespaces</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_adjoint_tools_8cpp_source.html#l00074">74</a> of file <a class="el" href="_adjoint_tools_8cpp_source.html">AdjointTools.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_adjoint_tools_8cpp_source.html#l00089">89</a> of file <a class="el" href="_adjoint_tools_8cpp_source.html">AdjointTools.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00327">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l01094">polyfem::solver::AdjointTools::dJ_du_step()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00342">polyfem::solver::AdjointTools::compute_shape_derivative_functional_term()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l01118">polyfem::solver::AdjointTools::dJ_du_step()</a>.</p>
 
 </div>
 </div>
@@ -238,7 +250,7 @@ Namespaces</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_adjoint_tools_8cpp_source.html#l00086">86</a> of file <a class="el" href="_adjoint_tools_8cpp_source.html">AdjointTools.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_adjoint_tools_8cpp_source.html#l00101">101</a> of file <a class="el" href="_adjoint_tools_8cpp_source.html">AdjointTools.cpp</a>.</p>
 
 </div>
 </div>

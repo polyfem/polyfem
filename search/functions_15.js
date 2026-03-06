@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['u_0',['u',['../classpolyfem_1_1solver_1_1_diff_cache.html#aef49f8d41ce8d8665737f8bc381f94c6',1,'polyfem::solver::DiffCache']]],
+  ['u_0',['u',['../classpolyfem_1_1_diff_cache.html#ae435a8a411044eed52863349c48200c6',1,'polyfem::DiffCache']]],
   ['unconstrained_5fl2_5fprojection_1',['unconstrained_L2_projection',['../namespacepolyfem_1_1mesh.html#a0547de920dbbdd2a54bce6c80b346318',1,'polyfem::mesh']]],
   ['unconstrainedogdenelasticity_2',['UnconstrainedOgdenElasticity',['../classpolyfem_1_1assembler_1_1_unconstrained_ogden_elasticity.html#a878699e457ed22a7bde1ebd9b65885e9',1,'polyfem::assembler::UnconstrainedOgdenElasticity']]],
   ['unflatten_3',['unflatten',['../namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5',1,'polyfem::utils']]],

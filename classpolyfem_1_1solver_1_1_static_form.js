@@ -2,9 +2,9 @@ var classpolyfem_1_1solver_1_1_static_form =
 [
     [ "~StaticForm", "classpolyfem_1_1solver_1_1_static_form.html#aa3569d3ab37e1d87b49b5c21a00fa39d", null ],
     [ "AdjointForm", "classpolyfem_1_1solver_1_1_static_form.html#adbd817ec8a72496bc3f5edf03aef8d4d", null ],
-    [ "compute_adjoint_rhs", "classpolyfem_1_1solver_1_1_static_form.html#a33c1c6036ebe80f6f950c8bb2f18b425", null ],
-    [ "compute_adjoint_rhs_step", "classpolyfem_1_1solver_1_1_static_form.html#a678e2ff07ab6fbb2ae4712fca32a53db", null ],
-    [ "compute_adjoint_rhs_step_prev", "classpolyfem_1_1solver_1_1_static_form.html#a3cee86ff0ef39d20d846fde11338f928", null ],
+    [ "compute_adjoint_rhs", "classpolyfem_1_1solver_1_1_static_form.html#a581bdb6d056ccae059cfb213ee8e80be", null ],
+    [ "compute_adjoint_rhs_step", "classpolyfem_1_1solver_1_1_static_form.html#a95adeef26b2d9b2540039f347899e5b8", null ],
+    [ "compute_adjoint_rhs_step_prev", "classpolyfem_1_1solver_1_1_static_form.html#afe5c0003108a36c8d026112c71481ef4", null ],
     [ "compute_partial_gradient", "classpolyfem_1_1solver_1_1_static_form.html#a44dd9952e895ef6b3468edf3b886e3ef", null ],
     [ "compute_partial_gradient_step", "classpolyfem_1_1solver_1_1_static_form.html#a0a3aff89fde436f2d0942b538da66a34", null ],
     [ "depends_on_step_prev", "classpolyfem_1_1solver_1_1_static_form.html#ac3b0ca6e3b45880bfb527e71120a19a6", null ],

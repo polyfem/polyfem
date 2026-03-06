@@ -66,7 +66,7 @@ var searchData=
   ['framebufferattributes_63',['FrameBufferAttributes',['../classpolyfem_1_1renderer_1_1_frame_buffer_attributes.html#af3c2a072c88f16a5421771616c1e27b3',1,'polyfem::renderer::FrameBufferAttributes']]],
   ['frankeproblem_64',['FrankeProblem',['../classpolyfem_1_1problem_1_1_franke_problem.html#af6e14eed9e91b2977cf18b378c54ced9',1,'polyfem::problem::FrankeProblem']]],
   ['frankeproblemold_65',['FrankeProblemOld',['../classpolyfem_1_1problem_1_1_franke_problem_old.html#a7f93b185762bff67bd8b398b2db7b651',1,'polyfem::problem::FrankeProblemOld']]],
-  ['friction_5fcollision_5fset_66',['friction_collision_set',['../classpolyfem_1_1solver_1_1_diff_cache.html#a4af64163950d72035acb4182a1ba3139',1,'polyfem::solver::DiffCache::friction_collision_set()'],['../classpolyfem_1_1solver_1_1_friction_form.html#ab4139b6cdf45601fb77d1cb8370bdeb8',1,'polyfem::solver::FrictionForm::friction_collision_set() const']]],
+  ['friction_5fcollision_5fset_66',['friction_collision_set',['../classpolyfem_1_1_diff_cache.html#a74e38bb1b23e2e8eb8b4ca740f8984b3',1,'polyfem::DiffCache::friction_collision_set()'],['../classpolyfem_1_1solver_1_1_friction_form.html#ab4139b6cdf45601fb77d1cb8370bdeb8',1,'polyfem::solver::FrictionForm::friction_collision_set() const']]],
   ['friction_5fpotential_67',['friction_potential',['../classpolyfem_1_1solver_1_1_friction_form.html#a82f05d3a9657d3bfd62d1ccffb6f2d1c',1,'polyfem::solver::FrictionForm']]],
   ['frictionform_68',['FrictionForm',['../classpolyfem_1_1solver_1_1_friction_form.html#a0c043ca3984c2d95c53ce7d816ba37cd',1,'polyfem::solver::FrictionForm']]],
   ['from_5fgeogram_5fmesh_69',['from_geogram_mesh',['../namespacepolyfem_1_1mesh.html#aa56d3e4087c89d5eec16b4af3f128879',1,'polyfem::mesh']]],

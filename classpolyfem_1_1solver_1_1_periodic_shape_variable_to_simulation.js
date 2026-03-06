@@ -7,8 +7,7 @@ var classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation =
     [ "inverse_eval", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#a888a2bbe9ec465cf8084f955b9e0a9a8", null ],
     [ "name", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#afc280e111e13057d2e09e51da0e82d4c", null ],
     [ "update", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#a0e8599ebc5b27cdbfa6eb46dc38b802b", null ],
-    [ "VariableToSimulation", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#a4b57aba08ca748956469e52d2cbc620a", null ],
-    [ "VariableToSimulation", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#a2da865600df57c21155dd001b1868e35", null ],
+    [ "VariableToSimulation", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#a4b838fdacd0cbcf4018b26613c31cddd", null ],
     [ "periodic_mesh_map", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#abb3aa5acb25673a4a6cb8dab195769bf", null ],
     [ "periodic_mesh_representation", "classpolyfem_1_1solver_1_1_periodic_shape_variable_to_simulation.html#a790aabe398023ac4cd2f7dc3de663d5d", null ]
 ];

@@ -9,7 +9,6 @@ var classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation =
     [ "set_output_indexing", "classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation.html#acc7ddc770eb3468c72447fa6319d9bda", null ],
     [ "update_state", "classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation.html#ac2c80ee907ad245b278326bac13af9c0", null ],
     [ "variable_to_string", "classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation.html#a44dca33ec46a2c905e2c078c8c8fb7ac", null ],
-    [ "VariableToSimulation", "classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation.html#a4b57aba08ca748956469e52d2cbc620a", null ],
-    [ "VariableToSimulation", "classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation.html#a2da865600df57c21155dd001b1868e35", null ],
+    [ "VariableToSimulation", "classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation.html#a4b838fdacd0cbcf4018b26613c31cddd", null ],
     [ "dirichlet_boundaries_", "classpolyfem_1_1solver_1_1_dirichlet_variable_to_simulation.html#a7e72fca9114ac77a034c05eff32fcda4", null ]
 ];

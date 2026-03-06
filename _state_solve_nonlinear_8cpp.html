@@ -127,6 +127,7 @@ $(document).ready(function(){initNavTree('_state_solve_nonlinear_8cpp.html','');
 <div class="textblock"><code>#include &lt;<a class="el" href="_state_8hpp_source.html">polyfem/State.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_mass_8hpp_source.html">polyfem/assembler/Mass.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_viscous_damping_8hpp_source.html">polyfem/assembler/ViscousDamping.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_common_8hpp_source.html">polyfem/Common.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_body_form_8hpp_source.html">polyfem/solver/forms/BodyForm.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_contact_form_8hpp_source.html">polyfem/solver/forms/ContactForm.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_elastic_form_8hpp_source.html">polyfem/solver/forms/ElasticForm.hpp</a>&gt;</code><br />
@@ -141,11 +142,19 @@ $(document).ready(function(){initNavTree('_state_solve_nonlinear_8cpp.html','');
 <code>#include &lt;<a class="el" href="_msh_writer_8hpp_source.html">polyfem/io/MshWriter.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_o_b_j_writer_8hpp_source.html">polyfem/io/OBJWriter.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_out_data_8hpp_source.html">polyfem/io/OutData.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_cache_level_8hpp_source.html">polyfem/optimization/CacheLevel.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_logger_8hpp_source.html">polyfem/utils/Logger.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_matrix_utils_8hpp_source.html">polyfem/utils/MatrixUtils.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_timer_8hpp_source.html">polyfem/utils/Timer.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_j_s_o_n_utils_8hpp_source.html">polyfem/utils/JSONUtils.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_boundary_sampler_8hpp_source.html">polyfem/utils/BoundarySampler.hpp</a>&gt;</code><br />
+<code>#include &lt;Eigen/Core&gt;</code><br />
 <code>#include &lt;ipc/ipc.hpp&gt;</code><br />
+<code>#include &lt;spdlog/fmt/fmt.h&gt;</code><br />
+<code>#include &lt;cassert&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for StateSolveNonlinear.cpp:</div>
 <div class="dyncontent">

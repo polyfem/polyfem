@@ -200,6 +200,8 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a033bf0014e0985c1f63e8fa0a0c8a1f7" id="r_a033bf0014e0985c1f63e8fa0a0c8a1f7"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_state.html">State</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_opt_state.html#a033bf0014e0985c1f63e8fa0a0c8a1f7">states</a></td></tr>
 <tr class="memdesc:a033bf0014e0985c1f63e8fa0a0c8a1f7"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state">State</a> used in the opt.  <br /></td></tr>
 <tr class="separator:a033bf0014e0985c1f63e8fa0a0c8a1f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a573923d2a6ad18b7325d70902dc41591" id="r_a573923d2a6ad18b7325d70902dc41591"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_opt_state.html#a573923d2a6ad18b7325d70902dc41591">diff_caches</a></td></tr>
+<tr class="separator:a573923d2a6ad18b7325d70902dc41591"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a92db2e5b36ebafaa49ef692b5c6f616c" id="r_a92db2e5b36ebafaa49ef692b5c6f616c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_opt_state.html#a92db2e5b36ebafaa49ef692b5c6f616c">variable_sizes</a></td></tr>
 <tr class="memdesc:a92db2e5b36ebafaa49ef692b5c6f616c"><td class="mdescLeft">&#160;</td><td class="mdescRight">variables  <br /></td></tr>
 <tr class="separator:a92db2e5b36ebafaa49ef692b5c6f616c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -213,7 +215,7 @@ Private Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>main class that contains the polyfem adjoint solver and all its state </p>
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00021">21</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00028">28</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ae97fd813e2cbfffb91eb092222faed5d" name="ae97fd813e2cbfffb91eb092222faed5d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae97fd813e2cbfffb91eb092222faed5d">&#9670;&#160;</a></span>~OptState()</h2>
@@ -230,7 +232,7 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00039">39</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00051">51</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
 
 </div>
 </div>
@@ -251,7 +253,7 @@ Private Attributes</h2></td></tr>
 
 <p>Constructor. </p>
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00043">43</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00055">55</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_geogram_utils_8cpp_source.html#l00057">polyfem::utils::GeogramUtils::initialize()</a>, and <a class="el" href="_geogram_utils_8hpp_source.html#l00011">polyfem::utils::GeogramUtils::instance()</a>.</p>
 <div class="dynheader">
@@ -278,9 +280,9 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00156">156</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00175">175</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_opt_state_8hpp_source.html#l00038">args</a>, <a class="el" href="_optimizations_8cpp_source.html#l00134">polyfem::solver::AdjointOptUtils::create_form()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00102">nl_problem</a>, <a class="el" href="_opt_state_8hpp_source.html#l00094">states</a>, and <a class="el" href="_opt_state_8hpp_source.html#l00100">variable_to_simulations</a>.</p>
+<p class="reference">References <a class="el" href="_opt_state_8hpp_source.html#l00045">args</a>, <a class="el" href="_build_from_json_8cpp_source.html#l00306">polyfem::from_json::build_form()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00102">diff_caches</a>, <a class="el" href="_opt_state_8hpp_source.html#l00110">nl_problem</a>, <a class="el" href="_opt_state_8hpp_source.html#l00101">states</a>, and <a class="el" href="_opt_state_8hpp_source.html#l00108">variable_to_simulations</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00227">optimization_simulation()</a>.</p>
 <div class="dynheader">
@@ -324,9 +326,9 @@ Here is the caller graph for this function:</div>
 
 <p>create the opt states </p>
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00130">130</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00142">142</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00030">polyfem::adjoint_logger()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00038">args</a>, <a class="el" href="_optimizations_8cpp_source.html#l00547">polyfem::solver::AdjointOptUtils::create_states()</a>, <a class="el" href="_geogram_utils_8hpp_source.html#l00011">polyfem::utils::GeogramUtils::instance()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00075">root_path()</a>, <a class="el" href="_geogram_utils_8cpp_source.html#l00076">polyfem::utils::GeogramUtils::set_logger()</a>, and <a class="el" href="_opt_state_8hpp_source.html#l00094">states</a>.</p>
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00030">polyfem::adjoint_logger()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00045">args</a>, <a class="el" href="_build_from_json_8cpp_source.html#l00093">polyfem::from_json::build_states()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00102">diff_caches</a>, <a class="el" href="_geogram_utils_8hpp_source.html#l00011">polyfem::utils::GeogramUtils::instance()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00082">root_path()</a>, <a class="el" href="_geogram_utils_8cpp_source.html#l00076">polyfem::utils::GeogramUtils::set_logger()</a>, and <a class="el" href="_opt_state_8hpp_source.html#l00101">states</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00227">optimization_simulation()</a>.</p>
 <div class="dynheader">
@@ -358,9 +360,9 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00179">179</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00198">198</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_opt_state_8hpp_source.html#l00102">nl_problem</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_opt_state_8hpp_source.html#l00110">nl_problem</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00227">optimization_simulation()</a>.</p>
 <div class="dynheader">
@@ -406,9 +408,9 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00099">99</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00111">111</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00030">polyfem::adjoint_logger()</a>, <a class="el" href="_optimizations_8cpp_source.html#l00598">polyfem::solver::AdjointOptUtils::apply_opt_json_spec()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00038">args</a>, <a class="el" href="par__for_8hpp_source.html#l00019">polyfem::utils::NThread::get()</a>, <a class="el" href="_opt_state_8cpp_source.html#l00048">init_logger()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00106">output_dir</a>, <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00075">root_path()</a>, and <a class="el" href="par__for_8hpp_source.html#l00027">polyfem::utils::NThread::set_num_threads()</a>.</p>
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00030">polyfem::adjoint_logger()</a>, <a class="el" href="_optimizations_8cpp_source.html#l00146">polyfem::solver::AdjointOptUtils::apply_opt_json_spec()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00045">args</a>, <a class="el" href="par__for_8hpp_source.html#l00019">polyfem::utils::NThread::get()</a>, <a class="el" href="_opt_state_8cpp_source.html#l00060">init_logger()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00114">output_dir</a>, <a class="el" href="_string_utils_8cpp_source.html#l00103">polyfem::utils::resolve_path()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00082">root_path()</a>, and <a class="el" href="par__for_8hpp_source.html#l00027">polyfem::utils::NThread::set_num_threads()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00227">optimization_simulation()</a>.</p>
 <div class="dynheader">
@@ -473,11 +475,11 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00048">48</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00060">60</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_opt_state_8hpp_source.html#l00086">console_sink_</a>, <a class="el" href="_opt_state_8hpp_source.html#l00087">file_sink_</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00048">init_logger()</a>.</p>
+<p class="reference">References <a class="el" href="_opt_state_8hpp_source.html#l00093">console_sink_</a>, <a class="el" href="_opt_state_8hpp_source.html#l00094">file_sink_</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00060">init_logger()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00099">init()</a>, <a class="el" href="_opt_state_8cpp_source.html#l00048">init_logger()</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00074">init_logger()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00111">init()</a>, <a class="el" href="_opt_state_8cpp_source.html#l00060">init_logger()</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00086">init_logger()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -527,9 +529,9 @@ Here is the caller graph for this function:</div>
 
 <p>initializing the logger meant for internal usage </p>
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00081">81</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00093">93</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00030">polyfem::adjoint_logger()</a>, <a class="el" href="_logger_8cpp_source.html#l00068">polyfem::set_adjoint_logger()</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00092">set_log_level()</a>.</p>
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00030">polyfem::adjoint_logger()</a>, <a class="el" href="_logger_8cpp_source.html#l00068">polyfem::set_adjoint_logger()</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00104">set_log_level()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -573,9 +575,9 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00074">74</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00086">86</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_opt_state_8cpp_source.html#l00048">init_logger()</a>.</p>
+<p class="reference">References <a class="el" href="_opt_state_8cpp_source.html#l00060">init_logger()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -601,15 +603,15 @@ Here is the call graph for this function:</div>
 
 <p>init variables </p>
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00141">141</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00159">159</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_opt_state_8hpp_source.html#l00038">args</a>, <a class="el" href="_optimizations_8cpp_source.html#l00657">polyfem::solver::AdjointOptUtils::compute_variable_size()</a>, <a class="el" href="_variable_to_simulation_8cpp_source.html#l00096">polyfem::solver::VariableToSimulationGroup::init()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00098">ndof</a>, <a class="el" href="_opt_state_8hpp_source.html#l00094">states</a>, <a class="el" href="_opt_state_8hpp_source.html#l00097">variable_sizes</a>, and <a class="el" href="_opt_state_8hpp_source.html#l00100">variable_to_simulations</a>.</p>
+<p class="reference">References <a class="el" href="_opt_state_8hpp_source.html#l00045">args</a>, <a class="el" href="_build_from_json_8cpp_source.html#l00291">polyfem::from_json::build_variable_to_simulation_group()</a>, <a class="el" href="_optimizations_8cpp_source.html#l00205">polyfem::solver::AdjointOptUtils::compute_variable_size()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00102">diff_caches</a>, <a class="el" href="_opt_state_8hpp_source.html#l00106">ndof</a>, <a class="el" href="_opt_state_8hpp_source.html#l00101">states</a>, <a class="el" href="_opt_state_8hpp_source.html#l00105">variable_sizes</a>, and <a class="el" href="_opt_state_8hpp_source.html#l00108">variable_to_simulations</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00227">optimization_simulation()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_opt_state_aeef759df193275f8dd2a886f62c6b461_cgraph.svg" width="100%" height="429"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_opt_state_aeef759df193275f8dd2a886f62c6b461_cgraph.svg" width="100%" height="558"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
@@ -635,9 +637,9 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00172">172</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00191">191</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_opt_state_8hpp_source.html#l00038">args</a>, <a class="el" href="_optimizations_8cpp_source.html#l00486">polyfem::solver::AdjointOptUtils::inverse_evaluation()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00098">ndof</a>, <a class="el" href="_variable_to_simulation_8hpp_source.html#l00062">polyfem::solver::VariableToSimulationGroup::update()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00097">variable_sizes</a>, <a class="el" href="_opt_state_8hpp_source.html#l00100">variable_to_simulations</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_opt_state_8hpp_source.html#l00045">args</a>, <a class="el" href="_optimizations_8cpp_source.html#l00080">polyfem::solver::AdjointOptUtils::inverse_evaluation()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00106">ndof</a>, <a class="el" href="_variable_to_simulation_8hpp_source.html#l00069">polyfem::solver::VariableToSimulationGroup::update()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00105">variable_sizes</a>, <a class="el" href="_opt_state_8hpp_source.html#l00108">variable_to_simulations</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00227">optimization_simulation()</a>.</p>
 <div class="dynheader">
@@ -676,11 +678,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00075">75</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00082">82</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_opt_state_8hpp_source.html#l00038">args</a>, and <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00131">polyfem::utils::is_param_valid()</a>.</p>
+<p class="reference">References <a class="el" href="_opt_state_8hpp_source.html#l00045">args</a>, and <a class="el" href="_j_s_o_n_utils_8cpp_source.html#l00131">polyfem::utils::is_param_valid()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00130">create_states()</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00099">init()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00142">create_states()</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00111">init()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -718,11 +720,11 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00092">92</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00104">104</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00030">polyfem::adjoint_logger()</a>, and <a class="el" href="_opt_state_8hpp_source.html#l00086">console_sink_</a>.</p>
+<p class="reference">References <a class="el" href="_logger_8cpp_source.html#l00030">polyfem::adjoint_logger()</a>, and <a class="el" href="_opt_state_8hpp_source.html#l00093">console_sink_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00081">init_logger()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00093">init_logger()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -752,9 +754,9 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00185">185</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8cpp_source.html#l00204">204</a> of file <a class="el" href="_opt_state_8cpp_source.html">OptState.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_opt_state_8hpp_source.html#l00038">args</a>, <a class="el" href="_optimizations_8cpp_source.html#l00069">polyfem::solver::AdjointOptUtils::make_nl_solver()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00102">nl_problem</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_opt_state_8hpp_source.html#l00045">args</a>, <a class="el" href="_optimizations_8cpp_source.html#l00067">polyfem::solver::AdjointOptUtils::make_nl_solver()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00110">nl_problem</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="main_8cpp_source.html#l00227">optimization_simulation()</a>.</p>
 <div class="dynheader">
@@ -785,9 +787,9 @@ Here is the caller graph for this function:</div>
 
 <p>main input arguments containing all defaults </p>
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00038">38</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00045">45</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00156">create_problem()</a>, <a class="el" href="_opt_state_8cpp_source.html#l00130">create_states()</a>, <a class="el" href="_opt_state_8cpp_source.html#l00099">init()</a>, <a class="el" href="_opt_state_8cpp_source.html#l00141">init_variables()</a>, <a class="el" href="_opt_state_8cpp_source.html#l00172">initial_guess()</a>, <a class="el" href="main_8cpp_source.html#l00227">optimization_simulation()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00075">root_path()</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00185">solve()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00175">create_problem()</a>, <a class="el" href="_opt_state_8cpp_source.html#l00142">create_states()</a>, <a class="el" href="_opt_state_8cpp_source.html#l00111">init()</a>, <a class="el" href="_opt_state_8cpp_source.html#l00159">init_variables()</a>, <a class="el" href="_opt_state_8cpp_source.html#l00191">initial_guess()</a>, <a class="el" href="main_8cpp_source.html#l00227">optimization_simulation()</a>, <a class="el" href="_opt_state_8hpp_source.html#l00082">root_path()</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00204">solve()</a>.</p>
 
 </div>
 </div>
@@ -813,9 +815,35 @@ Here is the caller graph for this function:</div>
 
 <p>logger sink to stdout </p>
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00086">86</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00093">93</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00048">init_logger()</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00092">set_log_level()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00060">init_logger()</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00104">set_log_level()</a>.</p>
+
+</div>
+</div>
+<a id="a573923d2a6ad18b7325d70902dc41591" name="a573923d2a6ad18b7325d70902dc41591"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a573923d2a6ad18b7325d70902dc41591">&#9670;&#160;</a></span>diff_caches</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::shared_ptr&lt;<a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a>&gt; &gt; polyfem::OptState::diff_caches</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00102">102</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00175">create_problem()</a>, <a class="el" href="_opt_state_8cpp_source.html#l00142">create_states()</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00159">init_variables()</a>.</p>
 
 </div>
 </div>
@@ -839,9 +867,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00087">87</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00094">94</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00048">init_logger()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00060">init_logger()</a>.</p>
 
 </div>
 </div>
@@ -865,9 +893,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00098">98</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00106">106</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00141">init_variables()</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00172">initial_guess()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00159">init_variables()</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00191">initial_guess()</a>.</p>
 
 </div>
 </div>
@@ -891,9 +919,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00102">102</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00110">110</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00156">create_problem()</a>, <a class="el" href="_opt_state_8cpp_source.html#l00179">eval()</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00185">solve()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00175">create_problem()</a>, <a class="el" href="_opt_state_8cpp_source.html#l00198">eval()</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00204">solve()</a>.</p>
 
 </div>
 </div>
@@ -911,9 +939,9 @@ Here is the caller graph for this function:</div>
 
 <p>Directory for output files. </p>
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00106">106</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00114">114</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00099">init()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00111">init()</a>.</p>
 
 </div>
 </div>
@@ -939,9 +967,9 @@ Here is the caller graph for this function:</div>
 
 <p><a class="el" href="classpolyfem_1_1_state.html" title="main class that contains the polyfem solver and all its state">State</a> used in the opt. </p>
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00094">94</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00101">101</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00156">create_problem()</a>, <a class="el" href="_opt_state_8cpp_source.html#l00130">create_states()</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00141">init_variables()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00175">create_problem()</a>, <a class="el" href="_opt_state_8cpp_source.html#l00142">create_states()</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00159">init_variables()</a>.</p>
 
 </div>
 </div>
@@ -967,9 +995,9 @@ Here is the caller graph for this function:</div>
 
 <p>variables </p>
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00097">97</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00105">105</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00141">init_variables()</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00172">initial_guess()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00159">init_variables()</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00191">initial_guess()</a>.</p>
 
 </div>
 </div>
@@ -993,9 +1021,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00100">100</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_opt_state_8hpp_source.html#l00108">108</a> of file <a class="el" href="_opt_state_8hpp_source.html">OptState.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00156">create_problem()</a>, <a class="el" href="_opt_state_8cpp_source.html#l00141">init_variables()</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00172">initial_guess()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_opt_state_8cpp_source.html#l00175">create_problem()</a>, <a class="el" href="_opt_state_8cpp_source.html#l00159">init_variables()</a>, and <a class="el" href="_opt_state_8cpp_source.html#l00191">initial_guess()</a>.</p>
 
 </div>
 </div>

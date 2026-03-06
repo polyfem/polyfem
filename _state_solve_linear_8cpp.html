@@ -127,15 +127,24 @@ $(document).ready(function(){initNavTree('_state_solve_linear_8cpp.html',''); in
 <div class="textblock"><code>#include &lt;<a class="el" href="_state_8hpp_source.html">polyfem/State.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_mass_8hpp_source.html">polyfem/assembler/Mass.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_assembler_utils_8hpp_source.html">polyfem/assembler/AssemblerUtils.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_cache_level_8hpp_source.html">polyfem/optimization/CacheLevel.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="_logger_8hpp_source.html">polyfem/utils/Logger.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_implicit_time_integrator_8hpp_source.html">polyfem/time_integrator/ImplicitTimeIntegrator.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_b_d_f_8hpp_source.html">polyfem/time_integrator/BDF.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_body_form_8hpp_source.html">polyfem/solver/forms/BodyForm.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_elastic_form_8hpp_source.html">polyfem/solver/forms/ElasticForm.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_inertia_form_8hpp_source.html">polyfem/solver/forms/InertiaForm.hpp</a>&gt;</code><br />
-<code>#include &lt;polysolve/linear/FEMSolver.hpp&gt;</code><br />
+<code>#include &lt;<a class="el" href="_types_8hpp_source.html">polyfem/utils/Types.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="_timer_8hpp_source.html">polyfem/utils/Timer.hpp</a>&gt;</code><br />
-<code>#include &lt;unsupported/Eigen/SparseExtra&gt;</code><br />
 <code>#include &lt;<a class="el" href="_evaluator_8hpp_source.html">polyfem/io/Evaluator.hpp</a>&gt;</code><br />
+<code>#include &lt;Eigen/Core&gt;</code><br />
+<code>#include &lt;unsupported/Eigen/SparseExtra&gt;</code><br />
+<code>#include &lt;spdlog/fmt/fmt.h&gt;</code><br />
+<code>#include &lt;polysolve/linear/FEMSolver.hpp&gt;</code><br />
+<code>#include &lt;cassert&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for StateSolveLinear.cpp:</div>
 <div class="dyncontent">

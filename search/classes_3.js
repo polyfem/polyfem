@@ -4,7 +4,7 @@ var searchData=
   ['deformedcollisionbarrierform_1',['DeformedCollisionBarrierForm',['../classpolyfem_1_1solver_1_1_deformed_collision_barrier_form.html',1,'polyfem::solver']]],
   ['densematrixcache_2',['DenseMatrixCache',['../classpolyfem_1_1utils_1_1_dense_matrix_cache.html',1,'polyfem::utils']]],
   ['density_3',['Density',['../classpolyfem_1_1assembler_1_1_density.html',1,'polyfem::assembler']]],
-  ['diffcache_4',['DiffCache',['../classpolyfem_1_1solver_1_1_diff_cache.html',1,'polyfem::solver']]],
+  ['diffcache_4',['DiffCache',['../classpolyfem_1_1_diff_cache.html',1,'polyfem']]],
   ['diffscalarbase_5',['DiffScalarBase',['../struct_diff_scalar_base.html',1,'']]],
   ['dirichletenergyform_6',['DirichletEnergyForm',['../classpolyfem_1_1solver_1_1_dirichlet_energy_form.html',1,'polyfem::solver']]],
   ['dirichletnodesvariabletosimulation_7',['DirichletNodesVariableToSimulation',['../classpolyfem_1_1solver_1_1_dirichlet_nodes_variable_to_simulation.html',1,'polyfem::solver']]],

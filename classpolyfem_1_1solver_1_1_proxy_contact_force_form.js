@@ -1,10 +1,10 @@
 var classpolyfem_1_1solver_1_1_proxy_contact_force_form =
 [
-    [ "ProxyContactForceForm", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#aebf059a06ac5be4bbefbccaa726466bc", null ],
+    [ "ProxyContactForceForm", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a91330898379faa540522128da604d68a", null ],
     [ "~ProxyContactForceForm", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a7606bc34011d3201424cf9496200ae57", null ],
     [ "build_collision_mesh", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#ab7fb0453693274d35caf72b36e229b95", null ],
     [ "build_forward_collision_mesh", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a9dff95a626312c0d676ee149dd23aed2", null ],
-    [ "compute_adjoint_rhs_step", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a899b1243350be94b02fdb93ec527e7e1", null ],
+    [ "compute_adjoint_rhs_step", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a9efc3014efdc1f4d2c06cebb18f75e41", null ],
     [ "compute_partial_gradient_step", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#aac0ea4d95a34ed7287b36b5f1dbfa0cd", null ],
     [ "get_or_compute_collision_set", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#afe76e66a8d35ca467a4da2925e1c2431", null ],
     [ "solution_changed_step", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a882b62bb50f60c92dc12657f573f9cea", null ],
@@ -19,7 +19,8 @@ var classpolyfem_1_1solver_1_1_proxy_contact_force_form =
     [ "collision_sets_", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a645c978323ad99001230187b1f136471", null ],
     [ "curr_x_", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a5481ad0a598fd0efdeaeb46addbfba2a", null ],
     [ "dhat_", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a7a613f9ad65f15e50bd206155dac11f2", null ],
+    [ "diff_cache_", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a42ea27c4466a342962ca141f91789715", null ],
     [ "dmin_", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#af7ddd65aafde1bc1939f8fbbfea00e79", null ],
     [ "node_positions_", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a81a19b8698375a6ad6cb49a4eaa5b81d", null ],
-    [ "state_", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a5e53423a73430a8f9d1fe5f1c643044d", null ]
+    [ "state_", "classpolyfem_1_1solver_1_1_proxy_contact_force_form.html#a18d8611a0c1454b37ef508722327fe38", null ]
 ];

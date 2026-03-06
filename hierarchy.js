@@ -103,7 +103,7 @@ var hierarchy =
     [ "polyfem::assembler::Density", "classpolyfem_1_1assembler_1_1_density.html", [
       [ "polyfem::assembler::NoDensity", "classpolyfem_1_1assembler_1_1_no_density.html", null ]
     ] ],
-    [ "polyfem::solver::DiffCache", "classpolyfem_1_1solver_1_1_diff_cache.html", null ],
+    [ "polyfem::DiffCache", "classpolyfem_1_1_diff_cache.html", null ],
     [ "DiffScalarBase", "struct_diff_scalar_base.html", [
       [ "DScalar1< _Scalar, _Gradient >", "struct_d_scalar1.html", null ],
       [ "DScalar2< _Scalar, _Gradient, _Hessian >", "struct_d_scalar2.html", null ]
@@ -326,7 +326,6 @@ var hierarchy =
       [ "polyfem::solver::Scaling", "classpolyfem_1_1solver_1_1_scaling.html", null ],
       [ "polyfem::solver::SliceMap", "classpolyfem_1_1solver_1_1_slice_map.html", null ]
     ] ],
-    [ "polyfem::solver::ParametrizationFactory", "classpolyfem_1_1solver_1_1_parametrization_factory.html", null ],
     [ "polyfem::utils::PeriodicBoundary", "classpolyfem_1_1utils_1_1_periodic_boundary.html", null ],
     [ "polyfem::solver::PeriodicContactForceDerivative", "classpolyfem_1_1solver_1_1_periodic_contact_force_derivative.html", null ],
     [ "polyfem::mesh::Obstacle::Plane", "classpolyfem_1_1mesh_1_1_obstacle_1_1_plane.html", null ],
