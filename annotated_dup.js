@@ -17,6 +17,7 @@ var annotated_dup =
     ] ],
     [ "polyfem", "namespacepolyfem.html", [
       [ "assembler", "namespacepolyfem_1_1assembler.html", [
+        [ "ActiveFiber", "classpolyfem_1_1assembler_1_1_active_fiber.html", "classpolyfem_1_1assembler_1_1_active_fiber" ],
         [ "AdiabaticProcess", "classpolyfem_1_1assembler_1_1_adiabatic_process.html", "classpolyfem_1_1assembler_1_1_adiabatic_process" ],
         [ "AllElasticMaterials", "classpolyfem_1_1assembler_1_1_all_elastic_materials.html", "classpolyfem_1_1assembler_1_1_all_elastic_materials" ],
         [ "AMIPSEnergy", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy" ],

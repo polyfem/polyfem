@@ -13,6 +13,7 @@ var hierarchy =
           [ "polyfem::assembler::GenericElastic< AMIPSEnergyAutodiff >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", [
             [ "polyfem::assembler::AMIPSEnergyAutodiff", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy_autodiff.html", null ]
           ] ],
+          [ "polyfem::assembler::GenericElastic< ActiveFiber >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
           [ "polyfem::assembler::GenericElastic< FiberModel >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", [
             [ "polyfem::assembler::GenericFiber< FiberModel >", "classpolyfem_1_1assembler_1_1_generic_fiber.html", null ]
           ] ],
@@ -41,6 +42,9 @@ var hierarchy =
           [ "polyfem::assembler::AMIPSEnergy", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html", null ],
           [ "polyfem::assembler::FixedCorotational", "classpolyfem_1_1assembler_1_1_fixed_corotational.html", null ],
           [ "polyfem::assembler::GenericElastic< Derived >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", [
+            [ "polyfem::assembler::GenericFiber< ActiveFiber >", "classpolyfem_1_1assembler_1_1_generic_fiber.html", [
+              [ "polyfem::assembler::ActiveFiber", "classpolyfem_1_1assembler_1_1_active_fiber.html", null ]
+            ] ],
             [ "polyfem::assembler::GenericFiber< HGOFiber >", "classpolyfem_1_1assembler_1_1_generic_fiber.html", [
               [ "polyfem::assembler::HGOFiber", "classpolyfem_1_1assembler_1_1_h_g_o_fiber.html", null ]
             ] ]

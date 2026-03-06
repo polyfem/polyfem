@@ -131,8 +131,7 @@ $(document).ready(function(){initNavTree('_a_m_i_p_s_energy_8cpp_source.html',''
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;<a class="code" href="_logger_8hpp.html">polyfem/utils/Logger.hpp</a>&gt;</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
-<div class="foldopen" id="foldopen00005" data-start="{" data-end="}">
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno"><a class="line" href="namespacepolyfem.html">    5</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacepolyfem_1_1assembler.html">polyfem::assembler</a></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacepolyfem_1_1assembler.html">polyfem::assembler</a></div>
 <div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span>{</div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>    <span class="keyword">namespace</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    {</div>
@@ -149,30 +148,30 @@ $(document).ready(function(){initNavTree('_a_m_i_p_s_energy_8cpp_source.html',''
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keyword">public</span>:</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>            <span class="keyword">static_assert</span>(p % 2 == 1);</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>            <span class="keyword">static</span> T value(T J)</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>            <span class="keyword">static</span> <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#ae5c4da017c5dcb47a015dddf43a18f04">T</a> value(T J)</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>            {</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>                <span class="keywordflow">if</span> (J &gt;= 0.5)</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>                    <span class="keywordflow">return</span> T(0.);</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>                <span class="keyword">const</span> T tmp1 = 2 * J - 1;</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                <span class="keyword">const</span> T tmp2 = pow(tmp1, p);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>                    <span class="keywordflow">return</span> <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#ae5c4da017c5dcb47a015dddf43a18f04">T</a>(0.);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>                <span class="keyword">const</span> <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#ae5c4da017c5dcb47a015dddf43a18f04">T</a> tmp1 = 2 * J - 1;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>                <span class="keyword">const</span> <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#ae5c4da017c5dcb47a015dddf43a18f04">T</a> tmp2 = pow(tmp1, p);</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>                <span class="keywordflow">return</span> C * (1 / (tmp2 + 1) - 1);</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>            }</div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            <span class="keyword">static</span> T first_derivatives(T J)</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            <span class="keyword">static</span> <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#ae5c4da017c5dcb47a015dddf43a18f04">T</a> first_derivatives(T J)</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            {</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                <span class="keywordflow">if</span> (J &gt;= 0.5)</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>                    <span class="keywordflow">return</span> T(0);</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                <span class="keyword">const</span> T tmp1 = 2 * J - 1;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                <span class="keyword">const</span> T tmp2 = pow(tmp1, p);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>                    <span class="keywordflow">return</span> <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#ae5c4da017c5dcb47a015dddf43a18f04">T</a>(0);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                <span class="keyword">const</span> <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#ae5c4da017c5dcb47a015dddf43a18f04">T</a> tmp1 = 2 * J - 1;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                <span class="keyword">const</span> <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#ae5c4da017c5dcb47a015dddf43a18f04">T</a> tmp2 = pow(tmp1, p);</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                <span class="keywordflow">return</span> C * -2 * p * tmp2 / tmp1 / pow(1 + tmp2, 2);</div>
 <div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            }</div>
 <div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            <span class="keyword">static</span> T second_derivatives(T J)</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>            <span class="keyword">static</span> <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#ae5c4da017c5dcb47a015dddf43a18f04">T</a> second_derivatives(T J)</div>
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>            {</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                <span class="keywordflow">if</span> (J &gt;= 0.5)</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                    <span class="keywordflow">return</span> T(0);</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                <span class="keyword">const</span> T tmp1 = 2 * J - 1;</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                <span class="keyword">const</span> T tmp2 = pow(tmp1, p);</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                    <span class="keywordflow">return</span> <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#ae5c4da017c5dcb47a015dddf43a18f04">T</a>(0);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                <span class="keyword">const</span> <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#ae5c4da017c5dcb47a015dddf43a18f04">T</a> tmp1 = 2 * J - 1;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                <span class="keyword">const</span> <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#ae5c4da017c5dcb47a015dddf43a18f04">T</a> tmp2 = pow(tmp1, p);</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                <span class="keywordflow">return</span> C * 4 * p * tmp2 / pow(tmp1, 2) * ((1 - p) + (1 + p) * tmp2) / pow(1 + tmp2, 3);</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            }</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        };</div>
@@ -229,11 +228,11 @@ $(document).ready(function(){initNavTree('_a_m_i_p_s_energy_8cpp_source.html',''
 <div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            }</div>
 <div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
 <div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            Eigen::Matrix&lt;T, dimt, dimt&gt; res(dim, dim);</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; dim; ++i)</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; <a class="code hl_variable" href="namespacegenerate__mooney__rivlin.html#aca2415ae8c0df86d447adf341caf4830">dim</a>; ++i)</div>
 <div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            {</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; dim; ++j)</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; <a class="code hl_variable" href="namespacegenerate__mooney__rivlin.html#aca2415ae8c0df86d447adf341caf4830">dim</a>; ++j)</div>
 <div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                {</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                    res(i, j) = T(standard(i, j));</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                    res(i, j) = <a class="code hl_variable" href="namespacegenerate__rotation__mtx.html#ae5c4da017c5dcb47a015dddf43a18f04">T</a>(standard(i, j));</div>
 <div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                }</div>
 <div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            }</div>
 <div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
@@ -782,7 +781,6 @@ $(document).ready(function(){initNavTree('_a_m_i_p_s_energy_8cpp_source.html',''
 </div>
 <div class="line"><a id="l00631" name="l00631"></a><span class="lineno">  631</span> </div>
 <div class="line"><a id="l00632" name="l00632"></a><span class="lineno">  632</span>} <span class="comment">// namespace polyfem::assembler</span></div>
-</div>
 <div class="ttc" id="a_a_m_i_p_s_energy_8hpp_html"><div class="ttname"><a href="_a_m_i_p_s_energy_8hpp.html">AMIPSEnergy.hpp</a></div></div>
 <div class="ttc" id="a_assembler_8cpp_html_a3c8bc0bb4f045bfe78d1196cb786792c"><div class="ttname"><a href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a></div><div class="ttdeci">double val</div><div class="ttdef"><b>Definition</b> <a href="_assembler_8cpp_source.html#l00086">Assembler.cpp:86</a></div></div>
 <div class="ttc" id="a_logger_8hpp_html"><div class="ttname"><a href="_logger_8hpp.html">Logger.hpp</a></div></div>
@@ -817,7 +815,9 @@ $(document).ready(function(){initNavTree('_a_m_i_p_s_energy_8cpp_source.html',''
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_output_data_html_a942a9b52ceb30ebff6408dc81daa1c1b"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_output_data.html#a942a9b52ceb30ebff6408dc81daa1c1b">polyfem::assembler::OutputData::local_pts</a></div><div class="ttdeci">const Eigen::MatrixXd &amp; local_pts</div><div class="ttdef"><b>Definition</b> <a href="_assembler_data_8hpp_source.html#l00121">AssemblerData.hpp:121</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_output_data_html_a9d5273f72f16e48846d1261068d5439a"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_output_data.html#a9d5273f72f16e48846d1261068d5439a">polyfem::assembler::OutputData::gbs</a></div><div class="ttdeci">const basis::ElementBases &amp; gbs</div><div class="ttdef"><b>Definition</b> <a href="_assembler_data_8hpp_source.html#l00120">AssemblerData.hpp:120</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_output_data_html_ac4e70810da56da0b8e6d1f22b837eea6"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_output_data.html#ac4e70810da56da0b8e6d1f22b837eea6">polyfem::assembler::OutputData::t</a></div><div class="ttdeci">const double t</div><div class="ttdef"><b>Definition</b> <a href="_assembler_data_8hpp_source.html#l00117">AssemblerData.hpp:117</a></div></div>
-<div class="ttc" id="anamespacepolyfem_1_1assembler_html"><div class="ttname"><a href="namespacepolyfem_1_1assembler.html">polyfem::assembler</a></div><div class="ttdoc">Used for test only.</div><div class="ttdef"><b>Definition</b> <a href="_a_m_i_p_s_energy_8cpp_source.html#l00005">AMIPSEnergy.cpp:6</a></div></div>
+<div class="ttc" id="anamespacegenerate__mooney__rivlin_html_aca2415ae8c0df86d447adf341caf4830"><div class="ttname"><a href="namespacegenerate__mooney__rivlin.html#aca2415ae8c0df86d447adf341caf4830">generate_mooney_rivlin.dim</a></div><div class="ttdeci">int dim</div><div class="ttdef"><b>Definition</b> <a href="generate__mooney__rivlin_8py_source.html#l00046">generate_mooney_rivlin.py:46</a></div></div>
+<div class="ttc" id="anamespacegenerate__rotation__mtx_html_ae5c4da017c5dcb47a015dddf43a18f04"><div class="ttname"><a href="namespacegenerate__rotation__mtx.html#ae5c4da017c5dcb47a015dddf43a18f04">generate_rotation_mtx.T</a></div><div class="ttdeci">T</div><div class="ttdef"><b>Definition</b> <a href="generate__rotation__mtx_8py_source.html#l00043">generate_rotation_mtx.py:43</a></div></div>
+<div class="ttc" id="anamespacepolyfem_1_1assembler_html"><div class="ttname"><a href="namespacepolyfem_1_1assembler.html">polyfem::assembler</a></div><div class="ttdoc">Used for test only.</div><div class="ttdef"><b>Definition</b> <a href="_active_fiber_8cpp_source.html#l00003">ActiveFiber.cpp:4</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1assembler_html_a6cfbb549e59585dc992cebd40b4253ce"><div class="ttname"><a href="namespacepolyfem_1_1assembler.html#a6cfbb549e59585dc992cebd40b4253ce">polyfem::assembler::AutoDiffGradMat</a></div><div class="ttdeci">Eigen::Matrix&lt; T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3 &gt; AutoDiffGradMat</div><div class="ttdef"><b>Definition</b> <a href="_mooney_rivlin3_param_symbolic_8hpp_source.html#l00012">MooneyRivlin3ParamSymbolic.hpp:12</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1assembler_html_aaff5aece5fe5a409ef40ca97ac093b32"><div class="ttname"><a href="namespacepolyfem_1_1assembler.html#aaff5aece5fe5a409ef40ca97ac093b32">polyfem::assembler::hat</a></div><div class="ttdeci">Eigen::Matrix&lt; double, dim, dim &gt; hat(const Eigen::Matrix&lt; double, dim, 1 &gt; &amp;x)</div><div class="ttdef"><b>Definition</b> <a href="_neo_hookean_elasticity_8cpp_source.html#l00422">NeoHookeanElasticity.cpp:422</a></div></div>
 <div class="ttc" id="anamespacepolyfem_1_1assembler_html_acde7fba90d34c1fca18bdfa2b8a84784"><div class="ttname"><a href="namespacepolyfem_1_1assembler.html#acde7fba90d34c1fca18bdfa2b8a84784">polyfem::assembler::cross</a></div><div class="ttdeci">Eigen::Matrix&lt; double, dim, 1 &gt; cross(const Eigen::Matrix&lt; double, dim, 1 &gt; &amp;x, const Eigen::Matrix&lt; double, dim, 1 &gt; &amp;y)</div><div class="ttdef"><b>Definition</b> <a href="_neo_hookean_elasticity_8cpp_source.html#l00439">NeoHookeanElasticity.cpp:439</a></div></div>
