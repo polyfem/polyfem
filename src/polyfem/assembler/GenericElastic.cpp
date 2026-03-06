@@ -9,6 +9,7 @@
 #include <polyfem/assembler/AMIPSEnergy.hpp>
 
 #include <polyfem/assembler/HGOFiber.hpp>
+#include <polyfem/assembler/ActiveFiber.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 
@@ -264,5 +265,6 @@ namespace polyfem::assembler
 	template class GenericElastic<VolumePenalty>;
 
 	template class GenericElastic<HGOFiber>;
+	template class GenericElastic<ActiveFiber>;
 
 } // namespace polyfem::assembler
