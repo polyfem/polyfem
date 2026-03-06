@@ -3,6 +3,7 @@
 #include <Eigen/Core>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/State.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/parametrization/PeriodicMeshToMesh.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Types.hpp>
@@ -13,6 +14,7 @@ namespace polyfem::solver
 	void PeriodicContactForceDerivative::force_shape_derivative(
 		const PeriodicContactForm &form,
 		const State &state,
+		const DiffCache &diff_cache,
 		const PeriodicMeshToMesh &periodic_mesh_map,
 		const Eigen::VectorXd &periodic_mesh_representation,
 		const ipc::NormalCollisions &contact_set,
@@ -67,7 +69,8 @@ namespace polyfem::solver
 			unit_term.segment(k_full * dim, dim) += affine.transpose() * tiled_term.segment(k_full * dim, dim);
 		}
 
-		Eigen::VectorXd single_term = state.basis_nodes_to_gbasis_nodes * form.proj.topRows(dim * form.n_single_dof_) * unit_term;
+		Eigen::VectorXd single_term =
+			diff_cache.basis_nodes_to_gbasis_nodes() * form.proj.topRows(dim * form.n_single_dof_) * unit_term;
 		single_term = utils::flatten(utils::unflatten(single_term, dim)(state.primitive_to_node(), Eigen::all));
 
 		term.setZero(periodic_mesh_representation.size());

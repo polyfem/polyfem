@@ -495,7 +495,7 @@ namespace polyfem::solver
 			coeff(Eigen::seq(1, coeff.size(), collision_mesh_.dim())).array() = 1;
 			Eigen::VectorXd grads = (hessian * (coeff.array() * forces.array()).matrix());
 
-			grads = state_->basis_nodes_to_gbasis_nodes * grads;
+			grads = diff_cache_->basis_nodes_to_gbasis_nodes() * grads;
 			return AdjointTools::map_node_to_primitive_order(*state_, grads);
 		});
 	}

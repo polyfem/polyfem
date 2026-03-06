@@ -533,7 +533,6 @@ namespace polyfem
 		polys.clear();
 		poly_edge_to_data.clear();
 		rhs.resize(0, 0);
-		basis_nodes_to_gbasis_nodes.resize(0, 0);
 
 		if (assembler::MultiModel *mm = dynamic_cast<assembler::MultiModel *>(assembler.get()))
 		{
@@ -774,60 +773,6 @@ namespace polyfem
 
 		if (n_geom_bases == 0)
 			n_geom_bases = n_bases;
-
-		auto &gbases = geom_bases();
-
-		if (optimization_enabled == solver::CacheLevel::Derivatives)
-		{
-			std::map<std::array<int, 2>, double> pairs;
-			for (int e = 0; e < gbases.size(); e++)
-			{
-				const auto &gbs = gbases[e].bases;
-				const auto &bs = bases[e].bases;
-
-				Eigen::MatrixXd local_pts;
-				const int order = bs.front().order();
-				if (mesh->is_volume())
-				{
-					if (mesh->is_simplex(e))
-						autogen::p_nodes_3d(order, local_pts);
-					else
-						autogen::q_nodes_3d(order, local_pts);
-				}
-				else
-				{
-					if (mesh->is_simplex(e))
-						autogen::p_nodes_2d(order, local_pts);
-					else
-						autogen::q_nodes_2d(order, local_pts);
-				}
-
-				ElementAssemblyValues vals;
-				vals.compute(e, mesh->is_volume(), local_pts, gbases[e], gbases[e]);
-
-				for (int i = 0; i < bs.size(); i++)
-				{
-					for (int j = 0; j < gbs.size(); j++)
-					{
-						if (std::abs(vals.basis_values[j].val(i)) > 1e-7)
-						{
-							std::array<int, 2> index = {{gbs[j].global()[0].index, bs[i].global()[0].index}};
-							pairs.insert({index, vals.basis_values[j].val(i)});
-						}
-					}
-				}
-			}
-
-			const int dim = mesh->dimension();
-			std::vector<Eigen::Triplet<double>> coeffs;
-			coeffs.clear();
-			for (const auto &iter : pairs)
-				for (int d = 0; d < dim; d++)
-					coeffs.emplace_back(iter.first[0] * dim + d, iter.first[1] * dim + d, iter.second);
-
-			basis_nodes_to_gbasis_nodes.resize(n_geom_bases * mesh->dimension(), n_bases * mesh->dimension());
-			basis_nodes_to_gbasis_nodes.setFromTriplets(coeffs.begin(), coeffs.end());
-		}
 
 		for (const auto &lb : local_boundary)
 			total_local_boundary.emplace_back(lb);
