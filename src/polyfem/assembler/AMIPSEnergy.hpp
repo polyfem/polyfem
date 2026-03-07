@@ -15,19 +15,10 @@
 
 namespace polyfem::assembler
 {
-	class AMIPSEnergy : public ElasticityNLAssembler
+	class AMIPSEnergy : public GenericElastic<AMIPSEnergy>
 	{
 	public:
 		AMIPSEnergy() {}
-
-		using ElasticityNLAssembler::assemble_energy;
-		using ElasticityNLAssembler::assemble_gradient;
-		using ElasticityNLAssembler::assemble_hessian;
-
-		// energy, gradient, and hessian used in newton method
-		double compute_energy(const NonLinearAssemblerData &data) const override;
-		Eigen::VectorXd assemble_gradient(const NonLinearAssemblerData &data) const override;
-		Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const override;
 
 		// sets material params
 		void add_multimaterial(const int index, const json &params, const Units &units) override;
@@ -35,24 +26,79 @@ namespace polyfem::assembler
 		std::string name() const override { return "AMIPS"; }
 		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
 
-		void assign_stress_tensor(const OutputData &data,
-								  const int all_size,
-								  const ElasticityTensorType &type,
-								  Eigen::MatrixXd &all,
-								  const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const override;
-
 		bool allow_inversion() const override { return false; }
 
-	private:
-		// utility function that computes energy, the template is used for double, DScalar1, and DScalar2 in energy, gradient and hessian
-		template <typename T>
-		T compute_energy_aux(const NonLinearAssemblerData &data) const;
-		template <int n_basis, int dim>
-		void compute_energy_aux_gradient_fast(const NonLinearAssemblerData &data, Eigen::VectorXd &G_flattened) const;
-		template <int n_basis, int dim>
-		void compute_energy_hessian_aux_fast(const NonLinearAssemblerData &data, Eigen::MatrixXd &H) const;
+		bool real_def_grad() const override { return use_rest_pose_; }
 
+		template <typename T>
+		T elastic_energy(
+			const RowVectorNd &p,
+			const double t,
+			const int el_id,
+			DefGradMatrix<T> &def_grad) const
+		{
+			typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
+
+			double power = -1;
+			if (use_rest_pose_)
+				power = size() == 2 ? 1. : (2. / 3.);
+			else
+				power = size() == 2 ? 2. : 5. / 3.;
+
+			AutoDiffGradMat standard;
+
+			if (size() == 2)
+				standard = get_standard<2, T>(size(), use_rest_pose_);
+			else
+				standard = get_standard<3, T>(size(), use_rest_pose_);
+
+			if (!use_rest_pose_)
+				def_grad = def_grad * standard;
+
+			const T det = polyfem::utils::determinant(def_grad);
+			if (det <= 0)
+			{
+				return T(std::nan(""));
+			}
+
+			const T powJ = pow(det, power);
+			return (def_grad.transpose() * def_grad).trace() / powJ; //+ barrier<T>::value(det);
+		}
+
+	private:
 		bool use_rest_pose_ = false;
+
+		template <int dimt, class T>
+		static Eigen::Matrix<T, dimt, dimt> get_standard(const int dim, const bool use_rest_pose)
+		{
+			Eigen::Matrix<double, dimt, dimt> standard(dim, dim);
+			if (use_rest_pose)
+			{
+				standard.setIdentity();
+			}
+			else
+			{
+				if (dim == 2)
+					standard << 1, 0,
+						0.5, std::sqrt(3) / 2;
+				else
+					standard << 1, 0, 0,
+						0.5, std::sqrt(3) / 2., 0,
+						0.5, 0.5 / std::sqrt(3), std::sqrt(3) / 2.;
+				standard = standard.inverse().transpose().eval();
+			}
+
+			Eigen::Matrix<T, dimt, dimt> res(dim, dim);
+			for (int i = 0; i < dim; ++i)
+			{
+				for (int j = 0; j < dim; ++j)
+				{
+					res(i, j) = T(standard(i, j));
+				}
+			}
+
+			return res;
+		}
 	};
 
 } // namespace polyfem::assembler

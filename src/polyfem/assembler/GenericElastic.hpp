@@ -62,6 +62,8 @@ namespace polyfem::assembler
 
 		bool allow_inversion() const override { return true; }
 
+		virtual bool real_def_grad() const { return true; }
+
 	protected:
 		AutodiffType autodiff_type_ = AutodiffType::STRESS;
 
@@ -72,6 +74,7 @@ namespace polyfem::assembler
 		{
 			typedef Eigen::Matrix<T, Eigen::Dynamic, 1> AutoDiffVect;
 			typedef Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
+			typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> DoubleGradMat;
 
 			AutoDiffVect local_disp;
 			get_local_disp(data, size(), local_disp);
@@ -88,6 +91,18 @@ namespace polyfem::assembler
 				// Id + grad d
 				for (int d = 0; d < size(); ++d)
 					def_grad(d, d) += T(1);
+
+				if (!derived().real_def_grad())
+				{
+					DoubleGradMat tmp_jac_it = data.vals.jac_it[p];
+					tmp_jac_it = tmp_jac_it.inverse();
+
+					AutoDiffGradMat jac_it(size(), size());
+					for (long k = 0; k < jac_it.size(); ++k)
+						jac_it(k) = T(tmp_jac_it(k));
+
+					def_grad *= jac_it;
+				}
 
 				const T val = derived().elastic_energy(data.vals.val.row(p), data.t, data.vals.element_id, def_grad);
 
