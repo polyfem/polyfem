@@ -44,7 +44,7 @@ namespace polyfem::assembler
 		}
 
 		template <int dim>
-		Eigen::Matrix<double, dim, dim> computeCofactorMtr(Eigen::Matrix<double, dim, dim>& F)
+		Eigen::Matrix<double, dim, dim> computeCofactorMtr(Eigen::Matrix<double, dim, dim> &F)
 		{
 			Eigen::Matrix<double, dim, dim> A;
 			A.setZero();
@@ -232,10 +232,10 @@ namespace polyfem::assembler
 	}
 
 	void FixedCorotational::assign_stress_tensor(const OutputData &data,
-													const int all_size,
-													const ElasticityTensorType &type,
-													Eigen::MatrixXd &all,
-													const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
+												 const int all_size,
+												 const ElasticityTensorType &type,
+												 Eigen::MatrixXd &all,
+												 const std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> &fun) const
 	{
 		const auto &displacement = data.fun;
 		const auto &local_pts = data.local_pts;
@@ -588,7 +588,7 @@ namespace polyfem::assembler
 
 		return res;
 	}
-	
+
 	template <int dim>
 	double FixedCorotational::compute_energy_from_singular_values(const Eigen::Vector<double, dim> &sigmas, const double lambda, const double mu)
 	{
@@ -597,17 +597,19 @@ namespace polyfem::assembler
 
 		return mu * sigmam12Sum + lambda / 2.0 * sigmaProdm1 * sigmaProdm1;
 	}
-	
+
 	template <int dim>
 	Eigen::Vector<double, dim> FixedCorotational::compute_stress_from_singular_values(const Eigen::Vector<double, dim> &sigmas, const double lambda, const double mu)
 	{
 		const double sigmaProdm1lambda = lambda * (sigmas.prod() - 1.0);
 		Eigen::Matrix<double, dim, 1> sigmaProd_noI;
-		if constexpr (dim == 2) {
+		if constexpr (dim == 2)
+		{
 			sigmaProd_noI[0] = sigmas[1];
 			sigmaProd_noI[1] = sigmas[0];
 		}
-		else {
+		else
+		{
 			sigmaProd_noI[0] = sigmas[1] * sigmas[2];
 			sigmaProd_noI[1] = sigmas[2] * sigmas[0];
 			sigmaProd_noI[2] = sigmas[0] * sigmas[1];
@@ -618,22 +620,25 @@ namespace polyfem::assembler
 		dE_div_dsigma.setZero();
 		dE_div_dsigma[0] = (_2mu * (sigmas[0] - 1.0) + sigmaProd_noI[0] * sigmaProdm1lambda);
 		dE_div_dsigma[1] = (_2mu * (sigmas[1] - 1.0) + sigmaProd_noI[1] * sigmaProdm1lambda);
-		if constexpr (dim == 3) {
+		if constexpr (dim == 3)
+		{
 			dE_div_dsigma[2] = (_2mu * (sigmas[2] - 1.0) + sigmaProd_noI[2] * sigmaProdm1lambda);
 		}
 		return dE_div_dsigma;
 	}
-	
+
 	template <int dim>
 	Eigen::Matrix<double, dim, dim> FixedCorotational::compute_stiffness_from_singular_values(const Eigen::Vector<double, dim> &sigmas, const double lambda, const double mu)
 	{
 		const double sigmaProd = sigmas.prod();
 		Eigen::Matrix<double, dim, 1> sigmaProd_noI;
-		if constexpr (dim == 2) {
+		if constexpr (dim == 2)
+		{
 			sigmaProd_noI[0] = sigmas[1];
 			sigmaProd_noI[1] = sigmas[0];
 		}
-		else {
+		else
+		{
 			sigmaProd_noI[0] = sigmas[1] * sigmas[2];
 			sigmaProd_noI[1] = sigmas[2] * sigmas[0];
 			sigmaProd_noI[2] = sigmas[0] * sigmas[1];
@@ -644,14 +649,17 @@ namespace polyfem::assembler
 		d2E_div_dsigma2.setZero();
 		d2E_div_dsigma2(0, 0) = _2mu + lambda * sigmaProd_noI[0] * sigmaProd_noI[0];
 		d2E_div_dsigma2(1, 1) = _2mu + lambda * sigmaProd_noI[1] * sigmaProd_noI[1];
-		if constexpr (dim == 3) {
+		if constexpr (dim == 3)
+		{
 			d2E_div_dsigma2(2, 2) = _2mu + lambda * sigmaProd_noI[2] * sigmaProd_noI[2];
 		}
 
-		if constexpr (dim == 2) {
+		if constexpr (dim == 2)
+		{
 			d2E_div_dsigma2(0, 1) = d2E_div_dsigma2(1, 0) = lambda * ((sigmaProd - 1.0) + sigmaProd_noI[0] * sigmaProd_noI[1]);
 		}
-		else {
+		else
+		{
 			d2E_div_dsigma2(0, 1) = d2E_div_dsigma2(1, 0) = lambda * (sigmas[2] * (sigmaProd - 1.0) + sigmaProd_noI[0] * sigmaProd_noI[1]);
 			d2E_div_dsigma2(0, 2) = d2E_div_dsigma2(2, 0) = lambda * (sigmas[1] * (sigmaProd - 1.0) + sigmaProd_noI[0] * sigmaProd_noI[2]);
 			d2E_div_dsigma2(2, 1) = d2E_div_dsigma2(1, 2) = lambda * (sigmas[0] * (sigmaProd - 1.0) + sigmaProd_noI[2] * sigmaProd_noI[1]);
@@ -698,7 +706,7 @@ namespace polyfem::assembler
 	}
 
 	template <int dim>
-	Eigen::Matrix<double, dim*dim, dim*dim> FixedCorotational::compute_stiffness_from_def_grad(const Eigen::Matrix<double, dim, dim> &F, const double lambda, const double mu)
+	Eigen::Matrix<double, dim * dim, dim * dim> FixedCorotational::compute_stiffness_from_def_grad(const Eigen::Matrix<double, dim, dim> &F, const double lambda, const double mu)
 	{
 		utils::AutoFlipSVD<Eigen::Matrix<double, dim, dim>> svd(F, Eigen::ComputeFullU | Eigen::ComputeFullV);
 		const Eigen::Vector<double, dim> sigmas = svd.singularValues();
@@ -710,17 +718,20 @@ namespace polyfem::assembler
 		BLeftCoef.setZero();
 		{
 			const double tmp = lambda / 2.0 * (sigmas.prod() - 1);
-			if constexpr (dim == 2) {
+			if constexpr (dim == 2)
+			{
 				BLeftCoef[0] = mu - tmp;
 			}
-			else {
+			else
+			{
 				BLeftCoef[0] = mu - tmp * sigmas[2];
 				BLeftCoef[1] = mu - tmp * sigmas[0];
 				BLeftCoef[2] = mu - tmp * sigmas[1];
 			}
 		}
 		Eigen::Matrix2d B[Cdim2];
-		for (int cI = 0; cI < Cdim2; cI++) {
+		for (int cI = 0; cI < Cdim2; cI++)
+		{
 			B[cI].setZero();
 			int cI_post = (cI + 1) % dim;
 
@@ -728,7 +739,7 @@ namespace polyfem::assembler
 			double sum_sigma = sigmas[cI] + sigmas[cI_post];
 			rightCoef /= 2.0 * std::max(sum_sigma, 1.0e-12);
 
-			const double& leftCoef = BLeftCoef[cI];
+			const double &leftCoef = BLeftCoef[cI];
 			B[cI](0, 0) = B[cI](1, 1) = leftCoef + rightCoef;
 			B[cI](0, 1) = B[cI](1, 0) = leftCoef - rightCoef;
 		}
@@ -736,14 +747,16 @@ namespace polyfem::assembler
 		// compute M using A(d2E_div_dsigma2) and B
 		Eigen::Matrix<double, dim * dim, dim * dim> M;
 		M.setZero();
-		if constexpr (dim == 2) {
+		if constexpr (dim == 2)
+		{
 			M(0, 0) = d2E_div_dsigma2(0, 0);
 			M(0, 3) = d2E_div_dsigma2(0, 1);
 			M.block(1, 1, 2, 2) = B[0];
 			M(3, 0) = d2E_div_dsigma2(1, 0);
 			M(3, 3) = d2E_div_dsigma2(1, 1);
 		}
-		else {
+		else
+		{
 			// A
 			M(0, 0) = d2E_div_dsigma2(0, 0);
 			M(0, 4) = d2E_div_dsigma2(0, 1);
@@ -772,27 +785,34 @@ namespace polyfem::assembler
 		}
 
 		// compute hessian
-		Eigen::Matrix<double, dim*dim, dim*dim> hessian;
+		Eigen::Matrix<double, dim * dim, dim * dim> hessian;
 		hessian.setZero();
-		const Eigen::Matrix<double, dim, dim>& U = svd.matrixU();
-		const Eigen::Matrix<double, dim, dim>& V = svd.matrixV();
-		for (int i = 0; i < dim; i++) {
+		const Eigen::Matrix<double, dim, dim> &U = svd.matrixU();
+		const Eigen::Matrix<double, dim, dim> &V = svd.matrixV();
+		for (int i = 0; i < dim; i++)
+		{
 			// int _dim_i = i * dim;
-			for (int j = 0; j < dim; j++) {
+			for (int j = 0; j < dim; j++)
+			{
 				int ij = i + j * dim;
-				for (int r = 0; r < dim; r++) {
+				for (int r = 0; r < dim; r++)
+				{
 					// int _dim_r = r * dim;
-					for (int s = 0; s < dim; s++) {
+					for (int s = 0; s < dim; s++)
+					{
 						int rs = r + s * dim;
-						if (ij > rs) {
+						if (ij > rs)
+						{
 							// bottom left, same as upper right
 							continue;
 						}
 
-						if constexpr (dim == 2) {
+						if constexpr (dim == 2)
+						{
 							hessian(ij, rs) = M(0, 0) * U(i, 0) * V(j, 0) * U(r, 0) * V(s, 0) + M(0, 3) * U(i, 0) * V(j, 0) * U(r, 1) * V(s, 1) + M(1, 1) * U(i, 0) * V(j, 1) * U(r, 0) * V(s, 1) + M(1, 2) * U(i, 0) * V(j, 1) * U(r, 1) * V(s, 0) + M(2, 1) * U(i, 1) * V(j, 0) * U(r, 0) * V(s, 1) + M(2, 2) * U(i, 1) * V(j, 0) * U(r, 1) * V(s, 0) + M(3, 0) * U(i, 1) * V(j, 1) * U(r, 0) * V(s, 0) + M(3, 3) * U(i, 1) * V(j, 1) * U(r, 1) * V(s, 1);
 						}
-						else {
+						else
+						{
 							hessian(ij, rs) = M(0, 0) * U(i, 0) * V(j, 0) * U(r, 0) * V(s, 0) + M(0, 4) * U(i, 0) * V(j, 0) * U(r, 1) * V(s, 1) + M(0, 8) * U(i, 0) * V(j, 0) * U(r, 2) * V(s, 2) + M(4, 0) * U(i, 1) * V(j, 1) * U(r, 0) * V(s, 0) + M(4, 4) * U(i, 1) * V(j, 1) * U(r, 1) * V(s, 1) + M(4, 8) * U(i, 1) * V(j, 1) * U(r, 2) * V(s, 2) + M(8, 0) * U(i, 2) * V(j, 2) * U(r, 0) * V(s, 0) + M(8, 4) * U(i, 2) * V(j, 2) * U(r, 1) * V(s, 1) + M(8, 8) * U(i, 2) * V(j, 2) * U(r, 2) * V(s, 2) + M(1, 1) * U(i, 0) * V(j, 1) * U(r, 0) * V(s, 1) + M(1, 3) * U(i, 0) * V(j, 1) * U(r, 1) * V(s, 0) + M(3, 1) * U(i, 1) * V(j, 0) * U(r, 0) * V(s, 1) + M(3, 3) * U(i, 1) * V(j, 0) * U(r, 1) * V(s, 0) + M(5, 5) * U(i, 1) * V(j, 2) * U(r, 1) * V(s, 2) + M(5, 7) * U(i, 1) * V(j, 2) * U(r, 2) * V(s, 1) + M(7, 5) * U(i, 2) * V(j, 1) * U(r, 1) * V(s, 2) + M(7, 7) * U(i, 2) * V(j, 1) * U(r, 2) * V(s, 1) + M(2, 2) * U(i, 0) * V(j, 2) * U(r, 0) * V(s, 2) + M(2, 6) * U(i, 0) * V(j, 2) * U(r, 2) * V(s, 0) + M(6, 2) * U(i, 2) * V(j, 0) * U(r, 0) * V(s, 2) + M(6, 6) * U(i, 2) * V(j, 0) * U(r, 2) * V(s, 0);
 						}
 

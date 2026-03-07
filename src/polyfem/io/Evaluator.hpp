@@ -23,6 +23,7 @@ namespace polyfem::io
 		/// @param[in] bases bases
 		/// @param[in] gbases geom bases
 		/// @param[in] disc_orders discretization orders
+		/// @param[in] disc_ordersq discretization orders
 		/// @param[in] assembler assembler
 		/// @param[in] fun function to use
 		/// @param[out] result output displacement
@@ -33,6 +34,7 @@ namespace polyfem::io
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const Eigen::VectorXi &disc_orders,
+			const Eigen::VectorXi &disc_ordersq,
 			const assembler::Assembler &assembler,
 			const Eigen::MatrixXd &fun,
 			const double t,
@@ -44,6 +46,7 @@ namespace polyfem::io
 		/// @param[in] is_problem_scalar if problem is scalar
 		/// @param[in] bases bases
 		/// @param[in] disc_orders discretization orders
+		/// @param[in] disc_ordersq discretization orders
 		/// @param[in] polys polygons
 		/// @param[in] polys_3d polyhedra
 		/// @param[in] sampler sampler for the local element
@@ -57,6 +60,7 @@ namespace polyfem::io
 			const bool is_problem_scalar,
 			const std::vector<basis::ElementBases> &bases,
 			const Eigen::VectorXi &disc_orders,
+			const Eigen::VectorXi &disc_ordersq,
 			const std::map<int, Eigen::MatrixXd> &polys,
 			const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 			const utils::RefElementSampler &sampler,
@@ -85,6 +89,7 @@ namespace polyfem::io
 		/// @param[in] actual_dim is the size of the problem (e.g., 1 for Laplace, dim for elasticity)
 		/// @param[in] bases bases
 		/// @param[in] disc_orders discretization orders
+		/// @param[in] disc_ordersq discretization orders
 		/// @param[in] polys polygons
 		/// @param[in] polys_3d polyhedra
 		/// @param[in] sampler sampler for the local element
@@ -98,6 +103,7 @@ namespace polyfem::io
 			const int actual_dim,
 			const std::vector<basis::ElementBases> &basis,
 			const Eigen::VectorXi &disc_orders,
+			const Eigen::VectorXi &disc_ordersq,
 			const std::map<int, Eigen::MatrixXd> &polys,
 			const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 			const utils::RefElementSampler &sampler,
@@ -165,6 +171,7 @@ namespace polyfem::io
 		/// @param[in] bases bases
 		/// @param[in] gbases geom bases
 		/// @param[in] disc_orders discretization orders
+		/// @param[in] disc_ordersq discretization orders
 		/// @param[in] polys polygons
 		/// @param[in] polys_3d polyhedra
 		/// @param[in] assembler assembler
@@ -179,6 +186,7 @@ namespace polyfem::io
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const Eigen::VectorXi &disc_orders,
+			const Eigen::VectorXi &disc_ordersq,
 			const std::map<int, Eigen::MatrixXd> &polys,
 			const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 			const assembler::Assembler &assembler,
@@ -194,6 +202,7 @@ namespace polyfem::io
 		/// @param[in] bases bases
 		/// @param[in] gbases geom bases
 		/// @param[in] disc_orders discretization orders
+		/// @param[in] disc_ordersq discretization orders
 		/// @param[in] polys polygons
 		/// @param[in] polys_3d polyhedra
 		/// @param[in] assembler assembler
@@ -209,6 +218,7 @@ namespace polyfem::io
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const Eigen::VectorXi &disc_orders,
+			const Eigen::VectorXi &disc_ordersq,
 			const std::map<int, Eigen::MatrixXd> &polys,
 			const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 			const assembler::Assembler &assembler,
@@ -220,20 +230,22 @@ namespace polyfem::io
 			const bool use_sampler,
 			const bool boundary_only);
 
-		/// computes scalar quantity of funtion (ie von mises for elasticity and norm of velocity for fluid)
-		/// the scalar value is averaged around every node to make it continuos
+		/// calls compute_scalar_value (i.e von mises for elasticity and norm of velocity for fluid) and compute_tensor_value of funtion using the assembler
+		/// the values are averaged around every node and interpolated using the bases to make them continuous.
+		/// the averaging is done over the full volume of the neighborhood elements and not just the voronoi/barycentric cell around the node.
 		/// @param[in] mesh mesh
 		/// @param[in] is_problem_scalar if problem is scalar
 		/// @param[in] n_bases number of bases
 		/// @param[in] bases bases
 		/// @param[in] gbases geom bases
 		/// @param[in] disc_orders discretization orders
+		/// @param[in] disc_ordersq discretization orders
 		/// @param[in] polys polygons
 		/// @param[in] polys_3d polyhedra
 		/// @param[in] assembler assembler
 		/// @param[in] sampler sampler for the local element
 		/// @param[in] n_points is the size of the output.
-		/// @param[in] fun function to used
+		/// @param[in] fun function to be used
 		/// @param[out] result_scalar scalar value
 		/// @param[out] result_tensor tensor value
 		/// @param[in] use_sampler uses the sampler or not
@@ -245,6 +257,7 @@ namespace polyfem::io
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const Eigen::VectorXi &disc_orders,
+			const Eigen::VectorXi &disc_ordersq,
 			const std::map<int, Eigen::MatrixXd> &polys,
 			const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 			const assembler::Assembler &assembler,
@@ -257,12 +270,13 @@ namespace polyfem::io
 			const bool use_sampler,
 			const bool boundary_only);
 
-		/// compute tensor quantity (ie stress tensor or velocy)
+		/// compute tensor quantity (ie stress tensor or velocity)
 		/// @param[in] mesh mesh
 		/// @param[in] is_problem_scalar if problem is scalar
 		/// @param[in] bases bases
 		/// @param[in] gbases geom bases
 		/// @param[in] disc_orders discretization orders
+		/// @param[in] disc_ordersq discretization orders
 		/// @param[in] polys polygons
 		/// @param[in] polys_3d polyhedra
 		/// @param[in] assembler assembler
@@ -278,6 +292,7 @@ namespace polyfem::io
 			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const Eigen::VectorXi &disc_orders,
+			const Eigen::VectorXi &disc_ordersq,
 			const std::map<int, Eigen::MatrixXd> &polys,
 			const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d,
 			const assembler::Assembler &assembler,

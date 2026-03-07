@@ -55,7 +55,7 @@ namespace polyfem::solver
 		const std::vector<int> &boundary_nodes,
 		const std::vector<mesh::LocalBoundary> &local_boundary,
 		const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
-		const int n_boundary_samples,
+		const QuadratureOrders &n_boundary_samples,
 		const Eigen::MatrixXd &rhs,
 		const Eigen::MatrixXd &sol,
 		const assembler::Density &density,
@@ -100,7 +100,7 @@ namespace polyfem::solver
 		const double alpha_n,
 		const bool use_adaptive_dhat,
 		const double min_distance_ratio,
-		
+
 		// Normal Adhesion Form
 		const bool adhesion_enabled,
 		const double dhat_p,
@@ -377,7 +377,7 @@ namespace polyfem::solver
 				{
 					contact_form = std::make_shared<SmoothContactForm>(
 						collision_mesh, dhat, avg_mass, alpha_t, alpha_n, use_adaptive_dhat, min_distance_ratio,
-						use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, 
+						use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase,
 						ccd_tolerance * units.characteristic_length(), ccd_max_iterations);
 				}
 				else
@@ -417,21 +417,17 @@ namespace polyfem::solver
 			{
 				normal_adhesion_form = std::make_shared<NormalAdhesionForm>(
 					collision_mesh, dhat_p, dhat_a, Y, is_time_dependent, enable_shape_derivatives,
-					broad_phase, ccd_tolerance * units.characteristic_length(), ccd_max_iterations
-				);
+					broad_phase, ccd_tolerance * units.characteristic_length(), ccd_max_iterations);
 				forms.push_back(normal_adhesion_form);
 
 				if (tangential_adhesion_coefficient != 0)
 				{
 					tangential_adhesion_form = std::make_shared<TangentialAdhesionForm>(
 						collision_mesh, time_integrator, epsa, tangential_adhesion_coefficient,
-						broad_phase, *normal_adhesion_form, tangential_adhesion_iterations
-					);
+						broad_phase, *normal_adhesion_form, tangential_adhesion_iterations);
 					forms.push_back(tangential_adhesion_form);
 				}
 			}
-
-			
 		}
 
 		const std::vector<json> rayleigh_damping_jsons = utils::json_as_array(rayleigh_damping);

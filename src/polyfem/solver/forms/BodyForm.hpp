@@ -8,11 +8,15 @@
 
 #include <polyfem/utils/Types.hpp>
 
+#include <vector>
+
 namespace polyfem::solver
 {
 	/// @brief Form representing body forces
 	class BodyForm : public Form
 	{
+		friend class BodyForceDerivative;
+
 	public:
 		/// @brief Construct a new Body Form object
 		/// @param state Reference to the simulation state
@@ -22,7 +26,7 @@ namespace polyfem::solver
 				 const std::vector<int> &boundary_nodes,
 				 const std::vector<mesh::LocalBoundary> &local_boundary,
 				 const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
-				 const int n_boundary_samples,
+				 const QuadratureOrders &n_boundary_samples,
 				 const Eigen::MatrixXd &rhs,
 				 const assembler::RhsAssembler &rhs_assembler,
 				 const assembler::Density &density,
@@ -53,18 +57,6 @@ namespace polyfem::solver
 		/// @param x Solution at time t
 		void update_quantities(const double t, const Eigen::VectorXd &x) override;
 
-		/// @brief Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adjoint_sol.
-		/// @param[in] n_verts Number of vertices
-		/// @param[in] x Current solution
-		/// @param[in] adjoint Current adjoint solution
-		/// @param[out] term Derivative of force multiplied by the adjoint
-		void force_shape_derivative(
-			const int n_verts,
-			const double t,
-			const Eigen::MatrixXd &x,
-			const Eigen::MatrixXd &adjoint,
-			Eigen::VectorXd &term);
-
 		void hessian_wrt_u_prev(
 			const Eigen::VectorXd &u_prev,
 			const double t,
@@ -80,7 +72,7 @@ namespace polyfem::solver
 		const std::vector<int> &boundary_nodes_;
 		const std::vector<mesh::LocalBoundary> &local_boundary_;
 		const std::vector<mesh::LocalBoundary> &local_neumann_boundary_;
-		const int n_boundary_samples_;
+		const QuadratureOrders n_boundary_samples_;
 
 		const Eigen::MatrixXd &rhs_;                   ///< static RHS for the current time
 		const assembler::RhsAssembler &rhs_assembler_; ///< Reference to the RHS assembler

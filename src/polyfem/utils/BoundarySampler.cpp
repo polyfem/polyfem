@@ -6,6 +6,7 @@
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
+#include <polyfem/autogen/prism_bases.hpp>
 
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
@@ -49,6 +50,30 @@ namespace polyfem
 				return Eigen::RowVector3d(p(local_index, 0), p(local_index, 1), p(local_index, 2));
 			}
 
+			Eigen::RowVector3d linear_prism_local_node_coordinates(int local_index)
+			{
+				Eigen::MatrixXd p;
+				polyfem::autogen::prism_nodes_3d(1, 1, p);
+				return Eigen::RowVector3d(p(local_index, 0), p(local_index, 1), p(local_index, 2));
+			}
+
+			Eigen::Matrix2d quad_local_node_coordinates_from_edge(int le)
+			{
+				Eigen::Matrix2d res(2, 2);
+				res.row(0) = quad_local_node_coordinates(le);
+				res.row(1) = quad_local_node_coordinates((le + 1) % 4);
+
+				return res;
+			}
+
+			Eigen::Matrix2d tri_local_node_coordinates_from_edge(int le)
+			{
+				Eigen::Matrix2d res(2, 2);
+				res.row(0) = tri_local_node_coordinates(le);
+				res.row(1) = tri_local_node_coordinates((le + 1) % 3);
+
+				return res;
+			}
 		} // namespace
 
 		Eigen::Matrix2d utils::BoundarySampler::quad_local_node_coordinates_from_edge(int le)
@@ -97,6 +122,24 @@ namespace polyfem
 			Eigen::MatrixXd res(4, 3);
 			for (int i = 0; i < 4; ++i)
 				res.row(i) = linear_hex_local_node_coordinates(fv(lf, i));
+
+			return res;
+		}
+
+		Eigen::MatrixXd utils::BoundarySampler::prism_local_node_coordinates_from_face(int lf)
+		{
+			Eigen::Matrix<int, 5, 4> fv;
+			fv.row(0) << 0, 1, 2, -1;
+			fv.row(1) << 3, 4, 5, -1;
+
+			fv.row(2) << 0, 1, 4, 3;
+			fv.row(3) << 1, 2, 5, 4;
+			fv.row(4) << 2, 0, 3, 5;
+
+			const int nv = lf < 2 ? 3 : 4;
+			Eigen::MatrixXd res(nv, 3);
+			for (int i = 0; i < nv; ++i)
+				res.row(i) = linear_prism_local_node_coordinates(fv(lf, i));
 
 			return res;
 		}
@@ -214,6 +257,74 @@ namespace polyfem
 			weights *= 2 * mesh.tri_area(gid);
 		}
 
+		void utils::BoundarySampler::quadrature_for_prism_face(int index, int orderp, int orderq, int gid, const Mesh &mesh, Eigen::MatrixXd &uv, Eigen::MatrixXd &points, Eigen::VectorXd &weights)
+		{
+			auto endpoints = prism_local_node_coordinates_from_face(index);
+
+			if (index < 2)
+			{
+				Quadrature quad;
+				TriQuadrature quad_rule;
+				quad_rule.get_quadrature(orderp, quad);
+
+				const int n_pts = quad.points.rows();
+				points.resize(n_pts, endpoints.cols());
+
+				uv.resize(quad.points.rows(), 3);
+				uv.col(0) = quad.points.col(0);
+				uv.col(1) = quad.points.col(1);
+				uv.col(2) = 1 - uv.col(0).array() - uv.col(1).array();
+
+				for (int i = 0; i < n_pts; ++i)
+				{
+					const double b1 = quad.points(i, 0);
+					const double b3 = quad.points(i, 1);
+					const double b2 = 1 - b1 - b3;
+
+					for (int c = 0; c < 3; ++c)
+					{
+						points(i, c) = b1 * endpoints(0, c) + b2 * endpoints(1, c) + b3 * endpoints(2, c);
+					}
+				}
+
+				weights = quad.weights;
+				// 2 * because weights sum to 1/2 already
+				weights *= 2 * mesh.tri_area(gid);
+			}
+			else
+			{
+				Quadrature quad;
+				QuadQuadrature quad_rule;
+				quad_rule.get_quadrature(orderq, quad);
+
+				const int n_pts = quad.points.rows();
+				points.resize(n_pts, endpoints.cols());
+
+				uv.resize(quad.points.rows(), 4);
+				uv.col(0) = quad.points.col(0);
+				uv.col(1) = 1 - uv.col(0).array();
+				uv.col(2) = quad.points.col(1);
+				uv.col(3) = 1 - uv.col(2).array();
+
+				for (int i = 0; i < n_pts; ++i)
+				{
+					const double b1 = quad.points(i, 0);
+					const double b2 = 1 - b1;
+
+					const double b3 = quad.points(i, 1);
+					const double b4 = 1 - b3;
+
+					for (int c = 0; c < 3; ++c)
+					{
+						points(i, c) = b3 * (b1 * endpoints(0, c) + b2 * endpoints(1, c)) + b4 * (b1 * endpoints(3, c) + b2 * endpoints(2, c));
+					}
+				}
+
+				weights = quad.weights;
+				weights *= mesh.quad_area(gid);
+			}
+		}
+
 		void utils::BoundarySampler::sample_parametric_quad_edge(int index, int n_samples, Eigen::MatrixXd &uv, Eigen::MatrixXd &samples)
 		{
 			auto endpoints = quad_local_node_coordinates_from_edge(index);
@@ -302,6 +413,64 @@ namespace polyfem
 			}
 			samples.conservativeResize(counter, 3);
 			uv.conservativeResize(counter, 3);
+		}
+
+		void utils::BoundarySampler::sample_parametric_prism_face(int index, int n_samples, Eigen::MatrixXd &uv, Eigen::MatrixXd &samples)
+		{
+			auto endpoints = prism_local_node_coordinates_from_face(index);
+
+			if (index < 2)
+			{
+				const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
+				samples.resize(n_samples * n_samples, endpoints.cols());
+
+				uv.resize(n_samples * n_samples, 3);
+
+				int counter = 0;
+				for (int u = 0; u < n_samples; ++u)
+				{
+					for (int v = 0; v < n_samples; ++v)
+					{
+						if (t(u) + t(v) > 1)
+							continue;
+
+						uv(counter, 0) = t(u);
+						uv(counter, 1) = t(v);
+						uv(counter, 2) = 1 - t(u) - t(v);
+
+						for (int c = 0; c < 3; ++c)
+						{
+							samples(counter, c) = t(u) * endpoints(0, c) + t(v) * endpoints(1, c) + (1 - t(u) - t(v)) * endpoints(2, c);
+						}
+						++counter;
+					}
+				}
+				samples.conservativeResize(counter, 3);
+				uv.conservativeResize(counter, 3);
+			}
+			else
+			{
+				const Eigen::VectorXd t = Eigen::VectorXd::LinSpaced(n_samples, 0, 1);
+				samples.resize(n_samples * n_samples, endpoints.cols());
+				Eigen::MatrixXd left(n_samples, endpoints.cols());
+				Eigen::MatrixXd right(n_samples, endpoints.cols());
+
+				uv.resize(n_samples * n_samples, endpoints.cols());
+				uv.setZero();
+
+				for (int c = 0; c < 3; ++c)
+				{
+					left.col(c) = (1.0 - t.array()).matrix() * endpoints(0, c) + t * endpoints(1, c);
+					right.col(c) = (1.0 - t.array()).matrix() * endpoints(3, c) + t * endpoints(2, c);
+				}
+				for (int c = 0; c < 3; ++c)
+				{
+					Eigen::MatrixXd x = (1.0 - t.array()).matrix() * left.col(c).transpose() + t * right.col(c).transpose();
+					assert(x.size() == n_samples * n_samples);
+
+					samples.col(c) = Eigen::Map<const Eigen::VectorXd>(x.data(), x.size());
+				}
+			}
 		}
 
 		void utils::BoundarySampler::sample_polygon_edge(int face_id, int edge_id, int n_samples, const Mesh &mesh, Eigen::MatrixXd &uv, Eigen::MatrixXd &samples)
@@ -429,6 +598,18 @@ namespace polyfem
 				normal *= -1;
 		}
 
+		void utils::BoundarySampler::normal_for_prism_face(int index, Eigen::MatrixXd &normal)
+		{
+			auto endpoints = prism_local_node_coordinates_from_face(index);
+			const Eigen::RowVector3d e1 = endpoints.row(0) - endpoints.row(1);
+			const Eigen::RowVector3d e2 = endpoints.row(0) - endpoints.row(2);
+			normal = e1.cross(e2);
+			normal.normalize();
+
+			if (index == 0)
+				normal *= -1;
+		}
+
 		void utils::BoundarySampler::normal_for_polygon_edge(int face_id, int edge_id, const Mesh &mesh, Eigen::MatrixXd &normal)
 		{
 			assert(!mesh.is_volume());
@@ -460,7 +641,7 @@ namespace polyfem
 			normal.normalize();
 		}
 
-		bool utils::BoundarySampler::boundary_quadrature(const LocalBoundary &local_boundary, const int order, const Mesh &mesh, const bool skip_computation, Eigen::MatrixXd &uv, Eigen::MatrixXd &points, Eigen::MatrixXd &normals, Eigen::VectorXd &weights, Eigen::VectorXi &global_primitive_ids)
+		bool utils::BoundarySampler::boundary_quadrature(const LocalBoundary &local_boundary, const QuadratureOrders &order, const Mesh &mesh, const bool skip_computation, Eigen::MatrixXd &uv, Eigen::MatrixXd &points, Eigen::MatrixXd &normals, Eigen::VectorXd &weights, Eigen::VectorXi &global_primitive_ids)
 		{
 			uv.resize(0, 0);
 			points.resize(0, 0);
@@ -476,23 +657,27 @@ namespace polyfem
 				switch (local_boundary.type())
 				{
 				case BoundaryType::TRI_LINE:
-					quadrature_for_tri_edge(local_boundary[i], order, gid, mesh, tmp_uv, tmp_p, tmp_w);
+					quadrature_for_tri_edge(local_boundary[i], order[0], gid, mesh, tmp_uv, tmp_p, tmp_w);
 					normal_for_tri_edge(local_boundary[i], tmp_n);
 					break;
 				case BoundaryType::QUAD_LINE:
-					quadrature_for_quad_edge(local_boundary[i], order, gid, mesh, tmp_uv, tmp_p, tmp_w);
+					quadrature_for_quad_edge(local_boundary[i], order[0], gid, mesh, tmp_uv, tmp_p, tmp_w);
 					normal_for_quad_edge(local_boundary[i], tmp_n);
 					break;
 				case BoundaryType::QUAD:
-					quadrature_for_quad_face(local_boundary[i], order, gid, mesh, tmp_uv, tmp_p, tmp_w);
+					quadrature_for_quad_face(local_boundary[i], order[0], gid, mesh, tmp_uv, tmp_p, tmp_w);
 					normal_for_quad_face(local_boundary[i], tmp_n);
 					break;
 				case BoundaryType::TRI:
-					quadrature_for_tri_face(local_boundary[i], order, gid, mesh, tmp_uv, tmp_p, tmp_w);
+					quadrature_for_tri_face(local_boundary[i], order[0], gid, mesh, tmp_uv, tmp_p, tmp_w);
 					normal_for_tri_face(local_boundary[i], tmp_n);
 					break;
+				case BoundaryType::PRISM:
+					quadrature_for_prism_face(local_boundary[i], order[0], order[1], gid, mesh, tmp_uv, tmp_p, tmp_w);
+					normal_for_prism_face(local_boundary[i], tmp_n);
+					break;
 				case BoundaryType::POLYGON:
-					quadrature_for_polygon_edge(local_boundary.element_id(), local_boundary.global_primitive_id(i), order, mesh, tmp_uv, tmp_p, tmp_w);
+					quadrature_for_polygon_edge(local_boundary.element_id(), local_boundary.global_primitive_id(i), order[0], mesh, tmp_uv, tmp_p, tmp_w);
 					normal_for_polygon_edge(local_boundary.element_id(), local_boundary.global_primitive_id(i), mesh, tmp_n);
 					break;
 				case BoundaryType::INVALID:
@@ -550,6 +735,9 @@ namespace polyfem
 				case BoundaryType::TRI:
 					sample_parametric_tri_face(local_boundary[i], n_samples, tmp_uv, tmp);
 					break;
+				case BoundaryType::PRISM:
+					sample_parametric_prism_face(local_boundary[i], n_samples, tmp_uv, tmp);
+					break;
 				case BoundaryType::POLYGON:
 					sample_polygon_edge(local_boundary.element_id(), local_boundary.global_primitive_id(i), n_samples, mesh, tmp_uv, tmp);
 					break;
@@ -576,7 +764,7 @@ namespace polyfem
 			return true;
 		}
 
-		bool utils::BoundarySampler::boundary_quadrature(const mesh::LocalBoundary &local_boundary, const int order, const mesh::Mesh &mesh, const int i, const bool skip_computation, Eigen::MatrixXd &uv, Eigen::MatrixXd &points, Eigen::MatrixXd &normals, Eigen::VectorXd &weights)
+		bool utils::BoundarySampler::boundary_quadrature(const mesh::LocalBoundary &local_boundary, const QuadratureOrders &order, const mesh::Mesh &mesh, const int i, const bool skip_computation, Eigen::MatrixXd &uv, Eigen::MatrixXd &points, Eigen::MatrixXd &normals, Eigen::VectorXd &weights)
 		{
 			assert(local_boundary.size() > i);
 
@@ -589,23 +777,27 @@ namespace polyfem
 			switch (local_boundary.type())
 			{
 			case BoundaryType::TRI_LINE:
-				quadrature_for_tri_edge(local_boundary[i], order, gid, mesh, uv, points, weights);
+				quadrature_for_tri_edge(local_boundary[i], order[0], gid, mesh, uv, points, weights);
 				normal_for_tri_edge(local_boundary[i], normal);
 				break;
 			case BoundaryType::QUAD_LINE:
-				quadrature_for_quad_edge(local_boundary[i], order, gid, mesh, uv, points, weights);
+				quadrature_for_quad_edge(local_boundary[i], order[0], gid, mesh, uv, points, weights);
 				normal_for_quad_edge(local_boundary[i], normal);
 				break;
 			case BoundaryType::QUAD:
-				quadrature_for_quad_face(local_boundary[i], order, gid, mesh, uv, points, weights);
+				quadrature_for_quad_face(local_boundary[i], order[0], gid, mesh, uv, points, weights);
 				normal_for_quad_face(local_boundary[i], normal);
 				break;
 			case BoundaryType::TRI:
-				quadrature_for_tri_face(local_boundary[i], order, gid, mesh, uv, points, weights);
+				quadrature_for_tri_face(local_boundary[i], order[0], gid, mesh, uv, points, weights);
 				normal_for_tri_face(local_boundary[i], normal);
 				break;
+			case BoundaryType::PRISM:
+				quadrature_for_prism_face(local_boundary[i], order[0], order[1], gid, mesh, uv, points, weights);
+				normal_for_prism_face(local_boundary[i], normal);
+				break;
 			case BoundaryType::POLYGON:
-				quadrature_for_polygon_edge(local_boundary.element_id(), gid, order, mesh, uv, points, weights);
+				quadrature_for_polygon_edge(local_boundary.element_id(), gid, order[0], mesh, uv, points, weights);
 				normal_for_polygon_edge(local_boundary.element_id(), gid, mesh, normal);
 				break;
 			case BoundaryType::INVALID:

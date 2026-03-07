@@ -284,7 +284,7 @@ namespace polyfem::assembler
 				for (size_t j = 0; j < size(); ++j)
 					for (size_t d = 0; d < size(); d++)
 						delF_delU_tensor(size() * j + d, i * size() + j) = delF_delU(i, d);
-			
+
 			stress_grad_Ut += delF_delU_tensor.transpose() * stress_grad_Ut_temp * delF_delU_tensor * data.da(p);
 		}
 
@@ -310,7 +310,7 @@ namespace polyfem::assembler
 		}
 
 		Eigen::MatrixXd local_vel = (local_disp - local_prev_disp) / data.dt;
-	
+
 		double energy = 0;
 		const int n_pts = data.da.size();
 
@@ -327,7 +327,7 @@ namespace polyfem::assembler
 			const Eigen::MatrixXd delF_delU = grad * data.vals.jac_it[p];
 			def_grad = local_disp.transpose() * delF_delU + Eigen::MatrixXd::Identity(size(), size());
 			dFdt = local_vel.transpose() * delF_delU;
-			
+
 			dEdt = dFdt.transpose() * def_grad;
 			dEdt = (dEdt + dEdt.transpose()).eval() / 2.;
 

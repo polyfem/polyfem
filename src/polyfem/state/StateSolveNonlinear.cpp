@@ -125,6 +125,8 @@ namespace polyfem
 			}
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
+			if (time_callback)
+				time_callback(t, time_steps, t0 + dt * t, t0 + dt * time_steps);
 
 			const std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
 			if (!rest_mesh_path.empty())
@@ -172,7 +174,7 @@ namespace polyfem
 			const Eigen::MatrixXd displaced = collision_mesh.displace_vertices(
 				utils::unflatten(sol, mesh->dimension()));
 
-			if (ipc::has_intersections(collision_mesh, displaced, ipc::build_broad_phase(args["solver"]["contact"]["CCD"]["broad_phase"])))
+			if (ipc::has_intersections(collision_mesh, displaced, ipc::create_broad_phase(args["solver"]["contact"]["CCD"]["broad_phase"])))
 			{
 				OBJWriter::write(
 					resolve_output_path("intersection.obj"), displaced,

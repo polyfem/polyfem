@@ -1,5 +1,7 @@
 #include "GeometryUtils.hpp"
 
+#include <cassert>
+
 #include <polyfem/utils/Logger.hpp>
 
 #include <Eigen/Geometry>
@@ -11,6 +13,15 @@
 
 namespace polyfem::utils
 {
+	namespace
+	{
+		double triangle_jacobian(const Eigen::VectorXd &v1, const Eigen::VectorXd &v2, const Eigen::VectorXd &v3)
+		{
+			Eigen::VectorXd a = v2 - v1, b = v3 - v1;
+			return a(0) * b(1) - b(0) * a(1);
+		}
+	} // namespace
+
 	double triangle_area_2D(
 		const Eigen::Vector2d &a,
 		const Eigen::Vector2d &b,
@@ -499,4 +510,41 @@ namespace polyfem::utils
 		H[142] = 0;
 		H[143] = 0;
 	}
+
+	bool is_flipped(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
+	{
+		assert(F.cols() == 3 || F.cols() == 4 && "Only triangle and tetrahedron are supported.");
+
+		// Triangle.
+		if (F.cols() == 3)
+		{
+			for (int i = 0; i < F.rows(); i++)
+			{
+				double area = triangle_jacobian(V.row(F(i, 0)), V.row(F(i, 1)), V.row(F(i, 2)));
+				if (area <= 0.0f)
+				{
+					return true;
+				}
+			}
+		}
+		else if (F.cols() == 4)
+		{
+			// Tetrahedron.
+			for (int i = 0; i < F.rows(); i++)
+			{
+				double volume = tetrahedron_volume(V.row(F(i, 0)), V.row(F(i, 1)), V.row(F(i, 2)), V.row(F(i, 3)));
+				if (volume <= 0.0f)
+				{
+					return true;
+				}
+			}
+		}
+		else
+		{
+			return true;
+		}
+
+		return false;
+	}
+
 } // namespace polyfem::utils

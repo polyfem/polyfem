@@ -2,14 +2,34 @@
 
 #include <polyfem/assembler/MooneyRivlinElasticity.hpp>
 #include <polyfem/assembler/MooneyRivlin3ParamElasticity.hpp>
+#include <polyfem/assembler/IsochoricNeoHookean.hpp>
 #include <polyfem/assembler/OgdenElasticity.hpp>
 #include <polyfem/assembler/NeoHookeanElasticityAutodiff.hpp>
+#include <polyfem/assembler/VolumePenalty.hpp>
 #include <polyfem/assembler/AMIPSEnergy.hpp>
+
+#include <polyfem/assembler/HGOFiber.hpp>
+#include <polyfem/assembler/ActiveFiber.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 
 namespace polyfem::assembler
 {
+
+	template <typename Derived>
+	template <int dim>
+	Eigen::Matrix<double, dim * dim, dim> GenericElastic<Derived>::compute_B_block(const Eigen::Matrix<double, 1, dim> &g) const
+	{
+		Eigen::Matrix<double, dim * dim, dim> B(size() * size(), size());
+		B.setZero();
+
+		for (int i = 0; i < dim; ++i)     // displacement component
+			for (int j = 0; j < dim; ++j) // gradient direction
+				B(i * dim + j, i) = g(j);
+
+		return B;
+	}
+
 	template <typename Derived>
 	GenericElastic<Derived>::GenericElastic()
 	{
@@ -92,6 +112,27 @@ namespace polyfem::assembler
 	template <typename Derived>
 	Eigen::VectorXd GenericElastic<Derived>::assemble_gradient(const NonLinearAssemblerData &data) const
 	{
+		if (autodiff_type_ == AutodiffType::FULL)
+			return assemble_gradient_full_ad(data);
+		else if (autodiff_type_ == AutodiffType::STRESS)
+		{
+#ifndef NDEBUG
+			auto grad = assemble_gradient_stress_ad(data);
+			auto grad_full = assemble_gradient_full_ad(data);
+			assert((std::isnan(grad.norm()) && std::isnan(grad_full.norm())) || (grad - grad_full).norm() < 1e-8);
+#endif
+			return assemble_gradient_stress_ad(data);
+		}
+		else
+		{
+			log_and_throw_error("Gradient assembly not implemented for autodiff type NONE");
+			return Eigen::VectorXd();
+		}
+	}
+
+	template <typename Derived>
+	Eigen::VectorXd GenericElastic<Derived>::assemble_gradient_full_ad(const NonLinearAssemblerData &data) const
+	{
 		const int n_bases = data.vals.basis_values.size();
 		return polyfem::gradient_from_energy(
 			size(), n_bases, data,
@@ -109,7 +150,98 @@ namespace polyfem::assembler
 	}
 
 	template <typename Derived>
+	Eigen::VectorXd GenericElastic<Derived>::assemble_gradient_stress_ad(const NonLinearAssemblerData &data) const
+	{
+		Eigen::Matrix<double, Eigen::Dynamic, 1> gradient;
+
+		if (size() == 2)
+		{
+			switch (data.vals.basis_values.size())
+			{
+			case 3:
+			{
+				gradient.resize(6);
+				compute_gradient_from_stress<3, 2>(data, gradient);
+				break;
+			}
+			case 6:
+			{
+				gradient.resize(12);
+				compute_gradient_from_stress<6, 2>(data, gradient);
+				break;
+			}
+			case 10:
+			{
+				gradient.resize(20);
+				compute_gradient_from_stress<10, 2>(data, gradient);
+				break;
+			}
+			default:
+			{
+				gradient.resize(data.vals.basis_values.size() * 2);
+				compute_gradient_from_stress<Eigen::Dynamic, 2>(data, gradient);
+				break;
+			}
+			}
+		}
+		else // if (size() == 3)
+		{
+			assert(size() == 3);
+			switch (data.vals.basis_values.size())
+			{
+			case 4:
+			{
+				gradient.resize(12);
+				compute_gradient_from_stress<4, 3>(data, gradient);
+				break;
+			}
+			case 10:
+			{
+				gradient.resize(30);
+				compute_gradient_from_stress<10, 3>(data, gradient);
+				break;
+			}
+			case 20:
+			{
+				gradient.resize(60);
+				compute_gradient_from_stress<20, 3>(data, gradient);
+				break;
+			}
+			default:
+			{
+				gradient.resize(data.vals.basis_values.size() * 3);
+				compute_gradient_from_stress<Eigen::Dynamic, 3>(data, gradient);
+				break;
+			}
+			}
+		}
+
+		return gradient;
+	}
+
+	template <typename Derived>
 	Eigen::MatrixXd GenericElastic<Derived>::assemble_hessian(const NonLinearAssemblerData &data) const
+	{
+		if (autodiff_type_ == AutodiffType::FULL)
+			return assemble_hessian_full_ad(data);
+		else if (autodiff_type_ == AutodiffType::STRESS)
+		{
+#ifndef NDEBUG
+			auto hessian = assemble_hessian_stress_ad(data);
+			auto hessian_full = assemble_hessian_full_ad(data);
+			assert((std::isnan(hessian.norm()) && std::isnan(hessian_full.norm())) || (hessian - hessian_full).norm() < 1e-8);
+#endif
+			return assemble_hessian_stress_ad(data);
+		}
+		else
+		{
+			log_and_throw_error("Hessian assembly not implemented for autodiff type NONE");
+			return Eigen::MatrixXd();
+		}
+	}
+
+	template <typename Derived>
+	Eigen::MatrixXd GenericElastic<Derived>::assemble_hessian_full_ad(const NonLinearAssemblerData &data) const
 	{
 		const int n_bases = data.vals.basis_values.size();
 		return polyfem::hessian_from_energy(
@@ -124,6 +256,84 @@ namespace polyfem::assembler
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, 81, 1>, Eigen::Matrix<double, 81, 81>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, SMALL_N, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, SMALL_N, SMALL_N>>>(data); },
 			[&](const NonLinearAssemblerData &data) { return compute_energy_aux<DScalar2<double, Eigen::VectorXd, Eigen::MatrixXd>>(data); });
+	}
+
+	template <typename Derived>
+	Eigen::MatrixXd GenericElastic<Derived>::assemble_hessian_stress_ad(const NonLinearAssemblerData &data) const
+	{
+		Eigen::MatrixXd hessian;
+
+		if (size() == 2)
+		{
+			switch (data.vals.basis_values.size())
+			{
+			case 3:
+			{
+				hessian.resize(6, 6);
+				hessian.setZero();
+				compute_hessian_from_stress<3, 2>(data, hessian);
+				break;
+			}
+			case 6:
+			{
+				hessian.resize(12, 12);
+				hessian.setZero();
+				compute_hessian_from_stress<6, 2>(data, hessian);
+				break;
+			}
+			case 10:
+			{
+				hessian.resize(20, 20);
+				hessian.setZero();
+				compute_hessian_from_stress<10, 2>(data, hessian);
+				break;
+			}
+			default:
+			{
+				hessian.resize(data.vals.basis_values.size() * 2, data.vals.basis_values.size() * 2);
+				hessian.setZero();
+				compute_hessian_from_stress<Eigen::Dynamic, 2>(data, hessian);
+				break;
+			}
+			}
+		}
+		else // if (size() == 3)
+		{
+			assert(size() == 3);
+			switch (data.vals.basis_values.size())
+			{
+			case 4:
+			{
+				hessian.resize(12, 12);
+				hessian.setZero();
+				compute_hessian_from_stress<4, 3>(data, hessian);
+				break;
+			}
+			case 10:
+			{
+				hessian.resize(30, 30);
+				hessian.setZero();
+				compute_hessian_from_stress<10, 3>(data, hessian);
+				break;
+			}
+			case 20:
+			{
+				hessian.resize(60, 60);
+				hessian.setZero();
+				compute_hessian_from_stress<20, 3>(data, hessian);
+				break;
+			}
+			default:
+			{
+				hessian.resize(data.vals.basis_values.size() * 3, data.vals.basis_values.size() * 3);
+				hessian.setZero();
+				compute_hessian_from_stress<Eigen::Dynamic, 3>(data, hessian);
+				break;
+			}
+			}
+		}
+
+		return hessian;
 	}
 
 	template <typename Derived>
@@ -250,9 +460,16 @@ namespace polyfem::assembler
 				// Compute ∂S_ij/∂F_kl * v_l, same as ∂S_ij/∂F_kl * v_j since the hessian is symmetric
 				result.row(i) = hess.row(i).reshaped(size(), size()) * vect;
 	}
+
 	template class GenericElastic<MooneyRivlinElasticity>;
 	template class GenericElastic<MooneyRivlin3ParamElasticity>;
 	template class GenericElastic<UnconstrainedOgdenElasticity>;
 	template class GenericElastic<IncompressibleOgdenElasticity>;
 	template class GenericElastic<NeoHookeanAutodiff>;
+	template class GenericElastic<IsochoricNeoHookean>;
+	template class GenericElastic<VolumePenalty>;
+
+	template class GenericElastic<HGOFiber>;
+	template class GenericElastic<ActiveFiber>;
+
 } // namespace polyfem::assembler

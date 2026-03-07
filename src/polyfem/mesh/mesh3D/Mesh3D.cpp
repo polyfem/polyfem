@@ -99,7 +99,11 @@ namespace polyfem
 		std::pair<RowVectorNd, int> Mesh3D::face_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j) const
 		{
 			const int tmp = n_new_nodes == 2 ? 3 : n_new_nodes;
-			if (is_simplex(index.element))
+
+			const bool is_prism_tri = is_prism(index.element) && n_face_vertices(index.face) == 3;
+			const bool is_prism_quad = is_prism(index.element) && n_face_vertices(index.face) == 4;
+
+			if (is_simplex(index.element) || is_prism_tri)
 			{
 				if (orders_.size() <= 0 || orders_(index.element) == 1 || orders_(index.element) == 2 || face_nodes_.empty() || face_nodes_[index.face].nodes.rows() != tmp)
 				{
@@ -176,7 +180,7 @@ namespace polyfem
 
 				return std::make_pair(n.nodes.row(lindex), n.nodes_ids[lindex]);
 			}
-			else if (is_cube(index.element))
+			else if (is_cube(index.element) || is_prism_quad)
 			{
 				// supports only blilinear quads
 				assert(orders_.size() <= 0 || orders_(index.element) == 1);
@@ -357,6 +361,43 @@ namespace polyfem
 			idx = switch_vertex(switch_edge(switch_face(idx)));
 			v[3] = idx.vertex;
 
+			return v;
+		}
+
+		//   v5
+		//   ╱┆ \
+		// v3─┼──v4
+		//  │v2   |
+		//  │╱  \ │
+		// v0────v1
+		std::array<int, 6> Mesh3D::get_ordered_vertices_from_prism(const int element_index) const
+		{
+			assert(is_prism(element_index));
+			auto idx = get_index_from_element(element_index);
+			std::array<int, 6> v;
+
+			Navigation3D::Index start = idx;
+
+			for (int i = 0; i < 3; ++i)
+				idx = next_around_face(idx);
+
+			if (idx.vertex != start.vertex)
+				start = switch_face(idx);
+
+			for (int i = 0; i < 3; ++i)
+			{
+				v[i] = start.vertex;
+				start = next_around_face(start);
+			}
+			assert(start.vertex == v[0]);
+
+			start = switch_face(switch_edge(switch_vertex(switch_edge(switch_face(start)))));
+			for (int i = 0; i < 3; ++i)
+			{
+				v[i + 3] = start.vertex;
+				start = next_around_face(start);
+			}
+			assert(start.vertex == v[3]);
 			return v;
 		}
 

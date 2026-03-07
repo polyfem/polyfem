@@ -5,12 +5,12 @@
 
 namespace polyfem::assembler
 {
-	class SumModel : public NLAssembler, ElasticityAssembler
+	class SumModel : public ElasticityNLAssembler
 	{
 	public:
-		using NLAssembler::assemble_energy;
-		using NLAssembler::assemble_gradient;
-		using NLAssembler::assemble_hessian;
+		using ElasticityNLAssembler::assemble_energy;
+		using ElasticityNLAssembler::assemble_gradient;
+		using ElasticityNLAssembler::assemble_hessian;
 
 		// compute elastic energy
 		double compute_energy(const NonLinearAssemblerData &data) const override;

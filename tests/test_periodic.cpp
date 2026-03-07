@@ -5,18 +5,18 @@
 #include <cmath>
 
 #include <polyfem/State.hpp>
-#include <polyfem/solver/Optimizations.hpp>
-#include <polyfem/solver/AdjointTools.hpp>
+#include <polyfem/optimization/Optimizations.hpp>
+#include <polyfem/optimization/AdjointTools.hpp>
 #include <polyfem/io/Evaluator.hpp>
 
-#include <polyfem/solver/AdjointNLProblem.hpp>
+#include <polyfem/optimization/AdjointNLProblem.hpp>
 
-#include <polyfem/solver/forms/adjoint_forms/SpatialIntegralForms.hpp>
-#include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
-#include <polyfem/solver/forms/adjoint_forms/CompositeForms.hpp>
+#include <polyfem/optimization/forms/SpatialIntegralForms.hpp>
+#include <polyfem/optimization/forms/SumCompositeForm.hpp>
+#include <polyfem/optimization/forms/CompositeForms.hpp>
 
-#include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
-// #include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
+#include <polyfem/optimization/parametrization/Parametrizations.hpp>
+// #include <polyfem/optimization/parametrization/SDFParametrizations.hpp>
 
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>

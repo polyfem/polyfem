@@ -15,14 +15,14 @@
 
 namespace polyfem::assembler
 {
-	class AMIPSEnergy : public NLAssembler, public ElasticityAssembler
+	class AMIPSEnergy : public ElasticityNLAssembler
 	{
 	public:
 		AMIPSEnergy() {}
 
-		using NLAssembler::assemble_energy;
-		using NLAssembler::assemble_gradient;
-		using NLAssembler::assemble_hessian;
+		using ElasticityNLAssembler::assemble_energy;
+		using ElasticityNLAssembler::assemble_gradient;
+		using ElasticityNLAssembler::assemble_hessian;
 
 		// energy, gradient, and hessian used in newton method
 		double compute_energy(const NonLinearAssemblerData &data) const override;

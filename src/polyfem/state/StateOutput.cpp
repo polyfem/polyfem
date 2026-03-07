@@ -56,7 +56,11 @@ namespace polyfem
 			out_geom.save_vtu(
 				resolve_output_path(fmt::format(step_name + "{:d}.vtu", t)),
 				*this, sol, pressure, time, dt,
-				io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar()), is_contact_enabled());
+				io::OutGeometryData::ExportOptions(args,
+												   mesh->is_linear(),
+												   mesh->has_prism(),
+												   problem->is_scalar()),
+				is_contact_enabled());
 
 			out_geom.save_pvd(
 				resolve_output_path(args["output"]["paraview"]["file_name"]),
@@ -99,7 +103,7 @@ namespace polyfem
 		using json = nlohmann::json;
 		json j;
 		stats.save_json(args, n_bases, n_pressure_bases,
-						sol, *mesh, disc_orders, *problem, timings,
+						sol, *mesh, disc_orders, disc_ordersq, *problem, timings,
 						assembler->name(), iso_parametric(), args["output"]["advanced"]["sol_at_node"],
 						j);
 		out << j.dump(4) << std::endl;
@@ -117,7 +121,11 @@ namespace polyfem
 		out_geom.save_vtu(
 			resolve_output_path(fmt::format("solve_{:d}.vtu", i)),
 			*this, sol, pressure, t, dt,
-			io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar()), is_contact_enabled());
+			io::OutGeometryData::ExportOptions(args,
+											   mesh->is_linear(),
+											   mesh->has_prism(),
+											   problem->is_scalar()),
+			is_contact_enabled());
 	}
 
 	void State::export_data(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure)
@@ -160,7 +168,10 @@ namespace polyfem
 			*this, sol, pressure,
 			!args["time"].is_null(),
 			tend, dt,
-			io::OutGeometryData::ExportOptions(args, mesh->is_linear(), problem->is_scalar()),
+			io::OutGeometryData::ExportOptions(args,
+											   mesh->is_linear(),
+											   mesh->has_prism(),
+											   problem->is_scalar()),
 			vis_mesh_path,
 			nodes_path,
 			solution_path,

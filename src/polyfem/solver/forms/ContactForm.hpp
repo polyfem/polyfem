@@ -7,7 +7,7 @@
 
 #include <ipc/collisions/normal/normal_collisions.hpp>
 #include <ipc/collision_mesh.hpp>
-#include <ipc/broad_phase/broad_phase.hpp>
+#include <ipc/broad_phase/create_broad_phase.hpp>
 #include <ipc/potentials/potential.hpp>
 
 // map BroadPhaseMethod values to JSON as strings
@@ -17,16 +17,16 @@ namespace ipc
 	NLOHMANN_JSON_SERIALIZE_ENUM(
 		ipc::BroadPhaseMethod,
 		{{ipc::BroadPhaseMethod::HASH_GRID, "hash_grid"}, // also default
-			{ipc::BroadPhaseMethod::HASH_GRID, "HG"},
-			{ipc::BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
-			{ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
-			{ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
-			{ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
-			{ipc::BroadPhaseMethod::BVH, "bvh"},
-			{ipc::BroadPhaseMethod::BVH, "BVH"},
-			{ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
-			{ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"}})
-}
+		 {ipc::BroadPhaseMethod::HASH_GRID, "HG"},
+		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "brute_force"},
+		 {ipc::BroadPhaseMethod::BRUTE_FORCE, "BF"},
+		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "spatial_hash"},
+		 {ipc::BroadPhaseMethod::SPATIAL_HASH, "SH"},
+		 {ipc::BroadPhaseMethod::BVH, "bvh"},
+		 {ipc::BroadPhaseMethod::BVH, "BVH"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "sweep_and_tiniest_queue"},
+		 {ipc::BroadPhaseMethod::SWEEP_AND_TINIEST_QUEUE, "STQ"}})
+} // namespace ipc
 
 namespace polyfem::solver
 {
@@ -103,7 +103,7 @@ namespace polyfem::solver
 		bool use_adaptive_barrier_stiffness() const { return use_adaptive_barrier_stiffness_; }
 		/// @brief Get use_convergent_formulation
 		virtual bool use_convergent_formulation() const { return false; }
-		
+
 		bool enable_shape_derivatives() const { return enable_shape_derivatives_; }
 
 		double weight() const override { return weight_ * barrier_stiffness_; }

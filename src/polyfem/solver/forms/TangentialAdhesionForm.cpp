@@ -19,36 +19,12 @@ namespace polyfem::solver
 		  epsa_(epsa),
 		  mu_(mu),
 		  broad_phase_method_(broad_phase_method),
-		  broad_phase_(ipc::build_broad_phase(broad_phase_method)),
+		  broad_phase_(ipc::create_broad_phase(broad_phase_method)),
 		  n_lagging_iters_(n_lagging_iters < 0 ? std::numeric_limits<int>::max() : n_lagging_iters),
 		  normal_adhesion_form_(normal_adhesion_form),
 		  tangential_adhesion_potential_(epsa)
 	{
 		assert(epsa_ > 0);
-	}
-
-	void TangentialAdhesionForm::force_shape_derivative(
-		const Eigen::MatrixXd &prev_solution,
-		const Eigen::MatrixXd &solution,
-		const Eigen::MatrixXd &adjoint,
-		const ipc::TangentialCollisions &tangential_constraints_set,
-		Eigen::VectorXd &term)
-	{
-		Eigen::MatrixXd U = collision_mesh_.vertices(utils::unflatten(solution, collision_mesh_.dim()));
-		Eigen::MatrixXd U_prev = collision_mesh_.vertices(utils::unflatten(prev_solution, collision_mesh_.dim()));
-
-		// TODO: use the time integration to compute the velocity
-		const Eigen::MatrixXd velocities = (U - U_prev) / time_integrator_->dt();
-
-		StiffnessMatrix hess = -tangential_adhesion_potential_.force_jacobian(
-			tangential_constraints_set,
-			collision_mesh_, collision_mesh_.rest_positions(),
-			/*lagged_displacements=*/U_prev, velocities,
-			normal_adhesion_form_.normal_adhesion_potential(),
-			1,
-			ipc::TangentialPotential::DiffWRT::REST_POSITIONS);
-
-		term = collision_mesh_.to_full_dof(hess).transpose() * adjoint;
 	}
 
 	Eigen::MatrixXd TangentialAdhesionForm::compute_displaced_surface(const Eigen::VectorXd &x) const
@@ -84,11 +60,14 @@ namespace polyfem::solver
 	{
 		POLYFEM_SCOPED_TIMER("tangential adhesion hessian");
 
-		ipc::PSDProjectionMethod psd_projection_method; 
+		ipc::PSDProjectionMethod psd_projection_method;
 
-		if (project_to_psd_) {
+		if (project_to_psd_)
+		{
 			psd_projection_method = ipc::PSDProjectionMethod::CLAMP;
-		} else {
+		}
+		else
+		{
 			psd_projection_method = ipc::PSDProjectionMethod::NONE;
 		}
 

@@ -8,13 +8,13 @@
 // local assembler for linear elasticity
 namespace polyfem::assembler
 {
-	class LinearElasticity : public LinearAssembler, NLAssembler, ElasticityAssembler
+	class LinearElasticity : public LinearAssembler, public ElasticityNLAssembler
 	{
 	public:
+		using ElasticityNLAssembler::assemble_energy;
+		using ElasticityNLAssembler::assemble_gradient;
+		using ElasticityNLAssembler::assemble_hessian;
 		using LinearAssembler::assemble;
-		using NLAssembler::assemble_energy;
-		using NLAssembler::assemble_gradient;
-		using NLAssembler::assemble_hessian;
 
 		/// computes local stiffness matrix is R^{dim²} for bases i,j
 		// vals stores the evaluation for that element

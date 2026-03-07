@@ -463,7 +463,7 @@ namespace polyfem
 
 		bool CMesh3D::build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
 		{
-			assert(F.cols() == 4 || F.cols() == 8);
+			assert(F.cols() == 4 || F.cols() == 6 || F.cols() == 8);
 			edge_nodes_.clear();
 			face_nodes_.clear();
 			cell_nodes_.clear();
@@ -480,6 +480,8 @@ namespace polyfem
 
 			if (F.cols() == 4)
 				M.cells.create_tets((int)F.rows());
+			else if (F.cols() == 6)
+				M.cells.create_prisms((int)F.rows());
 			else if (F.cols() == 8)
 				M.cells.create_hexes((int)F.rows());
 			else
@@ -488,9 +490,10 @@ namespace polyfem
 			}
 
 			static const std::vector<int> permute_tet = {0, 1, 2, 3};
+			static const std::vector<int> permute_prism = {0, 1, 2, 3, 4, 5};
 			// polyfem uses the msh file format for hexes ordering!
 			static const std::vector<int> permute_hex = {1, 0, 2, 3, 5, 4, 6, 7};
-			const std::vector<int> permute = F.cols() == 4 ? permute_tet : permute_hex;
+			const std::vector<int> permute = F.cols() == 4 ? permute_tet : (F.cols() == 6 ? permute_prism : permute_hex);
 
 			for (int c = 0; c < (int)M.cells.nb(); ++c)
 			{
@@ -1455,6 +1458,8 @@ namespace polyfem
 			{
 				if (ele.vs.size() == 4)
 					ele_tag[ele.id] = ElementType::SIMPLEX;
+				else if (ele.vs.size() == 6)
+					ele_tag[ele.id] = ElementType::PRISM;
 			}
 		}
 

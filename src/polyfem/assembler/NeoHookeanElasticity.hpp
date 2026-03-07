@@ -8,14 +8,14 @@
 // non linear NeoHookean material model
 namespace polyfem::assembler
 {
-	class NeoHookeanElasticity : public NLAssembler, public ElasticityAssembler
+	class NeoHookeanElasticity : public ElasticityNLAssembler
 	{
 	public:
 		NeoHookeanElasticity();
 
-		using NLAssembler::assemble_energy;
-		using NLAssembler::assemble_gradient;
-		using NLAssembler::assemble_hessian;
+		using ElasticityNLAssembler::assemble_energy;
+		using ElasticityNLAssembler::assemble_gradient;
+		using ElasticityNLAssembler::assemble_hessian;
 
 		// energy, gradient, and hessian used in newton method
 		double compute_energy(const NonLinearAssemblerData &data) const override;

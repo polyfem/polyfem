@@ -17,10 +17,10 @@ namespace polyfem
 		{
 		public:
 			typedef std::function<Eigen::VectorXi(const int local_index, const mesh::Mesh &mesh)> LocalNodeFromPrimitiveFunc;
-			
+
 			// function type that evaluates bases at given points and saves them in basis_values
 			typedef std::function<void(const Eigen::MatrixXd &uv, std::vector<assembler::AssemblyValues> &basis_values)> EvalBasesFunc;
-			
+
 			// function type that computes quadrature points and saves them in quadrature
 			typedef std::function<void(quadrature::Quadrature &quadrature)> QuadratureFunction;
 
@@ -67,7 +67,7 @@ namespace polyfem
 			void set_mass_quadrature(const QuadratureFunction &fun) { mass_quadrature_builder_ = fun; }
 
 			/// evaluate stored bases at given points on the reference element
-			/// saves results to basis_values 
+			/// saves results to basis_values
 			void evaluate_bases(const Eigen::MatrixXd &uv, std::vector<assembler::AssemblyValues> &basis_values) const
 			{
 				if (eval_bases_func_)
@@ -80,7 +80,7 @@ namespace polyfem
 				}
 			}
 			/// evaluate gradient of stored bases at given points on the reference element
-			/// saves results to basis_values 
+			/// saves results to basis_values
 			void evaluate_grads(const Eigen::MatrixXd &uv, std::vector<assembler::AssemblyValues> &basis_values) const
 			{
 				if (eval_grads_func_)

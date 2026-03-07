@@ -20,12 +20,18 @@ namespace polyfem
 		/// Generate a canonical tet/hex subdivided from a regular grid
 		///
 		/// @param[in]  n  			  n grid quads
-		/// @param[in]  tet			  is a tet or a hex
+		/// @param[in]  tet			  is a tet
+		/// @param[in]  prism		  is a prism
 		/// @param[out] V             #V x 3 output vertices positions
 		/// @param[out] F             #F x 3 output triangle indices
 		/// @param[out] T             #F x 4 output tet indices
 		///
-		void regular_3d_grid(const int nn, bool tet, Eigen::MatrixXd &V, Eigen::MatrixXi &F, Eigen::MatrixXi &T);
+		void regular_3d_grid(const int nn,
+							 bool tet,
+							 bool prism,
+							 Eigen::MatrixXd &V,
+							 Eigen::MatrixXi &F,
+							 Eigen::MatrixXi &T);
 
 		class RefElementSampler
 		{
@@ -45,6 +51,12 @@ namespace polyfem
 			const Eigen::MatrixXi &simplex_volume() const { return is_volume_ ? simplex_tets_ : simplex_faces_; }
 			const Eigen::MatrixXi &simplex_edges() const { return simplex_edges_; }
 
+			const Eigen::MatrixXd &prism_corners() const { return prism_corners_; }
+			const Eigen::MatrixXd &prism_points() const { return prism_points_; }
+			const Eigen::MatrixXi &prism_faces() const { return prism_faces_; }
+			const Eigen::MatrixXi &prism_volume() const { return prism_tets_; }
+			const Eigen::MatrixXi &prism_edges() const { return prism_edges_; }
+
 			void sample_polygon(const Eigen::MatrixXd &poly, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXi &edges) const;
 			void sample_polyhedron(const Eigen::MatrixXd &vertices, const Eigen::MatrixXi &f, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXi &edges) const;
 
@@ -57,7 +69,13 @@ namespace polyfem
 			void build();
 
 			Eigen::MatrixXi cube_tets_;
+			Eigen::MatrixXi prism_tets_;
 			Eigen::MatrixXi simplex_tets_;
+
+			Eigen::MatrixXd prism_corners_;
+			Eigen::MatrixXd prism_points_;
+			Eigen::MatrixXi prism_faces_;
+			Eigen::MatrixXi prism_edges_;
 
 			Eigen::MatrixXd cube_corners_;
 			Eigen::MatrixXd cube_points_;

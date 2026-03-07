@@ -7,12 +7,16 @@ set(SOURCES
 	AssemblyValsCache.cpp
 	AssemblyValsCache.hpp
 	AssemblyValues.hpp
+	ActiveFiber.cpp
+	ActiveFiber.hpp
 	Bilaplacian.cpp
 	Bilaplacian.hpp
 	ElementAssemblyValues.cpp
 	ElementAssemblyValues.hpp
 	GenericElastic.cpp
 	GenericElastic.hpp
+	GenericFiber.cpp
+	GenericFiber.hpp
 	GenericProblem.cpp
 	GenericProblem.hpp
 	Helmholtz.cpp
@@ -27,6 +31,8 @@ set(SOURCES
 	Electrostatics.hpp
 	LinearElasticity.cpp
 	LinearElasticity.hpp
+	HGOFiber.cpp
+	HGOFiber.hpp
 	MacroStrain.hpp
 	Mass.cpp
 	Mass.hpp
@@ -63,12 +69,16 @@ set(SOURCES
 	ViscousDamping.hpp
 	AMIPSEnergy.cpp
 	AMIPSEnergy.hpp
+	IsochoricNeoHookean.cpp
+	IsochoricNeoHookean.hpp
 	PressureAssembler.cpp
 	PressureAssembler.hpp
 	PeriodicBoundary.cpp
 	PeriodicBoundary.hpp
 	FixedCorotational.hpp
 	FixedCorotational.cpp
+	VolumePenalty.hpp
+	VolumePenalty.cpp
 	SumModel.hpp
 	SumModel.cpp
 )

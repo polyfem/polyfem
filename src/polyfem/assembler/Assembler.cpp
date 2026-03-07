@@ -770,8 +770,8 @@ namespace polyfem::assembler
 		logger().trace("done merge assembly {}s...", timer.getElapsedTime());
 	}
 
-	void ElasticityAssembler::set_use_robust_jacobian() 
-	{ 
+	void ElasticityAssembler::set_use_robust_jacobian()
+	{
 #ifdef POLYFEM_WITH_BEZIER
 		use_robust_jacobian = true;
 #else

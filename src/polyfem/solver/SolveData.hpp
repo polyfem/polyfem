@@ -82,7 +82,7 @@ namespace polyfem::solver
 			const std::vector<int> &boundary_nodes,
 			const std::vector<mesh::LocalBoundary> &local_boundary,
 			const std::vector<mesh::LocalBoundary> &local_neumann_boundary,
-			const int n_boundary_samples,
+			const QuadratureOrders &n_boundary_samples,
 			const Eigen::MatrixXd &rhs,
 			const Eigen::MatrixXd &sol,
 			const assembler::Density &density,
@@ -120,7 +120,7 @@ namespace polyfem::solver
 			const double ccd_tolerance,
 			const long ccd_max_iterations,
 			const bool enable_shape_derivatives,
-			
+
 			// Smooth Contact Form
 			const bool use_gcp_formulation,
 			const double alpha_t,

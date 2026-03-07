@@ -1,5 +1,7 @@
 #include "NeoHookeanElasticityAutodiff.hpp"
 
+DECLARE_DIFFSCALAR_BASE();
+
 namespace polyfem::assembler
 {
 	NeoHookeanAutodiff::NeoHookeanAutodiff()

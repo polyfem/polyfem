@@ -13,6 +13,9 @@
             "UnconstrainedOgden",
             "IncompressibleOgden",
             "Stokes",
+            "ActiveFiber",
+            "HGOFiber",
+            "IsochoricNeoHookean",
             "NavierStokes",
             "OperatorSplitting",
             "Electrostatics",
@@ -22,7 +25,8 @@
             "Helmholtz",
             "Bilaplacian",
             "AMIPS",
-            "FixedCorotational"
+            "FixedCorotational",
+            "VolumePenalty"
         ],
         "doc": "Type of material"
     },
@@ -63,6 +67,40 @@
         "pointer": "/",
         "type": "object",
         "type_name": "NeoHookean",
+        "required": [
+            "type",
+            "lambda",
+            "mu"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "phi",
+            "psi"
+        ],
+        "doc": "Material Parameters including ID, Lamé first ($\\lambda$), Lamé second ($\\mu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "IsochoricNeoHookean",
+        "required": [
+            "type",
+            "E",
+            "nu"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "phi",
+            "psi"
+        ],
+        "doc": "Material Parameters including ID, Young's modulus ($E$), Poisson's ratio ($\\nu$), density ($\\rho$)"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "IsochoricNeoHookean",
         "required": [
             "type",
             "lambda",
@@ -234,8 +272,8 @@
             "id",
             "rho",
             "phi",
-            "psi",
-            "fiber_direction"
+            "fiber_direction",
+            "psi"
         ],
         "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
     },
@@ -251,8 +289,8 @@
             "id",
             "rho",
             "phi",
-            "psi",
-            "fiber_direction"
+            "fiber_direction",
+            "psi"
         ],
         "doc": "Material Parameters including ID, E, nu, density ($\\rho$)"
     },
@@ -332,7 +370,12 @@
         "type": "object",
         "type_name": "MaterialSum",
         "required": [
-            "models"
+            "type"
+        ],
+        "optional": [
+            "id",
+            "models",
+            "rho"
         ],
         "doc": "Model that is a sum of other models"
     },
@@ -438,6 +481,52 @@
             "psi"
         ],
         "doc": "Material Parameters including ID"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "VolumePenalty",
+        "required": [
+            "type",
+            "k"
+        ],
+        "optional": [
+            "id",
+            "rho"
+        ],
+        "doc": "Material Parameters including ID"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "HGOFiber",
+        "required": [
+            "type",
+            "k1",
+            "k2"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "fiber_direction"
+        ],
+        "doc": "Material Parameters"
+    },
+    {
+        "pointer": "/",
+        "type": "object",
+        "type_name": "ActiveFiber",
+        "required": [
+            "type",
+            "activation"
+        ],
+        "optional": [
+            "id",
+            "rho",
+            "Tmax",
+            "fiber_direction"
+        ],
+        "doc": "Material Parameters"
     },
     {
         "pointer": "/E",
@@ -565,6 +654,18 @@
         "doc": "Fourth Parameter for Mooney-Rivlin"
     },
     {
+        "pointer": "/k1",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "First Parameter for HGOFiber"
+    },
+    {
+        "pointer": "/k2",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Second Parameter for HGOFiber"
+    },
+    {
         "pointer": "/alphas",
         "type": "include",
         "spec_file": "value-no.json",
@@ -630,20 +731,22 @@
         "doc": "Exponent(s) of Incompressible Ogden"
     },
     {
+        "pointer": "/activation",
+        "type": "include",
+        "spec_file": "value-no.json",
+        "doc": "Activation parameter for ActiveFiber"
+    },
+    {
+        "pointer": "/Tmax",
+        "type": "include",
+        "spec_file": "value1.json",
+        "default": 1,
+        "doc": "Maximum tension for ActiveFiber"
+    },
+    {
         "pointer": "/use_rest_pose",
         "type": "bool",
         "default": false,
         "doc": "Use amips wrt to rest pose or the regular element"
-    },
-    {
-        "pointer": "/models",
-        "type": "list",
-        "default": [],
-        "doc": "List of models"
-    },
-    {
-        "pointer": "/models/*",
-        "type": "object",
-        "doc": "Material model"
     }
 ]

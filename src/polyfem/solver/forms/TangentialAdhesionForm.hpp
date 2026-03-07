@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Form.hpp"
+#include "NormalAdhesionForm.hpp"
 
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/utils/Types.hpp>
@@ -9,14 +10,15 @@
 #include <ipc/collision_mesh.hpp>
 #include <ipc/collisions/tangential/tangential_collisions.hpp>
 #include <ipc/potentials/tangential_adhesion_potential.hpp>
+#include <ipc/broad_phase/create_broad_phase.hpp>
 
 namespace polyfem::solver
 {
-	class NormalAdhesionForm;
-
 	/// @brief Form of the lagged tangential adhesion disapative potential and forces
 	class TangentialAdhesionForm : public Form
 	{
+		friend class TangentialAdhesionForceDerivative;
+
 	public:
 		/// @brief Construct a new Tangential Adhesion Form object
 		/// @param collision_mesh Reference to the collision mesh
@@ -37,8 +39,6 @@ namespace polyfem::solver
 			const int n_lagging_iters);
 
 		std::string name() const override { return "tangential adhesion"; }
-
-		void force_shape_derivative(const Eigen::MatrixXd &prev_solution, const Eigen::MatrixXd &solution, const Eigen::MatrixXd &adjoint, const ipc::TangentialCollisions &tangential_constraints_set, Eigen::VectorXd &term);
 
 	protected:
 		/// @brief Compute the value of the form
@@ -99,7 +99,7 @@ namespace polyfem::solver
 		const double mu_;                                ///< Global coefficient of tangential adhesion
 		const ipc::BroadPhaseMethod broad_phase_method_; ///< Broad-phase method used for distance computation and collision detection
 		const std::shared_ptr<ipc::BroadPhase> broad_phase_;
-		const int n_lagging_iters_;                      ///< Number of lagging iterations
+		const int n_lagging_iters_; ///< Number of lagging iterations
 
 		ipc::TangentialCollisions tangential_collision_set_; ///< Lagged tangential constraint set
 

@@ -1,34 +1,37 @@
 #pragma once
 
 #include "ContactForm.hpp"
+
+#include <polyfem/utils/Types.hpp>
+#include <polysolve/nonlinear/PostStepData.hpp>
+
 #include <ipc/smooth_contact/smooth_collisions.hpp>
 #include <ipc/smooth_contact/smooth_contact_potential.hpp>
-#include <cmath>
 
 namespace polyfem::solver
 {
-    class SmoothContactForm : public ContactForm
-    {
-    public:
+	class SmoothContactForm : public ContactForm
+	{
+		friend class SmoothContactForceDerivative;
+
+	public:
 		SmoothContactForm(const ipc::CollisionMesh &collision_mesh,
-					const double dhat,
-					const double avg_mass,
-					const double alpha_t,
-					const double alpha_n,
-					const bool use_adaptive_dhat,
-					const double min_distance_ratio,
-					const bool use_adaptive_barrier_stiffness,
-					const bool is_time_dependent,
-					const bool enable_shape_derivatives,
-					const ipc::BroadPhaseMethod broad_phase_method,
-					const double ccd_tolerance,
-					const int ccd_max_iterations);
+						  const double dhat,
+						  const double avg_mass,
+						  const double alpha_t,
+						  const double alpha_n,
+						  const bool use_adaptive_dhat,
+						  const double min_distance_ratio,
+						  const bool use_adaptive_barrier_stiffness,
+						  const bool is_time_dependent,
+						  const bool enable_shape_derivatives,
+						  const ipc::BroadPhaseMethod broad_phase_method,
+						  const double ccd_tolerance,
+						  const int ccd_max_iterations);
 
 		virtual std::string name() const override { return "smooth-contact"; }
 
-        void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) override;
-
-		void force_shape_derivative(const ipc::SmoothCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const;
+		void update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy) override;
 
 		/// @brief Update fields after a step in the optimization
 		/// @param iter_num Optimization iteration number
@@ -36,7 +39,7 @@ namespace polyfem::solver
 		void post_step(const polysolve::nonlinear::PostStepData &data) override;
 
 		bool using_adaptive_dhat() const { return use_adaptive_dhat; }
-		const ipc::ParameterType &get_params() const { return params; }
+		const ipc::SmoothContactParameters &get_params() const { return params; }
 
 		const ipc::SmoothCollisions &collision_set() const { return collision_set_; }
 
@@ -66,7 +69,7 @@ namespace polyfem::solver
 		void update_collision_set(const Eigen::MatrixXd &displaced_surface) override;
 
 	private:
-		ipc::ParameterType params;
+		ipc::SmoothContactParameters params;
 		const bool use_adaptive_dhat;
 
 		/// @brief Cached constraint set for the current solution
@@ -75,4 +78,4 @@ namespace polyfem::solver
 		/// @brief Contact potential
 		ipc::SmoothContactPotential barrier_potential_;
 	};
-}
+} // namespace polyfem::solver

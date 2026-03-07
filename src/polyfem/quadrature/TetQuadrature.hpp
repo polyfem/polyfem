@@ -12,7 +12,7 @@ namespace polyfem
 			TetQuadrature(bool use_corner_quadrature = false);
 
 			void get_quadrature(const int order, Quadrature &quad);
-		
+
 		private:
 			bool use_corner_quadrature_;
 		};

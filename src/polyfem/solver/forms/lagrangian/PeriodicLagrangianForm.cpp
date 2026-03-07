@@ -6,46 +6,46 @@
 namespace polyfem::solver
 {
 	PeriodicLagrangianForm::PeriodicLagrangianForm(const int ndof,
-        const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc)
-        : periodic_bc_(periodic_bc),
-        n_dofs_(ndof)
-    {
+												   const std::shared_ptr<utils::PeriodicBoundary> &periodic_bc)
+		: periodic_bc_(periodic_bc),
+		  n_dofs_(ndof)
+	{
 		std::vector<Eigen::Triplet<double>> A_triplets;
 
-        const int dim = periodic_bc_->dim();
+		const int dim = periodic_bc_->dim();
 		for (int i = 0; i < periodic_bc_->n_constraints(); ++i)
 		{
-            auto c = periodic_bc_->constraint(i);
-            for (int d = 0; d < dim; d++)
-            {
-                A_triplets.emplace_back(d + i * dim, d + dim * c[0], 1.0);
-                A_triplets.emplace_back(d + i * dim, d + dim * c[1], -1.0);
-            }
+			auto c = periodic_bc_->constraint(i);
+			for (int d = 0; d < dim; d++)
+			{
+				A_triplets.emplace_back(d + i * dim, d + dim * c[0], 1.0);
+				A_triplets.emplace_back(d + i * dim, d + dim * c[1], -1.0);
+			}
 		}
 		A_.resize(periodic_bc_->n_constraints() * dim, n_dofs_);
 		A_.setFromTriplets(A_triplets.begin(), A_triplets.end());
 		A_.makeCompressed();
 
-        b_.setZero(A_.rows(), 1);
+		b_.setZero(A_.rows(), 1);
 
-        A_triplets.clear();
-        {
-            const auto& index_map = periodic_bc_->index_map();
-            for (int i = 0; i < index_map.size(); i++)
-                for (int d = 0; d < dim; d++)
-                    A_triplets.emplace_back(i * dim + d, index_map(i) * dim + d, 1.0);
+		A_triplets.clear();
+		{
+			const auto &index_map = periodic_bc_->index_map();
+			for (int i = 0; i < index_map.size(); i++)
+				for (int d = 0; d < dim; d++)
+					A_triplets.emplace_back(i * dim + d, index_map(i) * dim + d, 1.0);
 			assert(index_map.size() * dim == n_dofs_);
-        }
+		}
 
 		A_proj_.resize(n_dofs_, periodic_bc_->n_periodic_dof());
 		A_proj_.setFromTriplets(A_triplets.begin(), A_triplets.end());
 		A_proj_.makeCompressed();
 
-        b_proj_.setZero(A_proj_.rows(), 1);
+		b_proj_.setZero(A_proj_.rows(), 1);
 
-        lagr_mults_.resize(A_.rows());
+		lagr_mults_.resize(A_.rows());
 		lagr_mults_.setZero();
-    }
+	}
 
 	bool PeriodicLagrangianForm::can_project() const { return true; }
 
@@ -90,4 +90,4 @@ namespace polyfem::solver
 		k_al_ = k_al;
 		lagr_mults_ -= k_al * (A_ * x - b_);
 	}
-}
+} // namespace polyfem::solver
