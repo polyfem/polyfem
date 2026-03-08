@@ -122,6 +122,7 @@ namespace polyfem::assembler
 		{
 			typedef DScalar1<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>> Diff;
 			typedef Eigen::Matrix<Diff, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
+			typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> DoubleGradMat;
 
 			const int n_pts = data.da.size();
 
@@ -161,6 +162,18 @@ namespace polyfem::assembler
 					for (int d2 = 0; d2 < size(); ++d2)
 						def_grad_ad(d1, d2) = Diff(d1 * size() + d2, def_grad(d1, d2));
 
+				if (!derived().real_def_grad())
+				{
+					DoubleGradMat tmp_jac_it = data.vals.jac_it[p];
+					tmp_jac_it = tmp_jac_it.inverse();
+
+					AutoDiffGradMat jac_it(size(), size());
+					for (long k = 0; k < jac_it.size(); ++k)
+						jac_it(k) = Diff(tmp_jac_it(k));
+
+					def_grad_ad *= jac_it;
+				}
+
 				const Diff val = derived().elastic_energy(data.vals.val.row(p), data.t, data.vals.element_id, def_grad_ad);
 
 				Eigen::Matrix<double, dim, dim> P;
@@ -181,6 +194,7 @@ namespace polyfem::assembler
 		{
 			typedef DScalar2<double, Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1>, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9>> Diff2;
 			typedef Eigen::Matrix<Diff2, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> AutoDiffGradMat;
+			typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> DoubleGradMat;
 
 			const int d = size();
 			const int nb = data.vals.basis_values.size();
@@ -219,6 +233,18 @@ namespace polyfem::assembler
 				for (int i = 0; i < d; ++i)
 					for (int j = 0; j < d; ++j)
 						def_grad_ad(i, j) = Diff2(i * d + j, def_grad(i, j));
+
+				if (!derived().real_def_grad())
+				{
+					DoubleGradMat tmp_jac_it = data.vals.jac_it[p];
+					tmp_jac_it = tmp_jac_it.inverse();
+
+					AutoDiffGradMat jac_it(size(), size());
+					for (long k = 0; k < jac_it.size(); ++k)
+						jac_it(k) = Diff2(tmp_jac_it(k));
+
+					def_grad_ad *= jac_it;
+				}
 
 				const Diff2 val = derived().elastic_energy(data.vals.val.row(p), data.t, data.vals.element_id, def_grad_ad);
 
