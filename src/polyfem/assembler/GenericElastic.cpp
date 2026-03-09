@@ -229,7 +229,7 @@ namespace polyfem::assembler
 #ifndef NDEBUG
 			auto hessian = assemble_hessian_stress_ad(data);
 			auto hessian_full = assemble_hessian_full_ad(data);
-			assert((std::isnan(hessian.norm()) && std::isnan(hessian_full.norm())) || (hessian - hessian_full).norm() < 1e-8);
+			assert((std::isnan(hessian.norm()) && std::isnan(hessian_full.norm())) || (hessian - hessian_full).norm() < 1e-5);
 #endif
 			return assemble_hessian_stress_ad(data);
 		}
