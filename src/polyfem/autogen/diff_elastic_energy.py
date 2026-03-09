@@ -12,6 +12,9 @@ class AMIPSEnergy:
         self.use_rest_pose = use_rest_pose
         self.dim = dim
 
+    def parameters(self):
+        return []
+
     def get_standard(self):
         if self.use_rest_pose:
             return sp.eye(self.dim)
@@ -52,6 +55,25 @@ class AMIPSEnergy:
         return (def_grad.T @ def_grad).trace() / powJ
 
 
+class VolumePenaltyEnergy:
+    def __init__(self, dim):
+        self.dim = dim
+        self.k_ = sp.Symbol('k')
+
+    def parameters(self):
+        return ["k"]
+
+    def eval(self, p, t, el_id, def_grad):
+        k = self.k_
+
+        J = def_grad.det()
+        log_J = sp.log(J)
+
+        val = k / 2.0 * ((J * J - 1) / 2.0 - log_J)
+
+        return val
+
+
 def compute_energy(energy):
     dim = energy.dim
     F = sp.Matrix(dim, dim, lambda i, j: sp.Symbol(f"F{i}{j}"))
@@ -70,6 +92,8 @@ def compute_energy(energy):
 
 
 energies = {
+    "VolumePenalty2d": VolumePenaltyEnergy(dim=2),
+    "VolumePenalty3d": VolumePenaltyEnergy(dim=3),
     "AMIPS2d": AMIPSEnergy(use_rest_pose=False, dim=2),
     "AMIPS2drest": AMIPSEnergy(use_rest_pose=True, dim=2),
     "AMIPS3d": AMIPSEnergy(use_rest_pose=False, dim=3),
@@ -95,6 +119,11 @@ if __name__ == "__main__":
 
         file = path / f"{name}.hpp"
 
+        fparams = "(const RowVectorNd &p, const double t, const int el_id, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>& F"
+        for param in energy.parameters():
+            fparams += f", const double {param}"
+        fparams += ")"
+
         with open(file, "w") as f:
             f.write(f"// Auto-generated code for {name} energy\n")
             f.write(f"#pragma once\n")
@@ -102,7 +131,7 @@ if __name__ == "__main__":
             f.write("namespace polyfem {\n")
             f.write(f"    namespace autogen {{\n")
 
-            # f.write(f"        inline double {name}_energy(const RowVectorNd &p, const double t, const int el_id, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>& F) {{\n")
+            # f.write(f"        inline double {name}_energy{fparams} {{\n")
             # for i in range(dim):
             #     for j in range(dim):
             #         f.write(f"            const double F{i*dim + j} = F({i}, {j});\n")
@@ -111,7 +140,7 @@ if __name__ == "__main__":
             # f.write("        }\n\n")
 
             f.write(
-                f"        Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> {name}_gradient(const RowVectorNd &p, const double t, const int el_id, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>& F) {{\n")
+                f"        Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> {name}_gradient{fparams} {{\n")
             f.write(
                 f"            Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> grad({dim},{dim});\n")
             for i in range(dim):
@@ -129,7 +158,7 @@ if __name__ == "__main__":
             f.write("        }\n\n")
 
             f.write(
-                f"        inline Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9> {name}_hessian(const RowVectorNd &p, const double t, const int el_id, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>& F) {{\n")
+                f"        inline Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9> {name}_hessian{fparams} {{\n")
             f.write(
                 f"            Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9> hess({dim*dim},{dim*dim});\n")
             f.write(f"            std::array<double, {dim**4}> result_0;\n")
