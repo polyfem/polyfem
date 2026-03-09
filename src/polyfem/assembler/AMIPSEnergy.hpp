@@ -18,7 +18,10 @@ namespace polyfem::assembler
 	class AMIPSEnergy : public GenericElastic<AMIPSEnergy>
 	{
 	public:
-		AMIPSEnergy() {}
+		AMIPSEnergy()
+		{
+			autodiff_type_ = AutodiffType::NONE;
+		}
 
 		// sets material params
 		void add_multimaterial(const int index, const json &params, const Units &units) override;
@@ -99,6 +102,19 @@ namespace polyfem::assembler
 
 			return res;
 		}
+
+	public:
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> gradient(
+			const RowVectorNd &p,
+			const double t,
+			const int el_id,
+			const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> &F) const override;
+
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9> hessian(
+			const RowVectorNd &p,
+			const double t,
+			const int el_id,
+			const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> &F) const override;
 	};
 
 } // namespace polyfem::assembler

@@ -125,8 +125,12 @@ namespace polyfem::assembler
 		}
 		else
 		{
-			log_and_throw_error("Gradient assembly not implemented for autodiff type NONE");
-			return Eigen::VectorXd();
+#ifndef NDEBUG
+			auto grad = assemble_gradient_stress_noad(data);
+			auto grad_full = assemble_gradient_stress_ad(data);
+			assert((std::isnan(grad.norm()) && std::isnan(grad_full.norm())) || (grad - grad_full).norm() < 1e-6);
+#endif
+			return assemble_gradient_stress_noad(data);
 		}
 	}
 
@@ -220,6 +224,76 @@ namespace polyfem::assembler
 	}
 
 	template <typename Derived>
+	Eigen::VectorXd GenericElastic<Derived>::assemble_gradient_stress_noad(const NonLinearAssemblerData &data) const
+	{
+		Eigen::Matrix<double, Eigen::Dynamic, 1> gradient;
+
+		if (size() == 2)
+		{
+			switch (data.vals.basis_values.size())
+			{
+			case 3:
+			{
+				gradient.resize(6);
+				compute_gradient_from_stress_noad<3, 2>(data, gradient);
+				break;
+			}
+			case 6:
+			{
+				gradient.resize(12);
+				compute_gradient_from_stress_noad<6, 2>(data, gradient);
+				break;
+			}
+			case 10:
+			{
+				gradient.resize(20);
+				compute_gradient_from_stress_noad<10, 2>(data, gradient);
+				break;
+			}
+			default:
+			{
+				gradient.resize(data.vals.basis_values.size() * 2);
+				compute_gradient_from_stress_noad<Eigen::Dynamic, 2>(data, gradient);
+				break;
+			}
+			}
+		}
+		else // if (size() == 3)
+		{
+			assert(size() == 3);
+			switch (data.vals.basis_values.size())
+			{
+			case 4:
+			{
+				gradient.resize(12);
+				compute_gradient_from_stress_noad<4, 3>(data, gradient);
+				break;
+			}
+			case 10:
+			{
+				gradient.resize(30);
+				compute_gradient_from_stress_noad<10, 3>(data, gradient);
+				break;
+			}
+			case 20:
+			{
+				gradient.resize(60);
+				compute_gradient_from_stress_noad<20, 3>(data, gradient);
+				break;
+			}
+			default:
+			{
+				gradient.resize(data.vals.basis_values.size() * 3);
+				compute_gradient_from_stress_noad<Eigen::Dynamic, 3>(data, gradient);
+				break;
+			}
+			}
+		}
+
+		return gradient;
+	}
+
+	template <typename Derived>
 	Eigen::MatrixXd GenericElastic<Derived>::assemble_hessian(const NonLinearAssemblerData &data) const
 	{
 		if (autodiff_type_ == AutodiffType::FULL)
@@ -235,8 +309,12 @@ namespace polyfem::assembler
 		}
 		else
 		{
-			log_and_throw_error("Hessian assembly not implemented for autodiff type NONE");
-			return Eigen::MatrixXd();
+#ifndef NDEBUG
+			auto hessian = assemble_hessian_stress_noad(data);
+			auto hessian_full = assemble_hessian_stress_ad(data);
+			assert((std::isnan(hessian.norm()) && std::isnan(hessian_full.norm())) || (hessian - hessian_full).norm() < 1e-5);
+#endif
+			return assemble_hessian_stress_noad(data);
 		}
 	}
 
@@ -328,6 +406,84 @@ namespace polyfem::assembler
 				hessian.resize(data.vals.basis_values.size() * 3, data.vals.basis_values.size() * 3);
 				hessian.setZero();
 				compute_hessian_from_stress<Eigen::Dynamic, 3>(data, hessian);
+				break;
+			}
+			}
+		}
+
+		return hessian;
+	}
+
+	template <typename Derived>
+	Eigen::MatrixXd GenericElastic<Derived>::assemble_hessian_stress_noad(const NonLinearAssemblerData &data) const
+	{
+		Eigen::MatrixXd hessian;
+
+		if (size() == 2)
+		{
+			switch (data.vals.basis_values.size())
+			{
+			case 3:
+			{
+				hessian.resize(6, 6);
+				hessian.setZero();
+				compute_hessian_from_stress_noad<3, 2>(data, hessian);
+				break;
+			}
+			case 6:
+			{
+				hessian.resize(12, 12);
+				hessian.setZero();
+				compute_hessian_from_stress_noad<6, 2>(data, hessian);
+				break;
+			}
+			case 10:
+			{
+				hessian.resize(20, 20);
+				hessian.setZero();
+				compute_hessian_from_stress_noad<10, 2>(data, hessian);
+				break;
+			}
+			default:
+			{
+				hessian.resize(data.vals.basis_values.size() * 2, data.vals.basis_values.size() * 2);
+				hessian.setZero();
+				compute_hessian_from_stress_noad<Eigen::Dynamic, 2>(data, hessian);
+				break;
+			}
+			}
+		}
+		else // if (size() == 3)
+		{
+			assert(size() == 3);
+			switch (data.vals.basis_values.size())
+			{
+			case 4:
+			{
+				hessian.resize(12, 12);
+				hessian.setZero();
+				compute_hessian_from_stress_noad<4, 3>(data, hessian);
+				break;
+			}
+			case 10:
+			{
+				hessian.resize(30, 30);
+				hessian.setZero();
+				compute_hessian_from_stress_noad<10, 3>(data, hessian);
+				break;
+			}
+			case 20:
+			{
+				hessian.resize(60, 60);
+				hessian.setZero();
+				compute_hessian_from_stress_noad<20, 3>(data, hessian);
+				break;
+			}
+			default:
+			{
+				hessian.resize(data.vals.basis_values.size() * 3, data.vals.basis_values.size() * 3);
+				hessian.setZero();
+				compute_hessian_from_stress_noad<Eigen::Dynamic, 3>(data, hessian);
 				break;
 			}
 			}
