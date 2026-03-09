@@ -224,6 +224,14 @@ namespace polyfem
 			initial_acceleration(acceleration);
 			assert(acceleration.rows() == sol.size());
 
+			if (solution.cols() != velocity.cols() || solution.cols() != acceleration.cols())
+			{
+				log_and_throw_error(
+					"Incompatible initial-condition history for transient solve: "
+					"solution has {} columns, velocity has {}, acceleration has {}.",
+					solution.cols(), velocity.cols(), acceleration.cols());
+			}
+
 			const double dt = args["time"]["dt"];
 			solve_data.time_integrator->init(solution, velocity, acceleration, dt);
 		}
@@ -264,6 +272,14 @@ namespace polyfem
 			assert(velocity.rows() == sol.size());
 			initial_acceleration(acceleration);
 			assert(acceleration.rows() == sol.size());
+
+			if (solution.cols() != velocity.cols() || solution.cols() != acceleration.cols())
+			{
+				log_and_throw_error(
+					"Incompatible initial-condition history for transient solve: "
+					"solution has {} columns, velocity has {}, acceleration has {}.",
+					solution.cols(), velocity.cols(), acceleration.cols());
+			}
 
 			time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
 			time_integrator->init(solution, velocity, acceleration, dt);

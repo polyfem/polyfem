@@ -70,6 +70,23 @@ namespace polyfem
 	{
 		assert(solve_data.rhs_assembler != nullptr);
 
+		// Override in State has the highest priority.
+		if (initial_sol_override.size() != 0)
+		{
+			if (initial_sol_override.rows() != ndof())
+			{
+				log_and_throw_error("initial_sol_override has {} rows, expected {}.", initial_sol_override.rows(), ndof());
+			}
+			if (initial_sol_override.cols() < 1)
+			{
+				log_and_throw_error("initial_sol_override must have at least one column.");
+			}
+
+			logger().info("Using runtime override for initial solution.");
+			solution = initial_sol_override;
+			return;
+		}
+
 		const bool was_solution_loaded = read_initial_x_from_file(
 			resolve_input_path(args["input"]["data"]["state"]), "u",
 			args["input"]["data"]["reorder"], in_node_to_node,
@@ -91,6 +108,23 @@ namespace polyfem
 	{
 		assert(solve_data.rhs_assembler != nullptr);
 
+		// Override in State has the highest priority.
+		if (initial_vel_override.size() != 0)
+		{
+			if (initial_vel_override.rows() != ndof())
+			{
+				log_and_throw_error("initial_vel_override has {} rows, expected {}.", initial_vel_override.rows(), ndof());
+			}
+			if (initial_vel_override.cols() < 1)
+			{
+				log_and_throw_error("initial_vel_override must have at least one column.");
+			}
+
+			logger().info("Using runtime override for initial velocity.");
+			velocity = initial_vel_override;
+			return;
+		}
+
 		const bool was_velocity_loaded = read_initial_x_from_file(
 			resolve_input_path(args["input"]["data"]["state"]), "v",
 			args["input"]["data"]["reorder"], in_node_to_node,
@@ -103,6 +137,23 @@ namespace polyfem
 	void State::initial_acceleration(Eigen::MatrixXd &acceleration) const
 	{
 		assert(solve_data.rhs_assembler != nullptr);
+
+		// Override in State has the highest priority.
+		if (initial_acc_override.size() != 0)
+		{
+			if (initial_acc_override.rows() != ndof())
+			{
+				log_and_throw_error("initial_acc_override has {} rows, expected {}.", initial_acc_override.rows(), ndof());
+			}
+			if (initial_acc_override.cols() < 1)
+			{
+				log_and_throw_error("initial_acc_override must have at least one column.");
+			}
+
+			logger().info("Using runtime override for initial acceleration.");
+			acceleration = initial_acc_override;
+			return;
+		}
 
 		const bool was_acceleration_loaded = read_initial_x_from_file(
 			resolve_input_path(args["input"]["data"]["state"]), "a",

@@ -410,8 +410,9 @@ namespace polyfem::solver
 			{
 				log_and_throw_adjoint_error("[{}] Inconsistent number of parameters {} and number of dofs in forward {}!", name(), state_variable.size(), state->ndof() * 2);
 			}
-			state->initial_sol_update = state_variable.head(state->ndof());
-			state->initial_vel_update = state_variable.tail(state->ndof());
+			state->initial_sol_override = state_variable.head(state->ndof());
+			state->initial_vel_override = state_variable.tail(state->ndof());
+			state->initial_acc_override = {};
 		}
 	}
 	Eigen::VectorXd InitialConditionVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const

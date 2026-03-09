@@ -908,8 +908,6 @@ namespace polyfem::solver
 			solution = diff_cache.u(0);
 			state.initial_velocity(velocity);
 			state.initial_acceleration(acceleration);
-			if (state.initial_vel_update.size() == state.ndof())
-				velocity = state.initial_vel_update;
 			const double dt = state.args["time"]["dt"];
 			time_integrator->init(solution, velocity, acceleration, dt);
 		}

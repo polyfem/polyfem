@@ -172,14 +172,6 @@ namespace polyfem
 		assert(!problem->is_scalar()); // tensor
 		assert(mixed_assembler == nullptr);
 
-		if (optimization_enabled != solver::CacheLevel::None)
-		{
-			if (initial_sol_update.size() == ndof())
-				sol = initial_sol_update;
-			else
-				initial_sol_update = sol;
-		}
-
 		// --------------------------------------------------------------------
 		// Check for initial intersections
 		if (is_contact_enabled())
@@ -216,12 +208,12 @@ namespace polyfem
 				initial_acceleration(acceleration);
 				assert(acceleration.rows() == sol.size());
 
-				if (optimization_enabled != solver::CacheLevel::None)
+				if (solution.cols() != velocity.cols() || solution.cols() != acceleration.cols())
 				{
-					if (initial_vel_update.size() == ndof())
-						velocity = initial_vel_update;
-					else
-						initial_vel_update = velocity;
+					log_and_throw_error(
+						"Incompatible initial-condition history for transient solve: "
+						"solution has {} columns, velocity has {}, acceleration has {}.",
+						solution.cols(), velocity.cols(), acceleration.cols());
 				}
 
 				const double dt = args["time"]["dt"];

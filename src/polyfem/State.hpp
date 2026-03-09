@@ -113,6 +113,27 @@ namespace polyfem
 		/// main input arguments containing all defaults
 		json args;
 
+		/// @brief Optional user override for the initial solution history.
+		///
+		/// ndof by H (history size) matrix where each col is solution from a time step.
+		/// When non-empty, this matrix has the highest priority. Note that the time is
+		/// ordered in reversed. That is, .col(t) means t time steps before.
+		Eigen::MatrixXd initial_sol_override;
+
+		/// @brief Optional user override for the initial velocity history.
+		///
+		/// ndof by H (history size) matrix where each col is velocity from a time step.
+		/// When non-empty, this matrix has the highest priority. Note that the time is
+		/// ordered in reversed. That is, .col(t) means t time steps before.
+		Eigen::MatrixXd initial_vel_override;
+
+		/// @brief Optional user override for the initial acceleration history.
+		///
+		/// ndof by H (history size) matrix where each col is acceleration from a time step.
+		/// When non-empty, this matrix has the highest priority. Note that the time is
+		/// ordered in reversed. That is, .col(t) means t time steps before.
+		Eigen::MatrixXd initial_acc_override;
+
 		//---------------------------------------------------
 		//-----------------logger----------------------------
 		//---------------------------------------------------
@@ -730,9 +751,6 @@ namespace polyfem
 					elements(e, i++) = node_to_primitive_map[gbs.global()[0].index];
 			}
 		}
-
-		// to replace the initial condition in json during initial condition optimization
-		Eigen::MatrixXd initial_sol_update, initial_vel_update;
 
 		//---------------------------------------------------
 		//-----------------homogenization--------------------
