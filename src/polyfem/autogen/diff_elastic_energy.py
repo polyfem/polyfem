@@ -6,6 +6,7 @@ import os
 import numpy as np
 from pathlib import Path
 
+
 class AMIPSEnergy:
     def __init__(self, use_rest_pose, dim):
         self.use_rest_pose = use_rest_pose
@@ -24,7 +25,8 @@ class AMIPSEnergy:
             standard = sp.Matrix([
                 [1, 0, 0],
                 [sp.Rational(1, 2), sp.sqrt(3) / 2, 0],
-                [sp.Rational(1, 2), sp.Rational(1, 2) / sp.sqrt(3), sp.sqrt(3) / 2]
+                [sp.Rational(1, 2),
+                 sp.Rational(1, 2) / sp.sqrt(3), sp.sqrt(3) / 2]
             ])
         standard = standard.inv().T
 
@@ -53,7 +55,6 @@ class AMIPSEnergy:
 def compute_energy(energy):
     dim = energy.dim
     F = sp.Matrix(dim, dim, lambda i, j: sp.Symbol(f"F{i}{j}"))
-    print(F)
     p = sp.MatrixSymbol('p', dim, 1)
     t = sp.Symbol('t')
     el_id = sp.Symbol('el_id')
@@ -61,11 +62,12 @@ def compute_energy(energy):
     E = energy.eval(p, t, el_id, F)
     E = sp.simplify(E)
 
-    x = sp.Matrix([F[i, j] for i in range(dim) for j in range(dim)])  # column-major
+    x = sp.Matrix([F[i, j] for i in range(dim) for j in range(dim)])
     grad = sp.Matrix([sp.diff(E, v) for v in x])
     hess = grad.jacobian(x)
 
     return E, grad, hess
+
 
 energies = {
     "AMIPS2d": AMIPSEnergy(use_rest_pose=False, dim=2),
@@ -108,13 +110,17 @@ if __name__ == "__main__":
             # f.write(f"            return result_0;\n")
             # f.write("        }\n\n")
 
-            f.write(f"        Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> {name}_gradient(const RowVectorNd &p, const double t, const int el_id, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>& F) {{\n")
-            f.write(f"            Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> grad({dim},{dim});\n")
+            f.write(
+                f"        Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> {name}_gradient(const RowVectorNd &p, const double t, const int el_id, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>& F) {{\n")
+            f.write(
+                f"            Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> grad({dim},{dim});\n")
             for i in range(dim):
                 for j in range(dim):
-                    f.write(f"            const double F{i}{j} = F({i}, {j});\n")
+                    f.write(
+                        f"            const double F{i}{j} = F({i}, {j});\n")
             f.write(f"            std::array<double, {dim*dim}> result_0;\n")
-            f.write(f"            {pretty_print.C99_print(sp.sympify(grad))};\n")
+            f.write(
+                f"            {pretty_print.C99_print(sp.sympify(grad))};\n")
             for i in range(dim):
                 for j in range(dim):
                     idx = i * dim + j
@@ -122,16 +128,21 @@ if __name__ == "__main__":
             f.write("            return grad;\n")
             f.write("        }\n\n")
 
-            f.write(f"        inline Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9> {name}_hessian(const RowVectorNd &p, const double t, const int el_id, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>& F) {{\n")
-            f.write(f"            Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9> hess({dim*dim},{dim*dim});\n")
+            f.write(
+                f"        inline Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9> {name}_hessian(const RowVectorNd &p, const double t, const int el_id, const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3>& F) {{\n")
+            f.write(
+                f"            Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9> hess({dim*dim},{dim*dim});\n")
             f.write(f"            std::array<double, {dim**4}> result_0;\n")
             for i in range(dim):
                 for j in range(dim):
-                    f.write(f"            const double F{i}{j} = F({i}, {j});\n")
-            f.write(f"            {pretty_print.C99_print(sp.sympify(hess))};\n")
+                    f.write(
+                        f"            const double F{i}{j} = F({i}, {j});\n")
+            f.write(
+                f"            {pretty_print.C99_print(sp.sympify(hess))};\n")
             for i in range(dim*dim):
                 for j in range(dim*dim):
-                    f.write(f"            hess({i}, {j}) = result_0[{i*dim*dim+j}];\n")
+                    f.write(
+                        f"            hess({i}, {j}) = result_0[{i*dim*dim+j}];\n")
             f.write("            return hess;\n")
             f.write("        }\n")
             f.write("    }\n")

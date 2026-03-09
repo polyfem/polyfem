@@ -257,7 +257,8 @@ namespace polyfem::assembler
 				}
 
 				const Eigen::Matrix<double, dim, dim> P = derived().gradient(data.vals.val.row(p), data.t, data.vals.element_id, def_grad);
-				const Eigen::Matrix<double, n_basis, dim> Rloc = G * P.transpose() * data.da(p);
+				const Eigen::Matrix<double, n_basis, dim> Bgrad = derived().real_def_grad() ? G : grad;
+				const Eigen::Matrix<double, n_basis, dim> Rloc = Bgrad * P.transpose() * data.da(p);
 
 				for (int a = 0; a < data.vals.basis_values.size(); ++a)
 					for (int d = 0; d < size(); ++d)
@@ -399,13 +400,15 @@ namespace polyfem::assembler
 				// Since P = dW/dF, A is just the Hessian of W wrt vec(F).
 				Eigen::Matrix<double, dim * dim, dim * dim> A = derived().hessian(data.vals.val.row(p), data.t, data.vals.element_id, def_grad);
 
+				const Eigen::Matrix<double, n_basis, dim> Bgrad = derived().real_def_grad() ? G : grad_ref;
+
 				for (int a = 0; a < nb; ++a)
 				{
-					const Eigen::Matrix<double, dim * dim, dim> Ba = compute_B_block<dim>(G.row(a));
+					const Eigen::Matrix<double, dim * dim, dim> Ba = compute_B_block<dim>(Bgrad.row(a));
 
 					for (int b = 0; b < nb; ++b)
 					{
-						const Eigen::Matrix<double, dim * dim, dim> Bb = compute_B_block<dim>(G.row(b));
+						const Eigen::Matrix<double, dim * dim, dim> Bb = compute_B_block<dim>(Bgrad.row(b));
 
 						const Eigen::Matrix<double, dim, dim> Kab =
 							Ba.transpose() * A * Bb * data.da(p);
