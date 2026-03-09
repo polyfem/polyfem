@@ -1,10 +1,19 @@
 #pragma once
 
+#include <polyfem/Common.hpp>
 #include <polyfem/optimization/parametrization/Parametrization.hpp>
 #include <polyfem/optimization/AdjointTools.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/parametrization/PeriodicMeshToMesh.hpp>
 
-#include <iostream>
+#include <Eigen/Core>
+
+#include <cassert>
+#include <functional>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace polyfem::solver
 {
@@ -12,23 +21,24 @@ namespace polyfem::solver
 	class VariableToSimulation
 	{
 	public:
-		VariableToSimulation(const std::vector<std::shared_ptr<State>> &states, const CompositeParametrization &parametrization) : states_(states), parametrization_(parametrization) { assert(states.size() > 0); }
-		VariableToSimulation(const std::shared_ptr<State> &state, const CompositeParametrization &parametrization) : states_({state}), parametrization_(parametrization) {}
-		virtual ~VariableToSimulation() {}
+		VariableToSimulation(std::vector<std::shared_ptr<State>> states,
+							 std::vector<std::shared_ptr<DiffCache>> diff_caches,
+							 CompositeParametrization parametrization) : states(std::move(states)),
+																		 diff_caches(std::move(diff_caches)),
+																		 parametrization(std::move(parametrization))
+		{
+			assert(this->states.size() > 0);
+		}
 
-		static std::unique_ptr<VariableToSimulation> create(const std::string &type, const std::vector<std::shared_ptr<State>> &states, CompositeParametrization &&parametrization);
+		virtual ~VariableToSimulation() = default;
 
 		inline virtual void update(const Eigen::VectorXd &x)
 		{
-			update_state(parametrization_.eval(x), get_output_indexing(x));
+			update_state(parametrization.eval(x), get_output_indexing(x));
 		}
 
 		virtual std::string name() const = 0;
 
-		inline int n_states() const { return states_.size(); }
-		inline const std::vector<std::shared_ptr<State>> &get_states() const { return states_; }
-
-		inline CompositeParametrization &get_parametrization() { return parametrization_; }
 		virtual ParameterType get_parameter_type() const = 0;
 		virtual Eigen::VectorXd compute_adjoint_term(const Eigen::VectorXd &x) const = 0;
 		virtual Eigen::VectorXd inverse_eval();
@@ -38,10 +48,12 @@ namespace polyfem::solver
 
 		virtual Eigen::VectorXd apply_parametrization_jacobian(const Eigen::VectorXd &term, const Eigen::VectorXd &x) const;
 
+		const std::vector<std::shared_ptr<State>> states;
+		const std::vector<std::shared_ptr<DiffCache>> diff_caches;
+		CompositeParametrization parametrization;
+
 	protected:
 		virtual void update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices);
-		const std::vector<std::shared_ptr<State>> states_;
-		CompositeParametrization parametrization_;
 
 		Eigen::VectorXi output_indexing_; // if a derived class overrides apply_parametrization_jacobian(term, x), this is not necessarily used.
 	};
@@ -50,18 +62,13 @@ namespace polyfem::solver
 	class VariableToSimulationGroup
 	{
 	public:
-		using ValueType = std::shared_ptr<VariableToSimulation>;
-
-		VariableToSimulationGroup() = default;
 		virtual ~VariableToSimulationGroup() = default;
-
-		void init(const json &args, const std::vector<std::shared_ptr<State>> &states, const std::vector<int> &variable_sizes);
 
 		/// @brief Update parameters in simulators
 		/// @param x Optimization variable
 		inline void update(const Eigen::VectorXd &x)
 		{
-			for (auto &v2s : L)
+			for (auto &v2s : data)
 				v2s->update(x);
 		}
 
@@ -83,17 +90,7 @@ namespace polyfem::solver
 		/// @return Partial gradient wrt. the optimization variable
 		virtual Eigen::VectorXd apply_parametrization_jacobian(const ParameterType type, const State *state_ptr, const Eigen::VectorXd &x, const std::function<Eigen::VectorXd()> &grad) const;
 
-		typedef std::vector<ValueType>::const_iterator const_iterator;
-
-		inline ValueType &operator[](size_t i) { return L[i]; }
-		inline const ValueType &operator[](size_t i) const { return L[i]; }
-		inline const_iterator begin() const { return L.begin(); }
-		inline const_iterator end() const { return L.end(); }
-		inline void push_back(const ValueType &v2s) { L.push_back(v2s); }
-		inline void clear() { L.clear(); }
-
-	private:
-		std::vector<ValueType> L;
+		std::vector<std::shared_ptr<VariableToSimulation>> data;
 	};
 
 	// state variable dof = dim * n_vertices

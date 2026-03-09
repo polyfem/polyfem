@@ -1,5 +1,14 @@
-#include "CompositeForms.hpp"
+#include <polyfem/optimization/forms/CompositeForms.hpp>
+
 #include <polyfem/utils/AutodiffTypes.hpp>
+
+#include <Eigen/Core>
+
+#include <algorithm>
+#include <cassert>
+#include <memory>
+#include <stdexcept>
+#include <vector>
 
 namespace polyfem::solver
 {

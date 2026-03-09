@@ -1,6 +1,13 @@
 #pragma once
 
-#include "AdjointForm.hpp"
+#include <polyfem/optimization/forms/AdjointForm.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
+
+#include <Eigen/Core>
+
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace polyfem::solver
 {
@@ -10,7 +17,7 @@ namespace polyfem::solver
 		TransientForm(const VariableToSimulationGroup &variable_to_simulations, const int time_steps, const double dt, const std::string &transient_integral_type, const std::vector<int> &steps, const std::shared_ptr<StaticForm> &obj) : AdjointForm(variable_to_simulations), time_steps_(time_steps), dt_(dt), steps_(steps), obj_(obj), transient_integral_type_(transient_integral_type) {}
 		virtual ~TransientForm() = default;
 
-		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const override;
+		virtual Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const override;
 		virtual void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 		void init(const Eigen::VectorXd &x) override;
@@ -41,7 +48,7 @@ namespace polyfem::solver
 		ProxyTransientForm(const VariableToSimulationGroup &variable_to_simulations, const int time_steps, const double dt, const std::string &transient_integral_type, const std::vector<int> &steps, const std::shared_ptr<StaticForm> &obj) : TransientForm(variable_to_simulations, time_steps, dt, transient_integral_type, steps, obj) {}
 		virtual ~ProxyTransientForm() = default;
 
-		Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state) const override;
+		Eigen::MatrixXd compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const override;
 		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	protected:

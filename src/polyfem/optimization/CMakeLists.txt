@@ -9,6 +9,9 @@ set(SOURCES
 	AdjointTools.hpp
 	AdjointTools.cpp
 	DiffCache.hpp
+	DiffCache.cpp
+  BuildFromJson.hpp
+  BuildFromJson.cpp
 )
 
 source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" PREFIX "Source Files" FILES ${SOURCES})

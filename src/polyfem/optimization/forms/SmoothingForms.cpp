@@ -1,18 +1,28 @@
-#include "SmoothingForms.hpp"
+#include <polyfem/optimization/forms/SmoothingForms.hpp>
+
 #include <polyfem/State.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/Types.hpp>
+
+#include <Eigen/Core>
+
+#include <cassert>
+#include <memory>
+#include <set>
+#include <utility>
+#include <vector>
 
 namespace polyfem::solver
 {
 	BoundarySmoothingForm::BoundarySmoothingForm(
 		const VariableToSimulationGroup &variable_to_simulations,
-		const State &state,
+		std::shared_ptr<const State> state,
 		const bool scale_invariant,
 		const int power,
 		const std::vector<int> &surface_selections,
-		const std::vector<int> &active_dims) : AdjointForm(variable_to_simulations), state_(state), scale_invariant_(scale_invariant), power_(power), active_dims_(active_dims)
+		const std::vector<int> &active_dims) : AdjointForm(variable_to_simulations), state_(std::move(state)), scale_invariant_(scale_invariant), power_(power), active_dims_(active_dims)
 	{
-		const auto &mesh = *(state_.mesh);
+		const auto &mesh = *(state_->mesh);
 		const int dim = mesh.dimension();
 		const int n_verts = mesh.n_vertices();
 		assert(mesh.is_simplicial());
@@ -77,7 +87,7 @@ namespace polyfem::solver
 
 	double BoundarySmoothingForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		const auto &mesh = *(state_.mesh);
+		const auto &mesh = *(state_->mesh);
 		const int dim = mesh.dimension();
 		const int n_verts = mesh.n_vertices();
 
@@ -108,7 +118,7 @@ namespace polyfem::solver
 		else
 		{
 			Eigen::MatrixXd V;
-			state_.get_vertices(V);
+			state_->get_vertices(V);
 
 			val = (L * V(Eigen::all, active_dims_)).squaredNorm();
 		}
@@ -118,7 +128,7 @@ namespace polyfem::solver
 
 	void BoundarySmoothingForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		const auto &mesh = *(state_.mesh);
+		const auto &mesh = *(state_->mesh);
 		const int dim = mesh.dimension();
 		const int n_verts = mesh.n_vertices();
 
@@ -156,7 +166,7 @@ namespace polyfem::solver
 		else
 		{
 			Eigen::MatrixXd V;
-			state_.get_vertices(V);
+			state_->get_vertices(V);
 
 			Eigen::MatrixXd grad_mat = 2 * (L.transpose() * (L * V));
 			for (int d = 0; d < dim; d++)
@@ -165,7 +175,7 @@ namespace polyfem::solver
 			grad = utils::flatten(grad_mat);
 		}
 
-		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, &state_, x, [&grad]() {
+		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, state_.get(), x, [&grad]() {
 			return grad;
 		});
 	}

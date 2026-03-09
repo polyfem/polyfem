@@ -4,6 +4,8 @@
 #include <polyfem/optimization/parametrization/Parametrization.hpp>
 #include <polyfem/optimization/forms/AdjointForm.hpp>
 
+#include <Eigen/Core>
+
 namespace polyfem
 {
 	class State;
