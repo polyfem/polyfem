@@ -52,8 +52,8 @@ class AMIPSEnergy:
 
 def compute_energy(energy):
     dim = energy.dim
-    Fvars = sp.symbols(f"F0:{dim*dim}")
-    F = sp.Matrix(dim, dim, Fvars)
+    F = sp.Matrix(dim, dim, lambda i, j: sp.Symbol(f"F{i}{j}"))
+    print(F)
     p = sp.MatrixSymbol('p', dim, 1)
     t = sp.Symbol('t')
     el_id = sp.Symbol('el_id')
@@ -61,7 +61,7 @@ def compute_energy(energy):
     E = energy.eval(p, t, el_id, F)
     E = sp.simplify(E)
 
-    x = sp.Matrix(Fvars)
+    x = sp.Matrix([F[i, j] for i in range(dim) for j in range(dim)])  # column-major
     grad = sp.Matrix([sp.diff(E, v) for v in x])
     hess = grad.jacobian(x)
 
@@ -112,12 +112,13 @@ if __name__ == "__main__":
             f.write(f"            Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> grad({dim},{dim});\n")
             for i in range(dim):
                 for j in range(dim):
-                    f.write(f"            const double F{i*dim + j} = F({i}, {j});\n")
+                    f.write(f"            const double F{i}{j} = F({i}, {j});\n")
             f.write(f"            std::array<double, {dim*dim}> result_0;\n")
             f.write(f"            {pretty_print.C99_print(sp.sympify(grad))};\n")
             for i in range(dim):
                 for j in range(dim):
-                    f.write(f"            grad({i}, {j}) = result_0[{i*dim+j}];\n")
+                    idx = i * dim + j
+                    f.write(f"            grad({i}, {j}) = result_0[{idx}];\n")
             f.write("            return grad;\n")
             f.write("        }\n\n")
 
@@ -126,7 +127,7 @@ if __name__ == "__main__":
             f.write(f"            std::array<double, {dim**4}> result_0;\n")
             for i in range(dim):
                 for j in range(dim):
-                    f.write(f"            const double F{i*dim + j} = F({i}, {j});\n")
+                    f.write(f"            const double F{i}{j} = F({i}, {j});\n")
             f.write(f"            {pretty_print.C99_print(sp.sympify(hess))};\n")
             for i in range(dim*dim):
                 for j in range(dim*dim):
