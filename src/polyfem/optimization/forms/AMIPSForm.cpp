@@ -145,11 +145,11 @@ namespace polyfem::solver
 		  state_(std::move(state))
 	{
 		amips_energy_ = assembler::AssemblerUtils::make_assembler("AMIPS");
-		amips_energy_->set_size(state.mesh->dimension());
+		amips_energy_->set_size(state_->mesh->dimension());
 
 		json use_rest = {};
 		use_rest["use_rest_pose"] = true;
-		amips_energy_->add_multimaterial(0, use_rest, state.units);
+		amips_energy_->add_multimaterial(0, use_rest, state_->units);
 
 		Eigen::MatrixXd V;
 		state_->get_vertices(V);
