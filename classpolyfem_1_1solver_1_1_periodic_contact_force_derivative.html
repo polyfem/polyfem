@@ -130,15 +130,15 @@ $(document).ready(function(){initNavTree('classpolyfem_1_1solver_1_1_periodic_co
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aa2d9070bcf94fef00485d656058be0ba" id="r_aa2d9070bcf94fef00485d656058be0ba"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_force_derivative.html#aa2d9070bcf94fef00485d656058be0ba">force_shape_derivative</a> (const <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html">PeriodicContactForm</a> &amp;form, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const <a class="el" href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html">PeriodicMeshToMesh</a> &amp;periodic_mesh_map, const Eigen::VectorXd &amp;periodic_mesh_representation, const ipc::NormalCollisions &amp;contact_set, const Eigen::VectorXd &amp;solution, const Eigen::VectorXd &amp;adjoint_sol, Eigen::VectorXd &amp;term)</td></tr>
-<tr class="separator:aa2d9070bcf94fef00485d656058be0ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad09fddb737b615a75b50168a4a56ecc2" id="r_ad09fddb737b615a75b50168a4a56ecc2"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_force_derivative.html#ad09fddb737b615a75b50168a4a56ecc2">force_shape_derivative</a> (const <a class="el" href="classpolyfem_1_1solver_1_1_periodic_contact_form.html">PeriodicContactForm</a> &amp;form, const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;state, const <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &amp;diff_cache, const <a class="el" href="classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html">PeriodicMeshToMesh</a> &amp;periodic_mesh_map, const Eigen::VectorXd &amp;periodic_mesh_representation, const ipc::NormalCollisions &amp;contact_set, const Eigen::VectorXd &amp;solution, const Eigen::VectorXd &amp;adjoint_sol, Eigen::VectorXd &amp;term)</td></tr>
+<tr class="separator:ad09fddb737b615a75b50168a4a56ecc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="_periodic_contact_force_derivative_8hpp_source.html#l00011">11</a> of file <a class="el" href="_periodic_contact_force_derivative_8hpp_source.html">PeriodicContactForceDerivative.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_contact_force_derivative_8hpp_source.html#l00012">12</a> of file <a class="el" href="_periodic_contact_force_derivative_8hpp_source.html">PeriodicContactForceDerivative.hpp</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="aa2d9070bcf94fef00485d656058be0ba" name="aa2d9070bcf94fef00485d656058be0ba"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa2d9070bcf94fef00485d656058be0ba">&#9670;&#160;</a></span>force_shape_derivative()</h2>
+<a id="ad09fddb737b615a75b50168a4a56ecc2" name="ad09fddb737b615a75b50168a4a56ecc2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad09fddb737b615a75b50168a4a56ecc2">&#9670;&#160;</a></span>force_shape_derivative()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -157,6 +157,12 @@ Static Public Member Functions</h2></td></tr>
           <td></td>
           <td class="paramtype">const <a class="el" href="classpolyfem_1_1_state.html">State</a> &amp;&#160;</td>
           <td class="paramname"><em>state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classpolyfem_1_1_diff_cache.html">DiffCache</a> &amp;&#160;</td>
+          <td class="paramname"><em>diff_cache</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -207,13 +213,13 @@ Static Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_periodic_contact_force_derivative_8cpp_source.html#l00013">13</a> of file <a class="el" href="_periodic_contact_force_derivative_8cpp_source.html">PeriodicContactForceDerivative.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_periodic_contact_force_derivative_8cpp_source.html#l00014">14</a> of file <a class="el" href="_periodic_contact_force_derivative_8cpp_source.html">PeriodicContactForceDerivative.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_barrier_contact_form_8hpp_source.html#l00052">polyfem::solver::BarrierContactForm::barrier_potential()</a>, <a class="el" href="_state_8hpp_source.html#l00730">polyfem::State::basis_nodes_to_gbasis_nodes</a>, <a class="el" href="_contact_form_8hpp_source.html#l00126">polyfem::solver::ContactForm::collision_mesh_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00055">polyfem::solver::ContactForm::compute_displaced_surface()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00034">polyfem::utils::flatten()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00029">polyfem::solver::PeriodicMeshToMesh::full_to_periodic()</a>, <a class="el" href="_state_8hpp_source.html#l00195">polyfem::State::n_geom_bases</a>, <a class="el" href="_periodic_contact_form_8hpp_source.html#l00096">polyfem::solver::PeriodicContactForm::n_single_dof_</a>, <a class="el" href="_state_8cpp_source.html#l00234">polyfem::State::primitive_to_node()</a>, <a class="el" href="_periodic_contact_form_8hpp_source.html#l00097">polyfem::solver::PeriodicContactForm::proj</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00062">polyfem::solver::PeriodicContactForm::single_to_tiled()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00109">polyfem::solver::ContactForm::weight()</a>.</p>
+<p class="reference">References <a class="el" href="_barrier_contact_form_8hpp_source.html#l00052">polyfem::solver::BarrierContactForm::barrier_potential()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00280">polyfem::DiffCache::basis_nodes_to_gbasis_nodes()</a>, <a class="el" href="_contact_form_8hpp_source.html#l00126">polyfem::solver::ContactForm::collision_mesh_</a>, <a class="el" href="_contact_form_8cpp_source.html#l00055">polyfem::solver::ContactForm::compute_displaced_surface()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00034">polyfem::utils::flatten()</a>, <a class="el" href="_periodic_mesh_to_mesh_8hpp_source.html#l00029">polyfem::solver::PeriodicMeshToMesh::full_to_periodic()</a>, <a class="el" href="_state_8hpp_source.html#l00195">polyfem::State::n_geom_bases</a>, <a class="el" href="_periodic_contact_form_8hpp_source.html#l00096">polyfem::solver::PeriodicContactForm::n_single_dof_</a>, <a class="el" href="_state_8cpp_source.html#l00234">polyfem::State::primitive_to_node()</a>, <a class="el" href="_periodic_contact_form_8hpp_source.html#l00097">polyfem::solver::PeriodicContactForm::proj</a>, <a class="el" href="_periodic_contact_form_8cpp_source.html#l00062">polyfem::solver::PeriodicContactForm::single_to_tiled()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00053">polyfem::utils::unflatten()</a>, and <a class="el" href="_contact_form_8hpp_source.html#l00109">polyfem::solver::ContactForm::weight()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_periodic_contact_force_derivative_aa2d9070bcf94fef00485d656058be0ba_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1solver_1_1_periodic_contact_force_derivative_ad09fddb737b615a75b50168a4a56ecc2_cgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>

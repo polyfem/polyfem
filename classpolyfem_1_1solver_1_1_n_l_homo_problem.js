@@ -29,7 +29,6 @@ var classpolyfem_1_1solver_1_1_n_l_homo_problem =
     [ "reduced_to_disp_grad", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a11d7079fa4b26333dc94af34e3509958", null ],
     [ "reduced_to_extended", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a696594a4192e8185ba8e3f5e636a1529", null ],
     [ "reduced_to_full", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a6bb50791c0b7f0b2a0a38ad157bcd44f", null ],
-    [ "reduced_to_full_shape_derivative", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a9c0ef3b0582f7e478222858ab0ad6720", null ],
     [ "set_fixed_entry", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a2ad0a1bcfbb5ec4af8b132204f63d75a", null ],
     [ "solution_changed", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#aca48c42741c791242e5dcd7564260244", null ],
     [ "update_lagging", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#ae75ffb2ac52ed388db2b5b265896020d", null ],

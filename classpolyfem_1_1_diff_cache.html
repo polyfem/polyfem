@@ -142,6 +142,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a08e5289a2971a3ec3504665c38a17ed9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77ea382b8c9e2d37150e221f755e6ed5" id="r_a77ea382b8c9e2d37150e221f755e6ed5"><td class="memItemLeft" align="right" valign="top">const Eigen::MatrixXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#a77ea382b8c9e2d37150e221f755e6ed5">adjoint_mat</a> () const</td></tr>
 <tr class="separator:a77ea382b8c9e2d37150e221f755e6ed5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa59ccc8e8a6558380de5adfde77a8713" id="r_aa59ccc8e8a6558380de5adfde77a8713"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#aa59ccc8e8a6558380de5adfde77a8713">basis_nodes_to_gbasis_nodes</a> () const</td></tr>
+<tr class="separator:aa59ccc8e8a6558380de5adfde77a8713"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e6bc7e6f43aa2345c444fd4cd69865f" id="r_a1e6bc7e6f43aa2345c444fd4cd69865f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#a1e6bc7e6f43aa2345c444fd4cd69865f">size</a> () const</td></tr>
 <tr class="separator:a1e6bc7e6f43aa2345c444fd4cd69865f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1e40cf86eb088077aa6a8a213d127fb0" id="r_a1e40cf86eb088077aa6a8a213d127fb0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#a1e40cf86eb088077aa6a8a213d127fb0">bdf_order</a> (int step) const</td></tr>
@@ -184,6 +186,8 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a497ed0913a1ee4b96d873c5b9cffa539"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aba3f24c14f5136ca9ae9f297a68c388d" id="r_aba3f24c14f5136ca9ae9f297a68c388d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#aba3f24c14f5136ca9ae9f297a68c388d">cur_size_</a> = 0</td></tr>
 <tr class="separator:aba3f24c14f5136ca9ae9f297a68c388d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a631aeeb77e26041b79349147dc566ed7" id="r_a631aeeb77e26041b79349147dc566ed7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#a631aeeb77e26041b79349147dc566ed7">basis_nodes_to_gbasis_nodes_</a></td></tr>
+<tr class="separator:a631aeeb77e26041b79349147dc566ed7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a63415988df1b50b90e6fedb0437cfe2e" id="r_a63415988df1b50b90e6fedb0437cfe2e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; Eigen::MatrixXd &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#a63415988df1b50b90e6fedb0437cfe2e">disp_grad_</a></td></tr>
 <tr class="separator:a63415988df1b50b90e6fedb0437cfe2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afb878d1e600375c44fbf01f41bed59af" id="r_afb878d1e600375c44fbf01f41bed59af"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1_diff_cache.html#afb878d1e600375c44fbf01f41bed59af">u_</a></td></tr>
@@ -238,11 +242,11 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00074">74</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00076">76</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00134">acc_</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00043">size()</a>.</p>
+<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00139">acc_</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00045">size()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00153">cache_quantities_transient()</a>, and <a class="el" href="_diff_cache_8cpp_source.html#l00202">cache_transient()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00231">cache_quantities_transient()</a>, and <a class="el" href="_diff_cache_8cpp_source.html#l00288">cache_transient()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -281,13 +285,41 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00041">41</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00148">adjoint_mat_</a>.</p>
+<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00153">adjoint_mat_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00200">cache_adjoints()</a>, and <a class="el" href="_state_diff_8cpp_source.html#l00438">polyfem::get_adjoint_mat()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00278">cache_adjoints()</a>, and <a class="el" href="_state_diff_8cpp_source.html#l00438">polyfem::get_adjoint_mat()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_diff_cache_a77ea382b8c9e2d37150e221f755e6ed5_icgraph.svg" width="100%" height="600"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+</div>
+
+</div>
+</div>
+<a id="aa59ccc8e8a6558380de5adfde77a8713" name="aa59ccc8e8a6558380de5adfde77a8713"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa59ccc8e8a6558380de5adfde77a8713">&#9670;&#160;</a></span>basis_nodes_to_gbasis_nodes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const <a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp; polyfem::DiffCache::basis_nodes_to_gbasis_nodes </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8cpp_source.html#l00280">280</a> of file <a class="el" href="_diff_cache_8cpp_source.html">DiffCache.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00134">basis_nodes_to_gbasis_nodes_</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00691">polyfem::solver::AdjointTools::dJ_periodic_shape_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00636">polyfem::solver::AdjointTools::dJ_shape_homogenization_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00576">polyfem::solver::AdjointTools::dJ_shape_static_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00732">polyfem::solver::AdjointTools::dJ_shape_transient_adjoint_term()</a>, and <a class="el" href="_periodic_contact_force_derivative_8cpp_source.html#l00014">polyfem::solver::PeriodicContactForceDerivative::force_shape_derivative()</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1_diff_cache_aa59ccc8e8a6558380de5adfde77a8713_icgraph.svg" width="100%" height="553"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>
@@ -316,9 +348,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00044">44</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00046">46</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00136">bdf_order_</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00043">size()</a>.</p>
+<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00141">bdf_order_</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00045">size()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -343,9 +375,9 @@ Here is the call graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8cpp_source.html#l00200">200</a> of file <a class="el" href="_diff_cache_8cpp_source.html">DiffCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8cpp_source.html#l00278">278</a> of file <a class="el" href="_diff_cache_8cpp_source.html">DiffCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00041">adjoint_mat()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00148">adjoint_mat_</a>.</p>
+<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00041">adjoint_mat()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00153">adjoint_mat_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_state_diff_8cpp_source.html#l00426">polyfem::solve_adjoint_cached()</a>.</p>
 <div class="dynheader">
@@ -425,11 +457,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8cpp_source.html#l00181">181</a> of file <a class="el" href="_diff_cache_8cpp_source.html">DiffCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8cpp_source.html#l00259">259</a> of file <a class="el" href="_diff_cache_8cpp_source.html">DiffCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00091">collision_set()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00141">collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00129">cur_size_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00052">disp_grad()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00131">disp_grad_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00082">gradu_h()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00138">gradu_h_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00145">normal_adhesion_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00098">smooth_collision_set()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00142">smooth_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00060">u()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00132">u_</a>.</p>
+<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00093">collision_set()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00146">collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00131">cur_size_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00054">disp_grad()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00136">disp_grad_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00084">gradu_h()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00143">gradu_h_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00150">normal_adhesion_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00100">smooth_collision_set()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00147">smooth_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00062">u()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00137">u_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00202">cache_transient()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00288">cache_transient()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -513,11 +545,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8cpp_source.html#l00130">130</a> of file <a class="el" href="_diff_cache_8cpp_source.html">DiffCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8cpp_source.html#l00208">208</a> of file <a class="el" href="_diff_cache_8cpp_source.html">DiffCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00091">collision_set()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00141">collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00129">cur_size_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00052">disp_grad()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00131">disp_grad_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00143">friction_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00082">gradu_h()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00138">gradu_h_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00145">normal_adhesion_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00098">smooth_collision_set()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00142">smooth_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00146">tangential_adhesion_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00060">u()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00132">u_</a>.</p>
+<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00093">collision_set()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00146">collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00131">cur_size_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00054">disp_grad()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00136">disp_grad_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00148">friction_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00084">gradu_h()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00143">gradu_h_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00150">normal_adhesion_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00100">smooth_collision_set()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00147">smooth_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00151">tangential_adhesion_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00062">u()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00137">u_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00202">cache_transient()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00288">cache_transient()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -607,11 +639,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8cpp_source.html#l00153">153</a> of file <a class="el" href="_diff_cache_8cpp_source.html">DiffCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8cpp_source.html#l00231">231</a> of file <a class="el" href="_diff_cache_8cpp_source.html">DiffCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00074">acc()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00134">acc_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00136">bdf_order_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00091">collision_set()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00141">collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00129">cur_size_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00105">friction_collision_set()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00143">friction_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00082">gradu_h()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00138">gradu_h_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00098">smooth_collision_set()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00142">smooth_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00060">u()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00132">u_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00067">v()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00133">v_</a>.</p>
+<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00076">acc()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00139">acc_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00141">bdf_order_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00093">collision_set()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00146">collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00131">cur_size_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00107">friction_collision_set()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00148">friction_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00084">gradu_h()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00143">gradu_h_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00100">smooth_collision_set()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00147">smooth_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00062">u()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00137">u_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00069">v()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00138">v_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00202">cache_transient()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00288">cache_transient()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -682,9 +714,9 @@ Here is the caller graph for this function:</div>
 </dl>
 <dl class="section warning"><dt>Warning</dt><dd>We DO NOT support navier stoke problem yet!! Passing non-null pressure triggers exception. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8cpp_source.html#l00202">202</a> of file <a class="el" href="_diff_cache_8cpp_source.html">DiffCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8cpp_source.html#l00288">288</a> of file <a class="el" href="_diff_cache_8cpp_source.html">DiffCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00074">acc()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00181">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00130">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00153">cache_quantities_transient()</a>, <a class="el" href="namespacepolyfem_1_1solver.html#aff8f99461509f079bd5ac2a9817dbef8a2a7f1476b6ddab6d53b03d77dacdbd1e">polyfem::solver::Derivatives</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00052">disp_grad()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00082">gradu_h()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00108">init()</a>, <a class="el" href="_logger_8cpp_source.html#l00079">polyfem::log_and_throw_adjoint_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00077">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>, and <a class="el" href="_b_d_f_8cpp_source.html#l00062">polyfem::time_integrator::BDF::weighted_sum_v_prevs()</a>.</p>
+<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00076">acc()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00134">basis_nodes_to_gbasis_nodes_</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00259">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00208">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00231">cache_quantities_transient()</a>, <a class="el" href="namespacepolyfem_1_1solver.html#aff8f99461509f079bd5ac2a9817dbef8a2a7f1476b6ddab6d53b03d77dacdbd1e">polyfem::solver::Derivatives</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00054">disp_grad()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00084">gradu_h()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00186">init()</a>, <a class="el" href="_logger_8cpp_source.html#l00079">polyfem::log_and_throw_adjoint_error()</a>, <a class="el" href="_logger_8cpp_source.html#l00073">polyfem::log_and_throw_error()</a>, <a class="el" href="_implicit_time_integrator_8hpp_source.html#l00077">polyfem::time_integrator::ImplicitTimeIntegrator::v_prev()</a>, and <a class="el" href="_b_d_f_8cpp_source.html#l00062">polyfem::time_integrator::BDF::weighted_sum_v_prevs()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -717,11 +749,11 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00091">91</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00093">93</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00141">collision_set_</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00043">size()</a>.</p>
+<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00146">collision_set_</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00045">size()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00181">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00130">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00153">cache_quantities_transient()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00636">polyfem::solver::AdjointTools::dJ_shape_homogenization_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00576">polyfem::solver::AdjointTools::dJ_shape_static_adjoint_term()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l00732">polyfem::solver::AdjointTools::dJ_shape_transient_adjoint_term()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00259">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00208">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00231">cache_quantities_transient()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00636">polyfem::solver::AdjointTools::dJ_shape_homogenization_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00576">polyfem::solver::AdjointTools::dJ_shape_static_adjoint_term()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l00732">polyfem::solver::AdjointTools::dJ_shape_transient_adjoint_term()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -759,11 +791,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00052">52</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00054">54</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00131">disp_grad_</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00043">size()</a>.</p>
+<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00136">disp_grad_</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00045">size()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00181">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00130">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00202">cache_transient()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l00691">polyfem::solver::AdjointTools::dJ_periodic_shape_adjoint_term()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00259">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00208">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00288">cache_transient()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l00691">polyfem::solver::AdjointTools::dJ_periodic_shape_adjoint_term()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -801,11 +833,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00105">105</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00107">107</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00143">friction_collision_set_</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00043">size()</a>.</p>
+<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00148">friction_collision_set_</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00045">size()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00153">cache_quantities_transient()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00889">polyfem::solver::AdjointTools::dJ_friction_transient_adjoint_term()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l00732">polyfem::solver::AdjointTools::dJ_shape_transient_adjoint_term()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00231">cache_quantities_transient()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00889">polyfem::solver::AdjointTools::dJ_friction_transient_adjoint_term()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l00732">polyfem::solver::AdjointTools::dJ_shape_transient_adjoint_term()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -843,11 +875,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00082">82</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00084">84</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00138">gradu_h_</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00043">size()</a>.</p>
+<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00143">gradu_h_</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00045">size()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00181">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00130">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00153">cache_quantities_transient()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00202">cache_transient()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l01006">polyfem::solver::AdjointTools::dJ_dirichlet_static_adjoint_term()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00259">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00208">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00231">cache_quantities_transient()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00288">cache_transient()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l01006">polyfem::solver::AdjointTools::dJ_dirichlet_static_adjoint_term()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -901,11 +933,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8cpp_source.html#l00108">108</a> of file <a class="el" href="_diff_cache_8cpp_source.html">DiffCache.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8cpp_source.html#l00186">186</a> of file <a class="el" href="_diff_cache_8cpp_source.html">DiffCache.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00134">acc_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00136">bdf_order_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00141">collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00129">cur_size_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00131">disp_grad_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00143">friction_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00138">gradu_h_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00128">n_time_steps_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00145">normal_adhesion_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00142">smooth_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00146">tangential_adhesion_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00132">u_</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00133">v_</a>.</p>
+<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00139">acc_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00141">bdf_order_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00146">collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00131">cur_size_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00136">disp_grad_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00148">friction_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00143">gradu_h_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00130">n_time_steps_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00150">normal_adhesion_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00147">smooth_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00151">tangential_adhesion_collision_set_</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00137">u_</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00138">v_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00202">cache_transient()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00288">cache_transient()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -938,9 +970,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00112">112</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00114">114</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00145">normal_adhesion_collision_set_</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00043">size()</a>.</p>
+<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00150">normal_adhesion_collision_set_</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00045">size()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00636">polyfem::solver::AdjointTools::dJ_shape_homogenization_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00576">polyfem::solver::AdjointTools::dJ_shape_static_adjoint_term()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l00732">polyfem::solver::AdjointTools::dJ_shape_transient_adjoint_term()</a>.</p>
 <div class="dynheader">
@@ -979,11 +1011,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00043">43</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00045">45</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00129">cur_size_</a>.</p>
+<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00131">cur_size_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8hpp_source.html#l00074">acc()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00044">bdf_order()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00091">collision_set()</a>, <a class="el" href="_adjoint_form_8cpp_source.html#l00086">polyfem::solver::AdjointForm::compute_adjoint_rhs()</a>, <a class="el" href="_adjoint_form_8cpp_source.html#l00116">polyfem::solver::StaticForm::compute_adjoint_rhs()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00642">polyfem::solver::MinTargetDistForm::compute_adjoint_rhs()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00088">polyfem::solver::SpatialIntegralForm::compute_adjoint_rhs_step()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00052">disp_grad()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00105">friction_collision_set()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00082">gradu_h()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00112">normal_adhesion_collision_set()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00098">smooth_collision_set()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00119">tangential_adhesion_collision_set()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00060">u()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00067">v()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8hpp_source.html#l00076">acc()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00046">bdf_order()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00093">collision_set()</a>, <a class="el" href="_adjoint_form_8cpp_source.html#l00086">polyfem::solver::AdjointForm::compute_adjoint_rhs()</a>, <a class="el" href="_adjoint_form_8cpp_source.html#l00116">polyfem::solver::StaticForm::compute_adjoint_rhs()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00642">polyfem::solver::MinTargetDistForm::compute_adjoint_rhs()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00114">polyfem::solver::SpatialIntegralForm::compute_adjoint_rhs_step()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00054">disp_grad()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00107">friction_collision_set()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00084">gradu_h()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00114">normal_adhesion_collision_set()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00100">smooth_collision_set()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00121">tangential_adhesion_collision_set()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00062">u()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00069">v()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -1016,11 +1048,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00098">98</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00100">100</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00043">size()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00142">smooth_collision_set_</a>.</p>
+<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00045">size()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00147">smooth_collision_set_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00181">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00130">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00153">cache_quantities_transient()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00636">polyfem::solver::AdjointTools::dJ_shape_homogenization_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00576">polyfem::solver::AdjointTools::dJ_shape_static_adjoint_term()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l00732">polyfem::solver::AdjointTools::dJ_shape_transient_adjoint_term()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00259">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00208">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00231">cache_quantities_transient()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00636">polyfem::solver::AdjointTools::dJ_shape_homogenization_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00576">polyfem::solver::AdjointTools::dJ_shape_static_adjoint_term()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l00732">polyfem::solver::AdjointTools::dJ_shape_transient_adjoint_term()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1058,9 +1090,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00119">119</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00121">121</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00043">size()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00146">tangential_adhesion_collision_set_</a>.</p>
+<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00045">size()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00151">tangential_adhesion_collision_set_</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_adjoint_tools_8cpp_source.html#l00732">polyfem::solver::AdjointTools::dJ_shape_transient_adjoint_term()</a>.</p>
 <div class="dynheader">
@@ -1100,11 +1132,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00060">60</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00062">62</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00043">size()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00132">u_</a>.</p>
+<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00045">size()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00137">u_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00181">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00130">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00153">cache_quantities_transient()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00088">polyfem::solver::SpatialIntegralForm::compute_adjoint_rhs_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00539">polyfem::solver::NodeTargetForm::compute_adjoint_rhs_step()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00949">polyfem::solver::AdjointTools::dJ_damping_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00889">polyfem::solver::AdjointTools::dJ_friction_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00852">polyfem::solver::AdjointTools::dJ_material_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l01075">polyfem::solver::AdjointTools::dJ_pressure_transient_adjoint_term()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l00732">polyfem::solver::AdjointTools::dJ_shape_transient_adjoint_term()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00259">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00208">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00231">cache_quantities_transient()</a>, <a class="el" href="_spatial_integral_forms_8cpp_source.html#l00114">polyfem::solver::SpatialIntegralForm::compute_adjoint_rhs_step()</a>, <a class="el" href="_target_forms_8cpp_source.html#l00539">polyfem::solver::NodeTargetForm::compute_adjoint_rhs_step()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00949">polyfem::solver::AdjointTools::dJ_damping_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00889">polyfem::solver::AdjointTools::dJ_friction_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l00852">polyfem::solver::AdjointTools::dJ_material_transient_adjoint_term()</a>, <a class="el" href="_adjoint_tools_8cpp_source.html#l01075">polyfem::solver::AdjointTools::dJ_pressure_transient_adjoint_term()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l00732">polyfem::solver::AdjointTools::dJ_shape_transient_adjoint_term()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1142,11 +1174,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00067">67</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00069">69</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00043">size()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00133">v_</a>.</p>
+<p class="reference">References <a class="el" href="_diff_cache_8hpp_source.html#l00045">size()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00138">v_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00153">cache_quantities_transient()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l00732">polyfem::solver::AdjointTools::dJ_shape_transient_adjoint_term()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00231">cache_quantities_transient()</a>, and <a class="el" href="_adjoint_tools_8cpp_source.html#l00732">polyfem::solver::AdjointTools::dJ_shape_transient_adjoint_term()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1181,9 +1213,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00134">134</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00139">139</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8hpp_source.html#l00074">acc()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00153">cache_quantities_transient()</a>, and <a class="el" href="_diff_cache_8cpp_source.html#l00108">init()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8hpp_source.html#l00076">acc()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00231">cache_quantities_transient()</a>, and <a class="el" href="_diff_cache_8cpp_source.html#l00186">init()</a>.</p>
 
 </div>
 </div>
@@ -1207,9 +1239,35 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00148">148</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00153">153</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8hpp_source.html#l00041">adjoint_mat()</a>, and <a class="el" href="_diff_cache_8cpp_source.html#l00200">cache_adjoints()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8hpp_source.html#l00041">adjoint_mat()</a>, and <a class="el" href="_diff_cache_8cpp_source.html#l00278">cache_adjoints()</a>.</p>
+
+</div>
+</div>
+<a id="a631aeeb77e26041b79349147dc566ed7" name="a631aeeb77e26041b79349147dc566ed7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a631aeeb77e26041b79349147dc566ed7">&#9670;&#160;</a></span>basis_nodes_to_gbasis_nodes_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> polyfem::DiffCache::basis_nodes_to_gbasis_nodes_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00134">134</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00280">basis_nodes_to_gbasis_nodes()</a>, and <a class="el" href="_diff_cache_8cpp_source.html#l00288">cache_transient()</a>.</p>
 
 </div>
 </div>
@@ -1233,9 +1291,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00136">136</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00141">141</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8hpp_source.html#l00044">bdf_order()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00153">cache_quantities_transient()</a>, and <a class="el" href="_diff_cache_8cpp_source.html#l00108">init()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8hpp_source.html#l00046">bdf_order()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00231">cache_quantities_transient()</a>, and <a class="el" href="_diff_cache_8cpp_source.html#l00186">init()</a>.</p>
 
 </div>
 </div>
@@ -1259,9 +1317,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00141">141</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00146">146</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00181">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00130">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00153">cache_quantities_transient()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00091">collision_set()</a>, and <a class="el" href="_diff_cache_8cpp_source.html#l00108">init()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00259">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00208">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00231">cache_quantities_transient()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00093">collision_set()</a>, and <a class="el" href="_diff_cache_8cpp_source.html#l00186">init()</a>.</p>
 
 </div>
 </div>
@@ -1285,9 +1343,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00129">129</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00131">131</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00181">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00130">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00153">cache_quantities_transient()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00108">init()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00043">size()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00259">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00208">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00231">cache_quantities_transient()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00186">init()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00045">size()</a>.</p>
 
 </div>
 </div>
@@ -1311,9 +1369,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00131">131</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00136">136</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00181">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00130">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00052">disp_grad()</a>, and <a class="el" href="_diff_cache_8cpp_source.html#l00108">init()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00259">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00208">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00054">disp_grad()</a>, and <a class="el" href="_diff_cache_8cpp_source.html#l00186">init()</a>.</p>
 
 </div>
 </div>
@@ -1337,9 +1395,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00143">143</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00148">148</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00130">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00153">cache_quantities_transient()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00105">friction_collision_set()</a>, and <a class="el" href="_diff_cache_8cpp_source.html#l00108">init()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00208">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00231">cache_quantities_transient()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00107">friction_collision_set()</a>, and <a class="el" href="_diff_cache_8cpp_source.html#l00186">init()</a>.</p>
 
 </div>
 </div>
@@ -1363,9 +1421,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00138">138</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00143">143</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00181">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00130">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00153">cache_quantities_transient()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00082">gradu_h()</a>, and <a class="el" href="_diff_cache_8cpp_source.html#l00108">init()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00259">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00208">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00231">cache_quantities_transient()</a>, <a class="el" href="_diff_cache_8hpp_source.html#l00084">gradu_h()</a>, and <a class="el" href="_diff_cache_8cpp_source.html#l00186">init()</a>.</p>
 
 </div>
 </div>
@@ -1389,9 +1447,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00128">128</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00130">130</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00108">init()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00186">init()</a>.</p>
 
 </div>
 </div>
@@ -1415,9 +1473,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00145">145</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00150">150</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00181">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00130">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00108">init()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00112">normal_adhesion_collision_set()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00259">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00208">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00186">init()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00114">normal_adhesion_collision_set()</a>.</p>
 
 </div>
 </div>
@@ -1441,9 +1499,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00142">142</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00147">147</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00181">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00130">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00153">cache_quantities_transient()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00108">init()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00098">smooth_collision_set()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00259">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00208">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00231">cache_quantities_transient()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00186">init()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00100">smooth_collision_set()</a>.</p>
 
 </div>
 </div>
@@ -1467,9 +1525,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00146">146</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00151">151</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00130">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00108">init()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00119">tangential_adhesion_collision_set()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00208">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00186">init()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00121">tangential_adhesion_collision_set()</a>.</p>
 
 </div>
 </div>
@@ -1493,9 +1551,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00132">132</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00137">137</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00181">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00130">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00153">cache_quantities_transient()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00108">init()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00060">u()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00259">cache_quantities_quasistatic()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00208">cache_quantities_static()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00231">cache_quantities_transient()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00186">init()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00062">u()</a>.</p>
 
 </div>
 </div>
@@ -1519,9 +1577,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00133">133</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_diff_cache_8hpp_source.html#l00138">138</a> of file <a class="el" href="_diff_cache_8hpp_source.html">DiffCache.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00153">cache_quantities_transient()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00108">init()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00067">v()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_diff_cache_8cpp_source.html#l00231">cache_quantities_transient()</a>, <a class="el" href="_diff_cache_8cpp_source.html#l00186">init()</a>, and <a class="el" href="_diff_cache_8hpp_source.html#l00069">v()</a>.</p>
 
 </div>
 </div>

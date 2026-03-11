@@ -2,6 +2,7 @@ var classpolyfem_1_1_diff_cache =
 [
     [ "acc", "classpolyfem_1_1_diff_cache.html#a903f5f6112d4e152f123a4bf735afcf4", null ],
     [ "adjoint_mat", "classpolyfem_1_1_diff_cache.html#a77ea382b8c9e2d37150e221f755e6ed5", null ],
+    [ "basis_nodes_to_gbasis_nodes", "classpolyfem_1_1_diff_cache.html#aa59ccc8e8a6558380de5adfde77a8713", null ],
     [ "bdf_order", "classpolyfem_1_1_diff_cache.html#a1e40cf86eb088077aa6a8a213d127fb0", null ],
     [ "cache_adjoints", "classpolyfem_1_1_diff_cache.html#ae603012a79875dde11c82f8cf2d705dc", null ],
     [ "cache_quantities_quasistatic", "classpolyfem_1_1_diff_cache.html#accb579c2770ebaca52effb391752b95a", null ],
@@ -21,6 +22,7 @@ var classpolyfem_1_1_diff_cache =
     [ "v", "classpolyfem_1_1_diff_cache.html#a5e1be75ebb499393d031ce19a38774d5", null ],
     [ "acc_", "classpolyfem_1_1_diff_cache.html#a2a1b0ca7eeb5318e510105860912f7c7", null ],
     [ "adjoint_mat_", "classpolyfem_1_1_diff_cache.html#a5c42fe63672bdc3bb69ce52f6997a01c", null ],
+    [ "basis_nodes_to_gbasis_nodes_", "classpolyfem_1_1_diff_cache.html#a631aeeb77e26041b79349147dc566ed7", null ],
     [ "bdf_order_", "classpolyfem_1_1_diff_cache.html#aa7ea8f40ab6efb8fe0e32daad3983895", null ],
     [ "collision_set_", "classpolyfem_1_1_diff_cache.html#add4efdf8cc36133351bd41b1773b41b1", null ],
     [ "cur_size_", "classpolyfem_1_1_diff_cache.html#aba3f24c14f5136ca9ae9f297a68c388d", null ],

@@ -85,7 +85,6 @@ var classpolyfem_1_1_state =
     [ "assembler", "classpolyfem_1_1_state.html#a231166af7f4eeac4e187b2b8996baf60", null ],
     [ "avg_mass", "classpolyfem_1_1_state.html#ab1959486b5e566e79059ce2daca3a096", null ],
     [ "bases", "classpolyfem_1_1_state.html#a9da655f2e8df643e8bcb5093717dd5c9", null ],
-    [ "basis_nodes_to_gbasis_nodes", "classpolyfem_1_1_state.html#affc42602dda2e5dae8c4114164705115", null ],
     [ "boundary_nodes", "classpolyfem_1_1_state.html#ad0e2e2a71a9632307b64bfe93994feab", null ],
     [ "collision_mesh", "classpolyfem_1_1_state.html#a345bc04a1a0b2856c4a4c184235246ba", null ],
     [ "console_sink_", "classpolyfem_1_1_state.html#a7d772ea8e80bc8468cd0665a28c8802b", null ],

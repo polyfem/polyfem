@@ -1,35 +1,38 @@
 <map id="polyfem::solver::AdjointTools::dJ_periodic_shape_adjoint_term" name="polyfem::solver::AdjointTools::dJ_periodic_shape_adjoint_term">
-<area shape="rect" id="Node000001" title=" " alt="" coords="5,224,185,279"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a3de7ef85bccf3ba04b44f720fbd3d3b8" title="Apply jacobian for chain rule." alt="" coords="244,85,456,125"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="143,221,301,130,303,134,145,226"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1_diff_cache.html#a4e09a9e047e7487c27c10ef44fa8e0a7" title=" " alt="" coords="277,191,423,231"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="185,235,263,222,264,228,186,240"/>
-<area shape="rect" id="Node000008" href="$namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a1c6066de8e0b261f87dd0081f88fcee5" title=" " alt="" coords="233,309,467,364"/>
-<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="178,276,256,302,254,308,177,281"/>
-<area shape="rect" id="Node000012" href="$classpolyfem_1_1_state.html#a5eaa1d1e994fd9fe2ef287e1d623fe67" title=" " alt="" coords="537,477,723,517"/>
-<area shape="poly" id="edge18_Node000001_Node000012" title=" " alt="" coords="122,277,171,326,202,351,235,373,307,409,383,437,457,459,524,475,523,480,456,464,381,442,304,413,232,378,199,355,168,330,118,281"/>
-<area shape="rect" id="Node000003" href="$namespacepolyfem_1_1utils.html#adac090350174847f46edfd397abd4ab4" title="Flatten rowwises." alt="" coords="549,5,711,31"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="398,82,514,41,550,31,551,36,515,46,400,87"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#af6cde50bcb2d3c1e56f8a908e40acaa0" title=" " alt="" coords="538,55,722,95"/>
-<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="456,91,524,84,524,89,456,96"/>
-<area shape="rect" id="Node000005" href="$namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" title="Unflatten rowwises, so every dim elements in x become a row." alt="" coords="541,120,719,145"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="456,113,527,120,527,125,456,118"/>
-<area shape="rect" id="Node000007" href="$classpolyfem_1_1_diff_cache.html#a1e6bc7e6f43aa2345c444fd4cd69865f" title=" " alt="" coords="793,285,940,325"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="423,194,493,185,575,181,662,186,705,194,746,206,774,219,799,236,841,273,837,277,796,240,771,224,744,211,703,199,661,192,575,186,493,190,424,199"/>
-<area shape="rect" id="Node000009" href="$classpolyfem_1_1_diff_cache.html#a3901bb25cd0d80047a91f66b3903bf60" title=" " alt="" coords="557,221,703,261"/>
-<area shape="poly" id="edge8_Node000008_Node000009" title=" " alt="" coords="416,307,514,270,543,261,544,266,516,275,418,312"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1_state.html#a1037e7ad2862c48388f58f34818f5244" title="does the simulation have adhesion" alt="" coords="557,285,703,325"/>
-<area shape="poly" id="edge10_Node000008_Node000010" title=" " alt="" coords="467,321,543,312,543,317,467,326"/>
-<area shape="rect" id="Node000011" href="$classpolyfem_1_1_diff_cache.html#afb58cb479c4537968a3faafe50dace45" title=" " alt="" coords="515,349,745,389"/>
-<area shape="poly" id="edge11_Node000008_Node000011" title=" " alt="" coords="467,347,502,351,501,357,467,353"/>
-<area shape="poly" id="edge13_Node000008_Node000012" title=" " alt="" coords="399,362,468,412,492,439,501,451,516,462,528,469,525,473,513,467,497,455,488,443,465,416,396,366"/>
-<area shape="rect" id="Node000015" href="$classpolyfem_1_1_diff_cache.html#ae0240fbf898a1bfe6e79e5dd07687e61" title=" " alt="" coords="547,413,713,453"/>
-<area shape="poly" id="edge16_Node000008_Node000015" title=" " alt="" coords="418,362,516,398,540,406,539,411,514,403,416,367"/>
-<area shape="poly" id="edge9_Node000009_Node000007" title=" " alt="" coords="704,258,781,279,779,284,703,263"/>
-<area shape="poly" id="edge12_Node000011_Node000007" title=" " alt="" coords="704,346,779,325,781,331,705,351"/>
-<area shape="rect" id="Node000013" href="$classpolyfem_1_1_state.html#ab956f7e3ad92b7ffc1ca1a45ee47903f" title="check if using iso parametric bases" alt="" coords="794,477,939,517"/>
-<area shape="poly" id="edge14_Node000012_Node000013" title=" " alt="" coords="723,494,780,494,780,499,723,499"/>
-<area shape="rect" id="Node000014" href="$classpolyfem_1_1_state.html#a7447e954de5980b45223f7cf49738073" title=" " alt="" coords="988,477,1137,517"/>
-<area shape="poly" id="edge15_Node000013_Node000014" title=" " alt="" coords="939,494,974,494,974,499,939,499"/>
-<area shape="poly" id="edge17_Node000015_Node000007" title=" " alt="" coords="713,411,744,398,793,367,834,332,837,336,796,371,747,403,715,416"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,213,185,267"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#a3de7ef85bccf3ba04b44f720fbd3d3b8" title="Apply jacobian for chain rule." alt="" coords="244,81,456,121"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="134,210,180,179,232,148,282,124,285,129,235,153,183,184,137,215"/>
+<area shape="rect" id="Node000006" href="$classpolyfem_1_1_diff_cache.html#aa59ccc8e8a6558380de5adfde77a8713" title=" " alt="" coords="517,220,743,260"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="186,237,504,237,504,243,186,243"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1_diff_cache.html#a4e09a9e047e7487c27c10ef44fa8e0a7" title=" " alt="" coords="277,163,423,203"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="185,217,263,200,264,205,186,222"/>
+<area shape="rect" id="Node000009" href="$namespacepolyfem_1_1solver_1_1_adjoint_tools.html#a1c6066de8e0b261f87dd0081f88fcee5" title=" " alt="" coords="233,341,467,395"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="152,265,284,332,281,337,150,270"/>
+<area shape="rect" id="Node000013" href="$classpolyfem_1_1_state.html#a5eaa1d1e994fd9fe2ef287e1d623fe67" title=" " alt="" coords="537,540,723,580"/>
+<area shape="poly" id="edge20_Node000001_Node000013" title=" " alt="" coords="116,266,164,334,198,372,235,405,305,449,381,485,456,513,525,534,524,539,455,518,379,490,302,454,232,409,194,375,160,338,111,269"/>
+<area shape="rect" id="Node000003" href="$namespacepolyfem_1_1utils.html#adac090350174847f46edfd397abd4ab4" title="Flatten rowwises." alt="" coords="549,119,711,145"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="456,110,535,119,535,124,456,116"/>
+<area shape="rect" id="Node000004" href="$classpolyfem_1_1solver_1_1_periodic_mesh_to_mesh.html#af6cde50bcb2d3c1e56f8a908e40acaa0" title=" " alt="" coords="538,5,722,45"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="424,79,542,46,543,52,425,84"/>
+<area shape="rect" id="Node000005" href="$namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5" title="Unflatten rowwises, so every dim elements in x become a row." alt="" coords="541,70,719,95"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="456,92,527,87,527,92,456,97"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1_diff_cache.html#a1e6bc7e6f43aa2345c444fd4cd69865f" title=" " alt="" coords="793,380,940,420"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="423,166,495,159,579,159,622,164,666,173,708,186,747,206,768,221,788,240,819,283,842,327,858,366,853,368,838,329,815,286,784,243,765,225,744,210,706,191,664,178,622,169,579,164,495,164,424,171"/>
+<area shape="poly" id="edge9_Node000009_Node000006" title=" " alt="" coords="390,338,447,303,514,270,533,262,535,267,516,274,450,308,393,343"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1_diff_cache.html#a3901bb25cd0d80047a91f66b3903bf60" title=" " alt="" coords="557,476,703,516"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="393,393,450,428,516,462,544,472,542,477,514,466,447,433,390,398"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1_state.html#a1037e7ad2862c48388f58f34818f5244" title="does the simulation have adhesion" alt="" coords="557,284,703,324"/>
+<area shape="poly" id="edge12_Node000009_Node000011" title=" " alt="" coords="466,339,543,321,544,326,468,344"/>
+<area shape="rect" id="Node000012" href="$classpolyfem_1_1_diff_cache.html#afb58cb479c4537968a3faafe50dace45" title=" " alt="" coords="515,348,745,388"/>
+<area shape="poly" id="edge13_Node000009_Node000012" title=" " alt="" coords="467,365,501,365,501,371,467,371"/>
+<area shape="poly" id="edge15_Node000009_Node000013" title=" " alt="" coords="383,394,469,476,491,503,501,514,516,526,528,532,525,537,513,530,497,518,487,507,465,479,379,397"/>
+<area shape="rect" id="Node000016" href="$classpolyfem_1_1_diff_cache.html#ae0240fbf898a1bfe6e79e5dd07687e61" title=" " alt="" coords="547,412,713,452"/>
+<area shape="poly" id="edge18_Node000009_Node000016" title=" " alt="" coords="468,392,534,407,533,413,466,397"/>
+<area shape="poly" id="edge11_Node000010_Node000008" title=" " alt="" coords="703,476,744,462,819,425,822,429,746,466,705,481"/>
+<area shape="poly" id="edge14_Node000012_Node000008" title=" " alt="" coords="746,381,780,386,780,391,745,386"/>
+<area shape="rect" id="Node000014" href="$classpolyfem_1_1_state.html#ab956f7e3ad92b7ffc1ca1a45ee47903f" title="check if using iso parametric bases" alt="" coords="794,540,939,580"/>
+<area shape="poly" id="edge16_Node000013_Node000014" title=" " alt="" coords="723,557,780,557,780,563,723,563"/>
+<area shape="rect" id="Node000015" href="$classpolyfem_1_1_state.html#a7447e954de5980b45223f7cf49738073" title=" " alt="" coords="988,540,1137,580"/>
+<area shape="poly" id="edge17_Node000014_Node000015" title=" " alt="" coords="939,557,974,557,974,563,939,563"/>
+<area shape="poly" id="edge19_Node000016_Node000008" title=" " alt="" coords="713,418,780,409,780,414,714,423"/>
 </map>

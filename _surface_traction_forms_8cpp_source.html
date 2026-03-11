@@ -1223,7 +1223,7 @@ $(document).ready(function(){initNavTree('_surface_traction_forms_8cpp_source.ht
 <div class="line"><a id="l01083" name="l01083"></a><span class="lineno"> 1083</span>            <span class="comment">// logger().trace(&quot;fd norm {}&quot;, G.norm());</span></div>
 <div class="line"><a id="l01084" name="l01084"></a><span class="lineno"> 1084</span>            <span class="comment">// logger().trace(&quot;grads difference norm {}&quot;, (G - grads).norm() / G.norm());</span></div>
 <div class="line"><a id="l01085" name="l01085"></a><span class="lineno"> 1085</span> </div>
-<div class="line"><a id="l01086" name="l01086"></a><span class="lineno"> 1086</span>            grads = state_-&gt;basis_nodes_to_gbasis_nodes * grads;</div>
+<div class="line"><a id="l01086" name="l01086"></a><span class="lineno"> 1086</span>            grads = diff_cache_-&gt;basis_nodes_to_gbasis_nodes() * grads;</div>
 <div class="line"><a id="l01087" name="l01087"></a><span class="lineno"> 1087</span> </div>
 <div class="line"><a id="l01088" name="l01088"></a><span class="lineno"> 1088</span>            return AdjointTools::map_node_to_primitive_order(*state_, grads);</div>
 <div class="line"><a id="l01089" name="l01089"></a><span class="lineno"> 1089</span>        });</div>
