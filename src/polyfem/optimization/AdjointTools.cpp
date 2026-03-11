@@ -597,7 +597,7 @@ namespace polyfem::solver
 			if (state.solve_data.pressure_form)
 			{
 				PressureForceDerivative::force_shape_derivative(*state.solve_data.pressure_form, state.n_geom_bases, 0, sol, adjoint_zeroed, pressure_term);
-				pressure_term = state.basis_nodes_to_gbasis_nodes * pressure_term;
+				pressure_term = diff_cache.basis_nodes_to_gbasis_nodes() * pressure_term;
 			}
 			else
 				pressure_term.setZero(one_form.size());
@@ -613,7 +613,7 @@ namespace polyfem::solver
 					SmoothContactForceDerivative::force_shape_derivative(*smooth_contact, diff_cache.smooth_collision_set(0), sol, adjoint_zeroed, contact_term);
 				}
 
-				contact_term = state.basis_nodes_to_gbasis_nodes * contact_term;
+				contact_term = diff_cache.basis_nodes_to_gbasis_nodes() * contact_term;
 			}
 			else
 				contact_term.setZero(elasticity_term.size());
@@ -621,7 +621,7 @@ namespace polyfem::solver
 			if (state.is_adhesion_enabled())
 			{
 				NormalAdhesionForceDerivative::force_shape_derivative(*state.solve_data.normal_adhesion_form, diff_cache.normal_adhesion_collision_set(0), sol, adjoint, adhesion_term);
-				adhesion_term = state.basis_nodes_to_gbasis_nodes * adhesion_term;
+				adhesion_term = diff_cache.basis_nodes_to_gbasis_nodes() * adhesion_term;
 			}
 			else
 			{
@@ -664,7 +664,7 @@ namespace polyfem::solver
 				SmoothContactForceDerivative::force_shape_derivative(*smooth_contact, diff_cache.smooth_collision_set(0), sol, full_adjoint, contact_term);
 			}
 
-			contact_term = state.basis_nodes_to_gbasis_nodes * contact_term;
+			contact_term = diff_cache.basis_nodes_to_gbasis_nodes() * contact_term;
 		}
 		else
 			contact_term.setZero(elasticity_term.size());
@@ -672,7 +672,7 @@ namespace polyfem::solver
 		if (state.is_adhesion_enabled())
 		{
 			NormalAdhesionForceDerivative::force_shape_derivative(*state.solve_data.normal_adhesion_form, diff_cache.normal_adhesion_collision_set(0), sol, full_adjoint, adhesion_term);
-			adhesion_term = state.basis_nodes_to_gbasis_nodes * adhesion_term;
+			adhesion_term = diff_cache.basis_nodes_to_gbasis_nodes() * adhesion_term;
 		}
 		else
 		{
@@ -683,7 +683,7 @@ namespace polyfem::solver
 
 		Eigen::VectorXd force;
 		homo_problem->FullNLProblem::gradient(sol, force);
-		one_form -= state.basis_nodes_to_gbasis_nodes * utils::flatten(utils::unflatten(force, dim) * affine_adjoint);
+		one_form -= diff_cache.basis_nodes_to_gbasis_nodes() * utils::flatten(utils::unflatten(force, dim) * affine_adjoint);
 
 		one_form = utils::flatten(utils::unflatten(one_form, dim)(state.primitive_to_node(), Eigen::all));
 	}
@@ -715,7 +715,7 @@ namespace polyfem::solver
 		homo_problem->set_project_to_psd(false);
 		homo_problem->FullNLProblem::hessian(sol, hessian);
 		Eigen::VectorXd partial_term = full_adjoint.transpose() * hessian;
-		partial_term = state.basis_nodes_to_gbasis_nodes * utils::flatten(utils::unflatten(partial_term, dim) * diff_cache.disp_grad());
+		partial_term = diff_cache.basis_nodes_to_gbasis_nodes() * utils::flatten(utils::unflatten(partial_term, dim) * diff_cache.disp_grad());
 		one_form -= utils::flatten(utils::unflatten(partial_term, dim)(state.primitive_to_node(), Eigen::all));
 
 		one_form = periodic_mesh_map.apply_jacobian(one_form, periodic_mesh_representation);
@@ -723,7 +723,7 @@ namespace polyfem::solver
 		if (state.solve_data.periodic_contact_form)
 		{
 			Eigen::VectorXd contact_term;
-			PeriodicContactForceDerivative::force_shape_derivative(*state.solve_data.periodic_contact_form, state, periodic_mesh_map, periodic_mesh_representation, state.solve_data.periodic_contact_form->collision_set(), extended_sol, extended_adjoint, contact_term);
+			PeriodicContactForceDerivative::force_shape_derivative(*state.solve_data.periodic_contact_form, state, diff_cache, periodic_mesh_map, periodic_mesh_representation, state.solve_data.periodic_contact_form->collision_set(), extended_sol, extended_adjoint, contact_term);
 
 			one_form -= contact_term;
 		}
@@ -764,7 +764,7 @@ namespace polyfem::solver
 				ElasticForceDerivative::force_shape_derivative(*state.solve_data.elastic_form, t, state.n_geom_bases, diff_cache.u(i), diff_cache.u(i), cur_p, elasticity_term);
 				BodyForceDerivative::force_shape_derivative(*state.solve_data.body_form, state.n_geom_bases, t, diff_cache.u(i - 1), cur_p, rhs_term);
 				PressureForceDerivative::force_shape_derivative(*state.solve_data.pressure_form, state.n_geom_bases, t, diff_cache.u(i), cur_p, pressure_term);
-				pressure_term = state.basis_nodes_to_gbasis_nodes * pressure_term;
+				pressure_term = diff_cache.basis_nodes_to_gbasis_nodes() * pressure_term;
 
 				if (state.solve_data.damping_form)
 					ElasticForceDerivative::force_shape_derivative(*state.solve_data.damping_form, t, state.n_geom_bases, diff_cache.u(i), diff_cache.u(i - 1), cur_p, damping_term);
@@ -781,7 +781,7 @@ namespace polyfem::solver
 					{
 						SmoothContactForceDerivative::force_shape_derivative(*smooth_contact, diff_cache.smooth_collision_set(i), diff_cache.u(i), cur_p, contact_term);
 					}
-					contact_term = state.basis_nodes_to_gbasis_nodes * contact_term;
+					contact_term = diff_cache.basis_nodes_to_gbasis_nodes() * contact_term;
 					// contact_term /= beta_dt * beta_dt;
 				}
 				else
@@ -790,7 +790,7 @@ namespace polyfem::solver
 				if (state.solve_data.friction_form)
 				{
 					FrictionForceDerivative::force_shape_derivative(*state.solve_data.friction_form, diff_cache.u(i - 1), diff_cache.u(i), cur_p, diff_cache.friction_collision_set(i), friction_term);
-					friction_term = state.basis_nodes_to_gbasis_nodes * (friction_term / beta);
+					friction_term = diff_cache.basis_nodes_to_gbasis_nodes() * (friction_term / beta);
 					// friction_term /= beta_dt * beta_dt;
 				}
 				else
@@ -799,7 +799,7 @@ namespace polyfem::solver
 				if (state.is_adhesion_enabled())
 				{
 					NormalAdhesionForceDerivative::force_shape_derivative(*state.solve_data.normal_adhesion_form, diff_cache.normal_adhesion_collision_set(i), diff_cache.u(i), cur_p, adhesion_term);
-					adhesion_term = state.basis_nodes_to_gbasis_nodes * adhesion_term;
+					adhesion_term = diff_cache.basis_nodes_to_gbasis_nodes() * adhesion_term;
 				}
 				else
 				{
@@ -809,7 +809,7 @@ namespace polyfem::solver
 				if (state.solve_data.tangential_adhesion_form)
 				{
 					TangentialAdhesionForceDerivative::force_shape_derivative(*state.solve_data.tangential_adhesion_form, diff_cache.u(i - 1), diff_cache.u(i), cur_p, diff_cache.tangential_adhesion_collision_set(i), tangential_adhesion_term);
-					tangential_adhesion_term = state.basis_nodes_to_gbasis_nodes * (tangential_adhesion_term / beta);
+					tangential_adhesion_term = diff_cache.basis_nodes_to_gbasis_nodes() * (tangential_adhesion_term / beta);
 					// friction_term /= beta_dt * beta_dt;
 				}
 				else
