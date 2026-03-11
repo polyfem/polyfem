@@ -3,9 +3,15 @@
         "enabled": true,
         "dhat": 0.001,
         "use_high_order_formulation": true,
+<<<<<<< HEAD
 	"high_order_contact_params": {
 		"skip_obstacles": false
 	}
+=======
+		"high_order_contact_params": {
+			"skip_obstacles": true
+		}
+>>>>>>> d1189cfa508ea2f4fb3311336568f4eb8a4ccfd2
     },
     "solver": {
         "linear": {
