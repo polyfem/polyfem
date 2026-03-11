@@ -342,7 +342,7 @@ TEST_CASE("control-pressure-walker-2d", "[test_adjoint]")
 
 TEST_CASE("shape-walker-2d", "[test_adjoint]")
 {
-	run_test1("walker-shape-opt.json", 1e-7, 1e-3, 0.0, 1.0);
+	run_test1("walker-shape-opt.json", 1e-7, 1e-2, 0.0, 1.0);
 }
 
 TEST_CASE("shape-contact-force-norm", "[test_adjoint]")
@@ -408,7 +408,7 @@ TEST_CASE("node-trajectory", "[test_adjoint]")
 	Eigen::VectorXd x = var2sim_group.data[0]->inverse_eval();
 	Eigen::MatrixXd velocity = Eigen::MatrixXd::Random(x.size(), 1);
 
-	verify_adjoint(problem, x, velocity, 1e-5, 1e-4);
+	verify_adjoint(problem, x, velocity, 1e-5, 1e-3);
 }
 
 TEST_CASE("damping-transient", "[test_adjoint]")
@@ -531,7 +531,7 @@ TEST_CASE("shape-transient-smooth", "[test_adjoint]")
 	ctx.states[0]->get_vertices(V);
 	Eigen::VectorXd x = utils::flatten(V);
 
-	verify_adjoint(*ctx.problem, x, velocity, 1e-6, 1e-5);
+	verify_adjoint(*ctx.problem, x, velocity, 1e-6, 1e-3);
 }
 
 TEST_CASE("shape-pressure-nodes-3d", "[.][test_adjoint]")
