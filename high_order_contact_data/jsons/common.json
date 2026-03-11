@@ -2,7 +2,10 @@
     "contact": {
         "enabled": true,
         "dhat": 0.001,
-        "use_high_order_formulation": true
+        "use_high_order_formulation": true,
+		"high_order_contact_params": {
+			"skip_obstacles": true
+		}
     },
     "solver": {
         "linear": {
