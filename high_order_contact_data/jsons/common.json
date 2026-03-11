@@ -2,7 +2,10 @@
     "contact": {
         "enabled": true,
         "dhat": 0.001,
-        "use_high_order_formulation": true
+        "use_high_order_formulation": true,
+	"high_order_contact_params": {
+		"skip_obstacles": false
+	}
     },
     "solver": {
         "linear": {
@@ -18,20 +21,20 @@
             "line_search": {
                 "method": "Backtracking",
                 "use_grad_norm_tol": 500,
-                "min_step_size": 0,
+                "min_step_size": 1e-8,
                 "max_step_size_iter": 100
             },
             "solver": "Newton",
-            "grad_norm": 1e-4,
+            "grad_norm": 1e-3,
             "Newton": {
-                "use_psd_projection": false
+                "use_psd_projection": true
             }
         },
         "advanced": {
             "lump_mass_matrix": false
         },
         "contact": {
-            "barrier_stiffness": 1e3,
+            "barrier_stiffness": 1e4,
             "CCD": {
                 "max_iterations": 200
             }
@@ -53,6 +56,10 @@
         "advanced": {
             "save_solve_sequence_debug": false,
             "save_time_sequence": true
-        }
+        },
+	"restart_json": "restart.json",
+	"data": {
+	    "state": "simstate.hdf5"
+	}
     }
 }

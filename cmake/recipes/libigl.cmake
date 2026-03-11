@@ -49,9 +49,9 @@ if(POLYSOLVE_WITH_ACCELERATE)
 
     CPMAddPackage(
         NAME libigl
-        GITHUB_REPOSITORY "libigl/libigl"
-        GIT_TAG "v2.5.0"
+        GITHUB_REPOSITORY "fsichetti/libigl"
+        GIT_TAG "eigen-dontvec"
         PATCH_COMMAND ${PATCH_COMMAND_FOR_CPM})
 else()
-    CPMAddPackage("gh:libigl/libigl@2.5.0")
+    CPMAddPackage("gh:fsichetti/libigl#eigen-dontvec")
 endif()

@@ -18,7 +18,7 @@ if(TARGET Eigen3::Eigen)
 endif()
 
 option(EIGEN_WITH_MKL "Use Eigen with MKL" OFF)
-option(EIGEN_DONT_VECTORIZE "Disable Eigen vectorization" OFF)
+option(EIGEN_DONT_VECTORIZE "Disable Eigen vectorization" ON)
 option(EIGEN_MPL2_ONLY "Enable Eigen MPL2 license only" OFF)
 
 message(STATUS "Third-party: creating target 'Eigen3::Eigen'")
@@ -27,7 +27,7 @@ include(CPM)
 CPMAddPackage(
     NAME eigen
     GITLAB_REPOSITORY libeigen/eigen
-    GIT_TAG 3.4.0
+    GIT_TAG 5.0.1
     DOWNLOAD_ONLY TRUE
 )
 
@@ -45,7 +45,7 @@ if(EIGEN_MPL2_ONLY)
 endif()
 
 if(EIGEN_DONT_VECTORIZE)
-  target_compile_definitions(Eigen3_Eigen INTERFACE EIGEN_DONT_VECTORIZE)
+  target_compile_definitions(Eigen3_Eigen INTERFACE EIGEN_DONT_VECTORIZE=1)
 endif()
 
 if(EIGEN_WITH_MKL)

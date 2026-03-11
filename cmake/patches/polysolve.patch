@@ -71,7 +71,7 @@ index a9be577..1f8bdc6 100644
              step_size = compute_descent_step_size(x, delta_x, objFunc, use_grad_norm, initial_energy, initial_grad, step_size);
              if (std::isnan(step_size))
              {
-+                // plot_over_descent_direction(objFunc, x, delta_x, collision_free_step_size);
++                plot_over_descent_direction(objFunc, x, delta_x, collision_free_step_size);
                  // Superclass::save_sampled_values("failed-line-search-values.csv", x, delta_x, objFunc);
                  return NaN;
              }
@@ -79,7 +79,7 @@ index a9be577..1f8bdc6 100644
              assert(abs(initial_energy - objFunc(x)) < 1e-15);
  
              objFunc.line_search_end();
-+            // plot_over_descent_direction(objFunc, x, delta_x, collision_free_step_size);
++            plot_over_descent_direction(objFunc, x, delta_x, collision_free_step_size);
              return NaN;
          }
  
