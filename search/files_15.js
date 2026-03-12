@@ -5,5 +5,7 @@ var searchData=
   ['viscousdamping_2ecpp_2',['ViscousDamping.cpp',['../_viscous_damping_8cpp.html',1,'']]],
   ['viscousdamping_2ehpp_3',['ViscousDamping.hpp',['../_viscous_damping_8hpp.html',1,'']]],
   ['volumepenalty_2ecpp_4',['VolumePenalty.cpp',['../_volume_penalty_8cpp.html',1,'']]],
-  ['volumepenalty_2ehpp_5',['VolumePenalty.hpp',['../_volume_penalty_8hpp.html',1,'']]]
+  ['volumepenalty_2ehpp_5',['VolumePenalty.hpp',['../_volume_penalty_8hpp.html',1,'']]],
+  ['volumepenalty2d_2ehpp_6',['VolumePenalty2d.hpp',['../_volume_penalty2d_8hpp.html',1,'']]],
+  ['volumepenalty3d_2ehpp_7',['VolumePenalty3d.hpp',['../_volume_penalty3d_8hpp.html',1,'']]]
 ];

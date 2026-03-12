@@ -7,5 +7,6 @@ var searchData=
   ['simplex_5flagrange_4',['SIMPLEX_LAGRANGE',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#a884a904ee9c03603ae89e2824180d93caafefc7ae5fe3420e0323b2a46660b139',1,'polyfem::assembler::AssemblerUtils']]],
   ['solution_5',['Solution',['../namespacepolyfem_1_1solver.html#aff8f99461509f079bd5ac2a9817dbef8a49b21ad0d38942f635877e7bbc5d7a1e',1,'polyfem::solver']]],
   ['spline_6',['SPLINE',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#a884a904ee9c03603ae89e2824180d93cadd309e5586dd9ab277c7e1afa9c34bb6',1,'polyfem::assembler::AssemblerUtils']]],
-  ['surface_7',['Surface',['../namespacepolyfem_1_1solver.html#ad27032b2014cdcea2f5718580272f48faaa0d528ba11ea1485d466dfe1ea40819',1,'polyfem::solver']]]
+  ['stress_7',['STRESS',['../namespacepolyfem_1_1assembler.html#a566884380ca026c357915e5613b19667add99f8bff5882bcd9d0d337b9c2d3b0b',1,'polyfem::assembler']]],
+  ['surface_8',['Surface',['../namespacepolyfem_1_1solver.html#ad27032b2014cdcea2f5718580272f48faaa0d528ba11ea1485d466dfe1ea40819',1,'polyfem::solver']]]
 ];

@@ -227,30 +227,37 @@ $(document).ready(function(){initNavTree('_sum_model_8cpp_source.html',''); init
 <div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
 <div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        Eigen::MatrixXd tmp;</div>
 <div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;assembler : <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_sum_model.html#a894406ab0e7b109641dd6b6637cf04ea">assemblers_</a>)</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        <span class="keywordflow">if</span> (type == <a class="code hl_enumvalue" href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">ElasticityTensorType::F</a>)</div>
 <div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        {</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            std::dynamic_pointer_cast&lt;assembler::ElasticityNLAssembler&gt;(assembler)-&gt;assign_stress_tensor(data, all_size, type, tmp, fun);</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            all += tmp;</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        }</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    }</div>
-</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            std::dynamic_pointer_cast&lt;assembler::ElasticityAssembler&gt;(<a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_sum_model.html#a894406ab0e7b109641dd6b6637cf04ea">assemblers_</a>.front())</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                -&gt;assign_stress_tensor(data, all_size, type, all, fun);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        }</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
-<div class="foldopen" id="foldopen00097" data-start="{" data-end="}">
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_sum_model.html#a1bcf9dc4727e70ead246a2d5b6bef7c6">   97</a></span>    std::map&lt;std::string, Assembler::ParamFunc&gt; <a class="code hl_function" href="classpolyfem_1_1assembler_1_1_sum_model.html#a1bcf9dc4727e70ead246a2d5b6bef7c6">SumModel::parameters</a>()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        std::map&lt;std::string, Assembler::ParamFunc&gt; params;</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;a : <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_sum_model.html#a894406ab0e7b109641dd6b6637cf04ea">assemblers_</a>)</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        {</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            <span class="keyword">auto</span> p = a-&gt;parameters();</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;it : p)</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            {</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                params[a-&gt;name() + <span class="stringliteral">&quot;/&quot;</span> + it.first] = it.second;</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>            }</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        }</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        <span class="keywordflow">return</span> params;</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    }</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;assembler : <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_sum_model.html#a894406ab0e7b109641dd6b6637cf04ea">assemblers_</a>)</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        {</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            std::dynamic_pointer_cast&lt;assembler::ElasticityNLAssembler&gt;(assembler)-&gt;assign_stress_tensor(data, all_size, type, tmp, fun);</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            all += tmp;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        }</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    }</div>
 </div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>} <span class="comment">// namespace polyfem::assembler</span></div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
+<div class="foldopen" id="foldopen00104" data-start="{" data-end="}">
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="classpolyfem_1_1assembler_1_1_sum_model.html#a1bcf9dc4727e70ead246a2d5b6bef7c6">  104</a></span>    std::map&lt;std::string, Assembler::ParamFunc&gt; <a class="code hl_function" href="classpolyfem_1_1assembler_1_1_sum_model.html#a1bcf9dc4727e70ead246a2d5b6bef7c6">SumModel::parameters</a>()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        std::map&lt;std::string, Assembler::ParamFunc&gt; params;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;a : <a class="code hl_variable" href="classpolyfem_1_1assembler_1_1_sum_model.html#a894406ab0e7b109641dd6b6637cf04ea">assemblers_</a>)</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        {</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>            <span class="keyword">auto</span> p = a-&gt;parameters();</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;it : p)</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            {</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                params[a-&gt;name() + <span class="stringliteral">&quot;/&quot;</span> + it.first] = it.second;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>            }</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        }</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordflow">return</span> params;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    }</div>
+</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>} <span class="comment">// namespace polyfem::assembler</span></div>
 <div class="ttc" id="a_sum_model_8hpp_html"><div class="ttname"><a href="_sum_model_8hpp.html">SumModel.hpp</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1_units_html"><div class="ttname"><a href="classpolyfem_1_1_units.html">polyfem::Units</a></div><div class="ttdef"><b>Definition</b> <a href="_units_8hpp_source.html#l00011">Units.hpp:12</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_assembler_html_a80752709995e20a40d7df6ae26c684d4"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_assembler.html#a80752709995e20a40d7df6ae26c684d4">polyfem::assembler::Assembler::size</a></div><div class="ttdeci">int size() const</div><div class="ttdef"><b>Definition</b> <a href="_assembler_8hpp_source.html#l00063">Assembler.hpp:63</a></div></div>
@@ -258,7 +265,7 @@ $(document).ready(function(){initNavTree('_sum_model_8cpp_source.html',''); init
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_non_linear_assembler_data_html"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_non_linear_assembler_data.html">polyfem::assembler::NonLinearAssemblerData</a></div><div class="ttdef"><b>Definition</b> <a href="_assembler_data_8hpp_source.html#l00007">AssemblerData.hpp:8</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_output_data_html"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_output_data.html">polyfem::assembler::OutputData</a></div><div class="ttdef"><b>Definition</b> <a href="_assembler_data_8hpp_source.html#l00103">AssemblerData.hpp:104</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_output_data_html_a942a9b52ceb30ebff6408dc81daa1c1b"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_output_data.html#a942a9b52ceb30ebff6408dc81daa1c1b">polyfem::assembler::OutputData::local_pts</a></div><div class="ttdeci">const Eigen::MatrixXd &amp; local_pts</div><div class="ttdef"><b>Definition</b> <a href="_assembler_data_8hpp_source.html#l00121">AssemblerData.hpp:121</a></div></div>
-<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_sum_model_html_a1bcf9dc4727e70ead246a2d5b6bef7c6"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_sum_model.html#a1bcf9dc4727e70ead246a2d5b6bef7c6">polyfem::assembler::SumModel::parameters</a></div><div class="ttdeci">std::map&lt; std::string, ParamFunc &gt; parameters() const override</div><div class="ttdef"><b>Definition</b> <a href="_sum_model_8cpp_source.html#l00097">SumModel.cpp:97</a></div></div>
+<div class="ttc" id="aclasspolyfem_1_1assembler_1_1_sum_model_html_a1bcf9dc4727e70ead246a2d5b6bef7c6"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_sum_model.html#a1bcf9dc4727e70ead246a2d5b6bef7c6">polyfem::assembler::SumModel::parameters</a></div><div class="ttdeci">std::map&lt; std::string, ParamFunc &gt; parameters() const override</div><div class="ttdef"><b>Definition</b> <a href="_sum_model_8cpp_source.html#l00104">SumModel.cpp:104</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_sum_model_html_a49d3e5819261c7df8592bccbb5cd3c08"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_sum_model.html#a49d3e5819261c7df8592bccbb5cd3c08">polyfem::assembler::SumModel::compute_rhs</a></div><div class="ttdeci">VectorNd compute_rhs(const AutodiffHessianPt &amp;pt) const override</div><div class="ttdef"><b>Definition</b> <a href="_sum_model_8cpp_source.html#l00034">SumModel.cpp:34</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_sum_model_html_a551d88e5d53abb0e0d75d36aaf63ead3"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_sum_model.html#a551d88e5d53abb0e0d75d36aaf63ead3">polyfem::assembler::SumModel::assemble_gradient</a></div><div class="ttdeci">Eigen::VectorXd assemble_gradient(const NonLinearAssemblerData &amp;data) const override</div><div class="ttdef"><b>Definition</b> <a href="_sum_model_8cpp_source.html#l00044">SumModel.cpp:44</a></div></div>
 <div class="ttc" id="aclasspolyfem_1_1assembler_1_1_sum_model_html_a614cd1ec2fbd730f9d7192bb86bd40cf"><div class="ttname"><a href="classpolyfem_1_1assembler_1_1_sum_model.html#a614cd1ec2fbd730f9d7192bb86bd40cf">polyfem::assembler::SumModel::assemble_hessian</a></div><div class="ttdeci">Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &amp;data) const override</div><div class="ttdef"><b>Definition</b> <a href="_sum_model_8cpp_source.html#l00056">SumModel.cpp:56</a></div></div>
@@ -270,6 +277,7 @@ $(document).ready(function(){initNavTree('_sum_model_8cpp_source.html',''); init
 <div class="ttc" id="anamespacepolyfem_html_a5a418fe12634f0003c7e52fe47cdf99c"><div class="ttname"><a href="namespacepolyfem.html#a5a418fe12634f0003c7e52fe47cdf99c">polyfem::AutodiffHessianPt</a></div><div class="ttdeci">Eigen::Matrix&lt; AutodiffScalarHessian, Eigen::Dynamic, 1, 0, 3, 1 &gt; AutodiffHessianPt</div><div class="ttdef"><b>Definition</b> <a href="_autodiff_types_8hpp_source.html#l00014">AutodiffTypes.hpp:14</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_a77fa8fe96825827f2af726fcf6405d15"><div class="ttname"><a href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">polyfem::json</a></div><div class="ttdeci">nlohmann::json json</div><div class="ttdef"><b>Definition</b> <a href="_common_8hpp_source.html#l00009">Common.hpp:9</a></div></div>
 <div class="ttc" id="anamespacepolyfem_html_ab904d08a2b6012d82ab5cdc90909e4d1"><div class="ttname"><a href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1">polyfem::ElasticityTensorType</a></div><div class="ttdeci">ElasticityTensorType</div><div class="ttdef"><b>Definition</b> <a href="_elasticity_utils_8hpp_source.html#l00021">ElasticityUtils.hpp:22</a></div></div>
+<div class="ttc" id="anamespacepolyfem_html_ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012"><div class="ttname"><a href="namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012">polyfem::ElasticityTensorType::F</a></div><div class="ttdeci">@ F</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.1-->

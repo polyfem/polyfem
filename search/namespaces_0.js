@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['eigs_0',['eigs',['../namespaceeigs.html',1,'']]],
-  ['elasticity_5frhs_1',['elasticity_rhs',['../namespaceelasticity__rhs.html',1,'']]]
+  ['diff_5felastic_5fenergy_0',['diff_elastic_energy',['../namespacediff__elastic__energy.html',1,'']]]
 ];

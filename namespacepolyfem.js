@@ -2,6 +2,14 @@ var namespacepolyfem =
 [
     [ "assembler", "namespacepolyfem_1_1assembler.html", "namespacepolyfem_1_1assembler" ],
     [ "autogen", "namespacepolyfem_1_1autogen.html", [
+      [ "AMIPS2d_gradient", "namespacepolyfem_1_1autogen.html#a6e707178a9a395324844f376e6a7c6a2", null ],
+      [ "AMIPS2d_hessian", "namespacepolyfem_1_1autogen.html#ae0c8a707f5d97b9e308fede01bda2c5c", null ],
+      [ "AMIPS2drest_gradient", "namespacepolyfem_1_1autogen.html#a02788634011baca8f4bcd08f16f63c83", null ],
+      [ "AMIPS2drest_hessian", "namespacepolyfem_1_1autogen.html#ad3b6247b5310aa096c3aa0acdcc3c35f", null ],
+      [ "AMIPS3d_gradient", "namespacepolyfem_1_1autogen.html#ae948019c655a36c138e517d2e396a984", null ],
+      [ "AMIPS3d_hessian", "namespacepolyfem_1_1autogen.html#ab2162d08eff01b0b3215df22e866154f", null ],
+      [ "AMIPS3drest_gradient", "namespacepolyfem_1_1autogen.html#a07e5f981d1e14b8838247de8fc33aa20", null ],
+      [ "AMIPS3drest_hessian", "namespacepolyfem_1_1autogen.html#ac3f33d35ffa30000f92663e5a136370b", null ],
       [ "b_basis_value_2d", "namespacepolyfem_1_1autogen.html#aad390dca5e3756bf5ce9ca11af09c327", null ],
       [ "b_basis_value_3d", "namespacepolyfem_1_1autogen.html#a034bd2b91a168ab0c64669c2cf7c1bba", null ],
       [ "b_grad_basis_value_2d", "namespacepolyfem_1_1autogen.html#ac7086b626e36fb3dc48b70d8327a4dd4", null ],
@@ -60,7 +68,11 @@ var namespacepolyfem =
       [ "q_nodes_2d", "namespacepolyfem_1_1autogen.html#a18ee2912d770a6bc9cfe2a485a9ecb25", null ],
       [ "q_nodes_3d", "namespacepolyfem_1_1autogen.html#ae625b6539e6dfcbb11dee43af4a58bc0", null ],
       [ "saint_venant_2d_function", "namespacepolyfem_1_1autogen.html#afcc4c28102b25c1ce7cff7743aec872d", null ],
-      [ "saint_venant_3d_function", "namespacepolyfem_1_1autogen.html#a7c66d23f184776c923f8a0e89615a324", null ]
+      [ "saint_venant_3d_function", "namespacepolyfem_1_1autogen.html#a7c66d23f184776c923f8a0e89615a324", null ],
+      [ "VolumePenalty2d_gradient", "namespacepolyfem_1_1autogen.html#aef33b5a7f6d4a680869440156ab1c9cb", null ],
+      [ "VolumePenalty2d_hessian", "namespacepolyfem_1_1autogen.html#a524ae82cbee9e601fbdff2d3b8013739", null ],
+      [ "VolumePenalty3d_gradient", "namespacepolyfem_1_1autogen.html#a879911e45f1b8fdcbc0941ad4b31fca2", null ],
+      [ "VolumePenalty3d_hessian", "namespacepolyfem_1_1autogen.html#aa2e754f9deee182ba2152e5c130d21d7", null ]
     ] ],
     [ "basis", "namespacepolyfem_1_1basis.html", "namespacepolyfem_1_1basis" ],
     [ "from_json", "namespacepolyfem_1_1from__json.html", [

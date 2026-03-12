@@ -4,7 +4,6 @@ var namespacepolyfem_1_1assembler =
     [ "AdiabaticProcess", "classpolyfem_1_1assembler_1_1_adiabatic_process.html", "classpolyfem_1_1assembler_1_1_adiabatic_process" ],
     [ "AllElasticMaterials", "classpolyfem_1_1assembler_1_1_all_elastic_materials.html", "classpolyfem_1_1assembler_1_1_all_elastic_materials" ],
     [ "AMIPSEnergy", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy" ],
-    [ "AMIPSEnergyAutodiff", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy_autodiff.html", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy_autodiff" ],
     [ "Assembler", "classpolyfem_1_1assembler_1_1_assembler.html", "classpolyfem_1_1assembler_1_1_assembler" ],
     [ "AssemblerUtils", "classpolyfem_1_1assembler_1_1_assembler_utils.html", "classpolyfem_1_1assembler_1_1_assembler_utils" ],
     [ "AssemblyValsCache", "classpolyfem_1_1assembler_1_1_assembly_vals_cache.html", "classpolyfem_1_1assembler_1_1_assembly_vals_cache" ],
@@ -76,6 +75,11 @@ var namespacepolyfem_1_1assembler =
     [ "AutoDiffGradMat", "namespacepolyfem_1_1assembler.html#a6cfbb549e59585dc992cebd40b4253ce", null ],
     [ "AutoDiffVect", "namespacepolyfem_1_1assembler.html#ad90a88bb8d1f91b65a88e2561c464109", null ],
     [ "DefGradMatrix", "namespacepolyfem_1_1assembler.html#a3845564fe405bdfdad1fdf79c7255e69", null ],
+    [ "AutodiffType", "namespacepolyfem_1_1assembler.html#a566884380ca026c357915e5613b19667", [
+      [ "FULL", "namespacepolyfem_1_1assembler.html#a566884380ca026c357915e5613b19667aba7de5bc6888294e5884b024a4c894f1", null ],
+      [ "STRESS", "namespacepolyfem_1_1assembler.html#a566884380ca026c357915e5613b19667add99f8bff5882bcd9d0d337b9c2d3b0b", null ],
+      [ "NONE", "namespacepolyfem_1_1assembler.html#a566884380ca026c357915e5613b19667ab50339a10e1de285ac99d4c3990b8693", null ]
+    ] ],
     [ "cross", "namespacepolyfem_1_1assembler.html#acde7fba90d34c1fca18bdfa2b8a84784", null ],
     [ "hat", "namespacepolyfem_1_1assembler.html#aaff5aece5fe5a409ef40ca97ac093b32", null ]
 ];

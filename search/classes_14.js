@@ -11,5 +11,6 @@ var searchData=
   ['viscousdamping_8',['ViscousDamping',['../classpolyfem_1_1assembler_1_1_viscous_damping.html',1,'polyfem::assembler']]],
   ['viscousdampingprev_9',['ViscousDampingPrev',['../classpolyfem_1_1assembler_1_1_viscous_damping_prev.html',1,'polyfem::assembler']]],
   ['volumeform_10',['VolumeForm',['../classpolyfem_1_1solver_1_1_volume_form.html',1,'polyfem::solver']]],
-  ['volumepenalty_11',['VolumePenalty',['../classpolyfem_1_1assembler_1_1_volume_penalty.html',1,'polyfem::assembler']]]
+  ['volumepenalty_11',['VolumePenalty',['../classpolyfem_1_1assembler_1_1_volume_penalty.html',1,'polyfem::assembler']]],
+  ['volumepenaltyenergy_12',['VolumePenaltyEnergy',['../classdiff__elastic__energy_1_1_volume_penalty_energy.html',1,'diff_elastic_energy']]]
 ];

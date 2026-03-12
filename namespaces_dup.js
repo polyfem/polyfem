@@ -1,5 +1,6 @@
 var namespaces_dup =
 [
+    [ "diff_elastic_energy", "namespacediff__elastic__energy.html", "namespacediff__elastic__energy" ],
     [ "eigs", "namespaceeigs.html", [
       [ "eigs_2d", "namespaceeigs.html#acab94657af810ed942016bcf80ae7011", null ],
       [ "eigs_3d", "namespaceeigs.html#aee3326b91eb12e8aa41a50773b1dd246", null ],

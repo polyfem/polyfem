@@ -3,6 +3,7 @@ var hierarchy =
     [ "polyfem::solver::AdjointOptUtils", "structpolyfem_1_1solver_1_1_adjoint_opt_utils.html", null ],
     [ "polyfem::assembler::AllElasticMaterials", "classpolyfem_1_1assembler_1_1_all_elastic_materials.html", null ],
     [ "polyfem::solver::ALSolver", "classpolyfem_1_1solver_1_1_a_l_solver.html", null ],
+    [ "diff_elastic_energy.AMIPSEnergy", "classdiff__elastic__energy_1_1_a_m_i_p_s_energy.html", null ],
     [ "polyfem::refinement::APriori", "classpolyfem_1_1refinement_1_1_a_priori.html", null ],
     [ "polyfem::mesh::NCMesh2D::ArrayHasher2D", "structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1_array_hasher2_d.html", null ],
     [ "polyfem::mesh::NCMesh3D::ArrayHasher2D", "structpolyfem_1_1mesh_1_1_n_c_mesh3_d_1_1_array_hasher2_d.html", null ],
@@ -10,8 +11,8 @@ var hierarchy =
     [ "polyfem::assembler::Assembler", "classpolyfem_1_1assembler_1_1_assembler.html", [
       [ "polyfem::assembler::ElasticityAssembler", "classpolyfem_1_1assembler_1_1_elasticity_assembler.html", [
         [ "polyfem::assembler::ElasticityNLAssembler", "classpolyfem_1_1assembler_1_1_elasticity_n_l_assembler.html", [
-          [ "polyfem::assembler::GenericElastic< AMIPSEnergyAutodiff >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", [
-            [ "polyfem::assembler::AMIPSEnergyAutodiff", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy_autodiff.html", null ]
+          [ "polyfem::assembler::GenericElastic< AMIPSEnergy >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", [
+            [ "polyfem::assembler::AMIPSEnergy", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html", null ]
           ] ],
           [ "polyfem::assembler::GenericElastic< ActiveFiber >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", null ],
           [ "polyfem::assembler::GenericElastic< FiberModel >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", [
@@ -39,7 +40,6 @@ var hierarchy =
           [ "polyfem::assembler::GenericElastic< VolumePenalty >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", [
             [ "polyfem::assembler::VolumePenalty", "classpolyfem_1_1assembler_1_1_volume_penalty.html", null ]
           ] ],
-          [ "polyfem::assembler::AMIPSEnergy", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html", null ],
           [ "polyfem::assembler::FixedCorotational", "classpolyfem_1_1assembler_1_1_fixed_corotational.html", null ],
           [ "polyfem::assembler::GenericElastic< Derived >", "classpolyfem_1_1assembler_1_1_generic_elastic.html", [
             [ "polyfem::assembler::GenericFiber< ActiveFiber >", "classpolyfem_1_1assembler_1_1_generic_fiber.html", [
@@ -492,6 +492,7 @@ var hierarchy =
     [ "polyfem::mesh::Vertex", "structpolyfem_1_1mesh_1_1_vertex.html", null ],
     [ "polyfem::mesh::WildRemesher< WMTKMesh >::VertexAttributes", "structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html", null ],
     [ "polyfem::renderer::VertexAttributes", "classpolyfem_1_1renderer_1_1_vertex_attributes.html", null ],
+    [ "diff_elastic_energy.VolumePenaltyEnergy", "classdiff__elastic__energy_1_1_volume_penalty_energy.html", null ],
     [ "WMTKMesh", null, [
       [ "polyfem::mesh::WildRemesher< WMTKMesh >", "classpolyfem_1_1mesh_1_1_wild_remesher.html", null ]
     ] ],

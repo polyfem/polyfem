@@ -2,7 +2,7 @@ var searchData=
 [
   ['genericelastic_0',['GenericElastic',['../classpolyfem_1_1assembler_1_1_generic_elastic.html',1,'polyfem::assembler']]],
   ['genericelastic_3c_20activefiber_20_3e_1',['GenericElastic&lt; ActiveFiber &gt;',['../classpolyfem_1_1assembler_1_1_generic_elastic.html',1,'polyfem::assembler']]],
-  ['genericelastic_3c_20amipsenergyautodiff_20_3e_2',['GenericElastic&lt; AMIPSEnergyAutodiff &gt;',['../classpolyfem_1_1assembler_1_1_generic_elastic.html',1,'polyfem::assembler']]],
+  ['genericelastic_3c_20amipsenergy_20_3e_2',['GenericElastic&lt; AMIPSEnergy &gt;',['../classpolyfem_1_1assembler_1_1_generic_elastic.html',1,'polyfem::assembler']]],
   ['genericelastic_3c_20fibermodel_20_3e_3',['GenericElastic&lt; FiberModel &gt;',['../classpolyfem_1_1assembler_1_1_generic_elastic.html',1,'polyfem::assembler']]],
   ['genericelastic_3c_20hgofiber_20_3e_4',['GenericElastic&lt; HGOFiber &gt;',['../classpolyfem_1_1assembler_1_1_generic_elastic.html',1,'polyfem::assembler']]],
   ['genericelastic_3c_20incompressibleogdenelasticity_20_3e_5',['GenericElastic&lt; IncompressibleOgdenElasticity &gt;',['../classpolyfem_1_1assembler_1_1_generic_elastic.html',1,'polyfem::assembler']]],

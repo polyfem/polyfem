@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['none_0',['None',['../namespacepolyfem_1_1solver.html#aff8f99461509f079bd5ac2a9817dbef8a6adf97f83acf6453d4a6a4b1070f3754',1,'polyfem::solver']]]
+  ['none_0',['none',['../namespacepolyfem_1_1solver.html#aff8f99461509f079bd5ac2a9817dbef8a6adf97f83acf6453d4a6a4b1070f3754',1,'polyfem::solver::None'],['../namespacepolyfem_1_1assembler.html#a566884380ca026c357915e5613b19667ab50339a10e1de285ac99d4c3990b8693',1,'polyfem::assembler::NONE']]]
 ];

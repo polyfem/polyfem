@@ -122,6 +122,7 @@ $(document).ready(function(){initNavTree('namespacepolyfem_1_1assembler.html',''
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">polyfem::assembler Namespace Reference</div></div>
 </div><!--header-->
@@ -140,8 +141,6 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">utility to create a map of all elastic materials  <a href="classpolyfem_1_1assembler_1_1_all_elastic_materials.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html">AMIPSEnergy</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy_autodiff.html">AMIPSEnergyAutodiff</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">Assembler</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">abstract class  <a href="classpolyfem_1_1assembler_1_1_assembler.html#details">More...</a><br /></td></tr>
@@ -297,6 +296,14 @@ Typedefs</h2></td></tr>
 <tr class="memitem:ad90a88bb8d1f91b65a88e2561c464109"><td class="memTemplItemLeft" align="right" valign="top">using&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1assembler.html#ad90a88bb8d1f91b65a88e2561c464109">AutoDiffVect</a> = Eigen::Matrix&lt; T, Eigen::Dynamic, 1 &gt;</td></tr>
 <tr class="separator:ad90a88bb8d1f91b65a88e2561c464109"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:a566884380ca026c357915e5613b19667" id="r_a566884380ca026c357915e5613b19667"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacepolyfem_1_1assembler.html#a566884380ca026c357915e5613b19667">AutodiffType</a> { <a class="el" href="namespacepolyfem_1_1assembler.html#a566884380ca026c357915e5613b19667aba7de5bc6888294e5884b024a4c894f1">FULL</a>
+, <a class="el" href="namespacepolyfem_1_1assembler.html#a566884380ca026c357915e5613b19667add99f8bff5882bcd9d0d337b9c2d3b0b">STRESS</a>
+, <a class="el" href="namespacepolyfem_1_1assembler.html#a566884380ca026c357915e5613b19667ab50339a10e1de285ac99d4c3990b8693">NONE</a>
+ }</td></tr>
+<tr class="separator:a566884380ca026c357915e5613b19667"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:aaff5aece5fe5a409ef40ca97ac093b32" id="r_aaff5aece5fe5a409ef40ca97ac093b32"><td class="memTemplParams" colspan="2">template&lt;int dim&gt; </td></tr>
@@ -359,7 +366,37 @@ template&lt;typename T &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_generic_elastic_8hpp_source.html#l00010">10</a> of file <a class="el" href="_generic_elastic_8hpp_source.html">GenericElastic.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_generic_elastic_8hpp_source.html#l00019">19</a> of file <a class="el" href="_generic_elastic_8hpp_source.html">GenericElastic.hpp</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="a566884380ca026c357915e5613b19667" name="a566884380ca026c357915e5613b19667"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a566884380ca026c357915e5613b19667">&#9670;&#160;</a></span>AutodiffType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespacepolyfem_1_1assembler.html#a566884380ca026c357915e5613b19667">polyfem::assembler::AutodiffType</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a566884380ca026c357915e5613b19667aba7de5bc6888294e5884b024a4c894f1" name="a566884380ca026c357915e5613b19667aba7de5bc6888294e5884b024a4c894f1"></a>FULL&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a566884380ca026c357915e5613b19667add99f8bff5882bcd9d0d337b9c2d3b0b" name="a566884380ca026c357915e5613b19667add99f8bff5882bcd9d0d337b9c2d3b0b"></a>STRESS&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a566884380ca026c357915e5613b19667ab50339a10e1de285ac99d4c3990b8693" name="a566884380ca026c357915e5613b19667ab50339a10e1de285ac99d4c3990b8693"></a>NONE&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">Definition at line <a class="el" href="_generic_elastic_8hpp_source.html#l00011">11</a> of file <a class="el" href="_generic_elastic_8hpp_source.html">GenericElastic.hpp</a>.</p>
 
 </div>
 </div>

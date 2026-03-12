@@ -1,5 +1,9 @@
 var annotated_dup =
 [
+    [ "diff_elastic_energy", "namespacediff__elastic__energy.html", [
+      [ "AMIPSEnergy", "classdiff__elastic__energy_1_1_a_m_i_p_s_energy.html", "classdiff__elastic__energy_1_1_a_m_i_p_s_energy" ],
+      [ "VolumePenaltyEnergy", "classdiff__elastic__energy_1_1_volume_penalty_energy.html", "classdiff__elastic__energy_1_1_volume_penalty_energy" ]
+    ] ],
     [ "fmt", null, [
       [ "formatter< Eigen::MatrixXd >", "structfmt_1_1formatter_3_01_eigen_1_1_matrix_xd_01_4.html", "structfmt_1_1formatter_3_01_eigen_1_1_matrix_xd_01_4" ],
       [ "formatter< polyfem::StiffnessMatrix >", "structfmt_1_1formatter_3_01polyfem_1_1_stiffness_matrix_01_4.html", "structfmt_1_1formatter_3_01polyfem_1_1_stiffness_matrix_01_4" ]
@@ -21,7 +25,6 @@ var annotated_dup =
         [ "AdiabaticProcess", "classpolyfem_1_1assembler_1_1_adiabatic_process.html", "classpolyfem_1_1assembler_1_1_adiabatic_process" ],
         [ "AllElasticMaterials", "classpolyfem_1_1assembler_1_1_all_elastic_materials.html", "classpolyfem_1_1assembler_1_1_all_elastic_materials" ],
         [ "AMIPSEnergy", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy" ],
-        [ "AMIPSEnergyAutodiff", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy_autodiff.html", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy_autodiff" ],
         [ "Assembler", "classpolyfem_1_1assembler_1_1_assembler.html", "classpolyfem_1_1assembler_1_1_assembler" ],
         [ "AssemblerUtils", "classpolyfem_1_1assembler_1_1_assembler_utils.html", "classpolyfem_1_1assembler_1_1_assembler_utils" ],
         [ "AssemblyValsCache", "classpolyfem_1_1assembler_1_1_assembly_vals_cache.html", "classpolyfem_1_1assembler_1_1_assembly_vals_cache" ],

@@ -1,5 +1,6 @@
 var dir_203a0b4429a33981429312ec216e7182 =
 [
+    [ "elastic_energies", "dir_545651fc3f1801f812959bbe8652792a.html", "dir_545651fc3f1801f812959bbe8652792a" ],
     [ "quadrature", "dir_2585f341eb41f69a0b7c7e8618b3108e.html", "dir_2585f341eb41f69a0b7c7e8618b3108e" ],
     [ "auto_b_bases.cpp", "auto__b__bases_8cpp.html", "auto__b__bases_8cpp" ],
     [ "auto_b_bases.hpp", "auto__b__bases_8hpp.html", "auto__b__bases_8hpp" ],
@@ -40,6 +41,7 @@ var dir_203a0b4429a33981429312ec216e7182 =
     [ "auto_tetrahedron_corner.ipp", "auto__tetrahedron__corner_8ipp.html", "auto__tetrahedron__corner_8ipp" ],
     [ "auto_triangle.ipp", "auto__triangle_8ipp.html", "auto__triangle_8ipp" ],
     [ "auto_triangle_corner.ipp", "auto__triangle__corner_8ipp.html", "auto__triangle__corner_8ipp" ],
+    [ "diff_elastic_energy.py", "diff__elastic__energy_8py.html", "diff__elastic__energy_8py" ],
     [ "eigs.py", "eigs_8py.html", "eigs_8py" ],
     [ "elasticity_rhs.py", "elasticity__rhs_8py.html", "elasticity__rhs_8py" ],
     [ "generate_mooney_rivlin.py", "generate__mooney__rivlin_8py.html", "generate__mooney__rivlin_8py" ],
