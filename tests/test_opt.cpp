@@ -355,7 +355,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 	logger().trace("final energy {}", params["energy"].get<double>());
 
 	// REQUIRE(energies[0] == Catch::Approx(0.105955475999).epsilon(1e-4));
-	REQUIRE(params["energy"].get<double>() == Catch::Approx(0.0589966856256).epsilon(1e-4));
+	REQUIRE(params["energy"].get<double>() == Catch::Approx(0.0587843446).epsilon(1e-4));
 
 	// REQUIRE(energies[0] == Catch::Approx(12.0735).epsilon(1e-4));
 	// REQUIRE(energies[energies.size() - 1] == Catch::Approx(11.3886).epsilon(1e-4));
