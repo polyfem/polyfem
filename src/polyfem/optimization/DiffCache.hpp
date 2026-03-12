@@ -40,6 +40,8 @@ namespace polyfem
 
 		const Eigen::MatrixXd &adjoint_mat() const { return adjoint_mat_; }
 
+		const StiffnessMatrix &basis_nodes_to_gbasis_nodes() const;
+
 		inline int size() const { return cur_size_; }
 		inline int bdf_order(int step) const
 		{
@@ -127,6 +129,9 @@ namespace polyfem
 	private:
 		int n_time_steps_ = 0;
 		int cur_size_ = 0;
+
+		// Mapping from positions of FE basis nodes to positions of geometry nodes.
+		StiffnessMatrix basis_nodes_to_gbasis_nodes_;
 
 		std::vector<Eigen::MatrixXd> disp_grad_; // macro linear displacement in homogenization
 		Eigen::MatrixXd u_;                      // PDE solution

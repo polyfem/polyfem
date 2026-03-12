@@ -1083,7 +1083,7 @@ namespace polyfem::solver
 			// logger().trace("fd norm {}", G.norm());
 			// logger().trace("grads difference norm {}", (G - grads).norm() / G.norm());
 
-			grads = state_->basis_nodes_to_gbasis_nodes * grads;
+			grads = diff_cache_->basis_nodes_to_gbasis_nodes() * grads;
 
 			return AdjointTools::map_node_to_primitive_order(*state_, grads);
 		});

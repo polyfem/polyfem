@@ -29,6 +29,26 @@ namespace polyfem::solver
 
 		double dot(const Eigen::MatrixXd &A, const Eigen::MatrixXd &B) { return (A.array() * B.array()).sum(); }
 
+		Eigen::VectorXd reduced_to_full_shape_derivative(
+			const StiffnessMatrix &basis_nodes_to_gbasis_nodes,
+			const Eigen::MatrixXd &disp_grad,
+			const Eigen::VectorXd &adjoint_full,
+			const int n_bases,
+			const int dim)
+		{
+			assert(disp_grad.rows() == dim);
+			assert(disp_grad.cols() == dim);
+			assert(adjoint_full.size() == n_bases * dim);
+			assert(basis_nodes_to_gbasis_nodes.cols() == n_bases * dim);
+
+			Eigen::VectorXd term;
+			term.setZero(n_bases * dim);
+			for (int i = 0; i < n_bases; i++)
+				term.segment(i * dim, dim) += disp_grad.transpose() * adjoint_full.segment(i * dim, dim);
+
+			return basis_nodes_to_gbasis_nodes * term;
+		}
+
 		class LocalThreadScalarStorage
 		{
 		public:
@@ -77,8 +97,14 @@ namespace polyfem::solver
 			term *= this->weight();
 
 			const Eigen::VectorXd adjoint_rhs = this->compute_adjoint_rhs_step(time_step, x, *state_, *diff_cache_);
-			const NLHomoProblem &homo_problem = *std::dynamic_pointer_cast<NLHomoProblem>(state_->solve_data.nl_problem);
-			const Eigen::VectorXd full_shape_deriv = homo_problem.reduced_to_full_shape_derivative(diff_cache_->disp_grad(), adjoint_rhs);
+
+			const Eigen::VectorXd full_shape_deriv = reduced_to_full_shape_derivative(
+				diff_cache_->basis_nodes_to_gbasis_nodes(),
+				diff_cache_->disp_grad(),
+				adjoint_rhs,
+				state_->n_bases,
+				state_->mesh->dimension());
+
 			term += utils::flatten(utils::unflatten(full_shape_deriv, state_->mesh->dimension())(state_->primitive_to_node(), Eigen::all));
 
 			return term;

@@ -1,6 +1,11 @@
 #include <polyfem/optimization/DiffCache.hpp>
 
+#include <polyfem/assembler/ElementAssemblyValues.hpp>
+
 #include <polyfem/State.hpp>
+
+#include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_q_bases.hpp>
 
 #include <polyfem/time_integrator/BDF.hpp>
 #include <polyfem/time_integrator/ImplicitEuler.hpp>
@@ -26,6 +31,9 @@
 
 #include <memory>
 #include <vector>
+#include <map>
+#include <array>
+#include <cmath>
 
 namespace polyfem
 {
@@ -102,6 +110,76 @@ namespace polyfem
 					}
 				}
 			}
+		}
+
+		StiffnessMatrix compute_basis_nodes_to_gbasis_nodes(const State &state)
+		{
+			auto &gbases = state.geom_bases();
+			auto &bases = state.bases;
+
+			std::map<std::array<int, 2>, double> pairs;
+			for (int e = 0; e < gbases.size(); e++)
+			{
+				auto &gbs = gbases[e].bases;
+				auto &bs = bases[e].bases;
+				assert(!bs.empty());
+
+				Eigen::MatrixXd local_pts;
+				int order = bs.front().order();
+				if (state.mesh->is_volume())
+				{
+					if (state.mesh->is_simplex(e))
+					{
+						autogen::p_nodes_3d(order, local_pts);
+					}
+					else
+					{
+						autogen::q_nodes_3d(order, local_pts);
+					}
+				}
+				else
+				{
+					if (state.mesh->is_simplex(e))
+					{
+						autogen::p_nodes_2d(order, local_pts);
+					}
+					else
+					{
+						autogen::q_nodes_2d(order, local_pts);
+					}
+				}
+
+				assembler::ElementAssemblyValues vals;
+				vals.compute(e, state.mesh->is_volume(), local_pts, gbases[e], gbases[e]);
+
+				for (int i = 0; i < bs.size(); i++)
+				{
+					for (int j = 0; j < gbs.size(); j++)
+					{
+						if (std::abs(vals.basis_values[j].val(i)) > 1e-7)
+						{
+							std::array<int, 2> index = {{gbs[j].global()[0].index, bs[i].global()[0].index}};
+							pairs.insert({index, vals.basis_values[j].val(i)});
+						}
+					}
+				}
+			}
+
+			int dim = state.mesh->dimension();
+			std::vector<Eigen::Triplet<double>> coeffs;
+			coeffs.reserve(pairs.size() * dim);
+			for (const auto &iter : pairs)
+			{
+				for (int d = 0; d < dim; d++)
+				{
+					coeffs.emplace_back(iter.first[0] * dim + d, iter.first[1] * dim + d, iter.second);
+				}
+			}
+
+			StiffnessMatrix mapping;
+			mapping.resize(state.n_geom_bases * dim, state.n_bases * dim);
+			mapping.setFromTriplets(coeffs.begin(), coeffs.end());
+			return mapping;
 		}
 	} // namespace
 
@@ -199,6 +277,14 @@ namespace polyfem
 
 	void DiffCache::cache_adjoints(const Eigen::MatrixXd &adjoint_mat) { adjoint_mat_ = adjoint_mat; }
 
+	const StiffnessMatrix &DiffCache::basis_nodes_to_gbasis_nodes() const
+	{
+		assert(basis_nodes_to_gbasis_nodes_.size() != 0
+			   && "basis_nodes_to_gbasis_nodes is empty. Expect cache_transient(step==0) to build it first.");
+
+		return basis_nodes_to_gbasis_nodes_;
+	}
+
 	void DiffCache::cache_transient(
 		int step,
 		State &state,
@@ -210,6 +296,11 @@ namespace polyfem
 		if (pressure)
 		{
 			log_and_throw_adjoint_error("Navier stoke problem is not supported in adjoint optimization.");
+		}
+
+		if (step == 0)
+		{
+			basis_nodes_to_gbasis_nodes_ = compute_basis_nodes_to_gbasis_nodes(s);
 		}
 
 		Eigen::MatrixXd disp_grad_final;
