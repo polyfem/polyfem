@@ -86,22 +86,10 @@ namespace polyfem::solver
 		const int dof1 = reduced_size();
 
 		Eigen::VectorXd grad(dof1 + dof2);
-		 grad.head(dof1) = NLProblem::full_to_reduced_grad(extended.head(extended.size() - dim * dim));
+		grad.head(dof1) = NLProblem::full_to_reduced_grad(extended.head(extended.size() - dim * dim));
 		grad.tail(dof2) = macro_full_to_reduced_grad(extended.tail(dim * dim));
 
 		return grad;
-	}
-
-	NLHomoProblem::TVector NLHomoProblem::reduced_to_full_shape_derivative(const Eigen::MatrixXd &disp_grad, const TVector &adjoint_full) const
-	{
-		const int dim = state_.mesh->dimension();
-
-		Eigen::VectorXd term;
-		term.setZero(state_.n_bases * dim);
-		for (int i = 0; i < state_.n_bases; i++)
-			term.segment(i * dim, dim) += disp_grad.transpose() * adjoint_full.segment(i * dim, dim);
-
-		return state_.basis_nodes_to_gbasis_nodes * term;
 	}
 
 	double NLHomoProblem::value(const TVector &x)
@@ -187,7 +175,7 @@ namespace polyfem::solver
 		{
 			assert(dof1 == Q2_.cols());
 			StiffnessMatrix Q2_extended(Q2_.rows() + dof2, Q2_.cols() + dof2);
-			
+
 			{
 				entries.clear();
 				for (int k = 0; k < Q2_.cols(); ++k)
@@ -195,12 +183,12 @@ namespace polyfem::solver
 					{
 						entries.emplace_back(it.row(), it.col(), it.value());
 					}
-				
+
 				for (int k = 0; k < dof2; k++)
 				{
 					entries.emplace_back(Q2_.rows() + k, dof1 + k, 1);
 				}
-				
+
 				Q2_extended.setFromTriplets(entries.begin(), entries.end());
 			}
 
@@ -224,7 +212,7 @@ namespace polyfem::solver
 		FullNLProblem::hessian(reduced_to_full(x), hessian);
 
 		full_hessian_to_reduced_hessian(hessian);
-		
+
 		for (auto &form : homo_forms)
 			if (form->enabled())
 			{
@@ -295,7 +283,7 @@ namespace polyfem::solver
 		{
 			assert(dof1 == Q2_.cols());
 			StiffnessMatrix Q2_extended(Q2_.rows() + dof2, Q2_.cols() + dof2);
-			
+
 			{
 				entries.clear();
 				for (int k = 0; k < Q2_.cols(); ++k)
@@ -303,12 +291,12 @@ namespace polyfem::solver
 					{
 						entries.emplace_back(it.row(), it.col(), it.value());
 					}
-				
+
 				for (int k = 0; k < dof2; k++)
 				{
 					entries.emplace_back(Q2_.rows() + k, dof1 + k, 1);
 				}
-				
+
 				Q2_extended.setFromTriplets(entries.begin(), entries.end());
 			}
 

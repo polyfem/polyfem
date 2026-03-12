@@ -5,25 +5,15 @@
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
-namespace polyfem
-{
-	namespace assembler
-	{
-		class Mass;
-		class AssemblyValsCache;
-	} // namespace assembler
-
-	namespace basis
-	{
-		class ElementBases;
-	}
-} // namespace polyfem
+#include <Eigen/Core>
 
 namespace polyfem::solver
 {
 	/// @brief Form of the inertia
 	class InertiaForm : public Form
 	{
+		friend class InertiaForceDerivative;
+
 	public:
 		/// @brief Construct a new Inertia Form object
 		/// @param mass Mass matrix
@@ -32,18 +22,6 @@ namespace polyfem::solver
 					const time_integrator::ImplicitTimeIntegrator &time_integrator);
 
 		std::string name() const override { return "inertia"; }
-
-		static void force_shape_derivative(
-			bool is_volume,
-			const int n_geom_bases,
-			const double t, 
-			const std::vector<basis::ElementBases> &bases,
-			const std::vector<basis::ElementBases> &geom_bases,
-			const assembler::Mass &assembler,
-			const assembler::AssemblyValsCache &ass_vals_cache,
-			const Eigen::MatrixXd &velocity,
-			const Eigen::MatrixXd &adjoint,
-			Eigen::VectorXd &term);
 
 	protected:
 		/// @brief Compute the value of the form

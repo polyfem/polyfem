@@ -1,0 +1,32 @@
+#pragma once
+
+#include <polyfem/optimization/forms/ParametrizationForm.hpp>
+#include <polyfem/optimization/forms/VariableToSimulation.hpp>
+
+#include <Eigen/Core>
+
+#include <memory>
+#include <utility>
+
+namespace polyfem::solver
+{
+	/// @brief Computes the dot product of the input x (after parametrization) and the volume of each element on the mesh
+	class WeightedVolumeForm : public ParametrizationForm
+	{
+	public:
+		WeightedVolumeForm(CompositeParametrization &&parametrizations, std::shared_ptr<const State> state)
+			: ParametrizationForm(std::move(parametrizations)), state_(std::move(state))
+		{
+		}
+
+	protected:
+		/// @param x The input vector, after parametrization, same size as the number of elements on the mesh
+		double value_unweighted_with_param(const Eigen::VectorXd &x) const override;
+
+		/// @brief Computes the gradient of this form wrt. x, assuming that the volume of elements doesn't depend on x
+		void compute_partial_gradient_with_param(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
+
+	private:
+		std::shared_ptr<const State> state_;
+	};
+} // namespace polyfem::solver

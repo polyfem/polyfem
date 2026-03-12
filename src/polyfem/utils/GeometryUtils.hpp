@@ -191,4 +191,11 @@ namespace polyfem::utils
 		const VectorNd &aabb0_max,
 		const VectorNd &aabb1_min,
 		const VectorNd &aabb1_max);
+
+	/// @brief Determine if any simplex is inverted or collapses.
+	/// @param V Vertex positions as a #V-by-dim matrix (one vertex per row).
+	/// @param F Simplex indices as a #F-by-(dim+1) matrix (one simplex per row).
+	/// @return True if any simplex is inverted or collapses, false otherwise.
+	/// @warning Only triangle and tetrahedron are supported. Always return true otherwise.
+	bool is_flipped(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F);
 } // namespace polyfem::utils

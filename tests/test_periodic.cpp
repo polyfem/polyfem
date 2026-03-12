@@ -5,18 +5,19 @@
 #include <cmath>
 
 #include <polyfem/State.hpp>
-#include <polyfem/solver/Optimizations.hpp>
-#include <polyfem/solver/AdjointTools.hpp>
+#include <polyfem/optimization/Optimizations.hpp>
+#include <polyfem/optimization/AdjointTools.hpp>
 #include <polyfem/io/Evaluator.hpp>
 
-#include <polyfem/solver/AdjointNLProblem.hpp>
+#include <polyfem/optimization/AdjointNLProblem.hpp>
+#include <polyfem/optimization/BuildFromJson.hpp>
 
-#include <polyfem/solver/forms/adjoint_forms/SpatialIntegralForms.hpp>
-#include <polyfem/solver/forms/adjoint_forms/SumCompositeForm.hpp>
-#include <polyfem/solver/forms/adjoint_forms/CompositeForms.hpp>
+#include <polyfem/optimization/forms/SpatialIntegralForms.hpp>
+#include <polyfem/optimization/forms/SumCompositeForm.hpp>
+#include <polyfem/optimization/forms/CompositeForms.hpp>
 
-#include <polyfem/solver/forms/parametrization/Parametrizations.hpp>
-// #include <polyfem/solver/forms/parametrization/SDFParametrizations.hpp>
+#include <polyfem/optimization/parametrization/Parametrizations.hpp>
+// #include <polyfem/optimization/parametrization/SDFParametrizations.hpp>
 
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
@@ -34,7 +35,6 @@ using namespace solver;
 
 namespace
 {
-
 	bool load_json(const std::string &json_file, json &out)
 	{
 		std::ifstream file(json_file);
@@ -51,7 +51,7 @@ namespace
 
 	std::shared_ptr<State> create_state_and_solve(const json &args)
 	{
-		std::shared_ptr<State> state = AdjointOptUtils::create_state(args, solver::CacheLevel::Derivatives, -1);
+		std::shared_ptr<State> state = from_json::build_state(args, solver::CacheLevel::Derivatives, 16);
 		Eigen::MatrixXd sol, pressure;
 		state->solve_problem(sol, pressure);
 
@@ -60,7 +60,7 @@ namespace
 
 	std::shared_ptr<State> create_state_and_solve(const json &args, Eigen::MatrixXd &sol)
 	{
-		std::shared_ptr<State> state = AdjointOptUtils::create_state(args, solver::CacheLevel::Derivatives, -1);
+		std::shared_ptr<State> state = from_json::build_state(args, solver::CacheLevel::Derivatives, 16);
 		Eigen::MatrixXd pressure;
 		state->solve_problem(sol, pressure);
 
@@ -151,8 +151,9 @@ TEST_CASE("homogenize-stress-periodic", "[test_adjoint]")
 	load_json(path + "homogenize-stress-periodic.json", in_args);
 	in_args["/solver/linear/solver"_json_pointer] = "Eigen::SimplicialLDLT";
 
-	auto state_ptr = AdjointOptUtils::create_state(in_args, solver::CacheLevel::Derivatives, -1);
+	auto state_ptr = from_json::build_state(in_args, solver::CacheLevel::Derivatives, 16);
 	State &state = *state_ptr;
+	std::vector<std::shared_ptr<DiffCache>> diff_caches = {std::make_shared<DiffCache>()};
 
 	json opt_args;
 	load_json(path + "homogenize-stress-periodic-opt.json", opt_args);
@@ -160,14 +161,14 @@ TEST_CASE("homogenize-stress-periodic", "[test_adjoint]")
 
 	std::vector<std::shared_ptr<State>> states({state_ptr});
 
-	VariableToSimulationGroup var2sim;
-	var2sim.push_back(AdjointOptUtils::create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
+	VariableToSimulationGroup var2sim = from_json::build_variable_to_simulation_group(
+		opt_args["variable_to_simulation"], states, diff_caches, {});
 
-	auto obj = std::dynamic_pointer_cast<SumCompositeForm>(AdjointOptUtils::create_form(opt_args["functionals"], var2sim, states));
+	auto obj = std::dynamic_pointer_cast<SumCompositeForm>(from_json::build_form(opt_args["functionals"], var2sim, states, diff_caches));
 
-	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, diff_caches, opt_args);
 
-	Eigen::VectorXd x = var2sim[0]->inverse_eval();
+	Eigen::VectorXd x = var2sim.data[0]->inverse_eval();
 
 	Eigen::VectorXd theta;
 	theta.setRandom(x.size());
@@ -187,8 +188,9 @@ TEST_CASE("homogenize-stress", "[test_adjoint]")
 	load_json(path + "homogenize-stress.json", in_args);
 	in_args["/solver/linear/solver"_json_pointer] = "Eigen::SimplicialLDLT";
 
-	auto state_ptr = AdjointOptUtils::create_state(in_args, solver::CacheLevel::Derivatives, -1);
+	auto state_ptr = from_json::build_state(in_args, solver::CacheLevel::Derivatives, 16);
 	State &state = *state_ptr;
+	std::vector<std::shared_ptr<DiffCache>> diff_caches = {std::make_shared<DiffCache>()};
 
 	json opt_args;
 	load_json(path + "homogenize-stress-opt.json", opt_args);
@@ -196,12 +198,12 @@ TEST_CASE("homogenize-stress", "[test_adjoint]")
 
 	std::vector<std::shared_ptr<State>> states({state_ptr});
 
-	VariableToSimulationGroup var2sim;
-	var2sim.push_back(AdjointOptUtils::create_variable_to_simulation(opt_args["variable_to_simulation"][0], states, {}));
+	VariableToSimulationGroup var2sim = from_json::build_variable_to_simulation_group(
+		opt_args["variable_to_simulation"], states, diff_caches, {});
 
-	auto obj = std::dynamic_pointer_cast<SumCompositeForm>(AdjointOptUtils::create_form(opt_args["functionals"], var2sim, states));
+	auto obj = std::dynamic_pointer_cast<SumCompositeForm>(from_json::build_form(opt_args["functionals"], var2sim, states, diff_caches));
 
-	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, diff_caches, opt_args);
 
 	Eigen::MatrixXd V;
 	state.get_vertices(V);

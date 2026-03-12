@@ -5,6 +5,17 @@
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 
+#include <ipc/broad_phase/create_broad_phase.hpp>
+#include <ipc/collisions/normal/normal_collisions.hpp>
+#include <ipc/smooth_contact/smooth_collisions.hpp>
+
+#include <Eigen/Core>
+
+#include <cassert>
+#include <limits>
+#include <memory>
+#include <stdexcept>
+
 namespace polyfem::solver
 {
 	FrictionForm::FrictionForm(
@@ -25,34 +36,6 @@ namespace polyfem::solver
 		  friction_potential_(epsv)
 	{
 		assert(epsv_ > 0);
-	}
-
-	void FrictionForm::force_shape_derivative(
-		const Eigen::MatrixXd &prev_solution,
-		const Eigen::MatrixXd &solution,
-		const Eigen::MatrixXd &adjoint,
-		const ipc::TangentialCollisions &friction_constraints_set,
-		Eigen::VectorXd &term)
-	{
-		Eigen::MatrixXd U = collision_mesh_.vertices(utils::unflatten(solution, collision_mesh_.dim()));
-		Eigen::MatrixXd U_prev = collision_mesh_.vertices(utils::unflatten(prev_solution, collision_mesh_.dim()));
-
-		// TODO: use the time integration to compute the velocity
-		const Eigen::MatrixXd velocities = (U - U_prev) / time_integrator_->dt();
-
-		StiffnessMatrix hess;
-		if (const auto barrier_contact = dynamic_cast<const BarrierContactForm*>(&contact_form_))
-		{
-			hess = -friction_potential_.force_jacobian(
-			friction_constraints_set,
-			collision_mesh_, collision_mesh_.rest_positions(),
-			/*lagged_displacements=*/U_prev, velocities,
-			barrier_contact->barrier_potential(),
-			barrier_contact->barrier_stiffness(),
-			ipc::FrictionPotential::DiffWRT::REST_POSITIONS);
-		}
-
-		term = collision_mesh_.to_full_dof(hess).transpose() * adjoint;
 	}
 
 	Eigen::MatrixXd FrictionForm::compute_displaced_surface(const Eigen::VectorXd &x) const
@@ -110,7 +93,7 @@ namespace polyfem::solver
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
 		auto broad_phase = ipc::create_broad_phase(broad_phase_method_);
-		if (const auto barrier_contact = dynamic_cast<const BarrierContactForm*>(&contact_form_))
+		if (const auto barrier_contact = dynamic_cast<const BarrierContactForm *>(&contact_form_))
 		{
 			ipc::NormalCollisions collision_set;
 			collision_set.set_use_area_weighting(barrier_contact->use_area_weighting());
@@ -119,22 +102,22 @@ namespace polyfem::solver
 			collision_set.set_enable_shape_derivatives(barrier_contact->enable_shape_derivatives());
 			collision_set.build(
 				collision_mesh_, displaced_surface, barrier_contact->dhat(), /*dmin=*/0, broad_phase);
-			
+
 			friction_collision_set_.build(
 				collision_mesh_, displaced_surface, collision_set,
 				barrier_contact->barrier_potential(), barrier_contact->barrier_stiffness(), Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_, Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_);
 		}
-		else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm*>(&contact_form_))
+		else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm *>(&contact_form_))
 		{
 			ipc::SmoothCollisions collision_set;
 			if (smooth_contact->using_adaptive_dhat())
 				collision_set.compute_adaptive_dhat(collision_mesh_, collision_mesh_.rest_positions(), smooth_contact->get_params(), broad_phase);
 			collision_set.build(
-				collision_mesh_, displaced_surface, smooth_contact->get_params(), 
+				collision_mesh_, displaced_surface, smooth_contact->get_params(),
 				smooth_contact->using_adaptive_dhat(), broad_phase);
 
-			friction_collision_set_.build(   
-				collision_mesh_, displaced_surface, 
+			friction_collision_set_.build(
+				collision_mesh_, displaced_surface,
 				collision_set, smooth_contact->get_params(), contact_form_.barrier_stiffness(), Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_, Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_);
 		}
 		else

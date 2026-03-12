@@ -4,6 +4,7 @@
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/io/Evaluator.hpp>
+#include <polyfem/io/OBJWriter.hpp>
 
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/MultiModel.hpp>
@@ -41,22 +42,28 @@
 
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Timer.hpp>
+#include <polyfem/utils/autodiff.h>
+
+#include <polyfem/optimization/CacheLevel.hpp>
 
 #include <polysolve/linear/FEMSolver.hpp>
-
-#include <polyfem/io/OBJWriter.hpp>
 
 #include <igl/edges.h>
 #include <igl/Timer.h>
 
-#include <iostream>
+#include <Eigen/Core>
+
+#include <spdlog/fmt/fmt.h>
+
 #include <algorithm>
 #include <memory>
-#include <filesystem>
-
-#include <polyfem/io/Evaluator.hpp>
-
-#include <polyfem/utils/autodiff.h>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
+#include <cassert>
+#include <cmath>
+#include <cstddef>
 
 using namespace Eigen;
 
@@ -526,7 +533,6 @@ namespace polyfem
 		polys.clear();
 		poly_edge_to_data.clear();
 		rhs.resize(0, 0);
-		basis_nodes_to_gbasis_nodes.resize(0, 0);
 
 		if (assembler::MultiModel *mm = dynamic_cast<assembler::MultiModel *>(assembler.get()))
 		{
@@ -773,60 +779,6 @@ namespace polyfem
 		if (n_geom_bases == 0)
 			n_geom_bases = n_bases;
 
-		auto &gbases = geom_bases();
-
-		if (optimization_enabled == solver::CacheLevel::Derivatives)
-		{
-			std::map<std::array<int, 2>, double> pairs;
-			for (int e = 0; e < gbases.size(); e++)
-			{
-				const auto &gbs = gbases[e].bases;
-				const auto &bs = bases[e].bases;
-
-				Eigen::MatrixXd local_pts;
-				const int order = bs.front().order();
-				if (mesh->is_volume())
-				{
-					if (mesh->is_simplex(e))
-						autogen::p_nodes_3d(order, local_pts);
-					else
-						autogen::q_nodes_3d(order, local_pts);
-				}
-				else
-				{
-					if (mesh->is_simplex(e))
-						autogen::p_nodes_2d(order, local_pts);
-					else
-						autogen::q_nodes_2d(order, local_pts);
-				}
-
-				ElementAssemblyValues vals;
-				vals.compute(e, mesh->is_volume(), local_pts, gbases[e], gbases[e]);
-
-				for (int i = 0; i < bs.size(); i++)
-				{
-					for (int j = 0; j < gbs.size(); j++)
-					{
-						if (std::abs(vals.basis_values[j].val(i)) > 1e-7)
-						{
-							std::array<int, 2> index = {{gbs[j].global()[0].index, bs[i].global()[0].index}};
-							pairs.insert({index, vals.basis_values[j].val(i)});
-						}
-					}
-				}
-			}
-
-			const int dim = mesh->dimension();
-			std::vector<Eigen::Triplet<double>> coeffs;
-			coeffs.clear();
-			for (const auto &iter : pairs)
-				for (int d = 0; d < dim; d++)
-					coeffs.emplace_back(iter.first[0] * dim + d, iter.first[1] * dim + d, iter.second);
-
-			basis_nodes_to_gbasis_nodes.resize(n_geom_bases * mesh->dimension(), n_bases * mesh->dimension());
-			basis_nodes_to_gbasis_nodes.setFromTriplets(coeffs.begin(), coeffs.end());
-		}
-
 		for (const auto &lb : local_boundary)
 			total_local_boundary.emplace_back(lb);
 
@@ -1045,8 +997,6 @@ namespace polyfem
 		logger().info("n bases: {}", n_bases);
 		logger().info("n pressure bases: {}", n_pressure_bases);
 
-		ass_vals_cache.clear();
-		mass_ass_vals_cache.clear();
 		if (n_bases <= args["solver"]["advanced"]["cache_size"])
 		{
 			timer.start();
@@ -1057,6 +1007,13 @@ namespace polyfem
 				pressure_ass_vals_cache.init(mesh->is_volume(), pressure_bases, curret_bases);
 
 			logger().info(" took {}s", timer.getElapsedTime());
+		}
+		else
+		{
+			ass_vals_cache.init_empty();
+			mass_ass_vals_cache.init_empty(true);
+			if (mixed_assembler != nullptr)
+				pressure_ass_vals_cache.init_empty();
 		}
 
 		out_geom.build_grid(*mesh, args["output"]["advanced"]["sol_on_grid"]);
@@ -1703,7 +1660,7 @@ namespace polyfem
 		logger().info(" took {}s", timings.assigning_rhs_time);
 	}
 
-	void State::solve_problem(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
+	void State::solve_problem(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step)
 	{
 		if (!mesh)
 		{
@@ -1746,39 +1703,35 @@ namespace polyfem
 			}
 
 			if (assembler->name() == "NavierStokes")
-				solve_transient_navier_stokes(time_steps, t0, dt, sol, pressure);
+				solve_transient_navier_stokes(time_steps, t0, dt, sol, pressure, user_post_step);
 			else if (assembler->name() == "OperatorSplitting")
-				solve_transient_navier_stokes_split(time_steps, dt, sol, pressure);
+				solve_transient_navier_stokes_split(time_steps, dt, sol, pressure, user_post_step);
 			else if (is_homogenization())
-				solve_homogenization(time_steps, t0, dt, sol);
+				solve_homogenization(time_steps, t0, dt, sol, user_post_step);
 			else if (is_problem_linear())
-				solve_transient_linear(time_steps, t0, dt, sol, pressure);
+				solve_transient_linear(time_steps, t0, dt, sol, pressure, user_post_step);
 			else if (!assembler->is_linear() && problem->is_scalar())
 				throw std::runtime_error("Nonlinear scalar problems are not supported yet!");
 			else
-				solve_transient_tensor_nonlinear(time_steps, t0, dt, sol);
+				solve_transient_tensor_nonlinear(time_steps, t0, dt, sol, user_post_step);
 		}
 		else
 		{
 			if (assembler->name() == "NavierStokes")
-				solve_navier_stokes(sol, pressure);
+				solve_navier_stokes(0, sol, pressure, user_post_step);
 			else if (is_homogenization())
-				solve_homogenization(/* time steps */ 0, /* t0 */ 0, /* dt */ 0, sol);
+				solve_homogenization(/* time steps */ 0, /* t0 */ 0, /* dt */ 0, sol, user_post_step);
 			else if (is_problem_linear())
 			{
 				init_linear_solve(sol);
-				solve_linear(sol, pressure);
-				if (optimization_enabled != solver::CacheLevel::None)
-					cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
+				solve_linear(0, sol, pressure, user_post_step);
 			}
 			else if (!assembler->is_linear() && problem->is_scalar())
 				throw std::runtime_error("Nonlinear scalar problems are not supported yet!");
 			else
 			{
 				init_nonlinear_tensor_solve(sol);
-				solve_tensor_nonlinear(sol);
-				if (optimization_enabled != solver::CacheLevel::None)
-					cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
+				solve_tensor_nonlinear(0, sol, true, user_post_step);
 
 				const std::string state_path = resolve_output_path(args["output"]["data"]["state"]);
 				if (!state_path.empty())
