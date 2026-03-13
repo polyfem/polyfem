@@ -323,29 +323,6 @@ namespace polyfem
 		}
 
 		problem->set_units(*assembler, units);
-
-		if (optimization_enabled == solver::CacheLevel::Derivatives)
-		{
-			if (is_contact_enabled())
-			{
-				if (!args["contact"]["use_gcp_formulation"] && !args["contact"]["use_convergent_formulation"])
-				{
-					args["contact"]["use_convergent_formulation"] = true;
-					logger().info("Use convergent formulation for differentiable contact...");
-				}
-				if (args["/solver/contact/barrier_stiffness"_json_pointer].is_string())
-				{
-					logger().error("Only constant barrier stiffness is supported in differentiable contact!");
-				}
-			}
-
-			if (args.contains("boundary_conditions") && args["boundary_conditions"].contains("rhs"))
-			{
-				json rhs = args["boundary_conditions"]["rhs"];
-				if ((rhs.is_array() && rhs.size() > 0 && rhs[0].is_string()) || rhs.is_string())
-					logger().error("Only constant rhs over space is supported in differentiable code!");
-			}
-		}
 	}
 
 	void State::set_max_threads(const int max_threads)

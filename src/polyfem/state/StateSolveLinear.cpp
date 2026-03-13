@@ -273,11 +273,6 @@ namespace polyfem
 
 		const QuadratureOrders &n_b_samples = n_boundary_samples();
 
-		if (optimization_enabled != solver::CacheLevel::None)
-		{
-			log_and_throw_adjoint_error("Transient linear problems are not differentiable yet!");
-		}
-
 		// Step 0.
 		if (user_post_step)
 		{
@@ -350,11 +345,6 @@ namespace polyfem
 			}
 
 			solve_linear(t, solver, A, b, compute_spectrum, sol, pressure, user_post_step);
-
-			if (optimization_enabled != solver::CacheLevel::None)
-			{
-				log_and_throw_adjoint_error("Transient linear problems are not differentiable yet!");
-			}
 
 			time_integrator->update_quantities(sol);
 

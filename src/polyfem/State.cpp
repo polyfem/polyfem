@@ -485,9 +485,6 @@ namespace polyfem
 		if (has_periodic_bc())
 			return false;
 
-		if (optimization_enabled == solver::CacheLevel::Derivatives)
-			return false;
-
 		if (mesh->orders().size() <= 0)
 		{
 			if (args["space"]["discr_order"] == 1)
