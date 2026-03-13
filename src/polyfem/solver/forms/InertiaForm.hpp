@@ -32,6 +32,9 @@ namespace polyfem::solver
 
 		void update_quantities(const double t, const Eigen::VectorXd &x) override;
 
+		void setMass(const NewtonHessian &M, const Eigen::VectorXd &lumped) { M_full = M; M_lumped = lumped; }
+		void useLumpedMass(bool use_lumped) { m_useLumpedMass = use_lumped; }
+
 	protected:
 		/// @brief Compute the value of the form
 		/// @param x Current solution
@@ -47,12 +50,20 @@ namespace polyfem::solver
 		/// @param[in] x Current solution
 		/// @param[out] hessian Output Hessian of the value wrt x
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
+		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &H, SystemAssembler<2> &assembler) const override;
+		virtual NewtonHessian hessianSparsityPattern(SystemAssembler<2> &assembler) const override;
+		virtual NewtonHessian hessianSparsityPattern(SystemAssembler<3> &assembler) const override;
 
+    
 	private:
 		Eigen::VectorXd x_tilde() const;
 
 		// TODO mass might be time dependent
-		const StiffnessMatrix &mass_;                                    ///< Mass matrix
+		const StiffnessMatrix &mass_; 
+		bool m_useLumpedMass = false; 
+		NewtonHessian M_full; // full mass matrix, with meshfem integration
+		Eigen::VectorXd M_lumped; // lumped mass matrix, with meshfem integration
+		                            
 		const time_integrator::ImplicitTimeIntegrator &time_integrator_; ///< Time integrator
 		XTildeUpdater x_tilde_updater_;
 		Eigen::VectorXd x_tilde_;

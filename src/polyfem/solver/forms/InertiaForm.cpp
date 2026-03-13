@@ -54,4 +54,22 @@ namespace polyfem::solver
 	{
 		hessian = mass_;
 	}
+
+	void InertiaForm::accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &H, SystemAssembler<2> &assembler) const
+	{
+		if (m_useLumpedMass) H.H_ss->addDiag((weight * M_lumped).eval());
+            else             H.H_ss->addWithSubSparsityFast(*(M_full.H_ss), weight);
+	}
+
+	NewtonHessian InertiaForm::hessianSparsityPattern(SystemAssembler<2> &assembler) const
+	{
+		return M_full;
+	}
+
+	NewtonHessian InertiaForm::hessianSparsityPattern(SystemAssembler<3> &assembler) const
+	{
+		return M_full;
+	}
+
+	
 } // namespace polyfem::solver
