@@ -2,7 +2,7 @@
 
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
-
+#include <polyfem/utils/MatrixUtils.hpp>
 #include <igl/Timer.h>
 
 #include <ipc/utils/eigen_ext.hpp>
@@ -342,15 +342,7 @@ namespace polyfem::assembler
 		NewtonHessian H;
 		assemble(is_volume, n_basis, bases, gbases, cache, t, H, is_mass);
 
-		auto H_scalar = H.toScalar().toSymmetryMode(SuiteSparseMatrix::SymmetryMode::NONE);
-#ifdef POLYSOLVE_LARGE_INDEX
-		Eigen::Map<StiffnessMatrix> H_eigen(H_scalar.m, H_scalar.n, H_scalar.nz, H_scalar.Ap.data(), H_scalar.Ai.data(), H_scalar.Ax.data());
-#else
-		std::vector<int> Ap_int(H_scalar.Ap.begin(), H_scalar.Ap.end());
-		std::vector<int> Ai_int(H_scalar.Ai.begin(), H_scalar.Ai.end());
-		Eigen::Map<StiffnessMatrix> H_eigen(H_scalar.m, H_scalar.n, H_scalar.nz, Ap_int.data(), Ai_int.data(), H_scalar.Ax.data());
-#endif
-		stiffness = H_eigen;
+		NewtonHessian2SparseMatrix(H, stiffness);
 
 	}
 
