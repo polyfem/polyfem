@@ -8,6 +8,9 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/Jacobian.hpp>
+#include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/assembler/ElementAssemblyValues.hpp>
 
 #include <algorithm>
 #include <cassert>
@@ -314,6 +317,70 @@ namespace polyfem::solver
 				geom_bases_, ass_vals_cache_, t_, dt_, x, x_prev_, *mat_cache_, hessian);
 		}
 	}
+
+	Eigen::MatrixXd ElasticForm::hessianEvalPerElement(size_t e, const double weight, const Eigen::VectorXd &x) const{
+		ElementAssemblyValues vals;
+		ass_vals_cache_.compute(e, is_volume_, bases_[e], geom_bases_[e], vals);
+
+		const Quadrature &quadrature = vals.quadrature;
+
+		assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+		QuadratureVector qVec = vals.det.array() * quadrature.weights.array();
+		const int n_loc_bases = int(vals.basis_values.size());
+
+		auto stiffness_val = assembler_.assemble_hessian(NonLinearAssemblerData(vals, t_, dt_, x, x_prev_, qVec));
+		assert(stiffness_val.rows() == n_loc_bases * size());
+		assert(stiffness_val.cols() == n_loc_bases * size());
+
+		if (project_to_psd_)
+			stiffness_val = ipc::project_to_psd(stiffness_val);
+
+		return stiffness_val * weight;
+	}
+
+	void ElasticForm::accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian, SystemAssembler<2> &assembler) const
+	{
+		POLYFEM_SCOPED_TIMER("elastic hessian meshfem integration");
+
+		size_t numElements = bases_.size();
+		assembler.assembleHessian(hessian, numElements, [&](size_t e) { return hessianEvalPerElement(e, weight, x); }, [&](size_t e) { return stencil(e); });
+	}
+
+	void ElasticForm::accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian, SystemAssembler<3> &assembler) const
+	{
+		POLYFEM_SCOPED_TIMER("elastic hessian meshfem integration");
+
+		size_t numElements = bases_.size();
+		assembler.assembleHessian(hessian, numElements, [&](size_t e) { return hessianEvalPerElement(e, weight, x); }, [&](size_t e) { return stencil(e); });
+	}
+
+	std::vector<int> ElasticForm::stencil(size_t e) const {
+		std::vector<int> nodesIndices; 
+			const int n_loc_bases = int(bases_[e].bases.size());		
+			for (int i = 0; i < n_loc_bases; ++i)
+			{
+				const auto global_i = bases_[e].bases[i].global();
+				for (size_t ii = 0; ii < global_i.size(); ++ii)
+				{
+					nodesIndices.push_back(global_i[ii].index);
+				} // size of global_i is mostly 1
+			}
+			return nodesIndices;
+	}
+
+	NewtonHessian ElasticForm::hessianSparsityPattern(SystemAssembler<2> &assembler) const
+	{
+		size_t numElements = bases_.size();
+		return assembler.sparsityPattern(numElements, [&](size_t e) { return stencil(e); });
+	}
+
+	NewtonHessian ElasticForm::hessianSparsityPattern(SystemAssembler<3> &assembler) const
+	{
+		size_t numElements = bases_.size();
+		return assembler.sparsityPattern(numElements, [&](size_t e) { return stencil(e); });
+	}
+
+
 
 	void ElasticForm::finish()
 	{

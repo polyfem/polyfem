@@ -69,6 +69,18 @@ namespace polyfem::solver
 		/// @param[out] hessian Output Hessian of the value wrt x
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
+		Eigen::MatrixXd hessianEvalPerElement(size_t e, const double weight, const Eigen::VectorXd &x) const;
+		void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian, SystemAssembler<2> &assembler) const override;
+		void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian, SystemAssembler<3> &assembler) const override;
+
+		std::vector<int> stencil(size_t e) const;
+		virtual NewtonHessian hessianSparsityPattern(SystemAssembler<2> &assembler) const override;
+		virtual NewtonHessian hessianSparsityPattern(SystemAssembler<3> &assembler) const override;
+    
+		virtual bool sparsityChangedAlways() const override { return false; }
+
+
+
 	public:
 		/// @brief Determine if a step from solution x0 to solution x1 is allowed
 		/// @param x0 Current solution
