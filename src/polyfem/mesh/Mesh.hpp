@@ -32,6 +32,7 @@ namespace polyfem
 			INTERIOR_POLYTOPE,             /// Interior polytope
 			BOUNDARY_POLYTOPE,             /// Boundary polytope
 			PRISM,                         /// Prism
+			PYRAMID,                       /// Pyramid
 			UNDEFINED,                     /// For invalid configurations
 		};
 
@@ -415,6 +416,12 @@ namespace polyfem
 			/// @return is a prism
 			bool is_prism(const int el_id) const;
 
+			/// @brief checks if element is a pyramid
+			///
+			/// @param[in] el_id element id
+			/// @return is a pyramid
+			bool is_pyramid(const int el_id) const;
+
 			/// @brief Returns the elements types
 			///
 			/// @return vector of element types
@@ -585,6 +592,20 @@ namespace polyfem
 				for (int i = 0; i < n_elements(); ++i)
 				{
 					if (is_prism(i))
+						return true;
+				}
+
+				return false;
+			}
+
+			/// @brief checks if the mesh has pyramids
+			///
+			/// @return if the mesh has pyramids
+			bool has_pyramids() const
+			{
+				for (int i = 0; i < n_elements(); ++i)
+				{
+					if (is_pyramid(i))
 						return true;
 				}
 

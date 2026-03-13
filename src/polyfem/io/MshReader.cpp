@@ -100,35 +100,35 @@ namespace polyfem::io
 			if (e.entity_dim != dim)
 				continue;
 			const int type = e.element_type;
-
+			// https://shipengcheng1230.github.io/GmshTools.jl/stable/element_types/
 			if (type == 2 || type == 9 || type == 21 || type == 23 || type == 25) // tri
 			{
-				assert(cells_cols == -1 || cells_cols == 3);
-				cells_cols = 3;
+				cells_cols = std::max(cells_cols, 3);
 				num_els += e.num_elements_in_block;
 			}
 			else if (type == 3 || type == 10) // quad
 			{
-				assert(cells_cols == -1 || cells_cols == 4);
-				cells_cols = 4;
+				cells_cols = std::max(cells_cols, 4);
 				num_els += e.num_elements_in_block;
 			}
 			else if (type == 4 || type == 11 || type == 29 || type == 30 || type == 31) // tet
 			{
-				assert(cells_cols == -1 || cells_cols == 4);
-				cells_cols = 4;
+				cells_cols = std::max(cells_cols, 4);
 				num_els += e.num_elements_in_block;
 			}
 			else if (type == 5 || type == 12) // hex
 			{
-				assert(cells_cols == -1 || cells_cols == 8);
-				cells_cols = 8;
+				cells_cols = std::max(cells_cols, 8);
 				num_els += e.num_elements_in_block;
 			}
 			else if (type == 6) // prism
 			{
-				assert(cells_cols == -1 || cells_cols == 6);
-				cells_cols = 6;
+				cells_cols = std::max(cells_cols, 6);
+				num_els += e.num_elements_in_block;
+			}
+			else if (type == 7) // pyramid
+			{
+				cells_cols = std::max(cells_cols, 5);
 				num_els += e.num_elements_in_block;
 			}
 		}
@@ -141,6 +141,7 @@ namespace polyfem::io
 			map_entity_tag_to_physical_tag(spec.entities.volumes, entity_tag_to_physical_tag);
 
 		cells.resize(num_els, cells_cols);
+		cells.setConstant(-1);
 		body_ids.resize(num_els);
 		elements.resize(num_els);
 		weights.resize(num_els);
@@ -150,13 +151,28 @@ namespace polyfem::io
 			if (e.entity_dim != dim)
 				continue;
 			const int type = e.element_type;
-			if (type == 2 || type == 9 || type == 21 || type == 23 || type == 25 || type == 3 || type == 10 || type == 4 || type == 11 || type == 29 || type == 30 || type == 31 || type == 5 || type == 12 || type == 6)
+			if (type == 2 || type == 9 || type == 21 || type == 23 || type == 25 || type == 3 || type == 10 || type == 4 || type == 11 || type == 29 || type == 30 || type == 31 || type == 5 || type == 12 || type == 6 || type == 7)
 			{
 				const size_t n_nodes = mshio::nodes_per_element(type);
+				int local_cells_cols = -1;
+
+				if (type == 2 || type == 9 || type == 21 || type == 23 || type == 25) // tri
+					local_cells_cols = 3;
+				else if (type == 3 || type == 10) // quad
+					local_cells_cols = 4;
+				else if (type == 4 || type == 11 || type == 29 || type == 30 || type == 31) // tet
+					local_cells_cols = 4;
+				else if (type == 5 || type == 12) // hex
+					local_cells_cols = 8;
+				else if (type == 6) // prism
+					local_cells_cols = 6;
+				else if (type == 7) // pyramid
+					local_cells_cols = 5;
+
 				for (int i = 0; i < e.data.size(); i += (n_nodes + 1))
 				{
 					int index = 0;
-					for (int j = i + 1; j <= i + cells_cols; ++j)
+					for (int j = i + 1; j <= i + local_cells_cols; ++j)
 					{
 						const int v_index = tag_to_index[e.data[j]];
 						assert(v_index < n_vertices);

@@ -22,6 +22,7 @@ namespace polyfem
 		/// @param[in]  n  			  n grid quads
 		/// @param[in]  tet			  is a tet
 		/// @param[in]  prism		  is a prism
+		/// @param[in]  pyramid		  is a pyramid
 		/// @param[out] V             #V x 3 output vertices positions
 		/// @param[out] F             #F x 3 output triangle indices
 		/// @param[out] T             #F x 4 output tet indices
@@ -29,6 +30,7 @@ namespace polyfem
 		void regular_3d_grid(const int nn,
 							 bool tet,
 							 bool prism,
+							 bool pyramid,
 							 Eigen::MatrixXd &V,
 							 Eigen::MatrixXi &F,
 							 Eigen::MatrixXi &T);
@@ -57,6 +59,11 @@ namespace polyfem
 			const Eigen::MatrixXi &prism_volume() const { return prism_tets_; }
 			const Eigen::MatrixXi &prism_edges() const { return prism_edges_; }
 
+			const Eigen::MatrixXd &pyramid_corners() const { return pyramid_corners_; }
+			const Eigen::MatrixXd &pyramid_points() const { return pyramid_points_; }
+			const Eigen::MatrixXi &pyramid_faces() const { return pyramid_faces_; }
+			const Eigen::MatrixXi &pyramid_volume() const { return pyramid_tets_; }
+			const Eigen::MatrixXi &pyramid_edges() const { return pyramid_edges_; }
 			void sample_polygon(const Eigen::MatrixXd &poly, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXi &edges) const;
 			void sample_polyhedron(const Eigen::MatrixXd &vertices, const Eigen::MatrixXi &f, Eigen::MatrixXd &pts, Eigen::MatrixXi &faces, Eigen::MatrixXi &edges) const;
 
@@ -70,12 +77,18 @@ namespace polyfem
 
 			Eigen::MatrixXi cube_tets_;
 			Eigen::MatrixXi prism_tets_;
+			Eigen::MatrixXi pyramid_tets_;
 			Eigen::MatrixXi simplex_tets_;
 
 			Eigen::MatrixXd prism_corners_;
 			Eigen::MatrixXd prism_points_;
 			Eigen::MatrixXi prism_faces_;
 			Eigen::MatrixXi prism_edges_;
+
+			Eigen::MatrixXd pyramid_corners_;
+			Eigen::MatrixXd pyramid_points_;
+			Eigen::MatrixXi pyramid_faces_;
+			Eigen::MatrixXi pyramid_edges_;
 
 			Eigen::MatrixXd cube_corners_;
 			Eigen::MatrixXd cube_points_;

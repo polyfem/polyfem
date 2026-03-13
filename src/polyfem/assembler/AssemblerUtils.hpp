@@ -20,6 +20,7 @@ namespace polyfem::assembler
 			SIMPLEX_LAGRANGE,
 			CUBE_LAGRANGE,
 			PRISM_LAGRANGE,
+			PYRAMID_LAGRANGE,
 			SPLINE,
 			POLY
 		};

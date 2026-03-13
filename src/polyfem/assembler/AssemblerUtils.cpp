@@ -226,7 +226,7 @@ namespace polyfem
 				{
 					return std::max((basis_degree - 1) * 2, 1);
 				}
-				else if (b_type == BasisType::CUBE_LAGRANGE || b_type == BasisType::PRISM_LAGRANGE)
+				else if (b_type == BasisType::CUBE_LAGRANGE || b_type == BasisType::PRISM_LAGRANGE || b_type == BasisType::PYRAMID_LAGRANGE)
 				{
 					// in this case we have a tensor product basis
 					// this computes the quadrature order along a single axis

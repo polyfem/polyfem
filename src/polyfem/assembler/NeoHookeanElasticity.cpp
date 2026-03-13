@@ -284,7 +284,8 @@ namespace polyfem::assembler
 				all.row(p) = fun(def_grad);
 				continue;
 			}
-			const double J = def_grad.determinant();
+			// const double J = def_grad.determinant();
+			const double J = polyfem::utils::determinant(def_grad);
 			const Eigen::MatrixXd b = def_grad * def_grad.transpose();
 
 			double lambda, mu;
