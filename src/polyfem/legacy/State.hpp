@@ -742,6 +742,11 @@ namespace polyfem::legacy
 		/// @param[in] pressure pressure
 		void save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure);
 
+		/// saves the raw solution vector for visualization/debugging
+		/// @param[in] sol solution
+		/// @param[in] t time index
+		void save_solution(const Eigen::MatrixXd &sol, const int t);
+
 		/// saves a subsolve when save_solve_sequence_debug is true
 		/// @param[in] i sub solve index
 		/// @param[in] t time index

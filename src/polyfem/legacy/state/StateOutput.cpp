@@ -280,4 +280,24 @@ namespace polyfem::legacy
 		std::ofstream file(resolve_output_path(fmt::format(restart_json_path, global_t)));
 		file << restart_json;
 	}
+
+	void State::save_solution(const Eigen::MatrixXd &sol, const int t)
+	{
+		{
+			// POLYFEM_SCOPED_TIMER("Save output data", timings.write_solutions_time);
+		
+			const std::string out_path = resolve_output_path(fmt::format("data/x-{:d}.txt", t));
+			std::ofstream file(out_path);
+			file.precision(19);
+			file << std::scientific;
+			
+			if (file.is_open()){
+				file << sol << std::endl;
+				file.close();
+			}
+			else 
+				std::cerr << "Unable to open file." << std::endl;
+		}
+					
+	}
 } // namespace polyfem::legacy

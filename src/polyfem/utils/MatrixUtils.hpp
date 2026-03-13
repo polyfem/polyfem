@@ -5,6 +5,9 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
+#include <MeshFEM/newton_optimizer/NewtonHessian.hh>
+
+
 namespace polyfem
 {
 	namespace utils
@@ -204,5 +207,7 @@ namespace polyfem
 								const std::vector<int> &local_to_global,
 								StiffnessMatrix &Aout,
 								Eigen::MatrixXd &bout);
+
+		void NewtonHessian2SparseMatrix(const NewtonHessian &H, StiffnessMatrix &S);
 	} // namespace utils
 } // namespace polyfem
