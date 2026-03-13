@@ -2,13 +2,15 @@
 
 #include <polyfem/solver/forms/Form.hpp>
 #include <polysolve/nonlinear/Problem.hpp>
+#include <MeshFEM/SystemAssembler.hh>
+
 
 #include <memory>
 #include <vector>
 
 namespace polyfem::solver
 {
-	class FullNLProblem : public polysolve::nonlinear::Problem
+	class FullNLProblem: public polysolve::nonlinear::Problem
 	{
 	public:
 		FullNLProblem(const std::vector<std::shared_ptr<Form>> &forms, const bool is_residual = false);
@@ -18,6 +20,8 @@ namespace polyfem::solver
 		virtual double value(const TVector &x) override;
 		virtual void gradient(const TVector &x, TVector &gradv) override;
 		virtual void hessian(const TVector &x, THessian &hessian) override;
+		void evalHessian(const TVector &x, NewtonHessian &hessian);
+		NewtonHessian hessianSparsityPattern() const;
 
 		virtual bool is_step_valid(const TVector &x0, const TVector &x1) override;
 		virtual bool is_step_collision_free(const TVector &x0, const TVector &x1);
@@ -49,8 +53,17 @@ namespace polyfem::solver
 
 		virtual double normalize_forms();
 
+		void init_block_structure(const int block_size, const int num_block_vars);
+
 	protected:
 		std::vector<std::shared_ptr<Form>> forms_;
 		const bool is_residual_;
+
+		int block_size = 0;
+		int num_block_vars = 0;
+
+		// system assemblers for hessian assemby used in forms, mutable since it might be modified in const functions.
+		mutable std::unique_ptr<SystemAssembler<2>> m_assembler2D;
+		mutable std::unique_ptr<SystemAssembler<3>> m_assembler3D;
 	};
 } // namespace polyfem::solver

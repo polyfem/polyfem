@@ -23,6 +23,14 @@ namespace polyfem::solver
 		return total_weight;
 	}
 
+	void FullNLProblem::init_block_structure(const int block_size_, const int num_block_vars_)
+	{
+		block_size = block_size_;
+		num_block_vars = num_block_vars_;
+		m_assembler2D = std::make_unique<SystemAssembler<2>>(num_block_vars);
+		m_assembler3D = std::make_unique<SystemAssembler<3>>(num_block_vars);
+	}
+
 	void FullNLProblem::init(const TVector &x)
 	{
 		for (auto &f : forms_)
@@ -133,6 +141,27 @@ namespace polyfem::solver
 			f->second_derivative(x, tmp);
 			hessian += tmp;
 		}
+
+		
+		 
+		
+	}
+
+	void FullNLProblem::evalHessian(const TVector &x, NewtonHessian &hessian)
+	{
+		for (auto &f : forms_)
+		{
+			if (!f->enabled())
+				continue;
+			f->second_derivative(x, hessian);
+		}
+	}
+
+	NewtonHessian FullNLProblem::hessianSparsityPattern() const
+	{
+		NewtonHessian H;
+		return H;
+
 	}
 
 	void FullNLProblem::solution_changed(const TVector &x)
