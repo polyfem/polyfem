@@ -122,11 +122,11 @@ namespace polyfem
 		// Runtime override has the highest priority.
 		if (ic_override && ic_override->velocity.size() != 0)
 		{
-			if (!check_override_shape(ic_override->solution, ndof()))
+			if (!check_override_shape(ic_override->velocity, ndof()))
 			{
 				log_and_throw_adjoint_error("Invalid initial velocity shape ({}, {}). Expect ({}, >=1).",
-											ic_override->solution.rows(),
-											ic_override->solution.cols(),
+											ic_override->velocity.rows(),
+											ic_override->velocity.cols(),
 											ndof());
 			}
 			logger().info("Using runtime override for initial velocity.");
@@ -149,11 +149,11 @@ namespace polyfem
 
 		if (ic_override != nullptr && ic_override->acceleration.size() != 0)
 		{
-			if (!check_override_shape(ic_override->solution, ndof()))
+			if (!check_override_shape(ic_override->acceleration, ndof()))
 			{
 				log_and_throw_adjoint_error("Invalid initial acceleration shape ({}, {}). Expect ({}, >=1).",
-											ic_override->solution.rows(),
-											ic_override->solution.cols(),
+											ic_override->acceleration.rows(),
+											ic_override->acceleration.cols(),
 											ndof());
 			}
 			logger().info("Using runtime override for initial acceleration.");

@@ -415,6 +415,7 @@ namespace polyfem::solver
 
 			diff_cache.initial_condition_override.solution = state_variable.head(state.ndof());
 			diff_cache.initial_condition_override.velocity = state_variable.tail(state.ndof());
+			diff_cache.initial_condition_override.acceleration.resize(0, 0);
 		}
 	}
 	Eigen::VectorXd InitialConditionVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const

@@ -87,6 +87,7 @@ namespace polyfem
 	/// @param pressure[in] Optional. The pressure of current step. Optional, pass nullptr if not applicable.
 	using UserPostStepCallback = std::function<void(int step, State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd *disp_grad, const Eigen::MatrixXd *pressure)>;
 
+	/// @brief Runtime override for initial-condition histories.
 	class InitialConditionOverride
 	{
 	public:
@@ -102,6 +103,7 @@ namespace polyfem
 		/// Time step is ordered in reversed. ex. col(n) -> n steps before.
 		Eigen::MatrixXd acceleration;
 
+		/// @brief Returns true when no quantity is overridden.
 		bool is_empty() const
 		{
 			return solution.size() == 0 && velocity.size() == 0 && acceleration.size() == 0;
@@ -331,6 +333,7 @@ namespace polyfem
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
 		/// @param[in] user_post_step optional post step user callback. Empty by default.
+		/// @param[in] ic_override Optional initial condition override (highest priority). Empty by default.
 		void solve_problem(Eigen::MatrixXd &sol,
 						   Eigen::MatrixXd &pressure,
 						   UserPostStepCallback user_post_step = {},
@@ -340,6 +343,7 @@ namespace polyfem
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
 		/// @param[in] user_post_step optional post step user callback. Empty by default.
+		/// @param[in] ic_override Optional initial condition override (highest priority). Empty by default.
 		void solve(Eigen::MatrixXd &sol,
 				   Eigen::MatrixXd &pressure,
 				   UserPostStepCallback user_post_step = {},
@@ -373,6 +377,7 @@ namespace polyfem
 		/// initialize solver
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
+		/// @param[in] ic_override Optional initial condition override (highest priority). Empty by default.
 		void init_solve(Eigen::MatrixXd &sol,
 						Eigen::MatrixXd &pressure,
 						const InitialConditionOverride *ic_override = nullptr);
@@ -410,6 +415,7 @@ namespace polyfem
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
 		/// @param[in] user_post_step optional post step user callback. Empty by default.
+		/// @param[in] ic_override Optional initial condition override (highest priority). Empty by default.
 		void solve_transient_linear(const int time_steps,
 									const double t0,
 									const double dt,
@@ -424,6 +430,7 @@ namespace polyfem
 		/// @param[in] dt timestep size
 		/// @param[out] sol solution
 		/// @param[in] user_post_step optional post step user callback. Empty by default.
+		/// @param[in] ic_override Optional initial condition override (highest priority). Empty by default.
 		void solve_transient_tensor_nonlinear(const int time_steps,
 											  const double t0,
 											  const double dt,
@@ -434,6 +441,7 @@ namespace polyfem
 		/// initialize the nonlinear solver
 		/// @param[out] sol solution
 		/// @param[in] t (optional) initial time
+		/// @param[in] ic_override Optional initial condition override (highest priority). Empty by default.
 		void init_nonlinear_tensor_solve(Eigen::MatrixXd &sol,
 										 const double t = 1.0,
 										 const bool init_time_integrator = true,
@@ -441,18 +449,22 @@ namespace polyfem
 
 		/// initialize the linear solve
 		/// @param[in] t (optional) initial time
+		/// @param[in] ic_override Optional initial condition override (highest priority). Empty by default.
 		void init_linear_solve(Eigen::MatrixXd &sol,
 							   const double t = 1.0,
 							   const InitialConditionOverride *ic_override = nullptr);
 
 		/// @brief Load or compute the initial solution.
 		/// @param[out] solution Output solution variable.
+		/// @param[in] ic_override Optional initial condition override (highest priority). Empty by default.
 		void initial_solution(Eigen::MatrixXd &solution, const InitialConditionOverride *ic_override = nullptr) const;
 		/// @brief Load or compute the initial velocity.
-		/// @param[out] solution Output velocity variable.
+		/// @param[out] velocity Output velocity variable.
+		/// @param[in] ic_override Optional initial condition override (highest priority). Empty by default.
 		void initial_velocity(Eigen::MatrixXd &velocity, const InitialConditionOverride *ic_override = nullptr) const;
 		/// @brief Load or compute the initial acceleration.
-		/// @param[out] solution Output acceleration variable.
+		/// @param[out] acceleration Output acceleration variable.
+		/// @param[in] ic_override Optional initial condition override (highest priority). Empty by default.
 		void initial_acceleration(Eigen::MatrixXd &acceleration, const InitialConditionOverride *ic_override = nullptr) const;
 		/// solves a linear problem
 		/// @param[in] step current step
