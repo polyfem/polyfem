@@ -9,6 +9,7 @@
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/utils/Logger.hpp>
+
 #include <MeshFEM/SystemAssembler.hh>
 
 #include <functional>
@@ -78,6 +79,16 @@ namespace polyfem::assembler
 			StiffnessMatrix &stiffness,
 			const bool is_mass = false) const { log_and_throw_error("Assembler not implemented by {}!", name()); }
 
+		virtual void assemble(
+			const bool is_volume,
+			const int n_basis,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const double t,
+			NewtonHessian &stiffness,
+			const bool is_mass = true) const { log_and_throw_error("Assembler not implemented by {}!", name()); }
+
 		// assemble energy
 		virtual double assemble_energy(
 			const bool is_volume,
@@ -126,7 +137,24 @@ namespace polyfem::assembler
 			const Eigen::MatrixXd &displacement_prev,
 			utils::MatrixCache &mat_cache,
 			StiffnessMatrix &grad) const { log_and_throw_error("Assemble hessian not implemented by {}!", name()); }
+		
+		virtual void assemble_hessian(
+			const bool is_volume,
+			const int n_basis,
+			const bool project_to_psd,
+			const double weight,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const double t,
+			const double dt,
+			const Eigen::MatrixXd &displacement,
+			const Eigen::MatrixXd &displacement_prev,
+			utils::MatrixCache &mat_cache,
+			NewtonHessian &H) const { log_and_throw_error("Assemble hessian not implemented by {}!", name()); }
 
+		virtual Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const
+			{ log_and_throw_error("Assemble hessian not implemented by {}!", name()); }
 		// plotting (eg von mises), assembler is the name of the formulation
 		virtual void compute_scalar_value(
 			const OutputData &data,
@@ -344,6 +372,27 @@ namespace polyfem::assembler
 			StiffnessMatrix &stiffness,
 			const bool is_mass = false) const override;
 
+		void assemble(
+			const bool is_volume,
+			const int n_basis,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const double t,
+			NewtonHessian &stiffness,
+			const bool is_mass = true) const override;
+
+
+		void assembleImpl(
+		const bool is_volume,
+		const int n_basis,
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<basis::ElementBases> &gbases,
+		const AssemblyValsCache &cache,
+		const double t,
+		StiffnessMatrix &stiffness,
+		const bool is_mass) const;
+		
 		virtual bool is_linear() const override { return true; }
 
 		/// local assembly function that defines the bilinear form (LHS)
@@ -406,6 +455,24 @@ namespace polyfem::assembler
 			const Eigen::MatrixXd &displacement_prev,
 			utils::MatrixCache &mat_cache,
 			StiffnessMatrix &grad) const override;
+
+		// Integrating MeshFEM's hessian assembly into PolyFEM's NLAssembler interface
+		void assemble_hessian(
+			const bool is_volume,
+			const int n_basis,
+			const bool project_to_psd,
+			const double weight,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &gbases,
+			const AssemblyValsCache &cache,
+			const double t,
+			const double dt,
+			const Eigen::MatrixXd &displacement,
+			const Eigen::MatrixXd &displacement_prev,
+			utils::MatrixCache &mat_cache,
+			NewtonHessian &H) const override;
+
+		
 
 		virtual bool is_linear() const override { return false; }
 

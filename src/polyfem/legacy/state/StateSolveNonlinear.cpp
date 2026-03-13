@@ -154,6 +154,7 @@ namespace polyfem::legacy
 				solve_data.update_dt();
 				solve_data.update_barrier_stiffness(sol);
 			}
+			save_solution(sol, t);
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 			if (time_callback)
@@ -322,6 +323,17 @@ namespace polyfem::legacy
 		for (const auto &form : forms)
 			form->set_output_dir(output_dir);
 
+		NewtonHessian M_full;
+		mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, 0, M_full, true);
+		StiffnessMatrix m_full_stiffness;
+		NewtonHessian2SparseMatrix(M_full, m_full_stiffness);
+		m_full_stiffness = lump_matrix(m_full_stiffness);
+		for (const auto &form : forms)
+			if (form->name() == "inertia"){
+				dynamic_cast<InertiaForm *>(form.get())->setMass(M_full, m_full_stiffness.diagonal());
+				dynamic_cast<InertiaForm *>(form.get())->useLumpedMass(args["solver"]["advanced"]["lump_mass_matrix"]);
+			}
+
 		if (solve_data.contact_form != nullptr)
 			solve_data.contact_form->save_ccd_debug_meshes = args["output"]["advanced"]["save_ccd_debug_meshes"];
 
@@ -342,6 +354,7 @@ namespace polyfem::legacy
 		solve_data.nl_problem = std::make_shared<NLProblem>(
 			ndof, t, forms, solve_data.al_form,
 			polysolve::linear::Solver::create(args["solver"]["linear"], logger()), characteristic_length, characteristic_force_density, pure_mass, mesh->dimension());
+		solve_data.nl_problem->init_block_structure(mesh->dimension(), n_bases); // set block size and number of blocks for hessian assembly
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
 		// --------------------------------------------------------------------
