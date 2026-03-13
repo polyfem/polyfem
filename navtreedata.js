@@ -101,7 +101,7 @@ var NAVTREEINDEX =
 "auto__b__bases_8hpp.html",
 "classp__bases_1_1_reference_simplex.html#a832c3b4ce6bde36917fd59e42d2376ef",
 "classpolyfem_1_1_lazy_cubic_interpolator.html#ac8295f2cb3fa10dfe69491d0ccc1ac7d",
-"classpolyfem_1_1_state.html#a992936041debb52ccbdb24138ffda6c2",
+"classpolyfem_1_1_state.html#a94af4d214505b7f4b6d79fa2d4065097",
 "classpolyfem_1_1assembler_1_1_assembler.html#aa1bea9a7fbeda3ab4d32e7e7e1c197fe",
 "classpolyfem_1_1assembler_1_1_element_assembly_values.html#af00adc734a5115a4eb6dd1b0d3c6db36",
 "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aea31b32c1834fef06b028268ec042560",

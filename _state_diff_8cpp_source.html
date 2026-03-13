@@ -365,7 +365,7 @@ $(document).ready(function(){initNavTree('_state_diff_8cpp_source.html',''); ini
 <div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>            Eigen::MatrixXd <a class="code hl_variable" href="namespacepyramid.html#a1aba94803ba199f9b2d1b4a25105f26a">b</a> = adjoint_rhs;</div>
 <div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span> </div>
 <div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>            Eigen::MatrixXd adjoint;</div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>            <span class="keywordflow">if</span> (s.lin_solver_cached)</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>            <span class="keywordflow">if</span> (s.static_linear_solver_cache)</div>
 <div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>            {</div>
 <div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>                <a class="code hl_variable" href="namespacepyramid.html#a1aba94803ba199f9b2d1b4a25105f26a">b</a>(s.boundary_nodes, Eigen::all).setZero();</div>
 <div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span> </div>
@@ -391,7 +391,7 @@ $(document).ready(function(){initNavTree('_state_diff_8cpp_source.html',''); ini
 <div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>                {</div>
 <div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>                    Eigen::VectorXd <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, <a class="code hl_variable" href="namespacep__bases.html#a545f876b401f1042d3b57d92fb694df8">tmp</a>;</div>
 <div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>                    <a class="code hl_variable" href="namespacep__bases.html#a545f876b401f1042d3b57d92fb694df8">tmp</a> = <a class="code hl_variable" href="namespacepyramid.html#a1aba94803ba199f9b2d1b4a25105f26a">b</a>.col(i);</div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>                    dirichlet_solve_prefactorized(*s.lin_solver_cached, A, tmp, boundary_nodes_tmp, <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>);</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>                    dirichlet_solve_prefactorized(*s.static_linear_solver_cache, A, tmp, boundary_nodes_tmp, <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>);</div>
 <div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span> </div>
 <div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>                    <span class="keywordflow">if</span> (s.has_periodic_bc())</div>
 <div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>                        adjoint.col(i) = s.periodic_bc-&gt;periodic_to_full(full_size, <a class="code hl_variable" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>);</div>
