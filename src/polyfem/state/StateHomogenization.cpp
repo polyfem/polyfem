@@ -1,22 +1,33 @@
 #include <polyfem/State.hpp>
-#include <polyfem/solver/NLHomoProblem.hpp>
+#include <polyfem/Common.hpp>
 #include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/optimization/CacheLevel.hpp>
+#include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/Timer.hpp>
-#include <polysolve/linear/FEMSolver.hpp>
-#include <polysolve/nonlinear/Solver.hpp>
-
-#include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/utils/Types.hpp>
+#include <polyfem/solver/NLHomoProblem.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/forms/lagrangian/MacroStrainLagrangianForm.hpp>
 
-#include <unsupported/Eigen/SparseExtra>
-
+#include <polyfem/io/MshWriter.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/io/Evaluator.hpp>
 
+#include <Eigen/Core>
+#include <unsupported/Eigen/SparseExtra>
+#include <polysolve/linear/FEMSolver.hpp>
+#include <polysolve/nonlinear/Solver.hpp>
 #include <ipc/ipc.hpp>
+#include <spdlog/fmt/fmt.h>
+
+#include <algorithm>
+#include <memory>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
 namespace polyfem
 {
@@ -131,7 +142,7 @@ namespace polyfem
 		solve_data.nl_problem->update_quantities(t, Eigen::VectorXd::Zero(homo_problem->reduced_size() + homo_problem->macro_reduced_size()));
 	}
 
-	void State::solve_homogenization_step(Eigen::MatrixXd &sol, const int t, bool adaptive_initial_weight)
+	void State::solve_homogenization_step(int step, Eigen::MatrixXd &sol, bool adaptive_initial_weight, UserPostStepCallback user_post_step)
 	{
 		const int dim = mesh->dimension();
 		const int ndof = n_bases * dim;
@@ -150,7 +161,7 @@ namespace polyfem
 			std::shared_ptr<polysolve::nonlinear::Solver> nl_solver = make_nl_solver(true);
 
 			Eigen::VectorXi al_indices = fixed_entry.array() + homo_problem->full_size();
-			Eigen::VectorXd al_values = utils::flatten(macro_strain_constraint.eval(t))(fixed_entry);
+			Eigen::VectorXd al_values = utils::flatten(macro_strain_constraint.eval(step))(fixed_entry);
 
 			std::shared_ptr<MacroStrainLagrangianForm> lagr_form = solve_data.strain_al_lagr_form;
 			lagr_form->enable();
@@ -281,11 +292,14 @@ namespace polyfem
 			reduced_sol = homo_problem->extended_to_reduced(sol);
 		}
 
-		if (optimization_enabled != solver::CacheLevel::None)
-			cache_transient_adjoint_quantities(t, homo_problem->reduced_to_full(reduced_sol), utils::unflatten(sol.bottomRows(dim * dim), dim));
+		if (user_post_step)
+		{
+			Eigen::MatrixXd disp_grad = utils::unflatten(sol.bottomRows(dim * dim), dim);
+			user_post_step(step, *this, homo_problem->reduced_to_full(reduced_sol), &disp_grad, nullptr);
+		}
 	}
 
-	void State::solve_homogenization(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol)
+	void State::solve_homogenization(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, UserPostStepCallback user_post_step)
 	{
 		bool is_static = !is_param_valid(args, "time");
 		if (!is_static && !args["time"]["quasistatic"])
@@ -301,7 +315,7 @@ namespace polyfem
 
 			{
 				POLYFEM_SCOPED_TIMER(forward_solve_time);
-				solve_homogenization_step(extended_sol, t, false);
+				solve_homogenization_step(t, extended_sol, false, user_post_step);
 			}
 			sol = extended_sol.topRows(extended_sol.size() - dim * dim) + io::Evaluator::generate_linear_field(n_bases, mesh_nodes, utils::unflatten(extended_sol.bottomRows(dim * dim), dim));
 

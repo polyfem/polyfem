@@ -4,6 +4,7 @@
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/optimization/Optimizations.hpp>
 #include <polyfem/optimization/AdjointNLProblem.hpp>
+#include <polyfem/optimization/BuildFromJson.hpp>
 
 #include <polyfem/optimization/forms/SumCompositeForm.hpp>
 #include <polyfem/optimization/forms/CompositeForms.hpp>
@@ -65,11 +66,14 @@ namespace
 		return true;
 	}
 
-	std::tuple<std::shared_ptr<AdjointForm>, VariableToSimulationGroup, std::vector<std::shared_ptr<State>>> prepare_test(json &opt_args)
+	std::tuple<std::shared_ptr<AdjointForm>, VariableToSimulationGroup, std::vector<std::shared_ptr<State>>, std::vector<std::shared_ptr<DiffCache>>> prepare_test(json &opt_args)
 	{
 		opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
-		std::vector<std::shared_ptr<State>> states = AdjointOptUtils::create_states("", opt_args["states"], solver::CacheLevel::Derivatives, 16);
+		std::vector<std::shared_ptr<State>> states = from_json::build_states("", opt_args["states"], solver::CacheLevel::Derivatives, 16);
+		std::vector<std::shared_ptr<DiffCache>> diff_caches(states.size());
+		for (auto &dc : diff_caches)
+			dc = std::make_shared<DiffCache>();
 
 		/* DOF */
 		int ndof = 0;
@@ -82,16 +86,14 @@ namespace
 		}
 
 		/* variable to simulations */
-		VariableToSimulationGroup var2sim;
-		for (const auto &arg : opt_args["variable_to_simulation"])
-			var2sim.push_back(
-				AdjointOptUtils::create_variable_to_simulation(arg, states, variable_sizes));
+		VariableToSimulationGroup var2sim = from_json::build_variable_to_simulation_group(
+			opt_args["variable_to_simulation"], states, diff_caches, variable_sizes);
 
 		/* forms */
-		std::shared_ptr<AdjointForm> obj = AdjointOptUtils::create_form(
-			opt_args["functionals"], var2sim, states);
+		std::shared_ptr<AdjointForm> obj = from_json::build_form(
+			opt_args["functionals"], var2sim, states, diff_caches);
 
-		return {obj, std::move(var2sim), states};
+		return {obj, std::move(var2sim), states, diff_caches};
 	}
 
 	// std::vector<double> read_energy(const std::string &file)
@@ -130,8 +132,8 @@ TEST_CASE("material-opt", tagsopt)
 	for (auto &arg : opt_args["states"])
 		arg["path"] = root_folder + arg["path"].get<std::string>();
 
-	auto [obj, var2sim, states] = prepare_test(opt_args);
-	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
+	auto [obj, var2sim, states, diff_caches] = prepare_test(opt_args);
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, diff_caches, opt_args);
 
 	/* DOF */
 	int ndof = 0;
@@ -185,8 +187,8 @@ TEST_CASE("initial-opt", "[optimization]")
 	OptState opt_state;
 	opt_state.init(opt_args, false);
 
-	auto [obj, var2sim, states] = prepare_test(opt_args);
-	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
+	auto [obj, var2sim, states, diff_caches] = prepare_test(opt_args);
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, diff_caches, opt_args);
 
 	/* DOF */
 	int ndof = 0;
@@ -219,8 +221,8 @@ TEST_CASE("topology-opt", "[optimization]")
 	for (auto &arg : opt_args["states"])
 		arg["path"] = root_folder + arg["path"].get<std::string>();
 
-	auto [obj, var2sim, states] = prepare_test(opt_args);
-	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
+	auto [obj, var2sim, states, diff_caches] = prepare_test(opt_args);
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, diff_caches, opt_args);
 
 	/* DOF */
 	int ndof = 0;
@@ -238,7 +240,7 @@ TEST_CASE("topology-opt", "[optimization]")
 
 	// nonlinear inequality constraints g(x) < 0
 	{
-		auto obj1 = std::make_shared<WeightedVolumeForm>(CompositeParametrization({std::make_shared<LinearFilter>(*(states[0]->mesh), 0.1)}), *(states[0]));
+		auto obj1 = std::make_shared<WeightedVolumeForm>(CompositeParametrization({std::make_shared<LinearFilter>(*(states[0]->mesh), 0.1)}), states[0]);
 		obj1->set_weight(1 / 1.2);
 		auto obj2 = std::make_shared<PlusConstCompositeForm>(obj1, -1);
 		std::vector<std::shared_ptr<Form>> constraints = {{obj2}};
@@ -269,6 +271,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 
 	json state_args = opt_args["states"];
 	std::vector<std::shared_ptr<State>> states(state_args.size());
+	std::vector<std::shared_ptr<DiffCache>> diff_caches(state_args.size());
 	int i = 0;
 	for (const json &args : state_args)
 	{
@@ -276,7 +279,9 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
 			log_and_throw_adjoint_error("Can't find json for State {}", i);
 
-		states[i++] = AdjointOptUtils::create_state(cur_args, solver::CacheLevel::Derivatives, -1);
+		states[i] = from_json::build_state(cur_args, solver::CacheLevel::Derivatives, 16);
+		diff_caches[i] = std::make_shared<DiffCache>();
+		i++;
 	}
 
 	Eigen::VectorXd x(2);
@@ -284,7 +289,10 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 
 	VariableToSimulationGroup variable_to_simulations;
 	{
-		variable_to_simulations.push_back(std::make_unique<ShapeVariableToSimulation>(states[0], CompositeParametrization()));
+		variable_to_simulations.data.push_back(std::make_shared<ShapeVariableToSimulation>(
+			std::vector<std::shared_ptr<State>>{states[0]},
+			std::vector<std::shared_ptr<DiffCache>>{diff_caches[0]},
+			CompositeParametrization()));
 
 		json composite_map_args = R"({
 			"composite_map_type": "boundary_excluding_surface",
@@ -292,10 +300,10 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 			"surface_selection": [1]
 		})"_json;
 
-		variable_to_simulations[0]->set_output_indexing(composite_map_args);
+		variable_to_simulations.data[0]->set_output_indexing(composite_map_args);
 	}
 
-	auto obj1 = std::make_shared<AMIPSForm>(variable_to_simulations, *states[0]);
+	auto obj1 = std::make_shared<AMIPSForm>(variable_to_simulations, states[0]);
 	obj1->set_weight(1.0);
 
 	std::vector<std::shared_ptr<AdjointForm>> forms({obj1});
@@ -303,7 +311,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 	auto sum = std::make_shared<SumCompositeForm>(variable_to_simulations, forms);
 	sum->set_weight(1.0);
 
-	std::shared_ptr<solver::AdjointNLProblem> nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, opt_args);
+	std::shared_ptr<solver::AdjointNLProblem> nl_problem = std::make_shared<solver::AdjointNLProblem>(sum, variable_to_simulations, states, diff_caches, opt_args);
 
 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], 1);
 	nl_solver->minimize(*nl_problem, x);
@@ -323,8 +331,8 @@ TEST_CASE("shape-stress-opt", tagsopt)
 	for (auto &arg : opt_args["states"])
 		arg["path"] = root_folder + arg["path"].get<std::string>();
 
-	auto [obj, var2sim, states] = prepare_test(opt_args);
-	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
+	auto [obj, var2sim, states, diff_caches] = prepare_test(opt_args);
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, diff_caches, opt_args);
 
 	/* DOF */
 	int ndof = 0;
@@ -338,8 +346,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 
 	Eigen::VectorXd x = AdjointOptUtils::inverse_evaluation(opt_args["parameters"], ndof, variable_sizes, var2sim);
 
-	for (auto &v2s : var2sim)
-		v2s->update(x);
+	var2sim.update(x);
 
 	auto nl_solver = AdjointOptUtils::make_nl_solver(opt_args["solver"]["nonlinear"], opt_args["solver"]["linear"], 1);
 	CHECK_THROWS_WITH(nl_solver->minimize(*nl_problem, x), Catch::Matchers::ContainsSubstring("Reached iteration limit"));
@@ -348,7 +355,7 @@ TEST_CASE("shape-stress-opt", tagsopt)
 	logger().trace("final energy {}", params["energy"].get<double>());
 
 	// REQUIRE(energies[0] == Catch::Approx(0.105955475999).epsilon(1e-4));
-	REQUIRE(params["energy"].get<double>() == Catch::Approx(0.0589966856256).epsilon(1e-4));
+	REQUIRE(params["energy"].get<double>() == Catch::Approx(0.0587843446).epsilon(1e-4));
 
 	// REQUIRE(energies[0] == Catch::Approx(12.0735).epsilon(1e-4));
 	// REQUIRE(energies[energies.size() - 1] == Catch::Approx(11.3886).epsilon(1e-4));
@@ -964,8 +971,8 @@ TEST_CASE("3d-shape-layer-thickness", tagsopt)
 	for (auto &arg : opt_args["states"])
 		arg["path"] = root_folder + arg["path"].get<std::string>();
 
-	auto [obj, var2sim, states] = prepare_test(opt_args);
-	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, opt_args);
+	auto [obj, var2sim, states, diff_caches] = prepare_test(opt_args);
+	auto nl_problem = std::make_shared<AdjointNLProblem>(obj, var2sim, states, diff_caches, opt_args);
 
 	/* DOF */
 	int ndof = 0;

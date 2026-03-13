@@ -1,12 +1,26 @@
-#include "SurfaceTractionForms.hpp"
+#include <polyfem/optimization/forms/SurfaceTractionForms.hpp>
 
+#include <polyfem/State.hpp>
+#include <polyfem/Common.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
-#include <polyfem/solver/forms/ContactForm.hpp>
-#include <polyfem/solver/forms/FrictionForm.hpp>
-
 #include <polyfem/utils/IntegrableFunctional.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
-#include <polyfem/State.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/Types.hpp>
+#include <polyfem/solver/forms/ContactForm.hpp>
+#include <polyfem/solver/forms/FrictionForm.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
+
+#include <Eigen/Core>
+
+#include <cassert>
+#include <cstddef>
+#include <functional>
+#include <map>
+#include <memory>
+#include <set>
+#include <utility>
+#include <vector>
 
 // #include <finitediff.hpp>
 
@@ -787,12 +801,14 @@ namespace polyfem::solver
 
 	ProxyContactForceForm::ProxyContactForceForm(
 		const VariableToSimulationGroup &variable_to_simulations,
-		const State &state,
+		std::shared_ptr<const State> state,
+		std::shared_ptr<const DiffCache> diff_cache,
 		const double dhat,
 		const bool quadratic_potential,
 		const json &args)
 		: StaticForm(variable_to_simulations),
-		  state_(state),
+		  state_(std::move(state)),
+		  diff_cache_(std::move(diff_cache)),
 		  dhat_(dhat),
 		  dmin_(0),
 		  barrier_potential_(dhat, true)
@@ -804,9 +820,9 @@ namespace polyfem::solver
 
 		broad_phase_method_ = ipc::BroadPhaseMethod::HASH_GRID;
 
-		if (state.problem->is_time_dependent())
+		if (state_->problem->is_time_dependent())
 		{
-			int time_steps = state.args["time"]["time_steps"].get<int>() + 1;
+			int time_steps = state_->args["time"]["time_steps"].get<int>() + 1;
 			collision_set_indicator_.setZero(time_steps);
 			for (int i = 0; i < time_steps + 1; ++i)
 			{
@@ -839,7 +855,7 @@ namespace polyfem::solver
 		// Eigen::MatrixXd node_positions;
 		Eigen::MatrixXi boundary_edges, boundary_triangles;
 		std::vector<Eigen::Triplet<double>> displacement_map_entries;
-		io::OutGeometryData::extract_boundary_mesh(*state_.mesh, state_.n_bases, state_.bases, state_.total_local_boundary,
+		io::OutGeometryData::extract_boundary_mesh(*state_->mesh, state_->n_bases, state_->bases, state_->total_local_boundary,
 												   node_positions_, boundary_edges, boundary_triangles, displacement_map_entries);
 
 		std::vector<bool> is_on_surface;
@@ -849,24 +865,24 @@ namespace polyfem::solver
 		Eigen::MatrixXd points, uv, normals;
 		Eigen::VectorXd weights;
 		Eigen::VectorXi global_primitive_ids;
-		for (const auto &lb : state_.total_local_boundary)
+		for (const auto &lb : state_->total_local_boundary)
 		{
 			const int e = lb.element_id();
-			bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, state_.n_boundary_samples(), *state_.mesh, false, uv, points, normals, weights, global_primitive_ids);
+			bool has_samples = utils::BoundarySampler::boundary_quadrature(lb, state_->n_boundary_samples(), *state_->mesh, false, uv, points, normals, weights, global_primitive_ids);
 
 			if (!has_samples)
 				continue;
 
-			const basis::ElementBases &bs = state_.bases[e];
-			const basis::ElementBases &gbs = state_.geom_bases()[e];
+			const basis::ElementBases &bs = state_->bases[e];
+			const basis::ElementBases &gbs = state_->geom_bases()[e];
 
-			vals.compute(e, state_.mesh->is_volume(), points, bs, gbs);
+			vals.compute(e, state_->mesh->is_volume(), points, bs, gbs);
 
 			for (int i = 0; i < lb.size(); ++i)
 			{
 				const int primitive_global_id = lb.global_primitive_id(i);
-				const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, *state_.mesh);
-				const int boundary_id = state_.mesh->get_boundary_id(primitive_global_id);
+				const auto nodes = bs.local_nodes_for_primitive(primitive_global_id, *state_->mesh);
+				const int boundary_id = state_->mesh->get_boundary_id(primitive_global_id);
 
 				if (!std::count(boundary_ids_.begin(), boundary_ids_.end(), boundary_id))
 					continue;
@@ -885,7 +901,7 @@ namespace polyfem::solver
 		Eigen::SparseMatrix<double> displacement_map;
 		if (!displacement_map_entries.empty())
 		{
-			displacement_map.resize(node_positions_.rows(), state_.n_bases);
+			displacement_map.resize(node_positions_.rows(), state_->n_bases);
 			displacement_map.setFromTriplets(displacement_map_entries.begin(), displacement_map_entries.end());
 		}
 
@@ -904,7 +920,7 @@ namespace polyfem::solver
 				}
 			}
 
-			if (state_.mesh->is_volume())
+			if (state_->mesh->is_volume())
 			{
 				for (int i = 0; i < boundary_triangles.rows(); ++i)
 				{
@@ -970,10 +986,10 @@ namespace polyfem::solver
 
 	double ProxyContactForceForm::value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const
 	{
-		assert(state_.solve_data.time_integrator != nullptr);
-		assert(state_.solve_data.contact_form != nullptr);
+		assert(state_->solve_data.time_integrator != nullptr);
+		assert(state_->solve_data.contact_form != nullptr);
 
-		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh_.dim()));
+		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(diff_cache_->u(time_step), collision_mesh_.dim()));
 		auto collision_set = get_or_compute_collision_set(time_step, displaced_surface);
 
 		Eigen::MatrixXd forces = collision_mesh_.to_full_dof(barrier_potential_.gradient(collision_set, collision_mesh_, displaced_surface));
@@ -983,12 +999,12 @@ namespace polyfem::solver
 		return sum;
 	}
 
-	Eigen::VectorXd ProxyContactForceForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
+	Eigen::VectorXd ProxyContactForceForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const
 	{
-		assert(state_.solve_data.time_integrator != nullptr);
-		assert(state_.solve_data.contact_form != nullptr);
+		assert(state_->solve_data.time_integrator != nullptr);
+		assert(state_->solve_data.contact_form != nullptr);
 
-		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh_.dim()));
+		const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(diff_cache_->u(time_step), collision_mesh_.dim()));
 		auto collision_set = get_or_compute_collision_set(time_step, displaced_surface);
 
 		Eigen::MatrixXd forces = collision_mesh_.to_full_dof(barrier_potential_.gradient(collision_set, collision_mesh_, displaced_surface));
@@ -1021,11 +1037,11 @@ namespace polyfem::solver
 
 	void ProxyContactForceForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		assert(state_.solve_data.time_integrator != nullptr);
-		assert(state_.solve_data.contact_form != nullptr);
+		assert(state_->solve_data.time_integrator != nullptr);
+		assert(state_->solve_data.contact_form != nullptr);
 
-		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, &state_, x, [this, time_step, &x]() {
-			const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(state_.diff_cached.u(time_step), collision_mesh_.dim()));
+		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, state_.get(), x, [this, time_step, &x]() {
+			const Eigen::MatrixXd displaced_surface = collision_mesh_.displace_vertices(utils::unflatten(diff_cache_->u(time_step), collision_mesh_.dim()));
 
 			auto collision_set = get_or_compute_collision_set(time_step, displaced_surface);
 
@@ -1067,9 +1083,9 @@ namespace polyfem::solver
 			// logger().trace("fd norm {}", G.norm());
 			// logger().trace("grads difference norm {}", (G - grads).norm() / G.norm());
 
-			grads = state_.basis_nodes_to_gbasis_nodes * grads;
+			grads = diff_cache_->basis_nodes_to_gbasis_nodes() * grads;
 
-			return AdjointTools::map_node_to_primitive_order(state_, grads);
+			return AdjointTools::map_node_to_primitive_order(*state_, grads);
 		});
 	}
 

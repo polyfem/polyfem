@@ -2,6 +2,7 @@
 
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/time_integrator/BDF.hpp>
@@ -9,12 +10,21 @@
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
-#include <polysolve/linear/FEMSolver.hpp>
 
+#include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/Timer.hpp>
 
-#include <unsupported/Eigen/SparseExtra>
 #include <polyfem/io/Evaluator.hpp>
+
+#include <Eigen/Core>
+#include <unsupported/Eigen/SparseExtra>
+#include <spdlog/fmt/fmt.h>
+#include <polysolve/linear/FEMSolver.hpp>
+
+#include <cassert>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace polyfem
 {
@@ -67,11 +77,12 @@ namespace polyfem
 	}
 
 	void State::solve_linear(
+		int step,
 		const std::unique_ptr<polysolve::linear::Solver> &solver,
 		StiffnessMatrix &A,
 		Eigen::VectorXd &b,
 		const bool compute_spectrum,
-		Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
+		Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step)
 	{
 		assert(assembler->is_linear() && !is_contact_enabled());
 		assert(solve_data.rhs_assembler != nullptr);
@@ -92,18 +103,18 @@ namespace polyfem
 			boundary_nodes_tmp = boundary_nodes;
 
 		Eigen::VectorXd x;
-		if (optimization_enabled == solver::CacheLevel::Derivatives)
-		{
-			auto A_tmp = A;
-			prefactorize(*solver, A, boundary_nodes_tmp, precond_num, args["output"]["data"]["stiffness_mat"]);
-			dirichlet_solve_prefactorized(*solver, A_tmp, b, boundary_nodes_tmp, x);
-		}
-		else
-		{
-			stats.spectrum = dirichlet_solve(
-				*solver, A, b, boundary_nodes_tmp, x, precond_num, args["output"]["data"]["stiffness_mat"], compute_spectrum,
-				assembler->is_fluid(), use_avg_pressure);
-		}
+		stats.spectrum = dirichlet_solve(
+			*solver,
+			A,
+			b,
+			boundary_nodes_tmp,
+			x,
+			precond_num,
+			args["output"]["data"]["stiffness_mat"],
+			compute_spectrum,
+			assembler->is_fluid(),
+			use_avg_pressure);
+
 		if (has_periodic_bc())
 		{
 			sol = periodic_bc->periodic_to_full(full_size, x);
@@ -129,20 +140,23 @@ namespace polyfem
 
 		if (mixed_assembler != nullptr)
 			sol_to_pressure(sol, pressure);
+
+		if (user_post_step)
+		{
+			user_post_step(step, *this, sol, nullptr, nullptr);
+		}
 	}
 
-	void State::solve_linear(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
+	void State::solve_linear(int step, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step)
 	{
 		assert(!problem->is_time_dependent());
 		assert(assembler->is_linear() && !is_contact_enabled());
 
 		// --------------------------------------------------------------------
-		if (lin_solver_cached)
-			lin_solver_cached.reset();
 
-		lin_solver_cached =
+		static_linear_solver_cache =
 			polysolve::linear::Solver::create(args["solver"]["linear"], logger());
-		logger().info("{}...", lin_solver_cached->name());
+		logger().info("{}...", static_linear_solver_cache->name());
 
 		// --------------------------------------------------------------------
 
@@ -157,7 +171,7 @@ namespace polyfem
 
 		// --------------------------------------------------------------------
 
-		solve_linear(lin_solver_cached, A, b, args["output"]["advanced"]["spectrum"], sol, pressure);
+		solve_linear(step, static_linear_solver_cache, A, b, args["output"]["advanced"]["spectrum"], sol, pressure, user_post_step);
 	}
 
 	void State::init_linear_solve(Eigen::MatrixXd &sol, const double t)
@@ -216,7 +230,7 @@ namespace polyfem
 		solve_data.update_dt();
 	}
 
-	void State::solve_transient_linear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
+	void State::solve_transient_linear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step)
 	{
 		assert(sol.cols() == 1);
 		assert(problem->is_time_dependent());
@@ -262,7 +276,12 @@ namespace polyfem
 		if (optimization_enabled != solver::CacheLevel::None)
 		{
 			log_and_throw_adjoint_error("Transient linear problems are not differentiable yet!");
-			cache_transient_adjoint_quantities(0, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
+		}
+
+		// Step 0.
+		if (user_post_step)
+		{
+			user_post_step(0, *this, sol, nullptr, nullptr);
 		}
 
 		Eigen::MatrixXd current_rhs = rhs;
@@ -330,12 +349,11 @@ namespace polyfem
 				compute_spectrum &= t == 1;
 			}
 
-			solve_linear(solver, A, b, compute_spectrum, sol, pressure);
+			solve_linear(t, solver, A, b, compute_spectrum, sol, pressure, user_post_step);
 
 			if (optimization_enabled != solver::CacheLevel::None)
 			{
 				log_and_throw_adjoint_error("Transient linear problems are not differentiable yet!");
-				cache_transient_adjoint_quantities(t, sol, Eigen::MatrixXd::Zero(mesh->dimension(), mesh->dimension()));
 			}
 
 			time_integrator->update_quantities(sol);

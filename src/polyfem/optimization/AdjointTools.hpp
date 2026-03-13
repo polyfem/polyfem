@@ -1,6 +1,11 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
+
+#include <Eigen/Core>
+
+#include <vector>
 #include <set>
 
 namespace polyfem
@@ -63,6 +68,7 @@ namespace polyfem::solver
 			const int cur_time_step);
 		void dJ_shape_static_adjoint_term(
 			const State &state,
+			const DiffCache &diff_cache,
 			const Eigen::MatrixXd &sol,
 			const Eigen::MatrixXd &adjoint,
 			Eigen::VectorXd &one_form);
@@ -76,11 +82,13 @@ namespace polyfem::solver
 		// vertices as only one degree of freedom.
 		void dJ_shape_homogenization_adjoint_term(
 			const State &state,
+			const DiffCache &diff_cache,
 			const Eigen::MatrixXd &sol,
 			const Eigen::MatrixXd &adjoint,
 			Eigen::VectorXd &one_form);
 		void dJ_periodic_shape_adjoint_term(
 			const State &state,
+			const DiffCache &diff_cache,
 			const PeriodicMeshToMesh &periodic_mesh_map,
 			const Eigen::VectorXd &periodic_mesh_representation,
 			const Eigen::MatrixXd &sol,
@@ -89,6 +97,7 @@ namespace polyfem::solver
 
 		void dJ_shape_transient_adjoint_term(
 			const State &state,
+			const DiffCache &diff_cache,
 			const Eigen::MatrixXd &adjoint_nu,
 			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
@@ -99,16 +108,19 @@ namespace polyfem::solver
 			Eigen::VectorXd &one_form);
 		void dJ_material_transient_adjoint_term(
 			const State &state,
+			const DiffCache &diff_cache,
 			const Eigen::MatrixXd &adjoint_nu,
 			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
 		void dJ_friction_transient_adjoint_term(
 			const State &state,
+			const DiffCache &diff_cache,
 			const Eigen::MatrixXd &adjoint_nu,
 			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
 		void dJ_damping_transient_adjoint_term(
 			const State &state,
+			const DiffCache &diff_cache,
 			const Eigen::MatrixXd &adjoint_nu,
 			const Eigen::MatrixXd &adjoint_p,
 			Eigen::VectorXd &one_form);
@@ -119,6 +131,7 @@ namespace polyfem::solver
 			Eigen::VectorXd &one_form);
 		void dJ_dirichlet_static_adjoint_term(
 			const State &state,
+			const DiffCache &diff_cache,
 			const Eigen::MatrixXd &adjoint,
 			Eigen::VectorXd &one_form);
 		void dJ_dirichlet_transient_adjoint_term(
@@ -134,6 +147,7 @@ namespace polyfem::solver
 			Eigen::VectorXd &one_form);
 		void dJ_pressure_transient_adjoint_term(
 			const State &state,
+			const DiffCache &diff_cache,
 			const std::vector<int> &boundary_ids,
 			const Eigen::MatrixXd &adjoint_nu,
 			const Eigen::MatrixXd &adjoint_p,

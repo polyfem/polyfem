@@ -1,117 +1,46 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
+#include <polyfem/State.hpp>
+
 #include <polyfem/utils/Types.hpp>
+#include <polyfem/optimization/CacheLevel.hpp>
+
 #include <ipc/ipc.hpp>
 #include <ipc/collisions/normal/normal_collisions.hpp>
 #include <ipc/collisions/tangential/tangential_collisions.hpp>
 
-namespace polyfem::solver
-{
-	enum class CacheLevel
-	{
-		None,
-		Solution,
-		Derivatives
-	};
+#include <Eigen/Core>
 
+#include <cassert>
+#include <vector>
+
+namespace polyfem
+{
+	/// @brief Storage for additional data required by differntial code.
 	class DiffCache
 	{
 	public:
-		void init(const int dimension, const int ndof, const int n_time_steps = 0)
-		{
-			cur_size_ = 0;
-			n_time_steps_ = n_time_steps;
+		void cache_adjoints(const Eigen::MatrixXd &adjoint_mat);
 
-			u_.setZero(ndof, n_time_steps + 1);
-			disp_grad_.assign(n_time_steps + 1, Eigen::MatrixXd::Zero(dimension, dimension));
-			if (n_time_steps_ > 0)
-			{
-				bdf_order_.setZero(n_time_steps + 1);
-				v_.setZero(ndof, n_time_steps + 1);
-				acc_.setZero(ndof, n_time_steps + 1);
-				// gradu_h_prev_.resize(n_time_steps + 1);
-			}
-			gradu_h_.resize(n_time_steps + 1);
-			collision_set_.resize(n_time_steps + 1);
-			smooth_collision_set_.resize(n_time_steps + 1);
-			friction_collision_set_.resize(n_time_steps + 1);
-			normal_adhesion_collision_set_.resize(n_time_steps + 1);
-			tangential_adhesion_collision_set_.resize(n_time_steps + 1);
-		}
+		/// @brief Cache time-dependent adjoint optimization data.
+		/// @param[in] step Current time step.
+		/// @param[in] state Current forward simulation state. Will mutate it to get latest value.
+		/// @param[in] sol Current solution.
+		/// @param[in] disp_grad Pointer to displacement gradient matrix. Assumes zero if nullptr.
+		/// @param[in] pressure Pointer to pressure matrix. PASS nullptr ONLY.
+		///
+		/// @warning We DO NOT support navier stoke problem yet!! Passing non-null pressure triggers exception.
+		void cache_transient(
+			int step,
+			State &state,
+			const Eigen::MatrixXd &sol,
+			const Eigen::MatrixXd *disp_grad,
+			const Eigen::MatrixXd *pressure);
 
-		void cache_quantities_static(
-			const Eigen::MatrixXd &u,
-			const StiffnessMatrix &gradu_h,
-			const ipc::NormalCollisions &collision_set,
-			const ipc::SmoothCollisions &smooth_collision_set,
-			const ipc::TangentialCollisions &friction_constraint_set,
-			const ipc::NormalCollisions &normal_adhesion_set,
-			const ipc::TangentialCollisions &tangential_adhesion_set,
-			const Eigen::MatrixXd &disp_grad)
-		{
-			u_ = u;
-
-			gradu_h_[0] = gradu_h;
-			collision_set_[0] = collision_set;
-			smooth_collision_set_[0] = smooth_collision_set;
-			friction_collision_set_[0] = friction_constraint_set;
-			normal_adhesion_collision_set_[0] = normal_adhesion_set;
-			tangential_adhesion_collision_set_[0] = tangential_adhesion_set;
-			disp_grad_[0] = disp_grad;
-
-			cur_size_ = 1;
-		}
-
-		void cache_quantities_transient(
-			const int cur_step,
-			const int cur_bdf_order,
-			const Eigen::MatrixXd &u,
-			const Eigen::MatrixXd &v,
-			const Eigen::MatrixXd &acc,
-			const StiffnessMatrix &gradu_h,
-			// const StiffnessMatrix &gradu_h_prev,
-			const ipc::NormalCollisions &collision_set,
-			const ipc::SmoothCollisions &smooth_collision_set,
-			const ipc::TangentialCollisions &friction_collision_set)
-		{
-			bdf_order_(cur_step) = cur_bdf_order;
-
-			u_.col(cur_step) = u;
-			v_.col(cur_step) = v;
-			acc_.col(cur_step) = acc;
-
-			gradu_h_[cur_step] = gradu_h;
-			// gradu_h_prev_[cur_step] = gradu_h_prev;
-
-			collision_set_[cur_step] = collision_set;
-			smooth_collision_set_[cur_step] = smooth_collision_set;
-			friction_collision_set_[cur_step] = friction_collision_set;
-
-			cur_size_++;
-		}
-
-		void cache_quantities_quasistatic(
-			const int cur_step,
-			const Eigen::MatrixXd &u,
-			const StiffnessMatrix &gradu_h,
-			const ipc::NormalCollisions &collision_set,
-			const ipc::SmoothCollisions &smooth_collision_set,
-			const ipc::NormalCollisions &normal_adhesion_set,
-			const Eigen::MatrixXd &disp_grad)
-		{
-			u_.col(cur_step) = u;
-			gradu_h_[cur_step] = gradu_h;
-			collision_set_[cur_step] = collision_set;
-			smooth_collision_set_[cur_step] = smooth_collision_set;
-			normal_adhesion_collision_set_[cur_step] = normal_adhesion_set;
-			disp_grad_[cur_step] = disp_grad;
-
-			cur_size_++;
-		}
-
-		void cache_adjoints(const Eigen::MatrixXd &adjoint_mat) { adjoint_mat_ = adjoint_mat; }
 		const Eigen::MatrixXd &adjoint_mat() const { return adjoint_mat_; }
+
+		const StiffnessMatrix &basis_nodes_to_gbasis_nodes() const;
 
 		inline int size() const { return cur_size_; }
 		inline int bdf_order(int step) const
@@ -201,6 +130,9 @@ namespace polyfem::solver
 		int n_time_steps_ = 0;
 		int cur_size_ = 0;
 
+		// Mapping from positions of FE basis nodes to positions of geometry nodes.
+		StiffnessMatrix basis_nodes_to_gbasis_nodes_;
+
 		std::vector<Eigen::MatrixXd> disp_grad_; // macro linear displacement in homogenization
 		Eigen::MatrixXd u_;                      // PDE solution
 		Eigen::MatrixXd v_;                      // velocity in transient elastic simulations
@@ -219,5 +151,38 @@ namespace polyfem::solver
 		std::vector<ipc::TangentialCollisions> tangential_adhesion_collision_set_;
 
 		Eigen::MatrixXd adjoint_mat_;
+
+		void init(const int dimension, const int ndof, const int n_time_steps = 0);
+
+		void cache_quantities_static(
+			const Eigen::MatrixXd &u,
+			const StiffnessMatrix &gradu_h,
+			const ipc::NormalCollisions &collision_set,
+			const ipc::SmoothCollisions &smooth_collision_set,
+			const ipc::TangentialCollisions &friction_constraint_set,
+			const ipc::NormalCollisions &normal_adhesion_set,
+			const ipc::TangentialCollisions &tangential_adhesion_set,
+			const Eigen::MatrixXd &disp_grad);
+
+		void cache_quantities_transient(
+			const int cur_step,
+			const int cur_bdf_order,
+			const Eigen::MatrixXd &u,
+			const Eigen::MatrixXd &v,
+			const Eigen::MatrixXd &acc,
+			const StiffnessMatrix &gradu_h,
+			// const StiffnessMatrix &gradu_h_prev,
+			const ipc::NormalCollisions &collision_set,
+			const ipc::SmoothCollisions &smooth_collision_set,
+			const ipc::TangentialCollisions &friction_collision_set);
+
+		void cache_quantities_quasistatic(
+			const int cur_step,
+			const Eigen::MatrixXd &u,
+			const StiffnessMatrix &gradu_h,
+			const ipc::NormalCollisions &collision_set,
+			const ipc::SmoothCollisions &smooth_collision_set,
+			const ipc::NormalCollisions &normal_adhesion_set,
+			const Eigen::MatrixXd &disp_grad);
 	};
-} // namespace polyfem::solver
+} // namespace polyfem

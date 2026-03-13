@@ -1,10 +1,11 @@
 #pragma once
 
 #include <polyfem/optimization/forms/VariableToSimulation.hpp>
-#include "VariableToSimulation.hpp"
-#include "AdjointForm.hpp"
+#include <polyfem/optimization/forms/AdjointForm.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 #include <polyfem/basis/ElementBases.hpp>
+#include <memory>
+#include <utility>
 
 namespace polyfem
 {
@@ -22,9 +23,9 @@ namespace polyfem::solver
 	class MinJacobianForm : public AdjointForm
 	{
 	public:
-		MinJacobianForm(const VariableToSimulationGroup &variable_to_simulation, const State &state)
+		MinJacobianForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const State> state)
 			: AdjointForm(variable_to_simulation),
-			  state_(state)
+			  state_(std::move(state))
 		{
 		}
 
@@ -34,13 +35,13 @@ namespace polyfem::solver
 		void compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	private:
-		const State &state_;
+		std::shared_ptr<const State> state_;
 	};
 
 	class AMIPSForm : public AdjointForm
 	{
 	public:
-		AMIPSForm(const VariableToSimulationGroup &variable_to_simulation, const State &state);
+		AMIPSForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const State> state);
 
 		virtual std::string name() const override { return "AMIPS"; }
 
@@ -52,16 +53,17 @@ namespace polyfem::solver
 		Eigen::VectorXd get_updated_mesh_nodes(const Eigen::VectorXd &x) const
 		{
 			Eigen::VectorXd X = X_rest;
-			variable_to_simulations_.compute_state_variable(ParameterType::Shape, &state_, x, X);
+			variable_to_simulations_.compute_state_variable(ParameterType::Shape, state_.get(), x, X);
 			return X;
 		}
 
-		const State &state_;
+		std::shared_ptr<const State> state_;
 
 		Eigen::VectorXd X_rest;
 		Eigen::MatrixXi F;
 		std::vector<polyfem::basis::ElementBases> init_geom_bases_;
 		assembler::AssemblyValsCache init_ass_vals_cache_;
+		// amips_energy_ is actually owned exclusively by this class.
 		std::shared_ptr<assembler::Assembler> amips_energy_;
 	};
 } // namespace polyfem::solver

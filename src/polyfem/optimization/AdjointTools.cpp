@@ -1,15 +1,22 @@
 #include "AdjointTools.hpp"
 
-#include <polyfem/utils/MaybeParallelFor.hpp>
-#include <polyfem/utils/Timer.hpp>
-#include <polyfem/io/Evaluator.hpp>
-#include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/State.hpp>
 
+#include <polyfem/io/Evaluator.hpp>
+
+#include <polyfem/utils/AutodiffTypes.hpp>
+#include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/IntegrableFunctional.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
-#include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
+#include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/Types.hpp>
 
+#include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
+#include <polyfem/time_integrator/BDF.hpp>
+
+#include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/solver/NLHomoProblem.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/ContactForm.hpp>
 #include <polyfem/solver/forms/BarrierContactForm.hpp>
@@ -21,6 +28,8 @@
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/PressureForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
+
+#include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/force_derivatives/ElasticForceDerivative.hpp>
 #include <polyfem/optimization/force_derivatives/BodyForceDerivative.hpp>
 #include <polyfem/optimization/force_derivatives/PressureForceDerivative.hpp>
@@ -33,10 +42,16 @@
 #include <polyfem/optimization/force_derivatives/TangentialAdhesionForceDerivative.hpp>
 #include <polyfem/optimization/parametrization/PeriodicMeshToMesh.hpp>
 
-#include <polyfem/solver/NLProblem.hpp>
-#include <polyfem/solver/NLHomoProblem.hpp>
+#include <Eigen/Core>
 
-#include <polyfem/time_integrator/BDF.hpp>
+#include <algorithm>
+#include <cassert>
+#include <cmath>
+#include <map>
+#include <set>
+#include <string>
+#include <vector>
+#include <memory>
 
 /*
 Reminders:
@@ -560,6 +575,7 @@ namespace polyfem::solver
 
 	void AdjointTools::dJ_shape_static_adjoint_term(
 		const State &state,
+		const DiffCache &diff_cache,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &adjoint,
 		Eigen::VectorXd &one_form)
@@ -581,7 +597,7 @@ namespace polyfem::solver
 			if (state.solve_data.pressure_form)
 			{
 				PressureForceDerivative::force_shape_derivative(*state.solve_data.pressure_form, state.n_geom_bases, 0, sol, adjoint_zeroed, pressure_term);
-				pressure_term = state.basis_nodes_to_gbasis_nodes * pressure_term;
+				pressure_term = diff_cache.basis_nodes_to_gbasis_nodes() * pressure_term;
 			}
 			else
 				pressure_term.setZero(one_form.size());
@@ -590,22 +606,22 @@ namespace polyfem::solver
 			{
 				if (const auto barrier_contact = dynamic_cast<const BarrierContactForm *>(state.solve_data.contact_form.get()))
 				{
-					BarrierContactForceDerivative::force_shape_derivative(*barrier_contact, state.diff_cached.collision_set(0), sol, adjoint_zeroed, contact_term);
+					BarrierContactForceDerivative::force_shape_derivative(*barrier_contact, diff_cache.collision_set(0), sol, adjoint_zeroed, contact_term);
 				}
 				else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm *>(state.solve_data.contact_form.get()))
 				{
-					SmoothContactForceDerivative::force_shape_derivative(*smooth_contact, state.diff_cached.smooth_collision_set(0), sol, adjoint_zeroed, contact_term);
+					SmoothContactForceDerivative::force_shape_derivative(*smooth_contact, diff_cache.smooth_collision_set(0), sol, adjoint_zeroed, contact_term);
 				}
 
-				contact_term = state.basis_nodes_to_gbasis_nodes * contact_term;
+				contact_term = diff_cache.basis_nodes_to_gbasis_nodes() * contact_term;
 			}
 			else
 				contact_term.setZero(elasticity_term.size());
 
 			if (state.is_adhesion_enabled())
 			{
-				NormalAdhesionForceDerivative::force_shape_derivative(*state.solve_data.normal_adhesion_form, state.diff_cached.normal_adhesion_collision_set(0), sol, adjoint, adhesion_term);
-				adhesion_term = state.basis_nodes_to_gbasis_nodes * adhesion_term;
+				NormalAdhesionForceDerivative::force_shape_derivative(*state.solve_data.normal_adhesion_form, diff_cache.normal_adhesion_collision_set(0), sol, adjoint, adhesion_term);
+				adhesion_term = diff_cache.basis_nodes_to_gbasis_nodes() * adhesion_term;
 			}
 			else
 			{
@@ -619,6 +635,7 @@ namespace polyfem::solver
 
 	void AdjointTools::dJ_shape_homogenization_adjoint_term(
 		const State &state,
+		const DiffCache &diff_cache,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &adjoint,
 		Eigen::VectorXd &one_form)
@@ -640,22 +657,22 @@ namespace polyfem::solver
 		{
 			if (const auto barrier_contact = dynamic_cast<const BarrierContactForm *>(state.solve_data.contact_form.get()))
 			{
-				BarrierContactForceDerivative::force_shape_derivative(*barrier_contact, state.diff_cached.collision_set(0), sol, full_adjoint, contact_term);
+				BarrierContactForceDerivative::force_shape_derivative(*barrier_contact, diff_cache.collision_set(0), sol, full_adjoint, contact_term);
 			}
 			else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm *>(state.solve_data.contact_form.get()))
 			{
-				SmoothContactForceDerivative::force_shape_derivative(*smooth_contact, state.diff_cached.smooth_collision_set(0), sol, full_adjoint, contact_term);
+				SmoothContactForceDerivative::force_shape_derivative(*smooth_contact, diff_cache.smooth_collision_set(0), sol, full_adjoint, contact_term);
 			}
 
-			contact_term = state.basis_nodes_to_gbasis_nodes * contact_term;
+			contact_term = diff_cache.basis_nodes_to_gbasis_nodes() * contact_term;
 		}
 		else
 			contact_term.setZero(elasticity_term.size());
 
 		if (state.is_adhesion_enabled())
 		{
-			NormalAdhesionForceDerivative::force_shape_derivative(*state.solve_data.normal_adhesion_form, state.diff_cached.normal_adhesion_collision_set(0), sol, full_adjoint, adhesion_term);
-			adhesion_term = state.basis_nodes_to_gbasis_nodes * adhesion_term;
+			NormalAdhesionForceDerivative::force_shape_derivative(*state.solve_data.normal_adhesion_form, diff_cache.normal_adhesion_collision_set(0), sol, full_adjoint, adhesion_term);
+			adhesion_term = diff_cache.basis_nodes_to_gbasis_nodes() * adhesion_term;
 		}
 		else
 		{
@@ -666,13 +683,14 @@ namespace polyfem::solver
 
 		Eigen::VectorXd force;
 		homo_problem->FullNLProblem::gradient(sol, force);
-		one_form -= state.basis_nodes_to_gbasis_nodes * utils::flatten(utils::unflatten(force, dim) * affine_adjoint);
+		one_form -= diff_cache.basis_nodes_to_gbasis_nodes() * utils::flatten(utils::unflatten(force, dim) * affine_adjoint);
 
 		one_form = utils::flatten(utils::unflatten(one_form, dim)(state.primitive_to_node(), Eigen::all));
 	}
 
 	void AdjointTools::dJ_periodic_shape_adjoint_term(
 		const State &state,
+		const DiffCache &diff_cache,
 		const PeriodicMeshToMesh &periodic_mesh_map,
 		const Eigen::VectorXd &periodic_mesh_representation,
 		const Eigen::MatrixXd &sol,
@@ -682,7 +700,7 @@ namespace polyfem::solver
 		std::shared_ptr<NLHomoProblem> homo_problem = std::dynamic_pointer_cast<NLHomoProblem>(state.solve_data.nl_problem);
 		assert(homo_problem);
 
-		const Eigen::MatrixXd reduced_sol = homo_problem->full_to_reduced(sol, state.diff_cached.disp_grad());
+		const Eigen::MatrixXd reduced_sol = homo_problem->full_to_reduced(sol, diff_cache.disp_grad());
 		const Eigen::VectorXd extended_sol = homo_problem->reduced_to_extended(reduced_sol);
 
 		const Eigen::VectorXd extended_adjoint = homo_problem->reduced_to_extended(adjoint, true);
@@ -691,13 +709,13 @@ namespace polyfem::solver
 
 		const int dim = state.mesh->dimension();
 
-		dJ_shape_homogenization_adjoint_term(state, sol, adjoint, one_form);
+		dJ_shape_homogenization_adjoint_term(state, diff_cache, sol, adjoint, one_form);
 
 		StiffnessMatrix hessian;
 		homo_problem->set_project_to_psd(false);
 		homo_problem->FullNLProblem::hessian(sol, hessian);
 		Eigen::VectorXd partial_term = full_adjoint.transpose() * hessian;
-		partial_term = state.basis_nodes_to_gbasis_nodes * utils::flatten(utils::unflatten(partial_term, dim) * state.diff_cached.disp_grad());
+		partial_term = diff_cache.basis_nodes_to_gbasis_nodes() * utils::flatten(utils::unflatten(partial_term, dim) * diff_cache.disp_grad());
 		one_form -= utils::flatten(utils::unflatten(partial_term, dim)(state.primitive_to_node(), Eigen::all));
 
 		one_form = periodic_mesh_map.apply_jacobian(one_form, periodic_mesh_representation);
@@ -705,7 +723,7 @@ namespace polyfem::solver
 		if (state.solve_data.periodic_contact_form)
 		{
 			Eigen::VectorXd contact_term;
-			PeriodicContactForceDerivative::force_shape_derivative(*state.solve_data.periodic_contact_form, state, periodic_mesh_map, periodic_mesh_representation, state.solve_data.periodic_contact_form->collision_set(), extended_sol, extended_adjoint, contact_term);
+			PeriodicContactForceDerivative::force_shape_derivative(*state.solve_data.periodic_contact_form, state, diff_cache, periodic_mesh_map, periodic_mesh_representation, state.solve_data.periodic_contact_form->collision_set(), extended_sol, extended_adjoint, contact_term);
 
 			one_form -= contact_term;
 		}
@@ -713,6 +731,7 @@ namespace polyfem::solver
 
 	void AdjointTools::dJ_shape_transient_adjoint_term(
 		const State &state,
+		const DiffCache &diff_cache,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
 		Eigen::VectorXd &one_form)
@@ -733,7 +752,7 @@ namespace polyfem::solver
 			double beta_dt = beta * dt;
 			const double t = i * dt + t0;
 
-			Eigen::MatrixXd velocity = state.diff_cached.v(i);
+			Eigen::MatrixXd velocity = diff_cache.v(i);
 
 			cur_p = adjoint_p.col(i);
 			cur_nu = adjoint_nu.col(i);
@@ -742,13 +761,13 @@ namespace polyfem::solver
 
 			{
 				InertiaForceDerivative::force_shape_derivative(*state.solve_data.inertia_form, state.mesh->is_volume(), state.n_geom_bases, t, state.bases, state.geom_bases(), *(state.mass_matrix_assembler), state.mass_ass_vals_cache, velocity, cur_nu, mass_term);
-				ElasticForceDerivative::force_shape_derivative(*state.solve_data.elastic_form, t, state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i), cur_p, elasticity_term);
-				BodyForceDerivative::force_shape_derivative(*state.solve_data.body_form, state.n_geom_bases, t, state.diff_cached.u(i - 1), cur_p, rhs_term);
-				PressureForceDerivative::force_shape_derivative(*state.solve_data.pressure_form, state.n_geom_bases, t, state.diff_cached.u(i), cur_p, pressure_term);
-				pressure_term = state.basis_nodes_to_gbasis_nodes * pressure_term;
+				ElasticForceDerivative::force_shape_derivative(*state.solve_data.elastic_form, t, state.n_geom_bases, diff_cache.u(i), diff_cache.u(i), cur_p, elasticity_term);
+				BodyForceDerivative::force_shape_derivative(*state.solve_data.body_form, state.n_geom_bases, t, diff_cache.u(i - 1), cur_p, rhs_term);
+				PressureForceDerivative::force_shape_derivative(*state.solve_data.pressure_form, state.n_geom_bases, t, diff_cache.u(i), cur_p, pressure_term);
+				pressure_term = diff_cache.basis_nodes_to_gbasis_nodes() * pressure_term;
 
 				if (state.solve_data.damping_form)
-					ElasticForceDerivative::force_shape_derivative(*state.solve_data.damping_form, t, state.n_geom_bases, state.diff_cached.u(i), state.diff_cached.u(i - 1), cur_p, damping_term);
+					ElasticForceDerivative::force_shape_derivative(*state.solve_data.damping_form, t, state.n_geom_bases, diff_cache.u(i), diff_cache.u(i - 1), cur_p, damping_term);
 				else
 					damping_term.setZero(mass_term.size());
 
@@ -756,13 +775,13 @@ namespace polyfem::solver
 				{
 					if (const auto barrier_contact = dynamic_cast<const BarrierContactForm *>(state.solve_data.contact_form.get()))
 					{
-						BarrierContactForceDerivative::force_shape_derivative(*barrier_contact, state.diff_cached.collision_set(i), state.diff_cached.u(i), cur_p, contact_term);
+						BarrierContactForceDerivative::force_shape_derivative(*barrier_contact, diff_cache.collision_set(i), diff_cache.u(i), cur_p, contact_term);
 					}
 					else if (const auto smooth_contact = dynamic_cast<const SmoothContactForm *>(state.solve_data.contact_form.get()))
 					{
-						SmoothContactForceDerivative::force_shape_derivative(*smooth_contact, state.diff_cached.smooth_collision_set(i), state.diff_cached.u(i), cur_p, contact_term);
+						SmoothContactForceDerivative::force_shape_derivative(*smooth_contact, diff_cache.smooth_collision_set(i), diff_cache.u(i), cur_p, contact_term);
 					}
-					contact_term = state.basis_nodes_to_gbasis_nodes * contact_term;
+					contact_term = diff_cache.basis_nodes_to_gbasis_nodes() * contact_term;
 					// contact_term /= beta_dt * beta_dt;
 				}
 				else
@@ -770,8 +789,8 @@ namespace polyfem::solver
 
 				if (state.solve_data.friction_form)
 				{
-					FrictionForceDerivative::force_shape_derivative(*state.solve_data.friction_form, state.diff_cached.u(i - 1), state.diff_cached.u(i), cur_p, state.diff_cached.friction_collision_set(i), friction_term);
-					friction_term = state.basis_nodes_to_gbasis_nodes * (friction_term / beta);
+					FrictionForceDerivative::force_shape_derivative(*state.solve_data.friction_form, diff_cache.u(i - 1), diff_cache.u(i), cur_p, diff_cache.friction_collision_set(i), friction_term);
+					friction_term = diff_cache.basis_nodes_to_gbasis_nodes() * (friction_term / beta);
 					// friction_term /= beta_dt * beta_dt;
 				}
 				else
@@ -779,8 +798,8 @@ namespace polyfem::solver
 
 				if (state.is_adhesion_enabled())
 				{
-					NormalAdhesionForceDerivative::force_shape_derivative(*state.solve_data.normal_adhesion_form, state.diff_cached.normal_adhesion_collision_set(i), state.diff_cached.u(i), cur_p, adhesion_term);
-					adhesion_term = state.basis_nodes_to_gbasis_nodes * adhesion_term;
+					NormalAdhesionForceDerivative::force_shape_derivative(*state.solve_data.normal_adhesion_form, diff_cache.normal_adhesion_collision_set(i), diff_cache.u(i), cur_p, adhesion_term);
+					adhesion_term = diff_cache.basis_nodes_to_gbasis_nodes() * adhesion_term;
 				}
 				else
 				{
@@ -789,8 +808,8 @@ namespace polyfem::solver
 
 				if (state.solve_data.tangential_adhesion_form)
 				{
-					TangentialAdhesionForceDerivative::force_shape_derivative(*state.solve_data.tangential_adhesion_form, state.diff_cached.u(i - 1), state.diff_cached.u(i), cur_p, state.diff_cached.tangential_adhesion_collision_set(i), tangential_adhesion_term);
-					tangential_adhesion_term = state.basis_nodes_to_gbasis_nodes * (tangential_adhesion_term / beta);
+					TangentialAdhesionForceDerivative::force_shape_derivative(*state.solve_data.tangential_adhesion_form, diff_cache.u(i - 1), diff_cache.u(i), cur_p, diff_cache.tangential_adhesion_collision_set(i), tangential_adhesion_term);
+					tangential_adhesion_term = diff_cache.basis_nodes_to_gbasis_nodes() * (tangential_adhesion_term / beta);
 					// friction_term /= beta_dt * beta_dt;
 				}
 				else
@@ -812,7 +831,7 @@ namespace polyfem::solver
 			}
 		}
 		sum_alpha_p(state.boundary_nodes).setZero();
-		InertiaForceDerivative::force_shape_derivative(*state.solve_data.inertia_form, state.mesh->is_volume(), state.n_geom_bases, t0, state.bases, state.geom_bases(), *(state.mass_matrix_assembler), state.mass_ass_vals_cache, state.diff_cached.v(0), sum_alpha_p, mass_term);
+		InertiaForceDerivative::force_shape_derivative(*state.solve_data.inertia_form, state.mesh->is_volume(), state.n_geom_bases, t0, state.bases, state.geom_bases(), *(state.mass_matrix_assembler), state.mass_ass_vals_cache, diff_cache.v(0), sum_alpha_p, mass_term);
 
 		one_form += mass_term;
 
@@ -832,6 +851,7 @@ namespace polyfem::solver
 
 	void AdjointTools::dJ_material_transient_adjoint_term(
 		const State &state,
+		const DiffCache &diff_cache,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
 		Eigen::VectorXd &one_form)
@@ -857,7 +877,7 @@ namespace polyfem::solver
 				Eigen::VectorXd cur_p = adjoint_p.col(i);
 				cur_p(state.boundary_nodes).setZero();
 
-				ElasticForceDerivative::force_material_derivative(*state.solve_data.elastic_form, t0 + dt * i, state.diff_cached.u(i), state.diff_cached.u(i - 1), -cur_p, elasticity_term);
+				ElasticForceDerivative::force_material_derivative(*state.solve_data.elastic_form, t0 + dt * i, diff_cache.u(i), diff_cache.u(i - 1), -cur_p, elasticity_term);
 				local_storage.vec += beta_dt * elasticity_term;
 			}
 		});
@@ -868,6 +888,7 @@ namespace polyfem::solver
 
 	void AdjointTools::dJ_friction_transient_adjoint_term(
 		const State &state,
+		const DiffCache &diff_cache,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
 		Eigen::VectorXd &one_form)
@@ -884,7 +905,7 @@ namespace polyfem::solver
 			time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
 		{
 			Eigen::MatrixXd solution, velocity, acceleration;
-			solution = state.diff_cached.u(0);
+			solution = diff_cache.u(0);
 			state.initial_velocity(velocity);
 			state.initial_acceleration(acceleration);
 			if (state.initial_vel_update.size() == state.ndof())
@@ -898,17 +919,17 @@ namespace polyfem::solver
 			const int real_order = std::min(bdf_order, t);
 			double beta = time_integrator::BDF::betas(real_order - 1);
 
-			const Eigen::MatrixXd surface_solution_prev = state.collision_mesh.vertices(utils::unflatten(state.diff_cached.u(t - 1), dim));
-			// const Eigen::MatrixXd surface_solution = state.collision_mesh.vertices(utils::unflatten(state.diff_cached.u(t), dim));
+			const Eigen::MatrixXd surface_solution_prev = state.collision_mesh.vertices(utils::unflatten(diff_cache.u(t - 1), dim));
+			// const Eigen::MatrixXd surface_solution = state.collision_mesh.vertices(utils::unflatten(diff_cache.u(t), dim));
 
-			const Eigen::MatrixXd surface_velocities = state.collision_mesh.map_displacements(utils::unflatten(time_integrator->compute_velocity(state.diff_cached.u(t)), state.collision_mesh.dim()));
-			time_integrator->update_quantities(state.diff_cached.u(t));
+			const Eigen::MatrixXd surface_velocities = state.collision_mesh.map_displacements(utils::unflatten(time_integrator->compute_velocity(diff_cache.u(t)), state.collision_mesh.dim()));
+			time_integrator->update_quantities(diff_cache.u(t));
 
 			if (const auto barrier_contact = dynamic_cast<const BarrierContactForm *>(state.solve_data.contact_form.get()))
 			{
 				Eigen::MatrixXd force = state.collision_mesh.to_full_dof(
 					-state.solve_data.friction_form->friction_potential().force(
-						state.diff_cached.friction_collision_set(t),
+						diff_cache.friction_collision_set(t),
 						state.collision_mesh,
 						state.collision_mesh.rest_positions(),
 						/*lagged_displacements=*/surface_solution_prev,
@@ -927,6 +948,7 @@ namespace polyfem::solver
 
 	void AdjointTools::dJ_damping_transient_adjoint_term(
 		const State &state,
+		const DiffCache &diff_cache,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
 		Eigen::VectorXd &one_form)
@@ -952,7 +974,7 @@ namespace polyfem::solver
 				Eigen::VectorXd cur_p = adjoint_p.col(t);
 				cur_p(state.boundary_nodes).setZero();
 
-				ElasticForceDerivative::force_material_derivative(*state.solve_data.damping_form, t * dt + t0, state.diff_cached.u(t), state.diff_cached.u(t - 1), -cur_p, damping_term);
+				ElasticForceDerivative::force_material_derivative(*state.solve_data.damping_form, t * dt + t0, diff_cache.u(t), diff_cache.u(t - 1), -cur_p, damping_term);
 				local_storage.vec += (beta * dt) * damping_term;
 			}
 		});
@@ -983,11 +1005,12 @@ namespace polyfem::solver
 
 	void AdjointTools::dJ_dirichlet_static_adjoint_term(
 		const State &state,
+		const DiffCache &diff_cache,
 		const Eigen::MatrixXd &adjoint,
 		Eigen::VectorXd &one_form)
 	{
 		const int n_dirichlet_dof = state.boundary_nodes.size();
-		StiffnessMatrix gradd_h = state.diff_cached.gradu_h(0);
+		StiffnessMatrix gradd_h = diff_cache.gradu_h(0);
 		std::set<int> boundary_nodes_set(state.boundary_nodes.begin(), state.boundary_nodes.end());
 		gradd_h.prune([&boundary_nodes_set](const Eigen::Index &row, const Eigen::Index &col, const FullNLProblem::Scalar &value) {
 			if (row != col)
@@ -1051,6 +1074,7 @@ namespace polyfem::solver
 
 	void AdjointTools::dJ_pressure_transient_adjoint_term(
 		const State &state,
+		const DiffCache &diff_cache,
 		const std::vector<int> &boundary_ids,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
@@ -1084,7 +1108,7 @@ namespace polyfem::solver
 					state.n_geom_bases,
 					t,
 					boundary_ids[b],
-					state.diff_cached.u(i),
+					diff_cache.u(i),
 					cur_p);
 				one_form((i - 1) * n_pressure_dof + b) = -beta_dt * pressure_term;
 			}

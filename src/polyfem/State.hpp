@@ -22,13 +22,14 @@
 #include <polyfem/mesh/LocalBoundary.hpp>
 
 #include <polyfem/solver/SolveData.hpp>
-#include <polyfem/optimization/DiffCache.hpp>
 
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/Types.hpp>
 #include <polyfem/assembler/PeriodicBoundary.hpp>
+#include <polyfem/optimization/CacheLevel.hpp>
 
 #include <polyfem/io/OutData.hpp>
 
@@ -37,14 +38,23 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-#include <memory>
-#include <string>
-#include <unordered_map>
-
 #include <spdlog/sinks/basic_file_sink.h>
 
 #include <ipc/collision_mesh.hpp>
 #include <ipc/utils/logger.hpp>
+
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <functional>
+#include <cassert>
+#include <map>
+#include <utility>
+#include <vector>
+#include <sstream>
+#include <utility>
+#include <algorithm>
+#include <cstddef>
 
 // Forward declaration
 namespace polysolve::nonlinear
@@ -67,12 +77,15 @@ namespace polyfem
 		class Mesh3D;
 	} // namespace mesh
 
-	enum class CacheLevel
-	{
-		None,
-		Solution,
-		Derivatives
-	};
+	class State;
+
+	/// @brief User callback at the end of every solver step.
+	/// @param step[in] The current step.
+	/// @param state[in] The state of current step.
+	/// @param sol[in] The solution of current step.
+	/// @param disp_grad[in] du/dX where u is the displacement and X is the material coordinate. Optional, pass nullptr if not applicable.
+	/// @param pressure[in] Optional. The pressure of current step. Optional, pass nullptr if not applicable.
+	using UserPostStepCallback = std::function<void(int step, State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd *disp_grad, const Eigen::MatrixXd *pressure)>;
 
 	/// main class that contains the polyfem solver and all its state
 	class State
@@ -296,11 +309,13 @@ namespace polyfem
 		/// solves the problems
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
-		void solve_problem(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
+		/// @param[in] user_post_step optional post step user callback. Empty by default.
+		void solve_problem(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
 		/// solves the problem, call other methods
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
-		void solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
+		/// @param[in] user_post_step optional post step user callback. Empty by default.
+		void solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {})
 		{
 			if (!mesh)
 			{
@@ -314,11 +329,19 @@ namespace polyfem
 			assemble_rhs();
 			assemble_mass_mat();
 
-			solve_problem(sol, pressure);
+			solve_problem(sol, pressure, user_post_step);
 		}
 
 		/// timedependent stuff cached
 		solver::SolveData solve_data;
+
+		/// @brief Linear solver instance from the most recent static linear solve.
+		///
+		/// This cache is meant for library user to resue the factorization. Polyfem
+		/// core itself does not rely on this cache. For example, adjoint optimization
+		/// benefits from this as they sometime solve the same lhs.
+		std::unique_ptr<polysolve::linear::Solver> static_linear_solver_cache;
+
 		/// initialize solver
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
@@ -328,27 +351,31 @@ namespace polyfem
 		/// @param[in] dt timestep size
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
-		void solve_transient_navier_stokes_split(const int time_steps, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
+		/// @param[in] user_post_step optional post step user callback. Empty by default.
+		void solve_transient_navier_stokes_split(const int time_steps, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
 		/// solves transient navier stokes with FEM
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
-		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
+		/// @param[in] user_post_step optional post step user callback. Empty by default.
+		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
 		/// solves transient linear problem
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
-		void solve_transient_linear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
+		/// @param[in] user_post_step optional post step user callback. Empty by default.
+		void solve_transient_linear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
 		/// solves transient tensor nonlinear problem
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
 		/// @param[out] sol solution
-		void solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol);
+		/// @param[in] user_post_step optional post step user callback. Empty by default.
+		void solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, UserPostStepCallback user_post_step = {});
 		/// initialize the nonlinear solver
 		/// @param[out] sol solution
 		/// @param[in] t (optional) initial time
@@ -366,17 +393,22 @@ namespace polyfem
 		/// @param[out] solution Output acceleration variable.
 		void initial_acceleration(Eigen::MatrixXd &acceleration) const;
 		/// solves a linear problem
+		/// @param[in] step current step
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
-		void solve_linear(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
+		/// @param[in] user_post_step optional post step user callback. Empty by default.
+		void solve_linear(int step, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
 		/// solves a navier stokes
+		/// @param[in] step current step
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
-		void solve_navier_stokes(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
+		/// @param[in] user_post_step optional post step user callback. Empty by default.
+		void solve_navier_stokes(int step, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
 		/// solves nonlinear problems
+		/// @param[in] step current step
 		/// @param[out] sol solution
-		/// @param[in] t (optional) time step id
-		void solve_tensor_nonlinear(Eigen::MatrixXd &sol, const int t = 0, const bool init_lagging = true);
+		/// @param[in] user_post_step optional post step user callback. Empty by default.
+		void solve_tensor_nonlinear(int step, Eigen::MatrixXd &sol, const bool init_lagging = true, UserPostStepCallback user_post_step = {});
 
 		/// factory to create the nl solver depending on input
 		/// @return nonlinear solver (eg newton or LBFGS)
@@ -390,18 +422,21 @@ namespace polyfem
 		}
 
 		/// @brief Solve the linear problem with the given solver and system.
+		/// @param[in] step current step.
 		/// @param solver Linear solver.
 		/// @param A Linear system matrix.
 		/// @param b Right-hand side.
 		/// @param compute_spectrum If true, compute the spectrum.
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
+		/// @param[in] user_post_step optional post step user callback. Empty by default.
 		void solve_linear(
+			int step,
 			const std::unique_ptr<polysolve::linear::Solver> &solver,
 			StiffnessMatrix &A,
 			Eigen::VectorXd &b,
 			const bool compute_spectrum,
-			Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
+			Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
 
 		/// @brief Returns whether the system is linear. Collisions and pressure add nonlinearity to the problem.
 		bool is_problem_linear() const { return assembler->is_linear() && !is_contact_enabled() && !is_pressure_enabled() && !has_constraints(); }
@@ -654,10 +689,6 @@ namespace polyfem
 		//---------------------------------------------------
 	public:
 		solver::CacheLevel optimization_enabled = solver::CacheLevel::None;
-		void cache_transient_adjoint_quantities(const int current_step, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad);
-		solver::DiffCache diff_cached;
-
-		std::unique_ptr<polysolve::linear::Solver> lin_solver_cached; // matrix factorization of last linear solve
 
 		int ndof() const
 		{
@@ -668,44 +699,40 @@ namespace polyfem
 				return actual_dim * n_bases + n_pressure_bases;
 		}
 
-		// Aux functions for setting up adjoint equations
-		void compute_force_jacobian(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, StiffnessMatrix &hessian);
-		void compute_force_jacobian_prev(const int force_step, const int sol_step, StiffnessMatrix &hessian_prev) const;
-		// Solves the adjoint PDE for derivatives and caches
-		void solve_adjoint_cached(const Eigen::MatrixXd &rhs);
-		Eigen::MatrixXd solve_adjoint(const Eigen::MatrixXd &rhs) const;
-		// Returns cached adjoint solve
-		Eigen::MatrixXd get_adjoint_mat(int type) const
-		{
-			assert(diff_cached.adjoint_mat().size() > 0);
-			if (problem->is_time_dependent())
-			{
-				if (type == 0)
-					return diff_cached.adjoint_mat().leftCols(diff_cached.adjoint_mat().cols() / 2);
-				else if (type == 1)
-					return diff_cached.adjoint_mat().middleCols(diff_cached.adjoint_mat().cols() / 2, diff_cached.adjoint_mat().cols() / 2);
-				else
-					log_and_throw_adjoint_error("Invalid adjoint type!");
-			}
-
-			return diff_cached.adjoint_mat();
-		}
-		Eigen::MatrixXd solve_static_adjoint(const Eigen::MatrixXd &adjoint_rhs) const;
-		Eigen::MatrixXd solve_transient_adjoint(const Eigen::MatrixXd &adjoint_rhs) const;
 		// Change geometric node positions
-		void set_mesh_vertex(int v_id, const Eigen::VectorXd &vertex);
-		void get_vertices(Eigen::MatrixXd &vertices) const;
-		void get_elements(Eigen::MatrixXi &elements) const;
+		void set_mesh_vertex(int v_id, const Eigen::VectorXd &vertex)
+		{
+			assert(vertex.size() == mesh->dimension());
+			mesh->set_point(v_id, vertex);
+		}
 
-		// Get geometric node indices for surface/volume
-		void compute_surface_node_ids(const int surface_selection, std::vector<int> &node_ids) const;
-		void compute_total_surface_node_ids(std::vector<int> &node_ids) const;
-		void compute_volume_node_ids(const int volume_selection, std::vector<int> &node_ids) const;
+		void get_vertices(Eigen::MatrixXd &vertices) const
+		{
+			vertices.setZero(mesh->n_vertices(), mesh->dimension());
+
+			for (int v = 0; v < mesh->n_vertices(); v++)
+				vertices.row(v) = mesh->point(v);
+		}
+
+		void get_elements(Eigen::MatrixXi &elements) const
+		{
+			assert(mesh->is_simplicial());
+
+			auto node_to_primitive_map = node_to_primitive();
+
+			const auto &gbases = geom_bases();
+			int dim = mesh->dimension();
+			elements.setZero(gbases.size(), dim + 1);
+			for (int e = 0; e < gbases.size(); e++)
+			{
+				int i = 0;
+				for (const auto &gbs : gbases[e].bases)
+					elements(e, i++) = node_to_primitive_map[gbs.global()[0].index];
+			}
+		}
 
 		// to replace the initial condition in json during initial condition optimization
 		Eigen::MatrixXd initial_sol_update, initial_vel_update;
-		// mapping from positions of FE basis nodes to positions of geometry nodes
-		StiffnessMatrix basis_nodes_to_gbasis_nodes;
 
 		//---------------------------------------------------
 		//-----------------homogenization--------------------
@@ -714,9 +741,9 @@ namespace polyfem
 		assembler::MacroStrainValue macro_strain_constraint;
 
 		/// In Elasticity PDE, solve for "min W(disp_grad + \grad u)" instead of "min W(\grad u)"
-		void solve_homogenization_step(Eigen::MatrixXd &sol, const int t = 0, bool adaptive_initial_weight = false); // sol is the extended solution, i.e. [periodic fluctuation, macro strain]
+		void solve_homogenization_step(int step, Eigen::MatrixXd &sol, bool adaptive_initial_weight = false, UserPostStepCallback user_post_step = {}); // sol is the extended solution, i.e. [periodic fluctuation, macro strain]
 		void init_homogenization_solve(const double t);
-		void solve_homogenization(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol);
+		void solve_homogenization(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, UserPostStepCallback user_post_step = {});
 		bool is_homogenization() const
 		{
 			return args["boundary_conditions"]["periodic_boundary"]["linear_displacement_offset"].size() > 0;

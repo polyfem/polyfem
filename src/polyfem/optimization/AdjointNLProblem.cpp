@@ -1,17 +1,29 @@
 #include "AdjointNLProblem.hpp"
 
+#include <polyfem/State.hpp>
+#include <polyfem/Common.hpp>
+#include <polyfem/optimization/StateDiff.hpp>
+#include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/forms/AdjointForm.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
+#include <polyfem/utils/Types.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/io/MshWriter.hpp>
-#include <polyfem/State.hpp>
 #include <polyfem/mesh/SlimSmooth.hpp>
+
+#include <Eigen/Core>
+#include <spdlog/fmt/fmt.h>
 
 #include <list>
 #include <stack>
+#include <fstream>
+#include <iomanip>
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace polyfem::solver
 {
@@ -24,14 +36,14 @@ namespace polyfem::solver
 			curr_state->get_vertices(V);
 			Eigen::VectorXd X = utils::flatten(V);
 
-			for (auto &p : variables_to_simulation)
+			for (auto &p : variables_to_simulation.data)
 			{
-				for (const auto &state : p->get_states())
+				for (const auto &state : p->states)
 					if (state.get() != curr_state.get())
 						continue;
 				if (p->get_parameter_type() != ParameterType::Shape)
 					continue;
-				auto state_variable = p->get_parametrization().eval(x);
+				auto state_variable = p->parametrization.eval(x);
 				auto output_indexing = p->get_output_indexing(x);
 				for (int i = 0; i < output_indexing.size(); ++i)
 					X(output_indexing(i)) = state_variable(i);
@@ -40,17 +52,16 @@ namespace polyfem::solver
 			return X;
 		}
 
-		using namespace std;
 		// Class to represent a graph
 		class Graph
 		{
 			int V; // No. of vertices'
 
 			// adjacency lists
-			vector<list<int>> adj;
+			std::vector<std::list<int>> adj;
 
 			// A function used by topologicalSort
-			void topologicalSortUtil(int v, vector<bool> &visited, stack<int> &Stack);
+			void topologicalSortUtil(int v, std::vector<bool> &visited, std::stack<int> &Stack);
 
 		public:
 			Graph(int V); // Constructor
@@ -59,7 +70,7 @@ namespace polyfem::solver
 			void addEdge(int v, int w);
 
 			// prints a Topological Sort of the complete graph
-			vector<int> topologicalSort();
+			std::vector<int> topologicalSort();
 		};
 
 		Graph::Graph(int V)
@@ -74,14 +85,14 @@ namespace polyfem::solver
 		}
 
 		// A recursive function used by topologicalSort
-		void Graph::topologicalSortUtil(int v, vector<bool> &visited,
-										stack<int> &Stack)
+		void Graph::topologicalSortUtil(int v, std::vector<bool> &visited,
+										std::stack<int> &Stack)
 		{
 			// Mark the current node as visited.
 			visited[v] = true;
 
 			// Recur for all the vertices adjacent to this vertex
-			list<int>::iterator i;
+			std::list<int>::iterator i;
 			for (i = adj[v].begin(); i != adj[v].end(); ++i)
 				if (!visited[*i])
 					topologicalSortUtil(*i, visited, Stack);
@@ -92,12 +103,12 @@ namespace polyfem::solver
 
 		// The function to do Topological Sort. It uses recursive
 		// topologicalSortUtil()
-		vector<int> Graph::topologicalSort()
+		std::vector<int> Graph::topologicalSort()
 		{
-			stack<int> Stack;
+			std::stack<int> Stack;
 
 			// Mark all the vertices as not visited
-			vector<bool> visited(V, false);
+			std::vector<bool> visited(V, false);
 
 			// Call the recursive helper function to store Topological
 			// Sort starting from all vertices one by one
@@ -106,7 +117,7 @@ namespace polyfem::solver
 					topologicalSortUtil(i, visited, Stack);
 
 			// Print contents of stack
-			vector<int> sorted;
+			std::vector<int> sorted;
 			while (Stack.empty() == false)
 			{
 				sorted.push_back(Stack.top());
@@ -117,11 +128,16 @@ namespace polyfem::solver
 		}
 	} // namespace
 
-	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form, const VariableToSimulationGroup &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args)
+	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form,
+									   const VariableToSimulationGroup &variables_to_simulation,
+									   const std::vector<std::shared_ptr<State>> &all_states,
+									   const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
+									   const json &args)
 		: FullNLProblem({form}),
 		  form_(form),
 		  variables_to_simulation_(variables_to_simulation),
 		  all_states_(all_states),
+		  all_diff_caches_(all_diff_caches),
 		  save_freq(args["output"]["save_frequency"]),
 		  enable_slim(args["solver"]["advanced"]["enable_slim"]),
 		  smooth_line_search(args["solver"]["advanced"]["smooth_line_search"]),
@@ -158,9 +174,9 @@ namespace polyfem::solver
 		active_state_mask.assign(all_states_.size(), false);
 		for (int i = 0; i < all_states_.size(); i++)
 		{
-			for (const auto &v2sim : variables_to_simulation_)
+			for (const auto &v2sim : variables_to_simulation_.data)
 			{
-				for (const auto &state : v2sim->get_states())
+				for (const auto &state : v2sim->states)
 				{
 					if (all_states_[i].get() == state.get())
 					{
@@ -172,7 +188,12 @@ namespace polyfem::solver
 		}
 	}
 
-	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form, const std::vector<std::shared_ptr<AdjointForm>> &stopping_conditions, const VariableToSimulationGroup &variables_to_simulation, const std::vector<std::shared_ptr<State>> &all_states, const json &args) : AdjointNLProblem(form, variables_to_simulation, all_states, args)
+	AdjointNLProblem::AdjointNLProblem(std::shared_ptr<AdjointForm> form,
+									   const std::vector<std::shared_ptr<AdjointForm>> &stopping_conditions,
+									   const VariableToSimulationGroup &variables_to_simulation,
+									   const std::vector<std::shared_ptr<State>> &all_states,
+									   const std::vector<std::shared_ptr<DiffCache>> &all_diff_caches,
+									   const json &args) : AdjointNLProblem(form, variables_to_simulation, all_states, all_diff_caches, args)
 	{
 		stopping_conditions_ = stopping_conditions;
 	}
@@ -198,7 +219,7 @@ namespace polyfem::solver
 			{
 				POLYFEM_SCOPED_TIMER("adjoint solve");
 				for (int i = 0; i < all_states_.size(); i++)
-					all_states_[i]->solve_adjoint_cached(form_->compute_reduced_adjoint_rhs(x, *all_states_[i])); // caches inside state
+					solve_adjoint_cached(*all_states_[i], *all_diff_caches_[i], form_->compute_reduced_adjoint_rhs(x, *all_states_[i], *all_diff_caches_[i]));
 			}
 
 			{
@@ -220,7 +241,7 @@ namespace polyfem::solver
 		bool need_rebuild_basis = false;
 
 		// update to new parameter and check if the new parameter is valid to solve
-		for (const auto &v : variables_to_simulation_)
+		for (const auto &v : variables_to_simulation_.data)
 			if (v->get_parameter_type() == ParameterType::Shape || v->get_parameter_type() == ParameterType::PeriodicShape)
 				need_rebuild_basis = true;
 
@@ -304,8 +325,11 @@ namespace polyfem::solver
 		if (iter_num % save_freq != 0)
 			return;
 		adjoint_logger().info("Saving iteration {}", iter_num);
-		for (const auto &state : all_states_)
+		for (int i = 0; i < all_states_.size(); ++i)
 		{
+			auto &state = all_states_[i];
+			auto &diff_cache = all_diff_caches_[i];
+
 			bool save_vtu = true;
 			bool save_rest_mesh = true;
 
@@ -323,7 +347,7 @@ namespace polyfem::solver
 			if (!state->args["time"].is_null())
 				dt = state->args["time"]["dt"];
 
-			Eigen::MatrixXd sol = state->diff_cached.u(-1);
+			Eigen::MatrixXd sol = diff_cache->u(-1);
 
 			state->out_geom.save_vtu(
 				vis_mesh_path,
@@ -358,7 +382,7 @@ namespace polyfem::solver
 		bool need_rebuild_basis = false;
 
 		// update to new parameter and check if the new parameter is valid to solve
-		for (const auto &v : variables_to_simulation_)
+		for (const auto &v : variables_to_simulation_.data)
 		{
 			v->update(newX);
 			if (v->get_parameter_type() == ParameterType::Shape || v->get_parameter_type() == ParameterType::PeriodicShape)
@@ -384,7 +408,7 @@ namespace polyfem::solver
 		if (!enable_slim)
 			return false;
 
-		for (const auto &v : variables_to_simulation_)
+		for (const auto &v : variables_to_simulation_.data)
 			v->update(x0);
 
 		std::vector<Eigen::MatrixXd> V_old_list;
@@ -395,7 +419,7 @@ namespace polyfem::solver
 			V_old_list.push_back(V);
 		}
 
-		for (const auto &v : variables_to_simulation_)
+		for (const auto &v : variables_to_simulation_.data)
 			v->update(x1);
 
 		// Apply slim to all states on a frequency
@@ -429,13 +453,17 @@ namespace polyfem::solver
 			utils::maybe_parallel_for(all_states_.size(), [&](int start, int end, int thread_id) {
 				for (int i = start; i < end; i++)
 				{
-					auto state = all_states_[i];
-					if (active_state_mask[i] || state->diff_cached.size() == 0)
+					auto &state = all_states_[i];
+					auto &diff_cache = all_diff_caches_[i];
+					if (active_state_mask[i] || diff_cache->size() == 0)
 					{
 						state->assemble_rhs();
 						state->assemble_mass_mat();
 						Eigen::MatrixXd sol, pressure; // solution is also cached in state
-						state->solve_problem(sol, pressure);
+						auto cache_post_step = [&diff_cache](const int step, State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd *disp_grad, const Eigen::MatrixXd *pressure) {
+							diff_cache->cache_transient(step, state, sol, disp_grad, pressure);
+						};
+						state->solve_problem(sol, pressure, cache_post_step);
 					}
 				}
 			});
@@ -447,13 +475,17 @@ namespace polyfem::solver
 			Eigen::MatrixXd sol, pressure; // solution is also cached in state
 			for (int i : solve_in_order)
 			{
-				auto state = all_states_[i];
-				if (active_state_mask[i] || state->diff_cached.size() == 0)
+				auto &state = all_states_[i];
+				auto &diff_cache = all_diff_caches_[i];
+				if (active_state_mask[i] || diff_cache->size() == 0)
 				{
 					state->assemble_rhs();
 					state->assemble_mass_mat();
 
-					state->solve_problem(sol, pressure);
+					auto cache_post_step = [&](const int step, State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd *disp_grad, const Eigen::MatrixXd *pressure) {
+						diff_cache->cache_transient(step, state, sol, disp_grad, pressure);
+					};
+					state->solve_problem(sol, pressure, cache_post_step);
 				}
 			}
 		}

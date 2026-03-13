@@ -19,7 +19,8 @@ namespace polyfem::assembler
 
 	std::map<std::string, Assembler::ParamFunc> HGOFiber::parameters() const
 	{
-		std::map<std::string, ParamFunc> res;
+		std::map<std::string, ParamFunc> res = GenericFiber<HGOFiber>::parameters();
+
 		const auto &k1 = this->k1_;
 		const auto &k2 = this->k2_;
 

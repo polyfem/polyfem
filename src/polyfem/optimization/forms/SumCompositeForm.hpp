@@ -1,4 +1,6 @@
-#include "CompositeForm.hpp"
+#include <polyfem/optimization/forms/CompositeForm.hpp>
+
+#include <Eigen/Core>
 
 namespace polyfem::solver
 {
