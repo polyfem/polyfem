@@ -77,7 +77,7 @@ namespace polyfem::solver
 		virtual NewtonHessian hessianSparsityPattern(SystemAssembler<2> &assembler) const override;
 		virtual NewtonHessian hessianSparsityPattern(SystemAssembler<3> &assembler) const override;
     
-		virtual bool sparsityChangedAlways() const override { return false; }
+		virtual bool sparsityPatternIsStatic() const override { return true; }
 
 
 

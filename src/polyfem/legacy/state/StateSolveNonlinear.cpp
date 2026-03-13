@@ -323,16 +323,15 @@ namespace polyfem::legacy
 		for (const auto &form : forms)
 			form->set_output_dir(output_dir);
 
+		// Create block-sparse mass matrix.
 		NewtonHessian M_full;
 		mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, 0, M_full, true);
-		StiffnessMatrix m_full_stiffness;
-		NewtonHessian2SparseMatrix(M_full, m_full_stiffness);
-		m_full_stiffness = lump_matrix(m_full_stiffness);
-		for (const auto &form : forms)
+		for (const auto &form : forms) {
 			if (form->name() == "inertia"){
-				dynamic_cast<InertiaForm *>(form.get())->setMass(M_full, m_full_stiffness.diagonal());
+				dynamic_cast<InertiaForm *>(form.get())->setMass(M_full, mass.diagonal());
 				dynamic_cast<InertiaForm *>(form.get())->useLumpedMass(args["solver"]["advanced"]["lump_mass_matrix"]);
 			}
+        }
 
 		if (solve_data.contact_form != nullptr)
 			solve_data.contact_form->save_ccd_debug_meshes = args["output"]["advanced"]["save_ccd_debug_meshes"];

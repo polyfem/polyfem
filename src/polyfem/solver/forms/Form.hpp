@@ -154,10 +154,10 @@ namespace polyfem::solver
 		/// @param scale
 		void virtual set_scale(const double scale) { scale_ = scale; }
 
+		// BlockCSCHessian additions
 		virtual NewtonHessian hessianSparsityPattern(SystemAssembler<2> &assembler) const { throw std::runtime_error("hessianSparsityPattern not implemented by" + name()); }
 		virtual NewtonHessian hessianSparsityPattern(SystemAssembler<3> &assembler) const { throw std::runtime_error("hessianSparsityPattern not implemented by" + name()); }
-
-		virtual bool sparsityChangedAlways() const { return false; }
+		virtual bool sparsityPatternIsStatic() const { return false; }
 
 		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian, SystemAssembler<2> &assembler) const { throw std::runtime_error("accumulateHessian2D not implemented by" + name()); }
 		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian, SystemAssembler<3> &assembler) const { throw std::runtime_error("accumulateHessian3D not implemented by" + name()); }

@@ -27,8 +27,9 @@ namespace polyfem::solver
 	{
 		block_size = block_size_;
 		num_block_vars = num_block_vars_;
-		m_assembler2D = std::make_unique<SystemAssembler<2>>(num_block_vars);
-		m_assembler3D = std::make_unique<SystemAssembler<3>>(num_block_vars);
+		if      (block_size == 2) m_assembler2D = std::make_unique<SystemAssembler<2>>(num_block_vars);
+		else if (block_size == 3) m_assembler3D = std::make_unique<SystemAssembler<3>>(num_block_vars);
+		else throw std::runtime_error("Unsupported block size: " + std::to_string(block_size));
 	}
 
 	void FullNLProblem::init(const TVector &x)
