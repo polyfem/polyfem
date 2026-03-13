@@ -33,6 +33,18 @@ namespace polyfem::assembler
 			return val;
 		}
 
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> gradient(
+			const RowVectorNd &p,
+			const double t,
+			const int el_id,
+			const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> &F) const override;
+
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 9, 9> hessian(
+			const RowVectorNd &p,
+			const double t,
+			const int el_id,
+			const Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> &F) const override;
+
 	private:
 		GenericMatParam k_;
 	};

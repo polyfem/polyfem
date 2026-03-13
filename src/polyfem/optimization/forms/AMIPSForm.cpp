@@ -144,73 +144,12 @@ namespace polyfem::solver
 		: AdjointForm(variable_to_simulation),
 		  state_(std::move(state))
 	{
-		amips_energy_ = assembler::AssemblerUtils::make_assembler("AMIPSAutodiff");
+		amips_energy_ = assembler::AssemblerUtils::make_assembler("AMIPS");
 		amips_energy_->set_size(state_->mesh->dimension());
 
-		json transform_params = {};
-		transform_params["canonical_transformation"] = json::array();
-		if (!state_->mesh->is_volume())
-		{
-			Eigen::MatrixXd regular_tri(3, 3);
-			regular_tri << 0, 0, 1,
-				1, 0, 1,
-				1. / 2., std::sqrt(3) / 2., 1;
-			regular_tri.transposeInPlace();
-			Eigen::MatrixXd regular_tri_inv = regular_tri.inverse();
-
-			const auto &mesh2d = *dynamic_cast<mesh::Mesh2D *>(state_->mesh.get());
-			for (int e = 0; e < state_->mesh->n_elements(); e++)
-			{
-				Eigen::MatrixXd transform;
-				mesh2d.compute_face_jacobian(e, regular_tri_inv, transform);
-				transform_params["canonical_transformation"].push_back(json({
-					{
-						transform(0, 0),
-						transform(0, 1),
-					},
-					{
-						transform(1, 0),
-						transform(1, 1),
-					},
-				}));
-			}
-		}
-		else
-		{
-			Eigen::MatrixXd regular_tet(4, 4);
-			regular_tet << 0, 0, 0, 1,
-				1, 0, 0, 1,
-				1. / 2., std::sqrt(3) / 2., 0, 1,
-				1. / 2., 1. / 2. / std::sqrt(3), std::sqrt(3) / 2., 1;
-			regular_tet.transposeInPlace();
-			Eigen::MatrixXd regular_tet_inv = regular_tet.inverse();
-
-			const auto &mesh3d = *dynamic_cast<mesh::Mesh3D *>(state_->mesh.get());
-			for (int e = 0; e < state_->mesh->n_elements(); e++)
-			{
-				Eigen::MatrixXd transform;
-				mesh3d.compute_cell_jacobian(e, regular_tet_inv, transform);
-				transform_params["canonical_transformation"].push_back(json({
-					{
-						transform(0, 0),
-						transform(0, 1),
-						transform(0, 2),
-					},
-					{
-						transform(1, 0),
-						transform(1, 1),
-						transform(1, 2),
-					},
-					{
-						transform(2, 0),
-						transform(2, 1),
-						transform(2, 2),
-					},
-				}));
-			}
-		}
-		transform_params["solve_displacement"] = true;
-		amips_energy_->add_multimaterial(0, transform_params, state_->units);
+		json use_rest = {};
+		use_rest["use_rest_pose"] = true;
+		amips_energy_->add_multimaterial(0, use_rest, state_->units);
 
 		Eigen::MatrixXd V;
 		state_->get_vertices(V);
