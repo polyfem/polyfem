@@ -2,7 +2,6 @@
 
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/AssemblerUtils.hpp>
-#include <polyfem/optimization/CacheLevel.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
@@ -104,18 +103,18 @@ namespace polyfem
 			boundary_nodes_tmp = boundary_nodes;
 
 		Eigen::VectorXd x;
-		if (optimization_enabled == solver::CacheLevel::Derivatives)
-		{
-			auto A_tmp = A;
-			prefactorize(*solver, A, boundary_nodes_tmp, precond_num, args["output"]["data"]["stiffness_mat"]);
-			dirichlet_solve_prefactorized(*solver, A_tmp, b, boundary_nodes_tmp, x);
-		}
-		else
-		{
-			stats.spectrum = dirichlet_solve(
-				*solver, A, b, boundary_nodes_tmp, x, precond_num, args["output"]["data"]["stiffness_mat"], compute_spectrum,
-				assembler->is_fluid(), use_avg_pressure);
-		}
+		stats.spectrum = dirichlet_solve(
+			*solver,
+			A,
+			b,
+			boundary_nodes_tmp,
+			x,
+			precond_num,
+			args["output"]["data"]["stiffness_mat"],
+			compute_spectrum,
+			assembler->is_fluid(),
+			use_avg_pressure);
+
 		if (has_periodic_bc())
 		{
 			sol = periodic_bc->periodic_to_full(full_size, x);
@@ -154,12 +153,10 @@ namespace polyfem
 		assert(assembler->is_linear() && !is_contact_enabled());
 
 		// --------------------------------------------------------------------
-		if (lin_solver_cached)
-			lin_solver_cached.reset();
 
-		lin_solver_cached =
+		static_linear_solver_cache =
 			polysolve::linear::Solver::create(args["solver"]["linear"], logger());
-		logger().info("{}...", lin_solver_cached->name());
+		logger().info("{}...", static_linear_solver_cache->name());
 
 		// --------------------------------------------------------------------
 
@@ -174,7 +171,7 @@ namespace polyfem
 
 		// --------------------------------------------------------------------
 
-		solve_linear(step, lin_solver_cached, A, b, args["output"]["advanced"]["spectrum"], sol, pressure, user_post_step);
+		solve_linear(step, static_linear_solver_cache, A, b, args["output"]["advanced"]["spectrum"], sol, pressure, user_post_step);
 	}
 
 	void State::init_linear_solve(Eigen::MatrixXd &sol, const double t)

@@ -50,7 +50,7 @@ namespace polyfem::solver
 	{
 		Eigen::MatrixXd rhs = compute_adjoint_rhs(x, state, diff_cache);
 		// Only for homogenization
-		if (!state.problem->is_time_dependent() && !state.lin_solver_cached && state.is_homogenization()) // nonlinear static solve only
+		if (!state.problem->is_time_dependent() && state.is_homogenization() && state.solve_data.nl_problem) // nonlinear static solve only
 		{
 			Eigen::MatrixXd reduced;
 			for (int i = 0; i < rhs.cols(); i++)
