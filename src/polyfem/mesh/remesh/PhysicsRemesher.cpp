@@ -200,7 +200,7 @@ namespace polyfem::mesh
 		writer.add_field("edge_energy", edge_energies);
 		writer.add_field("edge_energy_diff", edge_energy_diffs);
 		writer.add_field("operation_order", edge_orders);
-		writer.write_mesh(path, rest_positions, elements, /*is_simplicial=*/true, /*has_poly=*/false);
+		writer.write_mesh(path, rest_positions, elements, state.mesh->is_volume() ? paraviewo::CellType::Tetrahedron : paraviewo::CellType::Triangle);
 	}
 
 	// -------------------------------------------------------------------------
