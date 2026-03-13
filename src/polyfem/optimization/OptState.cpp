@@ -153,7 +153,66 @@ namespace polyfem
 			diff_cache = std::make_shared<DiffCache>();
 		}
 
+		check_unsupported();
+
 		utils::GeogramUtils::instance().set_logger(adjoint_logger());
+	}
+
+	void OptState::check_unsupported() const
+	{
+		for (int i = 0; i < states.size(); ++i)
+		{
+			const State &state = *states[i];
+
+			// No transient linear support.
+			if (state.problem->is_time_dependent() && state.is_problem_linear())
+			{
+				log_and_throw_adjoint_error(
+					"State {}: transient linear problem is not supported in optimization.", i);
+			}
+
+			if (state.is_contact_enabled())
+			{
+				// No non-convergent contact formulation support.
+				if (!state.args["contact"]["use_gcp_formulation"].get<bool>()
+					&& !state.args["contact"]["use_convergent_formulation"].get<bool>())
+				{
+					log_and_throw_adjoint_error(
+						"State {}: non-convergent contact formulation is not supported in optimization.", i);
+				}
+
+				// No non-const barrier stiffness support.
+				if (state.args["/solver/contact/barrier_stiffness"_json_pointer].is_string())
+				{
+					log_and_throw_adjoint_error(
+						"State {}: only constant barrier stiffness is supported in optimization.", i);
+				}
+			}
+
+			// No non-const boundary support.
+			if (state.args.contains("boundary_conditions") && state.args["boundary_conditions"].contains("rhs"))
+			{
+				const json &rhs = state.args["boundary_conditions"]["rhs"];
+				if (rhs.is_string() || (rhs.is_array() && rhs.size() > 0 && rhs[0].is_string()))
+				{
+					log_and_throw_adjoint_error(
+						"State {}: only constant rhs over space is supported in optimization.", i);
+				}
+			}
+
+			// No high order geometric basis support.
+			for (const auto &element_bases : state.geom_bases())
+			{
+				for (const auto &basis : element_bases.bases)
+				{
+					if (basis.order() > 1)
+					{
+						log_and_throw_adjoint_error(
+							"State {}: high-order geometry basis is not supported in optimization.", i);
+					}
+				}
+			}
+		}
 	}
 
 	void OptState::init_variables()

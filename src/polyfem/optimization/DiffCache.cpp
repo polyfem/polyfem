@@ -70,9 +70,6 @@ namespace polyfem
 
 			if (s.problem->is_time_dependent())
 			{
-				if (s.assembler->is_linear() && !s.is_contact_enabled())
-					log_and_throw_adjoint_error("Differentiable transient linear solve is not supported!");
-
 				StiffnessMatrix tmp_hess;
 				s.solve_data.nl_problem->set_project_to_psd(false);
 				s.solve_data.nl_problem->FullNLProblem::solution_changed(sol);

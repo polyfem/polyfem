@@ -86,6 +86,9 @@ namespace polyfem
 			return "";
 		}
 
+		/// @brief Check and throw if any forward simulation State is not supported.
+		void check_unsupported() const;
+
 		/// initializing the logger meant for internal usage
 		void init_logger(const std::vector<spdlog::sink_ptr> &sinks, const spdlog::level::level_enum log_level);
 
