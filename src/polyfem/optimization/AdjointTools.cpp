@@ -905,11 +905,16 @@ namespace polyfem::solver
 			time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
 		{
 			Eigen::MatrixXd solution, velocity, acceleration;
+
+			const InitialConditionOverride *ic_override = nullptr;
+			if (!diff_cache.initial_condition_override.is_empty())
+			{
+				ic_override = &diff_cache.initial_condition_override;
+			}
+
 			solution = diff_cache.u(0);
-			state.initial_velocity(velocity);
-			state.initial_acceleration(acceleration);
-			if (state.initial_vel_update.size() == state.ndof())
-				velocity = state.initial_vel_update;
+			state.initial_velocity(velocity, ic_override);
+			state.initial_acceleration(acceleration, ic_override);
 			const double dt = state.args["time"]["dt"];
 			time_integrator->init(solution, velocity, acceleration, dt);
 		}

@@ -9,33 +9,6 @@ namespace polyfem
 	using namespace io;
 	using namespace utils;
 
-	void State::init_solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
-	{
-		POLYFEM_SCOPED_TIMER("Setup RHS");
-
-		solve_data.rhs_assembler = build_rhs_assembler();
-
-		initial_solution(sol);
-		if (sol.cols() > 1) // ignore previous solutions
-			sol.conservativeResize(Eigen::NoChange, 1);
-
-		if (mixed_assembler != nullptr)
-		{
-			const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
-
-			pressure.resize(0, 0);
-			sol.conservativeResize(rhs.size(), sol.cols());
-			// Zero initial pressure
-			sol.middleRows(n_bases * actual_dim, n_pressure_bases).setZero();
-			sol(sol.size() - 1) = 0;
-
-			sol_to_pressure(sol, pressure);
-		}
-
-		if (problem->is_time_dependent())
-			save_timestep(0, 0, 0, 0, sol, pressure);
-	}
-
 	namespace
 	{
 		bool read_initial_x_from_file(
@@ -64,11 +37,66 @@ namespace polyfem
 
 			return true;
 		}
+
+		bool check_override_shape(const Eigen::MatrixXd &override, const int ndof)
+		{
+			if (override.rows() != ndof)
+			{
+				return false;
+			}
+			if (override.cols() < 1)
+			{
+				return false;
+			}
+			return true;
+		}
 	} // namespace
 
-	void State::initial_solution(Eigen::MatrixXd &solution) const
+	void State::init_solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, const InitialConditionOverride *ic_override)
+	{
+		POLYFEM_SCOPED_TIMER("Setup RHS");
+
+		solve_data.rhs_assembler = build_rhs_assembler();
+
+		initial_solution(sol, ic_override);
+		if (sol.cols() > 1) // ignore previous solutions
+			sol.conservativeResize(Eigen::NoChange, 1);
+
+		if (mixed_assembler != nullptr)
+		{
+			const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
+
+			pressure.resize(0, 0);
+			sol.conservativeResize(rhs.size(), sol.cols());
+			// Zero initial pressure
+			sol.middleRows(n_bases * actual_dim, n_pressure_bases).setZero();
+			sol(sol.size() - 1) = 0;
+
+			sol_to_pressure(sol, pressure);
+		}
+
+		if (problem->is_time_dependent())
+			save_timestep(0, 0, 0, 0, sol, pressure);
+	}
+
+	void State::initial_solution(Eigen::MatrixXd &solution, const InitialConditionOverride *ic_override) const
 	{
 		assert(solve_data.rhs_assembler != nullptr);
+
+		// Runtime override has the highest priority.
+		if (ic_override && ic_override->solution.size() != 0)
+		{
+			if (!check_override_shape(ic_override->solution, ndof()))
+			{
+				log_and_throw_adjoint_error("Invalid initial solution shape ({}, {}). Expect ({}, >=1).",
+											ic_override->solution.rows(),
+											ic_override->solution.cols(),
+											ndof());
+			}
+			logger().info("Using runtime override for initial solution.");
+			solution = ic_override->solution;
+			return;
+		}
 
 		const bool was_solution_loaded = read_initial_x_from_file(
 			resolve_input_path(args["input"]["data"]["state"]), "u",
@@ -87,9 +115,24 @@ namespace polyfem
 		}
 	}
 
-	void State::initial_velocity(Eigen::MatrixXd &velocity) const
+	void State::initial_velocity(Eigen::MatrixXd &velocity, const InitialConditionOverride *ic_override) const
 	{
 		assert(solve_data.rhs_assembler != nullptr);
+
+		// Runtime override has the highest priority.
+		if (ic_override && ic_override->velocity.size() != 0)
+		{
+			if (!check_override_shape(ic_override->velocity, ndof()))
+			{
+				log_and_throw_adjoint_error("Invalid initial velocity shape ({}, {}). Expect ({}, >=1).",
+											ic_override->velocity.rows(),
+											ic_override->velocity.cols(),
+											ndof());
+			}
+			logger().info("Using runtime override for initial velocity.");
+			velocity = ic_override->velocity;
+			return;
+		}
 
 		const bool was_velocity_loaded = read_initial_x_from_file(
 			resolve_input_path(args["input"]["data"]["state"]), "v",
@@ -100,9 +143,23 @@ namespace polyfem
 			solve_data.rhs_assembler->initial_velocity(velocity);
 	}
 
-	void State::initial_acceleration(Eigen::MatrixXd &acceleration) const
+	void State::initial_acceleration(Eigen::MatrixXd &acceleration, const InitialConditionOverride *ic_override) const
 	{
 		assert(solve_data.rhs_assembler != nullptr);
+
+		if (ic_override != nullptr && ic_override->acceleration.size() != 0)
+		{
+			if (!check_override_shape(ic_override->acceleration, ndof()))
+			{
+				log_and_throw_adjoint_error("Invalid initial acceleration shape ({}, {}). Expect ({}, >=1).",
+											ic_override->acceleration.rows(),
+											ic_override->acceleration.cols(),
+											ndof());
+			}
+			logger().info("Using runtime override for initial acceleration.");
+			acceleration = ic_override->acceleration;
+			return;
+		}
 
 		const bool was_acceleration_loaded = read_initial_x_from_file(
 			resolve_input_path(args["input"]["data"]["state"]), "a",

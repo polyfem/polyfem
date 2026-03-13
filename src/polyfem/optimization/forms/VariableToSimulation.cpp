@@ -404,14 +404,18 @@ namespace polyfem::solver
 
 	void InitialConditionVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
-		for (auto state : states)
+		for (int i = 0; i < states.size(); ++i)
 		{
-			if (state_variable.size() != state->ndof() * 2)
-			{
-				log_and_throw_adjoint_error("[{}] Inconsistent number of parameters {} and number of dofs in forward {}!", name(), state_variable.size(), state->ndof() * 2);
-			}
-			state->initial_sol_update = state_variable.head(state->ndof());
-			state->initial_vel_update = state_variable.tail(state->ndof());
+			auto &state = *states[i];
+			auto &diff_cache = *diff_caches[i];
+
+			// For initial condition var2sim, the state variable is the initial solution and velocity
+			// of the forward simulation. So DOF should be 2x the state.
+			assert(state_variable.size() == 2 * state.ndof());
+
+			diff_cache.initial_condition_override.solution = state_variable.head(state.ndof());
+			diff_cache.initial_condition_override.velocity = state_variable.tail(state.ndof());
+			diff_cache.initial_condition_override.acceleration.resize(0, 0);
 		}
 	}
 	Eigen::VectorXd InitialConditionVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
