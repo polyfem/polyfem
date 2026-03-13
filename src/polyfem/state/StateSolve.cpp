@@ -9,33 +9,6 @@ namespace polyfem
 	using namespace io;
 	using namespace utils;
 
-	void State::init_solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
-	{
-		POLYFEM_SCOPED_TIMER("Setup RHS");
-
-		solve_data.rhs_assembler = build_rhs_assembler();
-
-		initial_solution(sol);
-		if (sol.cols() > 1) // ignore previous solutions
-			sol.conservativeResize(Eigen::NoChange, 1);
-
-		if (mixed_assembler != nullptr)
-		{
-			const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
-
-			pressure.resize(0, 0);
-			sol.conservativeResize(rhs.size(), sol.cols());
-			// Zero initial pressure
-			sol.middleRows(n_bases * actual_dim, n_pressure_bases).setZero();
-			sol(sol.size() - 1) = 0;
-
-			sol_to_pressure(sol, pressure);
-		}
-
-		if (problem->is_time_dependent())
-			save_timestep(0, 0, 0, 0, sol, pressure);
-	}
-
 	namespace
 	{
 		bool read_initial_x_from_file(
@@ -64,26 +37,64 @@ namespace polyfem
 
 			return true;
 		}
+
+		bool check_override_shape(const Eigen::MatrixXd &override, const int ndof)
+		{
+			if (override.rows() != ndof)
+			{
+				return false;
+			}
+			if (override.cols() < 1)
+			{
+				return false;
+			}
+			return true;
+		}
 	} // namespace
 
-	void State::initial_solution(Eigen::MatrixXd &solution) const
+	void State::init_solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, const InitialConditionOverride *ic_override)
+	{
+		POLYFEM_SCOPED_TIMER("Setup RHS");
+
+		solve_data.rhs_assembler = build_rhs_assembler();
+
+		initial_solution(sol, ic_override);
+		if (sol.cols() > 1) // ignore previous solutions
+			sol.conservativeResize(Eigen::NoChange, 1);
+
+		if (mixed_assembler != nullptr)
+		{
+			const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
+
+			pressure.resize(0, 0);
+			sol.conservativeResize(rhs.size(), sol.cols());
+			// Zero initial pressure
+			sol.middleRows(n_bases * actual_dim, n_pressure_bases).setZero();
+			sol(sol.size() - 1) = 0;
+
+			sol_to_pressure(sol, pressure);
+		}
+
+		if (problem->is_time_dependent())
+			save_timestep(0, 0, 0, 0, sol, pressure);
+	}
+
+	void State::initial_solution(Eigen::MatrixXd &solution, const InitialConditionOverride *ic_override) const
 	{
 		assert(solve_data.rhs_assembler != nullptr);
 
-		// Override in State has the highest priority.
-		if (initial_sol_override.size() != 0)
+		// Runtime override has the highest priority.
+		if (ic_override && ic_override->solution.size() != 0)
 		{
-			if (initial_sol_override.rows() != ndof())
+			if (!check_override_shape(ic_override->solution, ndof()))
 			{
-				log_and_throw_error("initial_sol_override has {} rows, expected {}.", initial_sol_override.rows(), ndof());
+				log_and_throw_adjoint_error("Invalid initial solution shape ({}, {}). Expect ({}, >=1).",
+											ic_override->solution.rows(),
+											ic_override->solution.cols(),
+											ndof());
 			}
-			if (initial_sol_override.cols() < 1)
-			{
-				log_and_throw_error("initial_sol_override must have at least one column.");
-			}
-
 			logger().info("Using runtime override for initial solution.");
-			solution = initial_sol_override;
+			solution = ic_override->solution;
 			return;
 		}
 
@@ -104,24 +115,22 @@ namespace polyfem
 		}
 	}
 
-	void State::initial_velocity(Eigen::MatrixXd &velocity) const
+	void State::initial_velocity(Eigen::MatrixXd &velocity, const InitialConditionOverride *ic_override) const
 	{
 		assert(solve_data.rhs_assembler != nullptr);
 
-		// Override in State has the highest priority.
-		if (initial_vel_override.size() != 0)
+		// Runtime override has the highest priority.
+		if (ic_override && ic_override->velocity.size() != 0)
 		{
-			if (initial_vel_override.rows() != ndof())
+			if (!check_override_shape(ic_override->solution, ndof()))
 			{
-				log_and_throw_error("initial_vel_override has {} rows, expected {}.", initial_vel_override.rows(), ndof());
+				log_and_throw_adjoint_error("Invalid initial velocity shape ({}, {}). Expect ({}, >=1).",
+											ic_override->solution.rows(),
+											ic_override->solution.cols(),
+											ndof());
 			}
-			if (initial_vel_override.cols() < 1)
-			{
-				log_and_throw_error("initial_vel_override must have at least one column.");
-			}
-
 			logger().info("Using runtime override for initial velocity.");
-			velocity = initial_vel_override;
+			velocity = ic_override->velocity;
 			return;
 		}
 
@@ -134,24 +143,21 @@ namespace polyfem
 			solve_data.rhs_assembler->initial_velocity(velocity);
 	}
 
-	void State::initial_acceleration(Eigen::MatrixXd &acceleration) const
+	void State::initial_acceleration(Eigen::MatrixXd &acceleration, const InitialConditionOverride *ic_override) const
 	{
 		assert(solve_data.rhs_assembler != nullptr);
 
-		// Override in State has the highest priority.
-		if (initial_acc_override.size() != 0)
+		if (ic_override != nullptr && ic_override->acceleration.size() != 0)
 		{
-			if (initial_acc_override.rows() != ndof())
+			if (!check_override_shape(ic_override->solution, ndof()))
 			{
-				log_and_throw_error("initial_acc_override has {} rows, expected {}.", initial_acc_override.rows(), ndof());
+				log_and_throw_adjoint_error("Invalid initial acceleration shape ({}, {}). Expect ({}, >=1).",
+											ic_override->solution.rows(),
+											ic_override->solution.cols(),
+											ndof());
 			}
-			if (initial_acc_override.cols() < 1)
-			{
-				log_and_throw_error("initial_acc_override must have at least one column.");
-			}
-
 			logger().info("Using runtime override for initial acceleration.");
-			acceleration = initial_acc_override;
+			acceleration = ic_override->acceleration;
 			return;
 		}
 

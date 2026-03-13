@@ -87,6 +87,27 @@ namespace polyfem
 	/// @param pressure[in] Optional. The pressure of current step. Optional, pass nullptr if not applicable.
 	using UserPostStepCallback = std::function<void(int step, State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd *disp_grad, const Eigen::MatrixXd *pressure)>;
 
+	class InitialConditionOverride
+	{
+	public:
+		/// ndof by H (history size) matrix where each col is solution from a time step.
+		/// Time step is ordered in reversed. ex. col(n) -> n steps before.
+		Eigen::MatrixXd solution;
+
+		/// ndof by H (history size) matrix where each col is velocity from a time step.
+		/// Time step is ordered in reversed. ex. col(n) -> n steps before.
+		Eigen::MatrixXd velocity;
+
+		/// ndof by H (history size) matrix where each col is acceleration from a time step.
+		/// Time step is ordered in reversed. ex. col(n) -> n steps before.
+		Eigen::MatrixXd acceleration;
+
+		bool is_empty() const
+		{
+			return solution.size() == 0 && velocity.size() == 0 && acceleration.size() == 0;
+		}
+	};
+
 	/// main class that contains the polyfem solver and all its state
 	class State
 	{
@@ -112,27 +133,6 @@ namespace polyfem
 
 		/// main input arguments containing all defaults
 		json args;
-
-		/// @brief Optional user override for the initial solution history.
-		///
-		/// ndof by H (history size) matrix where each col is solution from a time step.
-		/// When non-empty, this matrix has the highest priority. Note that the time is
-		/// ordered in reversed. That is, .col(t) means t time steps before.
-		Eigen::MatrixXd initial_sol_override;
-
-		/// @brief Optional user override for the initial velocity history.
-		///
-		/// ndof by H (history size) matrix where each col is velocity from a time step.
-		/// When non-empty, this matrix has the highest priority. Note that the time is
-		/// ordered in reversed. That is, .col(t) means t time steps before.
-		Eigen::MatrixXd initial_vel_override;
-
-		/// @brief Optional user override for the initial acceleration history.
-		///
-		/// ndof by H (history size) matrix where each col is acceleration from a time step.
-		/// When non-empty, this matrix has the highest priority. Note that the time is
-		/// ordered in reversed. That is, .col(t) means t time steps before.
-		Eigen::MatrixXd initial_acc_override;
 
 		//---------------------------------------------------
 		//-----------------logger----------------------------
@@ -331,12 +331,19 @@ namespace polyfem
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
 		/// @param[in] user_post_step optional post step user callback. Empty by default.
-		void solve_problem(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
+		void solve_problem(Eigen::MatrixXd &sol,
+						   Eigen::MatrixXd &pressure,
+						   UserPostStepCallback user_post_step = {},
+						   const InitialConditionOverride *ic_override = nullptr);
+
 		/// solves the problem, call other methods
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
 		/// @param[in] user_post_step optional post step user callback. Empty by default.
-		void solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {})
+		void solve(Eigen::MatrixXd &sol,
+				   Eigen::MatrixXd &pressure,
+				   UserPostStepCallback user_post_step = {},
+				   const InitialConditionOverride *ic_override = nullptr)
 		{
 			if (!mesh)
 			{
@@ -350,7 +357,7 @@ namespace polyfem
 			assemble_rhs();
 			assemble_mass_mat();
 
-			solve_problem(sol, pressure, user_post_step);
+			solve_problem(sol, pressure, user_post_step, ic_override);
 		}
 
 		/// timedependent stuff cached
@@ -366,14 +373,22 @@ namespace polyfem
 		/// initialize solver
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
-		void init_solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
+		void init_solve(Eigen::MatrixXd &sol,
+						Eigen::MatrixXd &pressure,
+						const InitialConditionOverride *ic_override = nullptr);
+
 		/// solves transient navier stokes with operator splitting
 		/// @param[in] time_steps number of time steps
 		/// @param[in] dt timestep size
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
 		/// @param[in] user_post_step optional post step user callback. Empty by default.
-		void solve_transient_navier_stokes_split(const int time_steps, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
+		void solve_transient_navier_stokes_split(const int time_steps,
+												 const double dt,
+												 Eigen::MatrixXd &sol,
+												 Eigen::MatrixXd &pressure,
+												 UserPostStepCallback user_post_step = {});
+
 		/// solves transient navier stokes with FEM
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
@@ -381,7 +396,13 @@ namespace polyfem
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
 		/// @param[in] user_post_step optional post step user callback. Empty by default.
-		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
+		void solve_transient_navier_stokes(const int time_steps,
+										   const double t0,
+										   const double dt,
+										   Eigen::MatrixXd &sol,
+										   Eigen::MatrixXd &pressure,
+										   UserPostStepCallback user_post_step = {});
+
 		/// solves transient linear problem
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
@@ -389,30 +410,50 @@ namespace polyfem
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
 		/// @param[in] user_post_step optional post step user callback. Empty by default.
-		void solve_transient_linear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
+		void solve_transient_linear(const int time_steps,
+									const double t0,
+									const double dt,
+									Eigen::MatrixXd &sol,
+									Eigen::MatrixXd &pressure,
+									UserPostStepCallback user_post_step = {},
+									const InitialConditionOverride *ic_override = nullptr);
+
 		/// solves transient tensor nonlinear problem
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
 		/// @param[out] sol solution
 		/// @param[in] user_post_step optional post step user callback. Empty by default.
-		void solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, UserPostStepCallback user_post_step = {});
+		void solve_transient_tensor_nonlinear(const int time_steps,
+											  const double t0,
+											  const double dt,
+											  Eigen::MatrixXd &sol,
+											  UserPostStepCallback user_post_step = {},
+											  const InitialConditionOverride *ic_override = nullptr);
+
 		/// initialize the nonlinear solver
 		/// @param[out] sol solution
 		/// @param[in] t (optional) initial time
-		void init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t = 1.0, const bool init_time_integrator = true);
+		void init_nonlinear_tensor_solve(Eigen::MatrixXd &sol,
+										 const double t = 1.0,
+										 const bool init_time_integrator = true,
+										 const InitialConditionOverride *ic_override = nullptr);
+
 		/// initialize the linear solve
 		/// @param[in] t (optional) initial time
-		void init_linear_solve(Eigen::MatrixXd &sol, const double t = 1.0);
+		void init_linear_solve(Eigen::MatrixXd &sol,
+							   const double t = 1.0,
+							   const InitialConditionOverride *ic_override = nullptr);
+
 		/// @brief Load or compute the initial solution.
 		/// @param[out] solution Output solution variable.
-		void initial_solution(Eigen::MatrixXd &solution) const;
+		void initial_solution(Eigen::MatrixXd &solution, const InitialConditionOverride *ic_override = nullptr) const;
 		/// @brief Load or compute the initial velocity.
 		/// @param[out] solution Output velocity variable.
-		void initial_velocity(Eigen::MatrixXd &velocity) const;
+		void initial_velocity(Eigen::MatrixXd &velocity, const InitialConditionOverride *ic_override = nullptr) const;
 		/// @brief Load or compute the initial acceleration.
 		/// @param[out] solution Output acceleration variable.
-		void initial_acceleration(Eigen::MatrixXd &acceleration) const;
+		void initial_acceleration(Eigen::MatrixXd &acceleration, const InitialConditionOverride *ic_override = nullptr) const;
 		/// solves a linear problem
 		/// @param[in] step current step
 		/// @param[out] sol solution

@@ -457,13 +457,18 @@ namespace polyfem::solver
 					auto &diff_cache = all_diff_caches_[i];
 					if (active_state_mask[i] || diff_cache->size() == 0)
 					{
+						const InitialConditionOverride *ic_override = nullptr;
+						if (!diff_cache->initial_condition_override.is_empty())
+						{
+							ic_override = &diff_cache->initial_condition_override;
+						}
 						state->assemble_rhs();
 						state->assemble_mass_mat();
 						Eigen::MatrixXd sol, pressure; // solution is also cached in state
 						auto cache_post_step = [&diff_cache](const int step, State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd *disp_grad, const Eigen::MatrixXd *pressure) {
 							diff_cache->cache_transient(step, state, sol, disp_grad, pressure);
 						};
-						state->solve_problem(sol, pressure, cache_post_step);
+						state->solve_problem(sol, pressure, cache_post_step, ic_override);
 					}
 				}
 			});
@@ -479,13 +484,19 @@ namespace polyfem::solver
 				auto &diff_cache = all_diff_caches_[i];
 				if (active_state_mask[i] || diff_cache->size() == 0)
 				{
+					const InitialConditionOverride *ic_override = nullptr;
+					if (!diff_cache->initial_condition_override.is_empty())
+					{
+						ic_override = &diff_cache->initial_condition_override;
+					}
+
 					state->assemble_rhs();
 					state->assemble_mass_mat();
 
 					auto cache_post_step = [&](const int step, State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd *disp_grad, const Eigen::MatrixXd *pressure) {
 						diff_cache->cache_transient(step, state, sol, disp_grad, pressure);
 					};
-					state->solve_problem(sol, pressure, cache_post_step);
+					state->solve_problem(sol, pressure, cache_post_step, ic_override);
 				}
 			}
 		}

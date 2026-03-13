@@ -50,9 +50,14 @@ namespace polyfem
 		return polysolve::nonlinear::Solver::create(for_al ? args["solver"]["augmented_lagrangian"]["nonlinear"] : args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger());
 	}
 
-	void State::solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, UserPostStepCallback user_post_step)
+	void State::solve_transient_tensor_nonlinear(const int time_steps,
+												 const double t0,
+												 const double dt,
+												 Eigen::MatrixXd &sol,
+												 UserPostStepCallback user_post_step,
+												 const InitialConditionOverride *ic_override)
 	{
-		init_nonlinear_tensor_solve(sol, t0 + dt);
+		init_nonlinear_tensor_solve(sol, t0 + dt, true, ic_override);
 
 		// Write the total energy to a CSV file
 		int save_i = 0;
@@ -165,7 +170,10 @@ namespace polyfem
 		}
 	}
 
-	void State::init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t, const bool init_time_integrator)
+	void State::init_nonlinear_tensor_solve(Eigen::MatrixXd &sol,
+											const double t,
+											const bool init_time_integrator,
+											const InitialConditionOverride *ic_override)
 	{
 		assert(sol.cols() == 1);
 		assert(!is_problem_linear());  // non-linear
@@ -200,12 +208,12 @@ namespace polyfem
 				solve_data.time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
 
 				Eigen::MatrixXd solution, velocity, acceleration;
-				initial_solution(solution); // Reload this because we need all previous solutions
-				solution.col(0) = sol;      // Make sure the current solution is the same as `sol`
+				initial_solution(solution, ic_override); // Reload this because we need all previous solutions
+				solution.col(0) = sol;                   // Make sure the current solution is the same as `sol`
 				assert(solution.rows() == sol.size());
-				initial_velocity(velocity);
+				initial_velocity(velocity, ic_override);
 				assert(velocity.rows() == sol.size());
-				initial_acceleration(acceleration);
+				initial_acceleration(acceleration, ic_override);
 				assert(acceleration.rows() == sol.size());
 
 				if (solution.cols() != velocity.cols() || solution.cols() != acceleration.cols())

@@ -134,10 +134,6 @@ namespace polyfem
 	{
 		json args_in = p_args_in; // mutable copy
 
-		initial_sol_override = {};
-		initial_vel_override = {};
-		initial_acc_override = {};
-
 		has_constraints_ = p_args_in.contains("constraints");
 
 		apply_common_params(args_in);
