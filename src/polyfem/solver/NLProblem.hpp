@@ -72,78 +72,11 @@ namespace polyfem::solver
 
 		double normalize_forms() override;
 
-		virtual double grad_norm_rescaling(const std::string &norm_type) const override
-		{
-			if (norm_type == "L2")
-			{
-				return F0 * std::pow(L, 1.5);
-			}
-			else if (norm_type == "Linf")
-			{
-				return F0;
-			}
-			else if (norm_type == "Euclidean")
-			{
-				return 1;
-			}
-			log_and_throw_error("Unrecognized norm_type: {}", norm_type);
-		}
-
-		virtual double step_norm_rescaling(const std::string &norm_type) const override
-		{
-			if (norm_type == "L2")
-			{
-				return std::pow(L, 2.5);
-			}
-			else if (norm_type == "Linf")
-			{
-				return L;
-			}
-			else if (norm_type == "Euclidean")
-			{
-				return 1;
-			}
-			log_and_throw_error("Unrecognized norm_type: {}", norm_type);
-		}
-
-		virtual double energy_norm_rescaling(const std::string &norm_type) const override
-		{
-			return F0 * L * L * L * L;
-		}
-
-		virtual double grad_norm(const TVector &x, const std::string &norm_type) const override
-		{
-			if (norm_type == "L2")
-			{
-				return sqrt(x.transpose() * current_lumped_mass().inverse() * x);
-			}
-			else if (norm_type == "Linf")
-			{
-				return (current_lumped_mass().inverse() * x).cwiseAbs().maxCoeff();
-			}
-			else if (norm_type == "Euclidean")
-			{
-				return x.norm();
-			}
-			log_and_throw_error("Unrecognized norm_type: {}", norm_type);
-		}
-
-		virtual double step_norm(const TVector &x, const std::string &norm_type) const override
-		{
-			if (norm_type == "L2")
-			{
-				return sqrt(x.transpose() * current_lumped_mass() * x);
-			}
-			else if (norm_type == "Linf")
-			{
-				return x.cwiseAbs().maxCoeff();
-			}
-			else if (norm_type == "Euclidean")
-			{
-				return x.norm();
-			}
-			log_and_throw_error("Unrecognized norm_type: {}", norm_type);
-		}
+		virtual double grad_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const override;
+		virtual double step_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const override;
+		virtual double energy_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const override;
+		virtual double grad_norm(const TVector &grad, const polysolve::nonlinear::NormType norm_type) const override;
+		virtual double step_norm(const TVector &x, const polysolve::nonlinear::NormType norm_type) const override;
 
 	protected:
 		const int full_size_; ///< Size of the full problem
