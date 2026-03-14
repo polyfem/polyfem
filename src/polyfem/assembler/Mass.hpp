@@ -31,8 +31,8 @@ namespace polyfem::assembler
 		std::string name() const override { return "Mass"; }
 		virtual std::map<std::string, ParamFunc> parameters() const override;
 
-		void enable_density() {use_density = true;}
-		void disable_density() {use_density = false;}
+		void enable_density() { use_density = true; }
+		void disable_density() { use_density = false; }
 
 	private:
 		// class that stores and compute density per point

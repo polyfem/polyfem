@@ -154,56 +154,60 @@ namespace polyfem::solver
 		// return total_weight;
 	}
 
-	double NLProblem::grad_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const 
+	double NLProblem::grad_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const
 	{
-		switch (norm_type) {
-			case polysolve::nonlinear::NormType::EUCLIDEAN:
-				return 1;
-			case polysolve::nonlinear::NormType::L2:
-				return F0 * std::pow(L, 1.5);
-			case polysolve::nonlinear::NormType::Linf:
-				return F0;
+		switch (norm_type)
+		{
+		case polysolve::nonlinear::NormType::EUCLIDEAN:
+			return 1;
+		case polysolve::nonlinear::NormType::L2:
+			return F0 * std::pow(L, 1.5);
+		case polysolve::nonlinear::NormType::Linf:
+			return F0;
 		}
 	}
 
-	double NLProblem::step_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const 
+	double NLProblem::step_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const
 	{
-		switch (norm_type) {
-			case polysolve::nonlinear::NormType::EUCLIDEAN:
-				return 1;
-			case polysolve::nonlinear::NormType::L2:
-				return std::pow(L, 2.5);
-			case polysolve::nonlinear::NormType::Linf:
-				return L;
+		switch (norm_type)
+		{
+		case polysolve::nonlinear::NormType::EUCLIDEAN:
+			return 1;
+		case polysolve::nonlinear::NormType::L2:
+			return std::pow(L, 2.5);
+		case polysolve::nonlinear::NormType::Linf:
+			return L;
 		}
 	}
 
-	double NLProblem::energy_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const 
+	double NLProblem::energy_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const
 	{
 		return F0 * L * L * L * L;
 	}
 
-	double NLProblem::grad_norm(const TVector &grad, const polysolve::nonlinear::NormType norm_type) const 
+	double NLProblem::grad_norm(const TVector &grad, const polysolve::nonlinear::NormType norm_type) const
 	{
-		switch (norm_type) {
-			case polysolve::nonlinear::NormType::EUCLIDEAN:
-				return grad.norm();
-			case polysolve::nonlinear::NormType::L2:
-				return sqrt(grad.transpose() * current_lumped_mass().inverse() * grad);
-			case polysolve::nonlinear::NormType::Linf:
-				return (current_lumped_mass().inverse() * grad).cwiseAbs().maxCoeff();
+		switch (norm_type)
+		{
+		case polysolve::nonlinear::NormType::EUCLIDEAN:
+			return grad.norm();
+		case polysolve::nonlinear::NormType::L2:
+			return sqrt(grad.transpose() * current_lumped_mass().inverse() * grad);
+		case polysolve::nonlinear::NormType::Linf:
+			return (current_lumped_mass().inverse() * grad).cwiseAbs().maxCoeff();
 		}
 	}
 
-	double NLProblem::step_norm(const TVector &x, const polysolve::nonlinear::NormType norm_type) const 
+	double NLProblem::step_norm(const TVector &x, const polysolve::nonlinear::NormType norm_type) const
 	{
-		switch (norm_type) {
-			case polysolve::nonlinear::NormType::EUCLIDEAN:
-				return x.norm();
-			case polysolve::nonlinear::NormType::L2:
-				return sqrt(x.transpose() * current_lumped_mass() * x);
-			case polysolve::nonlinear::NormType::Linf:
-				return x.cwiseAbs().maxCoeff();
+		switch (norm_type)
+		{
+		case polysolve::nonlinear::NormType::EUCLIDEAN:
+			return x.norm();
+		case polysolve::nonlinear::NormType::L2:
+			return sqrt(x.transpose() * current_lumped_mass() * x);
+		case polysolve::nonlinear::NormType::Linf:
+			return x.cwiseAbs().maxCoeff();
 		}
 	}
 
