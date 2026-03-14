@@ -151,7 +151,7 @@ namespace polyfem
 			else
 			{
 				logger().error("unable to open {} rules", polyfem_input_spec);
-				throw std::runtime_error("Invald spec file");
+				throw std::runtime_error("Invalid spec file");
 			}
 
 			jse.include_directories.push_back(POLYFEM_JSON_SPEC_DIR);
@@ -191,7 +191,7 @@ namespace polyfem
 		if (!valid_input)
 		{
 			logger().error("invalid input json:\n{}", jse.log2str());
-			throw std::runtime_error("Invald input json file");
+			throw std::runtime_error("Invalid input json file");
 		}
 		// end of check
 
