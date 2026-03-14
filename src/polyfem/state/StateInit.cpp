@@ -26,6 +26,9 @@
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 
+#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/NonlinearElasticTransientVarForm.hpp>
+
 #include <sstream>
 
 namespace spdlog::level
@@ -266,6 +269,11 @@ namespace polyfem
 		}
 
 		const std::string formulation = this->formulation();
+
+		// FIXME
+		variational_formulation = std::make_shared<varform::NonlinearElasticTransientVarForm>();
+		variational_formulation->init(formulation, units, args, output_dir);
+
 		assembler = assembler::AssemblerUtils::make_assembler(formulation);
 		assert(assembler->name() == formulation);
 		mass_matrix_assembler = std::make_shared<assembler::Mass>();

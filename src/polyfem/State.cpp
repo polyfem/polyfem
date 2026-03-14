@@ -48,6 +48,9 @@
 
 #include <polysolve/linear/FEMSolver.hpp>
 
+#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/NonlinearElasticTransientVarForm.hpp>
+
 #include <igl/edges.h>
 #include <igl/Timer.h>
 
@@ -516,6 +519,8 @@ namespace polyfem
 			logger().error("Load the mesh first!");
 			return;
 		}
+
+		variational_formulation->build_basis(*mesh, iso_parametric(), args);
 
 		mesh->prepare_mesh();
 

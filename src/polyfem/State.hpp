@@ -62,6 +62,11 @@ namespace polysolve::nonlinear
 	class Solver;
 }
 
+namespace polyfem::varform
+{
+	class VarForm;
+}
+
 namespace polyfem::assembler
 {
 	class Mass;
@@ -450,6 +455,8 @@ namespace polyfem
 		bool has_constraints_;
 
 	public:
+		std::shared_ptr<varform::VarForm> variational_formulation;
+
 		/// @brief utility that builds the stiffness matrix and collects stats, used only for linear problems
 		/// @param[out] stiffness matrix
 		void build_stiffness_mat(StiffnessMatrix &stiffness);

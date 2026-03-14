@@ -12,6 +12,9 @@
 
 #include <polyfem/utils/JSONUtils.hpp>
 
+#include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/NonlinearElasticTransientVarForm.hpp>
+
 #include <igl/Timer.h>
 namespace polyfem
 {
@@ -153,6 +156,23 @@ namespace polyfem
 			args["root_path"], mesh->dimension(), names, vertices, cells);
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
+
+		variational_formulation->load_mesh(*mesh, args);
+
+#ifdef POLYFEM_WITH_BEZIER
+		if (!mesh->is_simplicial())
+#else
+		if constexpr (true)
+#endif
+		{
+			args["space"]["advanced"]["count_flipped_els_continuous"] = false;
+			args["output"]["paraview"]["options"]["jacobian_validity"] = false;
+			args["solver"]["advanced"]["check_inversion"] = "Discrete";
+		}
+		else if (args["solver"]["advanced"]["check_inversion"] != "Discrete")
+		{
+			args["space"]["advanced"]["use_corner_quadrature"] = true;
+		}
 	}
 
 	void State::build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F)
