@@ -559,7 +559,6 @@ namespace polyfem::assembler
 	{
 	};
 
-	// 
 	struct ElementBasisStencil {
     	ElementBasisStencil(const std::vector<basis::ElementBases> &bases) : m_b(bases) { }
     	std::vector<int> operator()(int e) const { 
@@ -577,6 +576,48 @@ namespace polyfem::assembler
 		 }
 	private:
     	const std::vector<basis::ElementBases> &m_b;
-};
+	};
+
+	struct ElementHessianEvaluator{
+
+		ElementHessianEvaluator(const Assembler &assembler, const bool is_volume, const bool project_to_psd, const double weight, const Eigen::VectorXd &x, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const AssemblyValsCache &cache, const double t, const double dt, const Eigen::MatrixXd &displacement_prev)
+			: m_assembler(assembler), m_is_volume(is_volume), m_project_to_psd(project_to_psd), m_weight(weight), m_x(x), m_bases(bases), m_gbases(gbases), m_cache(cache), m_t(t), m_dt(dt), m_displacement_prev(displacement_prev) {}
+
+		Eigen::MatrixXd operator()(size_t e) const {
+			ElementAssemblyValues vals;
+			m_cache.compute(e, m_is_volume, m_bases[e], m_gbases[e], vals);
+
+			const quadrature::Quadrature &quadrature = vals.quadrature;
+
+			assert(MAX_QUAD_POINTS == -1 || quadrature.weights.size() < MAX_QUAD_POINTS);
+			QuadratureVector qVec = vals.det.array() * quadrature.weights.array();
+			const int n_loc_bases = int(vals.basis_values.size());
+
+			auto stiffness_val = m_assembler.assemble_hessian(NonLinearAssemblerData(vals, m_t, m_dt, m_x, m_displacement_prev, qVec));
+			assert(stiffness_val.rows() == n_loc_bases * size());
+			assert(stiffness_val.cols() == n_loc_bases * size());
+
+			if (m_project_to_psd)
+				stiffness_val = ipc::project_to_psd(stiffness_val);
+
+			return stiffness_val * m_weight;
+			
+		}
+		private:
+			const Assembler &m_assembler;
+			const bool m_is_volume;
+			const bool m_project_to_psd;
+			const double m_weight;
+			const Eigen::VectorXd &m_x;
+			const std::vector<basis::ElementBases> &m_bases;
+			const std::vector<basis::ElementBases> &m_gbases;
+			const AssemblyValsCache &m_cache;
+			const double m_t;
+			const double m_dt;
+			const Eigen::MatrixXd &m_displacement_prev;
+
+	};
+
+
 
 } // namespace polyfem::assembler

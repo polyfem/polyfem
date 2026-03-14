@@ -69,7 +69,6 @@ namespace polyfem::solver
 		/// @param[out] hessian Output Hessian of the value wrt x
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
-		Eigen::MatrixXd hessianEvalPerElement(size_t e, const double weight, const Eigen::VectorXd &x) const;
 		void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian, SystemAssembler<2> &assembler) const override;
 		void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian, SystemAssembler<3> &assembler) const override;
 
