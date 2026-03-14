@@ -9,7 +9,7 @@ namespace polyfem::assembler
 		// loop over quadrature points
 		for (int q = 0; q < data.da.size(); ++q)
 		{
-			const double rho = density_(data.vals.quadrature.points.row(q), data.vals.val.row(q), data.t, data.vals.element_id);
+			const double rho = use_density ? density_(data.vals.quadrature.points.row(q), data.vals.val.row(q), data.t, data.vals.element_id) : 1;
 			// phi_i * phi_j weighted by quadrature weights
 			tmp += rho * data.vals.basis_values[data.i].val(q) * data.vals.basis_values[data.j].val(q) * data.da(q);
 		}

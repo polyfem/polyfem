@@ -114,12 +114,18 @@ namespace polyfem::solver
 		const double t,
 		const std::vector<std::shared_ptr<Form>> &forms,
 		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
-		const std::shared_ptr<polysolve::linear::Solver> &solver)
+		const std::shared_ptr<polysolve::linear::Solver> &solver,
+		const double char_length,
+		const double char_force,
+		StiffnessMatrix lumped_mass)
 		: FullNLProblem(forms),
 		  full_size_(full_size),
 		  t_(t),
 		  penalty_forms_(penalty_forms),
-		  solver_(solver)
+		  solver_(solver),
+		  L(char_length),
+		  F0(char_force),
+		  lumped_mass_(lumped_mass.diagonal().asDiagonal())
 	{
 		setup_constraints();
 		use_reduced_size();
@@ -146,6 +152,66 @@ namespace polyfem::solver
 		// 	f->set_scale(total_weight);
 
 		// return total_weight;
+	}
+
+	double NLProblem::grad_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const
+	{
+		switch (norm_type)
+		{
+		case polysolve::nonlinear::NormType::EUCLIDEAN:
+			return 1;
+		case polysolve::nonlinear::NormType::L2:
+			return F0 * std::pow(L, 1.5);
+		case polysolve::nonlinear::NormType::Linf:
+			return F0;
+		}
+	}
+
+	double NLProblem::step_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const
+	{
+		switch (norm_type)
+		{
+		case polysolve::nonlinear::NormType::EUCLIDEAN:
+			return 1;
+		case polysolve::nonlinear::NormType::L2:
+			return std::pow(L, 2.5);
+		case polysolve::nonlinear::NormType::Linf:
+			return L;
+		}
+		log_and_throw_error("Unrecognized norm type!")
+	}
+
+	double NLProblem::energy_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const
+	{
+		return F0 * L * L * L * L;
+	}
+
+	double NLProblem::grad_norm(const TVector &grad, const polysolve::nonlinear::NormType norm_type) const
+	{
+		switch (norm_type)
+		{
+		case polysolve::nonlinear::NormType::EUCLIDEAN:
+			return grad.norm();
+		case polysolve::nonlinear::NormType::L2:
+			return sqrt(grad.transpose() * current_lumped_mass().inverse() * grad);
+		case polysolve::nonlinear::NormType::Linf:
+			return (current_lumped_mass().inverse() * grad).cwiseAbs().maxCoeff();
+		}
+		log_and_throw_error("Unrecognized norm type!")
+	}
+
+	double NLProblem::step_norm(const TVector &x, const polysolve::nonlinear::NormType norm_type) const
+	{
+		switch (norm_type)
+		{
+		case polysolve::nonlinear::NormType::EUCLIDEAN:
+			return x.norm();
+		case polysolve::nonlinear::NormType::L2:
+			return sqrt(x.transpose() * current_lumped_mass() * x);
+		case polysolve::nonlinear::NormType::Linf:
+			return x.cwiseAbs().maxCoeff();
+		}
+		log_and_throw_error("Unrecognized norm type!")
 	}
 
 	void NLProblem::setup_constraints()

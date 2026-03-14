@@ -998,6 +998,7 @@ namespace polyfem
 			logger().info("Building cache...");
 			ass_vals_cache.init(mesh->is_volume(), bases, curret_bases);
 			mass_ass_vals_cache.init(mesh->is_volume(), bases, curret_bases, true);
+			pure_mass_ass_vals_cache.init(mesh->is_volume(), bases, curret_bases, true);
 			if (mixed_assembler != nullptr)
 				pressure_ass_vals_cache.init(mesh->is_volume(), pressure_bases, curret_bases);
 
@@ -1482,6 +1483,10 @@ namespace polyfem
 		{
 			avg_mass = 1;
 			timings.assembling_mass_mat_time = 0;
+			mass_matrix_assembler->disable_density();
+			mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
+			pure_mass = lump_matrix(pure_mass);
+			mass_matrix_assembler->enable_density();
 			return;
 		}
 
@@ -1514,6 +1519,10 @@ namespace polyfem
 		else
 		{
 			mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, 0, mass, true);
+			mass_matrix_assembler->disable_density();
+			mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
+			pure_mass = lump_matrix(pure_mass);
+			mass_matrix_assembler->enable_density();
 		}
 
 		assert(mass.size() > 0);

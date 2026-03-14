@@ -208,13 +208,18 @@ namespace polyfem
 		/// used to store assembly values for small problems
 		assembler::AssemblyValsCache ass_vals_cache;
 		assembler::AssemblyValsCache mass_ass_vals_cache;
+		assembler::AssemblyValsCache pure_mass_ass_vals_cache;
 		/// used to store assembly values for pressure for small problems
 		assembler::AssemblyValsCache pressure_ass_vals_cache;
 
 		/// Mass matrix, it is computed only for time dependent problems
 		StiffnessMatrix mass;
+		StiffnessMatrix pure_mass;
 		/// average system mass, used for contact with IPC
 		double avg_mass;
+
+		double characteristic_length;
+		double characteristic_force_density;
 
 		/// System right-hand side.
 		Eigen::MatrixXd rhs;

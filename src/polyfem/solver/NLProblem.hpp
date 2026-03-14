@@ -4,6 +4,8 @@
 #include <polyfem/assembler/PeriodicBoundary.hpp>
 #include <polyfem/solver/forms/lagrangian/AugmentedLagrangianForm.hpp>
 
+#include <polyfem/utils/Logger.hpp>
+
 namespace polysolve::linear
 {
 	class Solver;
@@ -31,7 +33,10 @@ namespace polyfem::solver
 				  const double t,
 				  const std::vector<std::shared_ptr<Form>> &forms,
 				  const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
-				  const std::shared_ptr<polysolve::linear::Solver> &solver);
+				  const std::shared_ptr<polysolve::linear::Solver> &solver,
+				  const double char_length,
+				  const double char_force,
+				  StiffnessMatrix lumped_mass);
 		virtual ~NLProblem() = default;
 
 		virtual double value(const TVector &x) override;
@@ -67,6 +72,12 @@ namespace polyfem::solver
 
 		double normalize_forms() override;
 
+		virtual double grad_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const override;
+		virtual double step_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const override;
+		virtual double energy_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const override;
+		virtual double grad_norm(const TVector &grad, const polysolve::nonlinear::NormType norm_type) const override;
+		virtual double step_norm(const TVector &x, const polysolve::nonlinear::NormType norm_type) const override;
+
 	protected:
 		const int full_size_; ///< Size of the full problem
 		int reduced_size_;    ///< Size of the reduced problem
@@ -82,7 +93,15 @@ namespace polyfem::solver
 			return current_size_ == CurrentSize::FULL_SIZE ? full_size() : reduced_size();
 		}
 
+		Eigen::DiagonalMatrix<double, Eigen::Dynamic> current_lumped_mass() const
+		{
+			return full_to_reduced(lumped_mass_.diagonal()).asDiagonal();
+		}
+
 		double t_;
+		double F0;
+		double L;
+		Eigen::DiagonalMatrix<double, Eigen::Dynamic> lumped_mass_;
 
 	protected:
 		std::vector<std::shared_ptr<AugmentedLagrangianForm>> penalty_forms_;
