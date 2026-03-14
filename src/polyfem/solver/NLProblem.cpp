@@ -178,6 +178,7 @@ namespace polyfem::solver
 		case polysolve::nonlinear::NormType::Linf:
 			return L;
 		}
+		log_and_throw_error("Unrecognized norm type!")
 	}
 
 	double NLProblem::energy_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const
@@ -196,6 +197,7 @@ namespace polyfem::solver
 		case polysolve::nonlinear::NormType::Linf:
 			return (current_lumped_mass().inverse() * grad).cwiseAbs().maxCoeff();
 		}
+		log_and_throw_error("Unrecognized norm type!")
 	}
 
 	double NLProblem::step_norm(const TVector &x, const polysolve::nonlinear::NormType norm_type) const
@@ -209,6 +211,7 @@ namespace polyfem::solver
 		case polysolve::nonlinear::NormType::Linf:
 			return x.cwiseAbs().maxCoeff();
 		}
+		log_and_throw_error("Unrecognized norm type!")
 	}
 
 	void NLProblem::setup_constraints()
