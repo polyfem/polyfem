@@ -343,7 +343,7 @@ namespace polyfem::solver
 		POLYFEM_SCOPED_TIMER("elastic hessian meshfem integration");
 
 		size_t numElements = bases_.size();
-		assembler.assembleHessian(hessian, numElements, [&](size_t e) { return hessianEvalPerElement(e, weight, x); }, [&](size_t e) { return stencil(e); });
+		assembler.assembleHessian(hessian, numElements, [&](size_t e) { return hessianEvalPerElement(e, weight, x); }, ElementBasisStencil(bases_));
 	}
 
 	void ElasticForm::accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian, SystemAssembler<3> &assembler) const
@@ -351,33 +351,19 @@ namespace polyfem::solver
 		POLYFEM_SCOPED_TIMER("elastic hessian meshfem integration");
 
 		size_t numElements = bases_.size();
-		assembler.assembleHessian(hessian, numElements, [&](size_t e) { return hessianEvalPerElement(e, weight, x); }, [&](size_t e) { return stencil(e); });
-	}
-
-	std::vector<int> ElasticForm::stencil(size_t e) const {
-		std::vector<int> nodesIndices; 
-			const int n_loc_bases = int(bases_[e].bases.size());		
-			for (int i = 0; i < n_loc_bases; ++i)
-			{
-				const auto global_i = bases_[e].bases[i].global();
-				for (size_t ii = 0; ii < global_i.size(); ++ii)
-				{
-					nodesIndices.push_back(global_i[ii].index);
-				} // size of global_i is mostly 1
-			}
-			return nodesIndices;
+		assembler.assembleHessian(hessian, numElements, [&](size_t e) { return hessianEvalPerElement(e, weight, x); }, ElementBasisStencil(bases_));
 	}
 
 	NewtonHessian ElasticForm::hessianSparsityPattern(SystemAssembler<2> &assembler) const
 	{
 		size_t numElements = bases_.size();
-		return assembler.sparsityPattern(numElements, [&](size_t e) { return stencil(e); });
+		return assembler.sparsityPattern(numElements, ElementBasisStencil(bases_));
 	}
 
 	NewtonHessian ElasticForm::hessianSparsityPattern(SystemAssembler<3> &assembler) const
 	{
 		size_t numElements = bases_.size();
-		return assembler.sparsityPattern(numElements, [&](size_t e) { return stencil(e); });
+		return assembler.sparsityPattern(numElements, ElementBasisStencil(bases_));
 	}
 
 

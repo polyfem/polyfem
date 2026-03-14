@@ -73,7 +73,6 @@ namespace polyfem::solver
 		void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian, SystemAssembler<2> &assembler) const override;
 		void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian, SystemAssembler<3> &assembler) const override;
 
-		std::vector<int> stencil(size_t e) const;
 		virtual NewtonHessian hessianSparsityPattern(SystemAssembler<2> &assembler) const override;
 		virtual NewtonHessian hessianSparsityPattern(SystemAssembler<3> &assembler) const override;
     

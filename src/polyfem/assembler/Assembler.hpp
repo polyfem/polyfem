@@ -559,4 +559,24 @@ namespace polyfem::assembler
 	{
 	};
 
+	// 
+	struct ElementBasisStencil {
+    	ElementBasisStencil(const std::vector<basis::ElementBases> &bases) : m_b(bases) { }
+    	std::vector<int> operator()(int e) const { 
+			std::vector<int> nodesIndices; 
+			const int n_loc_bases = int(m_b[e].bases.size());		
+			for (int i = 0; i < n_loc_bases; ++i)
+			{
+				const auto global_i = m_b[e].bases[i].global();
+				for (size_t ii = 0; ii < global_i.size(); ++ii)
+				{
+					nodesIndices.push_back(global_i[ii].index);
+				} // size of global_i is mostly 1
+			}
+			return nodesIndices;
+		 }
+	private:
+    	const std::vector<basis::ElementBases> &m_b;
+};
+
 } // namespace polyfem::assembler
