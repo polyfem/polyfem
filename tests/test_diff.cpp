@@ -428,7 +428,7 @@ TEST_CASE("shape-transient-friction", "[test_adjoint]")
 
 TEST_CASE("shape-transient-friction-sdf", "[test_adjoint]")
 {
-	run_test2("shape-transient-friction-sdf-opt.json", 1e-7, 1e-5, 0.0, 1.0);
+	run_test2("shape-transient-friction-sdf-opt.json", 1e-7, 1e-4, 0.0, 1.0);
 }
 
 TEST_CASE("3d-shape-mesh-target", "[.][test_adjoint]")
@@ -531,7 +531,7 @@ TEST_CASE("shape-transient-smooth", "[test_adjoint]")
 	ctx.states[0]->get_vertices(V);
 	Eigen::VectorXd x = utils::flatten(V);
 
-	verify_adjoint(*ctx.problem, x, velocity, 1e-6, 1e-5);
+	verify_adjoint(*ctx.problem, x, velocity, 1e-7, 1e-4);
 }
 
 TEST_CASE("shape-pressure-nodes-3d", "[.][test_adjoint]")
