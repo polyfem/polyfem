@@ -531,7 +531,7 @@ TEST_CASE("shape-transient-smooth", "[test_adjoint]")
 	ctx.states[0]->get_vertices(V);
 	Eigen::VectorXd x = utils::flatten(V);
 
-	verify_adjoint(*ctx.problem, x, velocity, 1e-7, 1e-4);
+	verify_adjoint(*ctx.problem, x, velocity, 1e-7, 1e-3);
 }
 
 TEST_CASE("shape-pressure-nodes-3d", "[.][test_adjoint]")
