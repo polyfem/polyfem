@@ -87,3 +87,13 @@ scripts/*.txt
 scripts/*.json
 /.vs
 /CMakeSettings.json
+
+# easy wrapper build/output
+easy_wrapper/build/
+easy_wrapper/test_run/out/
+
+# top-level build
+build/
+
+# macOS
+.DS_Store
