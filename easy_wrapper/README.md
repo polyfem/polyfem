@@ -1,43 +1,44 @@
 # Easy PolyFEM Wrapper
 
-This directory contains a small **prototype C++ wrapper** for PolyFEM that provides a simplified command-line interface for running simulations.
+This directory contains a **C++ wrapper for PolyFEM** that provides a simplified command-line interface for running simulations.
 
-The wrapper demonstrates how PolyFEM can be invoked through a minimal C++ program that:
+The wrapper demonstrates how PolyFEM can be invoked through a small C++ program that:
 
-1. Accepts a mesh file path and output directory
-2. Generates a PolyFEM JSON configuration file automatically
-3. Optionally invokes the PolyFEM solver (`PolyFEM_bin`)
+1. Accepts a mesh file and output directory
+2. Generates a PolyFEM JSON configuration automatically
+3. Optionally runs the PolyFEM solver (`PolyFEM_bin`)
 
-The goal is to provide a lightweight example of exposing PolyFEM functionality through a simpler interface without modifying the internal PolyFEM codebase.
+The goal is to provide a lightweight example of exposing PolyFEM functionality through a simpler interface **without modifying the PolyFEM core codebase**.
 
 ---
 
 # Background
 
-PolyFEM normally expects a **JSON configuration file** that describes the simulation setup.  
+PolyFEM normally expects a **JSON configuration file** describing the simulation setup.
+
 This configuration includes information such as:
 
 - mesh file
-- material model
+- material / physics model
 - boundary conditions
 - solver settings
-- output options
+- output configuration
 
-A typical PolyFEM run looks like this:
+A typical PolyFEM execution looks like:
 
 ```
 PolyFEM_bin --json input.json
 ```
 
-where `input.json` must be written by the user.
+where `input.json` must be written manually by the user.
 
 ---
 
 # What This Wrapper Changes
 
-Instead of requiring users to manually write a JSON configuration file, the wrapper **generates the JSON automatically** based on simple command-line arguments.
+Instead of requiring users to manually write JSON configuration files, this wrapper **generates the JSON automatically** based on command-line arguments.
 
-Typical PolyFEM workflow:
+### Standard PolyFEM workflow
 
 ```
 User writes JSON configuration
@@ -47,7 +48,7 @@ PolyFEM_bin reads JSON
 Simulation runs
 ```
 
-Wrapper workflow:
+### Wrapper workflow
 
 ```
 easy_polyfem
@@ -63,20 +64,106 @@ This simplifies the process of running PolyFEM simulations.
 
 ---
 
-# Directory Contents
+# Supported Features
+
+The wrapper currently supports:
+
+### Problem Types
+
+The following PolyFEM problems can be selected:
+
+```
+laplacian
+helmholtz
+linear_elasticity
+```
+
+Example:
+
+```
+--problem laplacian
+```
+
+---
+
+### Configurable Boundary Conditions
+
+Dirichlet boundary conditions can be specified directly from the command line using the format:
+
+```
+--dirichlet <boundary_id>:<value>
+```
+
+Multiple boundaries can be provided:
+
+```
+--dirichlet 1:0
+--dirichlet 4:1
+```
+
+---
+
+### JSON-Only Mode
+
+Generate the PolyFEM JSON input **without running the solver**:
+
+```
+--json-only
+```
+
+This is useful for debugging or inspecting the generated configuration.
+
+---
+
+### Custom Output File Names
+
+You can customize generated output file names:
+
+```
+--json-name <file>
+--stats-name <file>
+--vtu-name <file>
+```
+
+Example:
+
+```
+--json-name simulation.json
+--stats-name statistics.json
+--vtu-name result.vtu
+```
+
+---
+
+# Directory Structure
 
 ```
 easy_wrapper/
- ├── easy_polyfem.cpp
  ├── CMakeLists.txt
- └── README.md
+ ├── README.md
+ ├── include/
+ │   └── easy_polyfem/
+ │        ├── cli.hpp
+ │        ├── config.hpp
+ │        ├── json_writer.hpp
+ │        ├── runner.hpp
+ │        └── validator.hpp
+ └── src/
+      ├── main.cpp
+      ├── cli.cpp
+      ├── json_writer.cpp
+      ├── runner.cpp
+      └── validator.cpp
 ```
 
 | File | Description |
 |-----|-------------|
-| easy_polyfem.cpp | Main wrapper implementation |
-| CMakeLists.txt | Build configuration for the wrapper |
-| README.md | Documentation |
+| main.cpp | Program entry point |
+| cli.cpp | Command-line argument parsing |
+| json_writer.cpp | Generates PolyFEM JSON configuration |
+| runner.cpp | Executes `PolyFEM_bin` |
+| validator.cpp | Input validation |
+| config.hpp | Configuration data structures |
 
 ---
 
@@ -101,44 +188,55 @@ easy_polyfem
 
 # Usage
 
-## Show Help
+Show help:
 
 ```
 ./easy_wrapper/build/easy_polyfem --help
 ```
 
-Example output:
+Example help output:
 
 ```
-Usage:
-easy_polyfem --mesh <mesh_file> [--problem laplacian] [--output <dir>]
-             [--rhs <value>] [--polyfem-bin <path>] [--json-only]
+easy_polyfem --mesh <mesh_file>
+             [--output <dir>]
+             [--problem <laplacian|helmholtz|linear_elasticity>]
+             [--rhs <value>]
+             [--dirichlet <id:value>]
+             [--polyfem-bin <path>]
+             [--json-name <file>]
+             [--stats-name <file>]
+             [--vtu-name <file>]
+             [--json-only]
 ```
 
 ---
 
-# Generate JSON Only
+# Example Usage
 
-This mode generates a PolyFEM JSON configuration file but **does not run the solver**.
+## Generate JSON Only
 
 ```
 ./easy_wrapper/build/easy_polyfem \
---mesh path/to/mesh.obj \
---output output_directory \
+--mesh mesh.obj \
+--output out \
+--problem laplacian \
+--rhs 10 \
+--dirichlet 1:0 \
+--dirichlet 4:1 \
 --json-only
 ```
 
-This creates a file such as:
+This generates:
 
 ```
 generated_input.json
 ```
 
-in the specified output directory.
+inside the output directory.
 
 ---
 
-# Running PolyFEM Through the Wrapper
+## Run PolyFEM Through the Wrapper
 
 First build the PolyFEM solver.
 
@@ -151,7 +249,7 @@ cmake ..
 make -j4
 ```
 
-This produces the executable:
+This produces:
 
 ```
 PolyFEM_bin
@@ -161,8 +259,12 @@ Then run the wrapper:
 
 ```
 ./easy_wrapper/build/easy_polyfem \
---mesh path/to/mesh.obj \
---output output_directory \
+--mesh mesh.obj \
+--output out \
+--problem laplacian \
+--rhs 10 \
+--dirichlet 1:0 \
+--dirichlet 4:1 \
 --polyfem-bin ./build/PolyFEM_bin
 ```
 
@@ -176,7 +278,7 @@ The wrapper will:
 
 # Output Files
 
-The wrapper and PolyFEM may generate files such as:
+PolyFEM may generate files such as:
 
 ```
 generated_input.json
@@ -184,15 +286,15 @@ stats.json
 result.vtu
 ```
 
-These are **generated files** and should **not be committed to the repository**.
+These files are **generated outputs** and should **not be committed to the repository**.
 
-They are written to the user-specified output directory.
+They are written to the output directory specified by the user.
 
 ---
 
 # Visualizing Results
 
-Simulation output files (e.g. `.vtu`) can be visualized using **ParaView**.
+Simulation results (`.vtu`) can be visualized using **ParaView**.
 
 Steps:
 
@@ -203,29 +305,9 @@ Steps:
 
 ---
 
-# Current Limitations
-
-This wrapper is currently a **prototype**.
-
-Limitations include:
-
-- Supports only a simple **Laplacian** setup
-- Boundary IDs are currently **hardcoded**
-- Mesh boundary detection is not implemented
-- Error handling is minimal
-
-Future improvements could include:
-
-- configurable boundary conditions
-- support for additional PolyFEM problem types
-- improved command-line interface
-- automatic mesh boundary detection
-
----
-
 # Repository Hygiene
 
-To avoid polluting the repository with generated data, the following should **not be committed**:
+To avoid polluting the repository with generated files, the following should **not be committed**:
 
 ```
 easy_wrapper/build/
@@ -243,4 +325,4 @@ Generated outputs should remain local.
 
 This wrapper demonstrates how PolyFEM functionality can be exposed through a simplified C++ interface while keeping the PolyFEM core architecture unchanged.
 
-It can serve as a starting point for building higher-level tools or integrations around PolyFEM.
+It provides a foundation for building higher-level tools or integrations around PolyFEM.

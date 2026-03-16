@@ -91,7 +91,17 @@ scripts/*.json
 # easy wrapper build/output
 easy_wrapper/build/
 easy_wrapper/test_run/out/
+easy_wrapper/build/
+easy_wrapper/test_run/out2/
+easy_wrapper/test_run/out3/
+easy_wrapper/test_run/run_real/
+build/
+.DS_Store
 
+
+easy_wrapper/test_run/*.obj
+easy_wrapper/test_run/*.msh
+easy_wrapper/test_run/*.mesh
 # top-level build
 build/
 
