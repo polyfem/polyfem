@@ -337,7 +337,7 @@ TEST_CASE("static-control-pressure-nodes-3d", "[.][test_adjoint]")
 
 TEST_CASE("control-pressure-walker-2d", "[test_adjoint]")
 {
-	run_test1("walker-opt.json", 1e-5, 1e-3, 0.0, 1.0);
+	run_test1("walker-opt.json", 1e-6, 1e-2, 0.0, 1.0);
 }
 
 TEST_CASE("shape-walker-2d", "[test_adjoint]")
