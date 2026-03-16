@@ -1,5 +1,6 @@
 #include "easy_polyfem/cli.hpp"
 
+#include <cctype>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
@@ -70,6 +71,12 @@ namespace easy_polyfem
                [--json-name <file>]
                [--stats-name <file>]
                [--vtu-name <file>]
+               [--auto-boundaries]
+               [--bc-left <value>]
+               [--bc-right <value>]
+               [--bc-bottom <value>]
+               [--bc-top <value>]
+               [--boundary-eps <value>]
                [--json-only]
 
 Examples:
@@ -78,6 +85,10 @@ Examples:
   easy_polyfem --mesh mesh.obj --output out --problem laplacian \
                --rhs 10 --dirichlet 1:0 --dirichlet 4:1 \
                --polyfem-bin ./build/PolyFEM_bin
+
+  easy_polyfem --mesh mesh.obj --output out --problem laplacian \
+               --rhs 10 --auto-boundaries --bc-left 0 --bc-right 1 \
+               --json-only
 )";
     }
 
@@ -168,6 +179,75 @@ Examples:
             {
                 if (!require_value(arg)) return false;
                 opt.vtu_name = argv[++i];
+            }
+            else if (arg == "--auto-boundaries")
+            {
+                opt.auto_boundaries = true;
+            }
+            else if (arg == "--bc-left")
+            {
+                if (!require_value(arg)) return false;
+                try
+                {
+                    opt.bc_left = std::stod(argv[++i]);
+                }
+                catch (...)
+                {
+                    error_message = "Invalid --bc-left value.";
+                    return false;
+                }
+            }
+            else if (arg == "--bc-right")
+            {
+                if (!require_value(arg)) return false;
+                try
+                {
+                    opt.bc_right = std::stod(argv[++i]);
+                }
+                catch (...)
+                {
+                    error_message = "Invalid --bc-right value.";
+                    return false;
+                }
+            }
+            else if (arg == "--bc-bottom")
+            {
+                if (!require_value(arg)) return false;
+                try
+                {
+                    opt.bc_bottom = std::stod(argv[++i]);
+                }
+                catch (...)
+                {
+                    error_message = "Invalid --bc-bottom value.";
+                    return false;
+                }
+            }
+            else if (arg == "--bc-top")
+            {
+                if (!require_value(arg)) return false;
+                try
+                {
+                    opt.bc_top = std::stod(argv[++i]);
+                }
+                catch (...)
+                {
+                    error_message = "Invalid --bc-top value.";
+                    return false;
+                }
+            }
+            else if (arg == "--boundary-eps")
+            {
+                if (!require_value(arg)) return false;
+                try
+                {
+                    opt.boundary_eps = std::stod(argv[++i]);
+                }
+                catch (...)
+                {
+                    error_message = "Invalid --boundary-eps value.";
+                    return false;
+                }
             }
             else if (arg == "--json-only")
             {

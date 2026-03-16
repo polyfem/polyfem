@@ -26,10 +26,23 @@ namespace easy_polyfem
             return false;
         }
 
-        if (opt.dirichlet_boundaries.empty())
+        if (!opt.auto_boundaries && opt.dirichlet_boundaries.empty())
         {
-            error_message = "At least one --dirichlet boundary condition is required.";
+            error_message = "Provide at least one --dirichlet boundary condition or use --auto-boundaries.";
             return false;
+        }
+
+        if (opt.auto_boundaries)
+        {
+            const bool has_auto_bc =
+                opt.bc_left.has_value() || opt.bc_right.has_value() ||
+                opt.bc_bottom.has_value() || opt.bc_top.has_value();
+
+            if (!has_auto_bc)
+            {
+                error_message = "With --auto-boundaries, provide at least one of --bc-left, --bc-right, --bc-bottom, --bc-top.";
+                return false;
+            }
         }
 
         if (!opt.json_only && !fs::exists(opt.polyfem_bin))

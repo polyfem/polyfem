@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VTKFile type="vtkMultiBlockDataSet" version="1.0">
+    <vtkMultiBlockDataSet>
+        <Block name="Volume">
+            <DataSet name="data" file="result.vtu"/>
+        </Block>
+    </vtkMultiBlockDataSet>
+    <FieldData>
+        <DataArray type="Float32" Name="TimeValue">1.000000</DataArray>
+    </FieldData>
+</VTKFile>

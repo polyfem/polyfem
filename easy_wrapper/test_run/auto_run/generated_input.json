@@ -1,0 +1,32 @@
+{
+  "geometry": [
+    {
+      "advanced": {
+        "normalize_mesh": true
+      },
+      "mesh": "/Users/nasimpaak/Downloads/git2/polyfem/easy_wrapper/test_run/mesh.obj",
+      "surface_selection": [
+        {
+          "threshold": 1e-08
+        }
+      ]
+    }
+  ],
+  "materials": {
+    "type": "Laplacian"
+  },
+  "boundary_conditions": {
+    "dirichlet_boundary": [
+      { "id": 1, "value": 0 },
+      { "id": 3, "value": 1 }
+    ],
+    "rhs": 10
+  },
+  "output": {
+    "directory": "/Users/nasimpaak/Downloads/git2/polyfem/easy_wrapper/test_run/auto_run",
+    "json": "stats.json",
+    "paraview": {
+      "file_name": "result.vtu"
+    }
+  }
+}

@@ -18,11 +18,11 @@ PolyFEM normally expects a **JSON configuration file** describing the simulation
 
 This configuration includes information such as:
 
-- mesh file
-- material / physics model
-- boundary conditions
-- solver settings
-- output configuration
+* mesh file
+* material / physics model
+* boundary conditions
+* solver settings
+* output configuration
 
 A typical PolyFEM execution looks like:
 
@@ -66,11 +66,13 @@ This simplifies the process of running PolyFEM simulations.
 
 # Supported Features
 
-The wrapper currently supports:
+The wrapper supports several configurable simulation options.
 
-### Problem Types
+---
 
-The following PolyFEM problems can be selected:
+# Problem Types
+
+The following PolyFEM problem types are supported:
 
 ```
 laplacian
@@ -86,9 +88,9 @@ Example:
 
 ---
 
-### Configurable Boundary Conditions
+# Configurable Boundary Conditions
 
-Dirichlet boundary conditions can be specified directly from the command line using the format:
+Dirichlet boundary conditions can be specified directly from the command line using:
 
 ```
 --dirichlet <boundary_id>:<value>
@@ -103,7 +105,49 @@ Multiple boundaries can be provided:
 
 ---
 
-### JSON-Only Mode
+# Automatic Boundary Detection
+
+The wrapper also supports **automatic boundary detection** using the bounding box of the mesh.
+
+This mode uses PolyFEM's `surface_selection` functionality to assign boundary IDs based on the mesh bounding box.
+
+Enable automatic boundary detection with:
+
+```
+--auto-boundaries
+```
+
+Boundary values can then be assigned using:
+
+```
+--bc-left <value>
+--bc-right <value>
+--bc-bottom <value>
+--bc-top <value>
+```
+
+Example:
+
+```
+--auto-boundaries --bc-left 0 --bc-right 1
+```
+
+PolyFEM internally assigns bounding box sides as:
+
+| Boundary | ID |
+| -------- | -- |
+| left     | 1  |
+| bottom   | 2  |
+| right    | 3  |
+| top      | 4  |
+| front    | 5  |
+| back     | 6  |
+
+This allows quick simulation setup without manually determining boundary IDs.
+
+---
+
+# JSON-Only Mode
 
 Generate the PolyFEM JSON input **without running the solver**:
 
@@ -115,7 +159,7 @@ This is useful for debugging or inspecting the generated configuration.
 
 ---
 
-### Custom Output File Names
+# Custom Output File Names
 
 You can customize generated output file names:
 
@@ -156,14 +200,14 @@ easy_wrapper/
       └── validator.cpp
 ```
 
-| File | Description |
-|-----|-------------|
-| main.cpp | Program entry point |
-| cli.cpp | Command-line argument parsing |
+| File            | Description                          |
+| --------------- | ------------------------------------ |
+| main.cpp        | Program entry point                  |
+| cli.cpp         | Command-line argument parsing        |
 | json_writer.cpp | Generates PolyFEM JSON configuration |
-| runner.cpp | Executes `PolyFEM_bin` |
-| validator.cpp | Input validation |
-| config.hpp | Configuration data structures |
+| runner.cpp      | Executes `PolyFEM_bin`               |
+| validator.cpp   | Input validation                     |
+| config.hpp      | Configuration data structures        |
 
 ---
 
@@ -171,7 +215,7 @@ easy_wrapper/
 
 From the repository root:
 
-```bash
+```
 mkdir -p easy_wrapper/build
 cd easy_wrapper/build
 cmake ..
@@ -202,6 +246,11 @@ easy_polyfem --mesh <mesh_file>
              [--problem <laplacian|helmholtz|linear_elasticity>]
              [--rhs <value>]
              [--dirichlet <id:value>]
+             [--auto-boundaries]
+             [--bc-left <value>]
+             [--bc-right <value>]
+             [--bc-bottom <value>]
+             [--bc-top <value>]
              [--polyfem-bin <path>]
              [--json-name <file>]
              [--stats-name <file>]
@@ -263,8 +312,9 @@ Then run the wrapper:
 --output out \
 --problem laplacian \
 --rhs 10 \
---dirichlet 1:0 \
---dirichlet 4:1 \
+--auto-boundaries \
+--bc-left 0 \
+--bc-right 1 \
 --polyfem-bin ./build/PolyFEM_bin
 ```
 

@@ -5,6 +5,7 @@ add_executable(easy_polyfem
     src/main.cpp
     src/cli.cpp
     src/json_writer.cpp
+    src/mesh_info.cpp
     src/runner.cpp
     src/validator.cpp
 )
