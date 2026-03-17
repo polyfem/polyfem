@@ -12,6 +12,7 @@ namespace polyfem::solver
 	public:
 		PeriodicMeshToMesh(const Eigen::MatrixXd &V);
 
+		int inverse_size(int y_size) const override { return input_size(); };
 		int size(const int x_size) const override
 		{
 			assert(x_size == input_size());
@@ -23,7 +24,7 @@ namespace polyfem::solver
 		int dim() const { return dim_; }
 
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
-		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) override;
+		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
 
 		int full_to_periodic(int i) const { return dependent_map(i); }

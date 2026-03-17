@@ -6,6 +6,7 @@
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
+#include <polyfem/optimization/AdjointTools.hpp>
 
 #include <Eigen/Core>
 
@@ -81,7 +82,7 @@ namespace polyfem::solver
 
 	void CollisionBarrierForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, state_.get(), x, [this, &x]() {
+		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, *state_, x, [this, &x]() {
 			const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_->mesh->dimension()));
 			const Eigen::VectorXd grad = collision_mesh_.to_full_dof(barrier_potential_.gradient(collision_set, collision_mesh_, displaced_surface));
 			return AdjointTools::map_node_to_primitive_order(*state_, grad);
@@ -150,7 +151,7 @@ namespace polyfem::solver
 	Eigen::VectorXd CollisionBarrierForm::get_updated_mesh_nodes(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd X = X_init;
-		variable_to_simulations_.compute_state_variable(ParameterType::Shape, state_.get(), x, X);
+		variable_to_simulations_.compute_state_variable(ParameterType::Shape, *state_, x, X);
 		return AdjointTools::map_primitive_to_node_order(*state_, X);
 	}
 
@@ -320,7 +321,7 @@ namespace polyfem::solver
 
 	void DeformedCollisionBarrierForm::compute_partial_gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
-		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, state_.get(), x, [this, &x]() {
+		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, *state_, x, [this, &x]() {
 			const Eigen::MatrixXd displaced_surface = collision_mesh_.vertices(utils::unflatten(get_updated_mesh_nodes(x), state_->mesh->dimension()));
 			const Eigen::VectorXd grad = collision_mesh_.to_full_dof(barrier_potential_.gradient(collision_set, collision_mesh_, displaced_surface));
 			return AdjointTools::map_node_to_primitive_order(*state_, grad);
@@ -382,7 +383,7 @@ namespace polyfem::solver
 	Eigen::VectorXd DeformedCollisionBarrierForm::get_updated_mesh_nodes(const Eigen::VectorXd &x) const
 	{
 		Eigen::VectorXd X = X_init;
-		variable_to_simulations_.compute_state_variable(ParameterType::Shape, state_.get(), x, X);
+		variable_to_simulations_.compute_state_variable(ParameterType::Shape, *state_, x, X);
 		return AdjointTools::map_primitive_to_node_order(*state_, X) + diff_cache_->u(0);
 	}
 
@@ -487,7 +488,7 @@ namespace polyfem::solver
 		StiffnessMatrix hessian = potential_.hessian(collisions_, collision_mesh_, displaced_surface, ipc::PSDProjectionMethod::NONE);
 		hessian = collision_mesh_.to_full_dof(hessian);
 
-		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, state_.get(), x, [this, &x, &forces, &hessian]() {
+		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, *state_, x, [this, &x, &forces, &hessian]() {
 			// Eigen::VectorXd grads = 2 * hessian.transpose() * forces;
 
 			Eigen::VectorXd coeff(forces.size());

@@ -3,6 +3,7 @@
 #include <polyfem/State.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/optimization/AdjointTools.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/forms/AdjointForm.hpp>
 

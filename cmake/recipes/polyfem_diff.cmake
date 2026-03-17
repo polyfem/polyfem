@@ -13,8 +13,8 @@ ExternalProject_Add(
     polyfem_diff_download
     PREFIX ${FETCHCONTENT_BASE_DIR}/polyfem-test-diff
     SOURCE_DIR ${POLYFEM_DIFF_DIR}
-    GIT_REPOSITORY https://github.com/polyfem/differentiability-data
-    GIT_TAG 096530a6334240431e6fb96dd965268105f81dc7
+    GIT_REPOSITORY https://github.com/iiiian/differentiability-data
+    GIT_TAG testing
     CONFIGURE_COMMAND ""
     BUILD_COMMAND ""
     INSTALL_COMMAND ""

@@ -5,7 +5,8 @@
 
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/forms/AdjointForm.hpp>
-#include <polyfem/optimization/forms/VariableToSimulation.hpp>
+#include <polyfem/optimization/var2sims/VariableToSimulation.hpp>
+#include <polyfem/optimization/var2sims/VariableToSimulationGroup.hpp>
 #include <polyfem/optimization/parametrization/Parametrization.hpp>
 
 #include <string>
@@ -15,8 +16,7 @@
 
 namespace polyfem::from_json
 {
-	// Build a single State from an in-memory JSON configuration.
-	// This mirrors the initialization done by build_states(), but does not load JSON from disk.
+
 	std::shared_ptr<State> build_state(
 		const json &args,
 		const size_t max_threads);
@@ -31,7 +31,7 @@ namespace polyfem::from_json
 		const std::vector<std::shared_ptr<State>> &states,
 		const std::vector<int> &variable_sizes);
 
-	std::unique_ptr<solver::VariableToSimulation> build_variable_to_simulation(
+	std::shared_ptr<solver::VariableToSimulation> build_variable_to_simulation(
 		const json &args,
 		const std::vector<std::shared_ptr<State>> &states,
 		const std::vector<std::shared_ptr<DiffCache>> &diff_caches,

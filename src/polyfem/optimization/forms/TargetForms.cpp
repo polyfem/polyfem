@@ -575,7 +575,7 @@ namespace polyfem::solver
 	void NodeTargetForm::compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		gradv.setZero(x.size());
-		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, state_.get(), x, [this]() {
+		gradv = weight() * variable_to_simulations_.apply_parametrization_jacobian(ParameterType::Shape, *state_, x, [this]() {
 			log_and_throw_adjoint_error("[{}] Doesn't support derivatives wrt. shape!", name());
 			return Eigen::VectorXd::Zero(0).eval();
 		});
