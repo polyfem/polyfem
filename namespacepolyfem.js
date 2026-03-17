@@ -99,6 +99,7 @@ var namespacepolyfem =
     [ "BSplineParametrization3D", "classpolyfem_1_1_b_spline_parametrization3_d.html", "classpolyfem_1_1_b_spline_parametrization3_d" ],
     [ "CubicHermiteSplineParametrization", "classpolyfem_1_1_cubic_hermite_spline_parametrization.html", "classpolyfem_1_1_cubic_hermite_spline_parametrization" ],
     [ "DiffCache", "classpolyfem_1_1_diff_cache.html", "classpolyfem_1_1_diff_cache" ],
+    [ "InitialConditionOverride", "classpolyfem_1_1_initial_condition_override.html", "classpolyfem_1_1_initial_condition_override" ],
     [ "IntegrableFunctional", "classpolyfem_1_1_integrable_functional.html", "classpolyfem_1_1_integrable_functional" ],
     [ "LazyCubicInterpolator", "classpolyfem_1_1_lazy_cubic_interpolator.html", "classpolyfem_1_1_lazy_cubic_interpolator" ],
     [ "OptState", "classpolyfem_1_1_opt_state.html", "classpolyfem_1_1_opt_state" ],

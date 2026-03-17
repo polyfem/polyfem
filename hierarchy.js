@@ -230,6 +230,7 @@ var hierarchy =
     [ "polyfem::mesh::Navigation3D::Index", "structpolyfem_1_1mesh_1_1_navigation3_d_1_1_index.html", null ],
     [ "polyfem::mesh::Navigation::Index", "structpolyfem_1_1mesh_1_1_navigation_1_1_index.html", null ],
     [ "polyfem::solver::InertiaForceDerivative", "classpolyfem_1_1solver_1_1_inertia_force_derivative.html", null ],
+    [ "polyfem::InitialConditionOverride", "classpolyfem_1_1_initial_condition_override.html", null ],
     [ "polyfem::IntegrableFunctional", "classpolyfem_1_1_integrable_functional.html", null ],
     [ "polyfem::basis::InterfaceData", "structpolyfem_1_1basis_1_1_interface_data.html", null ],
     [ "polyfem::utils::InterpolatedFunction2d", "classpolyfem_1_1utils_1_1_interpolated_function2d.html", null ],

@@ -24,7 +24,7 @@ var NAVTREEINDEX5 =
 "_state_8cpp.html#a066ceec9d3e84702a92a3c8d53b5a8ce":[8,0,1,0,15,0],
 "_state_8cpp_source.html":[8,0,1,0,15],
 "_state_8hpp.html":[8,0,1,0,16],
-"_state_8hpp.html#a910b3dbb6b070be9a2e1f4ebf3f1551a":[8,0,1,0,16,1],
+"_state_8hpp.html#a910b3dbb6b070be9a2e1f4ebf3f1551a":[8,0,1,0,16,2],
 "_state_8hpp_source.html":[8,0,1,0,16],
 "_state_diff_8cpp.html":[8,0,1,0,5,16],
 "_state_diff_8cpp.html#a16520f8a00832be325bdb7c7521a8b5e":[8,0,1,0,5,16,2],

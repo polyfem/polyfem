@@ -29,6 +29,7 @@ var classpolyfem_1_1_diff_cache =
     [ "disp_grad_", "classpolyfem_1_1_diff_cache.html#a63415988df1b50b90e6fedb0437cfe2e", null ],
     [ "friction_collision_set_", "classpolyfem_1_1_diff_cache.html#a30e1b538890f638369d77262fdcd9a4e", null ],
     [ "gradu_h_", "classpolyfem_1_1_diff_cache.html#a23108e47f58fd88fba4e0a8c441e96c0", null ],
+    [ "initial_condition_override", "classpolyfem_1_1_diff_cache.html#aa0491d2ec450a2f9f016c1bea8c436cc", null ],
     [ "n_time_steps_", "classpolyfem_1_1_diff_cache.html#a497ed0913a1ee4b96d873c5b9cffa539", null ],
     [ "normal_adhesion_collision_set_", "classpolyfem_1_1_diff_cache.html#a26a77b6e6ca86c7e0e9ec8ada7a16df9", null ],
     [ "smooth_collision_set_", "classpolyfem_1_1_diff_cache.html#a99490caa926705bd54ff54ded91a0a60", null ],

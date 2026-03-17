@@ -1,5 +1,13 @@
 var NAVTREEINDEX53 =
 {
+"structpolyfem_1_1mesh_1_1_vertex.html#adbd8e439aa7ad4ef9fbe620982154e5e":[6,0,8,5,28,1],
+"structpolyfem_1_1mesh_1_1_vertex.html#adbd8e439aa7ad4ef9fbe620982154e5e":[7,0,4,3,26,1],
+"structpolyfem_1_1mesh_1_1_vertex.html#afc574af258f55f93bc032321c1fbcf6a":[7,0,4,3,26,7],
+"structpolyfem_1_1mesh_1_1_vertex.html#afc574af258f55f93bc032321c1fbcf6a":[6,0,8,5,28,7],
+"structpolyfem_1_1mesh_1_1_wild_remesher_1_1_boundary_attributes.html":[6,0,8,5,29,0],
+"structpolyfem_1_1mesh_1_1_wild_remesher_1_1_boundary_attributes.html":[7,0,4,3,27,0],
+"structpolyfem_1_1mesh_1_1_wild_remesher_1_1_boundary_attributes.html#a6ad58bfe049b29bfacf4f787a6ddef4e":[7,0,4,3,27,0,0],
+"structpolyfem_1_1mesh_1_1_wild_remesher_1_1_boundary_attributes.html#a6ad58bfe049b29bfacf4f787a6ddef4e":[6,0,8,5,29,0,0],
 "structpolyfem_1_1mesh_1_1_wild_remesher_1_1_edge_attributes.html":[6,0,8,5,29,1],
 "structpolyfem_1_1mesh_1_1_wild_remesher_1_1_edge_attributes.html":[7,0,4,3,27,1],
 "structpolyfem_1_1mesh_1_1_wild_remesher_1_1_edge_attributes.html#a02ead7e3671f8308d316f9a6f0157752":[6,0,8,5,29,1,3],
