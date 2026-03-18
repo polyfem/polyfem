@@ -21,6 +21,9 @@ namespace polyfem
 	class DiffCache
 	{
 	public:
+		/// Initial-condition override storage for initial condition optimization.
+		InitialConditionOverride initial_condition_override;
+
 		void cache_adjoints(const Eigen::MatrixXd &adjoint_mat);
 
 		/// @brief Cache time-dependent adjoint optimization data.
