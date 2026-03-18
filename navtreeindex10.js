@@ -1,5 +1,7 @@
 var NAVTREEINDEX10 =
 {
+"classpolyfem_1_1assembler_1_1_assembler.html#a719343427b7a8ea6a643b2f745cb71a9":[7,0,4,0,4,22],
+"classpolyfem_1_1assembler_1_1_assembler.html#a719343427b7a8ea6a643b2f745cb71a9":[6,0,8,0,4,22],
 "classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f":[7,0,4,0,4,1],
 "classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f":[6,0,8,0,4,1],
 "classpolyfem_1_1assembler_1_1_assembler.html#a7c54d99815b988e2ca1bc05c1e202f69":[6,0,8,0,4,24],
@@ -247,7 +249,5 @@ var NAVTREEINDEX10 =
 "classpolyfem_1_1assembler_1_1_element_assembly_values.html#a818b1accc498b39a9793408497b6ea06":[6,0,8,0,16,17],
 "classpolyfem_1_1assembler_1_1_element_assembly_values.html#a818b1accc498b39a9793408497b6ea06":[7,0,4,0,16,17],
 "classpolyfem_1_1assembler_1_1_element_assembly_values.html#a88510322422a2a0dd72de26063a1eecf":[6,0,8,0,16,19],
-"classpolyfem_1_1assembler_1_1_element_assembly_values.html#a88510322422a2a0dd72de26063a1eecf":[7,0,4,0,16,19],
-"classpolyfem_1_1assembler_1_1_element_assembly_values.html#a8a6fa8fa67af453825d8441e40abc1ec":[7,0,4,0,16,7],
-"classpolyfem_1_1assembler_1_1_element_assembly_values.html#a8a6fa8fa67af453825d8441e40abc1ec":[6,0,8,0,16,7]
+"classpolyfem_1_1assembler_1_1_element_assembly_values.html#a88510322422a2a0dd72de26063a1eecf":[7,0,4,0,16,19]
 };

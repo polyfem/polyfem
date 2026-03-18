@@ -771,7 +771,7 @@ $(document).ready(function(){initNavTree('_local_mesh_8cpp_source.html',''); ini
 <div class="line"><a id="l00613" name="l00613"></a><span class="lineno">  613</span>        paraviewo::VTUWriter writer;</div>
 <div class="line"><a id="l00614" name="l00614"></a><span class="lineno">  614</span>        writer.add_field(<span class="stringliteral">&quot;is_free&quot;</span>, is_free);</div>
 <div class="line"><a id="l00615" name="l00615"></a><span class="lineno">  615</span>        writer.add_field(<span class="stringliteral">&quot;displacement&quot;</span>, <a class="code hl_function" href="namespacepolyfem_1_1utils.html#aafdbbff4a81a4fcba11129097b1109e5">utils::unflatten</a>(sol, M::DIM));</div>
-<div class="line"><a id="l00616" name="l00616"></a><span class="lineno">  616</span>        writer.write_mesh(path, rest_positions(), elements());</div>
+<div class="line"><a id="l00616" name="l00616"></a><span class="lineno">  616</span>        writer.write_mesh(path, rest_positions(), elements(), m_elements.cols() == 3 ? paraviewo::CellType::Tetrahedron : paraviewo::CellType::Triangle);</div>
 <div class="line"><a id="l00617" name="l00617"></a><span class="lineno">  617</span>    }</div>
 </div>
 <div class="line"><a id="l00618" name="l00618"></a><span class="lineno">  618</span> </div>

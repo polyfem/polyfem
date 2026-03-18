@@ -1,5 +1,9 @@
 var NAVTREEINDEX53 =
 {
+"structpolyfem_1_1mesh_1_1_vertex.html#a4addda86740ef529091c4935e4a62fa2":[6,0,8,5,28,6],
+"structpolyfem_1_1mesh_1_1_vertex.html#a4addda86740ef529091c4935e4a62fa2":[7,0,4,3,26,6],
+"structpolyfem_1_1mesh_1_1_vertex.html#a51f50a53eb00f294a2afcea07be2f524":[6,0,8,5,28,5],
+"structpolyfem_1_1mesh_1_1_vertex.html#a51f50a53eb00f294a2afcea07be2f524":[7,0,4,3,26,5],
 "structpolyfem_1_1mesh_1_1_vertex.html#aba32b89f8442eec1d3f5ccdb2844681f":[7,0,4,3,26,4],
 "structpolyfem_1_1mesh_1_1_vertex.html#aba32b89f8442eec1d3f5ccdb2844681f":[6,0,8,5,28,4],
 "structpolyfem_1_1mesh_1_1_vertex.html#adbd8e439aa7ad4ef9fbe620982154e5e":[6,0,8,5,28,1],

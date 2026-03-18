@@ -1,9 +1,11 @@
 var NAVTREEINDEX7 =
 {
+"classp__bases_1_1_reference_simplex.html#a045c2786d4bbea30dfc27ea756084490":[6,0,7,1,2],
+"classp__bases_1_1_reference_simplex.html#a045c2786d4bbea30dfc27ea756084490":[7,0,3,1,2],
 "classp__bases_1_1_reference_simplex.html#a832c3b4ce6bde36917fd59e42d2376ef":[6,0,7,1,1],
 "classp__bases_1_1_reference_simplex.html#a832c3b4ce6bde36917fd59e42d2376ef":[7,0,3,1,1],
-"classp__bases_1_1_reference_simplex.html#a8412b9660bedd187b9864c98b6b3ab2a":[7,0,3,1,0],
 "classp__bases_1_1_reference_simplex.html#a8412b9660bedd187b9864c98b6b3ab2a":[6,0,7,1,0],
+"classp__bases_1_1_reference_simplex.html#a8412b9660bedd187b9864c98b6b3ab2a":[7,0,3,1,0],
 "classp__bases_1_1_reference_simplex.html#a9aa8384d88fefb9130694de92ffdbbcb":[7,0,3,1,3],
 "classp__bases_1_1_reference_simplex.html#a9aa8384d88fefb9130694de92ffdbbcb":[6,0,7,1,3],
 "classpolyfem_1_1_auto_diff_allocator.html":[6,0,8,13],
@@ -247,7 +249,5 @@ var NAVTREEINDEX7 =
 "classpolyfem_1_1_lazy_cubic_interpolator.html#a6bc96bef0ee03e98314d3c2ce31027ca":[7,0,4,20,12],
 "classpolyfem_1_1_lazy_cubic_interpolator.html#a6bc96bef0ee03e98314d3c2ce31027ca":[6,0,8,22,12],
 "classpolyfem_1_1_lazy_cubic_interpolator.html#a8235ee5b5b5345ccd23064a2c1e3dacc":[6,0,8,22,2],
-"classpolyfem_1_1_lazy_cubic_interpolator.html#a8235ee5b5b5345ccd23064a2c1e3dacc":[7,0,4,20,2],
-"classpolyfem_1_1_lazy_cubic_interpolator.html#a84187f3cb8c174eb7a3b718a9c768f5b":[6,0,8,22,3],
-"classpolyfem_1_1_lazy_cubic_interpolator.html#a84187f3cb8c174eb7a3b718a9c768f5b":[7,0,4,20,3]
+"classpolyfem_1_1_lazy_cubic_interpolator.html#a8235ee5b5b5345ccd23064a2c1e3dacc":[7,0,4,20,2]
 };
