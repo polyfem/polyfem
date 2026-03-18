@@ -145,7 +145,7 @@ namespace
 
 			// Build states.
 			std::string root = POLYFEM_DIFF_DIR + std::string("/input/");
-			states = from_json::build_states(root, args["states"], solver::CacheLevel::Derivatives, -1);
+			states = from_json::build_states(root, args["states"], -1);
 
 			// Build diff_caches.
 			diff_caches.resize(states.size());
@@ -382,7 +382,7 @@ TEST_CASE("node-trajectory", "[test_adjoint]")
 	// One state only.
 	std::string root = POLYFEM_DIFF_DIR + std::string("/input/");
 	auto states =
-		from_json::build_states(root, opt_args["states"], solver::CacheLevel::Derivatives, -1);
+		from_json::build_states(root, opt_args["states"], -1);
 	std::vector<std::shared_ptr<DiffCache>> diff_caches = {std::make_shared<DiffCache>()};
 
 	auto elastic_var2sim =

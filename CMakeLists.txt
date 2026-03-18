@@ -68,6 +68,7 @@ set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vector
 
 # Polyfem options for enabling/disabling optional libraries
 option(POLYFEM_WITH_APP "Generate the application with gui" OFF)
+option(POLYFEM_WITH_OPTIMIZATION "Build adjoint optimization support" ON)
 option(POLYFEM_WITH_TESTS     "Build tests"                                 ON)
 option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"  ON)
 option(POLYFEM_WITH_MMG       "Build MMG utils for remeshing"              OFF)
@@ -145,6 +146,10 @@ target_compile_definitions(polyfem PUBLIC -DEIGEN_STACK_ALLOCATION_LIMIT=0)
 # Max stack-size small vectors (for gradient and Hessian)
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_SMALL_N=${POLYFEM_SMALL_N})
 target_compile_definitions(polyfem PUBLIC -DPOLYFEM_BIG_N=${POLYFEM_BIG_N})
+
+if(POLYFEM_WITH_OPTIMIZATION)
+    target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_OPTIMIZATION)
+endif()
 
 set(POLYFEM_JSON_SPEC_DIR "${PROJECT_SOURCE_DIR}/json-specs")
 target_compile_definitions(polyfem PUBLIC POLYFEM_JSON_SPEC_DIR="${POLYFEM_JSON_SPEC_DIR}")

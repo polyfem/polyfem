@@ -44,8 +44,6 @@
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/autodiff.h>
 
-#include <polyfem/optimization/CacheLevel.hpp>
-
 #include <polysolve/linear/FEMSolver.hpp>
 
 #include <igl/edges.h>
@@ -681,7 +679,6 @@ namespace polyfem
 		}
 
 		// shape optimization needs continuous geometric basis
-		// const bool use_continuous_gbasis = optimization_enabled == solver::CacheLevel::Derivatives;
 		const bool use_continuous_gbasis = true;
 		const bool use_corner_quadrature = args["space"]["advanced"]["use_corner_quadrature"];
 

@@ -70,7 +70,7 @@ namespace
 	{
 		opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
-		std::vector<std::shared_ptr<State>> states = from_json::build_states("", opt_args["states"], solver::CacheLevel::Derivatives, 16);
+		std::vector<std::shared_ptr<State>> states = from_json::build_states("", opt_args["states"], 16);
 		std::vector<std::shared_ptr<DiffCache>> diff_caches(states.size());
 		for (auto &dc : diff_caches)
 			dc = std::make_shared<DiffCache>();
@@ -279,7 +279,7 @@ TEST_CASE("AMIPS-debug", "[optimization]")
 		if (!load_json(utils::resolve_path(args["path"], root_folder, false), cur_args))
 			log_and_throw_adjoint_error("Can't find json for State {}", i);
 
-		states[i] = from_json::build_state(cur_args, solver::CacheLevel::Derivatives, 16);
+		states[i] = from_json::build_state(cur_args, 16);
 		diff_caches[i] = std::make_shared<DiffCache>();
 		i++;
 	}

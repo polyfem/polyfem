@@ -143,7 +143,6 @@ namespace polyfem::solver
 				Eigen::VectorXd p = state->mesh->point(vid);
 				p(indices(i) - vid * dim) = state_variable(i);
 				state->mesh->set_point(vid, p);
-				// state->set_mesh_vertex(indices(i) / dim, state_variable(Eigen::seqN(i, dim)));
 			}
 		}
 	}
@@ -739,7 +738,7 @@ namespace polyfem::solver
 			const int n_verts = state->mesh->n_vertices();
 
 			for (int i = 0; i < n_verts; i++)
-				state->set_mesh_vertex(i, V.row(i));
+				state->mesh->set_point(i, V.row(i));
 		}
 	}
 	Eigen::VectorXd PeriodicShapeVariableToSimulation::inverse_eval()

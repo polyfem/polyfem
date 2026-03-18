@@ -4,7 +4,6 @@
 #include <polyfem/Common.hpp>
 
 #include <polyfem/optimization/StateDiff.hpp>
-#include <polyfem/optimization/CacheLevel.hpp>
 #include <polyfem/optimization/AdjointNLProblem.hpp>
 #include <polyfem/optimization/forms/SpatialIntegralForms.hpp>
 #include <polyfem/optimization/forms/SumCompositeForm.hpp>

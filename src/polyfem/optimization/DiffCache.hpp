@@ -4,7 +4,6 @@
 #include <polyfem/State.hpp>
 
 #include <polyfem/utils/Types.hpp>
-#include <polyfem/optimization/CacheLevel.hpp>
 
 #include <ipc/ipc.hpp>
 #include <ipc/collisions/normal/normal_collisions.hpp>

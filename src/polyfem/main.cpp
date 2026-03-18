@@ -5,7 +5,9 @@
 #include <h5pp/h5pp.h>
 
 #include <polyfem/State.hpp>
+#ifdef POLYFEM_WITH_OPTIMIZATION
 #include <polyfem/optimization/OptState.hpp>
+#endif
 
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -62,11 +64,13 @@ int forward_simulation(const CLI::App &command_line,
 					   const spdlog::level::level_enum &log_level,
 					   json &in_args);
 
+#ifdef POLYFEM_WITH_OPTIMIZATION
 int optimization_simulation(const CLI::App &command_line,
 							const unsigned max_threads,
 							const bool is_strict,
 							const spdlog::level::level_enum &log_level,
 							json &opt_args);
+#endif
 
 int main(int argc, char **argv)
 {
@@ -128,7 +132,13 @@ int main(int argc, char **argv)
 			log_and_throw_error(fmt::format("unable to open {} file", json_file));
 
 		if (in_args.contains("states"))
+		{
+#ifndef POLYFEM_WITH_OPTIMIZATION
+			log_and_throw_error("PolyFEM was built without optimization support.");
+#else
 			return optimization_simulation(command_line, max_threads, is_strict, log_level, in_args);
+#endif
+		}
 		else
 			return forward_simulation(command_line, "", output_dir, max_threads,
 									  is_strict, fallback_solver, log_level, in_args);
@@ -224,6 +234,7 @@ int forward_simulation(const CLI::App &command_line,
 	return EXIT_SUCCESS;
 }
 
+#ifdef POLYFEM_WITH_OPTIMIZATION
 int optimization_simulation(const CLI::App &command_line,
 							const unsigned max_threads,
 							const bool is_strict,
@@ -240,7 +251,7 @@ int optimization_simulation(const CLI::App &command_line,
 	OptState opt_state;
 	opt_state.init(opt_args, is_strict);
 
-	opt_state.create_states(opt_state.args["compute_objective"].get<bool>() ? polyfem::solver::CacheLevel::Solution : polyfem::solver::CacheLevel::Derivatives, opt_state.args["solver"]["max_threads"].get<int>());
+	opt_state.create_states(opt_state.args["solver"]["max_threads"].get<int>());
 	opt_state.init_variables();
 	opt_state.create_problem();
 
@@ -256,3 +267,4 @@ int optimization_simulation(const CLI::App &command_line,
 	opt_state.solve(x);
 	return EXIT_SUCCESS;
 }
+#endif

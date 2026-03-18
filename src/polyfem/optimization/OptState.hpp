@@ -6,7 +6,6 @@
 #include <polyfem/utils/Logger.hpp>
 
 #include <polyfem/optimization/DiffCache.hpp>
-#include <polyfem/optimization/CacheLevel.hpp>
 #include <polyfem/optimization/forms/VariableToSimulation.hpp>
 
 #include <Eigen/Core>
@@ -65,7 +64,7 @@ namespace polyfem
 		void set_log_level(const spdlog::level::level_enum log_level);
 
 		/// @brief create the opt states
-		void create_states(const polyfem::solver::CacheLevel level, const int max_threads = -1);
+		void create_states(const int max_threads = -1);
 
 		/// init variables
 		void init_variables();

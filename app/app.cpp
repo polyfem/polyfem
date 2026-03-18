@@ -18,7 +18,9 @@
 #include <spdlog/sinks/callback_sink.h>
 
 #include <polyfem/State.hpp>
+#ifdef POLYFEM_WITH_OPTIMIZATION
 #include <polyfem/optimization/OptState.hpp>
+#endif
 
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
@@ -107,11 +109,12 @@ int run_polyfem(std::shared_ptr<State> state)
 	}
 }
 
+#ifdef POLYFEM_WITH_OPTIMIZATION
 int run_opt(std::shared_ptr<OptState> opt_state)
 {
 	try
 	{
-		opt_state->create_states(opt_state->args["compute_objective"].get<bool>() ? polyfem::solver::CacheLevel::Solution : polyfem::solver::CacheLevel::Derivatives, opt_state->args["solver"]["max_threads"].get<int>());
+		opt_state->create_states(opt_state->args["solver"]["max_threads"].get<int>());
 		opt_state->init_variables();
 		opt_state->create_problem();
 
@@ -133,6 +136,7 @@ int run_opt(std::shared_ptr<OptState> opt_state)
 		return EXIT_FAILURE;
 	}
 }
+#endif
 
 void display_log(
 	bool is_opt,
@@ -316,7 +320,9 @@ int main(int argc, char **argv)
 	set_adjoint_logger(std::make_shared<spdlog::logger>(opt_logger));
 
 	std::shared_ptr<State> state;
+#ifdef POLYFEM_WITH_OPTIMIZATION
 	std::shared_ptr<OptState> opt_state;
+#endif
 	std::shared_ptr<std::thread> worker;
 
 	// Main loop
@@ -437,6 +443,9 @@ int main(int argc, char **argv)
 					{
 						if (in_args.contains("states"))
 						{
+#ifndef POLYFEM_WITH_OPTIMIZATION
+							throw std::runtime_error("PolyFEM was built without optimization support.");
+#else
 							opt_state = std::make_shared<OptState>();
 							opt_state->init(in_args, false);
 
@@ -459,6 +468,7 @@ int main(int argc, char **argv)
 
 							worker = std::make_shared<std::thread>(run_opt, opt_state);
 							worker->detach();
+#endif
 						}
 						else
 						{

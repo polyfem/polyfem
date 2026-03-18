@@ -8,7 +8,6 @@
 #include <polyfem/utils/Logger.hpp>
 
 #include <polyfem/optimization/Optimizations.hpp>
-#include <polyfem/optimization/CacheLevel.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/AdjointNLProblem.hpp>
 #include <polyfem/optimization/BuildFromJson.hpp>
@@ -139,12 +138,11 @@ namespace polyfem
 		utils::NThread::get().set_num_threads(thread_in);
 	}
 
-	void OptState::create_states(const polyfem::solver::CacheLevel level, const int max_threads)
+	void OptState::create_states(const int max_threads)
 	{
 		states = from_json::build_states(
 			root_path(),
 			args["states"],
-			level,
 			max_threads <= 0 ? std::numeric_limits<unsigned int>::max() : max_threads);
 
 		diff_caches.resize(states.size());

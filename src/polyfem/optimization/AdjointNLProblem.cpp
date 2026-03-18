@@ -437,7 +437,7 @@ namespace polyfem::solver
 				log_and_throw_adjoint_error("SLIM cannot succeed");
 
 			for (int i = 0; i < V_smooth.rows(); ++i)
-				state->set_mesh_vertex(i, V_smooth.row(i));
+				state->mesh->set_point(i, V_smooth.row(i));
 		}
 		adjoint_logger().debug("SLIM succeeded!");
 

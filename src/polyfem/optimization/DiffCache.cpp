@@ -24,8 +24,6 @@
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/Logger.hpp>
 
-#include <polyfem/optimization/CacheLevel.hpp>
-
 #include <ipc/ipc.hpp>
 #include <Eigen/Core>
 
@@ -323,22 +321,19 @@ namespace polyfem
 		ipc::NormalCollisions cur_normal_adhesion_set;
 		ipc::TangentialCollisions cur_tangential_adhesion_set;
 
-		if (s.optimization_enabled == solver::CacheLevel::Derivatives)
-		{
-			if (!s.problem->is_time_dependent() || step > 0)
-				compute_force_jacobian(s, sol, disp_grad_final, gradu_h);
+		if (!s.problem->is_time_dependent() || step > 0)
+			compute_force_jacobian(s, sol, disp_grad_final, gradu_h);
 
-			if (s.solve_data.contact_form)
-			{
-				if (const auto barrier_contact = dynamic_cast<const solver::BarrierContactForm *>(s.solve_data.contact_form.get()))
-					cur_collision_set = barrier_contact->collision_set();
-				else if (const auto smooth_contact = dynamic_cast<const solver::SmoothContactForm *>(s.solve_data.contact_form.get()))
-					cur_smooth_collision_set = smooth_contact->collision_set();
-			}
-			cur_friction_set = s.solve_data.friction_form ? s.solve_data.friction_form->friction_collision_set() : ipc::TangentialCollisions();
-			cur_normal_adhesion_set = s.solve_data.normal_adhesion_form ? s.solve_data.normal_adhesion_form->collision_set() : ipc::NormalCollisions();
-			cur_tangential_adhesion_set = s.solve_data.tangential_adhesion_form ? s.solve_data.tangential_adhesion_form->tangential_collision_set() : ipc::TangentialCollisions();
+		if (s.solve_data.contact_form)
+		{
+			if (const auto barrier_contact = dynamic_cast<const solver::BarrierContactForm *>(s.solve_data.contact_form.get()))
+				cur_collision_set = barrier_contact->collision_set();
+			else if (const auto smooth_contact = dynamic_cast<const solver::SmoothContactForm *>(s.solve_data.contact_form.get()))
+				cur_smooth_collision_set = smooth_contact->collision_set();
 		}
+		cur_friction_set = s.solve_data.friction_form ? s.solve_data.friction_form->friction_collision_set() : ipc::TangentialCollisions();
+		cur_normal_adhesion_set = s.solve_data.normal_adhesion_form ? s.solve_data.normal_adhesion_form->collision_set() : ipc::NormalCollisions();
+		cur_tangential_adhesion_set = s.solve_data.tangential_adhesion_form ? s.solve_data.tangential_adhesion_form->tangential_collision_set() : ipc::TangentialCollisions();
 
 		if (s.problem->is_time_dependent())
 		{
