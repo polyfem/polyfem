@@ -1,18 +1,24 @@
 name: Coverage
 
 on:
-    push:
-      branches: [main]
-    pull_request:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   CTEST_OUTPUT_ON_FAILURE: ON
-  CTEST_PARALLEL_LEVEL: 2
 
 jobs:
   Linux:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: 4
+      CTEST_PARALLEL_LEVEL: 4
     strategy:
       fail-fast: false
       matrix:
@@ -53,6 +59,7 @@ jobs:
           libglu1-mesa-dev \
           xorg-dev \
           ccache \
+          ninja-build \
           lcov
           echo 'CACHE_PATH=~/.cache/ccache' >> "$GITHUB_ENV"
 
@@ -71,9 +78,7 @@ jobs:
 
       - name: Configure
         run: |
-          mkdir -p build
-          cd build
-          cmake .. \
+          cmake -G Ninja -S . -B build \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
@@ -84,12 +89,10 @@ jobs:
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
       - name: Build
-        run: cd build; make -j2; ccache --show-stats
+        run: cmake --build build && ccache --show-stats
 
       - name: Run Tests
-        run: |
-          cd build
-          ctest --timeout 3000
+        run: ctest --test-dir build --timeout 3000 --output-on-failure
 
       - name: Create Coverage
         run: |
