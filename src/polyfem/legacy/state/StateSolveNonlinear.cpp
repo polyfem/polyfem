@@ -323,6 +323,11 @@ namespace polyfem::legacy
 		for (const auto &form : forms)
 			form->set_output_dir(output_dir);
 
+		for (const auto &form : forms){
+			form->initSystemAssembler(n_bases);
+			form->setAssembler(assembler);
+		}
+
 		// Create block-sparse mass matrix.
 		NewtonHessian M_full;
 		mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, 0, M_full, true);

@@ -3,6 +3,8 @@
 #include <polyfem/utils/Types.hpp>
 #include <polysolve/nonlinear/PostStepData.hpp>
 
+#include <polyfem/assembler/Assembler.hpp>
+
 #include <MeshFEM/SystemAssembler.hh>
 #include <MeshFEM/newton_optimizer/NewtonHessian.hh>
 
@@ -20,7 +22,7 @@ namespace polyfem::solver
 		/// @brief Initialize the form
 		/// @param x Current solution
 		virtual void init(const Eigen::VectorXd &x) {}
-
+		
 		virtual void finish() {}
 
 		/// @brief Compute the value of the form multiplied with the weigth
@@ -155,13 +157,16 @@ namespace polyfem::solver
 		void virtual set_scale(const double scale) { scale_ = scale; }
 
 		// BlockCSCHessian additions
-		virtual NewtonHessian hessianSparsityPattern(SystemAssembler<2> &assembler) const { throw std::runtime_error("hessianSparsityPattern not implemented by" + name()); }
-		virtual NewtonHessian hessianSparsityPattern(SystemAssembler<3> &assembler) const { throw std::runtime_error("hessianSparsityPattern not implemented by" + name()); }
+		virtual NewtonHessian hessianSparsityPattern() const { throw std::runtime_error("hessianSparsityPattern not implemented by" + name()); }
 		virtual bool sparsityPatternIsStatic() const { return false; }
+		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian) const { throw std::runtime_error("accumulateHessian2D not implemented by" + name()); }
 
-		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian, SystemAssembler<2> &assembler) const { throw std::runtime_error("accumulateHessian2D not implemented by" + name()); }
-		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian, SystemAssembler<3> &assembler) const { throw std::runtime_error("accumulateHessian3D not implemented by" + name()); }
+		void initSystemAssembler(int n_basis) {
+			assembler->initSystemAssembler(n_basis);
+		}
 
+		void setAssembler(std::shared_ptr<const assembler::Assembler> a) { assembler = a; }
+		
 
 	protected:
 		bool project_to_psd_ = false; ///< If true, the form's second derivative is projected to be positive semidefinite
@@ -202,11 +207,7 @@ namespace polyfem::solver
 		/// @param[out] hessian Output Hessian of the value wrt x
 		virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const = 0;
 
-		/// @brief Compute the second derivative of the value wrt x
-		/// @param[in] x Current solution
-		/// @param[out] hessian Output Hessian of the value wrt x
-		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian) const { throw std::runtime_error("Not implemented"); };
-
+		std::shared_ptr<const assembler::Assembler> assembler;
 	private:
 		double scale_ = 1; ///< scale of the form
 	};

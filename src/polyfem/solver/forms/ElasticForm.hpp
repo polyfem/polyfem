@@ -69,12 +69,9 @@ namespace polyfem::solver
 		/// @param[out] hessian Output Hessian of the value wrt x
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
-		void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian, SystemAssembler<2> &assembler) const override;
-		void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian, SystemAssembler<3> &assembler) const override;
-
-		virtual NewtonHessian hessianSparsityPattern(SystemAssembler<2> &assembler) const override;
-		virtual NewtonHessian hessianSparsityPattern(SystemAssembler<3> &assembler) const override;
-    
+		void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian) const override;
+		virtual NewtonHessian hessianSparsityPattern() const override;
+		
 		virtual bool sparsityPatternIsStatic() const override { return true; }
 
 
@@ -117,7 +114,6 @@ namespace polyfem::solver
 		std::vector<basis::ElementBases> &bases_;
 		const std::vector<basis::ElementBases> &geom_bases_;
 
-		const assembler::Assembler &assembler_; ///< Reference to the assembler
 		assembler::AssemblyValsCache &ass_vals_cache_;
 		double t_;
 		const double jacobian_threshold_;

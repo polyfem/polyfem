@@ -79,11 +79,9 @@ namespace polyfem::solver
 
 		int blockVarForCollisionMeshVertex(int vertex_id) const;
 		StencilMembers constraintStencil(size_t ci, const std::function<int(int)>  &blockVarForCollisionMeshVertex) const;
-		virtual NewtonHessian hessianSparsityPattern(SystemAssembler<2> &assembler) const override;
-		virtual NewtonHessian hessianSparsityPattern(SystemAssembler<3> &assembler) const override;
-    	virtual bool sparsityPatternIsStatic() const override { return false; }
-		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &H, SystemAssembler<2> &assembler) const override;
-		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &H, SystemAssembler<3> &assembler) const override;
+		virtual NewtonHessian hessianSparsityPattern() const override;
+		virtual bool sparsityPatternIsStatic() const override { return false; }
+		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &H) const override;
 		
 		void update_collision_set(const Eigen::MatrixXd &displaced_surface) override;
 

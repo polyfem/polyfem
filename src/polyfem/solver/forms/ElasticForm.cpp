@@ -8,9 +8,6 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/Jacobian.hpp>
-#include <polyfem/utils/MaybeParallelFor.hpp>
-#include <polyfem/assembler/ViscousDamping.hpp>
-#include <polyfem/assembler/ElementAssemblyValues.hpp>
 
 #include <algorithm>
 #include <cassert>
@@ -217,7 +214,7 @@ namespace polyfem::solver
 	ElasticForm::ElasticForm(const int n_bases,
 							 std::vector<basis::ElementBases> &bases,
 							 const std::vector<basis::ElementBases> &geom_bases,
-							 const assembler::Assembler &assembler,
+							 const assembler::Assembler &assembler_,
 							 assembler::AssemblyValsCache &ass_vals_cache,
 							 const double t, const double dt,
 							 const bool is_volume,
@@ -227,7 +224,6 @@ namespace polyfem::solver
 		: n_bases_(n_bases),
 		  bases_(bases),
 		  geom_bases_(geom_bases),
-		  assembler_(assembler),
 		  ass_vals_cache_(ass_vals_cache),
 		  t_(t),
 		  jacobian_threshold_(jacobian_threshold),
@@ -277,14 +273,14 @@ namespace polyfem::solver
 
 	double ElasticForm::value_unweighted(const Eigen::VectorXd &x) const
 	{
-		return assembler_.assemble_energy(
+		return assembler->assemble_energy(
 			is_volume_,
 			bases_, geom_bases_, ass_vals_cache_, t_, dt_, x, x_prev_);
 	}
 
 	Eigen::VectorXd ElasticForm::value_per_element_unweighted(const Eigen::VectorXd &x) const
 	{
-		const Eigen::VectorXd out = assembler_.assemble_energy_per_element(
+		const Eigen::VectorXd out = assembler->assemble_energy_per_element(
 			is_volume_, bases_, geom_bases_, ass_vals_cache_, t_, dt_, x, x_prev_);
 		assert(abs(out.sum() - value_unweighted(x)) < std::max(1e-10 * out.sum(), 1e-10));
 		return out;
@@ -293,7 +289,7 @@ namespace polyfem::solver
 	void ElasticForm::first_derivative_unweighted(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const
 	{
 		Eigen::MatrixXd grad;
-		assembler_.assemble_gradient(is_volume_, n_bases_, bases_, geom_bases_,
+		assembler->assemble_gradient(is_volume_, n_bases_, bases_, geom_bases_,
 									 ass_vals_cache_, t_, dt_, x, x_prev_, grad);
 		gradv = grad;
 	}
@@ -304,7 +300,7 @@ namespace polyfem::solver
 
 		hessian.resize(x.size(), x.size());
 
-		if (assembler_.is_linear())
+		if (assembler->is_linear())
 		{
 			assert(cached_stiffness_.rows() == x.size() && cached_stiffness_.cols() == x.size());
 			hessian = cached_stiffness_;
@@ -312,40 +308,26 @@ namespace polyfem::solver
 		else
 		{
 			// NOTE: mat_cache_ is marked as mutable so we can modify it here
-			assembler_.assemble_hessian(
+			assembler->assemble_hessian(
 				is_volume_, n_bases_, project_to_psd_, bases_,
 				geom_bases_, ass_vals_cache_, t_, dt_, x, x_prev_, *mat_cache_, hessian);
 		}
 	}
 
-	void ElasticForm::accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian, SystemAssembler<2> &assembler) const
+	void ElasticForm::accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian) const
 	{
 		POLYFEM_SCOPED_TIMER("elastic hessian meshfem integration");
 
 		size_t numElements = bases_.size();
-		assembler.assembleHessian(hessian, numElements, ElementHessianEvaluator(assembler_, is_volume_, project_to_psd_, weight, x, bases_, geom_bases_, ass_vals_cache_, t_, dt_, x_prev_), ElementBasisStencil(bases_));
+		assembler->accumulateHessianContribs(hessian, numElements, ElementHessianEvaluator(*assembler, is_volume_, project_to_psd_, weight, x, bases_, geom_bases_, ass_vals_cache_, t_, dt_, x_prev_), ElementBasisStencil(bases_));
 	}
 
-	void ElasticForm::accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian, SystemAssembler<3> &assembler) const
-	{
-		POLYFEM_SCOPED_TIMER("elastic hessian meshfem integration");
 
-		size_t numElements = bases_.size();
-		assembler.assembleHessian(hessian, numElements, ElementHessianEvaluator(assembler_, is_volume_, project_to_psd_, weight, x, bases_, geom_bases_, ass_vals_cache_, t_, dt_, x_prev_), ElementBasisStencil(bases_));
-	}
-
-	NewtonHessian ElasticForm::hessianSparsityPattern(SystemAssembler<2> &assembler) const
+	NewtonHessian ElasticForm::hessianSparsityPattern() const
 	{
 		size_t numElements = bases_.size();
-		return assembler.sparsityPattern(numElements, ElementBasisStencil(bases_));
+		return assembler->buildSparsityPattern(numElements, ElementBasisStencil(bases_));
 	}
-
-	NewtonHessian ElasticForm::hessianSparsityPattern(SystemAssembler<3> &assembler) const
-	{
-		size_t numElements = bases_.size();
-		return assembler.sparsityPattern(numElements, ElementBasisStencil(bases_));
-	}
-
 
 
 	void ElasticForm::finish()
@@ -397,7 +379,6 @@ namespace polyfem::solver
 		{
 			pending_refinement_.reset();
 		}
-
 		return step;
 	}
 
@@ -456,9 +437,9 @@ namespace polyfem::solver
 
 	void ElasticForm::compute_cached_stiffness()
 	{
-		if (assembler_.is_linear() && cached_stiffness_.size() == 0)
+		if (assembler->is_linear() && cached_stiffness_.size() == 0)
 		{
-			assembler_.assemble(is_volume_, n_bases_, bases_, geom_bases_,
+			assembler->assemble(is_volume_, n_bases_, bases_, geom_bases_,
 								ass_vals_cache_, t_, cached_stiffness_);
 		}
 	}

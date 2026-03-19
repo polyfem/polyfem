@@ -230,6 +230,26 @@ namespace polyfem::assembler
 		virtual bool is_fluid() const { return false; }
 		virtual bool is_tensor() const { return false; }
 
+		
+		void initSystemAssembler(int n_basis) const {
+			m_assembler2D = std::make_unique<SystemAssembler<2>>(n_basis);
+			m_assembler3D = std::make_unique<SystemAssembler<3>>(n_basis);
+		}
+
+		template<class StencilCallable>
+		NewtonHessian buildSparsityPattern(size_t n, StencilCallable &&stencil) const {
+			if (size() == 2) { assert(m_assembler2D); return m_assembler2D->sparsityPattern(n, std::forward<StencilCallable>(stencil)); }
+			if (size() == 3) { assert(m_assembler3D); return m_assembler3D->sparsityPattern(n, std::forward<StencilCallable>(stencil)); }
+			throw std::runtime_error("Unsupported dimension in buildSparsityPattern");
+		}
+
+		template<class EvalCallable, class StencilCallable>
+		void accumulateHessianContribs(NewtonHessian &H, size_t n, EvalCallable &&eval, StencilCallable &&stencil) const {
+			if (size() == 2) { assert(m_assembler2D); m_assembler2D->assembleHessian(H, n, std::forward<EvalCallable>(eval), std::forward<StencilCallable>(stencil)); return; }
+			if (size() == 3) { assert(m_assembler3D); m_assembler3D->assembleHessian(H, n, std::forward<EvalCallable>(eval), std::forward<StencilCallable>(stencil)); return; }
+			throw std::runtime_error("Unsupported dimension in accumulateHessianContribs");
+		}
+
 		mutable std::unique_ptr<SystemAssembler<2>> m_assembler2D;
 		mutable std::unique_ptr<SystemAssembler<3>> m_assembler3D;
 	protected:
@@ -594,8 +614,8 @@ namespace polyfem::assembler
 			const int n_loc_bases = int(vals.basis_values.size());
 
 			auto stiffness_val = m_assembler.assemble_hessian(NonLinearAssemblerData(vals, m_t, m_dt, m_x, m_displacement_prev, qVec));
-			assert(stiffness_val.rows() == n_loc_bases * size());
-			assert(stiffness_val.cols() == n_loc_bases * size());
+			assert(stiffness_val.rows() == n_loc_bases * m_assembler.size());
+			assert(stiffness_val.cols() == n_loc_bases * m_assembler.size());
 
 			if (m_project_to_psd)
 				stiffness_val = ipc::project_to_psd(stiffness_val);
