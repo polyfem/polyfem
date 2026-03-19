@@ -89,7 +89,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest]
-        config: [Release]
+        config: [DebugNoSymbols, Release]
         threading: [TBB]
     steps:
       - name: Checkout repository
