@@ -358,7 +358,6 @@ namespace polyfem::legacy
 		solve_data.nl_problem = std::make_shared<NLProblem>(
 			ndof, t, forms, solve_data.al_form,
 			polysolve::linear::Solver::create(args["solver"]["linear"], logger()), characteristic_length, characteristic_force_density, pure_mass, mesh->dimension());
-		solve_data.nl_problem->init_block_structure(mesh->dimension(), n_bases); // set block size and number of blocks for hessian assembly
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
 		// --------------------------------------------------------------------

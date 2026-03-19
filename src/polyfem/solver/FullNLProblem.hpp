@@ -3,6 +3,7 @@
 #include <polyfem/solver/forms/Form.hpp>
 #include <polysolve/nonlinear/Problem.hpp>
 #include <MeshFEM/SystemAssembler.hh>
+#include <MeshFEM/SparsityLRU.hh>
 
 
 #include <memory>
@@ -20,8 +21,8 @@ namespace polyfem::solver
 		virtual double value(const TVector &x) override;
 		virtual void gradient(const TVector &x, TVector &gradv) override;
 		virtual void hessian(const TVector &x, THessian &hessian) override;
-		void evalHessian(const TVector &x, NewtonHessian &hessian);
-		NewtonHessian hessianSparsityPattern() const;
+		void 		 evalHessian(const TVector &x);
+		bool 		 updateHessianSparsityPattern();
 
 		virtual bool is_step_valid(const TVector &x0, const TVector &x1) override;
 		virtual bool is_step_collision_free(const TVector &x0, const TVector &x1);
@@ -53,17 +54,15 @@ namespace polyfem::solver
 
 		virtual double normalize_forms();
 
-		void init_block_structure(const int block_size, const int num_block_vars);
 
 	protected:
 		std::vector<std::shared_ptr<Form>> forms_;
 		const bool is_residual_;
 
-		int block_size = 0;
-		int num_block_vars = 0;
+		// Need to confirm if we actually need it.
+		mutable bool m_fullSparsityRebuildNeeded = true; // Whether all cached sparsity information has been invalidated (e.g., if the list of forms has changed)
 
-		// system assemblers for hessian assemby used in forms, mutable since it might be modified in const functions.
-		mutable std::unique_ptr<SystemAssembler<2>> m_assembler2D;
-		mutable std::unique_ptr<SystemAssembler<3>> m_assembler3D;
+		NewtonHessian m_hessianSparsity, m_hessianSparsityStaticPart;
+		std::unique_ptr<SparsityLRU> m_sparsityLRU; // Nonzero caching/retaining mechanism for minimizing Symbolic refactorizations
 	};
 } // namespace polyfem::solver

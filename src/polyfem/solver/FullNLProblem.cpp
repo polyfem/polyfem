@@ -1,5 +1,6 @@
 #include "FullNLProblem.hpp"
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 namespace polyfem::solver
 {
@@ -21,15 +22,6 @@ namespace polyfem::solver
 			f->set_scale(total_weight);
 
 		return total_weight;
-	}
-
-	void FullNLProblem::init_block_structure(const int block_size_, const int num_block_vars_)
-	{
-		block_size = block_size_;
-		num_block_vars = num_block_vars_;
-		if      (block_size == 2) m_assembler2D = std::make_unique<SystemAssembler<2>>(num_block_vars);
-		else if (block_size == 3) m_assembler3D = std::make_unique<SystemAssembler<3>>(num_block_vars);
-		else throw std::runtime_error("Unsupported block size: " + std::to_string(block_size));
 	}
 
 	void FullNLProblem::init(const TVector &x)
@@ -133,35 +125,106 @@ namespace polyfem::solver
 
 	void FullNLProblem::hessian(const TVector &x, THessian &hessian)
 	{
-		hessian.resize(x.size(), x.size());
-		for (auto &f : forms_)
-		{
-			if (!f->enabled())
-				continue;
-			THessian tmp;
-			f->second_derivative(x, tmp);
-			hessian += tmp;
-		}
+		// hessian.resize(x.size(), x.size());
+		// for (auto &f : forms_)
+		// {
+		// 	if (!f->enabled())
+		// 		continue;
+		// 	THessian tmp;
+		// 	f->second_derivative(x, tmp);
+		// 	hessian += tmp;
+		// }
 
-		
-		 
+		updateHessianSparsityPattern();
+		evalHessian(x);
+		utils::NewtonHessian2SparseMatrix(m_hessianSparsity, hessian);
 		
 	}
 
-	void FullNLProblem::evalHessian(const TVector &x, NewtonHessian &hessian)
+	void FullNLProblem::evalHessian(const TVector &x)
 	{
 		for (auto &f : forms_)
 		{
 			if (!f->enabled())
 				continue;
-			f->second_derivative(x, hessian);
+			f->accumulateHessian(f->weight(), x, m_hessianSparsity);
 		}
 	}
 
-	NewtonHessian FullNLProblem::hessianSparsityPattern() const
+	bool FullNLProblem::updateHessianSparsityPattern()
 	{
-		NewtonHessian H;
-		return H;
+		NewtonHessian dynamicSparsity;
+        const bool force = m_fullSparsityRebuildNeeded; // Force a rebuild of the sparsity pattern every time for now since the logic is still being developed and tested. We can disable this once we're confident in the correctness and efficiency of the sparsity pattern update logic.
+        if (force) {
+            m_hessianSparsity = NewtonHessian();
+            m_hessianSparsityStaticPart = NewtonHessian();
+		}
+
+        bool changed = force;
+        bool staticOnly = true;
+
+        for (size_t i = 0; i < forms_.size(); ++i) {
+            if (!forms_[i]->enabled())
+				continue;
+			const auto &f = forms_[i];
+        
+            if (f->sparsityPatternIsStatic()) {
+                // Only rebuild the "static" part when the terms might have been invalidated.
+                if (force) { m_hessianSparsityStaticPart.mergeSparsityPattern(f->hessianSparsityPattern()); std::cout << "Building static term sparsity pattern" << std::endl; }
+            }
+            else {
+                dynamicSparsity.mergeSparsityPattern(f->hessianSparsityPattern());
+                changed = true;
+				staticOnly = false;
+            }
+        }
+
+        if (changed) {
+            if (staticOnly) m_hessianSparsity = std::move(m_hessianSparsityStaticPart);
+            else {
+                if (!m_sparsityLRU && m_hessianSparsityStaticPart.H_ss && (m_hessianSparsityStaticPart.H_ss->nnz() > 0)) {
+                    m_sparsityLRU = std::make_unique<SparsityLRU>(*(m_hessianSparsityStaticPart.H_ss));
+                    m_hessianSparsity = std::move(m_hessianSparsityStaticPart.H_ss);
+                }
+
+                if (m_sparsityLRU) {
+                    changed = m_sparsityLRU->update(*(dynamicSparsity.H_ss));
+                    changed |= force; // Ensure the static part rebuild takes effect.
+                    if (changed) {
+                        if (!m_hessianSparsity.H_ss) throw std::logic_error("NewtonMultiobjectiveProblem::m_updateSparsityPattern: m_hessianSparsity not initialized"); // This should never happen since `m_sparsityLRU` is only created when the static part is nonempty...
+                        m_hessianSparsity.H_ss->Ap = (*m_sparsityLRU)->Ap;
+                        m_hessianSparsity.H_ss->Ai = (*m_sparsityLRU)->Ai;
+                        m_hessianSparsity.H_ss->nz = (*m_sparsityLRU)->nz;
+                    }
+                }
+                else {
+                    // No static part: hessian is purely dynamic, build it directly.
+                    m_hessianSparsity = m_hessianSparsityStaticPart;
+                    m_hessianSparsity.mergeSparsityPattern(dynamicSparsity);
+                }
+            }
+
+            m_hessianSparsity.finalize();
+        }
+        else if (m_sparsityLRU) {
+            // Still notify the cache of the sparsity pattern update in case
+            // it triggers a refactorization due to entry expiration.
+            if (m_sparsityLRU->increaseAgeOfOldEntries()) {
+                if (!m_hessianSparsity.H_ss) throw std::logic_error("NewtonMultiobjectiveProblem::m_updateSparsityPattern: m_hessianSparsity not initialized"); // This should never happen since `m_sparsityLRU` is only created when the static part is nonempty...
+                m_hessianSparsity.H_ss->Ap = (*m_sparsityLRU)->Ap;
+                m_hessianSparsity.H_ss->Ai = (*m_sparsityLRU)->Ai;
+                m_hessianSparsity.H_ss->nz = (*m_sparsityLRU)->nz;
+
+                m_hessianSparsity.finalize();
+
+                changed = true;
+            }
+        }
+
+        m_fullSparsityRebuildNeeded = false;
+
+
+		return changed;
 
 	}
 
