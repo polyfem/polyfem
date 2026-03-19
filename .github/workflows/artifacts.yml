@@ -152,7 +152,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        config: [Release]
+        # You might be wondering why it's MinSizeRel instead of Release here.
+        # The reason is that release build on windows is very buggy. Takes 2.5 
+        # hours and cause 2 unit tests to segfault. 
+        #
+        # Track this bug at https://github.com/polyfem/polyfem/issues/467
+        config: [MinSizeRel]
         threading: [CPP]
     steps:
       - name: Checkout repository
