@@ -324,8 +324,8 @@ namespace polyfem::legacy
 			form->set_output_dir(output_dir);
 
 		for (const auto &form : forms){
-			form->initSystemAssembler(n_bases);
 			form->setAssembler(assembler);
+			form->initSystemAssembler(n_bases);
 		}
 
 		// Create block-sparse mass matrix.

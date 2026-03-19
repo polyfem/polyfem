@@ -182,7 +182,8 @@ namespace polyfem::solver
         if (changed) {
             if (staticOnly) m_hessianSparsity = std::move(m_hessianSparsityStaticPart);
             else {
-                if (!m_sparsityLRU && m_hessianSparsityStaticPart.H_ss && (m_hessianSparsityStaticPart.H_ss->nnz() > 0)) {
+                if (!m_sparsityLRU){
+				    assert(m_hessianSparsityStaticPart.H_ss && (m_hessianSparsityStaticPart.H_ss->nnz() > 0));
                     m_sparsityLRU = std::make_unique<SparsityLRU>(*(m_hessianSparsityStaticPart.H_ss));
                     m_hessianSparsity = std::move(m_hessianSparsityStaticPart.H_ss);
                 }
