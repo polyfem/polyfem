@@ -7,12 +7,17 @@
 
 #include <ipc/collisions/normal/normal_collisions.hpp>
 #include <ipc/potentials/barrier_potential.hpp>
+#include <MeshFEM/SystemAssembler.hh>
+#include <MeshFEM/VarStructure.hh>
+
 
 namespace polyfem::solver
 {
 	class BarrierContactForm : public ContactForm
 	{
 		friend class BarrierContactForceDerivative;
+
+		using StencilMembers = ElementBlockVarsWithSizeRange<1, 4>;
 
 	public:
 		BarrierContactForm(const ipc::CollisionMesh &collision_mesh,
@@ -72,6 +77,14 @@ namespace polyfem::solver
 		/// @param hessian Output Hessian of the value wrt x
 		virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
+		int blockVarForCollisionMeshVertex(int vertex_id) const;
+		StencilMembers constraintStencil(size_t ci, const std::function<int(int)>  &blockVarForCollisionMeshVertex) const;
+		virtual NewtonHessian hessianSparsityPattern(SystemAssembler<2> &assembler) const override;
+		virtual NewtonHessian hessianSparsityPattern(SystemAssembler<3> &assembler) const override;
+    	virtual bool sparsityPatternIsStatic() const override { return false; }
+		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &H, SystemAssembler<2> &assembler) const override;
+		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &H, SystemAssembler<3> &assembler) const override;
+		
 		void update_collision_set(const Eigen::MatrixXd &displaced_surface) override;
 
 		/// @brief Cached constraint set for the current solution

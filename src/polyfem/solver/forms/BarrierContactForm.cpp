@@ -186,6 +186,75 @@ namespace polyfem::solver
 		hessian = collision_mesh_.to_full_dof(hessian);
 	}
 
+	
+	// Get the block variables *for the full problem* participating in the constraint.
+    BarrierContactForm::StencilMembers BarrierContactForm::constraintStencil(size_t ci, const std::function<int(int)>  &blockVarForCollisionMeshVertex) const {
+        const auto &c = collision_set_[ci];
+        const size_t nv = c.num_vertices();
+        std::array<int, 4> vertex_ids = c.vertex_ids(collision_mesh_.edges(), collision_mesh_.faces());
+        // // Convert to block variables of the global system.
+        StencilMembers result(nv);
+        size_t back = 0;
+        for (int vi : vertex_ids) {
+            if (vi < 0) continue;
+            int bvar = blockVarForCollisionMeshVertex(vi);
+			result[back++] = bvar;
+		}
+        result.resize(back);
+        return result;
+    }
+
+	NewtonHessian BarrierContactForm::hessianSparsityPattern(SystemAssembler<2> &assembler) const
+	{
+		auto blockVarForCollisionMeshVertex = [&](int vertex_id) {
+			return collision_mesh_.to_full_vertex_id(vertex_id);
+		};
+		return NewtonHessian(assembler.blockSparsityPattern(collision_set_.size(), [this, &blockVarForCollisionMeshVertex](size_t ci) { return constraintStencil(ci, blockVarForCollisionMeshVertex); }));
+	}
+
+	NewtonHessian BarrierContactForm::hessianSparsityPattern(SystemAssembler<3> &assembler) const
+	{
+		auto blockVarForCollisionMeshVertex = [&](int vertex_id) {
+			return collision_mesh_.to_full_vertex_id(vertex_id);
+		};
+		return NewtonHessian(assembler.blockSparsityPattern(collision_set_.size(), [this, &blockVarForCollisionMeshVertex](size_t ci) { return constraintStencil(ci, blockVarForCollisionMeshVertex); }));
+	}
+
+	void BarrierContactForm::accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &H, SystemAssembler<2> &assembler) const
+	{
+		ipc::PSDProjectionMethod psd_projection_method;
+
+		if (project_to_psd_) {
+			psd_projection_method = ipc::PSDProjectionMethod::CLAMP;
+		} else {
+			psd_projection_method = ipc::PSDProjectionMethod::NONE;
+		}
+
+		auto blockVarForCollisionMeshVertex = [&](int vertex_id) {
+			return collision_mesh_.to_full_vertex_id(vertex_id);
+		};
+		auto H_eval_e = [&](int ci) { return weight * barrier_potential_.hessian(collision_set_[ci], collision_set_[ci].dof(x, collision_mesh_.edges(), collision_mesh_.faces()), psd_projection_method); };
+		assembler.assembleHessian(H, collision_set_.size(), H_eval_e, [this, &blockVarForCollisionMeshVertex](size_t ci) { return constraintStencil(ci, blockVarForCollisionMeshVertex); });
+	}
+
+	void BarrierContactForm::accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &H, SystemAssembler<3> &assembler) const
+	{
+		ipc::PSDProjectionMethod psd_projection_method;
+
+		if (project_to_psd_) {
+			psd_projection_method = ipc::PSDProjectionMethod::CLAMP;
+		} else {
+			psd_projection_method = ipc::PSDProjectionMethod::NONE;
+		}
+
+		auto blockVarForCollisionMeshVertex = [&](int vertex_id) {
+			return collision_mesh_.to_full_vertex_id(vertex_id);
+		};
+		auto H_eval_e = [&](int ci) { return weight * barrier_potential_.hessian(collision_set_[ci], collision_set_[ci].dof(x, collision_mesh_.edges(), collision_mesh_.faces()), psd_projection_method); };
+		assembler.assembleHessian(H, collision_set_.size(), H_eval_e, [this, &blockVarForCollisionMeshVertex](size_t ci) { return constraintStencil(ci, blockVarForCollisionMeshVertex); });
+
+	}
+
 	void BarrierContactForm::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(data.x);
