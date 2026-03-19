@@ -51,6 +51,11 @@ namespace polyfem::solver
 		/// @param[out] hessian Output Hessian of the value wrt x
 		void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const override;
 
+		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &H) const override {}
+		virtual NewtonHessian hessianSparsityPattern() const override { return NewtonHessian(); }
+		virtual bool sparsityPatternIsStatic() const override { return true; }
+    
+
 	public:
 		/// @brief Update time dependent quantities
 		/// @param t New time
