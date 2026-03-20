@@ -13,12 +13,12 @@
 namespace polyfem::solver
 {
 	ipc::HighOrderContactParameters init_params(const double dhat, const json &high_order_contact_params, int powerdefault) {
-		const double alpha = high_order_contact_params["alpha"];
 		const int quadrature_order = high_order_contact_params["quadrature_order"];
+		const double dbar_factor = high_order_contact_params["dbar_factor"];
+		const bool skip_obst = high_order_contact_params["skip_obstacles"];
 		int power = high_order_contact_params["exponent"];
-		bool skip_obst = high_order_contact_params["skip_obstacles"];
 		if (power < 1) power = powerdefault;
-		return ipc::HighOrderContactParameters(dhat, alpha, power, quadrature_order, skip_obst);
+		return ipc::HighOrderContactParameters(dhat, dbar_factor, quadrature_order, power, skip_obst);
 	}
 
 	HighOrderContactForm::HighOrderContactForm(const ipc::CollisionMesh &collision_mesh,

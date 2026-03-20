@@ -1228,16 +1228,17 @@
         "type": "object",
         "default": null,
         "optional": [
-            "alpha",
+            "dbar_factor",
             "quadrature_order",
             "exponent",
             "skip_obstacles"
         ]
     },
     {
-        "pointer": "/contact/high_order_contact_params/alpha",
+        "pointer": "/contact/high_order_contact_params/dbar_factor",
         "type": "float",
-        "default": 1
+        "default": 1.0,
+        "doc": "Multiplied by dhat to get the activation distance of edge-edge contact points. 1.0 treats them as any other; 0.0 disables them."
     },
     {
         "pointer": "/contact/high_order_contact_params/quadrature_order",
