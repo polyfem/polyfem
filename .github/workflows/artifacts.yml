@@ -3,11 +3,10 @@ name: Artifacts
 on:
   push:
     branches: [main]
-  pull_request:
 
-env:
-  CTEST_OUTPUT_ON_FAILURE: ON
-  CTEST_PARALLEL_LEVEL: 1
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   ####################
@@ -17,6 +16,9 @@ jobs:
   Linux:
     name: ${{ matrix.name }} (${{ matrix.config }}, ${{ matrix.threading }})
     runs-on: ${{ matrix.os }}
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: 4
+      CTEST_PARALLEL_LEVEL: 4
     strategy:
       fail-fast: false
       matrix:
@@ -35,7 +37,7 @@ jobs:
       - name: Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get -o Acquire::Retries=3 install ccache \
+          sudo apt-get -o Acquire::Retries=3 install ccache ninja-build \
           libaudio-dev libjack-dev libsndio-dev libx11-dev libxext-dev \
           libxrandr-dev libxcursor-dev libxfixes-dev libxi-dev libxss-dev libxtst-dev \
           libxkbcommon-dev libdrm-dev libgbm-dev libgl1-mesa-dev libgles2-mesa-dev \
@@ -52,14 +54,11 @@ jobs:
 
       - name: Prepare ccache
         run: |
-          # ccache --max-size=1.0G
           ccache -V && ccache --show-stats && ccache --zero-stats
 
       - name: Configure
         run: |
-          mkdir -p build
-          cd build
-          cmake .. \
+          cmake -G Ninja -S . -B build \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
@@ -68,7 +67,7 @@ jobs:
             -DPOLYFEM_WITH_BEZIER=OFF
 
       - name: Build
-        run: cd build; make -j2; ccache --show-stats
+        run: cmake --build build && ccache --show-stats
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -83,13 +82,15 @@ jobs:
   MacOS:
     name: ${{ matrix.os }} (${{ matrix.config }}, ${{ matrix.threading }})
     runs-on: ${{ matrix.os }}
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: 3
+      CTEST_PARALLEL_LEVEL: 3
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, macos-14]
-        config: [Release]
+        os: [macos-latest]
+        config: [DebugNoSymbols, Release]
         threading: [TBB]
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.1.6
@@ -98,7 +99,7 @@ jobs:
 
       - name: Dependencies
         run: |
-          brew install ccache
+          brew install ccache ninja
           echo 'CACHE_PATH=~/Library/Caches/ccache' >> "$GITHUB_ENV"
 
       - name: Cache Build
@@ -116,9 +117,7 @@ jobs:
 
       - name: Configure
         run: |
-          mkdir -p build
-          cd build
-          cmake .. \
+          cmake -G Ninja -S . -B build \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
@@ -127,7 +126,7 @@ jobs:
             -DPOLYFEM_WITH_BEZIER=OFF
 
       - name: Build
-        run: cd build; make -j2; ccache --show-stats
+        run: cmake --build build && ccache --show-stats
 
       - name: Copy App
         run: |
@@ -149,9 +148,15 @@ jobs:
     runs-on: windows-2022
     env:
       SCCACHE_IDLE_TIMEOUT: "12000"
+      CMAKE_BUILD_PARALLEL_LEVEL: 4
     strategy:
       fail-fast: false
       matrix:
+        # You might be wondering why it's MinSizeRel instead of Release here.
+        # The reason is that release build on windows is very buggy. Takes 2.5 
+        # hours and cause 2 unit tests to segfault. 
+        #
+        # Track this bug at https://github.com/polyfem/polyfem/issues/467
         config: [MinSizeRel]
         threading: [CPP]
     steps:
@@ -203,7 +208,7 @@ jobs:
         shell: cmd
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
-          cmake --build build -j2 && sccache --show-stats
+          cmake --build build && sccache --show-stats
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4

@@ -6,7 +6,6 @@ on:
 
 env:
   CTEST_OUTPUT_ON_FAILURE: ON
-  CTEST_PARALLEL_LEVEL: 2
 
 jobs:
   ####################
@@ -16,6 +15,9 @@ jobs:
   Linux:
     name: ${{ matrix.name }} (${{ matrix.config }}, ${{ matrix.threading }})
     runs-on: ${{ matrix.os }}
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: 4
+      CTEST_PARALLEL_LEVEL: 4
     strategy:
       fail-fast: false
       matrix:
@@ -38,7 +40,8 @@ jobs:
           libblas-dev \
           libglu1-mesa-dev \
           xorg-dev \
-          ccache
+          ccache \
+          ninja-build
           echo 'CACHE_PATH=~/.cache/ccache' >> "$GITHUB_ENV"
 
       - name: Cache Build
@@ -56,19 +59,17 @@ jobs:
 
       - name: Configure
         run: |
-          mkdir -p build
-          cd build
-          cmake .. \
+          cmake -G Ninja -S . -B build \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
       - name: Build
-        run: cd build; make -j2; ccache --show-stats
+        run: cmake --build build && ccache --show-stats
 
       - name: Tests
-        run: cd build; ctest --verbose --output-on-failure
+        run: ctest --test-dir build --verbose --output-on-failure
 
   ####################
   # MacOS
@@ -77,10 +78,13 @@ jobs:
   MacOS:
     name: ${{ matrix.os }} (${{ matrix.config }}, ${{ matrix.threading }})
     runs-on: ${{ matrix.os }}
+    env:
+      CMAKE_BUILD_PARALLEL_LEVEL: 3
+      CTEST_PARALLEL_LEVEL: 3
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest, macos-14]
+        os: [macos-latest]
         config: [DebugNoSymbols, Release]
         threading: [CPP, TBB, NONE]
 
@@ -92,7 +96,7 @@ jobs:
 
       - name: Dependencies
         run: |
-          brew install ccache
+          brew install ccache ninja
           echo 'CACHE_PATH=~/Library/Caches/ccache' >> "$GITHUB_ENV"
 
       - name: Cache Build
@@ -110,19 +114,17 @@ jobs:
 
       - name: Configure
         run: |
-          mkdir -p build
-          cd build
-          cmake .. \
+          cmake -G Ninja -S . -B build \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
             -DCMAKE_BUILD_TYPE=${{ matrix.config }} \
             -DCMAKE_CXX_FLAGS_DEBUGNOSYMBOLS="" \
             -DPOLYFEM_THREADING=${{ matrix.threading }}
 
       - name: Build
-        run: cd build; make -j2; ccache --show-stats
+        run: cmake --build build && ccache --show-stats
 
       - name: Tests
-        run: cd build; ctest --verbose --output-on-failure
+        run: ctest --test-dir build --verbose --output-on-failure
 
   ####################
   # Windows
@@ -132,6 +134,8 @@ jobs:
     runs-on: windows-2022
     env:
       SCCACHE_IDLE_TIMEOUT: "12000"
+      CMAKE_BUILD_PARALLEL_LEVEL: 4
+      CTEST_PARALLEL_LEVEL: 4
     strategy:
       fail-fast: false
       matrix:
@@ -186,9 +190,7 @@ jobs:
         shell: cmd
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=x64
-          cmake --build build -j2 && sccache --show-stats
+          cmake --build build && sccache --show-stats
 
       - name: Tests
-        run: |
-          cd build
-          ctest --verbose --output-on-failure
+        run: ctest --test-dir build --verbose --output-on-failure
