@@ -1070,7 +1070,8 @@ namespace polyfem::io
 		const std::string &solution_path,
 		const std::string &stress_path,
 		const std::string &mises_path,
-		const bool is_contact_enabled) const
+		const bool is_contact_enabled,
+		const std::map<ipc::index_t, unsigned> &quadrature_points_ee) const
 	{
 		if (!state.mesh)
 		{
@@ -1150,8 +1151,8 @@ namespace polyfem::io
 		{
 			save_vtu(
 				vis_mesh_path, state, sol, pressure,
-				tend, dt, opts,
-				is_contact_enabled);
+				tend, dt, opts, is_contact_enabled,
+				quadrature_points_ee);
 		}
 		if (!nodes_path.empty())
 		{
@@ -1254,7 +1255,8 @@ namespace polyfem::io
 		const double t,
 		const double dt,
 		const ExportOptions &opts,
-		const bool is_contact_enabled) const
+		const bool is_contact_enabled,
+		const std::map<ipc::index_t, unsigned> &quadrature_points_ee) const
 	{
 		if (!state.mesh)
 		{
@@ -1297,7 +1299,7 @@ namespace polyfem::io
 		if (opts.surface)
 		{
 			save_surface(base_path + "_surf" + opts.file_extension(), state, sol, pressure, t, dt, opts,
-						 is_contact_enabled);
+						 is_contact_enabled, quadrature_points_ee);
 		}
 
 		if (is_contact_enabled && (opts.contact_forces || opts.friction_forces || opts.normal_adhesion_forces || opts.tangential_adhesion_forces))
@@ -1948,7 +1950,8 @@ namespace polyfem::io
 		const double t,
 		const double dt_in,
 		const ExportOptions &opts,
-		const bool is_contact_enabled) const
+		const bool is_contact_enabled,
+		const std::map<ipc::index_t, unsigned> &quadrature_points_ee) const
 	{
 
 		const Eigen::VectorXi &disc_orders = state.disc_orders;
@@ -2077,6 +2080,18 @@ namespace polyfem::io
 			writer.add_field("discr", discr);
 		if (opts.export_field("sidesets"))
 			writer.add_field("sidesets", b_sidesets);
+
+		if (!quadrature_points_ee.empty())
+		{
+			Eigen::MatrixXd field(boundary_vis_primitive_ids.rows(), 1);
+			field.setZero();
+			for (int i = 0; i < boundary_vis_primitive_ids.rows(); ++i)
+			{
+				if (quadrature_points_ee.count(boundary_vis_primitive_ids(i)))
+					field(i) = quadrature_points_ee.at(boundary_vis_primitive_ids(i));
+			}
+			writer.add_field("quadrature_points_ee", field);
+		}
 
 		if (actual_dim == 1 && opts.export_field("solution_grad"))
 			writer.add_field("solution_grad", vect);
