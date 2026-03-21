@@ -8,7 +8,7 @@ var searchData=
   ['op_5fattempts_5',['op_attempts',['../structpolyfem_1_1mesh_1_1_wild_remesher_1_1_edge_attributes.html#aa8c7277789496e6b3fc6af19e72a32da',1,'polyfem::mesh::WildRemesher::EdgeAttributes']]],
   ['op_5fcache_6',['op_cache',['../classpolyfem_1_1mesh_1_1_wild_remesher.html#a1d17f5498ef6191bf35fa919dbb6d2cc',1,'polyfem::mesh::WildRemesher']]],
   ['op_5fdepth_7',['op_depth',['../structpolyfem_1_1mesh_1_1_wild_remesher_1_1_edge_attributes.html#a02ead7e3671f8308d316f9a6f0157752',1,'polyfem::mesh::WildRemesher::EdgeAttributes']]],
-  ['optimization_5fenabled_8',['optimization_enabled',['../classpolyfem_1_1_state.html#a3992d081820ed035c8dc6e3fd3222f25',1,'polyfem::State']]],
+  ['optimization_5fenabled_8',['optimization_enabled',['../classpolyfem_1_1_state.html#ab1a7f9cd993bb4b26496eece766a9523',1,'polyfem::State']]],
   ['order_9',['order',['../classp__bases_1_1_lagrange.html#a04e32b1aa59b0068c7c054f975371809',1,'p_bases.Lagrange.order'],['../classq__bases_1_1_lagrange.html#a8931b44255e71403315ddeda3999db00',1,'q_bases.Lagrange.order']]],
   ['order_5f_10',['order_',['../classpolyfem_1_1basis_1_1_basis.html#a32467ddcd1ce6839401f099644fcc92a',1,'polyfem::basis::Basis']]],
   ['ordern_11',['orderN',['../namespaceq__bases.html#aefd408e88c0ce2b95ed824841f6cb539',1,'q_bases']]],

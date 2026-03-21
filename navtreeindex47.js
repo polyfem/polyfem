@@ -1,14 +1,5 @@
 var NAVTREEINDEX47 =
 {
-"main_8cpp.html":[8,0,1,0,14],
-"main_8cpp.html#a2af6e3fbd4aaa80375a7399896703035":[8,0,1,0,14,2],
-"main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627":[8,0,1,0,14,4],
-"main_8cpp.html#abf283a84783f5eafe559a45722f52a0e":[8,0,1,0,14,5],
-"main_8cpp.html#ac65ed99223ceda17a6feac9892f62153":[8,0,1,0,14,3],
-"main_8cpp.html#acbb63e1d425765e52625e23aabf97aa5":[8,0,1,0,14,1],
-"main_8cpp.html#aec889c702a246ad7f332c75ab7adb438":[8,0,1,0,14,0],
-"main_8cpp_source.html":[8,0,1,0,14],
-"md_src_2polyfem_2autogen_2_r_e_a_d_m_e.html":[4],
 "md_src_2polyfem_2autogen_2_r_e_a_d_m_e.html#autotoc_md23":[4,0],
 "md_src_2polyfem_2autogen_2_r_e_a_d_m_e.html#autotoc_md24":[4,1],
 "md_src_2polyfem_2autogen_2_r_e_a_d_m_e.html#autotoc_md25":[4,2],
@@ -122,8 +113,8 @@ var NAVTREEINDEX47 =
 "namespacegenerate__rotation__mtx.html#afadf45b0f7cccd365b403e62a6d84110":[6,0,4,2],
 "namespacegenerate__rotation__mtx.html#affd789c615fed77183c0c8b1b10f6b42":[6,0,4,5],
 "namespaceipc.html":[6,0,5],
-"namespacemembers.html":[6,1,0,0],
 "namespacemembers.html":[6,1,0],
+"namespacemembers.html":[6,1,0,0],
 "namespacemembers_b.html":[6,1,0,1],
 "namespacemembers_c.html":[6,1,0,2],
 "namespacemembers_d.html":[6,1,0,3],
@@ -249,5 +240,14 @@ var NAVTREEINDEX47 =
 "namespacepolyfem.html#a9b6c0c90bf84bff37213e17517526dd2":[6,0,8,32],
 "namespacepolyfem.html#a9c251b3fed11368a07bb8b3ed6d93f09":[6,0,8,52],
 "namespacepolyfem.html#a9c92d8a4b1a73baab24a2ecef44f9440":[6,0,8,42],
-"namespacepolyfem.html#aa181bc58c3a1b62840a1af8c8c651142":[6,0,8,55]
+"namespacepolyfem.html#aa181bc58c3a1b62840a1af8c8c651142":[6,0,8,55],
+"namespacepolyfem.html#aa3c7c48e526af400b4beb3738e168c35":[6,0,8,57],
+"namespacepolyfem.html#aa73576bfd50e92d2d35d855ba3f525cc":[6,0,8,28],
+"namespacepolyfem.html#aaf867383bfea72c587035f4e3346bb21":[6,0,8,66],
+"namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1":[6,0,8,40],
+"namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a800618943025315f869e4e1f09471012":[6,0,8,40,3],
+"namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1a9d0e3157464d10e95bff71bbcf0001ad":[6,0,8,40,0],
+"namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ab13248d68ac5516c015337b68346fc21":[6,0,8,40,2],
+"namespacepolyfem.html#ab904d08a2b6012d82ab5cdc90909e4d1ac34dd77ffb9238275b93ea1897664a7e":[6,0,8,40,1],
+"namespacepolyfem.html#ab97febca5b8b70517cc760a5409fa522":[6,0,8,39]
 };

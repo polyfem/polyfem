@@ -4,7 +4,7 @@ var classpolyfem_1_1_opt_state =
     [ "OptState", "classpolyfem_1_1_opt_state.html#af92124a9c75253c4c70e66c46ecf7449", null ],
     [ "check_unsupported", "classpolyfem_1_1_opt_state.html#a89147e12c0de672ee5dc423d57593677", null ],
     [ "create_problem", "classpolyfem_1_1_opt_state.html#af6e0a0dbf67bc5b8d22c7fec7a9bd9b6", null ],
-    [ "create_states", "classpolyfem_1_1_opt_state.html#ad2f643a88d481c1db7b39ee1397af44c", null ],
+    [ "create_states", "classpolyfem_1_1_opt_state.html#a36bb56b43d08e8e714c9c9d683b4a959", null ],
     [ "eval", "classpolyfem_1_1_opt_state.html#a8ce170f4f3bc85947966358984a8ea8b", null ],
     [ "init", "classpolyfem_1_1_opt_state.html#a49a90bfd024bab8f1d0a0565911b20ca", null ],
     [ "init_logger", "classpolyfem_1_1_opt_state.html#ac773f2b10e90d8b0e45fa605c1f3fff0", null ],
