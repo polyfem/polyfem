@@ -2318,6 +2318,18 @@ namespace polyfem::io
 			writer.add_field("tangential_adhesion_forces", forces_reshaped);
 		}
 
+		const auto ho_form = std::dynamic_pointer_cast<solver::HighOrderContactForm>(contact_form);
+		if (ho_form && problem_dim == 3)
+		{
+			const auto &ho_collisions = ho_form->collision_set();
+
+			Eigen::VectorXd edge_counts =
+				ho_collisions.edge_collision_counts(collision_mesh.num_edges());
+
+			writer.set_edges(collision_mesh.edges());
+			writer.add_edge_field("edge_collision_counts", edge_counts);
+		}
+
 		assert(collision_mesh.rest_positions().rows() == surface_displacements.rows());
 		assert(collision_mesh.rest_positions().cols() == surface_displacements.cols());
 
