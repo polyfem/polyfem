@@ -57,6 +57,7 @@ Sample usage:
 #include <chrono>
 #include <iostream>
 #include <iomanip>
+#include <arm_neon.h>
 
 namespace JIXIE
 {

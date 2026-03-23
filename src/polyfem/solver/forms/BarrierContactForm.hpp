@@ -2,6 +2,7 @@
 
 #include "ContactForm.hpp"
 #include <ipc/potentials/barrier_potential.hpp>
+#include <ipc/collisions/normal/normal_collisions.hpp>
 
 namespace polyfem::solver
 {
@@ -19,7 +20,8 @@ namespace polyfem::solver
 					const bool enable_shape_derivatives,
 					const ipc::BroadPhaseMethod broad_phase_method,
 					const double ccd_tolerance,
-					const int ccd_max_iterations);
+					const int ccd_max_iterations,
+					const ipc::NormalCollisions::CollisionSetType collision_set_type = ipc::NormalCollisions::CollisionSetType::IPC);
 
 		virtual std::string name() const override { return "barrier-contact"; }
 
