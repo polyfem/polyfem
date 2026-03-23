@@ -269,6 +269,7 @@ namespace polyfem
 		assembler = assembler::AssemblerUtils::make_assembler(formulation);
 		assert(assembler->name() == formulation);
 		mass_matrix_assembler = std::make_shared<assembler::Mass>();
+		pure_mass_matrix_assembler = std::make_shared<assembler::Mass>();
 		const auto other_name = assembler::AssemblerUtils::other_assembler_name(formulation);
 
 		if (!other_name.empty())

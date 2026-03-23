@@ -36,7 +36,8 @@ namespace polyfem::solver
 				  const std::shared_ptr<polysolve::linear::Solver> &solver,
 				  const double char_length,
 				  const double char_force,
-				  StiffnessMatrix lumped_mass);
+				  StiffnessMatrix lumped_mass,
+				  const int dimension);
 		virtual ~NLProblem() = default;
 
 		virtual double value(const TVector &x) override;
@@ -101,6 +102,7 @@ namespace polyfem::solver
 		double t_;
 		double F0;
 		double L;
+		int dim;
 		Eigen::DiagonalMatrix<double, Eigen::Dynamic> lumped_mass_;
 
 	protected:

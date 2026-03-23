@@ -117,7 +117,8 @@ namespace polyfem::solver
 		const std::shared_ptr<polysolve::linear::Solver> &solver,
 		const double char_length,
 		const double char_force,
-		StiffnessMatrix lumped_mass)
+		StiffnessMatrix lumped_mass,
+		const int dimension)
 		: FullNLProblem(forms),
 		  full_size_(full_size),
 		  t_(t),
@@ -125,7 +126,8 @@ namespace polyfem::solver
 		  solver_(solver),
 		  L(char_length),
 		  F0(char_force),
-		  lumped_mass_(lumped_mass.diagonal().asDiagonal())
+		  lumped_mass_(lumped_mass.diagonal().asDiagonal()),
+		  dim(dimension)
 	{
 		setup_constraints();
 		use_reduced_size();
@@ -161,7 +163,7 @@ namespace polyfem::solver
 		case polysolve::nonlinear::NormType::EUCLIDEAN:
 			return 1;
 		case polysolve::nonlinear::NormType::L2:
-			return F0 * std::pow(L, 1.5);
+			return F0 * (dim == 2 ? L : std::pow(L, 1.5));
 		case polysolve::nonlinear::NormType::Linf:
 			return F0;
 		}
@@ -175,7 +177,7 @@ namespace polyfem::solver
 		case polysolve::nonlinear::NormType::EUCLIDEAN:
 			return 1;
 		case polysolve::nonlinear::NormType::L2:
-			return std::pow(L, 2.5);
+			return dim == 2 ? L * L : std::pow(L, 2.5);
 		case polysolve::nonlinear::NormType::Linf:
 			return L;
 		}
@@ -184,7 +186,8 @@ namespace polyfem::solver
 
 	double NLProblem::energy_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const
 	{
-		return F0 * L * L * L * L;
+		const double density_scale = dim == 2 ? L * L : L * L * L;
+		return F0 * density_scale * L;
 	}
 
 	double NLProblem::grad_norm(const TVector &grad, const polysolve::nonlinear::NormType norm_type) const
