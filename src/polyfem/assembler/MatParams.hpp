@@ -139,7 +139,6 @@ namespace polyfem::assembler
 		{
 			return 1.0;
 		}
-
 	};
 
 	class FiberDirection
