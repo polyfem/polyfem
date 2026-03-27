@@ -31,7 +31,7 @@ namespace polyfem::solver
 											   const ipc::BroadPhaseMethod broad_phase_method,
 											   const double ccd_tolerance,
 											   const int ccd_max_iterations) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(init_params(dhat, high_order_contact_params, collision_mesh.dim() - 1)),
-											   barrier_potential_(params)
+											   barrier_potential_(params, high_order_contact_params["normalize_weights"])
 	{
 	}
 
@@ -88,10 +88,13 @@ namespace polyfem::solver
 	void HighOrderContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
 	{
 		// {
+		// 	static int hessian_call_count = 0;
+		// 	const std::string filename = "collision_mesh_hessian_" + std::to_string(hessian_call_count++) + ".obj";
 		// 	io::OBJWriter::write(
-		// 		"collision_mesh.obj",
+		// 		filename,
 		// 		compute_displaced_surface(x),
 		// 		collision_mesh_.edges(), collision_mesh_.faces());
+		// 	polyfem::logger().debug("Exported collision mesh to {}", filename);
 		// }
 		POLYFEM_SCOPED_TIMER("barrier hessian");
 		hessian = barrier_potential_.hessian(collision_set_, collision_mesh_, compute_displaced_surface(x), project_to_psd_ ? ipc::PSDProjectionMethod::CLAMP : ipc::PSDProjectionMethod::NONE);

@@ -1231,7 +1231,8 @@
             "dbar_factor",
             "quadrature_order",
             "exponent",
-            "skip_obstacles"
+            "skip_obstacles",
+            "normalize_weights"
         ]
     },
     {
@@ -1256,9 +1257,15 @@
     },
     {
         "pointer": "/contact/high_order_contact_params/skip_obstacles",
-        "default": true,
+        "default": false,
         "type": "bool",
         "doc": "Do integration only on non-fixed primitives."
+    },
+    {
+        "pointer": "/contact/high_order_contact_params/normalize_weights",
+        "default": true,
+        "type": "bool",
+        "doc": "Normalize quadrature weights in high-order contact potential."
     },
     {
         "pointer": "/contact/use_high_order_formulation",
