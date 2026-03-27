@@ -27,7 +27,6 @@ namespace polyfem::assembler
 
 		/// class that stores and compute density per point
 		const Density &density() const { return density_; }
-		void set_no_density() { density_ = NoDensity(); }
 
 		std::string name() const override { return "Mass"; }
 		virtual std::map<std::string, ParamFunc> parameters() const override;
