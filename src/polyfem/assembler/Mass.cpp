@@ -66,7 +66,6 @@ namespace polyfem::assembler
 				{
 					entry += data.vals.basis_values[i].val(q) * data.vals.basis_values[j].val(q) * data.da(q);
 				}
-				
 				sum_all_entries += entry;
 				if (i == j)
 				{

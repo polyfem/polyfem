@@ -665,7 +665,6 @@ namespace polyfem::solver
 		TVector grad = full;
 		if (penalty_forms_.size() == 1 && penalty_forms_.front()->can_project())
 			penalty_forms_.front()->project_gradient(grad);
-		
 		else
 			grad = Q2t_ * grad;
 
