@@ -67,6 +67,7 @@ namespace polyfem::solver
 
 		TVector full_to_reduced(const TVector &full) const;
 		virtual TVector full_to_reduced_grad(const TVector &full) const;
+		TVector full_to_reduced_diag(const TVector &full_diag) const;
 		TVector reduced_to_full(const TVector &reduced) const;
 
 		void full_hessian_to_reduced_hessian(StiffnessMatrix &hessian) const;
@@ -96,7 +97,7 @@ namespace polyfem::solver
 
 		Eigen::DiagonalMatrix<double, Eigen::Dynamic> current_lumped_mass() const
 		{
-			return full_to_reduced(lumped_mass_.diagonal()).asDiagonal();
+			return full_to_reduced_diag(lumped_mass_.diagonal()).asDiagonal();
 		}
 
 		double t_;

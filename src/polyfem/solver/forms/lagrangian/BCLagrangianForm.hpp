@@ -78,6 +78,7 @@ namespace polyfem::solver
 
 		virtual bool can_project() const override;
 		virtual void project_gradient(Eigen::VectorXd &grad) const override;
+		virtual void project_diag(Eigen::VectorXd &diag) const override;
 		virtual void project_hessian(StiffnessMatrix &hessian) const override;
 
 	private:

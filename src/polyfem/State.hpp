@@ -63,6 +63,7 @@ namespace polysolve::nonlinear
 namespace polyfem::assembler
 {
 	class Mass;
+	class HRZMass;
 	class ViscousDamping;
 	class ViscousDampingPrev;
 } // namespace polyfem::assembler
@@ -189,7 +190,7 @@ namespace polyfem
 		std::shared_ptr<assembler::Assembler> assembler = nullptr;
 
 		std::shared_ptr<assembler::Mass> mass_matrix_assembler = nullptr;
-		std::shared_ptr<assembler::Mass> pure_mass_matrix_assembler = nullptr;
+		std::shared_ptr<assembler::HRZMass> pure_mass_matrix_assembler = nullptr;
 
 		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
 		std::shared_ptr<assembler::Assembler> pressure_assembler = nullptr;

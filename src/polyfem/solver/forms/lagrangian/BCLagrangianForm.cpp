@@ -154,6 +154,14 @@ namespace polyfem::solver
 		grad.conservativeResize(not_constraints_.size());
 	}
 
+	void BCLagrangianForm::project_diag(Eigen::VectorXd &diag) const
+	{
+		// Assumes not_constraints_ is sorted
+		for (int i = 0; i < not_constraints_.size(); ++i)
+			diag[i] = diag[not_constraints_[i]];
+		diag.conservativeResize(not_constraints_.size());
+	}
+
 	void BCLagrangianForm::project_hessian(StiffnessMatrix &hessian) const
 	{
 		// Drop rows and columns whose indices are constrained DOFs in a single

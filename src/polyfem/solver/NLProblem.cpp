@@ -665,10 +665,27 @@ namespace polyfem::solver
 		TVector grad = full;
 		if (penalty_forms_.size() == 1 && penalty_forms_.front()->can_project())
 			penalty_forms_.front()->project_gradient(grad);
+		
 		else
 			grad = Q2t_ * grad;
 
 		return grad;
+	}
+
+	NLProblem::TVector NLProblem::full_to_reduced_diag(const TVector &full_diag) const
+	{
+		if (full_size() == current_size() || full_diag.size() == current_size())
+		{
+			return full_diag;
+		}
+
+		TVector diag = full_diag;
+		if (penalty_forms_.size() == 1 && penalty_forms_.front()->can_project())
+			penalty_forms_.front()->project_diag(diag);
+		else
+			diag = Q2t_ * diag.asDiagonal() * Q2_;
+
+		return diag;
 	}
 
 	NLProblem::TVector NLProblem::reduced_to_full(const TVector &reduced) const
