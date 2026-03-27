@@ -51,6 +51,8 @@ Sample usage:
 #if !defined(__APPLE__) || defined(__i386__) || defined(__x86_64__)
 #include <mmintrin.h>
 #include <xmmintrin.h>
+#else
+#include <arm_neon.h>
 #endif
 #include <cmath>
 #include <random>

@@ -31,6 +31,18 @@
 
 #include <h5pp/h5pp.h>
 
+namespace
+{
+	ipc::NormalCollisions::CollisionSetType collision_set_type_from_string(const std::string &s)
+	{
+		if (s == "OGC")
+			return ipc::NormalCollisions::CollisionSetType::OGC;
+		if (s == "IMPROVED_MAX_APPROX")
+			return ipc::NormalCollisions::CollisionSetType::IMPROVED_MAX_APPROX;
+		return ipc::NormalCollisions::CollisionSetType::IPC;
+	}
+} // namespace
+
 namespace polyfem::solver
 {
 	using namespace polyfem::time_integrator;
@@ -89,6 +101,7 @@ namespace polyfem::solver
 		const bool use_area_weighting,
 		const bool use_improved_max_operator,
 		const bool use_physical_barrier,
+		const std::string &collision_set_type,
 		const json &barrier_stiffness,
 		const double initial_barrier_stiffness,
 		const ipc::BroadPhaseMethod broad_phase,
@@ -404,7 +417,7 @@ namespace polyfem::solver
 					contact_form = std::make_shared<BarrierContactForm>(
 						collision_mesh, dhat, avg_mass, use_area_weighting, use_improved_max_operator, use_physical_barrier,
 						use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(),
-						ccd_max_iterations);
+						ccd_max_iterations, collision_set_type_from_string(collision_set_type));
 				}
 
 				if (use_adaptive_barrier_stiffness)

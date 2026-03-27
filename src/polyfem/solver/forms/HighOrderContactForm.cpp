@@ -15,10 +15,11 @@ namespace polyfem::solver
 	ipc::HighOrderContactParameters init_params(const double dhat, const json &high_order_contact_params, int powerdefault) {
 		const int quadrature_order = high_order_contact_params["quadrature_order"];
 		const double dbar_factor = high_order_contact_params["dbar_factor"];
-		const bool skip_obst = high_order_contact_params["skip_obstacles"];
 		int power = high_order_contact_params["exponent"];
 		if (power < 1) power = powerdefault;
-		return ipc::HighOrderContactParameters(dhat, dbar_factor, quadrature_order, power, skip_obst);
+		const ipc::HighOrderContactParameters::IntegrationType itype = high_order_contact_params["skip_obstacles"] ?
+			ipc::HighOrderContactParameters::IntegrationType::NO_OBST : ipc::HighOrderContactParameters::IntegrationType::NORMAL;
+		return ipc::HighOrderContactParameters(dhat, dbar_factor, quadrature_order, power, itype);
 	}
 
 	HighOrderContactForm::HighOrderContactForm(const ipc::CollisionMesh &collision_mesh,

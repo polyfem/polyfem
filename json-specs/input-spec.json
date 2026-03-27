@@ -1211,6 +1211,7 @@
             "use_area_weighting",
             "use_improved_max_operator",
             "use_physical_barrier",
+            "collision_set_type",
             "collision_mesh",
             "use_gcp_formulation",
             "high_order_contact_params",
@@ -1368,6 +1369,12 @@
         "default": true,
         "type": "bool",
         "doc": "If using the convergent formulation, whether or not to use physical barrier stiffness. Currently not implemented."
+    },
+    {
+        "pointer": "/contact/collision_set_type",
+        "default": "IPC",
+        "type": "string",
+        "doc": "Type of collision set to use. Options: \"IPC\", \"IMPROVED_MAX_APPROX\", \"OGC\"."
     },
     {
         "pointer": "/contact/collision_mesh",
