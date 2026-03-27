@@ -147,6 +147,7 @@ namespace polyfem
 			assemblers.push_back(pressure_assembler);
 		set_materials(assemblers);
 		pure_mass_matrix_assembler->set_size(mass_matrix_assembler->size());
+		pure_mass_matrix_assembler->set_no_density();
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
