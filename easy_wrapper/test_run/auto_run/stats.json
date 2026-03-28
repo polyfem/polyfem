@@ -1,0 +1,642 @@
+{
+    "args": {
+        "boundary_conditions": {
+            "dirichlet_boundary": [
+                {
+                    "dimension": [
+                        true,
+                        true,
+                        true
+                    ],
+                    "id": 1,
+                    "interpolation": [],
+                    "time_reference": [],
+                    "value": 0
+                },
+                {
+                    "dimension": [
+                        true,
+                        true,
+                        true
+                    ],
+                    "id": 3,
+                    "interpolation": [],
+                    "time_reference": [],
+                    "value": 1
+                }
+            ],
+            "neumann_boundary": [],
+            "normal_aligned_neumann_boundary": [],
+            "obstacle_displacements": [],
+            "periodic_boundary": {
+                "correspondence": [],
+                "enabled": false,
+                "fixed_macro_strain": [],
+                "force_zero_mean": false,
+                "linear_displacement_offset": [],
+                "tolerance": 1e-05
+            },
+            "pressure_boundary": [],
+            "pressure_cavity": [],
+            "rhs": 10
+        },
+        "common": "",
+        "constraints": {
+            "hard": [],
+            "soft": []
+        },
+        "contact": {
+            "adhesion": {
+                "adhesion_enabled": false,
+                "adhesion_strength": 0.001,
+                "dhat_a": 0.01,
+                "dhat_p": 0.001,
+                "epsa": 0.001,
+                "tangential_adhesion_coefficient": 0.0
+            },
+            "alpha_n": 0.5,
+            "alpha_t": 0.5,
+            "dhat": 0.001,
+            "dhat_percentage": 0.8,
+            "enabled": false,
+            "epsv": 0.001,
+            "friction_coefficient": 0,
+            "min_distance_ratio": 0.5,
+            "periodic": false,
+            "use_adaptive_dhat": false,
+            "use_area_weighting": true,
+            "use_convergent_formulation": false,
+            "use_gcp_formulation": false,
+            "use_improved_max_operator": true,
+            "use_physical_barrier": true
+        },
+        "geometry": [
+            {
+                "advanced": {
+                    "force_linear_geometry": false,
+                    "min_component": -1,
+                    "normalize_mesh": true,
+                    "refinement_location": 0.5
+                },
+                "curve_selection": null,
+                "enabled": true,
+                "extract": "volume",
+                "is_obstacle": false,
+                "mesh": "/Users/nasimpaak/Downloads/git2/polyfem/easy_wrapper/test_run/mesh.obj",
+                "n_refs": 0,
+                "surface_selection": [
+                    {
+                        "id_offset": 0,
+                        "threshold": 1e-08
+                    }
+                ],
+                "transformation": {
+                    "dimensions": 1,
+                    "rotation": [],
+                    "rotation_mode": "xyz",
+                    "scale": [],
+                    "translation": []
+                },
+                "type": "mesh",
+                "unit": "",
+                "volume_selection": {
+                    "id_offset": 0
+                }
+            }
+        ],
+        "initial_conditions": {
+            "acceleration": [],
+            "solution": [],
+            "velocity": []
+        },
+        "input": {
+            "data": {
+                "reorder": false,
+                "state": ""
+            }
+        },
+        "materials": {
+            "id": 0,
+            "rho": 1,
+            "type": "Laplacian"
+        },
+        "output": {
+            "advanced": {
+                "compute_error": true,
+                "curved_mesh_size": false,
+                "save_ccd_debug_meshes": false,
+                "save_nl_solve_sequence": false,
+                "save_solve_sequence_debug": false,
+                "save_time_sequence": true,
+                "sol_at_node": -1,
+                "sol_on_grid": -1,
+                "spectrum": false,
+                "timestep_prefix": "step_",
+                "vis_boundary_only": false
+            },
+            "data": {
+                "advanced": {
+                    "reorder_nodes": false
+                },
+                "full_mat": "",
+                "mises": "",
+                "nodes": "",
+                "rest_mesh": "",
+                "solution": "",
+                "state": "",
+                "stiffness_mat": "",
+                "stress_mat": ""
+            },
+            "directory": "/Users/nasimpaak/Downloads/git2/polyfem/easy_wrapper/test_run/auto_run",
+            "json": "stats.json",
+            "log": {
+                "file_level": "trace",
+                "level": "debug",
+                "path": "",
+                "quiet": false
+            },
+            "paraview": {
+                "fields": [],
+                "file_name": "result.vtu",
+                "high_order_mesh": true,
+                "options": {
+                    "acceleration": false,
+                    "body_ids": false,
+                    "contact_forces": false,
+                    "discretization_order": true,
+                    "force_high_order": false,
+                    "forces": false,
+                    "friction_forces": false,
+                    "jacobian_validity": false,
+                    "material": false,
+                    "nodes": true,
+                    "normal_adhesion_forces": false,
+                    "scalar_values": true,
+                    "tangential_adhesion_forces": false,
+                    "tensor_values": true,
+                    "use_hdf5": false,
+                    "velocity": false
+                },
+                "points": false,
+                "skip_frame": 1,
+                "surface": false,
+                "vismesh_rel_area": 1e-05,
+                "volume": true,
+                "wireframe": false
+            },
+            "reference": {
+                "gradient": [],
+                "solution": []
+            },
+            "restart_json": "",
+            "stats": false
+        },
+        "root_path": "/Users/nasimpaak/Downloads/git2/polyfem/easy_wrapper/test_run/auto_run/generated_input.json",
+        "solver": {
+            "adjoint_linear": {
+                "AMGCL": {
+                    "precond": {
+                        "class": "amg",
+                        "coarsening": {
+                            "aggr": {
+                                "eps_strong": 0
+                            },
+                            "estimate_spectral_radius": true,
+                            "relax": 1,
+                            "type": "smoothed_aggregation"
+                        },
+                        "direct_coarse": false,
+                        "max_levels": 6,
+                        "ncycle": 2,
+                        "relax": {
+                            "degree": 16,
+                            "higher": 2,
+                            "lower": 0.008333333333,
+                            "power_iters": 100,
+                            "scale": true,
+                            "type": "chebyshev"
+                        }
+                    },
+                    "solver": {
+                        "maxiter": 1000,
+                        "tol": 1e-10,
+                        "type": "cg"
+                    }
+                },
+                "Eigen::BiCGSTAB": {
+                    "max_iter": 1000,
+                    "tolerance": 1e-12
+                },
+                "Eigen::ConjugateGradient": {
+                    "max_iter": 1000,
+                    "tolerance": 1e-12
+                },
+                "Eigen::DGMRES": {
+                    "max_iter": 1000,
+                    "tolerance": 1e-12
+                },
+                "Eigen::GMRES": {
+                    "max_iter": 1000,
+                    "tolerance": 1e-12
+                },
+                "Eigen::LeastSquaresConjugateGradient": {
+                    "max_iter": 1000,
+                    "tolerance": 1e-12
+                },
+                "Eigen::MINRES": {
+                    "max_iter": 1000,
+                    "tolerance": 1e-12
+                },
+                "Hypre": {
+                    "max_iter": 1000,
+                    "pre_max_iter": 1,
+                    "tolerance": 1e-10
+                },
+                "Pardiso": {
+                    "mtype": 11
+                },
+                "enable_overwrite_solver": false,
+                "precond": "Eigen::DiagonalPreconditioner",
+                "solver": "Eigen::AccelerateLDLT"
+            },
+            "advanced": {
+                "cache_size": 900000,
+                "check_inversion": "Discrete",
+                "jacobian_threshold": 0,
+                "lagged_regularization_iterations": 1,
+                "lagged_regularization_weight": 0,
+                "lump_mass_matrix": false
+            },
+            "augmented_lagrangian": {
+                "eta": 0.99,
+                "initial_weight": 1000000.0,
+                "max_weight": 100000000.0,
+                "nonlinear": {
+                    "ADAM": {
+                        "alpha": 0.001,
+                        "beta_1": 0.9,
+                        "beta_2": 0.999,
+                        "epsilon": 1e-08
+                    },
+                    "L-BFGS": {
+                        "history_size": 6
+                    },
+                    "L-BFGS-B": {
+                        "history_size": 6
+                    },
+                    "Newton": {
+                        "force_psd_projection": false,
+                        "reg_weight_inc": 10,
+                        "reg_weight_max": 100000000.0,
+                        "reg_weight_min": 1e-08,
+                        "residual_tolerance": 1e-05,
+                        "use_psd_projection": true,
+                        "use_psd_projection_in_regularized": true
+                    },
+                    "StochasticADAM": {
+                        "alpha": 0.001,
+                        "beta_1": 0.9,
+                        "beta_2": 0.999,
+                        "epsilon": 1e-08,
+                        "erase_component_probability": 0.3
+                    },
+                    "StochasticGradientDescent": {
+                        "erase_component_probability": 0.3
+                    },
+                    "advanced": {
+                        "apply_gradient_fd": "None",
+                        "derivative_along_delta_x_tol": 0,
+                        "f_delta": 0,
+                        "f_delta_step_tol": 100,
+                        "gradient_fd_eps": 1e-07
+                    },
+                    "allow_out_of_iterations": false,
+                    "box_constraints": {
+                        "bounds": [],
+                        "max_change": -1
+                    },
+                    "first_grad_norm_tol": 1e-10,
+                    "grad_norm": 1e-08,
+                    "iterations_per_strategy": 5,
+                    "line_search": {
+                        "Armijo": {
+                            "c": 0.0001
+                        },
+                        "RobustArmijo": {
+                            "delta_relative_tolerance": 0.1
+                        },
+                        "default_init_step_size": 1,
+                        "max_step_size_iter": 30,
+                        "max_step_size_iter_final": 100,
+                        "method": "RobustArmijo",
+                        "min_step_size": 1e-10,
+                        "min_step_size_final": 1e-20,
+                        "step_ratio": 0.5,
+                        "use_grad_norm_tol": 1e-06
+                    },
+                    "max_iterations": 500,
+                    "solver": "Newton",
+                    "x_delta": 0
+                },
+                "scaling": 2.0
+            },
+            "contact": {
+                "CCD": {
+                    "broad_phase": "hash_grid",
+                    "max_iterations": 1000000,
+                    "tolerance": 1e-06
+                },
+                "barrier_stiffness": "adaptive",
+                "friction_convergence_tol": 0.01,
+                "friction_iterations": 0,
+                "initial_barrier_stiffness": 1,
+                "tangential_adhesion_iterations": 1
+            },
+            "linear": {
+                "AMGCL": {
+                    "precond": {
+                        "class": "amg",
+                        "coarsening": {
+                            "aggr": {
+                                "eps_strong": 0
+                            },
+                            "estimate_spectral_radius": true,
+                            "relax": 1,
+                            "type": "smoothed_aggregation"
+                        },
+                        "direct_coarse": false,
+                        "max_levels": 6,
+                        "ncycle": 2,
+                        "relax": {
+                            "degree": 16,
+                            "higher": 2,
+                            "lower": 0.008333333333,
+                            "power_iters": 100,
+                            "scale": true,
+                            "type": "chebyshev"
+                        }
+                    },
+                    "solver": {
+                        "maxiter": 1000,
+                        "tol": 1e-10,
+                        "type": "cg"
+                    }
+                },
+                "Eigen::BiCGSTAB": {
+                    "max_iter": 1000,
+                    "tolerance": 1e-12
+                },
+                "Eigen::ConjugateGradient": {
+                    "max_iter": 1000,
+                    "tolerance": 1e-12
+                },
+                "Eigen::DGMRES": {
+                    "max_iter": 1000,
+                    "tolerance": 1e-12
+                },
+                "Eigen::GMRES": {
+                    "max_iter": 1000,
+                    "tolerance": 1e-12
+                },
+                "Eigen::LeastSquaresConjugateGradient": {
+                    "max_iter": 1000,
+                    "tolerance": 1e-12
+                },
+                "Eigen::MINRES": {
+                    "max_iter": 1000,
+                    "tolerance": 1e-12
+                },
+                "Hypre": {
+                    "max_iter": 1000,
+                    "pre_max_iter": 1,
+                    "tolerance": 1e-10
+                },
+                "Pardiso": {
+                    "mtype": 11
+                },
+                "enable_overwrite_solver": false,
+                "precond": "Eigen::DiagonalPreconditioner",
+                "solver": "Eigen::AccelerateLDLT"
+            },
+            "max_threads": 0,
+            "nonlinear": {
+                "ADAM": {
+                    "alpha": 0.001,
+                    "beta_1": 0.9,
+                    "beta_2": 0.999,
+                    "epsilon": 1e-08
+                },
+                "L-BFGS": {
+                    "history_size": 6
+                },
+                "L-BFGS-B": {
+                    "history_size": 6
+                },
+                "Newton": {
+                    "force_psd_projection": false,
+                    "reg_weight_inc": 10,
+                    "reg_weight_max": 100000000.0,
+                    "reg_weight_min": 1e-08,
+                    "residual_tolerance": 1e-05,
+                    "use_psd_projection": true,
+                    "use_psd_projection_in_regularized": true
+                },
+                "StochasticADAM": {
+                    "alpha": 0.001,
+                    "beta_1": 0.9,
+                    "beta_2": 0.999,
+                    "epsilon": 1e-08,
+                    "erase_component_probability": 0.3
+                },
+                "StochasticGradientDescent": {
+                    "erase_component_probability": 0.3
+                },
+                "advanced": {
+                    "apply_gradient_fd": "None",
+                    "derivative_along_delta_x_tol": 0,
+                    "f_delta": 0,
+                    "f_delta_step_tol": 100,
+                    "gradient_fd_eps": 1e-07
+                },
+                "allow_out_of_iterations": false,
+                "box_constraints": {
+                    "bounds": [],
+                    "max_change": -1
+                },
+                "first_grad_norm_tol": 1e-10,
+                "grad_norm": 1e-08,
+                "iterations_per_strategy": 5,
+                "line_search": {
+                    "Armijo": {
+                        "c": 0.0001
+                    },
+                    "RobustArmijo": {
+                        "delta_relative_tolerance": 0.1
+                    },
+                    "default_init_step_size": 1,
+                    "max_step_size_iter": 30,
+                    "max_step_size_iter_final": 100,
+                    "method": "RobustArmijo",
+                    "min_step_size": 1e-10,
+                    "min_step_size_final": 1e-20,
+                    "step_ratio": 0.5,
+                    "use_grad_norm_tol": 1e-06
+                },
+                "max_iterations": 500,
+                "solver": "Newton",
+                "x_delta": 0
+            },
+            "rayleigh_damping": []
+        },
+        "space": {
+            "advanced": {
+                "B": 3,
+                "bc_method": "sample",
+                "count_flipped_els": true,
+                "count_flipped_els_continuous": false,
+                "discr_order_max": 4,
+                "force_no_ref_for_harmonic": false,
+                "h1_formula": false,
+                "integral_constraints": 2,
+                "isoparametric": false,
+                "mass_quadrature_order": -1,
+                "n_boundary_samples": -1,
+                "n_harmonic_samples": 10,
+                "quadrature_order": -1,
+                "use_corner_quadrature": false,
+                "use_particle_advection": false
+            },
+            "basis_type": "Lagrange",
+            "discr_order": 1,
+            "poly_basis_type": "MFSHarmonic",
+            "pressure_discr_order": 1,
+            "remesh": {
+                "collapse": {
+                    "abs_max_edge_length": 1e+100,
+                    "acceptance_tolerance": -1e-08,
+                    "culling_threshold": 0.01,
+                    "enabled": true,
+                    "max_depth": 3,
+                    "rel_max_edge_length": 1
+                },
+                "enabled": false,
+                "local_relaxation": {
+                    "local_mesh_n_ring": 2,
+                    "local_mesh_rel_area": 0.01,
+                    "max_nl_iterations": 1
+                },
+                "smooth": {
+                    "acceptance_tolerance": -1e-08,
+                    "enabled": false,
+                    "max_iters": 1
+                },
+                "split": {
+                    "acceptance_tolerance": 0.001,
+                    "culling_threshold": 0.95,
+                    "enabled": true,
+                    "max_depth": 3,
+                    "min_edge_length": 1e-06
+                },
+                "swap": {
+                    "acceptance_tolerance": -1e-08,
+                    "enabled": false,
+                    "max_depth": 3
+                },
+                "type": "physics"
+            },
+            "use_p_ref": false
+        },
+        "tests": {
+            "err_h1": 0,
+            "err_h1_semi": 0,
+            "err_l2": 0,
+            "err_linf": 0,
+            "err_linf_grad": 0,
+            "err_lp": 0,
+            "margin": 1e-05,
+            "time_steps": 1
+        },
+        "time": null,
+        "units": {
+            "characteristic_length": 1,
+            "length": "m",
+            "mass": "kg",
+            "time": "s"
+        }
+    },
+    "average_edge_length": 1.082842712474619,
+    "count_boundary": 0,
+    "count_multi_singular": 0,
+    "count_multi_singular_boundary": 0,
+    "count_non_regular": 0,
+    "count_non_regular_boundary": 0,
+    "count_prism": 0,
+    "count_regular": 0,
+    "count_regular_boundary": 0,
+    "count_simple_singular": 0,
+    "count_simplex": 2,
+    "count_undefined": 0,
+    "discr_order_max": 1,
+    "discr_order_min": 1,
+    "discr_orderq_max": 1,
+    "discr_orderq_min": 1,
+    "err_h1": 1.130388330520878,
+    "err_h1_semi": 1.0,
+    "err_l2": 0.5270462766947299,
+    "err_linf": 0.6666666666666666,
+    "err_linf_grad": 1.0,
+    "err_lp": 0.6116340238268617,
+    "formulation": "Laplacian",
+    "geom_order": 1,
+    "geom_order_min": 1,
+    "is_simplicial": true,
+    "iso_parametric": true,
+    "mat_size": 16,
+    "max_angle": null,
+    "mesh_size": 1.4142135623730951,
+    "min_edge_length": 1.0,
+    "num_bases": 4,
+    "num_dofs": 4,
+    "num_elements": 2,
+    "num_flipped": 0,
+    "num_non_zero": 14,
+    "num_p1": 2,
+    "num_p2": 0,
+    "num_p3": 0,
+    "num_p4": 0,
+    "num_p5": 0,
+    "num_pressure_bases": 0,
+    "num_threads": 8,
+    "num_vertices": 4,
+    "peak_memory": 41,
+    "problem": "GenericScalar",
+    "sigma_avg": 0.0,
+    "sigma_max": 0.0,
+    "sigma_min": 0.0,
+    "sol_at_node": [
+        0.0
+    ],
+    "sol_max": [
+        1.0
+    ],
+    "sol_min": [
+        0.0
+    ],
+    "solver_info": {
+        "solver_info": "Success"
+    },
+    "spectrum": [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+    ],
+    "spectrum_condest": null,
+    "time_assembling_mass_mat": 0.0,
+    "time_assembling_stiffness_mat": 3.6791666666666676e-05,
+    "time_assigning_rhs": 0.00017475000000000005,
+    "time_building_basis": 0.0010555000000000002,
+    "time_computing_poly_basis": 0.0,
+    "time_loading_mesh": 5e-324,
+    "time_solving": 0.020643083333333336
+}

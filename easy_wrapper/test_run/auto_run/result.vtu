@@ -1,0 +1,33 @@
+<VTKFile type="UnstructuredGrid" version="1.0" header_type="UInt64">
+<UnstructuredGrid>
+<Piece NumberOfPoints="6" NumberOfCells="2">
+<Points>
+<DataArray type="Float64" NumberOfComponents="3" format="binary">
+kAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwPwAAAAAAAPA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAA=
+</DataArray>
+</Points>
+<PointData Scalars="solution" >
+<DataArray type="Float64" Name="discr" NumberOfComponents="1" format="binary">
+MAAAAAAAAAAAAAAAAADwPwAAAAAAAPA/AAAAAAAA8D8AAAAAAADwPwAAAAAAAPA/AAAAAAAA8D8=
+</DataArray>
+<DataArray type="Float64" Name="body_ids" NumberOfComponents="1" format="binary">
+MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+</DataArray>
+<DataArray type="Float64" Name="solution" NumberOfComponents="1" format="binary">
+MAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA/AAAAAAAA8D8AAAAAAAAAAAAAAAAAAPA/AAAAAAAAAAA=
+</DataArray>
+</PointData>
+<Cells>
+<DataArray type="Int64" Name="connectivity" format="binary" >
+MAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAgAAAAAAAAADAAAAAAAAAAQAAAAAAAAABQAAAAAAAAA=
+</DataArray>
+<DataArray type="UInt8" Name="types" format="binary">
+AgAAAAAAAAAFBQ==
+</DataArray>
+<DataArray type="Int64" Name="offsets" format="binary">
+EAAAAAAAAAADAAAAAAAAAAYAAAAAAAAA
+</DataArray>
+</Cells>
+</Piece>
+</UnstructuredGrid>
+</VTKFile>
