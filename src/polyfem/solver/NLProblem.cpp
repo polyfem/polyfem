@@ -131,6 +131,25 @@ namespace polyfem::solver
 	{
 		setup_constraints();
 		use_reduced_size();
+
+		double total_lumped_mass = 0;
+		int num_nonzero_mass_entries = 0;
+		for (int i = 0; i < lumped_mass_.diagonal().size(); i++)
+		{
+			if (lumped_mass_.diagonal()[i] > 0)
+			{
+				total_lumped_mass += lumped_mass_.diagonal()[i];
+				num_nonzero_mass_entries++;	
+			}
+		}
+		const double avg_lumped_mass = total_lumped_mass / num_nonzero_mass_entries;
+		for (int i = 0; i < lumped_mass_.diagonal().size(); i++)
+		{
+			if (lumped_mass_.diagonal()[i] == 0)
+			{
+				lumped_mass_.diagonal()[i] = avg_lumped_mass;
+			}
+		}
 	}
 
 	double NLProblem::normalize_forms()
@@ -682,7 +701,10 @@ namespace polyfem::solver
 		if (penalty_forms_.size() == 1 && penalty_forms_.front()->can_project())
 			penalty_forms_.front()->project_diag(diag);
 		else
-			diag = Q2t_ * diag.asDiagonal() * Q2_;
+		{
+			Eigen::SparseMatrix<double> reduced_mat = Q2t_ * diag.asDiagonal() * Q2_;
+			diag = reduced_mat.diagonal();
+		}
 
 		return diag;
 	}
