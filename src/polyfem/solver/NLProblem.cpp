@@ -139,7 +139,7 @@ namespace polyfem::solver
 			if (lumped_mass_.diagonal()[i] > 0)
 			{
 				total_lumped_mass += lumped_mass_.diagonal()[i];
-				num_nonzero_mass_entries++;	
+				num_nonzero_mass_entries++;
 			}
 		}
 		const double avg_lumped_mass = total_lumped_mass / num_nonzero_mass_entries;
