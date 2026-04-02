@@ -21,7 +21,7 @@ namespace polyfem::solver
 		virtual double value(const TVector &x) override;
 		virtual void gradient(const TVector &x, TVector &gradv) override;
 		virtual void hessian(const TVector &x, THessian &hessian) override;
-		void 		 evalHessian(const TVector &x);
+		NewtonHessian evalHessian(const TVector &x);
 		bool 		 updateHessianSparsityPattern();
 
 		virtual bool is_step_valid(const TVector &x0, const TVector &x1) override;

@@ -136,19 +136,20 @@ namespace polyfem::solver
 		// }
 
 		updateHessianSparsityPattern();
-		evalHessian(x);
-		utils::NewtonHessian2SparseMatrix(m_hessianSparsity, hessian);
+		utils::NewtonHessian2SparseMatrix(evalHessian(x), hessian);
 		
 	}
 
-	void FullNLProblem::evalHessian(const TVector &x)
+	NewtonHessian FullNLProblem::evalHessian(const TVector &x)
 	{
+		NewtonHessian H = m_hessianSparsity; // Start with the sparsity pattern (and any static values) that we've cached in `m_hessianSparsity` (which should have been updated by `updateHessianSparsityPattern` right before this call).
 		for (auto &f : forms_)
 		{
 			if (!f->enabled())
 				continue;
-			f->accumulateHessian(f->weight(), x, m_hessianSparsity);
+			f->accumulateHessian(f->weight(), x, H);
 		}
+		return H;
 	}
 
 	bool FullNLProblem::updateHessianSparsityPattern()
@@ -180,7 +181,15 @@ namespace polyfem::solver
         }
 
         if (changed) {
-            if (staticOnly) m_hessianSparsity = std::move(m_hessianSparsityStaticPart);
+			if (force) {
+				// Work around paranoia of the Sparsity LRU object, which checks if all
+				// diagonal blocks are present (technically not needed for the specific
+				// matrix format used here).
+				auto copy = m_hessianSparsityStaticPart.H_ss->clone();
+				copy->setIdentity();
+				m_hessianSparsityStaticPart.H_ss->mergeSparsityPattern(*copy);
+			}
+			if (staticOnly) m_hessianSparsity = std::move(m_hessianSparsityStaticPart);
             else {
                 if (!m_sparsityLRU){
 				    assert(m_hessianSparsityStaticPart.H_ss && (m_hessianSparsityStaticPart.H_ss->nnz() > 0));
