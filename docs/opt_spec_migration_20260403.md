@@ -125,19 +125,19 @@ In addition, `active_geometry_nodes` support advanced selection mode, which does
 **Select all interior vertices from volume selection id**
 
 ```json
-"active_geometry_nodes": { "type": "interior", "selection": [1, 2] } }
+"active_geometry_nodes": { "type": "interior", "selection": [1, 2] }
 ```
 
 **Select all boundary vertices from surface selection id**
 
 ```json
-"active_geometry_nodes": { "type": "boundary", "selection": [3, 8] } }
+"active_geometry_nodes": { "type": "boundary", "selection": [3, 8] }
 ```
 
 **Select all boundary vertices except surface selection id**
 
 ```json
-"active_geometry_nodes": { "type": "boundary_excluding_surface", "selection": [3, 8] } }
+"active_geometry_nodes": { "type": "boundary_excluding_surface", "selection": [3, 8] }
 ```
 
 ## Migration cheatsheet
