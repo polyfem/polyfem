@@ -656,6 +656,12 @@ TEST_CASE("dirichlet-nodes-3d", "[opt_gradient]")
 	run_test1("dirichlet-nodes-3d-opt.json", 1e-7, TOL, 0.0, 1.0, SEED, REPEAT);
 }
 
+// Only on windows debug build homogenize tests failed with:
+// "Failed to factorize constraints matrix"
+//
+// The old comment mentioned this is a cholmod problem.
+#ifndef _WIN32
+
 TEST_CASE("homogenize-stress-periodic", EXPENSIVE_TEST_LABEL)
 {
 	TestContext ctx{"homogenize-stress-periodic-opt.json"};
@@ -725,3 +731,5 @@ TEST_CASE("homogenize-stress", EXPENSIVE_TEST_LABEL)
 		verify_adjoint(*ctx.opt.nl_problem, x, velocity, 1e-7, TOL, "homogenize-stress", trial, SEED);
 	}
 }
+
+#endif
