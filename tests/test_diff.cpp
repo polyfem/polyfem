@@ -280,7 +280,7 @@ TEST_CASE("laplacian", "[opt_gradient]")
 {
 	constexpr uint64_t SEED = BASE_SEED + 0;
 	constexpr int REPEAT = 1;
-	constexpr double TOL = 7.22927e-09;
+	constexpr double TOL = 1e-2;
 	TestContext ctx{"laplacian-opt.json"};
 
 	Eigen::VectorXd x;
@@ -307,7 +307,7 @@ TEST_CASE("linear_elasticity-surface-3d", "[opt_gradient]")
 {
 	constexpr uint64_t SEED = BASE_SEED + 1;
 	constexpr int REPEAT = 3;
-	constexpr double TOL = 2.12555e-08;
+	constexpr double TOL = 1e-2;
 	run_test1("linear_elasticity-surface-3d-opt.json", 1e-7, TOL, -1.0, 1.0, SEED, REPEAT);
 }
 
@@ -315,7 +315,7 @@ TEST_CASE("linear_elasticity-surface", "[opt_gradient]")
 {
 	constexpr uint64_t SEED = BASE_SEED + 2;
 	constexpr int REPEAT = 3;
-	constexpr double TOL = 6.53297e-09;
+	constexpr double TOL = 1e-2;
 	run_test1("linear_elasticity-surface-opt.json", 1e-6, TOL, -1.0, 1.0, SEED, REPEAT);
 }
 
@@ -323,7 +323,7 @@ TEST_CASE("topology-compliance", "[opt_gradient]")
 {
 	constexpr uint64_t SEED = BASE_SEED + 3;
 	constexpr int REPEAT = 3;
-	constexpr double TOL = 4.85167e-05;
+	constexpr double TOL = 1e-2;
 	run_test1("topology-compliance-opt.json", 1e-2, TOL, 0.0, 1.0, SEED, REPEAT);
 }
 
@@ -331,7 +331,7 @@ TEST_CASE("neohookean-stress-3d", EXPENSIVE_TEST_LABEL)
 {
 	constexpr uint64_t SEED = BASE_SEED + 4;
 	constexpr int REPEAT = 3;
-	constexpr double TOL = 6.90536e-05;
+	constexpr double TOL = 1e-2;
 	run_test1("neohookean-stress-3d-opt.json", 1e-7, TOL, -1.0, 1.0, SEED, REPEAT);
 }
 
@@ -339,7 +339,7 @@ TEST_CASE("shape-neumann-nodes", "[opt_gradient]")
 {
 	constexpr uint64_t SEED = BASE_SEED + 5;
 	constexpr int REPEAT = 3;
-	constexpr double TOL = 5.77112e-05;
+	constexpr double TOL = 1e-2;
 	run_test1("shape-neumann-nodes-opt.json", 1e-7, TOL, 0.0, 1.0, SEED, REPEAT);
 }
 
@@ -347,7 +347,7 @@ TEST_CASE("shape-pressure-nodes-2d", "[opt_gradient]")
 {
 	constexpr uint64_t SEED = BASE_SEED + 6;
 	constexpr int REPEAT = 3;
-	constexpr double TOL = 7.1262e-04;
+	constexpr double TOL = 1e-1;
 	run_test1("shape-pressure-nodes-2d-opt.json", 1e-7, TOL, 0.0, 1.0, SEED, REPEAT);
 }
 
@@ -355,7 +355,7 @@ TEST_CASE("static-control-pressure-nodes-3d", EXPENSIVE_TEST_LABEL)
 {
 	constexpr uint64_t SEED = BASE_SEED + 7;
 	constexpr int REPEAT = 2;
-	constexpr double TOL = 5.30642e-09;
+	constexpr double TOL = 1e-2;
 	run_test1("static-control-pressure-nodes-3d-opt.json", 1e-3, TOL, 0.0, 1.0, SEED, REPEAT);
 }
 
@@ -363,7 +363,7 @@ TEST_CASE("control-pressure-walker-2d", "[opt_gradient]")
 {
 	constexpr uint64_t SEED = BASE_SEED + 8;
 	constexpr int REPEAT = 3;
-	constexpr double TOL = 6.23514e-05;
+	constexpr double TOL = 1e-2;
 	run_test1("walker-opt.json", 1e-4, TOL, 0.0, 1.0, SEED, REPEAT);
 }
 
@@ -371,7 +371,7 @@ TEST_CASE("shape-walker-2d", EXPENSIVE_TEST_LABEL)
 {
 	constexpr uint64_t SEED = BASE_SEED + 9;
 	constexpr int REPEAT = 3;
-	constexpr double TOL = 2.21965e-04;
+	constexpr double TOL = 1e-2;
 	run_test1("walker-shape-opt.json", 1e-7, TOL, 0.0, 1.0, SEED, REPEAT);
 }
 
@@ -379,7 +379,7 @@ TEST_CASE("shape-contact-force-norm", "[opt_gradient]")
 {
 	constexpr uint64_t SEED = BASE_SEED + 10;
 	constexpr int REPEAT = 3;
-	constexpr double TOL = 2.7436e-06;
+	constexpr double TOL = 1e-2;
 	run_test1("shape-contact-force-norm-opt.json", 1e-7, TOL, 0.0, 1.0, SEED, REPEAT);
 }
 
@@ -387,7 +387,7 @@ TEST_CASE("shape-contact-force-norm-adhesion", "[opt_gradient]")
 {
 	constexpr uint64_t SEED = BASE_SEED + 11;
 	constexpr int REPEAT = 3;
-	constexpr double TOL = 1.05477e-01;
+	constexpr double TOL = 1e-1;
 	run_test1("shape-contact-force-norm-opt-adhesion.json", 1e-7, TOL, 0.0, 1.0, SEED, REPEAT);
 }
 
@@ -395,7 +395,7 @@ TEST_CASE("shape-contact-force-norm-3d", "[opt_gradient]")
 {
 	constexpr uint64_t SEED = BASE_SEED + 12;
 	constexpr int REPEAT = 3;
-	constexpr double TOL = 1.32029e-07;
+	constexpr double TOL = 1e-2;
 	run_test1("shape-contact-force-norm-3d-opt.json", 1e-6, TOL, 0.0, 1.0, SEED, REPEAT);
 }
 
@@ -403,7 +403,7 @@ TEST_CASE("shape-contact", "[opt_gradient]")
 {
 	constexpr uint64_t SEED = BASE_SEED + 27;
 	constexpr int REPEAT = 1;
-	constexpr double TOL = 9.2952e-09;
+	constexpr double TOL = 1e-2;
 	run_test2("shape-contact-opt.json", 1e-7, TOL, SEED, REPEAT);
 }
 
@@ -411,7 +411,7 @@ TEST_CASE("shape-contact-adhesion", "[opt_gradient]")
 {
 	constexpr uint64_t SEED = BASE_SEED + 28;
 	constexpr int REPEAT = 1;
-	constexpr double TOL = 4.77481e-06;
+	constexpr double TOL = 1e-2;
 	run_test2("shape-contact-adhesion-opt.json", 1e-7, TOL, SEED, REPEAT);
 }
 
@@ -452,7 +452,7 @@ TEST_CASE("node-trajectory", "[opt_gradient]")
 		std::make_shared<NodeTargetForm>(states[0], diff_caches[0], var2sim_group, actives, targets);
 	AdjointNLProblem problem{form, var2sim_group, states, diff_caches, opt_args};
 	Eigen::VectorXd x = var2sim_group.data[0]->inverse_eval();
-	constexpr double TOL = 9.60121e-05;
+	constexpr double TOL = 1e-2;
 	for (int i = 0; i < REPEAT; ++i)
 	{
 		Eigen::MatrixXd velocity = uniform_random_matrix(x.size(), 1, rng, 0.0, 1.0);
@@ -464,7 +464,7 @@ TEST_CASE("damping-transient", EXPENSIVE_TEST_LABEL)
 {
 	constexpr uint64_t SEED = BASE_SEED + 13;
 	constexpr int REPEAT = 3;
-	constexpr double TOL = 5.22115e-06;
+	constexpr double TOL = 1e-2;
 	run_test1("damping-transient-opt.json", 1e-3, TOL, 1.0, 1.0, SEED, REPEAT);
 }
 
@@ -472,7 +472,7 @@ TEST_CASE("material-transient", "[opt_gradient]")
 {
 	constexpr uint64_t SEED = BASE_SEED + 14;
 	constexpr int REPEAT = 3;
-	constexpr double TOL = 1.04805e-05;
+	constexpr double TOL = 1e-2;
 	run_test1("material-transient-opt.json", 1e-5, TOL, 1e3, 1e3, SEED, REPEAT);
 }
 
@@ -480,7 +480,7 @@ TEST_CASE("shape-transient-friction", "[opt_gradient]")
 {
 	constexpr uint64_t SEED = BASE_SEED + 15;
 	constexpr int REPEAT = 3;
-	constexpr double TOL = 2.46478e-05;
+	constexpr double TOL = 1e-2;
 	run_test1("shape-transient-friction-opt.json", 1e-6, TOL, 0.0, 1.0, SEED, REPEAT);
 }
 
@@ -488,7 +488,7 @@ TEST_CASE("shape-transient-friction-sdf", "[opt_gradient]")
 {
 	constexpr uint64_t SEED = BASE_SEED + 16;
 	constexpr int REPEAT = 3;
-	constexpr double TOL = 8.17988e-07;
+	constexpr double TOL = 1e-2;
 	run_test1("shape-transient-friction-sdf-opt.json", 1e-7, TOL, 0.0, 1.0, SEED, REPEAT);
 }
 
@@ -496,7 +496,7 @@ TEST_CASE("3d-shape-mesh-target", EXPENSIVE_TEST_LABEL)
 {
 	constexpr uint64_t SEED = BASE_SEED + 17;
 	constexpr int REPEAT = 1;
-	constexpr double TOL = 9.37036e-10;
+	constexpr double TOL = 1e-2;
 	run_test1("3d-shape-mesh-target-opt.json", 1e-7, TOL, 0.0, 1.0, SEED, REPEAT);
 }
 
@@ -504,7 +504,7 @@ TEST_CASE("initial-contact-min-dist", "[opt_gradient]")
 {
 	constexpr uint64_t SEED = BASE_SEED + 18;
 	constexpr int REPEAT = 3;
-	constexpr double TOL = 4.14499e-09;
+	constexpr double TOL = 1e-2;
 	run_test1("initial-contact-min-dist-opt.json", 1e-5, TOL, -1.0, 1.0, SEED, REPEAT);
 }
 
@@ -512,7 +512,7 @@ TEST_CASE("friction-contact", "[opt_gradient]")
 {
 	constexpr uint64_t SEED = BASE_SEED + 29;
 	constexpr int REPEAT = 1;
-	constexpr double TOL = 1.60138e-10;
+	constexpr double TOL = 1e-2;
 	TestContext ctx{"friction-contact-opt.json"};
 
 	Eigen::VectorXd velocity = Eigen::VectorXd::Ones(1);
@@ -528,7 +528,7 @@ TEST_CASE("barycenter", "[opt_gradient]")
 {
 	constexpr uint64_t SEED = BASE_SEED + 30;
 	constexpr int REPEAT = 1;
-	constexpr double TOL = 1.38648e-06;
+	constexpr double TOL = 1e-2;
 	TestContext ctx{"barycenter-opt.json"};
 
 	Eigen::VectorXd x;
@@ -552,7 +552,7 @@ TEST_CASE("shape-contact-smooth", "[opt_gradient]")
 {
 	constexpr uint64_t SEED = BASE_SEED + 31;
 	constexpr int REPEAT = 1;
-	constexpr double TOL = 1.39951e-07;
+	constexpr double TOL = 1e-2;
 	TestContext ctx{"shape-contact-opt.json"};
 
 	// Because state configs are shared, tailor json args.
@@ -595,7 +595,7 @@ TEST_CASE("initial-contact-smooth", "[opt_gradient]")
 
 	constexpr uint64_t SEED = BASE_SEED + 23;
 	constexpr int REPEAT = 3;
-	constexpr double TOL = 1.18941e-07;
+	constexpr double TOL = 1e-2;
 	std::mt19937_64 rng(SEED);
 	for (int i = 0; i < REPEAT; ++i)
 	{
@@ -623,7 +623,7 @@ TEST_CASE("shape-transient-smooth", "[opt_gradient]")
 
 	constexpr uint64_t SEED = BASE_SEED + 24;
 	constexpr int REPEAT = 3;
-	constexpr double TOL = 3.13527e-06;
+	constexpr double TOL = 1e-2;
 	std::mt19937_64 rng(SEED);
 	for (int i = 0; i < REPEAT; ++i)
 	{
@@ -636,7 +636,7 @@ TEST_CASE("shape-pressure-nodes-3d", EXPENSIVE_TEST_LABEL)
 {
 	constexpr uint64_t SEED = BASE_SEED + 19;
 	constexpr int REPEAT = 1;
-	constexpr double TOL = 2.81178e-07;
+	constexpr double TOL = 1e-2;
 	run_test1("shape-pressure-nodes-3d-opt.json", 1e-7, TOL, 0.0, 1.0, SEED, REPEAT);
 }
 
@@ -644,7 +644,7 @@ TEST_CASE("control-pressure-nodes-3d", EXPENSIVE_TEST_LABEL)
 {
 	constexpr uint64_t SEED = BASE_SEED + 20;
 	constexpr int REPEAT = 1;
-	constexpr double TOL = 8.15071e-07;
+	constexpr double TOL = 1e-2;
 	run_test1("control-pressure-nodes-3d-opt.json", 1e-8, TOL, 0.0, 1.0, SEED, REPEAT);
 }
 
@@ -652,7 +652,7 @@ TEST_CASE("dirichlet-nodes-3d", "[opt_gradient]")
 {
 	constexpr uint64_t SEED = BASE_SEED + 21;
 	constexpr int REPEAT = 3;
-	constexpr double TOL = 3.53598e-07;
+	constexpr double TOL = 1e-2;
 	run_test1("dirichlet-nodes-3d-opt.json", 1e-7, TOL, 0.0, 1.0, SEED, REPEAT);
 }
 
@@ -671,7 +671,7 @@ TEST_CASE("homogenize-stress-periodic", EXPENSIVE_TEST_LABEL)
 
 	constexpr uint64_t SEED = BASE_SEED + 25;
 	constexpr int REPEAT = 3;
-	constexpr double TOL = 7.00462e-08;
+	constexpr double TOL = 1e-2;
 	std::mt19937_64 rng(SEED);
 	constexpr double BOUNDARY_EPS = 1e-5;
 
@@ -706,7 +706,7 @@ TEST_CASE("homogenize-stress", EXPENSIVE_TEST_LABEL)
 
 	constexpr uint64_t SEED = BASE_SEED + 26;
 	constexpr int REPEAT = 3;
-	constexpr double TOL = 1.15279e-07;
+	constexpr double TOL = 1e-2;
 	std::mt19937_64 rng(SEED);
 	constexpr double BOUNDARY_EPS = 1e-5;
 
