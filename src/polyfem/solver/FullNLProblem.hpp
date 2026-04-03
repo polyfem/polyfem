@@ -60,9 +60,10 @@ namespace polyfem::solver
 		const bool is_residual_;
 
 		// Need to confirm if we actually need it.
-		mutable bool m_fullSparsityRebuildNeeded = true; // Whether all cached sparsity information has been invalidated (e.g., if the list of forms has changed)
+		bool m_fullSparsityRebuildNeeded = true; // Whether all cached sparsity information has been invalidated (e.g., if the list of forms has changed)
 
 		NewtonHessian m_hessianSparsity, m_hessianSparsityStaticPart;
 		std::unique_ptr<SparsityLRU> m_sparsityLRU; // Nonzero caching/retaining mechanism for minimizing Symbolic refactorizations
+        size_t m_sparsityPatternID = 0;
 	};
 } // namespace polyfem::solver

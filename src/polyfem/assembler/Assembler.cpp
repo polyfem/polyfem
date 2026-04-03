@@ -302,24 +302,19 @@ namespace polyfem::assembler
 		};
 
 		size_t n_elems = bases.size();
+		// TODO: use common assembler...
 		if (dim == 2)
 		{
 			m_assembler2D = std::make_unique<SystemAssembler<2>>(n_basis);
-			// sparsity pattern call
 			H = m_assembler2D->sparsityPattern(n_elems, stencil);
-			
-			// assembly call
 			m_assembler2D->assembleHessian(H, n_elems, eval_H_e, stencil);
 			
 		}
 		else if (dim == 3)
 		{
 			m_assembler3D = std::make_unique<SystemAssembler<3>>(n_basis);
-			// sparsity pattern call
 			H = m_assembler3D->sparsityPattern(n_elems, stencil);
-			
 			m_assembler3D->assembleHessian(H, n_elems, eval_H_e, stencil);
-			
 		}
 		else
 			throw std::runtime_error("Unsupported dimension for NLAssembler Hessian assembly.");
@@ -1239,6 +1234,7 @@ namespace polyfem::assembler
 			}
 			return nodesIndices; };
 
+		// TODO: do we still need this?
 		auto eval_H_e = [&](size_t e) -> Eigen::MatrixXd {
 			ElementAssemblyValues vals;
 			cache.compute(e, is_volume, bases[e], gbases[e], vals);
@@ -1263,12 +1259,10 @@ namespace polyfem::assembler
 		if (N == 2)
 		{
 			m_assembler2D = std::make_unique<SystemAssembler<2>>(n_basis);
-			// sparsity pattern call
 			H = m_assembler2D->sparsityPattern(n_elems, stencil);
 			std::cout << "SystemAssembler::buildSparsity pattern took " << std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() << std::endl;
 			
 			start = std::chrono::steady_clock::now();
-			// assembly call
 			m_assembler2D->assembleHessian(H, n_elems, eval_H_e, stencil);
 			std::cout << "SystemAssembler::assemble hessian took " << std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() << std::endl;
 
@@ -1276,7 +1270,6 @@ namespace polyfem::assembler
 		else if (N == 3)
 		{
 			m_assembler3D = std::make_unique<SystemAssembler<3>>(n_basis);
-			// sparsity pattern call
 			H = m_assembler3D->sparsityPattern(n_elems, stencil);
 			std::cout << "SystemAssembler::buildSparsity pattern took " << std::chrono::duration<double>(std::chrono::steady_clock::now() - start).count() << std::endl;
 			

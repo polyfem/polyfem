@@ -338,6 +338,7 @@ set(THIRD_PARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty)
 
 if (NOT TARGET MeshFEM)
     option(MESHFEM_ENABLE_BENCHMARKING "" ON)
+    option(MESHFEM_WITH_IPC_TOOLKIT "" OFF) # avoid conflicting IPC toolkit versions.
     add_subdirectory(${THIRD_PARTY_DIR}/MeshFEM_dev)
 endif()
 target_link_libraries(polyfem PUBLIC MeshFEM)

@@ -135,14 +135,14 @@ namespace polyfem::solver
 		// 	hessian += tmp;
 		// }
 
-		updateHessianSparsityPattern();
+		bool changed = updateHessianSparsityPattern();
+        if (changed) ++m_sparsityPatternID;
 		utils::NewtonHessian2SparseMatrix(evalHessian(x), hessian);
-		
 	}
 
 	NewtonHessian FullNLProblem::evalHessian(const TVector &x)
 	{
-		NewtonHessian H = m_hessianSparsity; // Start with the sparsity pattern (and any static values) that we've cached in `m_hessianSparsity` (which should have been updated by `updateHessianSparsityPattern` right before this call).
+		NewtonHessian H = m_hessianSparsity; // Accumulate into a fresh (value-free) copy of the sparsity pattern.
 		for (auto &f : forms_)
 		{
 			if (!f->enabled())
@@ -155,7 +155,7 @@ namespace polyfem::solver
 	bool FullNLProblem::updateHessianSparsityPattern()
 	{
 		NewtonHessian dynamicSparsity;
-        const bool force = m_fullSparsityRebuildNeeded; // Force a rebuild of the sparsity pattern every time for now since the logic is still being developed and tested. We can disable this once we're confident in the correctness and efficiency of the sparsity pattern update logic.
+        const bool force = m_fullSparsityRebuildNeeded;
         if (force) {
             m_hessianSparsity = NewtonHessian();
             m_hessianSparsityStaticPart = NewtonHessian();
@@ -233,9 +233,7 @@ namespace polyfem::solver
 
         m_fullSparsityRebuildNeeded = false;
 
-
 		return changed;
-
 	}
 
 	void FullNLProblem::solution_changed(const TVector &x)

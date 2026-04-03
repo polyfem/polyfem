@@ -209,7 +209,7 @@ namespace polyfem::solver
 		auto blockVarForCollisionMeshVertex = [&](int vertex_id) {
 			return collision_mesh_.to_full_vertex_id(vertex_id);
 		};
-		return assembler->buildSparsityPattern(collision_set_.size(), [this, &blockVarForCollisionMeshVertex](size_t ci) { return constraintStencil(ci, blockVarForCollisionMeshVertex); });
+		return buildSparsityPattern(collision_set_.size(), [this, &blockVarForCollisionMeshVertex](size_t ci) { return constraintStencil(ci, blockVarForCollisionMeshVertex); });
 	}
 
 	void BarrierContactForm::accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &H) const
@@ -228,7 +228,7 @@ namespace polyfem::solver
 
 		auto X = compute_displaced_surface(x);
 		auto H_eval_e = [&](int ci) { return weight * barrier_potential_.hessian(collision_set_[ci], collision_set_[ci].dof(X, collision_mesh_.edges(), collision_mesh_.faces()), psd_projection_method); };
-		assembler->accumulateHessianContribs(H, collision_set_.size(), H_eval_e, [this, &blockVarForCollisionMeshVertex](size_t ci) { return constraintStencil(ci, blockVarForCollisionMeshVertex); });
+		accumulateHessianContribs(H, collision_set_.size(), H_eval_e, [this, &blockVarForCollisionMeshVertex](size_t ci) { return constraintStencil(ci, blockVarForCollisionMeshVertex); });
 
 	}
 

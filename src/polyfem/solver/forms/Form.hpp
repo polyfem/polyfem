@@ -164,14 +164,24 @@ namespace polyfem::solver
 		virtual bool sparsityPatternIsStatic() const { return false; }
 		virtual void accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &hessian) const { 
 			// throw std::runtime_error("accumulateHessian2D not implemented by" + name()); 
-			}
-
-		void initSystemAssembler(int n_basis) {
-			assembler->initSystemAssembler(n_basis);
 		}
 
-		void setAssembler(std::shared_ptr<const assembler::Assembler> a) { assembler = a; }
-		
+		void setSystemAssembler(std::shared_ptr<SystemAssembler<2>> a) { m_assembler2D = a; }
+		void setSystemAssembler(std::shared_ptr<SystemAssembler<3>> a) { m_assembler3D = a; }
+
+		template<class StencilCallable>
+		NewtonHessian buildSparsityPattern(size_t num_stencils, StencilCallable &&stencil) const {
+			if (m_assembler2D) return m_assembler2D->sparsityPattern(num_stencils, std::forward<StencilCallable>(stencil));
+			if (m_assembler3D) return m_assembler3D->sparsityPattern(num_stencils, std::forward<StencilCallable>(stencil));
+			throw std::runtime_error("Form has no assembler.");
+		}
+
+		template<class EvalCallable, class StencilCallable>
+		void accumulateHessianContribs(NewtonHessian &H, size_t num_stencils, EvalCallable &&eval, StencilCallable &&stencil) const {
+			if (m_assembler2D) return m_assembler2D->assembleHessian(H, num_stencils, std::forward<EvalCallable>(eval), std::forward<StencilCallable>(stencil));
+			if (m_assembler3D) return m_assembler3D->assembleHessian(H, num_stencils, std::forward<EvalCallable>(eval), std::forward<StencilCallable>(stencil));
+			throw std::runtime_error("Form has no assembler.");
+		}
 
 	protected:
 		bool project_to_psd_ = false; ///< If true, the form's second derivative is projected to be positive semidefinite
@@ -212,7 +222,8 @@ namespace polyfem::solver
 		/// @param[out] hessian Output Hessian of the value wrt x
 		virtual void second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const = 0;
 
-		std::shared_ptr<const assembler::Assembler> assembler;
+		mutable std::shared_ptr<SystemAssembler<2>> m_assembler2D;
+		mutable std::shared_ptr<SystemAssembler<3>> m_assembler3D;
 	private:
 		double scale_ = 1; ///< scale of the form
 	};

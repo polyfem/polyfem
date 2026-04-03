@@ -153,8 +153,6 @@ namespace polyfem::assembler
 			utils::MatrixCache &mat_cache,
 			NewtonHessian &H) const { log_and_throw_error("Assemble hessian not implemented by {}!", name()); }
 
-		virtual Eigen::MatrixXd assemble_hessian(const NonLinearAssemblerData &data) const
-			{ log_and_throw_error("Assemble hessian not implemented by {}!", name()); }
 		// plotting (eg von mises), assembler is the name of the formulation
 		virtual void compute_scalar_value(
 			const OutputData &data,
@@ -229,30 +227,11 @@ namespace polyfem::assembler
 		virtual bool is_solution_displacement() const { return false; }
 		virtual bool is_fluid() const { return false; }
 		virtual bool is_tensor() const { return false; }
-
 		
-		void initSystemAssembler(int n_basis) const {
-			m_assembler2D = std::make_unique<SystemAssembler<2>>(n_basis);
-			m_assembler3D = std::make_unique<SystemAssembler<3>>(n_basis);
-		}
-
-		template<class StencilCallable>
-		NewtonHessian buildSparsityPattern(size_t n, StencilCallable &&stencil) const {
-			if (size() == 2) { assert(m_assembler2D); return m_assembler2D->sparsityPattern(n, std::forward<StencilCallable>(stencil)); }
-			if (size() == 3) { assert(m_assembler3D); return m_assembler3D->sparsityPattern(n, std::forward<StencilCallable>(stencil)); }
-			throw std::runtime_error("Unsupported dimension in buildSparsityPattern");
-		}
-
-		template<class EvalCallable, class StencilCallable>
-		void accumulateHessianContribs(NewtonHessian &H, size_t n, EvalCallable &&eval, StencilCallable &&stencil) const {
-			if (size() == 2) { assert(m_assembler2D); m_assembler2D->assembleHessian(H, n, std::forward<EvalCallable>(eval), std::forward<StencilCallable>(stencil)); return; }
-			if (size() == 3) { assert(m_assembler3D); m_assembler3D->assembleHessian(H, n, std::forward<EvalCallable>(eval), std::forward<StencilCallable>(stencil)); return; }
-			throw std::runtime_error("Unsupported dimension in accumulateHessianContribs");
-		}
-
+	protected:
 		mutable std::unique_ptr<SystemAssembler<2>> m_assembler2D;
 		mutable std::unique_ptr<SystemAssembler<3>> m_assembler3D;
-	protected:
+
 		int size_ = -1;
 		
 	};
@@ -598,9 +577,8 @@ namespace polyfem::assembler
     	const std::vector<basis::ElementBases> &m_b;
 	};
 
-	struct ElementHessianEvaluator{
-
-		ElementHessianEvaluator(const Assembler &assembler, const bool is_volume, const bool project_to_psd, const double weight, const Eigen::VectorXd &x, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const AssemblyValsCache &cache, const double t, const double dt, const Eigen::MatrixXd &displacement_prev)
+	struct ElementHessianEvaluator {
+		ElementHessianEvaluator(const NLAssembler &assembler, const bool is_volume, const bool project_to_psd, const double weight, const Eigen::VectorXd &x, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const AssemblyValsCache &cache, const double t, const double dt, const Eigen::MatrixXd &displacement_prev)
 			: m_assembler(assembler), m_is_volume(is_volume), m_project_to_psd(project_to_psd), m_weight(weight), m_x(x), m_bases(bases), m_gbases(gbases), m_cache(cache), m_t(t), m_dt(dt), m_displacement_prev(displacement_prev) {}
 
 		Eigen::MatrixXd operator()(size_t e) const {
@@ -624,7 +602,7 @@ namespace polyfem::assembler
 			
 		}
 		private:
-			const Assembler &m_assembler;
+			const NLAssembler &m_assembler;
 			const bool m_is_volume;
 			const bool m_project_to_psd;
 			const double m_weight;
@@ -635,9 +613,7 @@ namespace polyfem::assembler
 			const double m_t;
 			const double m_dt;
 			const Eigen::MatrixXd &m_displacement_prev;
-
 	};
-
 
 
 } // namespace polyfem::assembler

@@ -114,6 +114,7 @@ namespace polyfem::solver
 		std::vector<basis::ElementBases> &bases_;
 		const std::vector<basis::ElementBases> &geom_bases_;
 
+		const assembler::NLAssembler &assembler_; ///< Reference to the assembler
 		assembler::AssemblyValsCache &ass_vals_cache_;
 		double t_;
 		const double jacobian_threshold_;

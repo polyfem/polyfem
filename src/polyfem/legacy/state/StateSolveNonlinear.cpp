@@ -323,9 +323,16 @@ namespace polyfem::legacy
 		for (const auto &form : forms)
 			form->set_output_dir(output_dir);
 
-		for (const auto &form : forms){
-			form->setAssembler(assembler);
-			form->initSystemAssembler(n_bases);
+		// TODO: avoid the 2D/3D replication here by adding dynamic assembly
+		// routines to the `SystemAssemblerBase` class.
+		std::shared_ptr<SystemAssembler<2>> a2d;
+		std::shared_ptr<SystemAssembler<3>> a3d;
+		if (assembler->size() == 2) a2d = std::make_shared<SystemAssembler<2>>(n_bases);
+		if (assembler->size() == 3) a3d = std::make_shared<SystemAssembler<3>>(n_bases);
+
+		for (const auto &form : forms) {
+			form->setSystemAssembler(a2d);
+			form->setSystemAssembler(a3d);
 		}
 
 		// Create block-sparse mass matrix.
