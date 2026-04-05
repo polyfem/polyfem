@@ -23,13 +23,16 @@ namespace polyfem::solver
 					const ipc::BroadPhaseMethod broad_phase_method,
 					const double ccd_tolerance,
 					const int ccd_max_iterations,
-					const ipc::NormalCollisions::CollisionSetType collision_set_type): ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), barrier_potential_(dhat, use_physical_barrier)
+					const ipc::NormalCollisions::CollisionSetType collision_set_type,
+					const bool skip_obstacles
+				): ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), barrier_potential_(dhat, use_physical_barrier)
     {
 		// collision_set_.set_use_convergent_formulation(use_convergent_formulation);
 		collision_set_.set_use_area_weighting(use_area_weighting);
 		collision_set_.set_use_improved_max_approximator(use_improved_max_operator);
 		collision_set_.set_enable_shape_derivatives(enable_shape_derivatives);
 		collision_set_.set_collision_set_type(collision_set_type);
+		collision_set_.set_skip_obstacles(skip_obstacles);
     }
 	void BarrierContactForm::force_shape_derivative(const ipc::NormalCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const
 	{

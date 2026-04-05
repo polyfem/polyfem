@@ -14,6 +14,7 @@ namespace polyfem::solver
 					const double dhat,
 					const double avg_mass,
 					const json high_order_contact_params,
+					const bool skip_obstacles,
 					const bool use_adaptive_barrier_stiffness,
 					const bool is_time_dependent,
 					const bool enable_shape_derivatives,

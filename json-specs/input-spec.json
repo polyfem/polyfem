@@ -1212,6 +1212,7 @@
             "use_improved_max_operator",
             "use_physical_barrier",
             "collision_set_type",
+            "skip_obstacles",
             "collision_mesh",
             "use_gcp_formulation",
             "high_order_contact_params",
@@ -1232,7 +1233,6 @@
             "dbar_factor",
             "quadrature_order",
             "exponent",
-            "skip_obstacles",
             "normalize_weights"
         ]
     },
@@ -1255,12 +1255,6 @@
         "default": 0,
         "min": 0,
         "doc": "Exponent for high-order contact. Default is 0, which sets it to dimension-1."
-    },
-    {
-        "pointer": "/contact/high_order_contact_params/skip_obstacles",
-        "default": false,
-        "type": "bool",
-        "doc": "Do integration only on non-fixed primitives."
     },
     {
         "pointer": "/contact/high_order_contact_params/normalize_weights",
@@ -1375,6 +1369,12 @@
         "default": "IPC",
         "type": "string",
         "doc": "Type of collision set to use. Options: \"IPC\", \"IMPROVED_MAX_APPROX\", \"OGC\"."
+    },
+    {
+        "pointer": "/contact/skip_obstacles",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, skip obstacle primitives when building the collision set."
     },
     {
         "pointer": "/contact/collision_mesh",
