@@ -1713,13 +1713,13 @@
     },
     {
         "pointer": "/solver/advanced/characteristic_length",
-        "default": -1,
+        "default": 1,
         "type": "float",
         "doc": "Characteristic length, used for tolerances."
     },
     {
         "pointer": "/solver/advanced/characteristic_force_density",
-        "default": -1,
+        "default": 10000,
         "type": "float",
         "doc": "Characteristic force density, used for tolerances."
     },

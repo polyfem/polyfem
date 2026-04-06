@@ -318,8 +318,8 @@ namespace polyfem
 
 		if (args["solver"]["advanced"]["characteristic_force_density"] <= 0)
 		{
-			logger().warn("No user-specified force density was provided, defaulting to 1.");
-			characteristic_force_density = 1;
+			logger().warn("No user-specified force density was provided, defaulting to 10000.");
+			characteristic_force_density = 10000;
 		}
 		else
 		{
