@@ -12,12 +12,12 @@
 
 namespace polyfem::solver
 {
-	ipc::HighOrderContactParameters init_params(const double dhat, const json &high_order_contact_params, int powerdefault) {
+	ipc::HighOrderContactParameters init_params(const double dhat, const json &high_order_contact_params, int powerdefault, const bool skip_obstacles) {
 		const int quadrature_order = high_order_contact_params["quadrature_order"];
 		const double dbar_factor = high_order_contact_params["dbar_factor"];
 		int power = high_order_contact_params["exponent"];
 		if (power < 1) power = powerdefault;
-		const ipc::HighOrderContactParameters::IntegrationType itype = high_order_contact_params["skip_obstacles"] ?
+		const ipc::HighOrderContactParameters::IntegrationType itype = skip_obstacles ?
 			ipc::HighOrderContactParameters::IntegrationType::NO_OBST : ipc::HighOrderContactParameters::IntegrationType::NORMAL;
 		return ipc::HighOrderContactParameters(dhat, dbar_factor, quadrature_order, power, itype);
 	}
@@ -26,12 +26,13 @@ namespace polyfem::solver
 											   const double dhat,
 											   const double avg_mass,
 											   const json high_order_contact_params,
+											   const bool skip_obstacles,
 											   const bool use_adaptive_barrier_stiffness,
 											   const bool is_time_dependent,
 											   const bool enable_shape_derivatives,
 											   const ipc::BroadPhaseMethod broad_phase_method,
 											   const double ccd_tolerance,
-											   const int ccd_max_iterations) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(init_params(dhat, high_order_contact_params, collision_mesh.dim() - 1)),
+											   const int ccd_max_iterations) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(init_params(dhat, high_order_contact_params, collision_mesh.dim() - 1, skip_obstacles)),
 											   barrier_potential_(params, high_order_contact_params["normalize_weights"])
 	{
 	}

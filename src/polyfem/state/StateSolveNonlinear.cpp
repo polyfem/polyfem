@@ -261,6 +261,7 @@ namespace polyfem
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_improved_max_operator"]) : false,
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_physical_barrier"]) : false,
 			args["contact"]["collision_set_type"].get<std::string>(),
+			args["contact"]["skip_obstacles"].get<bool>(),
 			args["solver"]["contact"]["barrier_stiffness"],
 			args["solver"]["contact"]["initial_barrier_stiffness"],
 			args["solver"]["contact"]["CCD"]["broad_phase"],

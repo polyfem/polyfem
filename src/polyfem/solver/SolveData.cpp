@@ -102,6 +102,7 @@ namespace polyfem::solver
 		const bool use_improved_max_operator,
 		const bool use_physical_barrier,
 		const std::string &collision_set_type,
+		const bool skip_obstacles,
 		const json &barrier_stiffness,
 		const double initial_barrier_stiffness,
 		const ipc::BroadPhaseMethod broad_phase,
@@ -403,7 +404,7 @@ namespace polyfem::solver
 				else if (use_high_order_formulation)
 				{
 					contact_form = std::make_shared<HighOrderContactForm>(
-						collision_mesh, dhat, avg_mass, high_order_contact_params, use_adaptive_barrier_stiffness, is_time_dependent,
+						collision_mesh, dhat, avg_mass, high_order_contact_params, skip_obstacles, use_adaptive_barrier_stiffness, is_time_dependent,
 						enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(), ccd_max_iterations);
 				}
 				else if (use_offset_formulation)
@@ -417,7 +418,7 @@ namespace polyfem::solver
 					contact_form = std::make_shared<BarrierContactForm>(
 						collision_mesh, dhat, avg_mass, use_area_weighting, use_improved_max_operator, use_physical_barrier,
 						use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(),
-						ccd_max_iterations, collision_set_type_from_string(collision_set_type));
+						ccd_max_iterations, collision_set_type_from_string(collision_set_type), skip_obstacles);
 				}
 
 				if (use_adaptive_barrier_stiffness)

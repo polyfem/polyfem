@@ -428,10 +428,10 @@ TEST_CASE("high-order contact friction form derivatives", "[form][form_derivativ
 	const bool use_adaptive_barrier_stiffness = false;
 	const double ccd_tolerance = 1e-6;
 	const int ccd_max_iterations = static_cast<int>(1e6);
-	const json ho_params = json::object({{"quadrature_order", 5}, {"dbar_factor", 1.0}, {"exponent", 0}, {"normalize_weights", false}, {"skip_obstacles", false}});
+	const json ho_params = json::object({{"quadrature_order", 5}, {"dbar_factor", 1.0}, {"exponent", 0}, {"normalize_weights", false}});
 
 	const HighOrderContactForm contact_form(
-		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, ho_params,
+		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, ho_params, /*skip_obstacles=*/false,
 		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
 		ccd_tolerance, ccd_max_iterations);
 

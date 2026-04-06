@@ -115,6 +115,7 @@ namespace polyfem::solver
 			const bool use_improved_max_operator,
 			const bool use_physical_barrier,
 			const std::string &collision_set_type,
+			const bool skip_obstacles,
 			const json &barrier_stiffness,
 			const double initial_barrier_stiffness,
 			const ipc::BroadPhaseMethod broad_phase,

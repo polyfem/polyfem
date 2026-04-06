@@ -280,6 +280,7 @@ namespace polyfem::mesh
 				state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_improved_max_operator"]) : false,
 				state.args["contact"]["use_convergent_formulation"] ? bool(state.args["contact"]["use_physical_barrier"]) : false,
 				state.args["contact"]["collision_set_type"].get<std::string>(),
+				state.args["contact"]["skip_obstacles"].get<bool>(),
 				contact_enabled ? state.solve_data.contact_form->barrier_stiffness() : 0,
 				state.args["solver"]["contact"]["initial_barrier_stiffness"],
 				state.args["solver"]["contact"]["CCD"]["broad_phase"],
