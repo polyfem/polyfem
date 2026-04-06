@@ -105,7 +105,10 @@ namespace polyfem
 			// Always save the solution for consistency
 			if (energy_csv)
 				energy_csv->write(save_i, sol);
-			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
+			{
+				POLYFEM_SCOPED_TIMER("Save timestep");
+				save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
+			}
 			save_i++;
 
 			if (optimization_enabled != solver::CacheLevel::None)
@@ -362,11 +365,17 @@ namespace polyfem
 		};
 
 		Eigen::MatrixXd prev_sol = sol;
-		al_solver.solve_al(nl_problem, sol,
-						   args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
+		{
+			POLYFEM_SCOPED_TIMER("AL solve");
+			al_solver.solve_al(nl_problem, sol,
+							   args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
+		}
 
-		al_solver.solve_reduced(nl_problem, sol,
-								args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
+		{
+			POLYFEM_SCOPED_TIMER("Reduced solve");
+			al_solver.solve_reduced(nl_problem, sol,
+									args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
+		}
 
 		if (args["space"]["advanced"]["count_flipped_els_continuous"])
 		{
@@ -381,6 +390,7 @@ namespace polyfem
 
 		if (optimization_enabled != solver::CacheLevel::Derivatives)
 		{
+			POLYFEM_SCOPED_TIMER("Lagging loop");
 			// Lagging loop (start at 1 because we already did an iteration above)
 			bool lagging_converged = !nl_problem.uses_lagging();
 			for (int lag_i = 1; !lagging_converged; lag_i++)
