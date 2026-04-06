@@ -84,24 +84,4 @@ include(Catch)
 
 # Register tests
 set(PARSE_CATCH_TESTS_ADD_TO_CONFIGURE_DEPENDS ON)
-catch_discover_tests(unit_tests ADD_TAGS_AS_LABELS)
-
-################################################################################
-# CUDA
-################################################################################
-
-if(IPC_TOOLKIT_WITH_CUDA)
-  include(CheckLanguage)
-  check_language(CUDA)
-  if(CMAKE_CUDA_COMPILER)
-    enable_language(CUDA)
-  else()
-    message(FATAL_ERROR "No CUDA support found!")
-  endif()
-
-  # Nvidia 1080/1080Ti -> compute_61
-  # Nvidia V100 -> compute_70
-  # Nvidia RTX8000 -> compute_75
-  # Nvidia 3080Ti -> compute_86
-  set_target_properties(unit_tests PROPERTIES CUDA_ARCHITECTURES "70;75;86")
-endif()
+catch_discover_tests(unit_tests)

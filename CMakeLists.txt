@@ -68,6 +68,7 @@ set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vector
 
 # Polyfem options for enabling/disabling optional libraries
 option(POLYFEM_WITH_APP "Generate the application with gui" OFF)
+option(POLYFEM_WITH_CUDA "Build with cuda support" OFF)
 option(POLYFEM_WITH_OPTIMIZATION "Build adjoint optimization support" ON)
 option(POLYFEM_WITH_TESTS     "Build tests"                                 ON)
 option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"  ON)
@@ -168,29 +169,24 @@ endif ()
 # CUDA
 ################################################################################
 
-if(IPC_TOOLKIT_WITH_CUDA OR POLYSOLVE_WITH_CUSOLVER)
-    include(CheckLanguage)
-    check_language(CUDA)
-    if(CMAKE_CUDA_COMPILER)
-        enable_language(CUDA)
-    else()
-        message(FATAL_ERROR "No CUDA support found!")
-    endif()
+if (POLYFEM_WITH_CUDA)
+  # If CMAKE_CUDA_ARCHITECTURES was not specified, set it to native.
+  if(DEFINED CMAKE_CUDA_ARCHITECTURES)
+    message(STATUS "CMAKE_CUDA_ARCHITECTURES was specified, skipping auto-detection")
+  else()
+    message(STATUS "CMAKE_CUDA_ARCHITECTURES was not specified, set it to native")
+    set(CMAKE_CUDA_ARCHITECTURES "native")
+  endif()
+  message(STATUS "Targeting CUDA_ARCHITECTURES \"${CMAKE_CUDA_ARCHITECTURES}\"")
 
-    set_target_properties(polyfem PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+  # Enable CUDA support
+  enable_language(CUDA)
+  set(CMAKE_CUDA_STANDARD 17)
+  set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 
-    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.24.0")
-        set(CMAKE_CUDA_ARCHITECTURES "native")
-        set_target_properties(ipc_toolkit PROPERTIES CUDA_ARCHITECTURES "native")
-    else()
-        include(FindCUDA/select_compute_arch)
-        CUDA_DETECT_INSTALLED_GPUS(CUDA_ARCH_LIST)
-        string(STRIP "${CUDA_ARCH_LIST}" CUDA_ARCH_LIST)
-        string(REPLACE " " ";" CUDA_ARCH_LIST "${CUDA_ARCH_LIST}")
-        string(REPLACE "." "" CUDA_ARCH_LIST "${CUDA_ARCH_LIST}")
-        set(CMAKE_CUDA_ARCHITECTURES ${CUDA_ARCH_LIST})
-        set_target_properties(ipc_toolkit PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH_LIST}")
-    endif()
+  # Enalbe CUDA support for libraries.
+  set(IPC_TOOLKIT_WITH_CUDA ON)
+  set(POLYSOLVE_WITH_CUDA ON)
 endif()
 
 ################################################################################
