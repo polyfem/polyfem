@@ -5,6 +5,7 @@
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/io/OBJWriter.hpp>
+#include <polyfem/quadrature/TriQuadrature.hpp>
 
 #include <ipc/utils/eigen_ext.hpp>
 #include <ipc/barrier/adaptive_stiffness.hpp>
@@ -12,6 +13,26 @@
 
 namespace polyfem::solver
 {
+	namespace {
+		ipc::FaceQuadRule build_quad_rule(const int order)
+		{
+			polyfem::quadrature::Quadrature quad;
+			polyfem::quadrature::TriQuadrature(true).get_quadrature(order, quad);
+
+			ipc::FaceQuadRule rule;
+			rule.reserve(quad.size());
+			for (int i = 0; i < quad.size(); i++) {
+				const double x = quad.points(i, 0);
+				const double y = quad.points(i, 1);
+				// polyfem divides weights by 2 (reference triangle area); multiply
+				// back to match ipc-toolkit's convention of weights summing to 1.
+				const double w = quad.weights(i) * 2.0;
+				rule.push_back({{{1.0 - x - y, x, y}}, w});
+			}
+			return rule;
+		}
+	} // namespace
+
 	ipc::HighOrderContactParameters init_params(const double dhat, const json &high_order_contact_params, int powerdefault, const bool skip_obstacles) {
 		const int quadrature_order = high_order_contact_params["quadrature_order"];
 		const double dbar_factor = high_order_contact_params["dbar_factor"];
@@ -19,7 +40,10 @@ namespace polyfem::solver
 		if (power < 1) power = powerdefault;
 		const ipc::HighOrderContactParameters::IntegrationType itype = skip_obstacles ?
 			ipc::HighOrderContactParameters::IntegrationType::NO_OBST : ipc::HighOrderContactParameters::IntegrationType::NORMAL;
-		return ipc::HighOrderContactParameters(dhat, dbar_factor, quadrature_order, power, itype);
+		ipc::HighOrderContactParameters params(dhat, dbar_factor, quadrature_order, power, itype);
+		if (quadrature_order > 0)
+			params.face_quad_rule = build_quad_rule(quadrature_order);
+		return params;
 	}
 
 	HighOrderContactForm::HighOrderContactForm(const ipc::CollisionMesh &collision_mesh,
