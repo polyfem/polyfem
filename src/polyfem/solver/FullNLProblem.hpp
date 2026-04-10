@@ -24,6 +24,8 @@ namespace polyfem::solver
 		NewtonHessian evalHessian(const TVector &x);
 		bool 		 updateHessianSparsityPattern();
 
+		virtual size_t getSparsityPatternID() const override { return m_sparsityPatternID; }
+
 		virtual bool is_step_valid(const TVector &x0, const TVector &x1) override;
 		virtual bool is_step_collision_free(const TVector &x0, const TVector &x1);
 		virtual double max_step_size(const TVector &x0, const TVector &x1) override;
@@ -64,6 +66,6 @@ namespace polyfem::solver
 
 		NewtonHessian m_hessianSparsity, m_hessianSparsityStaticPart;
 		std::unique_ptr<SparsityLRU> m_sparsityLRU; // Nonzero caching/retaining mechanism for minimizing Symbolic refactorizations
-        size_t m_sparsityPatternID = 0;
+        size_t m_sparsityPatternID = -1;
 	};
 } // namespace polyfem::solver
