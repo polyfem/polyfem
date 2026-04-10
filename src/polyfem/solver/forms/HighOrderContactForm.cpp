@@ -33,6 +33,33 @@ namespace polyfem::solver
 		}
 	} // namespace
 
+	/// Check if a quadrature point is at a triangle vertex (one barycentric
+	/// coordinate ≈ 1, others ≈ 0).
+	bool is_vertex_point(const ipc::FaceQuadPoint& qp, int vertex, double tol = 1e-12)
+	{
+		for (int i = 0; i < 3; i++) {
+			if (std::abs(qp.lambda[i] - (i == vertex ? 1.0 : 0.0)) > tol)
+				return false;
+		}
+		return true;
+	}
+
+	/// Verify the quadrature rule contains the 3 triangle vertices.
+	void verify_vertices_in_quad_rule(const ipc::FaceQuadRule& rule)
+	{
+		for (int v = 0; v < 3; v++) {
+			bool found = false;
+			for (const auto& qp : rule) {
+				if (is_vertex_point(qp, v)) {
+					found = true;
+					break;
+				}
+			}
+			if (!found)
+				throw std::runtime_error("Face quadrature rule is missing triangle vertex " + std::to_string(v) + "; choose a quadrature scheme that includes corner points");
+		}
+	}
+
 	ipc::HighOrderContactParameters init_params(const double dhat, const json &high_order_contact_params, int powerdefault, const bool skip_obstacles) {
 		const int quadrature_order = high_order_contact_params["quadrature_order"];
 		const double dbar_factor = high_order_contact_params["dbar_factor"];
@@ -41,8 +68,10 @@ namespace polyfem::solver
 		const ipc::HighOrderContactParameters::IntegrationType itype = skip_obstacles ?
 			ipc::HighOrderContactParameters::IntegrationType::NO_OBST : ipc::HighOrderContactParameters::IntegrationType::NORMAL;
 		ipc::HighOrderContactParameters params(dhat, dbar_factor, quadrature_order, power, itype);
-		if (quadrature_order > 0)
+		if (quadrature_order > 0) {
 			params.face_quad_rule = build_quad_rule(quadrature_order);
+			verify_vertices_in_quad_rule(params.face_quad_rule);
+		}
 		return params;
 	}
 
