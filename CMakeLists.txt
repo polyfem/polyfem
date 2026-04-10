@@ -333,20 +333,6 @@ target_include_directories(polyfem PRIVATE "$<BUILD_INTERFACE:${POLYFEM_GENERATE
 add_dependencies(polyfem polyfem_spec polyfem_opt_spec polyfem_objective_spec)
 target_link_libraries(polyfem PUBLIC polyfem::spec polyfem::opt_spec polyfem::objective_spec)
 
-# MeshFEM
-set(THIRD_PARTY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty)
-
-if (NOT TARGET MeshFEM)
-    option(MESHFEM_ENABLE_BENCHMARKING "" ON)
-    option(MESHFEM_WITH_IPC_TOOLKIT "" OFF) # avoid conflicting IPC toolkit versions.
-    add_subdirectory(${THIRD_PARTY_DIR}/MeshFEM_dev)
-endif()
-target_link_libraries(polyfem PUBLIC MeshFEM)
-
-# Color errors/warnings.
-list(APPEND CMAKE_MODULE_PATH ${THIRD_PARTY_DIR}/MeshFEM_dev/cmake)
-include(UseColors)
-
 ################################################################################
 # Optional libraries
 ################################################################################
