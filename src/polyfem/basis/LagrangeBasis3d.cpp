@@ -660,6 +660,56 @@ namespace
 			res.insert(res.end(), node_ids.begin(), node_ids.end());
 		}
 
+		// Prism local-node ordering from MeshNodes primitive traversal can differ
+		// from autogen prism basis local ordering, especially for higher q.
+		// Reorder all local nodes by matching autogen local coordinates in physical space.
+		{
+			Eigen::MatrixXd local_nodes;
+			autogen::prism_nodes_3d(p, q, local_nodes);
+			assert(local_nodes.rows() == (int)res.size());
+
+			auto map_ref_to_phys = [&mesh, &v](const Eigen::RowVector3d &uvw) -> Eigen::RowVector3d {
+				const double u = uvw(0);
+				const double vv = uvw(1);
+				const double w = uvw(2);
+
+				const double N0 = (1.0 - u - vv) * (1.0 - w);
+				const double N1 = u * (1.0 - w);
+				const double N2 = vv * (1.0 - w);
+				const double N3 = (1.0 - u - vv) * w;
+				const double N4 = u * w;
+				const double N5 = vv * w;
+
+				return N0 * mesh.point(v[0]) + N1 * mesh.point(v[1]) + N2 * mesh.point(v[2]) + N3 * mesh.point(v[3]) + N4 * mesh.point(v[4]) + N5 * mesh.point(v[5]);
+			};
+
+			std::vector<int> reordered(res.size(), -1);
+			std::vector<bool> used(res.size(), false);
+
+			for (int i = 0; i < local_nodes.rows(); ++i)
+			{
+				const Eigen::RowVector3d target = map_ref_to_phys(local_nodes.row(i));
+				double best = std::numeric_limits<double>::infinity();
+				int best_j = -1;
+				for (int j = 0; j < (int)res.size(); ++j)
+				{
+					if (used[j])
+						continue;
+					const double d2 = (nodes.node_position(res[j]) - target).squaredNorm();
+					if (d2 < best)
+					{
+						best = d2;
+						best_j = j;
+					}
+				}
+				assert(best_j >= 0);
+				reordered[i] = res[best_j];
+				used[best_j] = true;
+			}
+
+			res.swap(reordered);
+		}
+
 		assert(res.size() == size_t(6 + n_edge_nodes + n_face_nodes + n_cell_nodes));
 	}
 
