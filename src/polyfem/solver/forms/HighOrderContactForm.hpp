@@ -37,6 +37,8 @@ namespace polyfem::solver
 
 		const ipc::HighOrderCollisions &collision_set() const { return collision_set_; }
 
+		const ipc::HighOrderContactPotential &barrier_potential() const { return barrier_potential_; }
+
 		const ipc::HighOrderContactPotential::CountMap &get_ee_qp_count() const {
 			return barrier_potential_.get_edge_evaluation_count();
 		}
