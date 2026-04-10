@@ -27,7 +27,7 @@ cmake_dependent_option(LIBIGL_RESTRICTED_TRIANGLE "Build target igl_restricted::
 include(eigen)
 
 include(CPM)
-CPMAddPackage("gh:fsichetti/libigl#main")
+CPMAddPackage("gh:libigl/libigl#aeeea9b416a5b5474cb9d12c07ff1238a4c83ba1")
 
 # igl/predicates/predicates.h was split into individual headers in new versions.
 # Write a compatibility shim so existing #include <igl/predicates/predicates.h>
