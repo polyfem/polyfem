@@ -24,6 +24,7 @@
 #include <polyfem/utils/BoundarySampler.hpp>
 
 #include <ipc/ipc.hpp>
+#include <ipc/utils/profile_registry.hpp>
 
 namespace polyfem
 {
@@ -128,6 +129,13 @@ namespace polyfem
 			}
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
+
+			// Flush the ipc-toolkit profiling registry to disk. The file is
+			// overwritten after every time step so the latest cumulative
+			// timings/counters are always available for inspection.
+			ipc::ProfileRegistry::instance().dump_json(
+				resolve_output_path("ipc_profile.json"));
+
 			if (time_callback)
 				time_callback(t, time_steps, t0 + dt * t, t0 + dt * time_steps);
 
