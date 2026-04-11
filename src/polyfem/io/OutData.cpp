@@ -2231,6 +2231,25 @@ namespace polyfem::io
 
 		const auto smooth_contact_form = std::dynamic_pointer_cast<solver::SmoothContactForm>(contact_form);
 
+		// Rebuild a smooth collision set from scratch (independent of the form's cached set).
+		ipc::SmoothCollisions smooth_collision_set;
+		if (smooth_contact_form)
+		{
+			const auto smooth_broad_phase =
+				ipc::create_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]);
+			if (smooth_contact_form->using_adaptive_dhat())
+			{
+				smooth_collision_set.compute_adaptive_dhat(
+					collision_mesh, collision_mesh.rest_positions(),
+					smooth_contact_form->get_params(), smooth_broad_phase);
+			}
+			smooth_collision_set.build(
+				collision_mesh, displaced_surface,
+				smooth_contact_form->get_params(),
+				smooth_contact_form->using_adaptive_dhat(),
+				smooth_broad_phase);
+		}
+
 		if (opts.contact_forces || opts.export_field("contact_forces"))
 		{
 			Eigen::MatrixXd forces;
@@ -2239,7 +2258,7 @@ namespace polyfem::io
 				const ipc::SmoothContactPotential smooth_potential(smooth_contact_form->get_params());
 				forces = -barrier_stiffness
 					* smooth_potential.gradient(
-						smooth_contact_form->collision_set(), collision_mesh, displaced_surface);
+						smooth_collision_set, collision_mesh, displaced_surface);
 			}
 			else
 			{
@@ -2295,7 +2314,7 @@ namespace polyfem::io
 					collision_mesh.num_vertices(), friction_coefficient);
 				friction_collision_set.build(
 					collision_mesh, displaced_surface,
-					smooth_contact_form->collision_set(),
+					smooth_collision_set,
 					smooth_contact_form->get_params(), barrier_stiffness,
 					mu_vec, mu_vec);
 			}
