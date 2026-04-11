@@ -2257,8 +2257,8 @@ namespace polyfem::io
 			{
 				const ipc::SmoothContactPotential smooth_potential(smooth_contact_form->get_params());
 				forces = -barrier_stiffness
-					* smooth_potential.gradient(
-						smooth_collision_set, collision_mesh, displaced_surface);
+						 * smooth_potential.gradient(
+							 smooth_collision_set, collision_mesh, displaced_surface);
 			}
 			else
 			{
