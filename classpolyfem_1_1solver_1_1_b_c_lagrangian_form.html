@@ -304,6 +304,9 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a06bedc2464814145093f082367c468db" id="r_a06bedc2464814145093f082367c468db"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a06bedc2464814145093f082367c468db">not_constraints_</a></td></tr>
 <tr class="memdesc:a06bedc2464814145093f082367c468db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Not Constraints.  <br /></td></tr>
 <tr class="separator:a06bedc2464814145093f082367c468db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3927090483f64308309e7321e3c4b9a7" id="r_a3927090483f64308309e7321e3c4b9a7"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a3927090483f64308309e7321e3c4b9a7">old_to_new_</a></td></tr>
+<tr class="memdesc:a3927090483f64308309e7321e3c4b9a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Map from full DOF index to reduced DOF index (-1 if constrained).  <br /></td></tr>
+<tr class="separator:a3927090483f64308309e7321e3c4b9a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57b99f4668154684b7810b7285841892" id="r_a57b99f4668154684b7810b7285841892"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html">assembler::RhsAssembler</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a57b99f4668154684b7810b7285841892">rhs_assembler_</a></td></tr>
 <tr class="memdesc:a57b99f4668154684b7810b7285841892"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference to the RHS assembler.  <br /></td></tr>
 <tr class="separator:a57b99f4668154684b7810b7285841892"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -459,7 +462,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00008">8</a> of file <a class="el" href="_b_c_lagrangian_form_8cpp_source.html">BCLagrangianForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">init_masked_lumped_mass()</a>, and <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00193">update_target()</a>.</p>
+<p class="reference">References <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">init_masked_lumped_mass()</a>, and <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00240">update_target()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -554,7 +557,7 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a415f2e1c8ff9ec49a211b5afac0ddfde">polyfem::solver::AugmentedLagrangianForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00145">145</a> of file <a class="el" href="_b_c_lagrangian_form_8cpp_source.html">BCLagrangianForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00147">147</a> of file <a class="el" href="_b_c_lagrangian_form_8cpp_source.html">BCLagrangianForm.cpp</a>.</p>
 
 </div>
 </div>
@@ -584,7 +587,7 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a4267b99824228ca877c6437b708b5e32">polyfem::solver::AugmentedLagrangianForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00186">186</a> of file <a class="el" href="_b_c_lagrangian_form_8cpp_source.html">BCLagrangianForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00233">233</a> of file <a class="el" href="_b_c_lagrangian_form_8cpp_source.html">BCLagrangianForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00048">polyfem::solver::AugmentedLagrangianForm::A_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">polyfem::solver::AugmentedLagrangianForm::b_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
@@ -635,9 +638,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a79c3d290522cc08bdb0a94196c5f669a">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00170">170</a> of file <a class="el" href="_b_c_lagrangian_form_8cpp_source.html">BCLagrangianForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00217">217</a> of file <a class="el" href="_b_c_lagrangian_form_8cpp_source.html">BCLagrangianForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00048">polyfem::solver::AugmentedLagrangianForm::A_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00042">polyfem::solver::AugmentedLagrangianForm::A_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">polyfem::solver::AugmentedLagrangianForm::b_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00041">polyfem::solver::AugmentedLagrangianForm::L_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00046">polyfem::solver::AugmentedLagrangianForm::lagr_mults_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00096">masked_lumped_mass_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00095">masked_lumped_mass_sqrt_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00048">polyfem::solver::AugmentedLagrangianForm::A_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00042">polyfem::solver::AugmentedLagrangianForm::A_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">polyfem::solver::AugmentedLagrangianForm::b_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00041">polyfem::solver::AugmentedLagrangianForm::L_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00046">polyfem::solver::AugmentedLagrangianForm::lagr_mults_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00100">masked_lumped_mass_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00099">masked_lumped_mass_sqrt_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -691,7 +694,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">50</a> of file <a class="el" href="_b_c_lagrangian_form_8cpp_source.html">BCLagrangianForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00048">polyfem::solver::AugmentedLagrangianForm::A_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00051">polyfem::solver::AugmentedLagrangianForm::A_proj_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00084">boundary_nodes_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00089">constraints_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00046">polyfem::solver::AugmentedLagrangianForm::lagr_mults_</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00084">polyfem::utils::lump_matrix()</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00096">masked_lumped_mass_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00095">masked_lumped_mass_sqrt_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00088">n_dofs_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00090">not_constraints_</a>, and <a class="el" href="_matrix_utils_8hpp_source.html#l00083">polyfem::utils::sparse_identity()</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00048">polyfem::solver::AugmentedLagrangianForm::A_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00051">polyfem::solver::AugmentedLagrangianForm::A_proj_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00084">boundary_nodes_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00089">constraints_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00046">polyfem::solver::AugmentedLagrangianForm::lagr_mults_</a>, <a class="el" href="_logger_8cpp_source.html#l00044">polyfem::logger()</a>, <a class="el" href="_matrix_utils_8cpp_source.html#l00084">polyfem::utils::lump_matrix()</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00100">masked_lumped_mass_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00099">masked_lumped_mass_sqrt_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00088">n_dofs_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00090">not_constraints_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00094">old_to_new_</a>, and <a class="el" href="_matrix_utils_8hpp_source.html#l00083">polyfem::utils::sparse_identity()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00008">BCLagrangianForm()</a>.</p>
 <div class="dynheader">
@@ -762,7 +765,7 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a3fa18d30fb728435d51b8e701d6d72d0">polyfem::solver::AugmentedLagrangianForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00147">147</a> of file <a class="el" href="_b_c_lagrangian_form_8cpp_source.html">BCLagrangianForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00149">149</a> of file <a class="el" href="_b_c_lagrangian_form_8cpp_source.html">BCLagrangianForm.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00090">not_constraints_</a>.</p>
 
@@ -794,9 +797,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a3f043be80ce3f2bf5193cd9454674e7d">polyfem::solver::AugmentedLagrangianForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00155">155</a> of file <a class="el" href="_b_c_lagrangian_form_8cpp_source.html">BCLagrangianForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00157">157</a> of file <a class="el" href="_b_c_lagrangian_form_8cpp_source.html">BCLagrangianForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00090">not_constraints_</a>.</p>
+<p class="reference">References <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00088">n_dofs_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00090">not_constraints_</a>, and <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00094">old_to_new_</a>.</p>
 
 </div>
 </div>
@@ -845,9 +848,9 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a4313c8af547f3c51a1c8cafd5071b44b">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00175">175</a> of file <a class="el" href="_b_c_lagrangian_form_8cpp_source.html">BCLagrangianForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00222">222</a> of file <a class="el" href="_b_c_lagrangian_form_8cpp_source.html">BCLagrangianForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00048">polyfem::solver::AugmentedLagrangianForm::A_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00042">polyfem::solver::AugmentedLagrangianForm::A_weight()</a>, and <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00096">masked_lumped_mass_</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00048">polyfem::solver::AugmentedLagrangianForm::A_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00042">polyfem::solver::AugmentedLagrangianForm::A_weight()</a>, and <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00100">masked_lumped_mass_</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -892,9 +895,9 @@ Here is the call graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a4f75f0acf41383a0c769560059cf97e0">polyfem::solver::AugmentedLagrangianForm</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00206">206</a> of file <a class="el" href="_b_c_lagrangian_form_8cpp_source.html">BCLagrangianForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00253">253</a> of file <a class="el" href="_b_c_lagrangian_form_8cpp_source.html">BCLagrangianForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00048">polyfem::solver::AugmentedLagrangianForm::A_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">polyfem::solver::AugmentedLagrangianForm::b_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00044">polyfem::solver::AugmentedLagrangianForm::k_al_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00046">polyfem::solver::AugmentedLagrangianForm::lagr_mults_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00095">masked_lumped_mass_sqrt_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00048">polyfem::solver::AugmentedLagrangianForm::A_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">polyfem::solver::AugmentedLagrangianForm::b_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00044">polyfem::solver::AugmentedLagrangianForm::k_al_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00046">polyfem::solver::AugmentedLagrangianForm::lagr_mults_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00099">masked_lumped_mass_sqrt_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 </div>
 </div>
@@ -943,9 +946,9 @@ Here is the call graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a36e58606b6cdc7b4bf16aa1bd7fd351c">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00180">180</a> of file <a class="el" href="_b_c_lagrangian_form_8cpp_source.html">BCLagrangianForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00227">227</a> of file <a class="el" href="_b_c_lagrangian_form_8cpp_source.html">BCLagrangianForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00093">is_time_dependent_</a>, and <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00193">update_target()</a>.</p>
+<p class="reference">References <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00097">is_time_dependent_</a>, and <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00240">update_target()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -986,11 +989,11 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00193">193</a> of file <a class="el" href="_b_c_lagrangian_form_8cpp_source.html">BCLagrangianForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00240">240</a> of file <a class="el" href="_b_c_lagrangian_form_8cpp_source.html">BCLagrangianForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">polyfem::solver::AugmentedLagrangianForm::b_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00052">polyfem::solver::AugmentedLagrangianForm::b_proj_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00084">boundary_nodes_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00089">constraints_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00085">local_boundary_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00086">local_neumann_boundary_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00087">n_boundary_samples_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00088">n_dofs_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00092">rhs_assembler_</a>, and <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a3b5639fffbdfe782d00f292fa3454941">polyfem::assembler::RhsAssembler::set_bc()</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">polyfem::solver::AugmentedLagrangianForm::b_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00052">polyfem::solver::AugmentedLagrangianForm::b_proj_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00084">boundary_nodes_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00089">constraints_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00085">local_boundary_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00086">local_neumann_boundary_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00087">n_boundary_samples_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00088">n_dofs_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00096">rhs_assembler_</a>, and <a class="el" href="classpolyfem_1_1assembler_1_1_rhs_assembler.html#a3b5639fffbdfe782d00f292fa3454941">polyfem::assembler::RhsAssembler::set_bc()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00008">BCLagrangianForm()</a>, and <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00180">update_quantities()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00008">BCLagrangianForm()</a>, and <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00227">update_quantities()</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1039,9 +1042,9 @@ Here is the caller graph for this function:</div>
 
 <p>Implements <a class="el" href="classpolyfem_1_1solver_1_1_form.html#a464a37a939d522c672aed03d281a5a92">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00161">161</a> of file <a class="el" href="_b_c_lagrangian_form_8cpp_source.html">BCLagrangianForm.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00208">208</a> of file <a class="el" href="_b_c_lagrangian_form_8cpp_source.html">BCLagrangianForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00048">polyfem::solver::AugmentedLagrangianForm::A_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00042">polyfem::solver::AugmentedLagrangianForm::A_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">polyfem::solver::AugmentedLagrangianForm::b_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00041">polyfem::solver::AugmentedLagrangianForm::L_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00046">polyfem::solver::AugmentedLagrangianForm::lagr_mults_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00096">masked_lumped_mass_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00095">masked_lumped_mass_sqrt_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00048">polyfem::solver::AugmentedLagrangianForm::A_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00042">polyfem::solver::AugmentedLagrangianForm::A_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">polyfem::solver::AugmentedLagrangianForm::b_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00041">polyfem::solver::AugmentedLagrangianForm::L_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00046">polyfem::solver::AugmentedLagrangianForm::lagr_mults_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00100">masked_lumped_mass_</a>, <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00099">masked_lumped_mass_sqrt_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -1073,7 +1076,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00084">84</a> of file <a class="el" href="_b_c_lagrangian_form_8hpp_source.html">BCLagrangianForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">init_masked_lumped_mass()</a>, and <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00193">update_target()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">init_masked_lumped_mass()</a>, and <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00240">update_target()</a>.</p>
 
 </div>
 </div>
@@ -1101,7 +1104,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00089">89</a> of file <a class="el" href="_b_c_lagrangian_form_8hpp_source.html">BCLagrangianForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">init_masked_lumped_mass()</a>, and <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00193">update_target()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">init_masked_lumped_mass()</a>, and <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00240">update_target()</a>.</p>
 
 </div>
 </div>
@@ -1125,9 +1128,9 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00093">93</a> of file <a class="el" href="_b_c_lagrangian_form_8hpp_source.html">BCLagrangianForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00097">97</a> of file <a class="el" href="_b_c_lagrangian_form_8hpp_source.html">BCLagrangianForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00180">update_quantities()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00227">update_quantities()</a>.</p>
 
 </div>
 </div>
@@ -1153,7 +1156,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00085">85</a> of file <a class="el" href="_b_c_lagrangian_form_8hpp_source.html">BCLagrangianForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00193">update_target()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00240">update_target()</a>.</p>
 
 </div>
 </div>
@@ -1179,7 +1182,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00086">86</a> of file <a class="el" href="_b_c_lagrangian_form_8hpp_source.html">BCLagrangianForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00193">update_target()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00240">update_target()</a>.</p>
 
 </div>
 </div>
@@ -1205,9 +1208,9 @@ Here is the call graph for this function:</div>
 
 <p>mass matrix masked by the AL dofs </p>
 
-<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00096">96</a> of file <a class="el" href="_b_c_lagrangian_form_8hpp_source.html">BCLagrangianForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00100">100</a> of file <a class="el" href="_b_c_lagrangian_form_8hpp_source.html">BCLagrangianForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00170">first_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">init_masked_lumped_mass()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00175">second_derivative_unweighted()</a>, and <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00161">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00217">first_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">init_masked_lumped_mass()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00222">second_derivative_unweighted()</a>, and <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00208">value_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -1233,9 +1236,9 @@ Here is the call graph for this function:</div>
 
 <p>sqrt mass matrix masked by the AL dofs </p>
 
-<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00095">95</a> of file <a class="el" href="_b_c_lagrangian_form_8hpp_source.html">BCLagrangianForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00099">99</a> of file <a class="el" href="_b_c_lagrangian_form_8hpp_source.html">BCLagrangianForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00170">first_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">init_masked_lumped_mass()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00206">update_lagrangian()</a>, and <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00161">value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00217">first_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">init_masked_lumped_mass()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00253">update_lagrangian()</a>, and <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00208">value_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -1261,7 +1264,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00087">87</a> of file <a class="el" href="_b_c_lagrangian_form_8hpp_source.html">BCLagrangianForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00193">update_target()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00240">update_target()</a>.</p>
 
 </div>
 </div>
@@ -1287,7 +1290,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00088">88</a> of file <a class="el" href="_b_c_lagrangian_form_8hpp_source.html">BCLagrangianForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">init_masked_lumped_mass()</a>, and <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00193">update_target()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">init_masked_lumped_mass()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00157">project_hessian()</a>, and <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00240">update_target()</a>.</p>
 
 </div>
 </div>
@@ -1315,7 +1318,36 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00090">90</a> of file <a class="el" href="_b_c_lagrangian_form_8hpp_source.html">BCLagrangianForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">init_masked_lumped_mass()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00147">project_gradient()</a>, and <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00155">project_hessian()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">init_masked_lumped_mass()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00149">project_gradient()</a>, and <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00157">project_hessian()</a>.</p>
+
+</div>
+</div>
+<a id="a3927090483f64308309e7321e3c4b9a7" name="a3927090483f64308309e7321e3c4b9a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3927090483f64308309e7321e3c4b9a7">&#9670;&#160;</a></span>old_to_new_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;int&gt; polyfem::solver::BCLagrangianForm::old_to_new_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Map from full DOF index to reduced DOF index (-1 if constrained). </p>
+<p>Used by project_hessian to slice out constrained rows/cols without going through triplet lists + setFromTriplets. </p>
+
+<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00094">94</a> of file <a class="el" href="_b_c_lagrangian_form_8hpp_source.html">BCLagrangianForm.hpp</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">init_masked_lumped_mass()</a>, and <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00157">project_hessian()</a>.</p>
 
 </div>
 </div>
@@ -1341,9 +1373,9 @@ Here is the call graph for this function:</div>
 
 <p>Reference to the RHS assembler. </p>
 
-<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00092">92</a> of file <a class="el" href="_b_c_lagrangian_form_8hpp_source.html">BCLagrangianForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_b_c_lagrangian_form_8hpp_source.html#l00096">96</a> of file <a class="el" href="_b_c_lagrangian_form_8hpp_source.html">BCLagrangianForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00193">update_target()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00240">update_target()</a>.</p>
 
 </div>
 </div>

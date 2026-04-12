@@ -1,5 +1,7 @@
 var NAVTREEINDEX53 =
 {
+"structpolyfem_1_1mesh_1_1_wild_remesher_1_1_boundary_attributes.html":[7,0,4,3,27,0],
+"structpolyfem_1_1mesh_1_1_wild_remesher_1_1_boundary_attributes.html#a6ad58bfe049b29bfacf4f787a6ddef4e":[7,0,4,3,27,0,0],
 "structpolyfem_1_1mesh_1_1_wild_remesher_1_1_boundary_attributes.html#a6ad58bfe049b29bfacf4f787a6ddef4e":[6,0,8,5,29,0,0],
 "structpolyfem_1_1mesh_1_1_wild_remesher_1_1_edge_attributes.html":[6,0,8,5,29,1],
 "structpolyfem_1_1mesh_1_1_wild_remesher_1_1_edge_attributes.html":[7,0,4,3,27,1],

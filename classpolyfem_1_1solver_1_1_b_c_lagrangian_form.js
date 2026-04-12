@@ -24,5 +24,6 @@ var classpolyfem_1_1solver_1_1_b_c_lagrangian_form =
     [ "n_boundary_samples_", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a271f8f7c6bd47b21f0e8afee665131ae", null ],
     [ "n_dofs_", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a4c4161dd649e28f2154257580bed8f7a", null ],
     [ "not_constraints_", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a06bedc2464814145093f082367c468db", null ],
+    [ "old_to_new_", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a3927090483f64308309e7321e3c4b9a7", null ],
     [ "rhs_assembler_", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a57b99f4668154684b7810b7285841892", null ]
 ];

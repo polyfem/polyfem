@@ -1,5 +1,7 @@
 var NAVTREEINDEX41 =
 {
+"classpolyfem_1_1solver_1_1_spatial_integral_form.html#a09f18485cbd951ec6974cf9d452ae55f":[7,0,4,8,95,5],
+"classpolyfem_1_1solver_1_1_spatial_integral_form.html#a09f18485cbd951ec6974cf9d452ae55f":[6,0,8,10,96,5],
 "classpolyfem_1_1solver_1_1_spatial_integral_form.html#a259689f7a833bdeaa144f86024927ecf":[7,0,4,8,95,8],
 "classpolyfem_1_1solver_1_1_spatial_integral_form.html#a259689f7a833bdeaa144f86024927ecf":[6,0,8,10,96,8],
 "classpolyfem_1_1solver_1_1_spatial_integral_form.html#a27e7bd3f8d6df592061e471825c4bc99":[7,0,4,8,95,10],
@@ -10,8 +12,8 @@ var NAVTREEINDEX41 =
 "classpolyfem_1_1solver_1_1_spatial_integral_form.html#a79b7d0bf367d7b1c9f3f9358ad542807":[6,0,8,10,96,9],
 "classpolyfem_1_1solver_1_1_spatial_integral_form.html#aa2bf36039614a69c8bcb28cc6bed7cbf":[7,0,4,8,95,4],
 "classpolyfem_1_1solver_1_1_spatial_integral_form.html#aa2bf36039614a69c8bcb28cc6bed7cbf":[6,0,8,10,96,4],
-"classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac5641105d5303178b79b4c23ef0d7387":[7,0,4,8,95,6],
 "classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac5641105d5303178b79b4c23ef0d7387":[6,0,8,10,96,6],
+"classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac5641105d5303178b79b4c23ef0d7387":[7,0,4,8,95,6],
 "classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac6f9bf7bd979734dad72425a8a48cc65":[6,0,8,10,96,3],
 "classpolyfem_1_1solver_1_1_spatial_integral_form.html#ac6f9bf7bd979734dad72425a8a48cc65":[7,0,4,8,95,3],
 "classpolyfem_1_1solver_1_1_spatial_integral_form.html#acd253fe5ef90f51233b5f3c90d878549":[6,0,8,10,96,2],
@@ -247,7 +249,5 @@ var NAVTREEINDEX41 =
 "classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#acc3fe194412e9ddd23a890d01a33891b":[7,0,4,8,105,3],
 "classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#acc3fe194412e9ddd23a890d01a33891b":[6,0,8,10,106,3],
 "classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#acfaf9eafdf7d3ae4aeaf1552cb4d9e0e":[7,0,4,8,105,0],
-"classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#acfaf9eafdf7d3ae4aeaf1552cb4d9e0e":[6,0,8,10,106,0],
-"classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#ad117f423c35bdee04d7ce9cc4fc8040d":[7,0,4,8,105,1],
-"classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#ad117f423c35bdee04d7ce9cc4fc8040d":[6,0,8,10,106,1]
+"classpolyfem_1_1solver_1_1_transient_navier_stokes_solver.html#acfaf9eafdf7d3ae4aeaf1552cb4d9e0e":[6,0,8,10,106,0]
 };
