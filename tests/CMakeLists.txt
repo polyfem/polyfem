@@ -17,6 +17,7 @@ set(test_sources
   test_matrix.cpp
   test_ncmesh.cpp
   test_normal.cpp
+  test_obstacle.cpp
   test_output.cpp
   test_parametrizations.cpp
   test_periodic.cpp

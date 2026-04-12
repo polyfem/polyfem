@@ -618,8 +618,6 @@ namespace polyfem
 					problem_.neumann_bc(mesh_, global_ids, uv, pts, normals, t, val);
 				},
 				local_boundary, bounday_nodes, resolution, local_neumann_boundary, displacement, t, rhs);
-
-			obstacle_.update_displacement(t, rhs);
 		}
 
 		void RhsAssembler::compute_energy_grad(const std::vector<LocalBoundary> &local_boundary, const std::vector<int> &bounday_nodes, const Density &density, const int resolution, const std::vector<LocalBoundary> &local_neumann_boundary, const Eigen::MatrixXd &final_rhs, const double t, Eigen::MatrixXd &rhs) const
