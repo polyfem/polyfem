@@ -1,5 +1,7 @@
 var NAVTREEINDEX5 =
 {
+"_spline_basis2d_8hpp.html":[8,0,1,0,2,16],
+"_spline_basis2d_8hpp_source.html":[8,0,1,0,2,16],
 "_spline_basis3d_8cpp.html":[8,0,1,0,2,17],
 "_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33":[8,0,1,0,2,17,4],
 "_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6":[8,0,1,0,2,17,5],
@@ -247,7 +249,5 @@ var NAVTREEINDEX5 =
 "auto__b__bases_8cpp.html#ac7086b626e36fb3dc48b70d8327a4dd4":[8,0,1,0,1,2,2],
 "auto__b__bases_8cpp_source.html":[8,0,1,0,1,2],
 "auto__b__bases_8hpp.html":[8,0,1,0,1,3],
-"auto__b__bases_8hpp.html#a034bd2b91a168ab0c64669c2cf7c1bba":[8,0,1,0,1,3,1],
-"auto__b__bases_8hpp.html#aaa4e2cc20a96914c1f416e068950cc9c":[8,0,1,0,1,3,3],
-"auto__b__bases_8hpp.html#aad390dca5e3756bf5ce9ca11af09c327":[8,0,1,0,1,3,0]
+"auto__b__bases_8hpp.html#a034bd2b91a168ab0c64669c2cf7c1bba":[8,0,1,0,1,3,1]
 };

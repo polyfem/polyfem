@@ -13,6 +13,8 @@ var dir_203a0b4429a33981429312ec216e7182 =
     [ "auto_p_bases.cpp", "auto__p__bases_8cpp.html", "auto__p__bases_8cpp" ],
     [ "auto_p_bases.hpp", "auto__p__bases_8hpp.html", "auto__p__bases_8hpp" ],
     [ "auto_pyramid.ipp", "auto__pyramid_8ipp.html", "auto__pyramid_8ipp" ],
+    [ "auto_pyramid_bases.cpp", "auto__pyramid__bases_8cpp.html", "auto__pyramid__bases_8cpp" ],
+    [ "auto_pyramid_bases.hpp", "auto__pyramid__bases_8hpp.html", "auto__pyramid__bases_8hpp" ],
     [ "auto_q_bases.hpp", "auto__q__bases_8hpp.html", null ],
     [ "auto_q_bases_1d_grad.cpp", "auto__q__bases__1d__grad_8cpp.html", "auto__q__bases__1d__grad_8cpp" ],
     [ "auto_q_bases_1d_grad.hpp", "auto__q__bases__1d__grad_8hpp.html", "auto__q__bases__1d__grad_8hpp" ],
@@ -52,5 +54,6 @@ var dir_203a0b4429a33981429312ec216e7182 =
     [ "pretty_print.py", "pretty__print_8py.html", "pretty__print_8py" ],
     [ "prism_bases.cpp", "prism__bases_8cpp.html", "prism__bases_8cpp" ],
     [ "prism_bases.hpp", "prism__bases_8hpp.html", "prism__bases_8hpp" ],
+    [ "pyramid_bases.py", "pyramid__bases_8py.html", "pyramid__bases_8py" ],
     [ "q_bases.py", "q__bases_8py.html", "q__bases_8py" ]
 ];

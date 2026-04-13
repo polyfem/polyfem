@@ -25,5 +25,7 @@ var searchData=
   ['polysolve_3a_3alinear_22',['linear',['../namespacepolysolve_1_1linear.html',1,'polysolve']]],
   ['polysolve_3a_3anonlinear_23',['nonlinear',['../namespacepolysolve_1_1nonlinear.html',1,'polysolve']]],
   ['pretty_5fprint_24',['pretty_print',['../namespacepretty__print.html',1,'']]],
-  ['pyramid_25',['pyramid',['../namespacepyramid.html',1,'']]]
+  ['pyramid_25',['pyramid',['../namespacepyramid.html',1,'']]],
+  ['pyramid_5fbases_26',['pyramid_bases',['../namespacepyramid__bases.html',1,'']]],
+  ['pyramid_5fduffy_27',['pyramid_duffy',['../namespacepyramid__duffy.html',1,'']]]
 ];

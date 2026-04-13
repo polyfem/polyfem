@@ -23,6 +23,7 @@ var classpolyfem_1_1mesh_1_1_mesh3_d =
     [ "get_index_from_element_face", "classpolyfem_1_1mesh_1_1_mesh3_d.html#aee466a14dafa19538b169d77e49ccff1", null ],
     [ "get_ordered_vertices_from_hex", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a786f4a920dd29f5584136be44de9e1ef", null ],
     [ "get_ordered_vertices_from_prism", "classpolyfem_1_1mesh_1_1_mesh3_d.html#ade9797722f81b88a97f6ce378caee70c", null ],
+    [ "get_ordered_vertices_from_pyramid", "classpolyfem_1_1mesh_1_1_mesh3_d.html#a4a4e9b64bfdcc458fbb2613f7427a5b7", null ],
     [ "get_ordered_vertices_from_tet", "classpolyfem_1_1mesh_1_1_mesh3_d.html#ad6d21fb4c79bcfb88e03f70af01975cb", null ],
     [ "get_vertex_elements_neighs", "classpolyfem_1_1mesh_1_1_mesh3_d.html#ad30a8601ac4bea1d116791aff536f891", null ],
     [ "is_volume", "classpolyfem_1_1mesh_1_1_mesh3_d.html#ac9544a097b95623a07d842237c388aa6", null ],

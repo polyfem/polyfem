@@ -413,6 +413,9 @@ var annotated_dup =
       [ "State", "classpolyfem_1_1_state.html", "classpolyfem_1_1_state" ],
       [ "Units", "classpolyfem_1_1_units.html", "classpolyfem_1_1_units" ]
     ] ],
+    [ "pyramid_bases", "namespacepyramid__bases.html", [
+      [ "Pyramid", "classpyramid__bases_1_1_pyramid.html", "classpyramid__bases_1_1_pyramid" ]
+    ] ],
     [ "q_bases", "namespaceq__bases.html", [
       [ "Lagrange", "classq__bases_1_1_lagrange.html", "classq__bases_1_1_lagrange" ],
       [ "ReferenceSimplex", "classq__bases_1_1_reference_simplex.html", "classq__bases_1_1_reference_simplex" ]

@@ -98,6 +98,15 @@ var namespaces_dup =
       [ "pick_scheme", "namespacepyramid.html#ac92b94cb17678be623abf5280948771a", null ],
       [ "b", "namespacepyramid.html#a1aba94803ba199f9b2d1b4a25105f26a", null ]
     ] ],
+    [ "pyramid_bases", "namespacepyramid__bases.html", "namespacepyramid__bases" ],
+    [ "pyramid_duffy", "namespacepyramid__duffy.html", [
+      [ "duffy_quadrature", "namespacepyramid__duffy.html#aaac50af3bb8b44a514fbc401ccb5ed63", null ],
+      [ "integrate_exact", "namespacepyramid__duffy.html#a371075fded27584cc9dff2b2db61afa2", null ],
+      [ "verify_duffy", "namespacepyramid__duffy.html#ad397d1cd57c1c76eb912d4d91d2f4b3d", null ],
+      [ "verify_duffy_rational", "namespacepyramid__duffy.html#af04ceae80da8288c18639ea288229375", null ],
+      [ "max_order", "namespacepyramid__duffy.html#af397071faf0c689e6eac824eebc6aa86", null ],
+      [ "max_p", "namespacepyramid__duffy.html#a30d74f385bc124a6e8b3db261dd91ad8", null ]
+    ] ],
     [ "q_bases", "namespaceq__bases.html", "namespaceq__bases" ],
     [ "spdlog", "namespacespdlog.html", "namespacespdlog" ],
     [ "tetrahedron", "namespacetetrahedron.html", [

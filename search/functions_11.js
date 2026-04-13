@@ -27,9 +27,10 @@ var searchData=
   ['quadraticproblem_24',['QuadraticProblem',['../classpolyfem_1_1problem_1_1_quadratic_problem.html#aae0fd5d3eb79d34ca3badb6bb6671120',1,'polyfem::problem::QuadraticProblem']]],
   ['quadrature_5ffor_5fpolygon_5fedge_25',['quadrature_for_polygon_edge',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#a02cf0bca8805defe581ac1902403ced2',1,'polyfem::utils::BoundarySampler']]],
   ['quadrature_5ffor_5fprism_5fface_26',['quadrature_for_prism_face',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#aa2fac9eaffd0c1a1b36faf5d99b15441',1,'polyfem::utils::BoundarySampler']]],
-  ['quadrature_5ffor_5fquad_5fedge_27',['quadrature_for_quad_edge',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#a282676a00275bf4a0e51d8638f9558f8',1,'polyfem::utils::BoundarySampler']]],
-  ['quadrature_5ffor_5fquad_5fface_28',['quadrature_for_quad_face',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#a14b39f9323abc114920975d012d11511',1,'polyfem::utils::BoundarySampler']]],
-  ['quadrature_5ffor_5ftri_5fedge_29',['quadrature_for_tri_edge',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#aec92b1bb3ff635fb517a2c26882d98a9',1,'polyfem::utils::BoundarySampler']]],
-  ['quadrature_5ffor_5ftri_5fface_30',['quadrature_for_tri_face',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#a4f92b1c04be7c25cbb65f7c40bce8a4d',1,'polyfem::utils::BoundarySampler']]],
-  ['quadrature_5forder_31',['quadrature_order',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#a80818109ce6766a1fae1733a0b2e87dc',1,'polyfem::assembler::AssemblerUtils']]]
+  ['quadrature_5ffor_5fpyramid_5fface_27',['quadrature_for_pyramid_face',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#afd8cd68b55fe99f81dbb08295e2ee338',1,'polyfem::utils::BoundarySampler']]],
+  ['quadrature_5ffor_5fquad_5fedge_28',['quadrature_for_quad_edge',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#a282676a00275bf4a0e51d8638f9558f8',1,'polyfem::utils::BoundarySampler']]],
+  ['quadrature_5ffor_5fquad_5fface_29',['quadrature_for_quad_face',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#a14b39f9323abc114920975d012d11511',1,'polyfem::utils::BoundarySampler']]],
+  ['quadrature_5ffor_5ftri_5fedge_30',['quadrature_for_tri_edge',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#aec92b1bb3ff635fb517a2c26882d98a9',1,'polyfem::utils::BoundarySampler']]],
+  ['quadrature_5ffor_5ftri_5fface_31',['quadrature_for_tri_face',['../classpolyfem_1_1utils_1_1_boundary_sampler.html#a4f92b1c04be7c25cbb65f7c40bce8a4d',1,'polyfem::utils::BoundarySampler']]],
+  ['quadrature_5forder_32',['quadrature_order',['../classpolyfem_1_1assembler_1_1_assembler_utils.html#a80818109ce6766a1fae1733a0b2e87dc',1,'polyfem::assembler::AssemblerUtils']]]
 ];

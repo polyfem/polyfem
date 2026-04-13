@@ -26,6 +26,7 @@ var classpolyfem_1_1io_1_1_out_stats_data =
     [ "non_regular_count", "classpolyfem_1_1io_1_1_out_stats_data.html#a96260e7a17c7720f72890a42deff6ceb", null ],
     [ "num_dofs", "classpolyfem_1_1io_1_1_out_stats_data.html#a2010d9a34be7667c7ed75469c298ab85", null ],
     [ "prism_count", "classpolyfem_1_1io_1_1_out_stats_data.html#a590b8ef7d3fe8db07267309acc807257", null ],
+    [ "pyramid_count", "classpolyfem_1_1io_1_1_out_stats_data.html#a13fb66b1f2de5fb444b7cf0046a99776", null ],
     [ "regular_boundary_count", "classpolyfem_1_1io_1_1_out_stats_data.html#aa1d68060344b0c353d6adf0a023e2234", null ],
     [ "regular_count", "classpolyfem_1_1io_1_1_out_stats_data.html#aeb88cadda41136be2639d35b7f2707fe", null ],
     [ "sigma_avg", "classpolyfem_1_1io_1_1_out_stats_data.html#ab7fb71a9b284a7699c81db1dd8a948cb", null ],

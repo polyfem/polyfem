@@ -16,6 +16,7 @@ var _mesh_8hpp =
       [ "INTERIOR_POLYTOPE", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2abe438b942e9f64180537be34d731916a", null ],
       [ "BOUNDARY_POLYTOPE", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2ae4a2dc79092444d9c45c456835af0965", null ],
       [ "PRISM", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2a25608df56c02f9fc6854a3de6a51822a", null ],
+      [ "PYRAMID", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2acd996d3184761601a0e44e587a012d4f", null ],
       [ "UNDEFINED", "_mesh_8hpp.html#a52d29c294eac8e3515c8c721ac4879c2a0db45d2a4141101bdfe48e3314cfbca3", null ]
     ] ]
 ];

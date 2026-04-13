@@ -54,6 +54,8 @@ var searchData=
   ['problemwithsolution_2ecpp_51',['ProblemWithSolution.cpp',['../_problem_with_solution_8cpp.html',1,'']]],
   ['problemwithsolution_2ehpp_52',['ProblemWithSolution.hpp',['../_problem_with_solution_8hpp.html',1,'']]],
   ['pyramid_2epy_53',['pyramid.py',['../pyramid_8py.html',1,'']]],
-  ['pyramidquadrature_2ecpp_54',['PyramidQuadrature.cpp',['../_pyramid_quadrature_8cpp.html',1,'']]],
-  ['pyramidquadrature_2ehpp_55',['PyramidQuadrature.hpp',['../_pyramid_quadrature_8hpp.html',1,'']]]
+  ['pyramid_5fbases_2epy_54',['pyramid_bases.py',['../pyramid__bases_8py.html',1,'']]],
+  ['pyramid_5fduffy_2epy_55',['pyramid_duffy.py',['../pyramid__duffy_8py.html',1,'']]],
+  ['pyramidquadrature_2ecpp_56',['PyramidQuadrature.cpp',['../_pyramid_quadrature_8cpp.html',1,'']]],
+  ['pyramidquadrature_2ehpp_57',['PyramidQuadrature.hpp',['../_pyramid_quadrature_8hpp.html',1,'']]]
 ];
