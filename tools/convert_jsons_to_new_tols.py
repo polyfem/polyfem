@@ -131,7 +131,7 @@ def update_json(in_json_path, out_json_path, is_common_file):
             update_field(sim_config, ["solver", "nonlinear", "line_search", "use_grad_norm_tol"], old_use_grad_norm_tol, create_new=True)
         
         if has_specified_augmented_lagrangian_params(sim_config, in_json_path):
-            update_field(sim_config, ["solver", "augmented_lagrangian", "nonlinear","rel_grad_norm_tol"], 0, create_new=True)
+            update_field(sim_config, ["solver", "augmented_lagrangian", "nonlinear", "rel_grad_norm_tol"], 0, create_new=True)
             old_al_first_grad_norm_tol = get_old_tol(sim_config, "first_grad_norm_tol", in_json_path, "augmented_lagrangian")
             if old_al_first_grad_norm_tol[1] and old_al_first_grad_norm_tol[0] * old_scale != 1e-12:
                 update_field(sim_config, ["solver", "augmented_lagrangian", "nonlinear", "first_grad_norm_tol"], old_al_first_grad_norm_tol[0] * old_scale, create_new=True)
