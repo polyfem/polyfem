@@ -90,16 +90,16 @@ def has_specified_augmented_lagrangian_params(sim_config, in_json_directory):
             return has_specified_augmented_lagrangian_params(json.load(f), common_json_path)
 
 
-def update_json(in_json_path, out_json_path, is_common_file, in_json_directory):
+def update_json(in_json_path, out_json_path, is_common_file):
 
     with open(in_json_path, "r") as f:
         sim_config = json.load(f)
 
-    update_field(sim_config, ["solver", "advanced", "characteristic_force_density"], 1, create_new=True)
-    update_field(sim_config, ["solver", "advanced", "characteristic_length"], 1, create_new=True)
-    update_field(sim_config, ["solver", "nonlinear", "norm_type"], "Euclidean", create_new=True)
-
     if not is_common_file:
+        update_field(sim_config, ["solver", "advanced", "characteristic_force_density"], 1, create_new=True)
+        update_field(sim_config, ["solver", "advanced", "characteristic_length"], 1, create_new=True)
+        update_field(sim_config, ["solver", "nonlinear", "norm_type"], "Euclidean", create_new=True)
+
         dt = get_old_dt(sim_config)
         old_characteristic_length = get_old_characteristic_length(sim_config)
         old_scale = dt * old_characteristic_length
@@ -111,45 +111,59 @@ def update_json(in_json_path, out_json_path, is_common_file, in_json_directory):
         old_derivative_along_delta_x_tol = get_old_tol(sim_config, "derivative_along_delta_x", in_json_path, "nonlinear")[0] * old_scale
         old_use_grad_norm_tol = get_old_tol(sim_config, "use_grad_norm_tol", in_json_path, "nonlinear")[0] * old_scale
         
-        update_field(sim_config, ["solver", "nonlinear", "first_grad_norm_tol"], old_first_grad_norm_tol, create_new=True)
-        update_field(sim_config, ["solver", "nonlinear", "grad_norm_tol"], old_grad_norm_tol, create_new=True)
-        update_field(sim_config, ["solver", "nonlinear", "x_delta_tol"], old_x_delta_tol, create_new=True)
-        update_field(sim_config, ["solver", "nonlinear", "advanced", "f_delta_tol"], old_f_delta_tol, create_new=True)
-        update_field(sim_config, ["solver", "nonlinear", "advanced", "derivative_along_delta_x_tol"], old_derivative_along_delta_x_tol, create_new=True)
-        update_field(sim_config, ["solver", "nonlinear", "line_search", "use_grad_norm_tol"], old_use_grad_norm_tol, create_new=True)
+        update_field(sim_config, ["solver", "nonlinear", "rel_grad_norm_tol"], 0, create_new=True)
+        if old_first_grad_norm_tol != 1e-12:
+            update_field(sim_config, ["solver", "nonlinear", "first_grad_norm_tol"], old_first_grad_norm_tol, create_new=True)
+        
+        if old_grad_norm_tol != 1e-10:
+            update_field(sim_config, ["solver", "nonlinear", "grad_norm_tol"], old_grad_norm_tol, create_new=True)
+
+        if old_x_delta_tol != 0:
+            update_field(sim_config, ["solver", "nonlinear", "x_delta_tol"], old_x_delta_tol, create_new=True)
+
+        if old_f_delta_tol != 0:
+            update_field(sim_config, ["solver", "nonlinear", "advanced", "f_delta_tol"], old_f_delta_tol, create_new=True)
+        
+        if old_derivative_along_delta_x_tol != 0:
+            update_field(sim_config, ["solver", "nonlinear", "advanced", "derivative_along_delta_x_tol"], old_derivative_along_delta_x_tol, create_new=True)
+        
+        if old_use_grad_norm_tol != 1e-6:
+            update_field(sim_config, ["solver", "nonlinear", "line_search", "use_grad_norm_tol"], old_use_grad_norm_tol, create_new=True)
         
         if has_specified_augmented_lagrangian_params(sim_config, in_json_path):
+            update_field(sim_config, ["solver", "augmented_lagrangian", "rel_grad_norm_tol"], 0, create_new=True)
             old_al_first_grad_norm_tol = get_old_tol(sim_config, "first_grad_norm_tol", in_json_path, "augmented_lagrangian")
-            if old_al_first_grad_norm_tol[1]:
+            if old_al_first_grad_norm_tol[1] and old_al_first_grad_norm_tol[0] * old_scale != 1e-12:
                 update_field(sim_config, ["solver", "augmented_lagrangian", "nonlinear", "first_grad_norm_tol"], old_al_first_grad_norm_tol[0] * old_scale, create_new=True)
 
             old_al_grad_norm_tol = get_old_tol(sim_config, "grad_norm", in_json_path, "augmented_lagrangian")
-            if old_al_grad_norm_tol[1]:
+            if old_al_grad_norm_tol[1] and old_al_grad_norm_tol[0] * old_scale != 1e-10:
                 update_field(sim_config, ["solver", "augmented_lagrangian", "nonlinear", "grad_norm_tol"], old_al_grad_norm_tol[0] * old_scale, create_new=True)
 
             old_al_x_delta_tol = get_old_tol(sim_config, "x_delta", in_json_path, "augmented_lagrangian")
-            if old_al_x_delta_tol[1]:
+            if old_al_x_delta_tol[1] and old_al_x_delta_tol[0] * old_scale != 0:
                 update_field(sim_config, ["solver", "augmented_lagrangian", "nonlinear", "x_delta_tol"], old_al_x_delta_tol[0] * old_scale, create_new=True)
 
             old_al_f_delta_tol = get_old_tol(sim_config, "f_delta", in_json_path, "augmented_lagrangian")
-            if old_al_f_delta_tol[1]:
+            if old_al_f_delta_tol[1] and old_al_f_delta_tol[0] * old_scale != 0:
                 update_field(sim_config, ["solver", "augmented_lagrangian", "nonlinear", "advanced", "f_delta_tol"], old_al_f_delta_tol[0] * old_scale, create_new=True)
 
             old_al_derivative_along_delta_x_tol = get_old_tol(sim_config, "derivative_along_delta_x", in_json_path, "augmented_lagrangian")
-            if old_al_derivative_along_delta_x_tol[1]:
+            if old_al_derivative_along_delta_x_tol[1] and old_al_derivative_along_delta_x_tol[0] * old_scale != 0:
                 update_field(sim_config, ["solver", "augmented_lagrangian", "nonlinear", "advanced", "derivative_along_delta_x"], old_al_derivative_along_delta_x_tol[0] * old_scale, create_new=True)
 
             old_al_use_grad_norm_tol = get_old_tol(sim_config, "use_grad_norm_tol", in_json_path, "augmented_lagrangian")
-            if old_al_use_grad_norm_tol[1]:
+            if old_al_use_grad_norm_tol[1] and old_al_use_grad_norm_tol[0] * old_scale != 1e-6:
                 update_field(sim_config, ["solver", "augmented_lagrangian", "nonlinear", "line_search", "use_grad_norm_tol"], old_al_use_grad_norm_tol[0] * old_scale, create_new=True)
 
-    sim_config["solver"]["nonlinear"].pop("grad_norm", None)
-    sim_config["solver"]["nonlinear"].pop("x_delta", None)
-    sim_config["solver"]["nonlinear"].pop("f_delta", None)
-    if "advanced" in sim_config["solver"]["nonlinear"].keys():
-        sim_config["solver"]["nonlinear"]["advanced"].pop("derivative_along_delta_x", None)
+    if "solver" in sim_config.keys() and "nonlinear" in sim_config["solver"].keys():
+        sim_config["solver"]["nonlinear"].pop("grad_norm", None)
+        sim_config["solver"]["nonlinear"].pop("x_delta", None)
+        sim_config["solver"]["nonlinear"].pop("f_delta", None)
+        if "advanced" in sim_config["solver"]["nonlinear"].keys():
+            sim_config["solver"]["nonlinear"]["advanced"].pop("derivative_along_delta_x", None)
 
-    if "augmented_lagrangian" in sim_config["solver"].keys() and "nonlinear" in sim_config["solver"]["augmented_lagrangian"].keys():
+    if "solver" in sim_config.keys() and "augmented_lagrangian" in sim_config["solver"].keys() and "nonlinear" in sim_config["solver"]["augmented_lagrangian"].keys():
         sim_config["solver"]["augmented_lagrangian"]["nonlinear"].pop("grad_norm", None)
         sim_config["solver"]["augmented_lagrangian"]["nonlinear"].pop("x_delta", None)
         sim_config["solver"]["augmented_lagrangian"]["nonlinear"].pop("f_delta", None)
@@ -186,16 +200,14 @@ def main():
                 update_json(
                     input_path, 
                     output_path,
-                    False, 
-                    args.input_directory
+                    False
                 )
 
     for (input_path, output_path) in common_files:
         update_json(
             input_path,
             output_path,
-            True,
-            args.input_directory
+            True
         )
 
 

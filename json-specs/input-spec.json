@@ -1713,9 +1713,9 @@
     },
     {
         "pointer": "/solver/advanced/characteristic_length",
-        "default": 1,
+        "default": -1,
         "type": "float",
-        "doc": "Characteristic length, used for tolerances."
+        "doc": "Characteristic length, used for tolerances. Defaults to bounding box diagonal if not specified."
     },
     {
         "pointer": "/solver/advanced/characteristic_force_density",
