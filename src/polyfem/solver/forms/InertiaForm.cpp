@@ -59,7 +59,7 @@ namespace polyfem::solver
 	void InertiaForm::accumulateHessian(const double weight, const Eigen::VectorXd &x, NewtonHessian &H) const
 	{
 		if (m_useLumpedMass) H.H_ss->addDiag((weight * M_lumped).eval());
-            else             H.H_ss->addWithSubSparsityFast(*(M_full.H_ss), weight);
+        else                 H.H_ss->addWithSubSparsityFast(*(M_full.H_ss), weight);
 	}
 
 
