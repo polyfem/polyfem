@@ -1233,7 +1233,8 @@
             "dbar_factor",
             "quadrature_order",
             "exponent",
-            "normalize_weights"
+            "normalize_weights",
+            "barrier"
         ]
     },
     {
@@ -1261,6 +1262,12 @@
         "default": true,
         "type": "bool",
         "doc": "Normalize quadrature weights in high-order contact potential."
+    },
+    {
+        "pointer": "/contact/high_order_contact_params/barrier",
+        "default": "normalized_log",
+        "type": "string",
+        "doc": "Barrier function for the high-order contact potential. Options: 'log' (default, ClampedLogBarrier), 'normalized_log' (NormalizedClampedLogBarrier)."
     },
     {
         "pointer": "/contact/use_high_order_formulation",

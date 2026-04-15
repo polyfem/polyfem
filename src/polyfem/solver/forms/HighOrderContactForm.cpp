@@ -10,6 +10,7 @@
 #include <ipc/utils/eigen_ext.hpp>
 #include <ipc/barrier/adaptive_stiffness.hpp>
 #include <ipc/utils/world_bbox_diagonal_length.hpp>
+#include <ipc/barrier/barrier.hpp>
 
 namespace polyfem::solver
 {
@@ -33,6 +34,16 @@ namespace polyfem::solver
 		}
 	} // namespace
 
+	std::shared_ptr<ipc::Barrier> barrier_from_params(const json &high_order_contact_params)
+	{
+		const std::string name = high_order_contact_params.value("barrier", std::string("normalized_log"));
+		if (name == "log")
+			return std::make_shared<ipc::ClampedLogBarrier>();
+		if (name == "normalized_log")
+			return std::make_shared<ipc::NormalizedClampedLogBarrier>();
+		log_and_throw_error("Unknown ACP barrier type: '{}'. Valid options: 'log', 'normalized_log'.", name);
+	}
+
 	ipc::HighOrderContactParameters init_params(const double dhat, const json &high_order_contact_params, int powerdefault, const bool skip_obstacles) {
 		const int quadrature_order = high_order_contact_params["quadrature_order"];
 		const double dbar_factor = high_order_contact_params["dbar_factor"];
@@ -43,6 +54,7 @@ namespace polyfem::solver
 		ipc::HighOrderContactParameters params(dhat, dbar_factor, quadrature_order, power, itype);
 		if (quadrature_order > 0)
 			params.face_quad_rule = build_quad_rule(quadrature_order);
+		params.barrier = barrier_from_params(high_order_contact_params);
 		return params;
 	}
 
@@ -135,7 +147,7 @@ namespace polyfem::solver
 		update_collision_set(displaced_surface);
 
 		const double curr_distance = collision_set_.compute_minimum_distance(collision_mesh_, displaced_surface);
-		const double curr_active_distance = collision_set_.compute_active_minimum_distance(collision_mesh_, displaced_surface);
+		const double curr_active_distance = collision_set_.compute_minimum_distance(collision_mesh_, displaced_surface);
 		if (!std::isinf(curr_distance))
 		{
 			const double ratio = sqrt(curr_distance) / dhat();
