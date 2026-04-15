@@ -147,7 +147,10 @@ namespace polyfem::solver
 
 			friction_collision_set_.build(
 				collision_mesh_, displaced_surface, collision_set,
-				ho_contact->get_params(), contact_form_.barrier_stiffness(), Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_, Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_);
+				ho_contact->get_params(), contact_form_.barrier_stiffness(),
+				Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_,
+				Eigen::VectorXd::Ones(collision_mesh_.num_vertices()) * mu_,
+				ho_contact->barrier_potential().get_normalize_weights());
 		}
 		else
 		{
