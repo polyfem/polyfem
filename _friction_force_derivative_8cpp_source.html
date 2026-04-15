@@ -157,19 +157,20 @@ $(document).ready(function(){initNavTree('_friction_force_derivative_8cpp_source
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <a class="code hl_typedef" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> hess;</div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keyword">auto</span> barrier_contact = <span class="keyword">dynamic_cast&lt;</span><span class="keyword">const </span><a class="code hl_class" href="classpolyfem_1_1solver_1_1_barrier_contact_form.html">BarrierContactForm</a> *<span class="keyword">&gt;</span>(&amp;form.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_friction_form.html#ad00c09711b4c9714bebc095f0c8f2666">contact_form_</a>))</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        {</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            hess = -form.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_friction_form.html#a7691f9825fe2bf82da3ee6aef7d89144">friction_potential_</a>.force_jacobian(</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                friction_constraints_set,</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>                form.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_friction_form.html#a3d4ea44549148c73a90f264b1e2728df">collision_mesh_</a>, form.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_friction_form.html#a3d4ea44549148c73a90f264b1e2728df">collision_mesh_</a>.rest_positions(),</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                <span class="comment">/*lagged_displacements=*/</span>U_prev, velocities,</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>                barrier_contact-&gt;barrier_potential(),</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                barrier_contact-&gt;barrier_stiffness(),</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                ipc::FrictionPotential::DiffWRT::REST_POSITIONS);</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        }</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>        term = form.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_friction_form.html#a3d4ea44549148c73a90f264b1e2728df">collision_mesh_</a>.to_full_dof(hess).transpose() * adjoint;</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    }</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            ipc::BarrierPotential bp = barrier_contact-&gt;barrier_potential();</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            bp.set_stiffness(barrier_contact-&gt;barrier_stiffness());</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            hess = -form.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_friction_form.html#a7691f9825fe2bf82da3ee6aef7d89144">friction_potential_</a>.force_jacobian(</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>                friction_constraints_set,</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>                form.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_friction_form.html#a3d4ea44549148c73a90f264b1e2728df">collision_mesh_</a>, form.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_friction_form.html#a3d4ea44549148c73a90f264b1e2728df">collision_mesh_</a>.rest_positions(),</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>                <span class="comment">/*lagged_displacements=*/</span>U_prev, velocities,</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>                bp,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                ipc::FrictionPotential::DiffWRT::REST_POSITIONS);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        }</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span> </div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        term = form.<a class="code hl_variable" href="classpolyfem_1_1solver_1_1_friction_form.html#a3d4ea44549148c73a90f264b1e2728df">collision_mesh_</a>.to_full_dof(hess).transpose() * adjoint;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    }</div>
 </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>} <span class="comment">// namespace polyfem::solver</span></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>} <span class="comment">// namespace polyfem::solver</span></div>
 <div class="ttc" id="a_barrier_contact_form_8hpp_html"><div class="ttname"><a href="_barrier_contact_form_8hpp.html">BarrierContactForm.hpp</a></div></div>
 <div class="ttc" id="a_friction_force_derivative_8hpp_html"><div class="ttname"><a href="_friction_force_derivative_8hpp.html">FrictionForceDerivative.hpp</a></div></div>
 <div class="ttc" id="a_friction_form_8hpp_html"><div class="ttname"><a href="_friction_form_8hpp.html">FrictionForm.hpp</a></div></div>
