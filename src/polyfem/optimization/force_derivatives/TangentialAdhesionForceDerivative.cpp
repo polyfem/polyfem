@@ -28,7 +28,6 @@ namespace polyfem::solver
 			form.collision_mesh_, form.collision_mesh_.rest_positions(),
 			/*lagged_displacements=*/U_prev, velocities,
 			form.normal_adhesion_form_.normal_adhesion_potential(),
-			1,
 			ipc::TangentialPotential::DiffWRT::REST_POSITIONS);
 
 		term = form.collision_mesh_.to_full_dof(hess).transpose() * adjoint;

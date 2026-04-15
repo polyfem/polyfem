@@ -99,6 +99,8 @@ namespace polyfem
 
 							if (const auto barrier_contact = dynamic_cast<const solver::BarrierContactForm *>(s.solve_data.contact_form.get()))
 							{
+								ipc::BarrierPotential bp = barrier_contact->barrier_potential();
+								bp.set_stiffness(barrier_contact->barrier_stiffness());
 								hessian_prev =
 									s.solve_data.friction_form->friction_potential().force_jacobian(
 										diff_cache.friction_collision_set(force_step),
@@ -106,8 +108,7 @@ namespace polyfem
 										s.collision_mesh.rest_positions(),
 										/*lagged_displacements=*/surface_solution_prev,
 										surface_velocities,
-										barrier_contact->barrier_potential(),
-										barrier_contact->barrier_stiffness(),
+										bp,
 										ipc::FrictionPotential::DiffWRT::LAGGED_DISPLACEMENTS)
 									+ s.solve_data.friction_form->friction_potential().force_jacobian(
 										  diff_cache.friction_collision_set(force_step),
@@ -115,8 +116,7 @@ namespace polyfem
 										  s.collision_mesh.rest_positions(),
 										  /*lagged_displacements=*/surface_solution_prev,
 										  surface_velocities,
-										  barrier_contact->barrier_potential(),
-										  barrier_contact->barrier_stiffness(),
+										  bp,
 										  ipc::FrictionPotential::DiffWRT::VELOCITIES)
 										  * dv_dut;
 							}
@@ -189,7 +189,6 @@ namespace polyfem
 									/*lagged_displacements=*/surface_solution_prev,
 									surface_velocities,
 									s.solve_data.normal_adhesion_form->normal_adhesion_potential(),
-									1,
 									ipc::TangentialPotential::DiffWRT::LAGGED_DISPLACEMENTS)
 								+ s.solve_data.tangential_adhesion_form->tangential_adhesion_potential().force_jacobian(
 									  diff_cache.tangential_adhesion_collision_set(force_step),
@@ -198,7 +197,6 @@ namespace polyfem
 									  /*lagged_displacements=*/surface_solution_prev,
 									  surface_velocities,
 									  s.solve_data.normal_adhesion_form->normal_adhesion_potential(),
-									  1,
 									  ipc::TangentialPotential::DiffWRT::VELOCITIES)
 									  * dv_dut;
 

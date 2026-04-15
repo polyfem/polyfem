@@ -84,11 +84,11 @@ namespace polyfem::solver
 		ipc::NormalCollisions collision_set;
 
 		collision_set.build(
-			collision_mesh_, displaced_surface, normal_adhesion_form_.dhat_a(), /*dmin=*/0, broad_phase_);
+			collision_mesh_, displaced_surface, normal_adhesion_form_.dhat_a(), /*dmin=*/0, broad_phase_.get());
 
 		tangential_collision_set_.build(
 			collision_mesh_, displaced_surface, collision_set,
 			normal_adhesion_form_.normal_adhesion_potential(),
-			1., mu_);
+			mu_);
 	}
 } // namespace polyfem::solver

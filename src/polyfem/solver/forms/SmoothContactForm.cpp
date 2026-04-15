@@ -28,7 +28,7 @@ namespace polyfem::solver
 		params.set_adaptive_dhat_ratio(min_distance_ratio);
 		if (use_adaptive_dhat)
 		{
-			collision_set_.compute_adaptive_dhat(collision_mesh, collision_mesh.rest_positions(), params, broad_phase_);
+			collision_set_.compute_adaptive_dhat(collision_mesh, collision_mesh.rest_positions(), params, broad_phase_.get());
 			if (use_adaptive_barrier_stiffness)
 				logger().error("Adaptive dhat is not compatible with adaptive barrier stiffness");
 		}
@@ -54,7 +54,7 @@ namespace polyfem::solver
 				candidates_, collision_mesh_, displaced_surface, params, use_adaptive_dhat);
 		else
 			collision_set_.build(
-				collision_mesh_, displaced_surface, params, use_adaptive_dhat, broad_phase_);
+				collision_mesh_, displaced_surface, params, use_adaptive_dhat, broad_phase_.get());
 		cached_displaced_surface = displaced_surface;
 	}
 

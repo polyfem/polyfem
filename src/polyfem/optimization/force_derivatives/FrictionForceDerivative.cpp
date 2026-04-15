@@ -27,12 +27,13 @@ namespace polyfem::solver
 		StiffnessMatrix hess;
 		if (const auto barrier_contact = dynamic_cast<const BarrierContactForm *>(&form.contact_form_))
 		{
+			ipc::BarrierPotential bp = barrier_contact->barrier_potential();
+			bp.set_stiffness(barrier_contact->barrier_stiffness());
 			hess = -form.friction_potential_.force_jacobian(
 				friction_constraints_set,
 				form.collision_mesh_, form.collision_mesh_.rest_positions(),
 				/*lagged_displacements=*/U_prev, velocities,
-				barrier_contact->barrier_potential(),
-				barrier_contact->barrier_stiffness(),
+				bp,
 				ipc::FrictionPotential::DiffWRT::REST_POSITIONS);
 		}
 

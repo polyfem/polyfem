@@ -236,7 +236,7 @@ namespace polyfem::solver
 			Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(utils::unflatten(u, collision_mesh.dim()));
 
 			ipc::NormalCollisions cs_ = cs_func(displaced_surface);
-			cs_.build(collision_mesh, displaced_surface, dhat, dmin, ipc::create_broad_phase(ipc::BroadPhaseMethod::HASH_GRID));
+			cs_.build(collision_mesh, displaced_surface, dhat, dmin, ipc::create_broad_phase(ipc::BroadPhaseMethod::HASH_GRID).get());
 
 			Eigen::MatrixXd forces = collision_mesh.to_full_dof(barrier_potential.gradient(cs_, collision_mesh, displaced_surface));
 
@@ -811,7 +811,7 @@ namespace polyfem::solver
 		  diff_cache_(std::move(diff_cache)),
 		  dhat_(dhat),
 		  dmin_(0),
-		  barrier_potential_(dhat, true)
+		  barrier_potential_(dhat, 1.0, true)
 	{
 		auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
 		boundary_ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -978,7 +978,7 @@ namespace polyfem::solver
 		if (!collision_set_indicator_(time_step))
 		{
 			collision_sets_[time_step]->build(
-				collision_mesh_, displaced_surface, dhat_, dmin_, ipc::create_broad_phase(broad_phase_method_));
+				collision_mesh_, displaced_surface, dhat_, dmin_, ipc::create_broad_phase(broad_phase_method_).get());
 			collision_set_indicator_(time_step) = 1;
 		}
 		return *collision_sets_[time_step];
