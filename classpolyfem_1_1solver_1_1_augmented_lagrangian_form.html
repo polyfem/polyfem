@@ -174,6 +174,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a3fa18d30fb728435d51b8e701d6d72d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f043be80ce3f2bf5193cd9454674e7d" id="r_a3f043be80ce3f2bf5193cd9454674e7d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a3f043be80ce3f2bf5193cd9454674e7d">project_hessian</a> (<a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hessian) const</td></tr>
 <tr class="separator:a3f043be80ce3f2bf5193cd9454674e7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb713a94208e38906723b7b479a80043" id="r_abb713a94208e38906723b7b479a80043"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#abb713a94208e38906723b7b479a80043">project_diag</a> (Eigen::VectorXd &amp;diag) const</td></tr>
+<tr class="separator:abb713a94208e38906723b7b479a80043"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa39928a446cf446760d40bac98ed1910" id="r_aa39928a446cf446760d40bac98ed1910"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#aa39928a446cf446760d40bac98ed1910">set_scale</a> (const double scale) override</td></tr>
 <tr class="memdesc:aa39928a446cf446760d40bac98ed1910"><td class="mdescLeft">&#160;</td><td class="mdescRight">sets the scale for the form  <br /></td></tr>
 <tr class="separator:aa39928a446cf446760d40bac98ed1910"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -405,11 +407,11 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00042">42</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00043">43</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00044">k_al_</a>, and <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00054">k_scale_</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00045">k_al_</a>, and <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00055">k_scale_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00217">polyfem::solver::BCLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00021">polyfem::solver::MacroStrainLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00035">polyfem::solver::MatrixLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00071">polyfem::solver::PeriodicLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00222">polyfem::solver::BCLagrangianForm::second_derivative_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00028">polyfem::solver::MacroStrainLagrangianForm::second_derivative_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00040">polyfem::solver::MatrixLagrangianForm::second_derivative_unweighted()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00076">polyfem::solver::PeriodicLagrangianForm::second_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00208">polyfem::solver::BCLagrangianForm::value_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00012">polyfem::solver::MacroStrainLagrangianForm::value_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00027">polyfem::solver::MatrixLagrangianForm::value_unweighted()</a>, and <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00062">polyfem::solver::PeriodicLagrangianForm::value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00225">polyfem::solver::BCLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00021">polyfem::solver::MacroStrainLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00035">polyfem::solver::MatrixLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00076">polyfem::solver::PeriodicLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00230">polyfem::solver::BCLagrangianForm::second_derivative_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00028">polyfem::solver::MacroStrainLagrangianForm::second_derivative_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00040">polyfem::solver::MatrixLagrangianForm::second_derivative_unweighted()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00081">polyfem::solver::PeriodicLagrangianForm::second_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00216">polyfem::solver::BCLagrangianForm::value_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00012">polyfem::solver::MacroStrainLagrangianForm::value_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00027">polyfem::solver::MatrixLagrangianForm::value_unweighted()</a>, and <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00067">polyfem::solver::PeriodicLagrangianForm::value_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -500,7 +502,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00024">24</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00048">A_</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">A_</a>.</p>
 
 </div>
 </div>
@@ -529,7 +531,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00027">27</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00051">A_proj_</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00052">A_proj_</a>.</p>
 
 </div>
 </div>
@@ -558,7 +560,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00028">28</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00052">b_proj_</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00053">b_proj_</a>.</p>
 
 </div>
 </div>
@@ -587,7 +589,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00025">25</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">b_</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00050">b_</a>.</p>
 
 </div>
 </div>
@@ -616,7 +618,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00030">30</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00051">A_proj_</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00052">A_proj_</a>.</p>
 
 </div>
 </div>
@@ -643,11 +645,11 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00041">41</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00042">42</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00054">k_scale_</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00055">k_scale_</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00217">polyfem::solver::BCLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00021">polyfem::solver::MacroStrainLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00035">polyfem::solver::MatrixLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00071">polyfem::solver::PeriodicLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00208">polyfem::solver::BCLagrangianForm::value_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00012">polyfem::solver::MacroStrainLagrangianForm::value_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00027">polyfem::solver::MatrixLagrangianForm::value_unweighted()</a>, and <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00062">polyfem::solver::PeriodicLagrangianForm::value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00225">polyfem::solver::BCLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00021">polyfem::solver::MacroStrainLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00035">polyfem::solver::MatrixLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00076">polyfem::solver::PeriodicLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00216">polyfem::solver::BCLagrangianForm::value_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00012">polyfem::solver::MacroStrainLagrangianForm::value_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00027">polyfem::solver::MatrixLagrangianForm::value_unweighted()</a>, and <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00067">polyfem::solver::PeriodicLagrangianForm::value_unweighted()</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -681,7 +683,37 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00022">22</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00044">k_al_</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00045">k_al_</a>.</p>
+
+</div>
+</div>
+<a id="abb713a94208e38906723b7b479a80043" name="abb713a94208e38906723b7b479a80043"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb713a94208e38906723b7b479a80043">&#9670;&#160;</a></span>project_diag()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void polyfem::solver::AugmentedLagrangianForm::project_diag </td>
+          <td>(</td>
+          <td class="paramtype">Eigen::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>diag</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reimplemented in <a class="el" href="classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a8fd3c420be59ba2c28c788bfeee4038c">polyfem::solver::BCLagrangianForm</a>, and <a class="el" href="classpolyfem_1_1solver_1_1_periodic_lagrangian_form.html#afa6bb83c79ec1b02aadf35527056562f">polyfem::solver::PeriodicLagrangianForm</a>.</p>
+
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00035">35</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
 </div>
 </div>
@@ -771,7 +803,7 @@ Here is the caller graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00020">20</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00044">k_al_</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00045">k_al_</a>.</p>
 
 </div>
 </div>
@@ -809,9 +841,9 @@ Here is the caller graph for this function:</div>
 
 <p>Reimplemented from <a class="el" href="classpolyfem_1_1solver_1_1_form.html#ab16f7de6dc61bd891a72a8d2180dac85">polyfem::solver::Form</a>.</p>
 
-<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00038">38</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00039">39</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00054">k_scale_</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00055">k_scale_</a>.</p>
 
 </div>
 </div>
@@ -876,9 +908,9 @@ Here is the caller graph for this function:</div>
 
 <p>Constraints matrix. </p>
 
-<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00048">48</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">49</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00233">polyfem::solver::BCLagrangianForm::compute_error()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00051">polyfem::solver::MatrixLagrangianForm::compute_error()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00081">polyfem::solver::PeriodicLagrangianForm::compute_error()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00024">constraint_matrix()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00217">polyfem::solver::BCLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00035">polyfem::solver::MatrixLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00071">polyfem::solver::PeriodicLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">polyfem::solver::BCLagrangianForm::init_masked_lumped_mass()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00009">polyfem::solver::MatrixLagrangianForm::MatrixLagrangianForm()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00008">polyfem::solver::PeriodicLagrangianForm::PeriodicLagrangianForm()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00222">polyfem::solver::BCLagrangianForm::second_derivative_unweighted()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00076">polyfem::solver::PeriodicLagrangianForm::second_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00253">polyfem::solver::BCLagrangianForm::update_lagrangian()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00045">polyfem::solver::MatrixLagrangianForm::update_lagrangian()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00088">polyfem::solver::PeriodicLagrangianForm::update_lagrangian()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00208">polyfem::solver::BCLagrangianForm::value_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00027">polyfem::solver::MatrixLagrangianForm::value_unweighted()</a>, and <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00062">polyfem::solver::PeriodicLagrangianForm::value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00241">polyfem::solver::BCLagrangianForm::compute_error()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00051">polyfem::solver::MatrixLagrangianForm::compute_error()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00086">polyfem::solver::PeriodicLagrangianForm::compute_error()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00024">constraint_matrix()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00225">polyfem::solver::BCLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00035">polyfem::solver::MatrixLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00076">polyfem::solver::PeriodicLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">polyfem::solver::BCLagrangianForm::init_masked_lumped_mass()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00009">polyfem::solver::MatrixLagrangianForm::MatrixLagrangianForm()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00008">polyfem::solver::PeriodicLagrangianForm::PeriodicLagrangianForm()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00230">polyfem::solver::BCLagrangianForm::second_derivative_unweighted()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00081">polyfem::solver::PeriodicLagrangianForm::second_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00261">polyfem::solver::BCLagrangianForm::update_lagrangian()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00045">polyfem::solver::MatrixLagrangianForm::update_lagrangian()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00093">polyfem::solver::PeriodicLagrangianForm::update_lagrangian()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00216">polyfem::solver::BCLagrangianForm::value_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00027">polyfem::solver::MatrixLagrangianForm::value_unweighted()</a>, and <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00067">polyfem::solver::PeriodicLagrangianForm::value_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -904,7 +936,7 @@ Here is the caller graph for this function:</div>
 
 <p>Constraints projection matrix. </p>
 
-<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00051">51</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00052">52</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00027">constraint_projection_matrix()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00030">has_projection()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">polyfem::solver::BCLagrangianForm::init_masked_lumped_mass()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00009">polyfem::solver::MatrixLagrangianForm::MatrixLagrangianForm()</a>, and <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00008">polyfem::solver::PeriodicLagrangianForm::PeriodicLagrangianForm()</a>.</p>
 
@@ -932,9 +964,9 @@ Here is the caller graph for this function:</div>
 
 <p>Constraints value. </p>
 
-<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">49</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00050">50</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00233">polyfem::solver::BCLagrangianForm::compute_error()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00051">polyfem::solver::MatrixLagrangianForm::compute_error()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00081">polyfem::solver::PeriodicLagrangianForm::compute_error()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00025">constraint_value()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00217">polyfem::solver::BCLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00071">polyfem::solver::PeriodicLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00009">polyfem::solver::MatrixLagrangianForm::MatrixLagrangianForm()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00008">polyfem::solver::PeriodicLagrangianForm::PeriodicLagrangianForm()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00253">polyfem::solver::BCLagrangianForm::update_lagrangian()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00045">polyfem::solver::MatrixLagrangianForm::update_lagrangian()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00088">polyfem::solver::PeriodicLagrangianForm::update_lagrangian()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00240">polyfem::solver::BCLagrangianForm::update_target()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00208">polyfem::solver::BCLagrangianForm::value_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00027">polyfem::solver::MatrixLagrangianForm::value_unweighted()</a>, and <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00062">polyfem::solver::PeriodicLagrangianForm::value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00241">polyfem::solver::BCLagrangianForm::compute_error()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00051">polyfem::solver::MatrixLagrangianForm::compute_error()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00086">polyfem::solver::PeriodicLagrangianForm::compute_error()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00025">constraint_value()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00225">polyfem::solver::BCLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00076">polyfem::solver::PeriodicLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00009">polyfem::solver::MatrixLagrangianForm::MatrixLagrangianForm()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00008">polyfem::solver::PeriodicLagrangianForm::PeriodicLagrangianForm()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00261">polyfem::solver::BCLagrangianForm::update_lagrangian()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00045">polyfem::solver::MatrixLagrangianForm::update_lagrangian()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00093">polyfem::solver::PeriodicLagrangianForm::update_lagrangian()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00248">polyfem::solver::BCLagrangianForm::update_target()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00216">polyfem::solver::BCLagrangianForm::value_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00027">polyfem::solver::MatrixLagrangianForm::value_unweighted()</a>, and <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00067">polyfem::solver::PeriodicLagrangianForm::value_unweighted()</a>.</p>
 
 </div>
 </div>
@@ -960,9 +992,9 @@ Here is the caller graph for this function:</div>
 
 <p>Constraints projection value. </p>
 
-<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00052">52</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00053">53</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00028">constraint_projection_vector()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00009">polyfem::solver::MatrixLagrangianForm::MatrixLagrangianForm()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00008">polyfem::solver::PeriodicLagrangianForm::PeriodicLagrangianForm()</a>, and <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00240">polyfem::solver::BCLagrangianForm::update_target()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00028">constraint_projection_vector()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00009">polyfem::solver::MatrixLagrangianForm::MatrixLagrangianForm()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00008">polyfem::solver::PeriodicLagrangianForm::PeriodicLagrangianForm()</a>, and <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00248">polyfem::solver::BCLagrangianForm::update_target()</a>.</p>
 
 </div>
 </div>
@@ -988,9 +1020,9 @@ Here is the caller graph for this function:</div>
 
 <p>penalty parameter </p>
 
-<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00044">44</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00045">45</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00042">A_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00022">lagrangian_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00020">set_initial_weight()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00253">polyfem::solver::BCLagrangianForm::update_lagrangian()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00049">polyfem::solver::MacroStrainLagrangianForm::update_lagrangian()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00045">polyfem::solver::MatrixLagrangianForm::update_lagrangian()</a>, and <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00088">polyfem::solver::PeriodicLagrangianForm::update_lagrangian()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00043">A_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00022">lagrangian_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00020">set_initial_weight()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00261">polyfem::solver::BCLagrangianForm::update_lagrangian()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00049">polyfem::solver::MacroStrainLagrangianForm::update_lagrangian()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00045">polyfem::solver::MatrixLagrangianForm::update_lagrangian()</a>, and <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00093">polyfem::solver::PeriodicLagrangianForm::update_lagrangian()</a>.</p>
 
 </div>
 </div>
@@ -1014,9 +1046,9 @@ Here is the caller graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00054">54</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00055">55</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00042">A_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00041">L_weight()</a>, and <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00038">set_scale()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00043">A_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00042">L_weight()</a>, and <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00039">set_scale()</a>.</p>
 
 </div>
 </div>
@@ -1042,9 +1074,9 @@ Here is the caller graph for this function:</div>
 
 <p>vector of lagrange multipliers </p>
 
-<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00046">46</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00047">47</a> of file <a class="el" href="_augmented_lagrangian_form_8hpp_source.html">AugmentedLagrangianForm.hpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00217">polyfem::solver::BCLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00021">polyfem::solver::MacroStrainLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00035">polyfem::solver::MatrixLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00071">polyfem::solver::PeriodicLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">polyfem::solver::BCLagrangianForm::init_masked_lumped_mass()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00006">polyfem::solver::MacroStrainLagrangianForm::MacroStrainLagrangianForm()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00009">polyfem::solver::MatrixLagrangianForm::MatrixLagrangianForm()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00008">polyfem::solver::PeriodicLagrangianForm::PeriodicLagrangianForm()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00253">polyfem::solver::BCLagrangianForm::update_lagrangian()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00049">polyfem::solver::MacroStrainLagrangianForm::update_lagrangian()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00045">polyfem::solver::MatrixLagrangianForm::update_lagrangian()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00088">polyfem::solver::PeriodicLagrangianForm::update_lagrangian()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00208">polyfem::solver::BCLagrangianForm::value_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00012">polyfem::solver::MacroStrainLagrangianForm::value_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00027">polyfem::solver::MatrixLagrangianForm::value_unweighted()</a>, and <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00062">polyfem::solver::PeriodicLagrangianForm::value_unweighted()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00225">polyfem::solver::BCLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00021">polyfem::solver::MacroStrainLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00035">polyfem::solver::MatrixLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00076">polyfem::solver::PeriodicLagrangianForm::first_derivative_unweighted()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00050">polyfem::solver::BCLagrangianForm::init_masked_lumped_mass()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00006">polyfem::solver::MacroStrainLagrangianForm::MacroStrainLagrangianForm()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00009">polyfem::solver::MatrixLagrangianForm::MatrixLagrangianForm()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00008">polyfem::solver::PeriodicLagrangianForm::PeriodicLagrangianForm()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00261">polyfem::solver::BCLagrangianForm::update_lagrangian()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00049">polyfem::solver::MacroStrainLagrangianForm::update_lagrangian()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00045">polyfem::solver::MatrixLagrangianForm::update_lagrangian()</a>, <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00093">polyfem::solver::PeriodicLagrangianForm::update_lagrangian()</a>, <a class="el" href="_b_c_lagrangian_form_8cpp_source.html#l00216">polyfem::solver::BCLagrangianForm::value_unweighted()</a>, <a class="el" href="_macro_strain_lagrangian_form_8cpp_source.html#l00012">polyfem::solver::MacroStrainLagrangianForm::value_unweighted()</a>, <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00027">polyfem::solver::MatrixLagrangianForm::value_unweighted()</a>, and <a class="el" href="_periodic_lagrangian_form_8cpp_source.html#l00067">polyfem::solver::PeriodicLagrangianForm::value_unweighted()</a>.</p>
 
 </div>
 </div>

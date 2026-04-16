@@ -49,6 +49,7 @@ var annotated_dup =
         [ "Helmholtz", "classpolyfem_1_1assembler_1_1_helmholtz.html", "classpolyfem_1_1assembler_1_1_helmholtz" ],
         [ "HGOFiber", "classpolyfem_1_1assembler_1_1_h_g_o_fiber.html", "classpolyfem_1_1assembler_1_1_h_g_o_fiber" ],
         [ "HookeLinearElasticity", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity" ],
+        [ "HRZMass", "classpolyfem_1_1assembler_1_1_h_r_z_mass.html", "classpolyfem_1_1assembler_1_1_h_r_z_mass" ],
         [ "IncompressibleLinearElasticityDispacement", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement" ],
         [ "IncompressibleLinearElasticityMixed", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed.html", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_mixed" ],
         [ "IncompressibleLinearElasticityPressure", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_pressure.html", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_pressure" ],

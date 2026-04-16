@@ -7,6 +7,7 @@ var classpolyfem_1_1solver_1_1_b_c_lagrangian_form =
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a0ce4ccc848cbbba5d749e0b643c14fc1", null ],
     [ "init_masked_lumped_mass", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a7bf0862201f0ac167ab6199bd7b85187", null ],
     [ "name", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a15dd180adfd295b3fd17236da15bf948", null ],
+    [ "project_diag", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a8fd3c420be59ba2c28c788bfeee4038c", null ],
     [ "project_gradient", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a6c7bebb44b437ed733104d7c7cadd32f", null ],
     [ "project_hessian", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#aaa7b730a3c1208c94d612548a0462e11", null ],
     [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_b_c_lagrangian_form.html#a67a57181e3bc976a759e3db975208f79", null ],

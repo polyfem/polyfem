@@ -12,6 +12,7 @@ var classpolyfem_1_1solver_1_1_augmented_lagrangian_form =
     [ "has_projection", "classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#ad045d81cc70e8a90b2709ce8c75ffd4f", null ],
     [ "L_weight", "classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#ab1b3a4ce20df852cee6eece6edc2dcb7", null ],
     [ "lagrangian_weight", "classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#ae66c689c6173bace55fd81787d78cdc2", null ],
+    [ "project_diag", "classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#abb713a94208e38906723b7b479a80043", null ],
     [ "project_gradient", "classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a3fa18d30fb728435d51b8e701d6d72d0", null ],
     [ "project_hessian", "classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a3f043be80ce3f2bf5193cd9454674e7d", null ],
     [ "set_initial_weight", "classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a9b46e91818499771e0881fcd69c6c655", null ],

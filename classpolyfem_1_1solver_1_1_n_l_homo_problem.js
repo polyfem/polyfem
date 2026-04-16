@@ -1,6 +1,6 @@
 var classpolyfem_1_1solver_1_1_n_l_homo_problem =
 [
-    [ "NLHomoProblem", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a50380387fa16da9830c0ae442e473a02", null ],
+    [ "NLHomoProblem", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a17e858e6b5d664dd5c9a68807bbbd391", null ],
     [ "~NLHomoProblem", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a8b8e79453cb452aa0334e6ed3e40578b", null ],
     [ "add_form", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#ae628c757aa4d6ca51dd76ba650a6038c", null ],
     [ "constraint_grad", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a98a632068fd8dd697cd99730c2deb5dc", null ],
@@ -10,6 +10,7 @@ var classpolyfem_1_1solver_1_1_n_l_homo_problem =
     [ "full_hessian_to_reduced_hessian", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#ac44e7ce8ded5567323b96c062c6feeca", null ],
     [ "full_to_reduced", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#af1f8132191081d6b7baa8b5252ddb32c", null ],
     [ "full_to_reduced", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#abecf10f4e71ac82a7116d65a55e06b8a", null ],
+    [ "full_to_reduced_diag", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a5f96b0e6ba23135d6e26f2a9429a3cf3", null ],
     [ "full_to_reduced_grad", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#ac32a7f01595e989dbc6ece262ade6320", null ],
     [ "gradient", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a15a652e39aa9bab4335f7f0b13fc93b4", null ],
     [ "has_symmetry_constraint", "classpolyfem_1_1solver_1_1_n_l_homo_problem.html#a8cb0d1de76fb107a665c14433af086ea", null ],

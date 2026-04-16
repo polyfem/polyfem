@@ -63,6 +63,7 @@ var hierarchy =
         [ "polyfem::assembler::BilaplacianAux", "classpolyfem_1_1assembler_1_1_bilaplacian_aux.html", null ],
         [ "polyfem::assembler::BilaplacianMain", "classpolyfem_1_1assembler_1_1_bilaplacian_main.html", null ],
         [ "polyfem::assembler::Electrostatics", "classpolyfem_1_1assembler_1_1_electrostatics.html", null ],
+        [ "polyfem::assembler::HRZMass", "classpolyfem_1_1assembler_1_1_h_r_z_mass.html", null ],
         [ "polyfem::assembler::Helmholtz", "classpolyfem_1_1assembler_1_1_helmholtz.html", null ],
         [ "polyfem::assembler::HookeLinearElasticity", "classpolyfem_1_1assembler_1_1_hooke_linear_elasticity.html", null ],
         [ "polyfem::assembler::IncompressibleLinearElasticityDispacement", "classpolyfem_1_1assembler_1_1_incompressible_linear_elasticity_dispacement.html", null ],

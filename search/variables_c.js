@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['l_0',['L',['../classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#add36149bb9e25d11991306e000dbbe39',1,'polyfem::solver::BoundarySmoothingForm']]],
+  ['l_0',['l',['../classpolyfem_1_1solver_1_1_n_l_problem.html#a7076df7240068b6f399fd047af4ed9bc',1,'polyfem::solver::NLProblem::L'],['../classpolyfem_1_1solver_1_1_boundary_smoothing_form.html#add36149bb9e25d11991306e000dbbe39',1,'polyfem::solver::BoundarySmoothingForm::L']]],
   ['l2_5ferr_1',['l2_err',['../classpolyfem_1_1io_1_1_out_stats_data.html#a659f5cbff15c4381abbdb3c353b6dc26',1,'polyfem::io::OutStatsData']]],
   ['lagged_5fstiffness_5fmatrix_5f_2',['lagged_stiffness_matrix_',['../classpolyfem_1_1solver_1_1_rayleigh_damping_form.html#ad73bdbed06b8c9fa49695b2910046e0b',1,'polyfem::solver::RayleighDampingForm']]],
   ['lagr_5fmults_5f_3',['lagr_mults_',['../classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a748a82c3c2749065c28c204390f64bb2',1,'polyfem::solver::AugmentedLagrangianForm']]],
@@ -31,5 +31,6 @@ var searchData=
   ['local_5fprimitive_5fid_5f_28',['local_primitive_id_',['../classpolyfem_1_1mesh_1_1_local_boundary.html#a8a3d0169b9403f606f49e3b09086e97a',1,'polyfem::mesh::LocalBoundary']]],
   ['local_5fpts_29',['local_pts',['../classpolyfem_1_1assembler_1_1_opt_assembler_data.html#a05ef80acd177f6d216ea828fd835a8ac',1,'polyfem::assembler::OptAssemblerData::local_pts'],['../classpolyfem_1_1assembler_1_1_output_data.html#a942a9b52ceb30ebff6408dc81daa1c1b',1,'polyfem::assembler::OutputData::local_pts']]],
   ['logger_5f_30',['logger_',['../_geogram_utils_8cpp.html#ac2b9c1c21e0f8366b6a8e57c3bae34fd',1,'GeogramUtils.cpp']]],
-  ['lp_5ferr_31',['lp_err',['../classpolyfem_1_1io_1_1_out_stats_data.html#a30468b92c25ac491390157d56949ec0e',1,'polyfem::io::OutStatsData']]]
+  ['lp_5ferr_31',['lp_err',['../classpolyfem_1_1io_1_1_out_stats_data.html#a30468b92c25ac491390157d56949ec0e',1,'polyfem::io::OutStatsData']]],
+  ['lumped_5fmass_5f_32',['lumped_mass_',['../classpolyfem_1_1solver_1_1_n_l_problem.html#a83928203343e4d5b1b2967cb8dcfe71d',1,'polyfem::solver::NLProblem']]]
 ];

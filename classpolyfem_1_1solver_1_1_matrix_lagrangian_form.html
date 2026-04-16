@@ -187,6 +187,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a3fa18d30fb728435d51b8e701d6d72d0 inherit pub_methods_classpolyfem_1_1solver_1_1_augmented_lagrangian_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f043be80ce3f2bf5193cd9454674e7d inherit pub_methods_classpolyfem_1_1solver_1_1_augmented_lagrangian_form" id="r_a3f043be80ce3f2bf5193cd9454674e7d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#a3f043be80ce3f2bf5193cd9454674e7d">project_hessian</a> (<a class="el" href="namespacepolyfem.html#af952b2322cc7cfb3abcca5212e2f16d4">StiffnessMatrix</a> &amp;hessian) const</td></tr>
 <tr class="separator:a3f043be80ce3f2bf5193cd9454674e7d inherit pub_methods_classpolyfem_1_1solver_1_1_augmented_lagrangian_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb713a94208e38906723b7b479a80043 inherit pub_methods_classpolyfem_1_1solver_1_1_augmented_lagrangian_form" id="r_abb713a94208e38906723b7b479a80043"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#abb713a94208e38906723b7b479a80043">project_diag</a> (Eigen::VectorXd &amp;diag) const</td></tr>
+<tr class="separator:abb713a94208e38906723b7b479a80043 inherit pub_methods_classpolyfem_1_1solver_1_1_augmented_lagrangian_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa39928a446cf446760d40bac98ed1910 inherit pub_methods_classpolyfem_1_1solver_1_1_augmented_lagrangian_form" id="r_aa39928a446cf446760d40bac98ed1910"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1solver_1_1_augmented_lagrangian_form.html#aa39928a446cf446760d40bac98ed1910">set_scale</a> (const double scale) override</td></tr>
 <tr class="memdesc:aa39928a446cf446760d40bac98ed1910 inherit pub_methods_classpolyfem_1_1solver_1_1_augmented_lagrangian_form"><td class="mdescLeft">&#160;</td><td class="mdescRight">sets the scale for the form  <br /></td></tr>
 <tr class="separator:aa39928a446cf446760d40bac98ed1910 inherit pub_methods_classpolyfem_1_1solver_1_1_augmented_lagrangian_form"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -381,7 +383,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00009">9</a> of file <a class="el" href="_matrix_lagrangian_form_8cpp_source.html">MatrixLagrangianForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00048">polyfem::solver::AugmentedLagrangianForm::A_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00051">polyfem::solver::AugmentedLagrangianForm::A_proj_</a>, <a class="el" href="_matrix_lagrangian_form_8hpp_source.html#l00043">AtA</a>, <a class="el" href="_matrix_lagrangian_form_8hpp_source.html#l00044">Atb</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">polyfem::solver::AugmentedLagrangianForm::b_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00052">polyfem::solver::AugmentedLagrangianForm::b_proj_</a>, and <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00046">polyfem::solver::AugmentedLagrangianForm::lagr_mults_</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">polyfem::solver::AugmentedLagrangianForm::A_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00052">polyfem::solver::AugmentedLagrangianForm::A_proj_</a>, <a class="el" href="_matrix_lagrangian_form_8hpp_source.html#l00043">AtA</a>, <a class="el" href="_matrix_lagrangian_form_8hpp_source.html#l00044">Atb</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00050">polyfem::solver::AugmentedLagrangianForm::b_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00053">polyfem::solver::AugmentedLagrangianForm::b_proj_</a>, and <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00047">polyfem::solver::AugmentedLagrangianForm::lagr_mults_</a>.</p>
 
 </div>
 </div>
@@ -414,7 +416,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00051">51</a> of file <a class="el" href="_matrix_lagrangian_form_8cpp_source.html">MatrixLagrangianForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00048">polyfem::solver::AugmentedLagrangianForm::A_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">polyfem::solver::AugmentedLagrangianForm::b_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">polyfem::solver::AugmentedLagrangianForm::A_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00050">polyfem::solver::AugmentedLagrangianForm::b_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 </div>
 </div>
@@ -465,7 +467,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00035">35</a> of file <a class="el" href="_matrix_lagrangian_form_8cpp_source.html">MatrixLagrangianForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00048">polyfem::solver::AugmentedLagrangianForm::A_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00042">polyfem::solver::AugmentedLagrangianForm::A_weight()</a>, <a class="el" href="_matrix_lagrangian_form_8hpp_source.html#l00043">AtA</a>, <a class="el" href="_matrix_lagrangian_form_8hpp_source.html#l00044">Atb</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00041">polyfem::solver::AugmentedLagrangianForm::L_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00046">polyfem::solver::AugmentedLagrangianForm::lagr_mults_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">polyfem::solver::AugmentedLagrangianForm::A_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00043">polyfem::solver::AugmentedLagrangianForm::A_weight()</a>, <a class="el" href="_matrix_lagrangian_form_8hpp_source.html#l00043">AtA</a>, <a class="el" href="_matrix_lagrangian_form_8hpp_source.html#l00044">Atb</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00042">polyfem::solver::AugmentedLagrangianForm::L_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00047">polyfem::solver::AugmentedLagrangianForm::lagr_mults_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -550,7 +552,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00040">40</a> of file <a class="el" href="_matrix_lagrangian_form_8cpp_source.html">MatrixLagrangianForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00042">polyfem::solver::AugmentedLagrangianForm::A_weight()</a>, and <a class="el" href="_matrix_lagrangian_form_8hpp_source.html#l00043">AtA</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00043">polyfem::solver::AugmentedLagrangianForm::A_weight()</a>, and <a class="el" href="_matrix_lagrangian_form_8hpp_source.html#l00043">AtA</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
@@ -597,7 +599,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00045">45</a> of file <a class="el" href="_matrix_lagrangian_form_8cpp_source.html">MatrixLagrangianForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00048">polyfem::solver::AugmentedLagrangianForm::A_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">polyfem::solver::AugmentedLagrangianForm::b_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00044">polyfem::solver::AugmentedLagrangianForm::k_al_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00046">polyfem::solver::AugmentedLagrangianForm::lagr_mults_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">polyfem::solver::AugmentedLagrangianForm::A_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00050">polyfem::solver::AugmentedLagrangianForm::b_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00045">polyfem::solver::AugmentedLagrangianForm::k_al_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00047">polyfem::solver::AugmentedLagrangianForm::lagr_mults_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 
 </div>
 </div>
@@ -638,7 +640,7 @@ Here is the call graph for this function:</div>
 
 <p class="definition">Definition at line <a class="el" href="_matrix_lagrangian_form_8cpp_source.html#l00027">27</a> of file <a class="el" href="_matrix_lagrangian_form_8cpp_source.html">MatrixLagrangianForm.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00048">polyfem::solver::AugmentedLagrangianForm::A_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00042">polyfem::solver::AugmentedLagrangianForm::A_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">polyfem::solver::AugmentedLagrangianForm::b_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00041">polyfem::solver::AugmentedLagrangianForm::L_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00046">polyfem::solver::AugmentedLagrangianForm::lagr_mults_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
+<p class="reference">References <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00049">polyfem::solver::AugmentedLagrangianForm::A_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00043">polyfem::solver::AugmentedLagrangianForm::A_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00050">polyfem::solver::AugmentedLagrangianForm::b_</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00042">polyfem::solver::AugmentedLagrangianForm::L_weight()</a>, <a class="el" href="_augmented_lagrangian_form_8hpp_source.html#l00047">polyfem::solver::AugmentedLagrangianForm::lagr_mults_</a>, and <a class="el" href="_spline_basis3d_8cpp_source.html#l00055">x</a>.</p>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">

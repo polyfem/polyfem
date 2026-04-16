@@ -5,6 +5,7 @@ var classpolyfem_1_1solver_1_1_periodic_lagrangian_form =
     [ "compute_error", "classpolyfem_1_1solver_1_1_periodic_lagrangian_form.html#aee7ab68aee367ac6b721ccc14db8f8b4", null ],
     [ "first_derivative_unweighted", "classpolyfem_1_1solver_1_1_periodic_lagrangian_form.html#a698803be57f3b00951a4cdec284ff6c8", null ],
     [ "name", "classpolyfem_1_1solver_1_1_periodic_lagrangian_form.html#a343aa855f21c64fee731cf1a7a69f9de", null ],
+    [ "project_diag", "classpolyfem_1_1solver_1_1_periodic_lagrangian_form.html#afa6bb83c79ec1b02aadf35527056562f", null ],
     [ "project_gradient", "classpolyfem_1_1solver_1_1_periodic_lagrangian_form.html#a78f212ea3dd77fda2a4719a2ee253f2e", null ],
     [ "project_hessian", "classpolyfem_1_1solver_1_1_periodic_lagrangian_form.html#aef2fdda6af0cfa9016cf25d1183388a6", null ],
     [ "second_derivative_unweighted", "classpolyfem_1_1solver_1_1_periodic_lagrangian_form.html#a9f099ee0d7448d2267d22d07478414ed", null ],

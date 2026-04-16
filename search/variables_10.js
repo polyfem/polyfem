@@ -71,13 +71,16 @@ var searchData=
   ['problems_5f_68',['problems_',['../classpolyfem_1_1problem_1_1_problem_factory.html#a57ec3ee51e2a5f56c8720c8db78409da',1,'polyfem::problem::ProblemFactory']]],
   ['proj_69',['proj',['../classpolyfem_1_1solver_1_1_periodic_contact_form.html#aa75dc37c7f1d68850f9826c286eade9d',1,'polyfem::solver::PeriodicContactForm']]],
   ['project_5fto_5fpsd_5f_70',['project_to_psd_',['../classpolyfem_1_1solver_1_1_form.html#af98a7df888dfde558eb2e70aa37e9dd2',1,'polyfem::solver::Form']]],
-  ['projection_5fquantities_71',['projection_quantities',['../structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#a95cc87cbc131c9d54d593d8de79507cd',1,'polyfem::mesh::WildRemesher::VertexAttributes::projection_quantities'],['../structpolyfem_1_1mesh_1_1_remesher_1_1_global_projection_cache.html#aeabd8764774cc8c8fad0649aaf841677',1,'polyfem::mesh::Remesher::GlobalProjectionCache::projection_quantities']]],
+  ['projection_5fquantities_71',['projection_quantities',['../structpolyfem_1_1mesh_1_1_remesher_1_1_global_projection_cache.html#aeabd8764774cc8c8fad0649aaf841677',1,'polyfem::mesh::Remesher::GlobalProjectionCache::projection_quantities'],['../structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#a95cc87cbc131c9d54d593d8de79507cd',1,'polyfem::mesh::WildRemesher::VertexAttributes::projection_quantities']]],
   ['psi_5fvals_72',['psi_vals',['../classpolyfem_1_1assembler_1_1_mixed_assembler_data.html#ae0c3b9478b3a57b2a7609e8c0130da3a',1,'polyfem::assembler::MixedAssemblerData']]],
   ['pts_5f_73',['pts_',['../classpolyfem_1_1utils_1_1_interpolated_function2d.html#a76c0df30347d0589e499ac00ec7b258b',1,'polyfem::utils::InterpolatedFunction2d']]],
-  ['pyramid_5fcorners_5f_74',['pyramid_corners_',['../classpolyfem_1_1utils_1_1_ref_element_sampler.html#a6730b11fada264f69d8449b57e7422e4',1,'polyfem::utils::RefElementSampler']]],
-  ['pyramid_5fcount_75',['pyramid_count',['../classpolyfem_1_1io_1_1_out_stats_data.html#a13fb66b1f2de5fb444b7cf0046a99776',1,'polyfem::io::OutStatsData']]],
-  ['pyramid_5fedges_5f_76',['pyramid_edges_',['../classpolyfem_1_1utils_1_1_ref_element_sampler.html#a85e26e37946d5146abfd6d2ef329fdfb',1,'polyfem::utils::RefElementSampler']]],
-  ['pyramid_5ffaces_5f_77',['pyramid_faces_',['../classpolyfem_1_1utils_1_1_ref_element_sampler.html#aeef3f5ff38426ee50186fd44ea86ed9e',1,'polyfem::utils::RefElementSampler']]],
-  ['pyramid_5fpoints_5f_78',['pyramid_points_',['../classpolyfem_1_1utils_1_1_ref_element_sampler.html#aa042b29fb348fa2d0d9385ac777453ec',1,'polyfem::utils::RefElementSampler']]],
-  ['pyramid_5ftets_5f_79',['pyramid_tets_',['../classpolyfem_1_1utils_1_1_ref_element_sampler.html#a704c4e1d8bac47c138486d683fafaa96',1,'polyfem::utils::RefElementSampler']]]
+  ['pure_5fmass_74',['pure_mass',['../classpolyfem_1_1_state.html#a18cea9794e80dd0dadd831ab9fc1ad79',1,'polyfem::State']]],
+  ['pure_5fmass_5fass_5fvals_5fcache_75',['pure_mass_ass_vals_cache',['../classpolyfem_1_1_state.html#afbec6481efcb08e11d7ff97224c12c9d',1,'polyfem::State']]],
+  ['pure_5fmass_5fmatrix_5fassembler_76',['pure_mass_matrix_assembler',['../classpolyfem_1_1_state.html#a722c394dd9e2ce54df890849f5258691',1,'polyfem::State']]],
+  ['pyramid_5fcorners_5f_77',['pyramid_corners_',['../classpolyfem_1_1utils_1_1_ref_element_sampler.html#a6730b11fada264f69d8449b57e7422e4',1,'polyfem::utils::RefElementSampler']]],
+  ['pyramid_5fcount_78',['pyramid_count',['../classpolyfem_1_1io_1_1_out_stats_data.html#a13fb66b1f2de5fb444b7cf0046a99776',1,'polyfem::io::OutStatsData']]],
+  ['pyramid_5fedges_5f_79',['pyramid_edges_',['../classpolyfem_1_1utils_1_1_ref_element_sampler.html#a85e26e37946d5146abfd6d2ef329fdfb',1,'polyfem::utils::RefElementSampler']]],
+  ['pyramid_5ffaces_5f_80',['pyramid_faces_',['../classpolyfem_1_1utils_1_1_ref_element_sampler.html#aeef3f5ff38426ee50186fd44ea86ed9e',1,'polyfem::utils::RefElementSampler']]],
+  ['pyramid_5fpoints_5f_81',['pyramid_points_',['../classpolyfem_1_1utils_1_1_ref_element_sampler.html#aa042b29fb348fa2d0d9385ac777453ec',1,'polyfem::utils::RefElementSampler']]],
+  ['pyramid_5ftets_5f_82',['pyramid_tets_',['../classpolyfem_1_1utils_1_1_ref_element_sampler.html#a704c4e1d8bac47c138486d683fafaa96',1,'polyfem::utils::RefElementSampler']]]
 ];
