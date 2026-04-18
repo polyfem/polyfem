@@ -34,14 +34,16 @@ namespace polyfem::solver
 		}
 	} // namespace
 
-	std::shared_ptr<ipc::Barrier> barrier_from_params(const json &high_order_contact_params)
+	std::shared_ptr<ipc::Barrier> barrier_from_params(const json &high_order_contact_params, const int power)
 	{
 		const std::string name = high_order_contact_params.value("barrier", std::string("normalized_log"));
 		if (name == "log")
 			return std::make_shared<ipc::ClampedLogBarrier>();
 		if (name == "normalized_log")
 			return std::make_shared<ipc::NormalizedClampedLogBarrier>();
-		log_and_throw_error("Unknown ACP barrier type: '{}'. Valid options: 'log', 'normalized_log'.", name);
+		if (name == "inverse_power")
+			return std::make_shared<ipc::InversePowerBarrier>(static_cast<double>(power));
+		log_and_throw_error("Unknown ACP barrier type: '{}'. Valid options: 'log', 'normalized_log', 'inverse_power'.", name);
 	}
 	
 	/// Check if a quadrature point is at a triangle vertex (one barycentric
@@ -79,7 +81,7 @@ namespace polyfem::solver
 		const ipc::HighOrderContactParameters::IntegrationType itype = skip_obstacles ?
 			ipc::HighOrderContactParameters::IntegrationType::NO_OBST : ipc::HighOrderContactParameters::IntegrationType::NORMAL;
 		ipc::HighOrderContactParameters params(dhat, dbar_factor, quadrature_order, power, itype);
-		params.barrier = barrier_from_params(high_order_contact_params);
+		params.barrier = barrier_from_params(high_order_contact_params, power);
 		if (quadrature_order > 0) {
 			params.face_quad_rule = build_quad_rule(quadrature_order);
 			verify_vertices_in_quad_rule(params.face_quad_rule);
