@@ -141,8 +141,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a45842b3cacf3a36390e47be124a7b1d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab91098e79561a4a595cc5613260138d0" id="r_ab91098e79561a4a595cc5613260138d0"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_density.html#ab91098e79561a4a595cc5613260138d0">~Density</a> ()=default</td></tr>
 <tr class="separator:ab91098e79561a4a595cc5613260138d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5d48b19ebc812f9818a1d94f6fb882fd" id="r_a5d48b19ebc812f9818a1d94f6fb882fd"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_density.html#a5d48b19ebc812f9818a1d94f6fb882fd">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const std::string &amp;density_unit)</td></tr>
-<tr class="separator:a5d48b19ebc812f9818a1d94f6fb882fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeeb7a39ea4187bc98d4384c8018d14e7" id="r_aeeb7a39ea4187bc98d4384c8018d14e7"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_density.html#aeeb7a39ea4187bc98d4384c8018d14e7">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const std::string &amp;density_unit, const std::string &amp;root_path)</td></tr>
+<tr class="separator:aeeb7a39ea4187bc98d4384c8018d14e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab80a9220827c49f5c848b118dc242bfa" id="r_ab80a9220827c49f5c848b118dc242bfa"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_density.html#ab80a9220827c49f5c848b118dc242bfa">operator()</a> (double px, double py, double pz, double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, double t, int el_id) const</td></tr>
 <tr class="separator:ab80a9220827c49f5c848b118dc242bfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a20c8e7fa330f80177d0c7359f6bbba0e" id="r_a20c8e7fa330f80177d0c7359f6bbba0e"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_density.html#a20c8e7fa330f80177d0c7359f6bbba0e">operator()</a> (const Eigen::MatrixXd &amp;param, const Eigen::MatrixXd &amp;p, double t, int el_id) const</td></tr>
@@ -209,8 +209,8 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a5d48b19ebc812f9818a1d94f6fb882fd" name="a5d48b19ebc812f9818a1d94f6fb882fd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5d48b19ebc812f9818a1d94f6fb882fd">&#9670;&#160;</a></span>add_multimaterial()</h2>
+<a id="aeeb7a39ea4187bc98d4384c8018d14e7" name="aeeb7a39ea4187bc98d4384c8018d14e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeeb7a39ea4187bc98d4384c8018d14e7">&#9670;&#160;</a></span>add_multimaterial()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -234,7 +234,13 @@ Private Attributes</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>density_unit</em>&#160;</td>
+          <td class="paramname"><em>density_unit</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>root_path</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -249,7 +255,7 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_no_density.html#a266ff9f252a6469da861f08c8af4051b">polyfem::assembler::NoDensity</a>.</p>
+<p>Reimplemented in <a class="el" href="classpolyfem_1_1assembler_1_1_no_density.html#a818833d610222a8d94e11277d896f610">polyfem::assembler::NoDensity</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_mat_params_8cpp_source.html#l00465">465</a> of file <a class="el" href="_mat_params_8cpp_source.html">MatParams.cpp</a>.</p>
 
@@ -259,7 +265,7 @@ Private Attributes</h2></td></tr>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_density_a5d48b19ebc812f9818a1d94f6fb882fd_icgraph.svg" width="100%" height="467"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_density_aeeb7a39ea4187bc98d4384c8018d14e7_icgraph.svg" width="100%" height="467"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div></div>
 </div>
 
 </div>

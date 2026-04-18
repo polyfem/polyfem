@@ -532,7 +532,7 @@ $(document).ready(function(){initNavTree('_variable_to_simulation_8cpp_source.ht
 <div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>            }</div>
 <div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span> </div>
 <div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>            <span class="keywordflow">if</span> (state-&gt;damping_assembler)</div>
-<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>                state-&gt;damping_assembler-&gt;add_multimaterial(0, damping_param, state-&gt;units);</div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>                state-&gt;damping_assembler-&gt;add_multimaterial(0, damping_param, state-&gt;units, state-&gt;root_path());</div>
 <div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>        }</div>
 <div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>        <a class="code hl_function" href="namespacepolyfem.html#a03f3d75072d2fd19f70cd886a51d10dd">logger</a>().info(<span class="stringliteral">&quot;[{}] Current params: {}, {}&quot;</span>, <a class="code hl_function" href="classpolyfem_1_1solver_1_1_damping_coeffient_variable_to_simulation.html#aebb886ddc838300b6b41bb36237b7c06">name</a>(), state_variable(0), state_variable(1));</div>
 <div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>    }</div>

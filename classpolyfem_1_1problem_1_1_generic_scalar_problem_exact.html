@@ -151,8 +151,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a110c0e92893a10163bbe95a4623fd099"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af7be02bcf8da99c6e992470f4326a783" id="r_af7be02bcf8da99c6e992470f4326a783"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#af7be02bcf8da99c6e992470f4326a783">initial_solution</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;pts, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const override</td></tr>
 <tr class="separator:af7be02bcf8da99c6e992470f4326a783"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acad61673e33e3f4244759ed91f2158e3" id="r_acad61673e33e3f4244759ed91f2158e3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#acad61673e33e3f4244759ed91f2158e3">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params) override</td></tr>
-<tr class="separator:acad61673e33e3f4244759ed91f2158e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74bbfd0f274642068ac4349a80f116f9" id="r_a74bbfd0f274642068ac4349a80f116f9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a74bbfd0f274642068ac4349a80f116f9">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const std::string &amp;root_path) override</td></tr>
+<tr class="separator:a74bbfd0f274642068ac4349a80f116f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7931602a67dc0c0615273e3ca7825bfe" id="r_a7931602a67dc0c0615273e3ca7825bfe"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a7931602a67dc0c0615273e3ca7825bfe">eval_fun</a> (const <a class="el" href="namespacepolyfem.html#a5d46d4510849a3d306dc60d4f365dc2c">VectorNd</a> &amp;pt, double t) const override</td></tr>
 <tr class="separator:a7931602a67dc0c0615273e3ca7825bfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70448aaeba7323f3fba3a5c2d7240aa1" id="r_a70448aaeba7323f3fba3a5c2d7240aa1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacepolyfem.html#af46f3e481ec6b7fd3f1963d3f570dbe4">AutodiffGradPt</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_generic_scalar_problem_exact.html#a70448aaeba7323f3fba3a5c2d7240aa1">eval_fun</a> (const <a class="el" href="namespacepolyfem.html#af46f3e481ec6b7fd3f1963d3f570dbe4">AutodiffGradPt</a> &amp;pt, double t) const override</td></tr>
@@ -612,8 +612,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="acad61673e33e3f4244759ed91f2158e3" name="acad61673e33e3f4244759ed91f2158e3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acad61673e33e3f4244759ed91f2158e3">&#9670;&#160;</a></span>set_parameters()</h2>
+<a id="a74bbfd0f274642068ac4349a80f116f9" name="a74bbfd0f274642068ac4349a80f116f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74bbfd0f274642068ac4349a80f116f9">&#9670;&#160;</a></span>set_parameters()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -625,8 +625,18 @@ Here is the call graph for this function:</div>
           <td class="memname">void polyfem::problem::GenericScalarProblemExact::set_parameters </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em></td><td>)</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>root_path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -636,7 +646,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a10ec97e704f516a2848ad65aadc8fee0">polyfem::assembler::Problem</a>.</p>
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a65d292883349f59cc9faf7c13e0918ba">polyfem::assembler::Problem</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_misc_problem_8cpp_source.html#l00278">278</a> of file <a class="el" href="_misc_problem_8cpp_source.html">MiscProblem.cpp</a>.</p>
 

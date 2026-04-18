@@ -161,8 +161,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ae52c3df204c90e59973150565c7be06c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac50debe5b3a962040225ea0b0590f837" id="r_ac50debe5b3a962040225ea0b0590f837"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#ac50debe5b3a962040225ea0b0590f837">is_scalar</a> () const override</td></tr>
 <tr class="separator:ac50debe5b3a962040225ea0b0590f837"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4dab4f2bc4f0e91e529e2f5354a99caf" id="r_a4dab4f2bc4f0e91e529e2f5354a99caf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#a4dab4f2bc4f0e91e529e2f5354a99caf">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params) override</td></tr>
-<tr class="separator:a4dab4f2bc4f0e91e529e2f5354a99caf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0db7fda673e0b8a371502db1efa7a645" id="r_a0db7fda673e0b8a371502db1efa7a645"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#a0db7fda673e0b8a371502db1efa7a645">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const std::string &amp;root_path) override</td></tr>
+<tr class="separator:a0db7fda673e0b8a371502db1efa7a645"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a53faf22e9fed4d5484cb5e41bdac106b" id="r_a53faf22e9fed4d5484cb5e41bdac106b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#a53faf22e9fed4d5484cb5e41bdac106b">add_constant</a> (const int bc_tag, const Eigen::Vector3d &amp;value)</td></tr>
 <tr class="separator:a53faf22e9fed4d5484cb5e41bdac106b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab214d6aa699278cb692091717fb664b3" id="r_ab214d6aa699278cb692091717fb664b3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_point_based_tensor_problem.html#ab214d6aa699278cb692091717fb664b3">add_function</a> (const int bc_tag, const Eigen::MatrixXd &amp;func, const Eigen::MatrixXd &amp;pts, const Eigen::MatrixXi &amp;tri, const int coord)</td></tr>
@@ -1038,8 +1038,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="a4dab4f2bc4f0e91e529e2f5354a99caf" name="a4dab4f2bc4f0e91e529e2f5354a99caf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4dab4f2bc4f0e91e529e2f5354a99caf">&#9670;&#160;</a></span>set_parameters()</h2>
+<a id="a0db7fda673e0b8a371502db1efa7a645" name="a0db7fda673e0b8a371502db1efa7a645"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0db7fda673e0b8a371502db1efa7a645">&#9670;&#160;</a></span>set_parameters()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1051,8 +1051,18 @@ Here is the call graph for this function:</div>
           <td class="memname">void polyfem::problem::PointBasedTensorProblem::set_parameters </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em></td><td>)</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>root_path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -1062,7 +1072,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a10ec97e704f516a2848ad65aadc8fee0">polyfem::assembler::Problem</a>.</p>
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a65d292883349f59cc9faf7c13e0918ba">polyfem::assembler::Problem</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_point_based_problem_8cpp_source.html#l00234">234</a> of file <a class="el" href="_point_based_problem_8cpp_source.html">PointBasedProblem.cpp</a>.</p>
 

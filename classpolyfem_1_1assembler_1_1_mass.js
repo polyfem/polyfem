@@ -1,6 +1,6 @@
 var classpolyfem_1_1assembler_1_1_mass =
 [
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_mass.html#a3f90cb936e582826b4dd0349ce059156", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_mass.html#af140c19a27e36e0fdacac3e44d852d3c", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_mass.html#a3a2430e7c06e87719b5eb23682ff3d9c", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_mass.html#ad3dfa0714411c7b024bbd63f6517efd3", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_mass.html#adc7b5a738074ba44208a49ea1027fd14", null ],

@@ -1,7 +1,7 @@
 var classpolyfem_1_1assembler_1_1_saint_venant_elasticity =
 [
     [ "SaintVenantElasticity", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a579170927fcdb8ec26b6fc6052f0a41c", null ],
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a1be21b0c3f23042d740ba0ec9ed470da", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#afeaac831eb25d2d9268d7324aa3d3c1a", null ],
     [ "allow_inversion", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#afde1118ee8211feab12788e39b96e935", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#af67c8ed337e2ca9c785c4ee0fa5c235a", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_saint_venant_elasticity.html#a8dccfbc5f76e3fed25c4924b6588ee4b", null ],

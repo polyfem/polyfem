@@ -1,7 +1,7 @@
 var classpolyfem_1_1assembler_1_1_h_g_o_fiber =
 [
     [ "HGOFiber", "classpolyfem_1_1assembler_1_1_h_g_o_fiber.html#ad3ebcfbdfbc10b2a8294e1ad0f215865", null ],
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_h_g_o_fiber.html#a37e09b5e358559eed88a71d1c42d33c1", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_h_g_o_fiber.html#af2a02f548f92f6669312dc661a68366e", null ],
     [ "elastic_energy", "classpolyfem_1_1assembler_1_1_h_g_o_fiber.html#a780df6b9f95e8b548d6ace8a21953591", null ],
     [ "name", "classpolyfem_1_1assembler_1_1_h_g_o_fiber.html#a9ef589865adde4f563f2ffea1219308f", null ],
     [ "parameters", "classpolyfem_1_1assembler_1_1_h_g_o_fiber.html#a506b609ba01be0cb54d050777f6f4501", null ],

@@ -27,7 +27,7 @@ var classpolyfem_1_1assembler_1_1_generic_tensor_problem =
     [ "pressure_bc", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a9b1d1a7cb4ff60641df3ec8da9ed3bdc", null ],
     [ "pressure_cavity_bc", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#abb156f2c383c8bfeefccdad3a2213656", null ],
     [ "rhs", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#af6b751523b4242cee6ebdf5f88c7bd0e", null ],
-    [ "set_parameters", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a3286b846bdcde273f9713d019d6053d2", null ],
+    [ "set_parameters", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a150cc7d70972fc96ddc9ed60b4f9b83b", null ],
     [ "set_time_dependent", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#a6dd70ffe7823cb8bb97bb882226e3611", null ],
     [ "set_units", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#aeb7bc1bff905955ea5b89e514cd6e5de", null ],
     [ "update_dirichlet_boundary", "classpolyfem_1_1assembler_1_1_generic_tensor_problem.html#ab7a4fed61012d7a451e8d2a0966d9431", null ],

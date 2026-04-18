@@ -2,7 +2,7 @@ var classpolyfem_1_1assembler_1_1_generic_fiber =
 [
     [ "GenericFiber", "classpolyfem_1_1assembler_1_1_generic_fiber.html#a98074a2c0944f26cc1a8c7c8bedbca96", null ],
     [ "~GenericFiber", "classpolyfem_1_1assembler_1_1_generic_fiber.html#abdbe08e2f943c81544b784b7cbf89649", null ],
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_generic_fiber.html#a156ae2d41b713e92fd0a19ad8b0af5da", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_generic_fiber.html#ab928086be051b812c474b316a22b12c6", null ],
     [ "I4Bar", "classpolyfem_1_1assembler_1_1_generic_fiber.html#a47e95b34fd778ac32b568c081560cd5c", null ],
     [ "I4Bar_generic", "classpolyfem_1_1assembler_1_1_generic_fiber.html#a3315aa7341c493e5f0f4799180f90a1f", null ],
     [ "I4Bar_with_norm", "classpolyfem_1_1assembler_1_1_generic_fiber.html#ac5cf431662f9789e53c0a3740a8f02fa", null ],

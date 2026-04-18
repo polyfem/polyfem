@@ -153,8 +153,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac7594391bfffa4e40ea7e5649bea4bd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9dcc8da2a74f106456a230464ecc9c39" id="r_a9dcc8da2a74f106456a230464ecc9c39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_stokes_law_problem.html#a9dcc8da2a74f106456a230464ecc9c39">initial_solution</a> (const <a class="el" href="classpolyfem_1_1mesh_1_1_mesh.html">mesh::Mesh</a> &amp;mesh, const Eigen::MatrixXi &amp;global_ids, const Eigen::MatrixXd &amp;pts, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const override</td></tr>
 <tr class="separator:a9dcc8da2a74f106456a230464ecc9c39"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1a0d3dd6269af58c140800029d3b38fb" id="r_a1a0d3dd6269af58c140800029d3b38fb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_stokes_law_problem.html#a1a0d3dd6269af58c140800029d3b38fb">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params) override</td></tr>
-<tr class="separator:a1a0d3dd6269af58c140800029d3b38fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57cdb694ca17f476df80fdd93cff0773" id="r_a57cdb694ca17f476df80fdd93cff0773"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_stokes_law_problem.html#a57cdb694ca17f476df80fdd93cff0773">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const std::string &amp;root_path) override</td></tr>
+<tr class="separator:a57cdb694ca17f476df80fdd93cff0773"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7d34103f628d61eae01a6f2a08b3363c" id="r_a7d34103f628d61eae01a6f2a08b3363c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_stokes_law_problem.html#a7d34103f628d61eae01a6f2a08b3363c">exact</a> (const Eigen::MatrixXd &amp;pts, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const override</td></tr>
 <tr class="separator:a7d34103f628d61eae01a6f2a08b3363c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6867b96981193d2ae9ad4f97ea01b7c9" id="r_a6867b96981193d2ae9ad4f97ea01b7c9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_stokes_law_problem.html#a6867b96981193d2ae9ad4f97ea01b7c9">exact_grad</a> (const Eigen::MatrixXd &amp;pts, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const override</td></tr>
@@ -676,8 +676,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="a1a0d3dd6269af58c140800029d3b38fb" name="a1a0d3dd6269af58c140800029d3b38fb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1a0d3dd6269af58c140800029d3b38fb">&#9670;&#160;</a></span>set_parameters()</h2>
+<a id="a57cdb694ca17f476df80fdd93cff0773" name="a57cdb694ca17f476df80fdd93cff0773"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57cdb694ca17f476df80fdd93cff0773">&#9670;&#160;</a></span>set_parameters()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -689,8 +689,18 @@ Here is the call graph for this function:</div>
           <td class="memname">void polyfem::problem::StokesLawProblem::set_parameters </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em></td><td>)</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>root_path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -700,7 +710,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a10ec97e704f516a2848ad65aadc8fee0">polyfem::assembler::Problem</a>.</p>
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a65d292883349f59cc9faf7c13e0918ba">polyfem::assembler::Problem</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_stokes_problem_8cpp_source.html#l00661">661</a> of file <a class="el" href="_stokes_problem_8cpp_source.html">StokesProblem.cpp</a>.</p>
 

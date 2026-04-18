@@ -1,7 +1,7 @@
 var classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy =
 [
     [ "AMIPSEnergy", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#a541e8ecb3c4269c667d8d0e1047e8787", null ],
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#a8a4e33a778c3a81592832e65293a712b", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#af1edd3ada02bf59cbb9d19b8ca812326", null ],
     [ "allow_inversion", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#ab77665208ba71b954ff4d5f42aa1a54f", null ],
     [ "elastic_energy", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#aec55aaa280acc3e89899b1da60dff653", null ],
     [ "gradient", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#a724172b965379ad759a3ab3f18e305a7", null ],

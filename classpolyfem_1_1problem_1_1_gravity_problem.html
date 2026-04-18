@@ -161,8 +161,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:afbfde943ea4b3661e379a4c67b86e3cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aebbef0b54680ea4538ef5bf4d730e7e7" id="r_aebbef0b54680ea4538ef5bf4d730e7e7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_gravity_problem.html#aebbef0b54680ea4538ef5bf4d730e7e7">is_time_dependent</a> () const override</td></tr>
 <tr class="separator:aebbef0b54680ea4538ef5bf4d730e7e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a614f1001838d70a79a568753022147" id="r_a0a614f1001838d70a79a568753022147"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_gravity_problem.html#a0a614f1001838d70a79a568753022147">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params) override</td></tr>
-<tr class="separator:a0a614f1001838d70a79a568753022147"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6abab6d6d852155ce3f8e2f2fb524354" id="r_a6abab6d6d852155ce3f8e2f2fb524354"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_gravity_problem.html#a6abab6d6d852155ce3f8e2f2fb524354">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const std::string &amp;root_path) override</td></tr>
+<tr class="separator:a6abab6d6d852155ce3f8e2f2fb524354"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classpolyfem_1_1assembler_1_1_problem"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpolyfem_1_1assembler_1_1_problem')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html">polyfem::assembler::Problem</a></td></tr>
 <tr class="memitem:ab7bc716ad17294502839aa1435265cd1 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_ab7bc716ad17294502839aa1435265cd1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ab7bc716ad17294502839aa1435265cd1">Problem</a> (const std::string &amp;<a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a49bcc436f56b6ac1c201261495bb333c">name</a>)</td></tr>
 <tr class="separator:ab7bc716ad17294502839aa1435265cd1 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -665,8 +665,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="a0a614f1001838d70a79a568753022147" name="a0a614f1001838d70a79a568753022147"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0a614f1001838d70a79a568753022147">&#9670;&#160;</a></span>set_parameters()</h2>
+<a id="a6abab6d6d852155ce3f8e2f2fb524354" name="a6abab6d6d852155ce3f8e2f2fb524354"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6abab6d6d852155ce3f8e2f2fb524354">&#9670;&#160;</a></span>set_parameters()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -678,8 +678,18 @@ Additional Inherited Members</h2></td></tr>
           <td class="memname">void polyfem::problem::GravityProblem::set_parameters </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em></td><td>)</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>root_path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -689,7 +699,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a10ec97e704f516a2848ad65aadc8fee0">polyfem::assembler::Problem</a>.</p>
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a65d292883349f59cc9faf7c13e0918ba">polyfem::assembler::Problem</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_elastic_problem_8cpp_source.html#l00561">561</a> of file <a class="el" href="_elastic_problem_8cpp_source.html">ElasticProblem.cpp</a>.</p>
 

@@ -1,6 +1,6 @@
 var classpolyfem_1_1assembler_1_1_sum_model =
 [
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_sum_model.html#ac0e7716c9ad1546f2ffa3b677c3e30c4", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_sum_model.html#a07641d67b57632297690bcc53652a497", null ],
     [ "allow_inversion", "classpolyfem_1_1assembler_1_1_sum_model.html#a0fb06227b1bc5de5de9d95ebf7d32ebc", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_sum_model.html#a551d88e5d53abb0e0d75d36aaf63ead3", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_sum_model.html#a614cd1ec2fbd730f9d7192bb86bd40cf", null ],

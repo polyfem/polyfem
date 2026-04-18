@@ -142,8 +142,8 @@ Collaboration diagram for polyfem::assembler::NoDensity:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a974037355f299ef97a8e7b4c49286c9c" id="r_a974037355f299ef97a8e7b4c49286c9c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_no_density.html#a974037355f299ef97a8e7b4c49286c9c">NoDensity</a> ()</td></tr>
 <tr class="separator:a974037355f299ef97a8e7b4c49286c9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a266ff9f252a6469da861f08c8af4051b" id="r_a266ff9f252a6469da861f08c8af4051b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_no_density.html#a266ff9f252a6469da861f08c8af4051b">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const std::string &amp;density_unit) override</td></tr>
-<tr class="separator:a266ff9f252a6469da861f08c8af4051b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a818833d610222a8d94e11277d896f610" id="r_a818833d610222a8d94e11277d896f610"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_no_density.html#a818833d610222a8d94e11277d896f610">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const std::string &amp;density_unit, const std::string &amp;root_path) override</td></tr>
+<tr class="separator:a818833d610222a8d94e11277d896f610"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeb23bdf63b0002e97df52013e57936fc" id="r_aeb23bdf63b0002e97df52013e57936fc"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_no_density.html#aeb23bdf63b0002e97df52013e57936fc">operator()</a> (double px, double py, double pz, double <a class="el" href="_spline_basis3d_8cpp.html#a6150e0515f7202e2fb518f7206ed97dc">x</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a0a2f84ed7838f07779ae24c5a9086d33">y</a>, double <a class="el" href="_spline_basis3d_8cpp.html#a14f94e529dff0b8bfba8e16fbe9755d6">z</a>, double t, int el_id) const override</td></tr>
 <tr class="separator:aeb23bdf63b0002e97df52013e57936fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classpolyfem_1_1assembler_1_1_density"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpolyfem_1_1assembler_1_1_density')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpolyfem_1_1assembler_1_1_density.html">polyfem::assembler::Density</a></td></tr>
@@ -186,8 +186,8 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a266ff9f252a6469da861f08c8af4051b" name="a266ff9f252a6469da861f08c8af4051b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a266ff9f252a6469da861f08c8af4051b">&#9670;&#160;</a></span>add_multimaterial()</h2>
+<a id="a818833d610222a8d94e11277d896f610" name="a818833d610222a8d94e11277d896f610"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a818833d610222a8d94e11277d896f610">&#9670;&#160;</a></span>add_multimaterial()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -211,7 +211,13 @@ Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>density_unit</em>&#160;</td>
+          <td class="paramname"><em>density_unit</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>root_path</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -226,7 +232,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_density.html#a5d48b19ebc812f9818a1d94f6fb882fd">polyfem::assembler::Density</a>.</p>
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_density.html#aeeb7a39ea4187bc98d4384c8018d14e7">polyfem::assembler::Density</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_mat_params_8hpp_source.html#l00133">133</a> of file <a class="el" href="_mat_params_8hpp_source.html">MatParams.hpp</a>.</p>
 

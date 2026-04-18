@@ -1,7 +1,7 @@
 var classpolyfem_1_1assembler_1_1_viscous_damping =
 [
     [ "ViscousDamping", "classpolyfem_1_1assembler_1_1_viscous_damping.html#aff5c5acf1dc89ce69ca03200b9cb98e9", null ],
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_viscous_damping.html#aa997e8b00c15e1e0f2500cdae74d7862", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_viscous_damping.html#a8bc682d3f68f508145a852eda83e85b5", null ],
     [ "assemble_energy", "classpolyfem_1_1assembler_1_1_viscous_damping.html#a0dcf0db6270fc7b52a74a498a8d3eb3a", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_viscous_damping.html#a66c7fdd502a6e57c6ef821261ec22b19", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_viscous_damping.html#a15ecbd96a1a15e9b7ff57413e7d9753b", null ],

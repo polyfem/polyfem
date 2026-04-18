@@ -155,8 +155,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a425e6013607e9f28745d7c8c53434179"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afbac577a4d30e6c481be548afd978572" id="r_afbac577a4d30e6c481be548afd978572"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#afbac577a4d30e6c481be548afd978572">is_constant_in_time</a> () const override</td></tr>
 <tr class="separator:afbac577a4d30e6c481be548afd978572"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6f47de54c9af214b62dd3bcaff74768e" id="r_a6f47de54c9af214b62dd3bcaff74768e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#a6f47de54c9af214b62dd3bcaff74768e">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params) override</td></tr>
-<tr class="separator:a6f47de54c9af214b62dd3bcaff74768e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c913cb2940228882448fcc8cd6144ee" id="r_a8c913cb2940228882448fcc8cd6144ee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_torsion_elastic_problem.html#a8c913cb2940228882448fcc8cd6144ee">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const std::string &amp;root_path) override</td></tr>
+<tr class="separator:a8c913cb2940228882448fcc8cd6144ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classpolyfem_1_1assembler_1_1_problem"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpolyfem_1_1assembler_1_1_problem')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html">polyfem::assembler::Problem</a></td></tr>
 <tr class="memitem:ab7bc716ad17294502839aa1435265cd1 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem" id="r_ab7bc716ad17294502839aa1435265cd1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#ab7bc716ad17294502839aa1435265cd1">Problem</a> (const std::string &amp;<a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a49bcc436f56b6ac1c201261495bb333c">name</a>)</td></tr>
 <tr class="separator:ab7bc716ad17294502839aa1435265cd1 inherit pub_methods_classpolyfem_1_1assembler_1_1_problem"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -514,8 +514,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="a6f47de54c9af214b62dd3bcaff74768e" name="a6f47de54c9af214b62dd3bcaff74768e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6f47de54c9af214b62dd3bcaff74768e">&#9670;&#160;</a></span>set_parameters()</h2>
+<a id="a8c913cb2940228882448fcc8cd6144ee" name="a8c913cb2940228882448fcc8cd6144ee"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8c913cb2940228882448fcc8cd6144ee">&#9670;&#160;</a></span>set_parameters()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -527,8 +527,18 @@ Here is the call graph for this function:</div>
           <td class="memname">void polyfem::problem::TorsionElasticProblem::set_parameters </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em></td><td>)</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>root_path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -538,7 +548,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a10ec97e704f516a2848ad65aadc8fee0">polyfem::assembler::Problem</a>.</p>
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a65d292883349f59cc9faf7c13e0918ba">polyfem::assembler::Problem</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_elastic_problem_8cpp_source.html#l00080">80</a> of file <a class="el" href="_elastic_problem_8cpp_source.html">ElasticProblem.cpp</a>.</p>
 

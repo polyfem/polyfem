@@ -1,6 +1,6 @@
 var classpolyfem_1_1assembler_1_1_multi_model =
 [
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_multi_model.html#a3e13177b51597598e2b79c4f781ff600", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_multi_model.html#ae6272c737b7d637e28ad18352502d283", null ],
     [ "allow_inversion", "classpolyfem_1_1assembler_1_1_multi_model.html#a2129c1ca8ddd63ee7c7b36350523e366", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_multi_model.html#a6a5547e3ddfa78abdb9fb12af42b5a36", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_multi_model.html#a535cf3a88a39fa73b0e844597ddfdc35", null ],

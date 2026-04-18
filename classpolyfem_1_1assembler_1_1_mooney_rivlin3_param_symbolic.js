@@ -1,7 +1,7 @@
 var classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_symbolic =
 [
     [ "MooneyRivlin3ParamSymbolic", "classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_symbolic.html#aa468c48e0e3f665063d9bbf976dc5ef5", null ],
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_symbolic.html#ab038626c96d70573217e6f30f21a7e98", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_symbolic.html#acebead7b48d9a3149c3f39573f39bffd", null ],
     [ "allow_inversion", "classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_symbolic.html#a762a02a82fd814b070f6fd0161f885e1", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_symbolic.html#a1839570f0b562da37c5749f5c664bfbe", null ],
     [ "assemble_hessian", "classpolyfem_1_1assembler_1_1_mooney_rivlin3_param_symbolic.html#aef5eb0e10e980353c0c00c605d360a71", null ],

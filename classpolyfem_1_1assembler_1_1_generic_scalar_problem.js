@@ -20,7 +20,7 @@ var classpolyfem_1_1assembler_1_1_generic_scalar_problem =
     [ "neumann_bc", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#aea31b32c1834fef06b028268ec042560", null ],
     [ "neumann_nodal_value", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#ae76ab9703370242db85d92b45be0e056", null ],
     [ "rhs", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a1cd5b360096c9a0f3910beb9ce474b9c", null ],
-    [ "set_parameters", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a1893d02c1123a15dccbe4b98f1e3c5d4", null ],
+    [ "set_parameters", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#af19715a20a188f76baa8ac2b124321d4", null ],
     [ "set_time_dependent", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#ad65948c645dd5271889a5914add45adb", null ],
     [ "set_units", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#ad1a65ec58b4e1fcf8d41339b77759234", null ],
     [ "update_nodes", "classpolyfem_1_1assembler_1_1_generic_scalar_problem.html#a3f25b6e94ffe26d31a9a24643700ff0a", null ],

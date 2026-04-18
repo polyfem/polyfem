@@ -10,6 +10,6 @@ var classpolyfem_1_1problem_1_1_gravity_problem =
     [ "is_scalar", "classpolyfem_1_1problem_1_1_gravity_problem.html#afbfde943ea4b3661e379a4c67b86e3cd", null ],
     [ "is_time_dependent", "classpolyfem_1_1problem_1_1_gravity_problem.html#aebbef0b54680ea4538ef5bf4d730e7e7", null ],
     [ "rhs", "classpolyfem_1_1problem_1_1_gravity_problem.html#a6adb51225a475e44e3cdba56915ed7ca", null ],
-    [ "set_parameters", "classpolyfem_1_1problem_1_1_gravity_problem.html#a0a614f1001838d70a79a568753022147", null ],
+    [ "set_parameters", "classpolyfem_1_1problem_1_1_gravity_problem.html#a6abab6d6d852155ce3f8e2f2fb524354", null ],
     [ "force_", "classpolyfem_1_1problem_1_1_gravity_problem.html#a9edb8c650232babb711f277e3ca16d48", null ]
 ];

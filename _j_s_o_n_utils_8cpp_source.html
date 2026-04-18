@@ -264,7 +264,7 @@ $(document).ready(function(){initNavTree('_j_s_o_n_utils_8cpp_source.html',''); 
 <div class="foldopen" id="foldopen00131" data-start="{" data-end="}">
 <div class="line"><a id="l00131" name="l00131"></a><span class="lineno"><a class="line" href="namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a">  131</a></span>        <span class="keywordtype">bool</span> <a class="code hl_function" href="namespacepolyfem_1_1utils.html#aa57e548cd0726262758fcc6b16fe0b0a">is_param_valid</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, <span class="keyword">const</span> std::string &amp;key)</div>
 <div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        {</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>            <span class="keywordflow">return</span> params.contains(key) &amp;&amp; !params[key].is_null();</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>            <span class="keywordflow">return</span> !params.is_null() &amp;&amp; params.contains(key) &amp;&amp; !params[key].is_null();</div>
 <div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        }</div>
 </div>
 <div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    } <span class="comment">// namespace utils</span></div>

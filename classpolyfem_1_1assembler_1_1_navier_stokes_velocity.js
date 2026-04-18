@@ -1,7 +1,7 @@
 var classpolyfem_1_1assembler_1_1_navier_stokes_velocity =
 [
     [ "NavierStokesVelocity", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a1174fbaa74996a561427a2c80c9468d4", null ],
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a40545084c0865df4acf81fca8c1e0fa2", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#ad9a951eaa37dc47f543153e863d7a480", null ],
     [ "assemble_energy", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a0dcf0db6270fc7b52a74a498a8d3eb3a", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a66c7fdd502a6e57c6ef821261ec22b19", null ],
     [ "assemble_gradient", "classpolyfem_1_1assembler_1_1_navier_stokes_velocity.html#a395f40aed1488d7be5041f2cdf0ca4ad", null ],

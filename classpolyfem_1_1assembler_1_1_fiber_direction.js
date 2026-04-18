@@ -2,7 +2,7 @@ var classpolyfem_1_1assembler_1_1_fiber_direction =
 [
     [ "FiberDirection", "classpolyfem_1_1assembler_1_1_fiber_direction.html#a971449954c20542a3413bdb007ba68d5", null ],
     [ "~FiberDirection", "classpolyfem_1_1assembler_1_1_fiber_direction.html#a751f978763c73d6fc1e80cbc4b5869aa", null ],
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_fiber_direction.html#a981768fbc3fc3b346366f45f00d494d8", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_fiber_direction.html#aafe84e9fbfe4972de5882c43b5d9c275", null ],
     [ "has_rotation", "classpolyfem_1_1assembler_1_1_fiber_direction.html#a60018e39a9e328c674160bd71a4f49eb", null ],
     [ "operator()", "classpolyfem_1_1assembler_1_1_fiber_direction.html#ad9115f906e6bb322de6262059f4f0467", null ],
     [ "operator()", "classpolyfem_1_1assembler_1_1_fiber_direction.html#aab88013eaf535a9e97b54f3a66e50c3d", null ],

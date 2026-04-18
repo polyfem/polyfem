@@ -151,8 +151,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a1fe3e495c6380af680921474de733915"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6d23254ebf04f49597121aa74a878397" id="r_a6d23254ebf04f49597121aa74a878397"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_kernel_problem.html#a6d23254ebf04f49597121aa74a878397">rhs</a> (const <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html">assembler::Assembler</a> &amp;assembler, const Eigen::MatrixXd &amp;pts, const double t, Eigen::MatrixXd &amp;<a class="el" href="_assembler_8cpp.html#a3c8bc0bb4f045bfe78d1196cb786792c">val</a>) const override</td></tr>
 <tr class="separator:a6d23254ebf04f49597121aa74a878397"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe745f16c75df5e8d7f6301cc1ac0adb" id="r_afe745f16c75df5e8d7f6301cc1ac0adb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_kernel_problem.html#afe745f16c75df5e8d7f6301cc1ac0adb">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params) override</td></tr>
-<tr class="separator:afe745f16c75df5e8d7f6301cc1ac0adb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a956f74f38b2ab114a6bce10b3779582e" id="r_a956f74f38b2ab114a6bce10b3779582e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_kernel_problem.html#a956f74f38b2ab114a6bce10b3779582e">set_parameters</a> (const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const std::string &amp;root_path) override</td></tr>
+<tr class="separator:a956f74f38b2ab114a6bce10b3779582e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ae35168ec08106ffada783ba52aa30c" id="r_a5ae35168ec08106ffada783ba52aa30c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1problem_1_1_kernel_problem.html#a5ae35168ec08106ffada783ba52aa30c">is_scalar</a> () const override</td></tr>
 <tr class="separator:a5ae35168ec08106ffada783ba52aa30c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classpolyfem_1_1problem_1_1_problem_with_solution"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classpolyfem_1_1problem_1_1_problem_with_solution')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classpolyfem_1_1problem_1_1_problem_with_solution.html">polyfem::problem::ProblemWithSolution</a></td></tr>
@@ -538,8 +538,8 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a id="afe745f16c75df5e8d7f6301cc1ac0adb" name="afe745f16c75df5e8d7f6301cc1ac0adb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afe745f16c75df5e8d7f6301cc1ac0adb">&#9670;&#160;</a></span>set_parameters()</h2>
+<a id="a956f74f38b2ab114a6bce10b3779582e" name="a956f74f38b2ab114a6bce10b3779582e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a956f74f38b2ab114a6bce10b3779582e">&#9670;&#160;</a></span>set_parameters()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -551,8 +551,18 @@ Here is the call graph for this function:</div>
           <td class="memname">void polyfem::problem::KernelProblem::set_parameters </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;&#160;</td>
-          <td class="paramname"><em>params</em></td><td>)</td>
+          <td class="paramname"><em>params</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>root_path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -562,7 +572,7 @@ Here is the call graph for this function:</div>
 </table>
 </div><div class="memdoc">
 
-<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a10ec97e704f516a2848ad65aadc8fee0">polyfem::assembler::Problem</a>.</p>
+<p>Reimplemented from <a class="el" href="classpolyfem_1_1assembler_1_1_problem.html#a65d292883349f59cc9faf7c13e0918ba">polyfem::assembler::Problem</a>.</p>
 
 <p class="definition">Definition at line <a class="el" href="_kernel_problem_8cpp_source.html#l00210">210</a> of file <a class="el" href="_kernel_problem_8cpp_source.html">KernelProblem.cpp</a>.</p>
 

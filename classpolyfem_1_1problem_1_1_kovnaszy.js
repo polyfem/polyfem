@@ -10,7 +10,7 @@ var classpolyfem_1_1problem_1_1_kovnaszy =
     [ "is_scalar", "classpolyfem_1_1problem_1_1_kovnaszy.html#ae11d548f75aa981093fdff6b55bbd20b", null ],
     [ "is_time_dependent", "classpolyfem_1_1problem_1_1_kovnaszy.html#a6468840dad58e13dee5e4bb1dda2e688", null ],
     [ "rhs", "classpolyfem_1_1problem_1_1_kovnaszy.html#af65806ac8250906e032843540562add0", null ],
-    [ "set_parameters", "classpolyfem_1_1problem_1_1_kovnaszy.html#a07cbaf805c0030195756722d23e680e7", null ],
+    [ "set_parameters", "classpolyfem_1_1problem_1_1_kovnaszy.html#ae9952b9134a5509ea750ed1551195ad3", null ],
     [ "is_time_dependent_", "classpolyfem_1_1problem_1_1_kovnaszy.html#ae961c8a221680d3c6d38d89b7327cd37", null ],
     [ "viscosity_", "classpolyfem_1_1problem_1_1_kovnaszy.html#a11425fe7f6dce2591bb556327ca26ae2", null ]
 ];

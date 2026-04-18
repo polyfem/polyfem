@@ -138,8 +138,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ab96c542a1889c928cd34ed30b31a4e70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a31eb4bd0755f25c7bb4a9a514dd4e067" id="r_a31eb4bd0755f25c7bb4a9a514dd4e067"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_all_elastic_materials.html#a31eb4bd0755f25c7bb4a9a514dd4e067">set_size</a> (const int size)</td></tr>
 <tr class="separator:a31eb4bd0755f25c7bb4a9a514dd4e067"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1925293a7f796e9e4b773795a797a1e0" id="r_a1925293a7f796e9e4b773795a797a1e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_all_elastic_materials.html#a1925293a7f796e9e4b773795a797a1e0">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;units)</td></tr>
-<tr class="separator:a1925293a7f796e9e4b773795a797a1e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab868c017c1eb24a0ba70b15342cc6083" id="r_ab868c017c1eb24a0ba70b15342cc6083"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_all_elastic_materials.html#ab868c017c1eb24a0ba70b15342cc6083">add_multimaterial</a> (const int index, const <a class="el" href="namespacepolyfem.html#a77fa8fe96825827f2af726fcf6405d15">json</a> &amp;params, const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;units, const std::string &amp;root_path)</td></tr>
+<tr class="separator:ab868c017c1eb24a0ba70b15342cc6083"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a51319d77b2ae1767aba5c80ad8e0b88d" id="r_a51319d77b2ae1767aba5c80ad8e0b88d"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classpolyfem_1_1assembler_1_1_elasticity_n_l_assembler.html">assembler::ElasticityNLAssembler</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_all_elastic_materials.html#a51319d77b2ae1767aba5c80ad8e0b88d">get_assembler</a> (const std::string &amp;name) const</td></tr>
 <tr class="separator:a51319d77b2ae1767aba5c80ad8e0b88d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a89708719e1044f80a23e5c8428fd6313" id="r_a89708719e1044f80a23e5c8428fd6313"><td class="memItemLeft" align="right" valign="top">std::map&lt; std::string, <a class="el" href="classpolyfem_1_1assembler_1_1_assembler.html#a78bc1c7356d5a01612532c061eb9345f">Assembler::ParamFunc</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpolyfem_1_1assembler_1_1_all_elastic_materials.html#a89708719e1044f80a23e5c8428fd6313">parameters</a> () const</td></tr>
@@ -182,8 +182,8 @@ Here is the call graph for this function:</div>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a1925293a7f796e9e4b773795a797a1e0" name="a1925293a7f796e9e4b773795a797a1e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1925293a7f796e9e4b773795a797a1e0">&#9670;&#160;</a></span>add_multimaterial()</h2>
+<a id="ab868c017c1eb24a0ba70b15342cc6083" name="ab868c017c1eb24a0ba70b15342cc6083"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab868c017c1eb24a0ba70b15342cc6083">&#9670;&#160;</a></span>add_multimaterial()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -204,7 +204,13 @@ Here is the call graph for this function:</div>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const <a class="el" href="classpolyfem_1_1_units.html">Units</a> &amp;&#160;</td>
-          <td class="paramname"><em>units</em>&#160;</td>
+          <td class="paramname"><em>units</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>root_path</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -222,7 +228,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_all_elastic_materials_a1925293a7f796e9e4b773795a797a1e0_icgraph.svg" width="442" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+<div class="center"><iframe scrolling="no" frameborder="0" src="classpolyfem_1_1assembler_1_1_all_elastic_materials_ab868c017c1eb24a0ba70b15342cc6083_icgraph.svg" width="442" height="66"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
 </div>
 
 </div>

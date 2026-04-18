@@ -5,6 +5,6 @@ var classpolyfem_1_1problem_1_1_simple_stoke_problem_exact =
     [ "eval_fun", "classpolyfem_1_1problem_1_1_simple_stoke_problem_exact.html#a76c853b72b571b21dcd6437b169d197c", null ],
     [ "eval_fun", "classpolyfem_1_1problem_1_1_simple_stoke_problem_exact.html#a35368c62cef183fb6b82f465aef2ff92", null ],
     [ "is_scalar", "classpolyfem_1_1problem_1_1_simple_stoke_problem_exact.html#a7d3985e96c3e363ff23f8383af161ece", null ],
-    [ "set_parameters", "classpolyfem_1_1problem_1_1_simple_stoke_problem_exact.html#a921c3ae40c7a436eeb7cf0fb4b14502e", null ],
+    [ "set_parameters", "classpolyfem_1_1problem_1_1_simple_stoke_problem_exact.html#ac7eac76bb33deb3199ce52d636d51118", null ],
     [ "func_", "classpolyfem_1_1problem_1_1_simple_stoke_problem_exact.html#a9ac31819cc6522b5980d55ccbda420f1", null ]
 ];

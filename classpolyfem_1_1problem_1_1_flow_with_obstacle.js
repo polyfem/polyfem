@@ -4,6 +4,6 @@ var classpolyfem_1_1problem_1_1_flow_with_obstacle =
     [ "dirichlet_bc", "classpolyfem_1_1problem_1_1_flow_with_obstacle.html#a8940ab850f438a39ccdc3586e5255b7b", null ],
     [ "is_rhs_zero", "classpolyfem_1_1problem_1_1_flow_with_obstacle.html#a8b2cf255fb3cc83c2055b51b5337fe4e", null ],
     [ "rhs", "classpolyfem_1_1problem_1_1_flow_with_obstacle.html#a53c837004e451b1027db769b6ae65c43", null ],
-    [ "set_parameters", "classpolyfem_1_1problem_1_1_flow_with_obstacle.html#a18e71fe7888fb04c0205aededd77640d", null ],
+    [ "set_parameters", "classpolyfem_1_1problem_1_1_flow_with_obstacle.html#a844159dff1672ff9510d7bdb9fa526eb", null ],
     [ "U_", "classpolyfem_1_1problem_1_1_flow_with_obstacle.html#a883bf1709534c5e9cc0d67c264291a38", null ]
 ];

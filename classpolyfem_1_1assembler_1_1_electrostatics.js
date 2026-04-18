@@ -1,7 +1,7 @@
 var classpolyfem_1_1assembler_1_1_electrostatics =
 [
     [ "Electrostatics", "classpolyfem_1_1assembler_1_1_electrostatics.html#ac628b1bee6ca4c9d1e3d29abb2d792df", null ],
-    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_electrostatics.html#a9e664c505db2755db204dffe9834d92f", null ],
+    [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_electrostatics.html#a2ee89cc718d102b5a767e9add59467cc", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_electrostatics.html#a3a2430e7c06e87719b5eb23682ff3d9c", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_electrostatics.html#a99b1ec1698338b2f4eb59d97998f6f0c", null ],
     [ "assemble", "classpolyfem_1_1assembler_1_1_electrostatics.html#adc7b5a738074ba44208a49ea1027fd14", null ],
