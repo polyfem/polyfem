@@ -27,7 +27,7 @@
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 
 #include <polyfem/varforms/VarForm.hpp>
-#include <polyfem/varforms/NonlinearElasticTransientVarForm.hpp>
+#include <polyfem/varforms/VarFormFactory.hpp>
 
 #include <sstream>
 
@@ -270,9 +270,12 @@ namespace polyfem
 
 		const std::string formulation = this->formulation();
 
-		// FIXME
-		variational_formulation = std::make_shared<varform::NonlinearElasticTransientVarForm>();
-		variational_formulation->init(formulation, units, args, output_dir);
+		variational_formulation = varform::VarFormFactory::create(formulation, args);
+		if (variational_formulation)
+		{
+			variational_formulation->init(formulation, units, args, output_dir);
+			return;
+		}
 
 		assembler = assembler::AssemblerUtils::make_assembler(formulation);
 		assert(assembler->name() == formulation);

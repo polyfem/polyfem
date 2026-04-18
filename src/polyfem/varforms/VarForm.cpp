@@ -13,6 +13,7 @@ namespace polyfem::varform
 		reset();
 
 		this->units = units;
+		this->args = args;
 
 		if (utils::is_param_valid(args, "root_path"))
 			root_path = args["root_path"].get<std::string>();
@@ -77,6 +78,11 @@ namespace polyfem::varform
 			logger().error("space/discr_order must be either a number a path or an array");
 			throw std::runtime_error("invalid json");
 		}
+	}
+
+	std::string VarForm::resolve_input_path(const std::string &path, const bool only_if_exists) const
+	{
+		return utils::resolve_path(path, root_path, only_if_exists);
 	}
 
 	std::string VarForm::resolve_output_path(const std::string &path) const

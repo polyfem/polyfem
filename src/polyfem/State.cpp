@@ -520,9 +520,14 @@ namespace polyfem
 			return;
 		}
 
-		variational_formulation->build_basis(*mesh, iso_parametric(), args);
-
 		mesh->prepare_mesh();
+
+		if (variational_formulation)
+		{
+			variational_formulation->build_basis(*mesh, iso_parametric(), args);
+			variational_formulation->sync_state(*this);
+			return;
+		}
 
 		bases.clear();
 		pressure_bases.clear();
@@ -1476,6 +1481,12 @@ namespace polyfem
 			logger().error("Build the bases first!");
 			return;
 		}
+		if (variational_formulation)
+		{
+			variational_formulation->assemble_mass_mat(*mesh, args);
+			variational_formulation->sync_state(*this);
+			return;
+		}
 		if (assembler->name() == "OperatorSplitting")
 		{
 			timings.assembling_stiffness_mat_time = 0;
@@ -1600,6 +1611,12 @@ namespace polyfem
 			logger().error("Build the bases first!");
 			return;
 		}
+		if (variational_formulation)
+		{
+			variational_formulation->assemble_rhs(*mesh, args);
+			variational_formulation->sync_state(*this);
+			return;
+		}
 
 		igl::Timer timer;
 
@@ -1685,6 +1702,16 @@ namespace polyfem
 
 		igl::Timer timer;
 		timer.start();
+		if (variational_formulation)
+		{
+			variational_formulation->solve(sol, pressure);
+			variational_formulation->sync_state(*this);
+			timer.stop();
+			timings.solving_time = timer.getElapsedTime();
+			logger().info(" took {}s", timings.solving_time);
+			return;
+		}
+
 		logger().info("Solving {}", assembler->name());
 
 		init_solve(sol, pressure);

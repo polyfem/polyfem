@@ -16,6 +16,8 @@
 
 namespace polyfem
 {
+	class State;
+
 	namespace varform
 	{
 		class VarForm
@@ -26,14 +28,19 @@ namespace polyfem
 			virtual void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path);
 			virtual void load_mesh(const mesh::Mesh &mesh, const json &args) = 0;
 			virtual void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) = 0;
-			virtual void solve(Eigen::MatrixXd &sol) = 0;
+			virtual void assemble_rhs(const mesh::Mesh &mesh, const json &args) = 0;
+			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) = 0;
+			virtual void solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure) = 0;
+			virtual void sync_state(State &state) const = 0;
 
 		protected:
+			std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const;
 			std::string resolve_output_path(const std::string &path) const;
 
 			/// current problem, it contains rhs and bc
 			std::shared_ptr<assembler::Problem> problem;
 			Units units;
+			json args;
 
 			std::vector<std::shared_ptr<solver::Form>> forms;
 

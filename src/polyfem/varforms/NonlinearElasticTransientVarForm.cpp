@@ -1,11 +1,15 @@
 #include "NonlinearElasticTransientVarForm.hpp"
 
+#include <polyfem/State.hpp>
+
 #include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/MacroStrain.hpp>
 #include <polyfem/assembler/MultiModel.hpp>
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/mesh/collision_proxy/CollisionProxy.hpp>
+#include <polyfem/mesh/GeometryReader.hpp>
 
 #include <polyfem/refinement/APriori.hpp>
 
@@ -19,19 +23,59 @@
 #include <polyfem/basis/PolygonalBasis3d.hpp>
 
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
+#include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/utils/Jacobian.hpp>
 
 #include <polyfem/problem/KernelProblem.hpp>
 #include <polyfem/problem/ProblemFactory.hpp>
 
+#include <polyfem/io/MatrixIO.hpp>
+#include <polyfem/io/OBJWriter.hpp>
+
+#include <polyfem/solver/ALSolver.hpp>
+#include <polyfem/solver/NLProblem.hpp>
+#include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
+
 #include <igl/Timer.h>
 #include <igl/edges.h>
 
+#include <ipc/ipc.hpp>
+
+#include <polysolve/nonlinear/Solver.hpp>
+
 namespace polyfem::varform
 {
+	using namespace solver;
+	using namespace time_integrator;
+
 	namespace
 	{
+		void copy_local_boundaries(
+			const std::vector<mesh::LocalBoundary> &from,
+			std::vector<mesh::LocalBoundary> &to)
+		{
+			to.clear();
+			to.reserve(from.size());
+			for (const auto &lb : from)
+				to.emplace_back(lb);
+		}
+
+		void copy_local_boundary_map(
+			const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &from,
+			std::unordered_map<int, std::vector<mesh::LocalBoundary>> &to)
+		{
+			to.clear();
+			to.reserve(from.size());
+			for (const auto &[id, boundaries] : from)
+			{
+				auto &dst = to[id];
+				copy_local_boundaries(boundaries, dst);
+			}
+		}
+
 		/// Assumes in nodes are in order vertex, edge, face, then cell nodes.
 		void build_in_node_to_in_primitive(const mesh::Mesh &mesh, const mesh::MeshNodes &mesh_nodes,
 										   Eigen::VectorXi &in_node_to_in_primitive,
@@ -206,6 +250,10 @@ namespace polyfem::varform
 
 		n_bases = 0;
 		n_geom_bases = 0;
+		n_pressure_bases = 0;
+		rhs.resize(0, 0);
+		mass.resize(0, 0);
+		mesh_ = nullptr;
 	}
 
 	void NonlinearElasticTransientVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
@@ -264,6 +312,10 @@ namespace polyfem::varform
 
 	void NonlinearElasticTransientVarForm::load_mesh(const mesh::Mesh &mesh, const json &args)
 	{
+		mesh_ = &mesh;
+		set_materials(*assembler);
+		set_materials(*mass_matrix_assembler);
+
 		if (assembler::MultiModel *mm = dynamic_cast<assembler::MultiModel *>(assembler.get()))
 		{
 			assert(args["materials"].is_array());
@@ -281,13 +333,23 @@ namespace polyfem::varform
 			mm->init_multimodels(materials);
 		}
 
+		logger().info("Loading obstacles...");
+		obstacle = mesh::read_obstacle_geometry(
+			units,
+			args["geometry"],
+			utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
+			utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
+			root_path, mesh.dimension());
+
 		problem->init(mesh);
 	}
 
 	void NonlinearElasticTransientVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
 	{
 		using namespace mesh;
+		mesh_ = &mesh;
 		this->iso_parametric = iso_parametric;
+		remesh_enabled = args["space"]["remesh"]["enabled"];
 
 		VarForm::assign_discr_orders(args["space"]["discr_order"], mesh, disc_orders);
 
@@ -822,12 +884,153 @@ namespace polyfem::varform
 		collision_mesh.init_area_jacobians();
 	}
 
-	void NonlinearElasticTransientVarForm::solve(Eigen::MatrixXd &sol)
+	void NonlinearElasticTransientVarForm::set_materials(assembler::Assembler &assembler) const
+	{
+		assert(mesh_ != nullptr);
+		const int size = this->assembler && (this->assembler->is_tensor() || this->assembler->is_fluid()) ? mesh_->dimension() : 1;
+		assembler.set_size(size);
+
+		if (!utils::is_param_valid(args, "materials"))
+			return;
+
+		std::vector<int> body_ids(mesh_->n_elements());
+		for (int i = 0; i < mesh_->n_elements(); ++i)
+			body_ids[i] = mesh_->get_body_id(i);
+
+		assembler.set_materials(body_ids, args["materials"], units);
+	}
+
+	std::vector<int> NonlinearElasticTransientVarForm::primitive_to_node() const
+	{
+		const auto &nodes = iso_parametric ? mesh_nodes : geom_mesh_nodes;
+		if (!nodes)
+			return {};
+
+		auto indices = nodes->primitive_to_node();
+		indices.resize(mesh_->n_vertices());
+		return indices;
+	}
+
+	std::vector<int> NonlinearElasticTransientVarForm::node_to_primitive() const
+	{
+		auto p2n = primitive_to_node();
+		std::vector<int> indices;
+		indices.resize(n_geom_bases);
+		for (int i = 0; i < p2n.size(); i++)
+			indices[p2n[i]] = i;
+		return indices;
+	}
+
+	QuadratureOrders NonlinearElasticTransientVarForm::n_boundary_samples() const
+	{
+		using assembler::AssemblerUtils;
+		const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
+		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
+		const int discr_order = std::max(disc_orders.maxCoeff(), gdiscr_order);
+
+		const int n_b_samples = std::max(n_b_samples_j, AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::POLY, mesh_->dimension()));
+		return {{n_b_samples, n_b_samples}};
+	}
+
+	std::shared_ptr<assembler::PressureAssembler> NonlinearElasticTransientVarForm::build_pressure_assembler() const
+	{
+		const int size = problem->is_scalar() ? 1 : mesh_->dimension();
+
+		return std::make_shared<assembler::PressureAssembler>(
+			*assembler, *mesh_, obstacle,
+			local_pressure_boundary,
+			local_pressure_cavity,
+			boundary_nodes,
+			primitive_to_node(), node_to_primitive(),
+			n_bases, size, bases, geom_bases(), *problem);
+	}
+
+	void NonlinearElasticTransientVarForm::assemble_rhs(const mesh::Mesh &mesh, const json &args)
+	{
+		mesh_ = &mesh;
+
+		igl::Timer timer;
+		json p_params = {};
+		p_params["formulation"] = assembler->name();
+		p_params["root_path"] = root_path;
+		{
+			RowVectorNd min, max, delta;
+			mesh.bounding_box(min, max);
+			delta = (max - min) / 2. + min;
+			if (mesh.is_volume())
+				p_params["bbox_center"] = {delta(0), delta(1), delta(2)};
+			else
+				p_params["bbox_center"] = {delta(0), delta(1)};
+		}
+		problem->set_parameters(p_params);
+
+		rhs.resize(0, 0);
+
+		timer.start();
+		logger().info("Assigning rhs...");
+
+		assert(solve_data.rhs_assembler != nullptr);
+		solve_data.rhs_assembler->assemble(mass_matrix_assembler->density(), rhs);
+		rhs *= -1;
+
+		timings.assigning_rhs_time = timer.getElapsedTime();
+		logger().info(" took {}s", timings.assigning_rhs_time);
+	}
+
+	void NonlinearElasticTransientVarForm::assemble_mass_mat(const mesh::Mesh &mesh, const json &args)
+	{
+		mesh_ = &mesh;
+
+		if (!problem->is_time_dependent())
+		{
+			avg_mass = 1;
+			timings.assembling_mass_mat_time = 0;
+			return;
+		}
+
+		mass.resize(0, 0);
+
+		igl::Timer timer;
+		timer.start();
+		logger().info("Assembling mass mat...");
+
+		mass_matrix_assembler->assemble(mesh.is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, 0, mass, true);
+
+		assert(mass.size() > 0);
+
+		avg_mass = 0;
+		for (int k = 0; k < mass.outerSize(); ++k)
+		{
+			for (StiffnessMatrix::InnerIterator it(mass, k); it; ++it)
+			{
+				assert(it.col() == k);
+				avg_mass += it.value();
+			}
+		}
+
+		avg_mass /= mass.rows();
+		logger().info("average mass {}", avg_mass);
+
+		if (args["solver"]["advanced"]["lump_mass_matrix"])
+			mass = utils::lump_matrix(mass);
+
+		timer.stop();
+		timings.assembling_mass_mat_time = timer.getElapsedTime();
+		logger().info(" took {}s", timings.assembling_mass_mat_time);
+
+		stats.nn_zero = mass.nonZeros();
+		stats.num_dofs = mass.rows();
+		stats.mat_size = (long long)mass.rows() * (long long)mass.cols();
+		logger().info("sparsity: {}/{}", stats.nn_zero, stats.mat_size);
+	}
+
+	void NonlinearElasticTransientVarForm::solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
 		const bool save = true;
 		const bool save_stats = false;
 		const std::string filename = "";
 		stats.spectrum.setZero();
+		pressure.resize(0, 0);
 
 		igl::Timer timer;
 		timer.start();
@@ -867,21 +1070,13 @@ namespace polyfem::varform
 		{
 			logger().debug("Saving nl stats to {} and {}", resolve_output_path("energy.csv"), resolve_output_path("stats.csv"));
 			energy_csv = std::make_unique<io::EnergyCSVWriter>(resolve_output_path("energy.csv"), solve_data);
-			stats_csv = std::make_unique<io::RuntimeStatsCSVWriter>(resolve_output_path("stats.csv"), *this, t0, dt);
 		}
 
 		// Save the initial solution
 		if (energy_csv)
 			energy_csv->write(save_i, sol);
 
-		save_timestep(t0, save_i, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 		save_i++;
-
-		// Step 0.
-		if (user_post_step)
-		{
-			user_post_step(0, *this, sol, nullptr, nullptr);
-		}
 
 		for (int t = 1; t <= time_steps; ++t)
 		{
@@ -892,44 +1087,10 @@ namespace polyfem::varform
 				solve_tensor_nonlinear(t, sol, true);
 			}
 
-			if (remesh_enabled)
-			{
-				if (energy_csv)
-					energy_csv->write(save_i, sol);
-				// save_timestep(t0 + dt * t, save_i, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
-				save_i++;
-
-				bool remesh_success;
-				{
-					POLYFEM_SCOPED_TIMER(remeshing_time);
-					remesh_success = this->remesh(t0 + dt * t, dt, sol);
-				}
-
-				// Save the solution after remeshing
-				if (energy_csv)
-					energy_csv->write(save_i, sol);
-				// save_timestep(t0 + dt * t, save_i, t0, save_dt, sol, Eigen::MatrixXd()); // no pressure
-				save_i++;
-
-				// Only do global relaxation if remeshing was successful
-				if (remesh_success)
-				{
-					POLYFEM_SCOPED_TIMER(global_relaxation_time);
-					solve_tensor_nonlinear(t, sol, false); // solve the scene again after remeshing
-				}
-			}
-
 			// Always save the solution for consistency
 			if (energy_csv)
 				energy_csv->write(save_i, sol);
-
-			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 			save_i++;
-
-			if (user_post_step)
-			{
-				user_post_step(t, *this, sol, nullptr, nullptr);
-			}
 
 			{
 				POLYFEM_SCOPED_TIMER("Update quantities");
@@ -943,28 +1104,10 @@ namespace polyfem::varform
 			}
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
-			if (time_callback)
-				time_callback(t, time_steps, t0 + dt * t, t0 + dt * time_steps);
-
-			const std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
-			if (!rest_mesh_path.empty())
-			{
-				Eigen::MatrixXd V;
-				Eigen::MatrixXi F;
-				build_mesh_matrices(V, F);
-				io::MshWriter::write(
-					resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], t)),
-					V, F, mesh->get_body_ids(), mesh->is_volume(), /*binary=*/true);
-			}
 
 			const std::string &state_path = resolve_output_path(fmt::format(args["output"]["data"]["state"], t));
 			if (!state_path.empty())
 				solve_data.time_integrator->save_state(state_path);
-
-			// save restart file
-			save_restart_json(t0, dt, t);
-			if (remesh_enabled && stats_csv)
-				stats_csv->write(t, forward_solve_time, remeshing_time, global_relaxation_time, sol);
 		}
 
 		timer.stop();
@@ -1006,7 +1149,7 @@ namespace polyfem::varform
 			// Augmented lagrangian form
 			obstacle.ndof(), args["constraints"]["hard"], args["constraints"]["soft"],
 			// Contact form
-			args["contact"]["enabled"], args["contact"]["periodic"].get<bool>() ? periodic_collision_mesh : collision_mesh, args["contact"]["dhat"],
+			args["contact"]["enabled"], collision_mesh, args["contact"]["dhat"],
 			avg_mass, args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_area_weighting"]) : false,
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_improved_max_operator"]) : false,
 			args["contact"]["use_convergent_formulation"] ? bool(args["contact"]["use_physical_barrier"]) : false,
@@ -1015,7 +1158,7 @@ namespace polyfem::varform
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
-			optimization_enabled == solver::CacheLevel::Derivatives,
+			false,
 			// Smooth Contact Form
 			args["contact"]["use_gcp_formulation"],
 			args["contact"]["alpha_t"],
@@ -1032,9 +1175,9 @@ namespace polyfem::varform
 			args["contact"]["adhesion"]["epsa"],
 			args["solver"]["contact"]["tangential_adhesion_iterations"],
 			// Homogenization
-			macro_strain_constraint,
+			assembler::MacroStrainValue(),
 			// Periodic contact
-			args["contact"]["periodic"], periodic_collision_mesh_to_basis, periodic_bc,
+			false, Eigen::VectorXi(), nullptr,
 			// Friction form
 			args["contact"]["friction_coefficient"],
 			args["contact"]["epsv"],
@@ -1043,7 +1186,7 @@ namespace polyfem::varform
 			args["solver"]["rayleigh_damping"]);
 
 		for (const auto &form : forms)
-			form->set_output_dir(output_dir);
+			form->set_output_dir(output_path);
 
 		if (solve_data.contact_form != nullptr)
 			solve_data.contact_form->save_ccd_debug_meshes = args["output"]["advanced"]["save_ccd_debug_meshes"];
@@ -1065,16 +1208,16 @@ namespace polyfem::varform
 
 		// --------------------------------------------------------------------
 		// Check for initial intersections
-		if (is_contact_enabled())
+		if (args["contact"]["enabled"])
 		{
 			POLYFEM_SCOPED_TIMER("Check for initial intersections");
 
 			const Eigen::MatrixXd displaced = collision_mesh.displace_vertices(
-				utils::unflatten(sol, mesh->dimension()));
+				utils::unflatten(sol, mesh_->dimension()));
 
 			if (ipc::has_intersections(collision_mesh, displaced, ipc::create_broad_phase(args["solver"]["contact"]["CCD"]["broad_phase"])))
 			{
-				OBJWriter::write(
+				io::OBJWriter::write(
 					resolve_output_path("intersection.obj"), displaced,
 					collision_mesh.edges(), collision_mesh.faces());
 				log_and_throw_error("Unable to solve, initial solution has intersections!");
@@ -1096,14 +1239,6 @@ namespace polyfem::varform
 			initial_acceleration(acceleration);
 			assert(acceleration.rows() == sol.size());
 
-			if (optimization_enabled != solver::CacheLevel::None)
-			{
-				if (initial_vel_update.size() == ndof())
-					velocity = initial_vel_update;
-				else
-					initial_vel_update = velocity;
-			}
-
 			solve_data.time_integrator->init(solution, velocity, acceleration, dt);
 		}
 		assert(solve_data.time_integrator != nullptr);
@@ -1114,15 +1249,256 @@ namespace polyfem::varform
 		// --------------------------------------------------------------------
 		// Initialize nonlinear problems
 
-		const int ndof = n_bases * mesh->dimension();
-		solve_data.nl_problem = std::make_shared<NLProblem>(
-			ndof, periodic_bc, t, forms, solve_data.al_form,
+		init_forms(args, mesh_->dimension(), sol, t);
+
+		const int ndof = n_bases * mesh_->dimension();
+		solve_data.nl_problem = std::make_shared<solver::NLProblem>(
+			ndof, nullptr, t, forms, solve_data.al_form,
 			polysolve::linear::Solver::create(args["solver"]["linear"], logger()));
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
 		// --------------------------------------------------------------------
 
 		stats.solver_info = json::array();
+	}
+
+	namespace
+	{
+		bool read_initial_x_from_file(
+			const std::string &state_path,
+			const std::string &x_name,
+			const bool reorder,
+			const Eigen::VectorXi &in_node_to_node,
+			const int dim,
+			Eigen::MatrixXd &x)
+		{
+			if (state_path.empty())
+				return false;
+
+			if (!io::read_matrix(state_path, x_name, x))
+			{
+				logger().debug("Unable to read initial {} from file ({})", x_name, state_path);
+				return false;
+			}
+
+			if (reorder)
+			{
+				const int ndof = in_node_to_node.size() * dim;
+				x.topRows(ndof) = utils::reorder_matrix(x.topRows(ndof), in_node_to_node, -1, dim);
+			}
+
+			return true;
+		}
+	} // namespace
+
+	void NonlinearElasticTransientVarForm::initial_solution(Eigen::MatrixXd &solution) const
+	{
+		assert(solve_data.rhs_assembler != nullptr);
+
+		const bool was_solution_loaded = read_initial_x_from_file(
+			resolve_input_path(args["input"]["data"]["state"]), "u",
+			args["input"]["data"]["reorder"], in_node_to_node,
+			mesh_->dimension(), solution);
+
+		if (!was_solution_loaded)
+		{
+			if (problem->is_time_dependent())
+				solve_data.rhs_assembler->initial_solution(solution);
+			else
+			{
+				solution.resize(rhs.size(), 1);
+				solution.setZero();
+			}
+		}
+	}
+
+	void NonlinearElasticTransientVarForm::initial_velocity(Eigen::MatrixXd &velocity) const
+	{
+		assert(solve_data.rhs_assembler != nullptr);
+
+		const bool was_velocity_loaded = read_initial_x_from_file(
+			resolve_input_path(args["input"]["data"]["state"]), "v",
+			args["input"]["data"]["reorder"], in_node_to_node,
+			mesh_->dimension(), velocity);
+
+		if (!was_velocity_loaded)
+			solve_data.rhs_assembler->initial_velocity(velocity);
+	}
+
+	void NonlinearElasticTransientVarForm::initial_acceleration(Eigen::MatrixXd &acceleration) const
+	{
+		assert(solve_data.rhs_assembler != nullptr);
+
+		const bool was_acceleration_loaded = read_initial_x_from_file(
+			resolve_input_path(args["input"]["data"]["state"]), "a",
+			args["input"]["data"]["reorder"], in_node_to_node,
+			mesh_->dimension(), acceleration);
+
+		if (!was_acceleration_loaded)
+			solve_data.rhs_assembler->initial_acceleration(acceleration);
+	}
+
+	void NonlinearElasticTransientVarForm::solve_tensor_nonlinear(int step, Eigen::MatrixXd &sol, const bool init_lagging)
+	{
+		assert(solve_data.nl_problem != nullptr);
+		solver::NLProblem &nl_problem = *(solve_data.nl_problem);
+
+		assert(sol.size() == rhs.size());
+
+		if (nl_problem.uses_lagging())
+		{
+			if (init_lagging)
+			{
+				POLYFEM_SCOPED_TIMER("Initializing lagging");
+				nl_problem.init_lagging(sol);
+			}
+			logger().info("Lagging iteration 1:");
+		}
+
+		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver =
+			polysolve::nonlinear::Solver::create(args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger());
+
+		ALSolver al_solver(
+			solve_data.al_form,
+			args["solver"]["augmented_lagrangian"]["initial_weight"],
+			args["solver"]["augmented_lagrangian"]["scaling"],
+			args["solver"]["augmented_lagrangian"]["max_weight"],
+			args["solver"]["augmented_lagrangian"]["eta"],
+			[&](const Eigen::VectorXd &x) {
+				this->solve_data.update_barrier_stiffness(sol);
+			});
+
+		al_solver.post_subsolve = [&](const double al_weight) {
+			stats.solver_info.push_back(
+				{{"type", al_weight > 0 ? "al" : "rc"},
+				 {"t", step},
+				 {"info", nl_solver->info()}});
+			if (al_weight > 0)
+				stats.solver_info.back()["weight"] = al_weight;
+		};
+
+		Eigen::MatrixXd prev_sol = sol;
+		al_solver.solve_al(nl_problem, sol,
+						   args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
+
+		al_solver.solve_reduced(nl_problem, sol,
+								args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
+
+		if (args["space"]["advanced"]["count_flipped_els_continuous"])
+		{
+			const auto invalidList = utils::count_invalid(mesh_->dimension(), bases, geom_bases(), sol);
+			logger().debug("Flipped elements (cnt {}) : {}", invalidList.size(), invalidList);
+		}
+
+		const double lagging_tol = args["solver"]["contact"].value("friction_convergence_tol", 1e-2) * units.characteristic_length();
+
+		bool lagging_converged = !nl_problem.uses_lagging();
+		for (int lag_i = 1; !lagging_converged; lag_i++)
+		{
+			Eigen::VectorXd tmp_sol = nl_problem.full_to_reduced(sol);
+
+			nl_problem.update_lagging(tmp_sol, lag_i);
+
+			Eigen::VectorXd grad;
+			nl_problem.gradient(tmp_sol, grad);
+			const double delta_x_norm = (prev_sol - sol).lpNorm<Eigen::Infinity>();
+			logger().debug("Lagging convergence grad_norm={:g} tol={:g} (||Δx||={:g})", grad.norm(), lagging_tol, delta_x_norm);
+			if (grad.norm() <= lagging_tol)
+			{
+				logger().info(
+					"Lagging converged in {:d} iteration(s) (grad_norm={:g} tol={:g})",
+					lag_i, grad.norm(), lagging_tol);
+				lagging_converged = true;
+				break;
+			}
+
+			if (delta_x_norm <= 1e-12)
+			{
+				logger().warn(
+					"Lagging produced tiny update between iterations {:d} and {:d} (grad_norm={:g} grad_tol={:g} ||Δx||={:g} Δx_tol={:g}); stopping early",
+					lag_i - 1, lag_i, grad.norm(), lagging_tol, delta_x_norm, 1e-6);
+				lagging_converged = false;
+				break;
+			}
+
+			if (lag_i >= nl_problem.max_lagging_iterations())
+			{
+				logger().warn(
+					"Lagging failed to converge with {:d} iteration(s) (grad_norm={:g} tol={:g})",
+					lag_i, grad.norm(), lagging_tol);
+				lagging_converged = false;
+				break;
+			}
+
+			logger().info("Lagging iteration {:d}:", lag_i + 1);
+			nl_problem.init(sol);
+			solve_data.update_barrier_stiffness(sol);
+			nl_problem.normalize_forms();
+			nl_solver->minimize(nl_problem, tmp_sol);
+			nl_problem.finish();
+			prev_sol = sol;
+			sol = nl_problem.reduced_to_full(tmp_sol);
+
+			stats.solver_info.push_back(
+				{{"type", "rc"},
+				 {"t", step},
+				 {"lag_i", lag_i},
+				 {"info", nl_solver->info()}});
+		}
+	}
+
+	void NonlinearElasticTransientVarForm::sync_state(State &state) const
+	{
+		state.assembler = assembler;
+		state.mass_matrix_assembler = mass_matrix_assembler;
+		state.mixed_assembler = nullptr;
+		state.pressure_assembler = nullptr;
+		state.elasticity_pressure_assembler = elasticity_pressure_assembler;
+		state.damping_assembler = damping_assembler;
+		state.damping_prev_assembler = damping_prev_assembler;
+		state.problem = problem;
+
+		state.bases = bases;
+		state.pressure_bases.clear();
+		state.geom_bases_ = geom_bases_;
+		state.n_bases = n_bases;
+		state.n_pressure_bases = 0;
+		state.n_geom_bases = n_geom_bases;
+		state.polys = polys;
+		state.polys_3d = polys_3d;
+		state.disc_orders = disc_orders;
+		state.disc_ordersq = disc_ordersq;
+		state.mesh_nodes = mesh_nodes;
+		state.geom_mesh_nodes = geom_mesh_nodes;
+		state.pressure_mesh_nodes = nullptr;
+		state.ass_vals_cache = ass_vals_cache;
+		state.mass_ass_vals_cache = mass_ass_vals_cache;
+		state.pressure_ass_vals_cache.init_empty();
+		state.mass = mass;
+		state.avg_mass = avg_mass;
+		state.rhs = rhs;
+		state.use_avg_pressure = true;
+
+		state.boundary_nodes = boundary_nodes;
+		state.pressure_boundary_nodes.clear();
+		copy_local_boundaries(total_local_boundary, state.total_local_boundary);
+		copy_local_boundaries(local_boundary, state.local_boundary);
+		copy_local_boundaries(local_neumann_boundary, state.local_neumann_boundary);
+		copy_local_boundaries(local_pressure_boundary, state.local_pressure_boundary);
+		copy_local_boundary_map(local_pressure_cavity, state.local_pressure_cavity);
+		state.poly_edge_to_data = poly_edge_to_data;
+		state.dirichlet_nodes = dirichlet_nodes;
+		state.dirichlet_nodes_position = dirichlet_nodes_position;
+		state.neumann_nodes = neumann_nodes;
+		state.neumann_nodes_position = neumann_nodes_position;
+		state.in_node_to_node = in_node_to_node;
+		state.in_primitive_to_primitive = in_primitive_to_primitive;
+
+		state.obstacle = obstacle;
+		state.collision_mesh = collision_mesh;
+		state.solve_data = solve_data;
+		state.timings = timings;
+		state.stats = stats;
 	}
 
 } // namespace polyfem::varform

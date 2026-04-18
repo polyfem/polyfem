@@ -25,7 +25,10 @@ namespace polyfem::varform
 		/// Build FE bases and any discretization-specific state.
 		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
 
-		void solve(Eigen::MatrixXd &sol) override;
+		void assemble_rhs(const mesh::Mesh &mesh, const json &args) override;
+		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
+		void solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure) override;
+		void sync_state(State &state) const override;
 
 	protected:
 		void reset() override;
@@ -38,9 +41,20 @@ namespace polyfem::varform
 		}
 
 	private:
-		bool remesh_enabled;
+		bool remesh_enabled = false;
 
 		void init_solve(Eigen::MatrixXd &sol, const double t);
+		void init_forms(const json &args, const int dim, Eigen::MatrixXd &sol, const double t);
+		void solve_tensor_nonlinear(int step, Eigen::MatrixXd &sol, const bool init_lagging = true);
+
+		void initial_solution(Eigen::MatrixXd &solution) const;
+		void initial_velocity(Eigen::MatrixXd &velocity) const;
+		void initial_acceleration(Eigen::MatrixXd &acceleration) const;
+		void set_materials(assembler::Assembler &assembler) const;
+		std::shared_ptr<assembler::PressureAssembler> build_pressure_assembler() const;
+		QuadratureOrders n_boundary_samples() const;
+		std::vector<int> primitive_to_node() const;
+		std::vector<int> node_to_primitive() const;
 
 		void build_node_mapping(const mesh::Mesh &mesh, const json &args);
 		void build_collision_mesh(const mesh::Mesh &mesh, const json &args);
@@ -55,6 +69,8 @@ namespace polyfem::varform
 			const std::function<std::string(const std::string &)> &resolve_input_path,
 			const Eigen::VectorXi &in_node_to_node,
 			ipc::CollisionMesh &collision_mesh);
+
+		const mesh::Mesh *mesh_ = nullptr;
 
 		mesh::Obstacle obstacle;
 		/// @brief IPC collision mesh
@@ -78,6 +94,7 @@ namespace polyfem::varform
 		int n_bases;
 		/// number of geometric bases
 		int n_geom_bases;
+		int n_pressure_bases = 0;
 
 		/// polygons, used since poly have no geom mapping
 		std::map<int, Eigen::MatrixXd> polys;
@@ -98,6 +115,7 @@ namespace polyfem::varform
 		StiffnessMatrix mass;
 		/// average system mass, used for contact with IPC
 		double avg_mass;
+		Eigen::MatrixXd rhs;
 
 		/// list of boundary nodes
 		std::vector<int> boundary_nodes;

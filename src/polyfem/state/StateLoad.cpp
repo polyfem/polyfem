@@ -63,6 +63,17 @@ namespace polyfem
 		if (!skip_boundary_sideset)
 			mesh->compute_boundary_ids(boundary_marker);
 
+		if (variational_formulation)
+		{
+			timer.stop();
+			logger().info(" took {}s", timer.getElapsedTime());
+
+			out_geom.init_sampler(*mesh, args["output"]["paraview"]["vismesh_rel_area"]);
+			variational_formulation->load_mesh(*mesh, args);
+			variational_formulation->sync_state(*this);
+			return;
+		}
+
 		std::vector<std::shared_ptr<assembler::Assembler>> assemblers;
 		assemblers.push_back(assembler);
 		assemblers.push_back(mass_matrix_assembler);
@@ -131,33 +142,43 @@ namespace polyfem
 
 		logger().info("mesh bb min [{}], max [{}]", min, max);
 
-		std::vector<std::shared_ptr<assembler::Assembler>> assemblers;
-		assemblers.push_back(assembler);
-		assemblers.push_back(mass_matrix_assembler);
-		if (mixed_assembler != nullptr)
-			// TODO: assemblers.push_back(mixed_assembler);
-			mixed_assembler->set_size(mesh->dimension());
-		if (pressure_assembler != nullptr)
-			assemblers.push_back(pressure_assembler);
-		set_materials(assemblers);
+		if (variational_formulation)
+		{
+			timer.stop();
+			logger().info(" took {}s", timer.getElapsedTime());
 
-		timer.stop();
-		logger().info(" took {}s", timer.getElapsedTime());
+			out_geom.init_sampler(*mesh, args["output"]["paraview"]["vismesh_rel_area"]);
+			variational_formulation->load_mesh(*mesh, args);
+			variational_formulation->sync_state(*this);
+		}
+		else
+		{
+			std::vector<std::shared_ptr<assembler::Assembler>> assemblers;
+			assemblers.push_back(assembler);
+			assemblers.push_back(mass_matrix_assembler);
+			if (mixed_assembler != nullptr)
+				// TODO: assemblers.push_back(mixed_assembler);
+				mixed_assembler->set_size(mesh->dimension());
+			if (pressure_assembler != nullptr)
+				assemblers.push_back(pressure_assembler);
+			set_materials(assemblers);
 
-		out_geom.init_sampler(*mesh, args["output"]["paraview"]["vismesh_rel_area"]);
+			timer.stop();
+			logger().info(" took {}s", timer.getElapsedTime());
 
-		timer.start();
-		logger().info("Loading obstacles...");
-		obstacle = mesh::read_obstacle_geometry(
-			units,
-			args["geometry"],
-			utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
-			utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
-			args["root_path"], mesh->dimension(), names, vertices, cells);
-		timer.stop();
-		logger().info(" took {}s", timer.getElapsedTime());
+			out_geom.init_sampler(*mesh, args["output"]["paraview"]["vismesh_rel_area"]);
 
-		variational_formulation->load_mesh(*mesh, args);
+			timer.start();
+			logger().info("Loading obstacles...");
+			obstacle = mesh::read_obstacle_geometry(
+				units,
+				args["geometry"],
+				utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
+				utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
+				args["root_path"], mesh->dimension(), names, vertices, cells);
+			timer.stop();
+			logger().info(" took {}s", timer.getElapsedTime());
+		}
 
 #ifdef POLYFEM_WITH_BEZIER
 		if (!mesh->is_simplicial())
