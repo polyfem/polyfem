@@ -1232,7 +1232,6 @@
         "optional": [
             "dbar_factor",
             "quadrature_order",
-            "exponent",
             "normalize_weights",
             "barrier"
         ]
@@ -1251,13 +1250,6 @@
         "doc": "Quadrature order for high-order contact."
     },
     {
-        "pointer": "/contact/high_order_contact_params/exponent",
-        "type": "int",
-        "default": 0,
-        "min": 0,
-        "doc": "Exponent for high-order contact. Default is 0, which sets it to dimension-1."
-    },
-    {
         "pointer": "/contact/high_order_contact_params/normalize_weights",
         "default": true,
         "type": "bool",
@@ -1265,9 +1257,9 @@
     },
     {
         "pointer": "/contact/high_order_contact_params/barrier",
-        "default": "normalized_log",
+        "default": "quadratic_inverse",
         "type": "string",
-        "doc": "Barrier function for the high-order contact potential. Options: 'log' (default, ClampedLogBarrier), 'normalized_log' (NormalizedClampedLogBarrier)."
+        "doc": "Barrier function for the high-order contact potential. Options: 'log' (ClampedLogBarrier), 'normalized_log' (NormalizedClampedLogBarrier), 'linear_inverse' (InversePowerBarrier with p=1), 'quadratic_inverse' (default, InversePowerBarrier with p=2)."
     },
     {
         "pointer": "/contact/use_high_order_formulation",
@@ -2464,9 +2456,16 @@
             "nodes",
             "forces",
             "force_high_order",
-            "jacobian_validity"
+            "jacobian_validity",
+            "obstacle_volume"
         ],
         "doc": "Optional fields in the output"
+    },
+    {
+        "pointer": "/output/paraview/options/obstacle_volume",
+        "default": true,
+        "type": "bool",
+        "doc": "If true and the obstacle was loaded from a tetrahedral mesh, export the obstacle in volumetric (tet) form instead of its surface in the paraview output."
     },
     {
         "pointer": "/output/paraview/options/use_hdf5",
