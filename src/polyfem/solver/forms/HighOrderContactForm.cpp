@@ -34,7 +34,7 @@ namespace polyfem::solver
 		}
 	} // namespace
 
-	std::shared_ptr<ipc::Barrier> barrier_from_params(const json &high_order_contact_params, const int power)
+	std::shared_ptr<ipc::Barrier> barrier_from_params(const json &high_order_contact_params)
 	{
 		const std::string name = high_order_contact_params.value("barrier", std::string("quadratic_inverse"));
 		if (name == "log")
