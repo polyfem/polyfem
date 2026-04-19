@@ -3,6 +3,7 @@
 #include "ContactForm.hpp"
 #include <ipc/potentials/barrier_potential.hpp>
 #include <ipc/collisions/normal/normal_collisions.hpp>
+#include <ipc/barrier/barrier.hpp>
 
 namespace polyfem::solver
 {
@@ -23,7 +24,8 @@ namespace polyfem::solver
 					const int ccd_max_iterations,
 					const double dhat_epsilon_scale,
 					const ipc::NormalCollisions::CollisionSetType collision_set_type = ipc::NormalCollisions::CollisionSetType::IPC,
-					const bool skip_obstacles = false);
+					const bool skip_obstacles = false,
+					std::shared_ptr<ipc::Barrier> barrier = nullptr);
 
 		virtual std::string name() const override { return "barrier-contact"; }
 

@@ -133,7 +133,6 @@ namespace polyfem::solver
 
 			// High Order Contact Form
 			const bool use_high_order_formulation,
-			const bool use_offset_formulation,
 			json high_order_contact_params,
 
 			// Normal Adhesion Form
