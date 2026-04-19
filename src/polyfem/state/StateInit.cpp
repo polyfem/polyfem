@@ -21,7 +21,9 @@
 #include <spdlog/sinks/ostream_sink.h>
 
 #include <ipc/utils/logger.hpp>
+#ifdef POLYFEM_WITH_ITR
 #include <wmtk/utils/Logger.hpp>
+#endif
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
@@ -104,12 +106,16 @@ namespace polyfem
 
 		ipc::set_logger(std::make_shared<spdlog::logger>("ipctk", sinks.begin(), sinks.end()));
 
+#ifdef POLYFEM_WITH_ITR
 		wmtk::set_logger(std::make_shared<spdlog::logger>("wmtk", sinks.begin(), sinks.end()));
+#endif
 
 		// Set the logger at the lowest level, so all messages are passed to the sinks
 		logger().set_level(spdlog::level::trace);
 		ipc::logger().set_level(spdlog::level::trace);
+#ifdef POLYFEM_WITH_ITR
 		wmtk::logger().set_level(spdlog::level::trace);
+#endif
 
 		set_log_level(log_level);
 	}

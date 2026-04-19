@@ -7,7 +7,9 @@
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 
+#ifdef POLYFEM_WITH_ITR
 #include <wmtk/TriMesh.h>
+#endif
 
 #include <Eigen/Dense>
 
@@ -160,7 +162,9 @@ TEST_CASE("inverse", "[utils]")
 	REQUIRE(((utils::inverse(mat3) - mat3_inv)).norm() == Catch::Approx(0).margin(1e-12));
 }
 
-TEST_CASE("wmtk_instatiation", "[utils]")
+#ifdef POLYFEM_WITH_ITR
+TEST_CASE("wmtk_instantiation", "[utils]")
 {
 	wmtk::TriMesh mesh;
 }
+#endif
