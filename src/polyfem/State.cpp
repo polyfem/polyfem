@@ -1482,8 +1482,9 @@ namespace polyfem
 		{
 			avg_mass = 1;
 			timings.assembling_mass_mat_time = 0;
-			pure_mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
-			pure_mass = lump_matrix(pure_mass);
+			if (!is_problem_linear())
+				pure_mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
+
 			return;
 		}
 
@@ -1497,7 +1498,8 @@ namespace polyfem
 		{
 			StiffnessMatrix velocity_mass;
 			mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, 0, velocity_mass, true);
-			pure_mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
+			if (!is_problem_linear())
+				pure_mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
 
 			std::vector<Eigen::Triplet<double>> mass_blocks;
 			mass_blocks.reserve(velocity_mass.nonZeros());
@@ -1517,8 +1519,8 @@ namespace polyfem
 		else
 		{
 			mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, 0, mass, true);
-			pure_mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
-			pure_mass = lump_matrix(pure_mass);
+			if (!is_problem_linear())
+				pure_mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
 		}
 
 		assert(mass.size() > 0);
