@@ -10,7 +10,6 @@
 #include <polyfem/solver/forms/BarrierContactForm.hpp>
 #include <polyfem/solver/forms/SmoothContactForm.hpp>
 #include <polyfem/solver/forms/HighOrderContactForm.hpp>
-#include <polyfem/solver/forms/OffsetContactForm.hpp>
 #include <polyfem/solver/forms/PressureForm.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
@@ -119,7 +118,6 @@ namespace polyfem::solver
 
 		// High Order Contact Form
 		const bool use_high_order_formulation,
-		const bool use_offset_formulation,
 		json high_order_contact_params,
 
 		// Normal Adhesion Form
@@ -407,18 +405,14 @@ namespace polyfem::solver
 						collision_mesh, dhat, avg_mass, high_order_contact_params, skip_obstacles, use_adaptive_barrier_stiffness, is_time_dependent,
 						enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(), ccd_max_iterations);
 				}
-				else if (use_offset_formulation)
-				{
-					contact_form = std::make_shared<OffsetContactForm>(
-						collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent,
-						enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(), ccd_max_iterations);
-				}
 				else
 				{
+					std::shared_ptr<ipc::Barrier> barrier = high_order_contact_params.contains("barrier")
+						? barrier_from_params(high_order_contact_params) : nullptr;
 					contact_form = std::make_shared<BarrierContactForm>(
 						collision_mesh, dhat, avg_mass, use_area_weighting, use_improved_max_operator, use_physical_barrier,
 						use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(),
-						ccd_max_iterations, collision_set_type_from_string(collision_set_type), skip_obstacles);
+						ccd_max_iterations, collision_set_type_from_string(collision_set_type), skip_obstacles, barrier);
 				}
 
 				if (use_adaptive_barrier_stiffness)

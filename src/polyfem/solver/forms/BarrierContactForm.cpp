@@ -24,8 +24,10 @@ namespace polyfem::solver
 					const double ccd_tolerance,
 					const int ccd_max_iterations,
 					const ipc::NormalCollisions::CollisionSetType collision_set_type,
-					const bool skip_obstacles
-				): ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), barrier_potential_(dhat, use_physical_barrier)
+					const bool skip_obstacles,
+					std::shared_ptr<ipc::Barrier> barrier
+				): ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations),
+				  barrier_potential_(barrier ? ipc::BarrierPotential(barrier, dhat, use_physical_barrier) : ipc::BarrierPotential(dhat, use_physical_barrier))
     {
 		// collision_set_.set_use_convergent_formulation(use_convergent_formulation);
 		collision_set_.set_use_area_weighting(use_area_weighting);

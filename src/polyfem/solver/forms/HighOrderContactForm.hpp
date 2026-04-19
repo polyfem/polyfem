@@ -7,6 +7,10 @@
 
 namespace polyfem::solver
 {
+	/// Create a barrier object from the "barrier" JSON field.
+	/// Recognised values: "log", "normalized_log", "linear_inverse", "quadratic_inverse".
+	std::shared_ptr<ipc::Barrier> barrier_from_params(const json &params);
+
     class HighOrderContactForm : public ContactForm
     {
     public:

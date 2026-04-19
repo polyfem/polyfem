@@ -1206,7 +1206,6 @@
             "epsv",
             "friction_coefficient",
             "use_high_order_formulation",
-            "use_offset_formulation",
             "use_convergent_formulation",
             "use_area_weighting",
             "use_improved_max_operator",
@@ -1265,12 +1264,6 @@
         "pointer": "/contact/use_high_order_formulation",
         "default": false,
         "type": "bool"
-    },
-    {
-        "pointer": "/contact/use_offset_formulation",
-        "default": false,
-        "type": "bool",
-        "doc": "True if the offset contact formulation is used."
     },
     {
         "pointer": "/contact/use_adaptive_dhat",

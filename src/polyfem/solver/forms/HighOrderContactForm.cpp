@@ -45,7 +45,9 @@ namespace polyfem::solver
 			return std::make_shared<ipc::InversePowerBarrier>(1.0);
 		if (name == "quadratic_inverse")
 			return std::make_shared<ipc::InversePowerBarrier>(2.0);
-		log_and_throw_error("Unknown ACP barrier type: '{}'. Valid options: 'log', 'normalized_log', 'linear_inverse', 'quadratic_inverse'.", name);
+		if (name == "two_stage")
+			return std::make_shared<ipc::TwoStageBarrier>();
+		log_and_throw_error("Unknown ACP barrier type: '{}'. Valid options: 'log', 'normalized_log', 'linear_inverse', 'quadratic_inverse', 'two_stage'.", name);
 	}
 	
 	/// Check if a quadrature point is at a triangle vertex (one barycentric
