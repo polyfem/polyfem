@@ -1586,7 +1586,8 @@
             "tangential_adhesion_iterations",
             "friction_convergence_tol",
             "barrier_stiffness",
-            "initial_barrier_stiffness"
+            "initial_barrier_stiffness",
+            "dhat_epsilon_scale"
         ],
         "doc": "Settings for contact handling in the solver."
     },
@@ -1595,6 +1596,13 @@
         "default": 1,
         "type": "float",
         "doc": "Initial barrier stiffness if adaptive barrier is used."
+    },
+    {
+        "pointer": "/solver/contact/dhat_epsilon_scale",
+        "default": 1e-7,
+        "min": 0,
+        "type": "float",
+        "doc": "dhat_epsilon_scale passed to ipc::update_barrier_stiffness during the adaptive per-step update: the stiffness is raised only when the minimum distance drops below dhat_epsilon_scale * bbox_diagonal."
     },
     {
         "pointer": "/solver/contact/CCD",

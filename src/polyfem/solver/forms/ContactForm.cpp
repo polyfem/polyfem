@@ -26,10 +26,12 @@ namespace polyfem::solver
 							 const bool enable_shape_derivatives,
 							 const ipc::BroadPhaseMethod broad_phase_method,
 							 const double ccd_tolerance,
-							 const int ccd_max_iterations)
+							 const int ccd_max_iterations,
+							 const double dhat_epsilon_scale)
 		: collision_mesh_(collision_mesh),
 		  dhat_(dhat),
 		  use_adaptive_barrier_stiffness_(use_adaptive_barrier_stiffness),
+		  dhat_epsilon_scale_(dhat_epsilon_scale),
 		  avg_mass_(avg_mass),
 		  is_time_dependent_(is_time_dependent),
 		  enable_shape_derivatives_(enable_shape_derivatives),

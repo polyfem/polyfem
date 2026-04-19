@@ -24,7 +24,8 @@ namespace polyfem::solver
 											   const bool enable_shape_derivatives,
 											   const ipc::BroadPhaseMethod broad_phase_method,
 											   const double ccd_tolerance,
-											   const int ccd_max_iterations) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(dhat_, alpha_t, 0, alpha_n, 0, collision_mesh.dim() - 1), use_adaptive_dhat(use_adaptive_dhat), barrier_potential_(params)
+											   const int ccd_max_iterations,
+											   const double dhat_epsilon_scale) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations, dhat_epsilon_scale), params(dhat_, alpha_t, 0, alpha_n, 0, collision_mesh.dim() - 1), use_adaptive_dhat(use_adaptive_dhat), barrier_potential_(params)
 	{
 		params.set_adaptive_dhat_ratio(min_distance_ratio);
 		if (use_adaptive_dhat)
@@ -118,7 +119,8 @@ namespace polyfem::solver
 
 				barrier_stiffness_ = ipc::update_barrier_stiffness(
 					prev_distance_, curr_distance, max_barrier_stiffness_,
-					barrier_stiffness(), ipc::world_bbox_diagonal_length(displaced_surface), 1e-7);
+					barrier_stiffness(), ipc::world_bbox_diagonal_length(displaced_surface),
+					dhat_epsilon_scale_);
 
 				if (barrier_stiffness() != prev_barrier_stiffness)
 				{

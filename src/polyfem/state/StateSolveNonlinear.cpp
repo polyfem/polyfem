@@ -34,6 +34,34 @@ namespace polyfem
 	using namespace io;
 	using namespace utils;
 
+	namespace
+	{
+		void record_nl_solver_stats(const polysolve::nonlinear::Solver &nl_solver)
+		{
+			const json info = nl_solver.info();
+			auto &reg = ipc::ProfileRegistry::instance();
+			const auto pull = [&](const char *key, const char *out) {
+				auto it = info.find(key);
+				if (it != info.end() && it->is_number())
+					reg.add_value(out, it->get<double>());
+			};
+			const int iters =
+				(info.contains("iterations") && info["iterations"].is_number())
+					? info["iterations"].get<int>()
+					: 0;
+			pull("iterations", "polyfem.newton.iters");
+			pull("total_time", "polyfem.newton.total_time");
+			const auto pull_per_iter = [&](const char *key, const char *out) {
+				auto it = info.find(key);
+				if (it != info.end() && it->is_number())
+					reg.add_value(out, it->get<double>() * iters);
+			};
+			pull_per_iter("time_assembly", "polyfem.newton.time_assembly");
+			pull_per_iter("time_inverting", "polyfem.newton.time_inverting");
+			pull_per_iter("time_line_search", "polyfem.newton.time_line_search");
+		}
+	} // namespace
+
 	std::shared_ptr<polysolve::nonlinear::Solver> State::make_nl_solver(bool for_al) const
 	{
 		return polysolve::nonlinear::Solver::create(for_al ? args["solver"]["augmented_lagrangian"]["nonlinear"] : args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger());
@@ -272,6 +300,7 @@ namespace polyfem
 			args["contact"]["skip_obstacles"].get<bool>(),
 			args["solver"]["contact"]["barrier_stiffness"],
 			args["solver"]["contact"]["initial_barrier_stiffness"],
+			args["solver"]["contact"]["dhat_epsilon_scale"],
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
@@ -369,6 +398,7 @@ namespace polyfem
 				 {"info", nl_solver->info()}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
+			record_nl_solver_stats(*nl_solver);
 			save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 		};
 
@@ -457,6 +487,7 @@ namespace polyfem
 					 {"t", t}, // TODO: null if static?
 					 {"lag_i", lag_i},
 					 {"info", nl_solver->info()}});
+				record_nl_solver_stats(*nl_solver);
 				save_subsolve(++subsolve_count, t, sol, Eigen::MatrixXd()); // no pressure
 			}
 		}
