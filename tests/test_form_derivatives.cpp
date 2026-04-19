@@ -297,7 +297,7 @@ TEST_CASE("barrier contact form derivatives", "[form][form_derivatives][contact_
 		state_ptr->collision_mesh, dhat, state_ptr->avg_mass,
 		use_convergent_formulation, use_convergent_formulation, use_convergent_formulation,
 		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
-		ccd_tolerance, ccd_max_iterations);
+		ccd_tolerance, ccd_max_iterations, /*dhat_epsilon_scale=*/1e-7);
 
 	test_form(form, *state_ptr);
 }
@@ -322,7 +322,7 @@ TEST_CASE("smooth contact form derivatives", "[form][form_derivatives][contact_f
 	SmoothContactForm form(
 		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, contact_args["alpha_t"], contact_args["alpha_n"], contact_args["use_adaptive_dhat"], contact_args["min_distance_ratio"],
 		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
-		ccd_tolerance, ccd_max_iterations);
+		ccd_tolerance, ccd_max_iterations, /*dhat_epsilon_scale=*/1e-7);
 
 	test_form(form, *state_ptr);
 }
@@ -380,7 +380,7 @@ TEST_CASE("friction form derivatives", "[form][form_derivatives][friction_form]"
 	const BarrierContactForm contact_form(
 		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, use_convergent_formulation, use_convergent_formulation,
 		use_convergent_formulation, use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
-		ccd_tolerance, ccd_max_iterations);
+		ccd_tolerance, ccd_max_iterations, /*dhat_epsilon_scale=*/1e-7);
 
 	FrictionForm form(
 		state_ptr->collision_mesh, nullptr, epsv, mu, broad_phase_method, contact_form,
@@ -407,7 +407,7 @@ TEST_CASE("smooth contact friction form derivatives", "[form][form_derivatives][
 		state_ptr->collision_mesh, dhat, state_ptr->avg_mass,
 		contact_args["alpha_t"], contact_args["alpha_n"], contact_args["use_adaptive_dhat"], contact_args["min_distance_ratio"],
 		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
-		ccd_tolerance, ccd_max_iterations);
+		ccd_tolerance, ccd_max_iterations, /*dhat_epsilon_scale=*/1e-7);
 
 	FrictionForm form(
 		state_ptr->collision_mesh, nullptr, epsv, mu, broad_phase_method, contact_form,
@@ -433,7 +433,7 @@ TEST_CASE("high-order contact friction form derivatives", "[form][form_derivativ
 	const HighOrderContactForm contact_form(
 		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, ho_params, /*skip_obstacles=*/false,
 		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
-		ccd_tolerance, ccd_max_iterations);
+		ccd_tolerance, ccd_max_iterations, /*dhat_epsilon_scale=*/1e-7);
 
 	FrictionForm form(
 		state_ptr->collision_mesh, nullptr, epsv, mu, broad_phase_method, contact_form,

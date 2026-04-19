@@ -21,6 +21,7 @@ namespace polyfem::solver
 					const ipc::BroadPhaseMethod broad_phase_method,
 					const double ccd_tolerance,
 					const int ccd_max_iterations,
+					const double dhat_epsilon_scale,
 					const ipc::NormalCollisions::CollisionSetType collision_set_type = ipc::NormalCollisions::CollisionSetType::IPC,
 					const bool skip_obstacles = false);
 

@@ -283,6 +283,7 @@ namespace polyfem::mesh
 				state.args["contact"]["skip_obstacles"].get<bool>(),
 				contact_enabled ? state.solve_data.contact_form->barrier_stiffness() : 0,
 				state.args["solver"]["contact"]["initial_barrier_stiffness"],
+				state.args["solver"]["contact"]["dhat_epsilon_scale"],
 				state.args["solver"]["contact"]["CCD"]["broad_phase"],
 				state.args["solver"]["contact"]["CCD"]["tolerance"],
 				state.args["solver"]["contact"]["CCD"]["max_iterations"],

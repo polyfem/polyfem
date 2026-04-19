@@ -99,7 +99,8 @@ namespace polyfem::solver
 											   const bool enable_shape_derivatives,
 											   const ipc::BroadPhaseMethod broad_phase_method,
 											   const double ccd_tolerance,
-											   const int ccd_max_iterations) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(init_params(dhat, high_order_contact_params, skip_obstacles)),
+											   const int ccd_max_iterations,
+											   const double dhat_epsilon_scale) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations, dhat_epsilon_scale), params(init_params(dhat, high_order_contact_params, skip_obstacles)),
 											   barrier_potential_(params, high_order_contact_params["normalize_weights"])
 	{
 	}
@@ -124,27 +125,6 @@ namespace polyfem::solver
 		if (cached_displaced_surface.size() == displaced_surface.size() && cached_displaced_surface == displaced_surface)
 			return;
 
-		// NOTE: unlike BarrierContactForm, we deliberately do NOT use the
-		// cached line-search Candidates path here. A prototype that routed
-		// update_collision_set through HighOrderCollisions::build(candidates,
-		// ...) using candidates_ from ContactForm::line_search_begin was
-		// measured to be ~1.7× slower end-to-end on the dolphin-funnel
-		// benchmark (1044s vs 619s for 25 steps):
-		//   * line_search_begin builds candidates swept over the full
-		//     x0 → x1 segment (inflation = dhat/2 + ½‖x1−x0‖ bounding box),
-		//     producing a much larger vv/ve/vf/ef/ee/ff set per entity than
-		//     a per-iteration broad phase at the current displaced surface.
-		//   * The per-vertex / per-edge builders in QuadratureCollisionsBuilder
-		//     (build_collisions_at_vertex / build_edge_edge_closest_point)
-		//     iterate these sets unconditionally — no distance pre-filter —
-		//     so cost scales with the swept superset, not the active contact
-		//     region. Per-build collision_build time jumped from ~4ms to
-		//     ~96ms (≈24×), turning a ~100s broad-phase saving into a ~420s
-		//     collision-build regression plus a ~70s potential-eval/grad/hess
-		//     regression (larger active set max from ~3.4k to ~5.1k dicts).
-		// Re-enabling this path cleanly requires a distance-based pre-filter
-		// inside build_collisions_at_vertex / build_edge_edge_closest_point so
-		// the swept cache only pays for near-contact candidates.
 		collision_set_.build(
 			collision_mesh_, displaced_surface, params, /*use_adaptive_dhat*/ false, broad_phase_.get());
 		cached_displaced_surface = displaced_surface;
@@ -217,7 +197,8 @@ namespace polyfem::solver
 
 				barrier_stiffness_ = ipc::update_barrier_stiffness(
 					prev_distance_, curr_distance, max_barrier_stiffness_,
-					barrier_stiffness(), ipc::world_bbox_diagonal_length(displaced_surface), 1e-7);
+					barrier_stiffness(), ipc::world_bbox_diagonal_length(displaced_surface),
+					dhat_epsilon_scale_);
 
 				if (barrier_stiffness() != prev_barrier_stiffness)
 				{

@@ -118,6 +118,7 @@ namespace polyfem::solver
 			const bool skip_obstacles,
 			const json &barrier_stiffness,
 			const double initial_barrier_stiffness,
+			const double dhat_epsilon_scale,
 			const ipc::BroadPhaseMethod broad_phase,
 			const double ccd_tolerance,
 			const long ccd_max_iterations,

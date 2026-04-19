@@ -18,7 +18,8 @@ namespace polyfem::solver
 					const bool enable_shape_derivatives,
 					const ipc::BroadPhaseMethod broad_phase_method,
 					const double ccd_tolerance,
-					const int ccd_max_iterations);
+					const int ccd_max_iterations,
+					const double dhat_epsilon_scale);
 
 		virtual std::string name() const override { return "high-order-contact"; }
 

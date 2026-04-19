@@ -105,6 +105,7 @@ namespace polyfem::solver
 		const bool skip_obstacles,
 		const json &barrier_stiffness,
 		const double initial_barrier_stiffness,
+		const double dhat_epsilon_scale,
 		const ipc::BroadPhaseMethod broad_phase,
 		const double ccd_tolerance,
 		const long ccd_max_iterations,
@@ -375,7 +376,7 @@ namespace polyfem::solver
 				periodic_contact_form = std::make_shared<PeriodicContactForm>(
 					collision_mesh, tiled_to_single, dhat, avg_mass, use_area_weighting, use_improved_max_operator, use_physical_barrier,
 					use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance,
-					ccd_max_iterations);
+					ccd_max_iterations, dhat_epsilon_scale);
 
 				if (use_adaptive_barrier_stiffness)
 				{
@@ -399,26 +400,26 @@ namespace polyfem::solver
 					contact_form = std::make_shared<SmoothContactForm>(
 						collision_mesh, dhat, avg_mass, alpha_t, alpha_n, use_adaptive_dhat, min_distance_ratio,
 						use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase,
-						ccd_tolerance * units.characteristic_length(), ccd_max_iterations);
+						ccd_tolerance * units.characteristic_length(), ccd_max_iterations, dhat_epsilon_scale);
 				}
 				else if (use_high_order_formulation)
 				{
 					contact_form = std::make_shared<HighOrderContactForm>(
 						collision_mesh, dhat, avg_mass, high_order_contact_params, skip_obstacles, use_adaptive_barrier_stiffness, is_time_dependent,
-						enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(), ccd_max_iterations);
+						enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(), ccd_max_iterations, dhat_epsilon_scale);
 				}
 				else if (use_offset_formulation)
 				{
 					contact_form = std::make_shared<OffsetContactForm>(
 						collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent,
-						enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(), ccd_max_iterations);
+						enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(), ccd_max_iterations, dhat_epsilon_scale);
 				}
 				else
 				{
 					contact_form = std::make_shared<BarrierContactForm>(
 						collision_mesh, dhat, avg_mass, use_area_weighting, use_improved_max_operator, use_physical_barrier,
 						use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(),
-						ccd_max_iterations, collision_set_type_from_string(collision_set_type), skip_obstacles);
+						ccd_max_iterations, dhat_epsilon_scale, collision_set_type_from_string(collision_set_type), skip_obstacles);
 				}
 
 				if (use_adaptive_barrier_stiffness)
