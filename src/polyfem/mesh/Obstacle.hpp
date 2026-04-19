@@ -24,28 +24,33 @@ namespace polyfem
 				const Eigen::VectorXi &codim_vertices,
 				const Eigen::MatrixXi &codim_edges,
 				const Eigen::MatrixXi &faces,
-				const json &displacement);
+				const json &displacement,
+				const Eigen::MatrixXi &tets = Eigen::MatrixXi());
 			void append_mesh_sequence(
 				const std::vector<Eigen::MatrixXd> &vertices,
 				const Eigen::VectorXi &codim_vertices,
 				const Eigen::MatrixXi &codim_edges,
 				const Eigen::MatrixXi &faces,
-				const int fps);
+				const int fps,
+				const Eigen::MatrixXi &tets = Eigen::MatrixXi());
 			void append_plane(const VectorNd &point, const VectorNd &normal);
 
 			inline int n_vertices() const { return v_.rows(); }
 			inline int n_edges() const { return e_.rows(); }
 			inline int n_faces() const { return f_.rows(); }
+			inline int n_tets() const { return tets_.rows(); }
 			inline int dim() const { return dim_; }
 			inline int ndof() const { return n_vertices() * dim(); }
 			inline const Eigen::MatrixXd &v() const { return v_; }
 			inline const Eigen::VectorXi &codim_v() const { return codim_v_; }
 			inline const Eigen::MatrixXi &f() const { return f_; }
 			inline const Eigen::MatrixXi &e() const { return e_; }
+			inline const Eigen::MatrixXi &tets() const { return tets_; }
 
 			inline const Eigen::MatrixXi &get_face_connectivity() const { return in_f_; }
 			inline const Eigen::MatrixXi &get_edge_connectivity() const { return in_e_; }
 			inline const Eigen::VectorXi &get_vertex_connectivity() const { return in_v_; }
+			inline const Eigen::MatrixXi &get_tet_connectivity() const { return in_tets_; }
 
 			void change_displacement(const int oid, const Eigen::RowVector3d &val, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
 			void change_displacement(const int oid, const std::function<Eigen::MatrixXd(double x, double y, double z, double t)> &func, const std::shared_ptr<utils::Interpolation> &interp = std::make_shared<utils::NoInterpolation>());
@@ -70,17 +75,20 @@ namespace polyfem
 				const Eigen::MatrixXd &vertices,
 				const Eigen::VectorXi &codim_vertices,
 				const Eigen::MatrixXi &codim_edges,
-				const Eigen::MatrixXi &faces);
+				const Eigen::MatrixXi &faces,
+				const Eigen::MatrixXi &tets = Eigen::MatrixXi());
 
 			int dim_;
 			Eigen::MatrixXd v_;
 			Eigen::VectorXi codim_v_;
 			Eigen::MatrixXi f_;
 			Eigen::MatrixXi e_;
+			Eigen::MatrixXi tets_;
 
 			Eigen::VectorXi in_v_;
 			Eigen::MatrixXi in_f_;
 			Eigen::MatrixXi in_e_;
+			Eigen::MatrixXi in_tets_;
 
 			std::vector<assembler::TensorBCValue> displacements_;
 

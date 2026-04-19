@@ -36,14 +36,16 @@ namespace polyfem::solver
 
 	std::shared_ptr<ipc::Barrier> barrier_from_params(const json &high_order_contact_params, const int power)
 	{
-		const std::string name = high_order_contact_params.value("barrier", std::string("normalized_log"));
+		const std::string name = high_order_contact_params.value("barrier", std::string("quadratic_inverse"));
 		if (name == "log")
 			return std::make_shared<ipc::ClampedLogBarrier>();
 		if (name == "normalized_log")
 			return std::make_shared<ipc::NormalizedClampedLogBarrier>();
-		if (name == "inverse_power")
-			return std::make_shared<ipc::InversePowerBarrier>(static_cast<double>(power));
-		log_and_throw_error("Unknown ACP barrier type: '{}'. Valid options: 'log', 'normalized_log', 'inverse_power'.", name);
+		if (name == "linear_inverse")
+			return std::make_shared<ipc::InversePowerBarrier>(1.0);
+		if (name == "quadratic_inverse")
+			return std::make_shared<ipc::InversePowerBarrier>(2.0);
+		log_and_throw_error("Unknown ACP barrier type: '{}'. Valid options: 'log', 'normalized_log', 'linear_inverse', 'quadratic_inverse'.", name);
 	}
 	
 	/// Check if a quadrature point is at a triangle vertex (one barycentric
@@ -73,15 +75,13 @@ namespace polyfem::solver
 		}
 	}
 
-	ipc::HighOrderContactParameters init_params(const double dhat, const json &high_order_contact_params, int powerdefault, const bool skip_obstacles) {
+	ipc::HighOrderContactParameters init_params(const double dhat, const json &high_order_contact_params, const bool skip_obstacles) {
 		const int quadrature_order = high_order_contact_params["quadrature_order"];
 		const double dbar_factor = high_order_contact_params["dbar_factor"];
-		int power = high_order_contact_params["exponent"];
-		if (power < 1) power = powerdefault;
 		const ipc::HighOrderContactParameters::IntegrationType itype = skip_obstacles ?
 			ipc::HighOrderContactParameters::IntegrationType::NO_OBST : ipc::HighOrderContactParameters::IntegrationType::NORMAL;
-		ipc::HighOrderContactParameters params(dhat, dbar_factor, quadrature_order, power, itype);
-		params.barrier = barrier_from_params(high_order_contact_params, power);
+		ipc::HighOrderContactParameters params(dhat, dbar_factor, quadrature_order, itype);
+		params.barrier = barrier_from_params(high_order_contact_params);
 		if (quadrature_order > 0) {
 			params.face_quad_rule = build_quad_rule(quadrature_order);
 			verify_vertices_in_quad_rule(params.face_quad_rule);
@@ -99,7 +99,7 @@ namespace polyfem::solver
 											   const bool enable_shape_derivatives,
 											   const ipc::BroadPhaseMethod broad_phase_method,
 											   const double ccd_tolerance,
-											   const int ccd_max_iterations) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(init_params(dhat, high_order_contact_params, collision_mesh.dim() - 1, skip_obstacles)),
+											   const int ccd_max_iterations) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(init_params(dhat, high_order_contact_params, skip_obstacles)),
 											   barrier_potential_(params, high_order_contact_params["normalize_weights"])
 	{
 	}

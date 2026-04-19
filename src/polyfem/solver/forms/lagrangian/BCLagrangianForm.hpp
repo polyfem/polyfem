@@ -88,6 +88,10 @@ namespace polyfem::solver
 		const int n_dofs_;
 		Eigen::VectorXi constraints_;     ///< Constraints
 		Eigen::VectorXi not_constraints_; ///< Not Constraints
+		/// Map from full DOF index to reduced DOF index (-1 if constrained).
+		/// Used by project_hessian to slice out constrained rows/cols without
+		/// going through triplet lists + setFromTriplets.
+		std::vector<int> old_to_new_;
 
 		const assembler::RhsAssembler *rhs_assembler_; ///< Reference to the RHS assembler
 		const bool is_time_dependent_;
