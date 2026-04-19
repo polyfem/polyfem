@@ -1,23 +1,27 @@
 <map id="polyfem::State::has_constraints" name="polyfem::State::has_constraints">
-<area shape="rect" id="Node000001" title=" " alt="" coords="1208,108,1357,148"/>
-<area shape="rect" id="Node000002" href="$classpolyfem_1_1_state.html#afae4e155c3cc743d90d568fb9a1bee45" title="Returns whether the system is linear. Collisions and pressure add nonlinearity to the problem." alt="" coords="1023,108,1160,148"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1194,131,1160,131,1160,125,1194,125"/>
-<area shape="rect" id="Node000003" href="$classpolyfem_1_1_opt_state.html#a89147e12c0de672ee5dc423d57593677" title="Check and throw if any forward simulation State is not supported." alt="" coords="810,19,959,59"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1031,105,931,61,933,56,1033,100"/>
-<area shape="rect" id="Node000005" href="$classpolyfem_1_1_state.html#ad41d92c2bae6e7027d8f33e02a017c8a" title="initialize the nonlinear solver" alt="" coords="795,108,975,148"/>
-<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="1009,131,975,131,975,125,1009,125"/>
-<area shape="rect" id="Node000006" href="$classpolyfem_1_1_state.html#aa8dffa9c5caf8ca5082a6814e1c8ed36" title="solves the problems" alt="" coords="335,120,496,160"/>
-<area shape="poly" id="edge11_Node000002_Node000006" title=" " alt="" coords="1015,154,975,163,855,181,760,189,665,187,544,175,483,163,484,157,544,169,665,182,760,184,854,176,974,157,1014,149"/>
-<area shape="rect" id="Node000004" href="$classpolyfem_1_1_opt_state.html#a36bb56b43d08e8e714c9c9d683b4a959" title="create the opt states" alt="" coords="571,5,720,45"/>
-<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="796,36,720,32,720,27,796,31"/>
-<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="781,114,746,111,645,104,544,111,484,123,483,117,544,105,645,99,747,105,781,109"/>
-<area shape="rect" id="Node000010" href="$classpolyfem_1_1_state.html#a581a91ee028c3d6376f9f0db39194ff3" title="solves transient tensor nonlinear problem" alt="" coords="544,120,747,160"/>
-<area shape="poly" id="edge9_Node000005_Node000010" title=" " alt="" coords="781,136,747,138,747,132,781,131"/>
-<area shape="rect" id="Node000007" href="$main_8cpp.html#aec889c702a246ad7f332c75ab7adb438" title=" " alt="" coords="123,98,271,123"/>
-<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="320,130,271,123,272,118,321,125"/>
-<area shape="rect" id="Node000009" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acac3e8ce8646ddd1544ed034c71bec96" title=" " alt="" coords="108,148,287,188"/>
-<area shape="poly" id="edge8_Node000006_Node000009" title=" " alt="" coords="321,155,287,159,287,154,321,149"/>
-<area shape="rect" id="Node000008" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,98,60,123"/>
-<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="109,113,60,113,60,108,109,108"/>
-<area shape="poly" id="edge10_Node000010_Node000006" title=" " alt="" coords="530,143,496,143,496,137,530,137"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="1236,117,1385,157"/>
+<area shape="rect" id="Node000002" href="$classpolyfem_1_1_state.html#afae4e155c3cc743d90d568fb9a1bee45" title="Returns whether the system is linear. Collisions and pressure add nonlinearity to the problem." alt="" coords="1051,117,1188,157"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1222,140,1188,140,1188,135,1222,135"/>
+<area shape="rect" id="Node000003" href="$classpolyfem_1_1_state.html#a1ccc0343cb326880d9d241517170efb0" title="assemble mass, step 4 of solve build mass matrix based on defined basis modifies mass (and maybe more..." alt="" coords="335,5,524,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1073,113,1002,78,940,57,890,44,774,28,644,21,524,23,524,17,644,15,775,23,891,39,941,52,1004,74,1075,108"/>
+<area shape="rect" id="Node000007" href="$classpolyfem_1_1_opt_state.html#a89147e12c0de672ee5dc423d57593677" title="Check and throw if any forward simulation State is not supported." alt="" coords="838,203,987,243"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="1059,165,963,205,961,200,1056,160"/>
+<area shape="rect" id="Node000009" href="$classpolyfem_1_1_state.html#ad41d92c2bae6e7027d8f33e02a017c8a" title="initialize the nonlinear solver" alt="" coords="823,88,1003,128"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="1037,128,1002,123,1003,118,1037,123"/>
+<area shape="rect" id="Node000010" href="$classpolyfem_1_1_state.html#aa8dffa9c5caf8ca5082a6814e1c8ed36" title="solves the problems" alt="" coords="349,69,510,109"/>
+<area shape="poly" id="edge14_Node000002_Node000010" title=" " alt="" coords="1037,142,1003,143,913,145,822,143,697,129,572,111,510,103,511,97,572,105,697,124,823,137,913,140,1003,137,1037,137"/>
+<area shape="rect" id="Node000004" href="$main_8cpp.html#aec889c702a246ad7f332c75ab7adb438" title=" " alt="" coords="123,15,271,41"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="320,29,271,30,271,24,320,24"/>
+<area shape="rect" id="Node000006" href="$structpolyfem_1_1solver_1_1_adjoint_opt_utils.html#acac3e8ce8646ddd1544ed034c71bec96" title=" " alt="" coords="108,67,287,107"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="340,52,274,69,273,64,339,46"/>
+<area shape="rect" id="Node000005" href="$main_8cpp.html#a3c04138a5bfe5d72780bb7e82a18e627" title=" " alt="" coords="5,15,60,41"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="109,31,60,31,60,25,109,25"/>
+<area shape="rect" id="Node000008" href="$classpolyfem_1_1_opt_state.html#a36bb56b43d08e8e714c9c9d683b4a959" title="create the opt states" alt="" coords="599,203,748,243"/>
+<area shape="poly" id="edge7_Node000007_Node000008" title=" " alt="" coords="824,225,748,225,748,220,824,220"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="809,107,510,95,510,90,809,101"/>
+<area shape="rect" id="Node000011" href="$classpolyfem_1_1_state.html#a581a91ee028c3d6376f9f0db39194ff3" title="solves transient tensor nonlinear problem" alt="" coords="572,37,775,77"/>
+<area shape="poly" id="edge12_Node000009_Node000011" title=" " alt="" coords="809,89,768,80,769,75,810,84"/>
+<area shape="poly" id="edge10_Node000010_Node000004" title=" " alt="" coords="339,68,245,43,247,38,341,63"/>
+<area shape="poly" id="edge11_Node000010_Node000006" title=" " alt="" coords="335,91,287,90,287,85,335,86"/>
+<area shape="poly" id="edge13_Node000011_Node000010" title=" " alt="" coords="558,75,510,81,510,76,558,70"/>
 </map>
