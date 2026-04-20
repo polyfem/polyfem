@@ -28,7 +28,9 @@ namespace polyfem::solver
 					const bool skip_obstacles,
 					std::shared_ptr<ipc::Barrier> barrier
 				): ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations, dhat_epsilon_scale),
-				  barrier_potential_(barrier ? ipc::BarrierPotential(barrier, dhat, use_physical_barrier) : ipc::BarrierPotential(dhat, use_physical_barrier))
+				  barrier_potential_(barrier
+					? ipc::BarrierPotential(barrier, dhat, /*use_physical_barrier=*/false, /*use_squared_distance=*/false)
+					: ipc::BarrierPotential(dhat, use_physical_barrier))
     {
 		// collision_set_.set_use_convergent_formulation(use_convergent_formulation);
 		collision_set_.set_use_area_weighting(use_area_weighting);
@@ -51,6 +53,9 @@ namespace polyfem::solver
 	{
 		if (!use_adaptive_barrier_stiffness())
 			return;
+
+		if (!barrier_potential_.use_squared_distance())
+			log_and_throw_error("Adaptive barrier stiffness is not supported for the selected barrier.");
 
 		const Eigen::MatrixXd displaced_surface = compute_displaced_surface(x);
 
