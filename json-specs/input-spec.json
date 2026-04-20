@@ -1212,6 +1212,7 @@
             "use_physical_barrier",
             "collision_set_type",
             "skip_obstacles",
+            "barrier",
             "collision_mesh",
             "use_gcp_formulation",
             "high_order_contact_params",
@@ -1231,8 +1232,7 @@
         "optional": [
             "dbar_factor",
             "quadrature_order",
-            "normalize_weights",
-            "barrier"
+            "normalize_weights"
         ]
     },
     {
@@ -1255,10 +1255,18 @@
         "doc": "Normalize quadrature weights in high-order contact potential."
     },
     {
-        "pointer": "/contact/high_order_contact_params/barrier",
-        "default": "quadratic_inverse",
+        "pointer": "/contact/barrier",
+        "default": "default",
         "type": "string",
-        "doc": "Barrier function for the high-order contact potential. Options: 'log' (ClampedLogBarrier), 'normalized_log' (NormalizedClampedLogBarrier), 'linear_inverse' (InversePowerBarrier with p=1), 'quadratic_inverse' (default, InversePowerBarrier with p=2)."
+        "options": [
+            "default",
+            "log",
+            "normalized_log",
+            "linear_inverse",
+            "quadratic_inverse",
+            "two_stage"
+        ],
+        "doc": "Barrier function for contact. 'default' uses the default barrier for each contact model. Options: 'log' (ClampedLogBarrier), 'normalized_log' (NormalizedClampedLogBarrier), 'linear_inverse' (InversePowerBarrier with p=1), 'quadratic_inverse' (InversePowerBarrier with p=2), 'two_stage' (TwoStageBarrier)."
     },
     {
         "pointer": "/contact/use_high_order_formulation",

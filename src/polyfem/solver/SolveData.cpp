@@ -40,6 +40,23 @@ namespace
 			return ipc::NormalCollisions::CollisionSetType::IMPROVED_MAX_APPROX;
 		return ipc::NormalCollisions::CollisionSetType::IPC;
 	}
+
+	std::shared_ptr<ipc::Barrier> barrier_from_string(const std::string &name)
+	{
+		if (name == "default")
+			return nullptr;
+		if (name == "log")
+			return std::make_shared<ipc::ClampedLogBarrier>();
+		if (name == "normalized_log")
+			return std::make_shared<ipc::NormalizedClampedLogBarrier>();
+		if (name == "linear_inverse")
+			return std::make_shared<ipc::InversePowerBarrier>(1.0);
+		if (name == "quadratic_inverse")
+			return std::make_shared<ipc::InversePowerBarrier>(2.0);
+		if (name == "two_stage")
+			return std::make_shared<ipc::TwoStageBarrier>();
+		polyfem::log_and_throw_error("Unknown barrier type: '{}'. Valid options: 'default', 'log', 'normalized_log', 'linear_inverse', 'quadratic_inverse', 'two_stage'.", name);
+	}
 } // namespace
 
 namespace polyfem::solver
@@ -102,6 +119,7 @@ namespace polyfem::solver
 		const bool use_physical_barrier,
 		const std::string &collision_set_type,
 		const bool skip_obstacles,
+		const std::string &barrier,
 		const json &barrier_stiffness,
 		const double initial_barrier_stiffness,
 		const double dhat_epsilon_scale,
@@ -403,17 +421,15 @@ namespace polyfem::solver
 				else if (use_high_order_formulation)
 				{
 					contact_form = std::make_shared<HighOrderContactForm>(
-						collision_mesh, dhat, avg_mass, high_order_contact_params, skip_obstacles, use_adaptive_barrier_stiffness, is_time_dependent,
+						collision_mesh, dhat, avg_mass, high_order_contact_params, skip_obstacles, barrier_from_string(barrier), use_adaptive_barrier_stiffness, is_time_dependent,
 						enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(), ccd_max_iterations, dhat_epsilon_scale);
 				}
 				else
 				{
-					std::shared_ptr<ipc::Barrier> barrier = high_order_contact_params.contains("barrier")
-						? barrier_from_params(high_order_contact_params) : nullptr;
 					contact_form = std::make_shared<BarrierContactForm>(
 						collision_mesh, dhat, avg_mass, use_area_weighting, use_improved_max_operator, use_physical_barrier,
 						use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(),
-						ccd_max_iterations, dhat_epsilon_scale, collision_set_type_from_string(collision_set_type), skip_obstacles, barrier);
+						ccd_max_iterations, dhat_epsilon_scale, collision_set_type_from_string(collision_set_type), skip_obstacles, barrier_from_string(barrier));
 				}
 
 				if (use_adaptive_barrier_stiffness)

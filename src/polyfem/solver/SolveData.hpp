@@ -116,6 +116,7 @@ namespace polyfem::solver
 			const bool use_physical_barrier,
 			const std::string &collision_set_type,
 			const bool skip_obstacles,
+			const std::string &barrier,
 			const json &barrier_stiffness,
 			const double initial_barrier_stiffness,
 			const double dhat_epsilon_scale,
