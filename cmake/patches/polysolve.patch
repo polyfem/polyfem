@@ -83,3 +83,50 @@ index a9be577..1f8bdc6 100644
              return NaN;
          }
  
+diff --git a/src/polysolve/nonlinear/Criteria.cpp b/src/polysolve/nonlinear/Criteria.cpp
+index 3dd6e11..28a17bb 100644
+--- a/src/polysolve/nonlinear/Criteria.cpp
++++ b/src/polysolve/nonlinear/Criteria.cpp
+@@ -20,6 +20,7 @@ namespace polysolve::nonlinear
+     {
+         iterations = 0;
+         xDelta = 0;
++        fValue = 0;
+         fDelta = 0;
+         gradNorm = 0;
+         firstGradNorm = 0;
+@@ -33,8 +34,8 @@ namespace polysolve::nonlinear
+     }
+     std::string Criteria::print_message() const {
+         return fmt::format(
+-            "iters={:d} Δf={:g} ‖∇f‖={:g} ‖Δx‖={:g} Δx⋅∇f(x)={:g}",
+-            iterations, fDelta, gradNorm, xDelta, xDeltaDotGrad);
++            "iters={:d} f={:g} Δf={:g} ‖∇f‖={:g} ‖Δx‖={:g} Δx⋅∇f(x)={:g}",
++            iterations, fValue, fDelta, gradNorm, xDelta, xDeltaDotGrad);
+     }
+ 
+     Status checkConvergence(const Criteria &stop, const Criteria &current)
+diff --git a/src/polysolve/nonlinear/Criteria.hpp b/src/polysolve/nonlinear/Criteria.hpp
+index d4e770c..49cf18f 100644
+--- a/src/polysolve/nonlinear/Criteria.hpp
++++ b/src/polysolve/nonlinear/Criteria.hpp
+@@ -33,6 +33,7 @@ namespace polysolve::nonlinear
+     public:
+         size_t iterations;    ///< Maximum number of iterations
+         double xDelta;        ///< Minimum change in parameter vector
++        double fValue;        ///< Current cost function value
+         double fDelta;        ///< Minimum change in cost function
+         double gradNorm;      ///< Minimum norm of gradient vector
+         double firstGradNorm; ///< Initial norm of gradient vector
+diff --git a/src/polysolve/nonlinear/Solver.cpp b/src/polysolve/nonlinear/Solver.cpp
+index 1b98faa..4d0f645 100644
+--- a/src/polysolve/nonlinear/Solver.cpp
++++ b/src/polysolve/nonlinear/Solver.cpp
+@@ -307,6 +307,7 @@ namespace polysolve::nonlinear
+                 break;
+             }
+ 
++            m_current.fValue = energy;
+             m_current.fDelta = std::abs(old_energy - energy);
+ 
+             // --- Gradient ----------------------------------------------------
