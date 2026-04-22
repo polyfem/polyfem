@@ -34,6 +34,8 @@ namespace polyfem::solver
 					const ElementInversionCheck check_inversion = ElementInversionCheck::Discrete);
 
 		std::string name() const override { return "elastic"; }
+		std::string assembler_name() const { return assembler_.name(); }
+		double unweighted_value(const Eigen::VectorXd &x) const { return value_unweighted(x); }
 
 	protected:
 		/// @brief Compute the elastic potential value

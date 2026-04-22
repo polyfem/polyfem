@@ -1,6 +1,7 @@
 #include "NLProblem.hpp"
 
 #include <polyfem/io/OBJWriter.hpp>
+#include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 
@@ -20,6 +21,7 @@
 #include <igl/Timer.h>
 
 #include <set>
+#include <sstream>
 
 /*
 m \frac{\partial^2 u}{\partial t^2} = \psi = \text{div}(\sigma[u])\newline
@@ -549,10 +551,41 @@ namespace polyfem::solver
 
 	void NLProblem::post_step(const polysolve::nonlinear::PostStepData &data)
 	{
-		FullNLProblem::post_step(polysolve::nonlinear::PostStepData(data.iter_num, data.solver_info, reduced_to_full(data.x), reduced_to_full(data.grad)));
+		const Eigen::VectorXd full_x = reduced_to_full(data.x);
+		const Eigen::VectorXd full_grad = reduced_to_full(data.grad);
+		FullNLProblem::post_step(polysolve::nonlinear::PostStepData(data.iter_num, data.solver_info, full_x, full_grad));
 
 		if (penalty_problem_ && full_size() == current_size())
 			penalty_problem_->post_step(data);
+
+		double total_energy_contribution = 0.0;
+		std::ostringstream contributions;
+		contributions << "iter " << data.iter_num << ": energy contributions";
+
+		for (const auto &form : forms_)
+		{
+			if (!form || !form->enabled())
+				continue;
+
+			const double contribution = form->value(full_x);
+			total_energy_contribution += contribution;
+
+			std::string term_name = form->name();
+			if (const auto elastic_form = std::dynamic_pointer_cast<ElasticForm>(form))
+				term_name = fmt::format("{}[{}]", term_name, elastic_form->assembler_name());
+
+			contributions << ", " << term_name << "=" << contribution;
+		}
+
+		if (penalty_problem_ && full_size() == current_size())
+		{
+			const double penalty_contribution = penalty_problem_->value(data.x);
+			total_energy_contribution += penalty_contribution;
+			contributions << ", penalty=" << penalty_contribution;
+		}
+
+		contributions << ", total=" << total_energy_contribution;
+		logger().info("{}", contributions.str());
 
 		// TODO: add me back
 		static int nsolves = 0;
