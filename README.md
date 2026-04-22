@@ -21,6 +21,8 @@ All the C++ dependencies required to build the code are included. It should work
 
 On Linux, `zenity` is required for the file dialog window to work. On macOS and Windows, the native windows are used directly.
 
+On Mac, the current CMake setup does not work with SuiteSparse installed via macports. Please either use Homebrew or disable SPQR with -DPOLYSOLVE_WITH_SPQR=OFF
+
 
 ### Optional
 The formula for higher-order bases is optionally computed at CMake time using an external python script. Consequently, PolyFEM might require a working installation of Python and some additional packages to build correctly:

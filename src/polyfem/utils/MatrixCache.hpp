@@ -9,7 +9,7 @@
 
 namespace polyfem::utils
 {
-	/// abstract class used for caching 
+	/// abstract class used for caching
 	class MatrixCache
 	{
 	public:
@@ -83,7 +83,7 @@ namespace polyfem::utils
 		/// otherwise, save the value directly in the second cache
 		///     in this case, modfies values_
 		void add_value(const int e, const int i, const int j, const double value) override;
-		/// if the cache is yet to be constructed, save the 
+		/// if the cache is yet to be constructed, save the
 		/// cached (ordered) indices in inner_index_ and outer_index_
 		/// then fill in map and second_cache_
 		///     in this case, modifies inner_index_, outer_index_, map, and second_cache_ to reflect the matrix structure
@@ -106,13 +106,13 @@ namespace polyfem::utils
 	private:
 		size_t size_;
 		StiffnessMatrix tmp_, mat_;
-		std::vector<Eigen::Triplet<double>> entries_; ///< contains global matrix indices and corresponding value
+		std::vector<Eigen::Triplet<double>> entries_;              ///< contains global matrix indices and corresponding value
 		std::vector<std::vector<std::pair<int, size_t>>> mapping_; ///< maps row indices to column index/local index pairs
-		std::vector<int> inner_index_, outer_index_; ///< saves inner/outer indices for sparse matrix
-		std::vector<double> values_; ///< buffer for values (corresponds to inner/outer_index_ structure for sparse matrix)
+		std::vector<int> inner_index_, outer_index_;               ///< saves inner/outer indices for sparse matrix
+		std::vector<double> values_;                               ///< buffer for values (corresponds to inner/outer_index_ structure for sparse matrix)
 		const SparseMatrixCache *main_cache_ = nullptr;
 
-		std::vector<std::vector<int>> second_cache_; ///< maps element index to local index
+		std::vector<std::vector<int>> second_cache_;                         ///< maps element index to local index
 		std::vector<std::vector<std::pair<int, int>>> second_cache_entries_; ///< maps element indices to global matrix indices
 		int current_e_ = -1;
 		int current_e_index_ = -1;

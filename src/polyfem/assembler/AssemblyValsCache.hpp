@@ -11,9 +11,14 @@ namespace polyfem
 		{
 		public:
 			/// computes the basis evaluation and geometric mapping
-			/// for each of the given ElementBases in bases
-			/// initializes cache member
+			/// for each of the given ElementBases in bases initializes cache member.
+			/// will clear the old cache if exists.
 			void init(const bool is_volume, const std::vector<basis::ElementBases> &bases, const std::vector<basis::ElementBases> &gbases, const bool is_mass = false);
+
+			/// initialize an empty cache.
+			/// does not computes the basis evaluation and geometric mapping.
+			/// will clear the old cache if exists.
+			void init_empty(const bool is_mass = false);
 
 			/// retrieves cached basis evaluation and geometric for the given element
 			/// if it doesn't exist, computes and caches it (modifies cache member in the latter case)

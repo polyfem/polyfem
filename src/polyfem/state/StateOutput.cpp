@@ -194,10 +194,14 @@ namespace polyfem
 		if (restart_json_path.empty())
 			return;
 
+		const int t_offset = args["output"]["data"]["file_index_offset"].get<int>();
+		const int global_t = t + t_offset;
+
 		json restart_json;
 		restart_json["root_path"] = root_path();
 		restart_json["common"] = root_path();
 		restart_json["time"] = {{"t0", t0 + dt * t}};
+		restart_json["output"] = {{"data", {{"file_index_offset", global_t}}}};
 
 		restart_json["space"] = R"({
 			"remesh": {
@@ -215,7 +219,7 @@ namespace polyfem
 		std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
 		if (!rest_mesh_path.empty())
 		{
-			rest_mesh_path = resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], t));
+			rest_mesh_path = resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], global_t));
 
 			std::vector<json> patch;
 			if (args["geometry"].is_array())
@@ -269,11 +273,11 @@ namespace polyfem
 		restart_json["input"] = {{
 			"data",
 			{
-				{"state", resolve_output_path(fmt::format(args["output"]["data"]["state"], t))},
+				{"state", resolve_output_path(fmt::format(args["output"]["data"]["state"], global_t))},
 			},
 		}};
 
-		std::ofstream file(resolve_output_path(fmt::format(restart_json_path, t)));
+		std::ofstream file(resolve_output_path(fmt::format(restart_json_path, global_t)));
 		file << restart_json;
 	}
 } // namespace polyfem

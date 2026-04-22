@@ -1,5 +1,6 @@
 #include "LineQuadrature.hpp"
 
+#include <algorithm>
 #include <vector>
 #include <cassert>
 #include <cmath>
@@ -4711,13 +4712,19 @@ namespace polyfem
 
 			assert((xi.size() == wi.size()));
 
-			std::sort(wi.begin(), wi.end(), [xi](int i1, int i2) {
-				return xi[i1] < xi[i2];
+			std::vector<std::pair<double, double>> paired(xi.size());
+			for (size_t i = 0; i < xi.size(); ++i)
+				paired[i] = {xi[i], wi[i]};
+
+			std::sort(paired.begin(), paired.end(), [](const auto &a, const auto &b) {
+				return a.first < b.first;
 			});
 
-			std::sort(xi.begin(), xi.end(), [xi](int i1, int i2) {
-				return xi[i1] < xi[i2];
-			});
+			for (size_t i = 0; i < paired.size(); ++i)
+			{
+				xi[i] = paired[i].first;
+				wi[i] = paired[i].second;
+			}
 
 			quad.points = Eigen::Map<Eigen::MatrixXd>(&xi[0], xi.size(), 1);
 			quad.weights = Eigen::Map<Eigen::MatrixXd>(&wi[0], wi.size(), 1);

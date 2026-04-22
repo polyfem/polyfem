@@ -35,7 +35,7 @@ namespace polyfem::mesh
 		{
 		}
 
-		virtual ~PhysicsRemesher(){};
+		virtual ~PhysicsRemesher() {};
 
 		// Edge splitting
 		void split_edges() override;

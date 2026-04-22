@@ -16,20 +16,20 @@ namespace
 
 		return V;
 	}
-}
+} // namespace
 
 namespace polyfem::utils
 {
-    PeriodicBoundary::PeriodicBoundary(
-        const bool is_scalar,
-        const int n_bases,
-        const std::vector<basis::ElementBases> &bases,
-        const std::shared_ptr<mesh::MeshNodes> &mesh_nodes,
+	PeriodicBoundary::PeriodicBoundary(
+		const bool is_scalar,
+		const int n_bases,
+		const std::vector<basis::ElementBases> &bases,
+		const std::shared_ptr<mesh::MeshNodes> &mesh_nodes,
 		const Eigen::MatrixXd &affine_matrix,
-		const double tol): affine_matrix_(affine_matrix)
-    {
-        const int dim = affine_matrix.rows();
-        problem_dim_ = is_scalar ? 1 : dim;
+		const double tol) : affine_matrix_(affine_matrix)
+	{
+		const int dim = affine_matrix.rows();
+		problem_dim_ = is_scalar ? 1 : dim;
 
 		Eigen::MatrixXd V = extract_vertices(mesh_nodes) * affine_matrix.inverse().transpose();
 		auto boundary_nodes = mesh_nodes->boundary_nodes();
@@ -97,7 +97,7 @@ namespace polyfem::utils
 			for (int i = 0; i < dependent_map_.size(); i++)
 				if (dependent_map_(i) >= 0 && dependent_map_(dependent_map_(i)) >= 0)
 					dependent_map_(i) = dependent_map_(dependent_map_(i));
-		
+
 		for (int i = 0; i < dependent_map_.size(); i++)
 		{
 			if (dependent_map_(i) >= 0)
@@ -116,19 +116,19 @@ namespace polyfem::utils
 			if (dependent_map_(i) >= 0)
 				index_map_(i) = index_map_(dependent_map_(i));
 
-        const int old_size = index_map_.size();
-        full_to_periodic_map_.setZero(old_size * problem_dim_);
-        for (int i = 0; i < old_size; i++)
-            for (int d = 0; d < problem_dim_; d++)
-                full_to_periodic_map_(i * problem_dim_ + d) = index_map_(i) * problem_dim_ + d;
-    }
+		const int old_size = index_map_.size();
+		full_to_periodic_map_.setZero(old_size * problem_dim_);
+		for (int i = 0; i < old_size; i++)
+			for (int d = 0; d < problem_dim_; d++)
+				full_to_periodic_map_(i * problem_dim_ + d) = index_map_(i) * problem_dim_ + d;
+	}
 
-    int PeriodicBoundary::full_to_periodic(StiffnessMatrix &A) const
+	int PeriodicBoundary::full_to_periodic(StiffnessMatrix &A) const
 	{
 		const int independent_dof = full_to_periodic_map_.maxCoeff() + 1;
-		
+
 		// account for potential pressure block
-		auto extended_index_map = [&](int id){
+		auto extended_index_map = [&](int id) {
 			if (id < full_to_periodic_map_.size())
 				return full_to_periodic_map_(id);
 			else
@@ -140,23 +140,23 @@ namespace polyfem::utils
 		entries.reserve(A.nonZeros());
 		for (int k = 0; k < A.outerSize(); k++)
 		{
-			for (StiffnessMatrix::InnerIterator it(A,k); it; ++it)
+			for (StiffnessMatrix::InnerIterator it(A, k); it; ++it)
 			{
 				entries.emplace_back(extended_index_map(it.row()), extended_index_map(it.col()), it.value());
 			}
 		}
-		A_periodic.setFromTriplets(entries.begin(),entries.end());
+		A_periodic.setFromTriplets(entries.begin(), entries.end());
 
 		std::swap(A_periodic, A);
 
 		return independent_dof;
 	}
-    Eigen::MatrixXd PeriodicBoundary::full_to_periodic(const Eigen::MatrixXd &b, bool accumulate) const
-    {
+	Eigen::MatrixXd PeriodicBoundary::full_to_periodic(const Eigen::MatrixXd &b, bool accumulate) const
+	{
 		const int independent_dof = full_to_periodic_map_.maxCoeff() + 1;
-		
+
 		// account for potential pressure block
-		auto extended_index_map = [&](int id){
+		auto extended_index_map = [&](int id) {
 			if (id < full_to_periodic_map_.size())
 				return full_to_periodic_map_(id);
 			else
@@ -174,27 +174,27 @@ namespace polyfem::utils
 				b_periodic.row(extended_index_map(k)) = b.row(k);
 
 		return b_periodic;
-    }
-    std::vector<int> PeriodicBoundary::full_to_periodic(const std::vector<int> &boundary_nodes) const
-    {
+	}
+	std::vector<int> PeriodicBoundary::full_to_periodic(const std::vector<int> &boundary_nodes) const
+	{
 		std::vector<int> boundary_nodes_reduced = boundary_nodes;
-        if (has_periodic_bc())
-        {
-            for (int i = 0; i < boundary_nodes_reduced.size(); i++)
-                boundary_nodes_reduced[i] = full_to_periodic_map_(boundary_nodes_reduced[i]);
+		if (has_periodic_bc())
+		{
+			for (int i = 0; i < boundary_nodes_reduced.size(); i++)
+				boundary_nodes_reduced[i] = full_to_periodic_map_(boundary_nodes_reduced[i]);
 
-            std::sort(boundary_nodes_reduced.begin(), boundary_nodes_reduced.end());
-            auto it = std::unique(boundary_nodes_reduced.begin(), boundary_nodes_reduced.end());
-            boundary_nodes_reduced.resize(std::distance(boundary_nodes_reduced.begin(), it));
-        }
+			std::sort(boundary_nodes_reduced.begin(), boundary_nodes_reduced.end());
+			auto it = std::unique(boundary_nodes_reduced.begin(), boundary_nodes_reduced.end());
+			boundary_nodes_reduced.resize(std::distance(boundary_nodes_reduced.begin(), it));
+		}
 		return boundary_nodes_reduced;
-    }
+	}
 
-    Eigen::MatrixXd PeriodicBoundary::periodic_to_full(const int ndofs, const Eigen::MatrixXd &x_periodic) const
+	Eigen::MatrixXd PeriodicBoundary::periodic_to_full(const int ndofs, const Eigen::MatrixXd &x_periodic) const
 	{
 		const int independent_dof = full_to_periodic_map_.maxCoeff() + 1;
-		
-		auto extended_index_map = [&](int id){
+
+		auto extended_index_map = [&](int id) {
 			if (id < full_to_periodic_map_.size())
 				return full_to_periodic_map_(id);
 			else
@@ -209,12 +209,12 @@ namespace polyfem::utils
 		return x_full;
 	}
 
-    bool PeriodicBoundary::all_direction_periodic() const
-    {
-        return true;
-    }
-    bool PeriodicBoundary::has_periodic_bc() const
-    {
-        return true;
-    }
-}
+	bool PeriodicBoundary::all_direction_periodic() const
+	{
+		return true;
+	}
+	bool PeriodicBoundary::has_periodic_bc() const
+	{
+		return true;
+	}
+} // namespace polyfem::utils

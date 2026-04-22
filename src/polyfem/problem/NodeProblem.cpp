@@ -169,7 +169,7 @@ namespace polyfem
 			return true;
 		}
 
-		void NodeProblem::set_parameters(const json &params)
+		void NodeProblem::set_parameters(const json &params, const std::string &root_path)
 		{
 			if (params.contains("rhs"))
 			{

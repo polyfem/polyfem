@@ -592,7 +592,7 @@ namespace polyfem::mesh
 				}
 
 				obstacle.append_mesh(
-					vertices, codim_vertices, codim_edges, faces, displacement);
+					vertices, codim_vertices, codim_edges, faces, displacement, root_path);
 			}
 			else if (geometry["type"] == "plane")
 			{

@@ -19,6 +19,7 @@
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
 #include <polyfem/assembler/IsochoricNeoHookean.hpp>
 #include <polyfem/assembler/HGOFiber.hpp>
+#include <polyfem/assembler/ActiveFiber.hpp>
 #include <polyfem/assembler/OgdenElasticity.hpp>
 #include <polyfem/assembler/VolumePenalty.hpp>
 #include <polyfem/assembler/SaintVenantElasticity.hpp>
@@ -100,6 +101,9 @@ namespace polyfem
 			else if (formulation == "HGOFiber")
 				return std::make_shared<HGOFiber>();
 
+			else if (formulation == "ActiveFiber")
+				return std::make_shared<ActiveFiber>();
+
 			else if (formulation == "Stokes")
 				return std::make_shared<StokesVelocity>();
 			else if (formulation == "StokesPressure")
@@ -111,8 +115,6 @@ namespace polyfem
 
 			else if (formulation == "AMIPS")
 				return std::make_shared<AMIPSEnergy>();
-			else if (formulation == "AMIPSAutodiff")
-				return std::make_shared<AMIPSEnergyAutodiff>();
 			else if (formulation == "FixedCorotational")
 				return std::make_shared<FixedCorotational>();
 
@@ -224,7 +226,7 @@ namespace polyfem
 				{
 					return std::max((basis_degree - 1) * 2, 1);
 				}
-				else if (b_type == BasisType::CUBE_LAGRANGE || b_type == BasisType::PRISM_LAGRANGE)
+				else if (b_type == BasisType::CUBE_LAGRANGE || b_type == BasisType::PRISM_LAGRANGE || b_type == BasisType::PYRAMID_LAGRANGE)
 				{
 					// in this case we have a tensor product basis
 					// this computes the quadrature order along a single axis
@@ -296,11 +298,11 @@ namespace polyfem
 			}
 		}
 
-		void AllElasticMaterials::add_multimaterial(const int index, const json &params, const Units &units)
+		void AllElasticMaterials::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
 		{
 			for (auto &it : elastic_material_map_)
 			{
-				it.second->add_multimaterial(index, params, units);
+				it.second->add_multimaterial(index, params, units, root_path);
 			}
 		}
 

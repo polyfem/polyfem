@@ -345,11 +345,23 @@ namespace polyfem
 
 	Eigen::MatrixXd pk1_from_cauchy(const Eigen::MatrixXd &stress, const Eigen::MatrixXd &F)
 	{
+		bool fnan = !(F.array() == F.array()).all();
+		bool stressnan = !(stress.array() == stress.array()).all();
+
+		if (fnan || stressnan)
+			return F;
+
 		return F.determinant() * stress * F.inverse().transpose();
 	}
 
 	Eigen::MatrixXd pk2_from_cauchy(const Eigen::MatrixXd &stress, const Eigen::MatrixXd &F)
 	{
+		bool fnan = !(F.array() == F.array()).all();
+		bool stressnan = !(stress.array() == stress.array()).all();
+
+		if (fnan || stressnan)
+			return F;
+
 		return F.determinant() * F.inverse() * stress * F.inverse().transpose();
 	}
 } // namespace polyfem

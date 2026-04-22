@@ -113,12 +113,28 @@ TEST_CASE("restart", "[.][restart]")
 	args["/input/data/state"_json_pointer] = (full_outdir / fmt::format("restart_{:d}.hdf5", restart_time_steps)).string();
 	args["/time/t0"_json_pointer] = args["/time/dt"_json_pointer].get<double>() * restart_time_steps;
 	args["time"]["time_steps"] = restart_time_steps;
+	args["/output/data/state"_json_pointer] = "restart_{:d}.hdf5";
+	args["/output/data/file_index_offset"_json_pointer] = restart_time_steps;
 	const auto restart_sol = run_sim(state, args);
 
 	CHECK(full_sol.rows() == restart_sol.rows());
 	CHECK(full_sol.cols() == restart_sol.cols());
 	CAPTURE((full_sol - restart_sol).lpNorm<Eigen::Infinity>());
 	CHECK(full_sol.isApprox(restart_sol, margin));
+
+	// Verify that the file index offset works: restarted output files should
+	// be numbered starting from restart_time_steps, not from 0.
+	for (int t = restart_time_steps + 1; t <= total_time_steps; ++t)
+	{
+		const auto state_file = restart_outdir / fmt::format("restart_{:d}.hdf5", t);
+		CHECK(std::filesystem::exists(state_file));
+	}
+	// Files numbered below restart_time_steps should NOT exist in the restart output dir.
+	for (int t = 1; t < restart_time_steps; ++t)
+	{
+		const auto state_file = restart_outdir / fmt::format("restart_{:d}.hdf5", t);
+		CHECK_FALSE(std::filesystem::exists(state_file));
+	}
 
 	std::filesystem::remove_all(outdir);
 }

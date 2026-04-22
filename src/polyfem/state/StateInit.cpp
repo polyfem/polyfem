@@ -21,7 +21,9 @@
 #include <spdlog/sinks/ostream_sink.h>
 
 #include <ipc/utils/logger.hpp>
+#ifdef POLYFEM_WITH_ITR
 #include <wmtk/utils/Logger.hpp>
+#endif
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
@@ -104,12 +106,16 @@ namespace polyfem
 
 		ipc::set_logger(std::make_shared<spdlog::logger>("ipctk", sinks.begin(), sinks.end()));
 
+#ifdef POLYFEM_WITH_ITR
 		wmtk::set_logger(std::make_shared<spdlog::logger>("wmtk", sinks.begin(), sinks.end()));
+#endif
 
 		// Set the logger at the lowest level, so all messages are passed to the sinks
 		logger().set_level(spdlog::level::trace);
 		ipc::logger().set_level(spdlog::level::trace);
+#ifdef POLYFEM_WITH_ITR
 		wmtk::logger().set_level(spdlog::level::trace);
+#endif
 
 		set_log_level(log_level);
 	}
@@ -151,7 +157,7 @@ namespace polyfem
 			else
 			{
 				logger().error("unable to open {} rules", polyfem_input_spec);
-				throw std::runtime_error("Invald spec file");
+				throw std::runtime_error("Invalid spec file");
 			}
 
 			jse.include_directories.push_back(POLYFEM_JSON_SPEC_DIR);
@@ -191,7 +197,7 @@ namespace polyfem
 		if (!valid_input)
 		{
 			logger().error("invalid input json:\n{}", jse.log2str());
-			throw std::runtime_error("Invald input json file");
+			throw std::runtime_error("Invalid input json file");
 		}
 		// end of check
 
@@ -269,6 +275,7 @@ namespace polyfem
 		assembler = assembler::AssemblerUtils::make_assembler(formulation);
 		assert(assembler->name() == formulation);
 		mass_matrix_assembler = std::make_shared<assembler::Mass>();
+		pure_mass_matrix_assembler = std::make_shared<assembler::HRZMass>();
 		const auto other_name = assembler::AssemblerUtils::other_assembler_name(formulation);
 
 		if (!other_name.empty())
@@ -294,16 +301,16 @@ namespace polyfem
 			if (!args["time"].is_null())
 			{
 				const auto tmp = R"({"is_time_dependent": true})"_json;
-				problem->set_parameters(tmp);
+				problem->set_parameters(tmp, root_path());
 			}
 			// important for the BC
 
 			auto bc = args["boundary_conditions"];
 			bc["root_path"] = root_path();
-			problem->set_parameters(bc);
-			problem->set_parameters(args["initial_conditions"]);
+			problem->set_parameters(bc, root_path());
+			problem->set_parameters(args["initial_conditions"], root_path());
 
-			problem->set_parameters(args["output"]);
+			problem->set_parameters(args["output"], root_path());
 		}
 		else
 		{
@@ -319,33 +326,10 @@ namespace polyfem
 				problem->clear();
 			}
 			// important for the BC
-			problem->set_parameters(args["preset_problem"]);
+			problem->set_parameters(args["preset_problem"], root_path());
 		}
 
 		problem->set_units(*assembler, units);
-
-		if (optimization_enabled == solver::CacheLevel::Derivatives)
-		{
-			if (is_contact_enabled())
-			{
-				if (!args["contact"]["use_gcp_formulation"] && !args["contact"]["use_convergent_formulation"])
-				{
-					args["contact"]["use_convergent_formulation"] = true;
-					logger().info("Use convergent formulation for differentiable contact...");
-				}
-				if (args["/solver/contact/barrier_stiffness"_json_pointer].is_string())
-				{
-					logger().error("Only constant barrier stiffness is supported in differentiable contact!");
-				}
-			}
-
-			if (args.contains("boundary_conditions") && args["boundary_conditions"].contains("rhs"))
-			{
-				json rhs = args["boundary_conditions"]["rhs"];
-				if ((rhs.is_array() && rhs.size() > 0 && rhs[0].is_string()) || rhs.is_string())
-					logger().error("Only constant rhs over space is supported in differentiable code!");
-			}
-		}
 	}
 
 	void State::set_max_threads(const int max_threads)
@@ -446,82 +430,12 @@ namespace polyfem
 		if (!utils::is_param_valid(args, "materials"))
 			return;
 
-		if (!args["materials"].is_array() && args["materials"]["type"] == "AMIPSAutodiff")
-		{
-			json transform_params = {};
-			transform_params["canonical_transformation"] = json::array();
-			if (!mesh->is_volume())
-			{
-				Eigen::MatrixXd regular_tri(3, 3);
-				regular_tri << 0, 0, 1,
-					1, 0, 1,
-					1. / 2., std::sqrt(3) / 2., 1;
-				regular_tri.transposeInPlace();
-				Eigen::MatrixXd regular_tri_inv = regular_tri.inverse();
-
-				const auto &mesh2d = *dynamic_cast<mesh::Mesh2D *>(mesh.get());
-				for (int e = 0; e < mesh->n_elements(); e++)
-				{
-					Eigen::MatrixXd transform;
-					mesh2d.compute_face_jacobian(e, regular_tri_inv, transform);
-					transform_params["canonical_transformation"].push_back(json({
-						{
-							transform(0, 0),
-							transform(0, 1),
-						},
-						{
-							transform(1, 0),
-							transform(1, 1),
-						},
-					}));
-				}
-			}
-			else
-			{
-				Eigen::MatrixXd regular_tet(4, 4);
-				regular_tet << 0, 0, 0, 1,
-					1, 0, 0, 1,
-					1. / 2., std::sqrt(3) / 2., 0, 1,
-					1. / 2., 1. / 2. / std::sqrt(3), std::sqrt(3) / 2., 1;
-				regular_tet.transposeInPlace();
-				Eigen::MatrixXd regular_tet_inv = regular_tet.inverse();
-
-				const auto &mesh3d = *dynamic_cast<mesh::Mesh3D *>(mesh.get());
-				for (int e = 0; e < mesh->n_elements(); e++)
-				{
-					Eigen::MatrixXd transform;
-					mesh3d.compute_cell_jacobian(e, regular_tet_inv, transform);
-					transform_params["canonical_transformation"].push_back(json({
-						{
-							transform(0, 0),
-							transform(0, 1),
-							transform(0, 2),
-						},
-						{
-							transform(1, 0),
-							transform(1, 1),
-							transform(1, 2),
-						},
-						{
-							transform(2, 0),
-							transform(2, 1),
-							transform(2, 2),
-						},
-					}));
-				}
-			}
-			transform_params["solve_displacement"] = true;
-			assembler->set_materials({}, transform_params, units);
-
-			return;
-		}
-
 		std::vector<int> body_ids(mesh->n_elements());
 		for (int i = 0; i < mesh->n_elements(); ++i)
 			body_ids[i] = mesh->get_body_id(i);
 
 		for (auto &a : assemblers)
-			a->set_materials(body_ids, args["materials"], units);
+			a->set_materials(body_ids, args["materials"], units, root_path());
 	}
 
 	void State::set_materials(assembler::Assembler &assembler) const
@@ -536,7 +450,7 @@ namespace polyfem
 		for (int i = 0; i < mesh->n_elements(); ++i)
 			body_ids[i] = mesh->get_body_id(i);
 
-		assembler.set_materials(body_ids, args["materials"], units);
+		assembler.set_materials(body_ids, args["materials"], units, root_path());
 	}
 
 } // namespace polyfem

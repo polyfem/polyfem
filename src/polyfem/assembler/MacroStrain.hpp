@@ -22,7 +22,7 @@ namespace polyfem
 			int dim() const { return _dim; }
 			const Eigen::VectorXi &get_fixed_entry() const { return fixed_entry; }
 
-			void init(const int dim, const json &param)
+			void init(const int dim, const json &param, const std::string &root_path)
 			{
 				_dim = dim;
 				fixed_entry = param["fixed_macro_strain"];
@@ -38,7 +38,7 @@ namespace polyfem
 					{
 						for (size_t j = 0; j < arg[i].size(); ++j)
 						{
-							value[i * 3 + j].init(arg[i][j]);
+							value[i * 3 + j].init(arg[i][j], root_path);
 							value[i * 3 + j].set_unit_type("");
 						}
 					}

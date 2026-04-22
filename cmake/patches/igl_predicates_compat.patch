@@ -1,0 +1,17 @@
+diff --git a/include/igl/predicates/predicates.h b/include/igl/predicates/predicates.h
+new file mode 100644
+index 0000000..d7096a6
+--- /dev/null
++++ b/include/igl/predicates/predicates.h
+@@ -0,0 +1,11 @@
++// Compatibility shim: predicates.h was split into individual headers.
++#pragma once
++#include <igl/predicates/IGL_PREDICATES_ASSERT_SCALAR.h>
++#include <igl/predicates/exactinit.h>
++#include <igl/predicates/orient2d.h>
++#include <igl/predicates/orient3d.h>
++#include <igl/predicates/incircle.h>
++#include <igl/predicates/insphere.h>
++namespace igl::predicates {
++    using Orientation = igl::Orientation;
++}

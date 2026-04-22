@@ -8,11 +8,16 @@
 
 #include <polyfem/utils/Types.hpp>
 
+#include <unordered_map>
+#include <vector>
+
 namespace polyfem::solver
 {
 	/// @brief Form representing body forces
 	class PressureForm : public Form
 	{
+		friend class PressureForceDerivative;
+
 	public:
 		/// @brief Construct a new Body Form object
 		/// @param state Reference to the simulation state
@@ -48,30 +53,6 @@ namespace polyfem::solver
 		/// @param t New time
 		/// @param x Solution at time t
 		void update_quantities(const double t, const Eigen::VectorXd &x) override;
-
-		/// @brief Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adjoint_sol.
-		/// @param[in] n_verts Number of vertices
-		/// @param[in] x Current solution
-		/// @param[in] adjoint Current adjoint solution
-		/// @param[out] term Derivative of force multiplied by the adjoint
-		void force_shape_derivative(
-			const int n_verts,
-			const double t,
-			const Eigen::MatrixXd &x,
-			const Eigen::MatrixXd &adjoint,
-			Eigen::VectorXd &term);
-
-		/// @brief Compute the derivative of the force wrt vertex positions, then multiply the resulting matrix with adjoint_sol.
-		/// @param[in] n_verts Number of vertices
-		/// @param[in] x Current solution
-		/// @param[in] adjoint Current adjoint solution
-		/// @param[out] term Derivative of force multiplied by the adjoint
-		double force_pressure_derivative(
-			const int n_verts,
-			const double t,
-			const int pressure_boundary_id,
-			const Eigen::MatrixXd &x,
-			const Eigen::MatrixXd &adjoint);
 
 	private:
 		double t_;       ///< Current time

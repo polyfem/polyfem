@@ -601,6 +601,7 @@
         "type": "object",
         "optional": [
             "discr_order",
+            "discr_orderq",
             "pressure_discr_order",
             "basis_type",
             "poly_basis_type",
@@ -609,6 +610,12 @@
             "advanced"
         ],
         "doc": "Options related to the FE space."
+    },
+    {
+        "pointer": "/space/discr_orderq",
+        "default": 1,
+        "type": "int",
+        "doc": "Lagrange element order at height dimension for the space for the main unknown, for prism."
     },
     {
         "pointer": "/space/discr_order",
@@ -1705,9 +1712,23 @@
             "lagged_regularization_weight",
             "lagged_regularization_iterations",
             "check_inversion",
-            "jacobian_threshold"
+            "jacobian_threshold",
+            "characteristic_length",
+            "characteristic_force_density"
         ],
         "doc": "Advanced settings for the solver"
+    },
+    {
+        "pointer": "/solver/advanced/characteristic_length",
+        "default": -1,
+        "type": "float",
+        "doc": "Characteristic length, used for tolerances. Defaults to bounding box diagonal if not specified."
+    },
+    {
+        "pointer": "/solver/advanced/characteristic_force_density",
+        "default": 10000,
+        "type": "float",
+        "doc": "Characteristic force density, used for tolerances."
     },
     {
         "pointer": "/solver/advanced/cache_size",
@@ -2512,7 +2533,8 @@
             "rest_mesh",
             "mises",
             "nodes",
-            "advanced"
+            "advanced",
+            "file_index_offset"
         ],
         "doc": "File names to write output data to."
     },
@@ -2578,6 +2600,12 @@
         "default": false,
         "type": "bool",
         "doc": "Reorder nodes accodring to input"
+    },
+    {
+        "pointer": "/output/data/file_index_offset",
+        "default": 0,
+        "type": "int",
+        "doc": "Starting file index offset for output files. Set automatically by restart JSON so that file numbering continues from the previous run."
     },
     {
         "pointer": "/output/reference",

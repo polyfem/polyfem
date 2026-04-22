@@ -1,14 +1,13 @@
 #include "SmoothContactForm.hpp"
+
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/Timer.hpp>
-#include <polyfem/utils/MatrixUtils.hpp>
-#include <polyfem/utils/MaybeParallelFor.hpp>
-#include <polyfem/io/OBJWriter.hpp>
 
-#include <ipc/utils/eigen_ext.hpp>
 #include <ipc/barrier/adaptive_stiffness.hpp>
 #include <ipc/utils/world_bbox_diagonal_length.hpp>
+
+#include <cmath>
 
 namespace polyfem::solver
 {
@@ -45,7 +44,7 @@ namespace polyfem::solver
 		params.set_adaptive_dhat_ratio(min_distance_ratio);
 		if (use_adaptive_dhat)
 		{
-			collision_set_.compute_adaptive_dhat(collision_mesh, collision_mesh.rest_positions(), params, broad_phase_);
+			collision_set_.compute_adaptive_dhat(collision_mesh, collision_mesh.rest_positions(), params, broad_phase_.get());
 			if (use_adaptive_barrier_stiffness)
 				logger().error("Adaptive dhat is not compatible with adaptive barrier stiffness");
 		}
@@ -57,12 +56,6 @@ namespace polyfem::solver
 			return;
 
 		log_and_throw_error("Adaptive barrier stiffness not implemented for SmoothContactForm!");
-	}
-
-	void SmoothContactForm::force_shape_derivative(const ipc::SmoothCollisions &collision_set, const Eigen::MatrixXd &solution, const Eigen::VectorXd &adjoint_sol, Eigen::VectorXd &term) const
-	{
-		StiffnessMatrix hessian = barrier_potential_.hessian(collision_set, collision_mesh_, compute_displaced_surface(solution), ipc::PSDProjectionMethod::NONE);
-		term = barrier_stiffness() * collision_mesh_.to_full_dof(hessian) * adjoint_sol;
 	}
 
 	void SmoothContactForm::update_collision_set(const Eigen::MatrixXd &displaced_surface)
@@ -77,7 +70,7 @@ namespace polyfem::solver
 				candidates_, collision_mesh_, displaced_surface, params, use_adaptive_dhat);
 		else
 			collision_set_.build(
-				collision_mesh_, displaced_surface, params, use_adaptive_dhat, broad_phase_);
+				collision_mesh_, displaced_surface, params, use_adaptive_dhat, broad_phase_.get());
 		cached_displaced_surface = displaced_surface;
 	}
 

@@ -13,8 +13,8 @@
 
 namespace
 {
-	//windows in release generates this error when building p4 bases
-	//Unhandled exception at 0x00007FF62FDD8DD7 in unit_tests.exe: 0xC00000FD: Stack overflow (parameters: 0x0000000000000001, 0x00000087AAE09000).
+	// windows in release generates this error when building p4 bases
+	// Unhandled exception at 0x00007FF62FDD8DD7 in unit_tests.exe: 0xC00000FD: Stack overflow (parameters: 0x0000000000000001, 0x00000087AAE09000).
 #if defined(WIN32) && defined(NDEBUG)
 	std::shared_ptr<polyfem::State> get_state(const std::string mesh_path = "", const int discr_order = 3)
 #else

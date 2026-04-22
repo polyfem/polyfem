@@ -9,7 +9,7 @@
 
 namespace polyfem::assembler
 {
-	void SumModel::add_multimaterial(const int index, const json &params, const Units &units)
+	void SumModel::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
 	{
 		assert(size() == 2 || size() == 3);
 		if (params.count("models") == 0)
@@ -26,7 +26,7 @@ namespace polyfem::assembler
 			assemblers_.emplace_back(std::dynamic_pointer_cast<NLAssembler>(assembler));
 			assert(assemblers_.back() != nullptr);
 			assemblers_.back()->set_size(size());
-			assemblers_.back()->add_multimaterial(index, model, units);
+			assemblers_.back()->add_multimaterial(index, model, units, root_path);
 		}
 	}
 
@@ -86,6 +86,13 @@ namespace polyfem::assembler
 		all.setZero();
 
 		Eigen::MatrixXd tmp;
+
+		if (type == ElasticityTensorType::F)
+		{
+			std::dynamic_pointer_cast<assembler::ElasticityAssembler>(assemblers_.front())
+				->assign_stress_tensor(data, all_size, type, all, fun);
+			return;
+		}
 
 		for (const auto &assembler : assemblers_)
 		{

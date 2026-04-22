@@ -9,12 +9,12 @@ namespace polyfem::assembler
 	{
 	}
 
-	void UnconstrainedOgdenElasticity::add_multimaterial(const int index, const json &params, const Units &units)
+	void UnconstrainedOgdenElasticity::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
 	{
 		// TODO check me
-		alphas_.add_multimaterial(index, params, "");
-		mus_.add_multimaterial(index, params, units.stress());
-		Ds_.add_multimaterial(index, params, units.stress());
+		alphas_.add_multimaterial(index, params, "", root_path);
+		mus_.add_multimaterial(index, params, units.stress(), root_path);
+		Ds_.add_multimaterial(index, params, units.stress(), root_path);
 		assert(alphas_.size() == mus_.size());
 		assert(alphas_.size() == Ds_.size());
 	}
@@ -50,11 +50,11 @@ namespace polyfem::assembler
 	{
 	}
 
-	void IncompressibleOgdenElasticity::add_multimaterial(const int index, const json &params, const Units &units)
+	void IncompressibleOgdenElasticity::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
 	{
-		coefficients_.add_multimaterial(index, params, units.stress());
-		expoenents_.add_multimaterial(index, params, "");
-		bulk_modulus_.add_multimaterial(index, params, units.stress());
+		coefficients_.add_multimaterial(index, params, units.stress(), root_path);
+		expoenents_.add_multimaterial(index, params, "", root_path);
+		bulk_modulus_.add_multimaterial(index, params, units.stress(), root_path);
 		assert(coefficients_.size() == expoenents_.size());
 	}
 

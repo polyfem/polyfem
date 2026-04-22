@@ -63,5 +63,5 @@ namespace polyfem
 			// template<typename T>
 			void set_intersection_own(const std::vector<uint32_t> &A, const std::vector<uint32_t> &B, std::array<uint32_t, 2> &C, int &num);
 		} // namespace MeshProcessing3D
-	}     // namespace mesh
+	} // namespace mesh
 } // namespace polyfem

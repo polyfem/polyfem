@@ -2,8 +2,6 @@ set(SOURCES
 	Common.hpp
 	State.cpp
 	State.hpp
-	OptState.cpp
-	OptState.hpp
 	Units.cpp
 	Units.hpp
 )
@@ -20,6 +18,9 @@ add_subdirectory(autogen)
 add_subdirectory(basis)
 add_subdirectory(io)
 add_subdirectory(mesh)
+if(POLYFEM_WITH_OPTIMIZATION)
+	add_subdirectory(optimization)
+endif()
 add_subdirectory(problem)
 add_subdirectory(quadrature)
 add_subdirectory(refinement)

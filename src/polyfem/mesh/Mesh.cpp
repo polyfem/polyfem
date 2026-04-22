@@ -250,14 +250,14 @@ namespace polyfem::mesh
 		mesh->build_from_matrices(vertices, cells);
 
 		std::vector<int> tmp(cells.data(), cells.data() + cells.size());
- 		std::sort(tmp.begin(), tmp.end());
- 		tmp.erase(std::unique(tmp.begin(), tmp.end()), tmp.end());
+		std::sort(tmp.begin(), tmp.end());
+		tmp.erase(std::unique(tmp.begin(), tmp.end()), tmp.end());
 
- 		mesh->in_ordered_vertices_ = Eigen::Map<Eigen::VectorXi, Eigen::Unaligned>(tmp.data(), tmp.size());
- 		// assert(mesh->in_ordered_vertices_[0] == 0);
- 		// assert(mesh->in_ordered_vertices_[1] == 1);
- 		// assert(mesh->in_ordered_vertices_[2] == 2);
- 		// assert(mesh->in_ordered_vertices_[mesh->in_ordered_vertices_.size() - 1] == vertices.rows() - 1);
+		mesh->in_ordered_vertices_ = Eigen::Map<Eigen::VectorXi, Eigen::Unaligned>(tmp.data(), tmp.size());
+		// assert(mesh->in_ordered_vertices_[0] == 0);
+		// assert(mesh->in_ordered_vertices_[1] == 1);
+		// assert(mesh->in_ordered_vertices_[2] == 2);
+		// assert(mesh->in_ordered_vertices_[mesh->in_ordered_vertices_.size() - 1] == vertices.rows() - 1);
 
 		if (dim == 2)
 		{
@@ -427,6 +427,11 @@ namespace polyfem::mesh
 	bool Mesh::is_prism(const int el_id) const
 	{
 		return elements_tag_[el_id] == ElementType::PRISM;
+	}
+
+	bool Mesh::is_pyramid(const int el_id) const
+	{
+		return elements_tag_[el_id] == ElementType::PYRAMID;
 	}
 
 	std::vector<std::pair<int, int>> Mesh::edges() const

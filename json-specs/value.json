@@ -14,6 +14,15 @@
         "doc": "Value with unit"
     },
     {
+        "pointer": "/",
+        "type": "object",
+        "required": [
+            "file_name",
+            "function_name"
+        ],
+        "doc": "Value from python function"
+    },
+    {
         "pointer": "/unit",
         "type": "string",
         "doc": "The unit of the Value"
@@ -27,5 +36,15 @@
         "pointer": "/value",
         "type": "string",
         "doc": "The value as an expression or a file"
+    },
+    {
+        "pointer": "/file_name",
+        "type": "file",
+        "doc": "Python filename containing the function to evaluate the value"
+    },
+    {
+        "pointer": "/function_name",
+        "type": "string",
+        "doc": "Python function name to evaluate the value"
     }
 ]

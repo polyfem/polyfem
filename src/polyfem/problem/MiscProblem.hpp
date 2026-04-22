@@ -110,7 +110,7 @@ namespace polyfem
 
 			void initial_solution(const mesh::Mesh &mesh, const Eigen::MatrixXi &global_ids, const Eigen::MatrixXd &pts, Eigen::MatrixXd &val) const override;
 
-			void set_parameters(const json &params) override;
+			void set_parameters(const json &params, const std::string &root_path) override;
 
 			VectorNd eval_fun(const VectorNd &pt, double t) const override;
 			AutodiffGradPt eval_fun(const AutodiffGradPt &pt, double t) const override;
