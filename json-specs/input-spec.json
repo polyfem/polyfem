@@ -1232,6 +1232,8 @@
         "optional": [
             "dbar_factor",
             "quadrature_order",
+            "use_ogc",
+            "area_weights",
             "normalize_weights"
         ]
     },
@@ -1244,9 +1246,21 @@
     {
         "pointer": "/contact/high_order_contact_params/quadrature_order",
         "type": "int",
-        "default": 16,
+        "default": 1,
         "min": 0,
         "doc": "Quadrature order for high-order contact."
+    },
+    {
+        "pointer": "/contact/high_order_contact_params/use_ogc",
+        "default": false,
+        "type": "bool",
+        "doc": "Use the construction logic and potential formulation from Offset Geometric Contact (Chen et al. 2025)."
+    },
+    {
+        "pointer": "/contact/high_order_contact_params/area_weights",
+        "default": true,
+        "type": "bool",
+        "doc": "Weigh quadrature points by area in high-order contact potential."
     },
     {
         "pointer": "/contact/high_order_contact_params/normalize_weights",
