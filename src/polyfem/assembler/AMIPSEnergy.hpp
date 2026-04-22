@@ -47,12 +47,14 @@ namespace polyfem::assembler
 		// utility function that computes energy, the template is used for double, DScalar1, and DScalar2 in energy, gradient and hessian
 		template <typename T>
 		T compute_energy_aux(const NonLinearAssemblerData &data) const;
+		double get_energy_weight(const int el_id) const;
 		template <int n_basis, int dim>
 		void compute_energy_aux_gradient_fast(const NonLinearAssemblerData &data, Eigen::VectorXd &G_flattened) const;
 		template <int n_basis, int dim>
 		void compute_energy_hessian_aux_fast(const NonLinearAssemblerData &data, Eigen::MatrixXd &H) const;
 
 		bool use_rest_pose_ = false;
+		std::vector<double> energy_weights_;
 	};
 
 	class AMIPSEnergyAutodiff : public GenericElastic<AMIPSEnergyAutodiff>
@@ -91,10 +93,13 @@ namespace polyfem::assembler
 			T J = polyfem::utils::determinant(F);
 			if (J <= 0)
 				J = T(std::nan(""));
-			return (F.transpose() * F).trace() / pow(J, 2. / size());
+			const double weight = get_energy_weight(el_id);
+			return T(weight) * (F.transpose() * F).trace() / pow(J, 2. / size());
 		}
 
 	private:
+		double get_energy_weight(const int el_id) const;
 		std::vector<Eigen::MatrixXd> canonical_transformation_;
+		std::vector<double> energy_weights_;
 	};
 } // namespace polyfem::assembler

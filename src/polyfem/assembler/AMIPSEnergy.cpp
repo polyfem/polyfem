@@ -253,7 +253,7 @@ namespace polyfem::assembler
 			}
 
 			const T powJ = pow(det, power);
-			const T val = (def_grad.transpose() * def_grad).trace() / powJ; //+ barrier<T>::value(det);
+			const T val = T(get_energy_weight(data.vals.element_id)) * (def_grad.transpose() * def_grad).trace() / powJ; //+ barrier<T>::value(det);
 
 			energy += val * data.da(p);
 		}
@@ -601,11 +601,31 @@ namespace polyfem::assembler
 		{
 			use_rest_pose_ = params["use_rest_pose"].get<bool>();
 		}
+
+		if (energy_weights_.size() <= index)
+			energy_weights_.resize(index + 1, 1.0);
+
+		if (params.contains("weight"))
+			energy_weights_[index] = params["weight"].get<double>();
+		else
+			energy_weights_[index] = 1.0;
+	}
+
+	double AMIPSEnergy::get_energy_weight(const int el_id) const
+	{
+		if (energy_weights_.empty())
+			return 1.0;
+		if (energy_weights_.size() == 1)
+			return energy_weights_[0];
+		if (el_id >= 0 && el_id < energy_weights_.size())
+			return energy_weights_[el_id];
+		return 1.0;
 	}
 
 	AMIPSEnergyAutodiff::AMIPSEnergyAutodiff()
 	{
 		canonical_transformation_.resize(0);
+		energy_weights_.resize(0);
 	}
 
 	std::map<std::string, Assembler::ParamFunc> AMIPSEnergyAutodiff::parameters() const
@@ -615,6 +635,14 @@ namespace polyfem::assembler
 
 	void AMIPSEnergyAutodiff::add_multimaterial(const int index, const json &params, const Units &)
 	{
+		if (energy_weights_.size() <= index)
+			energy_weights_.resize(index + 1, 1.0);
+
+		if (params.contains("weight"))
+			energy_weights_[index] = params["weight"].get<double>();
+		else
+			energy_weights_[index] = 1.0;
+
 		if (params.contains("canonical_transformation"))
 		{
 			canonical_transformation_.reserve(params["canonical_transformation"].size());
@@ -627,6 +655,17 @@ namespace polyfem::assembler
 				canonical_transformation_.push_back(transform_matrix);
 			}
 		}
+	}
+
+	double AMIPSEnergyAutodiff::get_energy_weight(const int el_id) const
+	{
+		if (energy_weights_.empty())
+			return 1.0;
+		if (energy_weights_.size() == 1)
+			return energy_weights_[0];
+		if (el_id >= 0 && el_id < energy_weights_.size())
+			return energy_weights_[el_id];
+		return 1.0;
 	}
 
 } // namespace polyfem::assembler
