@@ -1213,6 +1213,7 @@
             "use_gcp_formulation",
             "alpha_n",
             "alpha_t",
+            "use_rest_shape_measure",
             "min_distance_ratio",
             "use_adaptive_dhat",
             "periodic",
@@ -1254,6 +1255,12 @@
         "min": -1,
         "type": "float",
         "doc": "Control the smoothness of normal angle contraints of contact pairs."
+    },
+    {
+        "pointer": "/contact/use_rest_shape_measure",
+        "default": true,
+        "type": "bool",
+        "doc": "If true, smooth-contact quadrature weights are computed from rest positions; if false, from deformed positions."
     },
     {
         "pointer": "/contact/enabled",

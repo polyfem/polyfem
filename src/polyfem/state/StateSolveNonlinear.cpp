@@ -181,6 +181,12 @@ namespace polyfem
 					collision_mesh.edges(), collision_mesh.faces());
 				log_and_throw_error("Unable to solve, initial solution has intersections!");
 			}
+			else {
+				OBJWriter::write(
+					resolve_output_path("no_intersection.obj"), displaced,
+					collision_mesh.edges(), collision_mesh.faces());
+				logger().info("No initial intersections detected.");
+			}
 		}
 
 		// --------------------------------------------------------------------
@@ -267,6 +273,7 @@ namespace polyfem
 			args["contact"]["use_gcp_formulation"],
 			args["contact"]["alpha_t"],
 			args["contact"]["alpha_n"],
+			args["contact"]["use_rest_shape_measure"],
 			args["contact"]["use_adaptive_dhat"],
 			args["contact"]["min_distance_ratio"],
 			// Normal Adhesion Form

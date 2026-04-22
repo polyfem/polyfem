@@ -12,11 +12,27 @@
 
 namespace polyfem::solver
 {
+	namespace
+	{
+		ipc::SmoothContactParameters make_smooth_contact_params(
+			const double dhat,
+			const double alpha_t,
+			const double alpha_n,
+			const int dim,
+			const bool use_rest_shape_measure)
+		{
+			ipc::SmoothContactParameters out(dhat, alpha_t, 0, alpha_n, 0, dim - 1);
+			out.use_rest_shape_measure = use_rest_shape_measure;
+			return out;
+		}
+	} // namespace
+
 	SmoothContactForm::SmoothContactForm(const ipc::CollisionMesh &collision_mesh,
 											   const double dhat,
 											   const double avg_mass,
 											   const double alpha_t,
 											   const double alpha_n,
+										   const bool use_rest_shape_measure,
 											   const bool use_adaptive_dhat,
 											   const double min_distance_ratio,
 											   const bool use_adaptive_barrier_stiffness,
@@ -24,7 +40,7 @@ namespace polyfem::solver
 											   const bool enable_shape_derivatives,
 											   const ipc::BroadPhaseMethod broad_phase_method,
 											   const double ccd_tolerance,
-											   const int ccd_max_iterations) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(dhat_, alpha_t, 0, alpha_n, 0, collision_mesh.dim() - 1), use_adaptive_dhat(use_adaptive_dhat), barrier_potential_(params)
+										   const int ccd_max_iterations) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), params(make_smooth_contact_params(dhat_, alpha_t, alpha_n, collision_mesh.dim(), use_rest_shape_measure)), use_adaptive_dhat(use_adaptive_dhat), barrier_potential_(params)
 	{
 		params.set_adaptive_dhat_ratio(min_distance_ratio);
 		if (use_adaptive_dhat)

@@ -289,6 +289,7 @@ namespace polyfem::mesh
 				state.args["contact"]["use_gcp_formulation"],
 				state.args["contact"]["alpha_t"],
 				state.args["contact"]["alpha_n"],
+				state.args["contact"]["use_rest_shape_measure"],
 				state.args["contact"]["use_adaptive_dhat"],
 				state.args["contact"]["min_distance_ratio"],
 				// Normal Adhesion Form

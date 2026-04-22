@@ -125,6 +125,7 @@ namespace polyfem::solver
 			const bool use_gcp_formulation,
 			const double alpha_t,
 			const double alpha_n,
+			const bool use_rest_shape_measure,
 			const bool use_adaptive_dhat,
 			const double min_distance_ratio,
 

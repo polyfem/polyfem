@@ -67,6 +67,7 @@ namespace polyfem
 			args["contact"]["use_gcp_formulation"],
 			args["contact"]["alpha_t"],
 			args["contact"]["alpha_n"],
+			args["contact"]["use_rest_shape_measure"],
 			args["contact"]["use_adaptive_dhat"],
 			args["contact"]["min_distance_ratio"],
 			// Normal Adhesion Form

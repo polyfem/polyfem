@@ -98,6 +98,7 @@ namespace polyfem::solver
 		const bool use_gcp_formulation,
 		const double alpha_t,
 		const double alpha_n,
+		const bool use_rest_shape_measure,
 		const bool use_adaptive_dhat,
 		const double min_distance_ratio,
 
@@ -376,7 +377,7 @@ namespace polyfem::solver
 				if (use_gcp_formulation)
 				{
 					contact_form = std::make_shared<SmoothContactForm>(
-						collision_mesh, dhat, avg_mass, alpha_t, alpha_n, use_adaptive_dhat, min_distance_ratio,
+						collision_mesh, dhat, avg_mass, alpha_t, alpha_n, use_rest_shape_measure, use_adaptive_dhat, min_distance_ratio,
 						use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase,
 						ccd_tolerance * units.characteristic_length(), ccd_max_iterations);
 				}

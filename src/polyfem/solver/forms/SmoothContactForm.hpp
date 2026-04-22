@@ -15,6 +15,7 @@ namespace polyfem::solver
 					const double avg_mass,
 					const double alpha_t,
 					const double alpha_n,
+					const bool use_rest_shape_measure,
 					const bool use_adaptive_dhat,
 					const double min_distance_ratio,
 					const bool use_adaptive_barrier_stiffness,
