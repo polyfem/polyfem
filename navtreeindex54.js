@@ -1,5 +1,9 @@
 var NAVTREEINDEX54 =
 {
+"structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#acef9d14121814341d98f4da0a669a381":[6,0,8,5,29,3,1],
+"structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#acef9d14121814341d98f4da0a669a381":[7,0,4,3,27,3,1],
+"structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#af855ea6ae45a8209d6f1e266c93f9936":[6,0,8,5,29,3,5],
+"structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#af855ea6ae45a8209d6f1e266c93f9936":[7,0,4,3,27,3,5],
 "structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#afc43f2839f30718fffd1081117b1c4d1":[7,0,4,3,27,3,0],
 "structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#afc43f2839f30718fffd1081117b1c4d1":[6,0,8,5,29,3,0],
 "structpolyfem_1_1renderer_1_1_material.html":[6,0,8,9,2],

@@ -138,15 +138,15 @@ var NAVTREEINDEX =
 "classpolyfem_1_1time__integrator_1_1_implicit_time_integrator.html#a19cd333457b3cd71c4b1b49b6557a81f",
 "classpolyfem_1_1utils_1_1_expression_value.html#ab95e04c1de52f61f6b75d76bf7891fd4",
 "classpolyfem_1_1utils_1_1_r_b_f_interpolation.html#a6ae7f38098ec764e96bfe91662f973a1",
-"classpolyfem_1_1utils_1_1_timer.html#a1127efc8c59a3168b03938b9986cec2d",
-"functions_s.html",
-"namespacemembers_func_r.html",
-"namespacepolyfem_1_1io.html#ac4c3c352dd849e1009497f6aa8b55b6f",
-"namespacepolyfem_1_1utils.html#a38b2b0564e236864bbac36467f5502bf",
-"p__n__bases_8hpp.html#a832e81b4c3013ffb8938489be8a33814",
-"struct_d_scalar2.html#aec9ac875715861553a48e25edab5892e",
-"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#a678b74567cef7404d8e386cc810da87f",
-"structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#afc43f2839f30718fffd1081117b1c4d1"
+"classpolyfem_1_1utils_1_1_timer.html#a0a67b868556cba0af29c70fabf7ba9c1",
+"functions_p.html",
+"namespacemembers_func_n.html",
+"namespacepolyfem_1_1io.html#aa67c767411090aba6d364bd6876d69d1",
+"namespacepolyfem_1_1utils.html#a08175843f4d83a5b314e0f58fb2e9b4d",
+"p__n__bases_8hpp.html",
+"struct_d_scalar2.html#ae2c7eae0947f46be57584c6f5495c4e7",
+"structpolyfem_1_1mesh_1_1_n_c_mesh2_d_1_1nc_elem.html#a3e1e01b68ddb625a75b75e35fe29ea2a",
+"structpolyfem_1_1mesh_1_1_wild_remesher_1_1_vertex_attributes.html#acef9d14121814341d98f4da0a669a381"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
