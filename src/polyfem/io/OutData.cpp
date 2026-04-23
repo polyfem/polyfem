@@ -2294,48 +2294,57 @@ namespace polyfem::io
 			writer.add_field("friction_forces", forces_reshaped);
 		}
 
-		ipc::NormalCollisions adhesion_collision_set;
-		adhesion_collision_set.build(
-			collision_mesh, displaced_surface, dhat_a,
-			/*dmin=*/0, ipc::create_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]).get());
-
-		ipc::NormalAdhesionPotential normal_adhesion_potential(dhat_p, dhat_a, Y, 1);
-
-		if (opts.normal_adhesion_forces || opts.export_field("normal_adhesion_forces"))
+		const bool adhesion_enabled = state.args["contact"]["adhesion"]["adhesion_enabled"];
+		const bool need_normal_adhesion = adhesion_enabled && (opts.normal_adhesion_forces || opts.export_field("normal_adhesion_forces"));
+		const bool need_tangential_adhesion = adhesion_enabled && (opts.tangential_adhesion_forces || opts.export_field("tangential_adhesion_forces"));
+		if (need_normal_adhesion || need_tangential_adhesion)
 		{
-			Eigen::MatrixXd forces = -1 * normal_adhesion_potential.gradient(adhesion_collision_set, collision_mesh, displaced_surface);
+			ipc::NormalCollisions adhesion_collision_set;
+			{
+				POLYFEM_SCOPED_TIMER("VTU contact: build adhesion collision set");
+				adhesion_collision_set.build(
+					collision_mesh, displaced_surface, dhat_a,
+					/*dmin=*/0, ipc::create_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]).get());
+			}
 
-			Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
+			ipc::NormalAdhesionPotential normal_adhesion_potential(dhat_p, dhat_a, Y, 1);
 
-			assert(forces_reshaped.rows() == surface_displacements.rows());
-			assert(forces_reshaped.cols() == surface_displacements.cols());
-			writer.add_field("normal_adhesion_forces", forces_reshaped);
-		}
+			if (need_normal_adhesion)
+			{
+				Eigen::MatrixXd forces = -1 * normal_adhesion_potential.gradient(adhesion_collision_set, collision_mesh, displaced_surface);
 
-		if (opts.tangential_adhesion_forces || opts.export_field("tangential_adhesion_forces"))
-		{
-			ipc::TangentialCollisions tangential_collision_set;
-			tangential_collision_set.build(
-				collision_mesh, displaced_surface, adhesion_collision_set,
-				normal_adhesion_potential, 1, tangential_adhesion_coefficient);
+				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
 
-			ipc::TangentialAdhesionPotential tangential_adhesion_potential(epsa);
+				assert(forces_reshaped.rows() == surface_displacements.rows());
+				assert(forces_reshaped.cols() == surface_displacements.cols());
+				writer.add_field("normal_adhesion_forces", forces_reshaped);
+			}
 
-			Eigen::MatrixXd velocities;
-			if (state.solve_data.time_integrator != nullptr)
-				velocities = state.solve_data.time_integrator->v_prev();
-			else
-				velocities = sol;
-			velocities = collision_mesh.map_displacements(utils::unflatten(velocities, collision_mesh.dim()));
+			if (need_tangential_adhesion)
+			{
+				ipc::TangentialCollisions tangential_collision_set;
+				tangential_collision_set.build(
+					collision_mesh, displaced_surface, adhesion_collision_set,
+					normal_adhesion_potential, 1, tangential_adhesion_coefficient);
 
-			Eigen::MatrixXd forces = -tangential_adhesion_potential.gradient(
-				tangential_collision_set, collision_mesh, velocities);
+				ipc::TangentialAdhesionPotential tangential_adhesion_potential(epsa);
 
-			Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
+				Eigen::MatrixXd velocities;
+				if (state.solve_data.time_integrator != nullptr)
+					velocities = state.solve_data.time_integrator->v_prev();
+				else
+					velocities = sol;
+				velocities = collision_mesh.map_displacements(utils::unflatten(velocities, collision_mesh.dim()));
 
-			assert(forces_reshaped.rows() == surface_displacements.rows());
-			assert(forces_reshaped.cols() == surface_displacements.cols());
-			writer.add_field("tangential_adhesion_forces", forces_reshaped);
+				Eigen::MatrixXd forces = -tangential_adhesion_potential.gradient(
+					tangential_collision_set, collision_mesh, velocities);
+
+				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
+
+				assert(forces_reshaped.rows() == surface_displacements.rows());
+				assert(forces_reshaped.cols() == surface_displacements.cols());
+				writer.add_field("tangential_adhesion_forces", forces_reshaped);
+			}
 		}
 
 		const auto ho_form = std::dynamic_pointer_cast<solver::HighOrderContactForm>(contact_form);
@@ -2356,10 +2365,13 @@ namespace polyfem::io
 		// Write the solution last so it is the default for warp-by-vector
 		writer.add_field("solution", surface_displacements);
 
-		writer.write_mesh(
-			export_surface.substr(0, export_surface.length() - 4) + "_contact.vtu",
-			collision_mesh.rest_positions(),
-			problem_dim == 3 ? collision_mesh.faces() : collision_mesh.edges());
+		{
+			POLYFEM_SCOPED_TIMER("VTU contact: write_mesh to disk");
+			writer.write_mesh(
+				export_surface.substr(0, export_surface.length() - 4) + "_contact.vtu",
+				collision_mesh.rest_positions(),
+				problem_dim == 3 ? collision_mesh.faces() : collision_mesh.edges());
+		}
 	}
 
 	void OutGeometryData::save_wire(
