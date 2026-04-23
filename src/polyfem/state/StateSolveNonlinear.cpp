@@ -271,8 +271,8 @@ namespace polyfem
 		damping_prev_assembler = std::make_shared<assembler::ViscousDampingPrev>();
 		set_materials(*damping_prev_assembler);
 
-		ipc::EdgeEdgeDistanceTypeConfig::instance().set_use_legacy(
-			args["contact"]["use_legacy_edge_edge_distance_type"].get<bool>());
+		ipc::DistanceTypeConfig::instance().set_use_standard(
+			args["contact"]["use_standard_distance_type"].get<bool>());
 
 		const ElementInversionCheck check_inversion = args["solver"]["advanced"]["check_inversion"];
 		const std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(

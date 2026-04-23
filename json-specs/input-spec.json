@@ -1222,7 +1222,7 @@
             "use_adaptive_dhat",
             "periodic",
             "adhesion",
-            "use_legacy_edge_edge_distance_type"
+            "use_standard_distance_type"
         ],
         "doc": "Contact handling parameters."
     },
@@ -1289,10 +1289,10 @@
         "type": "bool"
     },
     {
-        "pointer": "/contact/use_legacy_edge_edge_distance_type",
+        "pointer": "/contact/use_standard_distance_type",
         "default": false,
         "type": "bool",
-        "doc": "Use the legacy analytic edge-edge distance-type classification (pre-2025-12) instead of the predicate-based one. The legacy version avoids Geogram exact-arithmetic fallbacks for nearly-parallel edges."
+        "doc": "Use the standard analytic distance-type classification (point-edge, point-triangle, edge-edge) instead of the predicate-based one. The standard version avoids Geogram exact-arithmetic fallbacks for nearly-parallel or degenerate configurations."
     },
     {
         "pointer": "/contact/use_adaptive_dhat",
