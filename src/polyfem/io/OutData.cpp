@@ -3185,6 +3185,8 @@ namespace polyfem::io
 		j["time_assembling_mass_mat"] = runtime.assembling_mass_mat_time;
 		j["time_assigning_rhs"] = runtime.assigning_rhs_time;
 		j["time_solving"] = runtime.solving_time;
+		j["time_vtu_export"] = runtime.vtu_export_time;
+		j["time_solving_without_vtu_export"] = runtime.solving_time - runtime.vtu_export_time;
 		// j["time_computing_errors"] = runtime.computing_errors_time;
 
 		j["solver_info"] = solver_info;

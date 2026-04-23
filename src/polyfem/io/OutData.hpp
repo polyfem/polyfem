@@ -367,6 +367,8 @@ namespace polyfem::io
 		double assigning_rhs_time;
 		/// time to solve
 		double solving_time;
+		/// accumulated time spent exporting VTU files
+		double vtu_export_time = 0.0;
 
 		/// @brief computes total time
 		/// @return total time

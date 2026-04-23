@@ -51,7 +51,7 @@ namespace polyfem
 		if (args["output"]["advanced"]["save_time_sequence"] && !(t % args["output"]["paraview"]["skip_frame"].get<int>()))
 		{
 			logger().trace("Saving VTU...");
-			POLYFEM_SCOPED_TIMER("Saving VTU");
+			utils::Timer _vtu_timer("Saving VTU", timings.vtu_export_time);
 			const std::string step_name = args["output"]["advanced"]["timestep_prefix"];
 
 			ipc::HighOrderContactPotential::CountMap quadrature_points_ee;
@@ -128,6 +128,7 @@ namespace polyfem
 		if (!args["time"].is_null())
 			dt = args["time"]["dt"];
 
+		utils::Timer _vtu_timer("Saving VTU", timings.vtu_export_time);
 		out_geom.save_vtu(
 			resolve_output_path(fmt::format("solve_{:d}.vtu", i)),
 			*this, sol, pressure, t, dt,
