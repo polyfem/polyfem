@@ -24,6 +24,7 @@
 #include <polyfem/utils/BoundarySampler.hpp>
 
 #include <ipc/ipc.hpp>
+#include <ipc/distance/distance_type.hpp>
 #include <ipc/utils/profile_registry.hpp>
 
 namespace polyfem
@@ -269,6 +270,9 @@ namespace polyfem
 		// for backward solve
 		damping_prev_assembler = std::make_shared<assembler::ViscousDampingPrev>();
 		set_materials(*damping_prev_assembler);
+
+		ipc::EdgeEdgeDistanceTypeConfig::instance().set_use_legacy(
+			args["contact"]["use_legacy_edge_edge_distance_type"].get<bool>());
 
 		const ElementInversionCheck check_inversion = args["solver"]["advanced"]["check_inversion"];
 		const std::vector<std::shared_ptr<Form>> forms = solve_data.init_forms(

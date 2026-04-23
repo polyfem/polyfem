@@ -1221,7 +1221,8 @@
             "min_distance_ratio",
             "use_adaptive_dhat",
             "periodic",
-            "adhesion"
+            "adhesion",
+            "use_legacy_edge_edge_distance_type"
         ],
         "doc": "Contact handling parameters."
     },
@@ -1286,6 +1287,12 @@
         "pointer": "/contact/use_high_order_formulation",
         "default": false,
         "type": "bool"
+    },
+    {
+        "pointer": "/contact/use_legacy_edge_edge_distance_type",
+        "default": false,
+        "type": "bool",
+        "doc": "Use the legacy analytic edge-edge distance-type classification (pre-2025-12) instead of the predicate-based one. The legacy version avoids Geogram exact-arithmetic fallbacks for nearly-parallel edges."
     },
     {
         "pointer": "/contact/use_adaptive_dhat",
