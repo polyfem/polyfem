@@ -60,7 +60,7 @@ namespace polyfem::assembler
 		const Derived &derived() const { return static_cast<const Derived &>(*this); }
 
 		// sets material params
-		virtual void add_multimaterial(const int index, const json &params, const Units &units) override = 0;
+		virtual void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override = 0;
 
 		bool allow_inversion() const override { return true; }
 

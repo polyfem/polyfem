@@ -29,6 +29,7 @@ namespace polyfem::solver
 		: collision_mesh_(collision_mesh),
 		  dhat_(dhat),
 		  use_adaptive_barrier_stiffness_(use_adaptive_barrier_stiffness),
+		  barrier_stiffness_(1.0),
 		  avg_mass_(avg_mass),
 		  is_time_dependent_(is_time_dependent),
 		  enable_shape_derivatives_(enable_shape_derivatives),
@@ -82,9 +83,9 @@ namespace polyfem::solver
 				collision_mesh_, V0, V1, dmin_, tight_inclusion_ccd_);
 		else
 			max_step = ipc::compute_collision_free_stepsize(
-				collision_mesh_, V0, V1, dmin_, broad_phase_, tight_inclusion_ccd_);
+				collision_mesh_, V0, V1, dmin_, broad_phase_.get(), tight_inclusion_ccd_);
 
-		if (save_ccd_debug_meshes && ipc::has_intersections(collision_mesh_, (V1 - V0) * max_step + V0, broad_phase_))
+		if (save_ccd_debug_meshes && ipc::has_intersections(collision_mesh_, (V1 - V0) * max_step + V0, broad_phase_.get()))
 		{
 			log_and_throw_error("Taking max_step results in intersections (max_step={})", max_step);
 		}
@@ -93,7 +94,7 @@ namespace polyfem::solver
 		// This will check for static intersections as a failsafe. Not needed if we use our conservative CCD.
 		Eigen::MatrixXd V_toi = (V1 - V0) * max_step + V0;
 
-		while (ipc::has_intersections(collision_mesh_, V_toi, broad_phase_))
+		while (ipc::has_intersections(collision_mesh_, V_toi, broad_phase_.get()))
 		{
 			logger().error("Taking max_step results in intersections (max_step={:g})", max_step);
 			max_step /= 2.0;
@@ -116,7 +117,7 @@ namespace polyfem::solver
 			compute_displaced_surface(x0),
 			compute_displaced_surface(x1),
 			/*inflation_radius=*/barrier_support_size() / 2,
-			broad_phase_);
+			broad_phase_.get());
 
 		use_cached_candidates_ = true;
 	}
@@ -146,7 +147,7 @@ namespace polyfem::solver
 				tight_inclusion_ccd_);
 		else
 			is_valid = ipc::is_step_collision_free(
-				collision_mesh_, displaced0, displaced1, dmin_, broad_phase_,
+				collision_mesh_, displaced0, displaced1, dmin_, broad_phase_.get(),
 				tight_inclusion_ccd_);
 
 		return is_valid;

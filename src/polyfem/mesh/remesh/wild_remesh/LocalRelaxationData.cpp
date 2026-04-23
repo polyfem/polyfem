@@ -153,11 +153,11 @@ namespace polyfem::mesh
 		assembler = assembler::AssemblerUtils::make_assembler(state.formulation());
 		assert(assembler->name() == state.formulation());
 		assembler->set_size(dim());
-		assembler->set_materials(local_mesh.body_ids(), state.args["materials"], state.units);
+		assembler->set_materials(local_mesh.body_ids(), state.args["materials"], state.units, state.root_path());
 
 		mass_matrix_assembler = std::make_shared<assembler::Mass>();
 		mass_matrix_assembler->set_size(dim());
-		mass_matrix_assembler->set_materials(local_mesh.body_ids(), state.args["materials"], state.units);
+		mass_matrix_assembler->set_materials(local_mesh.body_ids(), state.args["materials"], state.units, state.root_path());
 
 		pressure_assembler = nullptr; // TODO: implement this
 	}

@@ -58,7 +58,7 @@ namespace polyfem::solver
 	} // namespace
 
 	CollisionBarrierForm::CollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const State> state, const double dhat, const double dmin)
-		: AdjointForm(variable_to_simulation), state_(std::move(state)), dhat_(dhat), dmin_(dmin), barrier_potential_(dhat)
+		: AdjointForm(variable_to_simulation), state_(std::move(state)), dhat_(dhat), dmin_(dmin), barrier_potential_(dhat, 1.0)
 	{
 		State::build_collision_mesh(
 			*state_->mesh, state_->n_geom_bases, state_->geom_bases(), state_->geom_bases(),
@@ -111,7 +111,7 @@ namespace polyfem::solver
 			collision_mesh_.vertices(V0),
 			collision_mesh_.vertices(V1),
 			dmin_,
-			ipc::create_broad_phase(broad_phase_method_),
+			ipc::create_broad_phase(broad_phase_method_).get(),
 			tight_inclusion_ccd);
 
 		return is_valid;
@@ -128,7 +128,7 @@ namespace polyfem::solver
 			collision_mesh_.vertices(V0),
 			collision_mesh_.vertices(V1),
 			dmin_,
-			ipc::create_broad_phase(broad_phase_method_),
+			ipc::create_broad_phase(broad_phase_method_).get(),
 			tight_inclusion_ccd);
 
 		adjoint_logger().info("Objective {}: max step size is {}.", name(), max_step);
@@ -142,7 +142,7 @@ namespace polyfem::solver
 		if (cached_displaced_surface.size() == displaced_surface.size() && cached_displaced_surface == displaced_surface)
 			return;
 
-		collision_set.build(collision_mesh_, displaced_surface, dhat_, dmin_, ipc::create_broad_phase(broad_phase_method_));
+		collision_set.build(collision_mesh_, displaced_surface, dhat_, dmin_, ipc::create_broad_phase(broad_phase_method_).get());
 
 		cached_displaced_surface = displaced_surface;
 	}
@@ -293,7 +293,7 @@ namespace polyfem::solver
 	}
 
 	DeformedCollisionBarrierForm::DeformedCollisionBarrierForm(const VariableToSimulationGroup &variable_to_simulation, std::shared_ptr<const State> state, std::shared_ptr<const DiffCache> diff_cache, const double dhat)
-		: AdjointForm(variable_to_simulation), state_(std::move(state)), diff_cache_(std::move(diff_cache)), dhat_(dhat), barrier_potential_(dhat)
+		: AdjointForm(variable_to_simulation), state_(std::move(state)), diff_cache_(std::move(diff_cache)), dhat_(dhat), barrier_potential_(dhat, 1.0)
 	{
 		if (state_->n_bases != state_->n_geom_bases)
 			log_and_throw_adjoint_error("[{}] Should use linear FE basis!", name());
@@ -374,7 +374,7 @@ namespace polyfem::solver
 		if (cached_displaced_surface.size() == displaced_surface.size() && cached_displaced_surface == displaced_surface)
 			return;
 
-		collision_set.build(collision_mesh_, displaced_surface, dhat_, 0, ipc::create_broad_phase(broad_phase_method_));
+		collision_set.build(collision_mesh_, displaced_surface, dhat_, 0, ipc::create_broad_phase(broad_phase_method_).get());
 
 		cached_displaced_surface = displaced_surface;
 	}
@@ -437,7 +437,7 @@ namespace polyfem::solver
 	{
 		ipc::SmoothCollisions collisions;
 		const auto smooth_contact = dynamic_cast<const SmoothContactForm *>(state_->solve_data.contact_form.get());
-		collisions.build(collision_mesh_, displaced_surface, smooth_contact->get_params(), smooth_contact->using_adaptive_dhat(), smooth_contact->get_broad_phase());
+		collisions.build(collision_mesh_, displaced_surface, smooth_contact->get_params(), smooth_contact->using_adaptive_dhat(), smooth_contact->get_broad_phase().get());
 		return collisions;
 	}
 

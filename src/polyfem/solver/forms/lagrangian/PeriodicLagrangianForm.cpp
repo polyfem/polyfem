@@ -54,6 +54,11 @@ namespace polyfem::solver
 		grad = periodic_bc_->full_to_periodic(grad, true);
 	}
 
+	void PeriodicLagrangianForm::project_diag(Eigen::VectorXd &diag) const
+	{
+		diag = periodic_bc_->full_to_periodic(diag, true);
+	}
+
 	void PeriodicLagrangianForm::project_hessian(StiffnessMatrix &hessian) const
 	{
 		periodic_bc_->full_to_periodic(hessian);

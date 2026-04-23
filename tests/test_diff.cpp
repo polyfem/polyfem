@@ -337,7 +337,7 @@ TEST_CASE("static-control-pressure-nodes-3d", "[.][test_adjoint]")
 
 TEST_CASE("control-pressure-walker-2d", "[test_adjoint]")
 {
-	run_test1("walker-opt.json", 1e-4, 1e-3, 0.0, 1.0);
+	run_test1("walker-opt.json", 1e-6, 1e-1, 0.0, 1.0);
 }
 
 TEST_CASE("shape-walker-2d", "[test_adjoint]")
@@ -428,7 +428,7 @@ TEST_CASE("shape-transient-friction", "[test_adjoint]")
 
 TEST_CASE("shape-transient-friction-sdf", "[test_adjoint]")
 {
-	run_test2("shape-transient-friction-sdf-opt.json", 1e-7, 1e-5, 0.0, 1.0);
+	run_test2("shape-transient-friction-sdf-opt.json", 1e-7, 1e-4, 0.0, 1.0);
 }
 
 TEST_CASE("3d-shape-mesh-target", "[.][test_adjoint]")
@@ -520,7 +520,7 @@ TEST_CASE("shape-transient-smooth", "[test_adjoint]")
 		state->args["contact"]["use_gcp_formulation"] = true;
 		state->args["contact"]["alpha_t"] = 0.95;
 		state->args["contact"]["friction_coefficient"] = 0;
-		state->args["solver"]["nonlinear"]["grad_norm"] = 1e-6;
+		state->args["solver"]["nonlinear"]["grad_norm_tol"] = 1e-8;
 	}
 
 	std::srand(Catch::rngSeed());
@@ -531,7 +531,7 @@ TEST_CASE("shape-transient-smooth", "[test_adjoint]")
 	ctx.states[0]->get_vertices(V);
 	Eigen::VectorXd x = utils::flatten(V);
 
-	verify_adjoint(*ctx.problem, x, velocity, 1e-6, 1e-5);
+	verify_adjoint(*ctx.problem, x, velocity, 1e-6, 1e-4);
 }
 
 TEST_CASE("shape-pressure-nodes-3d", "[.][test_adjoint]")

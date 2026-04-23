@@ -54,7 +54,7 @@ namespace polyfem
 			bool has_exact_sol() const override { return false; }
 			bool is_scalar() const override { return true; }
 
-			void set_parameters(const json &params) override;
+			void set_parameters(const json &params, const std::string &root_path) override;
 
 			bool is_dimension_dirichet(const int tag, const int dim) const override;
 			bool all_dimensions_dirichlet() const override { return all_dimensions_dirichlet_; }

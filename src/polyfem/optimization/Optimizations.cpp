@@ -129,7 +129,7 @@ namespace polyfem::solver
 			if (!valid_input)
 			{
 				logger().error("invalid objective json:\n{}", jse.log2str());
-				throw std::runtime_error("Invald objective json file");
+				throw std::runtime_error("Invalid objective json file");
 			}
 
 			args = jse.inject_defaults(args, rules);
@@ -158,7 +158,7 @@ namespace polyfem::solver
 			else
 			{
 				logger().error("unable to open {} rules", POLYFEM_OPT_INPUT_SPEC);
-				throw std::runtime_error("Invald spec file");
+				throw std::runtime_error("Invalid spec file");
 			}
 
 			jse.include_directories.push_back(POLYFEM_JSON_SPEC_DIR);
@@ -175,7 +175,7 @@ namespace polyfem::solver
 		if (!valid_input)
 		{
 			logger().error("invalid input json:\n{}", jse.log2str());
-			throw std::runtime_error("Invald input json file");
+			throw std::runtime_error("Invalid input json file");
 		}
 
 		json args = jse.inject_defaults(args_in, rules);
@@ -190,7 +190,7 @@ namespace polyfem::solver
 			else
 			{
 				logger().error("unable to open {} rules", polyfem_objective_spec);
-				throw std::runtime_error("Invald spec file");
+				throw std::runtime_error("Invalid spec file");
 			}
 		}
 		apply_objective_json_spec(args["functionals"], obj_rules);

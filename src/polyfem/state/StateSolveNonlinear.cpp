@@ -75,6 +75,12 @@ namespace polyfem
 			stats_csv = std::make_unique<RuntimeStatsCSVWriter>(resolve_output_path("stats.csv"), *this, t0, dt);
 		}
 		const bool remesh_enabled = args["space"]["remesh"]["enabled"];
+#ifndef POLYFEM_WITH_ITR
+		if (remesh_enabled)
+		{
+			logger().warn("Remeshing is enabled but Polyfem was built without ITR support; remeshing will be disabled.");
+		}
+#endif
 		// const double save_dt = remesh_enabled ? (dt / 3) : dt;
 
 		// Save the initial solution
@@ -98,6 +104,7 @@ namespace polyfem
 				solve_tensor_nonlinear(t, sol, true);
 			}
 
+#ifdef POLYFEM_WITH_ITR
 			if (remesh_enabled)
 			{
 				if (energy_csv)
@@ -124,6 +131,7 @@ namespace polyfem
 					solve_tensor_nonlinear(t, sol, false); // solve the scene again after remeshing
 				}
 			}
+#endif
 
 			// Always save the solution for consistency
 			if (energy_csv)
@@ -192,7 +200,7 @@ namespace polyfem
 			const Eigen::MatrixXd displaced = collision_mesh.displace_vertices(
 				utils::unflatten(sol, mesh->dimension()));
 
-			if (ipc::has_intersections(collision_mesh, displaced, ipc::create_broad_phase(args["solver"]["contact"]["CCD"]["broad_phase"])))
+			if (ipc::has_intersections(collision_mesh, displaced, ipc::create_broad_phase(args["solver"]["contact"]["CCD"]["broad_phase"]).get()))
 			{
 				OBJWriter::write(
 					resolve_output_path("intersection.obj"), displaced,
@@ -316,10 +324,20 @@ namespace polyfem
 		// --------------------------------------------------------------------
 		// Initialize nonlinear problems
 
+		if (args["solver"]["advanced"]["characteristic_force_density"] <= 0)
+		{
+			logger().warn("No user-specified force density was provided, defaulting to 10000.");
+			characteristic_force_density = 10000;
+		}
+		else
+		{
+			characteristic_force_density = args["solver"]["advanced"]["characteristic_force_density"];
+		}
+
 		const int ndof = n_bases * mesh->dimension();
 		solve_data.nl_problem = std::make_shared<NLProblem>(
 			ndof, periodic_bc, t, forms, solve_data.al_form,
-			polysolve::linear::Solver::create(args["solver"]["linear"], logger()));
+			polysolve::linear::Solver::create(args["solver"]["linear"], logger()), characteristic_length, characteristic_force_density, pure_mass, mesh->dimension());
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
 		// --------------------------------------------------------------------

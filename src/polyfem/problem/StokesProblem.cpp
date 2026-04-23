@@ -27,7 +27,7 @@ namespace polyfem
 			is_time_dependent_ = false;
 		}
 
-		void TimeDepentendStokesProblem::set_parameters(const json &params)
+		void TimeDepentendStokesProblem::set_parameters(const json &params, const std::string &root_path)
 		{
 			if (params.find("time_dependent") != params.end())
 			{
@@ -271,9 +271,9 @@ namespace polyfem
 				val *= (1 - exp(-5 * t));
 		}
 
-		void Flow::set_parameters(const json &params)
+		void Flow::set_parameters(const json &params, const std::string &root_path)
 		{
-			TimeDepentendStokesProblem::set_parameters(params);
+			TimeDepentendStokesProblem::set_parameters(params, root_path);
 
 			if (params.find("inflow") != params.end())
 			{
@@ -377,9 +377,9 @@ namespace polyfem
 				val *= (1 - exp(-5 * t));
 		}
 
-		void FlowWithObstacle::set_parameters(const json &params)
+		void FlowWithObstacle::set_parameters(const json &params, const std::string &root_path)
 		{
-			TimeDepentendStokesProblem::set_parameters(params);
+			TimeDepentendStokesProblem::set_parameters(params, root_path);
 
 			if (params.find("U") != params.end())
 			{
@@ -399,7 +399,7 @@ namespace polyfem
 			exact(pts, 0, val);
 		}
 
-		void Kovnaszy::set_parameters(const json &params)
+		void Kovnaszy::set_parameters(const json &params, const std::string &root_path)
 		{
 			if (params.count("viscosity"))
 			{
@@ -493,9 +493,9 @@ namespace polyfem
 				val *= (1 - exp(-5 * t));
 		}
 
-		void CornerFlow::set_parameters(const json &params)
+		void CornerFlow::set_parameters(const json &params, const std::string &root_path)
 		{
-			TimeDepentendStokesProblem::set_parameters(params);
+			TimeDepentendStokesProblem::set_parameters(params, root_path);
 
 			if (params.find("U") != params.end())
 			{
@@ -539,9 +539,9 @@ namespace polyfem
 				val *= (1 - exp(-5 * t));
 		}
 
-		void Lshape::set_parameters(const json &params)
+		void Lshape::set_parameters(const json &params, const std::string &root_path)
 		{
-			TimeDepentendStokesProblem::set_parameters(params);
+			TimeDepentendStokesProblem::set_parameters(params, root_path);
 
 			if (params.find("U") != params.end())
 			{
@@ -593,9 +593,9 @@ namespace polyfem
 				val *= (1 - exp(-5 * t));
 		}
 
-		void UnitFlowWithObstacle::set_parameters(const json &params)
+		void UnitFlowWithObstacle::set_parameters(const json &params, const std::string &root_path)
 		{
-			TimeDepentendStokesProblem::set_parameters(params);
+			TimeDepentendStokesProblem::set_parameters(params, root_path);
 
 			if (params.find("U") != params.end())
 			{
@@ -658,7 +658,7 @@ namespace polyfem
 			exact(pts, 0, val);
 		}
 
-		void StokesLawProblem::set_parameters(const json &params)
+		void StokesLawProblem::set_parameters(const json &params, const std::string &root_path)
 		{
 			if (params.count("viscosity"))
 			{
@@ -753,7 +753,7 @@ namespace polyfem
 			exact(pts, 0, val);
 		}
 
-		void Airfoil::set_parameters(const json &params)
+		void Airfoil::set_parameters(const json &params, const std::string &root_path)
 		{
 			if (params.find("time_dependent") != params.end())
 			{
@@ -818,7 +818,7 @@ namespace polyfem
 			exact(pts, 0, val);
 		}
 
-		void TaylorGreenVortexProblem::set_parameters(const json &params)
+		void TaylorGreenVortexProblem::set_parameters(const json &params, const std::string &root_path)
 		{
 			if (params.count("viscosity"))
 			{
@@ -1018,7 +1018,7 @@ namespace polyfem
 			func_ = 0;
 		}
 
-		void SimpleStokeProblemExact::set_parameters(const json &params)
+		void SimpleStokeProblemExact::set_parameters(const json &params, const std::string &root_path)
 		{
 			if (params.find("func") != params.end())
 			{
@@ -1191,7 +1191,7 @@ namespace polyfem
 			exact(pts, 0, val);
 		}
 
-		void TransientStokeProblemExact::set_parameters(const json &params)
+		void TransientStokeProblemExact::set_parameters(const json &params, const std::string &root_path)
 		{
 			if (params.count("viscosity"))
 			{

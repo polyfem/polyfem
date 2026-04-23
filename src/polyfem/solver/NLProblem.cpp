@@ -114,15 +114,42 @@ namespace polyfem::solver
 		const double t,
 		const std::vector<std::shared_ptr<Form>> &forms,
 		const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
-		const std::shared_ptr<polysolve::linear::Solver> &solver)
+		const std::shared_ptr<polysolve::linear::Solver> &solver,
+		const double char_length,
+		const double char_force,
+		StiffnessMatrix lumped_mass,
+		const int dimension)
 		: FullNLProblem(forms),
 		  full_size_(full_size),
 		  t_(t),
 		  penalty_forms_(penalty_forms),
-		  solver_(solver)
+		  solver_(solver),
+		  L(char_length),
+		  F0(char_force),
+		  lumped_mass_(lumped_mass.diagonal().asDiagonal()),
+		  dim(dimension)
 	{
 		setup_constraints();
 		use_reduced_size();
+
+		double total_lumped_mass = 0;
+		int num_nonzero_mass_entries = 0;
+		for (int i = 0; i < lumped_mass_.diagonal().size(); i++)
+		{
+			if (lumped_mass_.diagonal()[i] > 0)
+			{
+				total_lumped_mass += lumped_mass_.diagonal()[i];
+				num_nonzero_mass_entries++;
+			}
+		}
+		const double avg_lumped_mass = total_lumped_mass / num_nonzero_mass_entries;
+		for (int i = 0; i < lumped_mass_.diagonal().size(); i++)
+		{
+			if (lumped_mass_.diagonal()[i] == 0)
+			{
+				lumped_mass_.diagonal()[i] = avg_lumped_mass;
+			}
+		}
 	}
 
 	double NLProblem::normalize_forms()
@@ -146,6 +173,68 @@ namespace polyfem::solver
 		// 	f->set_scale(total_weight);
 
 		// return total_weight;
+	}
+
+	double NLProblem::grad_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const
+	{
+		switch (norm_type)
+		{
+		case polysolve::nonlinear::NormType::EUCLIDEAN:
+			return 1;
+		case polysolve::nonlinear::NormType::L2:
+			return F0 * (dim == 2 ? L : std::pow(L, 1.5));
+		case polysolve::nonlinear::NormType::Linf:
+			return F0;
+		}
+		log_and_throw_error("Unrecognized norm type!");
+	}
+
+	double NLProblem::step_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const
+	{
+		switch (norm_type)
+		{
+		case polysolve::nonlinear::NormType::EUCLIDEAN:
+			return 1;
+		case polysolve::nonlinear::NormType::L2:
+			return dim == 2 ? L * L : std::pow(L, 2.5);
+		case polysolve::nonlinear::NormType::Linf:
+			return L;
+		}
+		log_and_throw_error("Unrecognized norm type!");
+	}
+
+	double NLProblem::energy_norm_rescaling(const polysolve::nonlinear::NormType norm_type) const
+	{
+		const double density_scale = dim == 2 ? L * L : L * L * L;
+		return F0 * density_scale * L;
+	}
+
+	double NLProblem::grad_norm(const TVector &grad, const polysolve::nonlinear::NormType norm_type) const
+	{
+		switch (norm_type)
+		{
+		case polysolve::nonlinear::NormType::EUCLIDEAN:
+			return grad.norm();
+		case polysolve::nonlinear::NormType::L2:
+			return sqrt(grad.transpose() * current_lumped_mass().inverse() * grad);
+		case polysolve::nonlinear::NormType::Linf:
+			return (current_lumped_mass().inverse() * grad).cwiseAbs().maxCoeff();
+		}
+		log_and_throw_error("Unrecognized norm type!");
+	}
+
+	double NLProblem::step_norm(const TVector &x, const polysolve::nonlinear::NormType norm_type) const
+	{
+		switch (norm_type)
+		{
+		case polysolve::nonlinear::NormType::EUCLIDEAN:
+			return x.norm();
+		case polysolve::nonlinear::NormType::L2:
+			return sqrt(x.transpose() * current_lumped_mass() * x);
+		case polysolve::nonlinear::NormType::Linf:
+			return x.cwiseAbs().maxCoeff();
+		}
+		log_and_throw_error("Unrecognized norm type!");
 	}
 
 	void NLProblem::setup_constraints()
@@ -599,6 +688,25 @@ namespace polyfem::solver
 			grad = Q2t_ * grad;
 
 		return grad;
+	}
+
+	NLProblem::TVector NLProblem::full_to_reduced_diag(const TVector &full_diag) const
+	{
+		if (full_size() == current_size() || full_diag.size() == current_size())
+		{
+			return full_diag;
+		}
+
+		TVector diag = full_diag;
+		if (penalty_forms_.size() == 1 && penalty_forms_.front()->can_project())
+			penalty_forms_.front()->project_diag(diag);
+		else
+		{
+			Eigen::SparseMatrix<double> reduced_mat = Q2t_ * diag.asDiagonal() * Q2_;
+			diag = reduced_mat.diagonal();
+		}
+
+		return diag;
 	}
 
 	NLProblem::TVector NLProblem::reduced_to_full(const TVector &reduced) const

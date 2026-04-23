@@ -25,7 +25,7 @@ namespace polyfem::solver
 										   const bool enable_shape_derivatives,
 										   const ipc::BroadPhaseMethod broad_phase_method,
 										   const double ccd_tolerance,
-										   const int ccd_max_iterations) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), barrier_potential_(dhat, use_physical_barrier)
+										   const int ccd_max_iterations) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations), barrier_potential_(dhat, 1.0, use_physical_barrier)
 	{
 		// collision_set_.set_use_convergent_formulation(use_convergent_formulation);
 		collision_set_.set_use_area_weighting(use_area_weighting);
@@ -48,7 +48,7 @@ namespace polyfem::solver
 		nonconvergent_constraints.set_use_area_weighting(false);
 		nonconvergent_constraints.set_use_improved_max_approximator(false);
 		nonconvergent_constraints.build(
-			collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_);
+			collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_.get());
 		Eigen::VectorXd grad_barrier = barrier_potential_.gradient(
 			nonconvergent_constraints, collision_mesh_, displaced_surface);
 		grad_barrier = collision_mesh_.to_full_dof(grad_barrier);
@@ -102,7 +102,7 @@ namespace polyfem::solver
 				candidates_, collision_mesh_, displaced_surface, dhat_);
 		else
 			collision_set_.build(
-				collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_);
+				collision_mesh_, displaced_surface, dhat_, dmin_, broad_phase_.get());
 		cached_displaced_surface = displaced_surface;
 	}
 

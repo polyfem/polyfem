@@ -9,7 +9,7 @@
 
 namespace polyfem::assembler
 {
-	void AMIPSEnergy::add_multimaterial(const int index, const json &params, const Units &units)
+	void AMIPSEnergy::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
 	{
 		assert(size() == 2 || size() == 3);
 

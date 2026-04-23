@@ -366,7 +366,7 @@ namespace polyfem::solver
 			}
 
 			if (state->damping_assembler)
-				state->damping_assembler->add_multimaterial(0, damping_param, state->units);
+				state->damping_assembler->add_multimaterial(0, damping_param, state->units, state->root_path());
 		}
 		logger().info("[{}] Current params: {}, {}", name(), state_variable(0), state_variable(1));
 	}

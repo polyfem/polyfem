@@ -2342,19 +2342,18 @@ namespace polyfem::io
 
 		collision_set.build(
 			collision_mesh, displaced_surface, dhat,
-			/*dmin=*/0, ipc::create_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]));
+			/*dmin=*/0, ipc::create_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]).get());
 
-		ipc::BarrierPotential barrier_potential(dhat);
+		const double barrier_stiffness = contact_form != nullptr ? contact_form->barrier_stiffness() : 1;
+		ipc::BarrierPotential barrier_potential(dhat, barrier_stiffness);
 		if (state.args["contact"]["use_convergent_formulation"])
 		{
 			barrier_potential.set_use_physical_barrier(state.args["contact"]["use_physical_barrier"]);
 		}
 
-		const double barrier_stiffness = contact_form != nullptr ? contact_form->barrier_stiffness() : 1;
-
 		if (opts.contact_forces || opts.export_field("contact_forces"))
 		{
-			Eigen::MatrixXd forces = -barrier_stiffness * barrier_potential.gradient(collision_set, collision_mesh, displaced_surface);
+			Eigen::MatrixXd forces = -barrier_potential.gradient(collision_set, collision_mesh, displaced_surface);
 
 			Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
 
@@ -2401,7 +2400,7 @@ namespace polyfem::io
 			ipc::TangentialCollisions friction_collision_set;
 			friction_collision_set.build(
 				collision_mesh, displaced_surface, collision_set,
-				barrier_potential, barrier_stiffness, friction_coefficient);
+				barrier_potential, friction_coefficient);
 
 			ipc::FrictionPotential friction_potential(epsv);
 
@@ -2425,7 +2424,7 @@ namespace polyfem::io
 		ipc::NormalCollisions adhesion_collision_set;
 		adhesion_collision_set.build(
 			collision_mesh, displaced_surface, dhat_a,
-			/*dmin=*/0, ipc::create_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]));
+			/*dmin=*/0, ipc::create_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]).get());
 
 		ipc::NormalAdhesionPotential normal_adhesion_potential(dhat_p, dhat_a, Y, 1);
 
@@ -2445,7 +2444,7 @@ namespace polyfem::io
 			ipc::TangentialCollisions tangential_collision_set;
 			tangential_collision_set.build(
 				collision_mesh, displaced_surface, adhesion_collision_set,
-				normal_adhesion_potential, 1, tangential_adhesion_coefficient);
+				normal_adhesion_potential, tangential_adhesion_coefficient);
 
 			ipc::TangentialAdhesionPotential tangential_adhesion_potential(epsa);
 

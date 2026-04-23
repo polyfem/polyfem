@@ -149,7 +149,7 @@ namespace polyfem::solver
 
 		json use_rest = {};
 		use_rest["use_rest_pose"] = true;
-		amips_energy_->add_multimaterial(0, use_rest, state_->units);
+		amips_energy_->add_multimaterial(0, use_rest, state_->units, state_->root_path());
 
 		Eigen::MatrixXd V;
 		state_->get_vertices(V);

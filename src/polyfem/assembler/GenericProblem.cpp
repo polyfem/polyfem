@@ -473,7 +473,7 @@ namespace polyfem
 			updated_dirichlet_node_ordering_ = true;
 		}
 
-		void GenericTensorProblem::set_parameters(const json &params)
+		void GenericTensorProblem::set_parameters(const json &params, const std::string &root_path)
 		{
 			if (is_param_valid(params, "is_time_dependent"))
 			{
@@ -486,7 +486,7 @@ namespace polyfem
 				if (rr.is_array())
 				{
 					for (size_t k = 0; k < rr.size(); ++k)
-						rhs_[k].init(rr[k]);
+						rhs_[k].init(rr[k], root_path);
 				}
 				else
 				{
@@ -502,7 +502,7 @@ namespace polyfem
 				if (ex.is_array())
 				{
 					for (size_t k = 0; k < ex.size(); ++k)
-						exact_[k].init(ex[k]);
+						exact_[k].init(ex[k], root_path);
 				}
 				else
 				{
@@ -517,7 +517,7 @@ namespace polyfem
 				if (ex.is_array())
 				{
 					for (size_t k = 0; k < ex.size(); ++k)
-						exact_grad_[k].init(ex[k]);
+						exact_grad_[k].init(ex[k], root_path);
 				}
 				else
 				{
@@ -570,10 +570,10 @@ namespace polyfem
 					{
 						for (size_t k = 0; k < ff.size(); ++k)
 						{
-							displacements_[i].value[k].init(ff[k]);
+							displacements_[i].value[k].init(ff[k], root_path);
 							if (j_boundary[i - offset].contains("time_reference") && j_boundary[i - offset]["time_reference"].size() > 0)
 								displacements_[i].value[k].set_t(j_boundary[i - offset]["time_reference"]);
-							nodal_dirichlet_[current_id].value[k].init(ff[k]);
+							nodal_dirichlet_[current_id].value[k].init(ff[k], root_path);
 						}
 					}
 					else
@@ -629,7 +629,7 @@ namespace polyfem
 					assert(ff.is_array());
 
 					for (size_t k = 0; k < ff.size(); ++k)
-						forces_[i].value[k].init(ff[k]);
+						forces_[i].value[k].init(ff[k], root_path);
 
 					if (j_boundary[i - offset]["interpolation"].is_array())
 					{
@@ -658,7 +658,7 @@ namespace polyfem
 					normal_aligned_neumann_boundary_ids_[i] = j_boundary[i - offset]["id"];
 
 					auto ff = j_boundary[i - offset]["value"];
-					normal_aligned_forces_[i].value.init(ff);
+					normal_aligned_forces_[i].value.init(ff, root_path);
 
 					if (j_boundary[i - offset].contains("interpolation"))
 						normal_aligned_forces_[i].interpolation = Interpolation::build(j_boundary[i - offset]["interpolation"]);
@@ -683,7 +683,7 @@ namespace polyfem
 					pressure_boundary_ids_[i] = j_boundary[i - offset]["id"];
 
 					auto ff = j_boundary[i - offset]["value"];
-					pressures_[i].value.init(ff);
+					pressures_[i].value.init(ff, root_path);
 					if (j_boundary[i - offset].contains("time_reference") && j_boundary[i - offset]["time_reference"].size() > 0)
 						pressures_[i].value.set_t(j_boundary[i - offset]["time_reference"]);
 
@@ -710,7 +710,7 @@ namespace polyfem
 						cavity_pressures_[boundary_id] = ScalarBCValue();
 
 						auto ff = j_boundary[i - offset]["value"];
-						cavity_pressures_[boundary_id].value.init(ff);
+						cavity_pressures_[boundary_id].value.init(ff, root_path);
 
 						cavity_pressures_[boundary_id].interpolation = std::make_shared<NoInterpolation>();
 					}
@@ -728,7 +728,7 @@ namespace polyfem
 					initial_position_[k].first = rr[k]["id"];
 					const auto v = rr[k]["value"];
 					for (size_t d = 0; d < v.size(); ++d)
-						initial_position_[k].second[d].init(v[d]);
+						initial_position_[k].second[d].init(v[d], root_path);
 				}
 			}
 
@@ -743,7 +743,7 @@ namespace polyfem
 					initial_velocity_[k].first = rr[k]["id"];
 					const auto v = rr[k]["value"];
 					for (size_t d = 0; d < v.size(); ++d)
-						initial_velocity_[k].second[d].init(v[d]);
+						initial_velocity_[k].second[d].init(v[d], root_path);
 				}
 			}
 
@@ -758,7 +758,7 @@ namespace polyfem
 					initial_acceleration_[k].first = rr[k]["id"];
 					const auto v = rr[k]["value"];
 					for (size_t d = 0; d < v.size(); ++d)
-						initial_acceleration_[k].second[d].init(v[d]);
+						initial_acceleration_[k].second[d].init(v[d], root_path);
 				}
 			}
 		}
@@ -1210,7 +1210,7 @@ namespace polyfem
 			updated_dirichlet_node_ordering_ = true;
 		}
 
-		void GenericScalarProblem::set_parameters(const json &params)
+		void GenericScalarProblem::set_parameters(const json &params, const std::string &root_path)
 		{
 			if (is_param_valid(params, "is_time_dependent"))
 			{
@@ -1219,13 +1219,13 @@ namespace polyfem
 
 			if (is_param_valid(params, "rhs"))
 			{
-				rhs_.init(params["rhs"]);
+				rhs_.init(params["rhs"], root_path);
 			}
 
 			if (is_param_valid(params, "reference") && is_param_valid(params["reference"], "solution"))
 			{
 				has_exact_ = !params["reference"]["solution"].empty();
-				exact_.init(params["reference"]["solution"]);
+				exact_.init(params["reference"]["solution"], root_path);
 			}
 
 			if (is_param_valid(params, "reference") && is_param_valid(params["reference"], "gradient"))
@@ -1235,7 +1235,7 @@ namespace polyfem
 				if (ex.is_array())
 				{
 					for (size_t k = 0; k < ex.size(); ++k)
-						exact_grad_[k].init(ex[k]);
+						exact_grad_[k].init(ex[k], root_path);
 				}
 				else
 				{
@@ -1285,8 +1285,8 @@ namespace polyfem
 					}
 
 					auto ff = j_boundary[i - offset]["value"];
-					dirichlet_[i].value.init(ff);
-					nodal_dirichlet_[current_id].value.init(ff);
+					dirichlet_[i].value.init(ff, root_path);
+					nodal_dirichlet_[current_id].value.init(ff, root_path);
 
 					if (j_boundary[i - offset]["interpolation"].is_array())
 					{
@@ -1319,7 +1319,7 @@ namespace polyfem
 					neumann_boundary_ids_[i] = j_boundary[i - offset]["id"];
 
 					auto ff = j_boundary[i - offset]["value"];
-					neumann_[i].value.init(ff);
+					neumann_[i].value.init(ff, root_path);
 
 					if (j_boundary[i - offset]["interpolation"].is_array())
 					{
@@ -1344,7 +1344,7 @@ namespace polyfem
 				for (size_t k = 0; k < rr.size(); ++k)
 				{
 					initial_solution_[k].first = rr[k]["id"];
-					initial_solution_[k].second.init(rr[k]["value"]);
+					initial_solution_[k].second.init(rr[k]["value"], root_path);
 				}
 			}
 		}

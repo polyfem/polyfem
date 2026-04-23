@@ -130,7 +130,7 @@ namespace polyfem
 		std::shared_ptr<NLHomoProblem> homo_problem = std::make_shared<NLHomoProblem>(
 			ndof,
 			macro_strain_constraint,
-			*this, t, forms, solve_data.al_form, solve_symmetric_flag, polysolve::linear::Solver::create(args["solver"]["linear"], logger()));
+			*this, t, forms, solve_data.al_form, solve_symmetric_flag, polysolve::linear::Solver::create(args["solver"]["linear"], logger()), characteristic_length, characteristic_force_density, pure_mass, mesh->dimension());
 		if (solve_data.periodic_contact_form)
 			homo_problem->add_form(solve_data.periodic_contact_form);
 		if (solve_data.strain_al_lagr_form)

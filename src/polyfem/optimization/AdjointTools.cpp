@@ -932,6 +932,8 @@ namespace polyfem::solver
 
 			if (const auto barrier_contact = dynamic_cast<const BarrierContactForm *>(state.solve_data.contact_form.get()))
 			{
+				ipc::BarrierPotential bp = barrier_contact->barrier_potential();
+				bp.set_stiffness(barrier_contact->barrier_stiffness());
 				Eigen::MatrixXd force = state.collision_mesh.to_full_dof(
 					-state.solve_data.friction_form->friction_potential().force(
 						diff_cache.friction_collision_set(t),
@@ -939,8 +941,7 @@ namespace polyfem::solver
 						state.collision_mesh.rest_positions(),
 						/*lagged_displacements=*/surface_solution_prev,
 						surface_velocities,
-						barrier_contact->barrier_potential(),
-						barrier_contact->barrier_stiffness(),
+						bp,
 						0., true));
 
 				Eigen::VectorXd cur_p = adjoint_p.col(t);

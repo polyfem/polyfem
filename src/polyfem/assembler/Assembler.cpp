@@ -94,11 +94,11 @@ namespace polyfem::assembler
 		};
 	} // namespace
 
-	void Assembler::set_materials(const std::vector<int> &body_ids, const json &body_params, const Units &units)
+	void Assembler::set_materials(const std::vector<int> &body_ids, const json &body_params, const Units &units, const std::string &root_path)
 	{
 		if (!body_params.is_array())
 		{
-			this->add_multimaterial(0, body_params, units);
+			this->add_multimaterial(0, body_params, units, root_path);
 			return;
 		}
 
@@ -141,7 +141,7 @@ namespace polyfem::assembler
 			}
 
 			const json &tmp = it->second;
-			this->add_multimaterial(e, tmp, units);
+			this->add_multimaterial(e, tmp, units, root_path);
 		}
 
 		for (int bid : missing)

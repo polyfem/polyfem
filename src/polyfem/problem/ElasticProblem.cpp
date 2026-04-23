@@ -77,7 +77,7 @@ namespace polyfem
 			}
 		}
 
-		void TorsionElasticProblem::set_parameters(const json &params)
+		void TorsionElasticProblem::set_parameters(const json &params, const std::string &root_path)
 		{
 			if (params.contains("axis_coordiante"))
 			{
@@ -185,7 +185,7 @@ namespace polyfem
 			}
 		}
 
-		void DoubleTorsionElasticProblem::set_parameters(const json &params)
+		void DoubleTorsionElasticProblem::set_parameters(const json &params, const std::string &root_path)
 		{
 			if (params.contains("axis_coordiante0"))
 			{
@@ -558,7 +558,7 @@ namespace polyfem
 			boundary_ids_ = {4};
 		}
 
-		void GravityProblem::set_parameters(const json &params)
+		void GravityProblem::set_parameters(const json &params, const std::string &root_path)
 		{
 			if (params.contains("force"))
 			{
@@ -648,7 +648,7 @@ namespace polyfem
 			width = 1 / 3.;
 		}
 
-		void ElasticCantileverExact::set_parameters(const json &params)
+		void ElasticCantileverExact::set_parameters(const json &params, const std::string &root_path)
 		{
 			if (params.contains("displacement"))
 			{

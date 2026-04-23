@@ -41,7 +41,7 @@ namespace polyfem::assembler
 		VectorNd compute_rhs(const AutodiffHessianPt &pt) const override;
 
 		// set viscosity
-		void add_multimaterial(const int index, const json &params, const Units &units) override;
+		void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
 
 		bool is_fluid() const override { return true; }
 		bool is_tensor() const override { return true; }

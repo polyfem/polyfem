@@ -10,11 +10,11 @@ namespace polyfem::assembler
 		}
 	} // namespace
 
-	void Electrostatics::add_multimaterial(const int index, const json &params, const Units &units)
+	void Electrostatics::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
 	{
 		assert(size() == 1);
 
-		epsilon_.add_multimaterial(index, params, units.permittivity());
+		epsilon_.add_multimaterial(index, params, units.permittivity(), root_path);
 	}
 
 	Eigen::Matrix<double, Eigen::Dynamic, 1, 0, 9, 1> Electrostatics::assemble(const LinearAssemblerData &data) const
