@@ -1,16 +1,3 @@
-diff --git a/src/polysolve/nonlinear/line_search/Backtracking.cpp b/src/polysolve/nonlinear/line_search/Backtracking.cpp
-index da8ee66..8b3e67e 100644
---- a/src/polysolve/nonlinear/line_search/Backtracking.cpp
-+++ b/src/polysolve/nonlinear/line_search/Backtracking.cpp
-@@ -77,7 +77,7 @@ namespace polysolve::nonlinear::line_search
-         {
-             TVector new_grad;
-             objFunc.gradient(new_x, new_grad);
--            return new_grad.norm() < old_grad.norm(); // TODO: cache old_grad.norm()
-+            return new_grad.norm() < old_grad.norm() || new_energy < old_energy; // TODO: cache old_grad.norm()
-         }
-         return new_energy < old_energy;
-     }
 diff --git a/src/polysolve/nonlinear/Criteria.cpp b/src/polysolve/nonlinear/Criteria.cpp
 index 3dd6e11..28a17bb 100644
 --- a/src/polysolve/nonlinear/Criteria.cpp
