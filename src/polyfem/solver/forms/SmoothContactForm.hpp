@@ -41,6 +41,8 @@ namespace polyfem::solver
 
 		const ipc::SmoothCollisions &collision_set() const { return collision_set_; }
 
+		const ipc::SmoothContactPotential &barrier_potential() const { return barrier_potential_; }
+
 	protected:
 		/// @brief Compute the contact barrier potential value
 		/// @param x Current solution

@@ -2475,6 +2475,9 @@
             "material",
             "body_ids",
             "contact_forces",
+            "contact_forces_vertex",
+            "contact_forces_edge",
+            "contact_forces_face",
             "friction_forces",
             "normal_adhesion_forces",
             "tangential_adhesion_forces",
@@ -2520,6 +2523,24 @@
         "default": false,
         "type": "bool",
         "doc": "If true, write out contact forces for surface"
+    },
+    {
+        "pointer": "/output/paraview/options/contact_forces_vertex",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out the vertex-subset contact forces (high-order contact only)"
+    },
+    {
+        "pointer": "/output/paraview/options/contact_forces_edge",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out the edge-subset contact forces (high-order contact only)"
+    },
+    {
+        "pointer": "/output/paraview/options/contact_forces_face",
+        "default": false,
+        "type": "bool",
+        "doc": "If true, write out the face-subset contact forces (high-order contact, 3D only)"
     },
     {
         "pointer": "/output/paraview/options/friction_forces",

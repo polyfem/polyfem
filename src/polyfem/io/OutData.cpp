@@ -142,6 +142,87 @@ namespace polyfem::io
 				}
 			}
 		}
+		// Write `contact_forces` plus per-subset variants (`contact_forces_vertex`,
+		// `contact_forces_edge`, and in 3D `contact_forces_face`) derived by
+		// restricting the high-order collision set to one dict group at a time
+		// before evaluating the gradient.
+		void save_high_order_contact_subset_forces(
+			const solver::HighOrderContactForm &ho_form,
+			ipc::HighOrderCollisions &ho_collision_set,
+			const ipc::CollisionMesh &collision_mesh,
+			const Eigen::MatrixXd &displaced_surface,
+			const Eigen::MatrixXd &surface_displacements,
+			const double barrier_stiffness,
+			const int problem_dim,
+			const bool export_vertex,
+			const bool export_edge,
+			const bool export_face,
+			paraviewo::ParaviewWriter &writer)
+		{
+			const auto &potential = ho_form.barrier_potential();
+
+			auto add_force_field = [&](const std::string &name, const Eigen::VectorXd &forces) {
+				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
+				assert(forces_reshaped.rows() == surface_displacements.rows());
+				assert(forces_reshaped.cols() == surface_displacements.cols());
+				writer.add_field(name, forces_reshaped);
+			};
+
+			// Stash all five dict groups; restore only the requested kind for the
+			// gradient call, then restore everything afterwards. Pointer-swap move
+			// on unordered_map<..., unique_ptr<...>> is O(1) and does not deep-copy.
+			auto gradient_with_only = [&](const std::string &kind) -> Eigen::VectorXd {
+				auto v  = std::move(ho_collision_set.vertex_collisions);
+				auto v2 = std::move(ho_collision_set.vertex_collisions_2d);
+				auto ee = std::move(ho_collision_set.edge_edge_collisions);
+				auto e2 = std::move(ho_collision_set.edge_collisions_2d);
+				auto f  = std::move(ho_collision_set.face_collisions);
+
+				if (kind == "vertex")
+				{
+					ho_collision_set.vertex_collisions = std::move(v);
+					ho_collision_set.vertex_collisions_2d = std::move(v2);
+				}
+				else if (kind == "edge")
+				{
+					ho_collision_set.edge_edge_collisions = std::move(ee);
+					ho_collision_set.edge_collisions_2d = std::move(e2);
+				}
+				else if (kind == "face")
+				{
+					ho_collision_set.face_collisions = std::move(f);
+				}
+
+				Eigen::VectorXd g = -barrier_stiffness * potential.gradient(
+					ho_collision_set, collision_mesh, displaced_surface);
+
+				if (kind != "vertex")
+				{
+					ho_collision_set.vertex_collisions = std::move(v);
+					ho_collision_set.vertex_collisions_2d = std::move(v2);
+				}
+				if (kind != "edge")
+				{
+					ho_collision_set.edge_edge_collisions = std::move(ee);
+					ho_collision_set.edge_collisions_2d = std::move(e2);
+				}
+				if (kind != "face")
+				{
+					ho_collision_set.face_collisions = std::move(f);
+				}
+				return g;
+			};
+
+			const Eigen::VectorXd forces = -barrier_stiffness * potential.gradient(
+				ho_collision_set, collision_mesh, displaced_surface);
+			add_force_field("contact_forces", forces);
+			if (export_vertex)
+				add_force_field("contact_forces_vertex", gradient_with_only("vertex"));
+			if (export_edge)
+				add_force_field("contact_forces_edge", gradient_with_only("edge"));
+			if (export_face && problem_dim == 3)
+				add_force_field("contact_forces_face", gradient_with_only("face"));
+		}
 	} // namespace
 
 	void OutGeometryData::extract_boundary_mesh(
@@ -1214,6 +1295,9 @@ namespace polyfem::io
 		wire = args["output"]["paraview"]["wireframe"];
 		points = args["output"]["paraview"]["points"];
 		contact_forces = args["output"]["paraview"]["options"]["contact_forces"] && !is_problem_scalar;
+		contact_forces_vertex = args["output"]["paraview"]["options"]["contact_forces_vertex"] && !is_problem_scalar;
+		contact_forces_edge = args["output"]["paraview"]["options"]["contact_forces_edge"] && !is_problem_scalar;
+		contact_forces_face = args["output"]["paraview"]["options"]["contact_forces_face"] && !is_problem_scalar;
 		friction_forces = args["output"]["paraview"]["options"]["friction_forces"] && !is_problem_scalar;
 		normal_adhesion_forces = args["output"]["paraview"]["options"]["normal_adhesion_forces"] && !is_problem_scalar;
 		contact_potential = args["output"]["advanced"]["contact_potential"];
@@ -2202,37 +2286,90 @@ namespace polyfem::io
 
 		const Eigen::MatrixXd displaced_surface = collision_mesh.displace_vertices(full_displacements);
 
-		ipc::NormalCollisions collision_set;
-		// collision_set.set_use_convergent_formulation(state.args["contact"]["use_convergent_formulation"]);
-		if (state.args["contact"]["use_convergent_formulation"])
-		{
-			collision_set.set_use_area_weighting(state.args["contact"]["use_area_weighting"]);
-			collision_set.set_use_improved_max_approximator(state.args["contact"]["use_improved_max_operator"]);
-		}
-
-		collision_set.build(
-			collision_mesh, displaced_surface, dhat,
-			/*dmin=*/0, ipc::create_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]).get());
-
-		ipc::BarrierPotential barrier_potential(dhat);
-		if (state.args["contact"]["use_convergent_formulation"])
-		{
-			barrier_potential.set_use_physical_barrier(state.args["contact"]["use_physical_barrier"]);
-		}
-
 		const double barrier_stiffness = contact_form != nullptr ? contact_form->barrier_stiffness() : 1;
 
 		const auto ho_form_for_forces = std::dynamic_pointer_cast<solver::HighOrderContactForm>(contact_form);
+		const auto smooth_form_for_forces = std::dynamic_pointer_cast<solver::SmoothContactForm>(contact_form);
 
-		if (opts.contact_forces || opts.export_field("contact_forces"))
+		const bool want_contact_forces = opts.contact_forces || opts.export_field("contact_forces");
+		const bool want_friction_forces = opts.friction_forces || opts.export_field("friction_forces");
+		const bool need_any = want_contact_forces || want_friction_forces;
+
+		// Freshly-rebuilt collision sets (matching whichever contact form is active).
+		// We rebuild here rather than reuse the form's cached sets so export is
+		// self-consistent at the current displaced configuration.
+		ipc::NormalCollisions collision_set;
+		ipc::BarrierPotential barrier_potential(dhat);
+		ipc::HighOrderCollisions ho_collision_set;
+		ipc::SmoothCollisions smooth_collision_set;
+
+		if (need_any && ho_form_for_forces)
 		{
-			Eigen::MatrixXd forces = -barrier_stiffness * barrier_potential.gradient(collision_set, collision_mesh, displaced_surface);
+			auto broad_phase = ipc::create_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]);
+			ho_collision_set.build(
+				collision_mesh, displaced_surface, ho_form_for_forces->get_params(),
+				/*use_adaptive_dhat=*/false, broad_phase.get());
+		}
+		else if (need_any && smooth_form_for_forces)
+		{
+			auto broad_phase = ipc::create_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]);
+			const bool adaptive = smooth_form_for_forces->using_adaptive_dhat();
+			if (adaptive)
+				smooth_collision_set.compute_adaptive_dhat(
+					collision_mesh, collision_mesh.rest_positions(),
+					smooth_form_for_forces->get_params(), broad_phase.get());
+			smooth_collision_set.build(
+				collision_mesh, displaced_surface,
+				smooth_form_for_forces->get_params(), adaptive, broad_phase.get());
+		}
+		else if (need_any)
+		{
+			// collision_set.set_use_convergent_formulation(state.args["contact"]["use_convergent_formulation"]);
+			if (state.args["contact"]["use_convergent_formulation"])
+			{
+				collision_set.set_use_area_weighting(state.args["contact"]["use_area_weighting"]);
+				collision_set.set_use_improved_max_approximator(state.args["contact"]["use_improved_max_operator"]);
+			}
 
-			Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
+			collision_set.build(
+				collision_mesh, displaced_surface, dhat,
+				/*dmin=*/0, ipc::create_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]).get());
 
-			assert(forces_reshaped.rows() == surface_displacements.rows());
-			assert(forces_reshaped.cols() == surface_displacements.cols());
-			writer.add_field("contact_forces", forces_reshaped);
+			if (state.args["contact"]["use_convergent_formulation"])
+			{
+				barrier_potential.set_use_physical_barrier(state.args["contact"]["use_physical_barrier"]);
+			}
+		}
+
+		if (want_contact_forces)
+		{
+			if (ho_form_for_forces)
+			{
+				save_high_order_contact_subset_forces(
+					*ho_form_for_forces, ho_collision_set, collision_mesh,
+					displaced_surface, surface_displacements, barrier_stiffness,
+					problem_dim, opts.contact_forces_vertex, opts.contact_forces_edge,
+					opts.contact_forces_face, writer);
+			}
+			else
+			{
+				Eigen::VectorXd forces;
+				if (smooth_form_for_forces)
+				{
+					forces = -barrier_stiffness * smooth_form_for_forces->barrier_potential().gradient(
+						smooth_collision_set, collision_mesh, displaced_surface);
+				}
+				else
+				{
+					forces = -barrier_stiffness * barrier_potential.gradient(
+						collision_set, collision_mesh, displaced_surface);
+				}
+
+				Eigen::MatrixXd forces_reshaped = utils::unflatten(forces, problem_dim);
+				assert(forces_reshaped.rows() == surface_displacements.rows());
+				assert(forces_reshaped.cols() == surface_displacements.cols());
+				writer.add_field("contact_forces", forces_reshaped);
+			}
 		}
 
 		if (contact_form && state.args["contact"]["use_gcp_formulation"] && state.args["contact"]["use_adaptive_dhat"] && opts.export_field("adaptive_dhat"))
@@ -2268,12 +2405,34 @@ namespace polyfem::io
 			}
 		}
 
-		if (opts.friction_forces || opts.export_field("friction_forces"))
+		if (want_friction_forces)
 		{
 			ipc::TangentialCollisions friction_collision_set;
-			friction_collision_set.build(
-				collision_mesh, displaced_surface, collision_set,
-				barrier_potential, barrier_stiffness, friction_coefficient);
+			if (ho_form_for_forces)
+			{
+				const Eigen::VectorXd mu_vec =
+					Eigen::VectorXd::Ones(collision_mesh.num_vertices()) * friction_coefficient;
+				friction_collision_set.build(
+					collision_mesh, displaced_surface, ho_collision_set,
+					ho_form_for_forces->get_params(), barrier_stiffness,
+					mu_vec, mu_vec,
+					ho_form_for_forces->barrier_potential().get_normalize_weights());
+			}
+			else if (smooth_form_for_forces)
+			{
+				const Eigen::VectorXd mu_vec =
+					Eigen::VectorXd::Ones(collision_mesh.num_vertices()) * friction_coefficient;
+				friction_collision_set.build(
+					collision_mesh, displaced_surface, smooth_collision_set,
+					smooth_form_for_forces->get_params(), barrier_stiffness,
+					mu_vec, mu_vec);
+			}
+			else
+			{
+				friction_collision_set.build(
+					collision_mesh, displaced_surface, collision_set,
+					barrier_potential, barrier_stiffness, friction_coefficient);
+			}
 
 			ipc::FrictionPotential friction_potential(epsv);
 

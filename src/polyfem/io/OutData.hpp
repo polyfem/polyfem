@@ -42,6 +42,9 @@ namespace polyfem::io
 			bool wire;
 			bool points;
 			bool contact_forces;
+			bool contact_forces_vertex;
+			bool contact_forces_edge;
+			bool contact_forces_face;
 			bool friction_forces;
 			bool normal_adhesion_forces;
 			bool contact_potential;
