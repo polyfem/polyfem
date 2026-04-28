@@ -45,3 +45,99 @@ index 1b98faa..4d0f645 100644
              m_current.fDelta = std::abs(old_energy - energy);
  
              // --- Gradient ----------------------------------------------------
+diff --git a/src/polysolve/nonlinear/line_search/Backtracking.cpp b/src/polysolve/nonlinear/line_search/Backtracking.cpp
+index da8ee66..8b3e67e 100644
+--- a/src/polysolve/nonlinear/line_search/Backtracking.cpp
++++ b/src/polysolve/nonlinear/line_search/Backtracking.cpp
+@@ -77,7 +77,7 @@ namespace polysolve::nonlinear::line_search
+         {
+             TVector new_grad;
+             objFunc.gradient(new_x, new_grad);
+-            return new_grad.norm() < old_grad.norm(); // TODO: cache old_grad.norm()
++            return new_grad.norm() < old_grad.norm() || new_energy < old_energy; // TODO: cache old_grad.norm()
+         }
+         return new_energy < old_energy;
+     }
+diff --git a/src/polysolve/nonlinear/line_search/LineSearch.cpp b/src/polysolve/nonlinear/line_search/LineSearch.cpp
+index a9be577..ae7a366 100644
+--- a/src/polysolve/nonlinear/line_search/LineSearch.cpp
++++ b/src/polysolve/nonlinear/line_search/LineSearch.cpp
+@@ -16,9 +16,62 @@
+ #endif
+ 
+ #include <cfenv>
++#include <fstream>
+ 
+ namespace polysolve::nonlinear::line_search
+ {
++    namespace
++    {
++        template <typename T>
++std::ostream& operator<<(std::ostream& os, const std::vector<T>& v) {
++            for (const auto& i : v) os << i << " ";
++            return os;
++        }
++
++        void plot_over_descent_direction(
++            Problem& objFunc,
++            const Eigen::VectorXd& x,
++            const Eigen::VectorXd& dx,
++            double max_step_size = 1)
++        {
++            static bool written = false;
++            if (written) return;
++            written = true;
++
++            double alpha = 1e-20;
++            std::vector<double> alphas, values, grad_norms;
++            Eigen::VectorXd grad;
++
++            objFunc.solution_changed(x);
++            alphas.push_back(0);
++            values.push_back(objFunc.value(x));
++            objFunc.gradient(x, grad);
++            grad_norms.push_back(grad.norm());
++
++            while (alpha < max_step_size)
++            {
++                Eigen::VectorXd y = x + dx * alpha;
++                objFunc.solution_changed(y);
++
++                alphas.push_back(alpha);
++                values.push_back(objFunc.value(y));
++                objFunc.gradient(y, grad);
++                grad_norms.push_back(grad.norm());
++
++                alpha *= 1.1;
++            }
++
++            objFunc.solution_changed(x);
++            {
++                std::ofstream csv("line_search_profile.csv");
++                csv << std::setprecision(20) << std::fixed;
++                csv << "alpha,energy,grad_norm\n";
++                for (size_t i = 0; i < alphas.size(); ++i)
++                    csv << alphas[i] << "," << values[i] << "," << grad_norms[i] << "\n";
++            } 
++        }
++    }
++
+     static constexpr double NaN = std::numeric_limits<double>::quiet_NaN();
+ 
+     std::shared_ptr<LineSearch> LineSearch::create(const json &params, spdlog::logger &logger)
+@@ -145,6 +198,7 @@ namespace polysolve::nonlinear::line_search
+             step_size = compute_descent_step_size(x, delta_x, objFunc, use_grad_norm, initial_energy, initial_grad, step_size);
+             if (std::isnan(step_size))
+             {
++                plot_over_descent_direction(objFunc, x, delta_x, collision_free_step_size);
+                 // Superclass::save_sampled_values("failed-line-search-values.csv", x, delta_x, objFunc);
+                 return NaN;
+             }
+@@ -166,6 +220,7 @@ namespace polysolve::nonlinear::line_search
+             assert(abs(initial_energy - objFunc(x)) < 1e-15);
+ 
+             objFunc.line_search_end();
++            plot_over_descent_direction(objFunc, x, delta_x, collision_free_step_size);
+             return NaN;
+         }
+ 
