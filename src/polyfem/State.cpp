@@ -1465,7 +1465,8 @@ namespace polyfem
 		// Each entry may be a pair [a, b] or a group [a, b, c, ...] which expands
 		// to all pairwise combinations within the group.
 		std::set<std::pair<int, int>> allowed_collision_pairs;
-		if (args.contains("/contact/collision_pairs"_json_pointer))
+		const bool collision_pairs_specified = args.contains("/contact/collision_pairs"_json_pointer);
+		if (collision_pairs_specified)
 		{
 			for (const auto &group : args.at("/contact/collision_pairs"_json_pointer))
 			{
@@ -1478,7 +1479,7 @@ namespace polyfem
 		}
 
 		collision_mesh.can_collide = [&collision_mesh, num_fe_collision_vertices,
-									  collision_body_ids, allowed_collision_pairs](size_t vi, size_t vj) {
+									  collision_body_ids, allowed_collision_pairs, collision_pairs_specified](size_t vi, size_t vj) {
 			const size_t full_vi = collision_mesh.to_full_vertex_id(vi);
 			const size_t full_vj = collision_mesh.to_full_vertex_id(vj);
 
@@ -1487,7 +1488,7 @@ namespace polyfem
 				return false;
 
 			// body-pair filter (FE-FE only; FE-obstacle always allowed)
-			if (!allowed_collision_pairs.empty() && !collision_body_ids.empty()
+			if (collision_pairs_specified && !collision_body_ids.empty()
 				&& full_vi < num_fe_collision_vertices && full_vj < num_fe_collision_vertices)
 			{
 				for (const int bi : collision_body_ids[full_vi])
