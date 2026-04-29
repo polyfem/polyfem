@@ -171,8 +171,11 @@ namespace polyfem::io
 
 			const bool is_simplicial = mesh.is_simplicial();
 
-			node_positions.resize(n_bases + (is_simplicial ? 0 : mesh.n_faces()), 3);
-			node_positions.setZero();
+			std::vector<Eigen::Vector3d> node_positions_vec;
+			node_positions_vec.reserve(n_bases + (is_simplicial ? 0 : mesh.n_faces()));
+
+			// node_positions.resize(n_bases + (is_simplicial ? 0 : mesh.n_faces()), 3);
+			// node_positions.setZero();
 			const Mesh3D &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
 
 			std::vector<std::tuple<int, int, int>> tris;
@@ -206,7 +209,8 @@ namespace polyfem::io
 								continue;
 
 							int gindex = glob.front().index;
-							node_positions.row(gindex) = glob.front().node;
+							node_positions_vec.resize(std::max(int(node_positions_vec.size()), gindex + 1));
+							node_positions_vec[gindex] = glob.front().node;
 							bary += glob.front().node;
 							loc_nodes.push_back(gindex);
 						}
@@ -220,7 +224,8 @@ namespace polyfem::io
 						bary /= 4;
 
 						const int new_node = n_bases + eid;
-						node_positions.row(new_node) = bary;
+						node_positions_vec.resize(std::max(int(node_positions_vec.size()), new_node + 1));
+						node_positions_vec[new_node] = bary;
 						tris.emplace_back(loc_nodes[1], loc_nodes[0], new_node);
 						tris.emplace_back(loc_nodes[2], loc_nodes[1], new_node);
 						tris.emplace_back(loc_nodes[3], loc_nodes[2], new_node);
@@ -252,7 +257,8 @@ namespace polyfem::io
 								continue;
 
 							int gindex = glob.front().index;
-							node_positions.row(gindex) = glob.front().node;
+							node_positions_vec.resize(std::max(int(node_positions_vec.size()), gindex + 1));
+							node_positions_vec[gindex] = glob.front().node;
 							bary += glob.front().node;
 							loc_nodes.push_back(gindex);
 						}
@@ -321,7 +327,6 @@ namespace polyfem::io
 
 						continue;
 					}
-
 					else if (mesh.is_pyramid(lb.element_id()))
 					{
 						assert(!is_simplicial);
@@ -336,7 +341,8 @@ namespace polyfem::io
 								continue;
 
 							int gindex = glob.front().index;
-							node_positions.row(gindex) = glob.front().node;
+							node_positions_vec.resize(std::max(int(node_positions_vec.size()), gindex + 1));
+							node_positions_vec[gindex] = glob.front().node;
 							loc_nodes.push_back(gindex);
 						}
 
@@ -406,7 +412,8 @@ namespace polyfem::io
 							continue;
 
 						int gindex = glob.front().index;
-						node_positions.row(gindex) = glob.front().node;
+						node_positions_vec.resize(std::max(int(node_positions_vec.size()), gindex + 1));
+						node_positions_vec[gindex] = glob.front().node;
 						loc_nodes.push_back(gindex);
 					}
 
@@ -474,6 +481,10 @@ namespace polyfem::io
 			if (print_warning.str().size() > 0)
 				logger().warn("Skipping faces as theys have {} nodes, boundary export supported up to p4", print_warning.str());
 
+			node_positions.resize(node_positions_vec.size(), 3);
+			for (int i = 0; i < node_positions_vec.size(); ++i)
+				node_positions.row(i) = node_positions_vec[i];
+
 			boundary_triangles.resize(tris.size(), 3);
 			for (int i = 0; i < tris.size(); ++i)
 			{
@@ -484,6 +495,8 @@ namespace polyfem::io
 			{
 				igl::edges(boundary_triangles, boundary_edges);
 			}
+
+			igl::write_triangle_mesh("boundary.obj", node_positions, boundary_triangles);
 		}
 		else
 		{
