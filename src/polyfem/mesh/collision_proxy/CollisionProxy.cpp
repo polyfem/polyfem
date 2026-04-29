@@ -6,6 +6,10 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 
+#include <fstream>
+#include <set>
+#include <sstream>
+
 #include <SimpleBVH/BVH.hpp>
 #include <igl/edges.h>
 #include <igl/barycentric_coordinates.h>
@@ -397,5 +401,41 @@ namespace polyfem::mesh
 			// Rearrange the columns based on the FEM mesh node order
 			displacement_map_entries.emplace_back(rows[i], in_node_to_node[cols[i]], values[i]);
 		}
+	}
+
+	std::vector<std::set<int>> load_collision_proxy_collision_body_ids(
+		const std::string &filename,
+		const Eigen::MatrixXi &faces,
+		const size_t n_vertices)
+	{
+		std::ifstream in(filename);
+		if (!in.is_open())
+			log_and_throw_error("Cannot open body IDs file: {}", filename);
+
+		std::vector<std::set<int>> vertex_body_ids(n_vertices);
+		std::string line;
+		int f = 0;
+		while (std::getline(in, line) && f < faces.rows())
+		{
+			if (line.empty())
+				continue;
+			std::istringstream iss(line);
+			std::set<int> face_id_set;
+			int id;
+			while (iss >> id)
+				face_id_set.insert(id);
+			if (face_id_set.empty())
+				log_and_throw_error(
+					"Body IDs file has no IDs on line {} (face {})", f, f);
+			for (int lv = 0; lv < faces.cols(); lv++)
+				vertex_body_ids[faces(f, lv)].insert(
+					face_id_set.begin(), face_id_set.end());
+			f++;
+		}
+		if (f < faces.rows())
+			log_and_throw_error(
+				"Body IDs file has fewer entries than faces ({} < {})",
+				f, faces.rows());
+		return vertex_body_ids;
 	}
 } // namespace polyfem::mesh

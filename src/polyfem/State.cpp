@@ -58,6 +58,7 @@
 #include <stdexcept>
 #include <string>
 #include <utility>
+#include <set>
 #include <vector>
 #include <cassert>
 #include <cmath>
@@ -1348,6 +1349,7 @@ namespace polyfem
 		Eigen::VectorXi collision_codim_vids;
 		Eigen::MatrixXi collision_edges, collision_triangles;
 		std::vector<Eigen::Triplet<double>> displacement_map_entries;
+		std::vector<std::set<int>> collision_body_ids; // empty = no body-pair filtering
 
 		if (args.contains("/contact/collision_mesh"_json_pointer)
 			&& args.at("/contact/collision_mesh/enabled"_json_pointer).get<bool>())
@@ -1365,6 +1367,15 @@ namespace polyfem
 					utils::resolve_path(collision_mesh_args["linear_map"], root_path),
 					in_node_to_node, transformation, collision_vertices, collision_codim_vids,
 					collision_edges, collision_triangles, displacement_map_entries);
+
+				if (collision_mesh_args.contains("collision_body_ids"))
+				{
+					const Eigen::MatrixXi &primitives =
+						collision_triangles.rows() > 0 ? collision_triangles : collision_edges;
+					collision_body_ids = mesh::load_collision_proxy_collision_body_ids(
+						utils::resolve_path(collision_mesh_args["collision_body_ids"], root_path),
+						primitives, collision_vertices.rows());
+				}
 			}
 			else if (collision_mesh_args.contains("max_edge_length"))
 			{
@@ -1450,10 +1461,43 @@ namespace polyfem
 			is_on_surface, is_orientable_vertex, collision_vertices, collision_edges, collision_triangles,
 			displacement_map);
 
-		collision_mesh.can_collide = [&collision_mesh, num_fe_collision_vertices](size_t vi, size_t vj) {
+		// Parse allowed collision body-ID pairs from args.
+		// Each entry may be a pair [a, b] or a group [a, b, c, ...] which expands
+		// to all pairwise combinations within the group.
+		std::set<std::pair<int, int>> allowed_collision_pairs;
+		if (args.contains("/contact/collision_pairs"_json_pointer))
+		{
+			for (const auto &group : args.at("/contact/collision_pairs"_json_pointer))
+			{
+				const std::vector<int> ids = group.get<std::vector<int>>();
+				for (size_t i = 0; i < ids.size(); i++)
+					for (size_t j = i + 1; j < ids.size(); j++)
+						allowed_collision_pairs.emplace(
+							std::min(ids[i], ids[j]), std::max(ids[i], ids[j]));
+			}
+		}
+
+		collision_mesh.can_collide = [&collision_mesh, num_fe_collision_vertices,
+									  collision_body_ids, allowed_collision_pairs](size_t vi, size_t vj) {
+			const size_t full_vi = collision_mesh.to_full_vertex_id(vi);
+			const size_t full_vj = collision_mesh.to_full_vertex_id(vj);
+
 			// obstacles do not collide with other obstacles
-			return collision_mesh.to_full_vertex_id(vi) < num_fe_collision_vertices
-				   || collision_mesh.to_full_vertex_id(vj) < num_fe_collision_vertices;
+			if (full_vi >= num_fe_collision_vertices && full_vj >= num_fe_collision_vertices)
+				return false;
+
+			// body-pair filter (FE-FE only; FE-obstacle always allowed)
+			if (!allowed_collision_pairs.empty() && !collision_body_ids.empty()
+				&& full_vi < num_fe_collision_vertices && full_vj < num_fe_collision_vertices)
+			{
+				for (const int bi : collision_body_ids[full_vi])
+					for (const int bj : collision_body_ids[full_vj])
+						if (allowed_collision_pairs.count({std::min(bi, bj), std::max(bi, bj)}))
+							return true;
+				return false;
+			}
+
+			return true;
 		};
 
 		collision_mesh.init_area_jacobians();

@@ -1224,7 +1224,8 @@
             "min_distance_ratio",
             "use_adaptive_dhat",
             "periodic",
-            "adhesion"
+            "adhesion",
+            "collision_pairs"
         ],
         "doc": "Contact handling parameters."
     },
@@ -1333,7 +1334,8 @@
             "linear_map"
         ],
         "optional": [
-            "enabled"
+            "enabled",
+            "collision_body_ids"
         ],
         "default": "skip",
         "doc": "Load a preconstructed collision mesh."
@@ -1390,10 +1392,32 @@
         "doc": ""
     },
     {
+        "pointer": "/contact/collision_mesh/collision_body_ids",
+        "type": "string",
+        "default": "",
+        "doc": "Path to a text file with per-face (or per-edge in 2D) collision body IDs, space-separated per line."
+    },
+    {
         "pointer": "/contact/periodic",
         "default": false,
         "type": "bool",
         "doc": "Set to true to check collision between adjacent periodic cells."
+    },
+    {
+        "pointer": "/contact/collision_pairs",
+        "type": "list",
+        "default": [],
+        "doc": "List of body-ID pairs (or groups) allowed to collide. Pairs are [id_a, id_b]; groups [id_a, id_b, id_c, ...] expand to all pairs."
+    },
+    {
+        "pointer": "/contact/collision_pairs/*",
+        "type": "list",
+        "doc": "A body-ID pair or group."
+    },
+    {
+        "pointer": "/contact/collision_pairs/*/*",
+        "type": "int",
+        "doc": "A body ID."
     },
     {
         "pointer": "/contact/adhesion",

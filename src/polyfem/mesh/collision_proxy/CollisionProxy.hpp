@@ -106,4 +106,16 @@ namespace polyfem::mesh
 		const Eigen::VectorXi &in_node_to_node,
 		const size_t num_proxy_vertices,
 		std::vector<Eigen::Triplet<double>> &displacement_map_entries);
+
+	/// @brief Load per-face collision body IDs from a text file (one integer per line)
+	/// and expand to per-vertex sets. Vertices shared between faces of different
+	/// IDs accumulate all of those IDs.
+	/// @param[in] filename Path to the collision body IDs file (n_faces lines)
+	/// @param[in] faces Face connectivity matrix (n_faces x 3)
+	/// @param[in] n_vertices Number of vertices
+	/// @return Per-vertex sets of collision body IDs
+	std::vector<std::set<int>> load_collision_proxy_collision_body_ids(
+		const std::string &filename,
+		const Eigen::MatrixXi &faces,
+		const size_t n_vertices);
 } // namespace polyfem::mesh
