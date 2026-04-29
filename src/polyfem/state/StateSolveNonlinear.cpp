@@ -296,7 +296,7 @@ namespace polyfem
 			args["contact"]["use_adaptive_dhat"],
 			args["contact"]["min_distance_ratio"],
 			// Normal Adhesion Form
-			args["contact"]["adhesion"]["adhesion_enabled"],
+			is_adhesion_enabled(),
 			args["contact"]["adhesion"]["dhat_p"],
 			args["contact"]["adhesion"]["dhat_a"],
 			args["contact"]["adhesion"]["adhesion_strength"],

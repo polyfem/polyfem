@@ -2421,14 +2421,21 @@ namespace polyfem::io
 			writer.add_field("friction_forces", forces_reshaped);
 		}
 
-		ipc::NormalCollisions adhesion_collision_set;
-		adhesion_collision_set.build(
-			collision_mesh, displaced_surface, dhat_a,
-			/*dmin=*/0, ipc::create_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]).get());
+		const bool adhesion_enabled = state.is_adhesion_enabled();
+		const bool need_normal_adhesion = adhesion_enabled && (opts.normal_adhesion_forces || opts.export_field("normal_adhesion_forces"));
+		const bool need_tangential_adhesion = adhesion_enabled && (opts.tangential_adhesion_forces || opts.export_field("tangential_adhesion_forces"));
 
+		ipc::NormalCollisions adhesion_collision_set;
 		ipc::NormalAdhesionPotential normal_adhesion_potential(dhat_p, dhat_a, Y, 1);
 
-		if (opts.normal_adhesion_forces || opts.export_field("normal_adhesion_forces"))
+		if (need_normal_adhesion || need_tangential_adhesion)
+		{
+			adhesion_collision_set.build(
+				collision_mesh, displaced_surface, dhat_a,
+				/*dmin=*/0, ipc::create_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]).get());
+		}
+
+		if (need_normal_adhesion)
 		{
 			Eigen::MatrixXd forces = -1 * normal_adhesion_potential.gradient(adhesion_collision_set, collision_mesh, displaced_surface);
 
@@ -2439,7 +2446,7 @@ namespace polyfem::io
 			writer.add_field("normal_adhesion_forces", forces_reshaped);
 		}
 
-		if (opts.tangential_adhesion_forces || opts.export_field("tangential_adhesion_forces"))
+		if (need_tangential_adhesion)
 		{
 			ipc::TangentialCollisions tangential_collision_set;
 			tangential_collision_set.build(

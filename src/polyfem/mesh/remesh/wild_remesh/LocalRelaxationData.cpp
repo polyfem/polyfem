@@ -292,7 +292,7 @@ namespace polyfem::mesh
 				state.args["contact"]["use_adaptive_dhat"],
 				state.args["contact"]["min_distance_ratio"],
 				// Normal Adhesion Form
-				state.args["contact"]["adhesion"]["adhesion_enabled"],
+				state.is_adhesion_enabled(),
 				state.args["contact"]["adhesion"]["dhat_p"],
 				state.args["contact"]["adhesion"]["dhat_a"],
 				state.args["contact"]["adhesion"]["adhesion_strength"],

@@ -144,13 +144,26 @@ namespace polyfem::mesh
 
 		if (!node_selections.empty())
 		{
+			bool boundary_only = true;
+			for (const auto &selection : node_selections)
+			{
+				if (!selection->boundary_only())
+				{
+					boundary_only = false;
+					break;
+				}
+			}
+
 			mesh->compute_node_ids([&](const size_t n_id, const RowVectorNd &p, bool is_boundary) {
-				if (!is_boundary)
+				if (boundary_only && !is_boundary)
 					return -1;
 
 				const std::vector<int> tmp = {int(n_id)};
 				for (const auto &selection : node_selections)
 				{
+					if (selection->boundary_only() && !is_boundary)
+						continue;
+
 					if (selection->inside(n_id, tmp, p))
 						return selection->id(n_id, tmp, p);
 				}
@@ -168,12 +181,25 @@ namespace polyfem::mesh
 
 		if (!surface_selections.empty())
 		{
+			bool boundary_only = true;
+			for (const auto &selection : surface_selections)
+			{
+				if (!selection->boundary_only())
+				{
+					boundary_only = false;
+					break;
+				}
+			}
+
 			mesh->compute_boundary_ids([&](const size_t p_id, const std::vector<int> &vs, const RowVectorNd &p, bool is_boundary) {
-				if (!is_boundary)
+				if (boundary_only && !is_boundary)
 					return -1;
 
 				for (const auto &selection : surface_selections)
 				{
+					if (selection->boundary_only() && !is_boundary)
+						continue;
+
 					if (selection->inside(p_id, vs, p))
 						return selection->id(p_id, vs, p);
 				}
