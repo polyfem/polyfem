@@ -380,7 +380,6 @@ namespace polyfem
 
 					regular_3d_grid(std::max(2., round(1. / pow(area_param_, 1. / 3.) + 1) / 2.),
 									false, false, true, pyramid_points_, pyramid_faces_, pyramid_tets_);
-					std::cout << "Pyramid sampler points: " << pyramid_points_.rows() << std::endl;
 
 					// Extract sampled edges matching the base element edges
 					Eigen::MatrixXi edges(8, 2);
