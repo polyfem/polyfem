@@ -56,6 +56,7 @@
 #include <ipc/ipc.hpp>
 
 #include <algorithm>
+#include <cmath>
 #include <filesystem>
 
 namespace polyfem::io
@@ -391,6 +392,7 @@ namespace polyfem::io
 						assert(!is_simplicial);
 						assert(!mesh.has_poly());
 						std::vector<int> loc_nodes;
+						std::vector<int> loc_local_nodes;
 
 						for (long n = 0; n < nodes.size(); ++n)
 						{
@@ -403,6 +405,7 @@ namespace polyfem::io
 							node_positions_vec.resize(std::max(int(node_positions_vec.size()), gindex + 1));
 							node_positions_vec[gindex] = glob.front().node;
 							loc_nodes.push_back(gindex);
+							loc_local_nodes.push_back(nodes(n));
 						}
 
 						auto update_mapping = [&displacement_map_entries, &visited_node](const std::vector<int> &loc_nodes) {
@@ -415,20 +418,98 @@ namespace polyfem::io
 							}
 						};
 
-						if (loc_nodes.size() == 3)
+						const int p = b.bases.empty() ? -1 : b.bases.front().order();
+						if (p < 1 || p > 3)
+						{
+							logger().trace("skipping pyramid face {} with unsupported p={}", eid, p);
+							continue;
+						}
+
+						if (lid == 0)
+						{
+							const int expected_nodes = (p + 1) * (p + 1);
+							if (loc_nodes.size() != expected_nodes || loc_local_nodes.size() != expected_nodes)
+							{
+								logger().trace("skipping pyramid quad face {} with p={} and {} nodes", eid, p, loc_nodes.size());
+								continue;
+							}
+
+							Eigen::MatrixXd pyramid_nodes;
+							autogen::pyramid_nodes_3d(p, pyramid_nodes);
+
+							const Eigen::RowVector3d origin = pyramid_nodes.row(loc_local_nodes[0]);
+							const Eigen::RowVector3d u_axis = pyramid_nodes.row(loc_local_nodes[1]) - origin;
+							const Eigen::RowVector3d v_axis = pyramid_nodes.row(loc_local_nodes[3]) - origin;
+
+							std::vector<int> grid(expected_nodes, -1);
+							auto grid_index = [p](const int i, const int j) {
+								return j * (p + 1) + i;
+							};
+
+							bool valid_grid = true;
+							for (int n = 0; n < loc_nodes.size(); ++n)
+							{
+								const Eigen::RowVector3d rel = pyramid_nodes.row(loc_local_nodes[n]) - origin;
+								const int i = int(std::lround(p * rel.dot(u_axis) / u_axis.squaredNorm()));
+								const int j = int(std::lround(p * rel.dot(v_axis) / v_axis.squaredNorm()));
+								if (i < 0 || i > p || j < 0 || j > p)
+								{
+									logger().trace("skipping pyramid quad face {} with invalid local grid coordinate ({}, {})", eid, i, j);
+									valid_grid = false;
+									break;
+								}
+								if (grid[grid_index(i, j)] >= 0)
+								{
+									logger().trace("skipping pyramid quad face {} with duplicate local grid coordinate ({}, {})", eid, i, j);
+									valid_grid = false;
+									break;
+								}
+								grid[grid_index(i, j)] = loc_nodes[n];
+							}
+
+							if (!valid_grid || !std::all_of(grid.begin(), grid.end(), [](const int n) { return n >= 0; }))
+								continue;
+
+							for (int j = 0; j < p; ++j)
+							{
+								for (int i = 0; i < p; ++i)
+								{
+									tris.emplace_back(grid[grid_index(i, j)], grid[grid_index(i + 1, j)], grid[grid_index(i, j + 1)]);
+									tris.emplace_back(grid[grid_index(i + 1, j + 1)], grid[grid_index(i, j + 1)], grid[grid_index(i + 1, j)]);
+								}
+							}
+
+							update_mapping(loc_nodes);
+						}
+						else if (loc_nodes.size() == 3)
 						{
 							tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
 							update_mapping(loc_nodes);
 						}
-						else if (loc_nodes.size() == 4)
+						else if (loc_nodes.size() == 6)
 						{
-							tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
-							tris.emplace_back(loc_nodes[0], loc_nodes[2], loc_nodes[3]);
+							tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[5]);
+							tris.emplace_back(loc_nodes[3], loc_nodes[1], loc_nodes[4]);
+							tris.emplace_back(loc_nodes[4], loc_nodes[2], loc_nodes[5]);
+							tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[5]);
+							update_mapping(loc_nodes);
+						}
+						else if (loc_nodes.size() == 10)
+						{
+							tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[8]);
+							tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[9]);
+							tris.emplace_back(loc_nodes[4], loc_nodes[1], loc_nodes[5]);
+							tris.emplace_back(loc_nodes[5], loc_nodes[6], loc_nodes[9]);
+							tris.emplace_back(loc_nodes[6], loc_nodes[2], loc_nodes[7]);
+							tris.emplace_back(loc_nodes[7], loc_nodes[8], loc_nodes[9]);
+							tris.emplace_back(loc_nodes[8], loc_nodes[3], loc_nodes[9]);
+							tris.emplace_back(loc_nodes[9], loc_nodes[4], loc_nodes[5]);
+							tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[9]);
 							update_mapping(loc_nodes);
 						}
 						else
 						{
-							logger().trace("skipping element {} since it is not linear, it has {} nodes", eid, loc_nodes.size());
+							logger().trace("skipping pyramid tri face {} with p={} and {} nodes", eid, p, loc_nodes.size());
 							continue;
 						}
 
