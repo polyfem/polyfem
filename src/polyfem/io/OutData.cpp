@@ -2104,7 +2104,7 @@ namespace polyfem::io
 			for (int i = 0; i < obstacle.get_face_connectivity().rows(); ++i)
 			{
 				elements.emplace_back();
-				elements.back().ctype = CellType::Tetrahedron;
+				elements.back().ctype = CellType::Triangle;
 				for (int j = 0; j < obstacle.get_face_connectivity().cols(); ++j)
 					elements.back().vertices.push_back(obstacle.get_face_connectivity()(i, j) + orig_p);
 			}
@@ -2112,7 +2112,7 @@ namespace polyfem::io
 			for (int i = 0; i < obstacle.get_edge_connectivity().rows(); ++i)
 			{
 				elements.emplace_back();
-				elements.back().ctype = CellType::Tetrahedron;
+				elements.back().ctype = CellType::Line;
 				for (int j = 0; j < obstacle.get_edge_connectivity().cols(); ++j)
 					elements.back().vertices.push_back(obstacle.get_edge_connectivity()(i, j) + orig_p);
 			}
@@ -2120,7 +2120,7 @@ namespace polyfem::io
 			for (int i = 0; i < obstacle.get_vertex_connectivity().size(); ++i)
 			{
 				elements.emplace_back();
-				elements.back().ctype = CellType::Tetrahedron;
+				elements.back().ctype = CellType::Vertex;
 				elements.back().vertices.push_back(obstacle.get_vertex_connectivity()(i) + orig_p);
 			}
 		}
