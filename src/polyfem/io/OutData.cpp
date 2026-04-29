@@ -147,6 +147,23 @@ namespace polyfem::io
 				}
 			}
 		}
+
+		void avoid_pyramid_apex(Eigen::MatrixXd &points)
+		{
+			assert(points.cols() == 3);
+			constexpr double eps = 1e-8;
+			for (int i = 0; i < points.rows(); ++i)
+			{
+				if (std::abs(points(i, 2) - 1.0) < eps)
+					points(i, 2) = 1.0 - eps;
+			}
+		}
+
+		void pyramid_nodes_for_output(const int order, Eigen::MatrixXd &points)
+		{
+			autogen::pyramid_nodes_3d(order, points);
+			avoid_pyramid_apex(points);
+		}
 	} // namespace
 
 	void OutGeometryData::extract_boundary_mesh(
@@ -1157,7 +1174,7 @@ namespace polyfem::io
 				}
 				else if (mesh.is_pyramid(i))
 				{
-					autogen::pyramid_nodes_3d(disc_orders(i) == 2 ? -1 : disc_orders(i), ref_pts);
+					pyramid_nodes_for_output(disc_orders(i), ref_pts);
 				}
 				else
 					continue;
@@ -1204,7 +1221,7 @@ namespace polyfem::io
 				}
 				else if (mesh.is_pyramid(i))
 				{
-					autogen::pyramid_nodes_3d(disc_orders(i) == 2 ? -1 : disc_orders(i), ref_pts);
+					pyramid_nodes_for_output(disc_orders(i), ref_pts);
 				}
 				else
 					continue;
@@ -2003,8 +2020,7 @@ namespace polyfem::io
 							autogen::prism_nodes_3d(o, o, local_pts);
 						}
 						else if (mesh.is_pyramid(e))
-							autogen::pyramid_nodes_3d(disc_orders(e) == 2 ? -1 : disc_orders(e), local_pts);
-
+							pyramid_nodes_for_output(disc_orders(e), local_pts);
 						else
 							continue;
 					}

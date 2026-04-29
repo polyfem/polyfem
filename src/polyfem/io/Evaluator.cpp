@@ -233,7 +233,7 @@ namespace polyfem::io
 			else if (mesh.is_pyramid(i))
 			{
 				assert(mesh.dimension() == 3);
-				autogen::pyramid_nodes_3d(disc_orders(i) == 2 ? -1 : disc_orders(i), local_pts);
+				autogen::pyramid_nodes_3d(disc_orders(i), local_pts);
 			}
 			else
 			{
@@ -623,7 +623,7 @@ namespace polyfem::io
 					}
 					else if (mesh.is_pyramid(i))
 					{
-						autogen::pyramid_nodes_3d(disc_orders(i) == 2 ? -1 : disc_orders(i), local_pts);
+						autogen::pyramid_nodes_3d(disc_orders(i), local_pts);
 					}
 					else
 						continue;
@@ -827,7 +827,7 @@ namespace polyfem::io
 					}
 					else if (mesh.is_pyramid(i))
 					{
-						autogen::pyramid_nodes_3d(disc_orders(i) == 2 ? -1 : disc_orders(i), local_pts);
+						autogen::pyramid_nodes_3d(disc_orders(i), local_pts);
 					}
 					else
 						continue;
@@ -928,7 +928,7 @@ namespace polyfem::io
 					}
 					else if (mesh.is_pyramid(i))
 					{
-						autogen::pyramid_nodes_3d(disc_orders(i) == 2 ? -1 : disc_orders(i), local_pts);
+						autogen::pyramid_nodes_3d(disc_orders(i), local_pts);
 					}
 					else
 						continue;
@@ -1041,7 +1041,7 @@ namespace polyfem::io
 					}
 					else if (mesh.is_pyramid(i))
 					{
-						autogen::pyramid_nodes_3d(disc_orders(i) == 2 ? -1 : disc_orders(i), local_pts);
+						autogen::pyramid_nodes_3d(disc_orders(i), local_pts);
 					}
 					else
 						continue;
