@@ -2192,7 +2192,7 @@ $(document).ready(function(){initNavTree('_out_data_8cpp_source.html',''); initR
 <div class="line"><a id="l02046" name="l02046"></a><span class="lineno"> 2046</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; obstacle.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_obstacle.html#a7c8eb9750b6623620ba63039021dd7f4">get_face_connectivity</a>().rows(); ++i)</div>
 <div class="line"><a id="l02047" name="l02047"></a><span class="lineno"> 2047</span>            {</div>
 <div class="line"><a id="l02048" name="l02048"></a><span class="lineno"> 2048</span>                elements.emplace_back();</div>
-<div class="line"><a id="l02049" name="l02049"></a><span class="lineno"> 2049</span>                elements.back().ctype = CellType::Tetrahedron;</div>
+<div class="line"><a id="l02049" name="l02049"></a><span class="lineno"> 2049</span>                elements.back().ctype = CellType::Triangle;</div>
 <div class="line"><a id="l02050" name="l02050"></a><span class="lineno"> 2050</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; obstacle.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_obstacle.html#a7c8eb9750b6623620ba63039021dd7f4">get_face_connectivity</a>().cols(); ++j)</div>
 <div class="line"><a id="l02051" name="l02051"></a><span class="lineno"> 2051</span>                    elements.back().vertices.push_back(obstacle.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_obstacle.html#a7c8eb9750b6623620ba63039021dd7f4">get_face_connectivity</a>()(i, j) + orig_p);</div>
 <div class="line"><a id="l02052" name="l02052"></a><span class="lineno"> 2052</span>            }</div>
@@ -2200,7 +2200,7 @@ $(document).ready(function(){initNavTree('_out_data_8cpp_source.html',''); initR
 <div class="line"><a id="l02054" name="l02054"></a><span class="lineno"> 2054</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; obstacle.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_obstacle.html#a39075d38314de5925213956c14dd1a04">get_edge_connectivity</a>().rows(); ++i)</div>
 <div class="line"><a id="l02055" name="l02055"></a><span class="lineno"> 2055</span>            {</div>
 <div class="line"><a id="l02056" name="l02056"></a><span class="lineno"> 2056</span>                elements.emplace_back();</div>
-<div class="line"><a id="l02057" name="l02057"></a><span class="lineno"> 2057</span>                elements.back().ctype = CellType::Tetrahedron;</div>
+<div class="line"><a id="l02057" name="l02057"></a><span class="lineno"> 2057</span>                elements.back().ctype = CellType::Line;</div>
 <div class="line"><a id="l02058" name="l02058"></a><span class="lineno"> 2058</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; obstacle.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_obstacle.html#a39075d38314de5925213956c14dd1a04">get_edge_connectivity</a>().cols(); ++j)</div>
 <div class="line"><a id="l02059" name="l02059"></a><span class="lineno"> 2059</span>                    elements.back().vertices.push_back(obstacle.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_obstacle.html#a39075d38314de5925213956c14dd1a04">get_edge_connectivity</a>()(i, j) + orig_p);</div>
 <div class="line"><a id="l02060" name="l02060"></a><span class="lineno"> 2060</span>            }</div>
@@ -2208,7 +2208,7 @@ $(document).ready(function(){initNavTree('_out_data_8cpp_source.html',''); initR
 <div class="line"><a id="l02062" name="l02062"></a><span class="lineno"> 2062</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; obstacle.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_obstacle.html#afb62c18348c6db81422d79834c5797a0">get_vertex_connectivity</a>().size(); ++i)</div>
 <div class="line"><a id="l02063" name="l02063"></a><span class="lineno"> 2063</span>            {</div>
 <div class="line"><a id="l02064" name="l02064"></a><span class="lineno"> 2064</span>                elements.emplace_back();</div>
-<div class="line"><a id="l02065" name="l02065"></a><span class="lineno"> 2065</span>                elements.back().ctype = CellType::Tetrahedron;</div>
+<div class="line"><a id="l02065" name="l02065"></a><span class="lineno"> 2065</span>                elements.back().ctype = CellType::Vertex;</div>
 <div class="line"><a id="l02066" name="l02066"></a><span class="lineno"> 2066</span>                elements.back().vertices.push_back(obstacle.<a class="code hl_function" href="classpolyfem_1_1mesh_1_1_obstacle.html#afb62c18348c6db81422d79834c5797a0">get_vertex_connectivity</a>()(i) + orig_p);</div>
 <div class="line"><a id="l02067" name="l02067"></a><span class="lineno"> 2067</span>            }</div>
 <div class="line"><a id="l02068" name="l02068"></a><span class="lineno"> 2068</span>        }</div>
