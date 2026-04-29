@@ -55,6 +55,7 @@
 
 #include <ipc/ipc.hpp>
 
+#include <algorithm>
 #include <filesystem>
 
 namespace polyfem::io
@@ -247,7 +248,7 @@ namespace polyfem::io
 						assert(!is_simplicial);
 						assert(!mesh.has_poly());
 						std::vector<int> loc_nodes;
-						RowVectorNd bary = RowVectorNd::Zero(3);
+						std::vector<int> loc_local_nodes;
 
 						for (long n = 0; n < nodes.size(); ++n)
 						{
@@ -259,8 +260,8 @@ namespace polyfem::io
 							int gindex = glob.front().index;
 							node_positions_vec.resize(std::max(int(node_positions_vec.size()), gindex + 1));
 							node_positions_vec[gindex] = glob.front().node;
-							bary += glob.front().node;
 							loc_nodes.push_back(gindex);
+							loc_local_nodes.push_back(nodes(n));
 						}
 
 						auto update_mapping = [&displacement_map_entries, &visited_node](const std::vector<int> &loc_nodes) {
@@ -311,18 +312,76 @@ namespace polyfem::io
 						}
 						else
 						{
-							bary /= 4;
-
-							if (loc_nodes.size() == 4) // 1 1
+							if (loc_nodes.size() < 4 || loc_local_nodes.size() < 4)
 							{
-
-								// TODO
-							}
-							else
-							{
-								logger().trace("skipping element {} since it is not linear, it has {} nodes", eid, loc_nodes.size());
+								logger().trace("skipping prism quad face {} since it has only {} complete nodes", eid, loc_nodes.size());
 								continue;
 							}
+
+							const int p = b.bases.empty() ? -1 : b.bases.front().order();
+							const int n_tri_nodes = (p + 1) * (p + 2) / 2;
+							const int q = n_tri_nodes > 0 && b.bases.size() % n_tri_nodes == 0 ? int(b.bases.size()) / n_tri_nodes - 1 : -1;
+
+							if (p < 1 || p > 3 || q < 1 || q > 3 || (p == 3 && q == 3))
+							{
+								logger().trace("skipping prism quad face {} with unsupported p={}, q={}", eid, p, q);
+								continue;
+							}
+
+							auto is_vertical_prism_edge = [](const int a, const int b) {
+								return (a >= 0 && a < 3 && b == a + 3) || (b >= 0 && b < 3 && a == b + 3);
+							};
+
+							std::vector<int> edge_orders(4);
+							for (int k = 0; k < 4; ++k)
+								edge_orders[k] = is_vertical_prism_edge(loc_local_nodes[k], loc_local_nodes[(k + 1) % 4]) ? q : p;
+
+							const int u_order = edge_orders[0];
+							const int v_order = edge_orders[1];
+							const int expected_nodes = (u_order + 1) * (v_order + 1);
+							if (loc_nodes.size() != expected_nodes || edge_orders[0] != edge_orders[2] || edge_orders[1] != edge_orders[3])
+							{
+								logger().trace("skipping prism quad face {} with p={}, q={} and {} nodes", eid, p, q, loc_nodes.size());
+								continue;
+							}
+
+							std::vector<int> grid(expected_nodes, -1);
+							auto grid_index = [u_order](const int i, const int j) {
+								return j * (u_order + 1) + i;
+							};
+
+							grid[grid_index(0, 0)] = loc_nodes[0];
+							grid[grid_index(u_order, 0)] = loc_nodes[1];
+							grid[grid_index(u_order, v_order)] = loc_nodes[2];
+							grid[grid_index(0, v_order)] = loc_nodes[3];
+
+							int node_index = 4;
+							for (int i = 1; i < u_order; ++i)
+								grid[grid_index(i, 0)] = loc_nodes[node_index++];
+							for (int j = 1; j < v_order; ++j)
+								grid[grid_index(u_order, j)] = loc_nodes[node_index++];
+							for (int i = u_order - 1; i > 0; --i)
+								grid[grid_index(i, v_order)] = loc_nodes[node_index++];
+							for (int j = v_order - 1; j > 0; --j)
+								grid[grid_index(0, j)] = loc_nodes[node_index++];
+
+							for (int j = 1; j < v_order; ++j)
+								for (int i = 1; i < u_order; ++i)
+									grid[grid_index(i, j)] = loc_nodes[node_index++];
+
+							assert(node_index == loc_nodes.size());
+							assert(std::all_of(grid.begin(), grid.end(), [](const int n) { return n >= 0; }));
+
+							for (int j = 0; j < v_order; ++j)
+							{
+								for (int i = 0; i < u_order; ++i)
+								{
+									tris.emplace_back(grid[grid_index(i, j)], grid[grid_index(i + 1, j)], grid[grid_index(i, j + 1)]);
+									tris.emplace_back(grid[grid_index(i + 1, j + 1)], grid[grid_index(i, j + 1)], grid[grid_index(i + 1, j)]);
+								}
+							}
+
+							update_mapping(loc_nodes);
 						}
 
 						continue;
@@ -496,7 +555,8 @@ namespace polyfem::io
 				igl::edges(boundary_triangles, boundary_edges);
 			}
 
-			igl::write_triangle_mesh("boundary.obj", node_positions, boundary_triangles);
+			// igl::write_triangle_mesh("boundary.obj", node_positions, boundary_triangles);
+			// exit(0);
 		}
 		else
 		{
