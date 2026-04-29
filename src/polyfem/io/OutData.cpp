@@ -267,71 +267,56 @@ namespace polyfem::io
 							}
 						};
 
-						if (loc_nodes.size() == 3)
+						// tri face
+						if (lid < 2)
 						{
-							tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
+							if (loc_nodes.size() == 3)
+							{
+								tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
 
-							update_mapping(loc_nodes);
-						}
-						else if (loc_nodes.size() == 6)
-						{
-							tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[5]);
-							tris.emplace_back(loc_nodes[3], loc_nodes[1], loc_nodes[4]);
-							tris.emplace_back(loc_nodes[4], loc_nodes[2], loc_nodes[5]);
-							tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[5]);
+								update_mapping(loc_nodes);
+							}
+							else if (loc_nodes.size() == 6)
+							{
+								tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[5]);
+								tris.emplace_back(loc_nodes[3], loc_nodes[1], loc_nodes[4]);
+								tris.emplace_back(loc_nodes[4], loc_nodes[2], loc_nodes[5]);
+								tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[5]);
 
-							update_mapping(loc_nodes);
-						}
-						else if (loc_nodes.size() == 10)
-						{
-							tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[8]);
-							tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[9]);
-							tris.emplace_back(loc_nodes[4], loc_nodes[1], loc_nodes[5]);
-							tris.emplace_back(loc_nodes[5], loc_nodes[6], loc_nodes[9]);
-							tris.emplace_back(loc_nodes[6], loc_nodes[2], loc_nodes[7]);
-							tris.emplace_back(loc_nodes[7], loc_nodes[8], loc_nodes[9]);
-							tris.emplace_back(loc_nodes[8], loc_nodes[3], loc_nodes[9]);
-							tris.emplace_back(loc_nodes[9], loc_nodes[4], loc_nodes[5]);
-							tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[9]);
-							update_mapping(loc_nodes);
-						}
-						else if (loc_nodes.size() == 15)
-						{
-							tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[11]);
-							tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[12]);
-							tris.emplace_back(loc_nodes[3], loc_nodes[12], loc_nodes[11]);
-							tris.emplace_back(loc_nodes[12], loc_nodes[10], loc_nodes[11]);
-							tris.emplace_back(loc_nodes[4], loc_nodes[5], loc_nodes[13]);
-							tris.emplace_back(loc_nodes[4], loc_nodes[13], loc_nodes[12]);
-							tris.emplace_back(loc_nodes[12], loc_nodes[13], loc_nodes[14]);
-							tris.emplace_back(loc_nodes[12], loc_nodes[14], loc_nodes[10]);
-							tris.emplace_back(loc_nodes[14], loc_nodes[9], loc_nodes[10]);
-							tris.emplace_back(loc_nodes[5], loc_nodes[1], loc_nodes[6]);
-							tris.emplace_back(loc_nodes[5], loc_nodes[6], loc_nodes[13]);
-							tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[13]);
-							tris.emplace_back(loc_nodes[13], loc_nodes[7], loc_nodes[14]);
-							tris.emplace_back(loc_nodes[7], loc_nodes[8], loc_nodes[14]);
-							tris.emplace_back(loc_nodes[14], loc_nodes[8], loc_nodes[9]);
-							tris.emplace_back(loc_nodes[8], loc_nodes[2], loc_nodes[9]);
-							update_mapping(loc_nodes);
-						}
-						else if (loc_nodes.size() == 4)
-						{
-							bary /= 4;
-
-							const int new_node = n_bases + eid;
-							node_positions.row(new_node) = bary;
-							tris.emplace_back(loc_nodes[1], loc_nodes[0], new_node);
-							tris.emplace_back(loc_nodes[2], loc_nodes[1], new_node);
-							tris.emplace_back(loc_nodes[3], loc_nodes[2], new_node);
-							tris.emplace_back(loc_nodes[0], loc_nodes[3], new_node);
-
-							update_mapping(loc_nodes);
+								update_mapping(loc_nodes);
+							}
+							else if (loc_nodes.size() == 10)
+							{
+								tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[8]);
+								tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[9]);
+								tris.emplace_back(loc_nodes[4], loc_nodes[1], loc_nodes[5]);
+								tris.emplace_back(loc_nodes[5], loc_nodes[6], loc_nodes[9]);
+								tris.emplace_back(loc_nodes[6], loc_nodes[2], loc_nodes[7]);
+								tris.emplace_back(loc_nodes[7], loc_nodes[8], loc_nodes[9]);
+								tris.emplace_back(loc_nodes[8], loc_nodes[3], loc_nodes[9]);
+								tris.emplace_back(loc_nodes[9], loc_nodes[4], loc_nodes[5]);
+								tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[9]);
+								update_mapping(loc_nodes);
+							}
+							else
+							{
+								logger().trace("skipping element {} since it is not linear, it has {} nodes", eid, loc_nodes.size());
+							}
 						}
 						else
 						{
-							logger().trace("skipping element {} since it is not linear, it has {} nodes", eid, loc_nodes.size());
-							continue;
+							bary /= 4;
+
+							if (loc_nodes.size() == 4) // 1 1
+							{
+
+								// TODO
+							}
+							else
+							{
+								logger().trace("skipping element {} since it is not linear, it has {} nodes", eid, loc_nodes.size());
+								continue;
+							}
 						}
 
 						continue;

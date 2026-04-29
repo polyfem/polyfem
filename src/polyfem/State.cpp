@@ -844,11 +844,11 @@ namespace polyfem
 			logger().debug("Done (took {}s)", timer2.getElapsedTime());
 		}
 
-		// logger().info("Building collision mesh...");
-		// build_collision_mesh();
-		// if (periodic_bc && args["contact"]["periodic"])
-		// 	build_periodic_collision_mesh();
-		// logger().info("Done!");
+		logger().info("Building collision mesh...");
+		build_collision_mesh();
+		if (periodic_bc && args["contact"]["periodic"])
+			build_periodic_collision_mesh();
+		logger().info("Done!");
 
 		const int prev_b_size = local_boundary.size();
 		problem->setup_bc(*mesh, n_bases - obstacle.n_vertices(),
