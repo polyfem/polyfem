@@ -1200,10 +1200,13 @@ namespace polyfem::io
 				// 	std::swap(elements[i].vertices[29], elements[i].vertices[31]);  // hack
 				// }
 				if (disc_orders(i) > 2)
-					error_msg = "Saving high-order meshes not implemented for P2+ elements!";
+					error_msg = "Saving high-order meshes not implemented for Q2+ elements!";
 			}
 			else if (disc_orders(i) > 1)
-				error_msg = "Saving high-order meshes not implemented for Q2+ elements!";
+			{
+				if (mesh.is_cube(i))
+					error_msg = "Saving high-order meshes not implemented for Q2+ elements!";
+			}
 		}
 
 		if (!error_msg.empty())
