@@ -1174,7 +1174,10 @@ namespace polyfem::io
 				}
 				else if (mesh.is_pyramid(i))
 				{
-					pyramid_nodes_for_output(disc_orders(i), ref_pts);
+					if (disc_orders(i) == 1)
+						pyramid_nodes_for_output(1, ref_pts);
+					else
+						ref_pts = ref_element_sampler.pyramid_points();
 				}
 				else
 					continue;
@@ -1221,7 +1224,10 @@ namespace polyfem::io
 				}
 				else if (mesh.is_pyramid(i))
 				{
-					pyramid_nodes_for_output(disc_orders(i), ref_pts);
+					if (disc_orders(i) == 1)
+						pyramid_nodes_for_output(1, ref_pts);
+					else
+						ref_pts = ref_element_sampler.pyramid_points();
 				}
 				else
 					continue;
@@ -1355,6 +1361,33 @@ namespace polyfem::io
 				else if (mesh.is_pyramid(i))
 					elements[i].ctype = CellType::Pyramid;
 			}
+		}
+
+		if (mesh.is_volume())
+		{
+			// ParaView does not reliably render high-order Lagrange pyramids;
+			// tessellate only those cells while keeping linear pyramids and the
+			// other element types in their native representation.
+			std::vector<CellElement> expanded_elements;
+			expanded_elements.reserve(elements.size());
+			for (size_t i = 0; i < bases.size(); ++i)
+			{
+				if (!mesh.is_pyramid(i) || disc_orders(i) == 1)
+				{
+					expanded_elements.push_back(std::move(elements[i]));
+					continue;
+				}
+
+				for (int t = 0; t < ref_element_sampler.pyramid_volume().rows(); ++t)
+				{
+					CellElement tet;
+					tet.ctype = CellType::Tetrahedron;
+					for (int j = 0; j < ref_element_sampler.pyramid_volume().cols(); ++j)
+						tet.vertices.push_back(elements[i].vertices[ref_element_sampler.pyramid_volume()(t, j)]);
+					expanded_elements.push_back(std::move(tet));
+				}
+			}
+			elements.swap(expanded_elements);
 		}
 
 		assert(pts_index == points.rows());
@@ -1732,7 +1765,7 @@ namespace polyfem::io
 		Eigen::Vector<bool, -1> validity;
 		if (opts.jacobian_validity)
 			Evaluator::mark_flipped_cells(
-				mesh, gbases, bases, state.disc_orders,
+				mesh, gbases, bases, state.disc_orders, state.disc_ordersq,
 				state.polys, state.polys_3d, ref_element_sampler,
 				points.rows(), sol, validity, opts.use_sampler, opts.boundary_only);
 
@@ -1988,7 +2021,7 @@ namespace polyfem::io
 				const basis::ElementBases &gbs = gbases[e];
 				const basis::ElementBases &bs = bases[e];
 
-				if (opts.use_sampler)
+				if (opts.use_sampler || (mesh.is_volume() && mesh.is_pyramid(e) && disc_orders(e) > 1))
 				{
 					if (mesh.is_simplex(e))
 						local_pts = sampler.simplex_points();
