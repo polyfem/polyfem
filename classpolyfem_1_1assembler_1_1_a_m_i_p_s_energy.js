@@ -4,10 +4,12 @@ var classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy =
     [ "add_multimaterial", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#af1edd3ada02bf59cbb9d19b8ca812326", null ],
     [ "allow_inversion", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#ab77665208ba71b954ff4d5f42aa1a54f", null ],
     [ "elastic_energy", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#aec55aaa280acc3e89899b1da60dff653", null ],
+    [ "get_energy_weight", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#a6dad6a375dd6ed394c97888dbe04f8dc", null ],
     [ "gradient", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#a724172b965379ad759a3ab3f18e305a7", null ],
     [ "hessian", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#acba5a55271cc3380a7d75ebf26e1ba04", null ],
     [ "name", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#a245f7760f870babb6b62bcb667054a26", null ],
     [ "parameters", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#ae7d9e9ef0c79269753dc03280a0493f0", null ],
     [ "real_def_grad", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#aecc0f4fb40df5a102e96f97754327475", null ],
+    [ "energy_weights_", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#a9872d9affbe80afb7e70cac94429ba3c", null ],
     [ "use_rest_pose_", "classpolyfem_1_1assembler_1_1_a_m_i_p_s_energy.html#ad6838ac6f9542ee8df15a8082ef9652e", null ]
 ];

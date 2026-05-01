@@ -1557,7 +1557,7 @@ $(document).ready(function(){initNavTree('_adjoint_tools_8cpp_source.html',''); 
 <div class="line"><a id="l01391" name="l01391"></a><span class="lineno"> 1391</span>        Eigen::Matrix&lt;Diff, 4, 1&gt; full_diff(4, 1);</div>
 <div class="line"><a id="l01392" name="l01392"></a><span class="lineno"> 1392</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 2; i++)</div>
 <div class="line"><a id="l01393" name="l01393"></a><span class="lineno"> 1393</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; 2; j++)</div>
-<div class="line"><a id="l01394" name="l01394"></a><span class="lineno"> 1394</span>                full_diff(i * 2 + j) = <a class="code hl_typedef" href="namespacepolyfem_1_1solver.html#a4165a3aa1ac3d4ff7e4ed89921620ef9">Diff</a>(i * 2 + j, <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>(i, j));</div>
+<div class="line"><a id="l01394" name="l01394"></a><span class="lineno"> 1394</span>                full_diff(i * 2 + j) = <a class="code hl_struct" href="struct_d_scalar1.html">Diff</a>(i * 2 + j, <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>(i, j));</div>
 <div class="line"><a id="l01395" name="l01395"></a><span class="lineno"> 1395</span>        <span class="keyword">auto</span> reduced_diff = edge_normal(full_diff);</div>
 <div class="line"><a id="l01396" name="l01396"></a><span class="lineno"> 1396</span> </div>
 <div class="line"><a id="l01397" name="l01397"></a><span class="lineno"> 1397</span>        Eigen::MatrixXd grad(2, 4);</div>
@@ -1575,7 +1575,7 @@ $(document).ready(function(){initNavTree('_adjoint_tools_8cpp_source.html',''); 
 <div class="line"><a id="l01407" name="l01407"></a><span class="lineno"> 1407</span>        Eigen::Matrix&lt;Diff, 9, 1&gt; full_diff(9, 1);</div>
 <div class="line"><a id="l01408" name="l01408"></a><span class="lineno"> 1408</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; 3; i++)</div>
 <div class="line"><a id="l01409" name="l01409"></a><span class="lineno"> 1409</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> j = 0; j &lt; 3; j++)</div>
-<div class="line"><a id="l01410" name="l01410"></a><span class="lineno"> 1410</span>                full_diff(i * 3 + j) = <a class="code hl_typedef" href="namespacepolyfem_1_1solver.html#a4165a3aa1ac3d4ff7e4ed89921620ef9">Diff</a>(i * 3 + j, <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>(i, j));</div>
+<div class="line"><a id="l01410" name="l01410"></a><span class="lineno"> 1410</span>                full_diff(i * 3 + j) = <a class="code hl_struct" href="struct_d_scalar1.html">Diff</a>(i * 3 + j, <a class="code hl_variable" href="_adjoint_n_l_problem_8cpp.html#a91e334f289dc11ba09da0df4a9c72123">V</a>(i, j));</div>
 <div class="line"><a id="l01411" name="l01411"></a><span class="lineno"> 1411</span>        <span class="keyword">auto</span> reduced_diff = face_normal(full_diff);</div>
 <div class="line"><a id="l01412" name="l01412"></a><span class="lineno"> 1412</span> </div>
 <div class="line"><a id="l01413" name="l01413"></a><span class="lineno"> 1413</span>        Eigen::MatrixXd grad(3, 9);</div>
