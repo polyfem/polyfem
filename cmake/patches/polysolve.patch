@@ -46,10 +46,19 @@ index 1b98faa..4d0f645 100644
  
              // --- Gradient ----------------------------------------------------
 diff --git a/src/polysolve/nonlinear/line_search/Backtracking.cpp b/src/polysolve/nonlinear/line_search/Backtracking.cpp
-index da8ee66..8b3e67e 100644
+index da8ee66..c1b0c21 100644
 --- a/src/polysolve/nonlinear/line_search/Backtracking.cpp
 +++ b/src/polysolve/nonlinear/line_search/Backtracking.cpp
-@@ -77,7 +77,7 @@ namespace polysolve::nonlinear::line_search
+@@ -52,6 +52,8 @@ namespace polysolve::nonlinear::line_search
+                 continue;
+             }
+ 
++            record_alpha_trial(step_size, new_energy);
++
+             m_logger.trace("ls it: {} ΔE: {}", cur_iter, new_energy - old_energy);
+ 
+             if (criteria(delta_x, objFunc, use_grad_norm, old_energy, old_grad, new_x, new_energy, step_size))
+@@ -77,7 +79,7 @@ namespace polysolve::nonlinear::line_search
          {
              TVector new_grad;
              objFunc.gradient(new_x, new_grad);
@@ -59,14 +68,16 @@ index da8ee66..8b3e67e 100644
          return new_energy < old_energy;
      }
 diff --git a/src/polysolve/nonlinear/line_search/LineSearch.cpp b/src/polysolve/nonlinear/line_search/LineSearch.cpp
-index a9be577..ae7a366 100644
+index a9be577..9b8f0b2 100644
 --- a/src/polysolve/nonlinear/line_search/LineSearch.cpp
 +++ b/src/polysolve/nonlinear/line_search/LineSearch.cpp
-@@ -16,9 +16,62 @@
+@@ -16,9 +16,74 @@
  #endif
  
  #include <cfenv>
 +#include <fstream>
++#include <iomanip>
++#include <sstream>
  
  namespace polysolve::nonlinear::line_search
  {
@@ -82,6 +93,8 @@ index a9be577..ae7a366 100644
 +            Problem& objFunc,
 +            const Eigen::VectorXd& x,
 +            const Eigen::VectorXd& dx,
++            const std::vector<double>& tried_alphas,
++            const std::string& stop_reason,
 +            double max_step_size = 1)
 +        {
 +            static bool written = false;
@@ -118,26 +131,81 @@ index a9be577..ae7a366 100644
 +                csv << "alpha,energy,grad_norm\n";
 +                for (size_t i = 0; i < alphas.size(); ++i)
 +                    csv << alphas[i] << "," << values[i] << "," << grad_norms[i] << "\n";
-+            } 
++            }
++            {
++                std::ofstream csv("line_search_tried_alphas.csv");
++                csv << std::setprecision(20) << std::fixed;
++                csv << "# stop_reason: " << stop_reason << "\n";
++                csv << "alpha\n";
++                for (double a : tried_alphas)
++                    csv << a << "\n";
++            }
 +        }
 +    }
 +
      static constexpr double NaN = std::numeric_limits<double>::quiet_NaN();
  
      std::shared_ptr<LineSearch> LineSearch::create(const json &params, spdlog::logger &logger)
-@@ -145,6 +198,7 @@ namespace polysolve::nonlinear::line_search
+@@ -73,6 +138,9 @@ namespace polysolve::nonlinear::line_search
+         // ----------------
+         // Begin linesearch
+         // ----------------
++        m_trial_alphas.clear();
++        m_trial_energies.clear();
++
+         double initial_energy, step_size;
+         TVector initial_grad;
+         {
+@@ -145,6 +213,7 @@ namespace polysolve::nonlinear::line_search
              step_size = compute_descent_step_size(x, delta_x, objFunc, use_grad_norm, initial_energy, initial_grad, step_size);
              if (std::isnan(step_size))
              {
-+                plot_over_descent_direction(objFunc, x, delta_x, collision_free_step_size);
++                plot_over_descent_direction(objFunc, x, delta_x, m_trial_alphas, "descent step returned NaN", collision_free_step_size);
                  // Superclass::save_sampled_values("failed-line-search-values.csv", x, delta_x, objFunc);
                  return NaN;
              }
-@@ -166,6 +220,7 @@ namespace polysolve::nonlinear::line_search
+@@ -166,6 +235,16 @@ namespace polysolve::nonlinear::line_search
              assert(abs(initial_energy - objFunc(x)) < 1e-15);
  
              objFunc.line_search_end();
-+            plot_over_descent_direction(objFunc, x, delta_x, collision_free_step_size);
++            {
++                std::ostringstream oss;
++                if (cur_iter >= current_max_step_size_iter())
++                    oss << "max iterations reached (" << cur_iter << ")";
++                else
++                    oss << std::scientific << std::setprecision(3)
++                        << "step size below minimum (" << step_size << " <= " << current_min_step_size() << ")";
++                const std::string reason = oss.str();
++                plot_over_descent_direction(objFunc, x, delta_x, m_trial_alphas, reason, collision_free_step_size);
++            }
              return NaN;
          }
  
+diff --git a/src/polysolve/nonlinear/line_search/LineSearch.hpp b/src/polysolve/nonlinear/line_search/LineSearch.hpp
+index 52e7a4d..cfd827a 100644
+--- a/src/polysolve/nonlinear/line_search/LineSearch.hpp
++++ b/src/polysolve/nonlinear/line_search/LineSearch.hpp
+@@ -67,6 +67,13 @@ namespace polysolve::nonlinear::line_search
+ 
+         int iterations() const { return cur_iter; }
+ 
++        // Called by subclasses during compute_descent_step_size to record each tried alpha
++        void record_alpha_trial(double alpha, double energy)
++        {
++            m_trial_alphas.push_back(alpha);
++            m_trial_energies.push_back(energy);
++        }
++
+         double checking_for_nan_inf_time;
+         double broad_phase_ccd_time;
+         double narrow_phase_ccd_time;
+@@ -98,6 +105,9 @@ namespace polysolve::nonlinear::line_search
+         double step_ratio;
+         int cur_iter;
+ 
++        std::vector<double> m_trial_alphas;
++        std::vector<double> m_trial_energies;
++
+     private:
+         /// @brief Compute step size that avoids nan/infinite energy
+         /// @param x Current input (n x 1)
