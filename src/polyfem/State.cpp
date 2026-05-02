@@ -651,8 +651,11 @@ namespace polyfem
 		const auto &tmp_json2 = args["space"]["discr_orderq"];
 		if (tmp_json2.is_number_integer())
 		{
-			// tmp fix for n-m order prism
-			disc_ordersq.setConstant(tmp_json2);
+			const int orderq = tmp_json2;
+			if (orderq < 0)
+				disc_ordersq = disc_orders;
+			else
+				disc_ordersq.setConstant(orderq);
 		}
 
 		int max_order = 0;
