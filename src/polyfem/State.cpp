@@ -674,7 +674,7 @@ namespace polyfem
 		{
 			for (int e = 0; e < mesh->n_elements(); ++e)
 			{
-				if (mesh->is_simplex(e))
+				if (mesh->is_simplex(e) || mesh->is_pyramid(e))
 				{
 					disc_orders[e] = max_order;
 				}
