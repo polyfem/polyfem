@@ -96,17 +96,151 @@ namespace polyfem
 				return std::make_pair(n.nodes.row(n.nodes.rows() - i), n.nodes_ids[n.nodes_ids.size() - i]);
 		}
 
+		std::pair<RowVectorNd, int> Mesh3D::face_node(const Navigation3D::Index &index, const int n_new_nodes, const int n_new_nodesq, const int i, const int j) const
+		{
+			assert(is_prism(index.element));
+
+			const int tmp = n_new_nodes == 2 ? 3 : n_new_nodes; // ?
+
+			const bool is_prism_tri = n_face_vertices(index.face) == 3;
+			const bool is_prism_quad = n_face_vertices(index.face) == 4;
+
+			// for (int i = 0; i < face_nodes_.size(); ++i)
+			// {
+			// 	std::cout << "face " << i << ": " << face_nodes_[i].nodes.rows() << " nodes" << std::endl;
+			// }
+			if (is_prism_tri)
+			{
+				if (orders_.size() <= 0 || orders_(index.element) == 1 || orders_(index.element) == 2 || face_nodes_.empty() || face_nodes_[index.face].nodes.rows() != tmp)
+				{
+					const auto v1 = point(index.vertex);
+					const auto v2 = point(switch_vertex(index).vertex);
+					const auto v3 = point(switch_vertex(switch_edge(index)).vertex);
+
+					const double b2 = i / (n_new_nodes + 2.0);
+					const double b3 = j / (n_new_nodes + 2.0);
+					const double b1 = 1 - b3 - b2;
+					assert(b3 < 1);
+					assert(b3 > 0);
+
+					return std::make_pair(b1 * v1 + b2 * v2 + b3 * v3, -1);
+				}
+
+				const int ii = i - 1;
+				const int jj = j - 1;
+
+				assert(orders_(index.element) == 3 || orders_(index.element) == 4);
+				const auto &n = face_nodes_[index.face];
+				int lindex = jj * n_new_nodes + ii;
+
+				if (orders_(index.element) == 4) // high order geometric mesh
+				{
+					static const std::array<int, 3> remapping = {{0, 2, 1}};
+					if (n.v1 == index.vertex)
+					{
+						if (n.v2 != next_around_face(index).vertex)
+						{
+							lindex = remapping[lindex];
+							assert(n.v3 == next_around_face(index).vertex);
+						}
+						else
+						{
+							assert(n.v2 == next_around_face(index).vertex);
+						}
+					}
+					else if (n.v2 == index.vertex)
+					{
+
+						if (n.v3 != next_around_face(index).vertex)
+						{
+							lindex = remapping[lindex];
+							assert(n.v1 == next_around_face(index).vertex);
+						}
+						else
+						{
+							assert(n.v3 == switch_vertex(index).vertex);
+						}
+
+						lindex = (lindex + 1) % 3;
+					}
+					else if (n.v3 == index.vertex)
+					{
+
+						if (n.v1 != next_around_face(index).vertex)
+						{
+							lindex = remapping[lindex];
+							assert(n.v2 == next_around_face(index).vertex);
+						}
+						else
+						{
+							assert(n.v1 == switch_vertex(index).vertex);
+						}
+
+						lindex = (lindex + 2) % 3;
+					}
+					else
+					{
+						// assert(false);
+					}
+				}
+
+				return std::make_pair(n.nodes.row(lindex), n.nodes_ids[lindex]);
+			}
+			else if (is_prism_quad)
+			{
+				// supports only blilinear quads
+				assert(orders_.size() <= 0 || orders_(index.element) == 1);
+
+				const int lindex = (j - 1) * n_new_nodes + (i - 1);
+
+				const auto v1 = point(index.vertex);
+				const auto v2 = point(switch_vertex(index).vertex);
+				const auto v3 = point(switch_vertex(switch_edge(switch_vertex(index))).vertex);
+				const auto v4 = point(switch_vertex(switch_edge(index)).vertex);
+
+				if (is_prism_quad)
+				{
+					if (n_face_vertices(switch_face(index).face) == 4)
+					{
+						const double b1 = i / (n_new_nodesq + 1.0);
+						const double b2 = j / (n_new_nodes + 1.0);
+						assert(b1 <= 1);
+						assert(b2 <= 1);
+						assert(b1 >= 0);
+						assert(b2 >= 0);
+						return std::make_pair(v1 * (1 - b1) * (1 - b2) + v2 * b1 * (1 - b2) + v3 * b1 * b2 + v4 * (1 - b1) * b2, -1);
+					}
+					else
+					{
+						const double b1 = i / (n_new_nodes + 1.0);
+						const double b2 = j / (n_new_nodesq + 1.0);
+						assert(b1 <= 1);
+						assert(b2 <= 1);
+						assert(b1 >= 0);
+						assert(b2 >= 0);
+						return std::make_pair(v1 * (1 - b1) * (1 - b2) + v2 * b1 * (1 - b2) + v3 * b1 * b2 + v4 * (1 - b1) * b2, -1);
+					}
+				}
+				const double b1 = i / (n_new_nodes + 1.0);
+				const double b2 = j / (n_new_nodes + 1.0);
+
+				return std::make_pair(v1 * (1 - b1) * (1 - b2) + v2 * b1 * (1 - b2) + v3 * b1 * b2 + v4 * (1 - b1) * b2, -1);
+			}
+
+			assert(false);
+			return std::make_pair(RowVectorNd(3, 1), -1);
+		}
+
 		std::pair<RowVectorNd, int> Mesh3D::face_node(const Navigation3D::Index &index, const int n_new_nodes, const int i, const int j) const
 		{
-			const int tmp = n_new_nodes == 2 ? 3 : n_new_nodes;
+			assert(!is_prism(index.element));
 
-			const bool is_prism_tri = is_prism(index.element) && n_face_vertices(index.face) == 3;
-			const bool is_prism_quad = is_prism(index.element) && n_face_vertices(index.face) == 4;
+			const int tmp = n_new_nodes == 2 ? 3 : n_new_nodes;
 
 			const bool is_pyramid_tri = is_pyramid(index.element) && n_face_vertices(index.face) == 3;
 			const bool is_pyramid_quad = is_pyramid(index.element) && n_face_vertices(index.face) == 4;
 
-			if (is_simplex(index.element) || is_prism_tri || is_pyramid_tri)
+			if (is_simplex(index.element) || is_pyramid_tri)
 			{
 				if (orders_.size() <= 0 || orders_(index.element) == 1 || orders_(index.element) == 2 || face_nodes_.empty() || face_nodes_[index.face].nodes.rows() != tmp)
 				{
@@ -183,7 +317,7 @@ namespace polyfem
 
 				return std::make_pair(n.nodes.row(lindex), n.nodes_ids[lindex]);
 			}
-			else if (is_cube(index.element) || is_prism_quad || is_pyramid_quad)
+			else if (is_cube(index.element) || is_pyramid_quad)
 			{
 				// supports only blilinear quads
 				assert(orders_.size() <= 0 || orders_(index.element) == 1);
