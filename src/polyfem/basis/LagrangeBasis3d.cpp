@@ -2335,7 +2335,77 @@ Eigen::VectorXi LagrangeBasis3d::prism_face_local_nodes(const int p, const int q
 
 			assert(found);
 		}
+		else if (n_face_nodes == 4)
+		{
+			std::cout << "ASdasdasd" << std::endl;
+			// This is ONLY for non conforming, not to support 33 prism face
+			assert(p == 3 && q == 3);
 
+			Eigen::MatrixXd nodes;
+			autogen::prism_nodes_3d(p, q, nodes);
+
+			std::array<int, 4> idx;
+			Navigation3D::Index idx_it = index;
+			for (int lv = 0; lv < 4; ++lv)
+			{
+				idx[lv] = find_index(l2g.begin(), l2g.end(), idx_it.vertex);
+				idx_it = mesh.next_around_face(idx_it);
+			}
+
+			Eigen::Matrix<double, 4, 3> pos;
+			for (int lv = 0; lv < 4; ++lv)
+				pos.row(lv) = nodes.row(idx[lv]);
+
+			const int start_row = 6 + global_n_edges_nodes + lf * n_face_nodes + 2 * n_tri_face_nodes;
+			Eigen::MatrixXd loc_nodes = nodes.block(start_row, 0, n_face_nodes, 3);
+
+			const std::array<Eigen::Vector2d, 4> uv = {
+				Eigen::Vector2d(1.0 / 3.0, 1.0 / 3.0),
+				Eigen::Vector2d(1.0 / 3.0, 2.0 / 3.0),
+				Eigen::Vector2d(2.0 / 3.0, 1.0 / 3.0),
+				Eigen::Vector2d(2.0 / 3.0, 2.0 / 3.0),
+			};
+
+			std::array<bool, 4> used = {{false, false, false, false}};
+
+			for (const auto &st : uv)
+			{
+				const double s = st(0);
+				const double t = st(1);
+
+				const Eigen::RowVector3d target =
+					(1.0 - s) * (1.0 - t) * pos.row(0)
+					+ s * (1.0 - t) * pos.row(1)
+					+ s * t * pos.row(2)
+					+ (1.0 - s) * t * pos.row(3);
+
+				int best_n = -1;
+				double best = std::numeric_limits<double>::infinity();
+
+				for (int n = 0; n < n_face_nodes; ++n)
+				{
+					if (used[n])
+						continue;
+
+					const double d = (loc_nodes.row(n) - target).squaredNorm();
+					if (d < best)
+					{
+						best = d;
+						best_n = n;
+					}
+				}
+
+				assert(best_n >= 0);
+				assert(best < 1e-12);
+
+				used[best_n] = true;
+				result[ii++] = start_row + best_n;
+			}
+		}
+		else
+		{
+			assert(n_face_nodes == 0);
+		}
 		assert(ii == result.size());
 		return result;
 	}
