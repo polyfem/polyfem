@@ -2359,12 +2359,12 @@ Eigen::VectorXi LagrangeBasis3d::prism_face_local_nodes(const int p, const int q
 			const int start_row = 6 + global_n_edges_nodes + lf * n_face_nodes + 2 * n_tri_face_nodes;
 			Eigen::MatrixXd loc_nodes = nodes.block(start_row, 0, n_face_nodes, 3);
 
-			const std::array<Eigen::Vector2d, 4> uv = {
+			const std::array<Eigen::Vector2d, 4> uv = {{
 				Eigen::Vector2d(1.0 / 3.0, 1.0 / 3.0),
 				Eigen::Vector2d(1.0 / 3.0, 2.0 / 3.0),
 				Eigen::Vector2d(2.0 / 3.0, 1.0 / 3.0),
 				Eigen::Vector2d(2.0 / 3.0, 2.0 / 3.0),
-			};
+			}};
 
 			std::array<bool, 4> used = {{false, false, false, false}};
 
