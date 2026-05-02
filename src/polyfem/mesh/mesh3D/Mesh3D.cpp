@@ -418,7 +418,28 @@ namespace polyfem
 					xv = i * hk * (1.0 - zv);
 					yv = j * hk * (1.0 - zv);
 				}
-				return std::make_pair(RowVectorNd{{xv, yv, zv}}, -1);
+
+				const auto vids = get_ordered_vertices_from_pyramid(index.element);
+				const auto v0 = point(vids[0]);
+				const auto v1 = point(vids[1]);
+				const auto v2 = point(vids[2]);
+				const auto v3 = point(vids[3]);
+				const auto v4 = point(vids[4]);
+
+				const double x = xv;
+				const double y = yv;
+				const double z = zv;
+				const double one_minus_z = 1.0 - z;
+
+				const double N0 = (one_minus_z * (one_minus_z - x - y) + x * y) / one_minus_z;
+				const double N1 = x * (one_minus_z - y) / one_minus_z;
+				const double N2 = x * y / one_minus_z;
+				const double N3 = y * (one_minus_z - x) / one_minus_z;
+				const double N4 = z;
+
+				const RowVectorNd node = N0 * v0 + N1 * v1 + N2 * v2 + N3 * v3 + N4 * v4;
+
+				return std::make_pair(node, -1);
 			}
 
 			assert(false);
