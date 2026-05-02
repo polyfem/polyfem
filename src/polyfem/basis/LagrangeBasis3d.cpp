@@ -713,7 +713,7 @@ namespace
 		assert(res.size() == size_t(6 + n_edge_nodes + n_face_nodes + n_cell_nodes));
 	}
 
-	void pyramid_local_to_global(const int p, const Mesh3D &mesh, int c, const Eigen::VectorXi &discr_order, std::vector<int> &res, MeshNodes &nodes)
+	void pyramid_local_to_global(const bool is_geom_bases, const int p, const Mesh3D &mesh, int c, const Eigen::VectorXi &discr_order, std::vector<int> &res, MeshNodes &nodes)
 	{
 		assert(mesh.is_pyramid(c));
 
@@ -801,11 +801,27 @@ namespace
 		assert(res.size() == size_t(5));
 
 		// Edges
+
 		for (int le = 0; le < e.rows(); ++le)
 		{
 			const auto index = e[le];
-			auto node_ids = nodes.node_ids_from_edge(index, p - 1);
-			res.insert(res.end(), node_ids.begin(), node_ids.end());
+
+			auto neighs = mesh.edge_neighs(index.edge);
+			int min_p = discr_order.size() > 0 ? discr_order(c) : 0;
+
+			for (auto cid : neighs)
+				min_p = std::min(min_p, discr_order.size() > 0 ? discr_order(cid) : 0);
+
+			if (!is_geom_bases && discr_order.size() > 0 && discr_order(c) > min_p)
+			{
+				for (int tmp = 0; tmp < p - 1; ++tmp)
+					res.push_back(-le - 10);
+			}
+			else
+			{
+				auto node_ids = nodes.node_ids_from_edge(index, p - 1);
+				res.insert(res.end(), node_ids.begin(), node_ids.end());
+			}
 		}
 		assert(res.size() == size_t(5 + n_edge_nodes));
 
@@ -813,10 +829,26 @@ namespace
 		for (int lf = 0; lf < f.rows(); ++lf)
 		{
 			const auto index = f[lf];
+			const auto other_cell = mesh.switch_element(index).element;
+			const bool skip_other = discr_order.size() > 0 && other_cell >= 0 && discr_order(c) > discr_order(other_cell);
+			const bool is_tri_face = lf < 4;
 
-			int n_loc_face = (lf < 4) ? (p - 2) : (p - 1);
-			auto node_ids = nodes.node_ids_from_face(index, n_loc_face);
-			res.insert(res.end(), node_ids.begin(), node_ids.end());
+			if (!is_geom_bases && skip_other)
+			{
+				const int nn = is_tri_face ? (p > 2 ? (p - 2) : 0) : (p - 1);
+				const int n_loc_face = is_tri_face ? (nn * (nn + 1) / 2) : (nn * nn);
+
+				for (int tmp = 0; tmp < n_loc_face; ++tmp)
+					res.push_back(-lf - 1);
+				continue;
+			}
+			else
+			{
+				const int n_loc_face = is_tri_face ? (p > 2 ? (p - 2) : 0) : (p - 1);
+
+				auto node_ids = nodes.node_ids_from_face(index, n_loc_face);
+				res.insert(res.end(), node_ids.begin(), node_ids.end());
+			}
 		}
 		assert(res.size() == size_t(5 + n_edge_nodes + n_face_nodes));
 
@@ -972,7 +1004,7 @@ namespace
 			// todo non conforming prisms
 			else if (mesh.is_pyramid(c))
 			{
-				pyramid_local_to_global(discr_order, mesh, c, discr_ordersp, element_nodes_id[c], nodes);
+				pyramid_local_to_global(is_geom_bases, discr_order, mesh, c, discr_ordersp, element_nodes_id[c], nodes);
 
 				auto v = pyramid_vertices_local_to_global(mesh, c);
 				Eigen::Matrix<int, 4, 3> fvt;
