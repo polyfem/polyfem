@@ -68,10 +68,10 @@ index da8ee66..c1b0c21 100644
          return new_energy < old_energy;
      }
 diff --git a/src/polysolve/nonlinear/line_search/LineSearch.cpp b/src/polysolve/nonlinear/line_search/LineSearch.cpp
-index a9be577..9b8f0b2 100644
+index a9be577..978f5df 100644
 --- a/src/polysolve/nonlinear/line_search/LineSearch.cpp
 +++ b/src/polysolve/nonlinear/line_search/LineSearch.cpp
-@@ -16,9 +16,74 @@
+@@ -16,9 +16,84 @@
  #endif
  
  #include <cfenv>
@@ -124,6 +124,16 @@ index a9be577..9b8f0b2 100644
 +                alpha *= 1.1;
 +            }
 +
++            {
++                Eigen::VectorXd y = x + dx * max_step_size;
++                objFunc.solution_changed(y);
++
++                alphas.push_back(max_step_size);
++                values.push_back(objFunc.value(y));
++                objFunc.gradient(y, grad);
++                grad_norms.push_back(grad.norm());
++            }
++
 +            objFunc.solution_changed(x);
 +            {
 +                std::ofstream csv("line_search_profile.csv");
@@ -146,7 +156,7 @@ index a9be577..9b8f0b2 100644
      static constexpr double NaN = std::numeric_limits<double>::quiet_NaN();
  
      std::shared_ptr<LineSearch> LineSearch::create(const json &params, spdlog::logger &logger)
-@@ -73,6 +138,9 @@ namespace polysolve::nonlinear::line_search
+@@ -73,6 +148,9 @@ namespace polysolve::nonlinear::line_search
          // ----------------
          // Begin linesearch
          // ----------------
@@ -156,7 +166,7 @@ index a9be577..9b8f0b2 100644
          double initial_energy, step_size;
          TVector initial_grad;
          {
-@@ -145,6 +213,7 @@ namespace polysolve::nonlinear::line_search
+@@ -145,6 +223,7 @@ namespace polysolve::nonlinear::line_search
              step_size = compute_descent_step_size(x, delta_x, objFunc, use_grad_norm, initial_energy, initial_grad, step_size);
              if (std::isnan(step_size))
              {
@@ -164,7 +174,7 @@ index a9be577..9b8f0b2 100644
                  // Superclass::save_sampled_values("failed-line-search-values.csv", x, delta_x, objFunc);
                  return NaN;
              }
-@@ -166,6 +235,16 @@ namespace polysolve::nonlinear::line_search
+@@ -166,6 +245,16 @@ namespace polysolve::nonlinear::line_search
              assert(abs(initial_energy - objFunc(x)) < 1e-15);
  
              objFunc.line_search_end();
