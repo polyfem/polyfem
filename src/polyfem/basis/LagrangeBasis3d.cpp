@@ -224,6 +224,37 @@ namespace
 		return l2g;
 	}
 
+	int prism_edge_order(int cid, int edge_id,
+						 const Eigen::VectorXi &discr_ordersp, const Eigen::VectorXi &discr_ordersq,
+						 const Mesh3D &mesh)
+	{
+		if (!mesh.is_prism(cid))
+			return discr_ordersp(cid);
+
+		const auto pv = prism_vertices_local_to_global(mesh, cid);
+
+		Eigen::Matrix<int, 9, 2> pev;
+		pev.row(0) << pv[0], pv[1];
+		pev.row(1) << pv[1], pv[2];
+		pev.row(2) << pv[2], pv[0];
+		pev.row(3) << pv[3], pv[4];
+		pev.row(4) << pv[4], pv[5];
+		pev.row(5) << pv[5], pv[3];
+		pev.row(6) << pv[0], pv[3];
+		pev.row(7) << pv[1], pv[4];
+		pev.row(8) << pv[2], pv[5];
+
+		for (int le = 0; le < 9; ++le)
+		{
+			const auto pidx = mesh.get_index_from_element_edge(cid, pev(le, 0), pev(le, 1));
+			if (pidx.edge == edge_id)
+				return le < 6 ? discr_ordersp(cid) : discr_ordersq(cid);
+		}
+
+		assert(false);
+		return discr_ordersp(cid);
+	};
+
 	int lowest_order_elem_on_edge(const polyfem::mesh::NCMesh3D &mesh, const Eigen::VectorXi &discr_orders, const int eid)
 	{
 		auto elem_list = mesh.edge_neighs(eid);
@@ -713,8 +744,10 @@ namespace
 		assert(res.size() == size_t(6 + n_edge_nodes + n_face_nodes + n_cell_nodes));
 	}
 
-	void pyramid_local_to_global(const bool is_geom_bases, const int p, const Mesh3D &mesh, int c, const Eigen::VectorXi &discr_order, std::vector<int> &res, MeshNodes &nodes)
+	void pyramid_local_to_global(const bool is_geom_bases, const int p, const Mesh3D &mesh, int c, const Eigen::VectorXi &discr_order, const Eigen::VectorXi &discr_ordersq, std::vector<int> &res, MeshNodes &nodes)
 	{
+		// discr_ordersq is only used for non conforming bases!!!!
+
 		assert(mesh.is_pyramid(c));
 
 		if (p == 0)
@@ -810,7 +843,7 @@ namespace
 			int min_p = discr_order.size() > 0 ? discr_order(c) : 0;
 
 			for (auto cid : neighs)
-				min_p = std::min(min_p, discr_order.size() > 0 ? discr_order(cid) : 0);
+				min_p = std::min(min_p, prism_edge_order(cid, index.edge, discr_order, discr_ordersq, mesh));
 
 			if (!is_geom_bases && discr_order.size() > 0 && discr_order(c) > min_p)
 			{
@@ -830,8 +863,10 @@ namespace
 		{
 			const auto index = f[lf];
 			const auto other_cell = mesh.switch_element(index).element;
-			const bool skip_other = discr_order.size() > 0 && other_cell >= 0 && discr_order(c) > discr_order(other_cell);
 			const bool is_tri_face = lf < 4;
+
+			const bool skip_other =
+				other_cell >= 0 && (discr_order(c) > discr_order(other_cell) || (!is_tri_face && mesh.is_prism(other_cell) && discr_order(c) > discr_ordersq(other_cell)));
 
 			if (!is_geom_bases && skip_other)
 			{
@@ -1004,7 +1039,7 @@ namespace
 			// todo non conforming prisms
 			else if (mesh.is_pyramid(c))
 			{
-				pyramid_local_to_global(is_geom_bases, discr_order, mesh, c, discr_ordersp, element_nodes_id[c], nodes);
+				pyramid_local_to_global(is_geom_bases, discr_order, mesh, c, discr_ordersp, discr_ordersq, element_nodes_id[c], nodes);
 
 				auto v = pyramid_vertices_local_to_global(mesh, c);
 				Eigen::Matrix<int, 4, 3> fvt;
@@ -3440,6 +3475,181 @@ int LagrangeBasis3d::build_bases(
 					}
 					else if (mesh.is_pyramid(e))
 					{
+						for (int j = 0; j < n_el_bases; ++j)
+						{
+							const int global_index = element_nodes_id[e][j];
+
+							if (global_index >= 0)
+							{
+								b.bases[j].init(discr_order, global_index, j, nodes.node_position(global_index));
+							}
+							else
+							{
+								const int lnn = discr_order - 1;
+								const int ln_edge_nodes = discr_order - 1;
+								const int ln_face_nodes = lnn * lnn;
+
+								const auto v = pyramid_vertices_local_to_global(mesh, e);
+								Navigation3D::Index index;
+								if (global_index <= -30)
+								{
+									assert(false);
+								}
+								else if (global_index <= -10)
+								{
+									const int le = -(global_index + 10);
+									assert(le >= 0 && le < 4);
+									assert(j >= 5 && j < 5 + 8 * ln_edge_nodes);
+
+									Eigen::Matrix<int, 4, 2> ev;
+									ev.row(0) << v[0], v[1];
+									ev.row(1) << v[1], v[2];
+									ev.row(2) << v[2], v[3];
+									ev.row(3) << v[3], v[0];
+
+									const auto edge_index = mesh.get_index_from_element_edge(e, ev(le, 0), ev(le, 1));
+									auto neighs = mesh.edge_neighs(edge_index.edge);
+									int min_p = discr_order;
+									int min_cell = edge_index.element;
+
+									for (auto cid : neighs)
+									{
+										const int cid_order =
+											prism_edge_order(cid, edge_index.edge, discr_ordersp, discr_ordersq, mesh);
+
+										if (cid_order < min_p)
+										{
+											min_p = cid_order;
+											min_cell = cid;
+										}
+									}
+
+									bool found = false;
+									if (mesh.is_prism(min_cell))
+									{
+										for (int lf = 0; lf < 5; ++lf) // loop only 2 faces
+										{
+											for (int lv = 0; lv < 5; ++lv) // quad face 4 vertices + 1 dummmy
+											{
+												index = mesh.get_index_from_element(min_cell, lf, lv); // correct for all elem types
+												if (index.vertex == edge_index.vertex)
+												{
+													if (index.edge != edge_index.edge)
+													{
+														auto tmp = index;
+														index = mesh.switch_edge(tmp);
+
+														if (index.edge != edge_index.edge)
+														{
+															index = mesh.switch_edge(mesh.switch_face(tmp));
+														}
+													}
+													found = true;
+													break;
+												}
+											}
+											if (found)
+												break;
+										}
+
+										if (mesh.n_face_vertices(index.face) == 3)
+											index = mesh.switch_face(index); // switch to quad face
+
+										assert(mesh.n_face_vertices(index.face) == 4);
+										assert(found);
+										assert(index.vertex == edge_index.vertex && index.edge == edge_index.edge);
+										assert(index.element != edge_index.element);
+									}
+									else
+									{
+										assert(false);
+									}
+								}
+								else
+								{
+									const auto lf = -(global_index + 1);
+									assert(lf == 4);
+
+									index = mesh.switch_element(find_quad_face(mesh, e, v[0], v[1], v[2], v[3]));
+								}
+
+								const auto other_cell = index.element;
+								assert(other_cell >= 0);
+
+								Eigen::VectorXi indices;
+								Eigen::MatrixXd lnodes;
+								Eigen::RowVector3d node_position; // = lnodes.row(indices(ii));
+
+								if (mesh.is_prism(other_cell))
+								{
+									assert(
+										(global_index <= -10 && discr_order > prism_edge_order(other_cell, index.edge, discr_ordersp, discr_ordersq, mesh))
+										|| (global_index > -10 && (discr_order > discr_ordersp(other_cell) || discr_order > discr_ordersq(other_cell))));
+
+									indices = prism_face_local_nodes(discr_order, discr_order, mesh, index);
+									autogen::prism_nodes_3d(discr_order, discr_order, lnodes);
+								}
+								else
+								{
+									assert(false);
+								}
+
+								const int tri_face_nodes = (discr_order - 1) * (discr_order - 2) / 2;
+								const int quad_face_start = 5 + 8 * ln_edge_nodes + 4 * tri_face_nodes;
+
+								if (j < 5)
+									node_position = lnodes.row(indices(0));
+								else if (j < 5 + 8 * ln_edge_nodes)
+								{
+									const int le = -(global_index + 10);
+									const int edge_offset = j - (5 + le * ln_edge_nodes);
+									assert(j >= 5 + le * ln_edge_nodes);
+									assert(j < 5 + (le + 1) * ln_edge_nodes);
+
+									// we are on a quad face
+									node_position = lnodes.row(indices(4 + edge_offset));
+								}
+								else if (j >= quad_face_start && j < quad_face_start + ln_face_nodes)
+								{
+									auto me_indices = pyramid_face_local_nodes(discr_order, mesh, mesh.switch_element(index));
+									int ii;
+									for (ii = 0; ii < me_indices.size(); ++ii)
+									{
+										if (me_indices(ii) == j)
+											break;
+									}
+
+									assert(ii >= 4 + 4 * ln_edge_nodes);
+									assert(ii < me_indices.size());
+
+									node_position = lnodes.row(indices(ii));
+								}
+								else
+									assert(false);
+
+								const auto &other_bases = bases[other_cell];
+								// Eigen::MatrixXd w;
+								std::vector<AssemblyValues> w;
+								other_bases.evaluate_bases(node_position, w);
+
+								assert(b.bases[j].global().size() == 0);
+
+								for (long i = 0; i < w.size(); ++i)
+								{
+									assert(w[i].val.size() == 1);
+									if (std::abs(w[i].val(0)) < 1e-8)
+										continue;
+
+									// assert(other_bases.bases[i].global().size() == 1);
+									for (size_t ii = 0; ii < other_bases.bases[i].global().size(); ++ii)
+									{
+										const auto &other_global = other_bases.bases[i].global()[ii];
+										// logger().trace("e {} j {} gid {}", e, j, other_global.index);
+										b.bases[j].global().emplace_back(other_global.index, other_global.node, w[i].val(0) * other_global.val);
+									}
+								}
+							}
+						}
 					}
 					else
 					{
