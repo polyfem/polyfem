@@ -2428,8 +2428,7 @@ namespace polyfem::io
 				friction_collision_set.build(
 					collision_mesh, displaced_surface, ho_collision_set,
 					ho_form_for_forces->get_params(), barrier_stiffness,
-					mu_vec, mu_vec,
-					ho_form_for_forces->barrier_potential().get_normalize_weights());
+					mu_vec, mu_vec);
 			}
 			else if (smooth_form_for_forces)
 			{
