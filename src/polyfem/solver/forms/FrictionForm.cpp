@@ -143,7 +143,7 @@ namespace polyfem::solver
 			ipc::HighOrderCollisions collision_set;
 			collision_set.build(
 				collision_mesh_, displaced_surface, ho_contact->get_params(),
-				/*use_adaptive_dhat=*/false, broad_phase.get());
+				ho_contact->get_adaptive_support().get(), broad_phase.get());
 
 			friction_collision_set_.build(
 				collision_mesh_, displaced_surface, collision_set,

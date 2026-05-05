@@ -84,6 +84,7 @@ namespace polyfem::solver
 											   const json high_order_contact_params,
 											   const bool skip_obstacles,
 											   std::shared_ptr<ipc::Barrier> barrier,
+											   const bool use_adaptive_dhat,
 											   const bool use_adaptive_barrier_stiffness,
 											   const bool is_time_dependent,
 											   const bool enable_shape_derivatives,
@@ -91,8 +92,13 @@ namespace polyfem::solver
 											   const double ccd_tolerance,
 											   const int ccd_max_iterations,
 											   const double dhat_epsilon_scale) : ContactForm(collision_mesh, dhat, avg_mass, use_adaptive_barrier_stiffness, is_time_dependent, enable_shape_derivatives, broad_phase_method, ccd_tolerance, ccd_max_iterations, dhat_epsilon_scale), params(init_params(dhat, high_order_contact_params, skip_obstacles, barrier, static_cast<int>(collision_mesh.dim()))),
-											   barrier_potential_(params, high_order_contact_params["normalize_weights"])
+											   barrier_potential_(params, high_order_contact_params["normalize_weights"]), use_adaptive_dhat_(use_adaptive_dhat)
 	{
+		// Compute adaptive support at rest configuration if enabled
+		if (use_adaptive_dhat_) {
+			adaptive_support_ = ipc::HighOrderCollisions::compute_adaptive_dhat(
+				collision_mesh, collision_mesh.rest_positions(), params);
+		}
 	}
 
 	void HighOrderContactForm::update_barrier_stiffness(const Eigen::VectorXd &x, const Eigen::MatrixXd &grad_energy)
@@ -116,7 +122,7 @@ namespace polyfem::solver
 			return;
 
 		collision_set_.build(
-			collision_mesh_, displaced_surface, params, /*use_adaptive_dhat*/ false, broad_phase_.get());
+			collision_mesh_, displaced_surface, params, adaptive_support_.get(), broad_phase_.get());
 		cached_displaced_surface = displaced_surface;
 	}
 

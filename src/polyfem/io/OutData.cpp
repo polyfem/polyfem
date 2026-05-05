@@ -2308,7 +2308,7 @@ namespace polyfem::io
 			auto broad_phase = ipc::create_broad_phase(state.args["solver"]["contact"]["CCD"]["broad_phase"]);
 			ho_collision_set.build(
 				collision_mesh, displaced_surface, ho_form_for_forces->get_params(),
-				/*use_adaptive_dhat=*/false, broad_phase.get());
+				ho_form_for_forces->get_adaptive_support().get(), broad_phase.get());
 		}
 		else if (need_any && smooth_form_for_forces)
 		{
@@ -2372,7 +2372,20 @@ namespace polyfem::io
 			}
 		}
 
-		if (contact_form && state.args["contact"]["use_gcp_formulation"] && state.args["contact"]["use_adaptive_dhat"] && opts.export_field("adaptive_dhat"))
+		if (ho_form_for_forces && ho_form_for_forces->using_adaptive_dhat() && state.args["contact"]["use_adaptive_dhat"] && opts.export_field("adaptive_dhat"))
+		{
+			const auto adaptive_support = ho_form_for_forces->get_adaptive_support();
+			if (adaptive_support)
+			{
+				Eigen::VectorXd vdhats(collision_mesh.num_vertices());
+				for (int i = 0; i < vdhats.size(); i++)
+					vdhats(i) = adaptive_support->vertex(i);
+
+				writer.add_field("adaptive_dhat", vdhats);
+			}
+			else throw std::logic_error("Adaptive dhat active but no AdaptiveSupport instance found");
+		}
+		else if (contact_form && state.args["contact"]["use_gcp_formulation"] && state.args["contact"]["use_adaptive_dhat"] && opts.export_field("adaptive_dhat"))
 		{
 			const auto form = std::dynamic_pointer_cast<solver::SmoothContactForm>(contact_form);
 			assert(form);

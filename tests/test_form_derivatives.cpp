@@ -432,7 +432,7 @@ TEST_CASE("high-order contact friction form derivatives", "[form][form_derivativ
 
 	const HighOrderContactForm contact_form(
 		state_ptr->collision_mesh, dhat, state_ptr->avg_mass, ho_params, /*skip_obstacles=*/false, /*barrier=*/nullptr,
-		use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
+		/*use_adaptive_dhat=*/false, use_adaptive_barrier_stiffness, is_time_dependent, false, broad_phase_method,
 		ccd_tolerance, ccd_max_iterations, /*dhat_epsilon_scale=*/1e-7);
 
 	FrictionForm form(

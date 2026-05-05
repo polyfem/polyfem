@@ -421,7 +421,7 @@ namespace polyfem::solver
 				else if (use_high_order_formulation)
 				{
 					contact_form = std::make_shared<HighOrderContactForm>(
-						collision_mesh, dhat, avg_mass, high_order_contact_params, skip_obstacles, barrier_from_string(barrier), use_adaptive_barrier_stiffness, is_time_dependent,
+						collision_mesh, dhat, avg_mass, high_order_contact_params, skip_obstacles, barrier_from_string(barrier), use_adaptive_dhat, use_adaptive_barrier_stiffness, is_time_dependent,
 						enable_shape_derivatives, broad_phase, ccd_tolerance * units.characteristic_length(), ccd_max_iterations, dhat_epsilon_scale);
 				}
 				else
