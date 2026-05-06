@@ -78,6 +78,7 @@ target_compile_definitions(unit_tests PUBLIC CATCH_CONFIG_ENABLE_BENCHMARKING)
 ################################################################################
 add_executable(contact_discontinuity_repro contact_discontinuity_repro.cpp)
 target_link_libraries(contact_discontinuity_repro PRIVATE polyfem::polyfem)
+target_compile_definitions(contact_discontinuity_repro PRIVATE -DPOLYFEM_TEST_DIR=\"${CMAKE_SOURCE_DIR}/tests\")
 
 FetchContent_GetProperties(catch2)
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)

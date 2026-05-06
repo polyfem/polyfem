@@ -154,11 +154,13 @@ struct Side {
 
 int main(int argc, char** argv)
 {
-	if (argc < 2) {
-		std::cerr << "Usage: " << argv[0] << " <dump_dir>\n";
-		return 1;
-	}
-	const std::string dir = argv[1];
+#ifndef POLYFEM_TEST_DIR
+#define POLYFEM_TEST_DIR "."
+#endif
+	const std::string dir = (argc >= 2)
+		? std::string(argv[1])
+		: std::string(POLYFEM_TEST_DIR) + "/data/ho_contact_discontinuity";
+	std::cout << "[dump_dir] " << dir << "\n";
 
 	Eigen::MatrixXd V = read_mat_bin<double>(dir + "/rest_V.bin");
 	Eigen::MatrixXi E = read_mat_bin<int>(dir + "/rest_E.bin");
