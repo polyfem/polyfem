@@ -73,6 +73,12 @@ target_compile_definitions(unit_tests PUBLIC CATCH_CONFIG_ENABLE_BENCHMARKING)
 # Register tests
 ################################################################################
 
+################################################################################
+# Standalone HO-contact discontinuity repro
+################################################################################
+add_executable(contact_discontinuity_repro contact_discontinuity_repro.cpp)
+target_link_libraries(contact_discontinuity_repro PRIVATE polyfem::polyfem)
+
 FetchContent_GetProperties(catch2)
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 include(Catch)
