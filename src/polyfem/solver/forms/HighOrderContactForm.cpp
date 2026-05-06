@@ -12,86 +12,9 @@
 #include <ipc/utils/world_bbox_diagonal_length.hpp>
 #include <ipc/barrier/barrier.hpp>
 
-#include <cstdlib>
-#include <fstream>
-#include <typeinfo>
-#include <filesystem>
-
 namespace polyfem::solver
 {
 	namespace {
-		// HO_CONTACT_DUMP: dump CollisionMesh + displaced + params when env vars set.
-		// Triggered by HO_CONTACT_DUMP_DIR (output dir) and HO_CONTACT_DUMP_TAG (file suffix).
-		// Writes per-dump: displaced_<tag>.bin + params_<tag>.json.
-		// Writes once: rest_V.bin, rest_E.bin, rest_F.bin.
-		template <typename Scalar>
-		void dump_matrix_bin(const std::string& path, const Eigen::Matrix<Scalar, -1, -1>& M)
-		{
-			std::ofstream f(path, std::ios::binary);
-			int32_t r = (int32_t)M.rows(), c = (int32_t)M.cols();
-			f.write((const char*)&r, sizeof(int32_t));
-			f.write((const char*)&c, sizeof(int32_t));
-			// Write row-major so the layout is independent of Eigen's storage order.
-			for (int i = 0; i < r; i++)
-				for (int j = 0; j < c; j++) {
-					Scalar v = M(i, j);
-					f.write((const char*)&v, sizeof(Scalar));
-				}
-		}
-
-		void dump_ho_contact_state(
-			const ipc::CollisionMesh& mesh,
-			const Eigen::MatrixXd& displaced,
-			const ipc::HighOrderContactParameters& params,
-			const ipc::HighOrderCollisions& collision_set,
-			const double barrier_stiffness)
-		{
-			const char* dir_env = std::getenv("HO_CONTACT_DUMP_DIR");
-			const char* tag_env = std::getenv("HO_CONTACT_DUMP_TAG");
-			if (!dir_env || !tag_env) return;
-			const std::string dir = dir_env;
-			const std::string tag = tag_env;
-			std::filesystem::create_directories(dir);
-
-			// rest mesh — written once per dir
-			const std::string rest_marker = dir + "/rest.done";
-			if (!std::filesystem::exists(rest_marker)) {
-				dump_matrix_bin<double>(dir + "/rest_V.bin", mesh.rest_positions());
-				Eigen::MatrixXi E = mesh.edges();
-				Eigen::MatrixXi F = mesh.faces();
-				dump_matrix_bin<int>(dir + "/rest_E.bin", E);
-				dump_matrix_bin<int>(dir + "/rest_F.bin", F);
-				std::ofstream(rest_marker).close();
-			}
-
-			dump_matrix_bin<double>(dir + "/displaced_" + tag + ".bin", displaced);
-
-			// params + per-call diagnostics
-			std::ofstream pj(dir + "/params_" + tag + ".json");
-			pj << "{\n";
-			pj << "  \"dhat\": " << params.dhat << ",\n";
-			pj << "  \"dbar\": " << params.dbar << ",\n";
-			pj << "  \"dbar_factor\": " << params.dbar_factor() << ",\n";
-			pj << "  \"quad_order\": " << params.quad_order << ",\n";
-			pj << "  \"ogc_collisions\": " << (params.ogc_collisions ? "true" : "false") << ",\n";
-			pj << "  \"area_weights\": " << (params.area_weights ? "true" : "false") << ",\n";
-			pj << "  \"integration_type\": " << static_cast<int>(params.integration_type) << ",\n";
-			pj << "  \"barrier_stiffness\": " << barrier_stiffness << ",\n";
-			pj << "  \"barrier_type\": \"" << (params.barrier ? typeid(*params.barrier).name() : "null") << "\",\n";
-			pj << "  \"num_collisions\": " << collision_set.size() << ",\n";
-			pj << "  \"num_candidates\": " << collision_set.n_candidates() << "\n";
-			pj << "}\n";
-			pj.close();
-
-			// per-collision text summary (best-effort; uses ipc-toolkit's to_string).
-			try {
-				std::ofstream cs(dir + "/collisions_" + tag + ".txt");
-				cs << collision_set.to_string(mesh, displaced, params);
-			} catch (...) { /* to_string may throw; not fatal */ }
-
-			polyfem::logger().warn("[HO_CONTACT_DUMP] tag={} dir={} ncollisions={}", tag, dir, collision_set.size());
-		}
-
 		ipc::FaceQuadRule build_quad_rule(const int order)
 		{
 			polyfem::quadrature::Quadrature quad;
@@ -226,8 +149,6 @@ namespace polyfem::solver
 		}
 		gradv = barrier_potential_.gradient(collision_set_, collision_mesh_, displaced);
 		gradv = collision_mesh_.to_full_dof(gradv);
-
-		dump_ho_contact_state(collision_mesh_, displaced, params, collision_set_, barrier_stiffness());
 	}
 
 	void HighOrderContactForm::second_derivative_unweighted(const Eigen::VectorXd &x, StiffnessMatrix &hessian) const
