@@ -3,10 +3,10 @@
         "enabled": true,
         "dhat": 0.001,
         "use_high_order_formulation": true,
+        "barrier": "normalized_log",
         "high_order_contact_params": {
             "normalize_weights": false,
-            "quadrature_order": 0,
-            "barrier": "normalized_log"
+            "quadrature_order": 0
         }
     },
     "solver": {
