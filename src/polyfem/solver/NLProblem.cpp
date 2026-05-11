@@ -352,6 +352,8 @@ namespace polyfem::solver
 
 	void NLProblem::update_constraint_values()
 	{
+		if (penalty_forms_.empty())
+			return;
 		if (penalty_forms_.size() == 1 && penalty_forms_.front()->has_projection())
 		{
 			Q1R1iTb_ = penalty_forms_.front()->constraint_projection_vector();
