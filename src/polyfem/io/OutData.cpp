@@ -3458,6 +3458,43 @@ namespace polyfem::io
 		file.flush();
 	}
 
+	GradientNormCSVWriter::GradientNormCSVWriter(const std::string &path, const solver::SolveData &solve_data)
+		: file(path), solve_data(solve_data)
+	{
+		file << "i";
+		for (const auto &[name, _] : solve_data.named_forms())
+		{
+			file << "," << name;
+		}
+		file << ",total" << std::endl;
+	}
+
+	GradientNormCSVWriter::~GradientNormCSVWriter()
+	{
+		file.close();
+	}
+
+	void GradientNormCSVWriter::write(const int i, const Eigen::MatrixXd &sol)
+	{
+		const Eigen::VectorXd x = sol.col(0);
+		Eigen::VectorXd grad, total = Eigen::VectorXd::Zero(x.size());
+		file << i;
+		for (const auto &[_, form] : solve_data.named_forms())
+		{
+			double n = 0;
+			if (form && form->enabled())
+			{
+				form->solution_changed(x);
+				form->first_derivative(x, grad);
+				n = grad.norm();
+				total += grad;
+			}
+			file << "," << n;
+		}
+		file << "," << total.norm() << "\n";
+		file.flush();
+	}
+
 	ContactPotentialCSVWriter::ContactPotentialCSVWriter(const std::string &path, const solver::SolveData &solve_data)
 		: file(path), solve_data(solve_data)
 	{

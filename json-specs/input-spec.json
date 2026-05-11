@@ -2354,7 +2354,8 @@
             "data",
             "advanced",
             "reference",
-            "stats"
+            "stats",
+            "gradient_norm"
         ],
         "doc": "output settings"
     },
@@ -2381,6 +2382,12 @@
         "default": "",
         "type": "string",
         "doc": "File name for JSON output statistics on time/error/etc."
+    },
+    {
+        "pointer": "/output/gradient_norm",
+        "default": "",
+        "type": "string",
+        "doc": "If non-empty, path to a CSV that receives the L2 norm of each Form's gradient at every saved timestep."
     },
     {
         "pointer": "/output/restart_json",

@@ -586,6 +586,8 @@ namespace polyfem
 		std::string output_dir;
 		/// visualization stuff
 		io::OutGeometryData out_geom;
+		/// CSV writer for per-Form gradient norms (lazy-initialized from args["output"]["gradient_norm"])
+		std::unique_ptr<io::GradientNormCSVWriter> gradient_norm_csv;
 		/// runtime statistics
 		io::OutRuntimeData timings;
 		/// Other statistics
