@@ -521,7 +521,7 @@ namespace polyfem::io
 	class GradientNormCSVWriter
 	{
 	public:
-		GradientNormCSVWriter(const std::string &path, const solver::SolveData &solve_data, const mesh::Mesh &mesh);
+		GradientNormCSVWriter(const std::string &path, const solver::SolveData &solve_data, const ipc::CollisionMesh &collision_mesh, const int n_obstacle_vertices);
 		~GradientNormCSVWriter();
 
 		void write(const int i, const Eigen::MatrixXd &sol);
@@ -529,7 +529,8 @@ namespace polyfem::io
 	protected:
 		std::ofstream file;
 		const solver::SolveData &solve_data;
-		const mesh::Mesh &mesh;
+		const ipc::CollisionMesh &collision_mesh_;
+		const int n_obstacle_vertices_;
 	};
 
 	class ContactPotentialCSVWriter

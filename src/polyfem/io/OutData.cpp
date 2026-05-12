@@ -3458,17 +3458,15 @@ namespace polyfem::io
 		file.flush();
 	}
 
-	GradientNormCSVWriter::GradientNormCSVWriter(const std::string &path, const solver::SolveData &solve_data, const mesh::Mesh &mesh)
-		: file(path), solve_data(solve_data), mesh(mesh)
+	GradientNormCSVWriter::GradientNormCSVWriter(const std::string &path, const solver::SolveData &solve_data, const ipc::CollisionMesh &collision_mesh, const int n_obstacle_vertices)
+		: file(path), solve_data(solve_data), collision_mesh_(collision_mesh), n_obstacle_vertices_(n_obstacle_vertices)
 	{
 		file << "i";
 		for (const auto &[name, _] : solve_data.named_forms())
 		{
 			file << "," << name;
 		}
-		file << ",total";
-
-		const int problem_dim = mesh.dimension();
+		const int problem_dim = collision_mesh_.dim();
 		file << ",total_contact";
 		if (problem_dim >= 1)
 			file << ",total_contact_x";
@@ -3504,16 +3502,31 @@ namespace polyfem::io
 			}
 			file << "," << n;
 		}
-		file << "," << total.norm();
+		const int problem_dim = collision_mesh_.dim();
+		const int num_collision_vertices = collision_mesh_.num_vertices();
 
-		const int problem_dim = mesh.dimension();
-
-		// Contact force statistics
-		Eigen::VectorXd contact_grad = Eigen::VectorXd::Zero(x.size());
+		// Contact force statistics (on collision-mesh DOFs)
+		Eigen::VectorXd contact_grad = Eigen::VectorXd::Zero(problem_dim * num_collision_vertices);
 		double contact_norm = 0;
 		if (solve_data.contact_form && solve_data.contact_form->enabled())
 		{
-			solve_data.contact_form->first_derivative(x, contact_grad);
+			Eigen::VectorXd contact_grad_full;
+			solve_data.contact_form->first_derivative(x, contact_grad_full);
+
+			// Revert collision_mesh_.to_full_dof: select collision DOFs from the full-DOF gradient.
+			// Obstacle vertices live at the tail of the full-DOF vertex list; zero them out so they
+			// do not contribute to the norm, component sums, or radial/tangential projections.
+			const Eigen::VectorXi &v2f = collision_mesh_.to_full_vertex_id();
+			const int obstacle_full_cutoff =
+				static_cast<int>(collision_mesh_.full_num_vertices()) - n_obstacle_vertices_;
+			for (int i = 0; i < num_collision_vertices; ++i)
+			{
+				if (v2f[i] >= obstacle_full_cutoff)
+					continue; // leave as zero
+				contact_grad.segment(problem_dim * i, problem_dim) =
+					contact_grad_full.segment(problem_dim * v2f[i], problem_dim);
+			}
+
 			contact_norm = contact_grad.norm();
 		}
 		file << "," << contact_norm;
@@ -3536,14 +3549,13 @@ namespace polyfem::io
 			if (problem_dim >= 3)
 				file << "," << contact_grad_components(2);
 
+			const Eigen::MatrixXd &rest_positions = collision_mesh_.rest_positions();
 			double contact_radial = 0, contact_tangential = 0;
 			for (int k = 0; k < contact_grad.size(); k += problem_dim)
 			{
-				const int dof_idx = k / problem_dim;
-				const auto pos = mesh.point(dof_idx);
-
-				const double x_pos = pos(0);
-				const double y_pos = pos(1);
+				const int i = k / problem_dim;
+				const double x_pos = rest_positions(i, 0);
+				const double y_pos = rest_positions(i, 1);
 				const double r = std::sqrt(x_pos * x_pos + y_pos * y_pos);
 
 				if (r > 1e-14)
