@@ -49,10 +49,10 @@ namespace polyfem
 	void State::save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure)
 	{
 		{
-			const std::string grad_norm_path = args["output"].value("gradient_norm", std::string(""));
+			const std::string grad_norm_path = args["output"].value("gradient_csv", std::string(""));
 			if (!grad_norm_path.empty() && !gradient_norm_csv && solve_data.nl_problem)
 				gradient_norm_csv = std::make_unique<io::GradientNormCSVWriter>(
-					resolve_output_path(grad_norm_path), solve_data);
+					resolve_output_path(grad_norm_path), solve_data, *mesh);
 			if (gradient_norm_csv)
 				gradient_norm_csv->write(t, sol);
 		}

@@ -3458,14 +3458,27 @@ namespace polyfem::io
 		file.flush();
 	}
 
-	GradientNormCSVWriter::GradientNormCSVWriter(const std::string &path, const solver::SolveData &solve_data)
-		: file(path), solve_data(solve_data)
+	GradientNormCSVWriter::GradientNormCSVWriter(const std::string &path, const solver::SolveData &solve_data, const mesh::Mesh &mesh)
+		: file(path), solve_data(solve_data), mesh(mesh)
 	{
 		file << "i";
 		for (const auto &[name, _] : solve_data.named_forms())
 		{
 			file << "," << name;
 		}
+		file << ",total";
+
+		const int problem_dim = mesh.dimension();
+		file << ",total_contact";
+		if (problem_dim >= 1)
+			file << ",total_contact_x";
+		if (problem_dim >= 2)
+			file << ",total_contact_y";
+		if (problem_dim >= 3)
+			file << ",total_contact_z";
+		if (problem_dim >= 2)
+			file << ",total_contact_radial,total_contact_tangential";
+
 		file << ",total" << std::endl;
 	}
 
@@ -3491,6 +3504,64 @@ namespace polyfem::io
 			}
 			file << "," << n;
 		}
+		file << "," << total.norm();
+
+		const int problem_dim = mesh.dimension();
+
+		// Contact force statistics
+		Eigen::VectorXd contact_grad = Eigen::VectorXd::Zero(x.size());
+		double contact_norm = 0;
+		if (solve_data.contact_form && solve_data.contact_form->enabled())
+		{
+			solve_data.contact_form->first_derivative(x, contact_grad);
+			contact_norm = contact_grad.norm();
+		}
+		file << "," << contact_norm;
+
+		if (problem_dim >= 2)
+		{
+			Eigen::VectorXd contact_grad_components = Eigen::VectorXd::Zero(problem_dim);
+			for (int k = 0; k < contact_grad.size(); k += problem_dim)
+			{
+				for (int d = 0; d < problem_dim; ++d)
+				{
+					contact_grad_components(d) += contact_grad(k + d);
+				}
+			}
+
+			if (problem_dim >= 1)
+				file << "," << contact_grad_components(0);
+			if (problem_dim >= 2)
+				file << "," << contact_grad_components(1);
+			if (problem_dim >= 3)
+				file << "," << contact_grad_components(2);
+
+			double contact_radial = 0, contact_tangential = 0;
+			for (int k = 0; k < contact_grad.size(); k += problem_dim)
+			{
+				const int dof_idx = k / problem_dim;
+				const auto pos = mesh.point(dof_idx);
+
+				const double x_pos = pos(0);
+				const double y_pos = pos(1);
+				const double r = std::sqrt(x_pos * x_pos + y_pos * y_pos);
+
+				if (r > 1e-14)
+				{
+					const double grad_x = contact_grad(k);
+					const double grad_y = contact_grad(k + 1);
+
+					const double radial = (grad_x * x_pos + grad_y * y_pos) / r;
+					const double tangential = (grad_x * (-y_pos) + grad_y * x_pos) / r;
+
+					contact_radial += radial;
+					contact_tangential += tangential;
+				}
+			}
+
+			file << "," << contact_radial << "," << contact_tangential;
+		}
+
 		file << "," << total.norm() << "\n";
 		file.flush();
 	}
