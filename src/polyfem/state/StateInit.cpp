@@ -15,6 +15,7 @@
 #include <polyfem/utils/JSONUtils.hpp>
 
 #include <jse/jse.h>
+#include <polyfem/embedded_spec/polyfem.hpp>
 
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -149,20 +150,7 @@ namespace polyfem
 		jse::JSE jse;
 		{
 			jse.strict = strict_validation;
-			const std::string polyfem_input_spec = POLYFEM_INPUT_SPEC;
-			std::ifstream file(polyfem_input_spec);
-
-			if (file.is_open())
-				file >> rules;
-			else
-			{
-				logger().error("unable to open {} rules", polyfem_input_spec);
-				throw std::runtime_error("Invalid spec file");
-			}
-
-			jse.include_directories.push_back(POLYFEM_JSON_SPEC_DIR);
-			jse.include_directories.push_back(POLYSOLVE_JSON_SPEC_DIR);
-			rules = jse.inject_include(rules);
+			rules = jse::embed::polyfem::spec();
 
 			polysolve::linear::Solver::apply_default_solver(rules, "/solver/linear");
 			polysolve::linear::Solver::apply_default_solver(rules, "/solver/adjoint_linear");

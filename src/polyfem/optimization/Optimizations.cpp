@@ -29,6 +29,8 @@
 #include <polysolve/nonlinear/BoxConstraintSolver.hpp>
 
 #include <jse/jse.h>
+#include <polyfem/embedded_spec/polyfem_opt.hpp>
+#include <polyfem/embedded_spec/polyfem_objective.hpp>
 
 #include <Eigen/Core>
 
@@ -151,19 +153,7 @@ namespace polyfem::solver
 		jse::JSE jse;
 		{
 			jse.strict = strict_validation;
-			std::ifstream file(POLYFEM_OPT_INPUT_SPEC);
-
-			if (file.is_open())
-				file >> rules;
-			else
-			{
-				logger().error("unable to open {} rules", POLYFEM_OPT_INPUT_SPEC);
-				throw std::runtime_error("Invalid spec file");
-			}
-
-			jse.include_directories.push_back(POLYFEM_JSON_SPEC_DIR);
-			jse.include_directories.push_back(POLYSOLVE_JSON_SPEC_DIR);
-			rules = jse.inject_include(rules);
+			rules = jse::embed::polyfem_opt::spec();
 
 			// polysolve::linear::Solver::apply_default_solver(rules, "/solver/linear");
 		}
@@ -180,19 +170,7 @@ namespace polyfem::solver
 
 		json args = jse.inject_defaults(args_in, rules);
 
-		json obj_rules;
-		{
-			const std::string polyfem_objective_spec = POLYFEM_OBJECTIVE_INPUT_SPEC;
-			std::ifstream file(polyfem_objective_spec);
-
-			if (file.is_open())
-				file >> obj_rules;
-			else
-			{
-				logger().error("unable to open {} rules", polyfem_objective_spec);
-				throw std::runtime_error("Invalid spec file");
-			}
-		}
+		const json obj_rules = jse::embed::polyfem_objective::spec();
 		apply_objective_json_spec(args["functionals"], obj_rules);
 
 		if (args.contains("stopping_conditions"))

@@ -154,12 +154,6 @@ if(POLYFEM_WITH_OPTIMIZATION)
     target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_OPTIMIZATION)
 endif()
 
-set(POLYFEM_JSON_SPEC_DIR "${PROJECT_SOURCE_DIR}/json-specs")
-target_compile_definitions(polyfem PUBLIC POLYFEM_JSON_SPEC_DIR="${POLYFEM_JSON_SPEC_DIR}")
-target_compile_definitions(polyfem PUBLIC POLYFEM_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/input-spec.json")
-target_compile_definitions(polyfem PUBLIC POLYFEM_OPT_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/opt-input-spec.json")
-target_compile_definitions(polyfem PUBLIC POLYFEM_OBJECTIVE_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/objective-spec.json")
-target_compile_definitions(polyfem PUBLIC POLYFEM_MATERIAL_INPUT_SPEC="${POLYFEM_JSON_SPEC_DIR}/material-parameters.json")
 
 if (MSVC)
     add_compile_options(/bigobj)
@@ -299,6 +293,40 @@ target_link_libraries(polyfem PUBLIC units::units)
 # YAML library
 include(yaml)
 target_link_libraries(polyfem PUBLIC yaml-cpp::yaml-cpp)
+
+
+
+################################################################################
+# JSON specifications
+################################################################################
+
+set(POLYFEM_JSON_SPEC_DIR "${PROJECT_SOURCE_DIR}/json-specs")
+
+jse_add_embedded_spec(
+	INPUT "${POLYFEM_JSON_SPEC_DIR}/input-spec.json"
+    INCLUDE_DIRS "${POLYSOLVE_JSON_SPEC_DIR}"
+	OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/src/polyfem/embedded_spec/polyfem.hpp"
+)
+
+jse_add_embedded_spec(
+	INPUT "${POLYFEM_JSON_SPEC_DIR}/opt-input-spec.json"
+    INCLUDE_DIRS "${POLYSOLVE_JSON_SPEC_DIR}"
+	OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/src/polyfem/embedded_spec/polyfem_opt.hpp"
+)
+
+jse_add_embedded_spec(
+	INPUT "${POLYFEM_JSON_SPEC_DIR}/objective-spec.json"
+    INCLUDE_DIRS "${POLYSOLVE_JSON_SPEC_DIR}"
+	OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/src/polyfem/embedded_spec/polyfem_objective.hpp"
+)
+
+jse_add_embedded_spec(
+    INPUT "${POLYFEM_JSON_SPEC_DIR}/material-parameters.json"
+    INCLUDE_DIRS "${POLYSOLVE_JSON_SPEC_DIR}"
+    OUTPUT "${CMAKE_CURRENT_SOURCE_DIR}/src/polyfem/embedded_spec/polyfem_material.hpp"
+)
+
+target_link_libraries(polyfem PUBLIC jse::embed)
 
 ################################################################################
 # Optional libraries
