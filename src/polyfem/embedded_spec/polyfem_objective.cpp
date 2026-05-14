@@ -1,5 +1,7 @@
 #include "polyfem_objective.hpp"
 
+#include <string>
+
 namespace jse
 {
 namespace embed
@@ -9,7 +11,10 @@ namespace polyfem_objective
 
 const nlohmann::json &spec()
 {
-    static const nlohmann::json value = nlohmann::json::parse(R"JSE_JSON(
+    static const nlohmann::json value = []() {
+        std::string text;
+        text.reserve(21833);
+        text += R"JSE_JSON(
 [
     {
         "doc": "TODO",
@@ -381,7 +386,8 @@ const nlohmann::json &spec()
         "type": "list"
     },
     {
-        "doc": "TODO",
+        "doc": "TOD)JSE_JSON";
+        text += R"JSE_JSON(O",
         "pointer": "/target/*",
         "type": "float"
     },
@@ -757,7 +763,8 @@ const nlohmann::json &spec()
         "type": "string"
     },
     {
-        "doc": "Pointwise max stress over the volume selection",
+        "doc": "Pointwise max stress over the volume selecti)JSE_JSON";
+        text += R"JSE_JSON(on",
         "optional": [
             "volume_selection",
             "weight",
@@ -1042,7 +1049,9 @@ const nlohmann::json &spec()
         "type_name": "min_jacobian"
     }
 ]
-)JSE_JSON");
+)JSE_JSON";
+        return nlohmann::json::parse(text);
+    }();
     return value;
 }
 

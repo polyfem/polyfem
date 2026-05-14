@@ -1,5 +1,7 @@
 #include "polyfem_opt.hpp"
 
+#include <string>
+
 namespace jse
 {
 namespace embed
@@ -9,7 +11,10 @@ namespace polyfem_opt
 
 const nlohmann::json &spec()
 {
-    static const nlohmann::json value = nlohmann::json::parse(R"JSE_JSON(
+    static const nlohmann::json value = []() {
+        std::string text;
+        text.reserve(44538);
+        text += R"JSE_JSON(
 [
     {
         "doc": "Root of the configuration file.",
@@ -291,7 +296,8 @@ const nlohmann::json &spec()
             "Linf"
         ],
         "pointer": "/solver/nonlinear/norm_type",
-        "type": "string"
+       )JSE_JSON";
+        text += R"JSE_JSON( "type": "string"
     },
     {
         "default": 500,
@@ -561,7 +567,8 @@ const nlohmann::json &spec()
         ],
         "type": "object",
         "type_name": "RegularizedProjectedNewton"
-    },
+    })JSE_JSON";
+        text += R"JSE_JSON(,
     {
         "doc": "Options for Newton.",
         "optional": [
@@ -854,7 +861,8 @@ const nlohmann::json &spec()
     {
         "default": 0.0001,
         "doc": "Armijo c parameter.",
-        "min_value": 0,
+      )JSE_JSON";
+        text += R"JSE_JSON(  "min_value": 0,
         "pointer": "/solver/nonlinear/line_search/Armijo/c",
         "type": "float"
     },
@@ -1138,7 +1146,8 @@ const nlohmann::json &spec()
         "type": "int"
     },
     {
-        "pointer": "/variable_to_simulation/*/state",
+   )JSE_JSON";
+        text += R"JSE_JSON(     "pointer": "/variable_to_simulation/*/state",
         "type": "list"
     },
     {
@@ -1410,7 +1419,8 @@ const nlohmann::json &spec()
         "type_name": "per-body-to-per-node"
     },
     {
-        "pointer": "/variable_to_simulation/*/composition/*",
+        "pointer": "/variable_to_simulation/*/comp)JSE_JSON";
+        text += R"JSE_JSON(osition/*",
         "required": [
             "is_volume",
             "type"
@@ -1593,7 +1603,9 @@ const nlohmann::json &spec()
         "type": "bool"
     }
 ]
-)JSE_JSON");
+)JSE_JSON";
+        return nlohmann::json::parse(text);
+    }();
     return value;
 }
 

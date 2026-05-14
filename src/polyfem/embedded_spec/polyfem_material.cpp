@@ -1,5 +1,7 @@
 #include "polyfem_material.hpp"
 
+#include <string>
+
 namespace jse
 {
 namespace embed
@@ -9,7 +11,10 @@ namespace polyfem_material
 
 const nlohmann::json &spec()
 {
-    static const nlohmann::json value = nlohmann::json::parse(R"JSE_JSON(
+    static const nlohmann::json value = []() {
+        std::string text;
+        text.reserve(50357);
+        text += R"JSE_JSON(
 [
     {
         "doc": "Type of material",
@@ -344,7 +349,8 @@ const nlohmann::json &spec()
         "required": [
             "type",
             "viscosity"
-        ],
+)JSE_JSON";
+        text += R"JSE_JSON(        ],
         "type": "object",
         "type_name": "OperatorSplitting"
     },
@@ -696,7 +702,8 @@ const nlohmann::json &spec()
         "type": "file"
     },
     {
-        "doc": "Python function name to evaluate the value",
+        "doc": "Python function )JSE_JSON";
+        text += R"JSE_JSON(name to evaluate the value",
         "pointer": "/viscosity/function_name",
         "type": "string"
     },
@@ -1018,7 +1025,8 @@ const nlohmann::json &spec()
     {
         "doc": "The unit of the Value",
         "pointer": "/phi/unit",
-        "type": "string"
+        "type": )JSE_JSON";
+        text += R"JSE_JSON("string"
     },
     {
         "doc": "The value of the constant",
@@ -1356,7 +1364,8 @@ const nlohmann::json &spec()
     },
     {
         "doc": "Python function name to evaluate the value",
-        "pointer": "/c2/function_name",
+        "pointer": "/c2/functio)JSE_JSON";
+        text += R"JSE_JSON(n_name",
         "type": "string"
     },
     {
@@ -1698,7 +1707,8 @@ const nlohmann::json &spec()
         "type": "string"
     },
     {
-        "doc": "Value with unit",
+        "d)JSE_JSON";
+        text += R"JSE_JSON(oc": "Value with unit",
         "pointer": "/mus/*",
         "required": [
             "value",
@@ -2038,7 +2048,8 @@ const nlohmann::json &spec()
         "doc": "Value from python function",
         "pointer": "/activation",
         "required": [
-            "file_name",
+        )JSE_JSON";
+        text += R"JSE_JSON(    "file_name",
             "function_name"
         ],
         "type": "object"
@@ -2135,7 +2146,9 @@ const nlohmann::json &spec()
         "type": "float"
     }
 ]
-)JSE_JSON");
+)JSE_JSON";
+        return nlohmann::json::parse(text);
+    }();
     return value;
 }
 

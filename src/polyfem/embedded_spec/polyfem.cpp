@@ -1,5 +1,7 @@
 #include "polyfem.hpp"
 
+#include <string>
+
 namespace jse
 {
 namespace embed
@@ -9,7 +11,10 @@ namespace polyfem
 
 const nlohmann::json &spec()
 {
-    static const nlohmann::json value = nlohmann::json::parse(R"JSE_JSON(
+    static const nlohmann::json value = []() {
+        std::string text;
+        text.reserve(348642);
+        text += R"JSE_JSON(
 [
     {
         "doc": "Root of the configuration file.",
@@ -320,7 +325,8 @@ const nlohmann::json &spec()
         "type": "object"
     },
     {
-        "default": "xyz",
+        "default": "xyz")JSE_JSON";
+        text += R"JSE_JSON(,
         "doc": "Type of rotation, supported are any permutation of [xyz]+, axis_angle, quaternion, or rotation_vector.",
         "pointer": "/geometry/*/transformation/rotation_mode",
         "type": "string"
@@ -547,7 +553,8 @@ const nlohmann::json &spec()
         "type": "string"
     },
     {
-        "pointer": "/geometry/*/volume_selection/*/offset",
+        "pointer": "/geometry/*/volume_se)JSE_JSON";
+        text += R"JSE_JSON(lection/*/offset",
         "type": "float"
     },
     {
@@ -795,7 +802,8 @@ const nlohmann::json &spec()
         "type": "float"
     },
     {
-        "pointer": "/geometry/*/surface_selection/*/position",
+        "pointer": "/geometry/*/surface_selection/*/posi)JSE_JSON";
+        text += R"JSE_JSON(tion",
         "type": "float"
     },
     {
@@ -1039,7 +1047,8 @@ const nlohmann::json &spec()
     {
         "pointer": "/geometry/*/point_selection/*/axis",
         "type": "int"
-    },
+    },)JSE_JSON";
+        text += R"JSE_JSON(
     {
         "pointer": "/geometry/*/point_selection/*/axis",
         "type": "string"
@@ -1325,7 +1334,8 @@ const nlohmann::json &spec()
         "type": "int"
     },
     {
-        "doc": "Lagrange element order for the space for the main unknown, for all elements.",
+        "doc": "Lagrange element o)JSE_JSON";
+        text += R"JSE_JSON(rder for the space for the main unknown, for all elements.",
         "pointer": "/space/discr_order/*/order",
         "type": "int"
     },
@@ -1597,7 +1607,8 @@ const nlohmann::json &spec()
             "discr_order_max",
             "isoparametric",
             "bc_method",
-            "n_boundary_samples",
+            "n_)JSE_JSON";
+        text += R"JSE_JSON(boundary_samples",
             "quadrature_order",
             "mass_quadrature_order",
             "use_corner_quadrature",
@@ -1867,7 +1878,8 @@ const nlohmann::json &spec()
     },
     {
         "default": null,
-        "doc": "Contact handling parameters.",
+        "doc": ")JSE_JSON";
+        text += R"JSE_JSON(Contact handling parameters.",
         "optional": [
             "enabled",
             "dhat",
@@ -2144,7 +2156,8 @@ const nlohmann::json &spec()
             "Hypre",
             "AMGCL",
             "Eigen::LeastSquaresConjugateGradient",
-            "Eigen::DGMRES",
+           )JSE_JSON";
+        text += R"JSE_JSON( "Eigen::DGMRES",
             "Eigen::ConjugateGradient",
             "Eigen::BiCGSTAB",
             "Eigen::GMRES",
@@ -2447,7 +2460,8 @@ const nlohmann::json &spec()
     {
         "default": null,
         "doc": "Coarsening parameters.",
-        "optional": [
+ )JSE_JSON";
+        text += R"JSE_JSON(       "optional": [
             "type",
             "estimate_spectral_radius",
             "relax",
@@ -2729,7 +2743,8 @@ const nlohmann::json &spec()
     },
     {
         "default": 1000,
-        "doc": "Maximum number of iterations.",
+    )JSE_JSON";
+        text += R"JSE_JSON(    "doc": "Maximum number of iterations.",
         "pointer": "/solver/adjoint_linear/Eigen::GMRES/max_iter",
         "type": "int"
     },
@@ -3010,7 +3025,8 @@ const nlohmann::json &spec()
     },
     {
         "default": 1e-10,
-        "doc": "Stopping criterion: minimal gradient for the iterations to continue relative to first step in nonlinear solve.",
+        "doc": "Stopping criterion: minimal gradient for the iterations t)JSE_JSON";
+        text += R"JSE_JSON(o continue relative to first step in nonlinear solve.",
         "min": 0,
         "pointer": "/solver/nonlinear/rel_grad_norm_tol",
         "type": "float"
@@ -3269,7 +3285,8 @@ const nlohmann::json &spec()
         "pointer": "/solver/nonlinear/solver/*",
         "required": [
             "type"
-        ],
+   )JSE_JSON";
+        text += R"JSE_JSON(     ],
         "type": "object",
         "type_name": "Newton"
     },
@@ -3567,7 +3584,8 @@ const nlohmann::json &spec()
     },
     {
         "default": 30,
-        "doc": "Number of iterations",
+        "doc)JSE_JSON";
+        text += R"JSE_JSON(": "Number of iterations",
         "pointer": "/solver/nonlinear/line_search/max_step_size_iter",
         "type": "int"
     },
@@ -3817,7 +3835,8 @@ const nlohmann::json &spec()
             "max_iter",
             "tolerance"
         ],
-        "pointer": "/solver/linear/adjoint_solver/Eigen::LeastSquaresConjugateGradient",
+        "pointer": ")JSE_JSON";
+        text += R"JSE_JSON(/solver/linear/adjoint_solver/Eigen::LeastSquaresConjugateGradient",
         "type": "object"
     },
     {
@@ -4103,7 +4122,8 @@ const nlohmann::json &spec()
     {
         "default": 16,
         "doc": "Degree of the polynomial.",
-        "pointer": "/solver/linear/adjoint_solver/AMGCL/precond/relax/degree",
+        "pointer": "/solver/linear/adjoint_s)JSE_JSON";
+        text += R"JSE_JSON(olver/AMGCL/precond/relax/degree",
         "type": "int"
     },
     {
@@ -4333,7 +4353,8 @@ const nlohmann::json &spec()
         "pointer": "/solver/augmented_lagrangian/nonlinear/L-BFGS-B",
         "type": "object"
     },
-    {
+ )JSE_JSON";
+        text += R"JSE_JSON(   {
         "default": 6,
         "doc": "The number of corrections to approximate the inverse Hessian matrix.",
         "pointer": "/solver/augmented_lagrangian/nonlinear/L-BFGS-B/history_size",
@@ -4590,7 +4611,8 @@ const nlohmann::json &spec()
     },
     {
         "doc": "Options for projected regularized Newton.",
-        "optional": [
+   )JSE_JSON";
+        text += R"JSE_JSON(     "optional": [
             "residual_tolerance",
             "reg_weight_min",
             "reg_weight_max",
@@ -4856,7 +4878,8 @@ const nlohmann::json &spec()
     },
     {
         "default": 0.1,
-        "doc": "Relative tolerance on E to switch to approximate.",
+        "doc": "Relative t)JSE_JSON";
+        text += R"JSE_JSON(olerance on E to switch to approximate.",
         "min_value": 0,
         "pointer": "/solver/augmented_lagrangian/nonlinear/line_search/RobustArmijo/delta_relative_tolerance",
         "type": "float"
@@ -5096,7 +5119,8 @@ const nlohmann::json &spec()
         "doc": "Apply Rayleigh damping to the given Form with a stiffness ratio.",
         "optional": [
             "lagging_iterations"
-        ],
+        )JSE_JSON";
+        text += R"JSE_JSON(],
         "pointer": "/solver/rayleigh_damping/*",
         "required": [
             "form",
@@ -5388,7 +5412,8 @@ const nlohmann::json &spec()
             "id",
             "rho"
         ],
-        "pointer": "/materials/*",
+        "pointer": "/m)JSE_JSON";
+        text += R"JSE_JSON(aterials/*",
         "required": [
             "type",
             "alphas",
@@ -5726,7 +5751,8 @@ const nlohmann::json &spec()
         "required": [
             "type",
             "k1",
-            "k2"
+           )JSE_JSON";
+        text += R"JSE_JSON( "k2"
         ],
         "type": "object",
         "type_name": "HGOFiber"
@@ -6032,7 +6058,8 @@ const nlohmann::json &spec()
         "type": "list"
     },
     {
-        "default": 0,
+        "default")JSE_JSON";
+        text += R"JSE_JSON(: 0,
         "doc": "Value as a constant float",
         "pointer": "/materials/*/fiber_direction/*/*",
         "type": "float"
@@ -6340,7 +6367,8 @@ const nlohmann::json &spec()
     },
     {
         "doc": "The value as an expression or a file",
-        "pointer": "/materials/*/k/value",
+        "pointer": "/mate)JSE_JSON";
+        text += R"JSE_JSON(rials/*/k/value",
         "type": "string"
     },
     {
@@ -6654,7 +6682,8 @@ const nlohmann::json &spec()
     {
         "doc": "The value of the constant",
         "pointer": "/materials/*/d1/value",
-        "type": "float"
+  )JSE_JSON";
+        text += R"JSE_JSON(      "type": "float"
     },
     {
         "doc": "The value as an expression or a file",
@@ -6966,7 +6995,8 @@ const nlohmann::json &spec()
         "type": "object"
     },
     {
-        "doc": "Value from python function",
+        "do)JSE_JSON";
+        text += R"JSE_JSON(c": "Value from python function",
         "pointer": "/materials/*/Ds/*",
         "required": [
             "file_name",
@@ -7276,7 +7306,8 @@ const nlohmann::json &spec()
     },
     {
         "default": 1,
-        "doc": "Value as a constant float",
+        )JSE_JSON";
+        text += R"JSE_JSON("doc": "Value as a constant float",
         "pointer": "/materials/*/Tmax",
         "type": "float"
     },
@@ -7587,7 +7618,8 @@ const nlohmann::json &spec()
             "type",
             "E",
             "nu"
-        ],
+        )JSE_JSON";
+        text += R"JSE_JSON(],
         "type": "object",
         "type_name": "HookeLinearElasticity"
     },
@@ -7920,7 +7952,8 @@ const nlohmann::json &spec()
         "type": "string"
     },
     {
-        "doc": "Python filename containing the function to evaluate the value",
+        "doc": "Python filename containing the f)JSE_JSON";
+        text += R"JSE_JSON(unction to evaluate the value",
         "pointer": "/materials/*/models/*/E/file_name",
         "type": "file"
     },
@@ -8201,7 +8234,8 @@ const nlohmann::json &spec()
     },
     {
         "doc": "The value as an expression or a file",
-        "pointer": "/materials/*/models/*/fiber_direction/*/*/value",
+        "pointer": "/mater)JSE_JSON";
+        text += R"JSE_JSON(ials/*/models/*/fiber_direction/*/*/value",
         "type": "string"
     },
     {
@@ -8493,7 +8527,8 @@ const nlohmann::json &spec()
         "type": "string"
     },
     {
-        "doc": "Value with unit",
+     )JSE_JSON";
+        text += R"JSE_JSON(   "doc": "Value with unit",
         "pointer": "/materials/*/models/*/mu",
         "required": [
             "value",
@@ -8791,7 +8826,8 @@ const nlohmann::json &spec()
         "type": "string"
     },
     {
-        "doc": "Python filename containing the function to evaluate the value",
+        "do)JSE_JSON";
+        text += R"JSE_JSON(c": "Python filename containing the function to evaluate the value",
         "pointer": "/materials/*/models/*/d1/file_name",
         "type": "file"
     },
@@ -9082,7 +9118,8 @@ const nlohmann::json &spec()
     },
     {
         "doc": "Value as an expression of $x,y,z,t$ or a file",
-        "pointer": "/materials/*/models/*/Ds/*",
+       )JSE_JSON";
+        text += R"JSE_JSON( "pointer": "/materials/*/models/*/Ds/*",
         "type": "string"
     },
     {
@@ -9380,7 +9417,8 @@ const nlohmann::json &spec()
     },
     {
         "doc": "The unit of the Value",
-        "pointer": "/materials/*/models/*/activation/unit",
+        "po)JSE_JSON";
+        text += R"JSE_JSON(inter": "/materials/*/models/*/activation/unit",
         "type": "string"
     },
     {
@@ -9660,7 +9698,8 @@ const nlohmann::json &spec()
         "type": "string"
     },
     {
-        "doc": "The value of the constant",
+       )JSE_JSON";
+        text += R"JSE_JSON( "doc": "The value of the constant",
         "pointer": "/boundary_conditions/rhs/*/value",
         "type": "float"
     },
@@ -9924,7 +9963,8 @@ const nlohmann::json &spec()
     {
         "default": 0,
         "doc": "Value as a constant float",
-        "pointer": "/boundary_conditions/dirichlet_boundary/*/value/*/*",
+        "pointer": "/)JSE_JSON";
+        text += R"JSE_JSON(boundary_conditions/dirichlet_boundary/*/value/*/*",
         "type": "float"
     },
     {
@@ -10188,7 +10228,8 @@ const nlohmann::json &spec()
         "type": "float"
     },
     {
-        "doc": "interpolation time points",
+        "doc": "interpolatio)JSE_JSON";
+        text += R"JSE_JSON(n time points",
         "pointer": "/boundary_conditions/neumann_boundary/*/interpolation/*/points",
         "type": "list"
     },
@@ -10454,7 +10495,8 @@ const nlohmann::json &spec()
         "doc": "pressure BC entry",
         "optional": [
             "time_reference"
-        ],
+  )JSE_JSON";
+        text += R"JSE_JSON(      ],
         "pointer": "/boundary_conditions/pressure_boundary/*",
         "required": [
             "id",
@@ -10711,7 +10753,8 @@ const nlohmann::json &spec()
             "value",
             "unit"
         ],
-        "type": "object"
+)JSE_JSON";
+        text += R"JSE_JSON(        "type": "object"
     },
     {
         "doc": "Value from python function",
@@ -10984,7 +11027,8 @@ const nlohmann::json &spec()
         "type": "file"
     },
     {
-        "doc": "Python function name to evaluate the value",
+        "doc": "Python function name t)JSE_JSON";
+        text += R"JSE_JSON(o evaluate the value",
         "pointer": "/initial_conditions/solution/*/value/*/function_name",
         "type": "string"
     },
@@ -11247,7 +11291,8 @@ const nlohmann::json &spec()
         "min": 0,
         "pointer": "/output/log/level",
         "type": "int"
-    },
+    )JSE_JSON";
+        text += R"JSE_JSON(},
     {
         "default": "debug",
         "doc": "Level of logging.",
@@ -11527,7 +11572,8 @@ const nlohmann::json &spec()
     },
     {
         "default": "",
-        "doc": "Main variable solution. Unrolled [xyz, xyz, ...] using PolyFEM ordering. If reorder_nodes exports the solution with the same order the vertices of the input mesh as a #n x d file",
+        "doc": "Main variable solution. Unrolled [xyz, xyz, ...] using PolyFEM ordering. If reorder_n)JSE_JSON";
+        text += R"JSE_JSON(odes exports the solution with the same order the vertices of the input mesh as a #n x d file",
         "pointer": "/output/data/solution",
         "type": "string"
     },
@@ -11820,7 +11866,8 @@ const nlohmann::json &spec()
     {
         "doc": "TODO",
         "pointer": "/preset_problem",
-        "required": [
+        "required")JSE_JSON";
+        text += R"JSE_JSON(: [
             "type"
         ],
         "type": "object",
@@ -12182,7 +12229,8 @@ const nlohmann::json &spec()
         "type": "bool"
     },
     {
-        "doc": "TODO",
+        "doc": "TODO")JSE_JSON";
+        text += R"JSE_JSON(,
         "optional": [
             "U",
             "time_dependent"
@@ -12383,7 +12431,9 @@ const nlohmann::json &spec()
         "type": "string"
     }
 ]
-)JSE_JSON");
+)JSE_JSON";
+        return nlohmann::json::parse(text);
+    }();
     return value;
 }
 
