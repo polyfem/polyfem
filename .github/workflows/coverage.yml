@@ -47,7 +47,7 @@ jobs:
 
 
       - name: Checkout repository
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@v6
         with:
           fetch-depth: 10
 
@@ -65,7 +65,7 @@ jobs:
 
       - name: Cache Build
         id: cache-build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ env.CACHE_PATH }}
           key: ${{ runner.os }}-cov-${{ matrix.threading }}-cache-${{ github.sha }}
@@ -101,7 +101,7 @@ jobs:
           lcov --remove coverage.info '/usr/*' "${HOME}"'/.cache/*' '*tests/*.cpp*' '*/polyfem/problem/*.cpp*' '*/polyfem/problem/*.hpp*' --output-file coverage.info
 
       - name: Upload Coverage
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v6
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
