@@ -150,7 +150,7 @@ namespace polyfem
 		jse::JSE jse;
 		{
 			jse.strict = strict_validation;
-			rules = jse::embed::polyfem::spec();
+			rules = jse::embed::polyfem_spec::polyfem::spec();
 
 			polysolve::linear::Solver::apply_default_solver(rules, "/solver/linear");
 			polysolve::linear::Solver::apply_default_solver(rules, "/solver/adjoint_linear");

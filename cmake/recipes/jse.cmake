@@ -8,4 +8,4 @@ endif()
 message(STATUS "Third-party: creating target 'jse::jse'")
 
 include(CPM)
-CPMAddPackage("gh:geometryprocessing/json-spec-engine#a812b426c86ea317e7c646be3ebd5db9b293d5df")
+CPMAddPackage("gh:geometryprocessing/json-spec-engine#7c8330309d36746d8eedae763f492351a266c6d5")

@@ -153,7 +153,7 @@ namespace polyfem::solver
 		jse::JSE jse;
 		{
 			jse.strict = strict_validation;
-			rules = jse::embed::polyfem_opt::spec();
+			rules = jse::embed::polyfem_opt_spec::polyfem_opt::spec();
 
 			// polysolve::linear::Solver::apply_default_solver(rules, "/solver/linear");
 		}
@@ -170,7 +170,7 @@ namespace polyfem::solver
 
 		json args = jse.inject_defaults(args_in, rules);
 
-		const json obj_rules = jse::embed::polyfem_objective::spec();
+		const json obj_rules = jse::embed::polyfem_objective_spec::polyfem_objective::spec();
 		apply_objective_json_spec(args["functionals"], obj_rules);
 
 		if (args.contains("stopping_conditions"))
