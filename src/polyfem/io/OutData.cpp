@@ -1945,6 +1945,7 @@ namespace polyfem::io
 		const assembler::AMIPSEnergy *amips = dynamic_cast<const assembler::AMIPSEnergy *>(&assembler);
 		if (amips)
 		{
+			Eigen::MatrixXd amips_energy;
 			Eigen::VectorXd energies = Eigen::VectorXd::Zero(points.rows());
 			Eigen::VectorXd energies_avg(points.rows());
 			energies_avg.setZero();
