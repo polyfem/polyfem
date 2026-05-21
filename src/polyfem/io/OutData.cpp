@@ -1,6 +1,7 @@
 #include "OutData.hpp"
 
 #include "Evaluator.hpp"
+#include "polyfem/assembler/AMIPSEnergy.hpp"
 
 #include <polyfem/State.hpp>
 
@@ -1940,6 +1941,57 @@ namespace polyfem::io
 
 			writer.add_field("body_ids", ids);
 		}
+
+		const assembler::AMIPSEnergy *amips = dynamic_cast<const assembler::AMIPSEnergy *>(&assembler);
+		if (amips)
+		{
+			Eigen::VectorXd energies = Eigen::VectorXd::Zero(points.rows());
+			Eigen::VectorXd energies_avg(points.rows());
+			energies_avg.setZero();
+			int pts_index = 0;
+			for (int e = 0; e < (int)bases.size(); ++e)
+			{
+				Eigen::MatrixXd ref_pts;
+				if (mesh.is_volume())
+				{
+					if (mesh.is_simplex(e))
+						autogen::p_nodes_3d(disc_orders(e), ref_pts);
+					else if (mesh.is_cube(e))
+						autogen::q_nodes_3d(disc_orders(e), ref_pts);
+					else continue;
+				}
+				else
+				{
+					if (mesh.is_simplex(e))
+						autogen::p_nodes_2d(disc_orders(e), ref_pts);
+					else if (mesh.is_cube(e))
+						autogen::q_nodes_2d(disc_orders(e), ref_pts);
+					else continue;
+				}
+
+				amips->assign_stress_tensor(
+					assembler::OutputData(t, e, bases[e], gbases[e], ref_pts, sol),
+					1, ElasticityTensorType::AMIPS, amips_energy,
+					[](const Eigen::MatrixXd &x) { return x; });
+
+
+				energies_avg(e) = amips_energy.col(0).mean();
+
+				for (int p = 0; p < ref_pts.rows(); ++p)
+					energies(pts_index++) = amips_energy(p, 0);
+			}
+
+			Eigen::VectorXd energies_avg_pts = Eigen::VectorXd::Zero(points.rows());
+			for (int i = 0; i < points.rows(); ++i)
+				energies_avg_pts(i) = energies_avg(el_id(i, 0));
+
+			writer.add_field("AMIPS", energies);
+			writer.add_field("AMIPS_average", energies_avg_pts);
+		}
+
+
+
+
 
 		// if (opts.export_field("rhs"))
 		// {
