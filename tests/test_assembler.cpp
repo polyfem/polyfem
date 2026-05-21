@@ -3,6 +3,7 @@
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
 #include <polyfem/assembler/NeoHookeanElasticityAutodiff.hpp>
 
+#include <polyfem/assembler/AMIPSEnergy.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
 
@@ -283,4 +284,108 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 			}
 		}
 	}
+}
+
+TEST_CASE("amips_power_default", "[assembler]")
+{
+    const std::string path = POLYFEM_DATA_DIR;
+    json in_args = json({});
+    in_args["geometry"] = {};
+    in_args["geometry"]["mesh"] = path + "/plane_hole.obj";
+    in_args["geometry"]["surface_selection"] = 7;
+
+    in_args["preset_problem"] = {};
+    in_args["preset_problem"]["type"] = "ElasticExact";
+
+    in_args["materials"] = {};
+    in_args["materials"]["type"] = "NeoHookean";
+    in_args["materials"]["E"] = 1e5;
+    in_args["materials"]["nu"] = 0.3;
+
+    State state;
+    state.init_logger("", spdlog::level::err, spdlog::level::off, false);
+    state.init(in_args, true);
+    state.load_mesh();
+    state.build_basis();
+
+    AMIPSEnergy no_power, with_power;
+    no_power.set_size(2);
+    with_power.set_size(2);
+
+    json params_no_power = {{"type", "AMIPS"}};
+    json params_with_power = {{"type", "AMIPS"}, {"power", 1.0}};
+
+    no_power.add_multimaterial(0, params_no_power, state.units, state.root_path());
+    with_power.add_multimaterial(0, params_with_power, state.units, state.root_path());
+
+    const int el_id = 0;
+    const auto &bs = state.bases[el_id];
+    ElementAssemblyValues vals;
+    vals.compute(el_id, false, bs, bs);
+    const QuadratureVector da = vals.det.array() * vals.quadrature.weights.array();
+
+    Eigen::MatrixXd displacement(state.n_bases, 1);
+    for (int rand = 0; rand < 10; ++rand)
+    {
+        displacement.setRandom();
+        const NonLinearAssemblerData data(vals, 0, 0, displacement, displacement, da);
+        const double e1 = no_power.compute_energy(data);
+        const double e2 = with_power.compute_energy(data);
+        if (std::isnan(e1))
+            REQUIRE(std::isnan(e2));
+        else
+            REQUIRE(e1 == Catch::Approx(e2).margin(1e-12));
+    }
+}
+
+TEST_CASE("amips_power_squared", "[assembler]")
+{
+    const std::string path = POLYFEM_DATA_DIR;
+    json in_args = json({});
+    in_args["geometry"] = {};
+    in_args["geometry"]["mesh"] = path + "/plane_hole.obj";
+    in_args["geometry"]["surface_selection"] = 7;
+
+    in_args["preset_problem"] = {};
+    in_args["preset_problem"]["type"] = "ElasticExact";
+
+    in_args["materials"] = {};
+    in_args["materials"]["type"] = "NeoHookean";
+    in_args["materials"]["E"] = 1e5;
+    in_args["materials"]["nu"] = 0.3;
+
+    State state;
+    state.init_logger("", spdlog::level::err, spdlog::level::off, false);
+    state.init(in_args, true);
+    state.load_mesh();
+    state.build_basis();
+
+    AMIPSEnergy base_amips, power2_amips;
+    base_amips.set_size(2);
+    power2_amips.set_size(2);
+
+    json params_base = {{"type", "AMIPS"}};
+    json params_power2 = {{"type", "AMIPS"}, {"power", 2.0}};
+
+    base_amips.add_multimaterial(0, params_base, state.units, state.root_path());
+    power2_amips.add_multimaterial(0, params_power2, state.units, state.root_path());
+
+    const int el_id = 0;
+    const auto &bs = state.bases[el_id];
+    ElementAssemblyValues vals;
+    vals.compute(el_id, false, bs, bs);
+    const QuadratureVector da = vals.det.array() * vals.quadrature.weights.array();
+
+    Eigen::MatrixXd displacement(state.n_bases, 1);
+    for (int rand = 0; rand < 10; ++rand)
+    {
+        displacement.setRandom();
+        const NonLinearAssemblerData data(vals, 0, 0, displacement, displacement, da);
+        const double e = base_amips.compute_energy(data);
+        const double e2 = power2_amips.compute_energy(data);
+        if (std::isnan(e))
+            REQUIRE(std::isnan(e2));
+        else
+            REQUIRE(e2 == Catch::Approx(e * e).margin(1e-12));
+    }
 }
