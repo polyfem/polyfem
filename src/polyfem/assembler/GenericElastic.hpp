@@ -145,16 +145,10 @@ namespace polyfem::assembler
 				}
 
 				const T val = derived().elastic_energy(data.vals.val.row(p), data.t, data.vals.element_id, def_grad);
-
 				energy += val * data.da(p);
-				
-
-
 			}
 
 			energy = pow(energy, get_power(data.vals.element_id));
-			std::cout << "element_id: " << data.vals.element_id << " power: " << get_power(data.vals.element_id) << " energy: " << energy << std::endl;
-
 			return energy;
 		}
 
