@@ -67,7 +67,27 @@ namespace polyfem::assembler
 		virtual bool real_def_grad() const { return true; }
 
 	protected:
-		AutodiffType autodiff_type_ = AutodiffType::STRESS;
+
+	    AutodiffType autodiff_type_ = AutodiffType::STRESS;
+    	std::vector<double> power_values_;
+
+		void read_power(const int index, const json &params)
+		{
+    		if (power_values_.size() <= index)
+        		power_values_.resize(index + 1, 1.0);
+    		if (params.contains("power"))
+        		power_values_[index] = params["power"].get<double>();
+   	 		else
+        		power_values_[index] = 1.0;
+		}
+
+	    double get_power(const int el_id) const
+    	{
+        	if (power_values_.empty()) return 1.0;
+        	if (power_values_.size() == 1) return power_values_[0];
+        	if (el_id >= 0 && el_id < (int)power_values_.size()) return power_values_[el_id];
+        	return 1.0;
+    	}
 
 		virtual Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> gradient(
 			const RowVectorNd &p,
@@ -127,7 +147,14 @@ namespace polyfem::assembler
 				const T val = derived().elastic_energy(data.vals.val.row(p), data.t, data.vals.element_id, def_grad);
 
 				energy += val * data.da(p);
+				
+
+
 			}
+
+			energy = pow(energy, get_power(data.vals.element_id));
+			std::cout << "element_id: " << data.vals.element_id << " power: " << get_power(data.vals.element_id) << " energy: " << energy << std::endl;
+
 			return energy;
 		}
 
