@@ -1942,53 +1942,24 @@ namespace polyfem::io
 			writer.add_field("body_ids", ids);
 		}
 
-		const assembler::AMIPSEnergy *amips = dynamic_cast<const assembler::AMIPSEnergy *>(&assembler);
-		if (amips)
+		const assembler::NLAssembler *nl = dynamic_cast<const assembler::NLAssembler *>(&assembler);
+		if (nl)
 		{
-			Eigen::MatrixXd amips_energy;
-			Eigen::VectorXd energies = Eigen::VectorXd::Zero(points.rows());
+			const Eigen::VectorXd element_energies = nl->assemble_energy_per_element(
+				mesh.is_volume(), bases, gbases, state.ass_vals_cache, t, 0, sol, sol);
+			Eigen::VectorXd energies(points.rows());
 			Eigen::VectorXd energies_avg(points.rows());
-			energies_avg.setZero();
-			int pts_index = 0;
-			for (int e = 0; e < (int)bases.size(); ++e)
+			for (int i = 0; i < points.rows(); ++i)
 			{
-				Eigen::MatrixXd ref_pts;
-				if (mesh.is_volume())
-				{
-					if (mesh.is_simplex(e))
-						autogen::p_nodes_3d(disc_orders(e), ref_pts);
-					else if (mesh.is_cube(e))
-						autogen::q_nodes_3d(disc_orders(e), ref_pts);
-					else continue;
-				}
-				else
-				{
-					if (mesh.is_simplex(e))
-						autogen::p_nodes_2d(disc_orders(e), ref_pts);
-					else if (mesh.is_cube(e))
-						autogen::q_nodes_2d(disc_orders(e), ref_pts);
-					else continue;
-				}
-
-				amips->assign_stress_tensor(
-					assembler::OutputData(t, e, bases[e], gbases[e], ref_pts, sol),
-					1, ElasticityTensorType::AMIPS, amips_energy,
-					[](const Eigen::MatrixXd &x) { return x; });
-
-
-				energies_avg(e) = amips_energy.col(0).mean();
-
-				for (int p = 0; p < ref_pts.rows(); ++p)
-					energies(pts_index++) = amips_energy(p, 0);
+				energies_avg(i) = element_energies(el_id(i, 0));
+				energies(i) = element_energies(el_id(i, 0));
 			}
 
-			Eigen::VectorXd energies_avg_pts = Eigen::VectorXd::Zero(points.rows());
-			for (int i = 0; i < points.rows(); ++i)
-				energies_avg_pts(i) = energies_avg(el_id(i, 0));
-
-			writer.add_field("AMIPS", energies);
-			writer.add_field("AMIPS_average", energies_avg_pts);
+			writer.add_field("energy", energies);
+			writer.add_field("energy_average", energies_avg);
 		}
+
+
 
 
 
