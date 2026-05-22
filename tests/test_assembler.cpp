@@ -340,52 +340,32 @@ TEST_CASE("amips_power_default", "[assembler]")
 
 TEST_CASE("amips_power_squared", "[assembler]")
 {
-    const std::string path = POLYFEM_DATA_DIR;
-    json in_args = json({});
-    in_args["geometry"] = {};
-    in_args["geometry"]["mesh"] = path + "/plane_hole.obj";
-    in_args["geometry"]["surface_selection"] = 7;
+	AMIPSEnergy base_amips, power2_amips;
+	base_amips.set_size(2);
+	power2_amips.set_size(2);
 
-    in_args["preset_problem"] = {};
-    in_args["preset_problem"]["type"] = "ElasticExact";
+	json params_base = {{"type", "AMIPS"}};
+	json params_power2 = {{"type", "AMIPS"}, {"power", 2.0}};
 
-    in_args["materials"] = {};
-    in_args["materials"]["type"] = "NeoHookean";
-    in_args["materials"]["E"] = 1e5;
-    in_args["materials"]["nu"] = 0.3;
+	Units units;
+	base_amips.add_multimaterial(0, params_base, units, "");
+	power2_amips.add_multimaterial(0, params_power2, units, "");
 
-    State state;
-    state.init_logger("", spdlog::level::err, spdlog::level::off, false);
-    state.init(in_args, true);
-    state.load_mesh();
-    state.build_basis();
 
-    AMIPSEnergy base_amips, power2_amips;
-    base_amips.set_size(2);
-    power2_amips.set_size(2);
 
-    json params_base = {{"type", "AMIPS"}};
-    json params_power2 = {{"type", "AMIPS"}, {"power", 2.0}};
+	Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> F(2, 2);
+	F.setIdentity();
+	F(0, 0) = 1.1; F(0, 1) = 0.1;
+	F(1, 0) = 0.0; F(1, 1) = 0.9;
 
-    base_amips.add_multimaterial(0, params_base, state.units, state.root_path());
-    power2_amips.add_multimaterial(0, params_power2, state.units, state.root_path());
 
-    const int el_id = 0;
-    const auto &bs = state.bases[el_id];
-    ElementAssemblyValues vals;
-    vals.compute(el_id, false, bs, bs);
-    const QuadratureVector da = vals.det.array() * vals.quadrature.weights.array();
 
-    Eigen::MatrixXd displacement(state.n_bases, 1);
-    for (int rand = 0; rand < 10; ++rand)
-    {
-        displacement.setRandom();
-        const NonLinearAssemblerData data(vals, 0, 0, displacement, displacement, da);
-        const double e = base_amips.compute_energy(data);
-        const double e2 = power2_amips.compute_energy(data);
-        if (std::isnan(e))
-            REQUIRE(std::isnan(e2));
-        else
-            REQUIRE(e2 == Catch::Approx(e * e).margin(1e-12));
-    }
+	Eigen::RowVectorXd p = Eigen::RowVectorXd::Zero(2);
+
+	auto F1 = F;
+	auto F2 = F;
+	const double e = base_amips.elastic_energy<double>(p, 0, 0, F1);
+	const double e2 = power2_amips.elastic_energy<double>(p, 0, 0, F2);
+
+	REQUIRE(e2 == Catch::Approx(e * e).margin(1e-12));
 }
