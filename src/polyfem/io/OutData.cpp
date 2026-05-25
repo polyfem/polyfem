@@ -55,6 +55,8 @@
 
 #include <ipc/ipc.hpp>
 
+#include <algorithm>
+#include <cmath>
 #include <filesystem>
 
 namespace polyfem::io
@@ -145,6 +147,23 @@ namespace polyfem::io
 				}
 			}
 		}
+
+		void avoid_pyramid_apex(Eigen::MatrixXd &points)
+		{
+			assert(points.cols() == 3);
+			constexpr double eps = 1e-8;
+			for (int i = 0; i < points.rows(); ++i)
+			{
+				if (std::abs(points(i, 2) - 1.0) < eps)
+					points(i, 2) = 1.0 - eps;
+			}
+		}
+
+		void pyramid_nodes_for_output(const int order, Eigen::MatrixXd &points)
+		{
+			autogen::pyramid_nodes_3d(order, points);
+			avoid_pyramid_apex(points);
+		}
 	} // namespace
 
 	void OutGeometryData::extract_boundary_mesh(
@@ -171,8 +190,11 @@ namespace polyfem::io
 
 			const bool is_simplicial = mesh.is_simplicial();
 
-			node_positions.resize(n_bases + (is_simplicial ? 0 : mesh.n_faces()), 3);
-			node_positions.setZero();
+			std::vector<Eigen::Vector3d> node_positions_vec;
+			node_positions_vec.reserve(n_bases + (is_simplicial ? 0 : mesh.n_faces()));
+
+			// node_positions.resize(n_bases + (is_simplicial ? 0 : mesh.n_faces()), 3);
+			// node_positions.setZero();
 			const Mesh3D &mesh3d = dynamic_cast<const Mesh3D &>(mesh);
 
 			std::vector<std::tuple<int, int, int>> tris;
@@ -206,7 +228,8 @@ namespace polyfem::io
 								continue;
 
 							int gindex = glob.front().index;
-							node_positions.row(gindex) = glob.front().node;
+							node_positions_vec.resize(std::max(int(node_positions_vec.size()), gindex + 1));
+							node_positions_vec[gindex] = glob.front().node;
 							bary += glob.front().node;
 							loc_nodes.push_back(gindex);
 						}
@@ -220,7 +243,8 @@ namespace polyfem::io
 						bary /= 4;
 
 						const int new_node = n_bases + eid;
-						node_positions.row(new_node) = bary;
+						node_positions_vec.resize(std::max(int(node_positions_vec.size()), new_node + 1));
+						node_positions_vec[new_node] = bary;
 						tris.emplace_back(loc_nodes[1], loc_nodes[0], new_node);
 						tris.emplace_back(loc_nodes[2], loc_nodes[1], new_node);
 						tris.emplace_back(loc_nodes[3], loc_nodes[2], new_node);
@@ -242,7 +266,7 @@ namespace polyfem::io
 						assert(!is_simplicial);
 						assert(!mesh.has_poly());
 						std::vector<int> loc_nodes;
-						RowVectorNd bary = RowVectorNd::Zero(3);
+						std::vector<int> loc_local_nodes;
 
 						for (long n = 0; n < nodes.size(); ++n)
 						{
@@ -252,9 +276,10 @@ namespace polyfem::io
 								continue;
 
 							int gindex = glob.front().index;
-							node_positions.row(gindex) = glob.front().node;
-							bary += glob.front().node;
+							node_positions_vec.resize(std::max(int(node_positions_vec.size()), gindex + 1));
+							node_positions_vec[gindex] = glob.front().node;
 							loc_nodes.push_back(gindex);
+							loc_local_nodes.push_back(nodes(n));
 						}
 
 						auto update_mapping = [&displacement_map_entries, &visited_node](const std::vector<int> &loc_nodes) {
@@ -267,10 +292,215 @@ namespace polyfem::io
 							}
 						};
 
-						if (loc_nodes.size() == 3)
+						// tri face
+						if (lid < 2)
+						{
+							if (loc_nodes.size() == 3)
+							{
+								tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
+
+								update_mapping(loc_nodes);
+							}
+							else if (loc_nodes.size() == 6)
+							{
+								tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[5]);
+								tris.emplace_back(loc_nodes[3], loc_nodes[1], loc_nodes[4]);
+								tris.emplace_back(loc_nodes[4], loc_nodes[2], loc_nodes[5]);
+								tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[5]);
+
+								update_mapping(loc_nodes);
+							}
+							else if (loc_nodes.size() == 10)
+							{
+								tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[8]);
+								tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[9]);
+								tris.emplace_back(loc_nodes[4], loc_nodes[1], loc_nodes[5]);
+								tris.emplace_back(loc_nodes[5], loc_nodes[6], loc_nodes[9]);
+								tris.emplace_back(loc_nodes[6], loc_nodes[2], loc_nodes[7]);
+								tris.emplace_back(loc_nodes[7], loc_nodes[8], loc_nodes[9]);
+								tris.emplace_back(loc_nodes[8], loc_nodes[3], loc_nodes[9]);
+								tris.emplace_back(loc_nodes[9], loc_nodes[4], loc_nodes[5]);
+								tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[9]);
+								update_mapping(loc_nodes);
+							}
+							else
+							{
+								logger().trace("skipping element {} since it is not linear, it has {} nodes", eid, loc_nodes.size());
+							}
+						}
+						else
+						{
+							if (loc_nodes.size() < 4 || loc_local_nodes.size() < 4)
+							{
+								logger().trace("skipping prism quad face {} since it has only {} complete nodes", eid, loc_nodes.size());
+								continue;
+							}
+
+							const int p = b.bases.empty() ? -1 : b.bases.front().order();
+							const int n_tri_nodes = (p + 1) * (p + 2) / 2;
+							const int q = n_tri_nodes > 0 && b.bases.size() % n_tri_nodes == 0 ? int(b.bases.size()) / n_tri_nodes - 1 : -1;
+
+							if (p < 1 || p > 3 || q < 1 || q > 3 || (p == 3 && q == 3))
+							{
+								logger().trace("skipping prism quad face {} with unsupported p={}, q={}", eid, p, q);
+								continue;
+							}
+
+							auto is_vertical_prism_edge = [](const int a, const int b) {
+								return (a >= 0 && a < 3 && b == a + 3) || (b >= 0 && b < 3 && a == b + 3);
+							};
+
+							std::vector<int> edge_orders(4);
+							for (int k = 0; k < 4; ++k)
+								edge_orders[k] = is_vertical_prism_edge(loc_local_nodes[k], loc_local_nodes[(k + 1) % 4]) ? q : p;
+
+							const int u_order = edge_orders[0];
+							const int v_order = edge_orders[1];
+							const int expected_nodes = (u_order + 1) * (v_order + 1);
+							if (loc_nodes.size() != expected_nodes || edge_orders[0] != edge_orders[2] || edge_orders[1] != edge_orders[3])
+							{
+								logger().trace("skipping prism quad face {} with p={}, q={} and {} nodes", eid, p, q, loc_nodes.size());
+								continue;
+							}
+
+							std::vector<int> grid(expected_nodes, -1);
+							auto grid_index = [u_order](const int i, const int j) {
+								return j * (u_order + 1) + i;
+							};
+
+							grid[grid_index(0, 0)] = loc_nodes[0];
+							grid[grid_index(u_order, 0)] = loc_nodes[1];
+							grid[grid_index(u_order, v_order)] = loc_nodes[2];
+							grid[grid_index(0, v_order)] = loc_nodes[3];
+
+							int node_index = 4;
+							for (int i = 1; i < u_order; ++i)
+								grid[grid_index(i, 0)] = loc_nodes[node_index++];
+							for (int j = 1; j < v_order; ++j)
+								grid[grid_index(u_order, j)] = loc_nodes[node_index++];
+							for (int i = u_order - 1; i > 0; --i)
+								grid[grid_index(i, v_order)] = loc_nodes[node_index++];
+							for (int j = v_order - 1; j > 0; --j)
+								grid[grid_index(0, j)] = loc_nodes[node_index++];
+
+							for (int j = 1; j < v_order; ++j)
+								for (int i = 1; i < u_order; ++i)
+									grid[grid_index(i, j)] = loc_nodes[node_index++];
+
+							assert(node_index == loc_nodes.size());
+							assert(std::all_of(grid.begin(), grid.end(), [](const int n) { return n >= 0; }));
+
+							for (int j = 0; j < v_order; ++j)
+							{
+								for (int i = 0; i < u_order; ++i)
+								{
+									tris.emplace_back(grid[grid_index(i, j)], grid[grid_index(i + 1, j)], grid[grid_index(i, j + 1)]);
+									tris.emplace_back(grid[grid_index(i + 1, j + 1)], grid[grid_index(i, j + 1)], grid[grid_index(i + 1, j)]);
+								}
+							}
+
+							update_mapping(loc_nodes);
+						}
+
+						continue;
+					}
+					else if (mesh.is_pyramid(lb.element_id()))
+					{
+						assert(!is_simplicial);
+						assert(!mesh.has_poly());
+						std::vector<int> loc_nodes;
+						std::vector<int> loc_local_nodes;
+
+						for (long n = 0; n < nodes.size(); ++n)
+						{
+							auto &bs = b.bases[nodes(n)];
+							const auto &glob = bs.global();
+							if (glob.size() != 1)
+								continue;
+
+							int gindex = glob.front().index;
+							node_positions_vec.resize(std::max(int(node_positions_vec.size()), gindex + 1));
+							node_positions_vec[gindex] = glob.front().node;
+							loc_nodes.push_back(gindex);
+							loc_local_nodes.push_back(nodes(n));
+						}
+
+						auto update_mapping = [&displacement_map_entries, &visited_node](const std::vector<int> &loc_nodes) {
+							for (int k = 0; k < loc_nodes.size(); ++k)
+							{
+								if (!visited_node[loc_nodes[k]])
+									displacement_map_entries.emplace_back(loc_nodes[k], loc_nodes[k], 1);
+
+								visited_node[loc_nodes[k]] = true;
+							}
+						};
+
+						const int p = b.bases.empty() ? -1 : b.bases.front().order();
+						if (p < 1 || p > 3)
+						{
+							logger().trace("skipping pyramid face {} with unsupported p={}", eid, p);
+							continue;
+						}
+
+						if (lid == 0)
+						{
+							const int expected_nodes = (p + 1) * (p + 1);
+							if (loc_nodes.size() != expected_nodes || loc_local_nodes.size() != expected_nodes)
+							{
+								logger().trace("skipping pyramid quad face {} with p={} and {} nodes", eid, p, loc_nodes.size());
+								continue;
+							}
+
+							Eigen::MatrixXd pyramid_nodes;
+							autogen::pyramid_nodes_3d(p, pyramid_nodes);
+
+							const Eigen::RowVector3d origin = pyramid_nodes.row(loc_local_nodes[0]);
+							const Eigen::RowVector3d u_axis = pyramid_nodes.row(loc_local_nodes[1]) - origin;
+							const Eigen::RowVector3d v_axis = pyramid_nodes.row(loc_local_nodes[3]) - origin;
+
+							std::vector<int> grid(expected_nodes, -1);
+							auto grid_index = [p](const int i, const int j) {
+								return j * (p + 1) + i;
+							};
+
+							bool valid_grid = true;
+							for (int n = 0; n < loc_nodes.size(); ++n)
+							{
+								const Eigen::RowVector3d rel = pyramid_nodes.row(loc_local_nodes[n]) - origin;
+								const int i = int(std::lround(p * rel.dot(u_axis) / u_axis.squaredNorm()));
+								const int j = int(std::lround(p * rel.dot(v_axis) / v_axis.squaredNorm()));
+								if (i < 0 || i > p || j < 0 || j > p)
+								{
+									logger().trace("skipping pyramid quad face {} with invalid local grid coordinate ({}, {})", eid, i, j);
+									valid_grid = false;
+									break;
+								}
+								if (grid[grid_index(i, j)] >= 0)
+								{
+									logger().trace("skipping pyramid quad face {} with duplicate local grid coordinate ({}, {})", eid, i, j);
+									valid_grid = false;
+									break;
+								}
+								grid[grid_index(i, j)] = loc_nodes[n];
+							}
+
+							if (!valid_grid || !std::all_of(grid.begin(), grid.end(), [](const int n) { return n >= 0; }))
+								continue;
+
+							for (int j = 0; j < p; ++j)
+							{
+								for (int i = 0; i < p; ++i)
+								{
+									tris.emplace_back(grid[grid_index(i, j)], grid[grid_index(i + 1, j)], grid[grid_index(i, j + 1)]);
+									tris.emplace_back(grid[grid_index(i + 1, j + 1)], grid[grid_index(i, j + 1)], grid[grid_index(i + 1, j)]);
+								}
+							}
+
+							update_mapping(loc_nodes);
+						}
+						else if (loc_nodes.size() == 3)
 						{
 							tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
-
 							update_mapping(loc_nodes);
 						}
 						else if (loc_nodes.size() == 6)
@@ -279,7 +509,6 @@ namespace polyfem::io
 							tris.emplace_back(loc_nodes[3], loc_nodes[1], loc_nodes[4]);
 							tris.emplace_back(loc_nodes[4], loc_nodes[2], loc_nodes[5]);
 							tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[5]);
-
 							update_mapping(loc_nodes);
 						}
 						else if (loc_nodes.size() == 10)
@@ -295,90 +524,9 @@ namespace polyfem::io
 							tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[9]);
 							update_mapping(loc_nodes);
 						}
-						else if (loc_nodes.size() == 15)
-						{
-							tris.emplace_back(loc_nodes[0], loc_nodes[3], loc_nodes[11]);
-							tris.emplace_back(loc_nodes[3], loc_nodes[4], loc_nodes[12]);
-							tris.emplace_back(loc_nodes[3], loc_nodes[12], loc_nodes[11]);
-							tris.emplace_back(loc_nodes[12], loc_nodes[10], loc_nodes[11]);
-							tris.emplace_back(loc_nodes[4], loc_nodes[5], loc_nodes[13]);
-							tris.emplace_back(loc_nodes[4], loc_nodes[13], loc_nodes[12]);
-							tris.emplace_back(loc_nodes[12], loc_nodes[13], loc_nodes[14]);
-							tris.emplace_back(loc_nodes[12], loc_nodes[14], loc_nodes[10]);
-							tris.emplace_back(loc_nodes[14], loc_nodes[9], loc_nodes[10]);
-							tris.emplace_back(loc_nodes[5], loc_nodes[1], loc_nodes[6]);
-							tris.emplace_back(loc_nodes[5], loc_nodes[6], loc_nodes[13]);
-							tris.emplace_back(loc_nodes[6], loc_nodes[7], loc_nodes[13]);
-							tris.emplace_back(loc_nodes[13], loc_nodes[7], loc_nodes[14]);
-							tris.emplace_back(loc_nodes[7], loc_nodes[8], loc_nodes[14]);
-							tris.emplace_back(loc_nodes[14], loc_nodes[8], loc_nodes[9]);
-							tris.emplace_back(loc_nodes[8], loc_nodes[2], loc_nodes[9]);
-							update_mapping(loc_nodes);
-						}
-						else if (loc_nodes.size() == 4)
-						{
-							bary /= 4;
-
-							const int new_node = n_bases + eid;
-							node_positions.row(new_node) = bary;
-							tris.emplace_back(loc_nodes[1], loc_nodes[0], new_node);
-							tris.emplace_back(loc_nodes[2], loc_nodes[1], new_node);
-							tris.emplace_back(loc_nodes[3], loc_nodes[2], new_node);
-							tris.emplace_back(loc_nodes[0], loc_nodes[3], new_node);
-
-							update_mapping(loc_nodes);
-						}
 						else
 						{
-							logger().trace("skipping element {} since it is not linear, it has {} nodes", eid, loc_nodes.size());
-							continue;
-						}
-
-						continue;
-					}
-
-					else if (mesh.is_pyramid(lb.element_id()))
-					{
-						assert(!is_simplicial);
-						assert(!mesh.has_poly());
-						std::vector<int> loc_nodes;
-
-						for (long n = 0; n < nodes.size(); ++n)
-						{
-							auto &bs = b.bases[nodes(n)];
-							const auto &glob = bs.global();
-							if (glob.size() != 1)
-								continue;
-
-							int gindex = glob.front().index;
-							node_positions.row(gindex) = glob.front().node;
-							loc_nodes.push_back(gindex);
-						}
-
-						auto update_mapping = [&displacement_map_entries, &visited_node](const std::vector<int> &loc_nodes) {
-							for (int k = 0; k < loc_nodes.size(); ++k)
-							{
-								if (!visited_node[loc_nodes[k]])
-									displacement_map_entries.emplace_back(loc_nodes[k], loc_nodes[k], 1);
-
-								visited_node[loc_nodes[k]] = true;
-							}
-						};
-
-						if (loc_nodes.size() == 3)
-						{
-							tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
-							update_mapping(loc_nodes);
-						}
-						else if (loc_nodes.size() == 4)
-						{
-							tris.emplace_back(loc_nodes[0], loc_nodes[1], loc_nodes[2]);
-							tris.emplace_back(loc_nodes[0], loc_nodes[2], loc_nodes[3]);
-							update_mapping(loc_nodes);
-						}
-						else
-						{
-							logger().trace("skipping element {} since it is not linear, it has {} nodes", eid, loc_nodes.size());
+							logger().trace("skipping pyramid tri face {} with p={} and {} nodes", eid, p, loc_nodes.size());
 							continue;
 						}
 
@@ -421,7 +569,8 @@ namespace polyfem::io
 							continue;
 
 						int gindex = glob.front().index;
-						node_positions.row(gindex) = glob.front().node;
+						node_positions_vec.resize(std::max(int(node_positions_vec.size()), gindex + 1));
+						node_positions_vec[gindex] = glob.front().node;
 						loc_nodes.push_back(gindex);
 					}
 
@@ -489,6 +638,10 @@ namespace polyfem::io
 			if (print_warning.str().size() > 0)
 				logger().warn("Skipping faces as theys have {} nodes, boundary export supported up to p4", print_warning.str());
 
+			node_positions.resize(node_positions_vec.size(), 3);
+			for (int i = 0; i < node_positions_vec.size(); ++i)
+				node_positions.row(i) = node_positions_vec[i];
+
 			boundary_triangles.resize(tris.size(), 3);
 			for (int i = 0; i < tris.size(); ++i)
 			{
@@ -499,6 +652,9 @@ namespace polyfem::io
 			{
 				igl::edges(boundary_triangles, boundary_edges);
 			}
+
+			// igl::write_triangle_mesh("boundary.obj", node_positions, boundary_triangles);
+			// exit(0);
 		}
 		else
 		{
@@ -1018,7 +1174,10 @@ namespace polyfem::io
 				}
 				else if (mesh.is_pyramid(i))
 				{
-					autogen::pyramid_nodes_3d(disc_orders(i) == 2 ? -1 : disc_orders(i), ref_pts);
+					if (disc_orders(i) == 1)
+						pyramid_nodes_for_output(1, ref_pts);
+					else
+						ref_pts = ref_element_sampler.pyramid_points();
 				}
 				else
 					continue;
@@ -1065,7 +1224,10 @@ namespace polyfem::io
 				}
 				else if (mesh.is_pyramid(i))
 				{
-					autogen::pyramid_nodes_3d(disc_orders(i) == 2 ? -1 : disc_orders(i), ref_pts);
+					if (disc_orders(i) == 1)
+						pyramid_nodes_for_output(1, ref_pts);
+					else
+						ref_pts = ref_element_sampler.pyramid_points();
 				}
 				else
 					continue;
@@ -1142,10 +1304,13 @@ namespace polyfem::io
 				// 	std::swap(elements[i].vertices[29], elements[i].vertices[31]);  // hack
 				// }
 				if (disc_orders(i) > 2)
-					error_msg = "Saving high-order meshes not implemented for P2+ elements!";
+					error_msg = "Saving high-order meshes not implemented for Q2+ elements!";
 			}
 			else if (disc_orders(i) > 1)
-				error_msg = "Saving high-order meshes not implemented for Q2+ elements!";
+			{
+				if (mesh.is_cube(i))
+					error_msg = "Saving high-order meshes not implemented for Q2+ elements!";
+			}
 		}
 
 		if (!error_msg.empty())
@@ -1196,6 +1361,33 @@ namespace polyfem::io
 				else if (mesh.is_pyramid(i))
 					elements[i].ctype = CellType::Pyramid;
 			}
+		}
+
+		if (mesh.is_volume())
+		{
+			// ParaView does not reliably render high-order Lagrange pyramids;
+			// tessellate only those cells while keeping linear pyramids and the
+			// other element types in their native representation.
+			std::vector<CellElement> expanded_elements;
+			expanded_elements.reserve(elements.size());
+			for (size_t i = 0; i < bases.size(); ++i)
+			{
+				if (!mesh.is_pyramid(i) || disc_orders(i) == 1)
+				{
+					expanded_elements.push_back(std::move(elements[i]));
+					continue;
+				}
+
+				for (int t = 0; t < ref_element_sampler.pyramid_volume().rows(); ++t)
+				{
+					CellElement tet;
+					tet.ctype = CellType::Tetrahedron;
+					for (int j = 0; j < ref_element_sampler.pyramid_volume().cols(); ++j)
+						tet.vertices.push_back(elements[i].vertices[ref_element_sampler.pyramid_volume()(t, j)]);
+					expanded_elements.push_back(std::move(tet));
+				}
+			}
+			elements.swap(expanded_elements);
 		}
 
 		assert(pts_index == points.rows());
@@ -1573,7 +1765,7 @@ namespace polyfem::io
 		Eigen::Vector<bool, -1> validity;
 		if (opts.jacobian_validity)
 			Evaluator::mark_flipped_cells(
-				mesh, gbases, bases, state.disc_orders,
+				mesh, gbases, bases, state.disc_orders, state.disc_ordersq,
 				state.polys, state.polys_3d, ref_element_sampler,
 				points.rows(), sol, validity, opts.use_sampler, opts.boundary_only);
 
@@ -1829,7 +2021,7 @@ namespace polyfem::io
 				const basis::ElementBases &gbs = gbases[e];
 				const basis::ElementBases &bs = bases[e];
 
-				if (opts.use_sampler)
+				if (opts.use_sampler || (mesh.is_volume() && mesh.is_pyramid(e) && disc_orders(e) > 1))
 				{
 					if (mesh.is_simplex(e))
 						local_pts = sampler.simplex_points();
@@ -1861,8 +2053,7 @@ namespace polyfem::io
 							autogen::prism_nodes_3d(o, o, local_pts);
 						}
 						else if (mesh.is_pyramid(e))
-							autogen::pyramid_nodes_3d(disc_orders(e) == 2 ? -1 : disc_orders(e), local_pts);
-
+							pyramid_nodes_for_output(disc_orders(e), local_pts);
 						else
 							continue;
 					}
