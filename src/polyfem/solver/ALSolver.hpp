@@ -59,7 +59,6 @@ namespace polyfem::solver
 		const double max_al_weight;
 		const double eta_tol;
 
-		// TODO: replace this with a member function
 		std::function<void(const Eigen::VectorXd &)> update_barrier_stiffness;
 	};
 } // namespace polyfem::solver
