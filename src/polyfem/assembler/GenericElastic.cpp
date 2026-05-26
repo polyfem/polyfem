@@ -101,6 +101,7 @@ namespace polyfem::assembler
 				
 			if (type == ElasticityTensorType::ENERGY)
 			{
+				all(p, 0) = val.getValue();
 				continue;
 			}
 
