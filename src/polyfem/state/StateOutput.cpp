@@ -50,7 +50,7 @@ namespace polyfem
 	{
 		if (variational_formulation)
 		{
-			io::VarFormOutputWriter(*variational_formulation).save_timestep(time, t, t0, dt, sol, pressure);
+			io::VarFormOutputWriter(*variational_formulation).save_timestep(time, t, t0, dt, sol);
 			return;
 		}
 
@@ -132,7 +132,7 @@ namespace polyfem
 	{
 		if (variational_formulation)
 		{
-			io::VarFormOutputWriter(*variational_formulation).save_subsolve(i, t, sol, pressure);
+			io::VarFormOutputWriter(*variational_formulation).save_subsolve(i, t, sol);
 			return;
 		}
 
@@ -157,7 +157,7 @@ namespace polyfem
 	{
 		if (variational_formulation)
 		{
-			io::VarFormOutputWriter(*variational_formulation).export_data(sol, pressure);
+			io::VarFormOutputWriter(*variational_formulation).export_data(sol);
 			return;
 		}
 

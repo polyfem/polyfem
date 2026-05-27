@@ -34,6 +34,7 @@
 
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/io/OBJWriter.hpp>
+#include <polyfem/io/Evaluator.hpp>
 #include <polyfem/io/VarFormOutputWriter.hpp>
 
 #include <polyfem/solver/ALSolver.hpp>
@@ -237,7 +238,6 @@ namespace polyfem::varform
 		VarForm::reset();
 
 		bases.clear();
-		pressure_bases.clear();
 		geom_bases_.clear();
 		boundary_nodes.clear();
 		dirichlet_nodes.clear();
@@ -252,7 +252,6 @@ namespace polyfem::varform
 
 		n_bases = 0;
 		n_geom_bases = 0;
-		n_pressure_bases = 0;
 		rhs.resize(0, 0);
 		mass.resize(0, 0);
 		mesh_ = nullptr;
@@ -1026,11 +1025,10 @@ namespace polyfem::varform
 		logger().info("sparsity: {}/{}", stats.nn_zero, stats.mat_size);
 	}
 
-	void NonlinearElasticTransientVarForm::solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
+	void NonlinearElasticTransientVarForm::solve(Eigen::MatrixXd &sol)
 	{
 		const bool save_stats = args["output"]["stats"];
 		stats.spectrum.setZero();
-		pressure.resize(0, 0);
 
 		igl::Timer timer;
 		timer.start();
@@ -1070,7 +1068,7 @@ namespace polyfem::varform
 		// Save the initial solution
 		if (energy_csv)
 			energy_csv->write(save_i, sol);
-		output_writer.save_timestep(t0, save_i, t0, dt, sol, pressure);
+		output_writer.save_timestep(t0, save_i, t0, dt, sol);
 
 		save_i++;
 
@@ -1086,7 +1084,7 @@ namespace polyfem::varform
 			// Always save the solution for consistency
 			if (energy_csv)
 				energy_csv->write(save_i, sol);
-			output_writer.save_timestep(t0 + dt * t, t, t0, dt, sol, pressure);
+			output_writer.save_timestep(t0 + dt * t, t, t0, dt, sol);
 			save_i++;
 
 			{
@@ -1132,7 +1130,7 @@ namespace polyfem::varform
 			// Elastic form
 			n_bases, bases, geom_bases(), *assembler, ass_vals_cache, mass_ass_vals_cache, args["solver"]["advanced"]["jacobian_threshold"], check_inversion,
 			// Body form
-			n_pressure_bases, boundary_nodes, local_boundary,
+			0, boundary_nodes, local_boundary,
 			local_neumann_boundary,
 			n_boundary_samples(), rhs, sol, mass_matrix_assembler->density(),
 			// Pressure form
@@ -1353,7 +1351,7 @@ namespace polyfem::varform
 			logger().info("Lagging iteration 1:");
 		}
 
-		output_writer.save_subsolve(0, step, sol, Eigen::MatrixXd());
+		output_writer.save_subsolve(0, step, sol);
 
 		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver =
 			polysolve::nonlinear::Solver::create(args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger());
@@ -1375,7 +1373,7 @@ namespace polyfem::varform
 				 {"info", nl_solver->info()}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
-			output_writer.save_subsolve(stats.solver_info.size(), step, sol, Eigen::MatrixXd());
+			output_writer.save_subsolve(stats.solver_info.size(), step, sol);
 		};
 
 		Eigen::MatrixXd prev_sol = sol;
@@ -1445,12 +1443,125 @@ namespace polyfem::varform
 				 {"t", step},
 				 {"lag_i", lag_i},
 				 {"info", nl_solver->info()}});
-			output_writer.save_subsolve(stats.solver_info.size(), step, sol, Eigen::MatrixXd());
+			output_writer.save_subsolve(stats.solver_info.size(), step, sol);
 		}
+	}
+
+	std::vector<io::OutputField> NonlinearElasticTransientVarForm::output_fields(
+		const io::OutputSample &sample,
+		const Eigen::MatrixXd &solution,
+		const io::OutputFieldOptions &options) const
+	{
+		std::vector<io::OutputField> fields;
+		if (!mesh_ || !problem || solution.size() <= 0)
+			return fields;
+
+		const bool export_primary = primary_output_name() != "solution" && options.export_field(primary_output_name());
+		const bool export_solution = options.export_field("solution");
+		if (!export_primary && !export_solution)
+			return fields;
+
+		const int actual_dim = problem->is_scalar() ? 1 : mesh_->dimension();
+		Eigen::MatrixXd values;
+
+		const auto append_obstacle_values = [&](Eigen::MatrixXd &sampled_values) -> bool {
+			if (obstacle.n_vertices() <= 0)
+				return sample.points.rows() == 0 || sample.points.rows() == sampled_values.rows();
+
+			const bool has_obstacle_rows =
+				sample.points.rows() == sampled_values.rows() + obstacle.n_vertices()
+				&& sample.points.cols() == obstacle.v().cols()
+				&& sample.points.bottomRows(obstacle.n_vertices()).isApprox(obstacle.v());
+
+			if (!has_obstacle_rows)
+				return sample.points.rows() == 0 || sample.points.rows() == sampled_values.rows();
+
+			sampled_values.conservativeResize(sampled_values.rows() + obstacle.n_vertices(), sampled_values.cols());
+			sampled_values.bottomRows(obstacle.n_vertices()) =
+				utils::unflatten(solution.bottomRows(obstacle.ndof()), sampled_values.cols());
+			return true;
+		};
+
+		const auto sample_from_elements = [&]() -> bool {
+			if (sample.local_points.rows() <= 0 || sample.local_points.rows() != sample.element_ids.size())
+				return false;
+
+			Eigen::MatrixXd sampled_values(sample.local_points.rows(), actual_dim);
+			for (int i = 0; i < sample.local_points.rows(); ++i)
+			{
+				const int element_id = sample.element_ids(i);
+				if (element_id < 0)
+				{
+					sampled_values.row(i).setZero();
+					continue;
+				}
+
+				Eigen::MatrixXd local_sol, local_grad;
+				io::Evaluator::interpolate_at_local_vals(
+					*mesh_, problem->is_scalar(), bases, geom_bases(),
+					element_id, sample.local_points.row(i), solution, local_sol, local_grad);
+
+				for (int d = 0; d < actual_dim; ++d)
+					sampled_values(i, d) = local_sol(d);
+			}
+
+			if (!append_obstacle_values(sampled_values))
+				return false;
+
+			values = std::move(sampled_values);
+			return true;
+		};
+
+		const auto sample_from_nodes = [&]() -> bool {
+			if (sample.node_ids.size() <= 0)
+				return false;
+
+			Eigen::MatrixXd sampled_values(sample.node_ids.size(), actual_dim);
+			for (int i = 0; i < sample.node_ids.size(); ++i)
+			{
+				const int node_id = sample.node_ids(i);
+				for (int d = 0; d < actual_dim; ++d)
+				{
+					const int dof = node_id * actual_dim + d;
+					if (dof < 0 || dof >= solution.rows())
+						return false;
+					sampled_values(i, d) = solution(dof);
+				}
+			}
+
+			if (sample.points.rows() > 0 && sample.points.rows() != sampled_values.rows())
+				return false;
+
+			values = std::move(sampled_values);
+			return true;
+		};
+
+		const auto sample_from_collision_mesh = [&]() -> bool {
+			if (sample.points.rows() <= 0
+				|| sample.points.rows() != collision_mesh.rest_positions().rows()
+				|| sample.points.cols() != collision_mesh.rest_positions().cols()
+				|| !sample.points.isApprox(collision_mesh.rest_positions()))
+				return false;
+
+			values = collision_mesh.map_displacements(utils::unflatten(solution, actual_dim));
+			return values.rows() == sample.points.rows();
+		};
+
+		if (!sample_from_elements() && !sample_from_nodes() && !sample_from_collision_mesh())
+		{
+			return fields;
+		}
+
+		if (export_primary)
+			fields.push_back({primary_output_name(), values, io::OutputField::Association::Point});
+		if (export_solution)
+			fields.push_back({"solution", values, io::OutputField::Association::Point});
+		return fields;
 	}
 
 	io::OutputState NonlinearElasticTransientVarForm::output_state() const
 	{
+		static const std::vector<basis::ElementBases> empty_mixed_bases;
 		return {
 			args,
 			mesh_,
@@ -1460,10 +1571,10 @@ namespace polyfem::varform
 			nullptr,
 			solve_data,
 			bases,
-			pressure_bases,
+			empty_mixed_bases,
 			geom_bases_,
 			n_bases,
-			n_pressure_bases,
+			0,
 			disc_orders,
 			disc_ordersq,
 			in_node_to_node,
@@ -1483,7 +1594,8 @@ namespace polyfem::varform
 			n_boundary_samples(),
 			stats,
 			timings,
-			stats.min_edge_length};
+			stats.min_edge_length,
+			this};
 	}
 
 	void NonlinearElasticTransientVarForm::sync_state(State &state) const

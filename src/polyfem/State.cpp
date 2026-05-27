@@ -1704,7 +1704,8 @@ namespace polyfem
 		timer.start();
 		if (variational_formulation)
 		{
-			variational_formulation->solve(sol, pressure);
+			pressure.resize(0, 0);
+			variational_formulation->solve(sol);
 			variational_formulation->sync_state(*this);
 			timer.stop();
 			timings.solving_time = timer.getElapsedTime();

@@ -61,7 +61,7 @@ namespace polyfem::io
 		return out.args["contact"]["enabled"];
 	}
 
-	void VarFormOutputWriter::export_data(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure)
+	void VarFormOutputWriter::export_data(const Eigen::MatrixXd &sol)
 	{
 		const OutputState out = var_form_.output_state();
 		if (!out.mesh)
@@ -94,7 +94,7 @@ namespace polyfem::io
 			dt = out.args["time"]["dt"];
 
 		out_geom_.export_data(
-			out, sol, pressure,
+			out, sol, Eigen::MatrixXd(),
 			!out.args["time"].is_null(),
 			tend, dt,
 			export_options(out),
@@ -106,7 +106,7 @@ namespace polyfem::io
 			is_contact_enabled(out));
 	}
 
-	void VarFormOutputWriter::save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure)
+	void VarFormOutputWriter::save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &sol)
 	{
 		const OutputState out = var_form_.output_state();
 		if (!out.mesh || !out.args["output"]["advanced"]["save_time_sequence"])
@@ -120,7 +120,7 @@ namespace polyfem::io
 		const std::string step_name = out.args["output"]["advanced"]["timestep_prefix"];
 		out_geom_.save_vtu(
 			resolve_output_path(fmt::format(step_name + "{:d}.vtu", t)),
-			out, sol, pressure, time, dt,
+			out, sol, Eigen::MatrixXd(), time, dt,
 			export_options(out),
 			is_contact_enabled(out));
 
@@ -130,7 +130,7 @@ namespace polyfem::io
 			t, t0, dt, out.args["output"]["paraview"]["skip_frame"].get<int>());
 	}
 
-	void VarFormOutputWriter::save_subsolve(const int i, const int t, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure)
+	void VarFormOutputWriter::save_subsolve(const int i, const int t, const Eigen::MatrixXd &sol)
 	{
 		const OutputState out = var_form_.output_state();
 		if (!out.mesh || !out.args["output"]["advanced"]["save_solve_sequence_debug"].get<bool>())
@@ -143,7 +143,7 @@ namespace polyfem::io
 		ensure_sampler();
 		out_geom_.save_vtu(
 			resolve_output_path(fmt::format("solve_{:d}.vtu", i)),
-			out, sol, pressure, t, dt,
+			out, sol, Eigen::MatrixXd(), t, dt,
 			export_options(out),
 			is_contact_enabled(out));
 	}

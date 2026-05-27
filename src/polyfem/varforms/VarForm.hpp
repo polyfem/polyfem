@@ -30,12 +30,19 @@ namespace polyfem
 			virtual void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) = 0;
 			virtual void assemble_rhs(const mesh::Mesh &mesh, const json &args) = 0;
 			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) = 0;
-			virtual void solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure) = 0;
+			virtual void solve(Eigen::MatrixXd &sol) = 0;
 			virtual void sync_state(State &state) const = 0;
 
 			virtual std::string name() const = 0;
 			virtual std::string primary_output_name() const { return "solution"; }
 			virtual io::OutputState output_state() const = 0;
+			virtual std::vector<io::OutputField> output_fields(
+				const io::OutputSample &sample,
+				const Eigen::MatrixXd &solution,
+				const io::OutputFieldOptions &options) const
+			{
+				return {};
+			}
 
 		protected:
 			std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const;

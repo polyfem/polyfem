@@ -19,9 +19,9 @@ namespace polyfem::io
 	public:
 		explicit VarFormOutputWriter(const varform::VarForm &var_form);
 
-		void export_data(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure);
-		void save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure);
-		void save_subsolve(const int i, const int t, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure);
+		void export_data(const Eigen::MatrixXd &sol);
+		void save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &sol);
+		void save_subsolve(const int i, const int t, const Eigen::MatrixXd &sol);
 		void save_json(const Eigen::MatrixXd &sol);
 		void save_json(const Eigen::MatrixXd &sol, std::ostream &out);
 		void save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol);

@@ -27,12 +27,16 @@ namespace polyfem::varform
 
 		void assemble_rhs(const mesh::Mesh &mesh, const json &args) override;
 		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
-		void solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure) override;
+		void solve(Eigen::MatrixXd &sol) override;
 		void sync_state(State &state) const override;
 
 		std::string name() const override { return "NonlinearElasticTransient"; }
 		std::string primary_output_name() const override { return "displacement"; }
 		io::OutputState output_state() const override;
+		std::vector<io::OutputField> output_fields(
+			const io::OutputSample &sample,
+			const Eigen::MatrixXd &solution,
+			const io::OutputFieldOptions &options) const override;
 
 	protected:
 		void reset() override;
@@ -91,8 +95,6 @@ namespace polyfem::varform
 
 		/// FE bases, the size is #elements
 		std::vector<basis::ElementBases> bases;
-		/// Empty pressure space placeholder for output APIs shared with legacy mixed formulations.
-		std::vector<basis::ElementBases> pressure_bases;
 		/// Geometric mapping bases, if the elements are isoparametric, this list is empty
 		std::vector<basis::ElementBases> geom_bases_;
 
@@ -100,7 +102,6 @@ namespace polyfem::varform
 		int n_bases;
 		/// number of geometric bases
 		int n_geom_bases;
-		int n_pressure_bases = 0;
 
 		/// polygons, used since poly have no geom mapping
 		std::map<int, Eigen::MatrixXd> polys;

@@ -26,6 +26,11 @@ namespace polyfem
 	class State;
 }
 
+namespace polyfem::varform
+{
+	class VarForm;
+} // namespace polyfem::varform
+
 namespace polyfem::assembler
 {
 	class Assembler;
@@ -47,6 +52,37 @@ namespace polyfem::io
 {
 	class OutRuntimeData;
 	class OutStatsData;
+
+	struct OutputFieldOptions
+	{
+		std::vector<std::string> fields;
+
+		bool export_field(const std::string &field) const;
+	};
+
+	struct OutputSample
+	{
+		Eigen::MatrixXd points;
+		Eigen::MatrixXd local_points;
+		Eigen::VectorXi element_ids;
+		Eigen::VectorXi node_ids;
+		Eigen::MatrixXd normals;
+		double time = 0;
+		double dt = 0;
+	};
+
+	struct OutputField
+	{
+		enum class Association
+		{
+			Point,
+			Cell
+		};
+
+		std::string name;
+		Eigen::MatrixXd values;
+		Association association = Association::Point;
+	};
 
 	struct OutputState
 	{
@@ -84,6 +120,7 @@ namespace polyfem::io
 		const OutStatsData &stats;
 		const OutRuntimeData &timings;
 		const double starting_min_edge_length;
+		const varform::VarForm *var_form = nullptr;
 
 		const std::vector<basis::ElementBases> &geom_bases() const
 		{
@@ -437,7 +474,8 @@ namespace polyfem::io
 			Eigen::MatrixXd &points,
 			Eigen::MatrixXi &tets,
 			Eigen::MatrixXi &el_id,
-			Eigen::MatrixXd &discr) const;
+			Eigen::MatrixXd &discr,
+			Eigen::MatrixXd &local_points) const;
 
 		/// builds high-der visualzation mesh per element all disconnected
 		/// it also retuns the mapping to element id and discretization of every elment
@@ -458,7 +496,8 @@ namespace polyfem::io
 			Eigen::MatrixXd &points,
 			std::vector<std::vector<int>> &elements,
 			Eigen::MatrixXi &el_id,
-			Eigen::MatrixXd &discr) const;
+			Eigen::MatrixXd &discr,
+			Eigen::MatrixXd &local_points) const;
 
 		void save_volume_vector_field(
 			const OutputState &state,
