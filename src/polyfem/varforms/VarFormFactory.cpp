@@ -7,11 +7,6 @@ namespace polyfem::varform
 {
 	bool VarFormFactory::supports(const std::string &formulation, const json &args)
 	{
-		// Keep the migration opt-in and boring: only transient nonlinear tensor
-		// elasticity is routed through the new VarForm path for now.
-		if (!args.contains("time") || args["time"].is_null())
-			return false;
-
 		if (args.value("/space/remesh/enabled"_json_pointer, false))
 			return false;
 
@@ -23,13 +18,24 @@ namespace polyfem::varform
 			return false;
 
 		const auto assembler = assembler::AssemblerUtils::make_assembler(formulation);
-		if (!assembler || assembler->is_linear() || !assembler->is_tensor() || assembler->is_fluid())
+		if (!assembler || !assembler->is_tensor() || assembler->is_fluid())
 			return false;
 
 		if (!assembler::AssemblerUtils::other_assembler_name(formulation).empty())
 			return false;
 
-		return true;
+		if (!assembler->is_linear())
+			return true;
+
+		const bool has_contact = args.value("/contact/enabled"_json_pointer, false);
+		const bool has_pressure =
+			args["boundary_conditions"]["pressure_boundary"].size() > 0
+			|| args["boundary_conditions"]["pressure_cavity"].size() > 0;
+		const bool has_constraints =
+			args.contains("constraints")
+			&& (!args["constraints"]["hard"].empty() || !args["constraints"]["soft"].empty());
+
+		return has_contact || has_pressure || has_constraints;
 	}
 
 	std::shared_ptr<VarForm> VarFormFactory::create(const std::string &formulation, const json &args)
@@ -37,6 +43,9 @@ namespace polyfem::varform
 		if (!supports(formulation, args))
 			return nullptr;
 
-		return std::make_shared<NonlinearElasticTransientVarForm>();
+		if (args.contains("time") && !args["time"].is_null())
+			return std::make_shared<NonlinearElasticTransientVarForm>();
+
+		return std::make_shared<NonlinearElasticStaticVarForm>();
 	}
 } // namespace polyfem::varform

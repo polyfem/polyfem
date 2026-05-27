@@ -68,4 +68,10 @@ namespace polyfem::varform
 		int time_steps;
 		double dt;
 	};
+
+	class NonlinearElasticStaticVarForm : public NonlinearElasticTransientVarForm
+	{
+	public:
+		std::string name() const override { return "NonlinearElasticStatic"; }
+	};
 } // namespace polyfem::varform

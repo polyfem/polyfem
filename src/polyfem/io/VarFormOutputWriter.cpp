@@ -88,14 +88,15 @@ namespace polyfem::io
 		const std::string stress_path = resolve_output_path(out.args["output"]["data"]["stress_mat"]);
 		const std::string mises_path = resolve_output_path(out.args["output"]["data"]["mises"]);
 
+		const bool has_time = out.args.contains("time") && !out.args["time"].is_null();
 		double tend = out.args.value("tend", 1.0);
 		double dt = 1;
-		if (!out.args["time"].is_null())
+		if (has_time)
 			dt = out.args["time"]["dt"];
 
 		out_geom_.export_data(
 			out, sol, Eigen::MatrixXd(),
-			!out.args["time"].is_null(),
+			has_time,
 			tend, dt,
 			export_options(out),
 			vis_mesh_path,
@@ -136,8 +137,9 @@ namespace polyfem::io
 		if (!out.mesh || !out.args["output"]["advanced"]["save_solve_sequence_debug"].get<bool>())
 			return;
 
+		const bool has_time = out.args.contains("time") && !out.args["time"].is_null();
 		double dt = 1;
-		if (!out.args["time"].is_null())
+		if (has_time)
 			dt = out.args["time"]["dt"];
 
 		ensure_sampler();

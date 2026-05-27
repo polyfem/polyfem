@@ -260,6 +260,7 @@ namespace polyfem::varform
 	void NonlinearElasticTransientVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
 	{
 		VarForm::init(formulation, units, args, out_path);
+		const bool is_time_dependent = args.contains("time") && !args["time"].is_null();
 
 		assembler = assembler::AssemblerUtils::make_assembler(formulation);
 		assert(assembler->name() == formulation);
@@ -276,7 +277,8 @@ namespace polyfem::varform
 			problem = std::make_shared<assembler::GenericTensorProblem>("GenericTensor");
 
 			problem->clear();
-			const auto tmp = R"({"is_time_dependent": true})"_json;
+			json tmp;
+			tmp["is_time_dependent"] = is_time_dependent;
 			problem->set_parameters(tmp);
 
 			// important for the BC
@@ -306,9 +308,9 @@ namespace polyfem::varform
 
 		problem->set_units(*assembler, units);
 
-		t0 = args["time"]["t0"];
-		time_steps = args["time"]["time_steps"];
-		dt = args["time"]["dt"];
+		t0 = is_time_dependent ? args["time"]["t0"].get<double>() : 0.0;
+		time_steps = is_time_dependent ? args["time"]["time_steps"].get<int>() : 0;
+		dt = is_time_dependent ? args["time"]["dt"].get<double>() : 0.0;
 	}
 
 	void NonlinearElasticTransientVarForm::load_mesh(const mesh::Mesh &mesh, const json &args)
@@ -1039,7 +1041,21 @@ namespace polyfem::varform
 			if (sol.cols() > 1) // ignore previous solutions
 				sol.conservativeResize(Eigen::NoChange, 1);
 		}
-		init_solve(sol, t0 + dt);
+		init_solve(sol, problem->is_time_dependent() ? t0 + dt : 1.0);
+
+		if (!problem->is_time_dependent())
+		{
+			solve_tensor_nonlinear(0, sol, true);
+
+			const std::string state_path = resolve_output_path(args["output"]["data"]["state"]);
+			if (!state_path.empty())
+				io::write_matrix(state_path, "u", sol);
+
+			timer.stop();
+			timings.solving_time = timer.getElapsedTime();
+			logger().info(" took {}s", timings.solving_time);
+			return;
+		}
 
 		// Write the total energy to a CSV file
 		int save_i = 0;
@@ -1210,6 +1226,7 @@ namespace polyfem::varform
 
 		// --------------------------------------------------------------------
 
+		if (problem->is_time_dependent())
 		{
 			POLYFEM_SCOPED_TIMER("Initialize time integrator");
 			solve_data.time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
@@ -1224,8 +1241,12 @@ namespace polyfem::varform
 			assert(acceleration.rows() == sol.size());
 
 			solve_data.time_integrator->init(solution, velocity, acceleration, dt);
+			assert(solve_data.time_integrator != nullptr);
 		}
-		assert(solve_data.time_integrator != nullptr);
+		else
+		{
+			solve_data.time_integrator = nullptr;
+		}
 
 		// --------------------------------------------------------------------
 		// Initialize forms
