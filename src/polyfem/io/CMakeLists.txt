@@ -13,6 +13,8 @@ set(SOURCES
 	OBJWriter.hpp
 	OutData.cpp
 	OutData.hpp
+	VarFormOutputWriter.cpp
+	VarFormOutputWriter.hpp
 	YamlToJson.cpp
 	YamlToJson.hpp
 )

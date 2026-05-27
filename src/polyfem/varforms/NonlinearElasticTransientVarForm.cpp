@@ -34,6 +34,7 @@
 
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/io/OBJWriter.hpp>
+#include <polyfem/io/VarFormOutputWriter.hpp>
 
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/NLProblem.hpp>
@@ -236,6 +237,7 @@ namespace polyfem::varform
 		VarForm::reset();
 
 		bases.clear();
+		pressure_bases.clear();
 		geom_bases_.clear();
 		boundary_nodes.clear();
 		dirichlet_nodes.clear();
@@ -658,7 +660,7 @@ namespace polyfem::varform
 				*assembler, mesh, obstacle,
 				dirichlet_nodes, neumann_nodes,
 				dirichlet_nodes_position, neumann_nodes_position,
-				n_bases, dim, bases, geom_bases(), ass_vals_cache, *problem,
+				n_bases, dim, bases, geom_bases(), mass_ass_vals_cache, *problem,
 				args["space"]["advanced"]["bc_method"],
 				rhs_solver_params);
 		}
@@ -1026,15 +1028,14 @@ namespace polyfem::varform
 
 	void NonlinearElasticTransientVarForm::solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure)
 	{
-		const bool save = true;
-		const bool save_stats = false;
-		const std::string filename = "";
+		const bool save_stats = args["output"]["stats"];
 		stats.spectrum.setZero();
 		pressure.resize(0, 0);
 
 		igl::Timer timer;
 		timer.start();
 		logger().info("Solving {}", assembler->name());
+		io::VarFormOutputWriter output_writer(*this);
 
 		{
 			POLYFEM_SCOPED_TIMER("Setup RHS");
@@ -1051,13 +1052,6 @@ namespace polyfem::varform
 			if (sol.cols() > 1) // ignore previous solutions
 				sol.conservativeResize(Eigen::NoChange, 1);
 		}
-		// Pre log the output path for easier watching
-		if (save)
-		{
-			logger().info("Time sequence of simulation will be written to: \"{}\"",
-						  resolve_output_path(filename));
-		}
-
 		init_solve(sol, t0 + dt);
 
 		// Write the total energy to a CSV file
@@ -1070,11 +1064,13 @@ namespace polyfem::varform
 		{
 			logger().debug("Saving nl stats to {} and {}", resolve_output_path("energy.csv"), resolve_output_path("stats.csv"));
 			energy_csv = std::make_unique<io::EnergyCSVWriter>(resolve_output_path("energy.csv"), solve_data);
+			stats_csv = std::make_unique<io::RuntimeStatsCSVWriter>(resolve_output_path("stats.csv"), output_state(), t0, dt);
 		}
 
 		// Save the initial solution
 		if (energy_csv)
 			energy_csv->write(save_i, sol);
+		output_writer.save_timestep(t0, save_i, t0, dt, sol, pressure);
 
 		save_i++;
 
@@ -1090,6 +1086,7 @@ namespace polyfem::varform
 			// Always save the solution for consistency
 			if (energy_csv)
 				energy_csv->write(save_i, sol);
+			output_writer.save_timestep(t0 + dt * t, t, t0, dt, sol, pressure);
 			save_i++;
 
 			{
@@ -1105,9 +1102,9 @@ namespace polyfem::varform
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 
-			const std::string &state_path = resolve_output_path(fmt::format(args["output"]["data"]["state"], t));
-			if (!state_path.empty())
-				solve_data.time_integrator->save_state(state_path);
+			output_writer.save_step_state(t0, dt, t, sol);
+			if (stats_csv)
+				stats_csv->write(t, forward_solve_time, remeshing_time, global_relaxation_time, sol);
 		}
 
 		timer.stop();
@@ -1342,6 +1339,7 @@ namespace polyfem::varform
 	{
 		assert(solve_data.nl_problem != nullptr);
 		solver::NLProblem &nl_problem = *(solve_data.nl_problem);
+		io::VarFormOutputWriter output_writer(*this);
 
 		assert(sol.size() == rhs.size());
 
@@ -1354,6 +1352,8 @@ namespace polyfem::varform
 			}
 			logger().info("Lagging iteration 1:");
 		}
+
+		output_writer.save_subsolve(0, step, sol, Eigen::MatrixXd());
 
 		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver =
 			polysolve::nonlinear::Solver::create(args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger());
@@ -1375,6 +1375,7 @@ namespace polyfem::varform
 				 {"info", nl_solver->info()}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
+			output_writer.save_subsolve(stats.solver_info.size(), step, sol, Eigen::MatrixXd());
 		};
 
 		Eigen::MatrixXd prev_sol = sol;
@@ -1444,7 +1445,45 @@ namespace polyfem::varform
 				 {"t", step},
 				 {"lag_i", lag_i},
 				 {"info", nl_solver->info()}});
+			output_writer.save_subsolve(stats.solver_info.size(), step, sol, Eigen::MatrixXd());
 		}
+	}
+
+	io::OutputState NonlinearElasticTransientVarForm::output_state() const
+	{
+		return {
+			args,
+			mesh_,
+			problem.get(),
+			assembler.get(),
+			mass_matrix_assembler.get(),
+			nullptr,
+			solve_data,
+			bases,
+			pressure_bases,
+			geom_bases_,
+			n_bases,
+			n_pressure_bases,
+			disc_orders,
+			disc_ordersq,
+			in_node_to_node,
+			rhs,
+			polys,
+			polys_3d,
+			obstacle,
+			collision_mesh,
+			total_local_boundary,
+			dirichlet_nodes,
+			dirichlet_nodes_position,
+			iso_parametric,
+			assembler ? assembler->name() : std::string(),
+			primary_output_name(),
+			root_path,
+			output_path,
+			n_boundary_samples(),
+			stats,
+			timings,
+			stats.min_edge_length};
 	}
 
 	void NonlinearElasticTransientVarForm::sync_state(State &state) const

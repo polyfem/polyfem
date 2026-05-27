@@ -5,45 +5,12 @@
 
 namespace polyfem::varform
 {
-	namespace
-	{
-		bool is_enabled(const json &args, const json::json_pointer &ptr)
-		{
-			return args.contains(ptr) && args.at(ptr).is_boolean() && args.at(ptr).get<bool>();
-		}
-
-		bool has_nonempty_string(const json &args, const json::json_pointer &ptr)
-		{
-			return args.contains(ptr) && args.at(ptr).is_string() && !args.at(ptr).get<std::string>().empty();
-		}
-	} // namespace
-
 	bool VarFormFactory::supports(const std::string &formulation, const json &args)
 	{
 		// Keep the migration opt-in and boring: only transient nonlinear tensor
 		// elasticity is routed through the new VarForm path for now.
 		if (!args.contains("time") || args["time"].is_null())
 			return false;
-
-		// Output/restart still lives in State. Until VarForm owns that surface,
-		// route output-producing solves through the legacy path.
-		if (is_enabled(args, "/output/advanced/save_time_sequence"_json_pointer)
-			|| is_enabled(args, "/output/advanced/save_solve_sequence_debug"_json_pointer)
-			|| is_enabled(args, "/output/advanced/save_ccd_debug_meshes"_json_pointer)
-			|| is_enabled(args, "/output/advanced/save_nl_solve_sequence"_json_pointer)
-			|| is_enabled(args, "/output/stats"_json_pointer)
-			|| has_nonempty_string(args, "/output/paraview/file_name"_json_pointer)
-			|| has_nonempty_string(args, "/output/json"_json_pointer)
-			|| has_nonempty_string(args, "/output/restart_json"_json_pointer)
-			|| has_nonempty_string(args, "/output/data/solution"_json_pointer)
-			|| has_nonempty_string(args, "/output/data/state"_json_pointer)
-			|| has_nonempty_string(args, "/output/data/rest_mesh"_json_pointer)
-			|| has_nonempty_string(args, "/output/data/mises"_json_pointer)
-			|| has_nonempty_string(args, "/output/data/nodes"_json_pointer)
-			|| has_nonempty_string(args, "/input/data/state"_json_pointer))
-		{
-			return false;
-		}
 
 		if (args.value("/space/remesh/enabled"_json_pointer, false))
 			return false;

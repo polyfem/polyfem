@@ -33,6 +33,10 @@ namespace polyfem
 			virtual void solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure) = 0;
 			virtual void sync_state(State &state) const = 0;
 
+			virtual std::string name() const = 0;
+			virtual std::string primary_output_name() const { return "solution"; }
+			virtual io::OutputState output_state() const = 0;
+
 		protected:
 			std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const;
 			std::string resolve_output_path(const std::string &path) const;

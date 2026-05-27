@@ -273,6 +273,7 @@ namespace polyfem
 		variational_formulation = varform::VarFormFactory::create(formulation, args);
 		if (variational_formulation)
 		{
+			logger().info("Using variational formulation: {}", variational_formulation->name());
 			variational_formulation->init(formulation, units, args, output_dir);
 			return;
 		}

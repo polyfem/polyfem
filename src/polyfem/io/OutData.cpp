@@ -58,9 +58,56 @@
 
 namespace polyfem::io
 {
+	OutputState OutputState::from_state(const State &state)
+	{
+		return {
+			state.args,
+			state.mesh.get(),
+			state.problem.get(),
+			state.assembler.get(),
+			state.mass_matrix_assembler.get(),
+			state.mixed_assembler.get(),
+			state.solve_data,
+			state.bases,
+			state.pressure_bases,
+			state.geom_bases_,
+			state.n_bases,
+			state.n_pressure_bases,
+			state.disc_orders,
+			state.disc_ordersq,
+			state.in_node_to_node,
+			state.rhs,
+			state.polys,
+			state.polys_3d,
+			state.obstacle,
+			state.collision_mesh,
+			state.total_local_boundary,
+			state.dirichlet_nodes,
+			state.dirichlet_nodes_position,
+			state.iso_parametric(),
+			state.assembler ? state.assembler->name() : std::string(),
+			"solution",
+			state.root_path(),
+			state.output_dir,
+			state.n_boundary_samples(),
+			state.stats,
+			state.timings,
+			state.starting_min_edge_length};
+	}
+
 	namespace
 	{
-		void compute_traction_forces(const State &state, const Eigen::MatrixXd &solution, const double t, Eigen::MatrixXd &traction_forces, bool skip_dirichlet = true)
+		void add_primary_field(
+			paraviewo::ParaviewWriter &writer,
+			const OutputState &state,
+			const Eigen::MatrixXd &field)
+		{
+			if (state.primary_field_name != "solution")
+				writer.add_field(state.primary_field_name, field);
+			writer.add_field("solution", field);
+		}
+
+		void compute_traction_forces(const OutputState &state, const Eigen::MatrixXd &solution, const double t, Eigen::MatrixXd &traction_forces, bool skip_dirichlet = true)
 		{
 			int actual_dim = 1;
 			if (!state.problem->is_scalar())
@@ -1071,6 +1118,27 @@ namespace polyfem::io
 		const std::string &mises_path,
 		const bool is_contact_enabled) const
 	{
+		export_data(
+			OutputState::from_state(state), sol, pressure, is_time_dependent, tend_in, dt,
+			opts, vis_mesh_path, nodes_path, solution_path, stress_path, mises_path,
+			is_contact_enabled);
+	}
+
+	void OutGeometryData::export_data(
+		const OutputState &state,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &pressure,
+		const bool is_time_dependent,
+		const double tend_in,
+		const double dt,
+		const ExportOptions &opts,
+		const std::string &vis_mesh_path,
+		const std::string &nodes_path,
+		const std::string &solution_path,
+		const std::string &stress_path,
+		const std::string &mises_path,
+		const bool is_contact_enabled) const
+	{
 		if (!state.mesh)
 		{
 			logger().error("Load the mesh first!");
@@ -1254,6 +1322,19 @@ namespace polyfem::io
 		const ExportOptions &opts,
 		const bool is_contact_enabled) const
 	{
+		save_vtu(path, OutputState::from_state(state), sol, pressure, t, dt, opts, is_contact_enabled);
+	}
+
+	void OutGeometryData::save_vtu(
+		const std::string &path,
+		const OutputState &state,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &pressure,
+		const double t,
+		const double dt,
+		const ExportOptions &opts,
+		const bool is_contact_enabled) const
+	{
 		if (!state.mesh)
 		{
 			logger().error("Load the mesh first!");
@@ -1331,6 +1412,18 @@ namespace polyfem::io
 	void OutGeometryData::save_volume(
 		const std::string &path,
 		const State &state,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &pressure,
+		const double t,
+		const double dt,
+		const ExportOptions &opts) const
+	{
+		save_volume(path, OutputState::from_state(state), sol, pressure, t, dt, opts);
+	}
+
+	void OutGeometryData::save_volume(
+		const std::string &path,
+		const OutputState &state,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &pressure,
 		const double t,
@@ -1873,8 +1966,8 @@ namespace polyfem::io
 			}
 		}
 
-		// Write the solution last so it is the default for warp-by-vector
-		writer.add_field("solution", fun);
+		// Write the solution alias last so it is the default for warp-by-vector.
+		add_primary_field(writer, state, fun);
 
 		if (obstacle.n_vertices() > 0)
 		{
@@ -1920,7 +2013,7 @@ namespace polyfem::io
 	}
 
 	void OutGeometryData::save_volume_vector_field(
-		const State &state,
+		const OutputState &state,
 		const Eigen::MatrixXd &points,
 		const ExportOptions &opts,
 		const std::string &name,
@@ -1947,6 +2040,19 @@ namespace polyfem::io
 	void OutGeometryData::save_surface(
 		const std::string &export_surface,
 		const State &state,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &pressure,
+		const double t,
+		const double dt_in,
+		const ExportOptions &opts,
+		const bool is_contact_enabled) const
+	{
+		save_surface(export_surface, OutputState::from_state(state), sol, pressure, t, dt_in, opts, is_contact_enabled);
+	}
+
+	void OutGeometryData::save_surface(
+		const std::string &export_surface,
+		const OutputState &state,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &pressure,
 		const double t,
@@ -2130,14 +2236,27 @@ namespace polyfem::io
 			writer.add_field("body_ids", ids);
 		}
 
-		// Write the solution last so it is the default for warp-by-vector
-		writer.add_field("solution", fun);
+		// Write the solution alias last so it is the default for warp-by-vector.
+		add_primary_field(writer, state, fun);
 		writer.write_mesh(export_surface, boundary_vis_vertices, boundary_vis_elements);
 	}
 
 	void OutGeometryData::save_contact_surface(
 		const std::string &export_surface,
 		const State &state,
+		const Eigen::MatrixXd &sol,
+		const Eigen::MatrixXd &pressure,
+		const double t,
+		const double dt_in,
+		const ExportOptions &opts,
+		const bool is_contact_enabled) const
+	{
+		save_contact_surface(export_surface, OutputState::from_state(state), sol, pressure, t, dt_in, opts, is_contact_enabled);
+	}
+
+	void OutGeometryData::save_contact_surface(
+		const std::string &export_surface,
+		const OutputState &state,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &pressure,
 		const double t,
@@ -2310,8 +2429,8 @@ namespace polyfem::io
 		assert(collision_mesh.rest_positions().rows() == surface_displacements.rows());
 		assert(collision_mesh.rest_positions().cols() == surface_displacements.cols());
 
-		// Write the solution last so it is the default for warp-by-vector
-		writer.add_field("solution", surface_displacements);
+		// Write the solution alias last so it is the default for warp-by-vector.
+		add_primary_field(writer, state, surface_displacements);
 
 		writer.write_mesh(
 			export_surface.substr(0, export_surface.length() - 4) + "_contact.vtu",
@@ -2322,6 +2441,16 @@ namespace polyfem::io
 	void OutGeometryData::save_wire(
 		const std::string &name,
 		const State &state,
+		const Eigen::MatrixXd &sol,
+		const double t,
+		const ExportOptions &opts) const
+	{
+		save_wire(name, OutputState::from_state(state), sol, t, opts);
+	}
+
+	void OutGeometryData::save_wire(
+		const std::string &name,
+		const OutputState &state,
 		const Eigen::MatrixXd &sol,
 		const double t,
 		const ExportOptions &opts) const
@@ -2521,8 +2650,8 @@ namespace polyfem::io
 					writer.add_field(v.first, v.second);
 			}
 		}
-		// Write the solution last so it is the default for warp-by-vector
-		writer.add_field("solution", fun);
+		// Write the solution alias last so it is the default for warp-by-vector.
+		add_primary_field(writer, state, fun);
 
 		writer.write_mesh(name, points, edges);
 	}
@@ -2530,6 +2659,15 @@ namespace polyfem::io
 	void OutGeometryData::save_points(
 		const std::string &path,
 		const State &state,
+		const Eigen::MatrixXd &sol,
+		const ExportOptions &opts) const
+	{
+		save_points(path, OutputState::from_state(state), sol, opts);
+	}
+
+	void OutGeometryData::save_points(
+		const std::string &path,
+		const OutputState &state,
 		const Eigen::MatrixXd &sol,
 		const ExportOptions &opts) const
 	{
@@ -2575,8 +2713,8 @@ namespace polyfem::io
 
 		if (opts.export_field("sidesets"))
 			writer.add_field("sidesets", b_sidesets);
-		// Write the solution last so it is the default for warp-by-vector
-		writer.add_field("solution", fun);
+		// Write the solution alias last so it is the default for warp-by-vector.
+		add_primary_field(writer, state, fun);
 		writer.write_mesh(path, points, cells, false, false);
 	}
 
@@ -3073,7 +3211,7 @@ namespace polyfem::io
 		const std::string &formulation,
 		const bool isoparametric,
 		const int sol_at_node_id,
-		nlohmann::json &j)
+		nlohmann::json &j) const
 	{
 
 		j["args"] = args;
@@ -3231,7 +3369,13 @@ namespace polyfem::io
 	}
 
 	RuntimeStatsCSVWriter::RuntimeStatsCSVWriter(const std::string &path, const State &state, const double t0, const double dt)
-		: file(path), state(state), t0(t0), dt(dt)
+		: file(path), n_bases(state.n_bases), n_elements(state.mesh->n_elements()), t0(t0), dt(dt)
+	{
+		file << "step,time,forward,remeshing,global_relaxation,peak_mem,#V,#T" << std::endl;
+	}
+
+	RuntimeStatsCSVWriter::RuntimeStatsCSVWriter(const std::string &path, const OutputState &state, const double t0, const double dt)
+		: file(path), n_bases(state.n_bases), n_elements(state.mesh ? state.mesh->n_elements() : 0), t0(t0), dt(dt)
 	{
 		file << "step,time,forward,remeshing,global_relaxation,peak_mem,#V,#T" << std::endl;
 	}
@@ -3263,7 +3407,7 @@ namespace polyfem::io
 		file << fmt::format(
 			"{},{},{},{},{},{},{},{}\n",
 			t, t0 + dt * t, forward, remeshing, global_relaxation, peak_mem,
-			state.n_bases, state.mesh->n_elements());
+			n_bases, n_elements);
 		file.flush();
 	}
 

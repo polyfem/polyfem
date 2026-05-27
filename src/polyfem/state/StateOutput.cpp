@@ -1,5 +1,6 @@
 #include <polyfem/State.hpp>
 
+#include <polyfem/io/VarFormOutputWriter.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
 
@@ -47,6 +48,12 @@ namespace polyfem
 
 	void State::save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure)
 	{
+		if (variational_formulation)
+		{
+			io::VarFormOutputWriter(*variational_formulation).save_timestep(time, t, t0, dt, sol, pressure);
+			return;
+		}
+
 		if (args["output"]["advanced"]["save_time_sequence"] && !(t % args["output"]["paraview"]["skip_frame"].get<int>()))
 		{
 			logger().trace("Saving VTU...");
@@ -71,6 +78,12 @@ namespace polyfem
 
 	void State::save_json(const Eigen::MatrixXd &sol)
 	{
+		if (variational_formulation)
+		{
+			io::VarFormOutputWriter(*variational_formulation).save_json(sol);
+			return;
+		}
+
 		const std::string out_path = resolve_output_path(args["output"]["json"]);
 		if (!out_path.empty())
 		{
@@ -87,6 +100,12 @@ namespace polyfem
 
 	void State::save_json(const Eigen::MatrixXd &sol, std::ostream &out)
 	{
+		if (variational_formulation)
+		{
+			io::VarFormOutputWriter(*variational_formulation).save_json(sol, out);
+			return;
+		}
+
 		if (!mesh)
 		{
 			logger().error("Load the mesh first!");
@@ -111,6 +130,12 @@ namespace polyfem
 
 	void State::save_subsolve(const int i, const int t, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure)
 	{
+		if (variational_formulation)
+		{
+			io::VarFormOutputWriter(*variational_formulation).save_subsolve(i, t, sol, pressure);
+			return;
+		}
+
 		if (!args["output"]["advanced"]["save_solve_sequence_debug"].get<bool>())
 			return;
 
@@ -130,6 +155,12 @@ namespace polyfem
 
 	void State::export_data(const Eigen::MatrixXd &sol, const Eigen::MatrixXd &pressure)
 	{
+		if (variational_formulation)
+		{
+			io::VarFormOutputWriter(*variational_formulation).export_data(sol, pressure);
+			return;
+		}
+
 		if (!mesh)
 		{
 			logger().error("Load the mesh first!");
@@ -190,6 +221,12 @@ namespace polyfem
 
 	void State::save_restart_json(const double t0, const double dt, const int t) const
 	{
+		if (variational_formulation)
+		{
+			io::VarFormOutputWriter(*variational_formulation).save_restart_json(t0, dt, t);
+			return;
+		}
+
 		const std::string restart_json_path = args["output"]["restart_json"];
 		if (restart_json_path.empty())
 			return;
