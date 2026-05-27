@@ -1475,7 +1475,6 @@ namespace polyfem::io
 	{
 		const Eigen::VectorXi &disc_orders = state.disc_orders;
 		const Eigen::VectorXi &disc_ordersq = state.disc_ordersq;
-		const auto &density = state.mass_matrix_assembler->density();
 		const std::vector<basis::ElementBases> &bases = state.bases;
 		const std::vector<basis::ElementBases> &pressure_bases = state.pressure_bases;
 		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
@@ -1572,11 +1571,15 @@ namespace polyfem::io
 				state.polys, state.polys_3d, ref_element_sampler,
 				points.rows(), sol, validity, opts.use_sampler, opts.boundary_only);
 
-		Evaluator::interpolate_function(
-			mesh, problem.is_scalar(), bases, disc_orders, disc_ordersq,
-			state.polys, state.polys_3d, ref_element_sampler,
-			points.rows(), sol, fun, opts.use_sampler, opts.boundary_only);
+		if (!state.var_form)
+		{
+			Evaluator::interpolate_function(
+				mesh, problem.is_scalar(), bases, disc_orders, disc_ordersq,
+				state.polys, state.polys_3d, ref_element_sampler,
+				points.rows(), sol, fun, opts.use_sampler, opts.boundary_only);
+		}
 
+		if (opts.nodes && opts.export_field("nodes"))
 		{
 			Eigen::MatrixXd tmp = Eigen::VectorXd::LinSpaced(sol.size(), 0, sol.size() - 1);
 
@@ -1588,15 +1591,21 @@ namespace polyfem::io
 
 		if (obstacle.n_vertices() > 0)
 		{
-			fun.conservativeResize(fun.rows() + obstacle.n_vertices(), fun.cols());
-			node_fun.conservativeResize(node_fun.rows() + obstacle.n_vertices(), node_fun.cols());
-			node_fun.bottomRows(obstacle.n_vertices()).setZero();
-			// obstacle.update_displacement(t, fun);
-			// NOTE: Assuming the obstacle displacement is the last part of the solution
-			fun.bottomRows(obstacle.n_vertices()) = utils::unflatten(sol.bottomRows(obstacle.ndof()), fun.cols());
+			if (!state.var_form)
+			{
+				fun.conservativeResize(fun.rows() + obstacle.n_vertices(), fun.cols());
+				// obstacle.update_displacement(t, fun);
+				// NOTE: Assuming the obstacle displacement is the last part of the solution
+				fun.bottomRows(obstacle.n_vertices()) = utils::unflatten(sol.bottomRows(obstacle.ndof()), fun.cols());
+			}
+			if (opts.nodes && opts.export_field("nodes"))
+			{
+				node_fun.conservativeResize(node_fun.rows() + obstacle.n_vertices(), node_fun.cols());
+				node_fun.bottomRows(obstacle.n_vertices()).setZero();
+			}
 		}
 
-		if (problem.has_exact_sol())
+		if (!state.var_form && problem.has_exact_sol())
 		{
 			problem.exact(points, t, exact_fun);
 			err = (fun - exact_fun).eval().rowwise().norm();
@@ -1625,7 +1634,7 @@ namespace polyfem::io
 		if (opts.nodes && opts.export_field("nodes"))
 			writer.add_field("nodes", node_fun);
 
-		if (problem.is_time_dependent())
+		if (!state.var_form && problem.is_time_dependent())
 		{
 			bool is_time_integrator_valid = time_integrator != nullptr;
 
@@ -1644,7 +1653,7 @@ namespace polyfem::io
 			}
 		}
 
-		if (opts.forces)
+		if (!state.var_form && opts.forces)
 		{
 			const double s = state.solve_data.time_integrator
 								 ? state.solve_data.time_integrator->acceleration_scaling()
@@ -1698,7 +1707,7 @@ namespace polyfem::io
 		if (opts.discretization_order && opts.export_field("discr"))
 			writer.add_field("discr", discr);
 
-		if (problem.has_exact_sol())
+		if (!state.var_form && problem.has_exact_sol())
 		{
 			if (opts.export_field("exact"))
 				writer.add_field("exact", exact_fun);
@@ -1706,7 +1715,7 @@ namespace polyfem::io
 				writer.add_field("error", err);
 		}
 
-		if (fun.cols() != 1 && (opts.scalar_values || opts.tensor_values || (!opts.use_spline && (opts.scalar_values || opts.tensor_values))))
+		if (!state.var_form && fun.cols() != 1 && (opts.scalar_values || opts.tensor_values || (!opts.use_spline && (opts.scalar_values || opts.tensor_values))))
 		{
 			std::vector<assembler::Assembler::NamedMatrix> vals, tvals;
 			Evaluator::compute_scalar_value(
@@ -1805,9 +1814,10 @@ namespace polyfem::io
 			}
 		}
 
-		if (opts.material_params)
+		if (!state.var_form && opts.material_params)
 		{
 			const auto &params = assembler.parameters();
+			const auto &density = state.mass_matrix_assembler->density();
 
 			std::map<std::string, Eigen::MatrixXd> param_val;
 			for (const auto &[p, _] : params)
@@ -1909,7 +1919,7 @@ namespace polyfem::io
 				writer.add_field("rho", rhos);
 		}
 
-		if (opts.body_ids || opts.export_field("body_ids"))
+		if (!state.var_form && (opts.body_ids || opts.export_field("body_ids")))
 		{
 
 			Eigen::MatrixXd ids(points.rows(), 1);
@@ -1934,7 +1944,7 @@ namespace polyfem::io
 		// 	writer.add_field("rhs", fun);
 		// }
 
-		if (fun.cols() != 1 && state.mixed_assembler == nullptr && opts.export_field("traction_force"))
+		if (!state.var_form && fun.cols() != 1 && state.mixed_assembler == nullptr && opts.export_field("traction_force"))
 		{
 			Eigen::MatrixXd traction_forces, traction_forces_fun;
 			compute_traction_forces(state, sol, t, traction_forces, false);
@@ -1953,7 +1963,7 @@ namespace polyfem::io
 			writer.add_field("traction_force", traction_forces_fun);
 		}
 
-		if (fun.cols() != 1 && state.mixed_assembler == nullptr && opts.export_field("gradient_of_elastic_potential"))
+		if (!state.var_form && fun.cols() != 1 && state.mixed_assembler == nullptr && opts.export_field("gradient_of_elastic_potential"))
 		{
 			try
 			{
@@ -1980,7 +1990,7 @@ namespace polyfem::io
 			}
 		}
 
-		if (fun.cols() != 1 && state.mixed_assembler == nullptr && opts.export_field("gradient_of_contact_potential"))
+		if (!state.var_form && fun.cols() != 1 && state.mixed_assembler == nullptr && opts.export_field("gradient_of_contact_potential"))
 		{
 			try
 			{
@@ -2118,7 +2128,6 @@ namespace polyfem::io
 	{
 
 		const Eigen::VectorXi &disc_orders = state.disc_orders;
-		const auto &density = state.mass_matrix_assembler->density();
 		const std::vector<basis::ElementBases> &bases = state.bases;
 		const std::vector<basis::ElementBases> &pressure_bases = state.pressure_bases;
 		const std::vector<basis::ElementBases> &gbases = state.geom_bases();
@@ -2148,10 +2157,16 @@ namespace polyfem::io
 		if (!problem.is_scalar())
 			actual_dim = mesh.dimension();
 
+		const bool legacy_output = !state.var_form;
+		const bool legacy_surface_grad = legacy_output && actual_dim == 1 && opts.export_field("solution_grad");
+		const bool legacy_surface_traction = legacy_output && actual_dim != 1 && opts.export_field("traction_force");
+
 		discr.resize(boundary_vis_vertices.rows(), 1);
-		fun.resize(boundary_vis_vertices.rows(), actual_dim);
 		interp_p.resize(boundary_vis_vertices.rows(), 1);
-		vect.resize(boundary_vis_vertices.rows(), mesh.dimension());
+		if (legacy_output)
+			fun.resize(boundary_vis_vertices.rows(), actual_dim);
+		if (legacy_surface_grad || legacy_surface_traction)
+			vect.resize(boundary_vis_vertices.rows(), mesh.dimension());
 
 		b_sidesets.resize(boundary_vis_vertices.rows(), 1);
 		b_sidesets.setZero();
@@ -2165,10 +2180,13 @@ namespace polyfem::io
 			}
 
 			const int el_index = boundary_vis_elements_ids(i);
-			Evaluator::interpolate_at_local_vals(
-				mesh, problem.is_scalar(), bases, gbases,
-				el_index, boundary_vis_local_vertices.row(i), sol, lsol, lgrad);
-			assert(lsol.size() == actual_dim);
+			if (legacy_output)
+			{
+				Evaluator::interpolate_at_local_vals(
+					mesh, problem.is_scalar(), bases, gbases,
+					el_index, boundary_vis_local_vertices.row(i), sol, lsol, lgrad);
+				assert(lsol.size() == actual_dim);
+			}
 			if (state.mixed_assembler != nullptr)
 			{
 				Evaluator::interpolate_at_local_vals(
@@ -2179,12 +2197,15 @@ namespace polyfem::io
 			}
 
 			discr(i) = disc_orders(el_index);
-			for (int j = 0; j < actual_dim; ++j)
+			if (legacy_output)
 			{
-				fun(i, j) = lsol(j);
+				for (int j = 0; j < actual_dim; ++j)
+				{
+					fun(i, j) = lsol(j);
+				}
 			}
 
-			if (actual_dim == 1)
+			if (legacy_surface_grad)
 			{
 				assert(lgrad.size() == mesh.dimension());
 				for (int j = 0; j < mesh.dimension(); ++j)
@@ -2192,7 +2213,7 @@ namespace polyfem::io
 					vect(i, j) = lgrad(j);
 				}
 			}
-			else
+			else if (legacy_surface_traction)
 			{
 				assert(lgrad.size() == actual_dim * actual_dim);
 				std::vector<assembler::Assembler::NamedMatrix> tensor_flat;
@@ -2244,16 +2265,17 @@ namespace polyfem::io
 		if (opts.export_field("sidesets"))
 			writer.add_field("sidesets", b_sidesets);
 
-		if (actual_dim == 1 && opts.export_field("solution_grad"))
+		if (legacy_surface_grad)
 			writer.add_field("solution_grad", vect);
-		else if (opts.export_field("traction_force"))
+		else if (legacy_surface_traction)
 		{
 			writer.add_field("traction_force", vect);
 		}
 
-		if (opts.material_params)
+		if (!state.var_form && opts.material_params)
 		{
 			const auto &params = assembler.parameters();
+			const auto &density = state.mass_matrix_assembler->density();
 
 			std::map<std::string, Eigen::MatrixXd> param_val;
 			for (const auto &[p, _] : params)
@@ -2279,7 +2301,7 @@ namespace polyfem::io
 				writer.add_field("rho", rhos);
 		}
 
-		if (opts.body_ids || opts.export_field("body_ids"))
+		if (!state.var_form && (opts.body_ids || opts.export_field("body_ids")))
 		{
 
 			Eigen::MatrixXd ids(boundary_vis_vertices.rows(), 1);
@@ -2299,6 +2321,7 @@ namespace polyfem::io
 			sample.points = boundary_vis_vertices;
 			sample.local_points = boundary_vis_local_vertices;
 			sample.element_ids = boundary_vis_elements_ids.col(0);
+			sample.primitive_ids = boundary_vis_primitive_ids;
 			sample.normals = displaced_boundary_vis_normals;
 			sample.time = t;
 			sample.dt = dt_in;
@@ -2697,14 +2720,17 @@ namespace polyfem::io
 		}
 
 		Eigen::MatrixXd fun;
-		Evaluator::interpolate_function(
-			mesh, problem.is_scalar(), state.bases, state.disc_orders, state.disc_ordersq,
-			state.polys, state.polys_3d, ref_element_sampler,
-			pts_index, sol, fun, /*use_sampler*/ true, false);
+		if (!state.var_form)
+		{
+			Evaluator::interpolate_function(
+				mesh, problem.is_scalar(), state.bases, state.disc_orders, state.disc_ordersq,
+				state.polys, state.polys_3d, ref_element_sampler,
+				pts_index, sol, fun, /*use_sampler*/ true, false);
+		}
 
 		Eigen::MatrixXd exact_fun, err;
 
-		if (problem.has_exact_sol())
+		if (!state.var_form && problem.has_exact_sol())
 		{
 			problem.exact(points, t, exact_fun);
 			err = (fun - exact_fun).eval().rowwise().norm();
@@ -2717,7 +2743,7 @@ namespace polyfem::io
 			tmpw = std::make_shared<paraviewo::VTUWriter>();
 		paraviewo::ParaviewWriter &writer = *tmpw;
 
-		if (problem.has_exact_sol())
+		if (!state.var_form && problem.has_exact_sol())
 		{
 			if (opts.export_field("exact"))
 				writer.add_field("exact", exact_fun);
@@ -2725,7 +2751,7 @@ namespace polyfem::io
 				writer.add_field("error", err);
 		}
 
-		if (fun.cols() != 1)
+		if (!state.var_form && fun.cols() != 1)
 		{
 			std::vector<assembler::Assembler::NamedMatrix> scalar_val;
 			Evaluator::compute_scalar_value(

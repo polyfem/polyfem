@@ -65,6 +65,7 @@ namespace polyfem::io
 		Eigen::MatrixXd points;
 		Eigen::MatrixXd local_points;
 		Eigen::VectorXi element_ids;
+		Eigen::VectorXi primitive_ids;
 		Eigen::VectorXi node_ids;
 		Eigen::MatrixXd normals;
 		double time = 0;
