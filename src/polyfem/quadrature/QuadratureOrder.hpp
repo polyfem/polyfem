@@ -2,11 +2,14 @@
 
 namespace polyfem::quadrature
 {
-	struct WeakFormOrderHint
+	class WeakFormOrderHint
 	{
+	public:
 		int phi_count = 0;
 		int grad_phi_count = 0;
 		int extra_order = 0;
+
+		void combine_max(const WeakFormOrderHint &other);
 	};
 
 	enum class BasisFamily

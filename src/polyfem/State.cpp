@@ -645,6 +645,10 @@ namespace polyfem
 			else
 				geom_disc_orders = mesh->orders();
 		}
+		else
+		{
+			geom_disc_orders = disc_orders;
+		}
 
 		// TODO: implement prism geometric order
 		Eigen::MatrixXi geom_disc_ordersq = geom_disc_orders;
@@ -686,6 +690,13 @@ namespace polyfem
 		// shape optimization needs continuous geometric basis
 		const bool use_continuous_gbasis = true;
 		const bool use_corner_quadrature = args["space"]["advanced"]["use_corner_quadrature"];
+		auto quadrature_hint = assembler->weak_form_order_hint();
+		if (mixed_assembler != nullptr)
+		{
+			quadrature_hint.combine_max(mixed_assembler->weak_form_order_hint());
+			quadrature_hint.combine_max(pressure_assembler->weak_form_order_hint());
+		}
+		const auto mass_quadrature_hint = mass_matrix_assembler->weak_form_order_hint();
 
 		if (mesh->is_volume())
 		{
@@ -699,7 +710,7 @@ namespace polyfem
 				// 	SplineBasis3d::build_bases(tmp_mesh, quadrature_order, geom_bases_, local_boundary, poly_edge_to_data);
 				// }
 
-				n_bases = basis::SplineBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
+				n_bases = basis::SplineBasis3d::build_bases(tmp_mesh, quadrature_hint, mass_quadrature_hint, quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
 
 				// if (iso_parametric() && args["fit_nodes"])
 				// 	SplineBasis3d::fit_nodes(tmp_mesh, n_bases, bases);
@@ -707,9 +718,9 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					n_geom_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geom_disc_orders, geom_disc_ordersq, false, false, has_polys, !use_continuous_gbasis, use_corner_quadrature, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
+					n_geom_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, quadrature_hint, mass_quadrature_hint, quadrature_order, mass_quadrature_order, geom_disc_orders, geom_disc_ordersq, geom_disc_orders, geom_disc_ordersq, false, false, has_polys, !use_continuous_gbasis, use_corner_quadrature, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
 
-				n_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, disc_orders, disc_ordersq, args["space"]["basis_type"] == "Bernstein", args["space"]["basis_type"] == "Serendipity", has_polys, false, use_corner_quadrature, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+				n_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, quadrature_hint, mass_quadrature_hint, quadrature_order, mass_quadrature_order, disc_orders, disc_ordersq, geom_disc_orders, geom_disc_ordersq, args["space"]["basis_type"] == "Bernstein", args["space"]["basis_type"] == "Serendipity", has_polys, false, use_corner_quadrature, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
 
 			// if(problem->is_mixed())
@@ -719,7 +730,7 @@ namespace polyfem
 				// todo prism
 				const int orderq = order;
 
-				n_pressure_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, order, orderq, args["space"]["basis_type"] == "Bernstein", false, has_polys, false, use_corner_quadrature, pressure_bases, local_boundary, poly_edge_to_data_geom, pressure_mesh_nodes);
+				n_pressure_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, quadrature_hint, mass_quadrature_hint, quadrature_order, mass_quadrature_order, order, orderq, geom_disc_orders.maxCoeff(), geom_disc_ordersq.maxCoeff(), args["space"]["basis_type"] == "Bernstein", false, has_polys, false, use_corner_quadrature, pressure_bases, local_boundary, poly_edge_to_data_geom, pressure_mesh_nodes);
 			}
 		}
 		else
@@ -735,7 +746,7 @@ namespace polyfem
 				// 	n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, geom_bases_, local_boundary, poly_edge_to_data);
 				// }
 
-				n_bases = basis::SplineBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
+				n_bases = basis::SplineBasis2d::build_bases(tmp_mesh, quadrature_hint, mass_quadrature_hint, quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
 
 				// if (iso_parametric() && args["fit_nodes"])
 				// 	SplineBasis2d::fit_nodes(tmp_mesh, n_bases, bases);
@@ -743,15 +754,15 @@ namespace polyfem
 			else
 			{
 				if (!iso_parametric())
-					n_geom_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, false, has_polys, !use_continuous_gbasis, use_corner_quadrature, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
+					n_geom_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, quadrature_hint, mass_quadrature_hint, quadrature_order, mass_quadrature_order, geom_disc_orders, geom_disc_orders, false, false, has_polys, !use_continuous_gbasis, use_corner_quadrature, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
 
-				n_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["basis_type"] == "Bernstein", args["space"]["basis_type"] == "Serendipity", has_polys, false, use_corner_quadrature, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+				n_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, quadrature_hint, mass_quadrature_hint, quadrature_order, mass_quadrature_order, disc_orders, geom_disc_orders, args["space"]["basis_type"] == "Bernstein", args["space"]["basis_type"] == "Serendipity", has_polys, false, use_corner_quadrature, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
 
 			// if(problem->is_mixed())
 			if (mixed_assembler != nullptr)
 			{
-				n_pressure_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), args["space"]["basis_type"] == "Bernstein", false, has_polys, false, use_corner_quadrature, pressure_bases, local_boundary, poly_edge_to_data_geom, pressure_mesh_nodes);
+				n_pressure_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, quadrature_hint, mass_quadrature_hint, quadrature_order, mass_quadrature_order, int(args["space"]["pressure_discr_order"]), geom_disc_orders.maxCoeff(), args["space"]["basis_type"] == "Bernstein", false, has_polys, false, use_corner_quadrature, pressure_bases, local_boundary, poly_edge_to_data_geom, pressure_mesh_nodes);
 			}
 		}
 
@@ -1053,6 +1064,8 @@ namespace polyfem
 		assert(n_pressure_bases == 0 || poly_edge_to_data.size() == 0);
 
 		int new_bases = 0;
+		const auto quadrature_hint = assembler->weak_form_order_hint();
+		const auto mass_quadrature_hint = mass_matrix_assembler->weak_form_order_hint();
 
 		if (iso_parametric())
 		{
@@ -1066,6 +1079,8 @@ namespace polyfem
 					args["space"]["advanced"]["n_harmonic_samples"],
 					*dynamic_cast<Mesh3D *>(mesh.get()),
 					n_bases,
+					quadrature_hint,
+					mass_quadrature_hint,
 					args["space"]["advanced"]["quadrature_order"],
 					args["space"]["advanced"]["mass_quadrature_order"],
 					args["space"]["advanced"]["integral_constraints"],
@@ -1079,7 +1094,8 @@ namespace polyfem
 				if (args["space"]["poly_basis_type"] == "MeanValue")
 				{
 					new_bases = basis::MVPolygonalBasis2d::build_bases(
-						assembler->name(),
+						quadrature_hint,
+						mass_quadrature_hint,
 						assembler->is_tensor() ? 2 : 1,
 						*dynamic_cast<Mesh2D *>(mesh.get()),
 						n_bases,
@@ -1090,7 +1106,8 @@ namespace polyfem
 				else if (args["space"]["poly_basis_type"] == "Wachspress")
 				{
 					new_bases = basis::WSPolygonalBasis2d::build_bases(
-						assembler->name(),
+						quadrature_hint,
+						mass_quadrature_hint,
 						assembler->is_tensor() ? 2 : 1,
 						*dynamic_cast<Mesh2D *>(mesh.get()),
 						n_bases,
@@ -1106,6 +1123,8 @@ namespace polyfem
 						args["space"]["advanced"]["n_harmonic_samples"],
 						*dynamic_cast<Mesh2D *>(mesh.get()),
 						n_bases,
+						quadrature_hint,
+						mass_quadrature_hint,
 						args["space"]["advanced"]["quadrature_order"],
 						args["space"]["advanced"]["mass_quadrature_order"],
 						args["space"]["advanced"]["integral_constraints"],
@@ -1133,6 +1152,8 @@ namespace polyfem
 						args["space"]["advanced"]["n_harmonic_samples"],
 						*dynamic_cast<Mesh3D *>(mesh.get()),
 						n_bases,
+						quadrature_hint,
+						mass_quadrature_hint,
 						args["space"]["advanced"]["quadrature_order"],
 						args["space"]["advanced"]["mass_quadrature_order"],
 						args["space"]["advanced"]["integral_constraints"],
@@ -1147,7 +1168,8 @@ namespace polyfem
 				if (args["space"]["poly_basis_type"] == "MeanValue")
 				{
 					new_bases = basis::MVPolygonalBasis2d::build_bases(
-						assembler->name(),
+						quadrature_hint,
+						mass_quadrature_hint,
 						assembler->is_tensor() ? 2 : 1,
 						*dynamic_cast<Mesh2D *>(mesh.get()),
 						n_bases, args["space"]["advanced"]["quadrature_order"],
@@ -1157,7 +1179,8 @@ namespace polyfem
 				else if (args["space"]["poly_basis_type"] == "Wachspress")
 				{
 					new_bases = basis::WSPolygonalBasis2d::build_bases(
-						assembler->name(),
+						quadrature_hint,
+						mass_quadrature_hint,
 						assembler->is_tensor() ? 2 : 1,
 						*dynamic_cast<Mesh2D *>(mesh.get()),
 						n_bases, args["space"]["advanced"]["quadrature_order"],
@@ -1172,6 +1195,8 @@ namespace polyfem
 						args["space"]["advanced"]["n_harmonic_samples"],
 						*dynamic_cast<Mesh2D *>(mesh.get()),
 						n_bases,
+						quadrature_hint,
+						mass_quadrature_hint,
 						args["space"]["advanced"]["quadrature_order"],
 						args["space"]["advanced"]["mass_quadrature_order"],
 						args["space"]["advanced"]["integral_constraints"],

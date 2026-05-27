@@ -65,6 +65,13 @@ namespace polyfem::quadrature
 		}
 	} // namespace
 
+	void WeakFormOrderHint::combine_max(const WeakFormOrderHint &other)
+	{
+		phi_count = std::max(phi_count, other.phi_count);
+		grad_phi_count = std::max(grad_phi_count, other.grad_phi_count);
+		extra_order = std::max(extra_order, other.extra_order);
+	}
+
 	QuadratureOrder::QuadratureOrder(
 		const WeakFormOrderHint &weakform_hint,
 		const BasisOrderHint &basis_hint,
