@@ -35,6 +35,14 @@ namespace polyfem::varform
 	protected:
 		void reset() override;
 
+		void initial_solution(Eigen::MatrixXd &solution) const;
+		void initial_velocity(Eigen::MatrixXd &velocity) const;
+		void initial_acceleration(Eigen::MatrixXd &acceleration) const;
+
+		double t0;
+		int time_steps;
+		double dt;
+
 	private:
 		bool remesh_enabled = false;
 
@@ -42,9 +50,6 @@ namespace polyfem::varform
 		void init_forms(const json &args, const int dim, Eigen::MatrixXd &sol, const double t);
 		void solve_tensor_nonlinear(int step, Eigen::MatrixXd &sol, const bool init_lagging = true);
 
-		void initial_solution(Eigen::MatrixXd &solution) const;
-		void initial_velocity(Eigen::MatrixXd &velocity) const;
-		void initial_acceleration(Eigen::MatrixXd &acceleration) const;
 		void set_materials(assembler::Assembler &assembler) const;
 		std::shared_ptr<assembler::PressureAssembler> build_pressure_assembler() const;
 		std::vector<int> primitive_to_node() const;
@@ -63,10 +68,6 @@ namespace polyfem::varform
 			const std::function<std::string(const std::string &)> &resolve_input_path,
 			const Eigen::VectorXi &in_node_to_node,
 			ipc::CollisionMesh &collision_mesh);
-
-		double t0;
-		int time_steps;
-		double dt;
 	};
 
 	class NonlinearElasticStaticVarForm : public NonlinearElasticTransientVarForm

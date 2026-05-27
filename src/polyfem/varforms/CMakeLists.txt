@@ -4,6 +4,8 @@ set(SOURCES
     VarFormFactory.cpp
     ElasticVarForm.hpp
     ElasticVarForm.cpp
+    LinearElasticVarForm.hpp
+    LinearElasticVarForm.cpp
     NonlinearElasticTransientVarForm.hpp
     NonlinearElasticTransientVarForm.cpp
 )
