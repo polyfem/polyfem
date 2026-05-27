@@ -1,8 +1,8 @@
 #include "ElasticForm.hpp"
+#include "polyfem/quadrature/QuadratureOrder.hpp"
 
 #include <polyfem/quadrature/TriQuadrature.hpp>
 #include <polyfem/quadrature/TetQuadrature.hpp>
-#include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/assembler/MatParams.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -259,7 +259,15 @@ namespace polyfem::solver
 		mat_cache_ = std::make_unique<utils::SparseMatrixCache>();
 		quadrature_hierarchy_.resize(bases_.size());
 
-		quadrature_order_ = AssemblerUtils::quadrature_order(assembler_.name(), bases_[0].bases[0].order(), AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, is_volume_ ? 3 : 2);
+		const int dim = is_volume_ ? 3 : 2;
+		const int basis_order = bases_[0].bases[0].order();
+		const int geometry_order = geom_bases_[0].bases[0].order();
+		const BasisOrderHint basis_hint{BasisFamily::SIMPLEX, basis_order, basis_order};
+		const GeometryBasisOrderHint geom_hint{BasisFamily::SIMPLEX, dim, geometry_order, geometry_order};
+		const QuadratureOrder quad_order{
+			assembler_.weak_form_order_hint(),
+			basis_hint, geom_hint, -1};
+		quadrature_order_ = quad_order.order;
 
 		if (check_inversion_ != ElementInversionCheck::Discrete)
 		{
