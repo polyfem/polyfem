@@ -63,6 +63,7 @@ namespace polyfem::assembler
 		void set_params(const LameParameters &params) { params_ = params; }
 
 		std::string name() const override { return "IncompressibleLinearElasticityPressure"; }
+		quadrature::WeakFormOrderHint weak_form_order_hint() const override { return {2, 0, 0}; }
 		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
 
 		void set_size(const int size) override

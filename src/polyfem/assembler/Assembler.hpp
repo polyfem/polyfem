@@ -5,6 +5,8 @@
 #include <polyfem/assembler/AssemblerData.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 
+#include <polyfem/quadrature/QuadratureOrder.hpp>
+
 #include <polyfem/utils/MatrixCache.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
@@ -37,6 +39,8 @@ namespace polyfem::assembler
 
 		virtual std::string name() const = 0;
 
+		virtual quadrature::WeakFormOrderHint weak_form_order_hint() const { return {1, 1, 0}; }
+
 		int size() const { return size_; }
 		virtual void set_size(const int size) { size_ = size; }
 
@@ -59,6 +63,8 @@ namespace polyfem::assembler
 		virtual ~Assembler() = default;
 
 		virtual std::string name() const = 0;
+
+		virtual quadrature::WeakFormOrderHint weak_form_order_hint() const { return {0, 2, 0}; }
 
 		int size() const { return size_; }
 		virtual void set_size(const int size) { size_ = size; }
@@ -373,6 +379,8 @@ namespace polyfem::assembler
 
 	class ElasticityNLAssembler : virtual public ElasticityAssembler, virtual public NLAssembler
 	{
+	public:
+		quadrature::WeakFormOrderHint weak_form_order_hint() const override { return {0, 2, 0}; }
 	};
 
 } // namespace polyfem::assembler

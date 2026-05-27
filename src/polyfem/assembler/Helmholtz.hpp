@@ -27,6 +27,7 @@ namespace polyfem::assembler
 		GenericMatParam k() const { return k_; }
 
 		std::string name() const override { return "Helmholtz"; }
+		quadrature::WeakFormOrderHint weak_form_order_hint() const override { return {2, 0, 0}; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
 	private:
