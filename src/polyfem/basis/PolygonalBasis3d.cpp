@@ -2,9 +2,7 @@
 #include "PolygonalBasis3d.hpp"
 #include "LagrangeBasis3d.hpp"
 
-#include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/quadrature/PolyhedronQuadrature.hpp>
-#include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/mesh/mesh2D/Refinement.hpp>
 #include <polyfem/utils/RefElementSampler.hpp>
@@ -480,6 +478,8 @@ namespace polyfem
 			const int nn_samples_per_edge,
 			const Mesh3D &mesh,
 			const int n_bases,
+			const WeakFormOrderHint &quadrature_hint,
+			const WeakFormOrderHint &mass_quadrature_hint,
 			const int quadrature_order,
 			const int mass_quadrature_order,
 			const int integral_constraints,
@@ -524,9 +524,15 @@ namespace polyfem
 				Quadrature tmp_quadrature, tmp_mass_quadrature;
 				double scaling;
 				Eigen::RowVector3d translation;
+				// RBF kernel is not polynomial, basis order 2 is heuristic.
+				const BasisOrderHint basis_hint{BasisFamily::POLY, 2, 2};
+				// Order of geometry mapping depends on runtime solution. 1 is dummy value.
+				const GeometryBasisOrderHint geometry_hint{BasisFamily::POLY, 1, 1, 1};
+				const QuadratureOrder final_quad_order{quadrature_hint, basis_hint, geometry_hint, quadrature_order};
+				const QuadratureOrder final_mass_quad_order{mass_quadrature_hint, basis_hint, geometry_hint, mass_quadrature_order};
 				sample_polyhedra(e, 2, n_kernels_per_edge, n_samples_per_edge,
-								 quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler.name(), 2, AssemblerUtils::BasisType::POLY, 3),
-								 mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", 2, AssemblerUtils::BasisType::POLY, 3),
+								 final_quad_order.order,
+								 final_mass_quad_order.order,
 								 mesh, poly_face_to_data, bases, gbases, eps, local_to_global,
 								 collocation_points, kernel_centers, rhs, triangulated_vertices,
 								 triangulated_faces, tmp_quadrature, tmp_mass_quadrature, scaling, translation);

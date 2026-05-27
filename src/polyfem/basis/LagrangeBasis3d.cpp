@@ -8,15 +8,15 @@
 #include <polyfem/quadrature/PrismQuadrature.hpp>
 #include <polyfem/quadrature/PyramidQuadrature.hpp>
 
-#include <polyfem/assembler/AssemblerUtils.hpp>
-
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
 #include <polyfem/autogen/prism_bases.hpp>
 #include <polyfem/autogen/auto_pyramid_bases.hpp>
 
 #include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/utils/Logger.hpp>
 
+#include <algorithm>
 #include <cassert>
 #include <array>
 ////////////////////////////////////////////////////////////////////////////////
@@ -26,6 +26,7 @@ using namespace polyfem::assembler;
 using namespace polyfem::basis;
 using namespace polyfem::mesh;
 using namespace polyfem::quadrature;
+using namespace polyfem::utils;
 
 /*
 Axes:
@@ -2366,11 +2367,14 @@ Eigen::VectorXi LagrangeBasis3d::pyramid_face_local_nodes(const int p, const Mes
 
 int LagrangeBasis3d::build_bases(
 	const Mesh3D &mesh,
-	const std::string &assembler,
+	const WeakFormOrderHint &quadrature_hint,
+	const WeakFormOrderHint &mass_quadrature_hint,
 	const int quadrature_order,
 	const int mass_quadrature_order,
 	const int discr_orderp,
 	const int discr_orderq,
+	const int geom_discr_orderp,
+	const int geom_discr_orderq,
 	const bool bernstein,
 	const bool serendipity,
 	const bool has_polys,
@@ -2387,16 +2391,42 @@ int LagrangeBasis3d::build_bases(
 	Eigen::VectorXi discr_ordersq(mesh.n_cells());
 	discr_ordersq.setConstant(discr_orderq);
 
-	return build_bases(mesh, assembler, quadrature_order, mass_quadrature_order, discr_ordersp, discr_ordersq, bernstein, serendipity, has_polys, is_geom_bases, use_corner_quadrature, bases, local_boundary, poly_face_to_data, mesh_nodes);
+	Eigen::VectorXi geom_discr_ordersp(mesh.n_cells());
+	geom_discr_ordersp.setConstant(geom_discr_orderp);
+
+	Eigen::VectorXi geom_discr_ordersq(mesh.n_cells());
+	geom_discr_ordersq.setConstant(geom_discr_orderq);
+
+	return build_bases(mesh,
+					   quadrature_hint,
+					   mass_quadrature_hint,
+					   quadrature_order,
+					   mass_quadrature_order,
+					   discr_ordersp,
+					   discr_ordersq,
+					   geom_discr_ordersp,
+					   geom_discr_ordersq,
+					   bernstein,
+					   serendipity,
+					   has_polys,
+					   is_geom_bases,
+					   use_corner_quadrature,
+					   bases,
+					   local_boundary,
+					   poly_face_to_data,
+					   mesh_nodes);
 }
 
 int LagrangeBasis3d::build_bases(
 	const Mesh3D &mesh,
-	const std::string &assembler,
+	const WeakFormOrderHint &quadrature_hint,
+	const WeakFormOrderHint &mass_quadrature_hint,
 	const int quadrature_order,
 	const int mass_quadrature_order,
 	const Eigen::VectorXi &discr_ordersp,
 	const Eigen::VectorXi &discr_ordersq,
+	const Eigen::VectorXi &geom_discr_ordersp,
+	const Eigen::VectorXi &geom_discr_ordersq,
 	const bool bernstein,
 	const bool serendipity,
 	const bool has_polys,
@@ -2410,6 +2440,8 @@ int LagrangeBasis3d::build_bases(
 	assert(mesh.is_volume());
 	assert(discr_ordersp.size() == mesh.n_cells());
 	assert(discr_ordersq.size() == mesh.n_cells());
+	assert(geom_discr_ordersp.size() == mesh.n_cells());
+	assert(geom_discr_ordersq.size() == mesh.n_cells());
 
 	// Navigation3D::get_index_from_element_face_time = 0;
 	// Navigation3D::switch_vertex_time = 0;
@@ -2448,6 +2480,21 @@ int LagrangeBasis3d::build_bases(
 		ElementBases &b = bases[e];
 		const int discr_order = discr_ordersp(e);
 		const int discr_orderq = discr_ordersq(e);
+		BasisFamily geometry_family = BasisFamily::SIMPLEX;
+		if (mesh.is_cube(e))
+		{
+			geometry_family = BasisFamily::TENSOR;
+		}
+		else if (mesh.is_prism(e))
+		{
+			geometry_family = BasisFamily::PRISM;
+		}
+		else if (mesh.is_pyramid(e))
+		{
+			geometry_family = BasisFamily::PYRAMID;
+		}
+
+		const GeometryBasisOrderHint geometry_hint{geometry_family, 3, geom_discr_ordersp(e), geom_discr_ordersq(e)};
 		const int n_el_bases = (int)element_nodes_id[e].size();
 		b.bases.resize(n_el_bases);
 
@@ -2470,15 +2517,16 @@ int LagrangeBasis3d::build_bases(
 
 		if (mesh.is_cube(e))
 		{
-			const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::CUBE_LAGRANGE, 3);
-			const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::CUBE_LAGRANGE, 3);
-			b.set_quadrature([real_order](Quadrature &quad) {
+			const BasisOrderHint basis_hint{BasisFamily::TENSOR, discr_order, discr_order};
+			const QuadratureOrder final_quad_order{quadrature_hint, basis_hint, geometry_hint, quadrature_order};
+			const QuadratureOrder final_mass_quad_order{mass_quadrature_hint, basis_hint, geometry_hint, mass_quadrature_order};
+			b.set_quadrature([final_quad_order](Quadrature &quad) {
 				HexQuadrature hex_quadrature;
-				hex_quadrature.get_quadrature(real_order, quad);
+				hex_quadrature.get_quadrature(final_quad_order.order, quad);
 			});
-			b.set_mass_quadrature([real_mass_order](Quadrature &quad) {
+			b.set_mass_quadrature([final_mass_quad_order](Quadrature &quad) {
 				HexQuadrature hex_quadrature;
-				hex_quadrature.get_quadrature(real_mass_order, quad);
+				hex_quadrature.get_quadrature(final_mass_quad_order.order, quad);
 			});
 
 			b.set_local_node_from_primitive_func([serendipity, discr_order, e](const int primitive_id, const Mesh &mesh) {
@@ -2509,16 +2557,17 @@ int LagrangeBasis3d::build_bases(
 		}
 		else if (mesh.is_simplex(e))
 		{
-			const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 3);
-			const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 3);
+			const BasisOrderHint basis_hint{BasisFamily::SIMPLEX, discr_order, discr_order};
+			const QuadratureOrder final_quad_order{quadrature_hint, basis_hint, geometry_hint, quadrature_order};
+			const QuadratureOrder final_mass_quad_order{mass_quadrature_hint, basis_hint, geometry_hint, mass_quadrature_order};
 
-			b.set_quadrature([real_order, use_corner_quadrature](Quadrature &quad) {
+			b.set_quadrature([final_quad_order, use_corner_quadrature](Quadrature &quad) {
 				TetQuadrature tet_quadrature(use_corner_quadrature);
-				tet_quadrature.get_quadrature(real_order, quad);
+				tet_quadrature.get_quadrature(final_quad_order.order, quad);
 			});
-			b.set_mass_quadrature([real_mass_order, use_corner_quadrature](Quadrature &quad) {
+			b.set_mass_quadrature([final_mass_quad_order, use_corner_quadrature](Quadrature &quad) {
 				TetQuadrature tet_quadrature(use_corner_quadrature);
-				tet_quadrature.get_quadrature(real_mass_order, quad);
+				tet_quadrature.get_quadrature(final_mass_quad_order.order, quad);
 			});
 
 			b.set_local_node_from_primitive_func([discr_order, e](const int primitive_id, const Mesh &mesh) {
@@ -2552,19 +2601,17 @@ int LagrangeBasis3d::build_bases(
 		}
 		else if (mesh.is_prism(e))
 		{
-			const int orderp = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::PRISM_LAGRANGE, 2);
-			const int orderq = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_orderq, AssemblerUtils::BasisType::PRISM_LAGRANGE, 1);
+			const BasisOrderHint basis_hint{BasisFamily::PRISM, discr_order, discr_orderq};
+			const QuadratureOrder final_quad_order{quadrature_hint, basis_hint, geometry_hint, quadrature_order};
+			const QuadratureOrder final_mass_quad_order{mass_quadrature_hint, basis_hint, geometry_hint, mass_quadrature_order};
 
-			const int mass_orderp = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::PRISM_LAGRANGE, 2);
-			const int mass_orderq = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_orderq, AssemblerUtils::BasisType::PRISM_LAGRANGE, 1);
-
-			b.set_quadrature([orderp, orderq](Quadrature &quad) {
+			b.set_quadrature([final_quad_order](Quadrature &quad) {
 				PrismQuadrature tet_quadrature;
-				tet_quadrature.get_quadrature(orderp, orderq, quad);
+				tet_quadrature.get_quadrature(final_quad_order.order, final_quad_order.height_order, quad);
 			});
-			b.set_mass_quadrature([mass_orderp, mass_orderq](Quadrature &quad) {
+			b.set_mass_quadrature([final_mass_quad_order](Quadrature &quad) {
 				PrismQuadrature tet_quadrature;
-				tet_quadrature.get_quadrature(mass_orderp, mass_orderq, quad);
+				tet_quadrature.get_quadrature(final_mass_quad_order.order, final_mass_quad_order.height_order, quad);
 			});
 
 			b.set_local_node_from_primitive_func([discr_order, discr_orderq, e](const int primitive_id, const Mesh &mesh) {
@@ -2595,16 +2642,17 @@ int LagrangeBasis3d::build_bases(
 		}
 		else if (mesh.is_pyramid(e))
 		{
-			const int orderp = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::PYRAMID_LAGRANGE, 2);
-			const int mass_orderp = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::PYRAMID_LAGRANGE, 2);
+			const BasisOrderHint basis_hint{BasisFamily::PYRAMID, discr_order, discr_order};
+			const QuadratureOrder final_quad_order{quadrature_hint, basis_hint, geometry_hint, quadrature_order};
+			const QuadratureOrder final_mass_quad_order{mass_quadrature_hint, basis_hint, geometry_hint, mass_quadrature_order};
 
-			b.set_quadrature([orderp](Quadrature &quad) {
+			b.set_quadrature([final_quad_order](Quadrature &quad) {
 				PyramidQuadrature tet_quadrature;
-				tet_quadrature.get_quadrature(orderp, quad);
+				tet_quadrature.get_quadrature(final_quad_order.order, quad);
 			});
-			b.set_mass_quadrature([mass_orderp](Quadrature &quad) {
+			b.set_mass_quadrature([final_mass_quad_order](Quadrature &quad) {
 				PyramidQuadrature p_quadrature;
-				p_quadrature.get_quadrature(mass_orderp, quad);
+				p_quadrature.get_quadrature(final_mass_quad_order.order, quad);
 			});
 
 			b.set_local_node_from_primitive_func([discr_order, e](const int primitive_id, const Mesh &mesh) {

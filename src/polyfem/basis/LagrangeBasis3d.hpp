@@ -7,6 +7,7 @@
 #include <polyfem/basis/InterfaceData.hpp>
 #include <polyfem/mesh/mesh3D/Navigation3D.hpp>
 #include <polyfem/mesh/MeshNodes.hpp>
+#include <polyfem/quadrature/QuadratureOrder.hpp>
 
 #include <Eigen/Dense>
 #include <vector>
@@ -43,11 +44,14 @@ namespace polyfem
 			///
 			static int build_bases(
 				const mesh::Mesh3D &mesh,
-				const std::string &assembler,
+				const quadrature::WeakFormOrderHint &quadrature_hint,
+				const quadrature::WeakFormOrderHint &mass_quadrature_hint,
 				const int quadrature_order,
 				const int mass_quadrature_order,
 				const int discr_orderp,
 				const int discr_orderq,
+				const int geom_discr_orderp,
+				const int geom_discr_orderq,
 				const bool bernstein,
 				const bool serendipity,
 				const bool has_polys,
@@ -83,11 +87,14 @@ namespace polyfem
 			///
 			static int build_bases(
 				const mesh::Mesh3D &mesh,
-				const std::string &assembler,
+				const quadrature::WeakFormOrderHint &quadrature_hint,
+				const quadrature::WeakFormOrderHint &mass_quadrature_hint,
 				const int quadrature_order,
 				const int mass_quadrature_order,
 				const Eigen::VectorXi &discr_orderp,
 				const Eigen::VectorXi &discr_orderq,
+				const Eigen::VectorXi &geom_discr_orderp,
+				const Eigen::VectorXi &geom_discr_orderq,
 				const bool bernstein,
 				const bool serendipity,
 				const bool has_polys,

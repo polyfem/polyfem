@@ -6,10 +6,9 @@
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
 
-#include <polyfem/assembler/AssemblerUtils.hpp>
-
 #include <polyfem/utils/MaybeParallelFor.hpp>
 
+#include <algorithm>
 #include <cassert>
 #include <array>
 ////////////////////////////////////////////////////////////////////////////////
@@ -674,10 +673,12 @@ Eigen::VectorXi LagrangeBasis2d::quad_edge_local_nodes(const int q, const Mesh2D
 
 int LagrangeBasis2d::build_bases(
 	const Mesh2D &mesh,
-	const std::string &assembler,
+	const WeakFormOrderHint &quadrature_hint,
+	const WeakFormOrderHint &mass_quadrature_hint,
 	const int quadrature_order,
 	const int mass_quadrature_order,
 	const int discr_order,
+	const int geom_discr_order,
 	const bool bernstein,
 	const bool serendipity,
 	const bool has_polys,
@@ -691,16 +692,35 @@ int LagrangeBasis2d::build_bases(
 
 	Eigen::VectorXi discr_orders(mesh.n_faces());
 	discr_orders.setConstant(discr_order);
+	Eigen::VectorXi geom_discr_orders(mesh.n_faces());
+	geom_discr_orders.setConstant(geom_discr_order);
 
-	return build_bases(mesh, assembler, quadrature_order, mass_quadrature_order, discr_orders, bernstein, serendipity, has_polys, is_geom_bases, use_corner_quadrature, bases, local_boundary, poly_edge_to_data, mesh_nodes);
+	return build_bases(mesh,
+					   quadrature_hint,
+					   mass_quadrature_hint,
+					   quadrature_order,
+					   mass_quadrature_order,
+					   discr_orders,
+					   geom_discr_orders,
+					   bernstein,
+					   serendipity,
+					   has_polys,
+					   is_geom_bases,
+					   use_corner_quadrature,
+					   bases,
+					   local_boundary,
+					   poly_edge_to_data,
+					   mesh_nodes);
 }
 
 int LagrangeBasis2d::build_bases(
 	const Mesh2D &mesh,
-	const std::string &assembler,
+	const WeakFormOrderHint &quadrature_hint,
+	const WeakFormOrderHint &mass_quadrature_hint,
 	const int quadrature_order,
 	const int mass_quadrature_order,
 	const Eigen::VectorXi &discr_orders,
+	const Eigen::VectorXi &geom_discr_orders,
 	const bool bernstein,
 	const bool serendipity,
 	const bool has_polys,
@@ -713,6 +733,7 @@ int LagrangeBasis2d::build_bases(
 {
 	assert(!mesh.is_volume());
 	assert(discr_orders.size() == mesh.n_faces());
+	assert(geom_discr_orders.size() == mesh.n_faces());
 
 	const int max_p = discr_orders.maxCoeff();
 	const int nn = max_p > 1 ? (max_p - 1) : 0;
@@ -739,6 +760,12 @@ int LagrangeBasis2d::build_bases(
 	{
 		ElementBases &b = bases[e];
 		const int discr_order = discr_orders(e);
+
+		const BasisFamily geometry_family =
+			mesh.is_cube(e) ? BasisFamily::TENSOR : BasisFamily::SIMPLEX;
+		const int geom_discr = geom_discr_orders(e);
+		const GeometryBasisOrderHint geometry_hint{geometry_family, 2, geom_discr, geom_discr};
+
 		const int n_el_bases = element_nodes_id[e].size();
 		b.bases.resize(n_el_bases);
 
@@ -762,17 +789,18 @@ int LagrangeBasis2d::build_bases(
 
 		if (mesh.is_cube(e))
 		{
-			const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::CUBE_LAGRANGE, 2);
-			const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::CUBE_LAGRANGE, 2);
-			b.set_quadrature([real_order](Quadrature &quad) {
+			const BasisOrderHint basis_hint{BasisFamily::TENSOR, discr_order, discr_order};
+			const QuadratureOrder final_quad_order{quadrature_hint, basis_hint, geometry_hint, quadrature_order};
+			const QuadratureOrder final_mass_quad_order{mass_quadrature_hint, basis_hint, geometry_hint, mass_quadrature_order};
+			b.set_quadrature([final_quad_order](Quadrature &quad) {
 				QuadQuadrature quad_quadrature;
-				quad_quadrature.get_quadrature(real_order, quad);
+				quad_quadrature.get_quadrature(final_quad_order.order, quad);
 			});
-			b.set_mass_quadrature([real_mass_order](Quadrature &quad) {
+			b.set_mass_quadrature([final_mass_quad_order](Quadrature &quad) {
 				QuadQuadrature quad_quadrature;
-				quad_quadrature.get_quadrature(real_mass_order, quad);
+				quad_quadrature.get_quadrature(final_mass_quad_order.order, quad);
 			});
-			// quad_quadrature.get_quadrature(real_order, b.quadrature);
+			// quad_quadrature.get_quadrature(final_quad_order.order, b.quadrature);
 
 			b.set_local_node_from_primitive_func([discr_order, e](const int primitive_id, const Mesh &mesh) {
 				const auto &mesh2d = dynamic_cast<const Mesh2D &>(mesh);
@@ -803,15 +831,16 @@ int LagrangeBasis2d::build_bases(
 		}
 		else if (mesh.is_simplex(e))
 		{
-			const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 2);
-			const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 2);
-			b.set_quadrature([real_order, use_corner_quadrature](Quadrature &quad) {
+			const BasisOrderHint basis_hint{BasisFamily::SIMPLEX, discr_order, discr_order};
+			const QuadratureOrder final_quad_order{quadrature_hint, basis_hint, geometry_hint, quadrature_order};
+			const QuadratureOrder final_mass_quad_order{mass_quadrature_hint, basis_hint, geometry_hint, mass_quadrature_order};
+			b.set_quadrature([final_quad_order, use_corner_quadrature](Quadrature &quad) {
 				TriQuadrature tri_quadrature(use_corner_quadrature);
-				tri_quadrature.get_quadrature(real_order, quad);
+				tri_quadrature.get_quadrature(final_quad_order.order, quad);
 			});
-			b.set_mass_quadrature([real_mass_order, use_corner_quadrature](Quadrature &quad) {
+			b.set_mass_quadrature([final_mass_quad_order, use_corner_quadrature](Quadrature &quad) {
 				TriQuadrature tri_quadrature(use_corner_quadrature);
-				tri_quadrature.get_quadrature(real_mass_order, quad);
+				tri_quadrature.get_quadrature(final_mass_quad_order.order, quad);
 			});
 
 			b.set_local_node_from_primitive_func([discr_order, e](const int primitive_id, const Mesh &mesh) {

@@ -6,6 +6,7 @@
 #include <polyfem/mesh/LocalBoundary.hpp>
 #include <polyfem/basis/InterfaceData.hpp>
 #include <polyfem/mesh/mesh2D/Navigation.hpp>
+#include <polyfem/quadrature/QuadratureOrder.hpp>
 
 #include <polyfem/mesh/MeshNodes.hpp>
 
@@ -44,10 +45,12 @@ namespace polyfem
 			///
 			static int build_bases(
 				const mesh::Mesh2D &mesh,
-				const std::string &assembler,
+				const quadrature::WeakFormOrderHint &quadrature_hint,
+				const quadrature::WeakFormOrderHint &mass_quadrature_hint,
 				const int quadrature_order,
 				const int mass_quadrature_order,
 				const int discr_order,
+				const int geom_discr_order,
 				const bool bernstein,
 				const bool serendipity,
 				const bool has_polys,
@@ -83,10 +86,12 @@ namespace polyfem
 			///
 			static int build_bases(
 				const mesh::Mesh2D &mesh,
-				const std::string &assembler,
+				const quadrature::WeakFormOrderHint &quadrature_hint,
+				const quadrature::WeakFormOrderHint &mass_quadrature_hint,
 				const int quadrature_order,
 				const int mass_quadrature_order,
 				const Eigen::VectorXi &discr_order,
+				const Eigen::VectorXi &geom_discr_order,
 				const bool bernstein,
 				const bool serendipity,
 				const bool has_polys,
