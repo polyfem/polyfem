@@ -7,6 +7,8 @@ set(QUAD_SOURCES
 	PolygonQuadrature.hpp
 	PolyhedronQuadrature.cpp
 	PolyhedronQuadrature.hpp
+	QuadratureOrder.hpp
+	QuadratureOrder.cpp
 	QuadQuadrature.cpp
 	QuadQuadrature.hpp
 	Quadrature.hpp
