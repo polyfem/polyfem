@@ -115,7 +115,7 @@ namespace polyfem
 
 			Quadrature tet_quadr_pts;
 			TetQuadrature tet_quadr;
-			tet_quadr.get_quadrature(4, tet_quadr_pts);
+			tet_quadr.get_quadrature(order, tet_quadr_pts);
 			// assert(tet_quadr_pts.weights.minCoeff() >= 0);
 
 			double scaling = (V.colwise().maxCoeff() - V.colwise().minCoeff()).maxCoeff();
