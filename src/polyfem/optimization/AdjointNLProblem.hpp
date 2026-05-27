@@ -43,7 +43,7 @@ namespace polyfem::solver
 		double value(const Eigen::VectorXd &x) override;
 
 		void gradient(const Eigen::VectorXd &x, Eigen::VectorXd &gradv) override;
-		void hessian(const Eigen::VectorXd &x, StiffnessMatrix &hessian) override;
+		void hessian(const Eigen::VectorXd &x, polysolve::Hessian &hessian) override;
 		void save_to_file(const int iter_num, const Eigen::VectorXd &x0);
 		bool is_step_valid(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;
 		bool is_step_collision_free(const Eigen::VectorXd &x0, const Eigen::VectorXd &x1) override;

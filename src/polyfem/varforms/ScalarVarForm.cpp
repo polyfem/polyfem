@@ -816,7 +816,9 @@ namespace polyfem::varform
 		const Eigen::VectorXd affine_offset =
 			constrained_problem.reduced_to_full(Eigen::VectorXd::Zero(constrained_problem.reduced_size()));
 		b = constrained_problem.full_to_reduced_grad(b - full_A * affine_offset);
-		constrained_problem.full_hessian_to_reduced_hessian(A);
+		Hessian hessian(std::move(A));
+		constrained_problem.full_hessian_to_reduced_hessian(hessian);
+		A = std::move(hessian.get_mutable<StiffnessMatrix>());
 
 		Eigen::VectorXd reduced_solution;
 		stats.spectrum = dirichlet_solve(

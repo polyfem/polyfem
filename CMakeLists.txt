@@ -207,6 +207,7 @@ endif()
 # polysolve
 include(polysolve)
 target_link_libraries(polyfem PUBLIC polysolve::polysolve)
+ 
 
 # libigl
 include(libigl)

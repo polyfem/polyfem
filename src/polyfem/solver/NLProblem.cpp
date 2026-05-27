@@ -2,7 +2,6 @@
 
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
-#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 
@@ -653,19 +652,22 @@ namespace polyfem::solver
 		}
 	}
 
-	void NLProblem::hessian(const TVector &x, THessian &hessian)
+	void NLProblem::hessian(const TVector &x, polysolve::Hessian &hessian)
 	{
 		FullNLProblem::hessian(reduced_to_full(x), hessian);
 
+		THessian &hessian_ = hessian.get<StiffnessMatrix>();
 		if (full_size() != current_size())
 		{
-			full_hessian_to_reduced_hessian(hessian);
+			// To DO: implement full_hessian_to_reduced_hessian in our Hessian struct type.
+			full_hessian_to_reduced_hessian(hessian_);
 		}
 		else if (penalty_problem_)
 		{
-			THessian tmp;
-			penalty_problem_->hessian(x, tmp);
-			hessian += tmp;
+			throw std::runtime_error("Hessian computation for the full problem with penalty forms is not implemented yet");
+			// THessian tmp;
+			// penalty_problem_->hessian(x, tmp);
+			// hessian_ += tmp;
 		}
 	}
 

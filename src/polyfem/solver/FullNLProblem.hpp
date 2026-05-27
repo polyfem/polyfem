@@ -20,7 +20,7 @@ namespace polyfem::solver
 
 		virtual double value(const TVector &x) override;
 		virtual void gradient(const TVector &x, TVector &gradv) override;
-		virtual void hessian(const TVector &x, THessian &hessian) override;
+		virtual void hessian(const TVector &x, polysolve::Hessian &hessian) override;
 		NewtonHessian evalHessian(const TVector &x);
 		bool 		 updateHessianSparsityPattern();
 

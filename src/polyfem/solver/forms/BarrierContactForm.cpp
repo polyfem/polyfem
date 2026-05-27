@@ -227,7 +227,7 @@ namespace polyfem::solver
 		};
 
 		auto X = compute_displaced_surface(x);
-		auto H_eval_e = [&](int ci) { return (weight * barrier_potential_.hessian(collision_set_[ci], collision_set_[ci].dof(X, collision_mesh_.edges(), collision_mesh_.faces()), psd_projection_method)).eval(); };
+		auto H_eval_e = [&](int ci) -> Eigen::MatrixXd { return (weight * barrier_potential_.hessian(collision_set_[ci], collision_set_[ci].dof(X, collision_mesh_.edges(), collision_mesh_.faces()), psd_projection_method)); };
 		accumulateHessianContribs(H, collision_set_.size(), H_eval_e, [this, &blockVarForCollisionMeshVertex](size_t ci) { return constraintStencil(ci, blockVarForCollisionMeshVertex); });
 
 	}

@@ -418,7 +418,6 @@ namespace polyfem::legacy
 				stats.solver_info.back()["weight"] = al_weight;
 			save_subsolve(++subsolve_count, step, sol, Eigen::MatrixXd()); // no pressure
 		};
-
 		Eigen::MatrixXd prev_sol = sol;
 		al_solver.solve_al(nl_problem, sol,
 						   args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length());
@@ -490,7 +489,6 @@ namespace polyfem::legacy
 				nl_problem.finish();
 				prev_sol = sol;
 				sol = nl_problem.reduced_to_full(tmp_sol);
-
 				// Save the subsolve sequence for debugging and info
 				stats.solver_info.push_back(
 					{{"type", "rc"},

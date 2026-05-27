@@ -123,21 +123,31 @@ namespace polyfem::solver
 		}
 	}
 
-	void FullNLProblem::hessian(const TVector &x, THessian &hessian)
+	void FullNLProblem::hessian(const TVector &x, polysolve::Hessian &hessian)
 	{
-		// hessian.resize(x.size(), x.size());
-		// for (auto &f : forms_)
-		// {
-		// 	if (!f->enabled())
-		// 		continue;
-		// 	THessian tmp;
-		// 	f->second_derivative(x, tmp);
-		// 	hessian += tmp;
-		// }
+#if 0
+		hessian = polysolve::Hessian(std::in_place_type<StiffnessMatrix>());
+        auto &H = std::get<StiffnessMatrix>(hessian);
+
+		H.resize(x.size(), x.size());
+		for (auto &f : forms_)
+		{
+			if (!f->enabled())
+				continue;
+			THessian tmp;
+			f->second_derivative(x, tmp);
+			H += tmp;
+		}
+#else
+		hessian = polysolve::Hessian(std::in_place_type<NewtonHessian>);
+        auto &H = hessian.get<NewtonHessian>();
 
 		bool changed = updateHessianSparsityPattern();
-        if (changed) ++m_sparsityPatternID;
-		utils::NewtonHessian2SparseMatrix(evalHessian(x), hessian);
+		if (changed) ++m_sparsityPatternID;
+
+		H = evalHessian(x);
+		
+#endif
 	}
 
 	NewtonHessian FullNLProblem::evalHessian(const TVector &x)

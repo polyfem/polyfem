@@ -42,7 +42,7 @@ namespace polyfem::solver
 
 		virtual double value(const TVector &x) override;
 		virtual void gradient(const TVector &x, TVector &gradv) override;
-		virtual void hessian(const TVector &x, THessian &hessian) override;
+		virtual void hessian(const TVector &x, polysolve::Hessian &hessian) override;
 
 		virtual bool is_step_valid(const TVector &x0, const TVector &x1) override;
 		virtual bool is_step_collision_free(const TVector &x0, const TVector &x1) override;

@@ -211,12 +211,15 @@ namespace polyfem::solver
 
 		return utils::unflatten(macro_reduced_to_full(reduced.tail(dof2), homogeneous), dim);
 	}
-	void NLHomoProblem::hessian(const TVector &x, THessian &hessian)
+	void NLHomoProblem::hessian(const TVector &x, polysolve::Hessian &hessian)
 	{
 		FullNLProblem::hessian(reduced_to_full(x), hessian);
 
-		full_hessian_to_reduced_hessian(hessian);
-
+		THessian &hessian_ = hessian.get<StiffnessMatrix>();
+		full_hessian_to_reduced_hessian(hessian_);
+		
+		// TODO: need to do this operations on hessian directly.
+		// This is incorrect now.
 		for (auto &form : homo_forms)
 			if (form->enabled())
 			{
@@ -225,7 +228,7 @@ namespace polyfem::solver
 
 				THessian hess;
 				extended_hessian_to_reduced_hessian(hess_extended, hess);
-				hessian += hess;
+				hessian_ += hess;
 			}
 	}
 
