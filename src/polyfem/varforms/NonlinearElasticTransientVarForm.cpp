@@ -233,7 +233,7 @@ namespace polyfem::varform
 		}
 	} // namespace
 
-	void NonlinearElasticTransientVarForm::reset()
+	void ElasticVarForm::reset()
 	{
 		VarForm::reset();
 
@@ -257,7 +257,7 @@ namespace polyfem::varform
 		mesh_ = nullptr;
 	}
 
-	void NonlinearElasticTransientVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
+	void ElasticVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
 	{
 		VarForm::init(formulation, units, args, out_path);
 		const bool is_time_dependent = args.contains("time") && !args["time"].is_null();
@@ -313,7 +313,7 @@ namespace polyfem::varform
 		dt = is_time_dependent ? args["time"]["dt"].get<double>() : 0.0;
 	}
 
-	void NonlinearElasticTransientVarForm::load_mesh(const mesh::Mesh &mesh, const json &args)
+	void ElasticVarForm::load_mesh(const mesh::Mesh &mesh, const json &args)
 	{
 		mesh_ = &mesh;
 		set_materials(*assembler);
@@ -347,7 +347,7 @@ namespace polyfem::varform
 		problem->init(mesh);
 	}
 
-	void NonlinearElasticTransientVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
+	void ElasticVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
 	{
 		using namespace mesh;
 		mesh_ = &mesh;
@@ -667,7 +667,7 @@ namespace polyfem::varform
 		}
 	}
 
-	void NonlinearElasticTransientVarForm::build_node_mapping(const mesh::Mesh &mesh, const json &args)
+	void ElasticVarForm::build_node_mapping(const mesh::Mesh &mesh, const json &args)
 	{
 		if (args["space"]["basis_type"] == "Spline")
 		{
@@ -750,7 +750,7 @@ namespace polyfem::varform
 		}
 	}
 
-	void NonlinearElasticTransientVarForm::build_collision_mesh(
+	void ElasticVarForm::build_collision_mesh(
 		const mesh::Mesh &mesh,
 		const json &args)
 	{
@@ -760,7 +760,7 @@ namespace polyfem::varform
 			in_node_to_node, collision_mesh);
 	}
 
-	void NonlinearElasticTransientVarForm::build_collision_mesh(
+	void ElasticVarForm::build_collision_mesh(
 		const mesh::Mesh &mesh,
 		const int n_bases,
 		const std::vector<basis::ElementBases> &bases,
@@ -887,7 +887,7 @@ namespace polyfem::varform
 		collision_mesh.init_area_jacobians();
 	}
 
-	void NonlinearElasticTransientVarForm::set_materials(assembler::Assembler &assembler) const
+	void ElasticVarForm::set_materials(assembler::Assembler &assembler) const
 	{
 		assert(mesh_ != nullptr);
 		const int size = this->assembler && (this->assembler->is_tensor() || this->assembler->is_fluid()) ? mesh_->dimension() : 1;
@@ -937,7 +937,7 @@ namespace polyfem::varform
 			n_bases, size, bases, geom_bases(), *problem);
 	}
 
-	void NonlinearElasticTransientVarForm::assemble_rhs(const mesh::Mesh &mesh, const json &args)
+	void ElasticVarForm::assemble_rhs(const mesh::Mesh &mesh, const json &args)
 	{
 		mesh_ = &mesh;
 
@@ -969,7 +969,7 @@ namespace polyfem::varform
 		logger().info(" took {}s", timings.assigning_rhs_time);
 	}
 
-	void NonlinearElasticTransientVarForm::assemble_mass_mat(const mesh::Mesh &mesh, const json &args)
+	void ElasticVarForm::assemble_mass_mat(const mesh::Mesh &mesh, const json &args)
 	{
 		mesh_ = &mesh;
 
@@ -1296,7 +1296,7 @@ namespace polyfem::varform
 		}
 	} // namespace
 
-	void NonlinearElasticTransientVarForm::initial_solution(Eigen::MatrixXd &solution) const
+	void ElasticVarForm::initial_solution(Eigen::MatrixXd &solution) const
 	{
 		assert(solve_data.rhs_assembler != nullptr);
 
@@ -1317,7 +1317,7 @@ namespace polyfem::varform
 		}
 	}
 
-	void NonlinearElasticTransientVarForm::initial_velocity(Eigen::MatrixXd &velocity) const
+	void ElasticVarForm::initial_velocity(Eigen::MatrixXd &velocity) const
 	{
 		assert(solve_data.rhs_assembler != nullptr);
 
@@ -1330,7 +1330,7 @@ namespace polyfem::varform
 			solve_data.rhs_assembler->initial_velocity(velocity);
 	}
 
-	void NonlinearElasticTransientVarForm::initial_acceleration(Eigen::MatrixXd &acceleration) const
+	void ElasticVarForm::initial_acceleration(Eigen::MatrixXd &acceleration) const
 	{
 		assert(solve_data.rhs_assembler != nullptr);
 
@@ -1457,7 +1457,7 @@ namespace polyfem::varform
 		}
 	}
 
-	void NonlinearElasticTransientVarForm::sync_state(State &state) const
+	void ElasticVarForm::sync_state(State &state) const
 	{
 		state.assembler = assembler;
 		state.mass_matrix_assembler = mass_matrix_assembler;

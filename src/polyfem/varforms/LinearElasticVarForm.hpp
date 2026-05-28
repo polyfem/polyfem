@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/varforms/NonlinearElasticTransientVarForm.hpp>
+#include <polyfem/varforms/ElasticVarForm.hpp>
 
 #include <memory>
 
@@ -11,7 +11,7 @@ namespace polysolve::linear
 
 namespace polyfem::varform
 {
-	class LinearElasticVarForm : public NonlinearElasticTransientVarForm
+	class LinearElasticVarForm : public ElasticVarForm
 	{
 	public:
 		std::string name() const override { return "LinearElastic"; }

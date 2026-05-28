@@ -15,12 +15,20 @@
 #include <ipc/collision_mesh.hpp>
 
 #include <map>
+#include <functional>
 
 namespace polyfem::varform
 {
 	class ElasticVarForm : public VarForm
 	{
 	public:
+		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
+		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
+		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
+		void assemble_rhs(const mesh::Mesh &mesh, const json &args) override;
+		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
+		void sync_state(State &state) const override;
+
 		io::OutputState output_state() const override;
 		std::vector<io::OutputField> output_fields(
 			const io::OutputSample &sample,
@@ -28,7 +36,12 @@ namespace polyfem::varform
 			const io::OutputFieldOptions &options) const override;
 
 	protected:
+		void reset() override;
+
 		QuadratureOrders n_boundary_samples() const;
+		void initial_solution(Eigen::MatrixXd &solution) const;
+		void initial_velocity(Eigen::MatrixXd &velocity) const;
+		void initial_acceleration(Eigen::MatrixXd &acceleration) const;
 
 		/// @brief Get a constant reference to the geometry mapping bases.
 		/// @return A constant reference to the geometry mapping bases.
@@ -76,5 +89,27 @@ namespace polyfem::varform
 
 		std::shared_ptr<assembler::ViscousDamping> damping_assembler = nullptr;
 		std::shared_ptr<assembler::ViscousDampingPrev> damping_prev_assembler = nullptr;
+
+		bool remesh_enabled = false;
+		double t0 = 0;
+		int time_steps = 0;
+		double dt = 0;
+
+		void set_materials(assembler::Assembler &assembler) const;
+
+	private:
+		void build_node_mapping(const mesh::Mesh &mesh, const json &args);
+		void build_collision_mesh(const mesh::Mesh &mesh, const json &args);
+		void build_collision_mesh(
+			const mesh::Mesh &mesh,
+			const int n_bases,
+			const std::vector<basis::ElementBases> &bases,
+			const std::vector<basis::ElementBases> &geom_bases,
+			const std::vector<mesh::LocalBoundary> &total_local_boundary,
+			const mesh::Obstacle &obstacle,
+			const json &args,
+			const std::function<std::string(const std::string &)> &resolve_input_path,
+			const Eigen::VectorXi &in_node_to_node,
+			ipc::CollisionMesh &collision_mesh);
 	};
 } // namespace polyfem::varform
