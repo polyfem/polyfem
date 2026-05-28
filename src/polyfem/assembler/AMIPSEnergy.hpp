@@ -68,8 +68,7 @@ namespace polyfem::assembler
 			const double weight = get_energy_weight(el_id);
 			const T base_energy = (def_grad.transpose() * def_grad).trace() / powJ;
 
-			const double power = power_[el_id](p, t, el_id);
-			return T(weight) * pow(base_energy, power);
+			return T(weight) * pow(base_energy, power_[el_id](p, t, el_id));
 			//return T(weight) * (def_grad.transpose() * def_grad).trace() / powJ; //+ barrier<T>::value(det);
 			
 		}
@@ -114,26 +113,8 @@ namespace polyfem::assembler
 
 
 
-		std::vector<double> power_values_;
-		GenericMatParams power_;
-
-		void read_power(const int index, const json &params)
-		{
-			if (power_values_.size() <= index)
-				power_values_.resize(index + 1, 1.0);
-			if (params.contains("power"))
-				power_values_[index] = params["power"].get<double>();
-			else
-				power_values_[index] = 1.0;
-		}
-
-		double get_power(const int el_id) const
-		{
-			if (power_values_.empty()) return 1.0;
-			if (power_values_.size() == 1) return power_values_[0];
-			if (el_id >= 0 && el_id < (int)power_values_.size()) return power_values_[el_id];
-			return 1.0;
-		}
+		GenericMatParams power_{"power"};
+	
 
 	public:
 		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, 0, 3, 3> gradient(
