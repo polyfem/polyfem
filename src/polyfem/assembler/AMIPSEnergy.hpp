@@ -67,7 +67,9 @@ namespace polyfem::assembler
 			const T powJ = pow(det, power);
 			const double weight = get_energy_weight(el_id);
 			const T base_energy = (def_grad.transpose() * def_grad).trace() / powJ;
-			return T(weight) * pow(base_energy, get_power(el_id));
+
+			const double power = power_[el_id](p, t, el_id);
+			return T(weight) * pow(base_energy, power);
 			//return T(weight) * (def_grad.transpose() * def_grad).trace() / powJ; //+ barrier<T>::value(det);
 			
 		}
@@ -113,6 +115,7 @@ namespace polyfem::assembler
 
 
 		std::vector<double> power_values_;
+		GenericMatParams power_;
 
 		void read_power(const int index, const json &params)
 		{

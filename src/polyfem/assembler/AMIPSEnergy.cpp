@@ -25,7 +25,8 @@ namespace polyfem::assembler
 			energy_weights_[index] = params["weight"].get<double>();
 		else
 			energy_weights_[index] = 1.0;
-		read_power(index, params);  
+		//read_power(index, params);
+		power_.add_multimaterial(index, params, "", root_path);
 	}
 
 	double AMIPSEnergy::get_energy_weight(const int el_id) const
