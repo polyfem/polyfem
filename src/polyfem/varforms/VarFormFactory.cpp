@@ -3,6 +3,7 @@
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/varforms/LinearElasticVarForm.hpp>
 #include <polyfem/varforms/NonlinearElasticTransientVarForm.hpp>
+#include <polyfem/varforms/ScalarVarForm.hpp>
 
 namespace polyfem::varform
 {
@@ -22,13 +23,13 @@ namespace polyfem::varform
 			return false;
 
 		const auto assembler = assembler::AssemblerUtils::make_assembler(formulation);
-		if (!assembler || !assembler->is_tensor() || assembler->is_fluid())
+		if (!assembler || assembler->is_fluid())
 			return false;
 
 		if (!assembler::AssemblerUtils::other_assembler_name(formulation).empty())
 			return false;
 
-		return true;
+		return assembler->is_tensor() || assembler->is_linear();
 	}
 
 	std::shared_ptr<VarForm> VarFormFactory::create(const std::string &formulation, const json &args)
@@ -44,6 +45,9 @@ namespace polyfem::varform
 		const bool has_constraints =
 			args.contains("constraints")
 			&& (!args["constraints"]["hard"].empty() || !args["constraints"]["soft"].empty());
+
+		if (!assembler->is_tensor())
+			return (!has_contact && !has_pressure && !has_constraints) ? std::make_shared<ScalarVarForm>() : nullptr;
 
 		if (assembler && assembler->is_linear() && !has_contact && !has_pressure && !has_constraints)
 			return std::make_shared<LinearElasticVarForm>();

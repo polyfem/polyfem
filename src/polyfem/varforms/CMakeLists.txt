@@ -6,6 +6,8 @@ set(SOURCES
     ElasticVarForm.cpp
     LinearElasticVarForm.hpp
     LinearElasticVarForm.cpp
+    ScalarVarForm.hpp
+    ScalarVarForm.cpp
     NonlinearElasticTransientVarForm.hpp
     NonlinearElasticTransientVarForm.cpp
 )

@@ -458,6 +458,7 @@ namespace polyfem::varform
 			total_local_boundary.emplace_back(lb);
 
 		const int dim = mesh.dimension();
+		const int problem_dim = problem->is_scalar() ? 1 : dim;
 		// FIXME!! handle periodic bc
 		//  handle periodic bc
 		//  if (has_periodic_bc())
@@ -585,8 +586,8 @@ namespace polyfem::varform
 
 		for (int i = prev_bases; i < n_bases; ++i)
 		{
-			for (int d = 0; d < dim; ++d)
-				boundary_nodes.push_back(i * dim + d);
+			for (int d = 0; d < problem_dim; ++d)
+				boundary_nodes.push_back(i * problem_dim + d);
 		}
 
 		std::sort(boundary_nodes.begin(), boundary_nodes.end());
@@ -661,7 +662,7 @@ namespace polyfem::varform
 				*assembler, mesh, obstacle,
 				dirichlet_nodes, neumann_nodes,
 				dirichlet_nodes_position, neumann_nodes_position,
-				n_bases, dim, bases, geom_bases(), mass_ass_vals_cache, *problem,
+				n_bases, problem_dim, bases, geom_bases(), mass_ass_vals_cache, *problem,
 				args["space"]["advanced"]["bc_method"],
 				rhs_solver_params);
 		}
