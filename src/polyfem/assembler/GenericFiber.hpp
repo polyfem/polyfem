@@ -13,7 +13,7 @@ namespace polyfem::assembler
 		virtual ~GenericFiber() = default;
 
 		// sets material params
-		virtual void add_multimaterial(const int index, const json &params, const Units &units) override;
+		virtual void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
 		virtual void set_size(const int size) override;
 
 		std::map<std::string, Assembler::ParamFunc> parameters() const override;

@@ -69,7 +69,7 @@ namespace polyfem::solver
 				candidates_, collision_mesh_, displaced_surface, dhat_a_);
 		else
 			collision_set_.build(
-				collision_mesh_, displaced_surface, dhat_a_, dmin_, broad_phase_);
+				collision_mesh_, displaced_surface, dhat_a_, dmin_, broad_phase_.get());
 		cached_displaced_surface = displaced_surface;
 	}
 
@@ -165,7 +165,7 @@ namespace polyfem::solver
 			compute_displaced_surface(x0),
 			compute_displaced_surface(x1),
 			/*inflation_radius=*/dhat_a_ / 2,
-			broad_phase_);
+			broad_phase_.get());
 
 		use_cached_candidates_ = true;
 	}

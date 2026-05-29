@@ -6,11 +6,11 @@ namespace polyfem::assembler
 	{
 	}
 
-	void IsochoricNeoHookean::add_multimaterial(const int index, const json &params, const Units &units)
+	void IsochoricNeoHookean::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
 	{
 		assert(size() == 2 || size() == 3);
 
-		params_.add_multimaterial(index, params, false, units.stress());
+		params_.add_multimaterial(index, params, false, units.stress(), root_path);
 	}
 
 	std::map<std::string, Assembler::ParamFunc> IsochoricNeoHookean::parameters() const

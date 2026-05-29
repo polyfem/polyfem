@@ -19,7 +19,6 @@
 #include <polyfem/io/MshWriter.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/io/OutData.hpp>
-#include <polyfem/optimization/CacheLevel.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
@@ -50,9 +49,18 @@ namespace polyfem
 		return polysolve::nonlinear::Solver::create(for_al ? args["solver"]["augmented_lagrangian"]["nonlinear"] : args["solver"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger());
 	}
 
-	void State::solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, UserPostStepCallback user_post_step)
+	void State::solve_transient_tensor_nonlinear(const int time_steps,
+												 const double t0,
+												 const double dt,
+												 Eigen::MatrixXd &sol,
+												 UserPostStepCallback user_post_step,
+												 const InitialConditionOverride *ic_override)
 	{
-		init_nonlinear_tensor_solve(sol, t0 + dt);
+		init_nonlinear_tensor_solve(sol, t0 + dt, true, ic_override);
+
+		// File index offset for continuing file numbering from a previous run.
+		// Set via restart JSON; defaults to 0 for fresh simulations.
+		const int t_offset = args["output"]["data"]["file_index_offset"].get<int>();
 
 		// Write the total energy to a CSV file
 		int save_i = 0;
@@ -67,12 +75,18 @@ namespace polyfem
 			stats_csv = std::make_unique<RuntimeStatsCSVWriter>(resolve_output_path("stats.csv"), *this, t0, dt);
 		}
 		const bool remesh_enabled = args["space"]["remesh"]["enabled"];
+#ifndef POLYFEM_WITH_ITR
+		if (remesh_enabled)
+		{
+			logger().warn("Remeshing is enabled but Polyfem was built without ITR support; remeshing will be disabled.");
+		}
+#endif
 		// const double save_dt = remesh_enabled ? (dt / 3) : dt;
 
 		// Save the initial solution
 		if (energy_csv)
 			energy_csv->write(save_i, sol);
-		save_timestep(t0, save_i, t0, dt, sol, Eigen::MatrixXd()); // no pressure
+		save_timestep(t0, t_offset, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 		save_i++;
 
 		// Step 0.
@@ -90,6 +104,7 @@ namespace polyfem
 				solve_tensor_nonlinear(t, sol, true);
 			}
 
+#ifdef POLYFEM_WITH_ITR
 			if (remesh_enabled)
 			{
 				if (energy_csv)
@@ -116,11 +131,12 @@ namespace polyfem
 					solve_tensor_nonlinear(t, sol, false); // solve the scene again after remeshing
 				}
 			}
+#endif
 
 			// Always save the solution for consistency
 			if (energy_csv)
 				energy_csv->write(save_i, sol);
-			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
+			save_timestep(t0 + dt * t, t + t_offset, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 			save_i++;
 
 			if (user_post_step)
@@ -150,11 +166,11 @@ namespace polyfem
 				Eigen::MatrixXi F;
 				build_mesh_matrices(V, F);
 				io::MshWriter::write(
-					resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], t)),
+					resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], t + t_offset)),
 					V, F, mesh->get_body_ids(), mesh->is_volume(), /*binary=*/true);
 			}
 
-			const std::string &state_path = resolve_output_path(fmt::format(args["output"]["data"]["state"], t));
+			const std::string &state_path = resolve_output_path(fmt::format(args["output"]["data"]["state"], t + t_offset));
 			if (!state_path.empty())
 				solve_data.time_integrator->save_state(state_path);
 
@@ -165,20 +181,15 @@ namespace polyfem
 		}
 	}
 
-	void State::init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t, const bool init_time_integrator)
+	void State::init_nonlinear_tensor_solve(Eigen::MatrixXd &sol,
+											const double t,
+											const bool init_time_integrator,
+											const InitialConditionOverride *ic_override)
 	{
 		assert(sol.cols() == 1);
 		assert(!is_problem_linear());  // non-linear
 		assert(!problem->is_scalar()); // tensor
 		assert(mixed_assembler == nullptr);
-
-		if (optimization_enabled != solver::CacheLevel::None)
-		{
-			if (initial_sol_update.size() == ndof())
-				sol = initial_sol_update;
-			else
-				initial_sol_update = sol;
-		}
 
 		// --------------------------------------------------------------------
 		// Check for initial intersections
@@ -189,7 +200,7 @@ namespace polyfem
 			const Eigen::MatrixXd displaced = collision_mesh.displace_vertices(
 				utils::unflatten(sol, mesh->dimension()));
 
-			if (ipc::has_intersections(collision_mesh, displaced, ipc::create_broad_phase(args["solver"]["contact"]["CCD"]["broad_phase"])))
+			if (ipc::has_intersections(collision_mesh, displaced, ipc::create_broad_phase(args["solver"]["contact"]["CCD"]["broad_phase"]).get()))
 			{
 				OBJWriter::write(
 					resolve_output_path("intersection.obj"), displaced,
@@ -208,20 +219,20 @@ namespace polyfem
 				solve_data.time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
 
 				Eigen::MatrixXd solution, velocity, acceleration;
-				initial_solution(solution); // Reload this because we need all previous solutions
-				solution.col(0) = sol;      // Make sure the current solution is the same as `sol`
+				initial_solution(solution, ic_override); // Reload this because we need all previous solutions
+				solution.col(0) = sol;                   // Make sure the current solution is the same as `sol`
 				assert(solution.rows() == sol.size());
-				initial_velocity(velocity);
+				initial_velocity(velocity, ic_override);
 				assert(velocity.rows() == sol.size());
-				initial_acceleration(acceleration);
+				initial_acceleration(acceleration, ic_override);
 				assert(acceleration.rows() == sol.size());
 
-				if (optimization_enabled != solver::CacheLevel::None)
+				if (solution.cols() != velocity.cols() || solution.cols() != acceleration.cols())
 				{
-					if (initial_vel_update.size() == ndof())
-						velocity = initial_vel_update;
-					else
-						initial_vel_update = velocity;
+					log_and_throw_error(
+						"Incompatible initial-condition history for transient solve: "
+						"solution has {} columns, velocity has {}, acceleration has {}.",
+						solution.cols(), velocity.cols(), acceleration.cols());
 				}
 
 				const double dt = args["time"]["dt"];
@@ -277,7 +288,7 @@ namespace polyfem
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
-			optimization_enabled == solver::CacheLevel::Derivatives,
+			optimization_enabled,
 			// Smooth Contact Form
 			args["contact"]["use_gcp_formulation"],
 			args["contact"]["alpha_t"],
@@ -285,7 +296,7 @@ namespace polyfem
 			args["contact"]["use_adaptive_dhat"],
 			args["contact"]["min_distance_ratio"],
 			// Normal Adhesion Form
-			args["contact"]["adhesion"]["adhesion_enabled"],
+			is_adhesion_enabled(),
 			args["contact"]["adhesion"]["dhat_p"],
 			args["contact"]["adhesion"]["dhat_a"],
 			args["contact"]["adhesion"]["adhesion_strength"],
@@ -313,10 +324,20 @@ namespace polyfem
 		// --------------------------------------------------------------------
 		// Initialize nonlinear problems
 
+		if (args["solver"]["advanced"]["characteristic_force_density"] <= 0)
+		{
+			logger().warn("No user-specified force density was provided, defaulting to 10000.");
+			characteristic_force_density = 10000;
+		}
+		else
+		{
+			characteristic_force_density = args["solver"]["advanced"]["characteristic_force_density"];
+		}
+
 		const int ndof = n_bases * mesh->dimension();
 		solve_data.nl_problem = std::make_shared<NLProblem>(
 			ndof, periodic_bc, t, forms, solve_data.al_form,
-			polysolve::linear::Solver::create(args["solver"]["linear"], logger()));
+			polysolve::linear::Solver::create(args["solver"]["linear"], logger()), characteristic_length, characteristic_force_density, pure_mass, mesh->dimension());
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
 		// --------------------------------------------------------------------
@@ -389,7 +410,7 @@ namespace polyfem
 		// TODO: Make this more general
 		const double lagging_tol = args["solver"]["contact"].value("friction_convergence_tol", 1e-2) * units.characteristic_length();
 
-		if (optimization_enabled != solver::CacheLevel::Derivatives)
+		if (!optimization_enabled)
 		{
 			// Lagging loop (start at 1 because we already did an iteration above)
 			bool lagging_converged = !nl_problem.uses_lagging();

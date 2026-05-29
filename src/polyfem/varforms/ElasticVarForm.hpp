@@ -53,6 +53,7 @@ namespace polyfem::varform
 		/// assembler corresponding to governing physical equations
 		std::shared_ptr<assembler::Assembler> assembler = nullptr;
 		std::shared_ptr<assembler::Mass> mass_matrix_assembler = nullptr;
+		std::shared_ptr<assembler::HRZMass> pure_mass_matrix_assembler = nullptr;
 
 		/// FE bases, the size is #elements
 		std::vector<basis::ElementBases> bases;
@@ -72,9 +73,11 @@ namespace polyfem::varform
 		/// used to store assembly values for small problems
 		assembler::AssemblyValsCache ass_vals_cache;
 		assembler::AssemblyValsCache mass_ass_vals_cache;
+		assembler::AssemblyValsCache pure_mass_ass_vals_cache;
 
 		/// Mass matrix, it is computed only for time dependent problems
 		StiffnessMatrix mass;
+		StiffnessMatrix pure_mass;
 		/// average system mass, used for contact with IPC
 		double avg_mass = 0;
 		Eigen::MatrixXd rhs;

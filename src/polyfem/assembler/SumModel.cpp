@@ -9,7 +9,7 @@
 
 namespace polyfem::assembler
 {
-	void SumModel::add_multimaterial(const int index, const json &params, const Units &units)
+	void SumModel::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
 	{
 		assert(size() == 2 || size() == 3);
 		if (params.count("models") == 0)
@@ -26,7 +26,7 @@ namespace polyfem::assembler
 			assemblers_.emplace_back(std::dynamic_pointer_cast<NLAssembler>(assembler));
 			assert(assemblers_.back() != nullptr);
 			assemblers_.back()->set_size(size());
-			assemblers_.back()->add_multimaterial(index, model, units);
+			assemblers_.back()->add_multimaterial(index, model, units, root_path);
 		}
 	}
 

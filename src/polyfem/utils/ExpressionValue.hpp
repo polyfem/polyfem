@@ -18,12 +18,17 @@ namespace polyfem
 			{
 				unit_type_ = units::unit_from_string(unit_type);
 				unit_type_set_ = true;
+				for (auto &expr : mat_expr_)
+					expr.set_unit_type(unit_type);
 			}
 
-			void init(const json &vals);
+			void init(const json &vals, const std::string &root_path);
 			void init(const double val);
 			void init(const Eigen::MatrixXd &val);
-			void init(const std::string &expr);
+			void init(const std::string &expr, const std::string &root_path);
+#ifdef POLYFEM_WITH_PYTHON
+			void init_python(const std::string &path, const std::string &function_name);
+#endif
 
 			void init(const std::function<double(double x, double y, double z)> &func);
 			void init(const std::function<double(double x, double y, double z, double t)> &func);
@@ -38,7 +43,10 @@ namespace polyfem
 
 			void clear();
 
-			bool is_zero() const { return expr_.empty() && fabs(value_) < 1e-10; }
+			bool is_zero() const
+			{
+				return expr_.empty() && mat_.size() == 0 && mat_expr_.empty() && !sfunc_ && !tfunc_ && fabs(value_) < 1e-10;
+			}
 			bool is_mat() const
 			{
 				if (expr_.empty() && mat_.size() > 0)

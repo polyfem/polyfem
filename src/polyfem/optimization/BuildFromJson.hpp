@@ -3,7 +3,6 @@
 #include <polyfem/State.hpp>
 #include <polyfem/Common.hpp>
 
-#include <polyfem/optimization/CacheLevel.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
 #include <polyfem/optimization/forms/AdjointForm.hpp>
 #include <polyfem/optimization/forms/VariableToSimulation.hpp>
@@ -20,13 +19,11 @@ namespace polyfem::from_json
 	// This mirrors the initialization done by build_states(), but does not load JSON from disk.
 	std::shared_ptr<State> build_state(
 		const json &args,
-		const solver::CacheLevel &level,
 		const size_t max_threads);
 
 	std::vector<std::shared_ptr<State>> build_states(
 		const std::string &root_path,
 		const json &args,
-		const solver::CacheLevel &level,
 		const size_t max_threads);
 
 	std::shared_ptr<solver::Parametrization> build_parametrization(

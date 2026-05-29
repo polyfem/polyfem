@@ -133,6 +133,11 @@ namespace polyfem::io
 			return boundary_samples;
 		}
 
+		bool is_adhesion_enabled() const
+		{
+			return args["contact"]["adhesion"]["adhesion_enabled"];
+		}
+
 		static OutputState from_state(const State &state);
 	};
 
@@ -495,7 +500,7 @@ namespace polyfem::io
 			const Eigen::VectorXi &disc_ordersq,
 			const std::vector<basis::ElementBases> &bases,
 			Eigen::MatrixXd &points,
-			std::vector<std::vector<int>> &elements,
+			std::vector<paraviewo::CellElement> &elements,
 			Eigen::MatrixXi &el_id,
 			Eigen::MatrixXd &discr,
 			Eigen::MatrixXd &local_points) const;
@@ -573,6 +578,8 @@ namespace polyfem::io
 		int simplex_count;
 		/// statiscs on the mesh (simplices)
 		int prism_count;
+		/// statiscs on the mesh (simplices)
+		int pyramid_count;
 		/// statiscs on the mesh (regular quad/hex part of the mesh), see Polyspline paper for desciption
 		int regular_count;
 		/// statiscs on the mesh (regular quad/hex boundary part of the mesh), see Polyspline paper for desciption

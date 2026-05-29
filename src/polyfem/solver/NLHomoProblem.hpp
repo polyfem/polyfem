@@ -27,7 +27,11 @@ namespace polyfem::solver
 					  const std::vector<std::shared_ptr<Form>> &forms,
 					  const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
 					  const bool solve_symmetric_macro_strain,
-					  const std::shared_ptr<polysolve::linear::Solver> &solver);
+					  const std::shared_ptr<polysolve::linear::Solver> &solver,
+					  const double char_length,
+					  const double char_force,
+					  StiffnessMatrix lumped_mass,
+					  const int dimension);
 		virtual ~NLHomoProblem() = default;
 
 		double value(const TVector &x) override;
@@ -41,6 +45,7 @@ namespace polyfem::solver
 		TVector full_to_reduced(const TVector &full, const Eigen::MatrixXd &disp_grad) const;
 		TVector full_to_reduced(const TVector &full) const;
 		TVector full_to_reduced_grad(const TVector &full) const override;
+		TVector full_to_reduced_diag(const TVector &full_diag) const override;
 		TVector reduced_to_full(const TVector &reduced) const;
 
 		TVector reduced_to_extended(const TVector &reduced, bool homogeneous = false) const;

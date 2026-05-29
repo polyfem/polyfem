@@ -254,6 +254,7 @@ namespace polyfem::varform
 		n_geom_bases = 0;
 		rhs.resize(0, 0);
 		mass.resize(0, 0);
+		pure_mass.resize(0, 0);
 		mesh_ = nullptr;
 	}
 
@@ -265,6 +266,7 @@ namespace polyfem::varform
 		assembler = assembler::AssemblerUtils::make_assembler(formulation);
 		assert(assembler->name() == formulation);
 		mass_matrix_assembler = std::make_shared<assembler::Mass>();
+		pure_mass_matrix_assembler = std::make_shared<assembler::HRZMass>();
 
 		if (args["solver"]["advanced"]["check_inversion"] == "Conservative")
 		{
@@ -279,15 +281,15 @@ namespace polyfem::varform
 			problem->clear();
 			json tmp;
 			tmp["is_time_dependent"] = is_time_dependent;
-			problem->set_parameters(tmp);
+			problem->set_parameters(tmp, root_path);
 
 			// important for the BC
 
 			auto bc = args["boundary_conditions"];
 			bc["root_path"] = root_path;
-			problem->set_parameters(bc);
-			problem->set_parameters(args["initial_conditions"]);
-			problem->set_parameters(args["output"]);
+			problem->set_parameters(bc, root_path);
+			problem->set_parameters(args["initial_conditions"], root_path);
+			problem->set_parameters(args["output"], root_path);
 		}
 		else
 		{
@@ -303,7 +305,7 @@ namespace polyfem::varform
 				problem->clear();
 			}
 			// important for the BC
-			problem->set_parameters(args["preset_problem"]);
+			problem->set_parameters(args["preset_problem"], root_path);
 		}
 
 		problem->set_units(*assembler, units);
@@ -318,6 +320,7 @@ namespace polyfem::varform
 		mesh_ = &mesh;
 		set_materials(*assembler);
 		set_materials(*mass_matrix_assembler);
+		pure_mass_matrix_assembler->set_size(mass_matrix_assembler->size());
 
 		if (assembler::MultiModel *mm = dynamic_cast<assembler::MultiModel *>(assembler.get()))
 		{
@@ -901,7 +904,7 @@ namespace polyfem::varform
 		for (int i = 0; i < mesh_->n_elements(); ++i)
 			body_ids[i] = mesh_->get_body_id(i);
 
-		assembler.set_materials(body_ids, args["materials"], units);
+		assembler.set_materials(body_ids, args["materials"], units, root_path);
 	}
 
 	std::vector<int> NonlinearElasticTransientVarForm::primitive_to_node() const
@@ -955,7 +958,7 @@ namespace polyfem::varform
 			else
 				p_params["bbox_center"] = {delta(0), delta(1)};
 		}
-		problem->set_parameters(p_params);
+		problem->set_parameters(p_params, root_path);
 
 		rhs.resize(0, 0);
 
@@ -978,6 +981,8 @@ namespace polyfem::varform
 		{
 			avg_mass = 1;
 			timings.assembling_mass_mat_time = 0;
+			if (!assembler->is_linear())
+				pure_mass_matrix_assembler->assemble(mesh.is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
 			return;
 		}
 
@@ -988,6 +993,8 @@ namespace polyfem::varform
 		logger().info("Assembling mass mat...");
 
 		mass_matrix_assembler->assemble(mesh.is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, 0, mass, true);
+		if (!assembler->is_linear())
+			pure_mass_matrix_assembler->assemble(mesh.is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
 
 		assert(mass.size() > 0);
 
@@ -1216,7 +1223,7 @@ namespace polyfem::varform
 			const Eigen::MatrixXd displaced = collision_mesh.displace_vertices(
 				utils::unflatten(sol, mesh_->dimension()));
 
-			if (ipc::has_intersections(collision_mesh, displaced, ipc::create_broad_phase(args["solver"]["contact"]["CCD"]["broad_phase"])))
+			if (ipc::has_intersections(collision_mesh, displaced, ipc::create_broad_phase(args["solver"]["contact"]["CCD"]["broad_phase"]).get()))
 			{
 				io::OBJWriter::write(
 					resolve_output_path("intersection.obj"), displaced,
@@ -1257,10 +1264,37 @@ namespace polyfem::varform
 
 		init_forms(args, mesh_->dimension(), sol, t);
 
+		double characteristic_length = 0;
+		if (args["solver"]["advanced"]["characteristic_length"] > 0)
+		{
+			characteristic_length = args["solver"]["advanced"]["characteristic_length"];
+		}
+		else
+		{
+			RowVectorNd min, max;
+			mesh_->bounding_box(min, max);
+			characteristic_length = (max - min).norm();
+		}
+
+		double characteristic_force_density = 0;
+		if (args["solver"]["advanced"]["characteristic_force_density"] <= 0)
+		{
+			logger().warn("No user-specified force density was provided, defaulting to 10000.");
+			characteristic_force_density = 10000;
+		}
+		else
+		{
+			characteristic_force_density = args["solver"]["advanced"]["characteristic_force_density"];
+		}
+
+		if (pure_mass.size() == 0)
+			pure_mass_matrix_assembler->assemble(mesh_->is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
+
 		const int ndof = n_bases * mesh_->dimension();
 		solve_data.nl_problem = std::make_shared<solver::NLProblem>(
 			ndof, nullptr, t, forms, solve_data.al_form,
-			polysolve::linear::Solver::create(args["solver"]["linear"], logger()));
+			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
+			characteristic_length, characteristic_force_density, pure_mass, mesh_->dimension());
 		solve_data.nl_problem->init(sol);
 		solve_data.nl_problem->update_quantities(t, sol);
 		// --------------------------------------------------------------------
@@ -1462,6 +1496,7 @@ namespace polyfem::varform
 	{
 		state.assembler = assembler;
 		state.mass_matrix_assembler = mass_matrix_assembler;
+		state.pure_mass_matrix_assembler = pure_mass_matrix_assembler;
 		state.mixed_assembler = nullptr;
 		state.pressure_assembler = nullptr;
 		state.elasticity_pressure_assembler = elasticity_pressure_assembler;
@@ -1484,8 +1519,10 @@ namespace polyfem::varform
 		state.pressure_mesh_nodes = nullptr;
 		state.ass_vals_cache = ass_vals_cache;
 		state.mass_ass_vals_cache = mass_ass_vals_cache;
+		state.pure_mass_ass_vals_cache = pure_mass_ass_vals_cache;
 		state.pressure_ass_vals_cache.init_empty();
 		state.mass = mass;
+		state.pure_mass = pure_mass;
 		state.avg_mass = avg_mass;
 		state.rhs = rhs;
 		state.use_avg_pressure = true;

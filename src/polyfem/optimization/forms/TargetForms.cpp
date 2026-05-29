@@ -200,9 +200,9 @@ namespace polyfem::solver
 
 	void TargetForm::set_reference(const json &func, const json &grad_func)
 	{
-		target_func.init(func);
+		target_func.init(func, state_->root_path());
 		for (size_t k = 0; k < grad_func.size(); k++)
-			target_func_grad[k].init(grad_func[k]);
+			target_func_grad[k].init(grad_func[k], state_->root_path());
 		have_target_func = true;
 	}
 

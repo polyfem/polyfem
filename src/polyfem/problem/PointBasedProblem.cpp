@@ -231,7 +231,7 @@ namespace polyfem
 			return true;
 		}
 
-		void PointBasedTensorProblem::set_parameters(const json &params)
+		void PointBasedTensorProblem::set_parameters(const json &params, const std::string &root_path)
 		{
 			if (initialized_)
 				return;

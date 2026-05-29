@@ -2,7 +2,6 @@
 #include <polyfem/Common.hpp>
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
-#include <polyfem/optimization/CacheLevel.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
@@ -73,7 +72,7 @@ namespace polyfem
 			args["solver"]["contact"]["CCD"]["broad_phase"],
 			args["solver"]["contact"]["CCD"]["tolerance"],
 			args["solver"]["contact"]["CCD"]["max_iterations"],
-			optimization_enabled == solver::CacheLevel::Derivatives,
+			optimization_enabled,
 			// Smooth Contact Form
 			args["contact"]["use_gcp_formulation"],
 			args["contact"]["alpha_t"],
@@ -81,7 +80,7 @@ namespace polyfem
 			args["contact"]["use_adaptive_dhat"],
 			args["contact"]["min_distance_ratio"],
 			// Normal Adhesion Form
-			args["contact"]["adhesion"]["adhesion_enabled"],
+			is_adhesion_enabled(),
 			args["contact"]["adhesion"]["dhat_p"],
 			args["contact"]["adhesion"]["dhat_a"],
 			args["contact"]["adhesion"]["adhesion_strength"],
@@ -131,7 +130,7 @@ namespace polyfem
 		std::shared_ptr<NLHomoProblem> homo_problem = std::make_shared<NLHomoProblem>(
 			ndof,
 			macro_strain_constraint,
-			*this, t, forms, solve_data.al_form, solve_symmetric_flag, polysolve::linear::Solver::create(args["solver"]["linear"], logger()));
+			*this, t, forms, solve_data.al_form, solve_symmetric_flag, polysolve::linear::Solver::create(args["solver"]["linear"], logger()), characteristic_length, characteristic_force_density, pure_mass, mesh->dimension());
 		if (solve_data.periodic_contact_form)
 			homo_problem->add_form(solve_data.periodic_contact_form);
 		if (solve_data.strain_al_lagr_form)
@@ -307,6 +306,7 @@ namespace polyfem
 
 		init_homogenization_solve(t0);
 
+		const int t_offset = args["output"]["data"]["file_index_offset"].get<int>();
 		const int dim = mesh->dimension();
 		Eigen::MatrixXd extended_sol;
 		for (int t = 0; t <= time_steps; ++t)
@@ -323,7 +323,7 @@ namespace polyfem
 				return;
 
 			// Always save the solution for consistency
-			save_timestep(t0 + dt * t, t, t0, dt, sol, Eigen::MatrixXd()); // no pressure
+			save_timestep(t0 + dt * t, t + t_offset, t0, dt, sol, Eigen::MatrixXd()); // no pressure
 
 			{
 				POLYFEM_SCOPED_TIMER("Update quantities");

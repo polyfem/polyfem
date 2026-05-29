@@ -143,7 +143,6 @@ namespace polyfem::solver
 				Eigen::VectorXd p = state->mesh->point(vid);
 				p(indices(i) - vid * dim) = state_variable(i);
 				state->mesh->set_point(vid, p);
-				// state->set_mesh_vertex(indices(i) / dim, state_variable(Eigen::seqN(i, dim)));
 			}
 		}
 	}
@@ -367,7 +366,7 @@ namespace polyfem::solver
 			}
 
 			if (state->damping_assembler)
-				state->damping_assembler->add_multimaterial(0, damping_param, state->units);
+				state->damping_assembler->add_multimaterial(0, damping_param, state->units, state->root_path());
 		}
 		logger().info("[{}] Current params: {}, {}", name(), state_variable(0), state_variable(1));
 	}
@@ -404,14 +403,18 @@ namespace polyfem::solver
 
 	void InitialConditionVariableToSimulation::update_state(const Eigen::VectorXd &state_variable, const Eigen::VectorXi &indices)
 	{
-		for (auto state : states)
+		for (int i = 0; i < states.size(); ++i)
 		{
-			if (state_variable.size() != state->ndof() * 2)
-			{
-				log_and_throw_adjoint_error("[{}] Inconsistent number of parameters {} and number of dofs in forward {}!", name(), state_variable.size(), state->ndof() * 2);
-			}
-			state->initial_sol_update = state_variable.head(state->ndof());
-			state->initial_vel_update = state_variable.tail(state->ndof());
+			auto &state = *states[i];
+			auto &diff_cache = *diff_caches[i];
+
+			// For initial condition var2sim, the state variable is the initial solution and velocity
+			// of the forward simulation. So DOF should be 2x the state.
+			assert(state_variable.size() == 2 * state.ndof());
+
+			diff_cache.initial_condition_override.solution = state_variable.head(state.ndof());
+			diff_cache.initial_condition_override.velocity = state_variable.tail(state.ndof());
+			diff_cache.initial_condition_override.acceleration.resize(0, 0);
 		}
 	}
 	Eigen::VectorXd InitialConditionVariableToSimulation::compute_adjoint_term(const Eigen::VectorXd &x) const
@@ -735,7 +738,7 @@ namespace polyfem::solver
 			const int n_verts = state->mesh->n_vertices();
 
 			for (int i = 0; i < n_verts; i++)
-				state->set_mesh_vertex(i, V.row(i));
+				state->mesh->set_point(i, V.row(i));
 		}
 	}
 	Eigen::VectorXd PeriodicShapeVariableToSimulation::inverse_eval()

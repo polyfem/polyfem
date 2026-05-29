@@ -11,10 +11,10 @@ namespace polyfem::assembler
 	}
 
 	template <typename FiberModel>
-	void GenericFiber<FiberModel>::add_multimaterial(const int index, const json &params, const Units &units)
+	void GenericFiber<FiberModel>::add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path)
 	{
 		if (params.contains("fiber_direction"))
-			fiber_direction_.add_multimaterial(index, params["fiber_direction"], units.length());
+			fiber_direction_.add_multimaterial(index, params["fiber_direction"], units.length(), root_path);
 	}
 
 	template <typename FiberModel>

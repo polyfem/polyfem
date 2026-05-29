@@ -170,7 +170,7 @@ AuthenticateResult authenticate_json(const std::string &json_file, const bool co
 			const double relerr = std::abs((curr_val - prev_val) / std::max(std::abs(prev_val), 1e-5));
 			if (relerr > margin)
 			{
-				spdlog::error("Violating Authenticate prev_{0}={1} curr_{0}={2}", key, prev_val, curr_val);
+				spdlog::error("Violating Authenticate prev_{0}={1} curr_{0}={2} relerr_{0}={3}", key, prev_val, curr_val, relerr);
 				return AUTHETICATION_FAILED;
 			}
 		}
@@ -258,6 +258,11 @@ TEST_CASE("standard", tagsrun)
 TEST_CASE("time_int", tagsrun)
 {
 	run_data("time_int", POLYFEM_DATA_DIR);
+}
+
+TEST_CASE("old_tolerances", tagsrun)
+{
+	run_data("old_tolerances", POLYFEM_DATA_DIR);
 }
 
 TEST_CASE("runners-pref", tagsrun)

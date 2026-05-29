@@ -51,7 +51,7 @@ namespace
 
 	std::shared_ptr<State> create_state_and_solve(const json &args)
 	{
-		std::shared_ptr<State> state = from_json::build_state(args, solver::CacheLevel::Derivatives, 16);
+		std::shared_ptr<State> state = from_json::build_state(args, 16);
 		Eigen::MatrixXd sol, pressure;
 		state->solve_problem(sol, pressure);
 
@@ -60,7 +60,7 @@ namespace
 
 	std::shared_ptr<State> create_state_and_solve(const json &args, Eigen::MatrixXd &sol)
 	{
-		std::shared_ptr<State> state = from_json::build_state(args, solver::CacheLevel::Derivatives, 16);
+		std::shared_ptr<State> state = from_json::build_state(args, 16);
 		Eigen::MatrixXd pressure;
 		state->solve_problem(sol, pressure);
 
@@ -151,7 +151,7 @@ TEST_CASE("homogenize-stress-periodic", "[test_adjoint]")
 	load_json(path + "homogenize-stress-periodic.json", in_args);
 	in_args["/solver/linear/solver"_json_pointer] = "Eigen::SimplicialLDLT";
 
-	auto state_ptr = from_json::build_state(in_args, solver::CacheLevel::Derivatives, 16);
+	auto state_ptr = from_json::build_state(in_args, 16);
 	State &state = *state_ptr;
 	std::vector<std::shared_ptr<DiffCache>> diff_caches = {std::make_shared<DiffCache>()};
 
@@ -188,7 +188,7 @@ TEST_CASE("homogenize-stress", "[test_adjoint]")
 	load_json(path + "homogenize-stress.json", in_args);
 	in_args["/solver/linear/solver"_json_pointer] = "Eigen::SimplicialLDLT";
 
-	auto state_ptr = from_json::build_state(in_args, solver::CacheLevel::Derivatives, 16);
+	auto state_ptr = from_json::build_state(in_args, 16);
 	State &state = *state_ptr;
 	std::vector<std::shared_ptr<DiffCache>> diff_caches = {std::make_shared<DiffCache>()};
 

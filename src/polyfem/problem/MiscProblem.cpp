@@ -275,7 +275,7 @@ namespace polyfem
 			exact(pts, 0, val);
 		}
 
-		void GenericScalarProblemExact::set_parameters(const json &params)
+		void GenericScalarProblemExact::set_parameters(const json &params, const std::string &root_path)
 		{
 
 			if (params.contains("func"))

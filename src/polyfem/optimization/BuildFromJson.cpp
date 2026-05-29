@@ -8,7 +8,6 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 
-#include <polyfem/optimization/CacheLevel.hpp>
 #include <polyfem/optimization/forms/AMIPSForm.hpp>
 #include <polyfem/optimization/forms/AdjointForm.hpp>
 #include <polyfem/optimization/forms/BarrierForms.hpp>
@@ -59,7 +58,6 @@ namespace polyfem::from_json
 
 	std::shared_ptr<State> build_state(
 		const json &args,
-		const solver::CacheLevel &level,
 		const size_t max_threads)
 	{
 		std::shared_ptr<State> state = std::make_shared<State>();
@@ -80,7 +78,7 @@ namespace polyfem::from_json
 			in_args.merge_patch(tmp);
 		}
 
-		state->optimization_enabled = level;
+		state->optimization_enabled = true;
 		state->init(in_args, true);
 		state->load_mesh();
 		state->build_basis();
@@ -93,7 +91,6 @@ namespace polyfem::from_json
 	std::vector<std::shared_ptr<State>> build_states(
 		const std::string &root_path,
 		const json &args,
-		const solver::CacheLevel &level,
 		const size_t max_threads)
 	{
 		std::vector<std::shared_ptr<State>> states(args.size());
@@ -106,7 +103,7 @@ namespace polyfem::from_json
 				log_and_throw_adjoint_error("Can't find json for State {}", i);
 			}
 
-			states[i] = build_state(cur_args, level, max_threads);
+			states[i] = build_state(cur_args, max_threads);
 		}
 		return states;
 	}

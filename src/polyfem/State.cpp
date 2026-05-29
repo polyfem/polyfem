@@ -44,8 +44,6 @@
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/autodiff.h>
 
-#include <polyfem/optimization/CacheLevel.hpp>
-
 #include <polysolve/linear/FEMSolver.hpp>
 
 #include <polyfem/varforms/VarForm.hpp>
@@ -488,9 +486,6 @@ namespace polyfem
 		if (has_periodic_bc())
 			return false;
 
-		if (optimization_enabled == solver::CacheLevel::Derivatives)
-			return false;
-
 		if (mesh->orders().size() <= 0)
 		{
 			if (args["space"]["discr_order"] == 1)
@@ -568,6 +563,7 @@ namespace polyfem
 		stats.reset();
 
 		disc_orders.resize(mesh->n_elements());
+		disc_ordersq.resize(mesh->n_elements());
 
 		problem->init(*mesh);
 		logger().info("Building {} basis...", (iso_parametric() ? "isoparametric" : "not isoparametric"));
@@ -662,8 +658,12 @@ namespace polyfem
 
 		// TODO: implement prism geometric order
 		Eigen::MatrixXi geom_disc_ordersq = geom_disc_orders;
-		disc_ordersq = disc_orders;
-		// disc_ordersq.setConstant(2);
+		const auto &tmp_json2 = args["space"]["discr_orderq"];
+		if (tmp_json2.is_number_integer())
+		{
+			// tmp fix for n-m order prism
+			disc_ordersq.setConstant(tmp_json2);
+		}
 
 		igl::Timer timer;
 		timer.start();
@@ -694,7 +694,6 @@ namespace polyfem
 		}
 
 		// shape optimization needs continuous geometric basis
-		// const bool use_continuous_gbasis = optimization_enabled == solver::CacheLevel::Derivatives;
 		const bool use_continuous_gbasis = true;
 		const bool use_corner_quadrature = args["space"]["advanced"]["use_corner_quadrature"];
 
@@ -811,7 +810,7 @@ namespace polyfem
 
 			periodic_bc = std::make_shared<PeriodicBoundary>(problem->is_scalar(), n_bases, bases, mesh_nodes, tile_offset, args["boundary_conditions"]["periodic_boundary"]["tolerance"].get<double>());
 
-			macro_strain_constraint.init(dim, args["boundary_conditions"]["periodic_boundary"]);
+			macro_strain_constraint.init(dim, args["boundary_conditions"]["periodic_boundary"], root_path());
 		}
 
 		if (args["space"]["advanced"]["count_flipped_els"])
@@ -1008,6 +1007,7 @@ namespace polyfem
 			logger().info("Building cache...");
 			ass_vals_cache.init(mesh->is_volume(), bases, curret_bases);
 			mass_ass_vals_cache.init(mesh->is_volume(), bases, curret_bases, true);
+			pure_mass_ass_vals_cache.init(mesh->is_volume(), bases, curret_bases, true);
 			if (mixed_assembler != nullptr)
 				pressure_ass_vals_cache.init(mesh->is_volume(), pressure_bases, curret_bases);
 
@@ -1498,6 +1498,9 @@ namespace polyfem
 		{
 			avg_mass = 1;
 			timings.assembling_mass_mat_time = 0;
+			if (!is_problem_linear())
+				pure_mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
+
 			return;
 		}
 
@@ -1511,6 +1514,8 @@ namespace polyfem
 		{
 			StiffnessMatrix velocity_mass;
 			mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, 0, velocity_mass, true);
+			if (!is_problem_linear())
+				pure_mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
 
 			std::vector<Eigen::Triplet<double>> mass_blocks;
 			mass_blocks.reserve(velocity_mass.nonZeros());
@@ -1530,6 +1535,8 @@ namespace polyfem
 		else
 		{
 			mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, 0, mass, true);
+			if (!is_problem_linear())
+				pure_mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
 		}
 
 		assert(mass.size() > 0);
@@ -1632,7 +1639,7 @@ namespace polyfem
 			else
 				p_params["bbox_center"] = {delta(0), delta(1)};
 		}
-		problem->set_parameters(p_params);
+		problem->set_parameters(p_params, root_path());
 
 		rhs.resize(0, 0);
 
@@ -1677,7 +1684,10 @@ namespace polyfem
 		logger().info(" took {}s", timings.assigning_rhs_time);
 	}
 
-	void State::solve_problem(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step)
+	void State::solve_problem(Eigen::MatrixXd &sol,
+							  Eigen::MatrixXd &pressure,
+							  UserPostStepCallback user_post_step,
+							  const InitialConditionOverride *ic_override)
 	{
 		if (!mesh)
 		{
@@ -1715,7 +1725,7 @@ namespace polyfem
 
 		logger().info("Solving {}", assembler->name());
 
-		init_solve(sol, pressure);
+		init_solve(sol, pressure, ic_override);
 
 		if (problem->is_time_dependent())
 		{
@@ -1737,11 +1747,11 @@ namespace polyfem
 			else if (is_homogenization())
 				solve_homogenization(time_steps, t0, dt, sol, user_post_step);
 			else if (is_problem_linear())
-				solve_transient_linear(time_steps, t0, dt, sol, pressure, user_post_step);
+				solve_transient_linear(time_steps, t0, dt, sol, pressure, user_post_step, ic_override);
 			else if (!assembler->is_linear() && problem->is_scalar())
 				throw std::runtime_error("Nonlinear scalar problems are not supported yet!");
 			else
-				solve_transient_tensor_nonlinear(time_steps, t0, dt, sol, user_post_step);
+				solve_transient_tensor_nonlinear(time_steps, t0, dt, sol, user_post_step, ic_override);
 		}
 		else
 		{
@@ -1751,14 +1761,14 @@ namespace polyfem
 				solve_homogenization(/* time steps */ 0, /* t0 */ 0, /* dt */ 0, sol, user_post_step);
 			else if (is_problem_linear())
 			{
-				init_linear_solve(sol);
+				init_linear_solve(sol, 1.0, ic_override);
 				solve_linear(0, sol, pressure, user_post_step);
 			}
 			else if (!assembler->is_linear() && problem->is_scalar())
 				throw std::runtime_error("Nonlinear scalar problems are not supported yet!");
 			else
 			{
-				init_nonlinear_tensor_solve(sol);
+				init_nonlinear_tensor_solve(sol, 1.0, true, ic_override);
 				solve_tensor_nonlinear(0, sol, true, user_post_step);
 
 				const std::string state_path = resolve_output_path(args["output"]["data"]["state"]);

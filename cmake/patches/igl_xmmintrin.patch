@@ -1,0 +1,13 @@
+diff --git a/include/igl/Singular_Value_Decomposition_Preamble.hpp b/include/igl/Singular_Value_Decomposition_Preamble.hpp
+index beda1b1..6582686 100644
+--- a/include/igl/Singular_Value_Decomposition_Preamble.hpp
++++ b/include/igl/Singular_Value_Decomposition_Preamble.hpp
+@@ -55,7 +55,7 @@
+ // Alec: Why is this using sse intrinsics if it's supposed to be the scalar
+ // implementation?
+ #ifdef __SSE__
+-#include <mmintrin.h>
++#include <xmmintrin.h>
+ // Changed to inline
+ inline float rsqrt(const float f)
+ {

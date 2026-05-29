@@ -905,11 +905,16 @@ namespace polyfem::solver
 			time_integrator::ImplicitTimeIntegrator::construct_time_integrator(state.args["time"]["integrator"]);
 		{
 			Eigen::MatrixXd solution, velocity, acceleration;
+
+			const InitialConditionOverride *ic_override = nullptr;
+			if (!diff_cache.initial_condition_override.is_empty())
+			{
+				ic_override = &diff_cache.initial_condition_override;
+			}
+
 			solution = diff_cache.u(0);
-			state.initial_velocity(velocity);
-			state.initial_acceleration(acceleration);
-			if (state.initial_vel_update.size() == state.ndof())
-				velocity = state.initial_vel_update;
+			state.initial_velocity(velocity, ic_override);
+			state.initial_acceleration(acceleration, ic_override);
 			const double dt = state.args["time"]["dt"];
 			time_integrator->init(solution, velocity, acceleration, dt);
 		}
@@ -927,6 +932,8 @@ namespace polyfem::solver
 
 			if (const auto barrier_contact = dynamic_cast<const BarrierContactForm *>(state.solve_data.contact_form.get()))
 			{
+				ipc::BarrierPotential bp = barrier_contact->barrier_potential();
+				bp.set_stiffness(barrier_contact->barrier_stiffness());
 				Eigen::MatrixXd force = state.collision_mesh.to_full_dof(
 					-state.solve_data.friction_form->friction_potential().force(
 						diff_cache.friction_collision_set(t),
@@ -934,8 +941,7 @@ namespace polyfem::solver
 						state.collision_mesh.rest_positions(),
 						/*lagged_displacements=*/surface_solution_prev,
 						surface_velocities,
-						barrier_contact->barrier_potential(),
-						barrier_contact->barrier_stiffness(),
+						bp,
 						0., true));
 
 				Eigen::VectorXd cur_p = adjoint_p.col(t);

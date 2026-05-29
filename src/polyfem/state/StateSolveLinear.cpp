@@ -174,7 +174,7 @@ namespace polyfem
 		solve_linear(step, static_linear_solver_cache, A, b, args["output"]["advanced"]["spectrum"], sol, pressure, user_post_step);
 	}
 
-	void State::init_linear_solve(Eigen::MatrixXd &sol, const double t)
+	void State::init_linear_solve(Eigen::MatrixXd &sol, const double t, const InitialConditionOverride *ic_override)
 	{
 		assert(sol.cols() == 1);
 		assert(assembler->is_linear() && !is_contact_enabled()); // linear
@@ -216,13 +216,21 @@ namespace polyfem
 			POLYFEM_SCOPED_TIMER("Initialize time integrator");
 
 			Eigen::MatrixXd solution, velocity, acceleration;
-			initial_solution(solution); // Reload this because we need all previous solutions
-			solution.col(0) = sol;      // Make sure the current solution is the same as `sol`
+			initial_solution(solution, ic_override); // Reload this because we need all previous solutions
+			solution.col(0) = sol;                   // Make sure the current solution is the same as `sol`
 			assert(solution.rows() == sol.size());
-			initial_velocity(velocity);
+			initial_velocity(velocity, ic_override);
 			assert(velocity.rows() == sol.size());
-			initial_acceleration(acceleration);
+			initial_acceleration(acceleration, ic_override);
 			assert(acceleration.rows() == sol.size());
+
+			if (solution.cols() != velocity.cols() || solution.cols() != acceleration.cols())
+			{
+				log_and_throw_error(
+					"Incompatible initial-condition history for transient solve: "
+					"solution has {} columns, velocity has {}, acceleration has {}.",
+					solution.cols(), velocity.cols(), acceleration.cols());
+			}
 
 			const double dt = args["time"]["dt"];
 			solve_data.time_integrator->init(solution, velocity, acceleration, dt);
@@ -230,7 +238,13 @@ namespace polyfem
 		solve_data.update_dt();
 	}
 
-	void State::solve_transient_linear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step)
+	void State::solve_transient_linear(const int time_steps,
+									   const double t0,
+									   const double dt,
+									   Eigen::MatrixXd &sol,
+									   Eigen::MatrixXd &pressure,
+									   UserPostStepCallback user_post_step,
+									   const InitialConditionOverride *ic_override)
 	{
 		assert(sol.cols() == 1);
 		assert(problem->is_time_dependent());
@@ -257,13 +271,21 @@ namespace polyfem
 		else
 		{
 			Eigen::MatrixXd solution, velocity, acceleration;
-			initial_solution(solution); // Reload this because we need all previous solutions
-			solution.col(0) = sol;      // Make sure the current solution is the same as `sol`
+			initial_solution(solution, ic_override); // Reload this because we need all previous solutions
+			solution.col(0) = sol;                   // Make sure the current solution is the same as `sol`
 			assert(solution.rows() == sol.size());
-			initial_velocity(velocity);
+			initial_velocity(velocity, ic_override);
 			assert(velocity.rows() == sol.size());
-			initial_acceleration(acceleration);
+			initial_acceleration(acceleration, ic_override);
 			assert(acceleration.rows() == sol.size());
+
+			if (solution.cols() != velocity.cols() || solution.cols() != acceleration.cols())
+			{
+				log_and_throw_error(
+					"Incompatible initial-condition history for transient solve: "
+					"solution has {} columns, velocity has {}, acceleration has {}.",
+					solution.cols(), velocity.cols(), acceleration.cols());
+			}
 
 			time_integrator = ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
 			time_integrator->init(solution, velocity, acceleration, dt);
@@ -272,11 +294,6 @@ namespace polyfem
 		// --------------------------------------------------------------------
 
 		const QuadratureOrders &n_b_samples = n_boundary_samples();
-
-		if (optimization_enabled != solver::CacheLevel::None)
-		{
-			log_and_throw_adjoint_error("Transient linear problems are not differentiable yet!");
-		}
 
 		// Step 0.
 		if (user_post_step)
@@ -290,6 +307,8 @@ namespace polyfem
 		build_stiffness_mat(stiffness);
 
 		// --------------------------------------------------------------------
+		const int t_offset = args["output"]["data"]["file_index_offset"].get<int>();
+
 		// TODO rebuild stiffnes if material are time dept
 		for (int t = 1; t <= time_steps; ++t)
 		{
@@ -351,16 +370,11 @@ namespace polyfem
 
 			solve_linear(t, solver, A, b, compute_spectrum, sol, pressure, user_post_step);
 
-			if (optimization_enabled != solver::CacheLevel::None)
-			{
-				log_and_throw_adjoint_error("Transient linear problems are not differentiable yet!");
-			}
-
 			time_integrator->update_quantities(sol);
 
-			save_timestep(time, t, t0, dt, sol, pressure);
+			save_timestep(time, t + t_offset, t0, dt, sol, pressure);
 
-			const std::string &state_path = resolve_output_path(fmt::format(args["output"]["data"]["state"], t));
+			const std::string &state_path = resolve_output_path(fmt::format(args["output"]["data"]["state"], t + t_offset));
 			if (!state_path.empty())
 				time_integrator->save_state(state_path);
 

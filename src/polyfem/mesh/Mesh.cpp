@@ -429,6 +429,11 @@ namespace polyfem::mesh
 		return elements_tag_[el_id] == ElementType::PRISM;
 	}
 
+	bool Mesh::is_pyramid(const int el_id) const
+	{
+		return elements_tag_[el_id] == ElementType::PYRAMID;
+	}
+
 	std::vector<std::pair<int, int>> Mesh::edges() const
 	{
 		std::vector<std::pair<int, int>> res;

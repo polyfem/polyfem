@@ -38,6 +38,7 @@ namespace polyfem::varform
 		assert(assembler->is_linear());
 		assert(!assembler->is_tensor());
 		mass_matrix_assembler = std::make_shared<assembler::Mass>();
+		pure_mass_matrix_assembler = std::make_shared<assembler::HRZMass>();
 
 		if (!args.contains("preset_problem"))
 		{
@@ -46,19 +47,19 @@ namespace polyfem::varform
 
 			json tmp;
 			tmp["is_time_dependent"] = is_time_dependent;
-			problem->set_parameters(tmp);
+			problem->set_parameters(tmp, root_path);
 
 			auto bc = args["boundary_conditions"];
 			bc["root_path"] = root_path;
-			problem->set_parameters(bc);
-			problem->set_parameters(args["initial_conditions"]);
-			problem->set_parameters(args["output"]);
+			problem->set_parameters(bc, root_path);
+			problem->set_parameters(args["initial_conditions"], root_path);
+			problem->set_parameters(args["output"], root_path);
 		}
 		else
 		{
 			problem = problem::ProblemFactory::factory().get_problem(args["preset_problem"]["type"]);
 			problem->clear();
-			problem->set_parameters(args["preset_problem"]);
+			problem->set_parameters(args["preset_problem"], root_path);
 		}
 
 		problem->set_units(*assembler, units);

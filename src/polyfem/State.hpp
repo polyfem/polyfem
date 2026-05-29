@@ -29,8 +29,6 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/assembler/PeriodicBoundary.hpp>
-#include <polyfem/optimization/CacheLevel.hpp>
-
 #include <polyfem/io/OutData.hpp>
 
 #include <polysolve/linear/Solver.hpp>
@@ -70,6 +68,7 @@ namespace polyfem::varform
 namespace polyfem::assembler
 {
 	class Mass;
+	class HRZMass;
 	class ViscousDamping;
 	class ViscousDampingPrev;
 } // namespace polyfem::assembler
@@ -91,6 +90,29 @@ namespace polyfem
 	/// @param disp_grad[in] du/dX where u is the displacement and X is the material coordinate. Optional, pass nullptr if not applicable.
 	/// @param pressure[in] Optional. The pressure of current step. Optional, pass nullptr if not applicable.
 	using UserPostStepCallback = std::function<void(int step, State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd *disp_grad, const Eigen::MatrixXd *pressure)>;
+
+	/// @brief Runtime override for initial-condition histories.
+	class InitialConditionOverride
+	{
+	public:
+		/// ndof by H (history size) matrix where each col is solution from a time step.
+		/// Time step is ordered in reversed. ex. col(n) -> n steps before.
+		Eigen::MatrixXd solution;
+
+		/// ndof by H (history size) matrix where each col is velocity from a time step.
+		/// Time step is ordered in reversed. ex. col(n) -> n steps before.
+		Eigen::MatrixXd velocity;
+
+		/// ndof by H (history size) matrix where each col is acceleration from a time step.
+		/// Time step is ordered in reversed. ex. col(n) -> n steps before.
+		Eigen::MatrixXd acceleration;
+
+		/// @brief Returns true when no quantity is overridden.
+		bool is_empty() const
+		{
+			return solution.size() == 0 && velocity.size() == 0 && acceleration.size() == 0;
+		}
+	};
 
 	/// main class that contains the polyfem solver and all its state
 	class State
@@ -173,6 +195,7 @@ namespace polyfem
 		std::shared_ptr<assembler::Assembler> assembler = nullptr;
 
 		std::shared_ptr<assembler::Mass> mass_matrix_assembler = nullptr;
+		std::shared_ptr<assembler::HRZMass> pure_mass_matrix_assembler = nullptr;
 
 		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
 		std::shared_ptr<assembler::Assembler> pressure_assembler = nullptr;
@@ -213,13 +236,18 @@ namespace polyfem
 		/// used to store assembly values for small problems
 		assembler::AssemblyValsCache ass_vals_cache;
 		assembler::AssemblyValsCache mass_ass_vals_cache;
+		assembler::AssemblyValsCache pure_mass_ass_vals_cache;
 		/// used to store assembly values for pressure for small problems
 		assembler::AssemblyValsCache pressure_ass_vals_cache;
 
 		/// Mass matrix, it is computed only for time dependent problems
 		StiffnessMatrix mass;
+		StiffnessMatrix pure_mass;
 		/// average system mass, used for contact with IPC
 		double avg_mass;
+
+		double characteristic_length;
+		double characteristic_force_density;
 
 		/// System right-hand side.
 		Eigen::MatrixXd rhs;
@@ -290,6 +318,15 @@ namespace polyfem
 			return {{n_b_samples, n_b_samples}};
 		}
 
+		int ndof() const
+		{
+			const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
+			if (mixed_assembler == nullptr)
+				return actual_dim * n_bases;
+			else
+				return actual_dim * n_bases + n_pressure_bases;
+		}
+
 	private:
 		/// splits the solution in solution and pressure for mixed problems
 		/// @param[in/out] sol solution
@@ -315,12 +352,21 @@ namespace polyfem
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
 		/// @param[in] user_post_step optional post step user callback. Empty by default.
-		void solve_problem(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
+		/// @param[in] ic_override Optional initial condition override (highest priority). Empty by default.
+		void solve_problem(Eigen::MatrixXd &sol,
+						   Eigen::MatrixXd &pressure,
+						   UserPostStepCallback user_post_step = {},
+						   const InitialConditionOverride *ic_override = nullptr);
+
 		/// solves the problem, call other methods
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
 		/// @param[in] user_post_step optional post step user callback. Empty by default.
-		void solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {})
+		/// @param[in] ic_override Optional initial condition override (highest priority). Empty by default.
+		void solve(Eigen::MatrixXd &sol,
+				   Eigen::MatrixXd &pressure,
+				   UserPostStepCallback user_post_step = {},
+				   const InitialConditionOverride *ic_override = nullptr)
 		{
 			if (!mesh)
 			{
@@ -334,7 +380,7 @@ namespace polyfem
 			assemble_rhs();
 			assemble_mass_mat();
 
-			solve_problem(sol, pressure, user_post_step);
+			solve_problem(sol, pressure, user_post_step, ic_override);
 		}
 
 		/// timedependent stuff cached
@@ -350,14 +396,23 @@ namespace polyfem
 		/// initialize solver
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
-		void init_solve(Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure);
+		/// @param[in] ic_override Optional initial condition override (highest priority). Empty by default.
+		void init_solve(Eigen::MatrixXd &sol,
+						Eigen::MatrixXd &pressure,
+						const InitialConditionOverride *ic_override = nullptr);
+
 		/// solves transient navier stokes with operator splitting
 		/// @param[in] time_steps number of time steps
 		/// @param[in] dt timestep size
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
 		/// @param[in] user_post_step optional post step user callback. Empty by default.
-		void solve_transient_navier_stokes_split(const int time_steps, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
+		void solve_transient_navier_stokes_split(const int time_steps,
+												 const double dt,
+												 Eigen::MatrixXd &sol,
+												 Eigen::MatrixXd &pressure,
+												 UserPostStepCallback user_post_step = {});
+
 		/// solves transient navier stokes with FEM
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
@@ -365,7 +420,13 @@ namespace polyfem
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
 		/// @param[in] user_post_step optional post step user callback. Empty by default.
-		void solve_transient_navier_stokes(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
+		void solve_transient_navier_stokes(const int time_steps,
+										   const double t0,
+										   const double dt,
+										   Eigen::MatrixXd &sol,
+										   Eigen::MatrixXd &pressure,
+										   UserPostStepCallback user_post_step = {});
+
 		/// solves transient linear problem
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
@@ -373,30 +434,57 @@ namespace polyfem
 		/// @param[out] sol solution
 		/// @param[out] pressure pressure
 		/// @param[in] user_post_step optional post step user callback. Empty by default.
-		void solve_transient_linear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, Eigen::MatrixXd &pressure, UserPostStepCallback user_post_step = {});
+		/// @param[in] ic_override Optional initial condition override (highest priority). Empty by default.
+		void solve_transient_linear(const int time_steps,
+									const double t0,
+									const double dt,
+									Eigen::MatrixXd &sol,
+									Eigen::MatrixXd &pressure,
+									UserPostStepCallback user_post_step = {},
+									const InitialConditionOverride *ic_override = nullptr);
+
 		/// solves transient tensor nonlinear problem
 		/// @param[in] time_steps number of time steps
 		/// @param[in] t0 initial times
 		/// @param[in] dt timestep size
 		/// @param[out] sol solution
 		/// @param[in] user_post_step optional post step user callback. Empty by default.
-		void solve_transient_tensor_nonlinear(const int time_steps, const double t0, const double dt, Eigen::MatrixXd &sol, UserPostStepCallback user_post_step = {});
+		/// @param[in] ic_override Optional initial condition override (highest priority). Empty by default.
+		void solve_transient_tensor_nonlinear(const int time_steps,
+											  const double t0,
+											  const double dt,
+											  Eigen::MatrixXd &sol,
+											  UserPostStepCallback user_post_step = {},
+											  const InitialConditionOverride *ic_override = nullptr);
+
 		/// initialize the nonlinear solver
 		/// @param[out] sol solution
 		/// @param[in] t (optional) initial time
-		void init_nonlinear_tensor_solve(Eigen::MatrixXd &sol, const double t = 1.0, const bool init_time_integrator = true);
+		/// @param[in] ic_override Optional initial condition override (highest priority). Empty by default.
+		void init_nonlinear_tensor_solve(Eigen::MatrixXd &sol,
+										 const double t = 1.0,
+										 const bool init_time_integrator = true,
+										 const InitialConditionOverride *ic_override = nullptr);
+
 		/// initialize the linear solve
 		/// @param[in] t (optional) initial time
-		void init_linear_solve(Eigen::MatrixXd &sol, const double t = 1.0);
+		/// @param[in] ic_override Optional initial condition override (highest priority). Empty by default.
+		void init_linear_solve(Eigen::MatrixXd &sol,
+							   const double t = 1.0,
+							   const InitialConditionOverride *ic_override = nullptr);
+
 		/// @brief Load or compute the initial solution.
 		/// @param[out] solution Output solution variable.
-		void initial_solution(Eigen::MatrixXd &solution) const;
+		/// @param[in] ic_override Optional initial condition override (highest priority). Empty by default.
+		void initial_solution(Eigen::MatrixXd &solution, const InitialConditionOverride *ic_override = nullptr) const;
 		/// @brief Load or compute the initial velocity.
-		/// @param[out] solution Output velocity variable.
-		void initial_velocity(Eigen::MatrixXd &velocity) const;
+		/// @param[out] velocity Output velocity variable.
+		/// @param[in] ic_override Optional initial condition override (highest priority). Empty by default.
+		void initial_velocity(Eigen::MatrixXd &velocity, const InitialConditionOverride *ic_override = nullptr) const;
 		/// @brief Load or compute the initial acceleration.
-		/// @param[out] solution Output acceleration variable.
-		void initial_acceleration(Eigen::MatrixXd &acceleration) const;
+		/// @param[out] acceleration Output acceleration variable.
+		/// @param[in] ic_override Optional initial condition override (highest priority). Empty by default.
+		void initial_acceleration(Eigen::MatrixXd &acceleration, const InitialConditionOverride *ic_override = nullptr) const;
 		/// solves a linear problem
 		/// @param[in] step current step
 		/// @param[out] sol solution
@@ -547,12 +635,41 @@ namespace polyfem
 		/// Build the mesh matrices (vertices and elements) from the mesh using the bases node ordering
 		void build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F);
 
+#ifdef POLYFEM_WITH_ITR
 		/// @brief Remesh the FE space and update solution(s).
 		/// @param time Current time.
 		/// @param dt Time step size.
 		/// @param sol Current solution.
 		/// @return True if remeshing performed any changes to the mesh/solution.
 		bool remesh(const double time, const double dt, Eigen::MatrixXd &sol);
+#endif
+
+		/// @brief Gather geometry vertices into a dense matrix.
+		void get_vertices(Eigen::MatrixXd &vertices) const
+		{
+			vertices.setZero(mesh->n_vertices(), mesh->dimension());
+
+			for (int v = 0; v < mesh->n_vertices(); v++)
+				vertices.row(v) = mesh->point(v);
+		}
+
+		/// @brief Gather geometry elements into a dense matrix.
+		void get_elements(Eigen::MatrixXi &elements) const
+		{
+			assert(mesh->is_simplicial());
+
+			auto node_to_primitive_map = node_to_primitive();
+
+			const auto &gbases = geom_bases();
+			int dim = mesh->dimension();
+			elements.setZero(gbases.size(), dim + 1);
+			for (int e = 0; e < gbases.size(); e++)
+			{
+				int i = 0;
+				for (const auto &gbs : gbases[e].bases)
+					elements(e, i++) = node_to_primitive_map[gbs.global()[0].index];
+			}
+		}
 
 		//---------------------------------------------------
 		//-----------------IPC-------------------------------
@@ -672,7 +789,7 @@ namespace polyfem
 		void compute_errors(const Eigen::MatrixXd &sol);
 
 		/// @brief Save a JSON sim file for restarting the simulation at time t
-		/// @param t current time to restart at
+		/// @param t current time step to restart at
 		void save_restart_json(const double t0, const double dt, const int t) const;
 
 		//-----------PATH management
@@ -695,51 +812,7 @@ namespace polyfem
 		//-----------------differentiable--------------------
 		//---------------------------------------------------
 	public:
-		solver::CacheLevel optimization_enabled = solver::CacheLevel::None;
-
-		int ndof() const
-		{
-			const int actual_dim = problem->is_scalar() ? 1 : mesh->dimension();
-			if (mixed_assembler == nullptr)
-				return actual_dim * n_bases;
-			else
-				return actual_dim * n_bases + n_pressure_bases;
-		}
-
-		// Change geometric node positions
-		void set_mesh_vertex(int v_id, const Eigen::VectorXd &vertex)
-		{
-			assert(vertex.size() == mesh->dimension());
-			mesh->set_point(v_id, vertex);
-		}
-
-		void get_vertices(Eigen::MatrixXd &vertices) const
-		{
-			vertices.setZero(mesh->n_vertices(), mesh->dimension());
-
-			for (int v = 0; v < mesh->n_vertices(); v++)
-				vertices.row(v) = mesh->point(v);
-		}
-
-		void get_elements(Eigen::MatrixXi &elements) const
-		{
-			assert(mesh->is_simplicial());
-
-			auto node_to_primitive_map = node_to_primitive();
-
-			const auto &gbases = geom_bases();
-			int dim = mesh->dimension();
-			elements.setZero(gbases.size(), dim + 1);
-			for (int e = 0; e < gbases.size(); e++)
-			{
-				int i = 0;
-				for (const auto &gbs : gbases[e].bases)
-					elements(e, i++) = node_to_primitive_map[gbs.global()[0].index];
-			}
-		}
-
-		// to replace the initial condition in json during initial condition optimization
-		Eigen::MatrixXd initial_sol_update, initial_vel_update;
+		bool optimization_enabled = false;
 
 		//---------------------------------------------------
 		//-----------------homogenization--------------------
