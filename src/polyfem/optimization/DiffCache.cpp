@@ -1,6 +1,6 @@
 #include <polyfem/optimization/DiffCache.hpp>
 
-#include <polyfem/assembler/ElementAssemblyValues.hpp>
+#include <polyfem/assembler/core/ElementAssemblyValues.hpp>
 
 #include <polyfem/State.hpp>
 
@@ -19,7 +19,7 @@
 #include <polyfem/solver/forms/NormalAdhesionForm.hpp>
 #include <polyfem/solver/forms/TangentialAdhesionForm.hpp>
 
-#include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/assembler/elasticity/ViscousDamping.hpp>
 
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/Logger.hpp>

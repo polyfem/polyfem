@@ -1,5 +1,5 @@
 #include "KernelProblem.hpp"
-#include <polyfem/assembler/Assembler.hpp>
+#include <polyfem/assembler/core/Assembler.hpp>
 
 #include <iostream>
 #include <fstream>

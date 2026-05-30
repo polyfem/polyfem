@@ -1,7 +1,7 @@
 #include <polyfem/State.hpp>
 #include <polyfem/Common.hpp>
-#include <polyfem/assembler/Mass.hpp>
-#include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/assembler/scalar/Mass.hpp>
+#include <polyfem/assembler/elasticity/ViscousDamping.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>

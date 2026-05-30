@@ -20,7 +20,7 @@
 #include <polyfem/solver/forms/FrictionForm.hpp>
 #include <polyfem/solver/forms/NormalAdhesionForm.hpp>
 #include <polyfem/solver/forms/TangentialAdhesionForm.hpp>
-#include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/assembler/elasticity/ViscousDamping.hpp>
 
 #include <polyfem/optimization/DiffCache.hpp>
 

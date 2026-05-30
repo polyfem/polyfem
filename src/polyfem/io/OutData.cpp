@@ -4,10 +4,10 @@
 
 #include <polyfem/State.hpp>
 
-#include <polyfem/assembler/ElementAssemblyValues.hpp>
-#include <polyfem/assembler/AssemblyValues.hpp>
-#include <polyfem/assembler/MatParams.hpp>
-#include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/core/ElementAssemblyValues.hpp>
+#include <polyfem/assembler/core/AssemblyValues.hpp>
+#include <polyfem/assembler/core/MatParams.hpp>
+#include <polyfem/assembler/scalar/Mass.hpp>
 
 #include <polyfem/basis/ElementBases.hpp>
 

@@ -2,8 +2,8 @@
 
 #include <polyfem/Common.hpp>
 #include <polyfem/basis/ElementBases.hpp>
-#include <polyfem/assembler/NavierStokes.hpp>
-#include <polyfem/assembler/AssemblyValsCache.hpp>
+#include <polyfem/assembler/fluid/NavierStokes.hpp>
+#include <polyfem/assembler/core/AssemblyValsCache.hpp>
 
 #include <polysolve/linear/Solver.hpp>
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <polyfem/solver/FullNLProblem.hpp>
-#include <polyfem/assembler/PeriodicBoundary.hpp>
+#include <polyfem/assembler/core/PeriodicBoundary.hpp>
 #include <polyfem/solver/forms/lagrangian/AugmentedLagrangianForm.hpp>
 
 #include <polyfem/utils/Logger.hpp>

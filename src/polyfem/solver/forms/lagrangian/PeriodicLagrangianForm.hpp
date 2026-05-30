@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AugmentedLagrangianForm.hpp"
-#include <polyfem/assembler/PeriodicBoundary.hpp>
+#include <polyfem/assembler/core/PeriodicBoundary.hpp>
 
 namespace polyfem::solver
 {

@@ -1,8 +1,8 @@
 #include <polyfem/State.hpp>
 
 #include <polyfem/problem/ProblemFactory.hpp>
-#include <polyfem/assembler/GenericProblem.hpp>
-#include <polyfem/assembler/Mass.hpp>
+#include <polyfem/problem/GenericProblem.hpp>
+#include <polyfem/assembler/scalar/Mass.hpp>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>

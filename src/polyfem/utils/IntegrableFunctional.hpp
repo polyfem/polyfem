@@ -2,9 +2,9 @@
 
 #include <functional>
 #include <Eigen/Dense>
-#include <polyfem/assembler/MatParams.hpp>
+#include <polyfem/assembler/core/MatParams.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
-#include <polyfem/assembler/Assembler.hpp>
+#include <polyfem/assembler/core/Assembler.hpp>
 
 using namespace polyfem::assembler;
 

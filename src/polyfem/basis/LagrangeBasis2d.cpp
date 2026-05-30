@@ -6,7 +6,7 @@
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
 
-#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/quadrature/QuadratureOrder.hpp>
 
 #include <polyfem/utils/MaybeParallelFor.hpp>
 
@@ -762,8 +762,8 @@ int LagrangeBasis2d::build_bases(
 
 		if (mesh.is_cube(e))
 		{
-			const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::CUBE_LAGRANGE, 2);
-			const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::CUBE_LAGRANGE, 2);
+			const int real_order = quadrature_order > 0 ? quadrature_order : compute_quadrature_order(assembler, discr_order, BasisType::CUBE_LAGRANGE, 2);
+			const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : compute_quadrature_order("Mass", discr_order, BasisType::CUBE_LAGRANGE, 2);
 			b.set_quadrature([real_order](Quadrature &quad) {
 				QuadQuadrature quad_quadrature;
 				quad_quadrature.get_quadrature(real_order, quad);
@@ -803,8 +803,8 @@ int LagrangeBasis2d::build_bases(
 		}
 		else if (mesh.is_simplex(e))
 		{
-			const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 2);
-			const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 2);
+			const int real_order = quadrature_order > 0 ? quadrature_order : compute_quadrature_order(assembler, discr_order, BasisType::SIMPLEX_LAGRANGE, 2);
+			const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : compute_quadrature_order("Mass", discr_order, BasisType::SIMPLEX_LAGRANGE, 2);
 			b.set_quadrature([real_order, use_corner_quadrature](Quadrature &quad) {
 				TriQuadrature tri_quadrature(use_corner_quadrature);
 				tri_quadrature.get_quadrature(real_order, quad);

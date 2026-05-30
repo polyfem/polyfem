@@ -4,8 +4,8 @@
 #include <vector>
 
 #include <Eigen/Core>
-#include <polyfem/assembler/AssemblyValues.hpp>
-#include <polyfem/assembler/ElementAssemblyValues.hpp>
+#include <polyfem/assembler/core/AssemblyValues.hpp>
+#include <polyfem/assembler/core/ElementAssemblyValues.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/optimization/AdjointTools.hpp>
 #include <polyfem/quadrature/Quadrature.hpp>

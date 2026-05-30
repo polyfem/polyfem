@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////
-#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/core/AssemblerUtils.hpp>
 #include <iostream>
 #include <fstream>
 #include <cmath>

@@ -1,9 +1,9 @@
 #pragma once
 
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
-#include <polyfem/assembler/Assembler.hpp>
+#include <polyfem/assembler/core/Assembler.hpp>
 #include <polyfem/basis/ElementBases.hpp>
-#include <polyfem/assembler/ElementAssemblyValues.hpp>
+#include <polyfem/assembler/core/ElementAssemblyValues.hpp>
 #include <polyfem/basis/InterfaceData.hpp>
 
 #include <Eigen/Dense>

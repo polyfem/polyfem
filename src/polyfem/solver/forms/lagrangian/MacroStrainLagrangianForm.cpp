@@ -1,5 +1,5 @@
 #include "MacroStrainLagrangianForm.hpp"
-#include <polyfem/assembler/MacroStrain.hpp>
+#include <polyfem/solver/constraints/MacroStrain.hpp>
 
 namespace polyfem::solver
 {

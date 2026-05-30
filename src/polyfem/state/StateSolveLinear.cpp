@@ -1,7 +1,7 @@
 #include <polyfem/State.hpp>
 
-#include <polyfem/assembler/Mass.hpp>
-#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/scalar/Mass.hpp>
+#include <polyfem/assembler/core/AssemblerUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>

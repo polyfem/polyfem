@@ -2,7 +2,7 @@
 #include <polyfem/State.hpp>
 #include "forms/PeriodicContactForm.hpp"
 #include "forms/lagrangian/MacroStrainLagrangianForm.hpp"
-#include <polyfem/assembler/MacroStrain.hpp>
+#include <polyfem/solver/constraints/MacroStrain.hpp>
 #include <polyfem/io/Evaluator.hpp>
 
 namespace polyfem::solver

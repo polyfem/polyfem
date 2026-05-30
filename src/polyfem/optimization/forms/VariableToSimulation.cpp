@@ -3,7 +3,7 @@
 #include <polyfem/State.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/io/MatrixIO.hpp>
-#include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/assembler/elasticity/ViscousDamping.hpp>
 #include <polyfem/optimization/Optimizations.hpp>
 #include <polyfem/optimization/StateDiff.hpp>
 #include <polyfem/optimization/parametrization/NodeCompositeParametrizations.hpp>

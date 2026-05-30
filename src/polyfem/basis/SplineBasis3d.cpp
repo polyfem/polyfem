@@ -4,12 +4,13 @@
 #include "function/QuadraticBSpline3d.hpp"
 #include <polyfem/quadrature/HexQuadrature.hpp>
 
-#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/quadrature/QuadratureOrder.hpp>
 
 #include <polysolve/linear/Solver.hpp>
 #include <polyfem/mesh/MeshNodes.hpp>
 
 #include <polyfem/utils/Types.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <polyfem/Common.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
@@ -1046,8 +1047,8 @@ namespace polyfem
 				build_local_space(mesh, mesh_nodes, e, space, local_boundary, poly_face_to_data);
 
 				ElementBases &b = bases[e];
-				const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, 2, AssemblerUtils::BasisType::SPLINE, 3);
-				const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", 2, AssemblerUtils::BasisType::SPLINE, 3);
+				const int real_order = quadrature_order > 0 ? quadrature_order : compute_quadrature_order(assembler, 2, BasisType::SPLINE, 3);
+				const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : compute_quadrature_order("Mass", 2, BasisType::SPLINE, 3);
 
 				b.set_quadrature([real_order](Quadrature &quad) {
 					HexQuadrature hex_quadrature;
@@ -1117,8 +1118,8 @@ namespace polyfem
 
 				ElementBases &b = bases[e];
 
-				const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, 2, AssemblerUtils::BasisType::CUBE_LAGRANGE, 3);
-				const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", 2, AssemblerUtils::BasisType::CUBE_LAGRANGE, 3);
+				const int real_order = quadrature_order > 0 ? quadrature_order : compute_quadrature_order(assembler, 2, BasisType::CUBE_LAGRANGE, 3);
+				const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : compute_quadrature_order("Mass", 2, BasisType::CUBE_LAGRANGE, 3);
 
 				// hex_quadrature.get_quadrature(quadrature_order, b.quadrature);
 				b.set_quadrature([real_order](Quadrature &quad) {

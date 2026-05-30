@@ -1,6 +1,6 @@
 #include <polyfem/State.hpp>
 
-#include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/scalar/Mass.hpp>
 
 #include <polyfem/mesh/GeometryReader.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>

@@ -2,7 +2,7 @@
 
 #include <polyfem/optimization/forms/VariableToSimulation.hpp>
 #include <polyfem/optimization/forms/AdjointForm.hpp>
-#include <polyfem/assembler/AssemblyValsCache.hpp>
+#include <polyfem/assembler/core/AssemblyValsCache.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <memory>
 #include <utility>

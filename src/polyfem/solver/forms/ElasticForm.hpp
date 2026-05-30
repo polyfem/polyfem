@@ -3,8 +3,8 @@
 #include "Form.hpp"
 
 #include <polyfem/basis/ElementBases.hpp>
-#include <polyfem/assembler/Assembler.hpp>
-#include <polyfem/assembler/AssemblyValsCache.hpp>
+#include <polyfem/assembler/core/Assembler.hpp>
+#include <polyfem/assembler/core/AssemblyValsCache.hpp>
 
 #include <polyfem/utils/Jacobian.hpp>
 #include <polyfem/utils/MatrixCache.hpp>

@@ -5,11 +5,11 @@
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 
-#include <polyfem/assembler/AssemblyValsCache.hpp>
+#include <polyfem/assembler/core/AssemblyValsCache.hpp>
 #include <polyfem/basis/ElementBases.hpp>
-#include <polyfem/assembler/Assembler.hpp>
-#include <polyfem/assembler/GenericElastic.hpp>
-#include <polyfem/assembler/AMIPSEnergy.hpp>
+#include <polyfem/assembler/core/Assembler.hpp>
+#include <polyfem/assembler/elasticity/GenericElastic.hpp>
+#include <polyfem/assembler/elasticity/AMIPSEnergy.hpp>
 #include <polyfem/utils/GeometryUtils.hpp>
 
 namespace polyfem::solver
