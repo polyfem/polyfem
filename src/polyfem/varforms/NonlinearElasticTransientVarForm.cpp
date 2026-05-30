@@ -643,6 +643,7 @@ namespace polyfem::varform
 			logger().info("Building cache...");
 			ass_vals_cache.init(mesh.is_volume(), bases, curret_bases);
 			mass_ass_vals_cache.init(mesh.is_volume(), bases, curret_bases, true);
+			pure_mass_ass_vals_cache.init(mesh.is_volume(), bases, curret_bases, true);
 
 			logger().info(" took {}s", timer.getElapsedTime());
 		}
@@ -650,6 +651,7 @@ namespace polyfem::varform
 		{
 			ass_vals_cache.init_empty();
 			mass_ass_vals_cache.init_empty(true);
+			pure_mass_ass_vals_cache.init_empty(true);
 		}
 
 		// FIXME
