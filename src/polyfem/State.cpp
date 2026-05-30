@@ -1712,7 +1712,7 @@ namespace polyfem
 
 		igl::Timer timer;
 		timer.start();
-		const bool requires_legacy_varform_compat = optimization_enabled || bool(user_post_step) || ic_override != nullptr;
+		const bool requires_legacy_varform_compat = bool(user_post_step) || ic_override != nullptr;
 		if (variational_formulation && !requires_legacy_varform_compat)
 		{
 			pressure.resize(0, 0);

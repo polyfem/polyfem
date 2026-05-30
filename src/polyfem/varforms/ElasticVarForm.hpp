@@ -100,7 +100,7 @@ namespace polyfem::varform
 
 		void set_materials(assembler::Assembler &assembler) const;
 
-	private:
+	protected:
 		void build_node_mapping(const mesh::Mesh &mesh, const json &args);
 		void build_collision_mesh(const mesh::Mesh &mesh, const json &args);
 		void build_collision_mesh(

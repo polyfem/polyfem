@@ -276,7 +276,12 @@ namespace polyfem
 
 		const std::string formulation = this->formulation();
 
-		variational_formulation = varform::VarFormFactory::create(formulation, args);
+		variational_formulation = nullptr;
+		if (!optimization_enabled)
+			variational_formulation = varform::VarFormFactory::create(formulation, args);
+		else
+			logger().info("Optimization enabled, using legacy State path for {}", formulation);
+
 		if (variational_formulation)
 		{
 			logger().info("Using variational formulation: {}", variational_formulation->name());

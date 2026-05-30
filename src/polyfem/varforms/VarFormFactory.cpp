@@ -1,6 +1,9 @@
 #include <polyfem/varforms/VarFormFactory.hpp>
 
 #include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/varforms/BilaplacianVarForm.hpp>
+#include <polyfem/varforms/FluidVarForm.hpp>
+#include <polyfem/varforms/IncompressibleElasticVarForm.hpp>
 #include <polyfem/varforms/LinearElasticVarForm.hpp>
 #include <polyfem/varforms/NonlinearElasticTransientVarForm.hpp>
 #include <polyfem/varforms/ScalarVarForm.hpp>
@@ -23,10 +26,19 @@ namespace polyfem::varform
 			return false;
 
 		const auto assembler = assembler::AssemblerUtils::make_assembler(formulation);
-		if (!assembler || assembler->is_fluid())
+		if (!assembler)
+			return false;
+
+		if (formulation == "OperatorSplitting")
 			return false;
 
 		if (!assembler::AssemblerUtils::other_assembler_name(formulation).empty())
+			return formulation == "Stokes"
+				|| formulation == "NavierStokes"
+				|| formulation == "IncompressibleLinearElasticity"
+				|| formulation == "Bilaplacian";
+
+		if (assembler->is_fluid())
 			return false;
 
 		return assembler->is_tensor() || assembler->is_linear();
@@ -46,10 +58,19 @@ namespace polyfem::varform
 			args.contains("constraints")
 			&& (!args["constraints"]["hard"].empty() || !args["constraints"]["soft"].empty());
 
+		if (formulation == "Stokes")
+			return (!has_contact && !has_constraints) ? std::make_shared<StokesVarForm>() : nullptr;
+		if (formulation == "NavierStokes")
+			return (!has_contact && !has_constraints) ? std::make_shared<NavierStokesVarForm>() : nullptr;
+		if (formulation == "IncompressibleLinearElasticity")
+			return (!has_contact && !has_pressure && !has_constraints) ? std::make_shared<IncompressibleElasticVarForm>() : nullptr;
+		if (formulation == "Bilaplacian")
+			return (!has_contact && !has_constraints) ? std::make_shared<BilaplacianVarForm>() : nullptr;
+
 		if (!assembler->is_tensor())
 			return (!has_contact && !has_pressure && !has_constraints) ? std::make_shared<ScalarVarForm>() : nullptr;
 
-		if (assembler && assembler->is_linear() && !has_contact && !has_pressure && !has_constraints)
+		if (assembler->is_linear() && !has_contact && !has_pressure && !has_constraints)
 			return std::make_shared<LinearElasticVarForm>();
 
 		if (args.contains("time") && !args["time"].is_null())
