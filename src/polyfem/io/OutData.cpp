@@ -1678,7 +1678,7 @@ namespace polyfem::io
 				res.row(i) = tmp;
 				res_grad.row(i) = tmp_grad;
 
-				if (state.mixed_assembler != nullptr)
+				if (!state.var_form && state.mixed_assembler != nullptr)
 				{
 					Evaluator::interpolate_at_local_vals(
 						mesh, 1, pressure_bases, gbases,
@@ -1697,7 +1697,7 @@ namespace polyfem::io
 			std::ofstream osgg(path + "_grid.txt");
 			osgg << grid_points;
 
-			if (state.mixed_assembler != nullptr)
+			if (!state.var_form && state.mixed_assembler != nullptr)
 			{
 				std::ofstream osp(path + "_p_sol.txt");
 				osp << res_p;
@@ -1824,7 +1824,7 @@ namespace polyfem::io
 		}
 
 		// if(problem->is_mixed())
-		if (state.mixed_assembler != nullptr && opts.export_field("pressure"))
+		if (!state.var_form && state.mixed_assembler != nullptr && opts.export_field("pressure"))
 		{
 			Eigen::MatrixXd interp_p;
 			Evaluator::interpolate_function(
@@ -2342,7 +2342,7 @@ namespace polyfem::io
 					el_index, boundary_vis_local_vertices.row(i), sol, lsol, lgrad);
 				assert(lsol.size() == actual_dim);
 			}
-			if (state.mixed_assembler != nullptr)
+			if (!state.var_form && state.mixed_assembler != nullptr)
 			{
 				Evaluator::interpolate_at_local_vals(
 					mesh, 1, pressure_bases, gbases,
@@ -2418,7 +2418,7 @@ namespace polyfem::io
 			writer.add_field("normals", boundary_vis_normals);
 		if (opts.export_field("displaced_normals"))
 			writer.add_field("displaced_normals", displaced_boundary_vis_normals);
-		if (state.mixed_assembler != nullptr && opts.export_field("pressure"))
+		if (!state.var_form && state.mixed_assembler != nullptr && opts.export_field("pressure"))
 			writer.add_field("pressure", interp_p);
 		if (opts.export_field("discr"))
 			writer.add_field("discr", discr);
