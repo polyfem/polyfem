@@ -6,6 +6,7 @@
 #include <polyfem/assembler/Stokes.hpp>
 #include <polyfem/basis/LagrangeBasis2d.hpp>
 #include <polyfem/basis/LagrangeBasis3d.hpp>
+#include <polyfem/io/Evaluator.hpp>
 #include <polyfem/io/VarFormOutputWriter.hpp>
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
@@ -392,30 +393,127 @@ namespace polyfem::varform
 		const Eigen::MatrixXd &solution,
 		const io::OutputFieldOptions &options) const
 	{
+		std::vector<io::OutputField> fields;
+		if (!mesh_ || !problem || solution.size() <= 0)
+			return fields;
+
 		Eigen::MatrixXd velocity, pressure;
 		split_solution(solution, velocity, pressure);
 
-		io::OutputFieldOptions base_options = options;
-		if (!base_options.fields.empty() && base_options.export_field("velocity") && !base_options.export_field("displacement"))
-			base_options.fields.push_back("displacement");
+		const int field_dim = mesh_->dimension();
+		const bool has_element_samples = sample.local_points.rows() > 0 && sample.local_points.rows() == sample.element_ids.size();
+		const int output_rows = sample.points.rows() > 0 ? sample.points.rows() : std::max<int>(sample.local_points.rows(), sample.node_ids.size());
 
-		auto fields = ElasticVarForm::output_fields(sample, velocity, base_options);
-		fields.erase(
-			std::remove_if(
-				fields.begin(), fields.end(),
-				[](const io::OutputField &field) {
-					return field.name == "velocity" || field.name == "acceleration";
-				}),
-			fields.end());
-		for (auto &field : fields)
-			if (field.name == "displacement")
-				field.name = "velocity";
+		const auto resize_to_output_rows = [&](Eigen::MatrixXd &values) {
+			if (output_rows <= values.rows())
+				return;
+
+			const int previous_rows = values.rows();
+			values.conservativeResize(output_rows, values.cols());
+			values.bottomRows(output_rows - previous_rows).setZero();
+		};
+
+		const auto sample_vector_field = [&](const Eigen::MatrixXd &dof_values, Eigen::MatrixXd &values) -> bool {
+			if (dof_values.size() <= 0 || field_dim <= 0)
+				return false;
+
+			if (has_element_samples)
+			{
+				values.resize(sample.local_points.rows(), field_dim);
+				for (int i = 0; i < sample.local_points.rows(); ++i)
+				{
+					const int element_id = sample.element_ids(i);
+					if (element_id < 0)
+					{
+						values.row(i).setZero();
+						continue;
+					}
+
+					Eigen::MatrixXd local_sol, local_grad;
+					io::Evaluator::interpolate_at_local_vals(
+						*mesh_, field_dim, bases, geom_bases(),
+						element_id, sample.local_points.row(i), dof_values, local_sol, local_grad);
+
+					for (int d = 0; d < field_dim; ++d)
+						values(i, d) = local_sol(d);
+				}
+
+				resize_to_output_rows(values);
+				return true;
+			}
+
+			if (sample.node_ids.size() > 0)
+			{
+				values.resize(sample.node_ids.size(), field_dim);
+				for (int i = 0; i < sample.node_ids.size(); ++i)
+				{
+					const int node_id = sample.node_ids(i);
+					for (int d = 0; d < field_dim; ++d)
+					{
+						const int dof = node_id * field_dim + d;
+						if (dof < 0 || dof >= dof_values.rows())
+							return false;
+						values(i, d) = dof_values(dof);
+					}
+				}
+				return sample.points.rows() == 0 || sample.points.rows() == values.rows();
+			}
+
+			return false;
+		};
+
+		Eigen::MatrixXd velocity_values;
+		const bool sampled_velocity = sample_vector_field(velocity, velocity_values);
+		if (sampled_velocity && options.export_field("velocity"))
+			fields.push_back({"velocity", velocity_values, io::OutputField::Association::Point});
+		if (sampled_velocity && options.export_field("solution"))
+			fields.push_back({"solution", velocity_values, io::OutputField::Association::Point});
 
 		if (mesh_ && options.export_field("pressure"))
 		{
 			Eigen::MatrixXd values;
 			if (sample_scalar_field(*mesh_, pressure_bases, geom_bases(), sample, pressure, values))
 				fields.push_back({"pressure", values, io::OutputField::Association::Point});
+		}
+
+		const auto &paraview_options = args["output"]["paraview"]["options"];
+		if (paraview_options["material"] && has_element_samples)
+		{
+			const auto &params = assembler->parameters();
+			std::map<std::string, Eigen::MatrixXd> param_values;
+			for (const auto &[p, _] : params)
+				param_values[p].setZero(output_rows, 1);
+
+			Eigen::MatrixXd rhos = Eigen::MatrixXd::Zero(output_rows, 1);
+			const auto &density = mass_matrix_assembler->density();
+			for (int i = 0; i < sample.local_points.rows(); ++i)
+			{
+				const int element_id = sample.element_ids(i);
+				if (element_id < 0)
+					continue;
+
+				for (const auto &[p, func] : params)
+					param_values.at(p)(i) = func(sample.local_points.row(i), sample.points.row(i), sample.time, element_id);
+				rhos(i) = density(sample.local_points.row(i), sample.points.row(i), sample.time, element_id);
+			}
+
+			for (const auto &[name, values] : param_values)
+				if (options.export_field(name))
+					fields.push_back({name, values, io::OutputField::Association::Point});
+			if (options.export_field("rho"))
+				fields.push_back({"rho", rhos, io::OutputField::Association::Point});
+		}
+
+		if ((paraview_options["body_ids"] || options.export_field("body_ids")) && has_element_samples)
+		{
+			Eigen::MatrixXd ids = Eigen::MatrixXd::Zero(output_rows, 1);
+			for (int i = 0; i < sample.element_ids.size(); ++i)
+			{
+				const int element_id = sample.element_ids(i);
+				if (element_id >= 0)
+					ids(i) = mesh_->get_body_id(element_id);
+			}
+			fields.push_back({"body_ids", ids, io::OutputField::Association::Point});
 		}
 
 		return fields;
