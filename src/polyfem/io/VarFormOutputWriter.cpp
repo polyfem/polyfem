@@ -181,10 +181,17 @@ namespace polyfem::io
 		}
 
 		logger().info("Saving json...");
+		const int actual_dim = output.problem->is_scalar() ? 1 : output.mesh->dimension();
+		const int primary_size = output.n_bases * actual_dim;
+		const Eigen::MatrixXd stats_solution =
+			output.mixed_assembler && sol.rows() >= primary_size
+				? sol.topRows(primary_size).eval()
+				: sol;
+
 		nlohmann::json j;
 		output.stats.save_json(
 			output.args, output.n_bases, output.n_pressure_bases,
-			sol, *output.mesh, output.disc_orders, output.disc_ordersq, *output.problem,
+			stats_solution, *output.mesh, output.disc_orders, output.disc_ordersq, *output.problem,
 			output.timings, output.formulation, output.iso_parametric,
 			output.args["output"]["advanced"]["sol_at_node"], j);
 		out << j.dump(4) << std::endl;
