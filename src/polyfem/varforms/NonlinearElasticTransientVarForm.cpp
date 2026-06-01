@@ -248,6 +248,7 @@ namespace polyfem::varform
 		local_pressure_boundary.clear();
 		local_pressure_cavity.clear();
 		polys.clear();
+		polys_3d.clear();
 		poly_edge_to_data.clear();
 
 		n_bases = 0;
@@ -348,6 +349,150 @@ namespace polyfem::varform
 			root_path, mesh.dimension());
 
 		problem->init(mesh);
+	}
+
+	void ElasticVarForm::build_polygonal_basis(const mesh::Mesh &mesh)
+	{
+		rhs.resize(0, 0);
+
+		if (poly_edge_to_data.empty() && polys.empty())
+		{
+			timings.computing_poly_basis_time = 0;
+			return;
+		}
+
+		igl::Timer timer;
+		timer.start();
+		logger().info("Computing polygonal basis...");
+
+		int new_bases = 0;
+		const int dim = assembler->is_tensor() ? mesh.dimension() : 1;
+		if (iso_parametric)
+		{
+			if (mesh.is_volume())
+			{
+				if (args["space"]["poly_basis_type"] == "MeanValue" || args["space"]["poly_basis_type"] == "Wachspress")
+					logger().error("Barycentric bases not supported in 3D");
+
+				const auto *linear_assembler = dynamic_cast<assembler::LinearAssembler *>(assembler.get());
+				assert(linear_assembler);
+				new_bases = basis::PolygonalBasis3d::build_bases(
+					*linear_assembler,
+					args["space"]["advanced"]["n_harmonic_samples"],
+					dynamic_cast<const mesh::Mesh3D &>(mesh),
+					n_bases,
+					args["space"]["advanced"]["quadrature_order"],
+					args["space"]["advanced"]["mass_quadrature_order"],
+					args["space"]["advanced"]["integral_constraints"],
+					bases,
+					bases,
+					poly_edge_to_data,
+					polys_3d);
+			}
+			else
+			{
+				const mesh::Mesh2D &mesh_2d = dynamic_cast<const mesh::Mesh2D &>(mesh);
+				if (args["space"]["poly_basis_type"] == "MeanValue")
+				{
+					new_bases = basis::MVPolygonalBasis2d::build_bases(
+						assembler->name(), dim, mesh_2d, n_bases,
+						args["space"]["advanced"]["quadrature_order"],
+						args["space"]["advanced"]["mass_quadrature_order"],
+						bases, local_boundary, polys);
+				}
+				else if (args["space"]["poly_basis_type"] == "Wachspress")
+				{
+					new_bases = basis::WSPolygonalBasis2d::build_bases(
+						assembler->name(), dim, mesh_2d, n_bases,
+						args["space"]["advanced"]["quadrature_order"],
+						args["space"]["advanced"]["mass_quadrature_order"],
+						bases, local_boundary, polys);
+				}
+				else
+				{
+					const auto *linear_assembler = dynamic_cast<assembler::LinearAssembler *>(assembler.get());
+					assert(linear_assembler);
+					new_bases = basis::PolygonalBasis2d::build_bases(
+						*linear_assembler,
+						args["space"]["advanced"]["n_harmonic_samples"],
+						mesh_2d,
+						n_bases,
+						args["space"]["advanced"]["quadrature_order"],
+						args["space"]["advanced"]["mass_quadrature_order"],
+						args["space"]["advanced"]["integral_constraints"],
+						bases,
+						bases,
+						poly_edge_to_data,
+						polys);
+				}
+			}
+		}
+		else
+		{
+			if (mesh.is_volume())
+			{
+				if (args["space"]["poly_basis_type"] == "MeanValue" || args["space"]["poly_basis_type"] == "Wachspress")
+					log_and_throw_error("Barycentric bases not supported in 3D");
+
+				const auto *linear_assembler = dynamic_cast<assembler::LinearAssembler *>(assembler.get());
+				assert(linear_assembler);
+				new_bases = basis::PolygonalBasis3d::build_bases(
+					*linear_assembler,
+					args["space"]["advanced"]["n_harmonic_samples"],
+					dynamic_cast<const mesh::Mesh3D &>(mesh),
+					n_bases,
+					args["space"]["advanced"]["quadrature_order"],
+					args["space"]["advanced"]["mass_quadrature_order"],
+					args["space"]["advanced"]["integral_constraints"],
+					bases,
+					geom_bases_,
+					poly_edge_to_data,
+					polys_3d);
+			}
+			else
+			{
+				const mesh::Mesh2D &mesh_2d = dynamic_cast<const mesh::Mesh2D &>(mesh);
+				if (args["space"]["poly_basis_type"] == "MeanValue")
+				{
+					new_bases = basis::MVPolygonalBasis2d::build_bases(
+						assembler->name(), dim, mesh_2d, n_bases,
+						args["space"]["advanced"]["quadrature_order"],
+						args["space"]["advanced"]["mass_quadrature_order"],
+						bases, local_boundary, polys);
+				}
+				else if (args["space"]["poly_basis_type"] == "Wachspress")
+				{
+					new_bases = basis::WSPolygonalBasis2d::build_bases(
+						assembler->name(), dim, mesh_2d, n_bases,
+						args["space"]["advanced"]["quadrature_order"],
+						args["space"]["advanced"]["mass_quadrature_order"],
+						bases, local_boundary, polys);
+				}
+				else
+				{
+					const auto *linear_assembler = dynamic_cast<assembler::LinearAssembler *>(assembler.get());
+					assert(linear_assembler);
+					new_bases = basis::PolygonalBasis2d::build_bases(
+						*linear_assembler,
+						args["space"]["advanced"]["n_harmonic_samples"],
+						mesh_2d,
+						n_bases,
+						args["space"]["advanced"]["quadrature_order"],
+						args["space"]["advanced"]["mass_quadrature_order"],
+						args["space"]["advanced"]["integral_constraints"],
+						bases,
+						geom_bases_,
+						poly_edge_to_data,
+						polys);
+				}
+			}
+		}
+
+		timer.stop();
+		timings.computing_poly_basis_time = timer.getElapsedTime();
+		logger().info(" took {}s", timings.computing_poly_basis_time);
+
+		n_bases += new_bases;
 	}
 
 	void ElasticVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
@@ -451,8 +596,7 @@ namespace polyfem::varform
 
 		timer.stop();
 
-		// FIXME!!
-		// build_polygonal_basis();
+		build_polygonal_basis(mesh);
 
 		if (n_geom_bases == 0)
 			n_geom_bases = n_bases;
