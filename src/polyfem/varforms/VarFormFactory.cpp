@@ -10,6 +10,14 @@
 
 namespace polyfem::varform
 {
+	namespace
+	{
+		bool has_entries(const json &args, const json::json_pointer &path)
+		{
+			return args.contains(path) && !args.at(path).empty();
+		}
+	} // namespace
+
 	bool VarFormFactory::supports(const std::string &formulation, const json &args)
 	{
 		if (args.value("/space/remesh/enabled"_json_pointer, false))
@@ -51,12 +59,11 @@ namespace polyfem::varform
 
 		const auto assembler = assembler::AssemblerUtils::make_assembler(formulation);
 		const bool has_contact = args.value("/contact/enabled"_json_pointer, false);
-		const bool has_pressure =
-			args["boundary_conditions"]["pressure_boundary"].size() > 0
-			|| args["boundary_conditions"]["pressure_cavity"].size() > 0;
+		const bool has_pressure = has_entries(args, "/boundary_conditions/pressure_boundary"_json_pointer)
+								  || has_entries(args, "/boundary_conditions/pressure_cavity"_json_pointer);
 		const bool has_constraints =
-			args.contains("constraints")
-			&& (!args["constraints"]["hard"].empty() || !args["constraints"]["soft"].empty());
+			has_entries(args, "/constraints/hard"_json_pointer)
+			|| has_entries(args, "/constraints/soft"_json_pointer);
 
 		if (formulation == "Stokes")
 			return (!has_contact && !has_constraints) ? std::make_shared<StokesVarForm>() : nullptr;
