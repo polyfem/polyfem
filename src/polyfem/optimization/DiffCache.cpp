@@ -2,7 +2,7 @@
 
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
@@ -62,7 +62,7 @@ namespace polyfem
 			reduced_mat.setFromTriplets(coeffs.begin(), coeffs.end());
 		}
 
-		void compute_force_jacobian(State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, StiffnessMatrix &hessian)
+		void compute_force_jacobian(legacy::State &state, const Eigen::MatrixXd &sol, const Eigen::MatrixXd &disp_grad, StiffnessMatrix &hessian)
 		{
 			auto &s = state;
 
@@ -107,7 +107,7 @@ namespace polyfem
 			}
 		}
 
-		StiffnessMatrix compute_basis_nodes_to_gbasis_nodes(const State &state)
+		StiffnessMatrix compute_basis_nodes_to_gbasis_nodes(const legacy::State &state)
 		{
 			auto &gbases = state.geom_bases();
 			auto &bases = state.bases;
@@ -282,7 +282,7 @@ namespace polyfem
 
 	void DiffCache::cache_transient(
 		int step,
-		State &state,
+		legacy::State &state,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd *disp_grad,
 		const Eigen::MatrixXd *pressure)

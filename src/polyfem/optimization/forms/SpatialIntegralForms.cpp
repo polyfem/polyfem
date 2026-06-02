@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/SpatialIntegralForms.hpp>
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/IntegrableFunctional.hpp>
@@ -111,7 +111,7 @@ namespace polyfem::solver
 		});
 	}
 
-	Eigen::VectorXd SpatialIntegralForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const
+	Eigen::VectorXd SpatialIntegralForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const legacy::State &state, const DiffCache &diff_cache) const
 	{
 		if (&state != state_.get())
 			return Eigen::VectorXd::Zero(state.ndof());

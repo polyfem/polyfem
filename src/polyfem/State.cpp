@@ -523,6 +523,7 @@ namespace polyfem
 			variational_formulation->sync_state(*this);
 			return;
 		}
+		throw std::runtime_error("polyfem::State is varform-only; use polyfem::legacy::State for legacy formulations.");
 
 		bases.clear();
 		pressure_bases.clear();
@@ -1487,6 +1488,7 @@ namespace polyfem
 			variational_formulation->sync_state(*this);
 			return;
 		}
+		throw std::runtime_error("polyfem::State is varform-only; use polyfem::legacy::State for legacy formulations.");
 		if (assembler->name() == "OperatorSplitting")
 		{
 			timings.assembling_stiffness_mat_time = 0;
@@ -1624,6 +1626,7 @@ namespace polyfem
 			variational_formulation->sync_state(*this);
 			return;
 		}
+		throw std::runtime_error("polyfem::State is varform-only; use polyfem::legacy::State for legacy formulations.");
 
 		igl::Timer timer;
 
@@ -1689,6 +1692,8 @@ namespace polyfem
 							  UserPostStepCallback user_post_step,
 							  const InitialConditionOverride *ic_override)
 	{
+		if (user_post_step || ic_override)
+			throw std::runtime_error("polyfem::State is varform-only; use polyfem::legacy::State for callback or initial-condition override solves.");
 		if (!mesh)
 		{
 			logger().error("Load the mesh first!");
@@ -1708,77 +1713,14 @@ namespace polyfem
 
 		// sol.resize(0, 0);
 		// pressure.resize(0, 0);
-		stats.spectrum.setZero();
+		if (!variational_formulation)
+			throw std::runtime_error("polyfem::State is varform-only; use polyfem::legacy::State for legacy formulations.");
 
 		igl::Timer timer;
 		timer.start();
-		const bool requires_legacy_varform_compat = bool(user_post_step) || ic_override != nullptr;
-		if (variational_formulation && !requires_legacy_varform_compat)
-		{
-			pressure.resize(0, 0);
-			variational_formulation->solve(sol);
-			variational_formulation->sync_state(*this);
-			timer.stop();
-			timings.solving_time = timer.getElapsedTime();
-			logger().info(" took {}s", timings.solving_time);
-			return;
-		}
-		if (variational_formulation && requires_legacy_varform_compat)
-			logger().debug("Falling back to legacy State::solve_problem for compatibility.");
-
-		logger().info("Solving {}", assembler->name());
-
-		init_solve(sol, pressure, ic_override);
-
-		if (problem->is_time_dependent())
-		{
-			const double t0 = args["time"]["t0"];
-			const int time_steps = args["time"]["time_steps"];
-			const double dt = args["time"]["dt"];
-
-			// Pre log the output path for easier watching
-			if (args["output"]["advanced"]["save_time_sequence"])
-			{
-				logger().info("Time sequence of simulation will be written to: \"{}\"",
-							  resolve_output_path(args["output"]["paraview"]["file_name"]));
-			}
-
-			if (assembler->name() == "NavierStokes")
-				solve_transient_navier_stokes(time_steps, t0, dt, sol, pressure, user_post_step);
-			else if (assembler->name() == "OperatorSplitting")
-				solve_transient_navier_stokes_split(time_steps, dt, sol, pressure, user_post_step);
-			else if (is_homogenization())
-				solve_homogenization(time_steps, t0, dt, sol, user_post_step);
-			else if (is_problem_linear())
-				solve_transient_linear(time_steps, t0, dt, sol, pressure, user_post_step, ic_override);
-			else if (!assembler->is_linear() && problem->is_scalar())
-				throw std::runtime_error("Nonlinear scalar problems are not supported yet!");
-			else
-				solve_transient_tensor_nonlinear(time_steps, t0, dt, sol, user_post_step, ic_override);
-		}
-		else
-		{
-			if (assembler->name() == "NavierStokes")
-				solve_navier_stokes(0, sol, pressure, user_post_step);
-			else if (is_homogenization())
-				solve_homogenization(/* time steps */ 0, /* t0 */ 0, /* dt */ 0, sol, user_post_step);
-			else if (is_problem_linear())
-			{
-				init_linear_solve(sol, 1.0, ic_override);
-				solve_linear(0, sol, pressure, user_post_step);
-			}
-			else if (!assembler->is_linear() && problem->is_scalar())
-				throw std::runtime_error("Nonlinear scalar problems are not supported yet!");
-			else
-			{
-				init_nonlinear_tensor_solve(sol, 1.0, true, ic_override);
-				solve_tensor_nonlinear(0, sol, true, user_post_step);
-
-				const std::string state_path = resolve_output_path(args["output"]["data"]["state"]);
-				if (!state_path.empty())
-					write_matrix(state_path, "u", sol);
-			}
-		}
+		pressure.resize(0, 0);
+		variational_formulation->solve(sol);
+		variational_formulation->sync_state(*this);
 
 		timer.stop();
 		timings.solving_time = timer.getElapsedTime();

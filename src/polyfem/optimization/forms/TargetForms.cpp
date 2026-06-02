@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/TargetForms.hpp>
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/io/OBJWriter.hpp>
@@ -151,7 +151,7 @@ namespace polyfem::solver
 		return j;
 	}
 
-	void TargetForm::set_reference(const std::shared_ptr<const State> &target_state, std::shared_ptr<const DiffCache> target_diff_cache, const std::set<int> &reference_cached_body_ids)
+	void TargetForm::set_reference(const std::shared_ptr<const legacy::State> &target_state, std::shared_ptr<const DiffCache> target_diff_cache, const std::set<int> &reference_cached_body_ids)
 	{
 		target_state_ = target_state;
 		target_diff_cache_ = std::move(target_diff_cache);
@@ -490,7 +490,7 @@ namespace polyfem::solver
 		return j;
 	}
 
-	NodeTargetForm::NodeTargetForm(std::shared_ptr<const State> state, std::shared_ptr<const DiffCache> diff_cache, const VariableToSimulationGroup &variable_to_simulations, const json &args)
+	NodeTargetForm::NodeTargetForm(std::shared_ptr<const legacy::State> state, std::shared_ptr<const DiffCache> diff_cache, const VariableToSimulationGroup &variable_to_simulations, const json &args)
 		: StaticForm(variable_to_simulations), state_(std::move(state)), diff_cache_(std::move(diff_cache))
 	{
 		const int dim = state_->mesh->dimension();
@@ -530,13 +530,13 @@ namespace polyfem::solver
 		}
 	}
 
-	NodeTargetForm::NodeTargetForm(std::shared_ptr<const State> state, std::shared_ptr<const DiffCache> diff_cache, const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_)
+	NodeTargetForm::NodeTargetForm(std::shared_ptr<const legacy::State> state, std::shared_ptr<const DiffCache> diff_cache, const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &active_nodes_, const Eigen::MatrixXd &target_vertex_positions_)
 		: StaticForm(variable_to_simulations), state_(std::move(state)), diff_cache_(std::move(diff_cache)), target_vertex_positions(target_vertex_positions_), active_nodes(active_nodes_)
 	{
 		// log_and_throw_adjoint_error("[{}] Constructor not implemented!", name());
 	}
 
-	Eigen::VectorXd NodeTargetForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const
+	Eigen::VectorXd NodeTargetForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const legacy::State &state, const DiffCache &diff_cache) const
 	{
 		Eigen::VectorXd rhs;
 		rhs.setZero(diff_cache.u(0).size());
@@ -581,7 +581,7 @@ namespace polyfem::solver
 		});
 	}
 
-	BarycenterTargetForm::BarycenterTargetForm(const VariableToSimulationGroup &variable_to_simulations, const json &args, const std::shared_ptr<State> &state1, std::shared_ptr<const DiffCache> diff_cache1, const std::shared_ptr<State> &state2, std::shared_ptr<const DiffCache> diff_cache2)
+	BarycenterTargetForm::BarycenterTargetForm(const VariableToSimulationGroup &variable_to_simulations, const json &args, const std::shared_ptr<legacy::State> &state1, std::shared_ptr<const DiffCache> diff_cache1, const std::shared_ptr<legacy::State> &state2, std::shared_ptr<const DiffCache> diff_cache2)
 		: StaticForm(variable_to_simulations)
 	{
 		dim = state1->mesh->dimension();
@@ -594,7 +594,7 @@ namespace polyfem::solver
 		}
 	}
 
-	Eigen::VectorXd BarycenterTargetForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const
+	Eigen::VectorXd BarycenterTargetForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const legacy::State &state, const DiffCache &diff_cache) const
 	{
 		Eigen::VectorXd term;
 		term.setZero(state.ndof());
@@ -627,7 +627,7 @@ namespace polyfem::solver
 		return dist;
 	}
 
-	MinTargetDistForm::MinTargetDistForm(const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &steps, const Eigen::VectorXd &target, const json &args, const std::shared_ptr<State> &state, std::shared_ptr<const DiffCache> diff_cache)
+	MinTargetDistForm::MinTargetDistForm(const VariableToSimulationGroup &variable_to_simulations, const std::vector<int> &steps, const Eigen::VectorXd &target, const json &args, const std::shared_ptr<legacy::State> &state, std::shared_ptr<const DiffCache> diff_cache)
 		: AdjointForm(variable_to_simulations), steps_(steps), target_(target)
 	{
 		dim = state->mesh->dimension();
@@ -639,7 +639,7 @@ namespace polyfem::solver
 		}
 		objs.push_back(std::make_unique<VolumeForm>(variable_to_simulations, state, diff_cache, args));
 	}
-	Eigen::MatrixXd MinTargetDistForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const
+	Eigen::MatrixXd MinTargetDistForm::compute_adjoint_rhs(const Eigen::VectorXd &x, const legacy::State &state, const DiffCache &diff_cache) const
 	{
 		Eigen::VectorXd values(steps_.size());
 		std::vector<Eigen::MatrixXd> grads(steps_.size(), Eigen::MatrixXd::Zero(state.ndof(), objs.size()));

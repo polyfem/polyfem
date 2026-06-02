@@ -22,11 +22,6 @@
 #include <ipc/potentials/normal_adhesion_potential.hpp>
 #include <ipc/potentials/tangential_adhesion_potential.hpp>
 
-namespace polyfem
-{
-	class State;
-}
-
 namespace polyfem::varform
 {
 	class VarForm;
@@ -135,8 +130,6 @@ namespace polyfem::io
 		{
 			return args["contact"]["adhesion"]["adhesion_enabled"];
 		}
-
-		static OutputState from_state(const State &state);
 	};
 
 	/// Utilies related to export of geometry
@@ -226,7 +219,7 @@ namespace polyfem::io
 		void build_grid(const polyfem::mesh::Mesh &mesh, const double spacing);
 
 		/// @brief exports everytihng, txt, vtu, etc
-		/// @param[in] state state to get the data
+		/// @param[in] state output state to get the data
 		/// @param[in] sol solution
 		/// @param[in] pressure pressure
 		/// @param[in] is_time_dependent if the sim is time dependent
@@ -239,20 +232,6 @@ namespace polyfem::io
 		/// @param[in] stress_path path to save stress tensor
 		/// @param[in] mises_path path to save von mises stresses
 		/// @param[in] is_contact_enabled if contact is enabled
-		void export_data(
-			const State &state,
-			const Eigen::MatrixXd &sol,
-			const Eigen::MatrixXd &pressure,
-			const bool is_time_dependent,
-			const double tend_in,
-			const double dt,
-			const ExportOptions &opts,
-			const std::string &vis_mesh_path,
-			const std::string &nodes_path,
-			const std::string &solution_path,
-			const std::string &stress_path,
-			const std::string &mises_path,
-			const bool is_contact_enabled) const;
 		void export_data(
 			const OutputState &state,
 			const Eigen::MatrixXd &sol,
@@ -270,21 +249,13 @@ namespace polyfem::io
 
 		/// saves the vtu file for time t
 		/// @param[in] path filename
-		/// @param[in] state state to get the data
+		/// @param[in] state output state to get the data
 		/// @param[in] sol solution
 		/// @param[in] pressure pressure
 		/// @param[in] t time
 		/// @param[in] dt delta t
 		/// @param[in] opts export options
 		/// @param[in] is_contact_enabled if contact is enabled
-		void save_vtu(const std::string &path,
-					  const State &state,
-					  const Eigen::MatrixXd &sol,
-					  const Eigen::MatrixXd &pressure,
-					  const double t,
-					  const double dt,
-					  const ExportOptions &opts,
-					  const bool is_contact_enabled) const;
 		void save_vtu(const std::string &path,
 					  const OutputState &state,
 					  const Eigen::MatrixXd &sol,
@@ -296,19 +267,12 @@ namespace polyfem::io
 
 		/// saves the volume vtu file
 		/// @param[in] path filename
-		/// @param[in] state state to get the data
+		/// @param[in] state output state to get the data
 		/// @param[in] sol solution
 		/// @param[in] pressure pressure
 		/// @param[in] t time
 		/// @param[in] dt delta t
 		/// @param[in] opts export options
-		void save_volume(const std::string &path,
-						 const State &state,
-						 const Eigen::MatrixXd &sol,
-						 const Eigen::MatrixXd &pressure,
-						 const double t,
-						 const double dt,
-						 const ExportOptions &opts) const;
 		void save_volume(const std::string &path,
 						 const OutputState &state,
 						 const Eigen::MatrixXd &sol,
@@ -319,21 +283,13 @@ namespace polyfem::io
 
 		/// saves the surface vtu file for for surface quantites, eg traction forces
 		/// @param[in] export_surface filename
-		/// @param[in] state state to get the data
+		/// @param[in] state output state to get the data
 		/// @param[in] sol solution
 		/// @param[in] pressure pressure
 		/// @param[in] t time
 		/// @param[in] dt_in delta_t
 		/// @param[in] opts export options
 		/// @param[in] is_contact_enabled if contact is enabled
-		void save_surface(const std::string &export_surface,
-						  const State &state,
-						  const Eigen::MatrixXd &sol,
-						  const Eigen::MatrixXd &pressure,
-						  const double t,
-						  const double dt_in,
-						  const ExportOptions &opts,
-						  const bool is_contact_enabled) const;
 		void save_surface(const std::string &export_surface,
 						  const OutputState &state,
 						  const Eigen::MatrixXd &sol,
@@ -345,22 +301,13 @@ namespace polyfem::io
 
 		/// saves the  surface vtu file for for constact quantites, eg contact or friction forces
 		/// @param[in] export_surface filename
-		/// @param[in] state state to get the data
+		/// @param[in] state output state to get the data
 		/// @param[in] sol solution
 		/// @param[in] pressure pressure
 		/// @param[in] t time
 		/// @param[in] dt_in delta_t
 		/// @param[in] opts export options
 		/// @param[in] is_contact_enabled if contact is enabled
-		void save_contact_surface(
-			const std::string &export_surface,
-			const State &state,
-			const Eigen::MatrixXd &sol,
-			const Eigen::MatrixXd &pressure,
-			const double t,
-			const double dt_in,
-			const ExportOptions &opts,
-			const bool is_contact_enabled) const;
 		void save_contact_surface(
 			const std::string &export_surface,
 			const OutputState &state,
@@ -373,15 +320,10 @@ namespace polyfem::io
 
 		/// saves the wireframe
 		/// @param[in] name filename
-		/// @param[in] state state to get the data
+		/// @param[in] state output state to get the data
 		/// @param[in] sol solution
 		/// @param[in] t time
 		/// @param[in] opts export options
-		void save_wire(const std::string &name,
-					   const State &state,
-					   const Eigen::MatrixXd &sol,
-					   const double t,
-					   const ExportOptions &opts) const;
 		void save_wire(const std::string &name,
 					   const OutputState &state,
 					   const Eigen::MatrixXd &sol,
@@ -390,14 +332,9 @@ namespace polyfem::io
 
 		/// saves the nodal values
 		/// @param[in] path filename
-		/// @param[in] state state to get the data
+		/// @param[in] state output state to get the data
 		/// @param[in] sol solution
 		/// @param[in] opts export options
-		void save_points(
-			const std::string &path,
-			const State &state,
-			const Eigen::MatrixXd &sol,
-			const ExportOptions &opts) const;
 		void save_points(
 			const std::string &path,
 			const OutputState &state,
@@ -529,7 +466,6 @@ namespace polyfem::io
 	class RuntimeStatsCSVWriter
 	{
 	public:
-		RuntimeStatsCSVWriter(const std::string &path, const State &state, const double t0, const double dt);
 		RuntimeStatsCSVWriter(const std::string &path, const OutputState &state, const double t0, const double dt);
 		~RuntimeStatsCSVWriter();
 

@@ -276,80 +276,12 @@ namespace polyfem
 
 		const std::string formulation = this->formulation();
 
-		variational_formulation = nullptr;
-		const bool requires_legacy_periodic = has_periodic_bc() || args["contact"]["periodic"].get<bool>();
-		if (!optimization_enabled && !requires_legacy_periodic)
-			variational_formulation = varform::VarFormFactory::create(formulation, args);
-		else if (optimization_enabled)
-			logger().info("Optimization enabled, using legacy State path for {}", formulation);
-		else
-			logger().info("Periodic boundary conditions enabled, using legacy State path for {}", formulation);
+		variational_formulation = varform::VarFormFactory::create(formulation, args);
+		if (!variational_formulation)
+			throw std::runtime_error("polyfem::State is varform-only; use polyfem::legacy::State for " + formulation + ".");
 
-		if (variational_formulation)
-		{
-			logger().info("Using variational formulation: {}", variational_formulation->name());
-			variational_formulation->init(formulation, units, args, output_dir);
-			return;
-		}
-
-		assembler = assembler::AssemblerUtils::make_assembler(formulation);
-		assert(assembler->name() == formulation);
-		mass_matrix_assembler = std::make_shared<assembler::Mass>();
-		pure_mass_matrix_assembler = std::make_shared<assembler::HRZMass>();
-		const auto other_name = assembler::AssemblerUtils::other_assembler_name(formulation);
-
-		if (!other_name.empty())
-		{
-			mixed_assembler = assembler::AssemblerUtils::make_mixed_assembler(formulation);
-			pressure_assembler = assembler::AssemblerUtils::make_assembler(other_name);
-		}
-
-		if (args["solver"]["advanced"]["check_inversion"] == "Conservative")
-		{
-			if (auto elastic_assembler = std::dynamic_pointer_cast<assembler::ElasticityAssembler>(assembler))
-				elastic_assembler->set_use_robust_jacobian();
-		}
-
-		if (!args.contains("preset_problem"))
-		{
-			if (!assembler->is_tensor())
-				problem = std::make_shared<assembler::GenericScalarProblem>("GenericScalar");
-			else
-				problem = std::make_shared<assembler::GenericTensorProblem>("GenericTensor");
-
-			problem->clear();
-			if (!args["time"].is_null())
-			{
-				const auto tmp = R"({"is_time_dependent": true})"_json;
-				problem->set_parameters(tmp, root_path());
-			}
-			// important for the BC
-
-			auto bc = args["boundary_conditions"];
-			bc["root_path"] = root_path();
-			problem->set_parameters(bc, root_path());
-			problem->set_parameters(args["initial_conditions"], root_path());
-
-			problem->set_parameters(args["output"], root_path());
-		}
-		else
-		{
-			if (args["preset_problem"]["type"] == "Kernel")
-			{
-				problem = std::make_shared<KernelProblem>("Kernel", *assembler);
-				problem->clear();
-				KernelProblem &kprob = *dynamic_cast<KernelProblem *>(problem.get());
-			}
-			else
-			{
-				problem = ProblemFactory::factory().get_problem(args["preset_problem"]["type"]);
-				problem->clear();
-			}
-			// important for the BC
-			problem->set_parameters(args["preset_problem"], root_path());
-		}
-
-		problem->set_units(*assembler, units);
+		logger().info("Using variational formulation: {}", variational_formulation->name());
+		variational_formulation->init(formulation, units, args, output_dir);
 	}
 
 	void State::set_max_threads(const int max_threads)

@@ -5,7 +5,7 @@
 
 namespace polyfem
 {
-	class State;
+	namespace legacy { class State; }
 }
 
 namespace polyfem::solver
@@ -13,7 +13,7 @@ namespace polyfem::solver
 	class VariableToNodes
 	{
 	public:
-		VariableToNodes(const State &state, const std::vector<int> &active_dimensions);
+		VariableToNodes(const legacy::State &state, const std::vector<int> &active_dimensions);
 		virtual ~VariableToNodes() {}
 		virtual void set_output_indexing(const std::vector<int> &node_ids) final;
 		const Eigen::VectorXi &get_output_indexing() const { return output_indexing_; }
@@ -28,18 +28,18 @@ namespace polyfem::solver
 	class VariableToInteriorNodes : public VariableToNodes
 	{
 	public:
-		VariableToInteriorNodes(const State &state, const std::vector<int> &active_dimensions, const std::vector<int> &volume_selection);
+		VariableToInteriorNodes(const legacy::State &state, const std::vector<int> &active_dimensions, const std::vector<int> &volume_selection);
 	};
 
 	class VariableToBoundaryNodes : public VariableToNodes
 	{
 	public:
-		VariableToBoundaryNodes(const State &state, const std::vector<int> &active_dimensions, const std::vector<int> &surface_selection);
+		VariableToBoundaryNodes(const legacy::State &state, const std::vector<int> &active_dimensions, const std::vector<int> &surface_selection);
 	};
 
 	class VariableToBoundaryNodesExclusive : public VariableToNodes
 	{
 	public:
-		VariableToBoundaryNodesExclusive(const State &state, const std::vector<int> &active_dimensions, const std::vector<int> &exclude_surface_selections);
+		VariableToBoundaryNodesExclusive(const legacy::State &state, const std::vector<int> &active_dimensions, const std::vector<int> &exclude_surface_selections);
 	};
 } // namespace polyfem::solver

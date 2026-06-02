@@ -19,6 +19,7 @@
 #include <polyfem/io/MshWriter.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/io/OutData.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
@@ -70,9 +71,11 @@ namespace polyfem
 
 		if (args["output"]["stats"])
 		{
+			if (!variational_formulation)
+				throw std::runtime_error("polyfem::State nonlinear stats require a variational formulation output state.");
 			logger().debug("Saving nl stats to {} and {}", resolve_output_path("energy.csv"), resolve_output_path("stats.csv"));
 			energy_csv = std::make_unique<EnergyCSVWriter>(resolve_output_path("energy.csv"), solve_data);
-			stats_csv = std::make_unique<RuntimeStatsCSVWriter>(resolve_output_path("stats.csv"), *this, t0, dt);
+			stats_csv = std::make_unique<RuntimeStatsCSVWriter>(resolve_output_path("stats.csv"), variational_formulation->output_state(), t0, dt);
 		}
 		const bool remesh_enabled = args["space"]["remesh"]["enabled"];
 #ifndef POLYFEM_WITH_ITR

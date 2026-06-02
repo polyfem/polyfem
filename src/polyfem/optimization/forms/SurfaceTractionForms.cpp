@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/SurfaceTractionForms.hpp>
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/IntegrableFunctional.hpp>
@@ -88,7 +88,7 @@ namespace polyfem::solver
 		};
 
 		void compute_collision_mesh_quantities(
-			const State &state,
+			const legacy::State &state,
 			const std::set<int> &boundary_ids,
 			const ipc::CollisionMesh &collision_mesh,
 			Eigen::MatrixXd &node_positions,
@@ -99,7 +99,7 @@ namespace polyfem::solver
 			Eigen::MatrixXi &can_collide_cache)
 		{
 			std::vector<Eigen::Triplet<double>> displacement_map_entries;
-			io::OutGeometryData::extract_boundary_mesh(*state.mesh, state.n_bases, state.bases, state.total_local_boundary,
+			legacy::io::OutGeometryData::extract_boundary_mesh(*state.mesh, state.n_bases, state.bases, state.total_local_boundary,
 													   node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
 
 			is_on_surface.resize(node_positions.rows(), false);
@@ -599,7 +599,7 @@ namespace polyfem::solver
 	// 	return sum;
 	// }
 
-	// Eigen::VectorXd TrueContactForceForm::compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const State &state) const
+	// Eigen::VectorXd TrueContactForceForm::compute_adjoint_rhs_unweighted_step(const int time_step, const Eigen::VectorXd &x, const legacy::State &state) const
 	// {
 	// 	assert(state_.solve_data.time_integrator != nullptr);
 	// 	assert(state_.solve_data.contact_form != nullptr);
@@ -659,7 +659,7 @@ namespace polyfem::solver
 	// 	return gradu;
 	// }
 
-	// Eigen::VectorXd TrueContactForceForm::compute_adjoint_rhs_unweighted_step_prev(const int time_step, const Eigen::VectorXd &x, const State &state) const
+	// Eigen::VectorXd TrueContactForceForm::compute_adjoint_rhs_unweighted_step_prev(const int time_step, const Eigen::VectorXd &x, const legacy::State &state) const
 	// {
 	// 	assert(state_.solve_data.time_integrator != nullptr);
 	// 	assert(state_.solve_data.contact_form != nullptr);
@@ -801,7 +801,7 @@ namespace polyfem::solver
 
 	ProxyContactForceForm::ProxyContactForceForm(
 		const VariableToSimulationGroup &variable_to_simulations,
-		std::shared_ptr<const State> state,
+		std::shared_ptr<const legacy::State> state,
 		std::shared_ptr<const DiffCache> diff_cache,
 		const double dhat,
 		const bool quadratic_potential,
@@ -855,7 +855,7 @@ namespace polyfem::solver
 		// Eigen::MatrixXd node_positions;
 		Eigen::MatrixXi boundary_edges, boundary_triangles;
 		std::vector<Eigen::Triplet<double>> displacement_map_entries;
-		io::OutGeometryData::extract_boundary_mesh(*state_->mesh, state_->n_bases, state_->bases, state_->total_local_boundary,
+		legacy::io::OutGeometryData::extract_boundary_mesh(*state_->mesh, state_->n_bases, state_->bases, state_->total_local_boundary,
 												   node_positions_, boundary_edges, boundary_triangles, displacement_map_entries);
 
 		std::vector<bool> is_on_surface;
@@ -999,7 +999,7 @@ namespace polyfem::solver
 		return sum;
 	}
 
-	Eigen::VectorXd ProxyContactForceForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const
+	Eigen::VectorXd ProxyContactForceForm::compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const legacy::State &state, const DiffCache &diff_cache) const
 	{
 		assert(state_->solve_data.time_integrator != nullptr);
 		assert(state_->solve_data.contact_form != nullptr);

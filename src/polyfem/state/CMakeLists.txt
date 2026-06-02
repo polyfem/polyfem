@@ -1,11 +1,9 @@
 set(SOURCES
 	StateInit.cpp
 	StateLoad.cpp
-	StateHomogenization.cpp
 	StateOutput.cpp
 	StateSolve.cpp
 	StateSolveLinear.cpp
-	StateSolveNavierStokes.cpp
 	StateSolveNonlinear.cpp
 )
 

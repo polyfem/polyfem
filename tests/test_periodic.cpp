@@ -4,7 +4,7 @@
 #include <fstream>
 #include <cmath>
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/optimization/Optimizations.hpp>
 #include <polyfem/optimization/AdjointTools.hpp>
 #include <polyfem/io/Evaluator.hpp>
@@ -49,25 +49,25 @@ namespace
 		return true;
 	}
 
-	std::shared_ptr<State> create_state_and_solve(const json &args)
+	std::shared_ptr<legacy::State> create_state_and_solve(const json &args)
 	{
-		std::shared_ptr<State> state = from_json::build_state(args, 16);
+		std::shared_ptr<legacy::State> state = from_json::build_state(args, 16);
 		Eigen::MatrixXd sol, pressure;
 		state->solve_problem(sol, pressure);
 
 		return state;
 	}
 
-	std::shared_ptr<State> create_state_and_solve(const json &args, Eigen::MatrixXd &sol)
+	std::shared_ptr<legacy::State> create_state_and_solve(const json &args, Eigen::MatrixXd &sol)
 	{
-		std::shared_ptr<State> state = from_json::build_state(args, 16);
+		std::shared_ptr<legacy::State> state = from_json::build_state(args, 16);
 		Eigen::MatrixXd pressure;
 		state->solve_problem(sol, pressure);
 
 		return state;
 	}
 
-	void sample_field(const State &state, std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> field, Eigen::MatrixXd &discrete_field, const int order = 1)
+	void sample_field(const legacy::State &state, std::function<Eigen::MatrixXd(const Eigen::MatrixXd &)> field, Eigen::MatrixXd &discrete_field, const int order = 1)
 	{
 		Eigen::MatrixXd tmp;
 		tmp.setZero(1, state.mesh->dimension());
@@ -152,14 +152,14 @@ TEST_CASE("homogenize-stress-periodic", "[test_adjoint]")
 	in_args["/solver/linear/solver"_json_pointer] = "Eigen::SimplicialLDLT";
 
 	auto state_ptr = from_json::build_state(in_args, 16);
-	State &state = *state_ptr;
+	legacy::State &state = *state_ptr;
 	std::vector<std::shared_ptr<DiffCache>> diff_caches = {std::make_shared<DiffCache>()};
 
 	json opt_args;
 	load_json(path + "homogenize-stress-periodic-opt.json", opt_args);
 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
-	std::vector<std::shared_ptr<State>> states({state_ptr});
+	std::vector<std::shared_ptr<legacy::State>> states({state_ptr});
 
 	VariableToSimulationGroup var2sim = from_json::build_variable_to_simulation_group(
 		opt_args["variable_to_simulation"], states, diff_caches, {});
@@ -189,14 +189,14 @@ TEST_CASE("homogenize-stress", "[test_adjoint]")
 	in_args["/solver/linear/solver"_json_pointer] = "Eigen::SimplicialLDLT";
 
 	auto state_ptr = from_json::build_state(in_args, 16);
-	State &state = *state_ptr;
+	legacy::State &state = *state_ptr;
 	std::vector<std::shared_ptr<DiffCache>> diff_caches = {std::make_shared<DiffCache>()};
 
 	json opt_args;
 	load_json(path + "homogenize-stress-opt.json", opt_args);
 	opt_args = AdjointOptUtils::apply_opt_json_spec(opt_args, false);
 
-	std::vector<std::shared_ptr<State>> states({state_ptr});
+	std::vector<std::shared_ptr<legacy::State>> states({state_ptr});
 
 	VariableToSimulationGroup var2sim = from_json::build_variable_to_simulation_group(
 		opt_args["variable_to_simulation"], states, diff_caches, {});

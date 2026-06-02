@@ -2,7 +2,6 @@
 
 #include "Evaluator.hpp"
 
-#include <polyfem/State.hpp>
 #include <polyfem/varforms/VarForm.hpp>
 
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
@@ -64,43 +63,6 @@ namespace polyfem::io
 	bool OutputFieldOptions::export_field(const std::string &field) const
 	{
 		return fields.empty() || std::find(fields.begin(), fields.end(), field) != fields.end();
-	}
-
-	OutputState OutputState::from_state(const State &state)
-	{
-		return {
-			state.args,
-			state.mesh.get(),
-			state.problem.get(),
-			state.assembler.get(),
-			state.mass_matrix_assembler.get(),
-			state.mixed_assembler.get(),
-			state.solve_data,
-			state.bases,
-			state.pressure_bases,
-			state.geom_bases_,
-			state.n_bases,
-			state.n_pressure_bases,
-			state.disc_orders,
-			state.disc_ordersq,
-			state.in_node_to_node,
-			state.rhs,
-			state.polys,
-			state.polys_3d,
-			state.obstacle,
-			state.collision_mesh,
-			state.total_local_boundary,
-			state.dirichlet_nodes,
-			state.dirichlet_nodes_position,
-			state.iso_parametric(),
-			state.assembler ? state.assembler->name() : std::string(),
-			"solution",
-			state.root_path(),
-			state.output_dir,
-			state.n_boundary_samples(),
-			state.stats,
-			state.timings,
-			state.starting_min_edge_length};
 	}
 
 	using CellType = paraviewo::CellType;
@@ -1293,27 +1255,6 @@ namespace polyfem::io
 	}
 
 	void OutGeometryData::export_data(
-		const State &state,
-		const Eigen::MatrixXd &sol,
-		const Eigen::MatrixXd &pressure,
-		const bool is_time_dependent,
-		const double tend_in,
-		const double dt,
-		const ExportOptions &opts,
-		const std::string &vis_mesh_path,
-		const std::string &nodes_path,
-		const std::string &solution_path,
-		const std::string &stress_path,
-		const std::string &mises_path,
-		const bool is_contact_enabled) const
-	{
-		export_data(
-			OutputState::from_state(state), sol, pressure, is_time_dependent, tend_in, dt,
-			opts, vis_mesh_path, nodes_path, solution_path, stress_path, mises_path,
-			is_contact_enabled);
-	}
-
-	void OutGeometryData::export_data(
 		const OutputState &state,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &pressure,
@@ -1500,19 +1441,6 @@ namespace polyfem::io
 
 	void OutGeometryData::save_vtu(
 		const std::string &path,
-		const State &state,
-		const Eigen::MatrixXd &sol,
-		const Eigen::MatrixXd &pressure,
-		const double t,
-		const double dt,
-		const ExportOptions &opts,
-		const bool is_contact_enabled) const
-	{
-		save_vtu(path, OutputState::from_state(state), sol, pressure, t, dt, opts, is_contact_enabled);
-	}
-
-	void OutGeometryData::save_vtu(
-		const std::string &path,
 		const OutputState &state,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &pressure,
@@ -1593,18 +1521,6 @@ namespace polyfem::io
 		if (opts.points)
 			vtm.add_dataset("Points", "data", path_stem + "_points" + opts.file_extension());
 		vtm.save(base_path + ".vtm");
-	}
-
-	void OutGeometryData::save_volume(
-		const std::string &path,
-		const State &state,
-		const Eigen::MatrixXd &sol,
-		const Eigen::MatrixXd &pressure,
-		const double t,
-		const double dt,
-		const ExportOptions &opts) const
-	{
-		save_volume(path, OutputState::from_state(state), sol, pressure, t, dt, opts);
 	}
 
 	void OutGeometryData::save_volume(
@@ -2260,19 +2176,6 @@ namespace polyfem::io
 
 	void OutGeometryData::save_surface(
 		const std::string &export_surface,
-		const State &state,
-		const Eigen::MatrixXd &sol,
-		const Eigen::MatrixXd &pressure,
-		const double t,
-		const double dt_in,
-		const ExportOptions &opts,
-		const bool is_contact_enabled) const
-	{
-		save_surface(export_surface, OutputState::from_state(state), sol, pressure, t, dt_in, opts, is_contact_enabled);
-	}
-
-	void OutGeometryData::save_surface(
-		const std::string &export_surface,
 		const OutputState &state,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &pressure,
@@ -2494,19 +2397,6 @@ namespace polyfem::io
 
 	void OutGeometryData::save_contact_surface(
 		const std::string &export_surface,
-		const State &state,
-		const Eigen::MatrixXd &sol,
-		const Eigen::MatrixXd &pressure,
-		const double t,
-		const double dt_in,
-		const ExportOptions &opts,
-		const bool is_contact_enabled) const
-	{
-		save_contact_surface(export_surface, OutputState::from_state(state), sol, pressure, t, dt_in, opts, is_contact_enabled);
-	}
-
-	void OutGeometryData::save_contact_surface(
-		const std::string &export_surface,
 		const OutputState &state,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &pressure,
@@ -2703,16 +2593,6 @@ namespace polyfem::io
 			collision_mesh.rest_positions(),
 			problem_dim == 3 ? collision_mesh.faces() : collision_mesh.edges(),
 			problem_dim == 3 ? CellType::Triangle : CellType::Line);
-	}
-
-	void OutGeometryData::save_wire(
-		const std::string &name,
-		const State &state,
-		const Eigen::MatrixXd &sol,
-		const double t,
-		const ExportOptions &opts) const
-	{
-		save_wire(name, OutputState::from_state(state), sol, t, opts);
 	}
 
 	void OutGeometryData::save_wire(
@@ -2966,15 +2846,6 @@ namespace polyfem::io
 			add_primary_field(writer, state, fun);
 
 		writer.write_mesh(name, points, edges, CellType::Line);
-	}
-
-	void OutGeometryData::save_points(
-		const std::string &path,
-		const State &state,
-		const Eigen::MatrixXd &sol,
-		const ExportOptions &opts) const
-	{
-		save_points(path, OutputState::from_state(state), sol, opts);
 	}
 
 	void OutGeometryData::save_points(
@@ -3696,12 +3567,6 @@ namespace polyfem::io
 		}
 		file << solve_data.nl_problem->value(sol) / s << "\n";
 		file.flush();
-	}
-
-	RuntimeStatsCSVWriter::RuntimeStatsCSVWriter(const std::string &path, const State &state, const double t0, const double dt)
-		: file(path), n_bases(state.n_bases), n_elements(state.mesh->n_elements()), t0(t0), dt(dt)
-	{
-		file << "step,time,forward,remeshing,global_relaxation,peak_mem,#V,#T" << std::endl;
 	}
 
 	RuntimeStatsCSVWriter::RuntimeStatsCSVWriter(const std::string &path, const OutputState &state, const double t0, const double dt)
