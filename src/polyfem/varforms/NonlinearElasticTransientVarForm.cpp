@@ -1053,7 +1053,7 @@ namespace polyfem::varform
 		assembler.set_materials(body_ids, args["materials"], units, root_path);
 	}
 
-	std::vector<int> NonlinearElasticTransientVarForm::primitive_to_node() const
+	std::vector<int> NonlinearElasticVarForm::primitive_to_node() const
 	{
 		const auto &nodes = iso_parametric ? mesh_nodes : geom_mesh_nodes;
 		if (!nodes)
@@ -1064,7 +1064,7 @@ namespace polyfem::varform
 		return indices;
 	}
 
-	std::vector<int> NonlinearElasticTransientVarForm::node_to_primitive() const
+	std::vector<int> NonlinearElasticVarForm::node_to_primitive() const
 	{
 		auto p2n = primitive_to_node();
 		std::vector<int> indices;
@@ -1074,7 +1074,7 @@ namespace polyfem::varform
 		return indices;
 	}
 
-	std::shared_ptr<assembler::PressureAssembler> NonlinearElasticTransientVarForm::build_pressure_assembler() const
+	std::shared_ptr<assembler::PressureAssembler> NonlinearElasticVarForm::build_pressure_assembler() const
 	{
 		const int size = problem->is_scalar() ? 1 : mesh_->dimension();
 
@@ -1170,6 +1170,42 @@ namespace polyfem::varform
 		logger().info("sparsity: {}/{}", stats.nn_zero, stats.mat_size);
 	}
 
+	void NonlinearElasticStaticVarForm::solve(Eigen::MatrixXd &sol)
+	{
+		stats.spectrum.setZero();
+
+		igl::Timer timer;
+		timer.start();
+		logger().info("Solving {}", assembler->name());
+
+		{
+			POLYFEM_SCOPED_TIMER("Setup RHS");
+
+			// FIXME
+			//  read_initial_x_from_file(
+			//  resolve_input_path(args["input"]["data"]["state"]), "u",
+			//  args["input"]["data"]["reorder"], in_node_to_node,
+			//  mesh->dimension(), solution);
+
+			if (sol.size() <= 0)
+				initial_solution(sol);
+
+			if (sol.cols() > 1) // ignore previous solutions
+				sol.conservativeResize(Eigen::NoChange, 1);
+		}
+		init_solve(sol, 1.0);
+
+		solve_tensor_nonlinear(0, sol, true);
+
+		const std::string state_path = resolve_output_path(args["output"]["data"]["state"]);
+		if (!state_path.empty())
+			io::write_matrix(state_path, "u", sol);
+
+		timer.stop();
+		timings.solving_time = timer.getElapsedTime();
+		logger().info(" took {}s", timings.solving_time);
+	}
+
 	void NonlinearElasticTransientVarForm::solve(Eigen::MatrixXd &sol)
 	{
 		const bool save_stats = args["output"]["stats"];
@@ -1195,21 +1231,7 @@ namespace polyfem::varform
 			if (sol.cols() > 1) // ignore previous solutions
 				sol.conservativeResize(Eigen::NoChange, 1);
 		}
-		init_solve(sol, problem->is_time_dependent() ? t0 + dt : 1.0);
-
-		if (!problem->is_time_dependent())
-		{
-			solve_tensor_nonlinear(0, sol, true);
-
-			const std::string state_path = resolve_output_path(args["output"]["data"]["state"]);
-			if (!state_path.empty())
-				io::write_matrix(state_path, "u", sol);
-
-			timer.stop();
-			timings.solving_time = timer.getElapsedTime();
-			logger().info(" took {}s", timings.solving_time);
-			return;
-		}
+		init_solve(sol, t0 + dt);
 
 		// Write the total energy to a CSV file
 		int save_i = 0;
@@ -1269,7 +1291,7 @@ namespace polyfem::varform
 		logger().info(" took {}s", timings.solving_time);
 	}
 
-	void NonlinearElasticTransientVarForm::init_forms(const json &args, const int dim, Eigen::MatrixXd &sol, const double t)
+	void NonlinearElasticVarForm::init_forms(const json &args, const int dim, Eigen::MatrixXd &sol, const double t)
 	{
 		damping_assembler = std::make_shared<assembler::ViscousDamping>();
 		set_materials(*damping_assembler);
@@ -1346,7 +1368,7 @@ namespace polyfem::varform
 			solve_data.contact_form->save_ccd_debug_meshes = args["output"]["advanced"]["save_ccd_debug_meshes"];
 	}
 
-	void NonlinearElasticTransientVarForm::init_solve(Eigen::MatrixXd &sol, const double t)
+	void NonlinearElasticVarForm::init_solve(Eigen::MatrixXd &sol, const double t)
 	{
 		assert(sol.cols() == 1);
 		assert(!problem->is_scalar()); // tensor
@@ -1524,7 +1546,7 @@ namespace polyfem::varform
 			solve_data.rhs_assembler->initial_acceleration(acceleration);
 	}
 
-	void NonlinearElasticTransientVarForm::solve_tensor_nonlinear(int step, Eigen::MatrixXd &sol, const bool init_lagging)
+	void NonlinearElasticVarForm::solve_tensor_nonlinear(int step, Eigen::MatrixXd &sol, const bool init_lagging)
 	{
 		assert(solve_data.nl_problem != nullptr);
 		solver::NLProblem &nl_problem = *(solve_data.nl_problem);

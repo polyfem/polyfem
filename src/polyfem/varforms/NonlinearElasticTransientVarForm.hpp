@@ -15,14 +15,9 @@
 
 namespace polyfem::varform
 {
-	class NonlinearElasticTransientVarForm : public ElasticVarForm
+	class NonlinearElasticVarForm : public ElasticVarForm
 	{
-	public:
-		void solve(Eigen::MatrixXd &sol) override;
-
-		std::string name() const override { return "NonlinearElasticTransient"; }
-
-	private:
+	protected:
 		void init_solve(Eigen::MatrixXd &sol, const double t);
 		void init_forms(const json &args, const int dim, Eigen::MatrixXd &sol, const double t);
 		void solve_tensor_nonlinear(int step, Eigen::MatrixXd &sol, const bool init_lagging = true);
@@ -32,9 +27,19 @@ namespace polyfem::varform
 		std::vector<int> node_to_primitive() const;
 	};
 
-	class NonlinearElasticStaticVarForm : public NonlinearElasticTransientVarForm
+	class NonlinearElasticTransientVarForm : public NonlinearElasticVarForm
 	{
 	public:
+		void solve(Eigen::MatrixXd &sol) override;
+
+		std::string name() const override { return "NonlinearElasticTransient"; }
+	};
+
+	class NonlinearElasticStaticVarForm : public NonlinearElasticVarForm
+	{
+	public:
+		void solve(Eigen::MatrixXd &sol) override;
+
 		std::string name() const override { return "NonlinearElasticStatic"; }
 	};
 } // namespace polyfem::varform
