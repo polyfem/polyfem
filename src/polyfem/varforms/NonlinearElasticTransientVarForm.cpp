@@ -1233,6 +1233,8 @@ namespace polyfem::varform
 		}
 		init_solve(sol, t0 + dt);
 
+		const int t_offset = args["output"]["data"]["file_index_offset"].get<int>();
+
 		// Write the total energy to a CSV file
 		int save_i = 0;
 
@@ -1249,7 +1251,7 @@ namespace polyfem::varform
 		// Save the initial solution
 		if (energy_csv)
 			energy_csv->write(save_i, sol);
-		output_writer.save_timestep(t0, save_i, t0, dt, sol);
+		output_writer.save_timestep(t0, t_offset, t0, dt, sol);
 
 		save_i++;
 
@@ -1265,7 +1267,7 @@ namespace polyfem::varform
 			// Always save the solution for consistency
 			if (energy_csv)
 				energy_csv->write(save_i, sol);
-			output_writer.save_timestep(t0 + dt * t, t, t0, dt, sol);
+			output_writer.save_timestep(t0 + dt * t, t + t_offset, t0, dt, sol);
 			save_i++;
 
 			{
@@ -1281,7 +1283,7 @@ namespace polyfem::varform
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 
-			output_writer.save_step_state(t0, dt, t, sol);
+			output_writer.save_step_state(t0, dt, t + t_offset, sol);
 			if (stats_csv)
 				stats_csv->write(t, forward_solve_time, remeshing_time, global_relaxation_time, sol);
 		}
