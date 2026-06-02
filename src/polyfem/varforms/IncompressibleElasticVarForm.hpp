@@ -37,7 +37,7 @@ namespace polyfem::varform
 		int stacked_ndof() const;
 		void prepare_initial_solution(Eigen::MatrixXd &sol) const;
 		void split_solution(const Eigen::MatrixXd &stacked, Eigen::MatrixXd &primary, Eigen::MatrixXd &pressure) const;
-		void build_stiffness_mat(StiffnessMatrix &stiffness);
+		void build_stiffness_mat(StiffnessMatrix &stiffness) override;
 		void solve_linear_system(
 			const std::unique_ptr<polysolve::linear::Solver> &solver,
 			StiffnessMatrix &A,

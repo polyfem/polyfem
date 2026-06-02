@@ -2,7 +2,8 @@
 #include <polyfem/mesh/collision_proxy/UpsampleMesh.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
 
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/State.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 
 #include <catch2/catch_all.hpp>
@@ -16,9 +17,9 @@ namespace
 	// windows in release generates this error when building p4 bases
 	// Unhandled exception at 0x00007FF62FDD8DD7 in unit_tests.exe: 0xC00000FD: Stack overflow (parameters: 0x0000000000000001, 0x00000087AAE09000).
 #if defined(WIN32) && defined(NDEBUG)
-	std::shared_ptr<polyfem::legacy::State> get_state(const std::string mesh_path = "", const int discr_order = 3)
+	std::shared_ptr<polyfem::State> get_state(const std::string mesh_path = "", const int discr_order = 3)
 #else
-	std::shared_ptr<polyfem::legacy::State> get_state(const std::string mesh_path = "", const int discr_order = 4)
+	std::shared_ptr<polyfem::State> get_state(const std::string mesh_path = "", const int discr_order = 4)
 #endif
 	{
 		polyfem::json in_args;
@@ -48,7 +49,7 @@ namespace
 		in_args["/time/tend"_json_pointer] = 1;
 		in_args["/output/log/level"_json_pointer] = "warning";
 
-		std::shared_ptr<polyfem::legacy::State> state = std::make_shared<polyfem::legacy::State>();
+		std::shared_ptr<polyfem::State> state = std::make_shared<polyfem::State>();
 		state->init(in_args, true);
 		state->set_max_threads(1);
 
@@ -59,6 +60,29 @@ namespace
 		// state->assemble_mass_mat();
 
 		return state;
+	}
+
+	void build_mesh_matrices(const polyfem::io::OutputState &out, Eigen::MatrixXd &V, Eigen::MatrixXi &F)
+	{
+		REQUIRE(out.mesh != nullptr);
+		const size_t n_vertices = out.n_bases - out.obstacle.n_vertices();
+		const int dim = out.mesh->dimension();
+
+		V.resize(n_vertices, dim);
+		F.resize(out.bases.size(), dim + 1);
+
+		for (int i = 0; i < out.bases.size(); i++)
+		{
+			const polyfem::basis::ElementBases &element = out.bases[i];
+			for (int j = 0; j < element.bases.size(); j++)
+			{
+				const polyfem::basis::Basis &basis = element.bases[j];
+				REQUIRE(basis.global().size() == 1);
+				V.row(basis.global()[0].index) = basis.global()[0].node;
+				if (j < F.cols())
+					F(i, j) = basis.global()[0].index;
+			}
+		}
 	}
 } // namespace
 
@@ -103,12 +127,13 @@ TEST_CASE("build collision proxy", "[build_collision_proxy]")
 #endif
 
 	const auto state = get_state();
+	const polyfem::io::OutputState out = state->variational_formulation->output_state();
 
 	Eigen::MatrixXd proxy_vertices;
 	Eigen::MatrixXi proxy_faces;
 	std::vector<Eigen::Triplet<double>> displacement_map_entries;
 	build_collision_proxy(
-		state->bases, state->geom_bases(), state->total_local_boundary, state->n_bases, state->mesh->dimension(),
+		out.bases, out.geom_bases(), out.total_local_boundary, out.n_bases, out.mesh->dimension(),
 		/*max_edge_length=*/0.1, proxy_vertices, proxy_faces, displacement_map_entries, tessellation);
 
 #if defined(WIN32) && defined(NDEBUG)
@@ -130,7 +155,7 @@ TEST_CASE("build collision proxy", "[build_collision_proxy]")
 #endif
 	Eigen::MatrixXd V;
 	Eigen::MatrixXi F, T;
-	state->build_mesh_matrices(V, T);
+	build_mesh_matrices(out, V, T);
 	igl::boundary_facets(T, F);
 
 	Eigen::MatrixXd squished_V = V;
@@ -172,6 +197,7 @@ TEST_CASE("build collision proxy displacement map", "[build_collision_proxy]")
 	// }
 
 	const auto state = get_state(fe_mesh_path, discr_order);
+	const polyfem::io::OutputState out = state->variational_formulation->output_state();
 
 	Eigen::MatrixXd vertices;
 	Eigen::VectorXi _;
@@ -180,8 +206,8 @@ TEST_CASE("build collision proxy displacement map", "[build_collision_proxy]")
 
 	std::vector<Eigen::Triplet<double>> displacement_map_entries;
 	polyfem::mesh::build_collision_proxy_displacement_map(
-		state->bases, state->geom_bases(), state->total_local_boundary,
-		state->n_bases, state->mesh->dimension(), vertices,
+		out.bases, out.geom_bases(), out.total_local_boundary,
+		out.n_bases, out.mesh->dimension(), vertices,
 		displacement_map_entries);
 
 	CHECK(displacement_map_entries.size() == vertices.rows() * n_nodes_per_element);

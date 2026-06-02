@@ -19,7 +19,7 @@ namespace polyfem::varform
 
 	private:
 		void init_linear_solve(Eigen::MatrixXd &sol, const double t);
-		void build_stiffness_mat(StiffnessMatrix &stiffness);
+		void build_stiffness_mat(StiffnessMatrix &stiffness) override;
 		void solve_linear_system(
 			const std::unique_ptr<polysolve::linear::Solver> &solver,
 			StiffnessMatrix &A,

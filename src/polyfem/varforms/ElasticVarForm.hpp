@@ -27,6 +27,7 @@ namespace polyfem::varform
 		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
 		void assemble_rhs(const mesh::Mesh &mesh, const json &args) override;
 		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
+		const StiffnessMatrix *mass_matrix() const override { return &mass; }
 
 		io::OutputState output_state() const override;
 		std::vector<io::OutputField> output_fields(

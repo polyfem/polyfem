@@ -26,7 +26,7 @@ namespace polyfem::varform
 			const io::OutputFieldOptions &options) const override;
 
 	private:
-		void build_stiffness_mat(StiffnessMatrix &stiffness);
+		void build_stiffness_mat(StiffnessMatrix &stiffness) override;
 		void solve_linear_system(
 			const std::unique_ptr<polysolve::linear::Solver> &solver,
 			StiffnessMatrix &A,

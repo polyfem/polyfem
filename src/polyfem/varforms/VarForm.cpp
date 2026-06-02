@@ -95,6 +95,12 @@ namespace polyfem::varform
 		return stats;
 	}
 
+	void VarForm::build_stiffness_mat(StiffnessMatrix &stiffness)
+	{
+		logger().error("Stiffness assembly is not exposed by {}.", name());
+		throw std::runtime_error("Stiffness assembly is not exposed by this variational formulation.");
+	}
+
 	std::string VarForm::resolve_input_path(const std::string &path, const bool only_if_exists) const
 	{
 		return utils::resolve_path(path, root_path, only_if_exists);

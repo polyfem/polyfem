@@ -1,7 +1,6 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-#include <polyfem/Units.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/utils/Types.hpp>
 
@@ -39,17 +38,11 @@ namespace polyfem
 		/// @param[in] strict_validation strict validation of input
 		void init(const json &args, const bool strict_validation);
 
-		/// initialize time settings if args contains "time"
-		void init_time();
-
 		/// @param[in] max_threads max number of threads
 		void set_max_threads(const int max_threads = std::numeric_limits<int>::max());
 
 		/// main input arguments containing all defaults
 		json args;
-
-		/// unit system
-		Units units;
 
 		/// current mesh, it can be a Mesh2D or Mesh3D
 		std::unique_ptr<mesh::Mesh> mesh;
@@ -106,9 +99,6 @@ namespace polyfem
 		/// assemble mass, step 4 of solve
 		void assemble_mass_mat();
 
-		/// solves the assembled variational form
-		void solve_problem(Eigen::MatrixXd &sol);
-
 		/// solves the problem, call other methods
 		void solve(Eigen::MatrixXd &sol);
 
@@ -142,9 +132,6 @@ namespace polyfem
 			mesh = mesh::Mesh::create(V, F, non_conforming);
 			load_mesh(non_conforming);
 		}
-
-		/// Resets the mesh-dependent state.
-		void reset_mesh();
 	};
 
 } // namespace polyfem

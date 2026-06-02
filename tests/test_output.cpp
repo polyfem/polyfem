@@ -66,14 +66,9 @@ TEST_CASE("full sim", "[.][full_sim]")
 		FAIL();
 	}
 
-	state.build_basis();
-
-	state.assemble_rhs();
-	state.assemble_mass_mat();
-
 	Eigen::MatrixXd sol;
 
-	state.solve_problem(sol);
+	state.solve(sol);
 	state.variational_formulation->compute_errors(sol);
 
 	CHECK(std::filesystem::exists(outdir));

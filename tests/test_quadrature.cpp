@@ -1,10 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/legacy/State.hpp>
+#include <polyfem/State.hpp>
 #include <polyfem/quadrature/LineQuadrature.hpp>
 #include <polyfem/quadrature/TriQuadrature.hpp>
 #include <polyfem/quadrature/TetQuadrature.hpp>
 #include <polyfem/quadrature/PrismQuadrature.hpp>
 #include <polyfem/quadrature/PyramidQuadrature.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 #include <iostream>
 #include <cmath>
 #include <Eigen/Dense>
@@ -15,7 +16,6 @@
 
 using namespace polyfem;
 using namespace polyfem::quadrature;
-using polyfem::legacy::State;
 
 const double pi = 3.14159265358979323846264338327950288419717;
 
@@ -127,8 +127,8 @@ namespace
 			auto state = get_state(mesh, n_refs, basis_order, -1, -1, spline, serendipity);
 			auto expected = get_state(mesh, n_refs, basis_order, expected_quad, expected_quad, spline, serendipity);
 			StiffnessMatrix exp_st, st;
-			state->build_stiffness_mat(st);
-			expected->build_stiffness_mat(exp_st);
+			state->variational_formulation->build_stiffness_mat(st);
+			expected->variational_formulation->build_stiffness_mat(exp_st);
 
 			StiffnessMatrix tmp = st - exp_st;
 			const auto val = Catch::Approx(0).margin(margin);
@@ -145,7 +145,11 @@ namespace
 				}
 			}
 
-			tmp = state->mass - expected->mass;
+			const StiffnessMatrix *mass = state->variational_formulation->mass_matrix();
+			const StiffnessMatrix *expected_mass = expected->variational_formulation->mass_matrix();
+			REQUIRE(mass != nullptr);
+			REQUIRE(expected_mass != nullptr);
+			tmp = *mass - *expected_mass;
 
 			for (int k = 0; k < tmp.outerSize(); ++k)
 			{

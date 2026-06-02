@@ -88,15 +88,9 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 	}
 	ncmesh.prepare_mesh();
 
-	// state.compute_mesh_stats();
-	state.build_basis();
-
-	state.assemble_mass_mat();
-	state.assemble_rhs();
-
 	Eigen::MatrixXd sol;
 
-	state.solve_problem(sol);
+	state.solve(sol);
 	const io::OutStatsData stats = state.variational_formulation->compute_errors(sol);
 
 	// state.save_vtu("debug.vtu", 1.);
@@ -171,15 +165,9 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 	}
 	ncmesh.prepare_mesh();
 
-	// state.compute_mesh_stats();
-	state.build_basis();
-
-	state.assemble_mass_mat();
-	state.assemble_rhs();
-
 	Eigen::MatrixXd sol;
 
-	state.solve_problem(sol);
+	state.solve(sol);
 	const io::OutStatsData stats = state.variational_formulation->compute_errors(sol);
 
 	// state.save_vtu("debug.vtu", 1.);

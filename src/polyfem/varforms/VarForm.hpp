@@ -35,6 +35,8 @@ namespace polyfem
 			virtual void assemble_rhs(const mesh::Mesh &mesh, const json &args) = 0;
 			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) = 0;
 			virtual void solve(Eigen::MatrixXd &sol) = 0;
+			virtual void build_stiffness_mat(StiffnessMatrix &stiffness);
+			virtual const StiffnessMatrix *mass_matrix() const { return nullptr; }
 
 			virtual std::string name() const = 0;
 			io::OutStatsData compute_errors(const Eigen::MatrixXd &solution);
