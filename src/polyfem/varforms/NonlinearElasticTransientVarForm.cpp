@@ -1190,7 +1190,7 @@ namespace polyfem::varform
 			//  mesh->dimension(), solution);
 
 			if (sol.size() <= 0)
-				solve_data.rhs_assembler->initial_solution(sol);
+				initial_solution(sol);
 
 			if (sol.cols() > 1) // ignore previous solutions
 				sol.conservativeResize(Eigen::NoChange, 1);
