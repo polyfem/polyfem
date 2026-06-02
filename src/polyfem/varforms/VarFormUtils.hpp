@@ -4,7 +4,7 @@
 
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/io/Evaluator.hpp>
-#include <polyfem/io/OutData.hpp>
+#include <polyfem/io/OutputData.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
 
 #include <unsupported/Eigen/SparseExtra>

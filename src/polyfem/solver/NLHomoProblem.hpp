@@ -4,10 +4,13 @@
 
 namespace polyfem
 {
-	class State;
 	namespace assembler
 	{
 		class MacroStrainValue;
+	}
+	namespace legacy
+	{
+		class State;
 	}
 } // namespace polyfem
 
@@ -22,7 +25,7 @@ namespace polyfem::solver
 
 		NLHomoProblem(const int full_size,
 					  const assembler::MacroStrainValue &macro_strain_constraint,
-					  const State &state,
+					  const legacy::State &state,
 					  const double t,
 					  const std::vector<std::shared_ptr<Form>> &forms,
 					  const std::vector<std::shared_ptr<AugmentedLagrangianForm>> &penalty_forms,
@@ -83,7 +86,7 @@ namespace polyfem::solver
 		Eigen::MatrixXd macro_full_to_reduced_grad(const Eigen::MatrixXd &full) const;
 		TVector macro_reduced_to_full(const TVector &reduced, bool homogeneous = false) const;
 
-		const State &state_;
+		const legacy::State &state_;
 		const bool only_symmetric;
 		const assembler::MacroStrainValue &macro_strain_constraint_;
 

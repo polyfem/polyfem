@@ -1,4 +1,4 @@
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
 #include <polyfem/assembler/NeoHookeanElasticityAutodiff.hpp>
@@ -11,6 +11,7 @@
 using namespace polyfem;
 using namespace polyfem::assembler;
 using namespace polyfem::basis;
+using polyfem::legacy::State;
 using namespace polyfem::mesh;
 using namespace polyfem::utils;
 

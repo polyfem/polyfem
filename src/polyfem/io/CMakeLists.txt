@@ -13,6 +13,7 @@ set(SOURCES
 	OBJWriter.hpp
 	OutData.cpp
 	OutData.hpp
+	OutputData.hpp
 	OutStatsData.hpp
 	VarFormOutputWriter.cpp
 	VarFormOutputWriter.hpp

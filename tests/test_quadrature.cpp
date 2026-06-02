@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/quadrature/LineQuadrature.hpp>
 #include <polyfem/quadrature/TriQuadrature.hpp>
 #include <polyfem/quadrature/TetQuadrature.hpp>
@@ -15,6 +15,7 @@
 
 using namespace polyfem;
 using namespace polyfem::quadrature;
+using polyfem::legacy::State;
 
 const double pi = 3.14159265358979323846264338327950288419717;
 

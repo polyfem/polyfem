@@ -23,7 +23,6 @@ namespace polyfem::varform
 		void assemble_rhs(const mesh::Mesh &mesh, const json &args) override;
 		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
 		void solve(Eigen::MatrixXd &sol) override;
-		void sync_state(State &state) const override;
 
 		io::OutputState output_state() const override;
 		std::vector<io::OutputField> output_fields(

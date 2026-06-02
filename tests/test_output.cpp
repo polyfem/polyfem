@@ -5,6 +5,7 @@
 #include <polyfem/State.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 
 #include <filesystem>
 #include <iostream>
@@ -71,11 +72,9 @@ TEST_CASE("full sim", "[.][full_sim]")
 	state.assemble_mass_mat();
 
 	Eigen::MatrixXd sol;
-	Eigen::MatrixXd pressure;
 
-	state.solve_problem(sol, pressure);
-
-	state.compute_errors(sol);
+	state.solve_problem(sol);
+	state.variational_formulation->compute_errors(sol);
 
 	CHECK(std::filesystem::exists(outdir));
 	CHECK(std::filesystem::exists(outdir / "sim.pvd"));

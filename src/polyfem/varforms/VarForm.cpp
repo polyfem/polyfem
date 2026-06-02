@@ -80,6 +80,21 @@ namespace polyfem::varform
 		}
 	}
 
+	io::OutStatsData VarForm::compute_errors(const Eigen::MatrixXd &solution)
+	{
+		if (!args["output"]["advanced"]["compute_error"])
+			return stats;
+
+		const io::OutputState output = output_state();
+
+		double tend = 0;
+		if (!args["time"].is_null())
+			tend = args["time"]["tend"];
+
+		stats.compute_errors(output.n_bases, output.bases, output.geom_bases(), *output.mesh, *output.problem, tend, solution);
+		return stats;
+	}
+
 	std::string VarForm::resolve_input_path(const std::string &path, const bool only_if_exists) const
 	{
 		return utils::resolve_path(path, root_path, only_if_exists);

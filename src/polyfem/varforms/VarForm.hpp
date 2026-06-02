@@ -7,7 +7,7 @@
 
 #include <polyfem/solver/forms/Form.hpp>
 
-#include <polyfem/io/OutData.hpp>
+#include <polyfem/io/OutputData.hpp>
 #include <polyfem/utils/Types.hpp>
 
 #include <Eigen/Dense>
@@ -35,9 +35,9 @@ namespace polyfem
 			virtual void assemble_rhs(const mesh::Mesh &mesh, const json &args) = 0;
 			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) = 0;
 			virtual void solve(Eigen::MatrixXd &sol) = 0;
-			virtual void sync_state(State &state) const = 0;
 
 			virtual std::string name() const = 0;
+			io::OutStatsData compute_errors(const Eigen::MatrixXd &solution);
 			virtual io::OutputState output_state() const = 0;
 			virtual std::vector<io::OutputField> output_fields(
 				const io::OutputSample &sample,

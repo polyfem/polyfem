@@ -1,18 +1,11 @@
 #include <polyfem/State.hpp>
 
-#include <polyfem/problem/ProblemFactory.hpp>
-#include <polyfem/assembler/GenericProblem.hpp>
-#include <polyfem/assembler/Mass.hpp>
-
-#include <polyfem/autogen/auto_p_bases.hpp>
-#include <polyfem/autogen/auto_q_bases.hpp>
-
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/GeogramUtils.hpp>
-#include <polyfem/problem/KernelProblem.hpp>
 #include <polyfem/utils/par_for.hpp>
 
 #include <polyfem/utils/JSONUtils.hpp>
+#include <polyfem/utils/StringUtils.hpp>
 
 #include <jse/jse.h>
 
@@ -29,8 +22,12 @@
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 
 #include <polyfem/varforms/VarForm.hpp>
+#include <polyfem/varforms/VarFormDispatch.hpp>
 #include <polyfem/varforms/VarFormFactory.hpp>
 
+#include <polysolve/linear/Solver.hpp>
+
+#include <filesystem>
 #include <sstream>
 
 namespace spdlog::level
@@ -55,16 +52,40 @@ namespace spdlog::level
 
 namespace polyfem
 {
-	using namespace problem;
 	using namespace utils;
+
+	namespace
+	{
+		std::string root_path(const json &args)
+		{
+			if (utils::is_param_valid(args, "root_path"))
+				return args["root_path"].get<std::string>();
+			return "";
+		}
+
+		std::string resolve_input_path(const json &args, const std::string &path, const bool only_if_exists = false)
+		{
+			return utils::resolve_path(path, root_path(args), only_if_exists);
+		}
+
+		std::string resolve_output_path(const std::string &output_dir, const std::string &path)
+		{
+			if (output_dir.empty() || path.empty() || std::filesystem::path(path).is_absolute())
+				return path;
+			return std::filesystem::weakly_canonical(std::filesystem::path(output_dir) / path).string();
+		}
+
+		bool contact_enabled(const json &args)
+		{
+			return args["contact"]["enabled"];
+		}
+	} // namespace
 
 	State::State()
 	{
 		using namespace polysolve;
 
 		GeogramUtils::instance().initialize();
-
-		problem = ProblemFactory::factory().get_problem("Linear");
 	}
 
 	void State::init_logger(
@@ -143,8 +164,6 @@ namespace polyfem
 	{
 		json args_in = p_args_in; // mutable copy
 
-		has_constraints_ = p_args_in.contains("constraints");
-
 		apply_common_params(args_in);
 
 		// CHECK validity json
@@ -214,26 +233,24 @@ namespace polyfem
 		}
 
 		// Save output directory and resolve output paths dynamically
-		const std::string output_dir = resolve_input_path(this->args["output"]["directory"]);
+		const std::string output_dir = resolve_input_path(this->args, this->args["output"]["directory"].get<std::string>());
 		if (!output_dir.empty())
 		{
 			std::filesystem::create_directories(output_dir);
 		}
-		this->output_dir = output_dir;
-
 		std::string out_path_log = this->args["output"]["log"]["path"];
 		if (!out_path_log.empty())
 		{
-			out_path_log = resolve_output_path(out_path_log);
+			out_path_log = resolve_output_path(output_dir, out_path_log);
 		}
 
 		for (auto &path : this->args["constraints"]["hard"])
 		{
-			path = resolve_input_path(path);
+			path = resolve_input_path(this->args, path.get<std::string>());
 		}
 		for (auto &path : this->args["constraints"]["soft"])
 		{
-			path["data"] = resolve_input_path(path["data"]);
+			path["data"] = resolve_input_path(this->args, path["data"].get<std::string>());
 		}
 
 		init_logger(
@@ -247,11 +264,9 @@ namespace polyfem
 		const unsigned int thread_in = this->args["solver"]["max_threads"];
 		set_max_threads(thread_in);
 
-		has_dhat = args_in["contact"].contains("dhat");
-
 		init_time();
 
-		if (is_contact_enabled())
+		if (contact_enabled(args))
 		{
 			if (args["solver"]["contact"]["friction_iterations"] == 0)
 			{
@@ -274,7 +289,12 @@ namespace polyfem
 			args["contact"]["periodic"] = false;
 		}
 
-		const std::string formulation = this->formulation();
+		const std::string formulation = varform::formulation_from_args(args);
+		if (formulation.empty())
+		{
+			logger().error("specify some 'materials'");
+			throw std::runtime_error("invalid input");
+		}
 
 		variational_formulation = varform::VarFormFactory::create(formulation, args);
 		if (!variational_formulation)
@@ -371,38 +391,6 @@ namespace polyfem
 		units.characteristic_length() *= dt;
 
 		logger().info("t0={}, dt={}, tend={}", t0, dt, tend);
-	}
-
-	void State::set_materials(std::vector<std::shared_ptr<assembler::Assembler>> &assemblers) const
-	{
-		const int size = (assembler->is_tensor() || assembler->is_fluid()) ? mesh->dimension() : 1;
-		for (auto &a : assemblers)
-			a->set_size(size);
-
-		if (!utils::is_param_valid(args, "materials"))
-			return;
-
-		std::vector<int> body_ids(mesh->n_elements());
-		for (int i = 0; i < mesh->n_elements(); ++i)
-			body_ids[i] = mesh->get_body_id(i);
-
-		for (auto &a : assemblers)
-			a->set_materials(body_ids, args["materials"], units, root_path());
-	}
-
-	void State::set_materials(assembler::Assembler &assembler) const
-	{
-		const int size = (this->assembler->is_tensor() || this->assembler->is_fluid()) ? this->mesh->dimension() : 1;
-		assembler.set_size(size);
-
-		if (!utils::is_param_valid(args, "materials"))
-			return;
-
-		std::vector<int> body_ids(mesh->n_elements());
-		for (int i = 0; i < mesh->n_elements(); ++i)
-			body_ids[i] = mesh->get_body_id(i);
-
-		assembler.set_materials(body_ids, args["materials"], units, root_path());
 	}
 
 } // namespace polyfem

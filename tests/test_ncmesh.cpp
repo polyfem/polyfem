@@ -1,5 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 #include <polyfem/State.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
@@ -94,15 +95,14 @@ TEST_CASE("ncmesh2d", "[ncmesh]")
 	state.assemble_rhs();
 
 	Eigen::MatrixXd sol;
-	Eigen::MatrixXd pressure;
 
-	state.solve_problem(sol, pressure);
-	state.compute_errors(sol);
+	state.solve_problem(sol);
+	const io::OutStatsData stats = state.variational_formulation->compute_errors(sol);
 
 	// state.save_vtu("debug.vtu", 1.);
 
-	REQUIRE(fabs(state.stats.h1_semi_err) < 1e-9);
-	REQUIRE(fabs(state.stats.l2_err) < 1e-10);
+	REQUIRE(fabs(stats.h1_semi_err) < 1e-9);
+	REQUIRE(fabs(stats.l2_err) < 1e-10);
 }
 
 TEST_CASE("ncmesh3d", "[ncmesh]")
@@ -178,13 +178,12 @@ TEST_CASE("ncmesh3d", "[ncmesh]")
 	state.assemble_rhs();
 
 	Eigen::MatrixXd sol;
-	Eigen::MatrixXd pressure;
 
-	state.solve_problem(sol, pressure);
-	state.compute_errors(sol);
+	state.solve_problem(sol);
+	const io::OutStatsData stats = state.variational_formulation->compute_errors(sol);
 
 	// state.save_vtu("debug.vtu", 1.);
 
-	REQUIRE(fabs(state.stats.h1_semi_err) < 1e-7);
-	REQUIRE(fabs(state.stats.l2_err) < 1e-8);
+	REQUIRE(fabs(stats.h1_semi_err) < 1e-7);
+	REQUIRE(fabs(stats.l2_err) < 1e-8);
 }

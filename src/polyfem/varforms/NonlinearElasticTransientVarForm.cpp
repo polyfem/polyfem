@@ -1,7 +1,5 @@
 #include "NonlinearElasticTransientVarForm.hpp"
 
-#include <polyfem/State.hpp>
-
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/assembler/MacroStrain.hpp>
 #include <polyfem/assembler/MultiModel.hpp>
@@ -46,6 +44,7 @@
 
 #include <ipc/ipc.hpp>
 
+#include <polysolve/linear/Solver.hpp>
 #include <polysolve/nonlinear/Solver.hpp>
 
 namespace polyfem::varform
@@ -1661,62 +1660,4 @@ namespace polyfem::varform
 			output_writer.save_subsolve(stats.solver_info.size(), step, sol);
 		}
 	}
-
-	void ElasticVarForm::sync_state(State &state) const
-	{
-		state.assembler = assembler;
-		state.mass_matrix_assembler = mass_matrix_assembler;
-		state.pure_mass_matrix_assembler = pure_mass_matrix_assembler;
-		state.mixed_assembler = nullptr;
-		state.pressure_assembler = nullptr;
-		state.elasticity_pressure_assembler = elasticity_pressure_assembler;
-		state.damping_assembler = damping_assembler;
-		state.damping_prev_assembler = damping_prev_assembler;
-		state.problem = problem;
-
-		state.bases = bases;
-		state.pressure_bases.clear();
-		state.geom_bases_ = geom_bases_;
-		state.n_bases = n_bases;
-		state.n_pressure_bases = 0;
-		state.n_geom_bases = n_geom_bases;
-		state.polys = polys;
-		state.polys_3d = polys_3d;
-		state.disc_orders = disc_orders;
-		state.disc_ordersq = disc_ordersq;
-		state.mesh_nodes = mesh_nodes;
-		state.geom_mesh_nodes = geom_mesh_nodes;
-		state.pressure_mesh_nodes = nullptr;
-		state.ass_vals_cache = ass_vals_cache;
-		state.mass_ass_vals_cache = mass_ass_vals_cache;
-		state.pure_mass_ass_vals_cache = pure_mass_ass_vals_cache;
-		state.pressure_ass_vals_cache.init_empty();
-		state.mass = mass;
-		state.pure_mass = pure_mass;
-		state.avg_mass = avg_mass;
-		state.rhs = rhs;
-		state.use_avg_pressure = true;
-
-		state.boundary_nodes = boundary_nodes;
-		state.pressure_boundary_nodes.clear();
-		copy_local_boundaries(total_local_boundary, state.total_local_boundary);
-		copy_local_boundaries(local_boundary, state.local_boundary);
-		copy_local_boundaries(local_neumann_boundary, state.local_neumann_boundary);
-		copy_local_boundaries(local_pressure_boundary, state.local_pressure_boundary);
-		copy_local_boundary_map(local_pressure_cavity, state.local_pressure_cavity);
-		state.poly_edge_to_data = poly_edge_to_data;
-		state.dirichlet_nodes = dirichlet_nodes;
-		state.dirichlet_nodes_position = dirichlet_nodes_position;
-		state.neumann_nodes = neumann_nodes;
-		state.neumann_nodes_position = neumann_nodes_position;
-		state.in_node_to_node = in_node_to_node;
-		state.in_primitive_to_primitive = in_primitive_to_primitive;
-
-		state.obstacle = obstacle;
-		state.collision_mesh = collision_mesh;
-		state.solve_data = solve_data;
-		state.timings = timings;
-		state.stats = stats;
-	}
-
 } // namespace polyfem::varform

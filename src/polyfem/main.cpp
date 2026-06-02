@@ -12,6 +12,8 @@
 
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/io/VarFormOutputWriter.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/io/YamlToJson.hpp>
 #include <polyfem/varforms/VarFormDispatch.hpp>
 
@@ -73,6 +75,35 @@ int optimization_simulation(const CLI::App &command_line,
 							const spdlog::level::level_enum &log_level,
 							json &opt_args);
 #endif
+
+int forward_simulation_with_varform_state(const std::vector<std::string> &names,
+										  const std::vector<Eigen::MatrixXi> &cells,
+										  const std::vector<Eigen::MatrixXd> &vertices,
+										  json &in_args,
+										  const bool is_strict)
+{
+	State state;
+	state.init(in_args, is_strict);
+	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
+
+	if (state.mesh == nullptr)
+		return EXIT_FAILURE;
+
+	Eigen::MatrixXd sol;
+	state.solve(sol);
+
+	state.variational_formulation->compute_errors(sol);
+	const io::OutputState output = state.variational_formulation->output_state();
+
+	io::OutRuntimeData timings = output.timings;
+	logger().info("total time: {}s", timings.total_time());
+
+	io::VarFormOutputWriter writer(*state.variational_formulation);
+	writer.save_json(sol);
+	writer.export_data(sol);
+
+	return EXIT_SUCCESS;
+}
 
 template <typename StateType>
 int forward_simulation_with_state(const std::vector<std::string> &names,
@@ -244,7 +275,7 @@ int forward_simulation(const CLI::App &command_line,
 	in_args.merge_patch(tmp);
 
 	if (varform::uses_varform_state(in_args))
-		return forward_simulation_with_state<State>(names, cells, vertices, in_args, is_strict);
+		return forward_simulation_with_varform_state(names, cells, vertices, in_args, is_strict);
 
 	return forward_simulation_with_state<legacy::State>(names, cells, vertices, in_args, is_strict);
 }

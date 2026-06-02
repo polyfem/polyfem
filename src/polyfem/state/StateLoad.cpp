@@ -1,14 +1,10 @@
 #include <polyfem/State.hpp>
 
-#include <polyfem/assembler/Mass.hpp>
-
 #include <polyfem/mesh/GeometryReader.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>
 #include <polyfem/mesh/mesh2D/NCMesh2D.hpp>
 #include <polyfem/mesh/mesh3D/CMesh3D.hpp>
 #include <polyfem/mesh/mesh3D/NCMesh3D.hpp>
-
-#include <polyfem/utils/Selection.hpp>
 
 #include <polyfem/utils/JSONUtils.hpp>
 
@@ -24,21 +20,6 @@ namespace polyfem
 
 	void State::reset_mesh()
 	{
-		bases.clear();
-		pressure_bases.clear();
-		geom_bases_.clear();
-		boundary_nodes.clear();
-		local_boundary.clear();
-		local_neumann_boundary.clear();
-		polys.clear();
-		poly_edge_to_data.clear();
-		obstacle.clear();
-
-		mass.resize(0, 0);
-		rhs.resize(0, 0);
-
-		n_bases = 0;
-		n_pressure_bases = 0;
 	}
 
 	void State::load_mesh(GEO::Mesh &meshin, const std::function<int(const size_t, const std::vector<int> &, const RowVectorNd &, bool)> &boundary_marker, bool non_conforming, bool skip_boundary_sideset)
@@ -66,11 +47,9 @@ namespace polyfem
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
-		if (!variational_formulation)
-			throw std::runtime_error("polyfem::State is varform-only; use polyfem::legacy::State for legacy formulations.");
+		assert(variational_formulation != nullptr);
 
 		variational_formulation->load_mesh(*mesh, args);
-		variational_formulation->sync_state(*this);
 	}
 
 	void State::load_mesh(bool non_conforming,
@@ -111,25 +90,14 @@ namespace polyfem
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);
 
-		if (args["solver"]["advanced"]["characteristic_length"] > 0)
-		{
-			characteristic_length = args["solver"]["advanced"]["characteristic_length"];
-		}
-		else
-		{
-			characteristic_length = (max - min).norm();
-		}
-
 		logger().info("mesh bb min [{}], max [{}]", min, max);
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
 
-		if (!variational_formulation)
-			throw std::runtime_error("polyfem::State is varform-only; use polyfem::legacy::State for legacy formulations.");
+		assert(variational_formulation != nullptr);
 
 		variational_formulation->load_mesh(*mesh, args);
-		variational_formulation->sync_state(*this);
 
 #ifdef POLYFEM_WITH_BEZIER
 		if (!mesh->is_simplicial())
@@ -147,46 +115,4 @@ namespace polyfem
 		}
 	}
 
-	void State::build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F)
-	{
-		assert(bases.size() == mesh->n_elements());
-		const size_t n_vertices = n_bases - obstacle.n_vertices();
-		const int dim = mesh->dimension();
-
-		V.resize(n_vertices, dim);
-		F.resize(bases.size(), dim + 1); // TODO: this only works for triangles and tetrahedra
-
-		for (int i = 0; i < bases.size(); i++)
-		{
-			const basis::ElementBases &element = bases[i];
-			for (int j = 0; j < element.bases.size(); j++)
-			{
-				const basis::Basis &basis = element.bases[j];
-				assert(basis.global().size() == 1);
-				V.row(basis.global()[0].index) = basis.global()[0].node;
-				if (j < F.cols()) // Only grab the corners of the triangles/tetrahedra
-					F(i, j) = basis.global()[0].index;
-			}
-		}
-	}
-
-	std::unordered_map<int, std::array<bool, 3>>
-	State::boundary_conditions_ids(const std::string &bc_type) const
-	{
-		assert(args["boundary_conditions"].contains(bc_type));
-		const std::vector<json> json_bcs = json_as_array(args["boundary_conditions"][bc_type]);
-		std::unordered_map<int, std::array<bool, 3>> bcs;
-		for (const json &bc : json_bcs)
-		{
-			assert(bc["dimension"].size() >= mesh->dimension());
-			std::array<bool, 3> dimension{{true, true, true}};
-			for (int d = 0; d < bc["dimension"].size(); ++d)
-				dimension[d] = bc["dimension"][d];
-
-			assert(bc.contains("id") && bc["id"].is_number_integer());
-			bcs[bc["id"].get<int>()] = dimension;
-		}
-
-		return bcs;
-	}
 } // namespace polyfem

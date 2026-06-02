@@ -1,7 +1,5 @@
 #include "BilaplacianVarForm.hpp"
 
-#include <polyfem/State.hpp>
-
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/assembler/GenericProblem.hpp>
 #include <polyfem/basis/LagrangeBasis2d.hpp>
@@ -420,19 +418,6 @@ namespace polyfem::varform
 		timer.stop();
 		timings.solving_time = timer.getElapsedTime();
 		logger().info(" took {}s", timings.solving_time);
-	}
-
-	void BilaplacianVarForm::sync_state(State &state) const
-	{
-		ElasticVarForm::sync_state(state);
-		state.mixed_assembler = mixed_assembler;
-		state.pressure_assembler = pressure_assembler;
-		state.pressure_bases = pressure_bases;
-		state.n_pressure_bases = n_pressure_bases;
-		state.pressure_mesh_nodes = pressure_mesh_nodes;
-		state.pressure_ass_vals_cache = pressure_ass_vals_cache;
-		state.use_avg_pressure = use_avg_pressure;
-		state.pressure_boundary_nodes = pressure_boundary_nodes;
 	}
 
 	io::OutputState BilaplacianVarForm::output_state() const

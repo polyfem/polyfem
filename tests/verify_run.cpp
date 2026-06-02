@@ -4,6 +4,8 @@
 #include "polyfem/utils/JSONUtils.hpp"
 #include "polyfem/State.hpp"
 #include "polyfem/legacy/State.hpp"
+#include "polyfem/io/VarFormOutputWriter.hpp"
+#include "polyfem/varforms/VarForm.hpp"
 #include "polyfem/varforms/VarFormDispatch.hpp"
 #include "spdlog/spdlog.h"
 #include <polyfem/Common.hpp>
@@ -42,10 +44,9 @@ enum AuthenticateResult
 	AUTHETICATION_FAILED
 };
 
-template <typename StateType>
-AuthenticateResult run_state(json &args, json &out)
+AuthenticateResult run_legacy_state(json &args, json &out)
 {
-	StateType state;
+	legacy::State state;
 	args["/output/log/level"_json_pointer] = "error";
 	state.init(args, true);
 	state.set_max_threads(1);
@@ -88,6 +89,47 @@ AuthenticateResult run_state(json &args, json &out)
 	out["err_linf"] = state.stats.linf_err;
 	out["err_linf_grad"] = state.stats.grad_max_err;
 	out["err_lp"] = state.stats.lp_err;
+
+	return SUCCESS;
+}
+
+AuthenticateResult run_varform_state(json &args, json &out)
+{
+	State state;
+	args["/output/log/level"_json_pointer] = "error";
+	state.init(args, true);
+	state.set_max_threads(1);
+	spdlog::set_level(spdlog::level::info);
+	state.load_mesh();
+
+	if (state.mesh == nullptr)
+	{
+		spdlog::warn("No Mesh is Read!!");
+		return MISSING_FILE;
+	}
+
+	Eigen::MatrixXd sol;
+	try
+	{
+		state.solve(sol);
+	}
+	catch (...)
+	{
+		return SOLVE_FAILED;
+	}
+
+	const io::OutStatsData stats = state.variational_formulation->compute_errors(sol);
+
+	io::VarFormOutputWriter writer(*state.variational_formulation);
+	writer.save_json(sol);
+	writer.export_data(sol);
+
+	out["err_l2"] = stats.l2_err;
+	out["err_h1"] = stats.h1_err;
+	out["err_h1_semi"] = stats.h1_semi_err;
+	out["err_linf"] = stats.linf_err;
+	out["err_linf_grad"] = stats.grad_max_err;
+	out["err_lp"] = stats.lp_err;
 
 	return SUCCESS;
 }
@@ -162,8 +204,8 @@ AuthenticateResult authenticate_json(const std::string &json_file, const bool co
 
 	json out = json({});
 	const AuthenticateResult run_result = varform::uses_varform_state(args)
-											  ? run_state<State>(args, out)
-											  : run_state<legacy::State>(args, out);
+											  ? run_varform_state(args, out)
+											  : run_legacy_state(args, out);
 	if (run_result != SUCCESS)
 		return run_result;
 

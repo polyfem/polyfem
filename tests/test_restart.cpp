@@ -11,7 +11,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
-using namespace polyfem::assembler;
 using namespace polyfem::utils;
 
 bool load_json(const std::string &json_file, json &out);
@@ -78,9 +77,8 @@ Eigen::MatrixXd run_sim(State &state, const json &args)
 	state.assemble_mass_mat();
 
 	Eigen::MatrixXd sol;
-	Eigen::MatrixXd pressure;
 
-	state.solve_problem(sol, pressure);
+	state.solve_problem(sol);
 
 	return sol;
 }
