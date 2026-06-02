@@ -449,7 +449,6 @@ namespace polyfem::io
 			paraviewo::ParaviewWriter &writer) const;
 	};
 
-
 	class EnergyCSVWriter
 	{
 	public:

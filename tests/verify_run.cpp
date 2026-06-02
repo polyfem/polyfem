@@ -162,8 +162,8 @@ AuthenticateResult authenticate_json(const std::string &json_file, const bool co
 
 	json out = json({});
 	const AuthenticateResult run_result = varform::uses_varform_state(args)
-											 ? run_state<State>(args, out)
-											 : run_state<legacy::State>(args, out);
+											  ? run_state<State>(args, out)
+											  : run_state<legacy::State>(args, out);
 	if (run_result != SUCCESS)
 		return run_result;
 

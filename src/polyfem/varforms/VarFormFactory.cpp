@@ -42,9 +42,9 @@ namespace polyfem::varform
 
 		if (!assembler::AssemblerUtils::other_assembler_name(formulation).empty())
 			return formulation == "Stokes"
-				|| formulation == "NavierStokes"
-				|| formulation == "IncompressibleLinearElasticity"
-				|| formulation == "Bilaplacian";
+				   || formulation == "NavierStokes"
+				   || formulation == "IncompressibleLinearElasticity"
+				   || formulation == "Bilaplacian";
 
 		if (assembler->is_fluid())
 			return false;

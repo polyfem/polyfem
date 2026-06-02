@@ -60,7 +60,7 @@ TEST_CASE("varform factory supports migrated formulations", "[varform]")
 	CHECK(varform::VarFormFactory::create("OperatorSplitting", args) == nullptr);
 
 	json periodic_args = args;
-		periodic_args["/boundary_conditions/periodic_boundary/enabled"_json_pointer] = true;
+	periodic_args["/boundary_conditions/periodic_boundary/enabled"_json_pointer] = true;
 	CHECK_FALSE(varform::VarFormFactory::supports("Stokes", periodic_args));
 	CHECK(varform::VarFormFactory::create("Stokes", periodic_args) == nullptr);
 	CHECK_FALSE(varform::VarFormFactory::supports("NeoHookean", periodic_args));
@@ -102,15 +102,15 @@ TEST_CASE("periodic boundary conditions remain on legacy state path", "[varform]
 
 TEST_CASE("optimization keeps varforms on the legacy state path", "[varform][state]")
 {
-		json args = load_scene(std::string(POLYFEM_DATA_DIR) + "/standard/stokes_static.json");
-		State state;
-		state.optimization_enabled = true;
-		state.init(args, true);
+	json args = load_scene(std::string(POLYFEM_DATA_DIR) + "/standard/stokes_static.json");
+	State state;
+	state.optimization_enabled = true;
+	state.init(args, true);
 
-		CHECK(state.variational_formulation == nullptr);
-		REQUIRE(state.assembler != nullptr);
-		CHECK(state.assembler->name() == "Stokes");
-		REQUIRE(state.pressure_assembler != nullptr);
-		CHECK(state.pressure_assembler->name() == "StokesPressure");
-		CHECK(state.mixed_assembler != nullptr);
+	CHECK(state.variational_formulation == nullptr);
+	REQUIRE(state.assembler != nullptr);
+	CHECK(state.assembler->name() == "Stokes");
+	REQUIRE(state.pressure_assembler != nullptr);
+	CHECK(state.pressure_assembler->name() == "StokesPressure");
+	CHECK(state.mixed_assembler != nullptr);
 }
