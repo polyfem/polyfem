@@ -277,10 +277,13 @@ namespace polyfem
 		const std::string formulation = this->formulation();
 
 		variational_formulation = nullptr;
-		if (!optimization_enabled)
+		const bool requires_legacy_periodic = has_periodic_bc() || args["contact"]["periodic"].get<bool>();
+		if (!optimization_enabled && !requires_legacy_periodic)
 			variational_formulation = varform::VarFormFactory::create(formulation, args);
-		else
+		else if (optimization_enabled)
 			logger().info("Optimization enabled, using legacy State path for {}", formulation);
+		else
+			logger().info("Periodic boundary conditions enabled, using legacy State path for {}", formulation);
 
 		if (variational_formulation)
 		{
