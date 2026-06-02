@@ -26,16 +26,6 @@ namespace polyfem::varform::internal
 			to.emplace_back(lb);
 	}
 
-	inline void copy_local_boundary_map(
-		const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &from,
-		std::unordered_map<int, std::vector<mesh::LocalBoundary>> &to)
-	{
-		to.clear();
-		to.reserve(from.size());
-		for (const auto &[id, boundaries] : from)
-			copy_local_boundaries(boundaries, to[id]);
-	}
-
 	inline void rebuild_node_positions(
 		const std::vector<basis::ElementBases> &bases,
 		const std::vector<int> &node_ids,
