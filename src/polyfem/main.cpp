@@ -5,6 +5,7 @@
 #include <h5pp/h5pp.h>
 
 #include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #ifdef POLYFEM_WITH_OPTIMIZATION
 #include <polyfem/optimization/OptState.hpp>
 #endif
@@ -12,6 +13,7 @@
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/io/YamlToJson.hpp>
+#include <polyfem/varforms/VarFormDispatch.hpp>
 
 using namespace polyfem;
 using namespace solver;
@@ -71,6 +73,46 @@ int optimization_simulation(const CLI::App &command_line,
 							const spdlog::level::level_enum &log_level,
 							json &opt_args);
 #endif
+
+template <typename StateType>
+int forward_simulation_with_state(const std::vector<std::string> &names,
+								  const std::vector<Eigen::MatrixXi> &cells,
+								  const std::vector<Eigen::MatrixXd> &vertices,
+								  json &in_args,
+								  const bool is_strict)
+{
+	StateType state;
+	state.init(in_args, is_strict);
+	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
+
+	// Mesh was not loaded successfully; load_mesh() logged the error.
+	if (state.mesh == nullptr)
+	{
+		// Cannot proceed without a mesh.
+		return EXIT_FAILURE;
+	}
+
+	state.stats.compute_mesh_stats(*state.mesh);
+
+	state.build_basis();
+
+	state.assemble_rhs();
+	state.assemble_mass_mat();
+
+	Eigen::MatrixXd sol;
+	Eigen::MatrixXd pressure;
+
+	state.solve_problem(sol, pressure);
+
+	state.compute_errors(sol);
+
+	logger().info("total time: {}s", state.timings.total_time());
+
+	state.save_json(sol);
+	state.export_data(sol, pressure);
+
+	return EXIT_SUCCESS;
+}
 
 int main(int argc, char **argv)
 {
@@ -201,37 +243,10 @@ int forward_simulation(const CLI::App &command_line,
 	assert(tmp.is_object());
 	in_args.merge_patch(tmp);
 
-	State state;
-	state.init(in_args, is_strict);
-	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
+	if (varform::uses_varform_state(in_args))
+		return forward_simulation_with_state<State>(names, cells, vertices, in_args, is_strict);
 
-	// Mesh was not loaded successfully; load_mesh() logged the error.
-	if (state.mesh == nullptr)
-	{
-		// Cannot proceed without a mesh.
-		return EXIT_FAILURE;
-	}
-
-	state.stats.compute_mesh_stats(*state.mesh);
-
-	state.build_basis();
-
-	state.assemble_rhs();
-	state.assemble_mass_mat();
-
-	Eigen::MatrixXd sol;
-	Eigen::MatrixXd pressure;
-
-	state.solve_problem(sol, pressure);
-
-	state.compute_errors(sol);
-
-	logger().info("total time: {}s", state.timings.total_time());
-
-	state.save_json(sol);
-	state.export_data(sol, pressure);
-
-	return EXIT_SUCCESS;
+	return forward_simulation_with_state<legacy::State>(names, cells, vertices, in_args, is_strict);
 }
 
 #ifdef POLYFEM_WITH_OPTIMIZATION

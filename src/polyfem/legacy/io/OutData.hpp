@@ -22,122 +22,15 @@
 #include <ipc/potentials/normal_adhesion_potential.hpp>
 #include <ipc/potentials/tangential_adhesion_potential.hpp>
 
-namespace polyfem
+namespace polyfem::legacy
 {
 	class State;
-}
+} // namespace polyfem::legacy
 
-namespace polyfem::varform
+namespace polyfem::legacy::io
 {
-	class VarForm;
-} // namespace polyfem::varform
-
-namespace polyfem::assembler
-{
-	class Assembler;
-	class Mass;
-	class MixedAssembler;
-} // namespace polyfem::assembler
-
-namespace polyfem::mesh
-{
-	class Obstacle;
-} // namespace polyfem::mesh
-
-namespace ipc
-{
-	class CollisionMesh;
-} // namespace ipc
-
-namespace polyfem::io
-{
-	struct OutputFieldOptions
-	{
-		std::vector<std::string> fields;
-
-		bool export_field(const std::string &field) const;
-	};
-
-	struct OutputSample
-	{
-		Eigen::MatrixXd points;
-		Eigen::MatrixXd local_points;
-		Eigen::VectorXi element_ids;
-		Eigen::VectorXi primitive_ids;
-		Eigen::VectorXi node_ids;
-		Eigen::MatrixXd normals;
-		double time = 0;
-		double dt = 0;
-	};
-
-	struct OutputField
-	{
-		enum class Association
-		{
-			Point,
-			Cell
-		};
-
-		std::string name;
-		Eigen::MatrixXd values;
-		Association association = Association::Point;
-	};
-
-	struct OutputState
-	{
-		const json &args;
-		const mesh::Mesh *mesh;
-		const assembler::Problem *problem;
-		const assembler::Assembler *assembler;
-		const assembler::Mass *mass_matrix_assembler;
-		const assembler::MixedAssembler *mixed_assembler;
-		const solver::SolveData &solve_data;
-
-		const std::vector<basis::ElementBases> &bases;
-		const std::vector<basis::ElementBases> &pressure_bases;
-		const std::vector<basis::ElementBases> &geom_bases_;
-		const int n_bases;
-		const int n_pressure_bases;
-		const Eigen::VectorXi &disc_orders;
-		const Eigen::VectorXi &disc_ordersq;
-		const Eigen::VectorXi &in_node_to_node;
-		const Eigen::MatrixXd &rhs;
-		const std::map<int, Eigen::MatrixXd> &polys;
-		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d;
-		const mesh::Obstacle &obstacle;
-		const ipc::CollisionMesh &collision_mesh;
-		const std::vector<mesh::LocalBoundary> &total_local_boundary;
-		const std::vector<int> &dirichlet_nodes;
-		const std::vector<RowVectorNd> &dirichlet_nodes_position;
-
-		const bool iso_parametric;
-		const std::string formulation;
-		const std::string primary_field_name;
-		const std::string root_path;
-		const std::string output_path;
-		const QuadratureOrders boundary_samples;
-		const OutStatsData &stats;
-		const OutRuntimeData &timings;
-		const double starting_min_edge_length;
-		const varform::VarForm *var_form = nullptr;
-
-		const std::vector<basis::ElementBases> &geom_bases() const
-		{
-			return iso_parametric ? bases : geom_bases_;
-		}
-
-		QuadratureOrders n_boundary_samples() const
-		{
-			return boundary_samples;
-		}
-
-		bool is_adhesion_enabled() const
-		{
-			return args["contact"]["adhesion"]["adhesion_enabled"];
-		}
-
-		static OutputState from_state(const State &state);
-	};
+	using polyfem::io::OutRuntimeData;
+	using polyfem::io::OutStatsData;
 
 	/// Utilies related to export of geometry
 	class OutGeometryData
@@ -253,20 +146,6 @@ namespace polyfem::io
 			const std::string &stress_path,
 			const std::string &mises_path,
 			const bool is_contact_enabled) const;
-		void export_data(
-			const OutputState &state,
-			const Eigen::MatrixXd &sol,
-			const Eigen::MatrixXd &pressure,
-			const bool is_time_dependent,
-			const double tend_in,
-			const double dt,
-			const ExportOptions &opts,
-			const std::string &vis_mesh_path,
-			const std::string &nodes_path,
-			const std::string &solution_path,
-			const std::string &stress_path,
-			const std::string &mises_path,
-			const bool is_contact_enabled) const;
 
 		/// saves the vtu file for time t
 		/// @param[in] path filename
@@ -279,14 +158,6 @@ namespace polyfem::io
 		/// @param[in] is_contact_enabled if contact is enabled
 		void save_vtu(const std::string &path,
 					  const State &state,
-					  const Eigen::MatrixXd &sol,
-					  const Eigen::MatrixXd &pressure,
-					  const double t,
-					  const double dt,
-					  const ExportOptions &opts,
-					  const bool is_contact_enabled) const;
-		void save_vtu(const std::string &path,
-					  const OutputState &state,
 					  const Eigen::MatrixXd &sol,
 					  const Eigen::MatrixXd &pressure,
 					  const double t,
@@ -309,13 +180,6 @@ namespace polyfem::io
 						 const double t,
 						 const double dt,
 						 const ExportOptions &opts) const;
-		void save_volume(const std::string &path,
-						 const OutputState &state,
-						 const Eigen::MatrixXd &sol,
-						 const Eigen::MatrixXd &pressure,
-						 const double t,
-						 const double dt,
-						 const ExportOptions &opts) const;
 
 		/// saves the surface vtu file for for surface quantites, eg traction forces
 		/// @param[in] export_surface filename
@@ -328,14 +192,6 @@ namespace polyfem::io
 		/// @param[in] is_contact_enabled if contact is enabled
 		void save_surface(const std::string &export_surface,
 						  const State &state,
-						  const Eigen::MatrixXd &sol,
-						  const Eigen::MatrixXd &pressure,
-						  const double t,
-						  const double dt_in,
-						  const ExportOptions &opts,
-						  const bool is_contact_enabled) const;
-		void save_surface(const std::string &export_surface,
-						  const OutputState &state,
 						  const Eigen::MatrixXd &sol,
 						  const Eigen::MatrixXd &pressure,
 						  const double t,
@@ -361,15 +217,6 @@ namespace polyfem::io
 			const double dt_in,
 			const ExportOptions &opts,
 			const bool is_contact_enabled) const;
-		void save_contact_surface(
-			const std::string &export_surface,
-			const OutputState &state,
-			const Eigen::MatrixXd &sol,
-			const Eigen::MatrixXd &pressure,
-			const double t,
-			const double dt_in,
-			const ExportOptions &opts,
-			const bool is_contact_enabled) const;
 
 		/// saves the wireframe
 		/// @param[in] name filename
@@ -382,11 +229,6 @@ namespace polyfem::io
 					   const Eigen::MatrixXd &sol,
 					   const double t,
 					   const ExportOptions &opts) const;
-		void save_wire(const std::string &name,
-					   const OutputState &state,
-					   const Eigen::MatrixXd &sol,
-					   const double t,
-					   const ExportOptions &opts) const;
 
 		/// saves the nodal values
 		/// @param[in] path filename
@@ -396,11 +238,6 @@ namespace polyfem::io
 		void save_points(
 			const std::string &path,
 			const State &state,
-			const Eigen::MatrixXd &sol,
-			const ExportOptions &opts) const;
-		void save_points(
-			const std::string &path,
-			const OutputState &state,
 			const Eigen::MatrixXd &sol,
 			const ExportOptions &opts) const;
 
@@ -478,8 +315,7 @@ namespace polyfem::io
 			Eigen::MatrixXd &points,
 			Eigen::MatrixXi &tets,
 			Eigen::MatrixXi &el_id,
-			Eigen::MatrixXd &discr,
-			Eigen::MatrixXd &local_points) const;
+			Eigen::MatrixXd &discr) const;
 
 		/// builds high-der visualzation mesh per element all disconnected
 		/// it also retuns the mapping to element id and discretization of every elment
@@ -500,11 +336,10 @@ namespace polyfem::io
 			Eigen::MatrixXd &points,
 			std::vector<paraviewo::CellElement> &elements,
 			Eigen::MatrixXi &el_id,
-			Eigen::MatrixXd &discr,
-			Eigen::MatrixXd &local_points) const;
+			Eigen::MatrixXd &discr) const;
 
 		void save_volume_vector_field(
-			const OutputState &state,
+			const State &state,
 			const Eigen::MatrixXd &points,
 			const ExportOptions &opts,
 			const std::string &name,
@@ -530,19 +365,17 @@ namespace polyfem::io
 	{
 	public:
 		RuntimeStatsCSVWriter(const std::string &path, const State &state, const double t0, const double dt);
-		RuntimeStatsCSVWriter(const std::string &path, const OutputState &state, const double t0, const double dt);
 		~RuntimeStatsCSVWriter();
 
 		void write(const int t, const double forward, const double remeshing, const double global_relaxation, const Eigen::MatrixXd &sol);
 
 	protected:
 		std::ofstream file;
-		const int n_bases;
-		const int n_elements;
+		const State &state;
 		const double t0;
 		const double dt;
 		double total_forward_solve_time = 0;
 		double total_remeshing_time = 0;
 		double total_global_relaxation_time = 0;
 	};
-} // namespace polyfem::io
+} // namespace polyfem::legacy::io

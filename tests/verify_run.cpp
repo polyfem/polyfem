@@ -3,6 +3,8 @@
 
 #include "polyfem/utils/JSONUtils.hpp"
 #include "polyfem/State.hpp"
+#include "polyfem/legacy/State.hpp"
+#include "polyfem/varforms/VarFormDispatch.hpp"
 #include "spdlog/spdlog.h"
 #include <polyfem/Common.hpp>
 
@@ -39,6 +41,56 @@ enum AuthenticateResult
 	SOLVE_FAILED,
 	AUTHETICATION_FAILED
 };
+
+template <typename StateType>
+AuthenticateResult run_state(json &args, json &out)
+{
+	StateType state;
+	args["/output/log/level"_json_pointer] = "error";
+	state.init(args, true);
+	state.set_max_threads(1);
+	spdlog::set_level(spdlog::level::info);
+	state.load_mesh();
+
+	if (state.mesh == nullptr)
+	{
+		spdlog::warn("No Mesh is Read!!");
+		return MISSING_FILE;
+	}
+
+	// state.compute_mesh_stats();
+
+	state.build_basis();
+
+	state.assemble_rhs();
+	state.assemble_mass_mat();
+
+	Eigen::MatrixXd sol;
+	Eigen::MatrixXd pressure;
+
+	try
+	{
+		state.solve_problem(sol, pressure);
+	}
+	catch (...)
+	{
+		return SOLVE_FAILED;
+	}
+
+	state.compute_errors(sol);
+
+	state.save_json(sol);
+	state.export_data(sol, pressure);
+
+	out["err_l2"] = state.stats.l2_err;
+	out["err_h1"] = state.stats.h1_err;
+	out["err_h1_semi"] = state.stats.h1_semi_err;
+	out["err_linf"] = state.stats.linf_err;
+	out["err_linf_grad"] = state.stats.grad_max_err;
+	out["err_lp"] = state.stats.lp_err;
+
+	return SUCCESS;
+}
 
 AuthenticateResult authenticate_json(const std::string &json_file, const bool compute_validation)
 {
@@ -108,50 +160,13 @@ AuthenticateResult authenticate_json(const std::string &json_file, const bool co
 			? "Eigen::SimplicialLDLT"
 			: "Eigen::SparseLU";
 
-	State state;
-	args["/output/log/level"_json_pointer] = "error";
-	state.init(args, true);
-	state.set_max_threads(1);
-	spdlog::set_level(spdlog::level::info);
-	state.load_mesh();
-
-	if (state.mesh == nullptr)
-	{
-		spdlog::warn("No Mesh is Read!!");
-		return MISSING_FILE;
-	}
-
-	// state.compute_mesh_stats();
-
-	state.build_basis();
-
-	state.assemble_rhs();
-	state.assemble_mass_mat();
-
-	Eigen::MatrixXd sol;
-	Eigen::MatrixXd pressure;
-
-	try
-	{
-		state.solve_problem(sol, pressure);
-	}
-	catch (...)
-	{
-		return SOLVE_FAILED;
-	}
-
-	state.compute_errors(sol);
-
-	state.save_json(sol);
-	state.export_data(sol, pressure);
-
 	json out = json({});
-	out["err_l2"] = state.stats.l2_err;
-	out["err_h1"] = state.stats.h1_err;
-	out["err_h1_semi"] = state.stats.h1_semi_err;
-	out["err_linf"] = state.stats.linf_err;
-	out["err_linf_grad"] = state.stats.grad_max_err;
-	out["err_lp"] = state.stats.lp_err;
+	const AuthenticateResult run_result = varform::uses_varform_state(args)
+											 ? run_state<State>(args, out)
+											 : run_state<legacy::State>(args, out);
+	if (run_result != SUCCESS)
+		return run_result;
+
 	out["margin"] = 1e-5;
 	out["time_steps"] = time_steps;
 
