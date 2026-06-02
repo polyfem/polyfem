@@ -178,7 +178,7 @@ namespace polyfem::solver
 		Eigen::MatrixXi boundary_edges, boundary_triangles;
 		std::vector<Eigen::Triplet<double>> displacement_map_entries;
 		legacy::io::OutGeometryData::extract_boundary_mesh(*state_->mesh, state_->n_geom_bases, state_->geom_bases(), state_->total_local_boundary,
-												   node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
+														   node_positions, boundary_edges, boundary_triangles, displacement_map_entries);
 
 		std::vector<bool> is_on_surface;
 		is_on_surface.resize(node_positions.rows(), false);

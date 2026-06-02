@@ -9,7 +9,10 @@
 
 namespace polyfem
 {
-	namespace legacy { class State; }
+	namespace legacy
+	{
+		class State;
+	}
 	namespace assembler
 	{
 		class Assembler;

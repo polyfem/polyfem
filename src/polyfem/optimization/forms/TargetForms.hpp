@@ -35,8 +35,8 @@ namespace polyfem::solver
 		virtual std::string name() const override { return "target"; }
 
 		void set_reference(const std::shared_ptr<const legacy::State> &target_state, std::shared_ptr<const DiffCache> target_diff_cache, const std::set<int> &reference_cached_body_ids); // target is another simulation solution
-		void set_reference(const Eigen::VectorXd &disp) { target_disp = disp; }                                                                                                   // target is a constant displacement
-		void set_reference(const json &func, const json &grad_func);                                                                                                              // target is a lambda function depending on deformed position
+		void set_reference(const Eigen::VectorXd &disp) { target_disp = disp; }                                                                                                           // target is a constant displacement
+		void set_reference(const json &func, const json &grad_func);                                                                                                                      // target is a lambda function depending on deformed position
 		void set_active_dimension(const std::vector<bool> &mask) { active_dimension_mask = mask; }
 
 	protected:

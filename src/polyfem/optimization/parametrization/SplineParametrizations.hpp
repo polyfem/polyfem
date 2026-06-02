@@ -6,7 +6,10 @@
 
 namespace polyfem
 {
-	namespace legacy { class State; }
+	namespace legacy
+	{
+		class State;
+	}
 	class BSplineParametrization2D;
 	class BSplineParametrization3D;
 } // namespace polyfem

@@ -10,7 +10,10 @@
 
 namespace polyfem
 {
-	namespace legacy { class State; }
+	namespace legacy
+	{
+		class State;
+	}
 	class IntegrableFunctional;
 
 	namespace solver

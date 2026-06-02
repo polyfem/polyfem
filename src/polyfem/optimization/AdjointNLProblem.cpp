@@ -356,9 +356,9 @@ namespace polyfem::solver
 				Eigen::MatrixXd::Zero(state->n_pressure_bases, 1),
 				tend, dt,
 				legacy::io::OutGeometryData::ExportOptions(state->args,
-												   state->mesh->is_linear(),
-												   state->mesh->has_prism(),
-												   state->problem->is_scalar()),
+														   state->mesh->is_linear(),
+														   state->mesh->has_prism(),
+														   state->problem->is_scalar()),
 				state->is_contact_enabled());
 
 			if (!save_rest_mesh)
