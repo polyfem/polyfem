@@ -31,6 +31,7 @@ namespace polyfem::io
 		std::string resolve_output_path(const std::string &path) const;
 		void ensure_sampler();
 		OutGeometryData::ExportOptions export_options(const OutputSpace &space, const OutputState &out) const;
+		OutputFieldFunction output_field_function(const Eigen::MatrixXd &sol, const OutGeometryData::ExportOptions &opts) const;
 		bool is_contact_enabled(const json &args) const;
 		void build_mesh_matrices(const OutputState &out, Eigen::MatrixXd &V, Eigen::MatrixXi &F) const;
 

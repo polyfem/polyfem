@@ -109,47 +109,35 @@ namespace polyfem::io
 		void build_grid(const polyfem::mesh::Mesh &mesh, const double spacing);
 
 		/// @brief exports everytihng, txt, vtu, etc
-		/// @param[in] state output state to get the data
-		/// @param[in] sol solution
-		/// @param[in] pressure pressure
+		/// @param[in] space output geometry data
+		/// @param[in] output_fields callback appending physics-specific fields
 		/// @param[in] is_time_dependent if the sim is time dependent
 		/// @param[in] tend_in end time
 		/// @param[in] dt delta t
 		/// @param[in] opts export options
 		/// @param[in] vis_mesh_path vtu path
-		/// @param[in] nodes_path path to save nodes
-		/// @param[in] solution_path path to save solution
-		/// @param[in] stress_path path to save stress tensor
-		/// @param[in] mises_path path to save von mises stresses
 		/// @param[in] is_contact_enabled if contact is enabled
 		void export_data(
-			const OutputState &state,
-			const Eigen::MatrixXd &sol,
-			const Eigen::MatrixXd &pressure,
+			const OutputSpace &space,
+			const OutputFieldFunction &output_fields,
 			const bool is_time_dependent,
 			const double tend_in,
 			const double dt,
 			const ExportOptions &opts,
 			const std::string &vis_mesh_path,
-			const std::string &nodes_path,
-			const std::string &solution_path,
-			const std::string &stress_path,
-			const std::string &mises_path,
 			const bool is_contact_enabled) const;
 
 		/// saves the vtu file for time t
 		/// @param[in] path filename
-		/// @param[in] state output state to get the data
-		/// @param[in] sol solution
-		/// @param[in] pressure pressure
+		/// @param[in] space output geometry data
+		/// @param[in] output_fields callback appending physics-specific fields
 		/// @param[in] t time
 		/// @param[in] dt delta t
 		/// @param[in] opts export options
 		/// @param[in] is_contact_enabled if contact is enabled
 		void save_vtu(const std::string &path,
-					  const OutputState &state,
-					  const Eigen::MatrixXd &sol,
-					  const Eigen::MatrixXd &pressure,
+					  const OutputSpace &space,
+					  const OutputFieldFunction &output_fields,
 					  const double t,
 					  const double dt,
 					  const ExportOptions &opts,
@@ -157,34 +145,29 @@ namespace polyfem::io
 
 		/// saves the volume vtu file
 		/// @param[in] path filename
-		/// @param[in] state output state to get the data
-		/// @param[in] sol solution
-		/// @param[in] pressure pressure
+		/// @param[in] space output geometry data
+		/// @param[in] output_fields callback appending physics-specific fields
 		/// @param[in] t time
 		/// @param[in] dt delta t
 		/// @param[in] opts export options
 		void save_volume(const std::string &path,
-						 const OutputState &state,
 						 const OutputSpace &space,
-						 const Eigen::MatrixXd &sol,
-						 const Eigen::MatrixXd &pressure,
+						 const OutputFieldFunction &output_fields,
 						 const double t,
 						 const double dt,
 						 const ExportOptions &opts) const;
 
 		/// saves the surface vtu file for for surface quantites, eg traction forces
 		/// @param[in] export_surface filename
-		/// @param[in] state output state to get the data
-		/// @param[in] sol solution
-		/// @param[in] pressure pressure
+		/// @param[in] space output geometry data
+		/// @param[in] output_fields callback appending physics-specific fields
 		/// @param[in] t time
 		/// @param[in] dt_in delta_t
 		/// @param[in] opts export options
 		/// @param[in] is_contact_enabled if contact is enabled
 		void save_surface(const std::string &export_surface,
-						  const OutputState &state,
-						  const Eigen::MatrixXd &sol,
-						  const Eigen::MatrixXd &pressure,
+						  const OutputSpace &space,
+						  const OutputFieldFunction &output_fields,
 						  const double t,
 						  const double dt_in,
 						  const ExportOptions &opts,
@@ -192,18 +175,16 @@ namespace polyfem::io
 
 		/// saves the  surface vtu file for for constact quantites, eg contact or friction forces
 		/// @param[in] export_surface filename
-		/// @param[in] state output state to get the data
-		/// @param[in] sol solution
-		/// @param[in] pressure pressure
+		/// @param[in] space output geometry data
+		/// @param[in] output_fields callback appending physics-specific fields
 		/// @param[in] t time
 		/// @param[in] dt_in delta_t
 		/// @param[in] opts export options
 		/// @param[in] is_contact_enabled if contact is enabled
 		void save_contact_surface(
 			const std::string &export_surface,
-			const OutputState &state,
-			const Eigen::MatrixXd &sol,
-			const Eigen::MatrixXd &pressure,
+			const OutputSpace &space,
+			const OutputFieldFunction &output_fields,
 			const double t,
 			const double dt_in,
 			const ExportOptions &opts,
@@ -211,25 +192,25 @@ namespace polyfem::io
 
 		/// saves the wireframe
 		/// @param[in] name filename
-		/// @param[in] state output state to get the data
-		/// @param[in] sol solution
+		/// @param[in] space output geometry data
+		/// @param[in] output_fields callback appending physics-specific fields
 		/// @param[in] t time
 		/// @param[in] opts export options
 		void save_wire(const std::string &name,
-					   const OutputState &state,
-					   const Eigen::MatrixXd &sol,
+					   const OutputSpace &space,
+					   const OutputFieldFunction &output_fields,
 					   const double t,
 					   const ExportOptions &opts) const;
 
 		/// saves the nodal values
 		/// @param[in] path filename
-		/// @param[in] state output state to get the data
-		/// @param[in] sol solution
+		/// @param[in] space output geometry data
+		/// @param[in] output_fields callback appending physics-specific fields
 		/// @param[in] opts export options
 		void save_points(
 			const std::string &path,
-			const OutputState &state,
-			const Eigen::MatrixXd &sol,
+			const OutputSpace &space,
+			const OutputFieldFunction &output_fields,
 			const ExportOptions &opts) const;
 
 		/// save a PVD of a time dependent simulation
@@ -329,13 +310,6 @@ namespace polyfem::io
 			Eigen::MatrixXd &discr,
 			Eigen::MatrixXd &local_points) const;
 
-		void save_volume_vector_field(
-			const OutputState &state,
-			const Eigen::MatrixXd &points,
-			const ExportOptions &opts,
-			const std::string &name,
-			const Eigen::VectorXd &field,
-			paraviewo::ParaviewWriter &writer) const;
 	};
 
 	class EnergyCSVWriter

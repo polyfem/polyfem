@@ -57,6 +57,13 @@ namespace polyfem::io
 			out.problem->is_scalar());
 	}
 
+	OutputFieldFunction VarFormOutputWriter::output_field_function(const Eigen::MatrixXd &sol, const OutGeometryData::ExportOptions &opts) const
+	{
+		return [this, &sol, fields = opts.fields](const OutputSample &sample) {
+			return var_form_.output_fields(sample, sol, OutputFieldOptions{fields});
+		};
+	}
+
 	bool VarFormOutputWriter::is_contact_enabled(const json &args) const
 	{
 		return args["contact"]["enabled"];
@@ -85,27 +92,20 @@ namespace polyfem::io
 		ensure_sampler();
 
 		const std::string vis_mesh_path = resolve_output_path(out.args["output"]["paraview"]["file_name"]);
-		const std::string nodes_path = resolve_output_path(out.args["output"]["data"]["nodes"]);
-		const std::string solution_path = resolve_output_path(out.args["output"]["data"]["solution"]);
-		const std::string stress_path = resolve_output_path(out.args["output"]["data"]["stress_mat"]);
-		const std::string mises_path = resolve_output_path(out.args["output"]["data"]["mises"]);
-
 		const bool has_time = out.args.contains("time") && !out.args["time"].is_null();
 		double tend = out.args.value("tend", 1.0);
 		double dt = 1;
 		if (has_time)
 			dt = out.args["time"]["dt"];
 
+		const auto opts = export_options(space, out);
 		out_geom_.export_data(
-			out, sol, Eigen::MatrixXd(),
+			space,
+			output_field_function(sol, opts),
 			has_time,
 			tend, dt,
-			export_options(space, out),
+			opts,
 			vis_mesh_path,
-			nodes_path,
-			solution_path,
-			stress_path,
-			mises_path,
 			is_contact_enabled(out.args));
 	}
 
@@ -122,10 +122,11 @@ namespace polyfem::io
 
 		logger().trace("Saving VTU...");
 		const std::string step_name = out.args["output"]["advanced"]["timestep_prefix"];
+		const auto opts = export_options(space, out);
 		out_geom_.save_vtu(
 			resolve_output_path(fmt::format(step_name + "{:d}.vtu", t)),
-			out, sol, Eigen::MatrixXd(), time, dt,
-			export_options(space, out),
+			space, output_field_function(sol, opts), time, dt,
+			opts,
 			is_contact_enabled(out.args));
 
 		out_geom_.save_pvd(
@@ -147,10 +148,11 @@ namespace polyfem::io
 			dt = out.args["time"]["dt"];
 
 		ensure_sampler();
+		const auto opts = export_options(space, out);
 		out_geom_.save_vtu(
 			resolve_output_path(fmt::format("solve_{:d}.vtu", i)),
-			out, sol, Eigen::MatrixXd(), t, dt,
-			export_options(space, out),
+			space, output_field_function(sol, opts), t, dt,
+			opts,
 			is_contact_enabled(out.args));
 	}
 

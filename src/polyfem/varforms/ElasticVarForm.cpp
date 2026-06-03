@@ -3,6 +3,8 @@
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 
+#include <polyfem/basis/Basis.hpp>
+
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
 #include <polyfem/autogen/prism_bases.hpp>
@@ -605,7 +607,9 @@ namespace polyfem::varform
 			&polys_3d,
 			&total_local_boundary,
 			&obstacle,
-			&collision_mesh};
+			&collision_mesh,
+			&dirichlet_nodes,
+			&dirichlet_nodes_position};
 	}
 
 	io::OutputState ElasticVarForm::output_state() const

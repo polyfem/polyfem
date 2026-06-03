@@ -10,6 +10,7 @@
 
 #include <Eigen/Dense>
 
+#include <functional>
 #include <map>
 #include <string>
 #include <vector>
@@ -70,6 +71,8 @@ namespace polyfem::io
 		Association association = Association::Point;
 	};
 
+	using OutputFieldFunction = std::function<std::vector<OutputField>(const OutputSample &)>;
+
 	struct OutputSpace
 	{
 		const mesh::Mesh *mesh = nullptr;
@@ -80,6 +83,8 @@ namespace polyfem::io
 		const std::vector<mesh::LocalBoundary> *total_local_boundary = nullptr;
 		const mesh::Obstacle *obstacle = nullptr;
 		const ipc::CollisionMesh *collision_mesh = nullptr;
+		const std::vector<int> *dirichlet_nodes = nullptr;
+		const std::vector<RowVectorNd> *dirichlet_nodes_position = nullptr;
 	};
 
 	struct OutputState
