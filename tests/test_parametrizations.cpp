@@ -5,6 +5,7 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/io/OBJReader.hpp>
+#include <polyfem/utils/MatrixUtils.hpp>
 
 #include <polyfem/optimization/parametrization/Parametrizations.hpp>
 #include <polyfem/optimization/parametrization/SplineParametrizations.hpp>
