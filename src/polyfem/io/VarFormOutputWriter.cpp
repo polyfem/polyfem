@@ -39,32 +39,34 @@ namespace polyfem::io
 			return;
 
 		const OutputState out = var_form_.output_state();
-		if (out.mesh)
+		const OutputSpace space = var_form_.output_space();
+		if (space.mesh)
 		{
-			out_geom_.init_sampler(*out.mesh, out.args["output"]["paraview"]["vismesh_rel_area"]);
-			out_geom_.build_grid(*out.mesh, out.args["output"]["advanced"]["sol_on_grid"]);
+			out_geom_.init_sampler(*space.mesh, out.args["output"]["paraview"]["vismesh_rel_area"]);
+			out_geom_.build_grid(*space.mesh, out.args["output"]["advanced"]["sol_on_grid"]);
 		}
 		sampler_initialized_ = true;
 	}
 
-	OutGeometryData::ExportOptions VarFormOutputWriter::export_options(const OutputState &out) const
+	OutGeometryData::ExportOptions VarFormOutputWriter::export_options(const OutputSpace &space, const OutputState &out) const
 	{
 		return OutGeometryData::ExportOptions(
 			out.args,
-			out.mesh->is_linear(),
-			out.mesh->has_prism(),
+			space.mesh->is_linear(),
+			space.mesh->has_prism(),
 			out.problem->is_scalar());
 	}
 
-	bool VarFormOutputWriter::is_contact_enabled(const OutputState &out) const
+	bool VarFormOutputWriter::is_contact_enabled(const json &args) const
 	{
-		return out.args["contact"]["enabled"];
+		return args["contact"]["enabled"];
 	}
 
 	void VarFormOutputWriter::export_data(const Eigen::MatrixXd &sol)
 	{
 		const OutputState out = var_form_.output_state();
-		if (!out.mesh)
+		const OutputSpace space = var_form_.output_space();
+		if (!space.mesh)
 		{
 			logger().error("Load the mesh first!");
 			return;
@@ -98,19 +100,20 @@ namespace polyfem::io
 			out, sol, Eigen::MatrixXd(),
 			has_time,
 			tend, dt,
-			export_options(out),
+			export_options(space, out),
 			vis_mesh_path,
 			nodes_path,
 			solution_path,
 			stress_path,
 			mises_path,
-			is_contact_enabled(out));
+			is_contact_enabled(out.args));
 	}
 
 	void VarFormOutputWriter::save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &sol)
 	{
 		const OutputState out = var_form_.output_state();
-		if (!out.mesh || !out.args["output"]["advanced"]["save_time_sequence"])
+		const OutputSpace space = var_form_.output_space();
+		if (!space.mesh || !out.args["output"]["advanced"]["save_time_sequence"])
 			return;
 		if (t % out.args["output"]["paraview"]["skip_frame"].get<int>())
 			return;
@@ -122,8 +125,8 @@ namespace polyfem::io
 		out_geom_.save_vtu(
 			resolve_output_path(fmt::format(step_name + "{:d}.vtu", t)),
 			out, sol, Eigen::MatrixXd(), time, dt,
-			export_options(out),
-			is_contact_enabled(out));
+			export_options(space, out),
+			is_contact_enabled(out.args));
 
 		out_geom_.save_pvd(
 			resolve_output_path(out.args["output"]["paraview"]["file_name"]),
@@ -134,7 +137,8 @@ namespace polyfem::io
 	void VarFormOutputWriter::save_subsolve(const int i, const int t, const Eigen::MatrixXd &sol)
 	{
 		const OutputState out = var_form_.output_state();
-		if (!out.mesh || !out.args["output"]["advanced"]["save_solve_sequence_debug"].get<bool>())
+		const OutputSpace space = var_form_.output_space();
+		if (!space.mesh || !out.args["output"]["advanced"]["save_solve_sequence_debug"].get<bool>())
 			return;
 
 		const bool has_time = out.args.contains("time") && !out.args["time"].is_null();
@@ -146,8 +150,8 @@ namespace polyfem::io
 		out_geom_.save_vtu(
 			resolve_output_path(fmt::format("solve_{:d}.vtu", i)),
 			out, sol, Eigen::MatrixXd(), t, dt,
-			export_options(out),
-			is_contact_enabled(out));
+			export_options(space, out),
+			is_contact_enabled(out.args));
 	}
 
 	void VarFormOutputWriter::save_json(const Eigen::MatrixXd &sol)

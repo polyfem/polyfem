@@ -46,6 +46,9 @@
 #include <paraviewo/VTMWriter.hpp>
 #include <paraviewo/PVDWriter.hpp>
 
+#include <ipc/potentials/normal_adhesion_potential.hpp>
+#include <ipc/potentials/tangential_adhesion_potential.hpp>
+
 #include <SimpleBVH/BVH.hpp>
 
 #include <igl/write_triangle_mesh.h>
@@ -70,6 +73,23 @@ namespace polyfem::io
 
 	namespace
 	{
+		Eigen::VectorXi high_order_output_orders(
+			const mesh::Mesh &mesh,
+			const Eigen::VectorXi &disc_orders,
+			const Eigen::VectorXi &disc_ordersq)
+		{
+			Eigen::VectorXi output_orders = disc_orders;
+			if (disc_ordersq.size() != disc_orders.size())
+				return output_orders;
+
+			for (int e = 0; e < output_orders.size(); ++e)
+			{
+				if (mesh.is_prism(e))
+					output_orders(e) = std::max(disc_orders(e), disc_ordersq(e));
+			}
+			return output_orders;
+		}
+
 		void add_primary_field(
 			paraviewo::ParaviewWriter &writer,
 			const OutputState &state,
@@ -1025,8 +1045,7 @@ namespace polyfem::io
 
 	void OutGeometryData::build_high_order_vis_mesh(
 		const mesh::Mesh &mesh,
-		const Eigen::VectorXi &disc_orders,
-		const Eigen::VectorXi &disc_ordersq,
+		const Eigen::VectorXi &output_orders,
 		const std::vector<basis::ElementBases> &bases,
 		Eigen::MatrixXd &points,
 		std::vector<CellElement> &elements,
@@ -1057,17 +1076,16 @@ namespace polyfem::io
 			if (mesh.is_volume())
 			{
 				if (mesh.is_simplex(i))
-					autogen::p_nodes_3d(disc_orders(i), ref_pts);
+					autogen::p_nodes_3d(output_orders(i), ref_pts);
 				else if (mesh.is_cube(i))
-					autogen::q_nodes_3d(disc_orders(i), ref_pts);
+					autogen::q_nodes_3d(output_orders(i), ref_pts);
 				else if (mesh.is_prism(i))
 				{
-					int max_order = std::max(disc_orders(i), disc_ordersq(i));
-					autogen::prism_nodes_3d(max_order, max_order, ref_pts);
+					autogen::prism_nodes_3d(output_orders(i), output_orders(i), ref_pts);
 				}
 				else if (mesh.is_pyramid(i))
 				{
-					autogen::pyramid_nodes_3d(disc_orders(i) == 2 ? -1 : disc_orders(i), ref_pts);
+					autogen::pyramid_nodes_3d(output_orders(i) == 2 ? -1 : output_orders(i), ref_pts);
 				}
 				else
 					continue;
@@ -1075,9 +1093,9 @@ namespace polyfem::io
 			else
 			{
 				if (mesh.is_simplex(i))
-					autogen::p_nodes_2d(disc_orders(i), ref_pts);
+					autogen::p_nodes_2d(output_orders(i), ref_pts);
 				else if (mesh.is_cube(i))
-					autogen::q_nodes_2d(disc_orders(i), ref_pts);
+					autogen::q_nodes_2d(output_orders(i), ref_pts);
 				else
 				{
 					const int n_v = static_cast<const mesh::Mesh2D &>(mesh).n_face_vertices(i);
@@ -1106,17 +1124,16 @@ namespace polyfem::io
 			if (mesh.is_volume())
 			{
 				if (mesh.is_simplex(i))
-					autogen::p_nodes_3d(disc_orders(i), ref_pts);
+					autogen::p_nodes_3d(output_orders(i), ref_pts);
 				else if (mesh.is_cube(i))
-					autogen::q_nodes_3d(disc_orders(i), ref_pts);
+					autogen::q_nodes_3d(output_orders(i), ref_pts);
 				else if (mesh.is_prism(i))
 				{
-					int max_order = std::max(disc_orders(i), disc_ordersq(i));
-					autogen::prism_nodes_3d(max_order, max_order, ref_pts);
+					autogen::prism_nodes_3d(output_orders(i), output_orders(i), ref_pts);
 				}
 				else if (mesh.is_pyramid(i))
 				{
-					autogen::pyramid_nodes_3d(disc_orders(i) == 2 ? -1 : disc_orders(i), ref_pts);
+					autogen::pyramid_nodes_3d(output_orders(i) == 2 ? -1 : output_orders(i), ref_pts);
 				}
 				else
 					continue;
@@ -1124,9 +1141,9 @@ namespace polyfem::io
 			else
 			{
 				if (mesh.is_simplex(i))
-					autogen::p_nodes_2d(disc_orders(i), ref_pts);
+					autogen::p_nodes_2d(output_orders(i), ref_pts);
 				else if (mesh.is_cube(i))
-					autogen::q_nodes_2d(disc_orders(i), ref_pts);
+					autogen::q_nodes_2d(output_orders(i), ref_pts);
 				else
 					continue;
 			}
@@ -1138,7 +1155,7 @@ namespace polyfem::io
 				points.row(pts_index) = mapped.row(j);
 				local_points.row(pts_index).leftCols(ref_pts.cols()) = ref_pts.row(j);
 				el_id(pts_index) = i;
-				discr(pts_index) = disc_orders(i);
+				discr(pts_index) = output_orders(i);
 				elements[i].vertices.push_back(pts_index);
 
 				pts_index++;
@@ -1149,30 +1166,30 @@ namespace polyfem::io
 				if (mesh.is_volume())
 				{
 					const int n_nodes = elements[i].vertices.size();
-					if (disc_orders(i) >= 3)
+					if (output_orders(i) >= 3)
 					{
 						std::swap(elements[i].vertices[16], elements[i].vertices[17]);
 						std::swap(elements[i].vertices[17], elements[i].vertices[18]);
 						std::swap(elements[i].vertices[18], elements[i].vertices[19]);
 					}
-					if (disc_orders(i) > 4)
+					if (output_orders(i) > 4)
 						error_msg = "Saving high-order meshes not implemented for P5+ elements!";
 				}
 				else
 				{
-					if (disc_orders(i) == 4)
+					if (output_orders(i) == 4)
 					{
 						const int n_nodes = elements[i].vertices.size();
 						std::swap(elements[i].vertices[n_nodes - 1], elements[i].vertices[n_nodes - 2]);
 					}
-					if (disc_orders(i) > 4)
+					if (output_orders(i) > 4)
 						error_msg = "Saving high-order meshes not implemented for P5+ elements!";
 				}
 			}
 			else if (mesh.is_cube(i) && mesh.is_volume())
 			{
 				const int n_nodes = elements[i].vertices.size();
-				if (disc_orders(i) == 2) // Lagrange hex, order=2
+				if (output_orders(i) == 2) // Lagrange hex, order=2
 				{
 					std::swap(elements[i].vertices[12], elements[i].vertices[16]);
 					std::swap(elements[i].vertices[13], elements[i].vertices[17]);
@@ -1193,10 +1210,10 @@ namespace polyfem::io
 				// 	std::swap(elements[i].vertices[28], elements[i].vertices[30]);  // hack
 				// 	std::swap(elements[i].vertices[29], elements[i].vertices[31]);  // hack
 				// }
-				if (disc_orders(i) > 2)
+				if (output_orders(i) > 2)
 					error_msg = "Saving high-order meshes not implemented for P2+ elements!";
 			}
-			else if (disc_orders(i) > 1)
+			else if (output_orders(i) > 1)
 				error_msg = "Saving high-order meshes not implemented for Q2+ elements!";
 		}
 
@@ -1216,7 +1233,7 @@ namespace polyfem::io
 				points.row(pts_index) = mesh2d.point(mesh2d.face_vertex(i, j));
 				local_points.row(pts_index) = mesh2d.point(mesh2d.face_vertex(i, j));
 				el_id(pts_index) = i;
-				discr(pts_index) = disc_orders(i);
+				discr(pts_index) = output_orders(i);
 				elements[i].vertices.push_back(pts_index);
 
 				pts_index++;
@@ -1484,7 +1501,7 @@ namespace polyfem::io
 
 		if (opts.volume)
 		{
-			save_volume(base_path + opts.file_extension(), state, sol, pressure, t, dt, opts);
+			save_volume(base_path + opts.file_extension(), state, state.var_form ? state.var_form->output_space() : OutputSpace{}, sol, pressure, t, dt, opts);
 		}
 
 		if (opts.surface)
@@ -1526,6 +1543,7 @@ namespace polyfem::io
 	void OutGeometryData::save_volume(
 		const std::string &path,
 		const OutputState &state,
+		const OutputSpace &space,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &pressure,
 		const double t,
@@ -1557,8 +1575,18 @@ namespace polyfem::io
 						   state.polys, state.polys_3d, opts.boundary_only,
 						   points, tets, el_id, discr, local_points);
 		else
-			build_high_order_vis_mesh(mesh, disc_orders, disc_ordersq, bases,
+		{
+			const Eigen::VectorXi output_orders =
+				space.mesh == &mesh && space.output_orders.size() == mesh.n_elements()
+					? space.output_orders
+					: high_order_output_orders(mesh, disc_orders, disc_ordersq);
+			const std::vector<basis::ElementBases> &mapping_bases =
+				space.mesh == &mesh && space.geometry_bases != nullptr
+					? *space.geometry_bases
+					: gbases;
+			build_high_order_vis_mesh(mesh, output_orders, mapping_bases,
 									  points, elements, el_id, discr, local_points);
+		}
 
 		Eigen::MatrixXd fun, exact_fun, err, node_fun;
 
@@ -3569,8 +3597,8 @@ namespace polyfem::io
 		file.flush();
 	}
 
-	RuntimeStatsCSVWriter::RuntimeStatsCSVWriter(const std::string &path, const OutputState &state, const double t0, const double dt)
-		: file(path), n_bases(state.n_bases), n_elements(state.mesh ? state.mesh->n_elements() : 0), t0(t0), dt(dt)
+	RuntimeStatsCSVWriter::RuntimeStatsCSVWriter(const std::string &path, const int n_bases, const int n_elements, const double t0, const double dt)
+		: file(path), n_bases(n_bases), n_elements(n_elements), t0(t0), dt(dt)
 	{
 		file << "step,time,forward,remeshing,global_relaxation,peak_mem,#V,#T" << std::endl;
 	}

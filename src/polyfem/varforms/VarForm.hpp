@@ -44,7 +44,9 @@ namespace polyfem
 			void solve(Eigen::MatrixXd &sol);
 
 			virtual std::string name() const = 0;
+			const io::OutRuntimeData &output_timings() const { return timings; }
 			io::OutStatsData compute_errors(const Eigen::MatrixXd &solution);
+			virtual io::OutputSpace output_space() const = 0;
 			virtual io::OutputState output_state() const = 0;
 			virtual std::vector<io::OutputField> output_fields(
 				const io::OutputSample &sample,

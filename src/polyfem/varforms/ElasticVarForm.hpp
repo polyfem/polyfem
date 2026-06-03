@@ -26,6 +26,7 @@ namespace polyfem::varform
 		void build_stiffness_mat_debug(StiffnessMatrix &stiffness) override;
 		const StiffnessMatrix *mass_matrix_debug() const override { return &mass; }
 
+		io::OutputSpace output_space() const override;
 		io::OutputState output_state() const override;
 		std::vector<io::OutputField> output_fields(
 			const io::OutputSample &sample,

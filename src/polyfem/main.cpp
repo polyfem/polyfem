@@ -90,9 +90,8 @@ int forward_simulation_with_varform_state(const std::vector<std::string> &names,
 	state.solve(sol);
 
 	state.variational_formulation->compute_errors(sol);
-	const io::OutputState output = state.variational_formulation->output_state();
 
-	io::OutRuntimeData timings = output.timings;
+	io::OutRuntimeData timings = state.variational_formulation->output_timings();
 	logger().info("total time: {}s", timings.total_time());
 
 	io::VarFormOutputWriter writer(*state.variational_formulation);

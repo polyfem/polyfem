@@ -70,6 +70,18 @@ namespace polyfem::io
 		Association association = Association::Point;
 	};
 
+	struct OutputSpace
+	{
+		const mesh::Mesh *mesh = nullptr;
+		const std::vector<basis::ElementBases> *geometry_bases = nullptr;
+		Eigen::VectorXi output_orders;
+		const std::map<int, Eigen::MatrixXd> *polys = nullptr;
+		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> *polys_3d = nullptr;
+		const std::vector<mesh::LocalBoundary> *total_local_boundary = nullptr;
+		const mesh::Obstacle *obstacle = nullptr;
+		const ipc::CollisionMesh *collision_mesh = nullptr;
+	};
+
 	struct OutputState
 	{
 		const json &args;

@@ -1250,7 +1250,12 @@ namespace polyfem::varform
 		{
 			logger().debug("Saving nl stats to {} and {}", resolve_output_path("energy.csv"), resolve_output_path("stats.csv"));
 			energy_csv = std::make_unique<io::EnergyCSVWriter>(resolve_output_path("energy.csv"), solve_data);
-			stats_csv = std::make_unique<io::RuntimeStatsCSVWriter>(resolve_output_path("stats.csv"), output_state(), t0, dt);
+			const io::OutputSpace space = output_space();
+			stats_csv = std::make_unique<io::RuntimeStatsCSVWriter>(
+				resolve_output_path("stats.csv"),
+				n_bases,
+				space.mesh ? space.mesh->n_elements() : 0,
+				t0, dt);
 		}
 
 		// Save the initial solution

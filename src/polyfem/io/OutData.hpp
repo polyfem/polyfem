@@ -20,31 +20,6 @@
 
 #include <Eigen/Dense>
 
-#include <ipc/potentials/normal_adhesion_potential.hpp>
-#include <ipc/potentials/tangential_adhesion_potential.hpp>
-
-namespace polyfem::varform
-{
-	class VarForm;
-} // namespace polyfem::varform
-
-namespace polyfem::assembler
-{
-	class Assembler;
-	class Mass;
-	class MixedAssembler;
-} // namespace polyfem::assembler
-
-namespace polyfem::mesh
-{
-	class Obstacle;
-} // namespace polyfem::mesh
-
-namespace ipc
-{
-	class CollisionMesh;
-} // namespace ipc
-
 namespace polyfem::io
 {
 	/// Utilies related to export of geometry
@@ -190,6 +165,7 @@ namespace polyfem::io
 		/// @param[in] opts export options
 		void save_volume(const std::string &path,
 						 const OutputState &state,
+						 const OutputSpace &space,
 						 const Eigen::MatrixXd &sol,
 						 const Eigen::MatrixXd &pressure,
 						 const double t,
@@ -337,17 +313,15 @@ namespace polyfem::io
 		/// it also retuns the mapping to element id and discretization of every elment
 		/// works in 2 and 3d. if the mesh is not simplicial it gets tri/tet halized
 		/// @param[in] mesh mesh
-		/// @param[in] disc_orders discretization orders
-		/// @param[in] disc_ordersq discretization orders
-		/// @param[in] bases bases
+		/// @param[in] output_orders output cell order per element
+		/// @param[in] bases bases used to map output reference nodes
 		/// @param[out] points mesh points
 		/// @param[out] elements mesh high-order cells
 		/// @param[out] el_id mapping from points to elements id
 		/// @param[out] discr mapping from points to discretization order
 		void build_high_order_vis_mesh(
 			const mesh::Mesh &mesh,
-			const Eigen::VectorXi &disc_orders,
-			const Eigen::VectorXi &disc_ordersq,
+			const Eigen::VectorXi &output_orders,
 			const std::vector<basis::ElementBases> &bases,
 			Eigen::MatrixXd &points,
 			std::vector<paraviewo::CellElement> &elements,
@@ -380,7 +354,7 @@ namespace polyfem::io
 	class RuntimeStatsCSVWriter
 	{
 	public:
-		RuntimeStatsCSVWriter(const std::string &path, const OutputState &state, const double t0, const double dt);
+		RuntimeStatsCSVWriter(const std::string &path, const int n_bases, const int n_elements, const double t0, const double dt);
 		~RuntimeStatsCSVWriter();
 
 		void write(const int t, const double forward, const double remeshing, const double global_relaxation, const Eigen::MatrixXd &sol);

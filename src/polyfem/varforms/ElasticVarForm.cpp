@@ -585,6 +585,29 @@ namespace polyfem::varform
 		return fields;
 	}
 
+	io::OutputSpace ElasticVarForm::output_space() const
+	{
+		Eigen::VectorXi output_orders = disc_orders;
+		if (mesh_ && disc_ordersq.size() == disc_orders.size())
+		{
+			for (int e = 0; e < output_orders.size(); ++e)
+			{
+				if (mesh_->is_prism(e))
+					output_orders(e) = std::max(disc_orders(e), disc_ordersq(e));
+			}
+		}
+
+		return {
+			mesh_.get(),
+			&geom_bases(),
+			output_orders,
+			&polys,
+			&polys_3d,
+			&total_local_boundary,
+			&obstacle,
+			&collision_mesh};
+	}
+
 	io::OutputState ElasticVarForm::output_state() const
 	{
 		static const std::vector<basis::ElementBases> empty_mixed_bases;
