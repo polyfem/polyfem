@@ -7,7 +7,7 @@
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/Types.hpp>
-#include <polyfem/legacy/solver/NLHomoProblem.hpp>
+#include <polyfem/solver/NLHomoProblem.hpp>
 #include <polyfem/solver/forms/PeriodicContactForm.hpp>
 #include <polyfem/solver/forms/lagrangian/MacroStrainLagrangianForm.hpp>
 
@@ -127,7 +127,7 @@ namespace polyfem::legacy
 			}
 		}
 
-		std::shared_ptr<NLHomoProblem> homo_problem = std::make_shared<NLHomoProblem>(
+		std::shared_ptr<solver::NLHomoProblem> homo_problem = std::make_shared<solver::NLHomoProblem>(
 			ndof,
 			macro_strain_constraint,
 			*this, t, forms, solve_data.al_form, solve_symmetric_flag, polysolve::linear::Solver::create(args["solver"]["linear"], logger()), characteristic_length, characteristic_force_density, pure_mass, mesh->dimension());
@@ -146,7 +146,7 @@ namespace polyfem::legacy
 		const int dim = mesh->dimension();
 		const int ndof = n_bases * dim;
 
-		auto homo_problem = std::dynamic_pointer_cast<NLHomoProblem>(solve_data.nl_problem);
+		auto homo_problem = std::dynamic_pointer_cast<solver::NLHomoProblem>(solve_data.nl_problem);
 
 		Eigen::VectorXd extended_sol;
 		extended_sol.setZero(ndof + dim * dim);
