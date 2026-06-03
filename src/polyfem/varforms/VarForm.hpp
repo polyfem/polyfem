@@ -24,6 +24,14 @@ namespace polyfem
 
 	namespace varform
 	{
+		class VarFormMatrixDebugAccess
+		{
+		public:
+			virtual ~VarFormMatrixDebugAccess() = default;
+			virtual void build_stiffness_mat_debug(StiffnessMatrix &stiffness) = 0;
+			virtual const StiffnessMatrix *mass_matrix_debug() const = 0;
+		};
+
 		class VarForm
 		{
 		public:
@@ -31,13 +39,9 @@ namespace polyfem
 			virtual ~VarForm() = default;
 
 			virtual void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path);
-			virtual void load_mesh(const mesh::Mesh &mesh, const json &args) = 0;
-			virtual void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) = 0;
-			virtual void assemble_rhs(const mesh::Mesh &mesh, const json &args) = 0;
-			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) = 0;
-			virtual void solve(Eigen::MatrixXd &sol) = 0;
-			virtual void build_stiffness_mat(StiffnessMatrix &stiffness);
-			virtual const StiffnessMatrix *mass_matrix() const { return nullptr; }
+			void set_mesh(std::unique_ptr<mesh::Mesh> mesh);
+			void prepare();
+			void solve(Eigen::MatrixXd &sol);
 
 			virtual std::string name() const = 0;
 			io::OutStatsData compute_errors(const Eigen::MatrixXd &solution);
@@ -51,6 +55,12 @@ namespace polyfem
 			}
 
 		protected:
+			virtual void load_mesh(const mesh::Mesh &mesh, const json &args) = 0;
+			virtual void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) = 0;
+			virtual void assemble_rhs(const mesh::Mesh &mesh, const json &args) = 0;
+			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) = 0;
+			virtual void solve_problem(Eigen::MatrixXd &sol) = 0;
+
 			std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const;
 			std::string resolve_output_path(const std::string &path) const;
 
@@ -78,7 +88,7 @@ namespace polyfem
 			std::string root_path;
 			std::string output_path;
 
-			const mesh::Mesh *mesh_ = nullptr;
+			std::unique_ptr<mesh::Mesh> mesh_;
 
 			/// Geometric mapping bases, if the elements are isoparametric, this list is empty
 			std::vector<basis::ElementBases> geom_bases_;

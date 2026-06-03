@@ -102,12 +102,6 @@ AuthenticateResult run_varform_state(json &args, json &out)
 	spdlog::set_level(spdlog::level::info);
 	state.load_mesh();
 
-	if (state.mesh == nullptr)
-	{
-		spdlog::warn("No Mesh is Read!!");
-		return MISSING_FILE;
-	}
-
 	Eigen::MatrixXd sol;
 	try
 	{

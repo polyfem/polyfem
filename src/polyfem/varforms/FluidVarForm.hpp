@@ -16,10 +16,6 @@ namespace polyfem::varform
 	{
 	public:
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
-		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
-		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
-		void assemble_rhs(const mesh::Mesh &mesh, const json &args) override;
-		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
 
 		io::OutputState output_state() const override;
 		std::vector<io::OutputField> output_fields(
@@ -29,6 +25,10 @@ namespace polyfem::varform
 
 	protected:
 		void reset() override;
+		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
+		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
+		void assemble_rhs(const mesh::Mesh &mesh, const json &args) override;
+		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
 
 		int primary_ndof() const;
 		int pressure_block_size() const;
@@ -67,9 +67,9 @@ namespace polyfem::varform
 	{
 	public:
 		std::string name() const override { return "Stokes"; }
-		void solve(Eigen::MatrixXd &sol) override;
 
 	private:
+		void solve_problem(Eigen::MatrixXd &sol) override;
 		void solve_static_linear(Eigen::MatrixXd &sol);
 		void solve_transient_linear(Eigen::MatrixXd &sol);
 	};
@@ -78,9 +78,9 @@ namespace polyfem::varform
 	{
 	public:
 		std::string name() const override { return "NavierStokes"; }
-		void solve(Eigen::MatrixXd &sol) override;
 
 	private:
+		void solve_problem(Eigen::MatrixXd &sol) override;
 		void solve_static(Eigen::MatrixXd &sol);
 		void solve_transient(Eigen::MatrixXd &sol);
 	};

@@ -30,16 +30,18 @@ namespace polyfem::varform
 	class NonlinearElasticTransientVarForm : public NonlinearElasticVarForm
 	{
 	public:
-		void solve(Eigen::MatrixXd &sol) override;
-
 		std::string name() const override { return "NonlinearElasticTransient"; }
+
+	private:
+		void solve_problem(Eigen::MatrixXd &sol) override;
 	};
 
 	class NonlinearElasticStaticVarForm : public NonlinearElasticVarForm
 	{
 	public:
-		void solve(Eigen::MatrixXd &sol) override;
-
 		std::string name() const override { return "NonlinearElasticStatic"; }
+
+	private:
+		void solve_problem(Eigen::MatrixXd &sol) override;
 	};
 } // namespace polyfem::varform

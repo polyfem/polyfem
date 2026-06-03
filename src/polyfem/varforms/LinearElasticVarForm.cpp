@@ -201,7 +201,7 @@ namespace polyfem::varform
 		}
 	}
 
-	void LinearElasticVarForm::solve(Eigen::MatrixXd &sol)
+	void LinearElasticVarForm::solve_problem(Eigen::MatrixXd &sol)
 	{
 		stats.spectrum.setZero();
 

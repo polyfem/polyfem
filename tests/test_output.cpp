@@ -60,12 +60,6 @@ TEST_CASE("full sim", "[.][full_sim]")
 	state.init(args, true);
 	state.load_mesh();
 
-	if (state.mesh == nullptr)
-	{
-		spdlog::warn("No Mesh is Read!!");
-		FAIL();
-	}
-
 	Eigen::MatrixXd sol;
 
 	state.solve(sol);

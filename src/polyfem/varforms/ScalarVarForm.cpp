@@ -74,7 +74,7 @@ namespace polyfem::varform
 		static const std::vector<basis::ElementBases> empty_mixed_bases;
 		return {
 			args,
-			mesh_,
+			mesh_.get(),
 			problem.get(),
 			assembler.get(),
 			mass_matrix_assembler.get(),
@@ -341,7 +341,7 @@ namespace polyfem::varform
 		}
 	}
 
-	void ScalarVarForm::solve(Eigen::MatrixXd &sol)
+	void ScalarVarForm::solve_problem(Eigen::MatrixXd &sol)
 	{
 		stats.spectrum.setZero();
 

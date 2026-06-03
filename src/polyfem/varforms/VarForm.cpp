@@ -8,6 +8,45 @@
 
 namespace polyfem::varform
 {
+	namespace
+	{
+		bool should_use_iso_parametric(const mesh::Mesh &mesh, const json &args)
+		{
+			if (mesh.has_poly())
+				return true;
+
+			if (args["space"]["basis_type"] == "Bernstein")
+				return false;
+
+			if (args["space"]["basis_type"] == "Spline")
+				return true;
+
+			if (mesh.is_rational())
+				return false;
+
+			if (args["space"]["use_p_ref"])
+				return false;
+
+			if (args["boundary_conditions"]["periodic_boundary"]["enabled"].get<bool>())
+				return false;
+
+			if (mesh.orders().size() <= 0)
+			{
+				if (args["space"]["discr_order"] == 1)
+					return true;
+				return args["space"]["advanced"]["isoparametric"];
+			}
+
+			if (mesh.orders().minCoeff() != mesh.orders().maxCoeff())
+				return false;
+
+			if (args["space"]["discr_order"] == mesh.orders().minCoeff())
+				return true;
+
+			return args["space"]["advanced"]["isoparametric"];
+		}
+	} // namespace
+
 	void VarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
 	{
 		reset();
@@ -21,6 +60,35 @@ namespace polyfem::varform
 			root_path = "";
 
 		this->output_path = out_path;
+	}
+
+	void VarForm::set_mesh(std::unique_ptr<mesh::Mesh> mesh)
+	{
+		mesh_ = std::move(mesh);
+		if (!mesh_)
+			return;
+
+		load_mesh(*mesh_, args);
+	}
+
+	void VarForm::prepare()
+	{
+		if (!mesh_)
+		{
+			logger().error("Load the mesh first!");
+			return;
+		}
+
+		mesh_->prepare_mesh();
+		build_basis(*mesh_, should_use_iso_parametric(*mesh_, args), args);
+		assemble_rhs(*mesh_, args);
+		assemble_mass_mat(*mesh_, args);
+	}
+
+	void VarForm::solve(Eigen::MatrixXd &sol)
+	{
+		prepare();
+		solve_problem(sol);
 	}
 
 	void VarForm::assign_discr_orders(const json &discr_order, const mesh::Mesh &mesh, Eigen::VectorXi &disc_orders)
@@ -93,12 +161,6 @@ namespace polyfem::varform
 
 		stats.compute_errors(output.n_bases, output.bases, output.geom_bases(), *output.mesh, *output.problem, tend, solution);
 		return stats;
-	}
-
-	void VarForm::build_stiffness_mat(StiffnessMatrix &stiffness)
-	{
-		logger().error("Stiffness assembly is not exposed by {}.", name());
-		throw std::runtime_error("Stiffness assembly is not exposed by this variational formulation.");
 	}
 
 	std::string VarForm::resolve_input_path(const std::string &path, const bool only_if_exists) const

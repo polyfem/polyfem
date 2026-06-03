@@ -18,11 +18,6 @@ namespace polyfem::varform
 		std::string name() const override { return "IncompressibleElastic"; }
 
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
-		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
-		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
-		void assemble_rhs(const mesh::Mesh &mesh, const json &args) override;
-		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
-		void solve(Eigen::MatrixXd &sol) override;
 
 		io::OutputState output_state() const override;
 		std::vector<io::OutputField> output_fields(
@@ -32,6 +27,11 @@ namespace polyfem::varform
 
 	private:
 		void reset() override;
+		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
+		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
+		void assemble_rhs(const mesh::Mesh &mesh, const json &args) override;
+		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
+		void solve_problem(Eigen::MatrixXd &sol) override;
 
 		int primary_ndof() const;
 		int stacked_ndof() const;

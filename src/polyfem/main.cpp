@@ -86,9 +86,6 @@ int forward_simulation_with_varform_state(const std::vector<std::string> &names,
 	state.init(in_args, is_strict);
 	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
 
-	if (state.mesh == nullptr)
-		return EXIT_FAILURE;
-
 	Eigen::MatrixXd sol;
 	state.solve(sol);
 

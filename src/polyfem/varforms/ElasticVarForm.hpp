@@ -19,15 +19,12 @@
 
 namespace polyfem::varform
 {
-	class ElasticVarForm : public VarForm
+	class ElasticVarForm : public VarForm, public VarFormMatrixDebugAccess
 	{
 	public:
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
-		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
-		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
-		void assemble_rhs(const mesh::Mesh &mesh, const json &args) override;
-		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
-		const StiffnessMatrix *mass_matrix() const override { return &mass; }
+		void build_stiffness_mat_debug(StiffnessMatrix &stiffness) override;
+		const StiffnessMatrix *mass_matrix_debug() const override { return &mass; }
 
 		io::OutputState output_state() const override;
 		std::vector<io::OutputField> output_fields(
@@ -37,6 +34,11 @@ namespace polyfem::varform
 
 	protected:
 		void reset() override;
+		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
+		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
+		void assemble_rhs(const mesh::Mesh &mesh, const json &args) override;
+		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
+		virtual void build_stiffness_mat(StiffnessMatrix &stiffness);
 
 		QuadratureOrders n_boundary_samples() const;
 		void initial_solution(Eigen::MatrixXd &solution) const;

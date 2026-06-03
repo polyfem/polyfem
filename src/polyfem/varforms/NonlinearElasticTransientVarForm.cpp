@@ -312,7 +312,6 @@ namespace polyfem::varform
 
 	void ElasticVarForm::load_mesh(const mesh::Mesh &mesh, const json &args)
 	{
-		mesh_ = &mesh;
 		set_materials(*assembler);
 		set_materials(*mass_matrix_assembler);
 		pure_mass_matrix_assembler->set_size(mass_matrix_assembler->size());
@@ -343,6 +342,17 @@ namespace polyfem::varform
 			root_path, mesh.dimension());
 
 		problem->init(mesh);
+	}
+
+	void ElasticVarForm::build_stiffness_mat_debug(StiffnessMatrix &stiffness)
+	{
+		build_stiffness_mat(stiffness);
+	}
+
+	void ElasticVarForm::build_stiffness_mat(StiffnessMatrix &stiffness)
+	{
+		logger().error("Stiffness assembly is not exposed by {}.", name());
+		throw std::runtime_error("Stiffness assembly is not exposed by this variational formulation.");
 	}
 
 	void ElasticVarForm::build_polygonal_basis(const mesh::Mesh &mesh)
@@ -492,7 +502,6 @@ namespace polyfem::varform
 	void ElasticVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
 	{
 		using namespace mesh;
-		mesh_ = &mesh;
 		this->iso_parametric = iso_parametric;
 		remesh_enabled = args["space"]["remesh"]["enabled"];
 
@@ -1089,8 +1098,6 @@ namespace polyfem::varform
 
 	void ElasticVarForm::assemble_rhs(const mesh::Mesh &mesh, const json &args)
 	{
-		mesh_ = &mesh;
-
 		igl::Timer timer;
 		json p_params = {};
 		p_params["formulation"] = assembler->name();
@@ -1121,8 +1128,6 @@ namespace polyfem::varform
 
 	void ElasticVarForm::assemble_mass_mat(const mesh::Mesh &mesh, const json &args)
 	{
-		mesh_ = &mesh;
-
 		if (!problem->is_time_dependent())
 		{
 			avg_mass = 1;
@@ -1170,7 +1175,7 @@ namespace polyfem::varform
 		logger().info("sparsity: {}/{}", stats.nn_zero, stats.mat_size);
 	}
 
-	void NonlinearElasticStaticVarForm::solve(Eigen::MatrixXd &sol)
+	void NonlinearElasticStaticVarForm::solve_problem(Eigen::MatrixXd &sol)
 	{
 		stats.spectrum.setZero();
 
@@ -1206,7 +1211,7 @@ namespace polyfem::varform
 		logger().info(" took {}s", timings.solving_time);
 	}
 
-	void NonlinearElasticTransientVarForm::solve(Eigen::MatrixXd &sol)
+	void NonlinearElasticTransientVarForm::solve_problem(Eigen::MatrixXd &sol)
 	{
 		const bool save_stats = args["output"]["stats"];
 		stats.spectrum.setZero();

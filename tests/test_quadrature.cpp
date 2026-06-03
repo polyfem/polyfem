@@ -108,9 +108,7 @@ namespace
 
 			state->load_mesh();
 
-			state->build_basis();
-			state->assemble_rhs();
-			state->assemble_mass_mat();
+			state->variational_formulation->prepare();
 
 			return state;
 		}
@@ -127,8 +125,12 @@ namespace
 			auto state = get_state(mesh, n_refs, basis_order, -1, -1, spline, serendipity);
 			auto expected = get_state(mesh, n_refs, basis_order, expected_quad, expected_quad, spline, serendipity);
 			StiffnessMatrix exp_st, st;
-			state->variational_formulation->build_stiffness_mat(st);
-			expected->variational_formulation->build_stiffness_mat(exp_st);
+			auto *state_matrices = dynamic_cast<varform::VarFormMatrixDebugAccess *>(state->variational_formulation.get());
+			auto *expected_matrices = dynamic_cast<varform::VarFormMatrixDebugAccess *>(expected->variational_formulation.get());
+			REQUIRE(state_matrices != nullptr);
+			REQUIRE(expected_matrices != nullptr);
+			state_matrices->build_stiffness_mat_debug(st);
+			expected_matrices->build_stiffness_mat_debug(exp_st);
 
 			StiffnessMatrix tmp = st - exp_st;
 			const auto val = Catch::Approx(0).margin(margin);
@@ -145,8 +147,8 @@ namespace
 				}
 			}
 
-			const StiffnessMatrix *mass = state->variational_formulation->mass_matrix();
-			const StiffnessMatrix *expected_mass = expected->variational_formulation->mass_matrix();
+			const StiffnessMatrix *mass = state_matrices->mass_matrix_debug();
+			const StiffnessMatrix *expected_mass = expected_matrices->mass_matrix_debug();
 			REQUIRE(mass != nullptr);
 			REQUIRE(expected_mass != nullptr);
 			tmp = *mass - *expected_mass;

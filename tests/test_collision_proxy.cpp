@@ -55,9 +55,7 @@ namespace
 
 		state->load_mesh();
 
-		state->build_basis();
-		// state->assemble_rhs();
-		// state->assemble_mass_mat();
+		state->variational_formulation->prepare();
 
 		return state;
 	}

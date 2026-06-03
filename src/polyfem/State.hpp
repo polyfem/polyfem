@@ -44,9 +44,6 @@ namespace polyfem
 		/// main input arguments containing all defaults
 		json args;
 
-		/// current mesh, it can be a Mesh2D or Mesh3D
-		std::unique_ptr<mesh::Mesh> mesh;
-
 		/// active variational formulation
 		std::shared_ptr<varform::VarForm> variational_formulation;
 
@@ -86,19 +83,6 @@ namespace polyfem
 		spdlog::sink_ptr file_sink_ = nullptr;
 
 	public:
-		//---------------------------------------------------
-		//-----------------assembly--------------------------
-		//---------------------------------------------------
-
-		/// builds the bases step 2 of solve
-		void build_basis();
-
-		/// compute rhs, step 3 of solve
-		void assemble_rhs();
-
-		/// assemble mass, step 4 of solve
-		void assemble_mass_mat();
-
 		/// solves the problem, call other methods
 		void solve(Eigen::MatrixXd &sol);
 
@@ -127,11 +111,7 @@ namespace polyfem
 		/// @param[in] V is #vertices x dim
 		/// @param[in] F is #elements x size (size = 3 for triangle mesh, size=4 for a quad mesh if dim is 2)
 		/// @param[in] non_conforming creates a conforming/non conforming mesh
-		void load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, bool non_conforming = false)
-		{
-			mesh = mesh::Mesh::create(V, F, non_conforming);
-			load_mesh(non_conforming);
-		}
+		void load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, bool non_conforming = false);
 	};
 
 } // namespace polyfem

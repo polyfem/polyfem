@@ -15,9 +15,9 @@ namespace polyfem::varform
 	{
 	public:
 		std::string name() const override { return "LinearElastic"; }
-		void solve(Eigen::MatrixXd &sol) override;
 
 	private:
+		void solve_problem(Eigen::MatrixXd &sol) override;
 		void init_linear_solve(Eigen::MatrixXd &sol, const double t);
 		void build_stiffness_mat(StiffnessMatrix &stiffness) override;
 		void solve_linear_system(

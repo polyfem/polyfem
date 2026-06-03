@@ -88,42 +88,6 @@ namespace polyfem
 			return args["contact"]["enabled"];
 		}
 
-		bool iso_parametric(const mesh::Mesh &mesh, const json &args)
-		{
-			if (mesh.has_poly())
-				return true;
-
-			if (args["space"]["basis_type"] == "Bernstein")
-				return false;
-
-			if (args["space"]["basis_type"] == "Spline")
-				return true;
-
-			if (mesh.is_rational())
-				return false;
-
-			if (args["space"]["use_p_ref"])
-				return false;
-
-			if (args["boundary_conditions"]["periodic_boundary"]["enabled"].get<bool>())
-				return false;
-
-			if (mesh.orders().size() <= 0)
-			{
-				if (args["space"]["discr_order"] == 1)
-					return true;
-				return args["space"]["advanced"]["isoparametric"];
-			}
-
-			if (mesh.orders().minCoeff() != mesh.orders().maxCoeff())
-				return false;
-
-			if (args["space"]["discr_order"] == mesh.orders().minCoeff())
-				return true;
-
-			return args["space"]["advanced"]["isoparametric"];
-		}
-
 		void init_time(json &args, Units &units)
 		{
 			if (!is_param_valid(args, "time"))
@@ -423,7 +387,7 @@ namespace polyfem
 		timer.start();
 		logger().info("Loading mesh...");
 
-		mesh = Mesh::create(meshin, non_conforming);
+		std::unique_ptr<Mesh> mesh = Mesh::create(meshin, non_conforming);
 		if (!mesh)
 		{
 			logger().error("Unable to load the mesh");
@@ -442,7 +406,7 @@ namespace polyfem
 		logger().info(" took {}s", timer.getElapsedTime());
 
 		assert(variational_formulation != nullptr);
-		variational_formulation->load_mesh(*mesh, args);
+		variational_formulation->set_mesh(std::move(mesh));
 	}
 
 	void State::load_mesh(
@@ -458,16 +422,13 @@ namespace polyfem
 		timer.start();
 
 		logger().info("Loading mesh ...");
-		if (mesh == nullptr)
-		{
-			assert(is_param_valid(args, "geometry"));
-			Units units;
-			units.init(args["units"]);
-			mesh = mesh::read_fem_geometry(
-				units,
-				args["geometry"], args["root_path"],
-				names, vertices, cells, non_conforming);
-		}
+		assert(is_param_valid(args, "geometry"));
+		Units units;
+		units.init(args["units"]);
+		std::unique_ptr<Mesh> mesh = mesh::read_fem_geometry(
+			units,
+			args["geometry"], args["root_path"],
+			names, vertices, cells, non_conforming);
 
 		if (mesh == nullptr)
 			log_and_throw_error("unable to load the mesh!");
@@ -479,9 +440,6 @@ namespace polyfem
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());
-
-		assert(variational_formulation != nullptr);
-		variational_formulation->load_mesh(*mesh, args);
 
 #ifdef POLYFEM_WITH_BEZIER
 		if (!mesh->is_simplicial())
@@ -498,59 +456,21 @@ namespace polyfem
 			args["space"]["advanced"]["use_corner_quadrature"] = true;
 		}
 		// FIXME: this is a temporary workaround to avoid incorrect Jacobian validity results for non-simplicial meshes when using discrete inversion checking. We should instead implement proper Jacobian validity checking for non-simplicial meshes.
+		assert(variational_formulation != nullptr);
 		variational_formulation->set_args(args);
-	}
-
-	void State::build_basis()
-	{
-		if (!mesh)
-		{
-			logger().error("Load the mesh first!");
-			return;
-		}
-
-		mesh->prepare_mesh();
-		assert(variational_formulation != nullptr);
-		variational_formulation->build_basis(*mesh, iso_parametric(*mesh, args), args);
-	}
-
-	void State::assemble_mass_mat()
-	{
-		if (!mesh)
-		{
-			logger().error("Load the mesh first!");
-			return;
-		}
-
-		assert(variational_formulation != nullptr);
-		variational_formulation->assemble_mass_mat(*mesh, args);
-	}
-
-	void State::assemble_rhs()
-	{
-		if (!mesh)
-		{
-			logger().error("Load the mesh first!");
-			return;
-		}
-
-		assert(variational_formulation != nullptr);
-		variational_formulation->assemble_rhs(*mesh, args);
+		variational_formulation->set_mesh(std::move(mesh));
 	}
 
 	void State::solve(Eigen::MatrixXd &sol)
 	{
-		if (!mesh)
-		{
-			logger().error("Load the mesh first!");
-			return;
-		}
-
-		build_basis();
-		assemble_rhs();
-		assemble_mass_mat();
-
 		assert(variational_formulation != nullptr);
+
 		variational_formulation->solve(sol);
+	}
+
+	void State::load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, bool non_conforming)
+	{
+		assert(variational_formulation != nullptr);
+		variational_formulation->set_mesh(mesh::Mesh::create(V, F, non_conforming));
 	}
 } // namespace polyfem

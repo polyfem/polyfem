@@ -17,7 +17,6 @@ namespace polyfem::varform
 		std::string name() const override { return "Scalar"; }
 
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
-		void solve(Eigen::MatrixXd &sol) override;
 
 		io::OutputState output_state() const override;
 		std::vector<io::OutputField> output_fields(
@@ -26,6 +25,7 @@ namespace polyfem::varform
 			const io::OutputFieldOptions &options) const override;
 
 	private:
+		void solve_problem(Eigen::MatrixXd &sol) override;
 		void build_stiffness_mat(StiffnessMatrix &stiffness) override;
 		void solve_linear_system(
 			const std::unique_ptr<polysolve::linear::Solver> &solver,

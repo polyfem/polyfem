@@ -65,12 +65,6 @@ Eigen::MatrixXd run_sim(State &state, const json &args)
 	logger().set_level(spdlog::level::info);
 	state.load_mesh();
 
-	if (state.mesh == nullptr)
-	{
-		spdlog::warn("No Mesh is Read!!");
-		FAIL();
-	}
-
 	Eigen::MatrixXd sol;
 
 	state.solve(sol);

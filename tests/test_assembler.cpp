@@ -42,9 +42,7 @@ TEST_CASE("hessian_lin", "[assembler]")
 	state.load_mesh();
 
 	// state.compute_mesh_stats();
-	state.build_basis();
-
-	state.assemble_mass_mat();
+	state.variational_formulation->prepare();
 
 	SparseMatrixCache mat_cache;
 	StiffnessMatrix hessian, stiffness;
@@ -55,7 +53,9 @@ TEST_CASE("hessian_lin", "[assembler]")
 	Eigen::MatrixXd disp(output.n_bases * output.mesh->dimension(), 1);
 	disp.setZero();
 
-	state.variational_formulation->build_stiffness_mat(stiffness);
+	auto *matrices = dynamic_cast<varform::VarFormMatrixDebugAccess *>(state.variational_formulation.get());
+	REQUIRE(matrices != nullptr);
+	matrices->build_stiffness_mat_debug(stiffness);
 
 	for (int rand = 0; rand < 10; ++rand)
 	{
@@ -102,9 +102,7 @@ TEST_CASE("hessian_hooke", "[assembler]")
 	state.load_mesh();
 
 	// state.compute_mesh_stats();
-	state.build_basis();
-
-	state.assemble_mass_mat();
+	state.variational_formulation->prepare();
 
 	SparseMatrixCache mat_cache;
 	StiffnessMatrix hessian, stiffness;
@@ -115,7 +113,9 @@ TEST_CASE("hessian_hooke", "[assembler]")
 	Eigen::MatrixXd disp(output.n_bases * output.mesh->dimension(), 1);
 	disp.setZero();
 
-	state.variational_formulation->build_stiffness_mat(stiffness);
+	auto *matrices = dynamic_cast<varform::VarFormMatrixDebugAccess *>(state.variational_formulation.get());
+	REQUIRE(matrices != nullptr);
+	matrices->build_stiffness_mat_debug(stiffness);
 
 	for (int rand = 0; rand < 10; ++rand)
 	{
@@ -163,7 +163,7 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 	state.load_mesh();
 
 	// state.compute_mesh_stats();
-	state.build_basis();
+	state.variational_formulation->prepare();
 
 	NeoHookeanAutodiff autodiff;
 	NeoHookeanElasticity real;

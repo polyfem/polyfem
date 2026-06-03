@@ -191,7 +191,6 @@ namespace polyfem::varform
 
 	void IncompressibleElasticVarForm::assemble_mass_mat(const mesh::Mesh &mesh, const json &args)
 	{
-		mesh_ = &mesh;
 		if (!problem->is_time_dependent())
 		{
 			avg_mass = 1;
@@ -366,7 +365,7 @@ namespace polyfem::varform
 		}
 	}
 
-	void IncompressibleElasticVarForm::solve(Eigen::MatrixXd &sol)
+	void IncompressibleElasticVarForm::solve_problem(Eigen::MatrixXd &sol)
 	{
 		stats.spectrum.setZero();
 		igl::Timer timer;
@@ -389,7 +388,7 @@ namespace polyfem::varform
 	{
 		return {
 			args,
-			mesh_,
+			mesh_.get(),
 			problem.get(),
 			assembler.get(),
 			mass_matrix_assembler.get(),

@@ -590,7 +590,7 @@ namespace polyfem::varform
 		static const std::vector<basis::ElementBases> empty_mixed_bases;
 		return {
 			args,
-			mesh_,
+			mesh_.get(),
 			problem.get(),
 			assembler.get(),
 			mass_matrix_assembler.get(),
