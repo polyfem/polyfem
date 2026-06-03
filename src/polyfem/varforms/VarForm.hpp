@@ -27,6 +27,7 @@ namespace polyfem
 		class VarForm
 		{
 		public:
+			void set_args(const json &args) { this->args = args; }
 			virtual ~VarForm() = default;
 
 			virtual void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path);

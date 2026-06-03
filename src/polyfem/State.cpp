@@ -497,6 +497,8 @@ namespace polyfem
 		{
 			args["space"]["advanced"]["use_corner_quadrature"] = true;
 		}
+		// FIXME: this is a temporary workaround to avoid incorrect Jacobian validity results for non-simplicial meshes when using discrete inversion checking. We should instead implement proper Jacobian validity checking for non-simplicial meshes.
+		variational_formulation->set_args(args);
 	}
 
 	void State::build_basis()

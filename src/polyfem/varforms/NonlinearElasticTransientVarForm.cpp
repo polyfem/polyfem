@@ -268,11 +268,6 @@ namespace polyfem::varform
 		mass_matrix_assembler = std::make_shared<assembler::Mass>();
 		pure_mass_matrix_assembler = std::make_shared<assembler::HRZMass>();
 
-		if (args["solver"]["advanced"]["check_inversion"] == "Conservative")
-		{
-			if (auto elastic_assembler = std::dynamic_pointer_cast<assembler::ElasticityAssembler>(assembler))
-				elastic_assembler->set_use_robust_jacobian();
-		}
 
 		if (!args.contains("preset_problem"))
 		{
@@ -500,6 +495,12 @@ namespace polyfem::varform
 		mesh_ = &mesh;
 		this->iso_parametric = iso_parametric;
 		remesh_enabled = args["space"]["remesh"]["enabled"];
+
+		if (args["solver"]["advanced"]["check_inversion"] == "Conservative")
+		{
+			if (auto elastic_assembler = std::dynamic_pointer_cast<assembler::ElasticityAssembler>(assembler))
+				elastic_assembler->set_use_robust_jacobian();
+		}
 
 		VarForm::assign_discr_orders(args["space"]["discr_order"], mesh, disc_orders);
 
