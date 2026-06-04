@@ -114,8 +114,8 @@ AuthenticateResult run_varform_state(json &args, json &out)
 
 	const io::OutStatsData stats = state.variational_formulation->compute_errors(sol);
 
+	state.variational_formulation->save_json(sol);
 	io::VarFormOutputWriter writer(*state.variational_formulation);
-	writer.save_json(sol);
 	writer.export_data(sol);
 
 	out["err_l2"] = stats.l2_err;

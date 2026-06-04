@@ -195,7 +195,7 @@ namespace polyfem::varform
 
 			solve_data.time_integrator->update_quantities(sol);
 			output_writer.save_timestep(time, t, t0, dt, sol);
-			output_writer.save_step_state(t0, dt, t, sol);
+			save_step_state(t0, dt, t, sol);
 
 			logger().info("{}/{}  t={}", t, time_steps, time);
 		}

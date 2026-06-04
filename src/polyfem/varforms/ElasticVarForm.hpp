@@ -23,11 +23,13 @@ namespace polyfem::varform
 	{
 	public:
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
+		io::OutStatsData compute_errors(const Eigen::MatrixXd &solution) override;
+		VarFormDebugData debug_data() const override;
+		void save_json(const Eigen::MatrixXd &solution, std::ostream &out) const override;
 		void build_stiffness_mat_debug(StiffnessMatrix &stiffness) override;
 		const StiffnessMatrix *mass_matrix_debug() const override { return &mass; }
 
 		io::OutputSpace output_space() const override;
-		io::OutputState output_state() const override;
 		std::vector<io::OutputField> output_fields(
 			const io::OutputSample &sample,
 			const Eigen::MatrixXd &solution,
@@ -39,6 +41,7 @@ namespace polyfem::varform
 		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
 		void assemble_rhs(const mesh::Mesh &mesh, const json &args) override;
 		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
+		void save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const override;
 		virtual void build_stiffness_mat(StiffnessMatrix &stiffness);
 
 		QuadratureOrders n_boundary_samples() const;
@@ -118,5 +121,6 @@ namespace polyfem::varform
 			const std::function<std::string(const std::string &)> &resolve_input_path,
 			const Eigen::VectorXi &in_node_to_node,
 			ipc::CollisionMesh &collision_mesh);
+		void build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F) const;
 	};
 } // namespace polyfem::varform

@@ -1,6 +1,7 @@
 #include <polyfem/State.hpp>
 
 #include <polyfem/Units.hpp>
+#include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/assembler/AssemblyValsCache.hpp>
 #include <polyfem/assembler/NeoHookeanElasticity.hpp>
 #include <polyfem/assembler/NeoHookeanElasticityAutodiff.hpp>
@@ -46,22 +47,25 @@ TEST_CASE("hessian_lin", "[assembler]")
 
 	SparseMatrixCache mat_cache;
 	StiffnessMatrix hessian, stiffness;
-	const io::OutputState output = state.variational_formulation->output_state();
-	REQUIRE(output.assembler != nullptr);
-	AssemblyValsCache ass_vals_cache;
-	ass_vals_cache.init_empty();
-	Eigen::MatrixXd disp(output.n_bases * output.mesh->dimension(), 1);
-	disp.setZero();
-
 	auto *matrices = dynamic_cast<varform::VarFormMatrixDebugAccess *>(state.variational_formulation.get());
 	REQUIRE(matrices != nullptr);
+	const varform::VarFormDebugData debug = matrices->debug_data();
+	REQUIRE(debug.assembler != nullptr);
+	REQUIRE(debug.mesh != nullptr);
+	REQUIRE(debug.bases != nullptr);
+	REQUIRE(debug.geometry_bases != nullptr);
+	AssemblyValsCache ass_vals_cache;
+	ass_vals_cache.init_empty();
+	Eigen::MatrixXd disp(debug.n_bases * debug.mesh->dimension(), 1);
+	disp.setZero();
+
 	matrices->build_stiffness_mat_debug(stiffness);
 
 	for (int rand = 0; rand < 10; ++rand)
 	{
-		output.assembler->assemble_hessian(
-			output.mesh->is_volume(), output.n_bases, false,
-			output.bases, output.geom_bases(), ass_vals_cache, 0, 0, disp, Eigen::MatrixXd(), mat_cache, hessian);
+		debug.assembler->assemble_hessian(
+			debug.mesh->is_volume(), debug.n_bases, false,
+			*debug.bases, *debug.geometry_bases, ass_vals_cache, 0, 0, disp, Eigen::MatrixXd(), mat_cache, hessian);
 
 		const StiffnessMatrix tmp = stiffness - hessian;
 		const auto val = Catch::Approx(0).margin(1e-8);
@@ -106,22 +110,25 @@ TEST_CASE("hessian_hooke", "[assembler]")
 
 	SparseMatrixCache mat_cache;
 	StiffnessMatrix hessian, stiffness;
-	const io::OutputState output = state.variational_formulation->output_state();
-	REQUIRE(output.assembler != nullptr);
-	AssemblyValsCache ass_vals_cache;
-	ass_vals_cache.init_empty();
-	Eigen::MatrixXd disp(output.n_bases * output.mesh->dimension(), 1);
-	disp.setZero();
-
 	auto *matrices = dynamic_cast<varform::VarFormMatrixDebugAccess *>(state.variational_formulation.get());
 	REQUIRE(matrices != nullptr);
+	const varform::VarFormDebugData debug = matrices->debug_data();
+	REQUIRE(debug.assembler != nullptr);
+	REQUIRE(debug.mesh != nullptr);
+	REQUIRE(debug.bases != nullptr);
+	REQUIRE(debug.geometry_bases != nullptr);
+	AssemblyValsCache ass_vals_cache;
+	ass_vals_cache.init_empty();
+	Eigen::MatrixXd disp(debug.n_bases * debug.mesh->dimension(), 1);
+	disp.setZero();
+
 	matrices->build_stiffness_mat_debug(stiffness);
 
 	for (int rand = 0; rand < 10; ++rand)
 	{
-		output.assembler->assemble_hessian(
-			output.mesh->is_volume(), output.n_bases, false,
-			output.bases, output.geom_bases(), ass_vals_cache, 0, 0, disp, Eigen::MatrixXd(), mat_cache, hessian);
+		debug.assembler->assemble_hessian(
+			debug.mesh->is_volume(), debug.n_bases, false,
+			*debug.bases, *debug.geometry_bases, ass_vals_cache, 0, 0, disp, Eigen::MatrixXd(), mat_cache, hessian);
 
 		const StiffnessMatrix tmp = stiffness - hessian;
 		const auto val = Catch::Approx(0).margin(1e-8);
@@ -173,22 +180,27 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 
 	Units units;
 	units.init(state.args["units"]);
-	const io::OutputState output = state.variational_formulation->output_state();
+	auto *matrices = dynamic_cast<varform::VarFormMatrixDebugAccess *>(state.variational_formulation.get());
+	REQUIRE(matrices != nullptr);
+	const varform::VarFormDebugData debug = matrices->debug_data();
+	REQUIRE(debug.mesh != nullptr);
+	REQUIRE(debug.bases != nullptr);
+	REQUIRE(debug.geometry_bases != nullptr);
 
-	autodiff.add_multimaterial(0, in_args["materials"], units, output.root_path);
-	real.add_multimaterial(0, in_args["materials"], units, output.root_path);
+	autodiff.add_multimaterial(0, in_args["materials"], units, debug.root_path);
+	real.add_multimaterial(0, in_args["materials"], units, debug.root_path);
 
 	const int el_id = 0;
-	const auto &bs = output.bases[el_id];
-	const auto &gbs = output.geom_bases()[el_id];
+	const auto &bs = (*debug.bases)[el_id];
+	const auto &gbs = (*debug.geometry_bases)[el_id];
 	Eigen::MatrixXd local_pts;
 	Eigen::MatrixXi f;
 	regular_2d_grid(10, true, local_pts, f);
 
-	Eigen::MatrixXd displacement(output.n_bases, 1);
+	Eigen::MatrixXd displacement(debug.n_bases, 1);
 
 	ElementAssemblyValues vals;
-	vals.compute(el_id, output.mesh->is_volume(), bs, gbs);
+	vals.compute(el_id, debug.mesh->is_volume(), bs, gbs);
 
 	const auto &quadrature = vals.quadrature;
 	const QuadratureVector da = vals.det.array() * quadrature.weights.array();

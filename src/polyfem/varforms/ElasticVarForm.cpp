@@ -10,11 +10,14 @@
 #include <polyfem/autogen/prism_bases.hpp>
 
 #include <polyfem/io/Evaluator.hpp>
+#include <polyfem/io/MshWriter.hpp>
 
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 
 #include <polyfem/utils/BoundarySampler.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
+
+#include <ostream>
 
 #include <spdlog/fmt/fmt.h>
 
@@ -587,6 +590,109 @@ namespace polyfem::varform
 		return fields;
 	}
 
+	io::OutStatsData ElasticVarForm::compute_errors(const Eigen::MatrixXd &solution)
+	{
+		if (!args["output"]["advanced"]["compute_error"])
+			return stats;
+
+		double tend = 0;
+		if (!args["time"].is_null())
+			tend = args["time"]["tend"];
+
+		stats.compute_errors(n_bases, bases, geom_bases(), *mesh_, *problem, tend, solution);
+		return stats;
+	}
+
+	VarFormDebugData ElasticVarForm::debug_data() const
+	{
+		return {
+			mesh_.get(),
+			assembler.get(),
+			&bases,
+			&geom_bases(),
+			&total_local_boundary,
+			n_bases,
+			obstacle.n_vertices(),
+			root_path};
+	}
+
+	void ElasticVarForm::save_json(const Eigen::MatrixXd &solution, std::ostream &out) const
+	{
+		if (!mesh_)
+		{
+			logger().error("Load the mesh first!");
+			return;
+		}
+		if (solution.size() <= 0)
+		{
+			logger().error("Solve the problem first!");
+			return;
+		}
+
+		logger().info("Saving json...");
+		const int actual_dim = problem_dimension();
+		const int primary_size = n_bases * actual_dim;
+		const Eigen::MatrixXd stats_solution =
+			solution.rows() >= primary_size
+				? solution.topRows(primary_size).eval()
+				: solution;
+
+		nlohmann::json j;
+		stats.save_json(
+			args, n_bases, 0,
+			stats_solution, *mesh_, disc_orders, disc_ordersq, *problem,
+			timings, assembler ? assembler->name() : name(), iso_parametric,
+			args["output"]["advanced"]["sol_at_node"], j);
+		out << j.dump(4) << std::endl;
+	}
+
+	void ElasticVarForm::build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F) const
+	{
+		assert(mesh_);
+		assert(bases.size() == mesh_->n_elements());
+		const size_t n_vertices = n_bases - obstacle.n_vertices();
+		const int dim = mesh_->dimension();
+
+		V.resize(n_vertices, dim);
+		F.resize(bases.size(), dim + 1);
+
+		for (int i = 0; i < bases.size(); i++)
+		{
+			const basis::ElementBases &element = bases[i];
+			for (int j = 0; j < element.bases.size(); j++)
+			{
+				const basis::Basis &basis = element.bases[j];
+				assert(basis.global().size() == 1);
+				V.row(basis.global()[0].index) = basis.global()[0].node;
+				if (j < F.cols())
+					F(i, j) = basis.global()[0].index;
+			}
+		}
+	}
+
+	void ElasticVarForm::save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const
+	{
+		if (!mesh_)
+			return;
+
+		const std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
+		if (!rest_mesh_path.empty())
+		{
+			Eigen::MatrixXd V;
+			Eigen::MatrixXi F;
+			build_mesh_matrices(V, F);
+			io::MshWriter::write(
+				resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], t)),
+				V, F, mesh_->get_body_ids(), mesh_->is_volume(), /*binary=*/true);
+		}
+
+		const std::string state_path = resolve_output_path(fmt::format(args["output"]["data"]["state"], t));
+		if (!state_path.empty() && solve_data.time_integrator)
+			solve_data.time_integrator->save_state(state_path);
+
+		save_restart_json(t0, dt, t);
+	}
+
 	io::OutputSpace ElasticVarForm::output_space() const
 	{
 		Eigen::VectorXi output_orders = disc_orders;
@@ -610,44 +716,5 @@ namespace polyfem::varform
 			&collision_mesh,
 			&dirichlet_nodes,
 			&dirichlet_nodes_position};
-	}
-
-	io::OutputState ElasticVarForm::output_state() const
-	{
-		static const std::vector<basis::ElementBases> empty_mixed_bases;
-		return {
-			args,
-			mesh_.get(),
-			problem.get(),
-			assembler.get(),
-			mass_matrix_assembler.get(),
-			nullptr,
-			solve_data,
-			bases,
-			empty_mixed_bases,
-			geom_bases_,
-			n_bases,
-			0,
-			disc_orders,
-			disc_ordersq,
-			in_node_to_node,
-			rhs,
-			polys,
-			polys_3d,
-			obstacle,
-			collision_mesh,
-			total_local_boundary,
-			dirichlet_nodes,
-			dirichlet_nodes_position,
-			iso_parametric,
-			assembler ? assembler->name() : std::string(),
-			"displacement",
-			root_path,
-			output_path,
-			n_boundary_samples(),
-			stats,
-			timings,
-			stats.min_edge_length,
-			this};
 	}
 } // namespace polyfem::varform

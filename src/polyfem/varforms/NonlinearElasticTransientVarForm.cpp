@@ -1293,7 +1293,7 @@ namespace polyfem::varform
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
 
-			output_writer.save_step_state(t0, dt, t + t_offset, sol);
+			save_step_state(t0, dt, t + t_offset, sol);
 			if (stats_csv)
 				stats_csv->write(t, forward_solve_time, remeshing_time, global_relaxation_time, sol);
 		}

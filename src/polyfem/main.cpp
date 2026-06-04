@@ -94,8 +94,8 @@ int forward_simulation_with_varform_state(const std::vector<std::string> &names,
 	io::OutRuntimeData timings = state.variational_formulation->output_timings();
 	logger().info("total time: {}s", timings.total_time());
 
+	state.variational_formulation->save_json(sol);
 	io::VarFormOutputWriter writer(*state.variational_formulation);
-	writer.save_json(sol);
 	writer.export_data(sol);
 
 	return EXIT_SUCCESS;

@@ -360,7 +360,7 @@ namespace polyfem::varform
 			bdf->update_quantities(displacement.col(0));
 
 			output_writer.save_timestep(time, t + t_offset, t0, dt, sol);
-			output_writer.save_step_state(t0, dt, t + t_offset, sol);
+			save_step_state(t0, dt, t + t_offset, sol);
 			logger().info("{}/{}  t={}", t, time_steps, time);
 		}
 	}
@@ -382,44 +382,6 @@ namespace polyfem::varform
 		timer.stop();
 		timings.solving_time = timer.getElapsedTime();
 		logger().info(" took {}s", timings.solving_time);
-	}
-
-	io::OutputState IncompressibleElasticVarForm::output_state() const
-	{
-		return {
-			args,
-			mesh_.get(),
-			problem.get(),
-			assembler.get(),
-			mass_matrix_assembler.get(),
-			mixed_assembler.get(),
-			solve_data,
-			bases,
-			pressure_bases,
-			geom_bases_,
-			n_bases,
-			n_pressure_bases,
-			disc_orders,
-			disc_ordersq,
-			in_node_to_node,
-			rhs,
-			polys,
-			polys_3d,
-			obstacle,
-			collision_mesh,
-			total_local_boundary,
-			dirichlet_nodes,
-			dirichlet_nodes_position,
-			iso_parametric,
-			assembler ? assembler->name() : std::string(),
-			"displacement",
-			root_path,
-			output_path,
-			n_boundary_samples(),
-			stats,
-			timings,
-			stats.min_edge_length,
-			this};
 	}
 
 	std::vector<io::OutputField> IncompressibleElasticVarForm::output_fields(

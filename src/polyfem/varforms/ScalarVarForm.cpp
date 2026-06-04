@@ -69,45 +69,6 @@ namespace polyfem::varform
 		dt = is_time_dependent ? args["time"]["dt"].get<double>() : 0.0;
 	}
 
-	io::OutputState ScalarVarForm::output_state() const
-	{
-		static const std::vector<basis::ElementBases> empty_mixed_bases;
-		return {
-			args,
-			mesh_.get(),
-			problem.get(),
-			assembler.get(),
-			mass_matrix_assembler.get(),
-			nullptr,
-			solve_data,
-			bases,
-			empty_mixed_bases,
-			geom_bases_,
-			n_bases,
-			0,
-			disc_orders,
-			disc_ordersq,
-			in_node_to_node,
-			rhs,
-			polys,
-			polys_3d,
-			obstacle,
-			collision_mesh,
-			total_local_boundary,
-			dirichlet_nodes,
-			dirichlet_nodes_position,
-			iso_parametric,
-			assembler ? assembler->name() : std::string(),
-			"solution",
-			root_path,
-			output_path,
-			n_boundary_samples(),
-			stats,
-			timings,
-			stats.min_edge_length,
-			this};
-	}
-
 	std::vector<io::OutputField> ScalarVarForm::output_fields(
 		const io::OutputSample &sample,
 		const Eigen::MatrixXd &solution,
@@ -335,7 +296,7 @@ namespace polyfem::varform
 
 			bdf->update_quantities(sol);
 			output_writer.save_timestep(time, t, t0, dt, sol);
-			output_writer.save_step_state(t0, dt, t, sol);
+			save_step_state(t0, dt, t, sol);
 
 			logger().info("{}/{}  t={}", t, time_steps, time);
 		}

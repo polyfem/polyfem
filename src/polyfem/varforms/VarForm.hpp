@@ -8,10 +8,12 @@
 #include <polyfem/solver/forms/Form.hpp>
 
 #include <polyfem/io/OutputData.hpp>
+#include <polyfem/io/OutStatsData.hpp>
 #include <polyfem/utils/Types.hpp>
 
 #include <Eigen/Dense>
 
+#include <iosfwd>
 #include <memory>
 #include <map>
 #include <unordered_map>
@@ -22,12 +24,30 @@ namespace polyfem
 {
 	class State;
 
+	namespace assembler
+	{
+		class Assembler;
+	} // namespace assembler
+
 	namespace varform
 	{
+		struct VarFormDebugData
+		{
+			const mesh::Mesh *mesh = nullptr;
+			const assembler::Assembler *assembler = nullptr;
+			const std::vector<basis::ElementBases> *bases = nullptr;
+			const std::vector<basis::ElementBases> *geometry_bases = nullptr;
+			const std::vector<mesh::LocalBoundary> *total_local_boundary = nullptr;
+			int n_bases = 0;
+			int n_obstacle_vertices = 0;
+			std::string root_path;
+		};
+
 		class VarFormMatrixDebugAccess
 		{
 		public:
 			virtual ~VarFormMatrixDebugAccess() = default;
+			virtual VarFormDebugData debug_data() const = 0;
 			virtual void build_stiffness_mat_debug(StiffnessMatrix &stiffness) = 0;
 			virtual const StiffnessMatrix *mass_matrix_debug() const = 0;
 		};
@@ -44,10 +64,14 @@ namespace polyfem
 			void solve(Eigen::MatrixXd &sol);
 
 			virtual std::string name() const = 0;
+			const json &input_args() const { return args; }
+			int problem_dimension() const;
+			bool is_contact_enabled() const;
+			std::string resolve_output_path(const std::string &path) const;
 			const io::OutRuntimeData &output_timings() const { return timings; }
-			io::OutStatsData compute_errors(const Eigen::MatrixXd &solution);
+			virtual io::OutStatsData compute_errors(const Eigen::MatrixXd &solution);
 			virtual io::OutputSpace output_space() const = 0;
-			virtual io::OutputState output_state() const = 0;
+			virtual void save_json(const Eigen::MatrixXd &solution, std::ostream &out) const {};
 			virtual std::vector<io::OutputField> output_fields(
 				const io::OutputSample &sample,
 				const Eigen::MatrixXd &solution,
@@ -62,9 +86,10 @@ namespace polyfem
 			virtual void assemble_rhs(const mesh::Mesh &mesh, const json &args) = 0;
 			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) = 0;
 			virtual void solve_problem(Eigen::MatrixXd &sol) = 0;
+			virtual void save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const;
+			void save_restart_json(const double t0, const double dt, const int t) const;
 
 			std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const;
-			std::string resolve_output_path(const std::string &path) const;
 
 			/// current problem, it contains rhs and bc
 			std::shared_ptr<assembler::Problem> problem;

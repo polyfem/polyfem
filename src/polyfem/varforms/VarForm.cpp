@@ -6,6 +6,11 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/StringUtils.hpp>
 
+#include <fstream>
+#include <limits>
+
+#include <spdlog/fmt/fmt.h>
+
 namespace polyfem::varform
 {
 	namespace
@@ -150,17 +155,130 @@ namespace polyfem::varform
 
 	io::OutStatsData VarForm::compute_errors(const Eigen::MatrixXd &solution)
 	{
-		if (!args["output"]["advanced"]["compute_error"])
-			return stats;
-
-		const io::OutputState output = output_state();
-
-		double tend = 0;
-		if (!args["time"].is_null())
-			tend = args["time"]["tend"];
-
-		stats.compute_errors(output.n_bases, output.bases, output.geom_bases(), *output.mesh, *output.problem, tend, solution);
 		return stats;
+	}
+
+	void VarForm::save_json(const Eigen::MatrixXd &solution) const
+	{
+		const std::string out_path = resolve_output_path(args["output"]["json"]);
+		if (out_path.empty())
+			return;
+
+		std::ofstream file(out_path);
+		if (!file.is_open())
+		{
+			logger().error("Unable to save simulation JSON to {}", out_path);
+			return;
+		}
+		save_json(solution, file);
+	}
+
+	int VarForm::problem_dimension() const
+	{
+		if (!problem)
+			return 0;
+		if (problem->is_scalar())
+			return 1;
+		return mesh_ ? mesh_->dimension() : 0;
+	}
+
+	bool VarForm::is_contact_enabled() const
+	{
+		return args.contains("contact") && args["contact"].contains("enabled") && args["contact"]["enabled"].get<bool>();
+	}
+
+	void VarForm::save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const
+	{
+		save_restart_json(t0, dt, t);
+	}
+
+	void VarForm::save_restart_json(const double t0, const double dt, const int t) const
+	{
+		const std::string restart_json_path = args["output"]["restart_json"];
+		if (restart_json_path.empty())
+			return;
+
+		json restart_json;
+		restart_json["root_path"] = root_path;
+		restart_json["common"] = root_path;
+		restart_json["time"] = {{"t0", t0 + dt * t}};
+
+		restart_json["space"] = R"({
+			"remesh": {
+				"collapse": {
+					"abs_max_edge_length": -1,
+					"rel_max_edge_length": -1
+				}
+			}
+		})"_json;
+
+		const double starting_min_edge_length = stats.min_edge_length;
+		restart_json["space"]["remesh"]["collapse"]["abs_max_edge_length"] = std::min(
+			args["space"]["remesh"]["collapse"]["abs_max_edge_length"].get<double>(),
+			starting_min_edge_length * args["space"]["remesh"]["collapse"]["rel_max_edge_length"].get<double>());
+		restart_json["space"]["remesh"]["collapse"]["rel_max_edge_length"] = std::numeric_limits<float>::max();
+
+		std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
+		if (!rest_mesh_path.empty())
+		{
+			rest_mesh_path = resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], t));
+
+			std::vector<json> patch;
+			if (args["geometry"].is_array())
+			{
+				const std::vector<json> in_geometry = args["geometry"];
+				for (int i = 0; i < in_geometry.size(); ++i)
+				{
+					if (!in_geometry[i]["is_obstacle"].get<bool>())
+					{
+						patch.push_back({
+							{"op", "remove"},
+							{"path", fmt::format("/geometry/{}", i)},
+						});
+					}
+				}
+
+				const int remaining_geometry = in_geometry.size() - patch.size();
+				assert(remaining_geometry >= 0);
+
+				patch.push_back({
+					{"op", "add"},
+					{"path", fmt::format("/geometry/{}", remaining_geometry > 0 ? "0" : "-")},
+					{"value",
+					 {
+						 {"mesh", rest_mesh_path},
+					 }},
+				});
+			}
+			else
+			{
+				assert(args["geometry"].is_object());
+				patch.push_back({
+					{"op", "remove"},
+					{"path", "/geometry"},
+				});
+				patch.push_back({
+					{"op", "replace"},
+					{"path", "/geometry"},
+					{"value",
+					 {
+						 {"mesh", rest_mesh_path},
+					 }},
+				});
+			}
+
+			restart_json["patch"] = patch;
+		}
+
+		restart_json["input"] = {{
+			"data",
+			{
+				{"state", resolve_output_path(fmt::format(args["output"]["data"]["state"], t))},
+			},
+		}};
+
+		std::ofstream file(resolve_output_path(fmt::format(restart_json_path, t)));
+		file << restart_json;
 	}
 
 	std::string VarForm::resolve_input_path(const std::string &path, const bool only_if_exists) const
