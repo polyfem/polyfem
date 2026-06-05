@@ -111,11 +111,11 @@ TEST_CASE("franke 2d", "[problem]")
 
 		Helmholtz helmholtz;
 		helmholtz.set_size(2);
-		helmholtz.add_multimaterial(0, params, units);
+		helmholtz.add_multimaterial(0, params, units, "");
 
 		Laplacian laplacian;
 		laplacian.set_size(2);
-		laplacian.add_multimaterial(0, params, units);
+		laplacian.add_multimaterial(0, params, units, "");
 
 		probl->rhs(laplacian, pts, 1, other);
 		Eigen::MatrixXd diff = (other - rhs);
@@ -197,11 +197,11 @@ TEST_CASE("franke 3d", "[problem]")
 
 		Helmholtz helmholtz;
 		helmholtz.set_size(3);
-		helmholtz.add_multimaterial(0, params, units);
+		helmholtz.add_multimaterial(0, params, units, "");
 
 		Laplacian laplacian;
 		laplacian.set_size(3);
-		laplacian.add_multimaterial(0, params, units);
+		laplacian.add_multimaterial(0, params, units, "");
 
 		probl->rhs(laplacian, pts, 1, other);
 		Eigen::MatrixXd diff = (other - rhs);
@@ -256,11 +256,11 @@ TEST_CASE("linear", "[problem]")
 
 	Helmholtz helmholtz;
 	helmholtz.set_size(2);
-	helmholtz.add_multimaterial(0, params, units);
+	helmholtz.add_multimaterial(0, params, units, "");
 
 	Laplacian laplacian;
 	laplacian.set_size(2);
-	laplacian.add_multimaterial(0, params, units);
+	laplacian.add_multimaterial(0, params, units, "");
 
 	{
 		Eigen::MatrixXd rhs = x;
@@ -322,11 +322,11 @@ TEST_CASE("quadratic", "[problem]")
 
 	Helmholtz helmholtz;
 	helmholtz.set_size(2);
-	helmholtz.add_multimaterial(0, params, units);
+	helmholtz.add_multimaterial(0, params, units, "");
 
 	Laplacian laplacian;
 	laplacian.set_size(2);
-	laplacian.add_multimaterial(0, params, units);
+	laplacian.add_multimaterial(0, params, units, "");
 
 	{
 		Eigen::MatrixXd rhs = x;
@@ -372,7 +372,7 @@ TEST_CASE("zero bc 2d", "[problem]")
 
 	Laplacian laplacian;
 	laplacian.set_size(2);
-	laplacian.add_multimaterial(0, params, units);
+	laplacian.add_multimaterial(0, params, units, "");
 
 	{
 		Eigen::MatrixXd rhs = -4 * x * y * (1 - y) * (1 - y) + 2 * (1 - x) * y * (1 - y) * (1 - y) - 4 * (1 - x) * x * x * (1 - y) + 2 * (1 - x) * x * x * y;
@@ -408,7 +408,7 @@ TEST_CASE("zero bc 3d", "[problem]")
 
 	Laplacian laplacian;
 	laplacian.set_size(3);
-	laplacian.add_multimaterial(0, params, units);
+	laplacian.add_multimaterial(0, params, units, "");
 
 	{
 		Eigen::MatrixXd rhs = (0.2e1 * pow(x, 0.3e1) - 0.2e1 * x * x + (6 * z * z - 6 * z) * x - (2 * z * z) + (2 * z)) * pow(y, 0.3e1) + (-0.4e1 * pow(x, 0.3e1) + 0.4e1 * x * x + (-12 * z * z + 12 * z) * x + (4 * z * z) - (4 * z)) * y * y + ((6 * z * z - 6 * z + 2) * pow(x, 0.3e1) + (-6 * z * z + 6 * z - 2) * x * x + (6 * z * z - 6 * z) * x - (2 * z * z) + (2 * z)) * y - 0.4e1 * x * x * z * (z - 1) * (x - 0.1e1);
@@ -446,19 +446,19 @@ TEST_CASE("elasticity 2d", "[problem]")
 
 	LinearElasticity le;
 	le.set_size(2);
-	le.add_multimaterial(0, params, units);
+	le.add_multimaterial(0, params, units, "");
 
 	HookeLinearElasticity ho;
 	ho.set_size(2);
-	ho.add_multimaterial(0, params, units);
+	ho.add_multimaterial(0, params, units, "");
 
 	SaintVenantElasticity sv;
 	sv.set_size(2);
-	sv.add_multimaterial(0, params, units);
+	sv.add_multimaterial(0, params, units, "");
 
 	NeoHookeanElasticity nh;
 	nh.set_size(2);
-	nh.add_multimaterial(0, params, units);
+	nh.add_multimaterial(0, params, units, "");
 
 	// rhs
 	{
@@ -532,15 +532,15 @@ TEST_CASE("elasticity 3d", "[problem]")
 
 	LinearElasticity le;
 	le.set_size(3);
-	le.add_multimaterial(0, params, units);
+	le.add_multimaterial(0, params, units, "");
 
 	HookeLinearElasticity ho;
 	ho.set_size(3);
-	ho.add_multimaterial(0, params, units);
+	ho.add_multimaterial(0, params, units, "");
 
 	SaintVenantElasticity sv;
 	sv.set_size(3);
-	sv.add_multimaterial(0, params, units);
+	sv.add_multimaterial(0, params, units, "");
 
 	// rhs
 	{

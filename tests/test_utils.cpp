@@ -7,12 +7,16 @@
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 
+#ifdef POLYFEM_WITH_ITR
 #include <wmtk/TriMesh.h>
+#endif
 
 #include <Eigen/Dense>
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
+#include <filesystem>
+#include <fstream>
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
@@ -92,11 +96,11 @@ TEST_CASE("expression", "[utils]")
 	json jval = {{"value", 1}};
 
 	utils::ExpressionValue expr;
-	expr.init(jexpr["value"]);
+	expr.init(jexpr["value"], "");
 	utils::ExpressionValue expr2d;
-	expr2d.init(jexpr2d["value"]);
+	expr2d.init(jexpr2d["value"], "");
 	utils::ExpressionValue val;
-	val.init(jval["value"]);
+	val.init(jval["value"], "");
 
 	expr.set_unit_type("");
 	expr2d.set_unit_type("");
@@ -105,6 +109,34 @@ TEST_CASE("expression", "[utils]")
 	REQUIRE(expr(2, 3, 4) == Catch::Approx(2. * 2. + sqrt(2. * 3.) + sin(4.) * 2.).margin(1e-10));
 	REQUIRE(expr2d(2, 3) == Catch::Approx(2. * 2. + sqrt(2. * 3.)).margin(1e-10));
 	REQUIRE(val(2, 3, 4) == Catch::Approx(1).margin(1e-16));
+
+	utils::ExpressionValue time_expr;
+	time_expr.init(json::array({"x", "2*x"}), "");
+	time_expr.set_t(json::array({0, 1}));
+	time_expr.set_unit_type("");
+
+	REQUIRE_FALSE(time_expr.is_zero());
+	REQUIRE(time_expr(3, 0, 0, 0) == Catch::Approx(3).margin(1e-16));
+	REQUIRE(time_expr(3, 0, 0, 1) == Catch::Approx(6).margin(1e-16));
+
+#ifdef POLYFEM_WITH_PYTHON
+	const std::filesystem::path python_file = std::filesystem::temp_directory_path() / "polyfem_python_expression_test.py";
+	{
+		std::ofstream file(python_file);
+		REQUIRE(file.is_open());
+		file << "def value(x, y, z, t, index):\n"
+			 << "    return x + 2 * y + 3 * z + 4 * t + index\n";
+	}
+
+	utils::ExpressionValue python_expr;
+	python_expr.init({{"file_name", python_file.string()}, {"function_name", "value"}}, "");
+	python_expr.set_unit_type("");
+
+	REQUIRE_FALSE(python_expr.is_zero());
+	REQUIRE(python_expr(1, 2, 3, 4, 5) == Catch::Approx(35).margin(1e-16));
+
+	std::filesystem::remove(python_file);
+#endif
 }
 
 TEST_CASE("mshreader", "[utils]")
@@ -130,7 +162,9 @@ TEST_CASE("inverse", "[utils]")
 	REQUIRE(((utils::inverse(mat3) - mat3_inv)).norm() == Catch::Approx(0).margin(1e-12));
 }
 
-TEST_CASE("wmtk_instatiation", "[utils]")
+#ifdef POLYFEM_WITH_ITR
+TEST_CASE("wmtk_instantiation", "[utils]")
 {
 	wmtk::TriMesh mesh;
 }
+#endif

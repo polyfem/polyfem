@@ -11,7 +11,7 @@ namespace polyfem::assembler
 		VolumePenalty();
 
 		// sets material params
-		void add_multimaterial(const int index, const json &params, const Units &units) override;
+		void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
 
 		std::string name() const override { return "VolumePenalty"; }
 		std::map<std::string, ParamFunc> parameters() const override;

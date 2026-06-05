@@ -16,7 +16,7 @@ namespace polyfem::assembler
 		NeoHookeanAutodiff();
 
 		// sets material params
-		void add_multimaterial(const int index, const json &params, const Units &units) override;
+		void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
 
 		template <typename T>
 		T elastic_energy(

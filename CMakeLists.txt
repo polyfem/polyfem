@@ -68,6 +68,7 @@ set(POLYFEM_BIG_N   1000 CACHE STRING "Maximum length for stack-allocated vector
 
 # Polyfem options for enabling/disabling optional libraries
 option(POLYFEM_WITH_APP "Generate the application with gui" OFF)
+option(POLYFEM_WITH_CUDA "Build with cuda support" OFF)
 option(POLYFEM_WITH_OPTIMIZATION "Build adjoint optimization support" ON)
 option(POLYFEM_WITH_TESTS     "Build tests"                                 ON)
 option(POLYFEM_WITH_CLIPPER   "Use clipper, necessary for polygonal bases"  ON)
@@ -79,6 +80,8 @@ option(POLYFEM_REGENERATE_AUTOGEN    "Generate the python autogen files" OFF)
 set(POLYFEM_THREADING "TBB" CACHE STRING "Multithreading library to use (options: CPP, TBB, NONE)")
 set_property(CACHE POLYFEM_THREADING PROPERTY STRINGS "CPP" "TBB" "NONE")
 option(POLYFEM_CODE_COVERAGE "Enable coverage reporting" OFF)
+option(POLYFEM_WITH_ITR       "Build In timestep remeshing"              OFF)
+option(POLYFEM_WITH_PYTHON "Enable Python interpreter support" ON)
 
 add_library(polyfem_coverage_config INTERFACE)
 if(POLYFEM_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
@@ -166,29 +169,24 @@ endif ()
 # CUDA
 ################################################################################
 
-if(IPC_TOOLKIT_WITH_CUDA OR POLYSOLVE_WITH_CUSOLVER)
-    include(CheckLanguage)
-    check_language(CUDA)
-    if(CMAKE_CUDA_COMPILER)
-        enable_language(CUDA)
-    else()
-        message(FATAL_ERROR "No CUDA support found!")
-    endif()
+if (POLYFEM_WITH_CUDA)
+  # If CMAKE_CUDA_ARCHITECTURES was not specified, set it to native.
+  if(DEFINED CMAKE_CUDA_ARCHITECTURES)
+    message(STATUS "CMAKE_CUDA_ARCHITECTURES was specified, skipping auto-detection")
+  else()
+    message(STATUS "CMAKE_CUDA_ARCHITECTURES was not specified, set it to native")
+    set(CMAKE_CUDA_ARCHITECTURES "native")
+  endif()
+  message(STATUS "Targeting CUDA_ARCHITECTURES \"${CMAKE_CUDA_ARCHITECTURES}\"")
 
-    set_target_properties(polyfem PROPERTIES CUDA_SEPARABLE_COMPILATION ON)
+  # Enable CUDA support
+  enable_language(CUDA)
+  set(CMAKE_CUDA_STANDARD 17)
+  set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 
-    if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.24.0")
-        set(CMAKE_CUDA_ARCHITECTURES "native")
-        set_target_properties(ipc_toolkit PROPERTIES CUDA_ARCHITECTURES "native")
-    else()
-        include(FindCUDA/select_compute_arch)
-        CUDA_DETECT_INSTALLED_GPUS(CUDA_ARCH_LIST)
-        string(STRIP "${CUDA_ARCH_LIST}" CUDA_ARCH_LIST)
-        string(REPLACE " " ";" CUDA_ARCH_LIST "${CUDA_ARCH_LIST}")
-        string(REPLACE "." "" CUDA_ARCH_LIST "${CUDA_ARCH_LIST}")
-        set(CMAKE_CUDA_ARCHITECTURES ${CUDA_ARCH_LIST})
-        set_target_properties(ipc_toolkit PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH_LIST}")
-    endif()
+  # Enalbe CUDA support for libraries.
+  set(IPC_TOOLKIT_WITH_CUDA ON)
+  set(POLYSOLVE_WITH_CUDA ON)
 endif()
 
 ################################################################################
@@ -207,7 +205,7 @@ target_link_libraries(polyfem PUBLIC polysolve::polysolve)
 
 # libigl
 include(libigl)
-target_link_libraries(polyfem PUBLIC igl::core)
+target_link_libraries(polyfem PUBLIC igl::core igl::predicates)
 
 if(NOT WIN32)
     # Eigen
@@ -306,6 +304,14 @@ target_link_libraries(polyfem PUBLIC yaml-cpp::yaml-cpp)
 # Optional libraries
 ################################################################################
 
+if(POLYFEM_WITH_PYTHON)
+    find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
+    include(pybind11)
+    target_link_libraries(polyfem PUBLIC pybind11::embed Python3::Python)
+    target_compile_definitions(polyfem PUBLIC POLYFEM_WITH_PYTHON)
+    target_compile_definitions(polyfem PUBLIC POLYFEM_PYTHON_EXECUTABLE="${Python3_EXECUTABLE}")
+endif()
+
 # # MMG wrapper
 if(POLYFEM_WITH_MMG)
     include(mmg)
@@ -313,12 +319,16 @@ if(POLYFEM_WITH_MMG)
     target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_MMG)
 endif()
 
-# wmtk library
-# Include lagrange first to fetch a newer version than
-# what is used in the toolkit.
-include(lagrange)
-include(wmtk)
-target_link_libraries(polyfem PUBLIC wmtk::toolkit)
+
+if(POLYFEM_WITH_ITR)
+    # wmtk library
+    # Include lagrange first to fetch a newer version than
+    # what is used in the toolkit.
+    include(lagrange)
+    include(wmtk)
+    target_link_libraries(polyfem PUBLIC wmtk::toolkit)
+    target_compile_definitions(polyfem PUBLIC -DPOLYFEM_WITH_ITR)
+endif()
 
 if(POLYFEM_WITH_CLIPPER)
     include(clipper)

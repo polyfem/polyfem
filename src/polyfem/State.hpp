@@ -63,6 +63,7 @@ namespace polysolve::nonlinear
 namespace polyfem::assembler
 {
 	class Mass;
+	class HRZMass;
 	class ViscousDamping;
 	class ViscousDampingPrev;
 } // namespace polyfem::assembler
@@ -189,6 +190,7 @@ namespace polyfem
 		std::shared_ptr<assembler::Assembler> assembler = nullptr;
 
 		std::shared_ptr<assembler::Mass> mass_matrix_assembler = nullptr;
+		std::shared_ptr<assembler::HRZMass> pure_mass_matrix_assembler = nullptr;
 
 		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
 		std::shared_ptr<assembler::Assembler> pressure_assembler = nullptr;
@@ -229,13 +231,18 @@ namespace polyfem
 		/// used to store assembly values for small problems
 		assembler::AssemblyValsCache ass_vals_cache;
 		assembler::AssemblyValsCache mass_ass_vals_cache;
+		assembler::AssemblyValsCache pure_mass_ass_vals_cache;
 		/// used to store assembly values for pressure for small problems
 		assembler::AssemblyValsCache pressure_ass_vals_cache;
 
 		/// Mass matrix, it is computed only for time dependent problems
 		StiffnessMatrix mass;
+		StiffnessMatrix pure_mass;
 		/// average system mass, used for contact with IPC
 		double avg_mass;
+
+		double characteristic_length;
+		double characteristic_force_density;
 
 		/// System right-hand side.
 		Eigen::MatrixXd rhs;
@@ -621,12 +628,14 @@ namespace polyfem
 		/// Build the mesh matrices (vertices and elements) from the mesh using the bases node ordering
 		void build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F);
 
+#ifdef POLYFEM_WITH_ITR
 		/// @brief Remesh the FE space and update solution(s).
 		/// @param time Current time.
 		/// @param dt Time step size.
 		/// @param sol Current solution.
 		/// @return True if remeshing performed any changes to the mesh/solution.
 		bool remesh(const double time, const double dt, Eigen::MatrixXd &sol);
+#endif
 
 		/// @brief Gather geometry vertices into a dense matrix.
 		void get_vertices(Eigen::MatrixXd &vertices) const

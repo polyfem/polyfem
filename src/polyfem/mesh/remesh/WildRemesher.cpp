@@ -7,6 +7,7 @@
 #include <wmtk/utils/TupleUtils.hpp>
 
 #include <unordered_map>
+#include <unordered_set>
 
 #define VERTEX_ATTRIBUTE_GETTER(name, attribute)                                                     \
 	template <class WMTKMesh>                                                                        \

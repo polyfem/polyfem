@@ -207,7 +207,7 @@ namespace polyfem
 			val.setZero();
 		}
 
-		void KernelProblem::set_parameters(const json &params)
+		void KernelProblem::set_parameters(const json &params, const std::string &root_path)
 		{
 			if (params.count("n_kernels") && !params["n_kernels"] > 0)
 				n_kernels_ = params["n_kernels"];

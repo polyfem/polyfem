@@ -103,7 +103,10 @@ namespace polyfem
 			const bool is_prism_tri = is_prism(index.element) && n_face_vertices(index.face) == 3;
 			const bool is_prism_quad = is_prism(index.element) && n_face_vertices(index.face) == 4;
 
-			if (is_simplex(index.element) || is_prism_tri)
+			const bool is_pyramid_tri = is_pyramid(index.element) && n_face_vertices(index.face) == 3;
+			const bool is_pyramid_quad = is_pyramid(index.element) && n_face_vertices(index.face) == 4;
+
+			if (is_simplex(index.element) || is_prism_tri || is_pyramid_tri)
 			{
 				if (orders_.size() <= 0 || orders_(index.element) == 1 || orders_(index.element) == 2 || face_nodes_.empty() || face_nodes_[index.face].nodes.rows() != tmp)
 				{
@@ -180,7 +183,7 @@ namespace polyfem
 
 				return std::make_pair(n.nodes.row(lindex), n.nodes_ids[lindex]);
 			}
-			else if (is_cube(index.element) || is_prism_quad)
+			else if (is_cube(index.element) || is_prism_quad || is_pyramid_quad)
 			{
 				// supports only blilinear quads
 				assert(orders_.size() <= 0 || orders_(index.element) == 1);
@@ -262,6 +265,26 @@ namespace polyfem
 				RowVectorNd blin2 = v5 * (1 - b1) * (1 - b2) + v6 * b1 * (1 - b2) + v7 * b1 * b2 + v8 * (1 - b1) * b2;
 
 				return std::make_pair((1 - b3) * blin1 + b3 * blin2, -1);
+			}
+			else if (is_pyramid(index.element))
+			{
+				// n_new_nodes = p-1, k = z-level (1..n-1), i,j = grid indices
+				const double n = n_new_nodes;
+				const double zv = 1.0 - k / n; // z coordinate
+
+				double xv, yv;
+				if (k == 1) // single node at centroid of slice
+				{
+					xv = 0.5 * (1.0 - zv);
+					yv = 0.5 * (1.0 - zv);
+				}
+				else // k×k grid
+				{
+					const double hk = 1.0 / (k + 1);
+					xv = i * hk * (1.0 - zv);
+					yv = j * hk * (1.0 - zv);
+				}
+				return std::make_pair(RowVectorNd{{xv, yv, zv}}, -1);
 			}
 
 			assert(false);
@@ -398,6 +421,47 @@ namespace polyfem
 				start = next_around_face(start);
 			}
 			assert(start.vertex == v[3]);
+			return v;
+		}
+
+		std::array<int, 5> Mesh3D::get_ordered_vertices_from_pyramid(const int element_index) const
+		{
+			auto idx = get_index_from_element(element_index);
+			std::array<int, 5> v;
+
+			Navigation3D::Index base; // we want to start navigation from base
+			if (n_face_vertices(idx.face) == 4)
+			{
+				base = idx;
+			}
+			else
+			{
+				Navigation3D::Index tmp = idx;
+				bool found = false;
+				for (int k = 0; k < 3; ++k)
+				{
+					auto nb = switch_face(tmp);
+					if (n_face_vertices(nb.face) == 4)
+					{
+						base = nb;
+						found = true;
+						break;
+					}
+					tmp = next_around_face(tmp);
+				}
+				assert(found);
+			}
+
+			idx = base;
+			for (int lv = 0; lv < 4; ++lv)
+			{
+				v[lv] = idx.vertex;
+				idx = next_around_face(idx);
+			}
+			// assert(idx == get_index_from_element(element_index));
+			idx = switch_vertex(switch_edge(switch_face(idx)));
+			v[4] = idx.vertex;
+
 			return v;
 		}
 

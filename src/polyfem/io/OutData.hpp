@@ -407,6 +407,8 @@ namespace polyfem::io
 		int simplex_count;
 		/// statiscs on the mesh (simplices)
 		int prism_count;
+		/// statiscs on the mesh (simplices)
+		int pyramid_count;
 		/// statiscs on the mesh (regular quad/hex part of the mesh), see Polyspline paper for desciption
 		int regular_count;
 		/// statiscs on the mesh (regular quad/hex boundary part of the mesh), see Polyspline paper for desciption

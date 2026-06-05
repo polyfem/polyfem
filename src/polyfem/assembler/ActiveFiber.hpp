@@ -16,7 +16,7 @@ namespace polyfem::assembler
 		// JSON params:
 		//  - "Tmax": scalar / field / param expression (GenericMatParam)
 		//  - "activation": scalar / field / param expression in [0,1] (GenericMatParam)
-		void add_multimaterial(const int index, const json &params, const Units &units) override;
+		void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
 
 		std::string name() const override { return "ActiveFiber"; }
 		std::map<std::string, ParamFunc> parameters() const override;

@@ -24,7 +24,7 @@ namespace polyfem::assembler
 		}
 
 		// sets material params
-		void add_multimaterial(const int index, const json &params, const Units &units) override;
+		void add_multimaterial(const int index, const json &params, const Units &units, const std::string &root_path) override;
 
 		std::string name() const override { return "AMIPS"; }
 		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
@@ -65,10 +65,13 @@ namespace polyfem::assembler
 			}
 
 			const T powJ = pow(det, power);
-			return (def_grad.transpose() * def_grad).trace() / powJ; //+ barrier<T>::value(det);
+			const double weight = get_energy_weight(el_id);
+			return T(weight) * (def_grad.transpose() * def_grad).trace() / powJ; //+ barrier<T>::value(det);
 		}
 
 	private:
+		double get_energy_weight(const int el_id) const;
+		std::vector<double> energy_weights_;
 		bool use_rest_pose_ = false;
 
 		template <int dimt, class T>

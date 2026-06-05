@@ -800,7 +800,7 @@ namespace polyfem
 
 			periodic_bc = std::make_shared<PeriodicBoundary>(problem->is_scalar(), n_bases, bases, mesh_nodes, tile_offset, args["boundary_conditions"]["periodic_boundary"]["tolerance"].get<double>());
 
-			macro_strain_constraint.init(dim, args["boundary_conditions"]["periodic_boundary"]);
+			macro_strain_constraint.init(dim, args["boundary_conditions"]["periodic_boundary"], root_path());
 		}
 
 		if (args["space"]["advanced"]["count_flipped_els"])
@@ -997,6 +997,7 @@ namespace polyfem
 			logger().info("Building cache...");
 			ass_vals_cache.init(mesh->is_volume(), bases, curret_bases);
 			mass_ass_vals_cache.init(mesh->is_volume(), bases, curret_bases, true);
+			pure_mass_ass_vals_cache.init(mesh->is_volume(), bases, curret_bases, true);
 			if (mixed_assembler != nullptr)
 				pressure_ass_vals_cache.init(mesh->is_volume(), pressure_bases, curret_bases);
 
@@ -1481,6 +1482,9 @@ namespace polyfem
 		{
 			avg_mass = 1;
 			timings.assembling_mass_mat_time = 0;
+			if (!is_problem_linear())
+				pure_mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
+
 			return;
 		}
 
@@ -1494,6 +1498,8 @@ namespace polyfem
 		{
 			StiffnessMatrix velocity_mass;
 			mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, 0, velocity_mass, true);
+			if (!is_problem_linear())
+				pure_mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
 
 			std::vector<Eigen::Triplet<double>> mass_blocks;
 			mass_blocks.reserve(velocity_mass.nonZeros());
@@ -1513,6 +1519,8 @@ namespace polyfem
 		else
 		{
 			mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, 0, mass, true);
+			if (!is_problem_linear())
+				pure_mass_matrix_assembler->assemble(mesh->is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
 		}
 
 		assert(mass.size() > 0);
@@ -1609,7 +1617,7 @@ namespace polyfem
 			else
 				p_params["bbox_center"] = {delta(0), delta(1)};
 		}
-		problem->set_parameters(p_params);
+		problem->set_parameters(p_params, root_path());
 
 		rhs.resize(0, 0);
 

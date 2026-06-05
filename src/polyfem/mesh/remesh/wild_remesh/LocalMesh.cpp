@@ -15,6 +15,8 @@
 
 #include <SimpleBVH/BVH.hpp>
 
+#include <unordered_set>
+
 namespace polyfem::mesh
 {
 	namespace

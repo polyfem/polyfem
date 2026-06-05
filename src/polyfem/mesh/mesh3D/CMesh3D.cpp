@@ -463,7 +463,7 @@ namespace polyfem
 
 		bool CMesh3D::build_from_matrices(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F)
 		{
-			assert(F.cols() == 4 || F.cols() == 6 || F.cols() == 8);
+			assert(F.cols() == 4 || F.cols() == 5 || F.cols() == 6 || F.cols() == 8);
 			edge_nodes_.clear();
 			face_nodes_.clear();
 			cell_nodes_.clear();
@@ -478,29 +478,47 @@ namespace polyfem
 				p[2] = V(i, 2);
 			}
 
-			if (F.cols() == 4)
-				M.cells.create_tets((int)F.rows());
-			else if (F.cols() == 6)
-				M.cells.create_prisms((int)F.rows());
-			else if (F.cols() == 8)
-				M.cells.create_hexes((int)F.rows());
-			else
-			{
-				throw std::runtime_error("Mesh format not supported");
-			}
-
 			static const std::vector<int> permute_tet = {0, 1, 2, 3};
+			static const std::vector<int> permute_pyramid = {0, 1, 2, 3, 4};
 			static const std::vector<int> permute_prism = {0, 1, 2, 3, 4, 5};
 			// polyfem uses the msh file format for hexes ordering!
 			static const std::vector<int> permute_hex = {1, 0, 2, 3, 5, 4, 6, 7};
-			const std::vector<int> permute = F.cols() == 4 ? permute_tet : (F.cols() == 6 ? permute_prism : permute_hex);
 
-			for (int c = 0; c < (int)M.cells.nb(); ++c)
-			{
-				for (int lv = 0; lv < F.cols(); ++lv)
+			auto add_cell = [&](int c, GEO::MeshCellType t, int nv, const std::vector<int> &perm) {
+				GEO::index_t cid = M.cells.create_cells(1, t);
+				for (int lv = 0; lv < nv; ++lv)
 				{
-					M.cells.set_vertex(c, lv, F(c, permute[lv]));
+					int vi = F(c, perm[lv]);
+					assert(vi >= 0 && vi < V.rows());
+					M.cells.set_vertex(cid, lv, GEO::index_t(vi));
 				}
+			};
+
+			for (int c = 0; c < F.rows(); ++c)
+			{
+				int nV;
+				for (nV = 0; nV < F.cols(); ++nV)
+				{
+					if (F(c, nV) == -1)
+						break;
+				}
+
+#ifndef NDEBUG
+				for (int k = nV; k < F.cols(); ++k)
+				{
+					assert(F(c, k) == -1);
+				}
+#endif
+				if (nV == 4)
+					add_cell(c, GEO::MESH_TET, 4, permute_tet);
+				else if (nV == 5)
+					add_cell(c, GEO::MESH_PYRAMID, 5, permute_pyramid);
+				else if (nV == 6)
+					add_cell(c, GEO::MESH_PRISM, 6, permute_prism);
+				else if (nV == 8)
+					add_cell(c, GEO::MESH_HEX, 8, permute_hex);
+				else
+					log_and_throw_error(fmt::format("Invalid number of vertices {}", nV));
 			}
 			M.cells.connect();
 
@@ -1458,6 +1476,8 @@ namespace polyfem
 			{
 				if (ele.vs.size() == 4)
 					ele_tag[ele.id] = ElementType::SIMPLEX;
+				else if (ele.vs.size() == 5)
+					ele_tag[ele.id] = ElementType::PYRAMID;
 				else if (ele.vs.size() == 6)
 					ele_tag[ele.id] = ElementType::PRISM;
 			}

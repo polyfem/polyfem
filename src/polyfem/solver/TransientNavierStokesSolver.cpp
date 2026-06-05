@@ -24,7 +24,7 @@ namespace polyfem
 		TransientNavierStokesSolver::TransientNavierStokesSolver(const json &solver_param)
 			: solver_param(solver_param)
 		{
-			gradNorm = solver_param["nonlinear"]["grad_norm"];
+			gradNorm = solver_param["nonlinear"]["grad_norm_tol"];
 			iterations = solver_param["nonlinear"]["max_iterations"];
 		}
 

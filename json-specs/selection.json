@@ -21,11 +21,26 @@
         "pointer": "/*",
         "type": "object",
         "required": [
+            "file"
+        ],
+        "optional": [
+            "relative",
+            "boundary_only"
+        ],
+        "default": null,
+        "#type_name": "file",
+        "doc": "Load ids from a file; the file is required to have one ID per element of the geometry"
+    },
+    {
+        "pointer": "/*",
+        "type": "object",
+        "required": [
             "id",
             "box"
         ],
         "optional": [
-            "relative"
+            "relative",
+            "boundary_only"
         ],
         "default": null,
         "#type_name": "box",
@@ -40,7 +55,8 @@
             "center"
         ],
         "optional": [
-            "relative"
+            "relative",
+            "boundary_only"
         ],
         "default": null,
         "#type_name": "sphere",
@@ -56,7 +72,8 @@
             "p2"
         ],
         "optional": [
-            "relative"
+            "relative",
+            "boundary_only"
         ],
         "default": null,
         "#type_name": "cylinder",
@@ -71,7 +88,8 @@
             "normal"
         ],
         "optional": [
-            "relative"
+            "relative",
+            "boundary_only"
         ],
         "default": null,
         "#type_name": "plane",
@@ -86,11 +104,26 @@
             "position"
         ],
         "optional": [
-            "relative"
+            "relative",
+            "boundary_only"
         ],
         "default": null,
         "#type_name": "axis",
         "doc": "Same as halfspace, but the boundary plane is axis-aligned. The choice of axis is specified either by a string matching the regexp r\"[+-][xyzXYZ]\" or an int matching the regular expression [+-]?[123] where the sign is the side of the plane to select and letter or number indicates the axis to which the plane is perpendicular. The offset is the plane offset from the origin. If the relative option is set to true, the offset is with respect to the center of the bounding box."
+    },
+    {
+        "pointer": "/*/boundary_only",
+        "type": "bool",
+        "default": true,
+        "doc": "If true, only elements with at least a face on the geometry boundary are selected."
+    },
+    {
+        "pointer": "/*/file",
+        "type": "file",
+        "extensions": [
+            ".txt"
+        ],
+        "doc": "Load ids from a file; the file is required to have one ID per element of the geometry"
     },
     {
         "pointer": "/*/id",

@@ -31,7 +31,7 @@ namespace polyfem
 			static std::shared_ptr<Selection> build(
 				const json &j_selections,
 				const BBox &mesh_bbox,
-				const std::string &root_path = "");
+				const std::string &root_path);
 
 			/// @brief Build a vector of selection objects from a JSON selection(s).
 			/// @param j_selections JSON object of selection(s).
@@ -41,7 +41,12 @@ namespace polyfem
 			static std::vector<std::shared_ptr<utils::Selection>> build_selections(
 				const json &j_selections,
 				const BBox &mesh_bbox,
-				const std::string &root_path = "");
+				const std::string &root_path);
+
+			inline bool boundary_only() const { return boundary_only_; }
+
+		private:
+			bool boundary_only_ = true;
 
 		protected:
 			Selection() {}

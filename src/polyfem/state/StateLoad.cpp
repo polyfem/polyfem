@@ -126,6 +126,15 @@ namespace polyfem
 		RowVectorNd min, max;
 		mesh->bounding_box(min, max);
 
+		if (args["solver"]["advanced"]["characteristic_length"] > 0)
+		{
+			characteristic_length = args["solver"]["advanced"]["characteristic_length"];
+		}
+		else
+		{
+			characteristic_length = (max - min).norm();
+		}
+
 		logger().info("mesh bb min [{}], max [{}]", min, max);
 
 		std::vector<std::shared_ptr<assembler::Assembler>> assemblers;
@@ -137,6 +146,7 @@ namespace polyfem
 		if (pressure_assembler != nullptr)
 			assemblers.push_back(pressure_assembler);
 		set_materials(assemblers);
+		pure_mass_matrix_assembler->set_size(mass_matrix_assembler->size());
 
 		timer.stop();
 		logger().info(" took {}s", timer.getElapsedTime());

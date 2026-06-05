@@ -443,6 +443,7 @@
         ],
         "optional": [
             "use_rest_pose",
+            "weight",
             "id",
             "rho"
         ],
@@ -748,5 +749,11 @@
         "type": "bool",
         "default": false,
         "doc": "Use amips wrt to rest pose or the regular element"
+    },
+    {
+        "pointer": "/weight",
+        "type": "float",
+        "default": 1.0,
+        "doc": "Scale factor for the AMIPS energy."
     }
 ]

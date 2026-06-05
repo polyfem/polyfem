@@ -38,7 +38,7 @@ namespace polyfem
 			bool is_scalar() const override { return false; }
 			bool is_constant_in_time() const override { return false; }
 
-			void set_parameters(const json &params) override;
+			void set_parameters(const json &params, const std::string &root_path) override;
 
 		private:
 			double n_turns_ = 0.5;
@@ -66,7 +66,7 @@ namespace polyfem
 			bool is_constant_in_time() const override { return false; }
 			bool is_time_dependent() const override { return true; }
 
-			void set_parameters(const json &params) override;
+			void set_parameters(const json &params, const std::string &root_path) override;
 
 		private:
 			double angular_v0_ = 0.5;
@@ -156,7 +156,7 @@ namespace polyfem
 			bool is_scalar() const override { return false; }
 			bool is_time_dependent() const override { return true; }
 
-			void set_parameters(const json &params) override;
+			void set_parameters(const json &params, const std::string &root_path) override;
 
 		private:
 			double force_ = 0.1;
@@ -198,7 +198,7 @@ namespace polyfem
 			void exact_grad(const Eigen::MatrixXd &pts, const double t, Eigen::MatrixXd &val) const override;
 			bool is_scalar() const override { return false; }
 
-			void set_parameters(const json &params) override;
+			void set_parameters(const json &params, const std::string &root_path) override;
 
 		private:
 			VectorNd eval_fun(const VectorNd &pt, const double t) const;
