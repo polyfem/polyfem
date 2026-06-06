@@ -709,6 +709,27 @@ namespace polyfem::varform
 		logger().info("Done!");
 	}
 
+	std::shared_ptr<assembler::RhsAssembler> NonlinearElasticVarForm::build_rhs_assembler(
+		const int n_bases,
+		const std::vector<basis::ElementBases> &bases,
+		const assembler::AssemblyValsCache &ass_vals_cache) const
+	{
+		json rhs_solver_params = args["solver"]["linear"];
+		if (!rhs_solver_params.contains("Pardiso"))
+			rhs_solver_params["Pardiso"] = {};
+		rhs_solver_params["Pardiso"]["mtype"] = -2;
+
+		const int size = problem->is_scalar() ? 1 : mesh_->dimension();
+
+		return std::make_shared<assembler::RhsAssembler>(
+			*assembler, *mesh_, obstacle,
+			dirichlet_nodes, neumann_nodes,
+			dirichlet_nodes_position, neumann_nodes_position,
+			n_bases, size, bases, geom_bases(), ass_vals_cache, *problem,
+			args["space"]["advanced"]["bc_method"],
+			rhs_solver_params);
+	}
+
 	void NonlinearElasticVarForm::build_collision_mesh(
 		const mesh::Mesh &mesh,
 		const json &args)

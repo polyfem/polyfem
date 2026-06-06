@@ -14,6 +14,7 @@
 #include <polyfem/basis/PolygonalBasis3d.hpp>
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
+#include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/refinement/APriori.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -868,6 +869,7 @@ namespace polyfem::varform
 		timer.start();
 		logger().info("Assigning rhs...");
 
+		solve_data.rhs_assembler = build_rhs_assembler();
 		assert(solve_data.rhs_assembler != nullptr);
 		solve_data.rhs_assembler->assemble(mass_matrix_assembler->density(), rhs);
 		rhs *= -1;
@@ -939,6 +941,27 @@ namespace polyfem::varform
 			body_ids[i] = mesh_->get_body_id(i);
 
 		assembler.set_materials(body_ids, args["materials"], units, root_path);
+	}
+
+	std::shared_ptr<assembler::RhsAssembler> VarForm::build_rhs_assembler(
+		const int n_bases,
+		const std::vector<basis::ElementBases> &bases,
+		const assembler::AssemblyValsCache &ass_vals_cache) const
+	{
+		json rhs_solver_params = args["solver"]["linear"];
+		if (!rhs_solver_params.contains("Pardiso"))
+			rhs_solver_params["Pardiso"] = {};
+		rhs_solver_params["Pardiso"]["mtype"] = -2;
+
+		const int size = problem->is_scalar() ? 1 : mesh_->dimension();
+
+		return std::make_shared<assembler::RhsAssembler>(
+			*assembler, *mesh_, mesh::Obstacle(),
+			dirichlet_nodes, neumann_nodes,
+			dirichlet_nodes_position, neumann_nodes_position,
+			n_bases, size, bases, geom_bases(), ass_vals_cache, *problem,
+			args["space"]["advanced"]["bc_method"],
+			rhs_solver_params);
 	}
 
 	void VarForm::load_mesh(const mesh::Mesh &mesh, const json &args)

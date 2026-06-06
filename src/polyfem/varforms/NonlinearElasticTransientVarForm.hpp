@@ -29,6 +29,10 @@ namespace polyfem::varform
 		void reset() override;
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
 		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
+		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler(
+			const int n_bases,
+			const std::vector<basis::ElementBases> &bases,
+			const assembler::AssemblyValsCache &ass_vals_cache) const override;
 		void init_solve(Eigen::MatrixXd &sol, const double t);
 		void init_forms(const json &args, const int dim, Eigen::MatrixXd &sol, const double t);
 		void solve_tensor_nonlinear(int step, Eigen::MatrixXd &sol, const bool init_lagging = true);

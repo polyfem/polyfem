@@ -1,12 +1,15 @@
 #include "FluidVarForm.hpp"
 
 #include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/GenericProblem.hpp>
 #include <polyfem/assembler/Stokes.hpp>
 #include <polyfem/basis/LagrangeBasis2d.hpp>
 #include <polyfem/basis/LagrangeBasis3d.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
+#include <polyfem/problem/KernelProblem.hpp>
+#include <polyfem/problem/ProblemFactory.hpp>
 #include <polyfem/solver/NavierStokesSolver.hpp>
 #include <polyfem/solver/TransientNavierStokesSolver.hpp>
 #include <polyfem/time_integrator/BDF.hpp>
@@ -37,8 +40,50 @@ namespace polyfem::varform
 	void FluidVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
 	{
 		VarForm::init(formulation, units, args, out_path);
+		const bool is_time_dependent = args.contains("time") && !args["time"].is_null();
+
+		assembler = assembler::AssemblerUtils::make_assembler(formulation);
+		mass_matrix_assembler = std::make_shared<assembler::Mass>();
+		pure_mass_matrix_assembler = std::make_shared<assembler::HRZMass>();
 		mixed_assembler = assembler::AssemblerUtils::make_mixed_assembler(formulation);
 		pressure_assembler = assembler::AssemblerUtils::make_assembler(assembler::AssemblerUtils::other_assembler_name(formulation));
+
+		if (!args.contains("preset_problem"))
+		{
+			problem = std::make_shared<assembler::GenericTensorProblem>("GenericTensor");
+			problem->clear();
+
+			json tmp;
+			tmp["is_time_dependent"] = is_time_dependent;
+			problem->set_parameters(tmp, root_path);
+
+			auto bc = args["boundary_conditions"];
+			bc["root_path"] = root_path;
+			problem->set_parameters(bc, root_path);
+			problem->set_parameters(args["initial_conditions"], root_path);
+			problem->set_parameters(args["output"], root_path);
+		}
+		else
+		{
+			if (args["preset_problem"]["type"] == "Kernel")
+			{
+				problem = std::make_shared<problem::KernelProblem>("Kernel", *assembler);
+				problem->clear();
+			}
+			else
+			{
+				problem = problem::ProblemFactory::factory().get_problem(args["preset_problem"]["type"]);
+				problem->clear();
+			}
+			problem->set_parameters(args["preset_problem"], root_path);
+		}
+
+		problem->set_units(*assembler, units);
+
+		t0 = is_time_dependent ? args["time"]["t0"].get<double>() : 0.0;
+		time_steps = is_time_dependent ? args["time"]["time_steps"].get<int>() : 0;
+		dt = is_time_dependent ? args["time"]["dt"].get<double>() : 0.0;
+
 		assert(assembler->is_fluid());
 	}
 

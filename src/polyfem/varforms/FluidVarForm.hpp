@@ -46,7 +46,7 @@ namespace polyfem::varform
 		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler(
 			const int n_bases,
 			const std::vector<basis::ElementBases> &bases,
-			const assembler::AssemblyValsCache &ass_vals_cache) const;
+			const assembler::AssemblyValsCache &ass_vals_cache) const override;
 		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler() const
 		{
 			return build_rhs_assembler(this->n_bases, bases, mass_ass_vals_cache);

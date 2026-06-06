@@ -3,6 +3,7 @@
 #include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/Problem.hpp>
+#include <polyfem/assembler/RhsAssembler.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/basis/InterfaceData.hpp>
 #include <polyfem/mesh/Mesh.hpp>
@@ -131,6 +132,14 @@ namespace polyfem
 			virtual void assemble_rhs(const mesh::Mesh &mesh, const json &args);
 			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args);
 			virtual void solve_problem(Eigen::MatrixXd &sol) = 0;
+			virtual std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler(
+				const int n_bases,
+				const std::vector<basis::ElementBases> &bases,
+				const assembler::AssemblyValsCache &ass_vals_cache) const;
+			std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler() const
+			{
+				return build_rhs_assembler(n_bases, bases, mass_ass_vals_cache);
+			}
 			virtual void save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const;
 			virtual void reset();
 			virtual void set_materials(assembler::Assembler &assembler) const;
