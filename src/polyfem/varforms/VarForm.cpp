@@ -65,11 +65,13 @@ namespace polyfem::varform
 			root_path = "";
 
 		this->output_path = out_path;
+		output_sampler_initialized_ = false;
 	}
 
 	void VarForm::set_mesh(std::unique_ptr<mesh::Mesh> mesh)
 	{
 		mesh_ = std::move(mesh);
+		output_sampler_initialized_ = false;
 		if (!mesh_)
 			return;
 
@@ -173,6 +175,70 @@ namespace polyfem::varform
 		save_json(solution, file);
 	}
 
+	void VarForm::ensure_output_sampler() const
+	{
+		if (output_sampler_initialized_)
+			return;
+
+		const io::OutputSpace space = output_space();
+		if (space.mesh)
+		{
+			output_geometry_.init_sampler(*space.mesh, args["output"]["paraview"]["vismesh_rel_area"]);
+			output_geometry_.build_grid(*space.mesh, args["output"]["advanced"]["sol_on_grid"]);
+		}
+		output_sampler_initialized_ = true;
+	}
+
+	io::OutGeometryData::ExportOptions VarForm::export_options(const io::OutputSpace &space) const
+	{
+		return io::OutGeometryData::ExportOptions(
+			args,
+			space.mesh->is_linear(),
+			space.mesh->has_prism(),
+			problem_dimension() == 1);
+	}
+
+	io::OutputFieldFunction VarForm::output_field_function(const Eigen::MatrixXd &solution, const io::OutGeometryData::ExportOptions &opts) const
+	{
+		return [this, &solution, fields = opts.fields](const io::OutputSample &sample) {
+			return output_fields(sample, solution, io::OutputFieldOptions{fields});
+		};
+	}
+
+	void VarForm::export_data(const Eigen::MatrixXd &solution) const
+	{
+		const io::OutputSpace space = output_space();
+		if (!space.mesh)
+		{
+			logger().error("Load the mesh first!");
+			return;
+		}
+		if (solution.size() <= 0)
+		{
+			logger().error("Solve the problem first!");
+			return;
+		}
+
+		ensure_output_sampler();
+
+		const std::string vis_mesh_path = resolve_output_path(args["output"]["paraview"]["file_name"]);
+		const bool has_time = args.contains("time") && !args["time"].is_null();
+		double tend = args.value("tend", 1.0);
+		double dt = 1;
+		if (has_time)
+			dt = args["time"]["dt"];
+
+		const auto opts = export_options(space);
+		output_geometry_.export_data(
+			space,
+			output_field_function(solution, opts),
+			has_time,
+			tend, dt,
+			opts,
+			vis_mesh_path,
+			is_contact_enabled());
+	}
+
 	int VarForm::problem_dimension() const
 	{
 		if (!problem)
@@ -182,14 +248,54 @@ namespace polyfem::varform
 		return mesh_ ? mesh_->dimension() : 0;
 	}
 
-	bool VarForm::is_contact_enabled() const
-	{
-		return args.contains("contact") && args["contact"].contains("enabled") && args["contact"]["enabled"].get<bool>();
-	}
-
 	void VarForm::save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const
 	{
 		save_restart_json(t0, dt, t);
+	}
+
+	void VarForm::save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &solution) const
+	{
+		const io::OutputSpace space = output_space();
+		if (!space.mesh || !args["output"]["advanced"]["save_time_sequence"])
+			return;
+		if (t % args["output"]["paraview"]["skip_frame"].get<int>())
+			return;
+
+		ensure_output_sampler();
+
+		logger().trace("Saving VTU...");
+		const std::string step_name = args["output"]["advanced"]["timestep_prefix"];
+		const auto opts = export_options(space);
+		output_geometry_.save_vtu(
+			resolve_output_path(fmt::format(step_name + "{:d}.vtu", t)),
+			space, output_field_function(solution, opts), time, dt,
+			opts,
+			is_contact_enabled());
+
+		output_geometry_.save_pvd(
+			resolve_output_path(args["output"]["paraview"]["file_name"]),
+			[step_name](int i) { return fmt::format(step_name + "{:d}.vtm", i); },
+			t, t0, dt, args["output"]["paraview"]["skip_frame"].get<int>());
+	}
+
+	void VarForm::save_subsolve(const int i, const int t, const Eigen::MatrixXd &solution) const
+	{
+		const io::OutputSpace space = output_space();
+		if (!space.mesh || !args["output"]["advanced"]["save_solve_sequence_debug"].get<bool>())
+			return;
+
+		const bool has_time = args.contains("time") && !args["time"].is_null();
+		double dt = 1;
+		if (has_time)
+			dt = args["time"]["dt"];
+
+		ensure_output_sampler();
+		const auto opts = export_options(space);
+		output_geometry_.save_vtu(
+			resolve_output_path(fmt::format("solve_{:d}.vtu", i)),
+			space, output_field_function(solution, opts), t, dt,
+			opts,
+			is_contact_enabled());
 	}
 
 	void VarForm::save_restart_json(const double t0, const double dt, const int t) const

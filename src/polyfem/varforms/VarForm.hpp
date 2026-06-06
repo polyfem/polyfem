@@ -8,6 +8,7 @@
 #include <polyfem/solver/forms/Form.hpp>
 
 #include <polyfem/io/OutputData.hpp>
+#include <polyfem/io/OutData.hpp>
 #include <polyfem/io/OutStatsData.hpp>
 #include <polyfem/utils/Types.hpp>
 
@@ -55,22 +56,48 @@ namespace polyfem
 		class VarForm
 		{
 		public:
-			void set_args(const json &args) { this->args = args; }
 			virtual ~VarForm() = default;
 
+			/// @brief Get the name of the variational formulation
+			/// @return Name of the variational formulation
+			virtual std::string name() const = 0;
+
+			/// @brief Reset the internal state of the variational formulation, e.g. when loading a new mesh
+			/// @param args json input arguments, used to determine which data to reset
+			void set_args(const json &args) { this->args = args; }
+
+			/// @brief Initialize the variational formulation with the given parameters
+			/// @param formulation name of the variational formulation
+			/// @param units unit system to use for the formulation
+			/// @param args json input arguments, used to initialize the formulation
+			/// @param out_path output path for the formulation, used to save intermediate data
 			virtual void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path);
+
+			/// @brief Set the mesh for the variational formulation
+			/// @param mesh unique pointer to the mesh to use for the formulation
 			void set_mesh(std::unique_ptr<mesh::Mesh> mesh);
-			void prepare();
+
+			/// @brief Solve the variational formulation and store the solution in the given matrix
+			/// @param sol matrix to store the solution
 			void solve(Eigen::MatrixXd &sol);
 
-			virtual std::string name() const = 0;
 			const json &input_args() const { return args; }
 
+			/// @brief Get the problem dimension of the variational formulation, for output purposes
+			/// @return Problem dimension
 			int problem_dimension() const;
-			bool is_contact_enabled() const;
+			/// @brief Check if contact is enabled for the variational formulation, for output purposes
+			/// @return True if contact is enabled, false otherwise
+			virtual bool is_contact_enabled() const { return false; }
 
-			std::string resolve_output_path(const std::string &path) const;
+			/// @brief Get the output space of the variational formulation, for output purposes
+			/// @return Output space
 			virtual io::OutputSpace output_space() const = 0;
+			/// @brief Get the output fields of the variational formulation, for output purposes
+			/// @param sample Output sample
+			/// @param solution Solution matrix
+			/// @param options Output field options
+			/// @return Output fields
 			virtual std::vector<io::OutputField> output_fields(
 				const io::OutputSample &sample,
 				const Eigen::MatrixXd &solution,
@@ -79,13 +106,27 @@ namespace polyfem
 				return {};
 			}
 
+			/// @brief Get the runtime timings of the variational formulation, for output purposes
+			/// @return Runtime timings
 			const io::OutRuntimeData &output_timings() const { return timings; }
+			/// @brief Get the error statistics of the variational formulation, for output purposes
+			/// @return Error statistics
 			virtual io::OutStatsData compute_errors(const Eigen::MatrixXd &solution);
 
+			/// @brief Save the solution to a JSON file, for output purposes
+			/// @param solution Solution matrix to save
+			/// @param out Output stream to save the solution
 			virtual void save_json(const Eigen::MatrixXd &solution, std::ostream &out) const {};
+			/// @brief 	Save the solution to a JSON file, for output purposes
+			/// @param solution
 			void save_json(const Eigen::MatrixXd &solution) const;
+			void export_data(const Eigen::MatrixXd &solution) const;
 
 		protected:
+			std::string resolve_output_path(const std::string &path) const;
+
+			void prepare();
+
 			virtual void load_mesh(const mesh::Mesh &mesh, const json &args) = 0;
 			virtual void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) = 0;
 			virtual void assemble_rhs(const mesh::Mesh &mesh, const json &args) = 0;
@@ -93,6 +134,11 @@ namespace polyfem
 			virtual void solve_problem(Eigen::MatrixXd &sol) = 0;
 			virtual void save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const;
 			void save_restart_json(const double t0, const double dt, const int t) const;
+			void save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &solution) const;
+			void save_subsolve(const int i, const int t, const Eigen::MatrixXd &solution) const;
+			void ensure_output_sampler() const;
+			io::OutGeometryData::ExportOptions export_options(const io::OutputSpace &space) const;
+			io::OutputFieldFunction output_field_function(const Eigen::MatrixXd &solution, const io::OutGeometryData::ExportOptions &opts) const;
 
 			std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const;
 
@@ -106,6 +152,7 @@ namespace polyfem
 			virtual void reset()
 			{
 				stats.reset();
+				output_sampler_initialized_ = false;
 			}
 
 			bool iso_parametric;
@@ -157,6 +204,9 @@ namespace polyfem
 			/// per node neumann
 			std::vector<int> neumann_nodes;
 			std::vector<RowVectorNd> neumann_nodes_position;
+
+			mutable io::OutGeometryData output_geometry_;
+			mutable bool output_sampler_initialized_ = false;
 		};
 	} // namespace varform
 } // namespace polyfem

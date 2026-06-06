@@ -17,6 +17,12 @@ namespace polyfem::varform
 {
 	class NonlinearElasticVarForm : public ElasticVarForm
 	{
+	public:
+		bool is_contact_enabled() const override
+		{
+			return args.contains("contact") && args["contact"].contains("enabled") && args["contact"]["enabled"].get<bool>();
+		}
+
 	protected:
 		void init_solve(Eigen::MatrixXd &sol, const double t);
 		void init_forms(const json &args, const int dim, Eigen::MatrixXd &sol, const double t);

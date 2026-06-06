@@ -4,7 +4,6 @@
 #include <polyfem/assembler/GenericProblem.hpp>
 
 #include <polyfem/io/Evaluator.hpp>
-#include <polyfem/io/VarFormOutputWriter.hpp>
 
 #include <polyfem/problem/ProblemFactory.hpp>
 
@@ -257,7 +256,6 @@ namespace polyfem::varform
 		assert(problem->is_time_dependent());
 		assert(solve_data.rhs_assembler != nullptr);
 
-		io::VarFormOutputWriter output_writer(*this);
 		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", solver->name());
 
@@ -267,7 +265,7 @@ namespace polyfem::varform
 		solve_data.time_integrator = bdf;
 		solve_data.update_dt();
 
-		output_writer.save_timestep(t0, 0, t0, dt, sol);
+		save_timestep(t0, 0, t0, dt, sol);
 
 		Eigen::MatrixXd current_rhs = rhs;
 
@@ -295,7 +293,7 @@ namespace polyfem::varform
 			solve_linear_system(solver, A, b, args["output"]["advanced"]["spectrum"].get<bool>() && t == time_steps, sol);
 
 			bdf->update_quantities(sol);
-			output_writer.save_timestep(time, t, t0, dt, sol);
+			save_timestep(time, t, t0, dt, sol);
 			save_step_state(t0, dt, t, sol);
 
 			logger().info("{}/{}  t={}", t, time_steps, time);

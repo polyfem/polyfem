@@ -13,7 +13,6 @@
 #include <polyfem/utils/par_for.hpp>
 
 #include <polyfem/varforms/VarForm.hpp>
-#include <polyfem/varforms/VarFormDispatch.hpp>
 #include <polyfem/varforms/VarFormFactory.hpp>
 
 #include <jse/jse.h>

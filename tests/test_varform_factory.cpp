@@ -1,7 +1,6 @@
 #include <polyfem/State.hpp>
 #include <polyfem/legacy/State.hpp>
 #include <polyfem/varforms/VarForm.hpp>
-#include <polyfem/varforms/VarFormDispatch.hpp>
 #include <polyfem/varforms/VarFormFactory.hpp>
 
 #include <catch2/catch_test_macros.hpp>

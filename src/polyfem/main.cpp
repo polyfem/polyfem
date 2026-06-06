@@ -12,10 +12,9 @@
 
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
-#include <polyfem/io/VarFormOutputWriter.hpp>
 #include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/io/YamlToJson.hpp>
-#include <polyfem/varforms/VarFormDispatch.hpp>
+#include <polyfem/varforms/VarFormFactory.hpp>
 
 using namespace polyfem;
 using namespace solver;
@@ -95,8 +94,7 @@ int forward_simulation_with_varform_state(const std::vector<std::string> &names,
 	logger().info("total time: {}s", timings.total_time());
 
 	state.variational_formulation->save_json(sol);
-	io::VarFormOutputWriter writer(*state.variational_formulation);
-	writer.export_data(sol);
+	state.variational_formulation->export_data(sol);
 
 	return EXIT_SUCCESS;
 }

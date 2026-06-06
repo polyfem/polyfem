@@ -15,8 +15,6 @@ set(SOURCES
 	OutData.hpp
 	OutputData.hpp
 	OutStatsData.hpp
-	VarFormOutputWriter.cpp
-	VarFormOutputWriter.hpp
 	YamlToJson.cpp
 	YamlToJson.hpp
 )

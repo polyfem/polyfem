@@ -2,7 +2,6 @@ set(SOURCES
     VarForm.cpp
     VarFormFactory.hpp
     VarFormFactory.cpp
-    VarFormDispatch.hpp
     VarFormUtils.hpp
     ElasticVarForm.hpp
     ElasticVarForm.cpp

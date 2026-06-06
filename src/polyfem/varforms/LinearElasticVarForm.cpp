@@ -1,6 +1,5 @@
 #include "LinearElasticVarForm.hpp"
 
-#include <polyfem/io/VarFormOutputWriter.hpp>
 
 #include <polyfem/solver/forms/BodyForm.hpp>
 #include <polyfem/solver/forms/ElasticForm.hpp>
@@ -159,11 +158,10 @@ namespace polyfem::varform
 		assert(solve_data.rhs_assembler != nullptr);
 		assert(solve_data.time_integrator != nullptr);
 
-		io::VarFormOutputWriter output_writer(*this);
 		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", solver->name());
 
-		output_writer.save_timestep(t0, 0, t0, dt, sol);
+		save_timestep(t0, 0, t0, dt, sol);
 
 		Eigen::MatrixXd current_rhs = rhs;
 
@@ -194,7 +192,7 @@ namespace polyfem::varform
 			solve_linear_system(solver, A, b, args["output"]["advanced"]["spectrum"].get<bool>() && t == 1, sol);
 
 			solve_data.time_integrator->update_quantities(sol);
-			output_writer.save_timestep(time, t, t0, dt, sol);
+			save_timestep(time, t, t0, dt, sol);
 			save_step_state(t0, dt, t, sol);
 
 			logger().info("{}/{}  t={}", t, time_steps, time);

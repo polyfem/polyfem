@@ -4,7 +4,6 @@
 #include <polyfem/assembler/GenericProblem.hpp>
 #include <polyfem/basis/LagrangeBasis2d.hpp>
 #include <polyfem/basis/LagrangeBasis3d.hpp>
-#include <polyfem/io/VarFormOutputWriter.hpp>
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/problem/ProblemFactory.hpp>
@@ -342,7 +341,6 @@ namespace polyfem::varform
 
 	void BilaplacianVarForm::solve_transient_linear(Eigen::MatrixXd &sol)
 	{
-		io::VarFormOutputWriter output_writer(*this);
 		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", solver->name());
 
@@ -357,7 +355,7 @@ namespace polyfem::varform
 			dt);
 		solve_data.time_integrator = bdf;
 
-		output_writer.save_timestep(t0, 0, t0, dt, sol);
+		save_timestep(t0, 0, t0, dt, sol);
 
 		Eigen::MatrixXd current_rhs = rhs;
 		StiffnessMatrix stiffness, expanded_mass;
@@ -394,7 +392,7 @@ namespace polyfem::varform
 			split_solution(sol, value, pressure);
 			bdf->update_quantities(value.col(0));
 
-			output_writer.save_timestep(time, t + t_offset, t0, dt, sol);
+			save_timestep(time, t + t_offset, t0, dt, sol);
 			save_step_state(t0, dt, t + t_offset, sol);
 			logger().info("{}/{}  t={}", t, time_steps, time);
 		}

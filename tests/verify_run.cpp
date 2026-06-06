@@ -4,9 +4,8 @@
 #include "polyfem/utils/JSONUtils.hpp"
 #include "polyfem/State.hpp"
 #include "polyfem/legacy/State.hpp"
-#include "polyfem/io/VarFormOutputWriter.hpp"
 #include "polyfem/varforms/VarForm.hpp"
-#include "polyfem/varforms/VarFormDispatch.hpp"
+#include "polyfem/varforms/VarFormFactory.hpp"
 #include "spdlog/spdlog.h"
 #include <polyfem/Common.hpp>
 
@@ -115,8 +114,7 @@ AuthenticateResult run_varform_state(json &args, json &out)
 	const io::OutStatsData stats = state.variational_formulation->compute_errors(sol);
 
 	state.variational_formulation->save_json(sol);
-	io::VarFormOutputWriter writer(*state.variational_formulation);
-	writer.export_data(sol);
+	state.variational_formulation->export_data(sol);
 
 	out["err_l2"] = stats.l2_err;
 	out["err_h1"] = stats.h1_err;

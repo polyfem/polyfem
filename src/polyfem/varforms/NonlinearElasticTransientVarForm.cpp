@@ -33,7 +33,6 @@
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/io/Evaluator.hpp>
-#include <polyfem/io/VarFormOutputWriter.hpp>
 
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/NLProblem.hpp>
@@ -1218,7 +1217,6 @@ namespace polyfem::varform
 		igl::Timer timer;
 		timer.start();
 		logger().info("Solving {}", assembler->name());
-		io::VarFormOutputWriter output_writer(*this);
 
 		{
 			POLYFEM_SCOPED_TIMER("Setup RHS");
@@ -1260,7 +1258,7 @@ namespace polyfem::varform
 		// Save the initial solution
 		if (energy_csv)
 			energy_csv->write(save_i, sol);
-		output_writer.save_timestep(t0, t_offset, t0, dt, sol);
+		save_timestep(t0, t_offset, t0, dt, sol);
 
 		save_i++;
 
@@ -1276,7 +1274,7 @@ namespace polyfem::varform
 			// Always save the solution for consistency
 			if (energy_csv)
 				energy_csv->write(save_i, sol);
-			output_writer.save_timestep(t0 + dt * t, t + t_offset, t0, dt, sol);
+			save_timestep(t0 + dt * t, t + t_offset, t0, dt, sol);
 			save_i++;
 
 			{
@@ -1561,7 +1559,6 @@ namespace polyfem::varform
 	{
 		assert(solve_data.nl_problem != nullptr);
 		solver::NLProblem &nl_problem = *(solve_data.nl_problem);
-		io::VarFormOutputWriter output_writer(*this);
 
 		assert(sol.size() == rhs.size());
 
@@ -1575,7 +1572,7 @@ namespace polyfem::varform
 			logger().info("Lagging iteration 1:");
 		}
 
-		output_writer.save_subsolve(0, step, sol);
+		save_subsolve(0, step, sol);
 
 		std::shared_ptr<polysolve::nonlinear::Solver> nl_solver =
 			polysolve::nonlinear::Solver::create(args["solver"]["augmented_lagrangian"]["nonlinear"], args["solver"]["linear"], units.characteristic_length(), logger());
@@ -1597,7 +1594,7 @@ namespace polyfem::varform
 				 {"info", nl_solver->info()}});
 			if (al_weight > 0)
 				stats.solver_info.back()["weight"] = al_weight;
-			output_writer.save_subsolve(stats.solver_info.size(), step, sol);
+			save_subsolve(stats.solver_info.size(), step, sol);
 		};
 
 		Eigen::MatrixXd prev_sol = sol;
@@ -1667,7 +1664,7 @@ namespace polyfem::varform
 				 {"t", step},
 				 {"lag_i", lag_i},
 				 {"info", nl_solver->info()}});
-			output_writer.save_subsolve(stats.solver_info.size(), step, sol);
+			save_subsolve(stats.solver_info.size(), step, sol);
 		}
 	}
 } // namespace polyfem::varform

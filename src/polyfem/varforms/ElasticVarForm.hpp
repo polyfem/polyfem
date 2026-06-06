@@ -24,16 +24,19 @@ namespace polyfem::varform
 	public:
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
 		io::OutStatsData compute_errors(const Eigen::MatrixXd &solution) override;
-		VarFormDebugData debug_data() const override;
+
 		void save_json(const Eigen::MatrixXd &solution, std::ostream &out) const override;
-		void build_stiffness_mat_debug(StiffnessMatrix &stiffness) override;
-		const StiffnessMatrix *mass_matrix_debug() const override { return &mass; }
 
 		io::OutputSpace output_space() const override;
 		std::vector<io::OutputField> output_fields(
 			const io::OutputSample &sample,
 			const Eigen::MatrixXd &solution,
 			const io::OutputFieldOptions &options) const override;
+
+		// DEBUG/TEST stuff
+		VarFormDebugData debug_data() const override;
+		void build_stiffness_mat_debug(StiffnessMatrix &stiffness) override;
+		const StiffnessMatrix *mass_matrix_debug() const override { return &mass; }
 
 	protected:
 		void reset() override;

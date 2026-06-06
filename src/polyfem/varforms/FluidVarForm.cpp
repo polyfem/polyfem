@@ -5,7 +5,6 @@
 #include <polyfem/basis/LagrangeBasis2d.hpp>
 #include <polyfem/basis/LagrangeBasis3d.hpp>
 #include <polyfem/io/Evaluator.hpp>
-#include <polyfem/io/VarFormOutputWriter.hpp>
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/solver/NavierStokesSolver.hpp>
@@ -481,7 +480,6 @@ namespace polyfem::varform
 
 	void StokesVarForm::solve_transient_linear(Eigen::MatrixXd &sol)
 	{
-		io::VarFormOutputWriter output_writer(*this);
 		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", solver->name());
 
@@ -497,7 +495,7 @@ namespace polyfem::varform
 			dt);
 		solve_data.time_integrator = bdf;
 
-		output_writer.save_timestep(t0, 0, t0, dt, sol);
+		save_timestep(t0, 0, t0, dt, sol);
 
 		Eigen::MatrixXd current_rhs = rhs;
 		StiffnessMatrix stiffness, expanded_mass;
@@ -534,7 +532,7 @@ namespace polyfem::varform
 			split_solution(sol, velocity, pressure);
 			bdf->update_quantities(velocity.col(0));
 
-			output_writer.save_timestep(time, t + t_offset, t0, dt, sol);
+			save_timestep(time, t + t_offset, t0, dt, sol);
 			save_step_state(t0, dt, t + t_offset, sol);
 			logger().info("{}/{}  t={}", t, time_steps, time);
 		}
@@ -594,7 +592,6 @@ namespace polyfem::varform
 
 	void NavierStokesVarForm::solve_transient(Eigen::MatrixXd &sol)
 	{
-		io::VarFormOutputWriter output_writer(*this);
 
 		Eigen::MatrixXd velocity, pressure;
 		split_solution(sol, velocity, pressure);
@@ -609,7 +606,7 @@ namespace polyfem::varform
 			dt);
 		solve_data.time_integrator = bdf;
 
-		output_writer.save_timestep(t0, 0, t0, dt, sol);
+		save_timestep(t0, 0, t0, dt, sol);
 
 		Eigen::MatrixXd current_rhs = rhs;
 		StiffnessMatrix velocity_mass;
@@ -661,7 +658,7 @@ namespace polyfem::varform
 			sol = tmp_sol;
 			split_solution(sol, velocity, pressure);
 			bdf->update_quantities(velocity.col(0));
-			output_writer.save_timestep(time, t, t0, dt, sol);
+			save_timestep(time, t, t0, dt, sol);
 		}
 
 		ns_solver.get_info(stats.solver_info);
