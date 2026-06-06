@@ -47,7 +47,7 @@ TEST_CASE("hessian_lin", "[assembler]")
 
 	SparseMatrixCache mat_cache;
 	StiffnessMatrix hessian, stiffness;
-	auto *matrices = dynamic_cast<varform::VarFormMatrixDebugAccess *>(state.variational_formulation.get());
+	auto *matrices = dynamic_cast<varform::VarFormMatrixTestAccess *>(state.variational_formulation.get());
 	REQUIRE(matrices != nullptr);
 	const varform::VarFormDebugData debug = matrices->debug_data();
 	REQUIRE(debug.assembler != nullptr);
@@ -110,7 +110,7 @@ TEST_CASE("hessian_hooke", "[assembler]")
 
 	SparseMatrixCache mat_cache;
 	StiffnessMatrix hessian, stiffness;
-	auto *matrices = dynamic_cast<varform::VarFormMatrixDebugAccess *>(state.variational_formulation.get());
+	auto *matrices = dynamic_cast<varform::VarFormMatrixTestAccess *>(state.variational_formulation.get());
 	REQUIRE(matrices != nullptr);
 	const varform::VarFormDebugData debug = matrices->debug_data();
 	REQUIRE(debug.assembler != nullptr);
@@ -180,7 +180,7 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 
 	Units units;
 	units.init(state.args["units"]);
-	auto *matrices = dynamic_cast<varform::VarFormMatrixDebugAccess *>(state.variational_formulation.get());
+	auto *matrices = dynamic_cast<varform::VarFormMatrixTestAccess *>(state.variational_formulation.get());
 	REQUIRE(matrices != nullptr);
 	const varform::VarFormDebugData debug = matrices->debug_data();
 	REQUIRE(debug.mesh != nullptr);

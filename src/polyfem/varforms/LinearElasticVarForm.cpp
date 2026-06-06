@@ -559,6 +559,29 @@ namespace polyfem::varform
 		return fields;
 	}
 
+	VarFormDebugData LinearElasticVarForm::debug_data() const
+	{
+		return {
+			mesh_.get(),
+			assembler.get(),
+			&bases,
+			&geom_bases(),
+			&total_local_boundary,
+			n_bases,
+			n_obstacle_vertices(),
+			root_path};
+	}
+
+	void LinearElasticVarForm::build_stiffness_mat_debug(StiffnessMatrix &stiffness)
+	{
+		build_stiffness_mat(stiffness);
+	}
+
+	const StiffnessMatrix *LinearElasticVarForm::mass_matrix_debug() const
+	{
+		return &mass;
+	}
+
 	void LinearElasticVarForm::build_stiffness_mat(StiffnessMatrix &stiffness)
 	{
 		igl::Timer timer;

@@ -126,7 +126,7 @@ TEST_CASE("build collision proxy", "[build_collision_proxy]")
 #endif
 
 	const auto state = get_state();
-	auto *debug_access = dynamic_cast<polyfem::varform::VarFormMatrixDebugAccess *>(state->variational_formulation.get());
+	auto *debug_access = dynamic_cast<polyfem::varform::VarFormTestAccess *>(state->variational_formulation.get());
 	REQUIRE(debug_access != nullptr);
 	const polyfem::varform::VarFormDebugData debug = debug_access->debug_data();
 	REQUIRE(debug.mesh != nullptr);
@@ -202,7 +202,7 @@ TEST_CASE("build collision proxy displacement map", "[build_collision_proxy]")
 	// }
 
 	const auto state = get_state(fe_mesh_path, discr_order);
-	auto *debug_access = dynamic_cast<polyfem::varform::VarFormMatrixDebugAccess *>(state->variational_formulation.get());
+	auto *debug_access = dynamic_cast<polyfem::varform::VarFormTestAccess *>(state->variational_formulation.get());
 	REQUIRE(debug_access != nullptr);
 	const polyfem::varform::VarFormDebugData debug = debug_access->debug_data();
 	REQUIRE(debug.mesh != nullptr);

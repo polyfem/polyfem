@@ -11,7 +11,7 @@ namespace polysolve::linear
 
 namespace polyfem::varform
 {
-	class ScalarVarForm : public VarForm
+	class ScalarVarForm : public VarForm, public VarFormMatrixTestAccess
 	{
 	public:
 		std::string name() const override { return "Scalar"; }
@@ -22,6 +22,9 @@ namespace polyfem::varform
 			const io::OutputSample &sample,
 			const Eigen::MatrixXd &solution,
 			const io::OutputFieldOptions &options) const override;
+		VarFormDebugData debug_data() const override;
+		void build_stiffness_mat_debug(StiffnessMatrix &stiffness) override;
+		const StiffnessMatrix *mass_matrix_debug() const override;
 
 	private:
 		void build_stiffness_mat(StiffnessMatrix &stiffness);

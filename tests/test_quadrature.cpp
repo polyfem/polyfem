@@ -125,8 +125,8 @@ namespace
 			auto state = get_state(mesh, n_refs, basis_order, -1, -1, spline, serendipity);
 			auto expected = get_state(mesh, n_refs, basis_order, expected_quad, expected_quad, spline, serendipity);
 			StiffnessMatrix exp_st, st;
-			auto *state_matrices = dynamic_cast<varform::VarFormMatrixDebugAccess *>(state->variational_formulation.get());
-			auto *expected_matrices = dynamic_cast<varform::VarFormMatrixDebugAccess *>(expected->variational_formulation.get());
+			auto *state_matrices = dynamic_cast<varform::VarFormMatrixTestAccess *>(state->variational_formulation.get());
+			auto *expected_matrices = dynamic_cast<varform::VarFormMatrixTestAccess *>(expected->variational_formulation.get());
 			REQUIRE(state_matrices != nullptr);
 			REQUIRE(expected_matrices != nullptr);
 			state_matrices->build_stiffness_mat_debug(st);

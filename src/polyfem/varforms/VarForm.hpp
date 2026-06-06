@@ -42,11 +42,17 @@ namespace polyfem
 			std::string root_path;
 		};
 
-		class VarFormMatrixDebugAccess
+		class VarFormTestAccess
 		{
 		public:
-			virtual ~VarFormMatrixDebugAccess() = default;
+			virtual ~VarFormTestAccess() = default;
 			virtual VarFormDebugData debug_data() const = 0;
+		};
+
+		class VarFormMatrixTestAccess : public VarFormTestAccess
+		{
+		public:
+			virtual ~VarFormMatrixTestAccess() = default;
 			virtual void build_stiffness_mat_debug(StiffnessMatrix &stiffness) = 0;
 			virtual const StiffnessMatrix *mass_matrix_debug() const = 0;
 		};
@@ -121,11 +127,10 @@ namespace polyfem
 			void export_data(const Eigen::MatrixXd &solution) const;
 
 			QuadratureOrders n_boundary_samples() const;
+			void prepare();
 
 		protected:
 			std::string resolve_output_path(const std::string &path) const;
-
-			void prepare();
 
 			virtual void load_mesh(const mesh::Mesh &mesh, const json &args);
 			virtual void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args);

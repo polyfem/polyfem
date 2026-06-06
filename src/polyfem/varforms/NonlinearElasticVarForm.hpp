@@ -11,7 +11,7 @@
 
 namespace polyfem::varform
 {
-	class NonlinearElasticVarForm : public ElasticVarForm
+	class NonlinearElasticVarForm : public ElasticVarForm, public VarFormTestAccess
 	{
 	public:
 		bool is_contact_enabled() const override
@@ -20,6 +20,7 @@ namespace polyfem::varform
 		}
 
 		io::OutputSpace output_space() const override;
+		VarFormDebugData debug_data() const override;
 		std::vector<io::OutputField> output_fields(
 			const io::OutputSample &sample,
 			const Eigen::MatrixXd &solution,

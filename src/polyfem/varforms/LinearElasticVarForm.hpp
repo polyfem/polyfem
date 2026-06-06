@@ -11,10 +11,13 @@ namespace polysolve::linear
 
 namespace polyfem::varform
 {
-	class LinearElasticVarForm : public ElasticVarForm
+	class LinearElasticVarForm : public ElasticVarForm, public VarFormMatrixTestAccess
 	{
 	public:
 		std::string name() const override { return "LinearElastic"; }
+		VarFormDebugData debug_data() const override;
+		void build_stiffness_mat_debug(StiffnessMatrix &stiffness) override;
+		const StiffnessMatrix *mass_matrix_debug() const override;
 
 	private:
 		void solve_problem(Eigen::MatrixXd &sol) override;
