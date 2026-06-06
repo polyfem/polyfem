@@ -17,6 +17,7 @@
 #include <polyfem/utils/BoundarySampler.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 
+
 #include <ostream>
 
 #include <spdlog/fmt/fmt.h>
@@ -139,15 +140,6 @@ namespace polyfem::varform
 				return sample.points.rows() == 0 || sample.points.rows() == values.rows();
 			}
 
-			if (field_dim == actual_dim
-				&& sample.points.rows() > 0
-				&& sample.points.rows() == collision_mesh.rest_positions().rows()
-				&& sample.points.cols() == collision_mesh.rest_positions().cols()
-				&& sample.points.isApprox(collision_mesh.rest_positions()))
-			{
-				values = collision_mesh.map_displacements(utils::unflatten(dof_values, actual_dim));
-				return values.rows() == sample.points.rows();
-			}
 
 			return false;
 		};
@@ -713,7 +705,7 @@ namespace polyfem::varform
 			&polys_3d,
 			&total_local_boundary,
 			&obstacle,
-			&collision_mesh,
+			nullptr,
 			&dirichlet_nodes,
 			&dirichlet_nodes_position};
 	}

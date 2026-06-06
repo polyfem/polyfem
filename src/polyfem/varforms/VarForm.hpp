@@ -1,10 +1,14 @@
 #pragma once
 
+#include <polyfem/assembler/Assembler.hpp>
+#include <polyfem/assembler/Mass.hpp>
 #include <polyfem/assembler/Problem.hpp>
 #include <polyfem/basis/ElementBases.hpp>
+#include <polyfem/basis/InterfaceData.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/MeshNodes.hpp>
 
+#include <polyfem/solver/SolveData.hpp>
 #include <polyfem/solver/forms/Form.hpp>
 
 #include <polyfem/io/OutputData.hpp>
@@ -23,13 +27,6 @@
 
 namespace polyfem
 {
-	class State;
-
-	namespace assembler
-	{
-		class Assembler;
-	} // namespace assembler
-
 	namespace varform
 	{
 		struct VarFormDebugData
@@ -128,11 +125,13 @@ namespace polyfem
 			void prepare();
 
 			virtual void load_mesh(const mesh::Mesh &mesh, const json &args) = 0;
-			virtual void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) = 0;
-			virtual void assemble_rhs(const mesh::Mesh &mesh, const json &args) = 0;
-			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) = 0;
+			virtual void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args);
+			virtual void assemble_rhs(const mesh::Mesh &mesh, const json &args);
+			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args);
 			virtual void solve_problem(Eigen::MatrixXd &sol) = 0;
 			virtual void save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const;
+			virtual void reset();
+			virtual void set_materials(assembler::Assembler &assembler) const = 0;
 			void save_restart_json(const double t0, const double dt, const int t) const;
 			void save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &solution) const;
 			void save_subsolve(const int i, const int t, const Eigen::MatrixXd &solution) const;
@@ -142,18 +141,24 @@ namespace polyfem
 
 			std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const;
 
+			/// @brief Get a constant reference to the geometry mapping bases.
+			/// @return A constant reference to the geometry mapping bases.
+			const std::vector<basis::ElementBases> &geom_bases() const
+			{
+				return iso_parametric ? bases : geom_bases_;
+			}
+
+			void build_polygonal_basis(const mesh::Mesh &mesh);
+			void build_node_mapping(const mesh::Mesh &mesh, const json &args);
+			std::vector<int> primitive_to_node() const;
+			std::vector<int> node_to_primitive() const;
+
 			/// current problem, it contains rhs and bc
 			std::shared_ptr<assembler::Problem> problem;
 			Units units;
 			json args;
 
 			std::vector<std::shared_ptr<solver::Form>> forms;
-
-			virtual void reset()
-			{
-				stats.reset();
-				output_sampler_initialized_ = false;
-			}
 
 			bool iso_parametric;
 
@@ -169,6 +174,20 @@ namespace polyfem
 
 			std::unique_ptr<mesh::Mesh> mesh_;
 
+			/// assembler corresponding to governing physical equations
+			std::shared_ptr<assembler::Assembler> assembler = nullptr;
+			std::shared_ptr<assembler::Mass> mass_matrix_assembler = nullptr;
+			std::shared_ptr<assembler::HRZMass> pure_mass_matrix_assembler = nullptr;
+
+			/// FE bases, the size is #elements
+			std::vector<basis::ElementBases> bases;
+
+			/// number of bases
+			int n_bases = 0;
+
+			/// vector of discretization orders, used when not all elements have the same degree, one per element
+			Eigen::VectorXi disc_orders, disc_ordersq;
+
 			/// Geometric mapping bases, if the elements are isoparametric, this list is empty
 			std::vector<basis::ElementBases> geom_bases_;
 			/// number of geometric bases
@@ -178,6 +197,12 @@ namespace polyfem
 			std::map<int, Eigen::MatrixXd> polys;
 			std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> polys_3d;
 
+			/// nodes on the boundary of polygonal elements, used for harmonic bases
+			std::map<int, basis::InterfaceData> poly_edge_to_data;
+
+			/// Mapping from input nodes to FE nodes
+			std::shared_ptr<polyfem::mesh::MeshNodes> mesh_nodes;
+
 			/// Mapping from input nodes to geometric mapping nodes
 			std::shared_ptr<polyfem::mesh::MeshNodes> geom_mesh_nodes;
 
@@ -185,6 +210,20 @@ namespace polyfem
 			Eigen::VectorXi in_node_to_node;
 			/// maps input vertices/edges/faces/cells to polyfem vertices/edges/faces/cells
 			Eigen::VectorXi in_primitive_to_primitive;
+
+			/// used to store assembly values for small problems
+			assembler::AssemblyValsCache ass_vals_cache;
+			assembler::AssemblyValsCache mass_ass_vals_cache;
+			assembler::AssemblyValsCache pure_mass_ass_vals_cache;
+
+			/// Mass matrix, it is computed only for time dependent problems
+			StiffnessMatrix mass;
+			StiffnessMatrix pure_mass;
+			/// average system mass, used for contact with IPC
+			double avg_mass = 0;
+			Eigen::MatrixXd rhs;
+
+			solver::SolveData solve_data;
 
 			/// list of boundary nodes
 			std::vector<int> boundary_nodes;
@@ -204,6 +243,10 @@ namespace polyfem
 			/// per node neumann
 			std::vector<int> neumann_nodes;
 			std::vector<RowVectorNd> neumann_nodes_position;
+
+			double t0 = 0;
+			int time_steps = 0;
+			double dt = 0;
 
 			mutable io::OutGeometryData output_geometry_;
 			mutable bool output_sampler_initialized_ = false;

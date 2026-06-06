@@ -198,7 +198,7 @@ namespace polyfem::varform
 	void BilaplacianVarForm::assemble_rhs(const mesh::Mesh &mesh, const json &args)
 	{
 		solve_data.rhs_assembler = build_rhs_assembler();
-		ElasticVarForm::assemble_rhs(mesh, args);
+		VarForm::assemble_rhs(mesh, args);
 
 		const int prev_size = rhs.rows();
 		rhs.conservativeResize(prev_size + n_pressure_bases, rhs.cols());

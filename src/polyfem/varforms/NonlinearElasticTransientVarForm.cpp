@@ -46,6 +46,8 @@
 #include <polysolve/linear/Solver.hpp>
 #include <polysolve/nonlinear/Solver.hpp>
 
+#include <algorithm>
+
 namespace polyfem::varform
 {
 	using namespace solver;
@@ -234,27 +236,15 @@ namespace polyfem::varform
 	void ElasticVarForm::reset()
 	{
 		VarForm::reset();
+	}
 
-		bases.clear();
-		geom_bases_.clear();
-		boundary_nodes.clear();
-		dirichlet_nodes.clear();
-		neumann_nodes.clear();
-		local_boundary.clear();
-		total_local_boundary.clear();
-		local_neumann_boundary.clear();
-		local_pressure_boundary.clear();
-		local_pressure_cavity.clear();
-		polys.clear();
-		polys_3d.clear();
-		poly_edge_to_data.clear();
-
-		n_bases = 0;
-		n_geom_bases = 0;
-		rhs.resize(0, 0);
-		mass.resize(0, 0);
-		pure_mass.resize(0, 0);
-		mesh_ = nullptr;
+	void NonlinearElasticVarForm::reset()
+	{
+		ElasticVarForm::reset();
+		collision_mesh = ipc::CollisionMesh();
+		elasticity_pressure_assembler = nullptr;
+		damping_assembler = nullptr;
+		damping_prev_assembler = nullptr;
 	}
 
 	void ElasticVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
@@ -331,6 +321,13 @@ namespace polyfem::varform
 			mm->init_multimodels(materials);
 		}
 
+		problem->init(mesh);
+	}
+
+	void NonlinearElasticVarForm::load_mesh(const mesh::Mesh &mesh, const json &args)
+	{
+		ElasticVarForm::load_mesh(mesh, args);
+
 		logger().info("Loading obstacles...");
 		obstacle = mesh::read_obstacle_geometry(
 			units,
@@ -338,8 +335,106 @@ namespace polyfem::varform
 			utils::json_as_array(args["boundary_conditions"]["obstacle_displacements"]),
 			utils::json_as_array(args["boundary_conditions"]["dirichlet_boundary"]),
 			root_path, mesh.dimension());
+	}
 
-		problem->init(mesh);
+	io::OutputSpace NonlinearElasticVarForm::output_space() const
+	{
+		auto space = ElasticVarForm::output_space();
+		space.collision_mesh = &collision_mesh;
+		return space;
+	}
+
+	std::vector<io::OutputField> NonlinearElasticVarForm::output_fields(
+		const io::OutputSample &sample,
+		const Eigen::MatrixXd &solution,
+		const io::OutputFieldOptions &options) const
+	{
+		auto fields = ElasticVarForm::output_fields(sample, solution, options);
+		if (!mesh_ || !problem || solution.size() <= 0)
+			return fields;
+
+		const int actual_dim = problem->is_scalar() ? 1 : mesh_->dimension();
+		if (actual_dim <= 0
+			|| sample.points.rows() <= 0
+			|| sample.points.rows() != collision_mesh.rest_positions().rows()
+			|| sample.points.cols() != collision_mesh.rest_positions().cols()
+			|| !sample.points.isApprox(collision_mesh.rest_positions()))
+		{
+			return fields;
+		}
+
+		const auto has_field = [&](const std::string &name) {
+			return std::any_of(fields.begin(), fields.end(), [&](const io::OutputField &field) {
+				return field.association == io::OutputField::Association::Point && field.name == name;
+			});
+		};
+
+		const auto append_collision_dof_field = [&](const std::string &name, const Eigen::MatrixXd &dof_values) {
+			if (has_field(name) || dof_values.size() <= 0)
+				return;
+
+			Eigen::MatrixXd values = collision_mesh.map_displacements(utils::unflatten(dof_values, actual_dim));
+			if (values.rows() == sample.points.rows())
+				fields.push_back({name, values, io::OutputField::Association::Point});
+		};
+
+		const auto &paraview_options = args["output"]["paraview"]["options"];
+		if (problem->is_time_dependent())
+		{
+			if (paraview_options["velocity"] || options.export_field("velocity"))
+				append_collision_dof_field(
+					"velocity",
+					solve_data.time_integrator ? solve_data.time_integrator->v_prev() : Eigen::VectorXd::Zero(solution.size()));
+			if (paraview_options["acceleration"] || options.export_field("acceleration"))
+				append_collision_dof_field(
+					"acceleration",
+					solve_data.time_integrator ? solve_data.time_integrator->a_prev() : Eigen::VectorXd::Zero(solution.size()));
+		}
+
+		if (paraview_options["forces"] && !problem->is_scalar())
+		{
+			const double s = solve_data.time_integrator ? solve_data.time_integrator->acceleration_scaling() : 1;
+			for (const auto &[name, form] : solve_data.named_forms())
+			{
+				const std::string field_name = name + "_forces";
+				if (!options.export_field(field_name))
+					continue;
+
+				Eigen::VectorXd force;
+				if (form && form->enabled())
+				{
+					form->first_derivative(solution, force);
+					force *= -1.0 / s;
+				}
+				else
+				{
+					force.setZero(solution.size());
+				}
+				append_collision_dof_field(field_name, force);
+			}
+		}
+
+		if (options.export_field("gradient_of_elastic_potential") && solve_data.elastic_form)
+		{
+			Eigen::VectorXd potential_grad;
+			solve_data.elastic_form->first_derivative(solution, potential_grad);
+			append_collision_dof_field("gradient_of_elastic_potential", potential_grad);
+		}
+
+		if (options.export_field("gradient_of_contact_potential") && solve_data.contact_form && solve_data.contact_form->weight() > 0)
+		{
+			Eigen::VectorXd potential_grad;
+			solve_data.contact_form->first_derivative(solution, potential_grad);
+			potential_grad *= -solve_data.contact_form->barrier_stiffness() / solve_data.contact_form->weight();
+			append_collision_dof_field("gradient_of_contact_potential", potential_grad);
+		}
+
+		if (options.export_field("displacement"))
+			append_collision_dof_field("displacement", solution);
+		if (options.export_field("solution"))
+			append_collision_dof_field("solution", solution);
+
+		return fields;
 	}
 
 	void ElasticVarForm::build_stiffness_mat_debug(StiffnessMatrix &stiffness)
@@ -353,7 +448,19 @@ namespace polyfem::varform
 		throw std::runtime_error("Stiffness assembly is not exposed by this variational formulation.");
 	}
 
-	void ElasticVarForm::build_polygonal_basis(const mesh::Mesh &mesh)
+	void NonlinearElasticVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
+	{
+		ElasticVarForm::build_basis(mesh, iso_parametric, args);
+
+		logger().info("Building collision mesh...");
+		build_collision_mesh(mesh, args);
+		// FIXME!! handle periodic collision mesh
+		//  if (periodic_bc && args["contact"]["periodic"])
+		//  	build_periodic_collision_mesh();
+		logger().info("Done!");
+	}
+
+	void VarForm::build_polygonal_basis(const mesh::Mesh &mesh)
 	{
 		rhs.resize(0, 0);
 
@@ -655,13 +762,6 @@ namespace polyfem::varform
 			logger().debug("Done (took {}s)", timer2.getElapsedTime());
 		}
 
-		logger().info("Building collision mesh...");
-		build_collision_mesh(mesh, args);
-		// FIXME!! handle periodic collision mesh
-		//  if (periodic_bc && args["contact"]["periodic"])
-		//  	build_periodic_collision_mesh();
-		logger().info("Done!");
-
 		// FIXME remove pressure
 		std::vector<int> tmp;
 		const int prev_b_size = local_boundary.size();
@@ -824,7 +924,7 @@ namespace polyfem::varform
 		}
 	}
 
-	void ElasticVarForm::build_node_mapping(const mesh::Mesh &mesh, const json &args)
+	void VarForm::build_node_mapping(const mesh::Mesh &mesh, const json &args)
 	{
 		if (args["space"]["basis_type"] == "Spline")
 		{
@@ -907,7 +1007,7 @@ namespace polyfem::varform
 		}
 	}
 
-	void ElasticVarForm::build_collision_mesh(
+	void NonlinearElasticVarForm::build_collision_mesh(
 		const mesh::Mesh &mesh,
 		const json &args)
 	{
@@ -917,7 +1017,7 @@ namespace polyfem::varform
 			in_node_to_node, collision_mesh);
 	}
 
-	void ElasticVarForm::build_collision_mesh(
+	void NonlinearElasticVarForm::build_collision_mesh(
 		const mesh::Mesh &mesh,
 		const int n_bases,
 		const std::vector<basis::ElementBases> &bases,
@@ -1060,7 +1160,7 @@ namespace polyfem::varform
 		assembler.set_materials(body_ids, args["materials"], units, root_path);
 	}
 
-	std::vector<int> NonlinearElasticVarForm::primitive_to_node() const
+	std::vector<int> VarForm::primitive_to_node() const
 	{
 		const auto &nodes = iso_parametric ? mesh_nodes : geom_mesh_nodes;
 		if (!nodes)
@@ -1071,7 +1171,7 @@ namespace polyfem::varform
 		return indices;
 	}
 
-	std::vector<int> NonlinearElasticVarForm::node_to_primitive() const
+	std::vector<int> VarForm::node_to_primitive() const
 	{
 		auto p2n = primitive_to_node();
 		std::vector<int> indices;
@@ -1094,7 +1194,7 @@ namespace polyfem::varform
 			n_bases, size, bases, geom_bases(), *problem);
 	}
 
-	void ElasticVarForm::assemble_rhs(const mesh::Mesh &mesh, const json &args)
+	void VarForm::assemble_rhs(const mesh::Mesh &mesh, const json &args)
 	{
 		igl::Timer timer;
 		json p_params = {};
@@ -1124,7 +1224,7 @@ namespace polyfem::varform
 		logger().info(" took {}s", timings.assigning_rhs_time);
 	}
 
-	void ElasticVarForm::assemble_mass_mat(const mesh::Mesh &mesh, const json &args)
+	void VarForm::assemble_mass_mat(const mesh::Mesh &mesh, const json &args)
 	{
 		if (!problem->is_time_dependent())
 		{
