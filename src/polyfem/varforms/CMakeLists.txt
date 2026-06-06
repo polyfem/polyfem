@@ -9,8 +9,8 @@ set(SOURCES
     LinearElasticVarForm.cpp
     ScalarVarForm.hpp
     ScalarVarForm.cpp
-    NonlinearElasticTransientVarForm.hpp
-    NonlinearElasticTransientVarForm.cpp
+    NonlinearElasticVarForm.hpp
+    NonlinearElasticVarForm.cpp
     FluidVarForm.hpp
     FluidVarForm.cpp
     IncompressibleElasticVarForm.hpp

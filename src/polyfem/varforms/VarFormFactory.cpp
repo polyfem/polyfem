@@ -5,7 +5,7 @@
 #include <polyfem/varforms/FluidVarForm.hpp>
 #include <polyfem/varforms/IncompressibleElasticVarForm.hpp>
 #include <polyfem/varforms/LinearElasticVarForm.hpp>
-#include <polyfem/varforms/NonlinearElasticTransientVarForm.hpp>
+#include <polyfem/varforms/NonlinearElasticVarForm.hpp>
 #include <polyfem/varforms/ScalarVarForm.hpp>
 
 namespace polyfem::varform

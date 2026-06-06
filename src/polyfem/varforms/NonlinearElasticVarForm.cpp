@@ -1,4 +1,4 @@
-#include "NonlinearElasticTransientVarForm.hpp"
+#include "NonlinearElasticVarForm.hpp"
 
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/assembler/MacroStrain.hpp>
