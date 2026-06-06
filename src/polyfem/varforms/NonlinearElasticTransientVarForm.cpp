@@ -2,23 +2,11 @@
 
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/assembler/MacroStrain.hpp>
-#include <polyfem/assembler/MultiModel.hpp>
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/mesh/collision_proxy/CollisionProxy.hpp>
 #include <polyfem/mesh/GeometryReader.hpp>
-
-#include <polyfem/refinement/APriori.hpp>
-
-#include <polyfem/basis/LagrangeBasis2d.hpp>
-#include <polyfem/basis/LagrangeBasis3d.hpp>
-#include <polyfem/basis/SplineBasis2d.hpp>
-#include <polyfem/basis/SplineBasis3d.hpp>
-#include <polyfem/basis/barycentric/MVPolygonalBasis2d.hpp>
-#include <polyfem/basis/barycentric/WSPolygonalBasis2d.hpp>
-#include <polyfem/basis/PolygonalBasis2d.hpp>
-#include <polyfem/basis/PolygonalBasis3d.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
@@ -27,12 +15,15 @@
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Jacobian.hpp>
 
-#include <polyfem/problem/KernelProblem.hpp>
-#include <polyfem/problem/ProblemFactory.hpp>
-
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/io/Evaluator.hpp>
+
+#include <polyfem/autogen/auto_p_bases.hpp>
+#include <polyfem/autogen/auto_q_bases.hpp>
+#include <polyfem/autogen/prism_bases.hpp>
+
+#include <polyfem/utils/BoundarySampler.hpp>
 
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/NLProblem.hpp>
@@ -78,165 +69,7 @@ namespace polyfem::varform
 			}
 		}
 
-		/// Assumes in nodes are in order vertex, edge, face, then cell nodes.
-		void build_in_node_to_in_primitive(const mesh::Mesh &mesh, const mesh::MeshNodes &mesh_nodes,
-										   Eigen::VectorXi &in_node_to_in_primitive,
-										   Eigen::VectorXi &in_node_offset)
-		{
-			const int num_vertex_nodes = mesh_nodes.num_vertex_nodes();
-			const int num_edge_nodes = mesh_nodes.num_edge_nodes();
-			const int num_face_nodes = mesh_nodes.num_face_nodes();
-			const int num_cell_nodes = mesh_nodes.num_cell_nodes();
-
-			const int num_nodes = num_vertex_nodes + num_edge_nodes + num_face_nodes + num_cell_nodes;
-
-			const long n_vertices = num_vertex_nodes;
-			const int num_in_primitives = n_vertices + mesh.n_edges() + mesh.n_faces() + mesh.n_cells();
-			const int num_primitives = mesh.n_vertices() + mesh.n_edges() + mesh.n_faces() + mesh.n_cells();
-
-			in_node_to_in_primitive.resize(num_nodes);
-			in_node_offset.resize(num_nodes);
-
-			// Only one node per vertex, so this is an identity map.
-			in_node_to_in_primitive.head(num_vertex_nodes).setLinSpaced(num_vertex_nodes, 0, num_vertex_nodes - 1); // vertex nodes
-			in_node_offset.head(num_vertex_nodes).setZero();
-
-			int prim_offset = n_vertices;
-			int node_offset = num_vertex_nodes;
-			auto foo = [&](const int num_prims, const int num_prim_nodes) {
-				if (num_prims <= 0 || num_prim_nodes <= 0)
-					return;
-				const Eigen::VectorXi range = Eigen::VectorXi::LinSpaced(num_prim_nodes, 0, num_prim_nodes - 1);
-				// TODO: This assumes isotropic degree of element.
-				const int node_per_prim = num_prim_nodes / num_prims;
-
-				in_node_to_in_primitive.segment(node_offset, num_prim_nodes) =
-					range.array() / node_per_prim + prim_offset;
-
-				in_node_offset.segment(node_offset, num_prim_nodes) =
-					range.unaryExpr([&](const int x) { return x % node_per_prim; });
-
-				prim_offset += num_prims;
-				node_offset += num_prim_nodes;
-			};
-
-			foo(mesh.n_edges(), num_edge_nodes);
-			foo(mesh.n_faces(), num_face_nodes);
-			foo(mesh.n_cells(), num_cell_nodes);
-		}
-
-		bool build_in_primitive_to_primitive(
-			const mesh::Mesh &mesh, const mesh::MeshNodes &mesh_nodes,
-			const Eigen::VectorXi &in_ordered_vertices,
-			const Eigen::MatrixXi &in_ordered_edges,
-			const Eigen::MatrixXi &in_ordered_faces,
-			Eigen::VectorXi &in_primitive_to_primitive)
-		{
-			// NOTE: Assume in_cells_to_cells is identity
-			const int num_vertex_nodes = mesh_nodes.num_vertex_nodes();
-			const int num_edge_nodes = mesh_nodes.num_edge_nodes();
-			const int num_face_nodes = mesh_nodes.num_face_nodes();
-			const int num_cell_nodes = mesh_nodes.num_cell_nodes();
-			const int num_nodes = num_vertex_nodes + num_edge_nodes + num_face_nodes + num_cell_nodes;
-
-			const long n_vertices = num_vertex_nodes;
-			const int num_in_primitives = n_vertices + mesh.n_edges() + mesh.n_faces() + mesh.n_cells();
-			const int num_primitives = mesh.n_vertices() + mesh.n_edges() + mesh.n_faces() + mesh.n_cells();
-
-			in_primitive_to_primitive.setLinSpaced(num_in_primitives, 0, num_in_primitives - 1);
-
-			igl::Timer timer;
-
-			// ------------
-			// Map vertices
-			// ------------
-
-			if (in_ordered_vertices.rows() != n_vertices)
-			{
-				logger().warn("Node ordering disabled, in_ordered_vertices != n_vertices, {} != {}", in_ordered_vertices.rows(), n_vertices);
-				return false;
-			}
-
-			in_primitive_to_primitive.head(n_vertices) = in_ordered_vertices;
-
-			int in_offset = n_vertices;
-			int offset = mesh.n_vertices();
-
-			// ---------
-			// Map edges
-			// ---------
-
-			logger().trace("Building Mesh edges to IDs...");
-			timer.start();
-			const auto edges_to_ids = mesh.edges_to_ids();
-			if (in_ordered_edges.rows() != edges_to_ids.size())
-			{
-				logger().warn("Node ordering disabled, in_ordered_edges != edges_to_ids, {} != {}", in_ordered_edges.rows(), edges_to_ids.size());
-				return false;
-			}
-			timer.stop();
-			logger().trace("Done (took {}s)", timer.getElapsedTime());
-
-			logger().trace("Building in-edge to edge mapping...");
-			timer.start();
-			for (int in_ei = 0; in_ei < in_ordered_edges.rows(); in_ei++)
-			{
-				const std::pair<int, int> in_edge(
-					in_ordered_edges.row(in_ei).minCoeff(),
-					in_ordered_edges.row(in_ei).maxCoeff());
-				in_primitive_to_primitive[in_offset + in_ei] =
-					offset + edges_to_ids.at(in_edge); // offset edge ids
-			}
-			timer.stop();
-			logger().trace("Done (took {}s)", timer.getElapsedTime());
-
-			in_offset += mesh.n_edges();
-			offset += mesh.n_edges();
-
-			// ---------
-			// Map faces
-			// ---------
-
-			if (mesh.is_volume())
-			{
-				logger().trace("Building Mesh faces to IDs...");
-				timer.start();
-				const auto faces_to_ids = mesh.faces_to_ids();
-				if (in_ordered_faces.rows() != faces_to_ids.size())
-				{
-					logger().warn("Node ordering disabled, in_ordered_faces != faces_to_ids, {} != {}", in_ordered_faces.rows(), faces_to_ids.size());
-					return false;
-				}
-				timer.stop();
-				logger().trace("Done (took {}s)", timer.getElapsedTime());
-
-				logger().trace("Building in-face to face mapping...");
-				timer.start();
-				for (int in_fi = 0; in_fi < in_ordered_faces.rows(); in_fi++)
-				{
-					std::vector<int> in_face(in_ordered_faces.cols());
-					for (int i = 0; i < in_face.size(); i++)
-						in_face[i] = in_ordered_faces(in_fi, i);
-					std::sort(in_face.begin(), in_face.end());
-
-					in_primitive_to_primitive[in_offset + in_fi] =
-						offset + faces_to_ids.at(in_face); // offset face ids
-				}
-				timer.stop();
-				logger().trace("Done (took {}s)", timer.getElapsedTime());
-
-				in_offset += mesh.n_faces();
-				offset += mesh.n_faces();
-			}
-
-			return true;
-		}
 	} // namespace
-
-	void ElasticVarForm::reset()
-	{
-		VarForm::reset();
-	}
 
 	void NonlinearElasticVarForm::reset()
 	{
@@ -245,83 +78,6 @@ namespace polyfem::varform
 		elasticity_pressure_assembler = nullptr;
 		damping_assembler = nullptr;
 		damping_prev_assembler = nullptr;
-	}
-
-	void ElasticVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
-	{
-		VarForm::init(formulation, units, args, out_path);
-		const bool is_time_dependent = args.contains("time") && !args["time"].is_null();
-
-		assembler = assembler::AssemblerUtils::make_assembler(formulation);
-		assert(assembler->name() == formulation);
-		mass_matrix_assembler = std::make_shared<assembler::Mass>();
-		pure_mass_matrix_assembler = std::make_shared<assembler::HRZMass>();
-
-		if (!args.contains("preset_problem"))
-		{
-			problem = std::make_shared<assembler::GenericTensorProblem>("GenericTensor");
-
-			problem->clear();
-			json tmp;
-			tmp["is_time_dependent"] = is_time_dependent;
-			problem->set_parameters(tmp, root_path);
-
-			// important for the BC
-
-			auto bc = args["boundary_conditions"];
-			bc["root_path"] = root_path;
-			problem->set_parameters(bc, root_path);
-			problem->set_parameters(args["initial_conditions"], root_path);
-			problem->set_parameters(args["output"], root_path);
-		}
-		else
-		{
-			if (args["preset_problem"]["type"] == "Kernel")
-			{
-				problem = std::make_shared<problem::KernelProblem>("Kernel", *assembler);
-				problem->clear();
-				problem::KernelProblem &kprob = *dynamic_cast<problem::KernelProblem *>(problem.get());
-			}
-			else
-			{
-				problem = problem::ProblemFactory::factory().get_problem(args["preset_problem"]["type"]);
-				problem->clear();
-			}
-			// important for the BC
-			problem->set_parameters(args["preset_problem"], root_path);
-		}
-
-		problem->set_units(*assembler, units);
-
-		t0 = is_time_dependent ? args["time"]["t0"].get<double>() : 0.0;
-		time_steps = is_time_dependent ? args["time"]["time_steps"].get<int>() : 0;
-		dt = is_time_dependent ? args["time"]["dt"].get<double>() : 0.0;
-	}
-
-	void ElasticVarForm::load_mesh(const mesh::Mesh &mesh, const json &args)
-	{
-		set_materials(*assembler);
-		set_materials(*mass_matrix_assembler);
-		pure_mass_matrix_assembler->set_size(mass_matrix_assembler->size());
-
-		if (assembler::MultiModel *mm = dynamic_cast<assembler::MultiModel *>(assembler.get()))
-		{
-			assert(args["materials"].is_array());
-
-			std::vector<std::string> materials(mesh.n_elements());
-
-			std::map<int, std::string> mats;
-
-			for (const auto &m : args["materials"])
-				mats[m["id"].get<int>()] = m["type"];
-
-			for (int i = 0; i < materials.size(); ++i)
-				materials[i] = mats.at(mesh.get_body_id(i));
-
-			mm->init_multimodels(materials);
-		}
-
-		problem->init(mesh);
 	}
 
 	void NonlinearElasticVarForm::load_mesh(const mesh::Mesh &mesh, const json &args)
@@ -341,6 +97,7 @@ namespace polyfem::varform
 	{
 		auto space = ElasticVarForm::output_space();
 		space.collision_mesh = &collision_mesh;
+		space.obstacle = &obstacle;
 		return space;
 	}
 
@@ -349,19 +106,540 @@ namespace polyfem::varform
 		const Eigen::MatrixXd &solution,
 		const io::OutputFieldOptions &options) const
 	{
-		auto fields = ElasticVarForm::output_fields(sample, solution, options);
+		std::vector<io::OutputField> fields;
 		if (!mesh_ || !problem || solution.size() <= 0)
 			return fields;
 
+		const bool export_displacement = options.export_field("displacement");
+		const bool export_solution = options.export_field("solution");
+		const bool has_element_samples = sample.local_points.rows() > 0 && sample.local_points.rows() == sample.element_ids.size();
+		const int output_rows = sample.points.rows() > 0 ? sample.points.rows() : std::max<int>(sample.local_points.rows(), sample.node_ids.size());
+
 		const int actual_dim = problem->is_scalar() ? 1 : mesh_->dimension();
-		if (actual_dim <= 0
-			|| sample.points.rows() <= 0
-			|| sample.points.rows() != collision_mesh.rest_positions().rows()
-			|| sample.points.cols() != collision_mesh.rest_positions().cols()
-			|| !sample.points.isApprox(collision_mesh.rest_positions()))
+		const auto &paraview_options = args["output"]["paraview"]["options"];
+		const bool material_params = paraview_options["material"];
+		const bool body_ids = paraview_options["body_ids"];
+		const bool velocity = paraview_options["velocity"];
+		const bool acceleration = paraview_options["acceleration"];
+		const bool forces = paraview_options["forces"] && !problem->is_scalar();
+		const bool tensor_values = paraview_options["tensor_values"] && !problem->is_scalar();
+		const bool scalar_values = paraview_options["scalar_values"];
+		const bool use_spline = args["space"]["basis_type"] == "Spline";
+
+		const auto append_obstacle_values = [&](Eigen::MatrixXd &sampled_values, const Eigen::MatrixXd &dof_values) -> bool {
+			if (obstacle.n_vertices() <= 0)
+				return sample.points.rows() == 0 || sample.points.rows() == sampled_values.rows();
+
+			const bool has_obstacle_rows =
+				sample.points.rows() == sampled_values.rows() + obstacle.n_vertices()
+				&& sample.points.cols() == obstacle.v().cols()
+				&& sample.points.bottomRows(obstacle.n_vertices()).isApprox(obstacle.v());
+
+			if (!has_obstacle_rows)
+				return sample.points.rows() == 0 || sample.points.rows() == sampled_values.rows();
+
+			sampled_values.conservativeResize(sampled_values.rows() + obstacle.n_vertices(), sampled_values.cols());
+			if (dof_values.rows() >= obstacle.ndof())
+				sampled_values.bottomRows(obstacle.n_vertices()) =
+					utils::unflatten(dof_values.bottomRows(obstacle.ndof()), sampled_values.cols());
+			else
+				sampled_values.bottomRows(obstacle.n_vertices()).setZero();
+			return true;
+		};
+
+		const auto resize_to_output_rows = [&](Eigen::MatrixXd &values) {
+			if (output_rows <= values.rows())
+				return;
+
+			const int previous_rows = values.rows();
+			values.conservativeResize(output_rows, values.cols());
+			values.bottomRows(output_rows - previous_rows).setZero();
+		};
+
+		const auto sample_dof_field = [&](const Eigen::MatrixXd &dof_values, const int field_dim, Eigen::MatrixXd &values) -> bool {
+			if (dof_values.size() <= 0 || field_dim <= 0)
+				return false;
+
+			if (has_element_samples)
+			{
+				values.resize(sample.local_points.rows(), field_dim);
+				for (int i = 0; i < sample.local_points.rows(); ++i)
+				{
+					const int element_id = sample.element_ids(i);
+					if (element_id < 0)
+					{
+						values.row(i).setZero();
+						continue;
+					}
+
+					Eigen::MatrixXd local_sol, local_grad;
+					io::Evaluator::interpolate_at_local_vals(
+						*mesh_, field_dim, bases, geom_bases(),
+						element_id, sample.local_points.row(i), dof_values, local_sol, local_grad);
+
+					for (int d = 0; d < field_dim; ++d)
+						values(i, d) = local_sol(d);
+				}
+
+				return append_obstacle_values(values, dof_values);
+			}
+
+			if (sample.node_ids.size() > 0)
+			{
+				values.resize(sample.node_ids.size(), field_dim);
+				for (int i = 0; i < sample.node_ids.size(); ++i)
+				{
+					const int node_id = sample.node_ids(i);
+					for (int d = 0; d < field_dim; ++d)
+					{
+						const int dof = node_id * field_dim + d;
+						if (dof < 0 || dof >= dof_values.rows())
+							return false;
+						values(i, d) = dof_values(dof);
+					}
+				}
+
+				return sample.points.rows() == 0 || sample.points.rows() == values.rows();
+			}
+
+			return false;
+		};
+
+		const auto append_sampled_dof_field = [&](const std::string &name, const Eigen::MatrixXd &dof_values, const int field_dim) {
+			Eigen::MatrixXd values;
+			if (sample_dof_field(dof_values, field_dim, values))
+				fields.push_back({name, values, io::OutputField::Association::Point});
+		};
+
+		const auto append_scalar_values = [&]() {
+			if (!scalar_values || problem->is_scalar() || !has_element_samples)
+				return;
+
+			const bool wants_scalar = options.fields.empty()
+									  || options.export_field("von_mises")
+									  || options.export_field("von_mises_avg");
+			if (!wants_scalar)
+				return;
+
+			std::vector<assembler::Assembler::NamedMatrix> point_values;
+			for (int i = 0; i < sample.local_points.rows(); ++i)
+			{
+				const int element_id = sample.element_ids(i);
+				if (element_id < 0)
+					continue;
+
+				std::vector<assembler::Assembler::NamedMatrix> local_values;
+				assembler->compute_scalar_value(
+					assembler::OutputData(sample.time, element_id, bases[element_id], geom_bases()[element_id], sample.local_points.row(i), solution),
+					local_values);
+
+				if (point_values.empty())
+				{
+					point_values.resize(local_values.size());
+					for (int k = 0; k < local_values.size(); ++k)
+					{
+						point_values[k].first = local_values[k].first;
+						point_values[k].second.setZero(output_rows, local_values[k].second.cols());
+					}
+				}
+
+				for (int k = 0; k < local_values.size(); ++k)
+					point_values[k].second.row(i) = local_values[k].second;
+			}
+
+			for (const auto &[name, values] : point_values)
+			{
+				if (options.export_field(name))
+					fields.push_back({name, values, io::OutputField::Association::Point});
+			}
+		};
+
+		const auto append_tensor_values = [&]() {
+			if (!tensor_values || problem->is_scalar() || !has_element_samples)
+				return;
+
+			const bool wants_tensor = options.fields.empty()
+									  || options.export_field("cauchy_stess")
+									  || options.export_field("pk1_stess")
+									  || options.export_field("pk2_stess")
+									  || options.export_field("F");
+			if (!wants_tensor)
+				return;
+
+			std::vector<assembler::Assembler::NamedMatrix> point_values;
+			for (int i = 0; i < sample.local_points.rows(); ++i)
+			{
+				const int element_id = sample.element_ids(i);
+				if (element_id < 0)
+					continue;
+
+				std::vector<assembler::Assembler::NamedMatrix> local_values;
+				assembler->compute_tensor_value(
+					assembler::OutputData(sample.time, element_id, bases[element_id], geom_bases()[element_id], sample.local_points.row(i), solution),
+					local_values);
+
+				if (point_values.empty())
+				{
+					point_values.resize(local_values.size());
+					for (int k = 0; k < local_values.size(); ++k)
+					{
+						point_values[k].first = local_values[k].first;
+						point_values[k].second.setZero(output_rows, local_values[k].second.cols());
+					}
+				}
+
+				for (int k = 0; k < local_values.size(); ++k)
+					point_values[k].second.row(i) = local_values[k].second;
+			}
+
+			for (const auto &[name, values] : point_values)
+			{
+				if (!options.export_field(name))
+					continue;
+
+				const int stride = mesh_->dimension();
+				assert(values.cols() % stride == 0);
+				for (int i = 0; i < values.cols(); i += stride)
+				{
+					const int ii = (i / stride) + 1;
+					fields.push_back({fmt::format("{:s}_{:d}", name, ii), values.middleCols(i, stride), io::OutputField::Association::Point});
+				}
+			}
+		};
+
+		const auto append_averaged_values = [&]() {
+			if (use_spline || problem->is_scalar() || !has_element_samples || (!scalar_values && !tensor_values))
+				return;
+
+			const bool wants_avg = options.fields.empty()
+								   || options.export_field("von_mises_avg")
+								   || options.export_field("cauchy_stess_avg")
+								   || options.export_field("pk1_stess_avg")
+								   || options.export_field("pk2_stess_avg")
+								   || options.export_field("F_avg");
+			if (!wants_avg)
+				return;
+
+			Eigen::MatrixXd areas(n_bases, 1);
+			areas.setZero();
+			std::vector<assembler::Assembler::NamedMatrix> tmp_s, tmp_t;
+			std::vector<Eigen::MatrixXd> avg_scalar, avg_tensor;
+
+			for (int e = 0; e < int(bases.size()); ++e)
+			{
+				Eigen::MatrixXd local_pts;
+				if (mesh_->is_simplex(e))
+				{
+					if (mesh_->dimension() == 3)
+						autogen::p_nodes_3d(disc_orders(e), local_pts);
+					else
+						autogen::p_nodes_2d(disc_orders(e), local_pts);
+				}
+				else if (mesh_->is_cube(e))
+				{
+					if (mesh_->dimension() == 3)
+						autogen::q_nodes_3d(disc_orders(e), local_pts);
+					else
+						autogen::q_nodes_2d(disc_orders(e), local_pts);
+				}
+				else if (mesh_->is_prism(e))
+				{
+					autogen::prism_nodes_3d(disc_orders(e), disc_ordersq(e), local_pts);
+				}
+				else
+				{
+					continue;
+				}
+
+				const basis::ElementBases &bs = bases[e];
+				const basis::ElementBases &gbs = geom_bases()[e];
+
+				assembler::ElementAssemblyValues vals;
+				vals.compute(e, mesh_->is_volume(), bs, gbs);
+				const double area = (vals.det.array() * vals.quadrature.weights.array()).sum();
+
+				if (scalar_values)
+					assembler->compute_scalar_value(assembler::OutputData(sample.time, e, bs, gbs, local_pts, solution), tmp_s);
+				if (tensor_values)
+					assembler->compute_tensor_value(assembler::OutputData(sample.time, e, bs, gbs, local_pts, solution), tmp_t);
+
+				if (avg_scalar.empty() && !tmp_s.empty())
+				{
+					avg_scalar.resize(tmp_s.size());
+					for (auto &m : avg_scalar)
+						m.setZero(n_bases, 1);
+				}
+				if (avg_tensor.empty() && !tmp_t.empty())
+				{
+					avg_tensor.resize(tmp_t.size());
+					for (auto &m : avg_tensor)
+						m.setZero(n_bases, actual_dim * actual_dim);
+				}
+
+				for (size_t j = 0; j < bs.bases.size(); ++j)
+				{
+					const basis::Basis &b = bs.bases[j];
+					if (b.global().size() > 1)
+						continue;
+
+					const int index = b.global().front().index;
+					areas(index) += area;
+					for (int k = 0; k < tmp_s.size(); ++k)
+						avg_scalar[k](index) += tmp_s[k].second(j) * area;
+					for (int k = 0; k < tmp_t.size(); ++k)
+						avg_tensor[k].row(index) += tmp_t[k].second.row(j) * area;
+				}
+			}
+
+			for (auto &m : avg_scalar)
+				for (int i = 0; i < m.rows(); ++i)
+					if (areas(i) > 0)
+						m(i) /= areas(i);
+			for (auto &m : avg_tensor)
+				for (int i = 0; i < m.rows(); ++i)
+					if (areas(i) > 0)
+						m.row(i) /= areas(i);
+
+			for (int k = 0; k < tmp_s.size(); ++k)
+			{
+				const std::string name = fmt::format("{:s}_avg", tmp_s[k].first);
+				if (!options.export_field(name))
+					continue;
+
+				Eigen::MatrixXd sampled;
+				if (sample_dof_field(avg_scalar[k], 1, sampled))
+					fields.push_back({name, sampled, io::OutputField::Association::Point});
+			}
+
+			for (int k = 0; k < tmp_t.size(); ++k)
+			{
+				const std::string base_name = fmt::format("{:s}_avg", tmp_t[k].first);
+				if (!options.export_field(base_name))
+					continue;
+
+				Eigen::MatrixXd sampled;
+				if (!sample_dof_field(utils::flatten(avg_tensor[k]), actual_dim * actual_dim, sampled))
+					continue;
+
+				const int stride = mesh_->dimension();
+				for (int i = 0; i < sampled.cols(); i += stride)
+				{
+					const int ii = (i / stride) + 1;
+					fields.push_back({fmt::format("{:s}_{:d}", base_name, ii), sampled.middleCols(i, stride), io::OutputField::Association::Point});
+				}
+			}
+		};
+
+		const auto append_material_fields = [&]() {
+			if (!material_params || !has_element_samples)
+				return;
+
+			const auto &params = assembler->parameters();
+			std::map<std::string, Eigen::MatrixXd> param_values;
+			for (const auto &[p, _] : params)
+				param_values[p].setZero(output_rows, 1);
+			Eigen::MatrixXd rhos = Eigen::MatrixXd::Zero(output_rows, 1);
+
+			const auto &density = mass_matrix_assembler->density();
+			for (int i = 0; i < sample.local_points.rows(); ++i)
+			{
+				const int element_id = sample.element_ids(i);
+				if (element_id < 0)
+					continue;
+
+				for (const auto &[p, func] : params)
+					param_values.at(p)(i) = func(sample.local_points.row(i), sample.points.row(i), sample.time, element_id);
+				rhos(i) = density(sample.local_points.row(i), sample.points.row(i), sample.time, element_id);
+			}
+
+			for (const auto &[name, values] : param_values)
+				if (options.export_field(name))
+					fields.push_back({name, values, io::OutputField::Association::Point});
+			if (options.export_field("rho"))
+				fields.push_back({"rho", rhos, io::OutputField::Association::Point});
+		};
+
+		const auto append_body_ids = [&]() {
+			if (!(body_ids || options.export_field("body_ids")) || !has_element_samples)
+				return;
+
+			Eigen::MatrixXd ids = Eigen::MatrixXd::Zero(output_rows, 1);
+			for (int i = 0; i < sample.element_ids.size(); ++i)
+			{
+				const int element_id = sample.element_ids(i);
+				if (element_id >= 0)
+					ids(i) = mesh_->get_body_id(element_id);
+			}
+			fields.push_back({"body_ids", ids, io::OutputField::Association::Point});
+		};
+
+		const auto compute_traction_forces = [&]() {
+			Eigen::MatrixXd traction_forces;
+			traction_forces.setZero(n_bases * actual_dim, 1);
+
+			Eigen::MatrixXd uv, points, normals;
+			Eigen::VectorXd weights;
+			Eigen::VectorXi global_primitive_ids;
+			assembler::ElementAssemblyValues vals;
+
+			for (const auto &lb : total_local_boundary)
+			{
+				const int e = lb.element_id();
+				const bool has_samples = utils::BoundarySampler::boundary_quadrature(
+					lb, n_boundary_samples(), *mesh_, false, uv, points, normals, weights, global_primitive_ids);
+				if (!has_samples)
+					continue;
+
+				const basis::ElementBases &bs = bases[e];
+				const basis::ElementBases &gbs = geom_bases()[e];
+				vals.compute(e, mesh_->is_volume(), points, bs, gbs);
+
+				for (int n = 0; n < normals.rows(); ++n)
+				{
+					Eigen::MatrixXd deform_mat = Eigen::MatrixXd::Zero(actual_dim, actual_dim);
+					for (const auto &b : vals.basis_values)
+					{
+						for (const auto &g : b.global)
+						{
+							for (int d = 0; d < actual_dim; ++d)
+								deform_mat.row(d) += solution(g.index * actual_dim + d) * b.grad.row(n);
+						}
+					}
+
+					Eigen::MatrixXd trafo = vals.jac_it[n].inverse() + deform_mat;
+					normals.row(n) = normals.row(n) * trafo.inverse();
+					normals.row(n).normalize();
+				}
+
+				std::vector<assembler::Assembler::NamedMatrix> tensor_flat;
+				assembler->compute_tensor_value(assembler::OutputData(sample.time, e, bs, gbs, points, solution), tensor_flat);
+
+				for (long n = 0; n < vals.basis_values.size(); ++n)
+				{
+					const assembler::AssemblyValues &v = vals.basis_values[n];
+					const int g_index = v.global[0].index * actual_dim;
+					for (int q = 0; q < points.rows(); ++q)
+					{
+						assert(tensor_flat[0].first == "cauchy_stess");
+						Eigen::MatrixXd stress_tensor = utils::unflatten(tensor_flat[0].second.row(q), actual_dim);
+						traction_forces.block(g_index, 0, actual_dim, 1) += stress_tensor * normals.row(q).transpose() * v.val(q) * weights(q);
+					}
+				}
+			}
+
+			return traction_forces;
+		};
+
+		const auto append_traction_force = [&]() {
+			if (problem->is_scalar() || !options.export_field("traction_force"))
+				return;
+
+			if (has_element_samples && sample.normals.rows() == sample.local_points.rows() && sample.primitive_ids.size() == sample.local_points.rows())
+			{
+				Eigen::MatrixXd values = Eigen::MatrixXd::Zero(output_rows, actual_dim);
+				for (int i = 0; i < sample.local_points.rows(); ++i)
+				{
+					const int element_id = sample.element_ids(i);
+					if (element_id < 0)
+						continue;
+
+					std::vector<assembler::Assembler::NamedMatrix> tensor_flat;
+					assembler->compute_tensor_value(
+						assembler::OutputData(sample.time, element_id, bases[element_id], geom_bases()[element_id], sample.local_points.row(i), solution),
+						tensor_flat);
+
+					assert(tensor_flat[0].first == "cauchy_stess");
+					Eigen::Map<Eigen::MatrixXd> tensor(tensor_flat[0].second.data(), actual_dim, actual_dim);
+					values.row(i) = sample.normals.row(i) * tensor;
+
+					double area = 0;
+					const int primitive_id = sample.primitive_ids(i);
+					if (mesh_->is_volume())
+					{
+						if (mesh_->is_simplex(element_id))
+							area = mesh_->tri_area(primitive_id);
+						else if (mesh_->is_cube(element_id))
+							area = mesh_->quad_area(primitive_id);
+						else if (mesh_->is_prism(element_id))
+							area = mesh_->n_face_vertices(primitive_id) == 4 ? mesh_->quad_area(primitive_id) : mesh_->tri_area(primitive_id);
+					}
+					else
+					{
+						area = mesh_->edge_length(primitive_id);
+					}
+					values.row(i) *= area;
+				}
+				fields.push_back({"traction_force", values, io::OutputField::Association::Point});
+				return;
+			}
+
+			append_sampled_dof_field("traction_force", compute_traction_forces(), actual_dim);
+		};
+
+		append_scalar_values();
+		append_tensor_values();
+		append_averaged_values();
+		append_material_fields();
+		append_body_ids();
+
+		if (problem->is_time_dependent())
 		{
-			return fields;
+			if (velocity || options.export_field("velocity"))
+				append_sampled_dof_field(
+					"velocity",
+					solve_data.time_integrator ? solve_data.time_integrator->v_prev() : Eigen::VectorXd::Zero(solution.size()),
+					actual_dim);
+			if (acceleration || options.export_field("acceleration"))
+				append_sampled_dof_field(
+					"acceleration",
+					solve_data.time_integrator ? solve_data.time_integrator->a_prev() : Eigen::VectorXd::Zero(solution.size()),
+					actual_dim);
 		}
+
+		if (forces)
+		{
+			const double s = solve_data.time_integrator ? solve_data.time_integrator->acceleration_scaling() : 1;
+			for (const auto &[name, form] : solve_data.named_forms())
+			{
+				const std::string field_name = name + "_forces";
+				if (!options.export_field(field_name))
+					continue;
+
+				Eigen::VectorXd force;
+				if (form && form->enabled())
+				{
+					form->first_derivative(solution, force);
+					force *= -1.0 / s;
+				}
+				else
+				{
+					force.setZero(solution.size());
+				}
+				append_sampled_dof_field(field_name, force, actual_dim);
+			}
+		}
+
+		append_traction_force();
+
+		if (options.export_field("gradient_of_elastic_potential") && solve_data.elastic_form)
+		{
+			Eigen::VectorXd potential_grad;
+			solve_data.elastic_form->first_derivative(solution, potential_grad);
+			append_sampled_dof_field("gradient_of_elastic_potential", potential_grad, actual_dim);
+		}
+
+		if (options.export_field("gradient_of_contact_potential") && solve_data.contact_form && solve_data.contact_form->weight() > 0)
+		{
+			Eigen::VectorXd potential_grad;
+			solve_data.contact_form->first_derivative(solution, potential_grad);
+			potential_grad *= -solve_data.contact_form->barrier_stiffness() / solve_data.contact_form->weight();
+			append_sampled_dof_field("gradient_of_contact_potential", potential_grad, actual_dim);
+		}
+
+		if (export_displacement)
+			append_sampled_dof_field("displacement", solution, actual_dim);
+		if (export_solution)
+			append_sampled_dof_field("solution", solution, actual_dim);
 
 		const auto has_field = [&](const std::string &name) {
 			return std::any_of(fields.begin(), fields.end(), [&](const io::OutputField &field) {
@@ -377,19 +655,6 @@ namespace polyfem::varform
 			if (values.rows() == sample.points.rows())
 				fields.push_back({name, values, io::OutputField::Association::Point});
 		};
-
-		const auto &paraview_options = args["output"]["paraview"]["options"];
-		if (problem->is_time_dependent())
-		{
-			if (paraview_options["velocity"] || options.export_field("velocity"))
-				append_collision_dof_field(
-					"velocity",
-					solve_data.time_integrator ? solve_data.time_integrator->v_prev() : Eigen::VectorXd::Zero(solution.size()));
-			if (paraview_options["acceleration"] || options.export_field("acceleration"))
-				append_collision_dof_field(
-					"acceleration",
-					solve_data.time_integrator ? solve_data.time_integrator->a_prev() : Eigen::VectorXd::Zero(solution.size()));
-		}
 
 		if (paraview_options["forces"] && !problem->is_scalar())
 		{
@@ -429,23 +694,7 @@ namespace polyfem::varform
 			append_collision_dof_field("gradient_of_contact_potential", potential_grad);
 		}
 
-		if (options.export_field("displacement"))
-			append_collision_dof_field("displacement", solution);
-		if (options.export_field("solution"))
-			append_collision_dof_field("solution", solution);
-
 		return fields;
-	}
-
-	void ElasticVarForm::build_stiffness_mat_debug(StiffnessMatrix &stiffness)
-	{
-		build_stiffness_mat(stiffness);
-	}
-
-	void ElasticVarForm::build_stiffness_mat(StiffnessMatrix &stiffness)
-	{
-		logger().error("Stiffness assembly is not exposed by {}.", name());
-		throw std::runtime_error("Stiffness assembly is not exposed by this variational formulation.");
 	}
 
 	void NonlinearElasticVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
@@ -458,553 +707,6 @@ namespace polyfem::varform
 		//  if (periodic_bc && args["contact"]["periodic"])
 		//  	build_periodic_collision_mesh();
 		logger().info("Done!");
-	}
-
-	void VarForm::build_polygonal_basis(const mesh::Mesh &mesh)
-	{
-		rhs.resize(0, 0);
-
-		if (poly_edge_to_data.empty() && polys.empty())
-		{
-			timings.computing_poly_basis_time = 0;
-			return;
-		}
-
-		igl::Timer timer;
-		timer.start();
-		logger().info("Computing polygonal basis...");
-
-		int new_bases = 0;
-		const int dim = assembler->is_tensor() ? mesh.dimension() : 1;
-		if (iso_parametric)
-		{
-			if (mesh.is_volume())
-			{
-				if (args["space"]["poly_basis_type"] == "MeanValue" || args["space"]["poly_basis_type"] == "Wachspress")
-					logger().error("Barycentric bases not supported in 3D");
-
-				const auto *linear_assembler = dynamic_cast<assembler::LinearAssembler *>(assembler.get());
-				assert(linear_assembler);
-				new_bases = basis::PolygonalBasis3d::build_bases(
-					*linear_assembler,
-					args["space"]["advanced"]["n_harmonic_samples"],
-					dynamic_cast<const mesh::Mesh3D &>(mesh),
-					n_bases,
-					args["space"]["advanced"]["quadrature_order"],
-					args["space"]["advanced"]["mass_quadrature_order"],
-					args["space"]["advanced"]["integral_constraints"],
-					bases,
-					bases,
-					poly_edge_to_data,
-					polys_3d);
-			}
-			else
-			{
-				const mesh::Mesh2D &mesh_2d = dynamic_cast<const mesh::Mesh2D &>(mesh);
-				if (args["space"]["poly_basis_type"] == "MeanValue")
-				{
-					new_bases = basis::MVPolygonalBasis2d::build_bases(
-						assembler->name(), dim, mesh_2d, n_bases,
-						args["space"]["advanced"]["quadrature_order"],
-						args["space"]["advanced"]["mass_quadrature_order"],
-						bases, local_boundary, polys);
-				}
-				else if (args["space"]["poly_basis_type"] == "Wachspress")
-				{
-					new_bases = basis::WSPolygonalBasis2d::build_bases(
-						assembler->name(), dim, mesh_2d, n_bases,
-						args["space"]["advanced"]["quadrature_order"],
-						args["space"]["advanced"]["mass_quadrature_order"],
-						bases, local_boundary, polys);
-				}
-				else
-				{
-					const auto *linear_assembler = dynamic_cast<assembler::LinearAssembler *>(assembler.get());
-					assert(linear_assembler);
-					new_bases = basis::PolygonalBasis2d::build_bases(
-						*linear_assembler,
-						args["space"]["advanced"]["n_harmonic_samples"],
-						mesh_2d,
-						n_bases,
-						args["space"]["advanced"]["quadrature_order"],
-						args["space"]["advanced"]["mass_quadrature_order"],
-						args["space"]["advanced"]["integral_constraints"],
-						bases,
-						bases,
-						poly_edge_to_data,
-						polys);
-				}
-			}
-		}
-		else
-		{
-			if (mesh.is_volume())
-			{
-				if (args["space"]["poly_basis_type"] == "MeanValue" || args["space"]["poly_basis_type"] == "Wachspress")
-					log_and_throw_error("Barycentric bases not supported in 3D");
-
-				const auto *linear_assembler = dynamic_cast<assembler::LinearAssembler *>(assembler.get());
-				assert(linear_assembler);
-				new_bases = basis::PolygonalBasis3d::build_bases(
-					*linear_assembler,
-					args["space"]["advanced"]["n_harmonic_samples"],
-					dynamic_cast<const mesh::Mesh3D &>(mesh),
-					n_bases,
-					args["space"]["advanced"]["quadrature_order"],
-					args["space"]["advanced"]["mass_quadrature_order"],
-					args["space"]["advanced"]["integral_constraints"],
-					bases,
-					geom_bases_,
-					poly_edge_to_data,
-					polys_3d);
-			}
-			else
-			{
-				const mesh::Mesh2D &mesh_2d = dynamic_cast<const mesh::Mesh2D &>(mesh);
-				if (args["space"]["poly_basis_type"] == "MeanValue")
-				{
-					new_bases = basis::MVPolygonalBasis2d::build_bases(
-						assembler->name(), dim, mesh_2d, n_bases,
-						args["space"]["advanced"]["quadrature_order"],
-						args["space"]["advanced"]["mass_quadrature_order"],
-						bases, local_boundary, polys);
-				}
-				else if (args["space"]["poly_basis_type"] == "Wachspress")
-				{
-					new_bases = basis::WSPolygonalBasis2d::build_bases(
-						assembler->name(), dim, mesh_2d, n_bases,
-						args["space"]["advanced"]["quadrature_order"],
-						args["space"]["advanced"]["mass_quadrature_order"],
-						bases, local_boundary, polys);
-				}
-				else
-				{
-					const auto *linear_assembler = dynamic_cast<assembler::LinearAssembler *>(assembler.get());
-					assert(linear_assembler);
-					new_bases = basis::PolygonalBasis2d::build_bases(
-						*linear_assembler,
-						args["space"]["advanced"]["n_harmonic_samples"],
-						mesh_2d,
-						n_bases,
-						args["space"]["advanced"]["quadrature_order"],
-						args["space"]["advanced"]["mass_quadrature_order"],
-						args["space"]["advanced"]["integral_constraints"],
-						bases,
-						geom_bases_,
-						poly_edge_to_data,
-						polys);
-				}
-			}
-		}
-
-		timer.stop();
-		timings.computing_poly_basis_time = timer.getElapsedTime();
-		logger().info(" took {}s", timings.computing_poly_basis_time);
-
-		n_bases += new_bases;
-	}
-
-	void ElasticVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
-	{
-		using namespace mesh;
-		this->iso_parametric = iso_parametric;
-		remesh_enabled = args["space"]["remesh"]["enabled"];
-
-		if (args["solver"]["advanced"]["check_inversion"] == "Conservative")
-		{
-			if (auto elastic_assembler = std::dynamic_pointer_cast<assembler::ElasticityAssembler>(assembler))
-				elastic_assembler->set_use_robust_jacobian();
-		}
-
-		VarForm::assign_discr_orders(args["space"]["discr_order"], mesh, disc_orders);
-
-		Eigen::MatrixXi geom_disc_orders;
-		if (!iso_parametric)
-		{
-			if (mesh.orders().size() <= 0)
-			{
-				geom_disc_orders.resizeLike(disc_orders);
-				geom_disc_orders.setConstant(1);
-			}
-			else
-				geom_disc_orders = mesh.orders();
-		}
-
-		Eigen::MatrixXi geom_disc_ordersq = geom_disc_orders;
-		disc_ordersq = disc_orders;
-
-		igl::Timer timer;
-		timer.start();
-		if (args["space"]["use_p_ref"])
-		{
-			refinement::APriori::p_refine(
-				mesh,
-				args["space"]["advanced"]["B"],
-				args["space"]["advanced"]["h1_formula"],
-				args["space"]["discr_order"],
-				args["space"]["advanced"]["discr_order_max"],
-				stats,
-				disc_orders);
-
-			logger().info("min p: {} max p: {}", disc_orders.minCoeff(), disc_orders.maxCoeff());
-		}
-
-		logger().info("Building {} basis...", (iso_parametric ? "isoparametric" : "not isoparametric"));
-		const bool has_polys = mesh.has_poly();
-
-		local_boundary.clear();
-		local_neumann_boundary.clear();
-		local_pressure_boundary.clear();
-		local_pressure_cavity.clear();
-		std::map<int, basis::InterfaceData> poly_edge_to_data_geom; // temp dummy variable
-
-		int quadrature_order = args["space"]["advanced"]["quadrature_order"].get<int>();
-		const int mass_quadrature_order = args["space"]["advanced"]["mass_quadrature_order"].get<int>();
-
-		// shape optimization needs continuous geometric basis
-		// const bool use_continuous_gbasis = optimization_enabled == solver::CacheLevel::Derivatives;
-		const bool use_continuous_gbasis = true;
-		const bool use_corner_quadrature = args["space"]["advanced"]["use_corner_quadrature"];
-
-		if (mesh.is_volume())
-		{
-			const Mesh3D &tmp_mesh = dynamic_cast<const Mesh3D &>(mesh);
-			if (args["space"]["basis_type"] == "Spline")
-			{
-				n_bases = basis::SplineBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
-			}
-			else
-			{
-				if (!iso_parametric)
-					n_geom_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geom_disc_orders, geom_disc_ordersq, false, false, has_polys, !use_continuous_gbasis, use_corner_quadrature, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
-
-				n_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, disc_orders, disc_ordersq, args["space"]["basis_type"] == "Bernstein", args["space"]["basis_type"] == "Serendipity", has_polys, false, use_corner_quadrature, bases, local_boundary, poly_edge_to_data, mesh_nodes);
-			}
-		}
-		else
-		{
-			const Mesh2D &tmp_mesh = dynamic_cast<const Mesh2D &>(mesh);
-			if (args["space"]["basis_type"] == "Spline")
-			{
-				// TODO:
-				// if (!iso_parametric())
-				// {
-				// 	logger().error("Splines must be isoparametric, ignoring...");
-				// 	// LagrangeBasis2d::build_bases(tmp_mesh, quadrature_order, disc_orders, has_polys, geom_bases_, local_boundary, poly_edge_to_data_geom, mesh_nodes);
-				// 	n_bases = SplineBasis2d::build_bases(tmp_mesh, quadrature_order, geom_bases_, local_boundary, poly_edge_to_data);
-				// }
-
-				n_bases = basis::SplineBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
-
-				// if (iso_parametric() && args["fit_nodes"])
-				// 	SplineBasis2d::fit_nodes(tmp_mesh, n_bases, bases);
-			}
-			else
-			{
-				if (!iso_parametric)
-					n_geom_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, false, has_polys, !use_continuous_gbasis, use_corner_quadrature, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
-
-				n_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["basis_type"] == "Bernstein", args["space"]["basis_type"] == "Serendipity", has_polys, false, use_corner_quadrature, bases, local_boundary, poly_edge_to_data, mesh_nodes);
-			}
-		}
-
-		timer.stop();
-
-		build_polygonal_basis(mesh);
-
-		if (n_geom_bases == 0)
-			n_geom_bases = n_bases;
-
-		for (const auto &lb : local_boundary)
-			total_local_boundary.emplace_back(lb);
-
-		const int dim = mesh.dimension();
-		const int problem_dim = problem->is_scalar() ? 1 : dim;
-		// FIXME!! handle periodic bc
-		//  handle periodic bc
-		//  if (has_periodic_bc())
-		//  {
-		//  	// collect periodic directions
-		//  	json directions = args["boundary_conditions"]["periodic_boundary"]["correspondence"];
-		//  	Eigen::MatrixXd tile_offset = Eigen::MatrixXd::Identity(dim, dim);
-
-		// 	if (directions.size() > 0)
-		// 	{
-		// 		Eigen::VectorXd tmp;
-		// 		for (int d = 0; d < dim; d++)
-		// 		{
-		// 			tmp = directions[d];
-		// 			if (tmp.size() != dim)
-		// 				log_and_throw_error("Invalid size of periodic directions!");
-		// 			tile_offset.col(d) = tmp;
-		// 		}
-		// 	}
-
-		// 	periodic_bc = std::make_shared<PeriodicBoundary>(problem->is_scalar(), n_bases, bases, mesh_nodes, tile_offset, args["boundary_conditions"]["periodic_boundary"]["tolerance"].get<double>());
-
-		// 	macro_strain_constraint.init(dim, args["boundary_conditions"]["periodic_boundary"]);
-		// }
-
-		if (args["space"]["advanced"]["count_flipped_els"])
-			stats.count_flipped_elements(mesh, geom_bases());
-
-		const int prev_bases = n_bases;
-		n_bases += obstacle.n_vertices();
-
-		{
-			igl::Timer timer2;
-			logger().debug("Building node mapping...");
-			timer2.start();
-			build_node_mapping(mesh, args);
-			problem->update_nodes(in_node_to_node);
-			mesh.update_nodes(in_node_to_node);
-			timer2.stop();
-			logger().debug("Done (took {}s)", timer2.getElapsedTime());
-		}
-
-		// FIXME remove pressure
-		std::vector<int> tmp;
-		const int prev_b_size = local_boundary.size();
-		problem->setup_bc(mesh, n_bases - obstacle.n_vertices(),
-						  bases, geom_bases(), {},
-						  local_boundary,
-						  boundary_nodes,
-						  local_neumann_boundary,
-						  local_pressure_boundary,
-						  local_pressure_cavity,
-						  tmp,
-						  dirichlet_nodes, neumann_nodes);
-
-		// setp nodal values
-		{
-			dirichlet_nodes_position.resize(dirichlet_nodes.size());
-			for (int n = 0; n < dirichlet_nodes.size(); ++n)
-			{
-				const int n_id = dirichlet_nodes[n];
-				bool found = false;
-				for (const auto &bs : bases)
-				{
-					for (const auto &b : bs.bases)
-					{
-						for (const auto &lg : b.global())
-						{
-							if (lg.index == n_id)
-							{
-								dirichlet_nodes_position[n] = lg.node;
-								found = true;
-								break;
-							}
-						}
-
-						if (found)
-							break;
-					}
-
-					if (found)
-						break;
-				}
-
-				assert(found);
-			}
-
-			neumann_nodes_position.resize(neumann_nodes.size());
-			for (int n = 0; n < neumann_nodes.size(); ++n)
-			{
-				const int n_id = neumann_nodes[n];
-				bool found = false;
-				for (const auto &bs : bases)
-				{
-					for (const auto &b : bs.bases)
-					{
-						for (const auto &lg : b.global())
-						{
-							if (lg.index == n_id)
-							{
-								neumann_nodes_position[n] = lg.node;
-								found = true;
-								break;
-							}
-						}
-
-						if (found)
-							break;
-					}
-
-					if (found)
-						break;
-				}
-
-				assert(found);
-			}
-		}
-
-		for (int i = prev_bases; i < n_bases; ++i)
-		{
-			for (int d = 0; d < problem_dim; ++d)
-				boundary_nodes.push_back(i * problem_dim + d);
-		}
-
-		std::sort(boundary_nodes.begin(), boundary_nodes.end());
-		auto it = std::unique(boundary_nodes.begin(), boundary_nodes.end());
-		boundary_nodes.resize(std::distance(boundary_nodes.begin(), it));
-
-		const auto &curret_bases = geom_bases();
-		const int n_samples = 10;
-		stats.compute_mesh_size(mesh, curret_bases, n_samples, args["output"]["advanced"]["curved_mesh_size"]);
-
-		// FIXME fix me
-		//  if (is_contact_enabled())
-		//  {
-		//  	double min_boundary_edge_length = std::numeric_limits<double>::max();
-		//  	for (const auto &edge : collision_mesh.edges().rowwise())
-		//  	{
-		//  		const VectorNd v0 = collision_mesh.rest_positions().row(edge(0));
-		//  		const VectorNd v1 = collision_mesh.rest_positions().row(edge(1));
-		//  		min_boundary_edge_length = std::min(min_boundary_edge_length, (v1 - v0).norm());
-		//  	}
-
-		// 	double dhat = Units::convert(args["contact"]["dhat"], units.length());
-		// 	args["contact"]["epsv"] = Units::convert(args["contact"]["epsv"], units.velocity());
-		// 	args["contact"]["dhat"] = dhat;
-
-		// 	if (!has_dhat && dhat > min_boundary_edge_length)
-		// 	{
-		// 		args["contact"]["dhat"] = double(args["contact"]["dhat_percentage"]) * min_boundary_edge_length;
-		// 		logger().info("dhat set to {}", double(args["contact"]["dhat"]));
-		// 	}
-		// 	else
-		// 	{
-		// 		if (dhat > min_boundary_edge_length)
-		// 			logger().warn("dhat larger than min boundary edge, {} > {}", dhat, min_boundary_edge_length);
-		// 	}
-		// }
-
-		logger().info("n_bases {}", n_bases);
-
-		timings.building_basis_time = timer.getElapsedTime();
-		logger().info(" took {}s", timings.building_basis_time);
-
-		logger().info("flipped elements {}", stats.n_flipped);
-		logger().info("h: {}", stats.mesh_size);
-		logger().info("n bases: {}", n_bases);
-
-		if (n_bases <= args["solver"]["advanced"]["cache_size"])
-		{
-			timer.start();
-			logger().info("Building cache...");
-			ass_vals_cache.init(mesh.is_volume(), bases, curret_bases);
-			mass_ass_vals_cache.init(mesh.is_volume(), bases, curret_bases, true);
-			pure_mass_ass_vals_cache.init(mesh.is_volume(), bases, curret_bases, true);
-
-			logger().info(" took {}s", timer.getElapsedTime());
-		}
-		else
-		{
-			ass_vals_cache.init_empty();
-			mass_ass_vals_cache.init_empty(true);
-			pure_mass_ass_vals_cache.init_empty(true);
-		}
-
-		// FIXME
-		//  out_geom.build_grid(*mesh, args["output"]["advanced"]["sol_on_grid"]);
-
-		{
-			json rhs_solver_params = args["solver"]["linear"];
-			if (!rhs_solver_params.contains("Pardiso"))
-				rhs_solver_params["Pardiso"] = {};
-			rhs_solver_params["Pardiso"]["mtype"] = -2; // matrix type for Pardiso (2 = SPD)
-
-			solve_data.rhs_assembler = std::make_shared<assembler::RhsAssembler>(
-				*assembler, mesh, obstacle,
-				dirichlet_nodes, neumann_nodes,
-				dirichlet_nodes_position, neumann_nodes_position,
-				n_bases, problem_dim, bases, geom_bases(), mass_ass_vals_cache, *problem,
-				args["space"]["advanced"]["bc_method"],
-				rhs_solver_params);
-		}
-	}
-
-	void VarForm::build_node_mapping(const mesh::Mesh &mesh, const json &args)
-	{
-		if (args["space"]["basis_type"] == "Spline")
-		{
-			logger().warn("Node ordering disabled, it dosent work for splines!");
-			return;
-		}
-
-		if (disc_orders.maxCoeff() >= 4 || disc_orders.maxCoeff() != disc_orders.minCoeff())
-		{
-			logger().warn("Node ordering disabled, it works only for p < 4 and uniform order!");
-			return;
-		}
-
-		if (!mesh.is_conforming())
-		{
-			logger().warn("Node ordering disabled, not supported for non-conforming meshes!");
-			return;
-		}
-
-		if (mesh.has_poly())
-		{
-			logger().warn("Node ordering disabled, not supported for polygonal meshes!");
-			return;
-		}
-
-		if (mesh.in_ordered_vertices().size() <= 0 || mesh.in_ordered_edges().size() <= 0 || (mesh.is_volume() && mesh.in_ordered_faces().size() <= 0))
-		{
-			logger().warn("Node ordering disabled, input vertices/edges/faces not computed!");
-			return;
-		}
-
-		const int num_vertex_nodes = mesh_nodes->num_vertex_nodes();
-		const int num_edge_nodes = mesh_nodes->num_edge_nodes();
-		const int num_face_nodes = mesh_nodes->num_face_nodes();
-		const int num_cell_nodes = mesh_nodes->num_cell_nodes();
-
-		const int num_nodes = num_vertex_nodes + num_edge_nodes + num_face_nodes + num_cell_nodes;
-
-		const long n_vertices = num_vertex_nodes;
-		const int num_in_primitives = n_vertices + mesh.n_edges() + mesh.n_faces() + mesh.n_cells();
-		const int num_primitives = mesh.n_vertices() + mesh.n_edges() + mesh.n_faces() + mesh.n_cells();
-
-		igl::Timer timer;
-
-		logger().trace("Building in-node to in-primitive mapping...");
-		timer.start();
-		Eigen::VectorXi in_node_to_in_primitive;
-		Eigen::VectorXi in_node_offset;
-		build_in_node_to_in_primitive(mesh, *mesh_nodes, in_node_to_in_primitive, in_node_offset);
-		timer.stop();
-		logger().trace("Done (took {}s)", timer.getElapsedTime());
-
-		logger().trace("Building in-primitive to primitive mapping...");
-		timer.start();
-		bool ok = build_in_primitive_to_primitive(
-			mesh, *mesh_nodes,
-			mesh.in_ordered_vertices(),
-			mesh.in_ordered_edges(),
-			mesh.in_ordered_faces(),
-			in_primitive_to_primitive);
-		timer.stop();
-		logger().trace("Done (took {}s)", timer.getElapsedTime());
-
-		if (!ok)
-		{
-			in_node_to_node.resize(0);
-			in_primitive_to_primitive.resize(0);
-			return;
-		}
-		const auto &tmp = mesh_nodes->in_ordered_vertices();
-		int max_tmp = -1;
-		for (auto v : tmp)
-			max_tmp = std::max(max_tmp, v);
-
-		in_node_to_node.resize(max_tmp + 1);
-		for (int i = 0; i < tmp.size(); ++i)
-		{
-			if (tmp[i] >= 0)
-				in_node_to_node[tmp[i]] = i;
-		}
 	}
 
 	void NonlinearElasticVarForm::build_collision_mesh(
@@ -1144,43 +846,6 @@ namespace polyfem::varform
 		collision_mesh.init_area_jacobians();
 	}
 
-	void ElasticVarForm::set_materials(assembler::Assembler &assembler) const
-	{
-		assert(mesh_ != nullptr);
-		const int size = this->assembler && (this->assembler->is_tensor() || this->assembler->is_fluid()) ? mesh_->dimension() : 1;
-		assembler.set_size(size);
-
-		if (!utils::is_param_valid(args, "materials"))
-			return;
-
-		std::vector<int> body_ids(mesh_->n_elements());
-		for (int i = 0; i < mesh_->n_elements(); ++i)
-			body_ids[i] = mesh_->get_body_id(i);
-
-		assembler.set_materials(body_ids, args["materials"], units, root_path);
-	}
-
-	std::vector<int> VarForm::primitive_to_node() const
-	{
-		const auto &nodes = iso_parametric ? mesh_nodes : geom_mesh_nodes;
-		if (!nodes)
-			return {};
-
-		auto indices = nodes->primitive_to_node();
-		indices.resize(mesh_->n_vertices());
-		return indices;
-	}
-
-	std::vector<int> VarForm::node_to_primitive() const
-	{
-		auto p2n = primitive_to_node();
-		std::vector<int> indices;
-		indices.resize(n_geom_bases);
-		for (int i = 0; i < p2n.size(); i++)
-			indices[p2n[i]] = i;
-		return indices;
-	}
-
 	std::shared_ptr<assembler::PressureAssembler> NonlinearElasticVarForm::build_pressure_assembler() const
 	{
 		const int size = problem->is_scalar() ? 1 : mesh_->dimension();
@@ -1192,85 +857,6 @@ namespace polyfem::varform
 			boundary_nodes,
 			primitive_to_node(), node_to_primitive(),
 			n_bases, size, bases, geom_bases(), *problem);
-	}
-
-	void VarForm::assemble_rhs(const mesh::Mesh &mesh, const json &args)
-	{
-		igl::Timer timer;
-		json p_params = {};
-		p_params["formulation"] = assembler->name();
-		p_params["root_path"] = root_path;
-		{
-			RowVectorNd min, max, delta;
-			mesh.bounding_box(min, max);
-			delta = (max - min) / 2. + min;
-			if (mesh.is_volume())
-				p_params["bbox_center"] = {delta(0), delta(1), delta(2)};
-			else
-				p_params["bbox_center"] = {delta(0), delta(1)};
-		}
-		problem->set_parameters(p_params, root_path);
-
-		rhs.resize(0, 0);
-
-		timer.start();
-		logger().info("Assigning rhs...");
-
-		assert(solve_data.rhs_assembler != nullptr);
-		solve_data.rhs_assembler->assemble(mass_matrix_assembler->density(), rhs);
-		rhs *= -1;
-
-		timings.assigning_rhs_time = timer.getElapsedTime();
-		logger().info(" took {}s", timings.assigning_rhs_time);
-	}
-
-	void VarForm::assemble_mass_mat(const mesh::Mesh &mesh, const json &args)
-	{
-		if (!problem->is_time_dependent())
-		{
-			avg_mass = 1;
-			timings.assembling_mass_mat_time = 0;
-			if (!assembler->is_linear())
-				pure_mass_matrix_assembler->assemble(mesh.is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
-			return;
-		}
-
-		mass.resize(0, 0);
-
-		igl::Timer timer;
-		timer.start();
-		logger().info("Assembling mass mat...");
-
-		mass_matrix_assembler->assemble(mesh.is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, 0, mass, true);
-		if (!assembler->is_linear())
-			pure_mass_matrix_assembler->assemble(mesh.is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
-
-		assert(mass.size() > 0);
-
-		avg_mass = 0;
-		for (int k = 0; k < mass.outerSize(); ++k)
-		{
-			for (StiffnessMatrix::InnerIterator it(mass, k); it; ++it)
-			{
-				assert(it.col() == k);
-				avg_mass += it.value();
-			}
-		}
-
-		avg_mass /= mass.rows();
-		logger().info("average mass {}", avg_mass);
-
-		if (args["solver"]["advanced"]["lump_mass_matrix"])
-			mass = utils::lump_matrix(mass);
-
-		timer.stop();
-		timings.assembling_mass_mat_time = timer.getElapsedTime();
-		logger().info(" took {}s", timings.assembling_mass_mat_time);
-
-		stats.nn_zero = mass.nonZeros();
-		stats.num_dofs = mass.rows();
-		stats.mat_size = (long long)mass.rows() * (long long)mass.cols();
-		logger().info("sparsity: {}/{}", stats.nn_zero, stats.mat_size);
 	}
 
 	void NonlinearElasticStaticVarForm::solve_problem(Eigen::MatrixXd &sol)
@@ -1577,82 +1163,6 @@ namespace polyfem::varform
 		// --------------------------------------------------------------------
 
 		stats.solver_info = json::array();
-	}
-
-	namespace
-	{
-		bool read_initial_x_from_file(
-			const std::string &state_path,
-			const std::string &x_name,
-			const bool reorder,
-			const Eigen::VectorXi &in_node_to_node,
-			const int dim,
-			Eigen::MatrixXd &x)
-		{
-			if (state_path.empty())
-				return false;
-
-			if (!io::read_matrix(state_path, x_name, x))
-			{
-				logger().debug("Unable to read initial {} from file ({})", x_name, state_path);
-				return false;
-			}
-
-			if (reorder)
-			{
-				const int ndof = in_node_to_node.size() * dim;
-				x.topRows(ndof) = utils::reorder_matrix(x.topRows(ndof), in_node_to_node, -1, dim);
-			}
-
-			return true;
-		}
-	} // namespace
-
-	void ElasticVarForm::initial_solution(Eigen::MatrixXd &solution) const
-	{
-		assert(solve_data.rhs_assembler != nullptr);
-
-		const bool was_solution_loaded = read_initial_x_from_file(
-			resolve_input_path(args["input"]["data"]["state"]), "u",
-			args["input"]["data"]["reorder"], in_node_to_node,
-			mesh_->dimension(), solution);
-
-		if (!was_solution_loaded)
-		{
-			if (problem->is_time_dependent())
-				solve_data.rhs_assembler->initial_solution(solution);
-			else
-			{
-				solution.resize(rhs.size(), 1);
-				solution.setZero();
-			}
-		}
-	}
-
-	void ElasticVarForm::initial_velocity(Eigen::MatrixXd &velocity) const
-	{
-		assert(solve_data.rhs_assembler != nullptr);
-
-		const bool was_velocity_loaded = read_initial_x_from_file(
-			resolve_input_path(args["input"]["data"]["state"]), "v",
-			args["input"]["data"]["reorder"], in_node_to_node,
-			mesh_->dimension(), velocity);
-
-		if (!was_velocity_loaded)
-			solve_data.rhs_assembler->initial_velocity(velocity);
-	}
-
-	void ElasticVarForm::initial_acceleration(Eigen::MatrixXd &acceleration) const
-	{
-		assert(solve_data.rhs_assembler != nullptr);
-
-		const bool was_acceleration_loaded = read_initial_x_from_file(
-			resolve_input_path(args["input"]["data"]["state"]), "a",
-			args["input"]["data"]["reorder"], in_node_to_node,
-			mesh_->dimension(), acceleration);
-
-		if (!was_acceleration_loaded)
-			solve_data.rhs_assembler->initial_acceleration(acceleration);
 	}
 
 	void NonlinearElasticVarForm::solve_tensor_nonlinear(int step, Eigen::MatrixXd &sol, const bool init_lagging)

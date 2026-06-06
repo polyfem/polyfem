@@ -23,7 +23,7 @@ namespace polyfem::varform
 
 	void FluidVarForm::reset()
 	{
-		ElasticVarForm::reset();
+		VarForm::reset();
 		pressure_bases.clear();
 		n_pressure_bases = 0;
 		pressure_mesh_nodes = nullptr;
@@ -36,7 +36,7 @@ namespace polyfem::varform
 
 	void FluidVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
 	{
-		ElasticVarForm::init(formulation, units, args, out_path);
+		VarForm::init(formulation, units, args, out_path);
 		mixed_assembler = assembler::AssemblerUtils::make_mixed_assembler(formulation);
 		pressure_assembler = assembler::AssemblerUtils::make_assembler(assembler::AssemblerUtils::other_assembler_name(formulation));
 		assert(assembler->is_fluid());
@@ -44,7 +44,7 @@ namespace polyfem::varform
 
 	void FluidVarForm::load_mesh(const mesh::Mesh &mesh, const json &args)
 	{
-		ElasticVarForm::load_mesh(mesh, args);
+		VarForm::load_mesh(mesh, args);
 		if (mixed_assembler)
 			mixed_assembler->set_size(mesh.dimension());
 		if (pressure_assembler)
@@ -77,7 +77,7 @@ namespace polyfem::varform
 		rhs_solver_params["Pardiso"]["mtype"] = -2;
 
 		return std::make_shared<assembler::RhsAssembler>(
-			*assembler, *mesh_, obstacle,
+			*assembler, *mesh_, mesh::Obstacle(), // no obtacle for the rhs assembler
 			dirichlet_nodes, neumann_nodes,
 			dirichlet_nodes_position, neumann_nodes_position,
 			n_bases, mesh_->dimension(), bases, geom_bases(), ass_vals_cache, *problem,
@@ -87,7 +87,7 @@ namespace polyfem::varform
 
 	void FluidVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
 	{
-		ElasticVarForm::build_basis(mesh, iso_parametric, args);
+		VarForm::build_basis(mesh, iso_parametric, args);
 
 		if (disc_orders.maxCoeff() != disc_orders.minCoeff())
 			log_and_throw_error("p refinement not supported in mixed formulation!");
@@ -96,7 +96,7 @@ namespace polyfem::varform
 		timer.start();
 
 		const auto all_boundary = total_local_boundary;
-		const int prev_bases = n_bases - obstacle.n_vertices();
+		const int prev_bases = n_bases;
 		const int prev_b_size = int(all_boundary.size());
 		const bool has_polys = mesh.has_poly();
 		const bool use_corner_quadrature = args["space"]["advanced"]["use_corner_quadrature"];
@@ -148,7 +148,7 @@ namespace polyfem::varform
 		neumann_nodes.clear();
 
 		problem->setup_bc(
-			mesh, n_bases - obstacle.n_vertices(),
+			mesh, n_bases,
 			bases, geom_bases(), pressure_bases,
 			local_boundary,
 			boundary_nodes,

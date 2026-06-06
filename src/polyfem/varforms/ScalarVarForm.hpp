@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/varforms/ElasticVarForm.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 
 #include <memory>
 
@@ -11,7 +11,7 @@ namespace polysolve::linear
 
 namespace polyfem::varform
 {
-	class ScalarVarForm : public ElasticVarForm
+	class ScalarVarForm : public VarForm
 	{
 	public:
 		std::string name() const override { return "Scalar"; }
@@ -24,8 +24,9 @@ namespace polyfem::varform
 			const io::OutputFieldOptions &options) const override;
 
 	private:
+		void build_stiffness_mat(StiffnessMatrix &stiffness);
+
 		void solve_problem(Eigen::MatrixXd &sol) override;
-		void build_stiffness_mat(StiffnessMatrix &stiffness) override;
 		void solve_linear_system(
 			const std::unique_ptr<polysolve::linear::Solver> &solver,
 			StiffnessMatrix &A,

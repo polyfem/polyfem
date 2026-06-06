@@ -51,6 +51,10 @@ namespace polyfem::varform
 		std::shared_ptr<assembler::PressureAssembler> elasticity_pressure_assembler = nullptr;
 		std::shared_ptr<assembler::ViscousDamping> damping_assembler = nullptr;
 		std::shared_ptr<assembler::ViscousDampingPrev> damping_prev_assembler = nullptr;
+
+		mesh::Obstacle obstacle;
+
+		int n_obstacle_vertices() const override { return obstacle.n_vertices(); };
 	};
 
 	class NonlinearElasticTransientVarForm : public NonlinearElasticVarForm

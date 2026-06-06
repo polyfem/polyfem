@@ -73,7 +73,7 @@ namespace polyfem::varform
 		rhs_solver_params["Pardiso"]["mtype"] = -2;
 
 		return std::make_shared<assembler::RhsAssembler>(
-			*assembler, *mesh_, obstacle,
+			*assembler, *mesh_, mesh::Obstacle(),
 			dirichlet_nodes, neumann_nodes,
 			dirichlet_nodes_position, neumann_nodes_position,
 			n_bases, mesh_->dimension(), bases, geom_bases(), ass_vals_cache, *problem,
@@ -83,7 +83,7 @@ namespace polyfem::varform
 
 	void IncompressibleElasticVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
 	{
-		ElasticVarForm::build_basis(mesh, iso_parametric, args);
+		VarForm::build_basis(mesh, iso_parametric, args);
 
 		if (disc_orders.maxCoeff() != disc_orders.minCoeff())
 			log_and_throw_error("p refinement not supported in mixed formulation!");
@@ -92,7 +92,7 @@ namespace polyfem::varform
 		timer.start();
 
 		const auto all_boundary = total_local_boundary;
-		const int prev_bases = n_bases - obstacle.n_vertices();
+		const int prev_bases = n_bases;
 		const int prev_b_size = int(all_boundary.size());
 		const bool has_polys = mesh.has_poly();
 		const bool use_corner_quadrature = args["space"]["advanced"]["use_corner_quadrature"];
@@ -144,7 +144,7 @@ namespace polyfem::varform
 		neumann_nodes.clear();
 
 		problem->setup_bc(
-			mesh, n_bases - obstacle.n_vertices(),
+			mesh, n_bases,
 			bases, geom_bases(), pressure_bases,
 			local_boundary,
 			boundary_nodes,

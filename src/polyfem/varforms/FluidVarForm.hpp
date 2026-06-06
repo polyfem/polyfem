@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/varforms/ElasticVarForm.hpp>
+#include <polyfem/varforms/VarForm.hpp>
 
 #include <polyfem/assembler/Assembler.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
@@ -12,7 +12,7 @@ namespace polysolve::linear
 
 namespace polyfem::varform
 {
-	class FluidVarForm : public ElasticVarForm
+	class FluidVarForm : public VarForm
 	{
 	public:
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
@@ -35,7 +35,7 @@ namespace polyfem::varform
 
 		void prepare_initial_solution(Eigen::MatrixXd &sol) const;
 		void split_solution(const Eigen::MatrixXd &stacked, Eigen::MatrixXd &primary, Eigen::MatrixXd &pressure) const;
-		void build_stiffness_mat(StiffnessMatrix &stiffness) override;
+		void build_stiffness_mat(StiffnessMatrix &stiffness);
 		void solve_linear_system(
 			const std::unique_ptr<polysolve::linear::Solver> &solver,
 			StiffnessMatrix &A,

@@ -89,7 +89,7 @@ namespace polyfem
 
 			/// @brief Get the output space of the variational formulation, for output purposes
 			/// @return Output space
-			virtual io::OutputSpace output_space() const = 0;
+			virtual io::OutputSpace output_space() const;
 			/// @brief Get the output fields of the variational formulation, for output purposes
 			/// @param sample Output sample
 			/// @param solution Solution matrix
@@ -119,19 +119,21 @@ namespace polyfem
 			void save_json(const Eigen::MatrixXd &solution) const;
 			void export_data(const Eigen::MatrixXd &solution) const;
 
+			QuadratureOrders n_boundary_samples() const;
+
 		protected:
 			std::string resolve_output_path(const std::string &path) const;
 
 			void prepare();
 
-			virtual void load_mesh(const mesh::Mesh &mesh, const json &args) = 0;
+			virtual void load_mesh(const mesh::Mesh &mesh, const json &args);
 			virtual void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args);
 			virtual void assemble_rhs(const mesh::Mesh &mesh, const json &args);
 			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args);
 			virtual void solve_problem(Eigen::MatrixXd &sol) = 0;
 			virtual void save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const;
 			virtual void reset();
-			virtual void set_materials(assembler::Assembler &assembler) const = 0;
+			virtual void set_materials(assembler::Assembler &assembler) const;
 			void save_restart_json(const double t0, const double dt, const int t) const;
 			void save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &solution) const;
 			void save_subsolve(const int i, const int t, const Eigen::MatrixXd &solution) const;
@@ -152,6 +154,8 @@ namespace polyfem
 			void build_node_mapping(const mesh::Mesh &mesh, const json &args);
 			std::vector<int> primitive_to_node() const;
 			std::vector<int> node_to_primitive() const;
+
+			void initial_solution(Eigen::MatrixXd &solution) const;
 
 			/// current problem, it contains rhs and bc
 			std::shared_ptr<assembler::Problem> problem;
@@ -250,6 +254,14 @@ namespace polyfem
 
 			mutable io::OutGeometryData output_geometry_;
 			mutable bool output_sampler_initialized_ = false;
+
+			static bool read_initial_x_from_file(
+				const std::string &state_path,
+				const std::string &x_name,
+				const bool reorder,
+				const Eigen::VectorXi &in_node_to_node,
+				const int dim,
+				Eigen::MatrixXd &x);
 		};
 	} // namespace varform
 } // namespace polyfem
