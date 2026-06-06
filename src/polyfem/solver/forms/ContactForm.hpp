@@ -116,6 +116,8 @@ namespace polyfem::solver
 
 		std::shared_ptr<ipc::BroadPhase> get_broad_phase() const { return broad_phase_; }
 
+		const ipc::CollisionMesh &collision_mesh() const { return collision_mesh_; }
+
 	protected:
 		/// @brief Update the cached candidate set for the current solution
 		/// @param displaced_surface Vertex positions displaced by the current solution
