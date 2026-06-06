@@ -268,7 +268,6 @@ namespace polyfem::varform
 		mass_matrix_assembler = std::make_shared<assembler::Mass>();
 		pure_mass_matrix_assembler = std::make_shared<assembler::HRZMass>();
 
-
 		if (!args.contains("preset_problem"))
 		{
 			problem = std::make_shared<assembler::GenericTensorProblem>("GenericTensor");

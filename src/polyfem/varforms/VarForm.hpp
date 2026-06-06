@@ -65,13 +65,12 @@ namespace polyfem
 
 			virtual std::string name() const = 0;
 			const json &input_args() const { return args; }
+
 			int problem_dimension() const;
 			bool is_contact_enabled() const;
+
 			std::string resolve_output_path(const std::string &path) const;
-			const io::OutRuntimeData &output_timings() const { return timings; }
-			virtual io::OutStatsData compute_errors(const Eigen::MatrixXd &solution);
 			virtual io::OutputSpace output_space() const = 0;
-			virtual void save_json(const Eigen::MatrixXd &solution, std::ostream &out) const {};
 			virtual std::vector<io::OutputField> output_fields(
 				const io::OutputSample &sample,
 				const Eigen::MatrixXd &solution,
@@ -79,6 +78,12 @@ namespace polyfem
 			{
 				return {};
 			}
+
+			const io::OutRuntimeData &output_timings() const { return timings; }
+			virtual io::OutStatsData compute_errors(const Eigen::MatrixXd &solution);
+
+			virtual void save_json(const Eigen::MatrixXd &solution, std::ostream &out) const {};
+			void save_json(const Eigen::MatrixXd &solution) const;
 
 		protected:
 			virtual void load_mesh(const mesh::Mesh &mesh, const json &args) = 0;
