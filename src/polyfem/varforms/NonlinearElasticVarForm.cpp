@@ -688,6 +688,11 @@ namespace polyfem::varform
 	{
 		ElasticVarForm::build_basis(mesh, iso_parametric, args);
 
+		// Legacy nonlinear/contact code assumes n_bases includes obstacle vertices.
+		// The shared VarForm build path only counts FE bases, so extend it here
+		// before constructing collision/contact state.
+		n_bases += obstacle.n_vertices();
+
 		logger().info("Building collision mesh...");
 		build_collision_mesh(mesh, args);
 		// FIXME!! handle periodic collision mesh
