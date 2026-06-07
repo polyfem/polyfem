@@ -8,6 +8,4 @@ endif()
 message(STATUS "Third-party: creating target 'ipc::toolkit'")
 
 include(CPM)
-# TODO: revert to ipc-sim/ipc-toolkit main once PR #239 lands
-# https://github.com/ipc-sim/ipc-toolkit/pull/239
-CPMAddPackage("gh:Huangzizhou/ipc-toolkit#7b970316ec3cf2e04fb1cdbf8141ecfd28efd4f0")
+CPMAddPackage("gh:ipc-sim/ipc-toolkit#b40e9c078639f947a2b631723f595231add59373")
