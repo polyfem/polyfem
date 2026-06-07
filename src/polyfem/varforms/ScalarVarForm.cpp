@@ -233,7 +233,7 @@ namespace polyfem::varform
 	{
 		assert(assembler->is_linear());
 		assert(problem->is_scalar());
-		assert(solve_data.rhs_assembler != nullptr);
+		assert(rhs_assembler != nullptr);
 
 		Eigen::VectorXd x;
 		stats.spectrum = dirichlet_solve(
@@ -263,7 +263,7 @@ namespace polyfem::varform
 		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", solver->name());
 
-		solve_data.rhs_assembler->set_bc(
+		rhs_assembler->set_bc(
 			local_boundary, boundary_nodes, n_boundary_samples(),
 			(assembler->name() != "Bilaplacian") ? local_neumann_boundary : std::vector<mesh::LocalBoundary>(), rhs);
 
@@ -277,7 +277,7 @@ namespace polyfem::varform
 	void ScalarVarForm::solve_transient(Eigen::MatrixXd &sol)
 	{
 		assert(problem->is_time_dependent());
-		assert(solve_data.rhs_assembler != nullptr);
+		assert(rhs_assembler != nullptr);
 
 		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", solver->name());
@@ -285,8 +285,7 @@ namespace polyfem::varform
 		auto bdf = std::make_shared<time_integrator::BDF>();
 		bdf->set_parameters(args["time"]);
 		bdf->init(sol, Eigen::VectorXd::Zero(sol.size()), Eigen::VectorXd::Zero(sol.size()), dt);
-		solve_data.time_integrator = bdf;
-		solve_data.update_dt();
+		time_integrator = bdf;
 
 		save_timestep(t0, 0, t0, dt, sol);
 
@@ -300,11 +299,11 @@ namespace polyfem::varform
 		{
 			const double time = t0 + t * dt;
 
-			solve_data.rhs_assembler->compute_energy_grad(
+			rhs_assembler->compute_energy_grad(
 				local_boundary, boundary_nodes, mass_matrix_assembler->density(), n_b_samples,
 				local_neumann_boundary, rhs, time, current_rhs);
 
-			solve_data.rhs_assembler->set_bc(
+			rhs_assembler->set_bc(
 				local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, current_rhs, sol, time);
 
 			StiffnessMatrix A = mass / bdf->beta_dt() + stiffness;
@@ -341,7 +340,7 @@ namespace polyfem::varform
 				sol.conservativeResize(Eigen::NoChange, 1);
 		}
 
-		solve_data.time_integrator = nullptr;
+		time_integrator = nullptr;
 		if (problem->is_time_dependent())
 			solve_transient(sol);
 		else

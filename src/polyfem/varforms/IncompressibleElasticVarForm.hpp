@@ -46,14 +46,7 @@ namespace polyfem::varform
 		void solve_static_linear(Eigen::MatrixXd &sol);
 		void solve_transient_linear(Eigen::MatrixXd &sol);
 
-		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler(
-			const int n_bases,
-			const std::vector<basis::ElementBases> &bases,
-			const assembler::AssemblyValsCache &ass_vals_cache) const override;
-		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler() const
-		{
-			return build_rhs_assembler(this->n_bases, bases, mass_ass_vals_cache);
-		}
+		void build_rhs_assembler() override;
 
 		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
 		std::shared_ptr<assembler::Assembler> pressure_assembler = nullptr;

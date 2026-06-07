@@ -3,6 +3,7 @@
 #include <polyfem/assembler/AssemblerUtils.hpp>
 
 #include <polyfem/io/MatrixIO.hpp>
+#include <polyfem/varforms/VarFormUtils.hpp>
 
 #include <polyfem/basis/LagrangeBasis2d.hpp>
 #include <polyfem/basis/LagrangeBasis3d.hpp>
@@ -289,7 +290,6 @@ namespace polyfem::varform
 		pure_mass.resize(0, 0);
 		rhs.resize(0, 0);
 		avg_mass = 0;
-		solve_data = solver::SolveData();
 		boundary_nodes.clear();
 		total_local_boundary.clear();
 		local_boundary.clear();
@@ -310,7 +310,7 @@ namespace polyfem::varform
 
 	void VarForm::initial_solution(Eigen::MatrixXd &solution) const
 	{
-		assert(solve_data.rhs_assembler != nullptr);
+		assert(rhs_assembler != nullptr);
 
 		const bool was_solution_loaded = read_initial_x_from_file(
 			resolve_input_path(args["input"]["data"]["state"]), "u",
@@ -320,7 +320,7 @@ namespace polyfem::varform
 		if (!was_solution_loaded)
 		{
 			if (problem->is_time_dependent())
-				solve_data.rhs_assembler->initial_solution(solution);
+				rhs_assembler->initial_solution(solution);
 			else
 			{
 				solution.resize(rhs.size(), 1);
@@ -484,6 +484,23 @@ namespace polyfem::varform
 			timer2.stop();
 			logger().debug("Done (took {}s)", timer2.getElapsedTime());
 		}
+
+		// FIXME ME
+		std::vector<basis::ElementBases> empty_pressure_bases;
+		std::vector<int> empty_pressure_boundary_nodes;
+		problem->setup_bc(
+			mesh, n_bases,
+			bases, geom_bases(), empty_pressure_bases,
+			local_boundary,
+			boundary_nodes,
+			local_neumann_boundary,
+			local_pressure_boundary,
+			local_pressure_cavity,
+			empty_pressure_boundary_nodes,
+			dirichlet_nodes, neumann_nodes);
+
+		rebuild_node_positions(bases, dirichlet_nodes, dirichlet_nodes_position);
+		rebuild_node_positions(bases, neumann_nodes, neumann_nodes_position);
 
 		const auto &current_bases = geom_bases();
 		const int n_samples = 10;
@@ -864,9 +881,9 @@ namespace polyfem::varform
 		timer.start();
 		logger().info("Assigning rhs...");
 
-		solve_data.rhs_assembler = build_rhs_assembler();
-		assert(solve_data.rhs_assembler != nullptr);
-		solve_data.rhs_assembler->assemble(mass_matrix_assembler->density(), rhs);
+		build_rhs_assembler();
+		assert(rhs_assembler != nullptr);
+		rhs_assembler->assemble(mass_matrix_assembler->density(), rhs);
 		rhs *= -1;
 
 		timings.assigning_rhs_time = timer.getElapsedTime();
@@ -938,10 +955,7 @@ namespace polyfem::varform
 		assembler.set_materials(body_ids, args["materials"], units, root_path);
 	}
 
-	std::shared_ptr<assembler::RhsAssembler> VarForm::build_rhs_assembler(
-		const int n_bases,
-		const std::vector<basis::ElementBases> &bases,
-		const assembler::AssemblyValsCache &ass_vals_cache) const
+	void VarForm::build_rhs_assembler()
 	{
 		json rhs_solver_params = args["solver"]["linear"];
 		if (!rhs_solver_params.contains("Pardiso"))
@@ -950,11 +964,11 @@ namespace polyfem::varform
 
 		const int size = problem->is_scalar() ? 1 : mesh_->dimension();
 
-		return std::make_shared<assembler::RhsAssembler>(
-			*assembler, *mesh_, mesh::Obstacle(),
+		rhs_assembler = std::make_shared<assembler::RhsAssembler>(
+			*assembler, *mesh_, nullptr,
 			dirichlet_nodes, neumann_nodes,
 			dirichlet_nodes_position, neumann_nodes_position,
-			n_bases, size, bases, geom_bases(), ass_vals_cache, *problem,
+			n_bases, size, bases, geom_bases(), mass_ass_vals_cache, *problem,
 			args["space"]["advanced"]["bc_method"],
 			rhs_solver_params);
 	}
@@ -1230,5 +1244,40 @@ namespace polyfem::varform
 
 		stats.compute_errors(n_bases, bases, geom_bases(), *mesh_, *problem, tend, solution);
 		return stats;
+	}
+
+	void VarForm::rebuild_node_positions(
+		const std::vector<basis::ElementBases> &bases,
+		const std::vector<int> &node_ids,
+		std::vector<RowVectorNd> &positions)
+	{
+		positions.resize(node_ids.size());
+		for (int n = 0; n < int(node_ids.size()); ++n)
+		{
+			const int node_id = node_ids[n];
+			bool found = false;
+			for (const auto &bs : bases)
+			{
+				for (const auto &b : bs.bases)
+				{
+					for (const auto &lg : b.global())
+					{
+						if (lg.index == node_id)
+						{
+							positions[n] = lg.node;
+							found = true;
+							break;
+						}
+					}
+
+					if (found)
+						break;
+				}
+
+				if (found)
+					break;
+			}
+			assert(found);
+		}
 	}
 } // namespace polyfem::varform

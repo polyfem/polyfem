@@ -95,7 +95,7 @@ namespace polyfem::varform
 
 	void ElasticVarForm::initial_velocity(Eigen::MatrixXd &velocity) const
 	{
-		assert(solve_data.rhs_assembler != nullptr);
+		assert(rhs_assembler != nullptr);
 
 		const bool was_velocity_loaded = read_initial_x_from_file(
 			resolve_input_path(args["input"]["data"]["state"]), "v",
@@ -103,12 +103,12 @@ namespace polyfem::varform
 			mesh_->dimension(), velocity);
 
 		if (!was_velocity_loaded)
-			solve_data.rhs_assembler->initial_velocity(velocity);
+			rhs_assembler->initial_velocity(velocity);
 	}
 
 	void ElasticVarForm::initial_acceleration(Eigen::MatrixXd &acceleration) const
 	{
-		assert(solve_data.rhs_assembler != nullptr);
+		assert(rhs_assembler != nullptr);
 
 		const bool was_acceleration_loaded = read_initial_x_from_file(
 			resolve_input_path(args["input"]["data"]["state"]), "a",
@@ -116,7 +116,7 @@ namespace polyfem::varform
 			mesh_->dimension(), acceleration);
 
 		if (!was_acceleration_loaded)
-			solve_data.rhs_assembler->initial_acceleration(acceleration);
+			rhs_assembler->initial_acceleration(acceleration);
 	}
 
 	void ElasticVarForm::save_json(const Eigen::MatrixXd &solution, std::ostream &out) const
@@ -190,8 +190,8 @@ namespace polyfem::varform
 		}
 
 		const std::string state_path = resolve_output_path(fmt::format(args["output"]["data"]["state"], t));
-		if (!state_path.empty() && solve_data.time_integrator)
-			solve_data.time_integrator->save_state(state_path);
+		if (!state_path.empty() && time_integrator)
+			time_integrator->save_state(state_path);
 
 		save_restart_json(t0, dt, t);
 	}

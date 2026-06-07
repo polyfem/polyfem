@@ -11,11 +11,6 @@ namespace polyfem::varform
 
 		void save_json(const Eigen::MatrixXd &solution, std::ostream &out) const override;
 
-		std::vector<io::OutputField> output_fields(
-			const io::OutputSample &sample,
-			const Eigen::MatrixXd &solution,
-			const io::OutputFieldOptions &options) const override;
-
 	protected:
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
 		void save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const override;

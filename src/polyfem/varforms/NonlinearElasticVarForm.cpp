@@ -44,33 +44,6 @@ namespace polyfem::varform
 	using namespace solver;
 	using namespace time_integrator;
 
-	namespace
-	{
-		void copy_local_boundaries(
-			const std::vector<mesh::LocalBoundary> &from,
-			std::vector<mesh::LocalBoundary> &to)
-		{
-			to.clear();
-			to.reserve(from.size());
-			for (const auto &lb : from)
-				to.emplace_back(lb);
-		}
-
-		void copy_local_boundary_map(
-			const std::unordered_map<int, std::vector<mesh::LocalBoundary>> &from,
-			std::unordered_map<int, std::vector<mesh::LocalBoundary>> &to)
-		{
-			to.clear();
-			to.reserve(from.size());
-			for (const auto &[id, boundaries] : from)
-			{
-				auto &dst = to[id];
-				copy_local_boundaries(boundaries, dst);
-			}
-		}
-
-	} // namespace
-
 	void NonlinearElasticVarForm::reset()
 	{
 		ElasticVarForm::reset();
@@ -722,10 +695,7 @@ namespace polyfem::varform
 		logger().info("Done!");
 	}
 
-	std::shared_ptr<assembler::RhsAssembler> NonlinearElasticVarForm::build_rhs_assembler(
-		const int n_bases,
-		const std::vector<basis::ElementBases> &bases,
-		const assembler::AssemblyValsCache &ass_vals_cache) const
+	void NonlinearElasticVarForm::build_rhs_assembler()
 	{
 		json rhs_solver_params = args["solver"]["linear"];
 		if (!rhs_solver_params.contains("Pardiso"))
@@ -734,13 +704,14 @@ namespace polyfem::varform
 
 		const int size = problem->is_scalar() ? 1 : mesh_->dimension();
 
-		return std::make_shared<assembler::RhsAssembler>(
-			*assembler, *mesh_, obstacle,
+		solve_data.rhs_assembler = std::make_shared<assembler::RhsAssembler>(
+			*assembler, *mesh_, &obstacle,
 			dirichlet_nodes, neumann_nodes,
 			dirichlet_nodes_position, neumann_nodes_position,
-			n_bases, size, bases, geom_bases(), ass_vals_cache, *problem,
+			n_bases, size, bases, geom_bases(), mass_ass_vals_cache, *problem,
 			args["space"]["advanced"]["bc_method"],
 			rhs_solver_params);
+		rhs_assembler = solve_data.rhs_assembler;
 	}
 
 	void NonlinearElasticVarForm::build_collision_mesh(

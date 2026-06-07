@@ -1567,7 +1567,7 @@ namespace polyfem::legacy
 		const int size = problem->is_scalar() ? 1 : mesh->dimension();
 
 		return std::make_shared<RhsAssembler>(
-			*assembler, *mesh, obstacle,
+			*assembler, *mesh, &obstacle,
 			dirichlet_nodes, neumann_nodes,
 			dirichlet_nodes_position, neumann_nodes_position,
 			n_bases_, size, bases_, geom_bases(), ass_vals_cache_, *problem,

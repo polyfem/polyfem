@@ -131,31 +131,17 @@ namespace polyfem
 
 		protected:
 			std::string resolve_output_path(const std::string &path) const;
+			std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const;
+
+			virtual void set_materials(assembler::Assembler &assembler) const;
+			virtual void reset();
 
 			virtual void load_mesh(const mesh::Mesh &mesh, const json &args);
 			virtual void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args);
+			void assign_discr_orders(const json &discr_order, const mesh::Mesh &mesh, Eigen::VectorXi &disc_orders);
 			virtual void assemble_rhs(const mesh::Mesh &mesh, const json &args);
 			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args);
 			virtual void solve_problem(Eigen::MatrixXd &sol) = 0;
-			virtual std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler(
-				const int n_bases,
-				const std::vector<basis::ElementBases> &bases,
-				const assembler::AssemblyValsCache &ass_vals_cache) const;
-			std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler() const
-			{
-				return build_rhs_assembler(n_bases, bases, mass_ass_vals_cache);
-			}
-			virtual void save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const;
-			virtual void reset();
-			virtual void set_materials(assembler::Assembler &assembler) const;
-			void save_restart_json(const double t0, const double dt, const int t) const;
-			void save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &solution) const;
-			void save_subsolve(const int i, const int t, const Eigen::MatrixXd &solution) const;
-			void ensure_output_sampler() const;
-			io::OutGeometryData::ExportOptions export_options(const io::OutputSpace &space) const;
-			io::OutputFieldFunction output_field_function(const Eigen::MatrixXd &solution, const io::OutGeometryData::ExportOptions &opts) const;
-
-			std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const;
 
 			/// @brief Get a constant reference to the geometry mapping bases.
 			/// @return A constant reference to the geometry mapping bases.
@@ -169,7 +155,20 @@ namespace polyfem
 			std::vector<int> primitive_to_node() const;
 			std::vector<int> node_to_primitive() const;
 
+			virtual void build_rhs_assembler();
+
 			void initial_solution(Eigen::MatrixXd &solution) const;
+
+			virtual void save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const;
+
+			void ensure_output_sampler() const;
+
+			void save_restart_json(const double t0, const double dt, const int t) const;
+			void save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &solution) const;
+			void save_subsolve(const int i, const int t, const Eigen::MatrixXd &solution) const;
+
+			io::OutGeometryData::ExportOptions export_options(const io::OutputSpace &space) const;
+			io::OutputFieldFunction output_field_function(const Eigen::MatrixXd &solution, const io::OutGeometryData::ExportOptions &opts) const;
 
 			/// current problem, it contains rhs and bc
 			std::shared_ptr<assembler::Problem> problem;
@@ -179,8 +178,6 @@ namespace polyfem
 			std::vector<std::shared_ptr<solver::Form>> forms;
 
 			bool iso_parametric;
-
-			void assign_discr_orders(const json &discr_order, const mesh::Mesh &mesh, Eigen::VectorXi &disc_orders);
 
 			io::OutStatsData stats;
 
@@ -234,14 +231,15 @@ namespace polyfem
 			assembler::AssemblyValsCache mass_ass_vals_cache;
 			assembler::AssemblyValsCache pure_mass_ass_vals_cache;
 
+			std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
+			std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
+
 			/// Mass matrix, it is computed only for time dependent problems
 			StiffnessMatrix mass;
 			StiffnessMatrix pure_mass;
 			/// average system mass, used for contact with IPC
 			double avg_mass = 0;
 			Eigen::MatrixXd rhs;
-
-			solver::SolveData solve_data;
 
 			/// list of boundary nodes
 			std::vector<int> boundary_nodes;
@@ -251,10 +249,12 @@ namespace polyfem
 			std::vector<mesh::LocalBoundary> local_boundary;
 			/// mapping from elements to nodes for neumann boundary conditions
 			std::vector<mesh::LocalBoundary> local_neumann_boundary;
+
 			/// mapping from elements to nodes for pressure boundary conditions
 			std::vector<mesh::LocalBoundary> local_pressure_boundary;
 			/// mapping from elements to nodes for pressure boundary conditions
 			std::unordered_map<int, std::vector<mesh::LocalBoundary>> local_pressure_cavity;
+
 			/// per node dirichlet
 			std::vector<int> dirichlet_nodes;
 			std::vector<RowVectorNd> dirichlet_nodes_position;
@@ -276,6 +276,11 @@ namespace polyfem
 				const Eigen::VectorXi &in_node_to_node,
 				const int dim,
 				Eigen::MatrixXd &x);
+
+			static void rebuild_node_positions(
+				const std::vector<basis::ElementBases> &bases,
+				const std::vector<int> &node_ids,
+				std::vector<RowVectorNd> &positions);
 		};
 	} // namespace varform
 } // namespace polyfem

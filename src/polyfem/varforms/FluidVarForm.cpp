@@ -111,21 +111,18 @@ namespace polyfem::varform
 		return primary_ndof() + pressure_block_size();
 	}
 
-	std::shared_ptr<assembler::RhsAssembler> FluidVarForm::build_rhs_assembler(
-		const int n_bases,
-		const std::vector<basis::ElementBases> &bases,
-		const assembler::AssemblyValsCache &ass_vals_cache) const
+	void FluidVarForm::build_rhs_assembler()
 	{
 		json rhs_solver_params = args["solver"]["linear"];
 		if (!rhs_solver_params.contains("Pardiso"))
 			rhs_solver_params["Pardiso"] = {};
 		rhs_solver_params["Pardiso"]["mtype"] = -2;
 
-		return std::make_shared<assembler::RhsAssembler>(
-			*assembler, *mesh_, mesh::Obstacle(), // no obtacle for the rhs assembler
+		rhs_assembler = std::make_shared<assembler::RhsAssembler>(
+			*assembler, *mesh_, nullptr, // no obtacle for the rhs assembler
 			dirichlet_nodes, neumann_nodes,
 			dirichlet_nodes_position, neumann_nodes_position,
-			n_bases, mesh_->dimension(), bases, geom_bases(), ass_vals_cache, *problem,
+			n_bases, mesh_->dimension(), bases, geom_bases(), mass_ass_vals_cache, *problem,
 			args["space"]["advanced"]["bc_method"],
 			rhs_solver_params);
 	}
@@ -140,7 +137,7 @@ namespace polyfem::varform
 		igl::Timer timer;
 		timer.start();
 
-		const auto all_boundary = total_local_boundary;
+		const auto &all_boundary = total_local_boundary;
 		const int prev_bases = n_bases;
 		const int prev_b_size = int(all_boundary.size());
 		const bool has_polys = mesh.has_poly();
@@ -182,8 +179,10 @@ namespace polyfem::varform
 			pressure_bases[i].set_quadrature([b_quad](quadrature::Quadrature &quad) { quad = b_quad; });
 		}
 
-		copy_local_boundaries(all_boundary, local_boundary);
-		copy_local_boundaries(all_boundary, total_local_boundary);
+		local_boundary.clear();
+		for (const auto &lb : all_boundary)
+			local_boundary.emplace_back(lb);
+
 		local_neumann_boundary.clear();
 		local_pressure_boundary.clear();
 		local_pressure_cavity.clear();
@@ -221,7 +220,7 @@ namespace polyfem::varform
 		else
 			pressure_ass_vals_cache.init_empty();
 
-		solve_data.rhs_assembler = build_rhs_assembler();
+		build_rhs_assembler();
 
 		timer.stop();
 		timings.building_basis_time += timer.getElapsedTime();
@@ -230,7 +229,7 @@ namespace polyfem::varform
 
 	void FluidVarForm::assemble_rhs(const mesh::Mesh &mesh, const json &args)
 	{
-		solve_data.rhs_assembler = build_rhs_assembler();
+		build_rhs_assembler();
 		VarForm::assemble_rhs(mesh, args);
 
 		const int prev_size = rhs.rows();
@@ -513,7 +512,7 @@ namespace polyfem::varform
 		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", solver->name());
 
-		solve_data.rhs_assembler->set_bc(
+		rhs_assembler->set_bc(
 			local_boundary, boundary_nodes, n_boundary_samples(),
 			local_neumann_boundary, rhs);
 
@@ -538,7 +537,7 @@ namespace polyfem::varform
 			Eigen::MatrixXd::Zero(velocity.rows(), velocity.cols()),
 			Eigen::MatrixXd::Zero(velocity.rows(), velocity.cols()),
 			dt);
-		solve_data.time_integrator = bdf;
+		time_integrator = bdf;
 
 		save_timestep(t0, 0, t0, dt, sol);
 
@@ -551,10 +550,10 @@ namespace polyfem::varform
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			const double time = t0 + t * dt;
-			solve_data.rhs_assembler->compute_energy_grad(
+			rhs_assembler->compute_energy_grad(
 				local_boundary, boundary_nodes, mass_matrix_assembler->density(), n_boundary_samples(), local_neumann_boundary, rhs, time,
 				current_rhs);
-			solve_data.rhs_assembler->set_bc(
+			rhs_assembler->set_bc(
 				local_boundary, boundary_nodes, n_boundary_samples(), local_neumann_boundary, current_rhs, velocity, time);
 
 			if (current_rhs.rows() != stacked_ndof())
@@ -595,7 +594,7 @@ namespace polyfem::varform
 			solve_transient_linear(sol);
 		else
 		{
-			solve_data.time_integrator = nullptr;
+			time_integrator = nullptr;
 			solve_static_linear(sol);
 		}
 
@@ -606,8 +605,8 @@ namespace polyfem::varform
 
 	void NavierStokesVarForm::solve_static(Eigen::MatrixXd &sol)
 	{
-		assert(solve_data.rhs_assembler != nullptr);
-		solve_data.rhs_assembler->set_bc(
+		assert(rhs_assembler != nullptr);
+		rhs_assembler->set_bc(
 			local_boundary, boundary_nodes, n_boundary_samples(), local_neumann_boundary, rhs);
 
 		auto velocity_stokes_assembler = std::make_shared<assembler::StokesVelocity>();
@@ -649,7 +648,7 @@ namespace polyfem::varform
 			Eigen::MatrixXd::Zero(velocity.rows(), velocity.cols()),
 			Eigen::MatrixXd::Zero(velocity.rows(), velocity.cols()),
 			dt);
-		solve_data.time_integrator = bdf;
+		time_integrator = bdf;
 
 		save_timestep(t0, 0, t0, dt, sol);
 
@@ -673,9 +672,9 @@ namespace polyfem::varform
 			logger().info("{}/{} steps, dt={}s t={}s", t, time_steps, dt, time);
 
 			const Eigen::VectorXd prev_sol = bdf->weighted_sum_x_prevs();
-			solve_data.rhs_assembler->compute_energy_grad(
+			rhs_assembler->compute_energy_grad(
 				local_boundary, boundary_nodes, mass_matrix_assembler->density(), n_boundary_samples(), local_neumann_boundary, rhs, time, current_rhs);
-			solve_data.rhs_assembler->set_bc(
+			rhs_assembler->set_bc(
 				local_boundary, boundary_nodes, n_boundary_samples(), local_neumann_boundary, current_rhs, velocity, time);
 
 			if (current_rhs.rows() != stacked_ndof())
@@ -721,7 +720,7 @@ namespace polyfem::varform
 			solve_transient(sol);
 		else
 		{
-			solve_data.time_integrator = nullptr;
+			time_integrator = nullptr;
 			solve_static(sol);
 		}
 

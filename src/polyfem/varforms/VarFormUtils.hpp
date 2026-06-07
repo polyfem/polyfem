@@ -16,50 +16,6 @@
 
 namespace polyfem::varform::internal
 {
-	inline void copy_local_boundaries(
-		const std::vector<mesh::LocalBoundary> &from,
-		std::vector<mesh::LocalBoundary> &to)
-	{
-		to.clear();
-		to.reserve(from.size());
-		for (const auto &lb : from)
-			to.emplace_back(lb);
-	}
-
-	inline void rebuild_node_positions(
-		const std::vector<basis::ElementBases> &bases,
-		const std::vector<int> &node_ids,
-		std::vector<RowVectorNd> &positions)
-	{
-		positions.resize(node_ids.size());
-		for (int n = 0; n < int(node_ids.size()); ++n)
-		{
-			const int node_id = node_ids[n];
-			bool found = false;
-			for (const auto &bs : bases)
-			{
-				for (const auto &b : bs.bases)
-				{
-					for (const auto &lg : b.global())
-					{
-						if (lg.index == node_id)
-						{
-							positions[n] = lg.node;
-							found = true;
-							break;
-						}
-					}
-
-					if (found)
-						break;
-				}
-
-				if (found)
-					break;
-			}
-			assert(found);
-		}
-	}
 
 	inline bool sample_scalar_field(
 		const mesh::Mesh &mesh,

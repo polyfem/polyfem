@@ -37,7 +37,7 @@ namespace polyfem::varform
 		}
 	} // namespace
 
-	std::vector<io::OutputField> ElasticVarForm::output_fields(
+	std::vector<io::OutputField> LinearElasticVarForm::output_fields(
 		const io::OutputSample &sample,
 		const Eigen::MatrixXd &solution,
 		const io::OutputFieldOptions &options) const
@@ -503,19 +503,24 @@ namespace polyfem::varform
 			if (velocity || options.export_field("velocity"))
 				append_sampled_dof_field(
 					"velocity",
-					solve_data.time_integrator ? solve_data.time_integrator->v_prev() : Eigen::VectorXd::Zero(solution.size()),
+					time_integrator ? time_integrator->v_prev() : Eigen::VectorXd::Zero(solution.size()),
 					actual_dim);
 			if (acceleration || options.export_field("acceleration"))
 				append_sampled_dof_field(
 					"acceleration",
-					solve_data.time_integrator ? solve_data.time_integrator->a_prev() : Eigen::VectorXd::Zero(solution.size()),
+					time_integrator ? time_integrator->a_prev() : Eigen::VectorXd::Zero(solution.size()),
 					actual_dim);
 		}
 
 		if (forces)
 		{
-			const double s = solve_data.time_integrator ? solve_data.time_integrator->acceleration_scaling() : 1;
-			for (const auto &[name, form] : solve_data.named_forms())
+			const double s = time_integrator ? time_integrator->acceleration_scaling() : 1;
+			std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> named_forms{
+				{"elastic", elastic_form},
+				{"inertia", inertia_form},
+				{"body", body_form}};
+
+			for (const auto &[name, form] : named_forms)
 			{
 				const std::string field_name = name + "_forces";
 				if (!options.export_field(field_name))
@@ -537,19 +542,11 @@ namespace polyfem::varform
 
 		append_traction_force();
 
-		if (options.export_field("gradient_of_elastic_potential") && solve_data.elastic_form)
+		if (options.export_field("gradient_of_elastic_potential"))
 		{
 			Eigen::VectorXd potential_grad;
-			solve_data.elastic_form->first_derivative(solution, potential_grad);
+			elastic_form->first_derivative(solution, potential_grad);
 			append_sampled_dof_field("gradient_of_elastic_potential", potential_grad, actual_dim);
-		}
-
-		if (options.export_field("gradient_of_contact_potential") && solve_data.contact_form && solve_data.contact_form->weight() > 0)
-		{
-			Eigen::VectorXd potential_grad;
-			solve_data.contact_form->first_derivative(solution, potential_grad);
-			potential_grad *= -solve_data.contact_form->barrier_stiffness() / solve_data.contact_form->weight();
-			append_sampled_dof_field("gradient_of_contact_potential", potential_grad, actual_dim);
 		}
 
 		if (export_displacement)
@@ -611,7 +608,7 @@ namespace polyfem::varform
 		Eigen::MatrixXd &sol)
 	{
 		assert(assembler->is_linear());
-		assert(solve_data.rhs_assembler != nullptr);
+		assert(rhs_assembler != nullptr);
 
 		const int problem_dim = problem->is_scalar() ? 1 : mesh_->dimension();
 		const int precond_num = problem_dim * n_bases;
@@ -646,26 +643,24 @@ namespace polyfem::varform
 
 		const int ndof = n_bases * mesh_->dimension();
 
-		solve_data.elastic_form = std::make_shared<solver::ElasticForm>(
+		elastic_form = std::make_shared<solver::ElasticForm>(
 			n_bases, bases, geom_bases(),
 			*assembler, ass_vals_cache,
 			t, problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
 			mesh_->is_volume());
 
-		solve_data.body_form = std::make_shared<solver::BodyForm>(
+		body_form = std::make_shared<solver::BodyForm>(
 			ndof, 0,
 			boundary_nodes, local_boundary, local_neumann_boundary, n_boundary_samples(),
-			rhs, *solve_data.rhs_assembler,
+			rhs, *rhs_assembler,
 			mass_matrix_assembler->density(),
 			/*is_formulation_mixed=*/false, problem->is_time_dependent());
-		solve_data.body_form->update_quantities(t, sol);
+		body_form->update_quantities(t, sol);
 
-		solve_data.inertia_form = nullptr;
-		solve_data.damping_form = nullptr;
 		if (problem->is_time_dependent())
 		{
-			solve_data.time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
-			solve_data.inertia_form = std::make_shared<solver::InertiaForm>(mass, *solve_data.time_integrator);
+			time_integrator = time_integrator::ImplicitTimeIntegrator::construct_time_integrator(args["time"]["integrator"]);
+			inertia_form = std::make_shared<solver::InertiaForm>(mass, *time_integrator);
 
 			POLYFEM_SCOPED_TIMER("Initialize time integrator");
 
@@ -678,16 +673,15 @@ namespace polyfem::varform
 			initial_acceleration(acceleration);
 			assert(acceleration.rows() == sol.size());
 
-			solve_data.time_integrator->init(solution, velocity, acceleration, dt);
+			time_integrator->init(solution, velocity, acceleration, dt);
+
+			elastic_form->set_weight(time_integrator->acceleration_scaling());
+			body_form->set_weight(time_integrator->acceleration_scaling());
 		}
 		else
 		{
-			solve_data.time_integrator = nullptr;
+			time_integrator = nullptr;
 		}
-
-		solve_data.contact_form = nullptr;
-		solve_data.friction_form = nullptr;
-		solve_data.update_dt();
 	}
 
 	void LinearElasticVarForm::solve_static_linear(Eigen::MatrixXd &sol)
@@ -695,7 +689,7 @@ namespace polyfem::varform
 		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", solver->name());
 
-		solve_data.rhs_assembler->set_bc(
+		rhs_assembler->set_bc(
 			local_boundary, boundary_nodes, n_boundary_samples(),
 			local_neumann_boundary, rhs);
 
@@ -709,8 +703,8 @@ namespace polyfem::varform
 	void LinearElasticVarForm::solve_transient_linear(Eigen::MatrixXd &sol)
 	{
 		assert(problem->is_time_dependent());
-		assert(solve_data.rhs_assembler != nullptr);
-		assert(solve_data.time_integrator != nullptr);
+		assert(rhs_assembler != nullptr);
+		assert(time_integrator != nullptr);
 
 		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", solver->name());
@@ -726,26 +720,26 @@ namespace polyfem::varform
 		{
 			const double time = t0 + t * dt;
 
-			solve_data.rhs_assembler->assemble(mass_matrix_assembler->density(), current_rhs, time);
+			rhs_assembler->assemble(mass_matrix_assembler->density(), current_rhs, time);
 			current_rhs *= -1;
 
-			solve_data.rhs_assembler->set_bc(
+			rhs_assembler->set_bc(
 				std::vector<mesh::LocalBoundary>(), std::vector<int>(), n_boundary_samples(),
 				local_neumann_boundary, current_rhs, sol, time);
 
-			current_rhs *= solve_data.time_integrator->acceleration_scaling();
-			current_rhs += mass * solve_data.time_integrator->x_tilde();
+			current_rhs *= time_integrator->acceleration_scaling();
+			current_rhs += mass * time_integrator->x_tilde();
 
-			solve_data.rhs_assembler->set_bc(
+			rhs_assembler->set_bc(
 				local_boundary, boundary_nodes, n_boundary_samples(),
 				std::vector<mesh::LocalBoundary>(), current_rhs, sol, time);
 
-			StiffnessMatrix A = stiffness * solve_data.time_integrator->acceleration_scaling() + mass;
+			StiffnessMatrix A = stiffness * time_integrator->acceleration_scaling() + mass;
 			Eigen::VectorXd b = current_rhs;
 
 			solve_linear_system(solver, A, b, args["output"]["advanced"]["spectrum"].get<bool>() && t == 1, sol);
 
-			solve_data.time_integrator->update_quantities(sol);
+			time_integrator->update_quantities(sol);
 			save_timestep(time, t, t0, dt, sol);
 			save_step_state(t0, dt, t, sol);
 
