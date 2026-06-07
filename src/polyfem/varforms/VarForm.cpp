@@ -806,11 +806,6 @@ namespace polyfem::varform
 		}
 	}
 
-	io::OutStatsData VarForm::compute_errors(const Eigen::MatrixXd &solution)
-	{
-		return stats;
-	}
-
 	void VarForm::save_json(const Eigen::MatrixXd &solution) const
 	{
 		const std::string out_path = resolve_output_path(args["output"]["json"]);
@@ -1222,5 +1217,18 @@ namespace polyfem::varform
 			return path;
 		}
 		return std::filesystem::weakly_canonical(std::filesystem::path(output_path) / path).string();
+	}
+
+	io::OutStatsData VarForm::compute_errors(const Eigen::MatrixXd &solution)
+	{
+		if (!args["output"]["advanced"]["compute_error"])
+			return stats;
+
+		double tend = 0;
+		if (!args["time"].is_null())
+			tend = args["time"]["tend"];
+
+		stats.compute_errors(n_bases, bases, geom_bases(), *mesh_, *problem, tend, solution);
+		return stats;
 	}
 } // namespace polyfem::varform

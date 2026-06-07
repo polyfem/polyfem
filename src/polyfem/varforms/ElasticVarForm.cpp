@@ -119,19 +119,6 @@ namespace polyfem::varform
 			solve_data.rhs_assembler->initial_acceleration(acceleration);
 	}
 
-	io::OutStatsData ElasticVarForm::compute_errors(const Eigen::MatrixXd &solution)
-	{
-		if (!args["output"]["advanced"]["compute_error"])
-			return stats;
-
-		double tend = 0;
-		if (!args["time"].is_null())
-			tend = args["time"]["tend"];
-
-		stats.compute_errors(n_bases, bases, geom_bases(), *mesh_, *problem, tend, solution);
-		return stats;
-	}
-
 	void ElasticVarForm::save_json(const Eigen::MatrixXd &solution, std::ostream &out) const
 	{
 		if (!mesh_)

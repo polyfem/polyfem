@@ -8,7 +8,6 @@ namespace polyfem::varform
 	{
 	public:
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
-		io::OutStatsData compute_errors(const Eigen::MatrixXd &solution) override;
 
 		void save_json(const Eigen::MatrixXd &solution, std::ostream &out) const override;
 
