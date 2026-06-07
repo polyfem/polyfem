@@ -68,8 +68,8 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ${{ env.CACHE_PATH }}
-          key: ${{ runner.os }}-cov-${{ matrix.threading }}-cache-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-cov-${{ matrix.threading }}-cache
+          key: ${{ runner.os }}-cov-${{ matrix.threading }}-nosimd-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-cov-${{ matrix.threading }}-nosimd-cache
 
       - name: Prepare ccache
         run: |
@@ -86,7 +86,8 @@ jobs:
             -DPOLYFEM_WITH_BEZIER=OFF \
             -DPOLYSOLVE_WITH_CHOLMOD=OFF \
             -DPOLYSOLVE_WITH_AMGCL=OFF \
-            -DPOLYFEM_THREADING=${{ matrix.threading }}
+            -DPOLYFEM_THREADING=${{ matrix.threading }} \
+            -DIPC_TOOLKIT_WITH_SIMD=OFF
 
       - name: Build
         run: cmake --build build && ccache --show-stats
