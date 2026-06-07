@@ -11,13 +11,6 @@
 #include <polyfem/optimization/forms/TargetForms.hpp>
 #include <polyfem/optimization/parametrization/Parametrizations.hpp>
 #include <polyfem/optimization/parametrization/NodeCompositeParametrizations.hpp>
-#include <polyfem/optimization/force_derivatives/BarrierContactForceDerivative.hpp>
-#include <polyfem/solver/forms/BarrierContactForm.hpp>
-#include <polyfem/utils/MatrixUtils.hpp>
-
-#include <ipc/collisions/normal/normal_collisions.hpp>
-#include <ipc/potentials/barrier_potential.hpp>
-#include <ipc/collision_mesh.hpp>
 
 #include <finitediff.hpp>
 #include <catch2/catch_all.hpp>
