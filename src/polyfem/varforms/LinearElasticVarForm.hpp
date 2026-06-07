@@ -25,6 +25,8 @@ namespace polyfem::varform
 			const io::OutputFieldOptions &options) const override;
 
 	private:
+		void save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const override;
+
 		void solve_problem(Eigen::MatrixXd &sol) override;
 		void init_linear_solve(Eigen::MatrixXd &sol, const double t);
 		void build_stiffness_mat(StiffnessMatrix &stiffness);
@@ -40,5 +42,7 @@ namespace polyfem::varform
 		std::shared_ptr<solver::ElasticForm> elastic_form;
 		std::shared_ptr<solver::BodyForm> body_form;
 		std::shared_ptr<solver::InertiaForm> inertia_form;
+
+		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 	};
 } // namespace polyfem::varform

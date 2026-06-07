@@ -175,8 +175,6 @@ namespace polyfem
 			Units units;
 			json args;
 
-			std::vector<std::shared_ptr<solver::Form>> forms;
-
 			bool iso_parametric;
 
 			io::OutStatsData stats;
@@ -232,7 +230,6 @@ namespace polyfem
 			assembler::AssemblyValsCache pure_mass_ass_vals_cache;
 
 			std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
-			std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 
 			/// Mass matrix, it is computed only for time dependent problems
 			StiffnessMatrix mass;

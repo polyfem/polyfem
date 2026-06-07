@@ -13,7 +13,6 @@ namespace polyfem::varform
 
 	protected:
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
-		void save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const override;
 
 		void initial_velocity(Eigen::MatrixXd &velocity) const;
 		void initial_acceleration(Eigen::MatrixXd &acceleration) const;

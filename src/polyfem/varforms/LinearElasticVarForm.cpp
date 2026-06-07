@@ -5,6 +5,7 @@
 #include <polyfem/solver/forms/InertiaForm.hpp>
 
 #include <polyfem/io/Evaluator.hpp>
+#include <polyfem/io/MshWriter.hpp>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
@@ -775,5 +776,28 @@ namespace polyfem::varform
 		timer.stop();
 		timings.solving_time = timer.getElapsedTime();
 		logger().info(" took {}s", timings.solving_time);
+	}
+
+	void LinearElasticVarForm::save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const
+	{
+		if (!mesh_)
+			return;
+
+		const std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
+		if (!rest_mesh_path.empty())
+		{
+			Eigen::MatrixXd V;
+			Eigen::MatrixXi F;
+			build_mesh_matrices(V, F);
+			io::MshWriter::write(
+				resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], t)),
+				V, F, mesh_->get_body_ids(), mesh_->is_volume(), /*binary=*/true);
+		}
+
+		const std::string state_path = resolve_output_path(fmt::format(args["output"]["data"]["state"], t));
+		if (!state_path.empty() && time_integrator)
+			time_integrator->save_state(state_path);
+
+		save_restart_json(t0, dt, t);
 	}
 } // namespace polyfem::varform

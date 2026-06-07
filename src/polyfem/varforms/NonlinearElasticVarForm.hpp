@@ -27,6 +27,8 @@ namespace polyfem::varform
 			const io::OutputFieldOptions &options) const override;
 
 	protected:
+		void save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const override;
+
 		void reset() override;
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
 		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
@@ -57,6 +59,7 @@ namespace polyfem::varform
 		mesh::Obstacle obstacle;
 
 		solver::SolveData solve_data;
+		std::vector<std::shared_ptr<solver::Form>> forms;
 
 		int n_obstacle_vertices() const override { return obstacle.n_vertices(); };
 	};

@@ -18,6 +18,7 @@
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 #include <polyfem/io/Evaluator.hpp>
+#include <polyfem/io/MshWriter.hpp>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
@@ -1004,6 +1005,7 @@ namespace polyfem::varform
 
 		const ElementInversionCheck check_inversion = args["solver"]["advanced"]["check_inversion"];
 
+		// NOTE: some stuff are legacy and hardcoded to be off
 		forms = solve_data.init_forms(
 			// General
 			units,
@@ -1281,5 +1283,28 @@ namespace polyfem::varform
 				 {"info", nl_solver->info()}});
 			save_subsolve(stats.solver_info.size(), step, sol);
 		}
+	}
+
+	void NonlinearElasticVarForm::save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const
+	{
+		if (!mesh_)
+			return;
+
+		const std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
+		if (!rest_mesh_path.empty())
+		{
+			Eigen::MatrixXd V;
+			Eigen::MatrixXi F;
+			build_mesh_matrices(V, F);
+			io::MshWriter::write(
+				resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], t)),
+				V, F, mesh_->get_body_ids(), mesh_->is_volume(), /*binary=*/true);
+		}
+
+		const std::string state_path = resolve_output_path(fmt::format(args["output"]["data"]["state"], t));
+		if (!state_path.empty() && solve_data.time_integrator)
+			solve_data.time_integrator->save_state(state_path);
+
+		save_restart_json(t0, dt, t);
 	}
 } // namespace polyfem::varform

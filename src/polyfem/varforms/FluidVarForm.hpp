@@ -53,6 +53,7 @@ namespace polyfem::varform
 		assembler::AssemblyValsCache pressure_ass_vals_cache;
 		std::vector<int> pressure_boundary_nodes;
 		bool use_avg_pressure = true;
+		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 	};
 
 	class StokesVarForm : public FluidVarForm

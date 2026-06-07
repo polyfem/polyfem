@@ -265,9 +265,10 @@ namespace polyfem::varform
 
 	void VarForm::reset()
 	{
+		// FIXME check subclasses
 		stats.reset();
 		output_sampler_initialized_ = false;
-		forms.clear();
+		rhs_assembler = nullptr;
 		problem = nullptr;
 		assembler = nullptr;
 		mass_matrix_assembler = nullptr;

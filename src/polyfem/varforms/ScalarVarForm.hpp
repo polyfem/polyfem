@@ -38,5 +38,7 @@ namespace polyfem::varform
 			Eigen::MatrixXd &sol);
 		void solve_static(Eigen::MatrixXd &sol);
 		void solve_transient(Eigen::MatrixXd &sol);
+
+		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 	};
 } // namespace polyfem::varform
