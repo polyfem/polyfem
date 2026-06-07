@@ -99,15 +99,16 @@ int forward_simulation_with_varform_state(const std::vector<std::string> &names,
 	return EXIT_SUCCESS;
 }
 
-template <typename StateType>
-int forward_simulation_with_state(const std::vector<std::string> &names,
-								  const std::vector<Eigen::MatrixXi> &cells,
-								  const std::vector<Eigen::MatrixXd> &vertices,
-								  json &in_args,
-								  const bool is_strict)
+int forward_simulation_with_legacy_state(const std::vector<std::string> &names,
+										 const std::vector<Eigen::MatrixXi> &cells,
+										 const std::vector<Eigen::MatrixXd> &vertices,
+										 json &in_args,
+										 const bool is_strict)
 {
-	StateType state;
+	legacy::State state;
 	state.init(in_args, is_strict);
+
+	logger().warn("Running forward simulation with legacy state.");
 	state.load_mesh(/*non_conforming=*/false, names, cells, vertices);
 
 	// Mesh was not loaded successfully; load_mesh() logged the error.
@@ -271,7 +272,7 @@ int forward_simulation(const CLI::App &command_line,
 	if (varform::uses_varform_state(in_args))
 		return forward_simulation_with_varform_state(names, cells, vertices, in_args, is_strict);
 
-	return forward_simulation_with_state<legacy::State>(names, cells, vertices, in_args, is_strict);
+	return forward_simulation_with_legacy_state(names, cells, vertices, in_args, is_strict);
 }
 
 #ifdef POLYFEM_WITH_OPTIMIZATION
