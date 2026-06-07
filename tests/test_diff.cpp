@@ -132,36 +132,6 @@ namespace
 		REQUIRE(derivative == Catch::Approx(finite_difference).epsilon(tol));
 	}
 
-	/// @brief Verify ‖∇f‖ against a centered finite difference along ∇f/‖∇f‖.
-	///
-	/// This catches errors in the *direction* of the gradient itself (the
-	/// "worst case" direction) — random theta in `verify_adjoint` can miss bugs
-	/// that only manifest along the gradient direction.
-	void verify_adjoint_along_gradient(AdjointNLProblem &problem, const Eigen::VectorXd &x, const double dt, const double tol)
-	{
-		problem.solution_changed(x);
-		double functional_val = problem.value(x);
-
-		Eigen::VectorXd one_form;
-		problem.gradient(x, one_form);
-		const double grad_norm = one_form.norm();
-		REQUIRE(grad_norm > 0);
-
-		Eigen::VectorXd theta = one_form / grad_norm;
-
-		problem.solution_changed(x + theta * dt);
-		double next_functional_val = problem.value(x + theta * dt);
-		problem.solution_changed(x - theta * dt);
-		double former_functional_val = problem.value(x - theta * dt);
-
-		const double fd_centered = (next_functional_val - former_functional_val) / dt / 2;
-
-		logger().trace("[directional] ||grad|| = {:.6e}, fd_centered = {:.6e}, rel_err = {:.3e}",
-		              grad_norm, fd_centered, std::abs(grad_norm - fd_centered) / std::abs(fd_centered));
-
-		REQUIRE(grad_norm == Catch::Approx(fd_centered).epsilon(tol));
-	}
-
 	class TestContext
 	{
 	public:
@@ -468,34 +438,15 @@ TEST_CASE("shape-transient-friction-sdf", "[test_adjoint]")
 	run_test2("shape-transient-friction-sdf-opt.json", 1e-7, 1e-4, 0.0, 1.0);
 }
 
-// 3D transient stress_norm shape adjoint with IPC contact.
-// Two-body scene (rotated plank as a meshed obstacle + small sphere falling
-// onto it under gravity) integrated over a few time steps. The two variants
-// only differ in `friction_coefficient` and are intended to localize a bug
-// in the transient adjoint when friction is disabled.
-// See INVESTIGATION.md (in the project workspace) for full diagnosis.
-//
-// We test with a directional FD along the gradient direction (not random
-// theta), because the bug shows up most dramatically along the gradient
-// direction itself — a random theta tends to average it out.
-//
-// Tagged [.][test_adjoint] (hidden) because each variant takes ~30 s.
-namespace
-{
-	void run_directional_grad_test(const std::string &json_name, double dt, double tol)
-	{
-		TestContext ctx{json_name};
-		// Use inverse_evaluation (variant 1) so composite parametrizations
-		// like "boundary" can size x correctly.
-		Eigen::VectorXd x =
-			AdjointOptUtils::inverse_evaluation(ctx.args["parameters"], ctx.ndof, ctx.var_sizes, ctx.var2sim);
-		verify_adjoint_along_gradient(*ctx.problem, x, dt, tol);
-	}
-}
-
 TEST_CASE("shape-transient-stress-3d-frictionless-fast", "[.][test_adjoint]")
 {
-	run_directional_grad_test("shape-transient-stress-3d-frictionless-fast-opt.json", 1e-5, 1e-3);
+	TestContext ctx{"shape-transient-stress-3d-frictionless-fast-opt.json"};
+	Eigen::VectorXd x =
+		AdjointOptUtils::inverse_evaluation(ctx.args["parameters"], ctx.ndof, ctx.var_sizes, ctx.var2sim);
+	ctx.problem->solution_changed(x);
+	Eigen::VectorXd one_form;
+	ctx.problem->gradient(x, one_form);
+	verify_adjoint(*ctx.problem, x, one_form.normalized(), 1e-5, 1e-3);
 }
 
 TEST_CASE("3d-shape-mesh-target", "[.][test_adjoint]")
