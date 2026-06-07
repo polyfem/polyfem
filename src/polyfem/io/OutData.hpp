@@ -309,7 +309,6 @@ namespace polyfem::io
 			Eigen::MatrixXi &el_id,
 			Eigen::MatrixXd &discr,
 			Eigen::MatrixXd &local_points) const;
-
 	};
 
 	class EnergyCSVWriter
