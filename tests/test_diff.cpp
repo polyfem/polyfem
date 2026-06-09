@@ -431,6 +431,17 @@ TEST_CASE("shape-transient-friction-sdf", "[test_adjoint]")
 	run_test2("shape-transient-friction-sdf-opt.json", 1e-7, 1e-4, 0.0, 1.0);
 }
 
+TEST_CASE("shape-transient-stress-3d-frictionless-fast", "[.][test_adjoint]")
+{
+	TestContext ctx{"shape-transient-stress-3d-frictionless-fast-opt.json"};
+	Eigen::VectorXd x =
+		AdjointOptUtils::inverse_evaluation(ctx.args["parameters"], ctx.ndof, ctx.var_sizes, ctx.var2sim);
+	ctx.problem->solution_changed(x);
+	Eigen::VectorXd one_form;
+	ctx.problem->gradient(x, one_form);
+	verify_adjoint(*ctx.problem, x, one_form.normalized(), 1e-5, 1e-3);
+}
+
 TEST_CASE("3d-shape-mesh-target", "[.][test_adjoint]")
 {
 	run_test1("3d-shape-mesh-target-opt.json", 1e-7, 1e-5, 0.0, 1.0);
