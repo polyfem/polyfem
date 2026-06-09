@@ -691,6 +691,7 @@ namespace polyfem::varform
 		// Legacy nonlinear/contact code assumes n_bases includes obstacle vertices.
 		// The shared VarForm build path only counts FE bases, so extend it here
 		// before constructing collision/contact state.
+		const int n_fe_bases = n_bases;
 		n_bases += obstacle.n_vertices();
 
 		logger().info("Building collision mesh...");
@@ -699,6 +700,15 @@ namespace polyfem::varform
 		//  if (periodic_bc && args["contact"]["periodic"])
 		//  	build_periodic_collision_mesh();
 		logger().info("Done!");
+
+		for (int i = n_fe_bases; i < n_bases; ++i)
+		{
+			for (int d = 0; d < mesh.dimension(); ++d)
+				boundary_nodes.push_back(i * mesh.dimension() + d);
+		}
+
+		std::sort(boundary_nodes.begin(), boundary_nodes.end());
+		boundary_nodes.erase(std::unique(boundary_nodes.begin(), boundary_nodes.end()), boundary_nodes.end());
 	}
 
 	void NonlinearElasticVarForm::build_rhs_assembler()
