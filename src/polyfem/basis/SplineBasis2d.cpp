@@ -6,11 +6,10 @@
 #include <polyfem/quadrature/QuadQuadrature.hpp>
 #include <polyfem/mesh/MeshNodes.hpp>
 
-#include <polyfem/assembler/AssemblerUtils.hpp>
-
 #include <polysolve/linear/Solver.hpp>
 
 #include <polyfem/utils/Types.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <polyfem/Common.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
@@ -32,6 +31,7 @@ namespace polyfem
 	using namespace assembler;
 	using namespace mesh;
 	using namespace quadrature;
+	using namespace utils;
 
 	namespace basis
 	{
@@ -677,7 +677,8 @@ namespace polyfem
 		} // namespace
 
 		int SplineBasis2d::build_bases(const Mesh2D &mesh,
-									   const std::string &assembler,
+									   const WeakFormOrderHint &quadrature_hint,
+									   const WeakFormOrderHint &mass_quadrature_hint,
 									   const int quadrature_order, const int mass_quadrature_order, std::vector<ElementBases> &bases, std::vector<LocalBoundary> &local_boundary, std::map<int, InterfaceData> &poly_edge_to_data)
 		{
 			using std::max;
@@ -705,17 +706,19 @@ namespace polyfem
 				// n_bases = max(n_bases, max_local_base);
 
 				ElementBases &b = bases[e];
-				// quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
-				const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, 2, AssemblerUtils::BasisType::SPLINE, 2);
-				const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", 2, AssemblerUtils::BasisType::SPLINE, 2);
+				// We use quadratic spline. Thus order is 2.
+				const BasisOrderHint basis_hint{BasisFamily::SPLINE, 2, 2};
+				const GeometryBasisOrderHint geometry_hint{BasisFamily::SPLINE, 2, 2, 2};
+				const QuadratureOrder final_quad_order{quadrature_hint, basis_hint, geometry_hint, quadrature_order};
+				const QuadratureOrder final_mass_quad_order{mass_quadrature_hint, basis_hint, geometry_hint, mass_quadrature_order};
 
-				b.set_quadrature([real_order](Quadrature &quad) {
+				b.set_quadrature([final_quad_order](Quadrature &quad) {
 					QuadQuadrature quad_quadrature;
-					quad_quadrature.get_quadrature(real_order, quad);
+					quad_quadrature.get_quadrature(final_quad_order.order, quad);
 				});
-				b.set_mass_quadrature([real_mass_order](Quadrature &quad) {
+				b.set_mass_quadrature([final_mass_quad_order](Quadrature &quad) {
 					QuadQuadrature quad_quadrature;
-					quad_quadrature.get_quadrature(real_mass_order, quad);
+					quad_quadrature.get_quadrature(final_mass_quad_order.order, quad);
 				});
 				b.bases.resize(9);
 
@@ -776,16 +779,18 @@ namespace polyfem
 
 				ElementBases &b = bases[e];
 				// quad_quadrature.get_quadrature(quadrature_order, b.quadrature);
-				const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, 2, AssemblerUtils::BasisType::CUBE_LAGRANGE, 2);
-				const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", 2, AssemblerUtils::BasisType::CUBE_LAGRANGE, 2);
+				const BasisOrderHint basis_hint{BasisFamily::TENSOR, 2, 2};
+				const GeometryBasisOrderHint geometry_hint{BasisFamily::TENSOR, 2, 2, 2};
+				const QuadratureOrder final_quad_order{quadrature_hint, basis_hint, geometry_hint, quadrature_order};
+				const QuadratureOrder final_mass_quad_order{mass_quadrature_hint, basis_hint, geometry_hint, mass_quadrature_order};
 
-				b.set_quadrature([real_order](Quadrature &quad) {
+				b.set_quadrature([final_quad_order](Quadrature &quad) {
 					QuadQuadrature quad_quadrature;
-					quad_quadrature.get_quadrature(real_order, quad);
+					quad_quadrature.get_quadrature(final_quad_order.order, quad);
 				});
-				b.set_mass_quadrature([real_mass_order](Quadrature &quad) {
+				b.set_mass_quadrature([final_mass_quad_order](Quadrature &quad) {
 					QuadQuadrature quad_quadrature;
-					quad_quadrature.get_quadrature(real_mass_order, quad);
+					quad_quadrature.get_quadrature(final_mass_quad_order.order, quad);
 				});
 
 				b.set_local_node_from_primitive_func([e](const int primitive_id, const Mesh &mesh) {

@@ -29,6 +29,7 @@ namespace polyfem::assembler
 		const Density &density() const { return density_; }
 
 		std::string name() const override { return "Mass"; }
+		quadrature::WeakFormOrderHint weak_form_order_hint() const override { return {2, 0, 0}; }
 		virtual std::map<std::string, ParamFunc> parameters() const override;
 
 	private:
@@ -54,5 +55,6 @@ namespace polyfem::assembler
 		}
 
 		std::string name() const override { return "HRZMass"; }
+		quadrature::WeakFormOrderHint weak_form_order_hint() const override { return {2, 0, 0}; }
 	};
 } // namespace polyfem::assembler

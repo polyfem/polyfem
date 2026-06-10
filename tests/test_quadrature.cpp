@@ -5,6 +5,14 @@
 #include <polyfem/quadrature/TetQuadrature.hpp>
 #include <polyfem/quadrature/PrismQuadrature.hpp>
 #include <polyfem/quadrature/PyramidQuadrature.hpp>
+#include <polyfem/quadrature/PolyhedronQuadrature.hpp>
+#include <polyfem/quadrature/QuadratureOrder.hpp>
+#include <polyfem/assembler/Laplacian.hpp>
+#include <polyfem/assembler/LinearElasticity.hpp>
+#include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/NavierStokes.hpp>
+#include <polyfem/assembler/NeoHookeanElasticity.hpp>
+#include <polyfem/assembler/Stokes.hpp>
 #include <iostream>
 #include <cmath>
 #include <Eigen/Dense>
@@ -14,6 +22,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
+using namespace polyfem::assembler;
 using namespace polyfem::quadrature;
 
 const double pi = 3.14159265358979323846264338327950288419717;
@@ -159,6 +168,92 @@ namespace
 	} // namespace
 
 } // anonymous namespace
+
+////////////////////////////////////////////////////////////////////////////////
+
+TEST_CASE("quadrature_order_hints", "[quadrature]")
+{
+	const WeakFormOrderHint stiffness{0, 2, 0};
+	const WeakFormOrderHint mass{2, 0, 0};
+	const GeometryBasisOrderHint linear2d{BasisFamily::SIMPLEX, 2, 1, 1};
+	const GeometryBasisOrderHint linear_tensor2d{BasisFamily::TENSOR, 2, 1, 1};
+	const GeometryBasisOrderHint quadratic2d{BasisFamily::SIMPLEX, 2, 2, 2};
+
+	REQUIRE((QuadratureOrder{stiffness, BasisOrderHint{BasisFamily::SIMPLEX, 1, 1}, linear2d, -1}.order == 1));
+	REQUIRE((QuadratureOrder{stiffness, BasisOrderHint{BasisFamily::SIMPLEX, 2, 2}, linear2d, -1}.order == 2));
+	REQUIRE((QuadratureOrder{stiffness, BasisOrderHint{BasisFamily::SIMPLEX, 3, 3}, linear2d, -1}.order == 4));
+	REQUIRE((QuadratureOrder{mass, BasisOrderHint{BasisFamily::SIMPLEX, 3, 3}, linear2d, -1}.order == 6));
+	REQUIRE((QuadratureOrder{stiffness, BasisOrderHint{BasisFamily::TENSOR, 2, 2}, linear_tensor2d, -1}.order == 6));
+	REQUIRE((QuadratureOrder{mass, BasisOrderHint{BasisFamily::TENSOR, 2, 2}, linear_tensor2d, -1}.order == 6));
+	REQUIRE((QuadratureOrder{WeakFormOrderHint{0, 2, 3}, BasisOrderHint{BasisFamily::SIMPLEX, 2, 2}, linear2d, -1}.order == 5));
+	REQUIRE((QuadratureOrder{stiffness, BasisOrderHint{BasisFamily::SIMPLEX, 2, 2}, quadratic2d, -1}.order == 4));
+	REQUIRE((QuadratureOrder{stiffness, BasisOrderHint{BasisFamily::SIMPLEX, 2, 2}, linear2d, 7}.order == 7));
+}
+
+TEST_CASE("prism_quadrature_order_hints", "[quadrature]")
+{
+	const GeometryBasisOrderHint linear3d{BasisFamily::PRISM, 3, 1, 1};
+	const QuadratureOrder mass_order{WeakFormOrderHint{2, 0, 0}, BasisOrderHint{BasisFamily::PRISM, 2, 3}, linear3d, -1};
+	const QuadratureOrder stiffness_order{WeakFormOrderHint{0, 2, 0}, BasisOrderHint{BasisFamily::PRISM, 2, 3}, linear3d, -1};
+
+	REQUIRE(mass_order.order == 7);
+	REQUIRE(mass_order.height_order == 7);
+	REQUIRE(stiffness_order.order == 7);
+	REQUIRE(stiffness_order.height_order == 7);
+}
+
+TEST_CASE("assembler_quadrature_hints", "[quadrature]")
+{
+	const Mass mass;
+	const HRZMass hrz_mass;
+	const Laplacian laplacian;
+	const StokesMixed stokes_mixed;
+	const NavierStokesVelocity navier_stokes;
+	const NeoHookeanElasticity neo_hookean;
+	const LinearElasticity linear_elasticity;
+
+	REQUIRE(mass.weak_form_order_hint().phi_count == 2);
+	REQUIRE(mass.weak_form_order_hint().grad_phi_count == 0);
+	REQUIRE(hrz_mass.weak_form_order_hint().phi_count == 2);
+	REQUIRE(laplacian.weak_form_order_hint().grad_phi_count == 2);
+	REQUIRE(stokes_mixed.weak_form_order_hint().phi_count == 1);
+	REQUIRE(stokes_mixed.weak_form_order_hint().grad_phi_count == 1);
+	REQUIRE(navier_stokes.weak_form_order_hint().phi_count == 2);
+	REQUIRE(navier_stokes.weak_form_order_hint().grad_phi_count == 1);
+	REQUIRE(neo_hookean.weak_form_order_hint().extra_order == 2);
+	REQUIRE(linear_elasticity.weak_form_order_hint().extra_order == 0);
+}
+
+TEST_CASE("prism_quadrature_respects_height_order", "[quadrature]")
+{
+	PrismQuadrature prism;
+	Quadrature low_height, high_height;
+	prism.get_quadrature(2, 1, low_height);
+	prism.get_quadrature(2, 4, high_height);
+
+	REQUIRE(high_height.size() > low_height.size());
+}
+
+TEST_CASE("polyhedron_quadrature_respects_order", "[quadrature]")
+{
+	Eigen::MatrixXd V(4, 3);
+	V << 0, 0, 0,
+		1, 0, 0,
+		0, 1, 0,
+		0, 0, 1;
+
+	Eigen::MatrixXi F(4, 3);
+	F << 0, 2, 1,
+		0, 1, 3,
+		1, 2, 3,
+		2, 0, 3;
+
+	Quadrature low_order, high_order;
+	PolyhedronQuadrature::get_quadrature(V, F, Eigen::RowVector3d(0.25, 0.25, 0.25), 1, low_order);
+	PolyhedronQuadrature::get_quadrature(V, F, Eigen::RowVector3d(0.25, 0.25, 0.25), 4, high_order);
+
+	REQUIRE(high_order.size() > low_order.size());
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 

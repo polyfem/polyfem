@@ -18,6 +18,7 @@ namespace polyfem::assembler
 		NavierStokesVelocity();
 
 		std::string name() const override { return "NavierStokes"; }
+		quadrature::WeakFormOrderHint weak_form_order_hint() const override { return {2, 1, 0}; }
 		std::map<std::string, ParamFunc> parameters() const override;
 
 		// navier stokes is not energy based

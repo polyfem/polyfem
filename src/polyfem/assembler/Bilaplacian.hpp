@@ -27,6 +27,7 @@ namespace polyfem::assembler
 	{
 	public:
 		std::string name() const override { return "BilaplacianMixed"; }
+		quadrature::WeakFormOrderHint weak_form_order_hint() const override { return {0, 2, 0}; }
 
 		using MixedAssembler::assemble;
 
@@ -48,6 +49,7 @@ namespace polyfem::assembler
 		assemble(const LinearAssemblerData &data) const override;
 
 		std::string name() const override { return "BilaplacianAux"; }
+		quadrature::WeakFormOrderHint weak_form_order_hint() const override { return {2, 0, 0}; }
 		std::map<std::string, ParamFunc> parameters() const override { return std::map<std::string, ParamFunc>(); }
 	};
 } // namespace polyfem::assembler

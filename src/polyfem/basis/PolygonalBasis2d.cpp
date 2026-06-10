@@ -8,7 +8,6 @@
 #include "function/RBFWithQuadratic.hpp"
 #include "function/RBFWithQuadraticLagrange.hpp"
 #include <polyfem/utils/Logger.hpp>
-#include <polyfem/assembler/AssemblerUtils.hpp>
 
 #include <polyfem/autogen/auto_q_bases.hpp>
 
@@ -263,6 +262,7 @@ namespace polyfem
 		}
 
 		int PolygonalBasis2d::build_bases(const LinearAssembler &assembler, const int n_samples_per_edge, const Mesh2D &mesh, const int n_bases,
+										  const WeakFormOrderHint &quadrature_hint, const WeakFormOrderHint &mass_quadrature_hint,
 										  const int quadrature_order, const int mass_quadrature_order, const int integral_constraints, std::vector<ElementBases> &bases, const std::vector<ElementBases> &gbases,
 										  const std::map<int, InterfaceData> &poly_edge_to_data, std::map<int, Eigen::MatrixXd> &mapped_boundary)
 		{
@@ -323,11 +323,17 @@ namespace polyfem
 				b.has_parameterization = false;
 
 				// Compute quadrature points for the polygon
+				// RBF kernel is not polynomial, basis order 2 is heuristic.
+				const BasisOrderHint basis_hint{BasisFamily::POLY, 2, 2};
+				// Order of geometry mapping depends on runtime solution. 1 is dummy value.
+				const GeometryBasisOrderHint geometry_hint{BasisFamily::POLY, 1, 1, 1};
+				const QuadratureOrder final_quad_order{quadrature_hint, basis_hint, geometry_hint, quadrature_order};
+				const QuadratureOrder final_mass_quad_order{mass_quadrature_hint, basis_hint, geometry_hint, mass_quadrature_order};
 				Quadrature tmp_quadrature;
-				poly_quadr.get_quadrature(collocation_points, quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler.name(), 2, AssemblerUtils::BasisType::POLY, 2), tmp_quadrature);
+				poly_quadr.get_quadrature(collocation_points, final_quad_order.order, tmp_quadrature);
 
 				Quadrature tmp_mass_quadrature;
-				poly_quadr.get_quadrature(collocation_points, mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", 2, AssemblerUtils::BasisType::POLY, 2), tmp_mass_quadrature);
+				poly_quadr.get_quadrature(collocation_points, final_mass_quad_order.order, tmp_mass_quadrature);
 
 				b.set_quadrature([tmp_quadrature](Quadrature &quad) { quad = tmp_quadrature; });
 				b.set_mass_quadrature([tmp_mass_quadrature](Quadrature &quad) { quad = tmp_mass_quadrature; });

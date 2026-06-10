@@ -3,6 +3,7 @@
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
+#include <polyfem/quadrature/QuadratureOrder.hpp>
 #include <polyfem/basis/InterfaceData.hpp>
 
 #include <Eigen/Dense>
@@ -18,7 +19,8 @@ namespace polyfem
 		public:
 			static int build_bases(
 				const mesh::Mesh3D &mesh,
-				const std::string &assembler,
+				const quadrature::WeakFormOrderHint &quadrature_hint,
+				const quadrature::WeakFormOrderHint &mass_quadrature_hint,
 				const int quadrature_order,
 				const int mass_quadrature_order,
 				std::vector<ElementBases> &bases,

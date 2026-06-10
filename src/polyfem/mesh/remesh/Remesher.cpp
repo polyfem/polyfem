@@ -269,22 +269,44 @@ namespace polyfem::mesh
 		{
 			n_bases = LagrangeBasis2d::build_bases(
 				dynamic_cast<const Mesh2D &>(mesh),
-				assembler_formulation, /*quadrature_order=*/1,
-				/*mass_quadrature_order=*/2, /*discr_order=*/1,
-				/*Bernstein=*/false, /*serendipity=*/false, /*has_polys=*/false,
-				/*is_geom_bases=*/false, /*use_corner_quadrature=*/false, bases, local_boundary,
-				poly_edge_to_data, mesh_nodes);
+				{},    // Dummy quadrature order hint. Use explicit override.
+				{},    // Dummy mass quadrature order hint. Use explicit override.
+				1,     // Quadrature order.
+				2,     // Mass quadrature order.
+				1,     // Discr order.
+				1,     // Geomtry discr order.
+				false, // bernstein.
+				false, // serendipity.
+				false, // has_polys.
+				false, // is_geom_bases.
+				false, // use_corner_quadrature.
+				bases,
+				local_boundary,
+				poly_edge_to_data,
+				mesh_nodes);
 		}
 		else
 		{
 			assert(mesh.dimension() == 3);
 			n_bases = LagrangeBasis3d::build_bases(
 				dynamic_cast<const Mesh3D &>(mesh),
-				assembler_formulation, /*quadrature_order=*/1,
-				/*mass_quadrature_order=*/2, /*discr_order=*/1, /*discr_orderq=*/1,
-				/*Bernstein=*/false, /*serendipity=*/false, /*has_polys=*/false,
-				/*is_geom_bases=*/false, /*use_corner_quadrature=*/false, bases, local_boundary,
-				poly_edge_to_data, mesh_nodes);
+				{},    // Dummy quadrature order hint. Use explicit override.
+				{},    // Dummy mass quadrature order hint. Use explicit override.
+				1,     // Quadrature order.
+				2,     // Mass quadrature order.
+				1,     // Discr order p.
+				1,     // Discr order q.
+				1,     // Geomtry discr order p.
+				1,     // Geomtry discr order q.
+				false, // bernstein.
+				false, // serendipity.
+				false, // has_polys.
+				false, // is_geom_bases.
+				false, // use_corner_quadrature.
+				bases,
+				local_boundary,
+				poly_edge_to_data,
+				mesh_nodes);
 		}
 
 		// TODO: use mesh_nodes to build vertex_to_basis

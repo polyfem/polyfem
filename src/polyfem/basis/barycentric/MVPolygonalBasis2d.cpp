@@ -239,7 +239,8 @@ namespace polyfem
 		}
 
 		int MVPolygonalBasis2d::build_bases(
-			const std::string &assembler_name,
+			const quadrature::WeakFormOrderHint &quadrature_hint,
+			const quadrature::WeakFormOrderHint &mass_quadrature_hint,
 			const int dim,
 			const mesh::Mesh2D &mesh,
 			const int n_bases,
@@ -249,7 +250,18 @@ namespace polyfem
 			std::vector<mesh::LocalBoundary> &local_boundary,
 			std::map<int, Eigen::MatrixXd> &mapped_boundary)
 		{
-			return BarycentricBasis2d::build_bases(assembler_name, dim, mesh, n_bases, quadrature_order, mass_quadrature_order, meanvalue, meanvalue_derivative, bases, local_boundary, mapped_boundary);
+			return BarycentricBasis2d::build_bases(quadrature_hint,
+												   mass_quadrature_hint,
+												   dim,
+												   mesh,
+												   n_bases,
+												   quadrature_order,
+												   mass_quadrature_order,
+												   meanvalue,
+												   meanvalue_derivative,
+												   bases,
+												   local_boundary,
+												   mapped_boundary);
 		}
 
 	} // namespace basis
