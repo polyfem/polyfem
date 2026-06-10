@@ -22,19 +22,19 @@ The optimization parameters dof and initial guess will be deduced automatically.
 
 The new name is `dirichlet-boundary`, the aim is to reduce confusion with dirichlet node var2sim.
 
-## Composite map is removed
+## Composite map is replaced by active selection
 
-`/variable_to_simulation/*` entry used to have `composite_map_type` and `composite_map_indices` field. Allowing user to select active dof via:
+`/variable_to_simulation/*` json spec used to have `composite_map_type` and `composite_map_indices` field. Allowing user to select active adjoint optimization parameters in following ways:
 
 - raw indices of optimization variable
 - geometry nodes via various selection mode
 - active dimensions (xyz)
 - time slice indexes
 
-However actual support is spotty in the code. A lot of var2sim class does not respect indexing. For example,
+However actual support is spotty in the code. A lot of var2sim class does not respect the selection. For example,
 
 ```json
-// Does not work at all. The code just ignore composite map.
+// Does not work. The code ignore composite map internally.
 {
   "type": "initial",
   "state": 0,
@@ -45,7 +45,7 @@ However actual support is spotty in the code. A lot of var2sim class does not re
 ```
 
 ```json
-// Does not work at all. The code just ignore composite map.
+// Does not work. The code ignore composite map internally.
 {
   "type": "friction",
   "state": 0,
@@ -55,11 +55,11 @@ However actual support is spotty in the code. A lot of var2sim class does not re
 }
 ```
 
-The new spec supports a much more limited set of index selection with strict validation internally.
+The new spec design supports a much more limited set of active parameter selection methods augmented with strict validation.
 
 ### Migration example
 
-Before diving into the spec, first checkout this example to get a feel. 
+Quick Before/After comparision.
 
 **Legacy**
 
@@ -74,7 +74,7 @@ Before diving into the spec, first checkout this example to get a feel.
 }
 ```
 
-This means:
+Above config translates to:
 
 - only optimize geometry nodes on the boundary
 - exclude surfaces `3` and `8`
@@ -95,9 +95,11 @@ This means:
 }
 ```
 
+The "composite_map_type", "composite_map_indices" and "surface_selection" json fields are replaced by respective "active_xxx" field. Which we will discuss in the next section.
+
 ### Active selection spec
 
-In total there are 5 kinds:
+In total there are 5 kinds of active optimization parameter selection:
 
 - `active_geometry_nodes`: specify vertex id. Support various selection modes.
    Supported by: Shape var2sim, dirichlet nodes var2sim
@@ -105,12 +107,24 @@ In total there are 5 kinds:
    Supported by: dirichlet boundary var2sim, pressure var2sim
 - `active_dimensions`: specify cartesian dimension of geometry nodes.
    Supported by: Shape var2sim
-- `active_dof`: specify initial condition dof.
+- `active_dofs`: specify initial condition dof.
    Supported by: Initial condition var2sim
 - `active_boundary_ids`: specify boundary id (selection id).
    Supported by: dirichlet boundary var2sim, pressure var2sim
 
 All of them can accept either a json array of int (ex. `"active_geometry_nodes": [1, 2, 3]`) or a file containing such indices. By default, active selection is an empty json list, which implies all active.
+
+**Example: boundary id and time slice selection**
+
+```json
+{
+  "type": "dirichlet-boundary",
+  "state": 0,
+  "composition": [],
+  "active_boundary_ids": [2, 5],
+  "active_time_slices": [0, 2, 4]
+}
+```
 
 ### Advanced selection mode for `active_geometry_nodes`
 
@@ -138,6 +152,21 @@ In addition, `active_geometry_nodes` support advanced selection mode, which does
 
 ```json
 "active_geometry_nodes": { "type": "boundary_excluding_surface", "selection": [3, 8] }
+```
+
+
+**Example: shape boundary selection**
+
+```json
+{
+  "type": "shape",
+  "state": 0,
+  "composition": [],
+  "active_geometry_nodes": {
+    "type": "boundary",
+    "selection": [1, 4]
+  }
+}
 ```
 
 ## Migration cheatsheet
