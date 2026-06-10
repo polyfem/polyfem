@@ -82,19 +82,6 @@ namespace polyfem::varform
 		return space;
 	}
 
-	VarFormDebugData NonlinearElasticVarForm::debug_data() const
-	{
-		return {
-			mesh_.get(),
-			assembler.get(),
-			&bases,
-			&geom_bases(),
-			&total_local_boundary,
-			n_bases,
-			n_obstacle_vertices(),
-			root_path};
-	}
-
 	std::vector<io::OutputField> NonlinearElasticVarForm::output_fields(
 		const io::OutputSample &sample,
 		const Eigen::MatrixXd &solution,

@@ -28,37 +28,17 @@
 
 namespace polyfem
 {
+	namespace test
+	{
+		class VarFormTestAccess;
+	}
+
 	namespace varform
 	{
-		struct VarFormDebugData
-		{
-			const mesh::Mesh *mesh = nullptr;
-			const assembler::Assembler *assembler = nullptr;
-			const std::vector<basis::ElementBases> *bases = nullptr;
-			const std::vector<basis::ElementBases> *geometry_bases = nullptr;
-			const std::vector<mesh::LocalBoundary> *total_local_boundary = nullptr;
-			int n_bases = 0;
-			int n_obstacle_vertices = 0;
-			std::string root_path;
-		};
-
-		class VarFormTestAccess
-		{
-		public:
-			virtual ~VarFormTestAccess() = default;
-			virtual VarFormDebugData debug_data() const = 0;
-		};
-
-		class VarFormMatrixTestAccess : public VarFormTestAccess
-		{
-		public:
-			virtual ~VarFormMatrixTestAccess() = default;
-			virtual void build_stiffness_mat_debug(StiffnessMatrix &stiffness) = 0;
-			virtual const StiffnessMatrix *mass_matrix_debug() const = 0;
-		};
-
 		class VarForm
 		{
+			friend class polyfem::test::VarFormTestAccess;
+
 		public:
 			virtual ~VarForm() = default;
 

@@ -11,7 +11,7 @@
 
 namespace polyfem::varform
 {
-	class NonlinearElasticVarForm : public ElasticVarForm, public VarFormTestAccess
+	class NonlinearElasticVarForm : public ElasticVarForm
 	{
 	public:
 		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
@@ -22,7 +22,6 @@ namespace polyfem::varform
 		}
 
 		io::OutputSpace output_space() const override;
-		VarFormDebugData debug_data() const override;
 		std::vector<io::OutputField> output_fields(
 			const io::OutputSample &sample,
 			const Eigen::MatrixXd &solution,

@@ -73,29 +73,6 @@ namespace polyfem::varform
 		save_json_stats(solution, 0, out);
 	}
 
-	VarFormDebugData ScalarVarForm::debug_data() const
-	{
-		return {
-			mesh_.get(),
-			assembler.get(),
-			&bases,
-			&geom_bases(),
-			&total_local_boundary,
-			n_bases,
-			0,
-			root_path};
-	}
-
-	void ScalarVarForm::build_stiffness_mat_debug(StiffnessMatrix &stiffness)
-	{
-		build_stiffness_mat(stiffness);
-	}
-
-	const StiffnessMatrix *ScalarVarForm::mass_matrix_debug() const
-	{
-		return &mass;
-	}
-
 	std::vector<io::OutputField> ScalarVarForm::output_fields(
 		const io::OutputSample &sample,
 		const Eigen::MatrixXd &solution,

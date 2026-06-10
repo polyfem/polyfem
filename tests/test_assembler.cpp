@@ -8,6 +8,8 @@
 #include <polyfem/utils/RefElementSampler.hpp>
 #include <polyfem/varforms/VarForm.hpp>
 
+#include "VarFormTestAccess.hpp"
+
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
 
@@ -47,9 +49,8 @@ TEST_CASE("hessian_lin", "[assembler]")
 
 	SparseMatrixCache mat_cache;
 	StiffnessMatrix hessian, stiffness;
-	auto *matrices = dynamic_cast<varform::VarFormMatrixTestAccess *>(state.variational_formulation.get());
-	REQUIRE(matrices != nullptr);
-	const varform::VarFormDebugData debug = matrices->debug_data();
+	varform::VarForm &form = *state.variational_formulation;
+	const test::VarFormDebugData debug = test::VarFormTestAccess::debug_data(form);
 	REQUIRE(debug.assembler != nullptr);
 	REQUIRE(debug.mesh != nullptr);
 	REQUIRE(debug.bases != nullptr);
@@ -59,7 +60,7 @@ TEST_CASE("hessian_lin", "[assembler]")
 	Eigen::MatrixXd disp(debug.n_bases * debug.mesh->dimension(), 1);
 	disp.setZero();
 
-	matrices->build_stiffness_mat_debug(stiffness);
+	REQUIRE(test::VarFormTestAccess::build_stiffness_mat(form, stiffness));
 
 	for (int rand = 0; rand < 10; ++rand)
 	{
@@ -110,9 +111,8 @@ TEST_CASE("hessian_hooke", "[assembler]")
 
 	SparseMatrixCache mat_cache;
 	StiffnessMatrix hessian, stiffness;
-	auto *matrices = dynamic_cast<varform::VarFormMatrixTestAccess *>(state.variational_formulation.get());
-	REQUIRE(matrices != nullptr);
-	const varform::VarFormDebugData debug = matrices->debug_data();
+	varform::VarForm &form = *state.variational_formulation;
+	const test::VarFormDebugData debug = test::VarFormTestAccess::debug_data(form);
 	REQUIRE(debug.assembler != nullptr);
 	REQUIRE(debug.mesh != nullptr);
 	REQUIRE(debug.bases != nullptr);
@@ -122,7 +122,7 @@ TEST_CASE("hessian_hooke", "[assembler]")
 	Eigen::MatrixXd disp(debug.n_bases * debug.mesh->dimension(), 1);
 	disp.setZero();
 
-	matrices->build_stiffness_mat_debug(stiffness);
+	REQUIRE(test::VarFormTestAccess::build_stiffness_mat(form, stiffness));
 
 	for (int rand = 0; rand < 10; ++rand)
 	{
@@ -180,9 +180,7 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 
 	Units units;
 	units.init(state.args["units"]);
-	auto *matrices = dynamic_cast<varform::VarFormMatrixTestAccess *>(state.variational_formulation.get());
-	REQUIRE(matrices != nullptr);
-	const varform::VarFormDebugData debug = matrices->debug_data();
+	const test::VarFormDebugData debug = test::VarFormTestAccess::debug_data(*state.variational_formulation);
 	REQUIRE(debug.mesh != nullptr);
 	REQUIRE(debug.bases != nullptr);
 	REQUIRE(debug.geometry_bases != nullptr);

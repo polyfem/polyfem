@@ -6,6 +6,9 @@
 #include <polyfem/quadrature/PrismQuadrature.hpp>
 #include <polyfem/quadrature/PyramidQuadrature.hpp>
 #include <polyfem/varforms/VarForm.hpp>
+
+#include "VarFormTestAccess.hpp"
+
 #include <iostream>
 #include <cmath>
 #include <Eigen/Dense>
@@ -125,12 +128,8 @@ namespace
 			auto state = get_state(mesh, n_refs, basis_order, -1, -1, spline, serendipity);
 			auto expected = get_state(mesh, n_refs, basis_order, expected_quad, expected_quad, spline, serendipity);
 			StiffnessMatrix exp_st, st;
-			auto *state_matrices = dynamic_cast<varform::VarFormMatrixTestAccess *>(state->variational_formulation.get());
-			auto *expected_matrices = dynamic_cast<varform::VarFormMatrixTestAccess *>(expected->variational_formulation.get());
-			REQUIRE(state_matrices != nullptr);
-			REQUIRE(expected_matrices != nullptr);
-			state_matrices->build_stiffness_mat_debug(st);
-			expected_matrices->build_stiffness_mat_debug(exp_st);
+			REQUIRE(test::VarFormTestAccess::build_stiffness_mat(*state->variational_formulation, st));
+			REQUIRE(test::VarFormTestAccess::build_stiffness_mat(*expected->variational_formulation, exp_st));
 
 			StiffnessMatrix tmp = st - exp_st;
 			const auto val = Catch::Approx(0).margin(margin);
@@ -147,11 +146,9 @@ namespace
 				}
 			}
 
-			const StiffnessMatrix *mass = state_matrices->mass_matrix_debug();
-			const StiffnessMatrix *expected_mass = expected_matrices->mass_matrix_debug();
-			REQUIRE(mass != nullptr);
-			REQUIRE(expected_mass != nullptr);
-			tmp = *mass - *expected_mass;
+			const StiffnessMatrix &mass = test::VarFormTestAccess::mass_matrix(*state->variational_formulation);
+			const StiffnessMatrix &expected_mass = test::VarFormTestAccess::mass_matrix(*expected->variational_formulation);
+			tmp = mass - expected_mass;
 
 			for (int k = 0; k < tmp.outerSize(); ++k)
 			{

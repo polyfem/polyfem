@@ -6,6 +6,8 @@
 #include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 
+#include "VarFormTestAccess.hpp"
+
 #include <catch2/catch_all.hpp>
 
 #include <igl/readPLY.h>
@@ -60,7 +62,7 @@ namespace
 		return state;
 	}
 
-	void build_mesh_matrices(const polyfem::varform::VarFormDebugData &debug, Eigen::MatrixXd &V, Eigen::MatrixXi &F)
+	void build_mesh_matrices(const polyfem::test::VarFormDebugData &debug, Eigen::MatrixXd &V, Eigen::MatrixXi &F)
 	{
 		REQUIRE(debug.mesh != nullptr);
 		REQUIRE(debug.bases != nullptr);
@@ -126,9 +128,8 @@ TEST_CASE("build collision proxy", "[build_collision_proxy]")
 #endif
 
 	const auto state = get_state();
-	auto *debug_access = dynamic_cast<polyfem::varform::VarFormTestAccess *>(state->variational_formulation.get());
-	REQUIRE(debug_access != nullptr);
-	const polyfem::varform::VarFormDebugData debug = debug_access->debug_data();
+	const polyfem::test::VarFormDebugData debug =
+		polyfem::test::VarFormTestAccess::debug_data(*state->variational_formulation);
 	REQUIRE(debug.mesh != nullptr);
 	REQUIRE(debug.bases != nullptr);
 	REQUIRE(debug.geometry_bases != nullptr);
@@ -202,9 +203,8 @@ TEST_CASE("build collision proxy displacement map", "[build_collision_proxy]")
 	// }
 
 	const auto state = get_state(fe_mesh_path, discr_order);
-	auto *debug_access = dynamic_cast<polyfem::varform::VarFormTestAccess *>(state->variational_formulation.get());
-	REQUIRE(debug_access != nullptr);
-	const polyfem::varform::VarFormDebugData debug = debug_access->debug_data();
+	const polyfem::test::VarFormDebugData debug =
+		polyfem::test::VarFormTestAccess::debug_data(*state->variational_formulation);
 	REQUIRE(debug.mesh != nullptr);
 	REQUIRE(debug.bases != nullptr);
 	REQUIRE(debug.geometry_bases != nullptr);
