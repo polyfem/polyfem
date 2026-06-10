@@ -21,7 +21,7 @@ namespace polyfem::solver
 
 		virtual ParameterType parameter_type() const = 0;
 
-		/// @brief Return true of current var2sim maps to target state.
+		/// @brief Return true if current var2sim maps to target state.
 		virtual bool affect_state(const State &target) const = 0;
 
 		/// @brief Update forward simulation states from optimization variables.
