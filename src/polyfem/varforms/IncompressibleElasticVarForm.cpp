@@ -392,7 +392,9 @@ namespace polyfem::varform
 	{
 		Eigen::MatrixXd displacement, pressure;
 		split_solution(solution, displacement, pressure);
-		auto fields = ElasticVarForm::output_fields(sample, displacement, options);
+		const std::vector<std::pair<std::string, std::shared_ptr<solver::Form>>> named_forms;
+		auto fields = elastic_output_fields(
+			sample, displacement, options, nullptr, time_integrator.get(), named_forms, nullptr);
 		const bool export_pressure_gradient =
 			!options.fields.empty() && options.export_field("pressure_gradient");
 		if (mesh_ && (options.export_field("pressure") || export_pressure_gradient))
