@@ -433,12 +433,11 @@ namespace polyfem::varform
 		auto fields = ScalarVarForm::output_fields(sample, value, options);
 		const bool export_pressure_gradient =
 			!options.fields.empty() && options.export_field("pressure_gradient");
-		if (mesh_ && (options.export_field("pressure") || export_pressure_gradient
-					 || (!options.fields.empty() && options.export_field("auxiliary"))))
+		if (mesh_ && (options.export_field("pressure") || export_pressure_gradient || (!options.fields.empty() && options.export_field("auxiliary"))))
 		{
 			Eigen::MatrixXd values, gradients;
 			if (sample_scalar_field(
-				*mesh_, pressure_bases, geom_bases(), sample, pressure, values,
+					*mesh_, pressure_bases, geom_bases(), sample, pressure, values,
 					export_pressure_gradient ? &gradients : nullptr))
 			{
 				if (options.export_field("pressure"))
