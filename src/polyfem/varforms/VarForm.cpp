@@ -18,6 +18,7 @@
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/refinement/APriori.hpp>
+#include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Jacobian.hpp>
@@ -271,6 +272,7 @@ namespace polyfem::varform
 		stats.reset();
 		timings = io::OutRuntimeData();
 		output_sampler_initialized_ = false;
+		prepared_ = false;
 		rhs_assembler = nullptr;
 		problem = nullptr;
 		assembler = nullptr;
@@ -309,6 +311,7 @@ namespace polyfem::varform
 		t0 = 0;
 		time_steps = 0;
 		dt = 0;
+		time_callback = nullptr;
 		mesh_ = nullptr;
 	}
 
@@ -354,6 +357,7 @@ namespace polyfem::varform
 		mesh_ = std::move(mesh);
 		timings.loading_mesh_time = loading_mesh_time;
 		output_sampler_initialized_ = false;
+		prepared_ = false;
 		if (!mesh_)
 			return;
 
@@ -362,17 +366,17 @@ namespace polyfem::varform
 
 	void VarForm::prepare()
 	{
-		if (!mesh_)
-		{
-			logger().error("Load the mesh first!");
+		if (prepared_)
 			return;
-		}
+		if (!mesh_)
+			log_and_throw_error("Load the mesh first!");
 
 		mesh_->prepare_mesh();
 		stats.compute_mesh_stats(*mesh_);
 		build_basis(*mesh_, should_use_iso_parametric(*mesh_, args), args);
 		assemble_rhs(*mesh_, args);
 		assemble_mass_mat(*mesh_, args);
+		prepared_ = true;
 	}
 
 	void VarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
@@ -1255,8 +1259,17 @@ namespace polyfem::varform
 		return mesh_ ? mesh_->dimension() : 0;
 	}
 
-	void VarForm::save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const
+	void VarForm::save_step_state(
+		const double t0,
+		const double dt,
+		const int t,
+		const time_integrator::ImplicitTimeIntegrator *time_integrator) const
 	{
+		const int global_t = output_file_index(t);
+		const std::string state_path = resolve_output_path(fmt::format(args["output"]["data"]["state"], global_t));
+		if (!state_path.empty() && time_integrator)
+			time_integrator->save_state(state_path);
+
 		save_restart_json(t0, dt, t);
 	}
 
@@ -1302,6 +1315,12 @@ namespace polyfem::varform
 			resolve_output_path(fmt::format("solve_{:d}.vtu", i)),
 			space, output_field_function(solution, opts), t, dt,
 			opts);
+	}
+
+	void VarForm::notify_time_step(const int t) const
+	{
+		if (time_callback)
+			time_callback(t, time_steps, t0 + dt * t, t0 + dt * time_steps);
 	}
 
 	void VarForm::save_restart_json(const double t0, const double dt, const int t) const

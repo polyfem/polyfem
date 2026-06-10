@@ -4,6 +4,7 @@
 
 #include <polyfem/assembler/PressureAssembler.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/solver/SolveData.hpp>
 
 #include <ipc/collision_mesh.hpp>
 
@@ -28,8 +29,6 @@ namespace polyfem::varform
 			const io::OutputFieldOptions &options) const override;
 
 	protected:
-		void save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const override;
-
 		void reset() override;
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
 		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;

@@ -9,9 +9,6 @@
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/MeshNodes.hpp>
 
-#include <polyfem/solver/SolveData.hpp>
-#include <polyfem/solver/forms/Form.hpp>
-
 #include <polyfem/io/OutputData.hpp>
 #include <polyfem/io/OutData.hpp>
 #include <polyfem/io/OutStatsData.hpp>
@@ -19,6 +16,7 @@
 
 #include <Eigen/Dense>
 
+#include <functional>
 #include <iosfwd>
 #include <memory>
 #include <map>
@@ -28,6 +26,11 @@
 
 namespace polyfem
 {
+	namespace time_integrator
+	{
+		class ImplicitTimeIntegrator;
+	}
+
 	namespace test
 	{
 		class VarFormTestAccess;
@@ -48,7 +51,12 @@ namespace polyfem
 
 			/// @brief Reset the internal state of the variational formulation, e.g. when loading a new mesh
 			/// @param args json input arguments, used to determine which data to reset
-			void set_args(const json &args) { this->args = args; }
+			void set_args(const json &args)
+			{
+				this->args = args;
+				prepared_ = false;
+				output_sampler_initialized_ = false;
+			}
 
 			/// @brief Initialize the variational formulation with the given parameters
 			/// @param formulation name of the variational formulation
@@ -64,6 +72,7 @@ namespace polyfem
 			/// @brief Solve the variational formulation and store the solution in the given matrix
 			/// @param sol matrix to store the solution
 			void solve(Eigen::MatrixXd &sol);
+			void set_time_callback(const std::function<void(int, int, double, double)> &callback) { time_callback = callback; }
 
 			/// @brief Get the problem dimension of the variational formulation, for output purposes
 			/// @return Problem dimension
@@ -102,7 +111,6 @@ namespace polyfem
 			void export_data(const Eigen::MatrixXd &solution) const;
 
 			QuadratureOrders n_boundary_samples() const;
-			void prepare();
 
 		protected:
 			std::string resolve_output_path(const std::string &path) const;
@@ -117,6 +125,7 @@ namespace polyfem
 			virtual void assemble_rhs(const mesh::Mesh &mesh, const json &args);
 			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args);
 			virtual void solve_problem(Eigen::MatrixXd &sol) = 0;
+			void prepare();
 
 			/// @brief Get a constant reference to the geometry mapping bases.
 			/// @return A constant reference to the geometry mapping bases.
@@ -134,7 +143,11 @@ namespace polyfem
 
 			void initial_solution(Eigen::MatrixXd &solution) const;
 
-			virtual void save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const;
+			void save_step_state(
+				const double t0,
+				const double dt,
+				const int t,
+				const time_integrator::ImplicitTimeIntegrator *time_integrator) const;
 
 			void ensure_output_sampler() const;
 			std::vector<io::OutputField> common_output_fields(
@@ -150,6 +163,7 @@ namespace polyfem
 			void save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &solution) const;
 			void save_subsolve(const int i, const int t, const Eigen::MatrixXd &solution) const;
 			int output_file_index(const int t) const;
+			void notify_time_step(const int t) const;
 
 			io::OutGeometryData::ExportOptions export_options(const io::OutputSpace &space) const;
 			io::OutputFieldFunction output_field_function(const Eigen::MatrixXd &solution, const io::OutGeometryData::ExportOptions &opts) const;
@@ -246,9 +260,11 @@ namespace polyfem
 			double t0 = 0;
 			int time_steps = 0;
 			double dt = 0;
+			std::function<void(int, int, double, double)> time_callback;
 
 			mutable io::OutGeometryData output_geometry_;
 			mutable bool output_sampler_initialized_ = false;
+			bool prepared_ = false;
 
 			static bool read_initial_x_from_file(
 				const std::string &state_path,

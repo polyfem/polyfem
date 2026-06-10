@@ -10,32 +10,18 @@
 
 #include <polyfem/basis/ElementBases.hpp>
 
+#include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 
-#include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
-
-#include <polyfem/solver/forms/SmoothContactForm.hpp>
-#include <polyfem/solver/forms/FrictionForm.hpp>
-#include <polyfem/solver/NLProblem.hpp>
-#include <polyfem/solver/forms/BodyForm.hpp>
-#include <polyfem/solver/forms/BodyForm.hpp>
-#include <polyfem/solver/forms/BarrierContactForm.hpp>
-#include <polyfem/solver/forms/ElasticForm.hpp>
-#include <polyfem/solver/forms/FrictionForm.hpp>
-#include <polyfem/solver/forms/InertiaForm.hpp>
-#include <polyfem/solver/forms/LaggedRegForm.hpp>
-#include <polyfem/solver/forms/RayleighDampingForm.hpp>
-#include <polyfem/solver/forms/lagrangian/AugmentedLagrangianForm.hpp>
-
+#include <polyfem/utils/getRSS.h>
 #include <polyfem/utils/EdgeSampler.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/par_for.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
-#include <polyfem/utils/getRSS.h>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
@@ -84,6 +70,19 @@ namespace polyfem::io
 			{
 				if (field.values.rows() <= 0)
 					continue;
+
+				const int expected_rows =
+					field.association == OutputField::Association::Cell
+						? sample.cell_count
+						: sample.points.rows();
+				if (field.values.rows() != expected_rows)
+				{
+					logger().warn(
+						"Skipping output field '{}' with {} rows; expected {} {} rows",
+						field.name, field.values.rows(), expected_rows,
+						field.association == OutputField::Association::Cell ? "cell" : "point");
+					continue;
+				}
 
 				if (field.association == OutputField::Association::Cell)
 					writer.add_cell_field(field.name, field.values);
@@ -1197,7 +1196,8 @@ namespace polyfem::io
 
 		const bool save_contact =
 			space.collision_mesh
-			&& (opts.contact_forces || opts.friction_forces || opts.normal_adhesion_forces || opts.tangential_adhesion_forces);
+			&& (opts.contact_forces || opts.friction_forces || opts.normal_adhesion_forces || opts.tangential_adhesion_forces
+				|| (!opts.fields.empty() && opts.export_field("adaptive_dhat")));
 
 		logger().info("Saving vtu to {}; volume={}, surface={}, contact={}, points={}, wireframe={}",
 					  path, opts.volume, opts.surface, save_contact, opts.points, opts.wire);
@@ -1348,6 +1348,8 @@ namespace polyfem::io
 		sample.points = points;
 		sample.local_points = local_points;
 		sample.element_ids = el_id.col(0);
+		sample.domain = OutputSample::Domain::Volume;
+		sample.cell_count = elements.empty() ? tets.rows() : static_cast<int>(elements.size());
 		sample.time = t;
 		sample.dt = dt;
 		add_output_fields(writer, sample, output_fields);
@@ -1357,6 +1359,7 @@ namespace polyfem::io
 			OutputSample grid_sample;
 			grid_sample.points = grid_points;
 			grid_sample.element_ids = grid_points_to_elements.col(0);
+			grid_sample.domain = OutputSample::Domain::Grid;
 			grid_sample.local_points.resize(grid_points.rows(), mesh.dimension());
 			grid_sample.local_points.setZero();
 			for (int i = 0; i < grid_points.rows(); ++i)
@@ -1458,6 +1461,8 @@ namespace polyfem::io
 		sample.element_ids = boundary_vis_elements_ids.col(0);
 		sample.primitive_ids = boundary_vis_primitive_ids;
 		sample.normals = boundary_vis_normals;
+		sample.domain = OutputSample::Domain::Surface;
+		sample.cell_count = boundary_vis_elements.rows();
 		sample.time = t;
 		sample.dt = dt_in;
 		add_output_fields(writer, sample, output_fields);
@@ -1487,6 +1492,9 @@ namespace polyfem::io
 		// Write the solution alias last so it is the default for warp-by-vector.
 		OutputSample sample;
 		sample.points = collision_mesh.rest_positions();
+		sample.domain = OutputSample::Domain::Contact;
+		sample.cell_count = static_cast<int>(
+			collision_mesh.dim() == 3 ? collision_mesh.num_faces() : collision_mesh.num_edges());
 		sample.time = t;
 		sample.dt = dt_in;
 		add_output_fields(writer, sample, output_fields);
@@ -1544,6 +1552,8 @@ namespace polyfem::io
 		sample.local_points = local_points;
 		if (element_ids.cols() > 0)
 			sample.element_ids = element_ids.col(0);
+		sample.domain = OutputSample::Domain::Wire;
+		sample.cell_count = edges.rows();
 		sample.time = t;
 		add_output_fields(writer, sample, output_fields);
 
@@ -1598,6 +1608,8 @@ namespace polyfem::io
 		sample.node_ids.resize(dirichlet_nodes.size());
 		for (int i = 0; i < dirichlet_nodes.size(); ++i)
 			sample.node_ids(i) = dirichlet_nodes[i];
+		sample.domain = OutputSample::Domain::Points;
+		sample.cell_count = static_cast<int>(cells.size());
 		add_output_fields(writer, sample, output_fields);
 		writer.write_mesh(path, points, cells);
 	}
@@ -2221,74 +2233,6 @@ namespace polyfem::io
 		j["formulation"] = formulation;
 
 		logger().info("done");
-	}
-
-	EnergyCSVWriter::EnergyCSVWriter(const std::string &path, const solver::SolveData &solve_data)
-		: file(path), solve_data(solve_data)
-	{
-		file << "i,";
-		for (const auto &[name, _] : solve_data.named_forms())
-		{
-			file << name << ",";
-		}
-		file << "total_energy" << std::endl;
-	}
-
-	EnergyCSVWriter::~EnergyCSVWriter()
-	{
-		file.close();
-	}
-
-	void EnergyCSVWriter::write(const int i, const Eigen::MatrixXd &sol)
-	{
-		const double s = solve_data.time_integrator
-							 ? solve_data.time_integrator->acceleration_scaling()
-							 : 1;
-		file << i << ",";
-		for (const auto &[_, form] : solve_data.named_forms())
-		{
-			// Divide by acceleration scaling to get the energy (units of J)
-			file << ((form && form->enabled()) ? form->value(sol) : 0) / s << ",";
-		}
-		file << solve_data.nl_problem->value(sol) / s << "\n";
-		file.flush();
-	}
-
-	RuntimeStatsCSVWriter::RuntimeStatsCSVWriter(const std::string &path, const int n_bases, const int n_elements, const double t0, const double dt)
-		: file(path), n_bases(n_bases), n_elements(n_elements), t0(t0), dt(dt)
-	{
-		file << "step,time,forward,remeshing,global_relaxation,peak_mem,#V,#T" << std::endl;
-	}
-
-	RuntimeStatsCSVWriter::~RuntimeStatsCSVWriter()
-	{
-		file.close();
-	}
-
-	void RuntimeStatsCSVWriter::write(const int t, const double forward, const double remeshing, const double global_relaxation, const Eigen::MatrixXd &sol)
-	{
-		total_forward_solve_time += forward;
-		total_remeshing_time += remeshing;
-		total_global_relaxation_time += global_relaxation;
-
-		// logger().debug(
-		// 	"Forward (cur, avg, total): {} s, {} s, {} s",
-		// 	forward, total_forward_solve_time / t, total_forward_solve_time);
-		// logger().debug(
-		// 	"Remeshing (cur, avg, total): {} s, {} s, {} s",
-		// 	remeshing, total_remeshing_time / t, total_remeshing_time);
-		// logger().debug(
-		// 	"Global relaxation (cur, avg, total): {} s, {} s, {} s",
-		// 	global_relaxation, total_global_relaxation_time / t, total_global_relaxation_time);
-
-		const double peak_mem = getPeakRSS() / double(1 << 30);
-		// logger().debug("Peak mem: {} GiB", peak_mem);
-
-		file << fmt::format(
-			"{},{},{},{},{},{},{},{}\n",
-			t, t0 + dt * t, forward, remeshing, global_relaxation, peak_mem,
-			n_bases, n_elements);
-		file.flush();
 	}
 
 } // namespace polyfem::io

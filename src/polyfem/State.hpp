@@ -1,7 +1,6 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-#include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/utils/Types.hpp>
 
 #include <Eigen/Dense>

@@ -467,6 +467,7 @@ namespace polyfem
 	{
 		assert(variational_formulation != nullptr);
 
+		variational_formulation->set_time_callback(time_callback);
 		variational_formulation->solve(sol);
 	}
 

@@ -17,7 +17,7 @@
 
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/io/OBJWriter.hpp>
-#include <polyfem/io/MshWriter.hpp>
+#include <polyfem/io/SolverCSVWriter.hpp>
 
 #include <polyfem/solver/ALSolver.hpp>
 #include <polyfem/solver/NLProblem.hpp>
@@ -47,18 +47,23 @@ namespace polyfem::varform
 	void NonlinearElasticVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
 	{
 		json clean_args = args;
-		contact_dhat_was_explicit_ = clean_args["contact"].value("_dhat_was_explicit", false);
+		const bool contact_dhat_was_explicit = clean_args["contact"].value("_dhat_was_explicit", false);
 		clean_args["contact"].erase("_dhat_was_explicit");
 		ElasticVarForm::init(formulation, units, clean_args, out_path);
+		contact_dhat_was_explicit_ = contact_dhat_was_explicit;
 	}
 
 	void NonlinearElasticVarForm::reset()
 	{
 		ElasticVarForm::reset();
 		collision_mesh = ipc::CollisionMesh();
+		obstacle.clear();
+		solve_data = solver::SolveData();
+		forms.clear();
 		elasticity_pressure_assembler = nullptr;
 		damping_assembler = nullptr;
 		damping_prev_assembler = nullptr;
+		contact_dhat_was_explicit_ = false;
 	}
 
 	void NonlinearElasticVarForm::load_mesh(const mesh::Mesh &mesh, const json &args)
@@ -91,6 +96,8 @@ namespace polyfem::varform
 			sample, solution, options, &obstacle, solve_data.time_integrator.get(),
 			solve_data.named_forms(), solve_data.elastic_form.get(), solve_data.contact_form.get());
 		if (!mesh_ || !problem || solution.size() <= 0)
+			return fields;
+		if (sample.domain != io::OutputSample::Domain::Contact)
 			return fields;
 
 		const int actual_dim = problem->is_scalar() ? 1 : mesh_->dimension();
@@ -198,6 +205,11 @@ namespace polyfem::varform
 					for (int f = 0; f < dhats.size(); ++f)
 						dhats(f) = set.get_face_dhat(f);
 					fields.push_back({"dhat_face", dhats, io::OutputField::Association::Cell});
+
+					Eigen::VectorXd vertex_dhats(collision_mesh.num_vertices());
+					for (int v = 0; v < vertex_dhats.size(); ++v)
+						vertex_dhats(v) = set.get_vert_dhat(v);
+					fields.push_back({"dhat_vert", vertex_dhats, io::OutputField::Association::Point});
 				}
 			}
 		}
@@ -547,10 +559,11 @@ namespace polyfem::varform
 			}
 
 			logger().info("{}/{}  t={}", t, time_steps, t0 + dt * t);
+			notify_time_step(t);
 
-			save_step_state(t0, dt, t, sol);
+			save_elastic_step_state(t0, dt, t, solve_data.time_integrator.get());
 			if (stats_csv)
-				stats_csv->write(t, forward_solve_time, remeshing_time, global_relaxation_time, sol);
+				stats_csv->write(t, forward_solve_time, remeshing_time, global_relaxation_time);
 		}
 
 		timer.stop();
@@ -851,27 +864,4 @@ namespace polyfem::varform
 		}
 	}
 
-	void NonlinearElasticVarForm::save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const
-	{
-		if (!mesh_)
-			return;
-		const int global_t = output_file_index(t);
-
-		const std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
-		if (!rest_mesh_path.empty())
-		{
-			Eigen::MatrixXd V;
-			Eigen::MatrixXi F;
-			build_mesh_matrices(V, F);
-			io::MshWriter::write(
-				resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], global_t)),
-				V, F, mesh_->get_body_ids(), mesh_->is_volume(), /*binary=*/true);
-		}
-
-		const std::string state_path = resolve_output_path(fmt::format(args["output"]["data"]["state"], global_t));
-		if (!state_path.empty() && solve_data.time_integrator)
-			solve_data.time_integrator->save_state(state_path);
-
-		save_restart_json(t0, dt, t);
-	}
 } // namespace polyfem::varform

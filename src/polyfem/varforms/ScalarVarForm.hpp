@@ -26,6 +26,9 @@ namespace polyfem::varform
 			const Eigen::MatrixXd &solution,
 			const io::OutputFieldOptions &options) const override;
 
+	protected:
+		void reset() override;
+
 	private:
 		void build_stiffness_mat(StiffnessMatrix &stiffness);
 

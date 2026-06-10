@@ -33,6 +33,17 @@ namespace polyfem::io
 
 	struct OutputSample
 	{
+		enum class Domain
+		{
+			Unknown,
+			Volume,
+			Surface,
+			Contact,
+			Wire,
+			Points,
+			Grid
+		};
+
 		Eigen::MatrixXd points;
 		Eigen::MatrixXd local_points;
 		Eigen::VectorXi element_ids;
@@ -40,6 +51,8 @@ namespace polyfem::io
 		Eigen::VectorXi node_ids;
 		Eigen::MatrixXd normals;
 		std::vector<std::string> requested_fields;
+		Domain domain = Domain::Unknown;
+		int cell_count = 0;
 		double time = 0;
 		double dt = 0;
 	};

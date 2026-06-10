@@ -45,7 +45,7 @@ TEST_CASE("hessian_lin", "[assembler]")
 	state.load_mesh();
 
 	// state.compute_mesh_stats();
-	state.variational_formulation->prepare();
+	test::VarFormTestAccess::prepare(*state.variational_formulation);
 
 	SparseMatrixCache mat_cache;
 	StiffnessMatrix hessian, stiffness;
@@ -107,7 +107,7 @@ TEST_CASE("hessian_hooke", "[assembler]")
 	state.load_mesh();
 
 	// state.compute_mesh_stats();
-	state.variational_formulation->prepare();
+	test::VarFormTestAccess::prepare(*state.variational_formulation);
 
 	SparseMatrixCache mat_cache;
 	StiffnessMatrix hessian, stiffness;
@@ -170,7 +170,7 @@ TEST_CASE("generic_elastic_assembler", "[assembler]")
 	state.load_mesh();
 
 	// state.compute_mesh_stats();
-	state.variational_formulation->prepare();
+	test::VarFormTestAccess::prepare(*state.variational_formulation);
 
 	NeoHookeanAutodiff autodiff;
 	NeoHookeanElasticity real;

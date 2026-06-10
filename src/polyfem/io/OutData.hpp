@@ -2,13 +2,10 @@
 
 #include <polyfem/Common.hpp>
 
-#include <polyfem/assembler/Problem.hpp>
-
 #include <polyfem/basis/ElementBases.hpp>
 
 #include <polyfem/mesh/Mesh.hpp>
 
-#include <polyfem/solver/SolveData.hpp>
 #include <polyfem/io/OutputData.hpp>
 #include <polyfem/io/OutStatsData.hpp>
 
@@ -284,35 +281,4 @@ namespace polyfem::io
 			Eigen::MatrixXd &local_points) const;
 	};
 
-	class EnergyCSVWriter
-	{
-	public:
-		EnergyCSVWriter(const std::string &path, const solver::SolveData &solve_data);
-		~EnergyCSVWriter();
-
-		void write(const int i, const Eigen::MatrixXd &sol);
-
-	protected:
-		std::ofstream file;
-		const solver::SolveData &solve_data;
-	};
-
-	class RuntimeStatsCSVWriter
-	{
-	public:
-		RuntimeStatsCSVWriter(const std::string &path, const int n_bases, const int n_elements, const double t0, const double dt);
-		~RuntimeStatsCSVWriter();
-
-		void write(const int t, const double forward, const double remeshing, const double global_relaxation, const Eigen::MatrixXd &sol);
-
-	protected:
-		std::ofstream file;
-		const int n_bases;
-		const int n_elements;
-		const double t0;
-		const double dt;
-		double total_forward_solve_time = 0;
-		double total_remeshing_time = 0;
-		double total_global_relaxation_time = 0;
-	};
 } // namespace polyfem::io

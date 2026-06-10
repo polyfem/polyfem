@@ -21,6 +21,11 @@ namespace polyfem::test
 	class VarFormTestAccess
 	{
 	public:
+		static void prepare(varform::VarForm &form)
+		{
+			form.prepare();
+		}
+
 		static VarFormDebugData debug_data(const varform::VarForm &form)
 		{
 			const io::OutputSpace output_space = form.output_space();

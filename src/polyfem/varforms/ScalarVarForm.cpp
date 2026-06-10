@@ -27,6 +27,12 @@ namespace polyfem::varform
 		}
 	} // namespace
 
+	void ScalarVarForm::reset()
+	{
+		VarForm::reset();
+		time_integrator = nullptr;
+	}
+
 	void ScalarVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
 	{
 		VarForm::init(formulation, units, args, out_path);
@@ -318,9 +324,10 @@ namespace polyfem::varform
 
 			bdf->update_quantities(sol);
 			save_timestep(time, t, t0, dt, sol);
-			save_step_state(t0, dt, t, sol);
+			save_step_state(t0, dt, t, time_integrator.get());
 
 			logger().info("{}/{}  t={}", t, time_steps, time);
+			notify_time_step(t);
 		}
 	}
 

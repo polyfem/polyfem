@@ -4,10 +4,6 @@
 #include <polyfem/solver/forms/ElasticForm.hpp>
 #include <polyfem/solver/forms/InertiaForm.hpp>
 
-#include <polyfem/io/MshWriter.hpp>
-
-#include <polyfem/io/MatrixIO.hpp>
-
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Timer.hpp>
@@ -30,6 +26,15 @@ namespace polyfem::varform
 			return true;
 		}
 	} // namespace
+
+	void LinearElasticVarForm::reset()
+	{
+		ElasticVarForm::reset();
+		elastic_form = nullptr;
+		body_form = nullptr;
+		inertia_form = nullptr;
+		time_integrator = nullptr;
+	}
 
 	std::vector<io::OutputField> LinearElasticVarForm::output_fields(
 		const io::OutputSample &sample,
@@ -206,9 +211,10 @@ namespace polyfem::varform
 
 			time_integrator->update_quantities(sol);
 			save_timestep(time, t, t0, dt, sol);
-			save_step_state(t0, dt, t, sol);
+			save_elastic_step_state(t0, dt, t, time_integrator.get());
 
 			logger().info("{}/{}  t={}", t, time_steps, time);
+			notify_time_step(t);
 		}
 	}
 
@@ -242,27 +248,4 @@ namespace polyfem::varform
 		logger().info(" took {}s", timings.solving_time);
 	}
 
-	void LinearElasticVarForm::save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const
-	{
-		if (!mesh_)
-			return;
-		const int global_t = output_file_index(t);
-
-		const std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
-		if (!rest_mesh_path.empty())
-		{
-			Eigen::MatrixXd V;
-			Eigen::MatrixXi F;
-			build_mesh_matrices(V, F);
-			io::MshWriter::write(
-				resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], global_t)),
-				V, F, mesh_->get_body_ids(), mesh_->is_volume(), /*binary=*/true);
-		}
-
-		const std::string state_path = resolve_output_path(fmt::format(args["output"]["data"]["state"], global_t));
-		if (!state_path.empty() && time_integrator)
-			time_integrator->save_state(state_path);
-
-		save_restart_json(t0, dt, t);
-	}
 } // namespace polyfem::varform

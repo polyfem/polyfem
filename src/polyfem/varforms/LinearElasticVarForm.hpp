@@ -9,6 +9,13 @@ namespace polysolve::linear
 	class Solver;
 }
 
+namespace polyfem::solver
+{
+	class BodyForm;
+	class ElasticForm;
+	class InertiaForm;
+}
+
 namespace polyfem::varform
 {
 	class LinearElasticVarForm : public ElasticVarForm
@@ -24,7 +31,7 @@ namespace polyfem::varform
 			const io::OutputFieldOptions &options) const override;
 
 	private:
-		void save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const override;
+		void reset() override;
 
 		void solve_problem(Eigen::MatrixXd &sol) override;
 		void init_linear_solve(Eigen::MatrixXd &sol, const double t);

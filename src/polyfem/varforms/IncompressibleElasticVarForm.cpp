@@ -32,6 +32,7 @@ namespace polyfem::varform
 		mixed_assembler = nullptr;
 		pressure_assembler = nullptr;
 		use_avg_pressure = true;
+		time_integrator = nullptr;
 	}
 
 	void IncompressibleElasticVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
@@ -361,8 +362,9 @@ namespace polyfem::varform
 			bdf->update_quantities(displacement.col(0));
 
 			save_timestep(time, t, t0, dt, sol);
-			save_step_state(t0, dt, t, sol);
+			save_elastic_step_state(t0, dt, t, time_integrator.get());
 			logger().info("{}/{}  t={}", t, time_steps, time);
+			notify_time_step(t);
 		}
 	}
 

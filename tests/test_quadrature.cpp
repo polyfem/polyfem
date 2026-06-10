@@ -111,7 +111,7 @@ namespace
 
 			state->load_mesh();
 
-			state->variational_formulation->prepare();
+			test::VarFormTestAccess::prepare(*state->variational_formulation);
 
 			return state;
 		}

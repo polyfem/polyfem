@@ -816,6 +816,30 @@ namespace polyfem::varform
 		save_json_stats(solution, 0, out);
 	}
 
+	void ElasticVarForm::save_elastic_step_state(
+		const double t0,
+		const double dt,
+		const int t,
+		const time_integrator::ImplicitTimeIntegrator *time_integrator) const
+	{
+		if (!mesh_)
+			return;
+
+		const int global_t = output_file_index(t);
+		const std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
+		if (!rest_mesh_path.empty())
+		{
+			Eigen::MatrixXd V;
+			Eigen::MatrixXi F;
+			build_mesh_matrices(V, F);
+			io::MshWriter::write(
+				resolve_output_path(fmt::format(rest_mesh_path, global_t)),
+				V, F, mesh_->get_body_ids(), mesh_->is_volume(), /*binary=*/true);
+		}
+
+		save_step_state(t0, dt, t, time_integrator);
+	}
+
 	void ElasticVarForm::build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F) const
 	{
 		assert(mesh_);

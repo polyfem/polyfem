@@ -15,6 +15,8 @@
 
 #include <polyfem/State.hpp>
 #include <polyfem/varforms/VarForm.hpp>
+
+#include "VarFormTestAccess.hpp"
 ////////////////////////////////////////////////////////////////////////////////
 
 using namespace polyfem;
@@ -123,7 +125,7 @@ namespace
 
 		state->load_mesh();
 
-		state->variational_formulation->prepare();
+		test::VarFormTestAccess::prepare(*state->variational_formulation);
 
 		return state;
 	}

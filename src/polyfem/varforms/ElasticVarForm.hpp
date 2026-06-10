@@ -10,6 +10,7 @@ namespace polyfem::mesh
 namespace polyfem::solver
 {
 	class ContactForm;
+	class Form;
 }
 
 namespace polyfem::time_integrator
@@ -32,6 +33,11 @@ namespace polyfem::varform
 		void initial_velocity(Eigen::MatrixXd &velocity) const;
 		void initial_acceleration(Eigen::MatrixXd &acceleration) const;
 		void build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F) const;
+		void save_elastic_step_state(
+			const double t0,
+			const double dt,
+			const int t,
+			const time_integrator::ImplicitTimeIntegrator *time_integrator) const;
 		std::vector<io::OutputField> elastic_output_fields(
 			const io::OutputSample &sample,
 			const Eigen::MatrixXd &solution,

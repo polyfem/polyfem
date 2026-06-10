@@ -18,7 +18,7 @@ namespace polyfem::varform
 		}
 	} // namespace
 
-	inline std::string formulation_from_args(const json &args)
+	std::string formulation_from_args(const json &args)
 	{
 		if (!args.contains("materials") || args["materials"].is_null())
 			return "";
