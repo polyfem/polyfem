@@ -43,6 +43,11 @@ namespace polyfem::varform
 		assert(assembler->is_tensor());
 	}
 
+	void IncompressibleElasticVarForm::save_json(const Eigen::MatrixXd &solution, std::ostream &out) const
+	{
+		save_json_stats(solution, n_pressure_bases, out);
+	}
+
 	void IncompressibleElasticVarForm::load_mesh(const mesh::Mesh &mesh, const json &args)
 	{
 		ElasticVarForm::load_mesh(mesh, args);
@@ -326,7 +331,6 @@ namespace polyfem::varform
 		build_stiffness_mat(stiffness);
 		expand_primary_matrix(stacked_ndof(), mass, expanded_mass);
 
-		const int t_offset = args["output"]["data"]["file_index_offset"].get<int>();
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			const double time = t0 + t * dt;
@@ -356,8 +360,8 @@ namespace polyfem::varform
 			split_solution(sol, displacement, pressure);
 			bdf->update_quantities(displacement.col(0));
 
-			save_timestep(time, t + t_offset, t0, dt, sol);
-			save_step_state(t0, dt, t + t_offset, sol);
+			save_timestep(time, t, t0, dt, sol);
+			save_step_state(t0, dt, t, sol);
 			logger().info("{}/{}  t={}", t, time_steps, time);
 		}
 	}
@@ -389,11 +393,20 @@ namespace polyfem::varform
 		Eigen::MatrixXd displacement, pressure;
 		split_solution(solution, displacement, pressure);
 		auto fields = ElasticVarForm::output_fields(sample, displacement, options);
-		if (mesh_ && options.export_field("pressure"))
+		const bool export_pressure_gradient =
+			!options.fields.empty() && options.export_field("pressure_gradient");
+		if (mesh_ && (options.export_field("pressure") || export_pressure_gradient))
 		{
-			Eigen::MatrixXd values;
-			if (sample_scalar_field(*mesh_, pressure_bases, geom_bases(), sample, pressure, values))
-				fields.push_back({"pressure", values, io::OutputField::Association::Point});
+			Eigen::MatrixXd values, gradients;
+			if (sample_scalar_field(
+					*mesh_, pressure_bases, geom_bases(), sample, pressure, values,
+					export_pressure_gradient ? &gradients : nullptr))
+			{
+				if (options.export_field("pressure"))
+					fields.push_back({"pressure", values, io::OutputField::Association::Point});
+				if (export_pressure_gradient)
+					fields.push_back({"pressure_gradient", gradients, io::OutputField::Association::Point});
+			}
 		}
 		return fields;
 	}

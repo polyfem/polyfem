@@ -14,6 +14,8 @@ namespace polyfem::varform
 	class NonlinearElasticVarForm : public ElasticVarForm, public VarFormTestAccess
 	{
 	public:
+		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
+
 		bool is_contact_enabled() const override
 		{
 			return args.contains("contact") && args["contact"].contains("enabled") && args["contact"]["enabled"].get<bool>();
@@ -39,6 +41,7 @@ namespace polyfem::varform
 
 		std::shared_ptr<assembler::PressureAssembler> build_pressure_assembler() const;
 		void build_collision_mesh(const mesh::Mesh &mesh, const json &args);
+		void preprocess_contact_parameters();
 		void build_collision_mesh(
 			const mesh::Mesh &mesh,
 			const int n_bases,
@@ -60,8 +63,9 @@ namespace polyfem::varform
 
 		solver::SolveData solve_data;
 		std::vector<std::shared_ptr<solver::Form>> forms;
+		bool contact_dhat_was_explicit_ = false;
 
-		int n_obstacle_vertices() const override { return obstacle.n_vertices(); };
+		int n_obstacle_vertices() const override { return obstacle.n_vertices(); }
 	};
 
 	class NonlinearElasticTransientVarForm : public NonlinearElasticVarForm

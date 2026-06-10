@@ -39,22 +39,11 @@ namespace polyfem::io
 			bool friction_forces;
 			bool normal_adhesion_forces;
 			bool tangential_adhesion_forces;
-			bool forces;
-			bool jacobian_validity;
 
 			bool use_sampler;
 			bool boundary_only;
-			bool material_params;
-			bool body_ids;
 			bool sol_on_grid;
-			bool velocity;
-			bool acceleration;
-			bool tensor_values;
-			bool scalar_values;
 			bool discretization_order;
-			bool nodes;
-
-			bool use_spline;
 			bool reorder_output;
 
 			bool use_hdf5;
@@ -116,7 +105,6 @@ namespace polyfem::io
 		/// @param[in] dt delta t
 		/// @param[in] opts export options
 		/// @param[in] vis_mesh_path vtu path
-		/// @param[in] is_contact_enabled if contact is enabled
 		void export_data(
 			const OutputSpace &space,
 			const OutputFieldFunction &output_fields,
@@ -124,8 +112,7 @@ namespace polyfem::io
 			const double tend_in,
 			const double dt,
 			const ExportOptions &opts,
-			const std::string &vis_mesh_path,
-			const bool is_contact_enabled) const;
+			const std::string &vis_mesh_path) const;
 
 		/// saves the vtu file for time t
 		/// @param[in] path filename
@@ -134,14 +121,12 @@ namespace polyfem::io
 		/// @param[in] t time
 		/// @param[in] dt delta t
 		/// @param[in] opts export options
-		/// @param[in] is_contact_enabled if contact is enabled
 		void save_vtu(const std::string &path,
 					  const OutputSpace &space,
 					  const OutputFieldFunction &output_fields,
 					  const double t,
 					  const double dt,
-					  const ExportOptions &opts,
-					  const bool is_contact_enabled) const;
+					  const ExportOptions &opts) const;
 
 		/// saves the volume vtu file
 		/// @param[in] path filename
@@ -164,14 +149,12 @@ namespace polyfem::io
 		/// @param[in] t time
 		/// @param[in] dt_in delta_t
 		/// @param[in] opts export options
-		/// @param[in] is_contact_enabled if contact is enabled
 		void save_surface(const std::string &export_surface,
 						  const OutputSpace &space,
 						  const OutputFieldFunction &output_fields,
 						  const double t,
 						  const double dt_in,
-						  const ExportOptions &opts,
-						  const bool is_contact_enabled) const;
+						  const ExportOptions &opts) const;
 
 		/// saves the  surface vtu file for for constact quantites, eg contact or friction forces
 		/// @param[in] export_surface filename
@@ -180,15 +163,13 @@ namespace polyfem::io
 		/// @param[in] t time
 		/// @param[in] dt_in delta_t
 		/// @param[in] opts export options
-		/// @param[in] is_contact_enabled if contact is enabled
 		void save_contact_surface(
 			const std::string &export_surface,
 			const OutputSpace &space,
 			const OutputFieldFunction &output_fields,
 			const double t,
 			const double dt_in,
-			const ExportOptions &opts,
-			const bool is_contact_enabled) const;
+			const ExportOptions &opts) const;
 
 		/// saves the wireframe
 		/// @param[in] name filename
@@ -236,32 +217,24 @@ namespace polyfem::io
 
 		/// @brief builds the boundary mesh for visualization
 		/// @param[in] mesh mesh
-		/// @param[in] bases bases
 		/// @param[in] gbases geometric bases
 		/// @param[in] total_local_boundary boundaries
-		/// @param[in] solution solution
-		/// @param[in] problem_dim dimension of the problem
 		/// @param[out] boundary_vis_vertices boundary visualization mesh vertices
 		/// @param[out] boundary_vis_local_vertices boundary visualization mesh vertices pre image in ref element
 		/// @param[out] boundary_vis_elements boundary visualization mesh connectivity
 		/// @param[out] boundary_vis_elements_ids boundary visualization mesh elements ids
 		/// @param[out] boundary_vis_primitive_ids boundary visualization mesh edge/face id
 		/// @param[out] boundary_vis_normals boundary visualization mesh normals
-		/// @param[out] displaced_boundary_vis_normals boundary visualization mesh normals after displacement is applied
 		void build_vis_boundary_mesh(
 			const mesh::Mesh &mesh,
-			const std::vector<basis::ElementBases> &bases,
 			const std::vector<basis::ElementBases> &gbases,
 			const std::vector<mesh::LocalBoundary> &total_local_boundary,
-			const Eigen::MatrixXd &solution,
-			const int problem_dim,
 			Eigen::MatrixXd &boundary_vis_vertices,
 			Eigen::MatrixXd &boundary_vis_local_vertices,
 			Eigen::MatrixXi &boundary_vis_elements,
 			Eigen::MatrixXi &boundary_vis_elements_ids,
 			Eigen::MatrixXi &boundary_vis_primitive_ids,
-			Eigen::MatrixXd &boundary_vis_normals,
-			Eigen::MatrixXd &displaced_boundary_vis_normals) const;
+			Eigen::MatrixXd &boundary_vis_normals) const;
 
 		/// builds visualzation mesh, upsampled mesh used for visualization
 		/// the visualization mesh is a dense mesh per element all disconnected

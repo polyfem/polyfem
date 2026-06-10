@@ -1,6 +1,7 @@
 #include "OutData.hpp"
 
 #include "Evaluator.hpp"
+#include "MatrixIO.hpp"
 
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 #include <polyfem/assembler/AssemblyValues.hpp>
@@ -494,24 +495,20 @@ namespace polyfem::io
 
 	void OutGeometryData::build_vis_boundary_mesh(
 		const mesh::Mesh &mesh,
-		const std::vector<basis::ElementBases> &bases,
 		const std::vector<basis::ElementBases> &gbases,
 		const std::vector<mesh::LocalBoundary> &total_local_boundary,
-		const Eigen::MatrixXd &solution,
-		const int problem_dim,
 		Eigen::MatrixXd &boundary_vis_vertices,
 		Eigen::MatrixXd &boundary_vis_local_vertices,
 		Eigen::MatrixXi &boundary_vis_elements,
 		Eigen::MatrixXi &boundary_vis_elements_ids,
 		Eigen::MatrixXi &boundary_vis_primitive_ids,
-		Eigen::MatrixXd &boundary_vis_normals,
-		Eigen::MatrixXd &displaced_boundary_vis_normals) const
+		Eigen::MatrixXd &boundary_vis_normals) const
 	{
 		using namespace polyfem::mesh;
 
-		std::vector<Eigen::MatrixXd> lv, vertices, allnormals, displaced_allnormals;
+		std::vector<Eigen::MatrixXd> lv, vertices, allnormals;
 		std::vector<int> el_ids, global_primitive_ids;
-		Eigen::MatrixXd uv, local_pts, tmp_n, normals, displaced_normals, trafo, deform_mat;
+		Eigen::MatrixXd uv, local_pts, tmp_n, normals;
 		assembler::ElementAssemblyValues vals;
 		const auto &sampler = ref_element_sampler;
 		const int n_samples = sampler.num_samples();
@@ -524,7 +521,6 @@ namespace polyfem::io
 		{
 			const auto &lb = *it;
 			const auto &gbs = gbases[lb.element_id()];
-			const auto &bs = bases[lb.element_id()];
 
 			for (int k = 0; k < lb.size(); ++k)
 			{
@@ -573,7 +569,7 @@ namespace polyfem::io
 				el_ids.push_back(lb.element_id());
 				global_primitive_ids.push_back(lb.global_primitive_id(k));
 				gbs.eval_geom_mapping(local_pts, vertices.back());
-				vals.compute(lb.element_id(), mesh.is_volume(), local_pts, bs, gbs);
+				vals.compute(lb.element_id(), mesh.is_volume(), local_pts, gbs, gbs);
 				const int tris_start = tris.size();
 
 				if (mesh.is_volume())
@@ -639,37 +635,14 @@ namespace polyfem::io
 				}
 
 				normals.resize(vals.jac_it.size(), tmp_n.cols());
-				displaced_normals.resize(vals.jac_it.size(), tmp_n.cols());
 
 				for (int n = 0; n < vals.jac_it.size(); ++n)
 				{
-					trafo = vals.jac_it[n].inverse();
-
-					if (problem_dim == 2 || problem_dim == 3)
-					{
-
-						if (solution.size() > 0)
-						{
-							deform_mat.resize(problem_dim, problem_dim);
-							deform_mat.setZero();
-							for (const auto &b : vals.basis_values)
-								for (const auto &g : b.global)
-									for (int d = 0; d < problem_dim; ++d)
-										deform_mat.row(d) += solution(g.index * problem_dim + d) * b.grad.row(n);
-
-							trafo += deform_mat;
-						}
-					}
-
 					normals.row(n) = tmp_n * vals.jac_it[n];
 					normals.row(n).normalize();
-
-					displaced_normals.row(n) = tmp_n * trafo.inverse();
-					displaced_normals.row(n).normalize();
 				}
 
 				allnormals.push_back(normals);
-				displaced_allnormals.push_back(displaced_normals);
 
 				tmp_n.setZero();
 				for (int n = 0; n < vals.jac_it.size(); ++n)
@@ -703,7 +676,6 @@ namespace polyfem::io
 		boundary_vis_elements_ids.resize(size, 1);
 		boundary_vis_primitive_ids.resize(size, 1);
 		boundary_vis_normals.resize(size, vertices.front().cols());
-		displaced_boundary_vis_normals.resize(size, vertices.front().cols());
 
 		if (mesh.is_volume())
 			boundary_vis_elements.resize(tris.size(), 3);
@@ -725,13 +697,6 @@ namespace polyfem::io
 		for (const auto &n : allnormals)
 		{
 			boundary_vis_normals.block(index, 0, n.rows(), n.cols()) = n;
-			index += n.rows();
-		}
-
-		index = 0;
-		for (const auto &n : displaced_allnormals)
-		{
-			displaced_boundary_vis_normals.block(index, 0, n.rows(), n.cols()) = n;
 			index += n.rows();
 		}
 
@@ -1164,8 +1129,7 @@ namespace polyfem::io
 		const double tend_in,
 		const double dt,
 		const ExportOptions &opts,
-		const std::string &vis_mesh_path,
-		const bool is_contact_enabled) const
+		const std::string &vis_mesh_path) const
 	{
 		if (!space.mesh)
 		{
@@ -1181,8 +1145,7 @@ namespace polyfem::io
 		{
 			save_vtu(
 				vis_mesh_path, space, output_fields,
-				tend, dt, opts,
-				is_contact_enabled);
+				tend, dt, opts);
 		}
 	}
 
@@ -1209,20 +1172,9 @@ namespace polyfem::io
 		else
 			use_sampler = !(is_mesh_linear && args["output"]["paraview"]["high_order_mesh"]);
 		boundary_only = use_sampler && args["output"]["advanced"]["vis_boundary_only"];
-		material_params = args["output"]["paraview"]["options"]["material"];
-		body_ids = args["output"]["paraview"]["options"]["body_ids"];
 		sol_on_grid = args["output"]["advanced"]["sol_on_grid"] > 0;
-		velocity = args["output"]["paraview"]["options"]["velocity"];
-		acceleration = args["output"]["paraview"]["options"]["acceleration"];
-		forces = args["output"]["paraview"]["options"]["forces"] && !is_problem_scalar;
-		jacobian_validity = args["output"]["paraview"]["options"]["jacobian_validity"] && !is_problem_scalar;
 
-		scalar_values = args["output"]["paraview"]["options"]["scalar_values"];
-		tensor_values = args["output"]["paraview"]["options"]["tensor_values"] && !is_problem_scalar;
 		discretization_order = args["output"]["paraview"]["options"]["discretization_order"];
-		nodes = args["output"]["paraview"]["options"]["nodes"] && !is_problem_scalar;
-
-		use_spline = args["space"]["basis_type"] == "Spline";
 
 		reorder_output = args["output"]["data"]["advanced"]["reorder_nodes"];
 
@@ -1235,8 +1187,7 @@ namespace polyfem::io
 		const OutputFieldFunction &output_fields,
 		const double t,
 		const double dt,
-		const ExportOptions &opts,
-		const bool is_contact_enabled) const
+		const ExportOptions &opts) const
 	{
 		if (!space.mesh)
 		{
@@ -1244,7 +1195,9 @@ namespace polyfem::io
 			return;
 		}
 
-		const bool save_contact = is_contact_enabled && (opts.contact_forces || opts.friction_forces);
+		const bool save_contact =
+			space.collision_mesh
+			&& (opts.contact_forces || opts.friction_forces || opts.normal_adhesion_forces || opts.tangential_adhesion_forces);
 
 		logger().info("Saving vtu to {}; volume={}, surface={}, contact={}, points={}, wireframe={}",
 					  path, opts.volume, opts.surface, save_contact, opts.points, opts.wire);
@@ -1260,14 +1213,12 @@ namespace polyfem::io
 
 		if (opts.surface)
 		{
-			save_surface(base_path + "_surf" + opts.file_extension(), space, output_fields, t, dt, opts,
-						 is_contact_enabled);
+			save_surface(base_path + "_surf" + opts.file_extension(), space, output_fields, t, dt, opts);
 		}
 
-		if (is_contact_enabled && (opts.contact_forces || opts.friction_forces || opts.normal_adhesion_forces || opts.tangential_adhesion_forces))
+		if (save_contact)
 		{
-			save_contact_surface(base_path + "_surf" + opts.file_extension(), space, output_fields, t, dt, opts,
-								 is_contact_enabled);
+			save_contact_surface(base_path + "_surf" + opts.file_extension(), space, output_fields, t, dt, opts);
 		}
 
 		if (opts.wire)
@@ -1285,7 +1236,7 @@ namespace polyfem::io
 			vtm.add_dataset("Volume", "data", path_stem + opts.file_extension());
 		if (opts.surface)
 			vtm.add_dataset("Surface", "data", path_stem + "_surf" + opts.file_extension());
-		if (is_contact_enabled && (opts.contact_forces || opts.friction_forces || opts.normal_adhesion_forces || opts.tangential_adhesion_forces))
+		if (save_contact)
 			vtm.add_dataset("Contact", "data", path_stem + "_surf_contact" + opts.file_extension());
 		if (opts.wire)
 			vtm.add_dataset("Wireframe", "data", path_stem + "_wire" + opts.file_extension());
@@ -1401,6 +1352,43 @@ namespace polyfem::io
 		sample.dt = dt;
 		add_output_fields(writer, sample, output_fields);
 
+		if (opts.sol_on_grid && output_fields && grid_points.rows() > 0)
+		{
+			OutputSample grid_sample;
+			grid_sample.points = grid_points;
+			grid_sample.element_ids = grid_points_to_elements.col(0);
+			grid_sample.local_points.resize(grid_points.rows(), mesh.dimension());
+			grid_sample.local_points.setZero();
+			for (int i = 0; i < grid_points.rows(); ++i)
+			{
+				if (grid_sample.element_ids(i) >= 0)
+					grid_sample.local_points.row(i) = grid_points_bc.row(i).rightCols(mesh.dimension());
+			}
+			grid_sample.time = t;
+			grid_sample.dt = dt;
+			grid_sample.requested_fields = {
+				"solution",
+				"solution_gradient",
+				"pressure",
+				"pressure_gradient",
+			};
+
+			io::write_matrix(path + "_grid.txt", grid_points);
+			for (const OutputField &field : output_fields(grid_sample))
+			{
+				if (field.association != OutputField::Association::Point || field.values.rows() != grid_points.rows())
+					continue;
+				if (field.name == "solution")
+					io::write_matrix(path + "_sol.txt", field.values);
+				else if (field.name == "solution_gradient")
+					io::write_matrix(path + "_grad.txt", field.values);
+				else if (field.name == "pressure")
+					io::write_matrix(path + "_p_sol.txt", field.values);
+				else if (field.name == "pressure_gradient")
+					io::write_matrix(path + "_p_grad.txt", field.values);
+			}
+		}
+
 		if (elements.empty())
 			writer.write_mesh(path, points, tets, mesh.is_volume() ? CellType::Tetrahedron : CellType::Triangle);
 		else
@@ -1413,8 +1401,7 @@ namespace polyfem::io
 		const OutputFieldFunction &output_fields,
 		const double t,
 		const double dt_in,
-		const ExportOptions &opts,
-		const bool is_contact_enabled) const
+		const ExportOptions &opts) const
 	{
 		if (!space.mesh || !space.geometry_bases || !space.total_local_boundary)
 			return;
@@ -1428,12 +1415,10 @@ namespace polyfem::io
 		Eigen::MatrixXi boundary_vis_elements_ids;
 		Eigen::MatrixXi boundary_vis_primitive_ids;
 		Eigen::MatrixXd boundary_vis_normals;
-		Eigen::MatrixXd displaced_boundary_vis_normals;
 
-		build_vis_boundary_mesh(mesh, gbases, gbases, *space.total_local_boundary, Eigen::MatrixXd(), 1,
+		build_vis_boundary_mesh(mesh, gbases, *space.total_local_boundary,
 								boundary_vis_vertices, boundary_vis_local_vertices, boundary_vis_elements,
-								boundary_vis_elements_ids, boundary_vis_primitive_ids, boundary_vis_normals,
-								displaced_boundary_vis_normals);
+								boundary_vis_elements_ids, boundary_vis_primitive_ids, boundary_vis_normals);
 
 		Eigen::MatrixXd discr, b_sidesets;
 		discr.resize(boundary_vis_vertices.rows(), 1);
@@ -1461,8 +1446,6 @@ namespace polyfem::io
 
 		if (opts.export_field("normals"))
 			writer.add_field("normals", boundary_vis_normals);
-		if (opts.export_field("displaced_normals"))
-			writer.add_field("displaced_normals", displaced_boundary_vis_normals);
 		if (opts.export_field("discr"))
 			writer.add_field("discr", discr);
 		if (opts.export_field("sidesets"))
@@ -1474,7 +1457,7 @@ namespace polyfem::io
 		sample.local_points = boundary_vis_local_vertices;
 		sample.element_ids = boundary_vis_elements_ids.col(0);
 		sample.primitive_ids = boundary_vis_primitive_ids;
-		sample.normals = displaced_boundary_vis_normals;
+		sample.normals = boundary_vis_normals;
 		sample.time = t;
 		sample.dt = dt_in;
 		add_output_fields(writer, sample, output_fields);
@@ -1487,10 +1470,9 @@ namespace polyfem::io
 		const OutputFieldFunction &output_fields,
 		const double t,
 		const double dt_in,
-		const ExportOptions &opts,
-		const bool is_contact_enabled) const
+		const ExportOptions &opts) const
 	{
-		if (!is_contact_enabled || !space.collision_mesh)
+		if (!space.collision_mesh)
 			return;
 
 		const ipc::CollisionMesh &collision_mesh = *space.collision_mesh;
@@ -1509,8 +1491,11 @@ namespace polyfem::io
 		sample.dt = dt_in;
 		add_output_fields(writer, sample, output_fields);
 
+		const std::filesystem::path surface_path(export_surface);
+		const std::string contact_path =
+			(surface_path.parent_path() / (surface_path.stem().string() + "_contact" + surface_path.extension().string())).string();
 		writer.write_mesh(
-			export_surface.substr(0, export_surface.length() - 4) + "_contact.vtu",
+			contact_path,
 			collision_mesh.rest_positions(),
 			collision_mesh.dim() == 3 ? collision_mesh.faces() : collision_mesh.edges(),
 			collision_mesh.dim() == 3 ? CellType::Triangle : CellType::Line);
@@ -1808,11 +1793,7 @@ namespace polyfem::io
 
 	void OutStatsData::reset()
 	{
-		sigma_avg = 0;
-		sigma_max = 0;
-		sigma_min = 0;
-
-		n_flipped = 0;
+		*this = OutStatsData();
 	}
 
 	void OutStatsData::count_flipped_elements(const polyfem::mesh::Mesh &mesh, const std::vector<polyfem::basis::ElementBases> &gbases)

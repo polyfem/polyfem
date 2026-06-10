@@ -3,6 +3,7 @@
 #include <polyfem/assembler/AssemblerUtils.hpp>
 
 #include <polyfem/io/MatrixIO.hpp>
+#include <polyfem/io/Evaluator.hpp>
 #include <polyfem/varforms/VarFormUtils.hpp>
 
 #include <polyfem/basis/LagrangeBasis2d.hpp>
@@ -19,6 +20,7 @@
 #include <polyfem/refinement/APriori.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/Logger.hpp>
+#include <polyfem/utils/Jacobian.hpp>
 
 #include <igl/Timer.h>
 #include <polyfem/utils/JSONUtils.hpp>
@@ -267,6 +269,7 @@ namespace polyfem::varform
 	{
 		// FIXME check subclasses
 		stats.reset();
+		timings = io::OutRuntimeData();
 		output_sampler_initialized_ = false;
 		rhs_assembler = nullptr;
 		problem = nullptr;
@@ -346,9 +349,10 @@ namespace polyfem::varform
 		output_sampler_initialized_ = false;
 	}
 
-	void VarForm::set_mesh(std::unique_ptr<mesh::Mesh> mesh)
+	void VarForm::set_mesh(std::unique_ptr<mesh::Mesh> mesh, const double loading_mesh_time)
 	{
 		mesh_ = std::move(mesh);
+		timings.loading_mesh_time = loading_mesh_time;
 		output_sampler_initialized_ = false;
 		if (!mesh_)
 			return;
@@ -365,6 +369,7 @@ namespace polyfem::varform
 		}
 
 		mesh_->prepare_mesh();
+		stats.compute_mesh_stats(*mesh_);
 		build_basis(*mesh_, should_use_iso_parametric(*mesh_, args), args);
 		assemble_rhs(*mesh_, args);
 		assemble_mass_mat(*mesh_, args);
@@ -839,6 +844,122 @@ namespace polyfem::varform
 		save_json(solution, file);
 	}
 
+	void VarForm::save_json_stats(
+		const Eigen::MatrixXd &solution,
+		const int n_auxiliary_bases,
+		std::ostream &out) const
+	{
+		if (!mesh_)
+		{
+			logger().error("Load the mesh first!");
+			return;
+		}
+		if (solution.size() <= 0)
+		{
+			logger().error("Solve the problem first!");
+			return;
+		}
+
+		logger().info("Saving json...");
+		const int primary_size = n_bases * problem_dimension();
+		const Eigen::MatrixXd stats_solution =
+			solution.rows() >= primary_size
+				? solution.topRows(primary_size).eval()
+				: solution;
+
+		nlohmann::json j;
+		stats.save_json(
+			args, n_bases, n_auxiliary_bases,
+			stats_solution, *mesh_, disc_orders, disc_ordersq, *problem,
+			timings, assembler ? assembler->name() : name(), iso_parametric,
+			args["output"]["advanced"]["sol_at_node"], j);
+		out << j.dump(4) << std::endl;
+	}
+
+	std::vector<io::OutputField> VarForm::common_output_fields(
+		const io::OutputSample &sample,
+		const Eigen::MatrixXd &solution,
+		const io::OutputFieldOptions &options) const
+	{
+		std::vector<io::OutputField> fields;
+		if (!mesh_ || !problem || solution.size() <= 0)
+			return fields;
+
+		const bool has_element_samples =
+			sample.local_points.rows() > 0
+			&& sample.local_points.rows() == sample.element_ids.size();
+		if (!has_element_samples)
+			return fields;
+
+		const int dim = problem_dimension();
+		const int output_rows = sample.points.rows() > 0 ? sample.points.rows() : sample.local_points.rows();
+		const int primary_ndof = std::min<int>(solution.rows(), n_bases * dim);
+		const Eigen::MatrixXd primary_solution = solution.topRows(primary_ndof);
+
+		const auto sample_dof_values = [&](const Eigen::MatrixXd &dof_values, Eigen::MatrixXd &values, Eigen::MatrixXd *gradients = nullptr) {
+			values.setZero(output_rows, dim);
+			if (gradients)
+				gradients->setZero(output_rows, dim * mesh_->dimension());
+
+			for (int i = 0; i < sample.local_points.rows(); ++i)
+			{
+				const int element_id = sample.element_ids(i);
+				if (element_id < 0)
+					continue;
+
+				Eigen::MatrixXd local_value, local_gradient;
+				io::Evaluator::interpolate_at_local_vals(
+					*mesh_, dim, bases, geom_bases(),
+					element_id, sample.local_points.row(i), dof_values,
+					local_value, local_gradient);
+				values.row(i) = local_value;
+				if (gradients)
+					gradients->row(i) = local_gradient;
+			}
+		};
+
+		if (problem->has_exact_sol() && sample.points.rows() == output_rows)
+		{
+			Eigen::MatrixXd exact;
+			problem->exact(sample.points, sample.time, exact);
+			if (exact.rows() == output_rows)
+			{
+				if (options.export_field("exact"))
+					fields.push_back({"exact", exact, io::OutputField::Association::Point});
+				if (options.export_field("error"))
+				{
+					Eigen::MatrixXd values;
+					sample_dof_values(primary_solution, values);
+					fields.push_back({"error", (values - exact).rowwise().norm(), io::OutputField::Association::Point});
+				}
+			}
+		}
+
+		const auto &paraview_options = args["output"]["paraview"]["options"];
+		if ((paraview_options["nodes"] || (!options.fields.empty() && options.export_field("nodes")))
+			&& sample.primitive_ids.size() == 0)
+		{
+			Eigen::MatrixXd dof_ids(primary_ndof, 1);
+			dof_ids.col(0).setLinSpaced(primary_ndof, 0, primary_ndof - 1);
+			Eigen::MatrixXd values;
+			sample_dof_values(dof_ids, values);
+			fields.push_back({"nodes", values, io::OutputField::Association::Point});
+		}
+
+		if ((paraview_options["jacobian_validity"] || (!options.fields.empty() && options.export_field("validity")))
+			&& dim == mesh_->dimension()
+			&& sample.primitive_ids.size() == 0)
+		{
+			const auto invalid_elements = utils::count_invalid(mesh_->dimension(), bases, geom_bases(), primary_solution);
+			Eigen::MatrixXd validity = Eigen::MatrixXd::Zero(output_rows, 1);
+			for (int i = 0; i < sample.element_ids.size(); ++i)
+				validity(i) = std::find(invalid_elements.begin(), invalid_elements.end(), sample.element_ids(i)) != invalid_elements.end();
+			fields.push_back({"validity", validity, io::OutputField::Association::Point});
+		}
+
+		return fields;
+	}
+
 	std::vector<int> VarForm::primitive_to_node() const
 	{
 		const auto &nodes = iso_parametric ? mesh_nodes : geom_mesh_nodes;
@@ -1009,7 +1130,10 @@ namespace polyfem::varform
 	io::OutputFieldFunction VarForm::output_field_function(const Eigen::MatrixXd &solution, const io::OutGeometryData::ExportOptions &opts) const
 	{
 		return [this, &solution, fields = opts.fields](const io::OutputSample &sample) {
-			return output_fields(sample, solution, io::OutputFieldOptions{fields});
+			return output_fields(
+				sample, solution,
+				io::OutputFieldOptions{
+					sample.requested_fields.empty() ? fields : sample.requested_fields});
 		};
 	}
 
@@ -1031,7 +1155,7 @@ namespace polyfem::varform
 
 		const std::string vis_mesh_path = resolve_output_path(args["output"]["paraview"]["file_name"]);
 		const bool has_time = args.contains("time") && !args["time"].is_null();
-		double tend = args.value("tend", 1.0);
+		double tend = has_time ? args["time"]["tend"].get<double>() : 1.0;
 		double dt = 1;
 		if (has_time)
 			dt = args["time"]["dt"];
@@ -1043,8 +1167,58 @@ namespace polyfem::varform
 			has_time,
 			tend, dt,
 			opts,
-			vis_mesh_path,
-			is_contact_enabled());
+			vis_mesh_path);
+
+		const std::string solution_path = resolve_output_path(args["output"]["data"]["solution"]);
+		if (!solution_path.empty())
+		{
+			const int dim = problem_dimension();
+			const int primary_ndof = std::min<int>(solution.rows(), n_bases * dim);
+			const Eigen::MatrixXd primary_solution = solution.topRows(primary_ndof);
+			if (opts.reorder_output && in_node_to_node.size() > 0)
+			{
+				const Eigen::MatrixXd nodal_solution = utils::unflatten(primary_solution, dim);
+				Eigen::MatrixXd reordered = Eigen::MatrixXd::Zero(nodal_solution.rows(), nodal_solution.cols());
+				for (int input_node = 0; input_node < in_node_to_node.size(); ++input_node)
+				{
+					const int node = in_node_to_node(input_node);
+					if (node >= 0 && node < nodal_solution.rows() && input_node < reordered.rows())
+						reordered.row(input_node) = nodal_solution.row(node);
+				}
+				io::write_matrix(solution_path, reordered);
+			}
+			else
+			{
+				io::write_matrix(solution_path, primary_solution);
+			}
+		}
+
+		const std::string nodes_path = resolve_output_path(args["output"]["data"]["nodes"]);
+		if (!nodes_path.empty())
+		{
+			Eigen::MatrixXd nodes = Eigen::MatrixXd::Zero(n_bases, mesh_->dimension());
+			for (const basis::ElementBases &element_bases : bases)
+				for (const basis::Basis &basis : element_bases.bases)
+					for (const auto &global : basis.global())
+						nodes.row(global.index) = global.node;
+			io::write_matrix(nodes_path, nodes);
+		}
+
+		const std::string stress_path = resolve_output_path(args["output"]["data"]["stress_mat"]);
+		const std::string mises_path = resolve_output_path(args["output"]["data"]["mises"]);
+		if ((!stress_path.empty() || !mises_path.empty()) && assembler)
+		{
+			Eigen::MatrixXd stress;
+			Eigen::VectorXd mises;
+			io::Evaluator::compute_stress_at_quadrature_points(
+				*mesh_, problem->is_scalar(), bases, geom_bases(),
+				disc_orders, disc_ordersq, *assembler, solution, tend,
+				stress, mises);
+			if (!stress_path.empty())
+				io::write_matrix(stress_path, stress);
+			if (!mises_path.empty())
+				io::write_matrix(mises_path, mises);
+		}
 	}
 
 	io::OutputSpace VarForm::output_space() const
@@ -1091,7 +1265,8 @@ namespace polyfem::varform
 		const io::OutputSpace space = output_space();
 		if (!space.mesh || !args["output"]["advanced"]["save_time_sequence"])
 			return;
-		if (t % args["output"]["paraview"]["skip_frame"].get<int>())
+		const int global_t = output_file_index(t);
+		if (global_t % args["output"]["paraview"]["skip_frame"].get<int>())
 			return;
 
 		ensure_output_sampler();
@@ -1100,15 +1275,14 @@ namespace polyfem::varform
 		const std::string step_name = args["output"]["advanced"]["timestep_prefix"];
 		const auto opts = export_options(space);
 		output_geometry_.save_vtu(
-			resolve_output_path(fmt::format(step_name + "{:d}.vtu", t)),
+			resolve_output_path(fmt::format(step_name + "{:d}.vtu", global_t)),
 			space, output_field_function(solution, opts), time, dt,
-			opts,
-			is_contact_enabled());
+			opts);
 
 		output_geometry_.save_pvd(
 			resolve_output_path(args["output"]["paraview"]["file_name"]),
 			[step_name](int i) { return fmt::format(step_name + "{:d}.vtm", i); },
-			t, t0, dt, args["output"]["paraview"]["skip_frame"].get<int>());
+			global_t, t0, dt, args["output"]["paraview"]["skip_frame"].get<int>());
 	}
 
 	void VarForm::save_subsolve(const int i, const int t, const Eigen::MatrixXd &solution) const
@@ -1127,8 +1301,7 @@ namespace polyfem::varform
 		output_geometry_.save_vtu(
 			resolve_output_path(fmt::format("solve_{:d}.vtu", i)),
 			space, output_field_function(solution, opts), t, dt,
-			opts,
-			is_contact_enabled());
+			opts);
 	}
 
 	void VarForm::save_restart_json(const double t0, const double dt, const int t) const
@@ -1137,10 +1310,13 @@ namespace polyfem::varform
 		if (restart_json_path.empty())
 			return;
 
+		const int global_t = output_file_index(t);
+
 		json restart_json;
 		restart_json["root_path"] = root_path;
 		restart_json["common"] = root_path;
 		restart_json["time"] = {{"t0", t0 + dt * t}};
+		restart_json["output"] = {{"data", {{"file_index_offset", global_t}}}};
 
 		restart_json["space"] = R"({
 			"remesh": {
@@ -1160,7 +1336,7 @@ namespace polyfem::varform
 		std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
 		if (!rest_mesh_path.empty())
 		{
-			rest_mesh_path = resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], t));
+			rest_mesh_path = resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], global_t));
 
 			std::vector<json> patch;
 			if (args["geometry"].is_array())
@@ -1212,12 +1388,17 @@ namespace polyfem::varform
 		restart_json["input"] = {{
 			"data",
 			{
-				{"state", resolve_output_path(fmt::format(args["output"]["data"]["state"], t))},
+				{"state", resolve_output_path(fmt::format(args["output"]["data"]["state"], global_t))},
 			},
 		}};
 
-		std::ofstream file(resolve_output_path(fmt::format(restart_json_path, t)));
+		std::ofstream file(resolve_output_path(fmt::format(restart_json_path, global_t)));
 		file << restart_json;
+	}
+
+	int VarForm::output_file_index(const int t) const
+	{
+		return t + args["output"]["data"]["file_index_offset"].get<int>();
 	}
 
 	std::string VarForm::resolve_input_path(const std::string &path, const bool only_if_exists) const

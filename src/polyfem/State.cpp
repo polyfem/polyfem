@@ -242,6 +242,7 @@ namespace polyfem
 	void State::init(const json &p_args_in, const bool strict_validation)
 	{
 		json args_in = p_args_in;
+		const bool contact_dhat_was_explicit = args_in.contains("/contact/dhat"_json_pointer);
 
 		apply_common_params(args_in);
 
@@ -368,7 +369,9 @@ namespace polyfem
 			throw std::runtime_error("polyfem::State is varform-only; use polyfem::legacy::State for " + formulation + ".");
 
 		logger().info("Using variational formulation: {}", variational_formulation->name());
+		args["contact"]["_dhat_was_explicit"] = contact_dhat_was_explicit;
 		variational_formulation->init(formulation, units, args, output_dir);
+		args["contact"].erase("_dhat_was_explicit");
 	}
 
 	void State::set_max_threads(const int max_threads)
@@ -405,7 +408,7 @@ namespace polyfem
 		logger().info(" took {}s", timer.getElapsedTime());
 
 		assert(variational_formulation != nullptr);
-		variational_formulation->set_mesh(std::move(mesh));
+		variational_formulation->set_mesh(std::move(mesh), timer.getElapsedTime());
 	}
 
 	void State::load_mesh(
@@ -457,7 +460,7 @@ namespace polyfem
 		// FIXME: this is a temporary workaround to avoid incorrect Jacobian validity results for non-simplicial meshes when using discrete inversion checking. We should instead implement proper Jacobian validity checking for non-simplicial meshes.
 		assert(variational_formulation != nullptr);
 		variational_formulation->set_args(args);
-		variational_formulation->set_mesh(std::move(mesh));
+		variational_formulation->set_mesh(std::move(mesh), timer.getElapsedTime());
 	}
 
 	void State::solve(Eigen::MatrixXd &sol)
@@ -470,6 +473,10 @@ namespace polyfem
 	void State::load_mesh(const Eigen::MatrixXd &V, const Eigen::MatrixXi &F, bool non_conforming)
 	{
 		assert(variational_formulation != nullptr);
-		variational_formulation->set_mesh(mesh::Mesh::create(V, F, non_conforming));
+		igl::Timer timer;
+		timer.start();
+		auto mesh = mesh::Mesh::create(V, F, non_conforming);
+		timer.stop();
+		variational_formulation->set_mesh(std::move(mesh), timer.getElapsedTime());
 	}
 } // namespace polyfem

@@ -18,25 +18,31 @@ namespace polyfem::io
 	{
 	public:
 		/// time to construct the basis
-		double building_basis_time;
+		double building_basis_time = 0;
 		/// time to load the mesh
-		double loading_mesh_time;
+		double loading_mesh_time = 0;
 		/// time to build the polygonal/polyhedral bases
-		double computing_poly_basis_time;
+		double computing_poly_basis_time = 0;
 		/// time to assembly
-		double assembling_stiffness_mat_time;
+		double assembling_stiffness_mat_time = 0;
 		/// time to assembly mass
-		double assembling_mass_mat_time;
+		double assembling_mass_mat_time = 0;
 		/// time to computing the rhs
-		double assigning_rhs_time;
+		double assigning_rhs_time = 0;
 		/// time to solve
-		double solving_time;
+		double solving_time = 0;
 
 		/// @brief computes total time
 		/// @return total time
-		double total_time()
+		double total_time() const
 		{
-			return building_basis_time + assembling_mass_mat_time + assembling_stiffness_mat_time + solving_time;
+			return building_basis_time
+				   + loading_mesh_time
+				   + computing_poly_basis_time
+				   + assembling_stiffness_mat_time
+				   + assembling_mass_mat_time
+				   + assigning_rhs_time
+				   + solving_time;
 		}
 	};
 
@@ -45,58 +51,58 @@ namespace polyfem::io
 	{
 	public:
 		/// spectrum of the stiffness matrix, enable only if POLYSOLVE_WITH_SPECTRA is ON (off by default)
-		Eigen::Vector4d spectrum;
+		Eigen::Vector4d spectrum = Eigen::Vector4d::Zero();
 
 		/// information of the solver, eg num iteration, time, errors, etc
 		/// the informations varies depending on the solver
 		json solver_info;
 
 		/// max edge lenght
-		double mesh_size;
+		double mesh_size = 0;
 		/// min edge lenght
-		double min_edge_length;
+		double min_edge_length = 0;
 		/// avg edge lenght
-		double average_edge_length;
+		double average_edge_length = 0;
 
 		/// errors, lp_err is in fact an L8 error
-		double l2_err, linf_err, lp_err, h1_err, h1_semi_err, grad_max_err;
+		double l2_err = 0, linf_err = 0, lp_err = 0, h1_err = 0, h1_semi_err = 0, grad_max_err = 0;
 
 		/// non zeros and sytem matrix size
 		/// num dof is the total dof in the system
-		long long nn_zero, mat_size, num_dofs;
+		long long nn_zero = 0, mat_size = 0, num_dofs = 0;
 
 		/// statiscs on angle, compute only when using p_ref (false by default)
-		double max_angle;
+		double max_angle = 0;
 		/// statiscs on tri/tet quality, compute only when using p_ref (false by default)
-		double sigma_max, sigma_min, sigma_avg;
+		double sigma_max = 0, sigma_min = 0, sigma_avg = 0;
 
 		/// number of flipped elements, compute only when using count_flipped_els (false by default)
-		int n_flipped;
+		int n_flipped = 0;
 
 		/// statiscs on the mesh (simplices)
-		int simplex_count;
+		int simplex_count = 0;
 		/// statiscs on the mesh (simplices)
-		int prism_count;
+		int prism_count = 0;
 		/// statiscs on the mesh (simplices)
-		int pyramid_count;
+		int pyramid_count = 0;
 		/// statiscs on the mesh (regular quad/hex part of the mesh), see Polyspline paper for desciption
-		int regular_count;
+		int regular_count = 0;
 		/// statiscs on the mesh (regular quad/hex boundary part of the mesh), see Polyspline paper for desciption
-		int regular_boundary_count;
+		int regular_boundary_count = 0;
 		/// statiscs on the mesh (irregular quad/hex part of the mesh), see Polyspline paper for desciption
-		int simple_singular_count;
+		int simple_singular_count = 0;
 		/// statiscs on the mesh (irregular quad/hex part of the mesh), see Polyspline paper for desciption
-		int multi_singular_count;
+		int multi_singular_count = 0;
 		/// statiscs on the mesh (boundary quads/hexs), see Polyspline paper for desciption
-		int boundary_count;
+		int boundary_count = 0;
 		/// statiscs on the mesh (irregular boundary quad/hex part of the mesh), see Polyspline paper for desciption
-		int non_regular_boundary_count;
+		int non_regular_boundary_count = 0;
 		/// statiscs on the mesh (irregular quad/hex part of the mesh), see Polyspline paper for desciption
-		int non_regular_count;
+		int non_regular_count = 0;
 		/// statiscs on the mesh (not quad/hex simplex), see Polyspline paper for desciption
-		int undefined_count;
+		int undefined_count = 0;
 		/// statiscs on the mesh (irregular boundary quad/hex part of the mesh), see Polyspline paper for desciption
-		int multi_singular_boundary_count;
+		int multi_singular_boundary_count = 0;
 
 		/// @brief compute errors
 		/// @param[in] n_bases number of base

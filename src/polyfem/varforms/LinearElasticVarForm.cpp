@@ -43,12 +43,10 @@ namespace polyfem::varform
 		const Eigen::MatrixXd &solution,
 		const io::OutputFieldOptions &options) const
 	{
-		std::vector<io::OutputField> fields;
+		std::vector<io::OutputField> fields = common_output_fields(sample, solution, options);
 		if (!mesh_ || !problem || solution.size() <= 0)
 			return fields;
 
-		const bool export_displacement = options.export_field("displacement");
-		const bool export_solution = options.export_field("solution");
 		const bool has_element_samples = sample.local_points.rows() > 0 && sample.local_points.rows() == sample.element_ids.size();
 		const int output_rows = sample.points.rows() > 0 ? sample.points.rows() : std::max<int>(sample.local_points.rows(), sample.node_ids.size());
 
@@ -62,6 +60,7 @@ namespace polyfem::varform
 		const bool tensor_values = paraview_options["tensor_values"] && !problem->is_scalar();
 		const bool scalar_values = paraview_options["scalar_values"];
 		const bool use_spline = args["space"]["basis_type"] == "Spline";
+		const bool explicit_fields = !options.fields.empty();
 
 		const auto resize_to_output_rows = [&](Eigen::MatrixXd &values) {
 			if (output_rows <= values.rows())
@@ -377,7 +376,7 @@ namespace polyfem::varform
 		};
 
 		const auto append_body_ids = [&]() {
-			if (!(body_ids || options.export_field("body_ids")) || !has_element_samples)
+			if (!body_ids || !options.export_field("body_ids") || !has_element_samples)
 				return;
 
 			Eigen::MatrixXd ids = Eigen::MatrixXd::Zero(output_rows, 1);
@@ -448,11 +447,13 @@ namespace polyfem::varform
 		};
 
 		const auto append_traction_force = [&]() {
-			if (problem->is_scalar() || !options.export_field("traction_force"))
+			if (problem->is_scalar() || !explicit_fields || !options.export_field("traction_force"))
 				return;
 
 			if (has_element_samples && sample.normals.rows() == sample.local_points.rows() && sample.primitive_ids.size() == sample.local_points.rows())
 			{
+				const Eigen::MatrixXd displaced_normals = displaced_output_normals(sample, solution);
+				const Eigen::MatrixXd &normals = displaced_normals.rows() == sample.normals.rows() ? displaced_normals : sample.normals;
 				Eigen::MatrixXd values = Eigen::MatrixXd::Zero(output_rows, actual_dim);
 				for (int i = 0; i < sample.local_points.rows(); ++i)
 				{
@@ -467,7 +468,7 @@ namespace polyfem::varform
 
 					assert(tensor_flat[0].first == "cauchy_stess");
 					Eigen::Map<Eigen::MatrixXd> tensor(tensor_flat[0].second.data(), actual_dim, actual_dim);
-					values.row(i) = sample.normals.row(i) * tensor;
+					values.row(i) = normals.row(i) * tensor;
 
 					double area = 0;
 					const int primitive_id = sample.primitive_ids(i);
@@ -501,12 +502,12 @@ namespace polyfem::varform
 
 		if (problem->is_time_dependent())
 		{
-			if (velocity || options.export_field("velocity"))
+			if (velocity && options.export_field("velocity"))
 				append_sampled_dof_field(
 					"velocity",
 					time_integrator ? time_integrator->v_prev() : Eigen::VectorXd::Zero(solution.size()),
 					actual_dim);
-			if (acceleration || options.export_field("acceleration"))
+			if (acceleration && options.export_field("acceleration"))
 				append_sampled_dof_field(
 					"acceleration",
 					time_integrator ? time_integrator->a_prev() : Eigen::VectorXd::Zero(solution.size()),
@@ -543,17 +544,14 @@ namespace polyfem::varform
 
 		append_traction_force();
 
-		if (options.export_field("gradient_of_elastic_potential"))
+		if (explicit_fields && options.export_field("gradient_of_elastic_potential"))
 		{
 			Eigen::VectorXd potential_grad;
 			elastic_form->first_derivative(solution, potential_grad);
 			append_sampled_dof_field("gradient_of_elastic_potential", potential_grad, actual_dim);
 		}
 
-		if (export_displacement)
-			append_sampled_dof_field("displacement", solution, actual_dim);
-		if (export_solution)
-			append_sampled_dof_field("solution", solution, actual_dim);
+		append_primary_output_fields(fields, sample, solution, options);
 		return fields;
 	}
 
@@ -782,6 +780,7 @@ namespace polyfem::varform
 	{
 		if (!mesh_)
 			return;
+		const int global_t = output_file_index(t);
 
 		const std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
 		if (!rest_mesh_path.empty())
@@ -790,11 +789,11 @@ namespace polyfem::varform
 			Eigen::MatrixXi F;
 			build_mesh_matrices(V, F);
 			io::MshWriter::write(
-				resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], t)),
+				resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], global_t)),
 				V, F, mesh_->get_body_ids(), mesh_->is_volume(), /*binary=*/true);
 		}
 
-		const std::string state_path = resolve_output_path(fmt::format(args["output"]["data"]["state"], t));
+		const std::string state_path = resolve_output_path(fmt::format(args["output"]["data"]["state"], global_t));
 		if (!state_path.empty() && time_integrator)
 			time_integrator->save_state(state_path);
 

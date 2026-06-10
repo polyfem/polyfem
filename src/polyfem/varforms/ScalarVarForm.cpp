@@ -68,6 +68,11 @@ namespace polyfem::varform
 		dt = is_time_dependent ? args["time"]["dt"].get<double>() : 0.0;
 	}
 
+	void ScalarVarForm::save_json(const Eigen::MatrixXd &solution, std::ostream &out) const
+	{
+		save_json_stats(solution, 0, out);
+	}
+
 	VarFormDebugData ScalarVarForm::debug_data() const
 	{
 		return {
@@ -96,7 +101,7 @@ namespace polyfem::varform
 		const Eigen::MatrixXd &solution,
 		const io::OutputFieldOptions &options) const
 	{
-		std::vector<io::OutputField> fields;
+		std::vector<io::OutputField> fields = common_output_fields(sample, solution, options);
 		if (!mesh_ || !problem || solution.size() <= 0)
 			return fields;
 
@@ -104,19 +109,23 @@ namespace polyfem::varform
 		const bool has_element_samples = sample.local_points.rows() > 0 && sample.local_points.rows() == sample.element_ids.size();
 		const int output_rows = sample.points.rows() > 0 ? sample.points.rows() : std::max<int>(sample.local_points.rows(), sample.node_ids.size());
 
-		const auto sample_dof_field = [&](const Eigen::MatrixXd &dof_values, Eigen::MatrixXd &values) -> bool {
+		const auto sample_dof_field = [&](const Eigen::MatrixXd &dof_values, Eigen::MatrixXd &values, Eigen::MatrixXd *gradients = nullptr) -> bool {
 			if (dof_values.size() <= 0)
 				return false;
 
 			if (has_element_samples)
 			{
 				values.resize(sample.local_points.rows(), 1);
+				if (gradients)
+					gradients->resize(sample.local_points.rows(), mesh_->dimension());
 				for (int i = 0; i < sample.local_points.rows(); ++i)
 				{
 					const int element_id = sample.element_ids(i);
 					if (element_id < 0)
 					{
 						values(i) = 0;
+						if (gradients)
+							gradients->row(i).setZero();
 						continue;
 					}
 
@@ -125,6 +134,8 @@ namespace polyfem::varform
 						*mesh_, 1, bases, geom_bases(),
 						element_id, sample.local_points.row(i), dof_values, local_sol, local_grad);
 					values(i) = local_sol(0);
+					if (gradients)
+						gradients->row(i) = local_grad;
 				}
 
 				if (output_rows > values.rows())
@@ -132,6 +143,11 @@ namespace polyfem::varform
 					const int previous_rows = values.rows();
 					values.conservativeResize(output_rows, Eigen::NoChange);
 					values.bottomRows(output_rows - previous_rows).setZero();
+					if (gradients)
+					{
+						gradients->conservativeResize(output_rows, Eigen::NoChange);
+						gradients->bottomRows(output_rows - previous_rows).setZero();
+					}
 				}
 				return true;
 			}
@@ -152,11 +168,20 @@ namespace polyfem::varform
 			return false;
 		};
 
-		if (options.export_field("solution"))
+		const bool export_solution_gradient =
+			!options.fields.empty() && options.export_field("solution_gradient");
+		if (options.export_field("solution") || export_solution_gradient)
 		{
-			Eigen::MatrixXd values;
-			if (sample_dof_field(solution, values))
-				fields.push_back({"solution", values, io::OutputField::Association::Point});
+			Eigen::MatrixXd values, gradients;
+			if (sample_dof_field(
+					solution, values,
+					export_solution_gradient ? &gradients : nullptr))
+			{
+				if (options.export_field("solution"))
+					fields.push_back({"solution", values, io::OutputField::Association::Point});
+				if (export_solution_gradient)
+					fields.push_back({"solution_gradient", gradients, io::OutputField::Association::Point});
+			}
 		}
 
 		const auto &paraview_options = args["output"]["paraview"]["options"];
@@ -187,7 +212,7 @@ namespace polyfem::varform
 				fields.push_back({"rho", rhos, io::OutputField::Association::Point});
 		}
 
-		if ((paraview_options["body_ids"] || options.export_field("body_ids")) && has_element_samples)
+		if (paraview_options["body_ids"] && options.export_field("body_ids") && has_element_samples)
 		{
 			Eigen::MatrixXd ids = Eigen::MatrixXd::Zero(output_rows, 1);
 			for (int i = 0; i < sample.element_ids.size(); ++i)

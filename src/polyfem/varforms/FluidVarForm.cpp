@@ -87,6 +87,11 @@ namespace polyfem::varform
 		assert(assembler->is_fluid());
 	}
 
+	void FluidVarForm::save_json(const Eigen::MatrixXd &solution, std::ostream &out) const
+	{
+		save_json_stats(solution, n_pressure_bases, out);
+	}
+
 	void FluidVarForm::load_mesh(const mesh::Mesh &mesh, const json &args)
 	{
 		VarForm::load_mesh(mesh, args);
@@ -381,7 +386,7 @@ namespace polyfem::varform
 		const Eigen::MatrixXd &solution,
 		const io::OutputFieldOptions &options) const
 	{
-		std::vector<io::OutputField> fields;
+		std::vector<io::OutputField> fields = common_output_fields(sample, solution, options);
 		if (!mesh_ || !problem || solution.size() <= 0)
 			return fields;
 
@@ -391,6 +396,10 @@ namespace polyfem::varform
 		const int field_dim = mesh_->dimension();
 		const bool has_element_samples = sample.local_points.rows() > 0 && sample.local_points.rows() == sample.element_ids.size();
 		const int output_rows = sample.points.rows() > 0 ? sample.points.rows() : std::max<int>(sample.local_points.rows(), sample.node_ids.size());
+		const bool export_solution_gradient =
+			!options.fields.empty() && options.export_field("solution_gradient");
+		const bool export_pressure_gradient =
+			!options.fields.empty() && options.export_field("pressure_gradient");
 
 		const auto resize_to_output_rows = [&](Eigen::MatrixXd &values) {
 			if (output_rows <= values.rows())
@@ -401,19 +410,23 @@ namespace polyfem::varform
 			values.bottomRows(output_rows - previous_rows).setZero();
 		};
 
-		const auto sample_vector_field = [&](const Eigen::MatrixXd &dof_values, Eigen::MatrixXd &values) -> bool {
+		const auto sample_vector_field = [&](const Eigen::MatrixXd &dof_values, Eigen::MatrixXd &values, Eigen::MatrixXd *gradients = nullptr) -> bool {
 			if (dof_values.size() <= 0 || field_dim <= 0)
 				return false;
 
 			if (has_element_samples)
 			{
 				values.resize(sample.local_points.rows(), field_dim);
+				if (gradients)
+					gradients->resize(sample.local_points.rows(), field_dim * mesh_->dimension());
 				for (int i = 0; i < sample.local_points.rows(); ++i)
 				{
 					const int element_id = sample.element_ids(i);
 					if (element_id < 0)
 					{
 						values.row(i).setZero();
+						if (gradients)
+							gradients->row(i).setZero();
 						continue;
 					}
 
@@ -424,9 +437,13 @@ namespace polyfem::varform
 
 					for (int d = 0; d < field_dim; ++d)
 						values(i, d) = local_sol(d);
+					if (gradients)
+						gradients->row(i) = local_grad;
 				}
 
 				resize_to_output_rows(values);
+				if (gradients)
+					resize_to_output_rows(*gradients);
 				return true;
 			}
 
@@ -450,18 +467,29 @@ namespace polyfem::varform
 			return false;
 		};
 
-		Eigen::MatrixXd velocity_values;
-		const bool sampled_velocity = sample_vector_field(velocity, velocity_values);
+		Eigen::MatrixXd velocity_values, velocity_gradients;
+		const bool sampled_velocity = sample_vector_field(
+			velocity, velocity_values,
+			export_solution_gradient ? &velocity_gradients : nullptr);
 		if (sampled_velocity && options.export_field("velocity"))
 			fields.push_back({"velocity", velocity_values, io::OutputField::Association::Point});
 		if (sampled_velocity && options.export_field("solution"))
 			fields.push_back({"solution", velocity_values, io::OutputField::Association::Point});
+		if (sampled_velocity && export_solution_gradient)
+			fields.push_back({"solution_gradient", velocity_gradients, io::OutputField::Association::Point});
 
-		if (mesh_ && options.export_field("pressure"))
+		if (mesh_ && (options.export_field("pressure") || export_pressure_gradient))
 		{
-			Eigen::MatrixXd values;
-			if (sample_scalar_field(*mesh_, pressure_bases, geom_bases(), sample, pressure, values))
-				fields.push_back({"pressure", values, io::OutputField::Association::Point});
+			Eigen::MatrixXd values, gradients;
+			if (sample_scalar_field(
+					*mesh_, pressure_bases, geom_bases(), sample, pressure, values,
+					export_pressure_gradient ? &gradients : nullptr))
+			{
+				if (options.export_field("pressure"))
+					fields.push_back({"pressure", values, io::OutputField::Association::Point});
+				if (export_pressure_gradient)
+					fields.push_back({"pressure_gradient", gradients, io::OutputField::Association::Point});
+			}
 		}
 
 		const auto &paraview_options = args["output"]["paraview"]["options"];
@@ -492,7 +520,7 @@ namespace polyfem::varform
 				fields.push_back({"rho", rhos, io::OutputField::Association::Point});
 		}
 
-		if ((paraview_options["body_ids"] || options.export_field("body_ids")) && has_element_samples)
+		if (paraview_options["body_ids"] && options.export_field("body_ids") && has_element_samples)
 		{
 			Eigen::MatrixXd ids = Eigen::MatrixXd::Zero(output_rows, 1);
 			for (int i = 0; i < sample.element_ids.size(); ++i)
@@ -546,7 +574,6 @@ namespace polyfem::varform
 		build_stiffness_mat(stiffness);
 		expand_primary_matrix(stacked_ndof(), mass, expanded_mass);
 
-		const int t_offset = args["output"]["data"]["file_index_offset"].get<int>();
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			const double time = t0 + t * dt;
@@ -576,8 +603,8 @@ namespace polyfem::varform
 			split_solution(sol, velocity, pressure);
 			bdf->update_quantities(velocity.col(0));
 
-			save_timestep(time, t + t_offset, t0, dt, sol);
-			save_step_state(t0, dt, t + t_offset, sol);
+			save_timestep(time, t, t0, dt, sol);
+			save_step_state(t0, dt, t, sol);
 			logger().info("{}/{}  t={}", t, time_steps, time);
 		}
 	}
@@ -703,6 +730,7 @@ namespace polyfem::varform
 			split_solution(sol, velocity, pressure);
 			bdf->update_quantities(velocity.col(0));
 			save_timestep(time, t, t0, dt, sol);
+			save_step_state(t0, dt, t, sol);
 		}
 
 		ns_solver.get_info(stats.solver_info);

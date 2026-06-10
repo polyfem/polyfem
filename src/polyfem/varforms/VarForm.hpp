@@ -79,13 +79,11 @@ namespace polyfem
 
 			/// @brief Set the mesh for the variational formulation
 			/// @param mesh unique pointer to the mesh to use for the formulation
-			void set_mesh(std::unique_ptr<mesh::Mesh> mesh);
+			void set_mesh(std::unique_ptr<mesh::Mesh> mesh, const double loading_mesh_time = 0);
 
 			/// @brief Solve the variational formulation and store the solution in the given matrix
 			/// @param sol matrix to store the solution
 			void solve(Eigen::MatrixXd &sol);
-
-			const json &input_args() const { return args; }
 
 			/// @brief Get the problem dimension of the variational formulation, for output purposes
 			/// @return Problem dimension
@@ -105,10 +103,7 @@ namespace polyfem
 			virtual std::vector<io::OutputField> output_fields(
 				const io::OutputSample &sample,
 				const Eigen::MatrixXd &solution,
-				const io::OutputFieldOptions &options) const
-			{
-				return {};
-			}
+				const io::OutputFieldOptions &options) const = 0;
 
 			/// @brief Get the runtime timings of the variational formulation, for output purposes
 			/// @return Runtime timings
@@ -120,7 +115,7 @@ namespace polyfem
 			/// @brief Save the solution to a JSON file, for output purposes
 			/// @param solution Solution matrix to save
 			/// @param out Output stream to save the solution
-			virtual void save_json(const Eigen::MatrixXd &solution, std::ostream &out) const {};
+			virtual void save_json(const Eigen::MatrixXd &solution, std::ostream &out) const = 0;
 			/// @brief 	Save the solution to a JSON file, for output purposes
 			/// @param solution
 			void save_json(const Eigen::MatrixXd &solution) const;
@@ -162,10 +157,19 @@ namespace polyfem
 			virtual void save_step_state(const double t0, const double dt, const int t, const Eigen::MatrixXd &sol) const;
 
 			void ensure_output_sampler() const;
+			std::vector<io::OutputField> common_output_fields(
+				const io::OutputSample &sample,
+				const Eigen::MatrixXd &solution,
+				const io::OutputFieldOptions &options) const;
+			void save_json_stats(
+				const Eigen::MatrixXd &solution,
+				const int n_auxiliary_bases,
+				std::ostream &out) const;
 
 			void save_restart_json(const double t0, const double dt, const int t) const;
 			void save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &solution) const;
 			void save_subsolve(const int i, const int t, const Eigen::MatrixXd &solution) const;
+			int output_file_index(const int t) const;
 
 			io::OutGeometryData::ExportOptions export_options(const io::OutputSpace &space) const;
 			io::OutputFieldFunction output_field_function(const Eigen::MatrixXd &solution, const io::OutGeometryData::ExportOptions &opts) const;

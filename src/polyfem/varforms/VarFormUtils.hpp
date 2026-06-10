@@ -23,7 +23,8 @@ namespace polyfem::varform::internal
 		const std::vector<basis::ElementBases> &gbases,
 		const io::OutputSample &sample,
 		const Eigen::MatrixXd &dof_values,
-		Eigen::MatrixXd &values)
+		Eigen::MatrixXd &values,
+		Eigen::MatrixXd *gradients = nullptr)
 	{
 		if (dof_values.size() <= 0)
 			return false;
@@ -35,12 +36,16 @@ namespace polyfem::varform::internal
 		if (has_element_samples)
 		{
 			values.resize(sample.local_points.rows(), 1);
+			if (gradients)
+				gradients->resize(sample.local_points.rows(), mesh.dimension());
 			for (int i = 0; i < sample.local_points.rows(); ++i)
 			{
 				const int element_id = sample.element_ids(i);
 				if (element_id < 0)
 				{
 					values(i) = 0;
+					if (gradients)
+						gradients->row(i).setZero();
 					continue;
 				}
 
@@ -49,6 +54,8 @@ namespace polyfem::varform::internal
 					mesh, 1, field_bases, gbases,
 					element_id, sample.local_points.row(i), dof_values, local_sol, local_grad);
 				values(i) = local_sol(0);
+				if (gradients)
+					gradients->row(i) = local_grad;
 			}
 			return true;
 		}

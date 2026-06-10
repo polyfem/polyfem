@@ -12,11 +12,6 @@
 #include <string>
 #include <vector>
 
-namespace polyfem::varform
-{
-	class VarForm;
-} // namespace polyfem::varform
-
 namespace polyfem::mesh
 {
 	class Obstacle;
@@ -44,6 +39,7 @@ namespace polyfem::io
 		Eigen::VectorXi primitive_ids;
 		Eigen::VectorXi node_ids;
 		Eigen::MatrixXd normals;
+		std::vector<std::string> requested_fields;
 		double time = 0;
 		double dt = 0;
 	};

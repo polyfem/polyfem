@@ -4,6 +4,7 @@
 
 #include <polyfem/State.hpp>
 #include <polyfem/Common.hpp>
+#include <polyfem/io/OutStatsData.hpp>
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/varforms/VarForm.hpp>
 
@@ -16,6 +17,26 @@ using namespace polyfem::assembler;
 using namespace polyfem::utils;
 
 bool load_json(const std::string &json_file, json &out);
+
+TEST_CASE("output statistics are initialized", "[output]")
+{
+	io::OutRuntimeData timings;
+	CHECK(timings.total_time() == 0);
+	CHECK(timings.loading_mesh_time == 0);
+	CHECK(timings.assigning_rhs_time == 0);
+	timings.building_basis_time = 1;
+	timings.loading_mesh_time = 2;
+	timings.assigning_rhs_time = 3;
+	timings.solving_time = 4;
+	CHECK(timings.total_time() == 10);
+
+	io::OutStatsData stats;
+	CHECK(stats.spectrum.isZero());
+	CHECK(stats.mesh_size == 0);
+	CHECK(stats.min_edge_length == 0);
+	CHECK(stats.nn_zero == 0);
+	CHECK(stats.simplex_count == 0);
+}
 
 #ifdef NDEBUG
 TEST_CASE("full sim", "[full_sim]")
