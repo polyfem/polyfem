@@ -11,6 +11,7 @@
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/time_integrator/BDF.hpp>
 #include <polyfem/varforms/ResolveDiscrOrder.hpp>
+#include <polyfem/varforms/ShouldUseIsoparametric.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
@@ -66,23 +67,26 @@ namespace polyfem::varform
 			*assembler, *mesh_, nullptr,
 			boundary.dirichlet_nodes, boundary.neumann_nodes,
 			boundary.dirichlet_nodes_position, boundary.neumann_nodes_position,
-			displacement_space.n_bases, mesh_->dimension(), displacement_space.bases, geom_bases(), displacement_caches.mass, *problem,
+			displacement_space.n_bases, mesh_->dimension(), *displacement_space.bases, geom_bases(), displacement_caches.mass, *problem,
 			args["space"]["advanced"]["bc_method"],
 			rhs_solver_params);
 	}
 
-	void IncompressibleElasticVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
+	void IncompressibleElasticVarForm::build_basis(mesh::Mesh &mesh, const json &args)
 	{
+		const bool iso_parametric = should_use_isoparametric(mesh, args);
 		displacement_space.value_dim = mesh.dimension();
 		displacement_space.geometry = geometry_mapping;
-		geometry_mapping->isoparametric = iso_parametric;
+
+		displacement_space.bases = std::make_shared<std::vector<basis::ElementBases>>();
+		geometry_mapping->bases = iso_parametric ? displacement_space.bases : std::make_shared<std::vector<basis::ElementBases>>();
 
 		auto disc = resolve_discr_orders(args, root_path, mesh, stats);
 		displacement_space.disc_orders = disc.orders;
 		displacement_space.disc_ordersq = disc.ordersq;
 		geometry_mapping->disc_orders = resolve_geom_orders(mesh, displacement_space.disc_orders, iso_parametric);
 
-		VarForm::build_basis(mesh, iso_parametric, args);
+		VarForm::build_basis(mesh, args);
 
 		if (displacement_space.disc_orders.maxCoeff() != displacement_space.disc_orders.minCoeff())
 			log_and_throw_error("p refinement not supported in mixed formulation!");
@@ -101,7 +105,7 @@ namespace polyfem::varform
 		std::vector<mesh::LocalBoundary> pressure_local_boundary;
 		std::map<int, basis::InterfaceData> pressure_poly_edge_to_data;
 
-		incompressible_spaces.pressure.bases.clear();
+		incompressible_spaces.pressure.bases = std::make_shared<std::vector<basis::ElementBases>>();
 		incompressible_spaces.pressure.n_bases = 0;
 		if (mesh.is_volume())
 		{
@@ -111,7 +115,7 @@ namespace polyfem::varform
 				order, order,
 				args["space"]["basis_type"] == "Bernstein", false,
 				has_polys, false, use_corner_quadrature,
-				incompressible_spaces.pressure.bases, pressure_local_boundary, pressure_poly_edge_to_data, incompressible_spaces.pressure.mesh_nodes);
+				*incompressible_spaces.pressure.bases, pressure_local_boundary, pressure_poly_edge_to_data, incompressible_spaces.pressure.mesh_nodes);
 		}
 		else
 		{
@@ -121,15 +125,15 @@ namespace polyfem::varform
 				order,
 				args["space"]["basis_type"] == "Bernstein", false,
 				has_polys, false, use_corner_quadrature,
-				incompressible_spaces.pressure.bases, pressure_local_boundary, pressure_poly_edge_to_data, incompressible_spaces.pressure.mesh_nodes);
+				*incompressible_spaces.pressure.bases, pressure_local_boundary, pressure_poly_edge_to_data, incompressible_spaces.pressure.mesh_nodes);
 		}
 
-		assert(displacement_space.bases.size() == incompressible_spaces.pressure.bases.size());
-		for (int i = 0; i < int(incompressible_spaces.pressure.bases.size()); ++i)
+		assert(displacement_space.bases->size() == incompressible_spaces.pressure.bases->size());
+		for (int i = 0; i < int(incompressible_spaces.pressure.bases->size()); ++i)
 		{
 			quadrature::Quadrature b_quad;
-			displacement_space.bases[i].compute_quadrature(b_quad);
-			incompressible_spaces.pressure.bases[i].set_quadrature([b_quad](quadrature::Quadrature &quad) { quad = b_quad; });
+			displacement_space.bases->at(i).compute_quadrature(b_quad);
+			incompressible_spaces.pressure.bases->at(i).set_quadrature([b_quad](quadrature::Quadrature &quad) { quad = b_quad; });
 		}
 
 		boundary.local_boundary.clear();
@@ -146,7 +150,7 @@ namespace polyfem::varform
 
 		problem->setup_bc(
 			mesh, displacement_space.n_bases,
-			displacement_space.bases, geom_bases(), incompressible_spaces.pressure.bases,
+			*displacement_space.bases, geom_bases(), *incompressible_spaces.pressure.bases,
 			boundary.local_boundary,
 			boundary.boundary_nodes,
 			boundary.local_neumann_boundary,
@@ -155,8 +159,8 @@ namespace polyfem::varform
 			boundary.pressure_boundary_nodes,
 			boundary.dirichlet_nodes, boundary.neumann_nodes);
 
-		rebuild_node_positions(displacement_space.bases, boundary.dirichlet_nodes, boundary.dirichlet_nodes_position);
-		rebuild_node_positions(displacement_space.bases, boundary.neumann_nodes, boundary.neumann_nodes_position);
+		rebuild_node_positions(*displacement_space.bases, boundary.dirichlet_nodes, boundary.dirichlet_nodes_position);
+		rebuild_node_positions(*displacement_space.bases, boundary.neumann_nodes, boundary.neumann_nodes_position);
 
 		const bool has_neumann = !boundary.local_neumann_boundary.empty() || int(boundary.local_boundary.size()) < prev_b_size;
 		use_avg_pressure = !has_neumann;
@@ -174,7 +178,7 @@ namespace polyfem::varform
 		boundary.boundary_nodes.erase(std::unique(boundary.boundary_nodes.begin(), boundary.boundary_nodes.end()), boundary.boundary_nodes.end());
 
 		if (displacement_space.n_bases <= args["solver"]["advanced"]["cache_size"])
-			pressure_ass_vals_cache.init(mesh.is_volume(), incompressible_spaces.pressure.bases, geom_bases());
+			pressure_ass_vals_cache.init(mesh.is_volume(), *incompressible_spaces.pressure.bases, geom_bases());
 		else
 			pressure_ass_vals_cache.init_empty();
 
@@ -207,7 +211,7 @@ namespace polyfem::varform
 		igl::Timer timer;
 		timer.start();
 		logger().info("Assembling mass mat...");
-		mass_matrix_assembler->assemble(mesh.is_volume(), displacement_space.n_bases, displacement_space.bases, geom_bases(), displacement_caches.mass, 0, mass, true);
+		mass_matrix_assembler->assemble(mesh.is_volume(), displacement_space.n_bases, *displacement_space.bases, geom_bases(), displacement_caches.mass, 0, mass, true);
 		avg_mass = 0;
 		for (int k = 0; k < mass.outerSize(); ++k)
 			for (StiffnessMatrix::InnerIterator it(mass, k); it; ++it)
@@ -259,9 +263,9 @@ namespace polyfem::varform
 		logger().info("Assembling stiffness mat...");
 
 		StiffnessMatrix elastic_stiffness, mixed_stiffness, pressure_stiffness;
-		assembler->assemble(mesh_->is_volume(), displacement_space.n_bases, displacement_space.bases, geom_bases(), displacement_caches.values, 0, elastic_stiffness);
-		mixed_assembler->assemble(mesh_->is_volume(), incompressible_spaces.pressure.n_bases, displacement_space.n_bases, incompressible_spaces.pressure.bases, displacement_space.bases, geom_bases(), pressure_ass_vals_cache, displacement_caches.values, 0, mixed_stiffness);
-		pressure_assembler->assemble(mesh_->is_volume(), incompressible_spaces.pressure.n_bases, incompressible_spaces.pressure.bases, geom_bases(), pressure_ass_vals_cache, 0, pressure_stiffness);
+		assembler->assemble(mesh_->is_volume(), displacement_space.n_bases, *displacement_space.bases, geom_bases(), displacement_caches.values, 0, elastic_stiffness);
+		mixed_assembler->assemble(mesh_->is_volume(), incompressible_spaces.pressure.n_bases, displacement_space.n_bases, *incompressible_spaces.pressure.bases, *displacement_space.bases, geom_bases(), pressure_ass_vals_cache, displacement_caches.values, 0, mixed_stiffness);
+		pressure_assembler->assemble(mesh_->is_volume(), incompressible_spaces.pressure.n_bases, *incompressible_spaces.pressure.bases, geom_bases(), pressure_ass_vals_cache, 0, pressure_stiffness);
 
 		assembler::AssemblerUtils::merge_mixed_matrices(
 			displacement_space.n_bases, incompressible_spaces.pressure.n_bases, mesh_->dimension(), /*add_average=*/false,
@@ -404,7 +408,7 @@ namespace polyfem::varform
 		{
 			Eigen::MatrixXd values, gradients;
 			if (sample_scalar_field(
-					*mesh_, incompressible_spaces.pressure.bases, geom_bases(), sample, pressure, values,
+					*mesh_, *incompressible_spaces.pressure.bases, geom_bases(), sample, pressure, values,
 					export_pressure_gradient ? &gradients : nullptr))
 			{
 				if (options.export_field("pressure"))

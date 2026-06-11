@@ -47,7 +47,7 @@ namespace polyfem::varform
 		logger().info("Assembling stiffness mat...");
 		assert(assembler->is_linear());
 
-		assembler->assemble(mesh_->is_volume(), displacement_space.n_bases, displacement_space.bases, geom_bases(), displacement_caches.values, 0, stiffness);
+		assembler->assemble(mesh_->is_volume(), displacement_space.n_bases, *displacement_space.bases, geom_bases(), displacement_caches.values, 0, stiffness);
 
 		timer.stop();
 		timings.assembling_stiffness_mat_time = timer.getElapsedTime();
@@ -105,7 +105,7 @@ namespace polyfem::varform
 		const int ndof = displacement_space.n_bases * mesh_->dimension();
 
 		elastic_form = std::make_shared<solver::ElasticForm>(
-			displacement_space.n_bases, displacement_space.bases, geom_bases(),
+			displacement_space.n_bases, *displacement_space.bases, geom_bases(),
 			*assembler, displacement_caches.values,
 			t, problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
 			mesh_->is_volume());

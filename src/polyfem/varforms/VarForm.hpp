@@ -115,7 +115,7 @@ namespace polyfem
 			virtual void set_materials(assembler::Assembler &assembler) const;
 
 			virtual void load_mesh(const mesh::Mesh &mesh, const json &args);
-			virtual void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args);
+			virtual void build_basis(mesh::Mesh &mesh, const json &args);
 			virtual void assemble_rhs(const mesh::Mesh &mesh, const json &args);
 			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args);
 			virtual void solve_problem(Eigen::MatrixXd &sol) = 0;
@@ -125,8 +125,7 @@ namespace polyfem
 			/// @return A constant reference to the geometry mapping bases.
 			const std::vector<basis::ElementBases> &geom_bases() const
 			{
-				const auto &geometry = primary_geometry();
-				return geometry && geometry->isoparametric ? primary_space().bases : geometry->bases;
+				return *primary_geometry()->bases;
 			}
 
 			// primary_xxx method is for lagacy compatibility only!!!!!

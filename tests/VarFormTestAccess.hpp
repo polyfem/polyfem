@@ -32,7 +32,7 @@ namespace polyfem::test
 			return {
 				form.mesh_.get(),
 				form.assembler.get(),
-				&form.primary_space().bases,
+				form.primary_space().bases.get(),
 				&form.geom_bases(),
 				&form.boundary_state().total_local_boundary,
 				form.primary_space().n_bases,

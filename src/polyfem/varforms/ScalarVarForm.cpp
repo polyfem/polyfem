@@ -8,6 +8,7 @@
 #include <polyfem/problem/ProblemFactory.hpp>
 
 #include <polyfem/varforms/ResolveDiscrOrder.hpp>
+#include <polyfem/varforms/ShouldUseIsoparametric.hpp>
 
 #include <polyfem/time_integrator/BDF.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -70,18 +71,21 @@ namespace polyfem::varform
 		dt = is_time_dependent ? args["time"]["dt"].get<double>() : 0.0;
 	}
 
-	void ScalarVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
+	void ScalarVarForm::build_basis(mesh::Mesh &mesh, const json &args)
 	{
+		const bool iso_parametric = should_use_isoparametric(mesh, args);
 		scalar_space.value_dim = 1;
 		scalar_space.geometry = geometry_mapping;
-		geometry_mapping->isoparametric = iso_parametric;
+
+		scalar_space.bases = std::make_shared<std::vector<basis::ElementBases>>();
+		geometry_mapping->bases = iso_parametric ? scalar_space.bases : std::make_shared<std::vector<basis::ElementBases>>();
 
 		auto disc = resolve_discr_orders(args, root_path, mesh, stats);
 		scalar_space.disc_orders = disc.orders;
 		scalar_space.disc_ordersq = disc.ordersq;
 		geometry_mapping->disc_orders = resolve_geom_orders(mesh, scalar_space.disc_orders, iso_parametric);
 
-		VarForm::build_basis(mesh, iso_parametric, args);
+		VarForm::build_basis(mesh, args);
 	}
 
 	void ScalarVarForm::save_json(const Eigen::MatrixXd &solution, std::ostream &out) const
@@ -124,7 +128,7 @@ namespace polyfem::varform
 
 					Eigen::MatrixXd local_sol, local_grad;
 					io::Evaluator::interpolate_at_local_vals(
-						*mesh_, 1, scalar_space.bases, geom_bases(),
+						*mesh_, 1, *scalar_space.bases, geom_bases(),
 						element_id, sample.local_points.row(i), dof_values, local_sol, local_grad);
 					values(i) = local_sol(0);
 					if (gradients)
@@ -228,7 +232,7 @@ namespace polyfem::varform
 		assert(assembler->is_linear());
 		assert(problem->is_scalar());
 
-		assembler->assemble(mesh_->is_volume(), scalar_space.n_bases, scalar_space.bases, geom_bases(), scalar_caches.values, 0, stiffness);
+		assembler->assemble(mesh_->is_volume(), scalar_space.n_bases, *scalar_space.bases, geom_bases(), scalar_caches.values, 0, stiffness);
 
 		timer.stop();
 		timings.assembling_stiffness_mat_time = timer.getElapsedTime();

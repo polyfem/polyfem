@@ -1,6 +1,8 @@
 set(SOURCES
     ResolveDiscrOrder.hpp
     ResolveDiscrOrder.cpp
+    ShouldUseIsoparametric.hpp
+    ShouldUseIsoparametric.cpp
     VarForm.cpp
     VarFormFactory.hpp
     VarFormFactory.cpp

@@ -17,9 +17,7 @@ namespace polyfem::varform
 {
 	struct GeometryMapping
 	{
-		bool isoparametric = false;
-
-		std::vector<basis::ElementBases> bases;
+		std::shared_ptr<std::vector<basis::ElementBases>> bases;
 		int n_bases = 0;
 
 		Eigen::VectorXi disc_orders;
@@ -38,7 +36,7 @@ namespace polyfem::varform
 		Eigen::VectorXi disc_orders;
 		Eigen::VectorXi disc_ordersq;
 
-		std::vector<basis::ElementBases> bases;
+		std::shared_ptr<std::vector<basis::ElementBases>> bases;
 		std::shared_ptr<GeometryMapping> geometry;
 		std::shared_ptr<mesh::MeshNodes> mesh_nodes;
 

@@ -9,6 +9,7 @@
 #include <polyfem/problem/ProblemFactory.hpp>
 #include <polyfem/time_integrator/BDF.hpp>
 #include <polyfem/varforms/ResolveDiscrOrder.hpp>
+#include <polyfem/varforms/ShouldUseIsoparametric.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
@@ -86,18 +87,21 @@ namespace polyfem::varform
 			rhs_solver_params);
 	}
 
-	void BilaplacianVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
+	void BilaplacianVarForm::build_basis(mesh::Mesh &mesh, const json &args)
 	{
+		const bool iso_parametric = should_use_isoparametric(mesh, args);
 		scalar_space.value_dim = 1;
 		scalar_space.geometry = geometry_mapping;
-		geometry_mapping->isoparametric = iso_parametric;
+
+		scalar_space.bases = std::make_shared<std::vector<basis::ElementBases>>();
+		geometry_mapping->bases = iso_parametric ? scalar_space.bases : std::make_shared<std::vector<basis::ElementBases>>();
 
 		auto disc = resolve_discr_orders(args, root_path, mesh, stats);
 		scalar_space.disc_orders = disc.orders;
 		scalar_space.disc_ordersq = disc.ordersq;
 		geometry_mapping->disc_orders = resolve_geom_orders(mesh, scalar_space.disc_orders, iso_parametric);
 
-		VarForm::build_basis(mesh, iso_parametric, args);
+		VarForm::build_basis(mesh, args);
 
 		if (scalar_space.disc_orders.maxCoeff() != scalar_space.disc_orders.minCoeff())
 			log_and_throw_error("p refinement not supported in mixed formulation!");
@@ -116,7 +120,7 @@ namespace polyfem::varform
 		std::vector<mesh::LocalBoundary> pressure_local_boundary;
 		std::map<int, basis::InterfaceData> pressure_poly_edge_to_data;
 
-		bilaplacian_spaces.helper.bases.clear();
+		bilaplacian_spaces.helper.bases = std::make_shared<std::vector<basis::ElementBases>>();
 		bilaplacian_spaces.helper.n_bases = 0;
 		if (mesh.is_volume())
 		{
@@ -126,7 +130,7 @@ namespace polyfem::varform
 				order, order,
 				args["space"]["basis_type"] == "Bernstein", false,
 				has_polys, false, use_corner_quadrature,
-				bilaplacian_spaces.helper.bases, pressure_local_boundary, pressure_poly_edge_to_data, bilaplacian_spaces.helper.mesh_nodes);
+				*bilaplacian_spaces.helper.bases, pressure_local_boundary, pressure_poly_edge_to_data, bilaplacian_spaces.helper.mesh_nodes);
 		}
 		else
 		{
@@ -136,15 +140,15 @@ namespace polyfem::varform
 				order,
 				args["space"]["basis_type"] == "Bernstein", false,
 				has_polys, false, use_corner_quadrature,
-				bilaplacian_spaces.helper.bases, pressure_local_boundary, pressure_poly_edge_to_data, bilaplacian_spaces.helper.mesh_nodes);
+				*bilaplacian_spaces.helper.bases, pressure_local_boundary, pressure_poly_edge_to_data, bilaplacian_spaces.helper.mesh_nodes);
 		}
 
-		assert(scalar_space.bases.size() == bilaplacian_spaces.helper.bases.size());
-		for (int i = 0; i < int(bilaplacian_spaces.helper.bases.size()); ++i)
+		assert(scalar_space.bases->size() == bilaplacian_spaces.helper.bases->size());
+		for (int i = 0; i < int(bilaplacian_spaces.helper.bases->size()); ++i)
 		{
 			quadrature::Quadrature b_quad;
-			scalar_space.bases[i].compute_quadrature(b_quad);
-			bilaplacian_spaces.helper.bases[i].set_quadrature([b_quad](quadrature::Quadrature &quad) { quad = b_quad; });
+			scalar_space.bases->at(i).compute_quadrature(b_quad);
+			bilaplacian_spaces.helper.bases->at(i).set_quadrature([b_quad](quadrature::Quadrature &quad) { quad = b_quad; });
 		}
 
 		boundary.local_boundary.clear();
@@ -161,7 +165,7 @@ namespace polyfem::varform
 
 		problem->setup_bc(
 			mesh, scalar_space.n_bases,
-			scalar_space.bases, geom_bases(), bilaplacian_spaces.helper.bases,
+			*scalar_space.bases, geom_bases(), *bilaplacian_spaces.helper.bases,
 			boundary.local_boundary,
 			boundary.boundary_nodes,
 			boundary.local_neumann_boundary,
@@ -170,8 +174,8 @@ namespace polyfem::varform
 			boundary.pressure_boundary_nodes,
 			boundary.dirichlet_nodes, boundary.neumann_nodes);
 
-		rebuild_node_positions(scalar_space.bases, boundary.dirichlet_nodes, boundary.dirichlet_nodes_position);
-		rebuild_node_positions(scalar_space.bases, boundary.neumann_nodes, boundary.neumann_nodes_position);
+		rebuild_node_positions(*scalar_space.bases, boundary.dirichlet_nodes, boundary.dirichlet_nodes_position);
+		rebuild_node_positions(*scalar_space.bases, boundary.neumann_nodes, boundary.neumann_nodes_position);
 
 		const bool has_neumann = !boundary.local_neumann_boundary.empty() || int(boundary.local_boundary.size()) < prev_b_size;
 		use_avg_pressure = !has_neumann;
@@ -188,7 +192,7 @@ namespace polyfem::varform
 		boundary.boundary_nodes.erase(std::unique(boundary.boundary_nodes.begin(), boundary.boundary_nodes.end()), boundary.boundary_nodes.end());
 
 		if (scalar_space.n_bases <= args["solver"]["advanced"]["cache_size"])
-			pressure_ass_vals_cache.init(mesh.is_volume(), bilaplacian_spaces.helper.bases, geom_bases());
+			pressure_ass_vals_cache.init(mesh.is_volume(), *bilaplacian_spaces.helper.bases, geom_bases());
 		else
 			pressure_ass_vals_cache.init_empty();
 
@@ -213,7 +217,7 @@ namespace polyfem::varform
 		else
 		{
 			Eigen::MatrixXd tmp = Eigen::MatrixXd::Zero(bilaplacian_spaces.helper.n_bases, 1);
-			auto tmp_rhs_assembler = build_rhs_assembler(bilaplacian_spaces.helper.n_bases, bilaplacian_spaces.helper.bases, pressure_ass_vals_cache);
+			auto tmp_rhs_assembler = build_rhs_assembler(bilaplacian_spaces.helper.n_bases, *bilaplacian_spaces.helper.bases, pressure_ass_vals_cache);
 			tmp_rhs_assembler->set_bc(
 				std::vector<mesh::LocalBoundary>(), std::vector<int>(), n_boundary_samples(), boundary.local_neumann_boundary, tmp);
 			rhs.bottomRows(bilaplacian_spaces.helper.n_bases) = tmp;
@@ -233,7 +237,7 @@ namespace polyfem::varform
 		igl::Timer timer;
 		timer.start();
 		logger().info("Assembling mass mat...");
-		mass_matrix_assembler->assemble(mesh.is_volume(), scalar_space.n_bases, scalar_space.bases, geom_bases(), scalar_caches.mass, 0, mass, true);
+		mass_matrix_assembler->assemble(mesh.is_volume(), scalar_space.n_bases, *scalar_space.bases, geom_bases(), scalar_caches.mass, 0, mass, true);
 		avg_mass = 0;
 		for (int k = 0; k < mass.outerSize(); ++k)
 			for (StiffnessMatrix::InnerIterator it(mass, k); it; ++it)
@@ -290,9 +294,9 @@ namespace polyfem::varform
 		logger().info("Assembling stiffness mat...");
 
 		StiffnessMatrix main_stiffness, mixed_stiffness, aux_stiffness;
-		assembler->assemble(mesh_->is_volume(), scalar_space.n_bases, scalar_space.bases, geom_bases(), scalar_caches.values, 0, main_stiffness);
-		mixed_assembler->assemble(mesh_->is_volume(), bilaplacian_spaces.helper.n_bases, scalar_space.n_bases, bilaplacian_spaces.helper.bases, scalar_space.bases, geom_bases(), pressure_ass_vals_cache, scalar_caches.values, 0, mixed_stiffness);
-		pressure_assembler->assemble(mesh_->is_volume(), bilaplacian_spaces.helper.n_bases, bilaplacian_spaces.helper.bases, geom_bases(), pressure_ass_vals_cache, 0, aux_stiffness);
+		assembler->assemble(mesh_->is_volume(), scalar_space.n_bases, *scalar_space.bases, geom_bases(), scalar_caches.values, 0, main_stiffness);
+		mixed_assembler->assemble(mesh_->is_volume(), bilaplacian_spaces.helper.n_bases, scalar_space.n_bases, *bilaplacian_spaces.helper.bases, *scalar_space.bases, geom_bases(), pressure_ass_vals_cache, scalar_caches.values, 0, mixed_stiffness);
+		pressure_assembler->assemble(mesh_->is_volume(), bilaplacian_spaces.helper.n_bases, *bilaplacian_spaces.helper.bases, geom_bases(), pressure_ass_vals_cache, 0, aux_stiffness);
 
 		assembler::AssemblerUtils::merge_mixed_matrices(
 			scalar_space.n_bases, bilaplacian_spaces.helper.n_bases, 1, /*add_average=*/false,
@@ -435,7 +439,7 @@ namespace polyfem::varform
 		{
 			Eigen::MatrixXd values, gradients;
 			if (sample_scalar_field(
-					*mesh_, bilaplacian_spaces.helper.bases, geom_bases(), sample, pressure, values,
+					*mesh_, *bilaplacian_spaces.helper.bases, geom_bases(), sample, pressure, values,
 					export_pressure_gradient ? &gradients : nullptr))
 			{
 				if (options.export_field("pressure"))

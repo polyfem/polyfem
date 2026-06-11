@@ -210,9 +210,9 @@ namespace polyfem::varform
 		return fields;
 	}
 
-	void NonlinearElasticVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
+	void NonlinearElasticVarForm::build_basis(mesh::Mesh &mesh, const json &args)
 	{
-		ElasticVarForm::build_basis(mesh, iso_parametric, args);
+		ElasticVarForm::build_basis(mesh, args);
 
 		// Legacy nonlinear/contact code assumes n_bases includes obstacle vertices.
 		// The shared VarForm build path only counts FE bases, so extend it here
@@ -282,7 +282,7 @@ namespace polyfem::varform
 			*assembler, *mesh_, &obstacle,
 			boundary.dirichlet_nodes, boundary.neumann_nodes,
 			boundary.dirichlet_nodes_position, boundary.neumann_nodes_position,
-			displacement_space.n_bases, size, displacement_space.bases, geom_bases(), displacement_caches.mass, *problem,
+			displacement_space.n_bases, size, *displacement_space.bases, geom_bases(), displacement_caches.mass, *problem,
 			args["space"]["advanced"]["bc_method"],
 			rhs_solver_params);
 		rhs_assembler = solve_data.rhs_assembler;
@@ -293,7 +293,7 @@ namespace polyfem::varform
 		const json &args)
 	{
 		build_collision_mesh(
-			mesh, displacement_space.n_bases, displacement_space.bases, geom_bases(), boundary.total_local_boundary, obstacle,
+			mesh, displacement_space.n_bases, *displacement_space.bases, geom_bases(), boundary.total_local_boundary, obstacle,
 			args, [this](const std::string &p) { return utils::resolve_path(p, root_path, false); },
 			in_node_to_node, collision_mesh);
 	}
@@ -435,7 +435,7 @@ namespace polyfem::varform
 			boundary.local_pressure_cavity,
 			boundary.boundary_nodes,
 			primitive_to_node(), node_to_primitive(),
-			displacement_space.n_bases, size, displacement_space.bases, geom_bases(), *problem);
+			displacement_space.n_bases, size, *displacement_space.bases, geom_bases(), *problem);
 	}
 
 	void NonlinearElasticStaticVarForm::solve_problem(Eigen::MatrixXd &sol)
@@ -583,7 +583,7 @@ namespace polyfem::varform
 			units,
 			dim, t, in_node_to_node,
 			// Elastic form
-			displacement_space.n_bases, displacement_space.bases, geom_bases(), *assembler, displacement_caches.values, displacement_caches.mass, args["solver"]["advanced"]["jacobian_threshold"], check_inversion,
+			displacement_space.n_bases, *displacement_space.bases, geom_bases(), *assembler, displacement_caches.values, displacement_caches.mass, args["solver"]["advanced"]["jacobian_threshold"], check_inversion,
 			// Body form
 			0, boundary.boundary_nodes, boundary.local_boundary,
 			boundary.local_neumann_boundary,
@@ -730,7 +730,7 @@ namespace polyfem::varform
 		}
 
 		if (pure_mass.size() == 0)
-			pure_mass_matrix_assembler->assemble(mesh_->is_volume(), displacement_space.n_bases, displacement_space.bases, geom_bases(), displacement_caches.pure_mass, 0, pure_mass, true);
+			pure_mass_matrix_assembler->assemble(mesh_->is_volume(), displacement_space.n_bases, *displacement_space.bases, geom_bases(), displacement_caches.pure_mass, 0, pure_mass, true);
 
 		const int ndof = displacement_space.n_bases * mesh_->dimension();
 		solve_data.nl_problem = std::make_shared<solver::NLProblem>(
@@ -795,7 +795,7 @@ namespace polyfem::varform
 
 		if (args["space"]["advanced"]["count_flipped_els_continuous"])
 		{
-			const auto invalidList = utils::count_invalid(mesh_->dimension(), displacement_space.bases, geom_bases(), sol);
+			const auto invalidList = utils::count_invalid(mesh_->dimension(), *displacement_space.bases, geom_bases(), sol);
 			logger().debug("Flipped elements (cnt {}) : {}", invalidList.size(), invalidList);
 		}
 
