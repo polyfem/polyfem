@@ -25,14 +25,14 @@ namespace polyfem::varform
 	public:
 		std::string name() const override { return "LinearElastic"; }
 
+		using ElasticVarForm::ElasticVarForm;
+
 		std::vector<io::OutputField> output_fields(
 			const io::OutputSample &sample,
 			const Eigen::MatrixXd &solution,
 			const io::OutputFieldOptions &options) const override;
 
 	private:
-		void reset() override;
-
 		void solve_problem(Eigen::MatrixXd &sol) override;
 		void init_linear_solve(Eigen::MatrixXd &sol, const double t);
 		void build_stiffness_mat(StiffnessMatrix &stiffness);

@@ -27,15 +27,6 @@ namespace polyfem::varform
 		}
 	} // namespace
 
-	void LinearElasticVarForm::reset()
-	{
-		ElasticVarForm::reset();
-		elastic_form = nullptr;
-		body_form = nullptr;
-		inertia_form = nullptr;
-		time_integrator = nullptr;
-	}
-
 	std::vector<io::OutputField> LinearElasticVarForm::output_fields(
 		const io::OutputSample &sample,
 		const Eigen::MatrixXd &solution,

@@ -44,26 +44,19 @@ namespace polyfem::varform
 	using namespace solver;
 	using namespace time_integrator;
 
-	void NonlinearElasticVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
+	namespace
 	{
-		json clean_args = args;
-		const bool contact_dhat_was_explicit = clean_args["contact"].value("_dhat_was_explicit", false);
-		clean_args["contact"].erase("_dhat_was_explicit");
-		ElasticVarForm::init(formulation, units, clean_args, out_path);
-		contact_dhat_was_explicit_ = contact_dhat_was_explicit;
-	}
+		json clean_contact_args(const json &args)
+		{
+			json clean = args;
+			clean["contact"].erase("_dhat_was_explicit");
+			return clean;
+		}
+	} // namespace
 
-	void NonlinearElasticVarForm::reset()
+	NonlinearElasticVarForm::NonlinearElasticVarForm(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
+		: ElasticVarForm(formulation, units, clean_contact_args(args), out_path), contact_dhat_was_explicit_(args["contact"].value("_dhat_was_explicit", false))
 	{
-		ElasticVarForm::reset();
-		collision_mesh = ipc::CollisionMesh();
-		obstacle.clear();
-		solve_data = solver::SolveData();
-		forms.clear();
-		elasticity_pressure_assembler = nullptr;
-		damping_assembler = nullptr;
-		damping_prev_assembler = nullptr;
-		contact_dhat_was_explicit_ = false;
 	}
 
 	void NonlinearElasticVarForm::load_mesh(const mesh::Mesh &mesh, const json &args)

@@ -23,7 +23,7 @@ namespace polyfem::varform
 	class ElasticVarForm : public VarForm
 	{
 	public:
-		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
+		ElasticVarForm(const std::string &formulation, const Units &units, const json &args, const std::string &out_path);
 
 		void save_json(const Eigen::MatrixXd &solution, std::ostream &out) const override;
 

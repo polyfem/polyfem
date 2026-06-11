@@ -18,7 +18,7 @@ namespace polyfem::varform
 	public:
 		std::string name() const override { return "Scalar"; }
 
-		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
+		ScalarVarForm(const std::string &formulation, const Units &units, const json &args, const std::string &out_path);
 		void save_json(const Eigen::MatrixXd &solution, std::ostream &out) const override;
 
 		std::vector<io::OutputField> output_fields(
@@ -27,7 +27,6 @@ namespace polyfem::varform
 			const io::OutputFieldOptions &options) const override;
 
 	protected:
-		void reset() override;
 		FESpace &primary_space() override { return scalar_space; }
 		const FESpace &primary_space() const override { return scalar_space; }
 		std::shared_ptr<GeometryMapping> &primary_geometry() override { return geometry_mapping; }

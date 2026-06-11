@@ -19,31 +19,9 @@ namespace polyfem::varform
 {
 	using namespace varform::internal;
 
-	void BilaplacianVarForm::reset()
+	BilaplacianVarForm::BilaplacianVarForm(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
+		: ScalarVarForm(formulation, units, args, out_path)
 	{
-		ScalarVarForm::reset();
-		bilaplacian_spaces.helper.bases.clear();
-		bilaplacian_spaces.helper.n_bases = 0;
-		bilaplacian_spaces.helper.mesh_nodes = nullptr;
-		pressure_ass_vals_cache.init_empty();
-		boundary.pressure_boundary_nodes.clear();
-		bilaplacian_spaces.layout = SolutionLayout();
-		bilaplacian_spaces.value_block = -1;
-		bilaplacian_spaces.helper_block = -1;
-		mixed_assembler = nullptr;
-		pressure_assembler = nullptr;
-		use_avg_pressure = true;
-		time_integrator = nullptr;
-	}
-
-	void BilaplacianVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
-	{
-		VarForm::init(formulation, units, args, out_path);
-		const bool is_time_dependent = args.contains("time") && !args["time"].is_null();
-
-		assembler = assembler::AssemblerUtils::make_assembler(formulation);
-		mass_matrix_assembler = std::make_shared<assembler::Mass>();
-		pure_mass_matrix_assembler = std::make_shared<assembler::HRZMass>();
 		mixed_assembler = assembler::AssemblerUtils::make_mixed_assembler(formulation);
 		pressure_assembler = assembler::AssemblerUtils::make_assembler(assembler::AssemblerUtils::other_assembler_name(formulation));
 
@@ -52,13 +30,12 @@ namespace polyfem::varform
 			problem = std::make_shared<assembler::GenericScalarProblem>("GenericScalar");
 			problem->clear();
 			json tmp;
-			tmp["is_time_dependent"] = is_time_dependent;
+			tmp["is_time_dependent"] = false;
 			problem->set_parameters(tmp, root_path);
 
 			auto bc = args["boundary_conditions"];
 			bc["root_path"] = root_path;
 			problem->set_parameters(bc, root_path);
-			problem->set_parameters(args["initial_conditions"], root_path);
 			problem->set_parameters(args["output"], root_path);
 		}
 		else
@@ -69,9 +46,10 @@ namespace polyfem::varform
 		}
 
 		problem->set_units(*assembler, units);
-		t0 = is_time_dependent ? args["time"]["t0"].get<double>() : 0.0;
-		time_steps = is_time_dependent ? args["time"]["time_steps"].get<int>() : 0;
-		dt = is_time_dependent ? args["time"]["dt"].get<double>() : 0.0;
+
+		t0 = 0;
+		time_steps = 0;
+		dt = 0;
 	}
 
 	void BilaplacianVarForm::save_json(const Eigen::MatrixXd &solution, std::ostream &out) const

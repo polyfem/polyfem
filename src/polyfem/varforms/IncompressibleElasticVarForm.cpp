@@ -21,26 +21,9 @@ namespace polyfem::varform
 {
 	using namespace varform::internal;
 
-	void IncompressibleElasticVarForm::reset()
+	IncompressibleElasticVarForm::IncompressibleElasticVarForm(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
+		: ElasticVarForm(formulation, units, args, out_path)
 	{
-		ElasticVarForm::reset();
-		incompressible_spaces.pressure.bases.clear();
-		incompressible_spaces.pressure.n_bases = 0;
-		incompressible_spaces.pressure.mesh_nodes = nullptr;
-		pressure_ass_vals_cache.init_empty();
-		boundary.pressure_boundary_nodes.clear();
-		incompressible_spaces.layout = SolutionLayout();
-		incompressible_spaces.displacement_block = -1;
-		incompressible_spaces.pressure_block = -1;
-		mixed_assembler = nullptr;
-		pressure_assembler = nullptr;
-		use_avg_pressure = true;
-		time_integrator = nullptr;
-	}
-
-	void IncompressibleElasticVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
-	{
-		ElasticVarForm::init(formulation, units, args, out_path);
 		mixed_assembler = assembler::AssemblerUtils::make_mixed_assembler(formulation);
 		pressure_assembler = assembler::AssemblerUtils::make_assembler(assembler::AssemblerUtils::other_assembler_name(formulation));
 		assert(assembler->is_linear());

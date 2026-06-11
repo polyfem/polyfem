@@ -15,7 +15,7 @@ namespace polyfem::varform
 	class FluidVarForm : public VarForm
 	{
 	public:
-		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
+		FluidVarForm(const std::string &formulation, const Units &units, const json &args, const std::string &out_path);
 		void save_json(const Eigen::MatrixXd &solution, std::ostream &out) const override;
 
 		std::vector<io::OutputField> output_fields(
@@ -24,7 +24,6 @@ namespace polyfem::varform
 			const io::OutputFieldOptions &options) const override;
 
 	protected:
-		void reset() override;
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
 		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
 		void assemble_rhs(const mesh::Mesh &mesh, const json &args) override;
@@ -69,6 +68,7 @@ namespace polyfem::varform
 	class StokesVarForm : public FluidVarForm
 	{
 	public:
+		using FluidVarForm::FluidVarForm;
 		std::string name() const override { return "Stokes"; }
 
 	private:
@@ -80,6 +80,7 @@ namespace polyfem::varform
 	class NavierStokesVarForm : public FluidVarForm
 	{
 	public:
+		using FluidVarForm::FluidVarForm;
 		std::string name() const override { return "NavierStokes"; }
 
 	private:

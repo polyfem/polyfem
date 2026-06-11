@@ -364,13 +364,12 @@ namespace polyfem
 			throw std::runtime_error("invalid input");
 		}
 
-		variational_formulation = varform::VarFormFactory::create(formulation, args);
+		args["contact"]["_dhat_was_explicit"] = contact_dhat_was_explicit;
+		variational_formulation = varform::VarFormFactory::create(formulation, units, args, output_dir);
 		if (!variational_formulation)
 			throw std::runtime_error("polyfem::State is varform-only; use polyfem::legacy::State for " + formulation + ".");
 
 		logger().info("Using variational formulation: {}", variational_formulation->name());
-		args["contact"]["_dhat_was_explicit"] = contact_dhat_was_explicit;
-		variational_formulation->init(formulation, units, args, output_dir);
 		args["contact"].erase("_dhat_was_explicit");
 	}
 

@@ -24,27 +24,9 @@ namespace polyfem::varform
 {
 	using namespace varform::internal;
 
-	void FluidVarForm::reset()
+	FluidVarForm::FluidVarForm(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
+		: VarForm(units, args, out_path)
 	{
-		VarForm::reset();
-		fluid_spaces.pressure.bases.clear();
-		fluid_spaces.pressure.n_bases = 0;
-		fluid_spaces.pressure.mesh_nodes = nullptr;
-		pressure_ass_vals_cache.init_empty();
-		boundary.pressure_boundary_nodes.clear();
-		fluid_spaces.layout = SolutionLayout();
-		fluid_spaces.velocity_block = -1;
-		fluid_spaces.pressure_block = -1;
-		fluid_spaces.pressure_mean_constraint_block = -1;
-		mixed_assembler = nullptr;
-		pressure_assembler = nullptr;
-		use_avg_pressure = true;
-		time_integrator = nullptr;
-	}
-
-	void FluidVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
-	{
-		VarForm::init(formulation, units, args, out_path);
 		const bool is_time_dependent = args.contains("time") && !args["time"].is_null();
 
 		assembler = assembler::AssemblerUtils::make_assembler(formulation);

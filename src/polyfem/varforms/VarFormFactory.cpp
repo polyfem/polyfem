@@ -55,7 +55,7 @@ namespace polyfem::varform
 	{
 		utils::apply_common_params(args);
 		const std::string formulation = formulation_from_args(args);
-		return !formulation.empty() && VarFormFactory::create(formulation, args) != nullptr;
+		return !formulation.empty() && VarFormFactory::supports(formulation, args);
 	}
 
 	bool VarFormFactory::supports(const std::string &formulation, const json &args)
@@ -92,7 +92,7 @@ namespace polyfem::varform
 		return assembler->is_tensor() || assembler->is_linear();
 	}
 
-	std::shared_ptr<VarForm> VarFormFactory::create(const std::string &formulation, const json &args)
+	std::shared_ptr<VarForm> VarFormFactory::create(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
 	{
 		if (!supports(formulation, args))
 			return nullptr;
@@ -106,23 +106,23 @@ namespace polyfem::varform
 			|| has_entries(args, "/constraints/soft"_json_pointer);
 
 		if (formulation == "Stokes")
-			return (!has_contact && !has_constraints) ? std::make_shared<StokesVarForm>() : nullptr;
+			return (!has_contact && !has_constraints) ? std::make_shared<StokesVarForm>(formulation, units, args, out_path) : nullptr;
 		if (formulation == "NavierStokes")
-			return (!has_contact && !has_constraints) ? std::make_shared<NavierStokesVarForm>() : nullptr;
+			return (!has_contact && !has_constraints) ? std::make_shared<NavierStokesVarForm>(formulation, units, args, out_path) : nullptr;
 		if (formulation == "IncompressibleLinearElasticity")
-			return (!has_contact && !has_pressure && !has_constraints) ? std::make_shared<IncompressibleElasticVarForm>() : nullptr;
+			return (!has_contact && !has_pressure && !has_constraints) ? std::make_shared<IncompressibleElasticVarForm>(formulation, units, args, out_path) : nullptr;
 		if (formulation == "Bilaplacian")
-			return (!has_contact && !has_constraints) ? std::make_shared<BilaplacianVarForm>() : nullptr;
+			return (!has_contact && !has_constraints) ? std::make_shared<BilaplacianVarForm>(formulation, units, args, out_path) : nullptr;
 
 		if (!assembler->is_tensor())
-			return (!has_contact && !has_pressure && !has_constraints) ? std::make_shared<ScalarVarForm>() : nullptr;
+			return (!has_contact && !has_pressure && !has_constraints) ? std::make_shared<ScalarVarForm>(formulation, units, args, out_path) : nullptr;
 
 		if (assembler->is_linear() && !has_contact && !has_pressure && !has_constraints)
-			return std::make_shared<LinearElasticVarForm>();
+			return std::make_shared<LinearElasticVarForm>(formulation, units, args, out_path);
 
 		if (args.contains("time") && !args["time"].is_null())
-			return std::make_shared<NonlinearElasticTransientVarForm>();
+			return std::make_shared<NonlinearElasticTransientVarForm>(formulation, units, args, out_path);
 
-		return std::make_shared<NonlinearElasticStaticVarForm>();
+		return std::make_shared<NonlinearElasticStaticVarForm>(formulation, units, args, out_path);
 	}
 } // namespace polyfem::varform

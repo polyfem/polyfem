@@ -33,9 +33,9 @@
 
 namespace polyfem::varform
 {
-	void ElasticVarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
+	ElasticVarForm::ElasticVarForm(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
+		: VarForm(units, args, out_path)
 	{
-		VarForm::init(formulation, units, args, out_path);
 		const bool is_time_dependent = args.contains("time") && !args["time"].is_null();
 
 		assembler = assembler::AssemblerUtils::make_assembler(formulation);

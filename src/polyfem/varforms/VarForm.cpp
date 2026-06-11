@@ -35,6 +35,15 @@
 
 namespace polyfem::varform
 {
+	VarForm::VarForm(const Units &units, const json &args, const std::string &out_path)
+		: units(units), args(args), output_path(out_path)
+	{
+		if (utils::is_param_valid(args, "root_path"))
+			root_path = args["root_path"].get<std::string>();
+		else
+			root_path = "";
+	}
+
 	bool VarForm::read_initial_x_from_file(
 		const std::string &state_path,
 		const std::string &x_name,
@@ -267,64 +276,6 @@ namespace polyfem::varform
 		return {{n_b_samples, n_b_samples}};
 	}
 
-	void VarForm::reset()
-	{
-		FESpace &space = primary_space();
-		std::shared_ptr<GeometryMapping> &geometry = primary_geometry();
-		AssemblyCaches &caches = primary_caches();
-		VarFormBoundaryState &boundary = boundary_state();
-
-		// FIXME check subclasses
-		stats.reset();
-		timings = io::OutRuntimeData();
-		output_sampler_initialized_ = false;
-		prepared_ = false;
-		rhs_assembler = nullptr;
-		problem = nullptr;
-		assembler = nullptr;
-		mass_matrix_assembler = nullptr;
-		pure_mass_matrix_assembler = nullptr;
-		geometry->isoparametric = false;
-		space.geometry = geometry;
-		space.value_dim = 1;
-		space.bases.clear();
-		geometry->bases.clear();
-		geometry->polys.clear();
-		geometry->polys_3d.clear();
-		poly_edge_to_data.clear();
-		space.mesh_nodes = nullptr;
-		geometry->mesh_nodes = nullptr;
-		in_node_to_node.resize(0);
-		in_primitive_to_primitive.resize(0);
-		space.disc_orders.resize(0);
-		space.disc_ordersq.resize(0);
-		caches.values.init_empty();
-		caches.mass.init_empty(true);
-		caches.pure_mass.init_empty(true);
-		mass.resize(0, 0);
-		pure_mass.resize(0, 0);
-		rhs.resize(0, 0);
-		avg_mass = 0;
-		boundary.boundary_nodes.clear();
-		boundary.total_local_boundary.clear();
-		boundary.local_boundary.clear();
-		boundary.local_neumann_boundary.clear();
-		boundary.local_pressure_boundary.clear();
-		boundary.local_pressure_cavity.clear();
-		boundary.pressure_boundary_nodes.clear();
-		boundary.dirichlet_nodes.clear();
-		boundary.dirichlet_nodes_position.clear();
-		boundary.neumann_nodes.clear();
-		boundary.neumann_nodes_position.clear();
-		space.n_bases = 0;
-		geometry->n_bases = 0;
-		t0 = 0;
-		time_steps = 0;
-		dt = 0;
-		time_callback = nullptr;
-		mesh_ = nullptr;
-	}
-
 	void VarForm::initial_solution(Eigen::MatrixXd &solution) const
 	{
 		assert(rhs_assembler != nullptr);
@@ -344,22 +295,6 @@ namespace polyfem::varform
 				solution.setZero();
 			}
 		}
-	}
-
-	void VarForm::init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path)
-	{
-		reset();
-
-		this->units = units;
-		this->args = args;
-
-		if (utils::is_param_valid(args, "root_path"))
-			root_path = args["root_path"].get<std::string>();
-		else
-			root_path = "";
-
-		this->output_path = out_path;
-		output_sampler_initialized_ = false;
 	}
 
 	void VarForm::set_mesh(std::unique_ptr<mesh::Mesh> mesh, const double loading_mesh_time)

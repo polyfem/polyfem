@@ -17,7 +17,7 @@ namespace polyfem::varform
 	public:
 		std::string name() const override { return "Bilaplacian"; }
 
-		void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path) override;
+		BilaplacianVarForm(const std::string &formulation, const Units &units, const json &args, const std::string &out_path);
 		void save_json(const Eigen::MatrixXd &solution, std::ostream &out) const override;
 
 		std::vector<io::OutputField> output_fields(
@@ -26,7 +26,6 @@ namespace polyfem::varform
 			const io::OutputFieldOptions &options) const override;
 
 	private:
-		void reset() override;
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
 		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
 		void assemble_rhs(const mesh::Mesh &mesh, const json &args) override;

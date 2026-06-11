@@ -44,27 +44,22 @@ namespace polyfem
 			friend class polyfem::test::VarFormTestAccess;
 
 		public:
+			VarForm(const Units &units, const json &args, const std::string &out_path);
+
 			virtual ~VarForm() = default;
 
 			/// @brief Get the name of the variational formulation
 			/// @return Name of the variational formulation
 			virtual std::string name() const = 0;
 
-			/// @brief Reset the internal state of the variational formulation, e.g. when loading a new mesh
-			/// @param args json input arguments, used to determine which data to reset
+			/// @brief Update the args and mark as unprepared, e.g. when loading a new mesh
+			/// @param args json input arguments
 			void set_args(const json &args)
 			{
 				this->args = args;
 				prepared_ = false;
 				output_sampler_initialized_ = false;
 			}
-
-			/// @brief Initialize the variational formulation with the given parameters
-			/// @param formulation name of the variational formulation
-			/// @param units unit system to use for the formulation
-			/// @param args json input arguments, used to initialize the formulation
-			/// @param out_path output path for the formulation, used to save intermediate data
-			virtual void init(const std::string &formulation, const Units &units, const json &args, const std::string &out_path);
 
 			/// @brief Set the mesh for the variational formulation
 			/// @param mesh unique pointer to the mesh to use for the formulation
@@ -118,7 +113,6 @@ namespace polyfem
 			std::string resolve_input_path(const std::string &path, const bool only_if_exists = false) const;
 
 			virtual void set_materials(assembler::Assembler &assembler) const;
-			virtual void reset();
 
 			virtual void load_mesh(const mesh::Mesh &mesh, const json &args);
 			virtual void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args);

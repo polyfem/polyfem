@@ -1,6 +1,7 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
+#include <polyfem/Units.hpp>
 
 #include <memory>
 #include <string>
@@ -13,7 +14,7 @@ namespace polyfem::varform
 	{
 	public:
 		static bool supports(const std::string &formulation, const json &args);
-		static std::shared_ptr<VarForm> create(const std::string &formulation, const json &args);
+		static std::shared_ptr<VarForm> create(const std::string &formulation, const Units &units, const json &args, const std::string &out_path);
 	};
 
 	/// @brief Extracts the formulation type from the given JSON arguments. this is temporary until legacy state is removed

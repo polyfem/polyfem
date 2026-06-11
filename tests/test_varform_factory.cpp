@@ -1,5 +1,6 @@
 #include <polyfem/State.hpp>
 #include <polyfem/legacy/State.hpp>
+#include <polyfem/Units.hpp>
 #include <polyfem/varforms/VarForm.hpp>
 #include <polyfem/varforms/VarFormFactory.hpp>
 
@@ -42,6 +43,8 @@ namespace
 TEST_CASE("varform factory supports migrated formulations", "[varform]")
 {
 	const json args = transient_args();
+	const Units units;
+	const std::string out_path;
 
 	for (const std::string formulation : {
 			 "NeoHookean",
@@ -54,18 +57,18 @@ TEST_CASE("varform factory supports migrated formulations", "[varform]")
 		 })
 	{
 		CHECK(varform::VarFormFactory::supports(formulation, args));
-		CHECK(varform::VarFormFactory::create(formulation, args) != nullptr);
+		CHECK(varform::VarFormFactory::create(formulation, units, args, out_path) != nullptr);
 	}
 
 	CHECK_FALSE(varform::VarFormFactory::supports("OperatorSplitting", args));
-	CHECK(varform::VarFormFactory::create("OperatorSplitting", args) == nullptr);
+	CHECK(varform::VarFormFactory::create("OperatorSplitting", units, args, out_path) == nullptr);
 
 	json periodic_args = args;
 	periodic_args["/boundary_conditions/periodic_boundary/enabled"_json_pointer] = true;
 	CHECK_FALSE(varform::VarFormFactory::supports("Stokes", periodic_args));
-	CHECK(varform::VarFormFactory::create("Stokes", periodic_args) == nullptr);
+	CHECK(varform::VarFormFactory::create("Stokes", units, periodic_args, out_path) == nullptr);
 	CHECK_FALSE(varform::VarFormFactory::supports("NeoHookean", periodic_args));
-	CHECK(varform::VarFormFactory::create("NeoHookean", periodic_args) == nullptr);
+	CHECK(varform::VarFormFactory::create("NeoHookean", units, periodic_args, out_path) == nullptr);
 }
 
 TEST_CASE("state can opt into migrated varforms", "[varform][state]")
