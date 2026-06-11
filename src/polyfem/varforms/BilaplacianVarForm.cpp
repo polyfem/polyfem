@@ -151,14 +151,18 @@ namespace polyfem::varform
 		bilaplacian_spaces.helper.geometry = geometry_mapping;
 		bilaplacian_spaces.helper.value_dim = 1;
 
+		timer.stop();
+		timings.building_basis_time += timer.getElapsedTime();
+		logger().info("n pressure bases: {}", bilaplacian_spaces.helper.n_bases);
+	}
+
+	void BilaplacianVarForm::build_assembler_cache(const mesh::Mesh &mesh, const json &args)
+	{
+		ScalarVarForm::build_assembler_cache(mesh, args);
 		if (scalar_space.n_bases <= args["solver"]["advanced"]["cache_size"])
 			pressure_ass_vals_cache.init(mesh.is_volume(), *bilaplacian_spaces.helper.bases, geom_bases());
 		else
 			pressure_ass_vals_cache.init_empty();
-
-		timer.stop();
-		timings.building_basis_time += timer.getElapsedTime();
-		logger().info("n pressure bases: {}", bilaplacian_spaces.helper.n_bases);
 	}
 
 	void BilaplacianVarForm::build_boundary_condition(mesh::Mesh &mesh, const json &args)

@@ -136,14 +136,18 @@ namespace polyfem::varform
 		incompressible_spaces.pressure.geometry = geometry_mapping;
 		incompressible_spaces.pressure.value_dim = 1;
 
+		timer.stop();
+		timings.building_basis_time += timer.getElapsedTime();
+		logger().info("n pressure bases: {}", incompressible_spaces.pressure.n_bases);
+	}
+
+	void IncompressibleElasticVarForm::build_assembler_cache(const mesh::Mesh &mesh, const json &args)
+	{
+		ElasticVarForm::build_assembler_cache(mesh, args);
 		if (displacement_space.n_bases <= args["solver"]["advanced"]["cache_size"])
 			pressure_ass_vals_cache.init(mesh.is_volume(), *incompressible_spaces.pressure.bases, geom_bases());
 		else
 			pressure_ass_vals_cache.init_empty();
-
-		timer.stop();
-		timings.building_basis_time += timer.getElapsedTime();
-		logger().info("n pressure bases: {}", incompressible_spaces.pressure.n_bases);
 	}
 
 	void IncompressibleElasticVarForm::build_boundary_condition(mesh::Mesh &mesh, const json &args)

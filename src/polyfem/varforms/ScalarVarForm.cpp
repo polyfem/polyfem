@@ -88,6 +88,26 @@ namespace polyfem::varform
 		VarForm::build_basis(mesh, args);
 	}
 
+	void ScalarVarForm::build_assembler_cache(const mesh::Mesh &mesh, const json &args)
+	{
+		if (scalar_space.n_bases <= args["solver"]["advanced"]["cache_size"])
+		{
+			igl::Timer timer;
+			timer.start();
+			logger().info("Building cache...");
+			scalar_caches.values.init(mesh.is_volume(), *scalar_space.bases, geom_bases());
+			scalar_caches.mass.init(mesh.is_volume(), *scalar_space.bases, geom_bases(), true);
+			scalar_caches.pure_mass.init(mesh.is_volume(), *scalar_space.bases, geom_bases(), true);
+			logger().info(" took {}s", timer.getElapsedTime());
+		}
+		else
+		{
+			scalar_caches.values.init_empty();
+			scalar_caches.mass.init_empty(true);
+			scalar_caches.pure_mass.init_empty(true);
+		}
+	}
+
 	void ScalarVarForm::build_boundary_condition(mesh::Mesh &mesh, const json &args)
 	{
 		build_node_mapping(mesh, args);

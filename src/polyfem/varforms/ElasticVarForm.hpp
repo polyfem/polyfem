@@ -30,6 +30,7 @@ namespace polyfem::varform
 	protected:
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
 		void build_basis(mesh::Mesh &mesh, const json &args) override;
+		void build_assembler_cache(const mesh::Mesh &mesh, const json &args) override;
 		void build_boundary_condition(mesh::Mesh &mesh, const json &args) override;
 		FESpace &primary_space() override { return displacement_space; }
 		const FESpace &primary_space() const override { return displacement_space; }

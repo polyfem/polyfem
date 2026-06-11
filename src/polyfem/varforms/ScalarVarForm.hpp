@@ -38,6 +38,7 @@ namespace polyfem::varform
 
 	protected:
 		void build_basis(mesh::Mesh &mesh, const json &args) override;
+		void build_assembler_cache(const mesh::Mesh &mesh, const json &args) override;
 		void build_boundary_condition(mesh::Mesh &mesh, const json &args) override;
 
 	private:

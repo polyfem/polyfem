@@ -283,6 +283,7 @@ namespace polyfem::varform
 		mesh_->prepare_mesh();
 		stats.compute_mesh_stats(*mesh_);
 		build_basis(*mesh_, args);
+		build_assembler_cache(*mesh_, args);
 		build_boundary_condition(*mesh_, args);
 		assemble_rhs(*mesh_, args);
 		assemble_mass_mat(*mesh_, args);
@@ -294,7 +295,6 @@ namespace polyfem::varform
 		using namespace mesh;
 		FESpace &space = primary_space();
 		std::shared_ptr<GeometryMapping> &geometry = primary_geometry();
-		AssemblyCaches &caches = primary_caches();
 		VarFormBoundaryState &boundary = boundary_state();
 		std::vector<basis::ElementBases> &bases = *space.bases;
 		int &n_bases = space.n_bases;
@@ -304,9 +304,6 @@ namespace polyfem::varform
 		int &n_geom_bases = geometry->n_bases;
 		std::shared_ptr<polyfem::mesh::MeshNodes> &mesh_nodes = space.mesh_nodes;
 		std::shared_ptr<polyfem::mesh::MeshNodes> &geom_mesh_nodes = geometry->mesh_nodes;
-		assembler::AssemblyValsCache &ass_vals_cache = caches.values;
-		assembler::AssemblyValsCache &mass_ass_vals_cache = caches.mass;
-		assembler::AssemblyValsCache &pure_mass_ass_vals_cache = caches.pure_mass;
 		std::vector<mesh::LocalBoundary> &total_local_boundary = boundary.total_local_boundary;
 		std::vector<mesh::LocalBoundary> &local_boundary = boundary.local_boundary;
 
@@ -388,22 +385,6 @@ namespace polyfem::varform
 		logger().info("h: {}", stats.mesh_size);
 		logger().info("n bases: {}", n_bases);
 
-		if (n_bases <= args["solver"]["advanced"]["cache_size"])
-		{
-			timer.start();
-			logger().info("Building cache...");
-			ass_vals_cache.init(mesh.is_volume(), bases, current_bases);
-			mass_ass_vals_cache.init(mesh.is_volume(), bases, current_bases, true);
-			pure_mass_ass_vals_cache.init(mesh.is_volume(), bases, current_bases, true);
-
-			logger().info(" took {}s", timer.getElapsedTime());
-		}
-		else
-		{
-			ass_vals_cache.init_empty();
-			mass_ass_vals_cache.init_empty(true);
-			pure_mass_ass_vals_cache.init_empty(true);
-		}
 	}
 
 	void VarForm::build_polygonal_basis(const mesh::Mesh &mesh)

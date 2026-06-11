@@ -185,14 +185,31 @@ namespace polyfem::varform
 		fluid_spaces.pressure.geometry = geometry_mapping;
 		fluid_spaces.pressure.value_dim = 1;
 
-		if (velocity_space.n_bases <= args["solver"]["advanced"]["cache_size"])
-			pressure_ass_vals_cache.init(mesh.is_volume(), *fluid_spaces.pressure.bases, geom_bases());
-		else
-			pressure_ass_vals_cache.init_empty();
-
 		timer.stop();
 		timings.building_basis_time += timer.getElapsedTime();
 		logger().info("n pressure bases: {}", fluid_spaces.pressure.n_bases);
+	}
+
+	void FluidVarForm::build_assembler_cache(const mesh::Mesh &mesh, const json &args)
+	{
+		if (velocity_space.n_bases <= args["solver"]["advanced"]["cache_size"])
+		{
+			igl::Timer timer;
+			timer.start();
+			logger().info("Building cache...");
+			velocity_caches.values.init(mesh.is_volume(), *velocity_space.bases, geom_bases());
+			velocity_caches.mass.init(mesh.is_volume(), *velocity_space.bases, geom_bases(), true);
+			velocity_caches.pure_mass.init(mesh.is_volume(), *velocity_space.bases, geom_bases(), true);
+			pressure_ass_vals_cache.init(mesh.is_volume(), *fluid_spaces.pressure.bases, geom_bases());
+			logger().info(" took {}s", timer.getElapsedTime());
+		}
+		else
+		{
+			velocity_caches.values.init_empty();
+			velocity_caches.mass.init_empty(true);
+			velocity_caches.pure_mass.init_empty(true);
+			pressure_ass_vals_cache.init_empty();
+		}
 	}
 
 	void FluidVarForm::build_boundary_condition(mesh::Mesh &mesh, const json &args)

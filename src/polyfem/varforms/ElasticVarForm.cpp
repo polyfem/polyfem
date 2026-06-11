@@ -27,6 +27,7 @@
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
+#include <polyfem/utils/Timer.hpp>
 
 #include <algorithm>
 #include <map>
@@ -102,6 +103,26 @@ namespace polyfem::varform
 		geometry_mapping->disc_orders = resolve_geom_orders(mesh, displacement_space.disc_orders, iso_parametric);
 
 		VarForm::build_basis(mesh, args);
+	}
+
+	void ElasticVarForm::build_assembler_cache(const mesh::Mesh &mesh, const json &args)
+	{
+		if (displacement_space.n_bases <= args["solver"]["advanced"]["cache_size"])
+		{
+			igl::Timer timer;
+			timer.start();
+			logger().info("Building cache...");
+			displacement_caches.values.init(mesh.is_volume(), *displacement_space.bases, geom_bases());
+			displacement_caches.mass.init(mesh.is_volume(), *displacement_space.bases, geom_bases(), true);
+			displacement_caches.pure_mass.init(mesh.is_volume(), *displacement_space.bases, geom_bases(), true);
+			logger().info(" took {}s", timer.getElapsedTime());
+		}
+		else
+		{
+			displacement_caches.values.init_empty();
+			displacement_caches.mass.init_empty(true);
+			displacement_caches.pure_mass.init_empty(true);
+		}
 	}
 
 	void ElasticVarForm::build_boundary_condition(mesh::Mesh &mesh, const json &args)
