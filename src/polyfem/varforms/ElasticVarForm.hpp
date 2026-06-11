@@ -11,7 +11,7 @@ namespace polyfem::solver
 {
 	class ContactForm;
 	class Form;
-}
+} // namespace polyfem::solver
 
 namespace polyfem::time_integrator
 {
@@ -29,15 +29,18 @@ namespace polyfem::varform
 
 	protected:
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
-		void build_basis(mesh::Mesh &mesh, const json &args) override;
+		void build_fe_space(mesh::Mesh &mesh, const json &args) override;
 		void build_assembler_cache(const mesh::Mesh &mesh, const json &args) override;
 		void build_boundary_condition(mesh::Mesh &mesh, const json &args) override;
-		FESpace &primary_space() override { return displacement_space; }
-		const FESpace &primary_space() const override { return displacement_space; }
-		std::shared_ptr<GeometryMapping> &primary_geometry() override { return geometry_mapping; }
-		const std::shared_ptr<GeometryMapping> &primary_geometry() const override { return geometry_mapping; }
-		AssemblyCaches &primary_caches() override { return displacement_caches; }
-		const AssemblyCaches &primary_caches() const override { return displacement_caches; }
+		// No-op.
+		void build_solution_layout() override {};
+
+		FESpace &legacy_primary_space_dont_use() override { return disp_space; }
+		const FESpace &legacy_primary_space_dont_use() const override { return disp_space; }
+		std::shared_ptr<GeometryMapping> &legacy_primary_geometry_dont_use() override { return disp_space.geometry; }
+		const std::shared_ptr<GeometryMapping> &legacy_primary_geometry_dont_use() const override { return disp_space.geometry; }
+		AssemblyCaches &legacy_primary_caches_dont_use() override { return displacement_caches; }
+		const AssemblyCaches &legacy_primary_caches_dont_use() const override { return displacement_caches; }
 		VarFormBoundaryState &boundary_state() override { return boundary; }
 		const VarFormBoundaryState &boundary_state() const override { return boundary; }
 
@@ -70,8 +73,7 @@ namespace polyfem::varform
 
 		virtual int n_obstacle_vertices() const { return 0; }
 
-		std::shared_ptr<GeometryMapping> geometry_mapping = std::make_shared<GeometryMapping>();
-		FESpace displacement_space;
+		FESpace disp_space; //< Displacement FE Space.
 		AssemblyCaches displacement_caches;
 		VarFormBoundaryState boundary;
 	};

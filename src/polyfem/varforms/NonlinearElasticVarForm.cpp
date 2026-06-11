@@ -217,8 +217,8 @@ namespace polyfem::varform
 		// Legacy nonlinear/contact code assumes n_bases includes obstacle vertices.
 		// Boundary conditions are built for the FE space before obstacle DOFs are
 		// appended and marked as constrained.
-		const int n_fe_bases = displacement_space.n_bases;
-		displacement_space.n_bases += obstacle.n_vertices();
+		const int n_fe_bases = disp_space.n_bases;
+		disp_space.n_bases += obstacle.n_vertices();
 
 		logger().info("Building collision mesh...");
 		build_collision_mesh(mesh, args);
@@ -228,7 +228,7 @@ namespace polyfem::varform
 		//  	build_periodic_collision_mesh();
 		logger().info("Done!");
 
-		for (int i = n_fe_bases; i < displacement_space.n_bases; ++i)
+		for (int i = n_fe_bases; i < disp_space.n_bases; ++i)
 		{
 			for (int d = 0; d < mesh.dimension(); ++d)
 				boundary.boundary_nodes.push_back(i * mesh.dimension() + d);
@@ -282,7 +282,7 @@ namespace polyfem::varform
 			*assembler, *mesh_, &obstacle,
 			boundary.dirichlet_nodes, boundary.neumann_nodes,
 			boundary.dirichlet_nodes_position, boundary.neumann_nodes_position,
-			displacement_space.n_bases, size, *displacement_space.bases, geom_bases(), displacement_caches.mass, *problem,
+			disp_space.n_bases, size, *disp_space.bases, geom_bases(), displacement_caches.mass, *problem,
 			args["space"]["advanced"]["bc_method"],
 			rhs_solver_params);
 		rhs_assembler = solve_data.rhs_assembler;
@@ -293,7 +293,7 @@ namespace polyfem::varform
 		const json &args)
 	{
 		build_collision_mesh(
-			mesh, displacement_space.n_bases, *displacement_space.bases, geom_bases(), boundary.total_local_boundary, obstacle,
+			mesh, disp_space.n_bases, *disp_space.bases, geom_bases(), boundary.total_local_boundary, obstacle,
 			args, [this](const std::string &p) { return utils::resolve_path(p, root_path, false); },
 			in_node_to_node, collision_mesh);
 	}
@@ -435,7 +435,7 @@ namespace polyfem::varform
 			boundary.local_pressure_cavity,
 			boundary.boundary_nodes,
 			primitive_to_node(), node_to_primitive(),
-			displacement_space.n_bases, size, *displacement_space.bases, geom_bases(), *problem);
+			disp_space.n_bases, size, *disp_space.bases, geom_bases(), *problem);
 	}
 
 	void NonlinearElasticStaticVarForm::solve_problem(Eigen::MatrixXd &sol)
@@ -513,7 +513,7 @@ namespace polyfem::varform
 			const io::OutputSpace space = output_space();
 			stats_csv = std::make_unique<io::RuntimeStatsCSVWriter>(
 				resolve_output_path("stats.csv"),
-				displacement_space.n_bases,
+				disp_space.n_bases,
 				space.mesh ? space.mesh->n_elements() : 0,
 				t0, dt);
 		}
@@ -583,7 +583,7 @@ namespace polyfem::varform
 			units,
 			dim, t, in_node_to_node,
 			// Elastic form
-			displacement_space.n_bases, *displacement_space.bases, geom_bases(), *assembler, displacement_caches.values, displacement_caches.mass, args["solver"]["advanced"]["jacobian_threshold"], check_inversion,
+			disp_space.n_bases, *disp_space.bases, geom_bases(), *assembler, displacement_caches.values, displacement_caches.mass, args["solver"]["advanced"]["jacobian_threshold"], check_inversion,
 			// Body form
 			0, boundary.boundary_nodes, boundary.local_boundary,
 			boundary.local_neumann_boundary,
@@ -730,9 +730,9 @@ namespace polyfem::varform
 		}
 
 		if (pure_mass.size() == 0)
-			pure_mass_matrix_assembler->assemble(mesh_->is_volume(), displacement_space.n_bases, *displacement_space.bases, geom_bases(), displacement_caches.pure_mass, 0, pure_mass, true);
+			pure_mass_matrix_assembler->assemble(mesh_->is_volume(), disp_space.n_bases, *disp_space.bases, geom_bases(), displacement_caches.pure_mass, 0, pure_mass, true);
 
-		const int ndof = displacement_space.n_bases * mesh_->dimension();
+		const int ndof = disp_space.n_bases * mesh_->dimension();
 		solve_data.nl_problem = std::make_shared<solver::NLProblem>(
 			ndof, nullptr, t, forms, solve_data.al_form,
 			polysolve::linear::Solver::create(args["solver"]["linear"], logger()),
@@ -795,7 +795,7 @@ namespace polyfem::varform
 
 		if (args["space"]["advanced"]["count_flipped_els_continuous"])
 		{
-			const auto invalidList = utils::count_invalid(mesh_->dimension(), *displacement_space.bases, geom_bases(), sol);
+			const auto invalidList = utils::count_invalid(mesh_->dimension(), *disp_space.bases, geom_bases(), sol);
 			logger().debug("Flipped elements (cnt {}) : {}", invalidList.size(), invalidList);
 		}
 

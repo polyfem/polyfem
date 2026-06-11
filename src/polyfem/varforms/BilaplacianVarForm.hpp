@@ -27,7 +27,7 @@ namespace polyfem::varform
 
 	private:
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
-		void build_basis(mesh::Mesh &mesh, const json &args) override;
+		void build_fe_space(mesh::Mesh &mesh, const json &args) override;
 		void build_assembler_cache(const mesh::Mesh &mesh, const json &args) override;
 		void build_boundary_condition(mesh::Mesh &mesh, const json &args) override;
 		void assemble_rhs(const mesh::Mesh &mesh, const json &args) override;
@@ -59,7 +59,7 @@ namespace polyfem::varform
 
 		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
 		std::shared_ptr<assembler::Assembler> pressure_assembler = nullptr;
-		BilaplacianSpaces bilaplacian_spaces;
+		// BilaplacianSpaces bilaplacian_spaces;
 		assembler::AssemblyValsCache pressure_ass_vals_cache;
 		bool use_avg_pressure = true;
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;

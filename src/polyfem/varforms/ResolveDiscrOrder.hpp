@@ -17,14 +17,14 @@ namespace polyfem
 	{
 		class Mesh;
 	}
-}
+} // namespace polyfem
 
 namespace polyfem::varform
 {
 	struct DiscOrders
 	{
-		Eigen::VectorXi orders;   // final per-element orders (possibly p-refined)
-		Eigen::VectorXi ordersq; // pre-refinement snapshot (for quadrature)
+		Eigen::VectorXi orders;
+		Eigen::VectorXi ordersq;
 	};
 
 	/// Resolve per-element discretization orders, optionally applying a priori p-refinement.
@@ -55,9 +55,7 @@ namespace polyfem::varform
 	///
 	/// @param mesh            The mesh
 	/// @param disc_orders     The solution space discretization orders (after p-refinement)
-	/// @param isoparametric   Whether the geometry mapping is isoparametric
 	/// @return                Per-element geometry discretization order vector
 	Eigen::VectorXi resolve_geom_orders(const mesh::Mesh &mesh,
-										const Eigen::VectorXi &disc_orders,
-										bool isoparametric);
+										const Eigen::VectorXi &disc_orders);
 } // namespace polyfem::varform

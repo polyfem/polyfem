@@ -1,5 +1,6 @@
 #include "ScalarVarForm.hpp"
 
+#include <memory>
 #include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/assembler/GenericProblem.hpp>
 
@@ -7,6 +8,7 @@
 
 #include <polyfem/problem/ProblemFactory.hpp>
 
+#include <polyfem/varforms/BuildBasis.hpp>
 #include <polyfem/varforms/ResolveDiscrOrder.hpp>
 #include <polyfem/varforms/ShouldUseIsoparametric.hpp>
 
@@ -71,21 +73,85 @@ namespace polyfem::varform
 		dt = is_time_dependent ? args["time"]["dt"].get<double>() : 0.0;
 	}
 
-	void ScalarVarForm::build_basis(mesh::Mesh &mesh, const json &args)
+	void ScalarVarForm::build_fe_space(mesh::Mesh &mesh, const json &args)
 	{
 		const bool iso_parametric = should_use_isoparametric(mesh, args);
 		scalar_space.value_dim = 1;
-		scalar_space.geometry = geometry_mapping;
+		scalar_space.geometry = std::make_shared<GeometryMapping>();
 
-		scalar_space.bases = std::make_shared<std::vector<basis::ElementBases>>();
-		geometry_mapping->bases = iso_parametric ? scalar_space.bases : std::make_shared<std::vector<basis::ElementBases>>();
-
+		// Resolve discr order.
 		auto disc = resolve_discr_orders(args, root_path, mesh, stats);
 		scalar_space.disc_orders = disc.orders;
 		scalar_space.disc_ordersq = disc.ordersq;
-		geometry_mapping->disc_orders = resolve_geom_orders(mesh, scalar_space.disc_orders, iso_parametric);
+		scalar_space.geometry->disc_orders = resolve_geom_orders(mesh, scalar_space.disc_orders);
 
-		VarForm::build_basis(mesh, args);
+		// Build scalar field basis.
+		logger().info("Building {} basis...", iso_parametric ? "isoparametric" : "not isoparametric");
+		double standard_basis_time = 0;
+		// if dynamic_cast fail, nullptr will be handled inside build_basis helper.
+		const auto *linear_assembler = dynamic_cast<const assembler::LinearAssembler *>(assembler.get());
+		auto ret = varform::build_basis(
+			mesh,
+			args,
+			assembler->name(),
+			scalar_space.disc_orders,
+			scalar_space.disc_ordersq,
+			scalar_space.value_dim,
+			false,
+			linear_assembler);
+		standard_basis_time += ret.standard_basis_time;
+
+		scalar_space.n_bases = ret.n_bases;
+		scalar_space.bases = std::make_shared<std::vector<basis::ElementBases>>(std::move(ret.bases));
+		scalar_space.mesh_nodes = std::move(ret.mesh_nodes);
+		scalar_space.polys = std::move(ret.polygons);
+		scalar_space.polys_3d = std::move(ret.polyhedra);
+		boundary.local_boundary = std::move(ret.local_boundary);
+
+		// Iso-parametric, geometry mapping mirror displacement space.
+		if (iso_parametric)
+		{
+			scalar_space.geometry->n_bases = scalar_space.n_bases;
+			scalar_space.geometry->bases = scalar_space.bases;
+			scalar_space.geometry->mesh_nodes = scalar_space.mesh_nodes;
+			scalar_space.geometry->polys = scalar_space.polys;
+			scalar_space.geometry->polys_3d = scalar_space.polys_3d;
+		}
+		// Build dedicate geometry mapping.
+		else
+		{
+			auto ret = varform::build_basis(
+				mesh,
+				args,
+				assembler->name(),
+				scalar_space.geometry->disc_orders,
+				scalar_space.geometry->disc_orders,
+				mesh.dimension(),
+				true);
+			standard_basis_time += ret.standard_basis_time;
+			scalar_space.geometry->n_bases = ret.n_bases;
+			scalar_space.geometry->bases = std::make_shared<std::vector<basis::ElementBases>>(std::move(ret.bases));
+			scalar_space.geometry->mesh_nodes = std::move(ret.mesh_nodes);
+			scalar_space.geometry->polys = std::move(ret.polygons);
+			scalar_space.geometry->polys_3d = std::move(ret.polyhedra);
+		}
+
+		// TODO: remove
+		boundary.total_local_boundary.clear();
+		for (const auto &local_boundary : boundary.local_boundary)
+			boundary.total_local_boundary.emplace_back(local_boundary);
+
+		// TODO: remove
+		if (args["space"]["advanced"]["count_flipped_els"])
+			stats.count_flipped_elements(mesh, geom_bases());
+		stats.compute_mesh_size(mesh, geom_bases(), 10, args["output"]["advanced"]["curved_mesh_size"]);
+
+		timings.building_basis_time = standard_basis_time;
+		timings.computing_poly_basis_time = ret.polygon_basis_time;
+		logger().info(" took {}s", timings.building_basis_time);
+		logger().info("flipped elements {}", stats.n_flipped);
+		logger().info("h: {}", stats.mesh_size);
+		logger().info("n bases: {}", scalar_space.n_bases);
 	}
 
 	void ScalarVarForm::build_assembler_cache(const mesh::Mesh &mesh, const json &args)

@@ -1,5 +1,6 @@
 #include "ElasticVarForm.hpp"
 
+#include <memory>
 #include <polyfem/assembler/ElementAssemblyValues.hpp>
 
 #include <polyfem/assembler/MultiModel.hpp>
@@ -19,6 +20,7 @@
 #include <polyfem/problem/KernelProblem.hpp>
 #include <polyfem/problem/ProblemFactory.hpp>
 
+#include <polyfem/varforms/BuildBasis.hpp>
 #include <polyfem/varforms/ResolveDiscrOrder.hpp>
 #include <polyfem/varforms/ShouldUseIsoparametric.hpp>
 
@@ -88,33 +90,93 @@ namespace polyfem::varform
 		dt = is_time_dependent ? args["time"]["dt"].get<double>() : 0.0;
 	}
 
-	void ElasticVarForm::build_basis(mesh::Mesh &mesh, const json &args)
+	void ElasticVarForm::build_fe_space(mesh::Mesh &mesh, const json &args)
 	{
 		const bool iso_parametric = should_use_isoparametric(mesh, args);
-		displacement_space.value_dim = mesh.dimension();
-		displacement_space.geometry = geometry_mapping;
+		disp_space.value_dim = mesh.dimension();
+		disp_space.geometry = std::make_shared<GeometryMapping>();
 
-		displacement_space.bases = std::make_shared<std::vector<basis::ElementBases>>();
-		geometry_mapping->bases = iso_parametric ? displacement_space.bases : std::make_shared<std::vector<basis::ElementBases>>();
-
+		// Resolve discr order.
 		auto disc = resolve_discr_orders(args, root_path, mesh, stats);
-		displacement_space.disc_orders = disc.orders;
-		displacement_space.disc_ordersq = disc.ordersq;
-		geometry_mapping->disc_orders = resolve_geom_orders(mesh, displacement_space.disc_orders, iso_parametric);
+		disp_space.disc_orders = disc.orders;
+		disp_space.disc_ordersq = disc.ordersq;
+		disp_space.geometry->disc_orders = resolve_geom_orders(mesh, disp_space.disc_orders);
 
-		VarForm::build_basis(mesh, args);
+		// Build displacement field basis.
+		logger().info("Building {} basis...", iso_parametric ? "isoparametric" : "not isoparametric");
+		double standard_basis_time = 0;
+		// if dynamic_cast fail, nullptr will be handled inside build_basis helper.
+		const auto *linear_assembler = dynamic_cast<const assembler::LinearAssembler *>(assembler.get());
+		auto ret = varform::build_basis(
+			mesh,
+			args,
+			assembler->name(),
+			disp_space.disc_orders,
+			disp_space.disc_ordersq,
+			disp_space.value_dim,
+			false,
+			linear_assembler);
+		standard_basis_time += ret.standard_basis_time;
+
+		disp_space.n_bases = ret.n_bases;
+		disp_space.bases = std::make_shared<std::vector<basis::ElementBases>>(std::move(ret.bases));
+		disp_space.polys = std::move(ret.polygons);
+		disp_space.polys_3d = std::move(ret.polyhedra);
+		disp_space.mesh_nodes = ret.mesh_nodes;
+		boundary.local_boundary = std::move(ret.local_boundary);
+
+		// Iso-parametric, geometry mapping mirror displacement space.
+		if (iso_parametric)
+		{
+			disp_space.geometry->mirror_fe_space(disp_space);
+		}
+		// Build dedicate geometry mapping.
+		else
+		{
+			auto ret = varform::build_basis(
+				mesh,
+				args,
+				assembler->name(),
+				disp_space.geometry->disc_orders,
+				disp_space.geometry->disc_orders,
+				mesh.dimension(),
+				true);
+			standard_basis_time += ret.standard_basis_time;
+			disp_space.geometry->bases = std::make_shared<std::vector<basis::ElementBases>>(std::move(ret.bases));
+			disp_space.geometry->n_bases = ret.n_bases;
+			disp_space.geometry->mesh_nodes = ret.mesh_nodes;
+			disp_space.geometry->polys = std::move(ret.polygons);
+			disp_space.geometry->polys_3d = std::move(ret.polyhedra);
+		}
+
+		// TODO: remove
+		boundary.total_local_boundary.clear();
+		for (const auto &local_boundary : boundary.local_boundary)
+			boundary.total_local_boundary.emplace_back(local_boundary);
+
+		// TODO: remove
+		if (args["space"]["advanced"]["count_flipped_els"])
+			stats.count_flipped_elements(mesh, geom_bases());
+		stats.compute_mesh_size(mesh, geom_bases(), 10, args["output"]["advanced"]["curved_mesh_size"]);
+
+		timings.building_basis_time = standard_basis_time;
+		timings.computing_poly_basis_time = ret.polygon_basis_time;
+		logger().info(" took {}s", timings.building_basis_time);
+		logger().info("flipped elements {}", stats.n_flipped);
+		logger().info("h: {}", stats.mesh_size);
+		logger().info("n bases: {}", disp_space.n_bases);
 	}
 
 	void ElasticVarForm::build_assembler_cache(const mesh::Mesh &mesh, const json &args)
 	{
-		if (displacement_space.n_bases <= args["solver"]["advanced"]["cache_size"])
+		if (disp_space.n_bases <= args["solver"]["advanced"]["cache_size"])
 		{
 			igl::Timer timer;
 			timer.start();
 			logger().info("Building cache...");
-			displacement_caches.values.init(mesh.is_volume(), *displacement_space.bases, geom_bases());
-			displacement_caches.mass.init(mesh.is_volume(), *displacement_space.bases, geom_bases(), true);
-			displacement_caches.pure_mass.init(mesh.is_volume(), *displacement_space.bases, geom_bases(), true);
+			displacement_caches.values.init(mesh.is_volume(), *disp_space.bases, geom_bases());
+			displacement_caches.mass.init(mesh.is_volume(), *disp_space.bases, geom_bases(), true);
+			displacement_caches.pure_mass.init(mesh.is_volume(), *disp_space.bases, geom_bases(), true);
 			logger().info(" took {}s", timer.getElapsedTime());
 		}
 		else
@@ -146,8 +208,8 @@ namespace polyfem::varform
 
 		const std::vector<basis::ElementBases> empty_pressure_bases;
 		problem->setup_bc(
-			mesh, displacement_space.n_bases,
-			*displacement_space.bases, geom_bases(), empty_pressure_bases,
+			mesh, disp_space.n_bases,
+			*disp_space.bases, geom_bases(), empty_pressure_bases,
 			boundary.local_boundary,
 			boundary.boundary_nodes,
 			boundary.local_neumann_boundary,
@@ -156,8 +218,8 @@ namespace polyfem::varform
 			boundary.pressure_boundary_nodes,
 			boundary.dirichlet_nodes, boundary.neumann_nodes);
 
-		rebuild_node_positions(*displacement_space.bases, boundary.dirichlet_nodes, boundary.dirichlet_nodes_position);
-		rebuild_node_positions(*displacement_space.bases, boundary.neumann_nodes, boundary.neumann_nodes_position);
+		rebuild_node_positions(*disp_space.bases, boundary.dirichlet_nodes, boundary.dirichlet_nodes_position);
+		rebuild_node_positions(*disp_space.bases, boundary.neumann_nodes, boundary.neumann_nodes_position);
 	}
 
 	void ElasticVarForm::load_mesh(const mesh::Mesh &mesh, const json &args)
@@ -288,7 +350,7 @@ namespace polyfem::varform
 
 					Eigen::MatrixXd local_sol, local_grad;
 					io::Evaluator::interpolate_at_local_vals(
-						*mesh_, field_dim, *displacement_space.bases, geom_bases(),
+						*mesh_, field_dim, *disp_space.bases, geom_bases(),
 						element_id, sample.local_points.row(i), dof_values, local_sol, local_grad);
 
 					for (int d = 0; d < field_dim; ++d)
@@ -344,7 +406,7 @@ namespace polyfem::varform
 
 				std::vector<assembler::Assembler::NamedMatrix> local_values;
 				assembler->compute_scalar_value(
-					assembler::OutputData(sample.time, element_id, displacement_space.bases->at(element_id), geom_bases()[element_id], sample.local_points.row(i), solution),
+					assembler::OutputData(sample.time, element_id, disp_space.bases->at(element_id), geom_bases()[element_id], sample.local_points.row(i), solution),
 					local_values);
 
 				if (point_values.empty())
@@ -389,7 +451,7 @@ namespace polyfem::varform
 
 				std::vector<assembler::Assembler::NamedMatrix> local_values;
 				assembler->compute_tensor_value(
-					assembler::OutputData(sample.time, element_id, displacement_space.bases->at(element_id), geom_bases()[element_id], sample.local_points.row(i), solution),
+					assembler::OutputData(sample.time, element_id, disp_space.bases->at(element_id), geom_bases()[element_id], sample.local_points.row(i), solution),
 					local_values);
 
 				if (point_values.empty())
@@ -434,38 +496,38 @@ namespace polyfem::varform
 			if (!wants_avg)
 				return;
 
-			Eigen::MatrixXd areas(displacement_space.n_bases, 1);
+			Eigen::MatrixXd areas(disp_space.n_bases, 1);
 			areas.setZero();
 			std::vector<assembler::Assembler::NamedMatrix> tmp_s, tmp_t;
 			std::vector<Eigen::MatrixXd> avg_scalar, avg_tensor;
 
-			for (int e = 0; e < int(displacement_space.bases->size()); ++e)
+			for (int e = 0; e < int(disp_space.bases->size()); ++e)
 			{
 				Eigen::MatrixXd local_pts;
 				if (mesh_->is_simplex(e))
 				{
 					if (mesh_->dimension() == 3)
-						autogen::p_nodes_3d(displacement_space.disc_orders(e), local_pts);
+						autogen::p_nodes_3d(disp_space.disc_orders(e), local_pts);
 					else
-						autogen::p_nodes_2d(displacement_space.disc_orders(e), local_pts);
+						autogen::p_nodes_2d(disp_space.disc_orders(e), local_pts);
 				}
 				else if (mesh_->is_cube(e))
 				{
 					if (mesh_->dimension() == 3)
-						autogen::q_nodes_3d(displacement_space.disc_orders(e), local_pts);
+						autogen::q_nodes_3d(disp_space.disc_orders(e), local_pts);
 					else
-						autogen::q_nodes_2d(displacement_space.disc_orders(e), local_pts);
+						autogen::q_nodes_2d(disp_space.disc_orders(e), local_pts);
 				}
 				else if (mesh_->is_prism(e))
 				{
-					autogen::prism_nodes_3d(displacement_space.disc_orders(e), displacement_space.disc_ordersq(e), local_pts);
+					autogen::prism_nodes_3d(disp_space.disc_orders(e), disp_space.disc_ordersq(e), local_pts);
 				}
 				else
 				{
 					continue;
 				}
 
-				const basis::ElementBases &bs = displacement_space.bases->at(e);
+				const basis::ElementBases &bs = disp_space.bases->at(e);
 				const basis::ElementBases &gbs = geom_bases()[e];
 
 				assembler::ElementAssemblyValues vals;
@@ -481,13 +543,13 @@ namespace polyfem::varform
 				{
 					avg_scalar.resize(tmp_s.size());
 					for (auto &m : avg_scalar)
-						m.setZero(displacement_space.n_bases, 1);
+						m.setZero(disp_space.n_bases, 1);
 				}
 				if (avg_tensor.empty() && !tmp_t.empty())
 				{
 					avg_tensor.resize(tmp_t.size());
 					for (auto &m : avg_tensor)
-						m.setZero(displacement_space.n_bases, actual_dim * actual_dim);
+						m.setZero(disp_space.n_bases, actual_dim * actual_dim);
 				}
 
 				for (size_t j = 0; j < bs.bases.size(); ++j)
@@ -589,7 +651,7 @@ namespace polyfem::varform
 
 		const auto compute_traction_forces = [&]() {
 			Eigen::MatrixXd traction_forces;
-			traction_forces.setZero(displacement_space.n_bases * actual_dim, 1);
+			traction_forces.setZero(disp_space.n_bases * actual_dim, 1);
 
 			Eigen::MatrixXd uv, points, normals;
 			Eigen::VectorXd weights;
@@ -604,7 +666,7 @@ namespace polyfem::varform
 				if (!has_samples)
 					continue;
 
-				const basis::ElementBases &bs = displacement_space.bases->at(e);
+				const basis::ElementBases &bs = disp_space.bases->at(e);
 				const basis::ElementBases &gbs = geom_bases()[e];
 				vals.compute(e, mesh_->is_volume(), points, bs, gbs);
 
@@ -661,7 +723,7 @@ namespace polyfem::varform
 
 					std::vector<assembler::Assembler::NamedMatrix> tensor_flat;
 					assembler->compute_tensor_value(
-						assembler::OutputData(sample.time, element_id, displacement_space.bases->at(element_id), geom_bases()[element_id], sample.local_points.row(i), solution),
+						assembler::OutputData(sample.time, element_id, disp_space.bases->at(element_id), geom_bases()[element_id], sample.local_points.row(i), solution),
 						tensor_flat);
 
 					assert(tensor_flat[0].first == "cauchy_stess");
@@ -792,7 +854,7 @@ namespace polyfem::varform
 
 				Eigen::MatrixXd local_value, local_gradient;
 				io::Evaluator::interpolate_at_local_vals(
-					*mesh_, dim, *displacement_space.bases, geom_bases(),
+					*mesh_, dim, *disp_space.bases, geom_bases(),
 					element_id, sample.local_points.row(i), solution,
 					local_value, local_gradient);
 				values.row(i) = local_value;
@@ -874,7 +936,7 @@ namespace polyfem::varform
 
 			Eigen::MatrixXd local_value, local_gradient;
 			io::Evaluator::interpolate_at_local_vals(
-				*mesh_, dim, *displacement_space.bases, geom_bases(),
+				*mesh_, dim, *disp_space.bases, geom_bases(),
 				element_id, sample.local_points.row(i), solution,
 				local_value, local_gradient);
 
@@ -919,16 +981,16 @@ namespace polyfem::varform
 	void ElasticVarForm::build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F) const
 	{
 		assert(mesh_);
-		assert(displacement_space.bases->size() == mesh_->n_elements());
-		const size_t n_vertices = displacement_space.n_bases - n_obstacle_vertices();
+		assert(disp_space.bases->size() == mesh_->n_elements());
+		const size_t n_vertices = disp_space.n_bases - n_obstacle_vertices();
 		const int dim = mesh_->dimension();
 
 		V.resize(n_vertices, dim);
-		F.resize(displacement_space.bases->size(), dim + 1);
+		F.resize(disp_space.bases->size(), dim + 1);
 
-		for (int i = 0; i < displacement_space.bases->size(); i++)
+		for (int i = 0; i < disp_space.bases->size(); i++)
 		{
-			const basis::ElementBases &element = displacement_space.bases->at(i);
+			const basis::ElementBases &element = disp_space.bases->at(i);
 			for (int j = 0; j < element.bases.size(); j++)
 			{
 				const basis::Basis &basis = element.bases[j];

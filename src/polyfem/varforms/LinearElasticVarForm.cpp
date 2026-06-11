@@ -47,7 +47,7 @@ namespace polyfem::varform
 		logger().info("Assembling stiffness mat...");
 		assert(assembler->is_linear());
 
-		assembler->assemble(mesh_->is_volume(), displacement_space.n_bases, *displacement_space.bases, geom_bases(), displacement_caches.values, 0, stiffness);
+		assembler->assemble(mesh_->is_volume(), disp_space.n_bases, *disp_space.bases, geom_bases(), displacement_caches.values, 0, stiffness);
 
 		timer.stop();
 		timings.assembling_stiffness_mat_time = timer.getElapsedTime();
@@ -72,7 +72,7 @@ namespace polyfem::varform
 		assert(rhs_assembler != nullptr);
 
 		const int problem_dim = problem->is_scalar() ? 1 : mesh_->dimension();
-		const int precond_num = problem_dim * displacement_space.n_bases;
+		const int precond_num = problem_dim * disp_space.n_bases;
 
 		Eigen::VectorXd x;
 		stats.spectrum = dirichlet_solve(
@@ -102,10 +102,10 @@ namespace polyfem::varform
 		assert(sol.cols() == 1);
 		assert(assembler->is_linear());
 
-		const int ndof = displacement_space.n_bases * mesh_->dimension();
+		const int ndof = disp_space.n_bases * mesh_->dimension();
 
 		elastic_form = std::make_shared<solver::ElasticForm>(
-			displacement_space.n_bases, *displacement_space.bases, geom_bases(),
+			disp_space.n_bases, *disp_space.bases, geom_bases(),
 			*assembler, displacement_caches.values,
 			t, problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
 			mesh_->is_volume());

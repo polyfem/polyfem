@@ -5,7 +5,6 @@
 #include <polyfem/assembler/Problem.hpp>
 #include <polyfem/assembler/RhsAssembler.hpp>
 #include <polyfem/basis/ElementBases.hpp>
-#include <polyfem/basis/InterfaceData.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/MeshNodes.hpp>
 
@@ -20,8 +19,6 @@
 #include <functional>
 #include <iosfwd>
 #include <memory>
-#include <map>
-#include <unordered_map>
 #include <vector>
 #include <string>
 
@@ -115,9 +112,10 @@ namespace polyfem
 			virtual void set_materials(assembler::Assembler &assembler) const;
 
 			virtual void load_mesh(const mesh::Mesh &mesh, const json &args);
-			virtual void build_basis(mesh::Mesh &mesh, const json &args);
+			virtual void build_fe_space(mesh::Mesh &mesh, const json &args) = 0;
 			virtual void build_assembler_cache(const mesh::Mesh &mesh, const json &args) = 0;
 			virtual void build_boundary_condition(mesh::Mesh &mesh, const json &args) = 0;
+			virtual void build_solution_layout() = 0;
 			virtual void assemble_rhs(const mesh::Mesh &mesh, const json &args);
 			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args);
 			virtual void solve_problem(Eigen::MatrixXd &sol) = 0;
@@ -127,21 +125,21 @@ namespace polyfem
 			/// @return A constant reference to the geometry mapping bases.
 			const std::vector<basis::ElementBases> &geom_bases() const
 			{
-				return *primary_geometry()->bases;
+				return *legacy_primary_geometry_dont_use()->bases;
 			}
 
-			// primary_xxx method is for lagacy compatibility only!!!!!
+			// For lagacy compatibility only!!!!!
 			// NEVER EVER USE IT IN NEW CODE.
-			virtual FESpace &primary_space() = 0;
-			virtual const FESpace &primary_space() const = 0;
-			virtual std::shared_ptr<GeometryMapping> &primary_geometry() = 0;
-			virtual const std::shared_ptr<GeometryMapping> &primary_geometry() const = 0;
-			virtual AssemblyCaches &primary_caches() = 0;
-			virtual const AssemblyCaches &primary_caches() const = 0;
+			virtual FESpace &legacy_primary_space_dont_use() = 0;
+			virtual const FESpace &legacy_primary_space_dont_use() const = 0;
+			virtual std::shared_ptr<GeometryMapping> &legacy_primary_geometry_dont_use() = 0;
+			virtual const std::shared_ptr<GeometryMapping> &legacy_primary_geometry_dont_use() const = 0;
+			virtual AssemblyCaches &legacy_primary_caches_dont_use() = 0;
+			virtual const AssemblyCaches &legacy_primary_caches_dont_use() const = 0;
+
 			virtual VarFormBoundaryState &boundary_state() = 0;
 			virtual const VarFormBoundaryState &boundary_state() const = 0;
 
-			void build_polygonal_basis(const mesh::Mesh &mesh);
 			void build_node_mapping(const mesh::Mesh &mesh, const json &args);
 			std::vector<int> primitive_to_node() const;
 			std::vector<int> node_to_primitive() const;
@@ -194,9 +192,6 @@ namespace polyfem
 			std::shared_ptr<assembler::Assembler> assembler = nullptr;
 			std::shared_ptr<assembler::Mass> mass_matrix_assembler = nullptr;
 			std::shared_ptr<assembler::HRZMass> pure_mass_matrix_assembler = nullptr;
-
-			/// nodes on the boundary of polygonal elements, used for harmonic bases
-			std::map<int, basis::InterfaceData> poly_edge_to_data;
 
 			/// Input nodes (including high-order) to polyfem nodes, only for isoparametric
 			Eigen::VectorXi in_node_to_node;

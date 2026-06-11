@@ -1,4 +1,6 @@
 set(SOURCES
+    BuildBasis.hpp
+    BuildBasis.cpp
     ResolveDiscrOrder.hpp
     ResolveDiscrOrder.cpp
     ShouldUseIsoparametric.hpp
@@ -8,6 +10,7 @@ set(SOURCES
     VarFormFactory.cpp
     VarFormUtils.hpp
     FESpace.hpp
+    FESpace.cpp
     ElasticVarForm.hpp
     ElasticVarForm.cpp
     LinearElasticVarForm.hpp

@@ -8,8 +8,6 @@
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/problem/ProblemFactory.hpp>
 #include <polyfem/time_integrator/BDF.hpp>
-#include <polyfem/varforms/ResolveDiscrOrder.hpp>
-#include <polyfem/varforms/ShouldUseIsoparametric.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
@@ -87,21 +85,9 @@ namespace polyfem::varform
 			rhs_solver_params);
 	}
 
-	void BilaplacianVarForm::build_basis(mesh::Mesh &mesh, const json &args)
+	void BilaplacianVarForm::build_fe_space(mesh::Mesh &mesh, const json &args)
 	{
-		const bool iso_parametric = should_use_isoparametric(mesh, args);
-		scalar_space.value_dim = 1;
-		scalar_space.geometry = geometry_mapping;
-
-		scalar_space.bases = std::make_shared<std::vector<basis::ElementBases>>();
-		geometry_mapping->bases = iso_parametric ? scalar_space.bases : std::make_shared<std::vector<basis::ElementBases>>();
-
-		auto disc = resolve_discr_orders(args, root_path, mesh, stats);
-		scalar_space.disc_orders = disc.orders;
-		scalar_space.disc_ordersq = disc.ordersq;
-		geometry_mapping->disc_orders = resolve_geom_orders(mesh, scalar_space.disc_orders, iso_parametric);
-
-		VarForm::build_basis(mesh, args);
+		ScalarVarForm::build_fe_space(mesh, args);
 
 		if (scalar_space.disc_orders.maxCoeff() != scalar_space.disc_orders.minCoeff())
 			log_and_throw_error("p refinement not supported in mixed formulation!");

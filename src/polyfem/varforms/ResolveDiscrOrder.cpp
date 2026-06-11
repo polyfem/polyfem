@@ -93,14 +93,8 @@ namespace polyfem::varform
 	}
 
 	Eigen::VectorXi resolve_geom_orders(const mesh::Mesh &mesh,
-										const Eigen::VectorXi &disc_orders,
-										bool isoparametric)
+										const Eigen::VectorXi &disc_orders)
 	{
-		if (isoparametric)
-		{
-			return disc_orders;
-		}
-
 		if (mesh.orders().size() <= 0)
 		{
 			Eigen::VectorXi geom_orders(disc_orders.size());

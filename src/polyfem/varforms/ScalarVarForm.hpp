@@ -27,19 +27,21 @@ namespace polyfem::varform
 			const io::OutputFieldOptions &options) const override;
 
 	protected:
-		FESpace &primary_space() override { return scalar_space; }
-		const FESpace &primary_space() const override { return scalar_space; }
-		std::shared_ptr<GeometryMapping> &primary_geometry() override { return geometry_mapping; }
-		const std::shared_ptr<GeometryMapping> &primary_geometry() const override { return geometry_mapping; }
-		AssemblyCaches &primary_caches() override { return scalar_caches; }
-		const AssemblyCaches &primary_caches() const override { return scalar_caches; }
+		FESpace &legacy_primary_space_dont_use() override { return scalar_space; }
+		const FESpace &legacy_primary_space_dont_use() const override { return scalar_space; }
+		std::shared_ptr<GeometryMapping> &legacy_primary_geometry_dont_use() override { return scalar_space.geometry; }
+		const std::shared_ptr<GeometryMapping> &legacy_primary_geometry_dont_use() const override { return scalar_space.geometry; }
+		AssemblyCaches &legacy_primary_caches_dont_use() override { return scalar_caches; }
+		const AssemblyCaches &legacy_primary_caches_dont_use() const override { return scalar_caches; }
 		VarFormBoundaryState &boundary_state() override { return boundary; }
 		const VarFormBoundaryState &boundary_state() const override { return boundary; }
 
 	protected:
-		void build_basis(mesh::Mesh &mesh, const json &args) override;
+		void build_fe_space(mesh::Mesh &mesh, const json &args) override;
 		void build_assembler_cache(const mesh::Mesh &mesh, const json &args) override;
 		void build_boundary_condition(mesh::Mesh &mesh, const json &args) override;
+		// No-op.
+		void build_solution_layout() override {};
 
 	private:
 		void build_stiffness_mat(StiffnessMatrix &stiffness);
@@ -57,7 +59,6 @@ namespace polyfem::varform
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 
 	protected:
-		std::shared_ptr<GeometryMapping> geometry_mapping = std::make_shared<GeometryMapping>();
 		FESpace scalar_space;
 		AssemblyCaches scalar_caches;
 		VarFormBoundaryState boundary;

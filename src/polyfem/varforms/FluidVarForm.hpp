@@ -1,5 +1,6 @@
 #pragma once
 
+#include "polyfem/varforms/FESpace.hpp"
 #include <polyfem/varforms/VarForm.hpp>
 
 #include <polyfem/assembler/Assembler.hpp>
@@ -25,17 +26,28 @@ namespace polyfem::varform
 
 	protected:
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
-		void build_basis(mesh::Mesh &mesh, const json &args) override;
+
+		// DESIGN NOTE:
+		// The idea is that base VarForm will provide pure virtual method for derive class to implement.
+		// In other language like Java, VarForm will be a so-called "Interface". Instead of complex method
+		// overwrite via inheritance, we de-duplicate code via focused free function helper in standalone file.
+
+		void build_fe_space(mesh::Mesh &mesh, const json &args) override;
 		void build_assembler_cache(const mesh::Mesh &mesh, const json &args) override;
 		void build_boundary_condition(mesh::Mesh &mesh, const json &args) override;
+		void build_solution_layout() override;
+
 		void assemble_rhs(const mesh::Mesh &mesh, const json &args) override;
 		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
-		FESpace &primary_space() override { return velocity_space; }
-		const FESpace &primary_space() const override { return velocity_space; }
-		std::shared_ptr<GeometryMapping> &primary_geometry() override { return geometry_mapping; }
-		const std::shared_ptr<GeometryMapping> &primary_geometry() const override { return geometry_mapping; }
-		AssemblyCaches &primary_caches() override { return velocity_caches; }
-		const AssemblyCaches &primary_caches() const override { return velocity_caches; }
+
+		// LEGACY COMPATIBILITY METHODS.
+		FESpace &legacy_primary_space_dont_use() override { return velocity_space; }
+		const FESpace &legacy_primary_space_dont_use() const override { return velocity_space; }
+		std::shared_ptr<GeometryMapping> &legacy_primary_geometry_dont_use() override { return velocity_space.geometry; }
+		const std::shared_ptr<GeometryMapping> &legacy_primary_geometry_dont_use() const override { return velocity_space.geometry; }
+		AssemblyCaches &legacy_primary_caches_dont_use() override { return velocity_caches; }
+		const AssemblyCaches &legacy_primary_caches_dont_use() const override { return velocity_caches; }
+
 		VarFormBoundaryState &boundary_state() override { return boundary; }
 		const VarFormBoundaryState &boundary_state() const override { return boundary; }
 
@@ -57,11 +69,34 @@ namespace polyfem::varform
 
 		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
 		std::shared_ptr<assembler::Assembler> pressure_assembler = nullptr;
-		std::shared_ptr<GeometryMapping> geometry_mapping = std::make_shared<GeometryMapping>();
+
+		// DESIGN NOTE: Each var form should be able build it's finite element space and specify solution layout.
+		//
+		// Ex. For thermal elasticity
+		// FESpace disp_space;
+		// FESpace temp_space;
+		// Solution layout: [displacement...] [temperature...]
+		//
+		// Ex. For fluid elasticity
+		// FESpace disp_space; // for solid
+		// FESpace velocity_space; // for fluid
+		// FESpace pressure_space; // for fluid
+		// Solution layout: [displacement...] [velocity...] [pressure...]
+		//
+		// There will be no primary/aux space and we are not limited to two spaces.
+
 		FESpace velocity_space;
+		FESpace pressure_space;
+
+		// DESIGN NOTE:
+		// For fluid, the layout is:
+		// [velocity...] [pressure...] [optional avg pressure lagrange multiplier]
+		//
+		// For simple varform with only one solution block, they can skip this class member.
+		SolutionLayout solution_layout;
+
 		AssemblyCaches velocity_caches;
 		VarFormBoundaryState boundary;
-		FluidSpaces fluid_spaces;
 		assembler::AssemblyValsCache pressure_ass_vals_cache;
 		bool use_avg_pressure = true;
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;

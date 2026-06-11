@@ -6,16 +6,6 @@
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/varforms/VarFormUtils.hpp>
 
-#include <polyfem/basis/LagrangeBasis2d.hpp>
-#include <polyfem/basis/LagrangeBasis3d.hpp>
-#include <polyfem/basis/SplineBasis2d.hpp>
-#include <polyfem/basis/SplineBasis3d.hpp>
-#include <polyfem/basis/barycentric/MVPolygonalBasis2d.hpp>
-#include <polyfem/basis/barycentric/WSPolygonalBasis2d.hpp>
-#include <polyfem/basis/PolygonalBasis2d.hpp>
-#include <polyfem/basis/PolygonalBasis3d.hpp>
-#include <polyfem/mesh/mesh2D/Mesh2D.hpp>
-#include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/refinement/APriori.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
@@ -233,7 +223,7 @@ namespace polyfem::varform
 		using assembler::AssemblerUtils;
 		const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
 		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
-		const Eigen::VectorXi &disc_orders = primary_space().disc_orders;
+		const Eigen::VectorXi &disc_orders = legacy_primary_space_dont_use().disc_orders;
 		const int discr_order = std::max(disc_orders.maxCoeff(), gdiscr_order);
 
 		const int n_b_samples = std::max(n_b_samples_j, AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::POLY, mesh_->dimension()));
@@ -282,264 +272,14 @@ namespace polyfem::varform
 
 		mesh_->prepare_mesh();
 		stats.compute_mesh_stats(*mesh_);
-		build_basis(*mesh_, args);
+		rhs.resize(0, 0);
+		build_fe_space(*mesh_, args);
 		build_assembler_cache(*mesh_, args);
 		build_boundary_condition(*mesh_, args);
+		build_solution_layout();
 		assemble_rhs(*mesh_, args);
 		assemble_mass_mat(*mesh_, args);
 		prepared_ = true;
-	}
-
-	void VarForm::build_basis(mesh::Mesh &mesh, const json &args)
-	{
-		using namespace mesh;
-		FESpace &space = primary_space();
-		std::shared_ptr<GeometryMapping> &geometry = primary_geometry();
-		VarFormBoundaryState &boundary = boundary_state();
-		std::vector<basis::ElementBases> &bases = *space.bases;
-		int &n_bases = space.n_bases;
-		Eigen::VectorXi &disc_orders = space.disc_orders;
-		Eigen::VectorXi &disc_ordersq = space.disc_ordersq;
-		std::vector<basis::ElementBases> &geom_bases_ = *geometry->bases;
-		int &n_geom_bases = geometry->n_bases;
-		std::shared_ptr<polyfem::mesh::MeshNodes> &mesh_nodes = space.mesh_nodes;
-		std::shared_ptr<polyfem::mesh::MeshNodes> &geom_mesh_nodes = geometry->mesh_nodes;
-		std::vector<mesh::LocalBoundary> &total_local_boundary = boundary.total_local_boundary;
-		std::vector<mesh::LocalBoundary> &local_boundary = boundary.local_boundary;
-
-		igl::Timer timer;
-		timer.start();
-
-		const bool iso_parametric = (geometry->bases == space.bases);
-		logger().info("Building {} basis...", (iso_parametric ? "isoparametric" : "not isoparametric"));
-		const bool has_polys = mesh.has_poly();
-
-		total_local_boundary.clear();
-		local_boundary.clear();
-		std::map<int, basis::InterfaceData> poly_edge_to_data_geom;
-
-		const int quadrature_order = args["space"]["advanced"]["quadrature_order"].get<int>();
-		const int mass_quadrature_order = args["space"]["advanced"]["mass_quadrature_order"].get<int>();
-
-		const bool use_continuous_gbasis = true;
-		const bool use_corner_quadrature = args["space"]["advanced"]["use_corner_quadrature"];
-
-		if (mesh.is_volume())
-		{
-			const Mesh3D &tmp_mesh = dynamic_cast<const Mesh3D &>(mesh);
-			if (args["space"]["basis_type"] == "Spline")
-			{
-				n_bases = basis::SplineBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
-			}
-			else
-			{
-				if (!iso_parametric)
-					n_geom_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geometry->disc_orders, geometry->disc_orders, false, false, has_polys, !use_continuous_gbasis, use_corner_quadrature, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
-
-				n_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, disc_orders, disc_ordersq, args["space"]["basis_type"] == "Bernstein", args["space"]["basis_type"] == "Serendipity", has_polys, false, use_corner_quadrature, bases, local_boundary, poly_edge_to_data, mesh_nodes);
-			}
-		}
-		else
-		{
-			const Mesh2D &tmp_mesh = dynamic_cast<const Mesh2D &>(mesh);
-			if (args["space"]["basis_type"] == "Spline")
-			{
-				n_bases = basis::SplineBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, bases, local_boundary, poly_edge_to_data);
-			}
-			else
-			{
-				if (!iso_parametric)
-					n_geom_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geometry->disc_orders, false, false, has_polys, !use_continuous_gbasis, use_corner_quadrature, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
-
-				n_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["basis_type"] == "Bernstein", args["space"]["basis_type"] == "Serendipity", has_polys, false, use_corner_quadrature, bases, local_boundary, poly_edge_to_data, mesh_nodes);
-			}
-		}
-
-		timer.stop();
-
-		build_polygonal_basis(mesh);
-
-		if (iso_parametric)
-		{
-			n_geom_bases = n_bases;
-			geometry->mesh_nodes = space.mesh_nodes;
-		}
-
-		total_local_boundary.clear();
-		for (const auto &lb : local_boundary)
-			total_local_boundary.emplace_back(lb);
-
-		if (args["space"]["advanced"]["count_flipped_els"])
-			stats.count_flipped_elements(mesh, geom_bases());
-
-		const auto &current_bases = geom_bases();
-		const int n_samples = 10;
-		stats.compute_mesh_size(mesh, current_bases, n_samples, args["output"]["advanced"]["curved_mesh_size"]);
-
-		logger().info("n_bases {}", n_bases);
-
-		timings.building_basis_time = timer.getElapsedTime();
-		logger().info(" took {}s", timings.building_basis_time);
-
-		logger().info("flipped elements {}", stats.n_flipped);
-		logger().info("h: {}", stats.mesh_size);
-		logger().info("n bases: {}", n_bases);
-
-	}
-
-	void VarForm::build_polygonal_basis(const mesh::Mesh &mesh)
-	{
-		FESpace &space = primary_space();
-		std::shared_ptr<GeometryMapping> &geometry = primary_geometry();
-		VarFormBoundaryState &boundary = boundary_state();
-		std::vector<basis::ElementBases> &bases = *space.bases;
-		int &n_bases = space.n_bases;
-		std::vector<basis::ElementBases> &geom_bases_ = *geometry->bases;
-		std::map<int, Eigen::MatrixXd> &polys = geometry->polys;
-		std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d = geometry->polys_3d;
-		std::vector<mesh::LocalBoundary> &local_boundary = boundary.local_boundary;
-		const bool iso_parametric = (geometry->bases == space.bases);
-
-		rhs.resize(0, 0);
-
-		if (poly_edge_to_data.empty() && polys.empty())
-		{
-			timings.computing_poly_basis_time = 0;
-			return;
-		}
-
-		igl::Timer timer;
-		timer.start();
-		logger().info("Computing polygonal basis...");
-
-		int new_bases = 0;
-		const int dim = assembler->is_tensor() ? mesh.dimension() : 1;
-		if (iso_parametric)
-		{
-			if (mesh.is_volume())
-			{
-				if (args["space"]["poly_basis_type"] == "MeanValue" || args["space"]["poly_basis_type"] == "Wachspress")
-					logger().error("Barycentric bases not supported in 3D");
-
-				const auto *linear_assembler = dynamic_cast<assembler::LinearAssembler *>(assembler.get());
-				assert(linear_assembler);
-				new_bases = basis::PolygonalBasis3d::build_bases(
-					*linear_assembler,
-					args["space"]["advanced"]["n_harmonic_samples"],
-					dynamic_cast<const mesh::Mesh3D &>(mesh),
-					n_bases,
-					args["space"]["advanced"]["quadrature_order"],
-					args["space"]["advanced"]["mass_quadrature_order"],
-					args["space"]["advanced"]["integral_constraints"],
-					bases,
-					bases,
-					poly_edge_to_data,
-					polys_3d);
-			}
-			else
-			{
-				const mesh::Mesh2D &mesh_2d = dynamic_cast<const mesh::Mesh2D &>(mesh);
-				if (args["space"]["poly_basis_type"] == "MeanValue")
-				{
-					new_bases = basis::MVPolygonalBasis2d::build_bases(
-						assembler->name(), dim, mesh_2d, n_bases,
-						args["space"]["advanced"]["quadrature_order"],
-						args["space"]["advanced"]["mass_quadrature_order"],
-						bases, local_boundary, polys);
-				}
-				else if (args["space"]["poly_basis_type"] == "Wachspress")
-				{
-					new_bases = basis::WSPolygonalBasis2d::build_bases(
-						assembler->name(), dim, mesh_2d, n_bases,
-						args["space"]["advanced"]["quadrature_order"],
-						args["space"]["advanced"]["mass_quadrature_order"],
-						bases, local_boundary, polys);
-				}
-				else
-				{
-					const auto *linear_assembler = dynamic_cast<assembler::LinearAssembler *>(assembler.get());
-					assert(linear_assembler);
-					new_bases = basis::PolygonalBasis2d::build_bases(
-						*linear_assembler,
-						args["space"]["advanced"]["n_harmonic_samples"],
-						mesh_2d,
-						n_bases,
-						args["space"]["advanced"]["quadrature_order"],
-						args["space"]["advanced"]["mass_quadrature_order"],
-						args["space"]["advanced"]["integral_constraints"],
-						bases,
-						bases,
-						poly_edge_to_data,
-						polys);
-				}
-			}
-		}
-		else
-		{
-			if (mesh.is_volume())
-			{
-				if (args["space"]["poly_basis_type"] == "MeanValue" || args["space"]["poly_basis_type"] == "Wachspress")
-					log_and_throw_error("Barycentric bases not supported in 3D");
-
-				const auto *linear_assembler = dynamic_cast<assembler::LinearAssembler *>(assembler.get());
-				assert(linear_assembler);
-				new_bases = basis::PolygonalBasis3d::build_bases(
-					*linear_assembler,
-					args["space"]["advanced"]["n_harmonic_samples"],
-					dynamic_cast<const mesh::Mesh3D &>(mesh),
-					n_bases,
-					args["space"]["advanced"]["quadrature_order"],
-					args["space"]["advanced"]["mass_quadrature_order"],
-					args["space"]["advanced"]["integral_constraints"],
-					bases,
-					geom_bases_,
-					poly_edge_to_data,
-					polys_3d);
-			}
-			else
-			{
-				const mesh::Mesh2D &mesh_2d = dynamic_cast<const mesh::Mesh2D &>(mesh);
-				if (args["space"]["poly_basis_type"] == "MeanValue")
-				{
-					new_bases = basis::MVPolygonalBasis2d::build_bases(
-						assembler->name(), dim, mesh_2d, n_bases,
-						args["space"]["advanced"]["quadrature_order"],
-						args["space"]["advanced"]["mass_quadrature_order"],
-						bases, local_boundary, polys);
-				}
-				else if (args["space"]["poly_basis_type"] == "Wachspress")
-				{
-					new_bases = basis::WSPolygonalBasis2d::build_bases(
-						assembler->name(), dim, mesh_2d, n_bases,
-						args["space"]["advanced"]["quadrature_order"],
-						args["space"]["advanced"]["mass_quadrature_order"],
-						bases, local_boundary, polys);
-				}
-				else
-				{
-					const auto *linear_assembler = dynamic_cast<assembler::LinearAssembler *>(assembler.get());
-					assert(linear_assembler);
-					new_bases = basis::PolygonalBasis2d::build_bases(
-						*linear_assembler,
-						args["space"]["advanced"]["n_harmonic_samples"],
-						mesh_2d,
-						n_bases,
-						args["space"]["advanced"]["quadrature_order"],
-						args["space"]["advanced"]["mass_quadrature_order"],
-						args["space"]["advanced"]["integral_constraints"],
-						bases,
-						geom_bases_,
-						poly_edge_to_data,
-						polys);
-				}
-			}
-		}
-
-		timer.stop();
-		timings.computing_poly_basis_time = timer.getElapsedTime();
-		logger().info(" took {}s", timings.computing_poly_basis_time);
-
-		n_bases += new_bases;
 	}
 
 	void VarForm::solve(Eigen::MatrixXd &sol)
@@ -550,7 +290,7 @@ namespace polyfem::varform
 
 	void VarForm::build_node_mapping(const mesh::Mesh &mesh, const json &args)
 	{
-		const FESpace &space = primary_space();
+		const FESpace &space = legacy_primary_space_dont_use();
 		const Eigen::VectorXi &disc_orders = space.disc_orders;
 		const std::shared_ptr<polyfem::mesh::MeshNodes> &mesh_nodes = space.mesh_nodes;
 
@@ -667,8 +407,8 @@ namespace polyfem::varform
 		}
 
 		logger().info("Saving json...");
-		const FESpace &space = primary_space();
-		const std::shared_ptr<GeometryMapping> &geometry = primary_geometry();
+		const FESpace &space = legacy_primary_space_dont_use();
+		const std::shared_ptr<GeometryMapping> &geometry = legacy_primary_geometry_dont_use();
 		const int n_bases = space.n_bases;
 		const Eigen::VectorXi &disc_orders = space.disc_orders;
 		const Eigen::VectorXi &disc_ordersq = space.disc_ordersq;
@@ -703,7 +443,7 @@ namespace polyfem::varform
 		if (!has_element_samples)
 			return fields;
 
-		const FESpace &space = primary_space();
+		const FESpace &space = legacy_primary_space_dont_use();
 		const int n_bases = space.n_bases;
 		const std::vector<basis::ElementBases> &bases = *space.bases;
 		const int dim = problem_dimension();
@@ -777,20 +517,18 @@ namespace polyfem::varform
 
 	std::vector<int> VarForm::primitive_to_node() const
 	{
-		const FESpace &space = primary_space();
-		const std::shared_ptr<GeometryMapping> &geometry = primary_geometry();
-		const auto &nodes = (geometry->bases == space.bases) ? space.mesh_nodes : geometry->mesh_nodes;
-		if (!nodes)
-			return {};
+		const std::shared_ptr<GeometryMapping> &geometry = legacy_primary_geometry_dont_use();
+		if (!geometry || !geometry->mesh_nodes)
+			log_and_throw_error("Primitive-to-node mapping is unavailable for this basis");
 
-		auto indices = nodes->primitive_to_node();
+		auto indices = geometry->mesh_nodes->primitive_to_node();
 		indices.resize(mesh_->n_vertices());
 		return indices;
 	}
 
 	std::vector<int> VarForm::node_to_primitive() const
 	{
-		const std::shared_ptr<GeometryMapping> &geometry = primary_geometry();
+		const std::shared_ptr<GeometryMapping> &geometry = legacy_primary_geometry_dont_use();
 		auto p2n = primitive_to_node();
 		std::vector<int> indices;
 		indices.resize(geometry->n_bases);
@@ -832,8 +570,8 @@ namespace polyfem::varform
 
 	void VarForm::assemble_mass_mat(const mesh::Mesh &mesh, const json &args)
 	{
-		const FESpace &space = primary_space();
-		const AssemblyCaches &caches = primary_caches();
+		const FESpace &space = legacy_primary_space_dont_use();
+		const AssemblyCaches &caches = legacy_primary_caches_dont_use();
 		const int n_bases = space.n_bases;
 		const std::vector<basis::ElementBases> &bases = *space.bases;
 		const assembler::AssemblyValsCache &mass_ass_vals_cache = caches.mass;
@@ -904,8 +642,8 @@ namespace polyfem::varform
 
 	void VarForm::build_rhs_assembler()
 	{
-		const FESpace &space = primary_space();
-		const AssemblyCaches &caches = primary_caches();
+		const FESpace &space = legacy_primary_space_dont_use();
+		const AssemblyCaches &caches = legacy_primary_caches_dont_use();
 		const VarFormBoundaryState &boundary = boundary_state();
 		const int n_bases = space.n_bases;
 		const std::vector<basis::ElementBases> &bases = *space.bases;
@@ -975,7 +713,7 @@ namespace polyfem::varform
 
 	void VarForm::export_data(const Eigen::MatrixXd &solution) const
 	{
-		const FESpace &fe_space = primary_space();
+		const FESpace &fe_space = legacy_primary_space_dont_use();
 		const int n_bases = fe_space.n_bases;
 		const std::vector<basis::ElementBases> &bases = *fe_space.bases;
 		const Eigen::VectorXi &disc_orders = fe_space.disc_orders;
@@ -1065,8 +803,8 @@ namespace polyfem::varform
 
 	io::OutputSpace VarForm::output_space() const
 	{
-		const FESpace &space = primary_space();
-		const std::shared_ptr<GeometryMapping> &geometry = primary_geometry();
+		const FESpace &space = legacy_primary_space_dont_use();
+		const std::shared_ptr<GeometryMapping> &geometry = legacy_primary_geometry_dont_use();
 		const VarFormBoundaryState &boundary = boundary_state();
 		const Eigen::VectorXi &disc_orders = space.disc_orders;
 		const Eigen::VectorXi &disc_ordersq = space.disc_ordersq;
@@ -1288,7 +1026,7 @@ namespace polyfem::varform
 		if (!args["output"]["advanced"]["compute_error"])
 			return stats;
 
-		const FESpace &space = primary_space();
+		const FESpace &space = legacy_primary_space_dont_use();
 		const int n_bases = space.n_bases;
 		const std::vector<basis::ElementBases> &bases = *space.bases;
 

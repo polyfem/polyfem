@@ -32,10 +32,10 @@ namespace polyfem::test
 			return {
 				form.mesh_.get(),
 				form.assembler.get(),
-				form.primary_space().bases.get(),
+				form.legacy_primary_space_dont_use().bases.get(),
 				&form.geom_bases(),
 				&form.boundary_state().total_local_boundary,
-				form.primary_space().n_bases,
+				form.legacy_primary_space_dont_use().n_bases,
 				output_space.obstacle ? output_space.obstacle->n_vertices() : 0,
 				form.root_path};
 		}
