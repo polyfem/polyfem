@@ -130,6 +130,8 @@ namespace polyfem
 				return geometry && geometry->isoparametric ? primary_space().bases : geometry->bases;
 			}
 
+			// primary_xxx method is for lagacy compatibility only!!!!!
+			// NEVER EVER USE IT IN NEW CODE.
 			virtual FESpace &primary_space() = 0;
 			virtual const FESpace &primary_space() const = 0;
 			virtual std::shared_ptr<GeometryMapping> &primary_geometry() = 0;
