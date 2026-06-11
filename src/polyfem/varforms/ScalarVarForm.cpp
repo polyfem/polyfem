@@ -114,7 +114,7 @@ namespace polyfem::varform
 
 					Eigen::MatrixXd local_sol, local_grad;
 					io::Evaluator::interpolate_at_local_vals(
-						*mesh_, 1, bases, geom_bases(),
+						*mesh_, 1, scalar_space.bases, geom_bases(),
 						element_id, sample.local_points.row(i), dof_values, local_sol, local_grad);
 					values(i) = local_sol(0);
 					if (gradients)
@@ -218,7 +218,7 @@ namespace polyfem::varform
 		assert(assembler->is_linear());
 		assert(problem->is_scalar());
 
-		assembler->assemble(mesh_->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, 0, stiffness);
+		assembler->assemble(mesh_->is_volume(), scalar_space.n_bases, scalar_space.bases, geom_bases(), scalar_caches.values, 0, stiffness);
 
 		timer.stop();
 		timings.assembling_stiffness_mat_time = timer.getElapsedTime();
@@ -248,9 +248,9 @@ namespace polyfem::varform
 			*solver,
 			A,
 			b,
-			boundary_nodes,
+			boundary.boundary_nodes,
 			x,
-			n_bases,
+			scalar_space.n_bases,
 			args["output"]["data"]["stiffness_mat"],
 			compute_spectrum,
 			/*is_problem_mixed=*/false,
@@ -272,8 +272,8 @@ namespace polyfem::varform
 		logger().info("{}...", solver->name());
 
 		rhs_assembler->set_bc(
-			local_boundary, boundary_nodes, n_boundary_samples(),
-			(assembler->name() != "Bilaplacian") ? local_neumann_boundary : std::vector<mesh::LocalBoundary>(), rhs);
+			boundary.local_boundary, boundary.boundary_nodes, n_boundary_samples(),
+			(assembler->name() != "Bilaplacian") ? boundary.local_neumann_boundary : std::vector<mesh::LocalBoundary>(), rhs);
 
 		StiffnessMatrix A;
 		build_stiffness_mat(A);
@@ -308,15 +308,15 @@ namespace polyfem::varform
 			const double time = t0 + t * dt;
 
 			rhs_assembler->compute_energy_grad(
-				local_boundary, boundary_nodes, mass_matrix_assembler->density(), n_b_samples,
-				local_neumann_boundary, rhs, time, current_rhs);
+				boundary.local_boundary, boundary.boundary_nodes, mass_matrix_assembler->density(), n_b_samples,
+				boundary.local_neumann_boundary, rhs, time, current_rhs);
 
 			rhs_assembler->set_bc(
-				local_boundary, boundary_nodes, n_b_samples, local_neumann_boundary, current_rhs, sol, time);
+				boundary.local_boundary, boundary.boundary_nodes, n_b_samples, boundary.local_neumann_boundary, current_rhs, sol, time);
 
 			StiffnessMatrix A = mass / bdf->beta_dt() + stiffness;
 			Eigen::VectorXd b = (mass * bdf->weighted_sum_x_prevs()) / bdf->beta_dt();
-			for (int i : boundary_nodes)
+			for (int i : boundary.boundary_nodes)
 				b[i] = 0;
 			b += current_rhs;
 

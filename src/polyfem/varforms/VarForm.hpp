@@ -13,6 +13,7 @@
 #include <polyfem/io/OutData.hpp>
 #include <polyfem/io/OutStatsData.hpp>
 #include <polyfem/utils/Types.hpp>
+#include <polyfem/varforms/FESpace.hpp>
 
 #include <Eigen/Dense>
 
@@ -131,8 +132,18 @@ namespace polyfem
 			/// @return A constant reference to the geometry mapping bases.
 			const std::vector<basis::ElementBases> &geom_bases() const
 			{
-				return iso_parametric ? bases : geom_bases_;
+				const auto &geometry = primary_geometry();
+				return geometry && geometry->isoparametric ? primary_space().bases : geometry->bases;
 			}
+
+			virtual FESpace &primary_space() = 0;
+			virtual const FESpace &primary_space() const = 0;
+			virtual std::shared_ptr<GeometryMapping> &primary_geometry() = 0;
+			virtual const std::shared_ptr<GeometryMapping> &primary_geometry() const = 0;
+			virtual AssemblyCaches &primary_caches() = 0;
+			virtual const AssemblyCaches &primary_caches() const = 0;
+			virtual VarFormBoundaryState &boundary_state() = 0;
+			virtual const VarFormBoundaryState &boundary_state() const = 0;
 
 			void build_polygonal_basis(const mesh::Mesh &mesh);
 			void build_node_mapping(const mesh::Mesh &mesh, const json &args);
@@ -173,8 +184,6 @@ namespace polyfem
 			Units units;
 			json args;
 
-			bool iso_parametric;
-
 			io::OutStatsData stats;
 
 			/// runtime statistics
@@ -190,42 +199,13 @@ namespace polyfem
 			std::shared_ptr<assembler::Mass> mass_matrix_assembler = nullptr;
 			std::shared_ptr<assembler::HRZMass> pure_mass_matrix_assembler = nullptr;
 
-			/// FE bases, the size is #elements
-			std::vector<basis::ElementBases> bases;
-
-			/// number of bases
-			int n_bases = 0;
-
-			/// vector of discretization orders, used when not all elements have the same degree, one per element
-			Eigen::VectorXi disc_orders, disc_ordersq;
-
-			/// Geometric mapping bases, if the elements are isoparametric, this list is empty
-			std::vector<basis::ElementBases> geom_bases_;
-			/// number of geometric bases
-			int n_geom_bases = 0;
-
-			/// polyhedra/polygons, used since poly elements have no geometry mapping
-			std::map<int, Eigen::MatrixXd> polys;
-			std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> polys_3d;
-
 			/// nodes on the boundary of polygonal elements, used for harmonic bases
 			std::map<int, basis::InterfaceData> poly_edge_to_data;
-
-			/// Mapping from input nodes to FE nodes
-			std::shared_ptr<polyfem::mesh::MeshNodes> mesh_nodes;
-
-			/// Mapping from input nodes to geometric mapping nodes
-			std::shared_ptr<polyfem::mesh::MeshNodes> geom_mesh_nodes;
 
 			/// Input nodes (including high-order) to polyfem nodes, only for isoparametric
 			Eigen::VectorXi in_node_to_node;
 			/// maps input vertices/edges/faces/cells to polyfem vertices/edges/faces/cells
 			Eigen::VectorXi in_primitive_to_primitive;
-
-			/// used to store assembly values for small problems
-			assembler::AssemblyValsCache ass_vals_cache;
-			assembler::AssemblyValsCache mass_ass_vals_cache;
-			assembler::AssemblyValsCache pure_mass_ass_vals_cache;
 
 			std::shared_ptr<assembler::RhsAssembler> rhs_assembler;
 
@@ -235,27 +215,6 @@ namespace polyfem
 			/// average system mass, used for contact with IPC
 			double avg_mass = 0;
 			Eigen::MatrixXd rhs;
-
-			/// list of boundary nodes
-			std::vector<int> boundary_nodes;
-			/// mapping from elements to nodes for all mesh
-			std::vector<mesh::LocalBoundary> total_local_boundary;
-			/// mapping from elements to nodes for dirichlet boundary conditions
-			std::vector<mesh::LocalBoundary> local_boundary;
-			/// mapping from elements to nodes for neumann boundary conditions
-			std::vector<mesh::LocalBoundary> local_neumann_boundary;
-
-			/// mapping from elements to nodes for pressure boundary conditions
-			std::vector<mesh::LocalBoundary> local_pressure_boundary;
-			/// mapping from elements to nodes for pressure boundary conditions
-			std::unordered_map<int, std::vector<mesh::LocalBoundary>> local_pressure_cavity;
-
-			/// per node dirichlet
-			std::vector<int> dirichlet_nodes;
-			std::vector<RowVectorNd> dirichlet_nodes_position;
-			/// per node neumann
-			std::vector<int> neumann_nodes;
-			std::vector<RowVectorNd> neumann_nodes_position;
 
 			double t0 = 0;
 			int time_steps = 0;

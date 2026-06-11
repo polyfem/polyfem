@@ -24,7 +24,6 @@ The design should reduce duplicated mixed-form layout logic without creating a c
 - `n_geom_bases`
 - `mesh_nodes`
 - `geom_mesh_nodes`
-- assembly caches
 - polygonal geometry data
 
 Mixed forms then duplicate additional space state:

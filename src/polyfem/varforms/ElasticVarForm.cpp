@@ -212,7 +212,7 @@ namespace polyfem::varform
 
 					Eigen::MatrixXd local_sol, local_grad;
 					io::Evaluator::interpolate_at_local_vals(
-						*mesh_, field_dim, bases, geom_bases(),
+						*mesh_, field_dim, displacement_space.bases, geom_bases(),
 						element_id, sample.local_points.row(i), dof_values, local_sol, local_grad);
 
 					for (int d = 0; d < field_dim; ++d)
@@ -268,7 +268,7 @@ namespace polyfem::varform
 
 				std::vector<assembler::Assembler::NamedMatrix> local_values;
 				assembler->compute_scalar_value(
-					assembler::OutputData(sample.time, element_id, bases[element_id], geom_bases()[element_id], sample.local_points.row(i), solution),
+					assembler::OutputData(sample.time, element_id, displacement_space.bases[element_id], geom_bases()[element_id], sample.local_points.row(i), solution),
 					local_values);
 
 				if (point_values.empty())
@@ -313,7 +313,7 @@ namespace polyfem::varform
 
 				std::vector<assembler::Assembler::NamedMatrix> local_values;
 				assembler->compute_tensor_value(
-					assembler::OutputData(sample.time, element_id, bases[element_id], geom_bases()[element_id], sample.local_points.row(i), solution),
+					assembler::OutputData(sample.time, element_id, displacement_space.bases[element_id], geom_bases()[element_id], sample.local_points.row(i), solution),
 					local_values);
 
 				if (point_values.empty())
@@ -358,38 +358,38 @@ namespace polyfem::varform
 			if (!wants_avg)
 				return;
 
-			Eigen::MatrixXd areas(n_bases, 1);
+			Eigen::MatrixXd areas(displacement_space.n_bases, 1);
 			areas.setZero();
 			std::vector<assembler::Assembler::NamedMatrix> tmp_s, tmp_t;
 			std::vector<Eigen::MatrixXd> avg_scalar, avg_tensor;
 
-			for (int e = 0; e < int(bases.size()); ++e)
+			for (int e = 0; e < int(displacement_space.bases.size()); ++e)
 			{
 				Eigen::MatrixXd local_pts;
 				if (mesh_->is_simplex(e))
 				{
 					if (mesh_->dimension() == 3)
-						autogen::p_nodes_3d(disc_orders(e), local_pts);
+						autogen::p_nodes_3d(displacement_space.disc_orders(e), local_pts);
 					else
-						autogen::p_nodes_2d(disc_orders(e), local_pts);
+						autogen::p_nodes_2d(displacement_space.disc_orders(e), local_pts);
 				}
 				else if (mesh_->is_cube(e))
 				{
 					if (mesh_->dimension() == 3)
-						autogen::q_nodes_3d(disc_orders(e), local_pts);
+						autogen::q_nodes_3d(displacement_space.disc_orders(e), local_pts);
 					else
-						autogen::q_nodes_2d(disc_orders(e), local_pts);
+						autogen::q_nodes_2d(displacement_space.disc_orders(e), local_pts);
 				}
 				else if (mesh_->is_prism(e))
 				{
-					autogen::prism_nodes_3d(disc_orders(e), disc_ordersq(e), local_pts);
+					autogen::prism_nodes_3d(displacement_space.disc_orders(e), displacement_space.disc_ordersq(e), local_pts);
 				}
 				else
 				{
 					continue;
 				}
 
-				const basis::ElementBases &bs = bases[e];
+				const basis::ElementBases &bs = displacement_space.bases[e];
 				const basis::ElementBases &gbs = geom_bases()[e];
 
 				assembler::ElementAssemblyValues vals;
@@ -405,13 +405,13 @@ namespace polyfem::varform
 				{
 					avg_scalar.resize(tmp_s.size());
 					for (auto &m : avg_scalar)
-						m.setZero(n_bases, 1);
+						m.setZero(displacement_space.n_bases, 1);
 				}
 				if (avg_tensor.empty() && !tmp_t.empty())
 				{
 					avg_tensor.resize(tmp_t.size());
 					for (auto &m : avg_tensor)
-						m.setZero(n_bases, actual_dim * actual_dim);
+						m.setZero(displacement_space.n_bases, actual_dim * actual_dim);
 				}
 
 				for (size_t j = 0; j < bs.bases.size(); ++j)
@@ -513,14 +513,14 @@ namespace polyfem::varform
 
 		const auto compute_traction_forces = [&]() {
 			Eigen::MatrixXd traction_forces;
-			traction_forces.setZero(n_bases * actual_dim, 1);
+			traction_forces.setZero(displacement_space.n_bases * actual_dim, 1);
 
 			Eigen::MatrixXd uv, points, normals;
 			Eigen::VectorXd weights;
 			Eigen::VectorXi global_primitive_ids;
 			assembler::ElementAssemblyValues vals;
 
-			for (const auto &lb : total_local_boundary)
+			for (const auto &lb : boundary.total_local_boundary)
 			{
 				const int e = lb.element_id();
 				const bool has_samples = utils::BoundarySampler::boundary_quadrature(
@@ -528,7 +528,7 @@ namespace polyfem::varform
 				if (!has_samples)
 					continue;
 
-				const basis::ElementBases &bs = bases[e];
+				const basis::ElementBases &bs = displacement_space.bases[e];
 				const basis::ElementBases &gbs = geom_bases()[e];
 				vals.compute(e, mesh_->is_volume(), points, bs, gbs);
 
@@ -585,7 +585,7 @@ namespace polyfem::varform
 
 					std::vector<assembler::Assembler::NamedMatrix> tensor_flat;
 					assembler->compute_tensor_value(
-						assembler::OutputData(sample.time, element_id, bases[element_id], geom_bases()[element_id], sample.local_points.row(i), solution),
+						assembler::OutputData(sample.time, element_id, displacement_space.bases[element_id], geom_bases()[element_id], sample.local_points.row(i), solution),
 						tensor_flat);
 
 					assert(tensor_flat[0].first == "cauchy_stess");
@@ -716,7 +716,7 @@ namespace polyfem::varform
 
 				Eigen::MatrixXd local_value, local_gradient;
 				io::Evaluator::interpolate_at_local_vals(
-					*mesh_, dim, bases, geom_bases(),
+					*mesh_, dim, displacement_space.bases, geom_bases(),
 					element_id, sample.local_points.row(i), solution,
 					local_value, local_gradient);
 				values.row(i) = local_value;
@@ -798,7 +798,7 @@ namespace polyfem::varform
 
 			Eigen::MatrixXd local_value, local_gradient;
 			io::Evaluator::interpolate_at_local_vals(
-				*mesh_, dim, bases, geom_bases(),
+				*mesh_, dim, displacement_space.bases, geom_bases(),
 				element_id, sample.local_points.row(i), solution,
 				local_value, local_gradient);
 
@@ -843,16 +843,16 @@ namespace polyfem::varform
 	void ElasticVarForm::build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F) const
 	{
 		assert(mesh_);
-		assert(bases.size() == mesh_->n_elements());
-		const size_t n_vertices = n_bases - n_obstacle_vertices();
+		assert(displacement_space.bases.size() == mesh_->n_elements());
+		const size_t n_vertices = displacement_space.n_bases - n_obstacle_vertices();
 		const int dim = mesh_->dimension();
 
 		V.resize(n_vertices, dim);
-		F.resize(bases.size(), dim + 1);
+		F.resize(displacement_space.bases.size(), dim + 1);
 
-		for (int i = 0; i < bases.size(); i++)
+		for (int i = 0; i < displacement_space.bases.size(); i++)
 		{
-			const basis::ElementBases &element = bases[i];
+			const basis::ElementBases &element = displacement_space.bases[i];
 			for (int j = 0; j < element.bases.size(); j++)
 			{
 				const basis::Basis &basis = element.bases[j];

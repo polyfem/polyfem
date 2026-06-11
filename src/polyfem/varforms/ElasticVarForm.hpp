@@ -29,6 +29,14 @@ namespace polyfem::varform
 
 	protected:
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
+		FESpace &primary_space() override { return displacement_space; }
+		const FESpace &primary_space() const override { return displacement_space; }
+		std::shared_ptr<GeometryMapping> &primary_geometry() override { return geometry_mapping; }
+		const std::shared_ptr<GeometryMapping> &primary_geometry() const override { return geometry_mapping; }
+		AssemblyCaches &primary_caches() override { return displacement_caches; }
+		const AssemblyCaches &primary_caches() const override { return displacement_caches; }
+		VarFormBoundaryState &boundary_state() override { return boundary; }
+		const VarFormBoundaryState &boundary_state() const override { return boundary; }
 
 		void initial_velocity(Eigen::MatrixXd &velocity) const;
 		void initial_acceleration(Eigen::MatrixXd &acceleration) const;
@@ -58,5 +66,10 @@ namespace polyfem::varform
 			const Eigen::MatrixXd &solution) const;
 
 		virtual int n_obstacle_vertices() const { return 0; }
+
+		std::shared_ptr<GeometryMapping> geometry_mapping = std::make_shared<GeometryMapping>();
+		FESpace displacement_space;
+		AssemblyCaches displacement_caches;
+		VarFormBoundaryState boundary;
 	};
 } // namespace polyfem::varform

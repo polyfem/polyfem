@@ -29,6 +29,14 @@ namespace polyfem::varform
 		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
 		void assemble_rhs(const mesh::Mesh &mesh, const json &args) override;
 		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
+		FESpace &primary_space() override { return velocity_space; }
+		const FESpace &primary_space() const override { return velocity_space; }
+		std::shared_ptr<GeometryMapping> &primary_geometry() override { return geometry_mapping; }
+		const std::shared_ptr<GeometryMapping> &primary_geometry() const override { return geometry_mapping; }
+		AssemblyCaches &primary_caches() override { return velocity_caches; }
+		const AssemblyCaches &primary_caches() const override { return velocity_caches; }
+		VarFormBoundaryState &boundary_state() override { return boundary; }
+		const VarFormBoundaryState &boundary_state() const override { return boundary; }
 
 		int primary_ndof() const;
 		int pressure_block_size() const;
@@ -48,11 +56,12 @@ namespace polyfem::varform
 
 		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
 		std::shared_ptr<assembler::Assembler> pressure_assembler = nullptr;
-		std::vector<basis::ElementBases> pressure_bases;
-		int n_pressure_bases = 0;
-		std::shared_ptr<mesh::MeshNodes> pressure_mesh_nodes;
+		std::shared_ptr<GeometryMapping> geometry_mapping = std::make_shared<GeometryMapping>();
+		FESpace velocity_space;
+		AssemblyCaches velocity_caches;
+		VarFormBoundaryState boundary;
+		FluidSpaces fluid_spaces;
 		assembler::AssemblyValsCache pressure_ass_vals_cache;
-		std::vector<int> pressure_boundary_nodes;
 		bool use_avg_pressure = true;
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 	};

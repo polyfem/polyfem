@@ -56,7 +56,7 @@ namespace polyfem::varform
 		logger().info("Assembling stiffness mat...");
 		assert(assembler->is_linear());
 
-		assembler->assemble(mesh_->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, 0, stiffness);
+		assembler->assemble(mesh_->is_volume(), displacement_space.n_bases, displacement_space.bases, geom_bases(), displacement_caches.values, 0, stiffness);
 
 		timer.stop();
 		timings.assembling_stiffness_mat_time = timer.getElapsedTime();
@@ -81,14 +81,14 @@ namespace polyfem::varform
 		assert(rhs_assembler != nullptr);
 
 		const int problem_dim = problem->is_scalar() ? 1 : mesh_->dimension();
-		const int precond_num = problem_dim * n_bases;
+		const int precond_num = problem_dim * displacement_space.n_bases;
 
 		Eigen::VectorXd x;
 		stats.spectrum = dirichlet_solve(
 			*solver,
 			A,
 			b,
-			boundary_nodes,
+			boundary.boundary_nodes,
 			x,
 			precond_num,
 			args["output"]["data"]["stiffness_mat"],
@@ -111,17 +111,17 @@ namespace polyfem::varform
 		assert(sol.cols() == 1);
 		assert(assembler->is_linear());
 
-		const int ndof = n_bases * mesh_->dimension();
+		const int ndof = displacement_space.n_bases * mesh_->dimension();
 
 		elastic_form = std::make_shared<solver::ElasticForm>(
-			n_bases, bases, geom_bases(),
-			*assembler, ass_vals_cache,
+			displacement_space.n_bases, displacement_space.bases, geom_bases(),
+			*assembler, displacement_caches.values,
 			t, problem->is_time_dependent() ? args["time"]["dt"].get<double>() : 0.0,
 			mesh_->is_volume());
 
 		body_form = std::make_shared<solver::BodyForm>(
 			ndof, 0,
-			boundary_nodes, local_boundary, local_neumann_boundary, n_boundary_samples(),
+			boundary.boundary_nodes, boundary.local_boundary, boundary.local_neumann_boundary, n_boundary_samples(),
 			rhs, *rhs_assembler,
 			mass_matrix_assembler->density(),
 			/*is_formulation_mixed=*/false, problem->is_time_dependent());
@@ -160,8 +160,8 @@ namespace polyfem::varform
 		logger().info("{}...", solver->name());
 
 		rhs_assembler->set_bc(
-			local_boundary, boundary_nodes, n_boundary_samples(),
-			local_neumann_boundary, rhs);
+			boundary.local_boundary, boundary.boundary_nodes, n_boundary_samples(),
+			boundary.local_neumann_boundary, rhs);
 
 		StiffnessMatrix A;
 		build_stiffness_mat(A);
@@ -195,13 +195,13 @@ namespace polyfem::varform
 
 			rhs_assembler->set_bc(
 				std::vector<mesh::LocalBoundary>(), std::vector<int>(), n_boundary_samples(),
-				local_neumann_boundary, current_rhs, sol, time);
+				boundary.local_neumann_boundary, current_rhs, sol, time);
 
 			current_rhs *= time_integrator->acceleration_scaling();
 			current_rhs += mass * time_integrator->x_tilde();
 
 			rhs_assembler->set_bc(
-				local_boundary, boundary_nodes, n_boundary_samples(),
+				boundary.local_boundary, boundary.boundary_nodes, n_boundary_samples(),
 				std::vector<mesh::LocalBoundary>(), current_rhs, sol, time);
 
 			StiffnessMatrix A = stiffness * time_integrator->acceleration_scaling() + mass;

@@ -27,11 +27,15 @@ namespace polyfem::varform
 	void FluidVarForm::reset()
 	{
 		VarForm::reset();
-		pressure_bases.clear();
-		n_pressure_bases = 0;
-		pressure_mesh_nodes = nullptr;
+		fluid_spaces.pressure.bases.clear();
+		fluid_spaces.pressure.n_bases = 0;
+		fluid_spaces.pressure.mesh_nodes = nullptr;
 		pressure_ass_vals_cache.init_empty();
-		pressure_boundary_nodes.clear();
+		boundary.pressure_boundary_nodes.clear();
+		fluid_spaces.layout = SolutionLayout();
+		fluid_spaces.velocity_block = -1;
+		fluid_spaces.pressure_block = -1;
+		fluid_spaces.pressure_mean_constraint_block = -1;
 		mixed_assembler = nullptr;
 		pressure_assembler = nullptr;
 		use_avg_pressure = true;
@@ -90,7 +94,7 @@ namespace polyfem::varform
 
 	void FluidVarForm::save_json(const Eigen::MatrixXd &solution, std::ostream &out) const
 	{
-		save_json_stats(solution, n_pressure_bases, out);
+		save_json_stats(solution, fluid_spaces.pressure.n_bases, out);
 	}
 
 	void FluidVarForm::load_mesh(const mesh::Mesh &mesh, const json &args)
@@ -104,17 +108,17 @@ namespace polyfem::varform
 
 	int FluidVarForm::primary_ndof() const
 	{
-		return mesh_ ? n_bases * mesh_->dimension() : 0;
+		return mesh_ ? velocity_space.n_bases * mesh_->dimension() : 0;
 	}
 
 	int FluidVarForm::pressure_block_size() const
 	{
-		return n_pressure_bases + ((use_avg_pressure && assembler && assembler->is_fluid()) ? 1 : 0);
+		return fluid_spaces.pressure.n_bases + ((use_avg_pressure && assembler && assembler->is_fluid()) ? 1 : 0);
 	}
 
 	int FluidVarForm::stacked_ndof() const
 	{
-		return primary_ndof() + pressure_block_size();
+		return fluid_spaces.layout.total_dof();
 	}
 
 	void FluidVarForm::build_rhs_assembler()
@@ -126,9 +130,9 @@ namespace polyfem::varform
 
 		rhs_assembler = std::make_shared<assembler::RhsAssembler>(
 			*assembler, *mesh_, nullptr, // no obtacle for the rhs assembler
-			dirichlet_nodes, neumann_nodes,
-			dirichlet_nodes_position, neumann_nodes_position,
-			n_bases, mesh_->dimension(), bases, geom_bases(), mass_ass_vals_cache, *problem,
+			boundary.dirichlet_nodes, boundary.neumann_nodes,
+			boundary.dirichlet_nodes_position, boundary.neumann_nodes_position,
+			velocity_space.n_bases, mesh_->dimension(), velocity_space.bases, geom_bases(), velocity_caches.mass, *problem,
 			args["space"]["advanced"]["bc_method"],
 			rhs_solver_params);
 	}
@@ -137,14 +141,14 @@ namespace polyfem::varform
 	{
 		VarForm::build_basis(mesh, iso_parametric, args);
 
-		if (disc_orders.maxCoeff() != disc_orders.minCoeff())
+		if (velocity_space.disc_orders.maxCoeff() != velocity_space.disc_orders.minCoeff())
 			log_and_throw_error("p refinement not supported in mixed formulation!");
 
 		igl::Timer timer;
 		timer.start();
 
-		const auto &all_boundary = total_local_boundary;
-		const int prev_bases = n_bases;
+		const auto &all_boundary = boundary.total_local_boundary;
+		const int prev_bases = velocity_space.n_bases;
 		const int prev_b_size = int(all_boundary.size());
 		const bool has_polys = mesh.has_poly();
 		const bool use_corner_quadrature = args["space"]["advanced"]["use_corner_quadrature"];
@@ -154,75 +158,83 @@ namespace polyfem::varform
 		std::vector<mesh::LocalBoundary> pressure_local_boundary;
 		std::map<int, basis::InterfaceData> pressure_poly_edge_to_data;
 
-		pressure_bases.clear();
-		n_pressure_bases = 0;
+		fluid_spaces.pressure.bases.clear();
+		fluid_spaces.pressure.n_bases = 0;
 		if (mesh.is_volume())
 		{
 			const mesh::Mesh3D &tmp_mesh = dynamic_cast<const mesh::Mesh3D &>(mesh);
-			n_pressure_bases = basis::LagrangeBasis3d::build_bases(
+			fluid_spaces.pressure.n_bases = basis::LagrangeBasis3d::build_bases(
 				tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order,
 				order, order,
 				args["space"]["basis_type"] == "Bernstein", false,
 				has_polys, false, use_corner_quadrature,
-				pressure_bases, pressure_local_boundary, pressure_poly_edge_to_data, pressure_mesh_nodes);
+				fluid_spaces.pressure.bases, pressure_local_boundary, pressure_poly_edge_to_data, fluid_spaces.pressure.mesh_nodes);
 		}
 		else
 		{
 			const mesh::Mesh2D &tmp_mesh = dynamic_cast<const mesh::Mesh2D &>(mesh);
-			n_pressure_bases = basis::LagrangeBasis2d::build_bases(
+			fluid_spaces.pressure.n_bases = basis::LagrangeBasis2d::build_bases(
 				tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order,
 				order,
 				args["space"]["basis_type"] == "Bernstein", false,
 				has_polys, false, use_corner_quadrature,
-				pressure_bases, pressure_local_boundary, pressure_poly_edge_to_data, pressure_mesh_nodes);
+				fluid_spaces.pressure.bases, pressure_local_boundary, pressure_poly_edge_to_data, fluid_spaces.pressure.mesh_nodes);
 		}
 
-		assert(bases.size() == pressure_bases.size());
-		for (int i = 0; i < int(pressure_bases.size()); ++i)
+		assert(velocity_space.bases.size() == fluid_spaces.pressure.bases.size());
+		for (int i = 0; i < int(fluid_spaces.pressure.bases.size()); ++i)
 		{
 			quadrature::Quadrature b_quad;
-			bases[i].compute_quadrature(b_quad);
-			pressure_bases[i].set_quadrature([b_quad](quadrature::Quadrature &quad) { quad = b_quad; });
+			velocity_space.bases[i].compute_quadrature(b_quad);
+			fluid_spaces.pressure.bases[i].set_quadrature([b_quad](quadrature::Quadrature &quad) { quad = b_quad; });
 		}
 
-		local_boundary.clear();
+		boundary.local_boundary.clear();
 		for (const auto &lb : all_boundary)
-			local_boundary.emplace_back(lb);
+			boundary.local_boundary.emplace_back(lb);
 
-		local_neumann_boundary.clear();
-		local_pressure_boundary.clear();
-		local_pressure_cavity.clear();
-		boundary_nodes.clear();
-		pressure_boundary_nodes.clear();
-		dirichlet_nodes.clear();
-		neumann_nodes.clear();
+		boundary.local_neumann_boundary.clear();
+		boundary.local_pressure_boundary.clear();
+		boundary.local_pressure_cavity.clear();
+		boundary.boundary_nodes.clear();
+		boundary.pressure_boundary_nodes.clear();
+		boundary.dirichlet_nodes.clear();
+		boundary.neumann_nodes.clear();
 
 		problem->setup_bc(
-			mesh, n_bases,
-			bases, geom_bases(), pressure_bases,
-			local_boundary,
-			boundary_nodes,
-			local_neumann_boundary,
-			local_pressure_boundary,
-			local_pressure_cavity,
-			pressure_boundary_nodes,
-			dirichlet_nodes, neumann_nodes);
+			mesh, velocity_space.n_bases,
+			velocity_space.bases, geom_bases(), fluid_spaces.pressure.bases,
+			boundary.local_boundary,
+			boundary.boundary_nodes,
+			boundary.local_neumann_boundary,
+			boundary.local_pressure_boundary,
+			boundary.local_pressure_cavity,
+			boundary.pressure_boundary_nodes,
+			boundary.dirichlet_nodes, boundary.neumann_nodes);
 
-		rebuild_node_positions(bases, dirichlet_nodes, dirichlet_nodes_position);
-		rebuild_node_positions(bases, neumann_nodes, neumann_nodes_position);
+		rebuild_node_positions(velocity_space.bases, boundary.dirichlet_nodes, boundary.dirichlet_nodes_position);
+		rebuild_node_positions(velocity_space.bases, boundary.neumann_nodes, boundary.neumann_nodes_position);
 
-		const bool has_neumann = !local_neumann_boundary.empty() || int(local_boundary.size()) < prev_b_size;
+		const bool has_neumann = !boundary.local_neumann_boundary.empty() || int(boundary.local_boundary.size()) < prev_b_size;
 		use_avg_pressure = !has_neumann;
+		fluid_spaces.pressure.geometry = geometry_mapping;
+		fluid_spaces.pressure.value_dim = 1;
+		fluid_spaces.layout = SolutionLayout();
+		fluid_spaces.velocity_block = fluid_spaces.layout.add_block(primary_ndof(), problem->is_time_dependent());
+		fluid_spaces.pressure_block = fluid_spaces.layout.add_block(fluid_spaces.pressure.n_bases, false);
+		fluid_spaces.pressure_mean_constraint_block = -1;
+		if (use_avg_pressure && assembler && assembler->is_fluid())
+			fluid_spaces.pressure_mean_constraint_block = fluid_spaces.layout.add_block(1, false, true);
 
-		for (int i = prev_bases; i < n_bases; ++i)
+		for (int i = prev_bases; i < velocity_space.n_bases; ++i)
 			for (int d = 0; d < mesh.dimension(); ++d)
-				boundary_nodes.push_back(i * mesh.dimension() + d);
+				boundary.boundary_nodes.push_back(i * mesh.dimension() + d);
 
-		std::sort(boundary_nodes.begin(), boundary_nodes.end());
-		boundary_nodes.erase(std::unique(boundary_nodes.begin(), boundary_nodes.end()), boundary_nodes.end());
+		std::sort(boundary.boundary_nodes.begin(), boundary.boundary_nodes.end());
+		boundary.boundary_nodes.erase(std::unique(boundary.boundary_nodes.begin(), boundary.boundary_nodes.end()), boundary.boundary_nodes.end());
 
-		if (n_bases <= args["solver"]["advanced"]["cache_size"])
-			pressure_ass_vals_cache.init(mesh.is_volume(), pressure_bases, geom_bases());
+		if (velocity_space.n_bases <= args["solver"]["advanced"]["cache_size"])
+			pressure_ass_vals_cache.init(mesh.is_volume(), fluid_spaces.pressure.bases, geom_bases());
 		else
 			pressure_ass_vals_cache.init_empty();
 
@@ -230,7 +242,7 @@ namespace polyfem::varform
 
 		timer.stop();
 		timings.building_basis_time += timer.getElapsedTime();
-		logger().info("n pressure bases: {}", n_pressure_bases);
+		logger().info("n pressure bases: {}", fluid_spaces.pressure.n_bases);
 	}
 
 	void FluidVarForm::assemble_rhs(const mesh::Mesh &mesh, const json &args)
@@ -250,7 +262,7 @@ namespace polyfem::varform
 			avg_mass = 1;
 			timings.assembling_mass_mat_time = 0;
 			if (!assembler->is_linear())
-				pure_mass_matrix_assembler->assemble(mesh.is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
+				pure_mass_matrix_assembler->assemble(mesh.is_volume(), velocity_space.n_bases, velocity_space.bases, geom_bases(), velocity_caches.pure_mass, 0, pure_mass, true);
 			return;
 		}
 
@@ -260,9 +272,9 @@ namespace polyfem::varform
 		logger().info("Assembling mass mat...");
 
 		StiffnessMatrix velocity_mass;
-		mass_matrix_assembler->assemble(mesh.is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, 0, velocity_mass, true);
+		mass_matrix_assembler->assemble(mesh.is_volume(), velocity_space.n_bases, velocity_space.bases, geom_bases(), velocity_caches.mass, 0, velocity_mass, true);
 		if (!assembler->is_linear())
-			pure_mass_matrix_assembler->assemble(mesh.is_volume(), n_bases, bases, geom_bases(), pure_mass_ass_vals_cache, 0, pure_mass, true);
+			pure_mass_matrix_assembler->assemble(mesh.is_volume(), velocity_space.n_bases, velocity_space.bases, geom_bases(), velocity_caches.pure_mass, 0, pure_mass, true);
 
 		std::vector<Eigen::Triplet<double>> blocks;
 		blocks.reserve(velocity_mass.nonZeros());
@@ -311,7 +323,7 @@ namespace polyfem::varform
 	{
 		const int cols = std::max(1, int(stacked.cols()));
 		primary.setZero(primary_ndof(), cols);
-		pressure.setZero(n_pressure_bases, cols);
+		pressure.setZero(fluid_spaces.pressure.n_bases, cols);
 
 		const int primary_rows = std::min(primary_ndof(), int(stacked.rows()));
 		if (primary_rows > 0)
@@ -319,7 +331,7 @@ namespace polyfem::varform
 
 		if (stacked.rows() > primary_ndof())
 		{
-			const int pressure_rows = std::min(n_pressure_bases, int(stacked.rows()) - primary_ndof());
+			const int pressure_rows = std::min(fluid_spaces.pressure.n_bases, int(stacked.rows()) - primary_ndof());
 			if (pressure_rows > 0)
 				pressure.topRows(pressure_rows) = stacked.middleRows(primary_ndof(), pressure_rows);
 		}
@@ -332,12 +344,12 @@ namespace polyfem::varform
 		logger().info("Assembling stiffness mat...");
 
 		StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
-		assembler->assemble(mesh_->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, 0, velocity_stiffness);
-		mixed_assembler->assemble(mesh_->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, geom_bases(), pressure_ass_vals_cache, ass_vals_cache, 0, mixed_stiffness);
-		pressure_assembler->assemble(mesh_->is_volume(), n_pressure_bases, pressure_bases, geom_bases(), pressure_ass_vals_cache, 0, pressure_stiffness);
+		assembler->assemble(mesh_->is_volume(), velocity_space.n_bases, velocity_space.bases, geom_bases(), velocity_caches.values, 0, velocity_stiffness);
+		mixed_assembler->assemble(mesh_->is_volume(), fluid_spaces.pressure.n_bases, velocity_space.n_bases, fluid_spaces.pressure.bases, velocity_space.bases, geom_bases(), pressure_ass_vals_cache, velocity_caches.values, 0, mixed_stiffness);
+		pressure_assembler->assemble(mesh_->is_volume(), fluid_spaces.pressure.n_bases, fluid_spaces.pressure.bases, geom_bases(), pressure_ass_vals_cache, 0, pressure_stiffness);
 
 		assembler::AssemblerUtils::merge_mixed_matrices(
-			n_bases, n_pressure_bases, mesh_->dimension(), use_avg_pressure,
+			velocity_space.n_bases, fluid_spaces.pressure.n_bases, mesh_->dimension(), use_avg_pressure,
 			velocity_stiffness, mixed_stiffness, pressure_stiffness, stiffness);
 
 		timer.stop();
@@ -364,7 +376,7 @@ namespace polyfem::varform
 			*solver,
 			A,
 			b,
-			boundary_nodes,
+			boundary.boundary_nodes,
 			x,
 			primary_ndof(),
 			args["output"]["data"]["stiffness_mat"],
@@ -433,7 +445,7 @@ namespace polyfem::varform
 
 					Eigen::MatrixXd local_sol, local_grad;
 					io::Evaluator::interpolate_at_local_vals(
-						*mesh_, field_dim, bases, geom_bases(),
+						*mesh_, field_dim, velocity_space.bases, geom_bases(),
 						element_id, sample.local_points.row(i), dof_values, local_sol, local_grad);
 
 					for (int d = 0; d < field_dim; ++d)
@@ -483,7 +495,7 @@ namespace polyfem::varform
 		{
 			Eigen::MatrixXd values, gradients;
 			if (sample_scalar_field(
-					*mesh_, pressure_bases, geom_bases(), sample, pressure, values,
+					*mesh_, fluid_spaces.pressure.bases, geom_bases(), sample, pressure, values,
 					export_pressure_gradient ? &gradients : nullptr))
 			{
 				if (options.export_field("pressure"))
@@ -542,8 +554,8 @@ namespace polyfem::varform
 		logger().info("{}...", solver->name());
 
 		rhs_assembler->set_bc(
-			local_boundary, boundary_nodes, n_boundary_samples(),
-			local_neumann_boundary, rhs);
+			boundary.local_boundary, boundary.boundary_nodes, n_boundary_samples(),
+			boundary.local_neumann_boundary, rhs);
 
 		StiffnessMatrix A;
 		build_stiffness_mat(A);
@@ -579,10 +591,10 @@ namespace polyfem::varform
 		{
 			const double time = t0 + t * dt;
 			rhs_assembler->compute_energy_grad(
-				local_boundary, boundary_nodes, mass_matrix_assembler->density(), n_boundary_samples(), local_neumann_boundary, rhs, time,
+				boundary.local_boundary, boundary.boundary_nodes, mass_matrix_assembler->density(), n_boundary_samples(), boundary.local_neumann_boundary, rhs, time,
 				current_rhs);
 			rhs_assembler->set_bc(
-				local_boundary, boundary_nodes, n_boundary_samples(), local_neumann_boundary, current_rhs, velocity, time);
+				boundary.local_boundary, boundary.boundary_nodes, n_boundary_samples(), boundary.local_neumann_boundary, current_rhs, velocity, time);
 
 			if (current_rhs.rows() != stacked_ndof())
 			{
@@ -596,7 +608,7 @@ namespace polyfem::varform
 			StiffnessMatrix A = expanded_mass / bdf->beta_dt() + stiffness;
 			Eigen::VectorXd b = Eigen::VectorXd::Zero(stacked_ndof());
 			b.head(primary_ndof()) = (mass * bdf->weighted_sum_x_prevs()) / bdf->beta_dt();
-			for (int i : boundary_nodes)
+			for (int i : boundary.boundary_nodes)
 				b[i] = 0;
 			b += current_rhs;
 
@@ -636,7 +648,7 @@ namespace polyfem::varform
 	{
 		assert(rhs_assembler != nullptr);
 		rhs_assembler->set_bc(
-			local_boundary, boundary_nodes, n_boundary_samples(), local_neumann_boundary, rhs);
+			boundary.local_boundary, boundary.boundary_nodes, n_boundary_samples(), boundary.local_neumann_boundary, rhs);
 
 		auto velocity_stokes_assembler = std::make_shared<assembler::StokesVelocity>();
 		set_materials(*velocity_stokes_assembler);
@@ -644,16 +656,16 @@ namespace polyfem::varform
 		Eigen::VectorXd x;
 		solver::NavierStokesSolver ns_solver(args["solver"]);
 		ns_solver.minimize(
-			n_bases, n_pressure_bases,
-			bases, pressure_bases,
+			velocity_space.n_bases, fluid_spaces.pressure.n_bases,
+			velocity_space.bases, fluid_spaces.pressure.bases,
 			geom_bases(),
 			*velocity_stokes_assembler,
 			*dynamic_cast<assembler::NavierStokesVelocity *>(assembler.get()),
 			*mixed_assembler,
 			*pressure_assembler,
-			ass_vals_cache,
+			velocity_caches.values,
 			pressure_ass_vals_cache,
-			boundary_nodes,
+			boundary.boundary_nodes,
 			use_avg_pressure,
 			mesh_->dimension(),
 			mesh_->is_volume(),
@@ -683,28 +695,28 @@ namespace polyfem::varform
 
 		Eigen::MatrixXd current_rhs = rhs;
 		StiffnessMatrix velocity_mass;
-		mass_matrix_assembler->assemble(mesh_->is_volume(), n_bases, bases, geom_bases(), mass_ass_vals_cache, 0, velocity_mass, true);
+		mass_matrix_assembler->assemble(mesh_->is_volume(), velocity_space.n_bases, velocity_space.bases, geom_bases(), velocity_caches.mass, 0, velocity_mass, true);
 
 		StiffnessMatrix velocity_stiffness, mixed_stiffness, pressure_stiffness;
 		auto velocity_stokes_assembler = std::make_shared<assembler::StokesVelocity>();
 		set_materials(*velocity_stokes_assembler);
 
-		mixed_assembler->assemble(mesh_->is_volume(), n_pressure_bases, n_bases, pressure_bases, bases, geom_bases(), pressure_ass_vals_cache, ass_vals_cache, 0, mixed_stiffness);
-		pressure_assembler->assemble(mesh_->is_volume(), n_pressure_bases, pressure_bases, geom_bases(), pressure_ass_vals_cache, 0, pressure_stiffness);
+		mixed_assembler->assemble(mesh_->is_volume(), fluid_spaces.pressure.n_bases, velocity_space.n_bases, fluid_spaces.pressure.bases, velocity_space.bases, geom_bases(), pressure_ass_vals_cache, velocity_caches.values, 0, mixed_stiffness);
+		pressure_assembler->assemble(mesh_->is_volume(), fluid_spaces.pressure.n_bases, fluid_spaces.pressure.bases, geom_bases(), pressure_ass_vals_cache, 0, pressure_stiffness);
 
 		solver::TransientNavierStokesSolver ns_solver(args["solver"]);
 		for (int t = 1; t <= time_steps; ++t)
 		{
 			const double time = t0 + t * dt;
-			velocity_stokes_assembler->assemble(mesh_->is_volume(), n_bases, bases, geom_bases(), ass_vals_cache, time, velocity_stiffness);
+			velocity_stokes_assembler->assemble(mesh_->is_volume(), velocity_space.n_bases, velocity_space.bases, geom_bases(), velocity_caches.values, time, velocity_stiffness);
 
 			logger().info("{}/{} steps, dt={}s t={}s", t, time_steps, dt, time);
 
 			const Eigen::VectorXd prev_sol = bdf->weighted_sum_x_prevs();
 			rhs_assembler->compute_energy_grad(
-				local_boundary, boundary_nodes, mass_matrix_assembler->density(), n_boundary_samples(), local_neumann_boundary, rhs, time, current_rhs);
+				boundary.local_boundary, boundary.boundary_nodes, mass_matrix_assembler->density(), n_boundary_samples(), boundary.local_neumann_boundary, rhs, time, current_rhs);
 			rhs_assembler->set_bc(
-				local_boundary, boundary_nodes, n_boundary_samples(), local_neumann_boundary, current_rhs, velocity, time);
+				boundary.local_boundary, boundary.boundary_nodes, n_boundary_samples(), boundary.local_neumann_boundary, current_rhs, velocity, time);
 
 			if (current_rhs.rows() != stacked_ndof())
 			{
@@ -717,12 +729,12 @@ namespace polyfem::varform
 
 			Eigen::VectorXd tmp_sol;
 			ns_solver.minimize(
-				n_bases, n_pressure_bases,
+				velocity_space.n_bases, fluid_spaces.pressure.n_bases,
 				time,
-				bases, geom_bases(),
+				velocity_space.bases, geom_bases(),
 				*dynamic_cast<assembler::NavierStokesVelocity *>(assembler.get()),
-				ass_vals_cache,
-				boundary_nodes,
+				velocity_caches.values,
+				boundary.boundary_nodes,
 				use_avg_pressure,
 				mesh_->dimension(),
 				mesh_->is_volume(),

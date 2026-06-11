@@ -28,6 +28,14 @@ namespace polyfem::varform
 
 	protected:
 		void reset() override;
+		FESpace &primary_space() override { return scalar_space; }
+		const FESpace &primary_space() const override { return scalar_space; }
+		std::shared_ptr<GeometryMapping> &primary_geometry() override { return geometry_mapping; }
+		const std::shared_ptr<GeometryMapping> &primary_geometry() const override { return geometry_mapping; }
+		AssemblyCaches &primary_caches() override { return scalar_caches; }
+		const AssemblyCaches &primary_caches() const override { return scalar_caches; }
+		VarFormBoundaryState &boundary_state() override { return boundary; }
+		const VarFormBoundaryState &boundary_state() const override { return boundary; }
 
 	private:
 		void build_stiffness_mat(StiffnessMatrix &stiffness);
@@ -43,5 +51,11 @@ namespace polyfem::varform
 		void solve_transient(Eigen::MatrixXd &sol);
 
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
+
+	protected:
+		std::shared_ptr<GeometryMapping> geometry_mapping = std::make_shared<GeometryMapping>();
+		FESpace scalar_space;
+		AssemblyCaches scalar_caches;
+		VarFormBoundaryState boundary;
 	};
 } // namespace polyfem::varform

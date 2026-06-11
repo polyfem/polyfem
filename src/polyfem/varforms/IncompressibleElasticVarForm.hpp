@@ -51,11 +51,8 @@ namespace polyfem::varform
 
 		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
 		std::shared_ptr<assembler::Assembler> pressure_assembler = nullptr;
-		std::vector<basis::ElementBases> pressure_bases;
-		int n_pressure_bases = 0;
-		std::shared_ptr<mesh::MeshNodes> pressure_mesh_nodes;
+		IncompressibleElasticSpaces incompressible_spaces;
 		assembler::AssemblyValsCache pressure_ass_vals_cache;
-		std::vector<int> pressure_boundary_nodes;
 		bool use_avg_pressure = true;
 
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;

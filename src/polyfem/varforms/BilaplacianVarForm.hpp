@@ -48,7 +48,7 @@ namespace polyfem::varform
 
 		void build_rhs_assembler() override
 		{
-			rhs_assembler = build_rhs_assembler(n_bases, bases, mass_ass_vals_cache);
+			rhs_assembler = build_rhs_assembler(scalar_space.n_bases, scalar_space.bases, scalar_caches.mass);
 		}
 
 		std::shared_ptr<assembler::RhsAssembler> build_rhs_assembler(
@@ -58,11 +58,8 @@ namespace polyfem::varform
 
 		std::shared_ptr<assembler::MixedAssembler> mixed_assembler = nullptr;
 		std::shared_ptr<assembler::Assembler> pressure_assembler = nullptr;
-		std::vector<basis::ElementBases> pressure_bases;
-		int n_pressure_bases = 0;
-		std::shared_ptr<mesh::MeshNodes> pressure_mesh_nodes;
+		BilaplacianSpaces bilaplacian_spaces;
 		assembler::AssemblyValsCache pressure_ass_vals_cache;
-		std::vector<int> pressure_boundary_nodes;
 		bool use_avg_pressure = true;
 		std::shared_ptr<time_integrator::ImplicitTimeIntegrator> time_integrator;
 	};

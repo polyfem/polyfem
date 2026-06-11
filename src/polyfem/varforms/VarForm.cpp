@@ -260,6 +260,7 @@ namespace polyfem::varform
 		using assembler::AssemblerUtils;
 		const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
 		const int gdiscr_order = mesh_->orders().size() <= 0 ? 1 : mesh_->orders().maxCoeff();
+		const Eigen::VectorXi &disc_orders = primary_space().disc_orders;
 		const int discr_order = std::max(disc_orders.maxCoeff(), gdiscr_order);
 
 		const int n_b_samples = std::max(n_b_samples_j, AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::POLY, mesh_->dimension()));
@@ -268,6 +269,11 @@ namespace polyfem::varform
 
 	void VarForm::reset()
 	{
+		FESpace &space = primary_space();
+		std::shared_ptr<GeometryMapping> &geometry = primary_geometry();
+		AssemblyCaches &caches = primary_caches();
+		VarFormBoundaryState &boundary = boundary_state();
+
 		// FIXME check subclasses
 		stats.reset();
 		timings = io::OutRuntimeData();
@@ -278,36 +284,40 @@ namespace polyfem::varform
 		assembler = nullptr;
 		mass_matrix_assembler = nullptr;
 		pure_mass_matrix_assembler = nullptr;
-		bases.clear();
-		geom_bases_.clear();
-		polys.clear();
-		polys_3d.clear();
+		geometry->isoparametric = false;
+		space.geometry = geometry;
+		space.value_dim = 1;
+		space.bases.clear();
+		geometry->bases.clear();
+		geometry->polys.clear();
+		geometry->polys_3d.clear();
 		poly_edge_to_data.clear();
-		mesh_nodes = nullptr;
-		geom_mesh_nodes = nullptr;
+		space.mesh_nodes = nullptr;
+		geometry->mesh_nodes = nullptr;
 		in_node_to_node.resize(0);
 		in_primitive_to_primitive.resize(0);
-		disc_orders.resize(0);
-		disc_ordersq.resize(0);
-		ass_vals_cache.init_empty();
-		mass_ass_vals_cache.init_empty(true);
-		pure_mass_ass_vals_cache.init_empty(true);
+		space.disc_orders.resize(0);
+		space.disc_ordersq.resize(0);
+		caches.values.init_empty();
+		caches.mass.init_empty(true);
+		caches.pure_mass.init_empty(true);
 		mass.resize(0, 0);
 		pure_mass.resize(0, 0);
 		rhs.resize(0, 0);
 		avg_mass = 0;
-		boundary_nodes.clear();
-		total_local_boundary.clear();
-		local_boundary.clear();
-		local_neumann_boundary.clear();
-		local_pressure_boundary.clear();
-		local_pressure_cavity.clear();
-		dirichlet_nodes.clear();
-		dirichlet_nodes_position.clear();
-		neumann_nodes.clear();
-		neumann_nodes_position.clear();
-		n_bases = 0;
-		n_geom_bases = 0;
+		boundary.boundary_nodes.clear();
+		boundary.total_local_boundary.clear();
+		boundary.local_boundary.clear();
+		boundary.local_neumann_boundary.clear();
+		boundary.local_pressure_boundary.clear();
+		boundary.local_pressure_cavity.clear();
+		boundary.pressure_boundary_nodes.clear();
+		boundary.dirichlet_nodes.clear();
+		boundary.dirichlet_nodes_position.clear();
+		boundary.neumann_nodes.clear();
+		boundary.neumann_nodes_position.clear();
+		space.n_bases = 0;
+		geometry->n_bases = 0;
 		t0 = 0;
 		time_steps = 0;
 		dt = 0;
@@ -382,7 +392,35 @@ namespace polyfem::varform
 	void VarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
 	{
 		using namespace mesh;
-		this->iso_parametric = iso_parametric;
+		FESpace &space = primary_space();
+		std::shared_ptr<GeometryMapping> &geometry = primary_geometry();
+		AssemblyCaches &caches = primary_caches();
+		VarFormBoundaryState &boundary = boundary_state();
+		std::vector<basis::ElementBases> &bases = space.bases;
+		int &n_bases = space.n_bases;
+		Eigen::VectorXi &disc_orders = space.disc_orders;
+		Eigen::VectorXi &disc_ordersq = space.disc_ordersq;
+		std::vector<basis::ElementBases> &geom_bases_ = geometry->bases;
+		int &n_geom_bases = geometry->n_bases;
+		std::shared_ptr<polyfem::mesh::MeshNodes> &mesh_nodes = space.mesh_nodes;
+		std::shared_ptr<polyfem::mesh::MeshNodes> &geom_mesh_nodes = geometry->mesh_nodes;
+		assembler::AssemblyValsCache &ass_vals_cache = caches.values;
+		assembler::AssemblyValsCache &mass_ass_vals_cache = caches.mass;
+		assembler::AssemblyValsCache &pure_mass_ass_vals_cache = caches.pure_mass;
+		std::vector<int> &boundary_nodes = boundary.boundary_nodes;
+		std::vector<mesh::LocalBoundary> &total_local_boundary = boundary.total_local_boundary;
+		std::vector<mesh::LocalBoundary> &local_boundary = boundary.local_boundary;
+		std::vector<mesh::LocalBoundary> &local_neumann_boundary = boundary.local_neumann_boundary;
+		std::vector<mesh::LocalBoundary> &local_pressure_boundary = boundary.local_pressure_boundary;
+		std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity = boundary.local_pressure_cavity;
+		std::vector<int> &dirichlet_nodes = boundary.dirichlet_nodes;
+		std::vector<RowVectorNd> &dirichlet_nodes_position = boundary.dirichlet_nodes_position;
+		std::vector<int> &neumann_nodes = boundary.neumann_nodes;
+		std::vector<RowVectorNd> &neumann_nodes_position = boundary.neumann_nodes_position;
+
+		geometry->isoparametric = iso_parametric;
+		space.geometry = geometry;
+		space.value_dim = assembler && (assembler->is_tensor() || assembler->is_fluid()) ? mesh.dimension() : 1;
 
 		VarForm::assign_discr_orders(args["space"]["discr_order"], mesh, disc_orders);
 
@@ -545,6 +583,17 @@ namespace polyfem::varform
 
 	void VarForm::build_polygonal_basis(const mesh::Mesh &mesh)
 	{
+		FESpace &space = primary_space();
+		std::shared_ptr<GeometryMapping> &geometry = primary_geometry();
+		VarFormBoundaryState &boundary = boundary_state();
+		std::vector<basis::ElementBases> &bases = space.bases;
+		int &n_bases = space.n_bases;
+		std::vector<basis::ElementBases> &geom_bases_ = geometry->bases;
+		std::map<int, Eigen::MatrixXd> &polys = geometry->polys;
+		std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d = geometry->polys_3d;
+		std::vector<mesh::LocalBoundary> &local_boundary = boundary.local_boundary;
+		const bool iso_parametric = geometry->isoparametric;
+
 		rhs.resize(0, 0);
 
 		if (poly_edge_to_data.empty() && polys.empty())
@@ -695,6 +744,10 @@ namespace polyfem::varform
 
 	void VarForm::build_node_mapping(const mesh::Mesh &mesh, const json &args)
 	{
+		const FESpace &space = primary_space();
+		const Eigen::VectorXi &disc_orders = space.disc_orders;
+		const std::shared_ptr<polyfem::mesh::MeshNodes> &mesh_nodes = space.mesh_nodes;
+
 		if (args["space"]["basis_type"] == "Spline")
 		{
 			logger().warn("Node ordering disabled, it dosent work for splines!");
@@ -865,6 +918,12 @@ namespace polyfem::varform
 		}
 
 		logger().info("Saving json...");
+		const FESpace &space = primary_space();
+		const std::shared_ptr<GeometryMapping> &geometry = primary_geometry();
+		const int n_bases = space.n_bases;
+		const Eigen::VectorXi &disc_orders = space.disc_orders;
+		const Eigen::VectorXi &disc_ordersq = space.disc_ordersq;
+		const bool iso_parametric = geometry && geometry->isoparametric;
 		const int primary_size = n_bases * problem_dimension();
 		const Eigen::MatrixXd stats_solution =
 			solution.rows() >= primary_size
@@ -895,6 +954,9 @@ namespace polyfem::varform
 		if (!has_element_samples)
 			return fields;
 
+		const FESpace &space = primary_space();
+		const int n_bases = space.n_bases;
+		const std::vector<basis::ElementBases> &bases = space.bases;
 		const int dim = problem_dimension();
 		const int output_rows = sample.points.rows() > 0 ? sample.points.rows() : sample.local_points.rows();
 		const int primary_ndof = std::min<int>(solution.rows(), n_bases * dim);
@@ -966,7 +1028,9 @@ namespace polyfem::varform
 
 	std::vector<int> VarForm::primitive_to_node() const
 	{
-		const auto &nodes = iso_parametric ? mesh_nodes : geom_mesh_nodes;
+		const FESpace &space = primary_space();
+		const std::shared_ptr<GeometryMapping> &geometry = primary_geometry();
+		const auto &nodes = geometry->isoparametric ? space.mesh_nodes : geometry->mesh_nodes;
 		if (!nodes)
 			return {};
 
@@ -977,9 +1041,10 @@ namespace polyfem::varform
 
 	std::vector<int> VarForm::node_to_primitive() const
 	{
+		const std::shared_ptr<GeometryMapping> &geometry = primary_geometry();
 		auto p2n = primitive_to_node();
 		std::vector<int> indices;
-		indices.resize(n_geom_bases);
+		indices.resize(geometry->n_bases);
 		for (int i = 0; i < p2n.size(); i++)
 			indices[p2n[i]] = i;
 		return indices;
@@ -1018,6 +1083,13 @@ namespace polyfem::varform
 
 	void VarForm::assemble_mass_mat(const mesh::Mesh &mesh, const json &args)
 	{
+		const FESpace &space = primary_space();
+		const AssemblyCaches &caches = primary_caches();
+		const int n_bases = space.n_bases;
+		const std::vector<basis::ElementBases> &bases = space.bases;
+		const assembler::AssemblyValsCache &mass_ass_vals_cache = caches.mass;
+		const assembler::AssemblyValsCache &pure_mass_ass_vals_cache = caches.pure_mass;
+
 		if (!problem->is_time_dependent())
 		{
 			avg_mass = 1;
@@ -1083,6 +1155,17 @@ namespace polyfem::varform
 
 	void VarForm::build_rhs_assembler()
 	{
+		const FESpace &space = primary_space();
+		const AssemblyCaches &caches = primary_caches();
+		const VarFormBoundaryState &boundary = boundary_state();
+		const int n_bases = space.n_bases;
+		const std::vector<basis::ElementBases> &bases = space.bases;
+		const assembler::AssemblyValsCache &mass_ass_vals_cache = caches.mass;
+		const std::vector<int> &dirichlet_nodes = boundary.dirichlet_nodes;
+		const std::vector<int> &neumann_nodes = boundary.neumann_nodes;
+		const std::vector<RowVectorNd> &dirichlet_nodes_position = boundary.dirichlet_nodes_position;
+		const std::vector<RowVectorNd> &neumann_nodes_position = boundary.neumann_nodes_position;
+
 		json rhs_solver_params = args["solver"]["linear"];
 		if (!rhs_solver_params.contains("Pardiso"))
 			rhs_solver_params["Pardiso"] = {};
@@ -1143,6 +1226,12 @@ namespace polyfem::varform
 
 	void VarForm::export_data(const Eigen::MatrixXd &solution) const
 	{
+		const FESpace &fe_space = primary_space();
+		const int n_bases = fe_space.n_bases;
+		const std::vector<basis::ElementBases> &bases = fe_space.bases;
+		const Eigen::VectorXi &disc_orders = fe_space.disc_orders;
+		const Eigen::VectorXi &disc_ordersq = fe_space.disc_ordersq;
+
 		const io::OutputSpace space = output_space();
 		if (!space.mesh)
 		{
@@ -1227,6 +1316,17 @@ namespace polyfem::varform
 
 	io::OutputSpace VarForm::output_space() const
 	{
+		const FESpace &space = primary_space();
+		const std::shared_ptr<GeometryMapping> &geometry = primary_geometry();
+		const VarFormBoundaryState &boundary = boundary_state();
+		const Eigen::VectorXi &disc_orders = space.disc_orders;
+		const Eigen::VectorXi &disc_ordersq = space.disc_ordersq;
+		const std::map<int, Eigen::MatrixXd> &polys = geometry->polys;
+		const std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> &polys_3d = geometry->polys_3d;
+		const std::vector<mesh::LocalBoundary> &total_local_boundary = boundary.total_local_boundary;
+		const std::vector<int> &dirichlet_nodes = boundary.dirichlet_nodes;
+		const std::vector<RowVectorNd> &dirichlet_nodes_position = boundary.dirichlet_nodes_position;
+
 		Eigen::VectorXi output_orders = disc_orders;
 		if (mesh_ && disc_ordersq.size() == disc_orders.size())
 		{
@@ -1438,6 +1538,10 @@ namespace polyfem::varform
 	{
 		if (!args["output"]["advanced"]["compute_error"])
 			return stats;
+
+		const FESpace &space = primary_space();
+		const int n_bases = space.n_bases;
+		const std::vector<basis::ElementBases> &bases = space.bases;
 
 		double tend = 0;
 		if (!args["time"].is_null())
