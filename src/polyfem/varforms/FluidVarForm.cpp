@@ -10,6 +10,7 @@
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/problem/KernelProblem.hpp>
 #include <polyfem/problem/ProblemFactory.hpp>
+#include <polyfem/varforms/ResolveDiscrOrder.hpp>
 #include <polyfem/solver/NavierStokesSolver.hpp>
 #include <polyfem/solver/TransientNavierStokesSolver.hpp>
 #include <polyfem/time_integrator/BDF.hpp>
@@ -121,6 +122,15 @@ namespace polyfem::varform
 
 	void FluidVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
 	{
+		velocity_space.value_dim = mesh.dimension();
+		velocity_space.geometry = geometry_mapping;
+		geometry_mapping->isoparametric = iso_parametric;
+
+		auto disc = resolve_discr_orders(args, root_path, mesh, stats);
+		velocity_space.disc_orders = disc.orders;
+		velocity_space.disc_ordersq = disc.ordersq;
+		geometry_mapping->disc_orders = resolve_geom_orders(mesh, velocity_space.disc_orders, iso_parametric);
+
 		VarForm::build_basis(mesh, iso_parametric, args);
 
 		if (velocity_space.disc_orders.maxCoeff() != velocity_space.disc_orders.minCoeff())

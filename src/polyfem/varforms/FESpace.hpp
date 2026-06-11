@@ -22,6 +22,8 @@ namespace polyfem::varform
 		std::vector<basis::ElementBases> bases;
 		int n_bases = 0;
 
+		Eigen::VectorXi disc_orders;
+
 		std::map<int, Eigen::MatrixXd> polys;
 		std::map<int, std::pair<Eigen::MatrixXd, Eigen::MatrixXi>> polys_3d;
 

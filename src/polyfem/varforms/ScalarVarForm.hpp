@@ -36,6 +36,9 @@ namespace polyfem::varform
 		VarFormBoundaryState &boundary_state() override { return boundary; }
 		const VarFormBoundaryState &boundary_state() const override { return boundary; }
 
+	protected:
+		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
+
 	private:
 		void build_stiffness_mat(StiffnessMatrix &stiffness);
 

@@ -10,6 +10,7 @@
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/time_integrator/BDF.hpp>
+#include <polyfem/varforms/ResolveDiscrOrder.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
@@ -72,6 +73,15 @@ namespace polyfem::varform
 
 	void IncompressibleElasticVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
 	{
+		displacement_space.value_dim = mesh.dimension();
+		displacement_space.geometry = geometry_mapping;
+		geometry_mapping->isoparametric = iso_parametric;
+
+		auto disc = resolve_discr_orders(args, root_path, mesh, stats);
+		displacement_space.disc_orders = disc.orders;
+		displacement_space.disc_ordersq = disc.ordersq;
+		geometry_mapping->disc_orders = resolve_geom_orders(mesh, displacement_space.disc_orders, iso_parametric);
+
 		VarForm::build_basis(mesh, iso_parametric, args);
 
 		if (displacement_space.disc_orders.maxCoeff() != displacement_space.disc_orders.minCoeff())

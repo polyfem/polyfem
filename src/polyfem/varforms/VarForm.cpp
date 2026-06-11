@@ -353,42 +353,8 @@ namespace polyfem::varform
 		std::vector<int> &neumann_nodes = boundary.neumann_nodes;
 		std::vector<RowVectorNd> &neumann_nodes_position = boundary.neumann_nodes_position;
 
-		geometry->isoparametric = iso_parametric;
-		space.geometry = geometry;
-		space.value_dim = assembler && (assembler->is_tensor() || assembler->is_fluid()) ? mesh.dimension() : 1;
-
-		VarForm::assign_discr_orders(args["space"]["discr_order"], mesh, disc_orders);
-
-		Eigen::MatrixXi geom_disc_orders;
-		if (!iso_parametric)
-		{
-			if (mesh.orders().size() <= 0)
-			{
-				geom_disc_orders.resizeLike(disc_orders);
-				geom_disc_orders.setConstant(1);
-			}
-			else
-				geom_disc_orders = mesh.orders();
-		}
-
-		Eigen::MatrixXi geom_disc_ordersq = geom_disc_orders;
-		disc_ordersq = disc_orders;
-
 		igl::Timer timer;
 		timer.start();
-		if (args["space"]["use_p_ref"])
-		{
-			refinement::APriori::p_refine(
-				mesh,
-				args["space"]["advanced"]["B"],
-				args["space"]["advanced"]["h1_formula"],
-				args["space"]["discr_order"],
-				args["space"]["advanced"]["discr_order_max"],
-				stats,
-				disc_orders);
-
-			logger().info("min p: {} max p: {}", disc_orders.minCoeff(), disc_orders.maxCoeff());
-		}
 
 		logger().info("Building {} basis...", (iso_parametric ? "isoparametric" : "not isoparametric"));
 		const bool has_polys = mesh.has_poly();
@@ -422,7 +388,7 @@ namespace polyfem::varform
 			else
 			{
 				if (!iso_parametric)
-					n_geom_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geom_disc_orders, geom_disc_ordersq, false, false, has_polys, !use_continuous_gbasis, use_corner_quadrature, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
+					n_geom_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geometry->disc_orders, geometry->disc_orders, false, false, has_polys, !use_continuous_gbasis, use_corner_quadrature, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
 
 				n_bases = basis::LagrangeBasis3d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, disc_orders, disc_ordersq, args["space"]["basis_type"] == "Bernstein", args["space"]["basis_type"] == "Serendipity", has_polys, false, use_corner_quadrature, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
@@ -437,7 +403,7 @@ namespace polyfem::varform
 			else
 			{
 				if (!iso_parametric)
-					n_geom_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geom_disc_orders, false, false, has_polys, !use_continuous_gbasis, use_corner_quadrature, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
+					n_geom_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, geometry->disc_orders, false, false, has_polys, !use_continuous_gbasis, use_corner_quadrature, geom_bases_, local_boundary, poly_edge_to_data_geom, geom_mesh_nodes);
 
 				n_bases = basis::LagrangeBasis2d::build_bases(tmp_mesh, assembler->name(), quadrature_order, mass_quadrature_order, disc_orders, args["space"]["basis_type"] == "Bernstein", args["space"]["basis_type"] == "Serendipity", has_polys, false, use_corner_quadrature, bases, local_boundary, poly_edge_to_data, mesh_nodes);
 			}
@@ -761,63 +727,6 @@ namespace polyfem::varform
 		{
 			if (tmp[i] >= 0)
 				in_node_to_node[tmp[i]] = i;
-		}
-	}
-
-	void VarForm::assign_discr_orders(const json &discr_order, const mesh::Mesh &mesh, Eigen::VectorXi &disc_orders)
-	{
-		disc_orders.resize(mesh.n_elements());
-
-		if (discr_order.is_number_integer())
-		{
-			disc_orders.setConstant(discr_order);
-		}
-		else if (discr_order.is_string())
-		{
-			const std::string discr_orders_path = utils::resolve_path(discr_order, root_path);
-			Eigen::MatrixXi tmp;
-			io::read_matrix(discr_orders_path, tmp);
-			assert(tmp.size() == disc_orders.size());
-			assert(tmp.cols() == 1);
-			disc_orders = tmp;
-		}
-		else if (discr_order.is_array())
-		{
-			const auto b_discr_orders = discr_order;
-
-			std::map<int, int> b_orders;
-			for (size_t i = 0; i < b_discr_orders.size(); ++i)
-			{
-				assert(b_discr_orders[i]["id"].is_array() || b_discr_orders[i]["id"].is_number_integer());
-
-				const int order = b_discr_orders[i]["order"];
-				for (const int id : utils::json_as_array<int>(b_discr_orders[i]["id"]))
-				{
-					b_orders[id] = order;
-					logger().trace("bid {}, discr {}", id, order);
-				}
-			}
-
-			for (int e = 0; e < mesh.n_elements(); ++e)
-			{
-				const int bid = mesh.get_body_id(e);
-				const auto order = b_orders.find(bid);
-				if (order == b_orders.end())
-				{
-					logger().debug("Missing discretization order for body {}; using 1", bid);
-					b_orders[bid] = 1;
-					disc_orders[e] = 1;
-				}
-				else
-				{
-					disc_orders[e] = order->second;
-				}
-			}
-		}
-		else
-		{
-			logger().error("space/discr_order must be either a number a path or an array");
-			throw std::runtime_error("invalid json");
 		}
 	}
 

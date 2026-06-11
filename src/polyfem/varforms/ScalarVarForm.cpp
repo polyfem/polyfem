@@ -7,6 +7,8 @@
 
 #include <polyfem/problem/ProblemFactory.hpp>
 
+#include <polyfem/varforms/ResolveDiscrOrder.hpp>
+
 #include <polyfem/time_integrator/BDF.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Timer.hpp>
@@ -66,6 +68,20 @@ namespace polyfem::varform
 		t0 = is_time_dependent ? args["time"]["t0"].get<double>() : 0.0;
 		time_steps = is_time_dependent ? args["time"]["time_steps"].get<int>() : 0;
 		dt = is_time_dependent ? args["time"]["dt"].get<double>() : 0.0;
+	}
+
+	void ScalarVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
+	{
+		scalar_space.value_dim = 1;
+		scalar_space.geometry = geometry_mapping;
+		geometry_mapping->isoparametric = iso_parametric;
+
+		auto disc = resolve_discr_orders(args, root_path, mesh, stats);
+		scalar_space.disc_orders = disc.orders;
+		scalar_space.disc_ordersq = disc.ordersq;
+		geometry_mapping->disc_orders = resolve_geom_orders(mesh, scalar_space.disc_orders, iso_parametric);
+
+		VarForm::build_basis(mesh, iso_parametric, args);
 	}
 
 	void ScalarVarForm::save_json(const Eigen::MatrixXd &solution, std::ostream &out) const

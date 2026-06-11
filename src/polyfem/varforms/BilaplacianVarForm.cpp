@@ -8,6 +8,7 @@
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/problem/ProblemFactory.hpp>
 #include <polyfem/time_integrator/BDF.hpp>
+#include <polyfem/varforms/ResolveDiscrOrder.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
@@ -87,6 +88,15 @@ namespace polyfem::varform
 
 	void BilaplacianVarForm::build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args)
 	{
+		scalar_space.value_dim = 1;
+		scalar_space.geometry = geometry_mapping;
+		geometry_mapping->isoparametric = iso_parametric;
+
+		auto disc = resolve_discr_orders(args, root_path, mesh, stats);
+		scalar_space.disc_orders = disc.orders;
+		scalar_space.disc_ordersq = disc.ordersq;
+		geometry_mapping->disc_orders = resolve_geom_orders(mesh, scalar_space.disc_orders, iso_parametric);
+
 		VarForm::build_basis(mesh, iso_parametric, args);
 
 		if (scalar_space.disc_orders.maxCoeff() != scalar_space.disc_orders.minCoeff())

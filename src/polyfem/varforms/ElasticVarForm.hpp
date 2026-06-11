@@ -29,6 +29,7 @@ namespace polyfem::varform
 
 	protected:
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
+		void build_basis(mesh::Mesh &mesh, const bool iso_parametric, const json &args) override;
 		FESpace &primary_space() override { return displacement_space; }
 		const FESpace &primary_space() const override { return displacement_space; }
 		std::shared_ptr<GeometryMapping> &primary_geometry() override { return geometry_mapping; }

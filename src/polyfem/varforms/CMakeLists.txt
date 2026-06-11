@@ -1,4 +1,6 @@
 set(SOURCES
+    ResolveDiscrOrder.hpp
+    ResolveDiscrOrder.cpp
     VarForm.cpp
     VarFormFactory.hpp
     VarFormFactory.cpp
