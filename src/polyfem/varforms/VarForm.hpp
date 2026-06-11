@@ -116,6 +116,7 @@ namespace polyfem
 
 			virtual void load_mesh(const mesh::Mesh &mesh, const json &args);
 			virtual void build_basis(mesh::Mesh &mesh, const json &args);
+			virtual void build_boundary_condition(mesh::Mesh &mesh, const json &args) = 0;
 			virtual void assemble_rhs(const mesh::Mesh &mesh, const json &args);
 			virtual void assemble_mass_mat(const mesh::Mesh &mesh, const json &args);
 			virtual void solve_problem(Eigen::MatrixXd &sol) = 0;

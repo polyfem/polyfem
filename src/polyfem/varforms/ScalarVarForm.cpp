@@ -88,6 +88,41 @@ namespace polyfem::varform
 		VarForm::build_basis(mesh, args);
 	}
 
+	void ScalarVarForm::build_boundary_condition(mesh::Mesh &mesh, const json &args)
+	{
+		build_node_mapping(mesh, args);
+		problem->update_nodes(in_node_to_node);
+		mesh.update_nodes(in_node_to_node);
+
+		boundary.local_boundary.clear();
+		for (const auto &local_boundary : boundary.total_local_boundary)
+			boundary.local_boundary.emplace_back(local_boundary);
+		boundary.boundary_nodes.clear();
+		boundary.local_neumann_boundary.clear();
+		boundary.local_pressure_boundary.clear();
+		boundary.local_pressure_cavity.clear();
+		boundary.pressure_boundary_nodes.clear();
+		boundary.dirichlet_nodes.clear();
+		boundary.dirichlet_nodes_position.clear();
+		boundary.neumann_nodes.clear();
+		boundary.neumann_nodes_position.clear();
+
+		const std::vector<basis::ElementBases> empty_pressure_bases;
+		problem->setup_bc(
+			mesh, scalar_space.n_bases,
+			*scalar_space.bases, geom_bases(), empty_pressure_bases,
+			boundary.local_boundary,
+			boundary.boundary_nodes,
+			boundary.local_neumann_boundary,
+			boundary.local_pressure_boundary,
+			boundary.local_pressure_cavity,
+			boundary.pressure_boundary_nodes,
+			boundary.dirichlet_nodes, boundary.neumann_nodes);
+
+		rebuild_node_positions(*scalar_space.bases, boundary.dirichlet_nodes, boundary.dirichlet_nodes_position);
+		rebuild_node_positions(*scalar_space.bases, boundary.neumann_nodes, boundary.neumann_nodes_position);
+	}
+
 	void ScalarVarForm::save_json(const Eigen::MatrixXd &solution, std::ostream &out) const
 	{
 		save_json_stats(solution, 0, out);

@@ -109,9 +109,6 @@ namespace polyfem::varform
 		igl::Timer timer;
 		timer.start();
 
-		const int prev_bases = scalar_space.n_bases;
-		const auto &all_boundary = boundary.total_local_boundary;
-		const int prev_b_size = int(all_boundary.size());
 		const bool has_polys = mesh.has_poly();
 		const bool use_corner_quadrature = args["space"]["advanced"]["use_corner_quadrature"];
 		const int quadrature_order = args["space"]["advanced"]["quadrature_order"].get<int>();
@@ -151,17 +148,39 @@ namespace polyfem::varform
 			bilaplacian_spaces.helper.bases->at(i).set_quadrature([b_quad](quadrature::Quadrature &quad) { quad = b_quad; });
 		}
 
-		boundary.local_boundary.clear();
-		for (const auto &lb : all_boundary)
-			boundary.local_boundary.emplace_back(lb);
+		bilaplacian_spaces.helper.geometry = geometry_mapping;
+		bilaplacian_spaces.helper.value_dim = 1;
 
+		if (scalar_space.n_bases <= args["solver"]["advanced"]["cache_size"])
+			pressure_ass_vals_cache.init(mesh.is_volume(), *bilaplacian_spaces.helper.bases, geom_bases());
+		else
+			pressure_ass_vals_cache.init_empty();
+
+		timer.stop();
+		timings.building_basis_time += timer.getElapsedTime();
+		logger().info("n pressure bases: {}", bilaplacian_spaces.helper.n_bases);
+	}
+
+	void BilaplacianVarForm::build_boundary_condition(mesh::Mesh &mesh, const json &args)
+	{
+		const int total_boundary_size = int(boundary.total_local_boundary.size());
+
+		build_node_mapping(mesh, args);
+		problem->update_nodes(in_node_to_node);
+		mesh.update_nodes(in_node_to_node);
+
+		boundary.local_boundary.clear();
+		for (const auto &local_boundary : boundary.total_local_boundary)
+			boundary.local_boundary.emplace_back(local_boundary);
+		boundary.boundary_nodes.clear();
 		boundary.local_neumann_boundary.clear();
 		boundary.local_pressure_boundary.clear();
 		boundary.local_pressure_cavity.clear();
-		boundary.boundary_nodes.clear();
 		boundary.pressure_boundary_nodes.clear();
 		boundary.dirichlet_nodes.clear();
+		boundary.dirichlet_nodes_position.clear();
 		boundary.neumann_nodes.clear();
+		boundary.neumann_nodes_position.clear();
 
 		problem->setup_bc(
 			mesh, scalar_space.n_bases,
@@ -177,30 +196,14 @@ namespace polyfem::varform
 		rebuild_node_positions(*scalar_space.bases, boundary.dirichlet_nodes, boundary.dirichlet_nodes_position);
 		rebuild_node_positions(*scalar_space.bases, boundary.neumann_nodes, boundary.neumann_nodes_position);
 
-		const bool has_neumann = !boundary.local_neumann_boundary.empty() || int(boundary.local_boundary.size()) < prev_b_size;
+		const bool has_neumann =
+			!boundary.local_neumann_boundary.empty()
+			|| int(boundary.local_boundary.size()) < total_boundary_size;
 		use_avg_pressure = !has_neumann;
-		bilaplacian_spaces.helper.geometry = geometry_mapping;
-		bilaplacian_spaces.helper.value_dim = 1;
+
 		bilaplacian_spaces.layout = SolutionLayout();
 		bilaplacian_spaces.value_block = bilaplacian_spaces.layout.add_block(scalar_space.n_bases, problem->is_time_dependent());
 		bilaplacian_spaces.helper_block = bilaplacian_spaces.layout.add_block(bilaplacian_spaces.helper.n_bases, false);
-
-		for (int i = prev_bases; i < scalar_space.n_bases; ++i)
-			boundary.boundary_nodes.push_back(i);
-
-		std::sort(boundary.boundary_nodes.begin(), boundary.boundary_nodes.end());
-		boundary.boundary_nodes.erase(std::unique(boundary.boundary_nodes.begin(), boundary.boundary_nodes.end()), boundary.boundary_nodes.end());
-
-		if (scalar_space.n_bases <= args["solver"]["advanced"]["cache_size"])
-			pressure_ass_vals_cache.init(mesh.is_volume(), *bilaplacian_spaces.helper.bases, geom_bases());
-		else
-			pressure_ass_vals_cache.init_empty();
-
-		build_rhs_assembler();
-
-		timer.stop();
-		timings.building_basis_time += timer.getElapsedTime();
-		logger().info("n pressure bases: {}", bilaplacian_spaces.helper.n_bases);
 	}
 
 	void BilaplacianVarForm::assemble_rhs(const mesh::Mesh &mesh, const json &args)

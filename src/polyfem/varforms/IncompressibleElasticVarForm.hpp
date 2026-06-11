@@ -28,6 +28,7 @@ namespace polyfem::varform
 	private:
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
 		void build_basis(mesh::Mesh &mesh, const json &args) override;
+		void build_boundary_condition(mesh::Mesh &mesh, const json &args) override;
 		void assemble_rhs(const mesh::Mesh &mesh, const json &args) override;
 		void assemble_mass_mat(const mesh::Mesh &mesh, const json &args) override;
 		void solve_problem(Eigen::MatrixXd &sol) override;

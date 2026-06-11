@@ -30,7 +30,7 @@ namespace polyfem::varform
 
 	protected:
 		void load_mesh(const mesh::Mesh &mesh, const json &args) override;
-		void build_basis(mesh::Mesh &mesh, const json &args) override;
+		void build_boundary_condition(mesh::Mesh &mesh, const json &args) override;
 		void build_rhs_assembler() override;
 		void init_solve(Eigen::MatrixXd &sol, const double t);
 		void init_forms(const json &args, const int dim, Eigen::MatrixXd &sol, const double t);

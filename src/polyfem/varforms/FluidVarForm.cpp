@@ -143,9 +143,6 @@ namespace polyfem::varform
 		igl::Timer timer;
 		timer.start();
 
-		const auto &all_boundary = boundary.total_local_boundary;
-		const int prev_bases = velocity_space.n_bases;
-		const int prev_b_size = int(all_boundary.size());
 		const bool has_polys = mesh.has_poly();
 		const bool use_corner_quadrature = args["space"]["advanced"]["use_corner_quadrature"];
 		const int quadrature_order = args["space"]["advanced"]["quadrature_order"].get<int>();
@@ -185,17 +182,39 @@ namespace polyfem::varform
 			fluid_spaces.pressure.bases->at(i).set_quadrature([b_quad](quadrature::Quadrature &quad) { quad = b_quad; });
 		}
 
-		boundary.local_boundary.clear();
-		for (const auto &lb : all_boundary)
-			boundary.local_boundary.emplace_back(lb);
+		fluid_spaces.pressure.geometry = geometry_mapping;
+		fluid_spaces.pressure.value_dim = 1;
 
+		if (velocity_space.n_bases <= args["solver"]["advanced"]["cache_size"])
+			pressure_ass_vals_cache.init(mesh.is_volume(), *fluid_spaces.pressure.bases, geom_bases());
+		else
+			pressure_ass_vals_cache.init_empty();
+
+		timer.stop();
+		timings.building_basis_time += timer.getElapsedTime();
+		logger().info("n pressure bases: {}", fluid_spaces.pressure.n_bases);
+	}
+
+	void FluidVarForm::build_boundary_condition(mesh::Mesh &mesh, const json &args)
+	{
+		const int total_boundary_size = int(boundary.total_local_boundary.size());
+
+		build_node_mapping(mesh, args);
+		problem->update_nodes(in_node_to_node);
+		mesh.update_nodes(in_node_to_node);
+
+		boundary.local_boundary.clear();
+		for (const auto &local_boundary : boundary.total_local_boundary)
+			boundary.local_boundary.emplace_back(local_boundary);
+		boundary.boundary_nodes.clear();
 		boundary.local_neumann_boundary.clear();
 		boundary.local_pressure_boundary.clear();
 		boundary.local_pressure_cavity.clear();
-		boundary.boundary_nodes.clear();
 		boundary.pressure_boundary_nodes.clear();
 		boundary.dirichlet_nodes.clear();
+		boundary.dirichlet_nodes_position.clear();
 		boundary.neumann_nodes.clear();
+		boundary.neumann_nodes_position.clear();
 
 		problem->setup_bc(
 			mesh, velocity_space.n_bases,
@@ -211,34 +230,17 @@ namespace polyfem::varform
 		rebuild_node_positions(*velocity_space.bases, boundary.dirichlet_nodes, boundary.dirichlet_nodes_position);
 		rebuild_node_positions(*velocity_space.bases, boundary.neumann_nodes, boundary.neumann_nodes_position);
 
-		const bool has_neumann = !boundary.local_neumann_boundary.empty() || int(boundary.local_boundary.size()) < prev_b_size;
+		const bool has_neumann =
+			!boundary.local_neumann_boundary.empty()
+			|| int(boundary.local_boundary.size()) < total_boundary_size;
 		use_avg_pressure = !has_neumann;
-		fluid_spaces.pressure.geometry = geometry_mapping;
-		fluid_spaces.pressure.value_dim = 1;
+
 		fluid_spaces.layout = SolutionLayout();
 		fluid_spaces.velocity_block = fluid_spaces.layout.add_block(primary_ndof(), problem->is_time_dependent());
 		fluid_spaces.pressure_block = fluid_spaces.layout.add_block(fluid_spaces.pressure.n_bases, false);
 		fluid_spaces.pressure_mean_constraint_block = -1;
 		if (use_avg_pressure && assembler && assembler->is_fluid())
 			fluid_spaces.pressure_mean_constraint_block = fluid_spaces.layout.add_block(1, false, true);
-
-		for (int i = prev_bases; i < velocity_space.n_bases; ++i)
-			for (int d = 0; d < mesh.dimension(); ++d)
-				boundary.boundary_nodes.push_back(i * mesh.dimension() + d);
-
-		std::sort(boundary.boundary_nodes.begin(), boundary.boundary_nodes.end());
-		boundary.boundary_nodes.erase(std::unique(boundary.boundary_nodes.begin(), boundary.boundary_nodes.end()), boundary.boundary_nodes.end());
-
-		if (velocity_space.n_bases <= args["solver"]["advanced"]["cache_size"])
-			pressure_ass_vals_cache.init(mesh.is_volume(), *fluid_spaces.pressure.bases, geom_bases());
-		else
-			pressure_ass_vals_cache.init_empty();
-
-		build_rhs_assembler();
-
-		timer.stop();
-		timings.building_basis_time += timer.getElapsedTime();
-		logger().info("n pressure bases: {}", fluid_spaces.pressure.n_bases);
 	}
 
 	void FluidVarForm::assemble_rhs(const mesh::Mesh &mesh, const json &args)

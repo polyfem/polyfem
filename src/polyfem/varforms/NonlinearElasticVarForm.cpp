@@ -210,13 +210,13 @@ namespace polyfem::varform
 		return fields;
 	}
 
-	void NonlinearElasticVarForm::build_basis(mesh::Mesh &mesh, const json &args)
+	void NonlinearElasticVarForm::build_boundary_condition(mesh::Mesh &mesh, const json &args)
 	{
-		ElasticVarForm::build_basis(mesh, args);
+		ElasticVarForm::build_boundary_condition(mesh, args);
 
 		// Legacy nonlinear/contact code assumes n_bases includes obstacle vertices.
-		// The shared VarForm build path only counts FE bases, so extend it here
-		// before constructing collision/contact state.
+		// Boundary conditions are built for the FE space before obstacle DOFs are
+		// appended and marked as constrained.
 		const int n_fe_bases = displacement_space.n_bases;
 		displacement_space.n_bases += obstacle.n_vertices();
 

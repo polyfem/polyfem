@@ -283,6 +283,7 @@ namespace polyfem::varform
 		mesh_->prepare_mesh();
 		stats.compute_mesh_stats(*mesh_);
 		build_basis(*mesh_, args);
+		build_boundary_condition(*mesh_, args);
 		assemble_rhs(*mesh_, args);
 		assemble_mass_mat(*mesh_, args);
 		prepared_ = true;
@@ -306,16 +307,8 @@ namespace polyfem::varform
 		assembler::AssemblyValsCache &ass_vals_cache = caches.values;
 		assembler::AssemblyValsCache &mass_ass_vals_cache = caches.mass;
 		assembler::AssemblyValsCache &pure_mass_ass_vals_cache = caches.pure_mass;
-		std::vector<int> &boundary_nodes = boundary.boundary_nodes;
 		std::vector<mesh::LocalBoundary> &total_local_boundary = boundary.total_local_boundary;
 		std::vector<mesh::LocalBoundary> &local_boundary = boundary.local_boundary;
-		std::vector<mesh::LocalBoundary> &local_neumann_boundary = boundary.local_neumann_boundary;
-		std::vector<mesh::LocalBoundary> &local_pressure_boundary = boundary.local_pressure_boundary;
-		std::unordered_map<int, std::vector<mesh::LocalBoundary>> &local_pressure_cavity = boundary.local_pressure_cavity;
-		std::vector<int> &dirichlet_nodes = boundary.dirichlet_nodes;
-		std::vector<RowVectorNd> &dirichlet_nodes_position = boundary.dirichlet_nodes_position;
-		std::vector<int> &neumann_nodes = boundary.neumann_nodes;
-		std::vector<RowVectorNd> &neumann_nodes_position = boundary.neumann_nodes_position;
 
 		igl::Timer timer;
 		timer.start();
@@ -324,16 +317,8 @@ namespace polyfem::varform
 		logger().info("Building {} basis...", (iso_parametric ? "isoparametric" : "not isoparametric"));
 		const bool has_polys = mesh.has_poly();
 
-		boundary_nodes.clear();
-		dirichlet_nodes.clear();
-		neumann_nodes.clear();
-		dirichlet_nodes_position.clear();
-		neumann_nodes_position.clear();
 		total_local_boundary.clear();
 		local_boundary.clear();
-		local_neumann_boundary.clear();
-		local_pressure_boundary.clear();
-		local_pressure_cavity.clear();
 		std::map<int, basis::InterfaceData> poly_edge_to_data_geom;
 
 		const int quadrature_order = args["space"]["advanced"]["quadrature_order"].get<int>();
@@ -389,34 +374,6 @@ namespace polyfem::varform
 
 		if (args["space"]["advanced"]["count_flipped_els"])
 			stats.count_flipped_elements(mesh, geom_bases());
-
-		{
-			igl::Timer timer2;
-			logger().debug("Building node mapping...");
-			timer2.start();
-			build_node_mapping(mesh, args);
-			problem->update_nodes(in_node_to_node);
-			mesh.update_nodes(in_node_to_node);
-			timer2.stop();
-			logger().debug("Done (took {}s)", timer2.getElapsedTime());
-		}
-
-		// FIXME ME
-		std::vector<basis::ElementBases> empty_pressure_bases;
-		std::vector<int> empty_pressure_boundary_nodes;
-		problem->setup_bc(
-			mesh, n_bases,
-			bases, geom_bases(), empty_pressure_bases,
-			local_boundary,
-			boundary_nodes,
-			local_neumann_boundary,
-			local_pressure_boundary,
-			local_pressure_cavity,
-			empty_pressure_boundary_nodes,
-			dirichlet_nodes, neumann_nodes);
-
-		rebuild_node_positions(bases, dirichlet_nodes, dirichlet_nodes_position);
-		rebuild_node_positions(bases, neumann_nodes, neumann_nodes_position);
 
 		const auto &current_bases = geom_bases();
 		const int n_samples = 10;
