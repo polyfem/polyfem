@@ -1,16 +1,55 @@
 #include "Parametrizations.hpp"
+
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
 
+#include <string_view>
+
 namespace polyfem::solver
 {
+	namespace
+	{
+		constexpr std::string_view ERR_STRING =
+			"Please check your variable to simulation and composition chain.";
+
+		void check_from_to(int from, int to, std::string_view name)
+		{
+			// If from != -1, [from, to] implies a range.
+			// range size must > 0.
+			if (from >= 0 && from >= to)
+			{
+				log_and_throw_adjoint_error(
+					"Invalid composition {}. Reason: [from, to] = [{}, {}] is not a valid range. {}", name, from, to, ERR_STRING);
+			}
+		}
+
+		void check_non_empty(int size, std::string_view name)
+		{
+			if (size <= 0)
+				log_and_throw_adjoint_error(
+					"Invalid composition {}. Reason: Empty or negative optimization parameter DOF {}. {}", name, size, ERR_STRING);
+		}
+
+	} // namespace
+
 	ExponentialMap::ExponentialMap(const int from, const int to)
 		: from_(from), to_(to)
 	{
-		assert(from_ < to_ || from_ < 0);
+		check_from_to(from, to, "exp");
+	}
+
+	int ExponentialMap::inverse_size(int y_size) const
+	{
+		check_non_empty(y_size, "ExponentialMap::inverse_size");
+		return y_size;
+	}
+
+	int ExponentialMap::size(const int x_size) const
+	{
+		return x_size;
 	}
 
 	Eigen::VectorXd ExponentialMap::inverse_eval(const Eigen::VectorXd &y) const
@@ -52,8 +91,18 @@ namespace polyfem::solver
 	Scaling::Scaling(const double scale, const int from, const int to)
 		: from_(from), to_(to), scale_(scale)
 	{
-		assert(from_ < to_ || from_ < 0);
-		assert(scale_ != 0);
+		check_from_to(from, to, "scale");
+	}
+
+	int Scaling::inverse_size(int y_size) const
+	{
+		check_non_empty(y_size, "Scaling::inverse_size");
+		return y_size;
+	}
+
+	int Scaling::size(const int x_size) const
+	{
+		return x_size;
 	}
 
 	Eigen::VectorXd Scaling::inverse_eval(const Eigen::VectorXd &y) const
@@ -90,6 +139,23 @@ namespace polyfem::solver
 		}
 		else
 			return scale_ * grad.array();
+	}
+
+	PowerMap::PowerMap(const double power, const int from, const int to)
+		: power_(power), from_(from), to_(to)
+	{
+		check_from_to(from, to, "power");
+	}
+
+	int PowerMap::inverse_size(int y_size) const
+	{
+		check_non_empty(y_size, "PowerMap::inverse_size");
+		return y_size;
+	}
+
+	int PowerMap::size(const int x_size) const
+	{
+		return x_size;
 	}
 
 	Eigen::VectorXd PowerMap::inverse_eval(const Eigen::VectorXd &y) const
@@ -131,6 +197,21 @@ namespace polyfem::solver
 	ENu2LambdaMu::ENu2LambdaMu(const bool is_volume)
 		: is_volume_(is_volume)
 	{
+	}
+
+	int ENu2LambdaMu::inverse_size(int y_size) const
+	{
+		check_non_empty(y_size, "E-nu-to-lambda-mu");
+		if (y_size % 2 != 0)
+		{
+			log_and_throw_adjoint_error("Invalid composition E-nu-to-lambda-mu. Reason: Expect output dof be multiple of 2 but instead get {}. {}", y_size, ERR_STRING);
+		}
+		return y_size;
+	}
+
+	int ENu2LambdaMu::size(const int x_size) const
+	{
+		return x_size;
 	}
 
 	Eigen::VectorXd ENu2LambdaMu::inverse_eval(const Eigen::VectorXd &y) const
@@ -223,7 +304,11 @@ namespace polyfem::solver
 
 	int PerBody2PerNode::inverse_size(int y_size) const
 	{
-		assert(y_size % full_size_ == 0);
+		check_non_empty(y_size, "PerBody2PerNode::inverse_size");
+		if (y_size % full_size_ != 0)
+		{
+			log_and_throw_adjoint_error("Invalid composition per-body-to-per-node. Reason: Expect output dof be multiple of mesh node num but instead get mesh node num = {} and output size = {}. {}", full_size_, y_size, ERR_STRING);
+		}
 		int dim = y_size / full_size_;
 		return reduced_size_ * dim;
 	}
@@ -323,7 +408,11 @@ namespace polyfem::solver
 
 	int PerBody2PerElem::inverse_size(int y_size) const
 	{
-		assert(y_size % full_size_ == 0);
+		check_non_empty(y_size, "PerBody2PerElem::inverse_size");
+		if (y_size % full_size_ != 0)
+		{
+			log_and_throw_adjoint_error("Invalid composition per-body-to-per-elem. Reason: Expect output dof be multiple of mesh element num but instead get mesh element num = {} and output size = {}. {}", full_size_, y_size, ERR_STRING);
+		}
 		int dim = y_size / full_size_;
 		return reduced_size_ * dim;
 	}
@@ -396,6 +485,10 @@ namespace polyfem::solver
 		{
 			log_and_throw_adjoint_error("SliceMap with unknown total is impossible to inverse!");
 		}
+		if (y_size != to_ - from_)
+		{
+			log_and_throw_adjoint_error("Invalid composition slice. Reason: Output DOF {} and [from, to] = [{}, {}] size mismatch. {}", y_size, from_, to_, ERR_STRING);
+		}
 		return total_;
 	}
 
@@ -447,7 +540,10 @@ namespace polyfem::solver
 
 	int InsertConstantMap::inverse_size(int y_size) const
 	{
-		assert(y_size >= values_.size());
+		if (y_size < values_.size())
+		{
+			log_and_throw_adjoint_error("Invalid composition append-const. Reason: Output DOF {} is smaller than append size {}. {}", y_size, values_.size(), ERR_STRING);
+		}
 		return y_size - values_.size();
 	}
 
@@ -535,6 +631,21 @@ namespace polyfem::solver
 			tt_radius_adjacency_row_sum(i) = tt_radius_adjacency.row(i).sum();
 	}
 
+	int LinearFilter::inverse_size(int y_size) const
+	{
+		check_non_empty(y_size, "LinearFilter::inverse_size");
+		if (y_size != tt_radius_adjacency.rows())
+		{
+			log_and_throw_adjoint_error("Invalid composition linear-filter. Reason: Output DOF {} and mesh element count {} mismatch. {}", y_size, tt_radius_adjacency.rows(), ERR_STRING);
+		}
+		return y_size;
+	}
+
+	int LinearFilter::size(const int x_size) const
+	{
+		return x_size;
+	}
+
 	Eigen::VectorXd LinearFilter::eval(const Eigen::VectorXd &x) const
 	{
 		assert(x.size() == tt_radius_adjacency.rows());
@@ -551,6 +662,19 @@ namespace polyfem::solver
 	{
 		assert(x.size() == tt_radius_adjacency.rows());
 		return (tt_radius_adjacency * grad).array() / tt_radius_adjacency_row_sum.array();
+	}
+
+	ScalarVelocityParametrization::ScalarVelocityParametrization(const double start_val, const double dt) : start_val_(start_val), dt_(dt) {}
+
+	int ScalarVelocityParametrization::inverse_size(int y_size) const
+	{
+		check_non_empty(y_size, "ScalarVelocityParametrization::inverse_size");
+		return y_size;
+	}
+
+	int ScalarVelocityParametrization::size(const int x_size) const
+	{
+		return x_size;
 	}
 
 	Eigen::VectorXd ScalarVelocityParametrization::inverse_eval(const Eigen::VectorXd &y) const

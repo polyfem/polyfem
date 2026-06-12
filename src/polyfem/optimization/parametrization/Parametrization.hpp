@@ -17,7 +17,7 @@ namespace polyfem::solver
 		/// @brief Compute DOF of x given DOF of y.
 		/// @param[in] y_size DOF of y.
 		/// @return DOF of x.
-		/// @throw std::runtime_error Throw if inverse not implemented or is impossible.
+		/// @throw std::runtime_error Throw if inverse not impossible or y_size is invalid.
 		virtual int inverse_size(int y_size) const = 0;
 
 		/// @brief Eval x = f^-1 (y).

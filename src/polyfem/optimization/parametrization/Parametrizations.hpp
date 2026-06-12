@@ -20,8 +20,8 @@ namespace polyfem::solver
 	public:
 		ExponentialMap(const int from = -1, const int to = -1);
 
-		int inverse_size(int y_size) const override { return y_size; };
-		int size(const int x_size) const override { return x_size; }
+		int inverse_size(int y_size) const override;
+		int size(const int x_size) const override;
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
@@ -35,8 +35,8 @@ namespace polyfem::solver
 	public:
 		Scaling(const double scale, const int from = -1, const int to = -1);
 
-		int inverse_size(int y_size) const override { return y_size; };
-		int size(const int x_size) const override { return x_size; }
+		int inverse_size(int y_size) const override;
+		int size(const int x_size) const override;
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
@@ -49,14 +49,10 @@ namespace polyfem::solver
 	class PowerMap : public Parametrization
 	{
 	public:
-		PowerMap(const double power = 1, const int from = -1, const int to = -1) : power_(power), from_(from), to_(to)
-		{
-			assert(from_ < to_ || from_ < 0);
-			assert(power_ > 0);
-		}
+		PowerMap(const double power = 1, const int from = -1, const int to = -1);
 
-		int inverse_size(int y_size) const override { return y_size; };
-		int size(const int x_size) const override { return x_size; }
+		int inverse_size(int y_size) const override;
+		int size(const int x_size) const override;
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
@@ -71,8 +67,8 @@ namespace polyfem::solver
 	public:
 		ENu2LambdaMu(const bool is_volume);
 
-		int inverse_size(int y_size) const override { return y_size; };
-		int size(const int x_size) const override { return x_size; }
+		int inverse_size(int y_size) const override;
+		int size(const int x_size) const override;
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
@@ -165,8 +161,8 @@ namespace polyfem::solver
 	public:
 		LinearFilter(const mesh::Mesh &mesh, const double radius);
 
-		int size(const int x_size) const override { return x_size; }
-		int inverse_size(int y_size) const override { return y_size; }
+		int size(const int x_size) const override;
+		int inverse_size(int y_size) const override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
@@ -179,10 +175,10 @@ namespace polyfem::solver
 	class ScalarVelocityParametrization : public Parametrization
 	{
 	public:
-		ScalarVelocityParametrization(const double start_val, const double dt) : start_val_(start_val), dt_(dt) {}
+		ScalarVelocityParametrization(const double start_val, const double dt);
 
-		int size(const int x_size) const override { return x_size; }
-		int inverse_size(int y_size) const override { return y_size; }
+		int size(const int x_size) const override;
+		int inverse_size(int y_size) const override;
 		Eigen::VectorXd inverse_eval(const Eigen::VectorXd &y) const override;
 		Eigen::VectorXd eval(const Eigen::VectorXd &x) const override;
 		Eigen::VectorXd apply_jacobian(const Eigen::VectorXd &grad, const Eigen::VectorXd &x) const override;
