@@ -6,7 +6,7 @@
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 
-#include <polyfem/io/OutData.hpp>
+#include <polyfem/io/OutStatsData.hpp>
 
 namespace polyfem::refinement
 {

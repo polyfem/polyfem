@@ -1,6 +1,6 @@
 #include "AdjointTools.hpp"
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 
 #include <polyfem/io/Evaluator.hpp>
 
@@ -67,7 +67,7 @@ namespace polyfem::solver
 	namespace
 	{
 
-		int get_bdf_order(const polyfem::State &state)
+		int get_bdf_order(const polyfem::legacy::State &state)
 		{
 			if (state.args["time"]["integrator"].is_string())
 				return 1;
@@ -205,7 +205,7 @@ namespace polyfem::solver
 	} // namespace
 
 	double AdjointTools::integrate_objective(
-		const State &state,
+		const legacy::State &state,
 		const IntegrableFunctional &j,
 		const Eigen::MatrixXd &solution,
 		const std::set<int> &interested_ids, // either body id or surface id
@@ -340,7 +340,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::compute_shape_derivative_functional_term(
-		const State &state,
+		const legacy::State &state,
 		const Eigen::MatrixXd &solution,
 		const IntegrableFunctional &j,
 		const std::set<int> &interested_ids, // either body id or surface id
@@ -574,7 +574,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_shape_static_adjoint_term(
-		const State &state,
+		const legacy::State &state,
 		const DiffCache &diff_cache,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &adjoint,
@@ -634,7 +634,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_shape_homogenization_adjoint_term(
-		const State &state,
+		const legacy::State &state,
 		const DiffCache &diff_cache,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &adjoint,
@@ -689,7 +689,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_periodic_shape_adjoint_term(
-		const State &state,
+		const legacy::State &state,
 		const DiffCache &diff_cache,
 		const PeriodicMeshToMesh &periodic_mesh_map,
 		const Eigen::VectorXd &periodic_mesh_representation,
@@ -730,7 +730,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_shape_transient_adjoint_term(
-		const State &state,
+		const legacy::State &state,
 		const DiffCache &diff_cache,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
@@ -839,7 +839,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_material_static_adjoint_term(
-		const State &state,
+		const legacy::State &state,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &adjoint,
 		Eigen::VectorXd &one_form)
@@ -850,7 +850,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_material_transient_adjoint_term(
-		const State &state,
+		const legacy::State &state,
 		const DiffCache &diff_cache,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
@@ -887,7 +887,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_friction_transient_adjoint_term(
-		const State &state,
+		const legacy::State &state,
 		const DiffCache &diff_cache,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
@@ -906,7 +906,7 @@ namespace polyfem::solver
 		{
 			Eigen::MatrixXd solution, velocity, acceleration;
 
-			const InitialConditionOverride *ic_override = nullptr;
+			const legacy::InitialConditionOverride *ic_override = nullptr;
 			if (!diff_cache.initial_condition_override.is_empty())
 			{
 				ic_override = &diff_cache.initial_condition_override;
@@ -953,7 +953,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_damping_transient_adjoint_term(
-		const State &state,
+		const legacy::State &state,
 		const DiffCache &diff_cache,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
@@ -990,7 +990,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_initial_condition_adjoint_term(
-		const State &state,
+		const legacy::State &state,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
 		Eigen::VectorXd &one_form)
@@ -1010,7 +1010,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_dirichlet_static_adjoint_term(
-		const State &state,
+		const legacy::State &state,
 		const DiffCache &diff_cache,
 		const Eigen::MatrixXd &adjoint,
 		Eigen::VectorXd &one_form)
@@ -1032,7 +1032,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_dirichlet_transient_adjoint_term(
-		const State &state,
+		const legacy::State &state,
 		const Eigen::MatrixXd &adjoint_nu,
 		const Eigen::MatrixXd &adjoint_p,
 		Eigen::VectorXd &one_form)
@@ -1055,7 +1055,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_pressure_static_adjoint_term(
-		const State &state,
+		const legacy::State &state,
 		const std::vector<int> &boundary_ids,
 		const Eigen::MatrixXd &sol,
 		const Eigen::MatrixXd &adjoint,
@@ -1079,7 +1079,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_pressure_transient_adjoint_term(
-		const State &state,
+		const legacy::State &state,
 		const DiffCache &diff_cache,
 		const std::vector<int> &boundary_ids,
 		const Eigen::MatrixXd &adjoint_nu,
@@ -1122,7 +1122,7 @@ namespace polyfem::solver
 	}
 
 	void AdjointTools::dJ_du_step(
-		const State &state,
+		const legacy::State &state,
 		const IntegrableFunctional &j,
 		const Eigen::MatrixXd &solution,
 		const std::set<int> &interested_ids,
@@ -1363,7 +1363,7 @@ namespace polyfem::solver
 		}
 	}
 
-	Eigen::VectorXd AdjointTools::map_primitive_to_node_order(const State &state, const Eigen::VectorXd &primitives)
+	Eigen::VectorXd AdjointTools::map_primitive_to_node_order(const legacy::State &state, const Eigen::VectorXd &primitives)
 	{
 		int dim = state.mesh->dimension();
 		assert(primitives.size() == (state.n_geom_bases * dim));
@@ -1374,7 +1374,7 @@ namespace polyfem::solver
 		return nodes;
 	}
 
-	Eigen::VectorXd AdjointTools::map_node_to_primitive_order(const State &state, const Eigen::VectorXd &nodes)
+	Eigen::VectorXd AdjointTools::map_node_to_primitive_order(const legacy::State &state, const Eigen::VectorXd &nodes)
 	{
 		int dim = state.mesh->dimension();
 		assert(nodes.size() == (state.n_geom_bases * dim));

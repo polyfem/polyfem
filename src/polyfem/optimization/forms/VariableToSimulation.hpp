@@ -21,7 +21,7 @@ namespace polyfem::solver
 	class VariableToSimulation
 	{
 	public:
-		VariableToSimulation(std::vector<std::shared_ptr<State>> states,
+		VariableToSimulation(std::vector<std::shared_ptr<legacy::State>> states,
 							 std::vector<std::shared_ptr<DiffCache>> diff_caches,
 							 CompositeParametrization parametrization) : states(std::move(states)),
 																		 diff_caches(std::move(diff_caches)),
@@ -48,7 +48,7 @@ namespace polyfem::solver
 
 		virtual Eigen::VectorXd apply_parametrization_jacobian(const Eigen::VectorXd &term, const Eigen::VectorXd &x) const;
 
-		const std::vector<std::shared_ptr<State>> states;
+		const std::vector<std::shared_ptr<legacy::State>> states;
 		const std::vector<std::shared_ptr<DiffCache>> diff_caches;
 		CompositeParametrization parametrization;
 
@@ -75,7 +75,7 @@ namespace polyfem::solver
 		/// @brief Evaluate the variable to simulations and overwrite the state_variable based on x
 		/// @param x Optimization variable
 		/// @param state_variable The state variable in state_ptr with type
-		void compute_state_variable(const ParameterType type, const State *state_ptr, const Eigen::VectorXd &x, Eigen::VectorXd &state_variable) const;
+		void compute_state_variable(const ParameterType type, const legacy::State *state_ptr, const Eigen::VectorXd &x, Eigen::VectorXd &state_variable) const;
 
 		/// @brief Computes the sum of adjoint terms for all VariableToSimulation
 		/// @param x Optimization variable
@@ -88,7 +88,7 @@ namespace polyfem::solver
 		/// @param x Optimization variable
 		/// @param grad Partial gradient wrt. the state variable, lambda function to allow lazy evaluation of the gradient
 		/// @return Partial gradient wrt. the optimization variable
-		virtual Eigen::VectorXd apply_parametrization_jacobian(const ParameterType type, const State *state_ptr, const Eigen::VectorXd &x, const std::function<Eigen::VectorXd()> &grad) const;
+		virtual Eigen::VectorXd apply_parametrization_jacobian(const ParameterType type, const legacy::State *state_ptr, const Eigen::VectorXd &x, const std::function<Eigen::VectorXd()> &grad) const;
 
 		std::vector<std::shared_ptr<VariableToSimulation>> data;
 	};

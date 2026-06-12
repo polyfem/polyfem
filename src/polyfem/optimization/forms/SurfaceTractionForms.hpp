@@ -18,7 +18,7 @@ namespace polyfem::solver
 	// class TractionNormForm : public SpatialIntegralForm
 	// {
 	// public:
-	// 	TractionNormForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
+	// 	TractionNormForm(const VariableToSimulationGroup &variable_to_simulations, const legacy::State &state, const json &args) : SpatialIntegralForm(variable_to_simulations, state, args)
 	// 	{
 	// 		set_integral_type(SpatialIntegralType::Surface);
 
@@ -39,7 +39,7 @@ namespace polyfem::solver
 	// class TrueContactForceForm : public StaticForm
 	// {
 	// public:
-	// 	TrueContactForceForm(const VariableToSimulationGroup &variable_to_simulations, const State &state, const json &args) : StaticForm(variable_to_simulations), state_(state)
+	// 	TrueContactForceForm(const VariableToSimulationGroup &variable_to_simulations, const legacy::State &state, const json &args) : StaticForm(variable_to_simulations), state_(state)
 	// 	{
 	// 		auto tmp_ids = args["surface_selection"].get<std::vector<int>>();
 	// 		ids_ = std::set(tmp_ids.begin(), tmp_ids.end());
@@ -48,17 +48,17 @@ namespace polyfem::solver
 	// 	}
 	// 	~TrueContactForceForm() = default;
 
-	// 	const State &get_state() { return state_; }
+	// 	const legacy::State &get_state() { return state_; }
 
 	// 	double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
-	// 	Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
-	// 	Eigen::VectorXd compute_adjoint_rhs_step_prev(const int time_step, const Eigen::VectorXd &x, const State &state) const override;
+	// 	Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const legacy::State &state) const override;
+	// 	Eigen::VectorXd compute_adjoint_rhs_step_prev(const int time_step, const Eigen::VectorXd &x, const legacy::State &state) const override;
 	// 	virtual void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 
 	// 	void build_active_nodes();
 
 	// protected:
-	// 	const State &state_;
+	// 	const legacy::State &state_;
 	// 	std::set<int> ids_;
 	// 	Eigen::VectorXi active_nodes_;
 	// 	StiffnessMatrix active_nodes_mat_;
@@ -72,7 +72,7 @@ namespace polyfem::solver
 	public:
 		ProxyContactForceForm(
 			const VariableToSimulationGroup &variable_to_simulations,
-			std::shared_ptr<const State> state,
+			std::shared_ptr<const legacy::State> state,
 			std::shared_ptr<const DiffCache> diff_cache,
 			const double dhat,
 			const bool quadratic_potential,
@@ -80,7 +80,7 @@ namespace polyfem::solver
 		~ProxyContactForceForm() = default;
 
 		double value_unweighted_step(const int time_step, const Eigen::VectorXd &x) const override;
-		Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const State &state, const DiffCache &diff_cache) const override;
+		Eigen::VectorXd compute_adjoint_rhs_step(const int time_step, const Eigen::VectorXd &x, const legacy::State &state, const DiffCache &diff_cache) const override;
 		void compute_partial_gradient_step(const int time_step, const Eigen::VectorXd &x, Eigen::VectorXd &gradv) const override;
 		void solution_changed_step(const int time_step, const Eigen::VectorXd &x) override
 		{
@@ -97,7 +97,7 @@ namespace polyfem::solver
 		void build_forward_collision_mesh();
 		const ipc::NormalCollisions &get_or_compute_collision_set(const int time_step, const Eigen::MatrixXd &displaced_surface) const;
 
-		std::shared_ptr<const State> state_;
+		std::shared_ptr<const legacy::State> state_;
 		std::shared_ptr<const DiffCache> diff_cache_;
 		std::set<int> boundary_ids_;
 		std::map<int, std::set<int>> boundary_ids_to_dof_;

@@ -1,6 +1,6 @@
 #include <polyfem/optimization/forms/VariableToSimulation.hpp>
 
-#include <polyfem/State.hpp>
+#include <polyfem/legacy/State.hpp>
 #include <polyfem/Common.hpp>
 #include <polyfem/io/MatrixIO.hpp>
 #include <polyfem/assembler/ViscousDamping.hpp>
@@ -27,7 +27,7 @@ namespace polyfem::solver
 	void VariableToSimulation::set_output_indexing(const json &args)
 	{
 		const std::string composite_map_type = args["composite_map_type"];
-		const State &state = *(states[0]);
+		const legacy::State &state = *(states[0]);
 		if (composite_map_type == "none")
 		{
 			output_indexing_.resize(0);
@@ -89,7 +89,7 @@ namespace polyfem::solver
 		return adjoint_term;
 	}
 
-	void VariableToSimulationGroup::compute_state_variable(const ParameterType type, const State *state_ptr, const Eigen::VectorXd &x, Eigen::VectorXd &state_variable) const
+	void VariableToSimulationGroup::compute_state_variable(const ParameterType type, const legacy::State *state_ptr, const Eigen::VectorXd &x, Eigen::VectorXd &state_variable) const
 	{
 		for (const auto &v2s : data)
 		{
@@ -107,7 +107,7 @@ namespace polyfem::solver
 		}
 	}
 
-	Eigen::VectorXd VariableToSimulationGroup::apply_parametrization_jacobian(const ParameterType type, const State *state_ptr, const Eigen::VectorXd &x, const std::function<Eigen::VectorXd()> &grad) const
+	Eigen::VectorXd VariableToSimulationGroup::apply_parametrization_jacobian(const ParameterType type, const legacy::State *state_ptr, const Eigen::VectorXd &x, const std::function<Eigen::VectorXd()> &grad) const
 	{
 		Eigen::VectorXd gradv = Eigen::VectorXd::Zero(x.size());
 		for (const auto &v2s : data)
@@ -197,7 +197,7 @@ namespace polyfem::solver
 	void ShapeVariableToSimulation::set_output_indexing(const json &args)
 	{
 		const std::string composite_map_type = args["composite_map_type"];
-		const State &state = *(states[0]);
+		const legacy::State &state = *(states[0]);
 
 		if (composite_map_type == "interior" || composite_map_type == "boundary" || composite_map_type == "boundary_excluding_surface")
 		{
@@ -533,7 +533,7 @@ namespace polyfem::solver
 	void DirichletVariableToSimulation::set_output_indexing(const json &args)
 	{
 		const std::string composite_map_type = args["composite_map_type"];
-		const State &state = *(states[0]);
+		const legacy::State &state = *(states[0]);
 		if (composite_map_type == "time_step_indexing")
 		{
 			const int time_steps = state.args["time"]["time_steps"];
@@ -689,7 +689,7 @@ namespace polyfem::solver
 	void PressureVariableToSimulation::set_output_indexing(const json &args)
 	{
 		const std::string composite_map_type = args["composite_map_type"];
-		const State &state = *(states[0]);
+		const legacy::State &state = *(states[0]);
 		if (composite_map_type == "time_step_indexing")
 		{
 			const int time_steps = state.args["time"]["time_steps"];
