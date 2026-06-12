@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/assembler/MatParams.hpp>
+#include <polyfem/assembler/core/MatParams.hpp>
 #include <polyfem/utils/ElasticityUtils.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <Eigen/Dense>

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "AugmentedLagrangianForm.hpp"
-#include <polyfem/assembler/RhsAssembler.hpp>
+#include <polyfem/assembler/core/RhsAssembler.hpp>
 
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>

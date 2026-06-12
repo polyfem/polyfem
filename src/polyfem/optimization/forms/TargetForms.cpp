@@ -9,7 +9,7 @@
 #include <polyfem/utils/Types.hpp>
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/BoundarySampler.hpp>
-#include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/scalar/Mass.hpp>
 #include <polyfem/optimization/DiffCache.hpp>
 
 #include <polyfem/utils/IntegrableFunctional.hpp>

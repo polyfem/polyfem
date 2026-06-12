@@ -6,8 +6,8 @@
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/io/OBJWriter.hpp>
 
-#include <polyfem/assembler/Mass.hpp>
-#include <polyfem/assembler/MultiModel.hpp>
+#include <polyfem/assembler/scalar/Mass.hpp>
+#include <polyfem/assembler/elasticity/MultiModel.hpp>
 
 #include <polyfem/mesh/mesh2D/Mesh2D.hpp>
 #include <polyfem/mesh/mesh2D/CMesh2D.hpp>

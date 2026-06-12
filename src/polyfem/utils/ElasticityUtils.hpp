@@ -1,7 +1,7 @@
 #pragma once
 
 #include <polyfem/Common.hpp>
-#include <polyfem/assembler/AssemblerData.hpp>
+#include <polyfem/assembler/core/AssemblerData.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/utils/AutodiffTypes.hpp>
 #include <polyfem/utils/Types.hpp>

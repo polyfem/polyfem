@@ -1,4 +1,8 @@
 set(SOURCES
+	Problem.cpp
+	Problem.hpp
+	GenericProblem.cpp
+	GenericProblem.hpp
 	PointBasedProblem.cpp
 	PointBasedProblem.hpp
 	ElasticProblem.cpp

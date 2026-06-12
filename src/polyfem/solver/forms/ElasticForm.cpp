@@ -2,9 +2,9 @@
 
 #include <polyfem/quadrature/TriQuadrature.hpp>
 #include <polyfem/quadrature/TetQuadrature.hpp>
-#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/quadrature/QuadratureOrder.hpp>
 #include <polyfem/basis/ElementBases.hpp>
-#include <polyfem/assembler/MatParams.hpp>
+#include <polyfem/assembler/core/MatParams.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Timer.hpp>
 
@@ -259,7 +259,7 @@ namespace polyfem::solver
 		mat_cache_ = std::make_unique<utils::SparseMatrixCache>();
 		quadrature_hierarchy_.resize(bases_.size());
 
-		quadrature_order_ = AssemblerUtils::quadrature_order(assembler_.name(), bases_[0].bases[0].order(), AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, is_volume_ ? 3 : 2);
+		quadrature_order_ = polyfem::quadrature::compute_quadrature_order(assembler_.name(), bases_[0].bases[0].order(), BasisType::SIMPLEX_LAGRANGE, is_volume_ ? 3 : 2);
 
 		if (check_inversion_ != ElementInversionCheck::Discrete)
 		{

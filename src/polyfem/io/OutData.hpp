@@ -2,7 +2,7 @@
 
 #include <polyfem/Common.hpp>
 
-#include <polyfem/assembler/Problem.hpp>
+#include <polyfem/problem/Problem.hpp>
 
 #include <polyfem/basis/ElementBases.hpp>
 

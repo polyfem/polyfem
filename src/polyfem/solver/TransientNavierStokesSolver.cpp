@@ -2,7 +2,7 @@
 
 #include <polyfem/utils/MatrixUtils.hpp>
 #include <polysolve/linear/FEMSolver.hpp>
-#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/core/AssemblerUtils.hpp>
 
 #include <polyfem/utils/Logger.hpp>
 

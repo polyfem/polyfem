@@ -1,7 +1,7 @@
 #include <polyfem/State.hpp>
 
-#include <polyfem/assembler/NeoHookeanElasticity.hpp>
-#include <polyfem/assembler/NeoHookeanElasticityAutodiff.hpp>
+#include <polyfem/assembler/elasticity/NeoHookeanElasticity.hpp>
+#include <polyfem/assembler/elasticity/NeoHookeanElasticityAutodiff.hpp>
 
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>

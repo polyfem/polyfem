@@ -3,7 +3,7 @@
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Timer.hpp>
 
-#include <polyfem/assembler/Electrostatics.hpp>
+#include <polyfem/assembler/scalar/Electrostatics.hpp>
 
 #include <filesystem>
 

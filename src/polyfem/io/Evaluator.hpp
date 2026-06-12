@@ -3,7 +3,7 @@
 #include <Eigen/Core>
 
 #include <polyfem/basis/ElementBases.hpp>
-#include <polyfem/assembler/Assembler.hpp>
+#include <polyfem/assembler/core/Assembler.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/MeshNodes.hpp>
 

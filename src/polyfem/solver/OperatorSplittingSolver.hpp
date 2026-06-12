@@ -2,12 +2,12 @@
 
 #include <polyfem/Common.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>
-#include <polyfem/assembler/Problem.hpp>
+#include <polyfem/problem/Problem.hpp>
 #include <polyfem/utils/Logger.hpp>
 
 #include <polysolve/linear/Solver.hpp>
 
-#include <polyfem/assembler/Assembler.hpp>
+#include <polyfem/assembler/core/Assembler.hpp>
 #include <memory>
 
 #ifdef POLYFEM_WITH_TBB

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <polyfem/assembler/Problem.hpp>
+#include <polyfem/problem/Problem.hpp>
 
 #include <functional>
 #include <memory>

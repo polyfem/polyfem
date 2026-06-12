@@ -5,7 +5,7 @@
 #include <polyfem/utils/MaybeParallelFor.hpp>
 #include <polyfem/utils/IntegrableFunctional.hpp>
 #include <polyfem/utils/Logger.hpp>
-#include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/scalar/Mass.hpp>
 #include <polyfem/solver/NLProblem.hpp>
 #include <polyfem/solver/NLHomoProblem.hpp>
 #include <polyfem/optimization/DiffCache.hpp>

@@ -2,10 +2,10 @@
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Types.hpp>
 
-#include <polyfem/assembler/Laplacian.hpp>
-#include <polyfem/assembler/Mass.hpp>
-#include <polyfem/assembler/Stokes.hpp>
-#include <polyfem/assembler/NavierStokes.hpp>
+#include <polyfem/assembler/scalar/Laplacian.hpp>
+#include <polyfem/assembler/scalar/Mass.hpp>
+#include <polyfem/assembler/fluid/Stokes.hpp>
+#include <polyfem/assembler/fluid/NavierStokes.hpp>
 
 #include <polyfem/solver/NavierStokesSolver.hpp>
 #include <polyfem/solver/OperatorSplittingSolver.hpp>

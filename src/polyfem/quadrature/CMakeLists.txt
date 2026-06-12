@@ -10,6 +10,8 @@ set(QUAD_SOURCES
 	QuadQuadrature.cpp
 	QuadQuadrature.hpp
 	Quadrature.hpp
+	QuadratureOrder.cpp
+	QuadratureOrder.hpp
 	TetQuadrature.cpp
 	TetQuadrature.hpp
 	TriQuadrature.cpp

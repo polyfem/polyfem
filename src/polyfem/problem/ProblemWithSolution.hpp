@@ -1,7 +1,7 @@
 #pragma once
 
-#include <polyfem/assembler/Problem.hpp>
-#include <polyfem/assembler/Assembler.hpp>
+#include <polyfem/problem/Problem.hpp>
+#include <polyfem/assembler/core/Assembler.hpp>
 
 #include <polyfem/utils/AutodiffTypes.hpp>
 

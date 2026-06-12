@@ -1,6 +1,6 @@
 #include <polyfem/State.hpp>
 
-#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/core/AssemblerUtils.hpp>
 
 #include <polyfem/optimization/Optimizations.hpp>
 #include <polyfem/optimization/AdjointTools.hpp>

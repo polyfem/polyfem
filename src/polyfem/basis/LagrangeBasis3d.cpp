@@ -8,7 +8,7 @@
 #include <polyfem/quadrature/PrismQuadrature.hpp>
 #include <polyfem/quadrature/PyramidQuadrature.hpp>
 
-#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/quadrature/QuadratureOrder.hpp>
 
 #include <polyfem/autogen/auto_p_bases.hpp>
 #include <polyfem/autogen/auto_q_bases.hpp>
@@ -16,6 +16,7 @@
 #include <polyfem/autogen/auto_pyramid_bases.hpp>
 
 #include <polyfem/utils/MaybeParallelFor.hpp>
+#include <polyfem/utils/Logger.hpp>
 
 #include <cassert>
 #include <array>
@@ -2470,8 +2471,8 @@ int LagrangeBasis3d::build_bases(
 
 		if (mesh.is_cube(e))
 		{
-			const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::CUBE_LAGRANGE, 3);
-			const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::CUBE_LAGRANGE, 3);
+			const int real_order = quadrature_order > 0 ? quadrature_order : compute_quadrature_order(assembler, discr_order, BasisType::CUBE_LAGRANGE, 3);
+			const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : compute_quadrature_order("Mass", discr_order, BasisType::CUBE_LAGRANGE, 3);
 			b.set_quadrature([real_order](Quadrature &quad) {
 				HexQuadrature hex_quadrature;
 				hex_quadrature.get_quadrature(real_order, quad);
@@ -2509,8 +2510,8 @@ int LagrangeBasis3d::build_bases(
 		}
 		else if (mesh.is_simplex(e))
 		{
-			const int real_order = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 3);
-			const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::SIMPLEX_LAGRANGE, 3);
+			const int real_order = quadrature_order > 0 ? quadrature_order : compute_quadrature_order(assembler, discr_order, BasisType::SIMPLEX_LAGRANGE, 3);
+			const int real_mass_order = mass_quadrature_order > 0 ? mass_quadrature_order : compute_quadrature_order("Mass", discr_order, BasisType::SIMPLEX_LAGRANGE, 3);
 
 			b.set_quadrature([real_order, use_corner_quadrature](Quadrature &quad) {
 				TetQuadrature tet_quadrature(use_corner_quadrature);
@@ -2552,11 +2553,11 @@ int LagrangeBasis3d::build_bases(
 		}
 		else if (mesh.is_prism(e))
 		{
-			const int orderp = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::PRISM_LAGRANGE, 2);
-			const int orderq = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_orderq, AssemblerUtils::BasisType::PRISM_LAGRANGE, 1);
+			const int orderp = quadrature_order > 0 ? quadrature_order : compute_quadrature_order(assembler, discr_order, BasisType::PRISM_LAGRANGE, 2);
+			const int orderq = quadrature_order > 0 ? quadrature_order : compute_quadrature_order(assembler, discr_orderq, BasisType::PRISM_LAGRANGE, 1);
 
-			const int mass_orderp = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::PRISM_LAGRANGE, 2);
-			const int mass_orderq = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_orderq, AssemblerUtils::BasisType::PRISM_LAGRANGE, 1);
+			const int mass_orderp = mass_quadrature_order > 0 ? mass_quadrature_order : compute_quadrature_order("Mass", discr_order, BasisType::PRISM_LAGRANGE, 2);
+			const int mass_orderq = mass_quadrature_order > 0 ? mass_quadrature_order : compute_quadrature_order("Mass", discr_orderq, BasisType::PRISM_LAGRANGE, 1);
 
 			b.set_quadrature([orderp, orderq](Quadrature &quad) {
 				PrismQuadrature tet_quadrature;
@@ -2595,8 +2596,8 @@ int LagrangeBasis3d::build_bases(
 		}
 		else if (mesh.is_pyramid(e))
 		{
-			const int orderp = quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler, discr_order, AssemblerUtils::BasisType::PYRAMID_LAGRANGE, 2);
-			const int mass_orderp = mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::PYRAMID_LAGRANGE, 2);
+			const int orderp = quadrature_order > 0 ? quadrature_order : compute_quadrature_order(assembler, discr_order, BasisType::PYRAMID_LAGRANGE, 2);
+			const int mass_orderp = mass_quadrature_order > 0 ? mass_quadrature_order : compute_quadrature_order("Mass", discr_order, BasisType::PYRAMID_LAGRANGE, 2);
 
 			b.set_quadrature([orderp](Quadrature &quad) {
 				PyramidQuadrature tet_quadrature;

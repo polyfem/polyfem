@@ -8,7 +8,7 @@
 #include "function/RBFWithQuadratic.hpp"
 #include "function/RBFWithQuadraticLagrange.hpp"
 #include <polyfem/utils/Logger.hpp>
-#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/quadrature/QuadratureOrder.hpp>
 
 #include <polyfem/autogen/auto_q_bases.hpp>
 
@@ -324,10 +324,10 @@ namespace polyfem
 
 				// Compute quadrature points for the polygon
 				Quadrature tmp_quadrature;
-				poly_quadr.get_quadrature(collocation_points, quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler.name(), 2, AssemblerUtils::BasisType::POLY, 2), tmp_quadrature);
+				poly_quadr.get_quadrature(collocation_points, quadrature_order > 0 ? quadrature_order : compute_quadrature_order(assembler.name(), 2, BasisType::POLY, 2), tmp_quadrature);
 
 				Quadrature tmp_mass_quadrature;
-				poly_quadr.get_quadrature(collocation_points, mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", 2, AssemblerUtils::BasisType::POLY, 2), tmp_mass_quadrature);
+				poly_quadr.get_quadrature(collocation_points, mass_quadrature_order > 0 ? mass_quadrature_order : compute_quadrature_order("Mass", 2, BasisType::POLY, 2), tmp_mass_quadrature);
 
 				b.set_quadrature([tmp_quadrature](Quadrature &quad) { quad = tmp_quadrature; });
 				b.set_mass_quadrature([tmp_mass_quadrature](Quadrature &quad) { quad = tmp_mass_quadrature; });

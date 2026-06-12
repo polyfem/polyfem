@@ -1,8 +1,8 @@
 #include <polyfem/mesh/remesh/PhysicsRemesher.hpp>
 #include <polyfem/mesh/remesh/L2Projection.hpp>
 #include <polyfem/utils/Logger.hpp>
-#include <polyfem/assembler/MassMatrixAssembler.hpp>
-#include <polyfem/assembler/Mass.hpp>
+#include <polyfem/assembler/core/MassMatrixAssembler.hpp>
+#include <polyfem/assembler/scalar/Mass.hpp>
 
 #include <wmtk/ExecutionScheduler.hpp>
 #include <wmtk/utils/TriQualityUtils.hpp>

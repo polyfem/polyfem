@@ -7,14 +7,16 @@
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/basis/InterfaceData.hpp>
 
-#include <polyfem/assembler/ElementAssemblyValues.hpp>
-#include <polyfem/assembler/AssemblyValsCache.hpp>
-#include <polyfem/assembler/RhsAssembler.hpp>
-#include <polyfem/assembler/PressureAssembler.hpp>
-#include <polyfem/assembler/MacroStrain.hpp>
-#include <polyfem/assembler/Problem.hpp>
-#include <polyfem/assembler/Assembler.hpp>
-#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/assembler/core/ElementAssemblyValues.hpp>
+#include <polyfem/assembler/core/AssemblyValsCache.hpp>
+#include <polyfem/assembler/core/RhsAssembler.hpp>
+#include <polyfem/assembler/core/PressureAssembler.hpp>
+#include <polyfem/solver/constraints/MacroStrain.hpp>
+#include <polyfem/problem/Problem.hpp>
+#include <polyfem/assembler/core/Assembler.hpp>
+#include <polyfem/assembler/core/AssemblerUtils.hpp>
+
+#include <polyfem/quadrature/QuadratureOrder.hpp>
 
 #include <polyfem/mesh/Mesh.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
@@ -28,7 +30,7 @@
 #include <polyfem/utils/JSONUtils.hpp>
 #include <polyfem/utils/Logger.hpp>
 #include <polyfem/utils/Types.hpp>
-#include <polyfem/assembler/PeriodicBoundary.hpp>
+#include <polyfem/assembler/core/PeriodicBoundary.hpp>
 #include <polyfem/io/OutData.hpp>
 
 #include <polysolve/linear/Solver.hpp>
@@ -303,12 +305,11 @@ namespace polyfem
 		/// @return the quadrature used for projecting boundary conditions
 		QuadratureOrders n_boundary_samples() const
 		{
-			using assembler::AssemblerUtils;
 			const int n_b_samples_j = args["space"]["advanced"]["n_boundary_samples"];
 			const int gdiscr_order = mesh->orders().size() <= 0 ? 1 : mesh->orders().maxCoeff();
 			const int discr_order = std::max(disc_orders.maxCoeff(), gdiscr_order);
 
-			const int n_b_samples = std::max(n_b_samples_j, AssemblerUtils::quadrature_order("Mass", discr_order, AssemblerUtils::BasisType::POLY, mesh->dimension()));
+			const int n_b_samples = std::max(n_b_samples_j, quadrature::compute_quadrature_order("Mass", discr_order, quadrature::BasisType::POLY, mesh->dimension()));
 			// todo prism
 			return {{n_b_samples, n_b_samples}};
 		}

@@ -4,7 +4,7 @@
 #include <polyfem/quadrature/Quadrature.hpp>
 #include <polyfem/mesh/Mesh.hpp>
 
-#include <polyfem/assembler/AssemblyValues.hpp>
+#include <polyfem/assembler/core/AssemblyValues.hpp>
 
 #include <vector>
 

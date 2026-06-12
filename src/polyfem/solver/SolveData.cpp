@@ -20,12 +20,12 @@
 #include <polyfem/solver/forms/RayleighDampingForm.hpp>
 #include <polyfem/solver/forms/QuadraticPenaltyForm.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
-#include <polyfem/assembler/ViscousDamping.hpp>
-#include <polyfem/assembler/PressureAssembler.hpp>
-#include <polyfem/assembler/Mass.hpp>
-#include <polyfem/assembler/MacroStrain.hpp>
+#include <polyfem/assembler/elasticity/ViscousDamping.hpp>
+#include <polyfem/assembler/core/PressureAssembler.hpp>
+#include <polyfem/assembler/scalar/Mass.hpp>
+#include <polyfem/solver/constraints/MacroStrain.hpp>
 #include <polyfem/utils/Logger.hpp>
-#include <polyfem/assembler/PeriodicBoundary.hpp>
+#include <polyfem/assembler/core/PeriodicBoundary.hpp>
 
 #include <h5pp/h5pp.h>
 

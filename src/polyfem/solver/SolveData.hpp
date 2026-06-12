@@ -1,8 +1,8 @@
 #pragma once
 
-#include <polyfem/assembler/AssemblyValsCache.hpp>
-#include <polyfem/assembler/RhsAssembler.hpp>
-#include <polyfem/assembler/Assembler.hpp>
+#include <polyfem/assembler/core/AssemblyValsCache.hpp>
+#include <polyfem/assembler/core/RhsAssembler.hpp>
+#include <polyfem/assembler/core/Assembler.hpp>
 #include <polyfem/basis/ElementBases.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/mesh/LocalBoundary.hpp>

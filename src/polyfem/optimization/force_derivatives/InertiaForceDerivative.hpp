@@ -4,8 +4,8 @@
 #include <Eigen/Core>
 #include <polyfem/solver/forms/InertiaForm.hpp>
 #include <polyfem/basis/ElementBases.hpp>
-#include <polyfem/assembler/Mass.hpp>
-#include <polyfem/assembler/AssemblyValsCache.hpp>
+#include <polyfem/assembler/scalar/Mass.hpp>
+#include <polyfem/assembler/core/AssemblyValsCache.hpp>
 
 namespace polyfem::solver
 {

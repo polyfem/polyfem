@@ -2,9 +2,9 @@
 
 #include <Eigen/Core>
 #include <polyfem/solver/forms/ElasticForm.hpp>
-#include <polyfem/assembler/ElementAssemblyValues.hpp>
-#include <polyfem/assembler/MatParams.hpp>
-#include <polyfem/assembler/ViscousDamping.hpp>
+#include <polyfem/assembler/core/ElementAssemblyValues.hpp>
+#include <polyfem/assembler/core/MatParams.hpp>
+#include <polyfem/assembler/elasticity/ViscousDamping.hpp>
 #include <polyfem/io/Evaluator.hpp>
 #include <polyfem/quadrature/Quadrature.hpp>
 #include <polyfem/utils/MatrixUtils.hpp>

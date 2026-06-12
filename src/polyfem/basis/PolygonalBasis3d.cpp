@@ -2,9 +2,8 @@
 #include "PolygonalBasis3d.hpp"
 #include "LagrangeBasis3d.hpp"
 
-#include <polyfem/assembler/AssemblerUtils.hpp>
+#include <polyfem/quadrature/QuadratureOrder.hpp>
 #include <polyfem/quadrature/PolyhedronQuadrature.hpp>
-#include <polyfem/assembler/AssemblerUtils.hpp>
 #include <polyfem/mesh/MeshUtils.hpp>
 #include <polyfem/mesh/mesh2D/Refinement.hpp>
 #include <polyfem/utils/RefElementSampler.hpp>
@@ -525,8 +524,8 @@ namespace polyfem
 				double scaling;
 				Eigen::RowVector3d translation;
 				sample_polyhedra(e, 2, n_kernels_per_edge, n_samples_per_edge,
-								 quadrature_order > 0 ? quadrature_order : AssemblerUtils::quadrature_order(assembler.name(), 2, AssemblerUtils::BasisType::POLY, 3),
-								 mass_quadrature_order > 0 ? mass_quadrature_order : AssemblerUtils::quadrature_order("Mass", 2, AssemblerUtils::BasisType::POLY, 3),
+								 quadrature_order > 0 ? quadrature_order : compute_quadrature_order(assembler.name(), 2, BasisType::POLY, 3),
+								 mass_quadrature_order > 0 ? mass_quadrature_order : compute_quadrature_order("Mass", 2, BasisType::POLY, 3),
 								 mesh, poly_face_to_data, bases, gbases, eps, local_to_global,
 								 collocation_points, kernel_centers, rhs, triangulated_vertices,
 								 triangulated_faces, tmp_quadrature, tmp_mass_quadrature, scaling, translation);

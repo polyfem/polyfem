@@ -5,7 +5,7 @@
 #include <polyfem/utils/Interpolation.hpp>
 #include <polyfem/utils/Types.hpp>
 
-#include <polyfem/assembler/GenericProblem.hpp>
+#include <polyfem/problem/GenericProblem.hpp>
 
 #include <Eigen/Dense>
 
