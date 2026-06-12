@@ -18,6 +18,7 @@
 #include <polyfem/mesh/mesh3D/Mesh3D.hpp>
 #include <polyfem/mesh/Obstacle.hpp>
 #include <polyfem/refinement/APriori.hpp>
+#include <polyfem/time_integrator/BDF.hpp>
 #include <polyfem/time_integrator/ImplicitTimeIntegrator.hpp>
 #include <polyfem/utils/Timer.hpp>
 #include <polyfem/utils/Logger.hpp>
@@ -1259,18 +1260,37 @@ namespace polyfem::varform
 		return mesh_ ? mesh_->dimension() : 0;
 	}
 
+	std::shared_ptr<time_integrator::BDF> VarForm::make_bdf_time_integrator() const
+	{
+		const json &config = args["time"]["integrator"];
+		const std::string type = config.is_object() ? config.at("type").get<std::string>() : config.get<std::string>();
+
+		if (type == "ImplicitEuler" || type == "implict_euler")
+			return std::make_shared<time_integrator::BDF>();
+
+		if (!utils::StringUtils::startswith(type, "BDF"))
+			log_and_throw_error("First-order transient formulations require ImplicitEuler or BDF, got {}.", type);
+
+		auto integrator = std::make_shared<time_integrator::BDF>(
+			type == "BDF" ? 1 : std::stoi(type.substr(3)));
+		if (config.is_object() && config.contains("steps"))
+			integrator->set_parameters(config);
+		return integrator;
+	}
+
 	void VarForm::save_step_state(
 		const double t0,
 		const double dt,
 		const int t,
-		const time_integrator::ImplicitTimeIntegrator *time_integrator) const
+		const time_integrator::ImplicitTimeIntegrator *time_integrator,
+		const bool rest_mesh_written) const
 	{
 		const int global_t = output_file_index(t);
 		const std::string state_path = resolve_output_path(fmt::format(args["output"]["data"]["state"], global_t));
 		if (!state_path.empty() && time_integrator)
 			time_integrator->save_state(state_path);
 
-		save_restart_json(t0, dt, t);
+		save_restart_json(t0, dt, t, rest_mesh_written);
 	}
 
 	void VarForm::save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &solution) const
@@ -1323,7 +1343,7 @@ namespace polyfem::varform
 			time_callback(t, time_steps, t0 + dt * t, t0 + dt * time_steps);
 	}
 
-	void VarForm::save_restart_json(const double t0, const double dt, const int t) const
+	void VarForm::save_restart_json(const double t0, const double dt, const int t, const bool rest_mesh_written) const
 	{
 		const std::string restart_json_path = args["output"]["restart_json"];
 		if (restart_json_path.empty())
@@ -1355,6 +1375,9 @@ namespace polyfem::varform
 		std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
 		if (!rest_mesh_path.empty())
 		{
+			if (!rest_mesh_written)
+				logger().warn("Restart JSON for {} references a rest mesh that this formulation does not write.", name());
+
 			rest_mesh_path = resolve_output_path(fmt::format(args["output"]["data"]["rest_mesh"], global_t));
 
 			std::vector<json> patch;

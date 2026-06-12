@@ -316,8 +316,7 @@ namespace polyfem::varform
 
 		Eigen::MatrixXd displacement, pressure;
 		split_solution(sol, displacement, pressure);
-		auto bdf = std::make_shared<time_integrator::BDF>();
-		bdf->set_parameters(args["time"]["integrator"]);
+		auto bdf = make_bdf_time_integrator();
 		bdf->init(
 			displacement,
 			Eigen::MatrixXd::Zero(displacement.rows(), displacement.cols()),

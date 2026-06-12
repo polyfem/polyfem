@@ -827,6 +827,7 @@ namespace polyfem::varform
 
 		const int global_t = output_file_index(t);
 		const std::string rest_mesh_path = args["output"]["data"]["rest_mesh"].get<std::string>();
+		bool rest_mesh_written = false;
 		if (!rest_mesh_path.empty())
 		{
 			Eigen::MatrixXd V;
@@ -835,9 +836,10 @@ namespace polyfem::varform
 			io::MshWriter::write(
 				resolve_output_path(fmt::format(rest_mesh_path, global_t)),
 				V, F, mesh_->get_body_ids(), mesh_->is_volume(), /*binary=*/true);
+			rest_mesh_written = true;
 		}
 
-		save_step_state(t0, dt, t, time_integrator);
+		save_step_state(t0, dt, t, time_integrator, rest_mesh_written);
 	}
 
 	void ElasticVarForm::build_mesh_matrices(Eigen::MatrixXd &V, Eigen::MatrixXi &F) const

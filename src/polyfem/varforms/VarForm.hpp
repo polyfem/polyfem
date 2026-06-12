@@ -28,6 +28,7 @@ namespace polyfem
 {
 	namespace time_integrator
 	{
+		class BDF;
 		class ImplicitTimeIntegrator;
 	}
 
@@ -142,12 +143,14 @@ namespace polyfem
 			virtual void build_rhs_assembler();
 
 			void initial_solution(Eigen::MatrixXd &solution) const;
+			std::shared_ptr<time_integrator::BDF> make_bdf_time_integrator() const;
 
 			void save_step_state(
 				const double t0,
 				const double dt,
 				const int t,
-				const time_integrator::ImplicitTimeIntegrator *time_integrator) const;
+				const time_integrator::ImplicitTimeIntegrator *time_integrator,
+				const bool rest_mesh_written = false) const;
 
 			void ensure_output_sampler() const;
 			std::vector<io::OutputField> common_output_fields(
@@ -159,7 +162,7 @@ namespace polyfem
 				const int n_auxiliary_bases,
 				std::ostream &out) const;
 
-			void save_restart_json(const double t0, const double dt, const int t) const;
+			void save_restart_json(const double t0, const double dt, const int t, const bool rest_mesh_written) const;
 			void save_timestep(const double time, const int t, const double t0, const double dt, const Eigen::MatrixXd &solution) const;
 			void save_subsolve(const int i, const int t, const Eigen::MatrixXd &solution) const;
 			int output_file_index(const int t) const;

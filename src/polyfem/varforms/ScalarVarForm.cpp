@@ -290,8 +290,7 @@ namespace polyfem::varform
 		auto solver = polysolve::linear::Solver::create(args["solver"]["linear"], logger());
 		logger().info("{}...", solver->name());
 
-		auto bdf = std::make_shared<time_integrator::BDF>();
-		bdf->set_parameters(args["time"]);
+		auto bdf = make_bdf_time_integrator();
 		bdf->init(sol, Eigen::VectorXd::Zero(sol.size()), Eigen::VectorXd::Zero(sol.size()), dt);
 		time_integrator = bdf;
 

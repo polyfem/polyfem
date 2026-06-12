@@ -559,8 +559,7 @@ namespace polyfem::varform
 		Eigen::MatrixXd velocity, pressure;
 		split_solution(sol, velocity, pressure);
 
-		auto bdf = std::make_shared<time_integrator::BDF>();
-		bdf->set_parameters(args["time"]["integrator"]);
+		auto bdf = make_bdf_time_integrator();
 		bdf->init(
 			velocity,
 			Eigen::MatrixXd::Zero(velocity.rows(), velocity.cols()),
@@ -669,9 +668,7 @@ namespace polyfem::varform
 		Eigen::MatrixXd velocity, pressure;
 		split_solution(sol, velocity, pressure);
 
-		auto bdf = std::make_shared<time_integrator::BDF>();
-		if (args["time"]["integrator"].is_object() && args["time"]["integrator"]["type"] == "BDF")
-			bdf->set_parameters(args["time"]["integrator"]);
+		auto bdf = make_bdf_time_integrator();
 		bdf->init(
 			velocity,
 			Eigen::MatrixXd::Zero(velocity.rows(), velocity.cols()),
