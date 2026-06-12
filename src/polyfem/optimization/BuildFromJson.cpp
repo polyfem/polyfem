@@ -112,10 +112,13 @@ namespace polyfem::from_json
 			{
 				return select_boundary_nodes(state, selection);
 			}
-			//  "boundary_excluding_surface"
-			else
+			else if (type == "boundary_excluding_surface")
 			{
 				return select_boundary_nodes_excluding_surfaces(state, selection);
+			}
+			else
+			{
+				log_and_throw_adjoint_error("Unknown advanced active geometry selection type name {}.", type);
 			}
 		}
 
