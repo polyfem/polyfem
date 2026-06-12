@@ -366,13 +366,16 @@ namespace polyfem::from_json
 				std::move(active_boundary_ids),
 				std::move(active_time_slices));
 		}
-		//  "periodic-shape"
-		else
+		else if (var2sim_type == "periodic-shape")
 		{
 			var2sim = std::make_shared<PeriodicShapeVariableToSimulation>(
 				std::move(rel_states),
 				std::move(rel_diff_caches),
 				std::move(compo));
+		}
+		else
+		{
+			log_and_throw_adjoint_error("Unknown variable to simulation name {}.", var2sim_type);
 		}
 
 		return var2sim;
