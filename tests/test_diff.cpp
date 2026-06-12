@@ -492,6 +492,14 @@ TEST_CASE("shape-transient-friction-sdf", "[opt_gradient]")
 	run_test1("shape-transient-friction-sdf-opt.json", 1e-7, TOL, 0.0, 1.0, SEED, REPEAT);
 }
 
+TEST_CASE("shape-transient-stress-3d-frictionless-fast", "[.][opt_gradient]")
+{
+	constexpr uint64_t SEED = BASE_SEED + 31;
+	constexpr int REPEAT = 1;
+	constexpr double TOL = 1e-3;
+	run_test2("shape-transient-stress-3d-frictionless-fast-opt.json", 1e-5, TOL, SEED, REPEAT);
+}
+
 TEST_CASE("3d-shape-mesh-target", EXPENSIVE_TEST_LABEL)
 {
 	constexpr uint64_t SEED = BASE_SEED + 17;
